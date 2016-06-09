@@ -1,4 +1,4 @@
-package de.symeda.sormas.backend.caze.mock;
+package de.symeda.sormas.backend.mock;
 
 import java.util.ArrayList;
 import java.util.List;

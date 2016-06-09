@@ -6,7 +6,7 @@ import javax.ejb.Singleton;
 
 import de.symeda.sormas.api.caze.CaseDto;
 import de.symeda.sormas.api.caze.CaseFacade;
-import de.symeda.sormas.backend.caze.mock.MockDataGenerator;
+import de.symeda.sormas.backend.mock.MockDataGenerator;
 
 @Singleton(name = "CaseFacade")
 public class CaseFacadeMock implements CaseFacade {
