@@ -1,0 +1,62 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>de.symeda.sormas</groupId>
+		<artifactId>sormas-base</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+		<relativePath>../sormas-base</relativePath>
+	</parent>
+	<artifactId>sormas-ear</artifactId>
+	<packaging>ear</packaging>
+
+	<properties>
+		<maven.build.timestamp.format>dd.MM.yyy</maven.build.timestamp.format>
+		<buildNumber>${maven.build.timestamp}</buildNumber>
+		<domain.path>artifacts/${maven.build.timestamp}</domain.path>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>de.symeda.sormas</groupId>
+			<artifactId>sormas-backend</artifactId>
+			<version>${project.version}</version>
+			<type>ejb</type>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-ear-plugin</artifactId>
+				<configuration>
+					<version>6</version>
+					<defaultLibBundleDir>lib</defaultLibBundleDir>
+					<modules>
+						<ejbModule>
+							<groupId>de.symeda.sormas</groupId>
+							<artifactId>sormas-backend</artifactId>
+							<bundleFileName>sormas-backend.jar</bundleFileName>
+						</ejbModule>
+					</modules>
+				</configuration>
+			</plugin>
+
+			<!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-dependency-plugin</artifactId> <executions> 
+				<execution> <id>copy</id> <phase>package</phase> <goals> <goal>copy</goal> </goals> <configuration> <artifactItems> <artifactItem> 
+				<groupId>org.hibernate</groupId> <artifactId>hibernate-core</artifactId> <type>jar</type> </artifactItem> <artifactItem> 
+				<groupId>org.hibernate</groupId> <artifactId>hibernate-core</artifactId> <type>jar</type> </artifactItem> <artifactItem> 
+				<groupId>org.postgresql</groupId> <artifactId>postgresql</artifactId> <type>jar</type> </artifactItem> </artifactItems> <overWrite>true</overWrite> 
+				<outputDirectory>${domain.path}/lib</outputDirectory> </configuration> </execution> </executions> </plugin> -->
+
+		</plugins>
+		<finalName>${project.artifactId}</finalName>
+	</build>
+
+	<name>${project.artifactId}</name>
+</project>
