@@ -32,12 +32,18 @@ import de.symeda.sormas.samples.ResetButtonForTextField;
  */
 public class CasesView extends CssLayout implements View {
 
-    public static final String VIEW_NAME = "cases";
+	private static final long serialVersionUID = -3533557348144005469L;
+	
+	public static final String VIEW_NAME = "cases";
     private CaseGrid grid;
     private CaseForm form;
 
     private CaseController viewLogic = new CaseController(this);
     private Button newCase;
+
+	private VerticalLayout formLayout;
+
+	private VerticalLayout gridLayout;
 
     public CasesView() {
         setSizeFull();
@@ -47,25 +53,31 @@ public class CasesView extends CssLayout implements View {
         grid = new CaseGrid();
         grid.addSelectionListener(new SelectionListener() {
 
-            @Override
+			private static final long serialVersionUID = 673897391366410556L;
+
+			@Override
             public void select(SelectionEvent event) {
                 viewLogic.rowSelected(grid.getSelectedRow());
             }
         });
 
+        formLayout = new VerticalLayout();
         form = new CaseForm(viewLogic);
+        formLayout.addComponent(form);
+        formLayout.setSizeFull();
+        formLayout.setExpandRatio(form, 1);
 
-        VerticalLayout barAndGridLayout = new VerticalLayout();
-        barAndGridLayout.addComponent(topLayout);
-        barAndGridLayout.addComponent(grid);
-        barAndGridLayout.setMargin(true);
-        barAndGridLayout.setSpacing(true);
-        barAndGridLayout.setSizeFull();
-        barAndGridLayout.setExpandRatio(grid, 1);
-        barAndGridLayout.setStyleName("crud-main-layout");
+        gridLayout = new VerticalLayout();
+        gridLayout.addComponent(topLayout);
+        gridLayout.addComponent(grid);
+        gridLayout.setMargin(true);
+        gridLayout.setSpacing(true);
+        gridLayout.setSizeFull();
+        gridLayout.setExpandRatio(grid, 1);
+        gridLayout.setStyleName("crud-main-layout");
 
-        addComponent(barAndGridLayout);
-        addComponent(form);
+        addComponent(gridLayout);
+        addComponent(formLayout);
 
         viewLogic.init();
     }
@@ -77,7 +89,10 @@ public class CasesView extends CssLayout implements View {
         ResetButtonForTextField.extend(filter);
         filter.setImmediate(true);
         filter.addTextChangeListener(new FieldEvents.TextChangeListener() {
-            @Override
+
+        	private static final long serialVersionUID = -3350923354333230347L;
+
+			@Override
             public void textChange(FieldEvents.TextChangeEvent event) {
                 grid.setFilter(event.getText());
             }
@@ -87,7 +102,10 @@ public class CasesView extends CssLayout implements View {
         newCase.addStyleName(ValoTheme.BUTTON_PRIMARY);
         newCase.setIcon(FontAwesome.PLUS_CIRCLE);
         newCase.addClickListener(new ClickListener() {
-            @Override
+
+			private static final long serialVersionUID = -6938781760347121633L;
+
+			@Override
             public void buttonClick(ClickEvent event) {
                 viewLogic.newCase();
             }
@@ -135,11 +153,11 @@ public class CasesView extends CssLayout implements View {
 
     public void edit(CaseDto caze) {
         if (caze != null) {
-            form.addStyleName("visible");
-            form.setEnabled(true);
+            formLayout.setVisible(true);
+            gridLayout.setVisible(false);
         } else {
-            form.removeStyleName("visible");
-            form.setEnabled(false);
+        	formLayout.setVisible(false);
+        	gridLayout.setVisible(true);
         }
         form.editCase(caze);
     }

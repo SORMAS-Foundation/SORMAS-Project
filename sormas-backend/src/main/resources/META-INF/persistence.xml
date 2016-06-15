@@ -5,12 +5,19 @@
 	<persistence-unit name="SormasPU" transaction-type="JTA">
 		<jta-data-source>jdbc/sormasDataPool</jta-data-source>
 
-		<mapping-file>META-INF/listener.xml</mapping-file>
+		<!-- <mapping-file>META-INF/listener.xml</mapping-file> -->
 
-		<class>de.symeda.sormas.api.common.AbstractDomainObject</class>
+		<class>de.symeda.sormas.backend.common.AbstractDomainObject</class>
+		<class>de.symeda.sormas.backend.caze.Case</class>
+		<class>de.symeda.sormas.backend.person.Person</class>
+		<class>de.symeda.sormas.backend.location.Location</class>
+		<class>de.symeda.sormas.backend.user.User</class>
+		<class>de.symeda.sormas.backend.region.Region</class>
+		<class>de.symeda.sormas.backend.region.District</class>
+		<class>de.symeda.sormas.backend.region.Community</class>
 
 
-		<exclude-unlisted-classes>false</exclude-unlisted-classes>
+		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 
 		<shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
 		<validation-mode>CALLBACK</validation-mode>

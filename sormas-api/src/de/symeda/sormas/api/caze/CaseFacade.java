@@ -11,4 +11,8 @@ public interface CaseFacade {
 
     public abstract CaseDto getByUuid(String uuid);
 
+    public abstract CaseDto saveCase(CaseDto dto);
+
+    public abstract void createDemo();
+
 }

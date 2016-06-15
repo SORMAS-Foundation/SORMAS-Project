@@ -12,11 +12,12 @@ import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.ui.Grid;
 
 import de.symeda.sormas.api.caze.CaseDto;
-import de.symeda.sormas.ui.utils.CaseHelper;
 
 public class CaseGrid extends Grid {
 
-    public CaseGrid() {
+	private static final long serialVersionUID = -3413165328323165362L;
+
+	public CaseGrid() {
         setSizeFull();
 
         setSelectionMode(SelectionMode.SINGLE);
@@ -25,6 +26,8 @@ public class CaseGrid extends Grid {
         setContainerDataSource(container);
         setColumnOrder(CaseDto.UUID, CaseDto.CASE_STATUS, CaseDto.DESCRIPTION);
         getColumn(CaseDto.UUID).setConverter(new Converter<String, String>() {
+			
+        	private static final long serialVersionUID = -5274112323551652930L;
 
 			@Override
 			public String convertToModel(String value, Class<? extends String> targetType, Locale locale)
@@ -72,7 +75,8 @@ public class CaseGrid extends Grid {
 
     }
 
-    private BeanItemContainer<CaseDto> getContainer() {
+    @SuppressWarnings("unchecked")
+	private BeanItemContainer<CaseDto> getContainer() {
         return (BeanItemContainer<CaseDto>) super.getContainerDataSource();
     }
 
@@ -92,7 +96,8 @@ public class CaseGrid extends Grid {
         BeanItem<CaseDto> item = getContainer().getItem(caze);
         if (item != null) {
             // Updated product
-            MethodProperty p = (MethodProperty) item.getItemProperty(CaseDto.UUID);
+            @SuppressWarnings("rawtypes")
+			MethodProperty p = (MethodProperty) item.getItemProperty(CaseDto.UUID);
             p.fireValueChange();
         } else {
             // New product

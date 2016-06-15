@@ -1,6 +1,5 @@
 package de.symeda.sormas.ui.surveillance.caze;
 
-import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.data.fieldgroup.FieldGroup.CommitEvent;
@@ -26,12 +25,12 @@ import de.symeda.sormas.ui.utils.LayoutUtil;
  * side of the view or filling the whole screen - see the theme for the related
  * CSS rules.
  */
-public class CaseForm extends CssLayout {
+public class CaseForm extends CustomLayout {
 
-    private CaseController viewLogic;
+	private static final long serialVersionUID = 8049619475023157401L;
+	private CaseController viewLogic;
     private BeanFieldGroup<CaseDto> fieldGroup;
     
-	private final CustomLayout layout;
     private final TextField id;
     private final NativeSelect caseStatus; 
     private final TextArea description; 
@@ -44,8 +43,8 @@ public class CaseForm extends CssLayout {
 
     public CaseForm(CaseController caseController) {
         super();
-        layout = new CustomLayout((String)null);
-        layout.setTemplateContents(HTML_LAYOUT);
+        setSizeFull();
+        setTemplateContents(HTML_LAYOUT);
         
         viewLogic = caseController;
 
@@ -53,21 +52,17 @@ public class CaseForm extends CssLayout {
 
         id = fieldGroup.buildAndBind("ID", CaseDto.UUID, TextField.class);
         id.setReadOnly(true);
-        layout.addComponent(id, CaseDto.UUID);
+        addComponent(id, CaseDto.UUID);
         
         caseStatus = fieldGroup.buildAndBind("Status", CaseDto.CASE_STATUS, NativeSelect.class);
-        layout.addComponent(caseStatus, CaseDto.CASE_STATUS);
+        addComponent(caseStatus, CaseDto.CASE_STATUS);
 
         description = fieldGroup.buildAndBind("Description", CaseDto.DESCRIPTION, TextArea.class);
-        layout.addComponent(description, CaseDto.DESCRIPTION);
+        addComponent(description, CaseDto.DESCRIPTION);
 
         // perform validation and enable/disable buttons while editing
-        ValueChangeListener valueListener = new ValueChangeListener() {
-            @Override
-            public void valueChange(ValueChangeEvent event) {
-                formHasChanged();
-            }
-        };
+        ValueChangeListener valueListener = e -> formHasChanged();
+        
         for (Field f : fieldGroup.getFields()) {
             f.addValueChangeListener(valueListener);
         }
@@ -84,6 +79,7 @@ public class CaseForm extends CssLayout {
             	viewLogic.updateCase(fieldGroup.getItemDataSource().getBean());
             }
         });
+
 
 //        save.addClickListener(new ClickListener() {
 //            @Override
@@ -127,9 +123,12 @@ public class CaseForm extends CssLayout {
 
         // Scroll to the top
         // As this is not a Panel, using JavaScript
-        String scrollScript = "window.document.getElementById('" + getId()
-                + "').scrollTop = 0;";
-        Page.getCurrent().getJavaScript().execute(scrollScript);
+        String id2 = getId();
+        if (id2 != null) {
+			String scrollScript = "window.document.getElementById('" + id2
+	                + "').scrollTop = 0;";
+	        Page.getCurrent().getJavaScript().execute(scrollScript);
+        }
     }
 
     private void formHasChanged() {

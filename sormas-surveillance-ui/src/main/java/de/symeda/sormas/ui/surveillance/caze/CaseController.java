@@ -20,7 +20,8 @@ import de.symeda.sormas.ui.utils.CaseHelper;
  */
 public class CaseController implements Serializable {
 
-    private CasesView view;
+	private static final long serialVersionUID = 1L;
+	private CasesView view;
 
     public CaseController(CasesView simpleCrudView) {
         view = simpleCrudView;
@@ -32,7 +33,10 @@ public class CaseController implements Serializable {
         if (!SurveillanceUI.get().getAccessControl().isUserInRole("admin")) {
             view.setNewCaseEnabled(false);
         }
-
+        
+        // Create demo-content
+        FacadeProvider.getCaseFacade().createDemo();
+        
         view.show(FacadeProvider.getCaseFacade().getAllCases());
     }
 
@@ -45,12 +49,12 @@ public class CaseController implements Serializable {
     /**
      * Update the fragment without causing navigator to change view
      */
-    private void setFragmentParameter(String productId) {
+    private void setFragmentParameter(String caseUuid) {
         String fragmentParameter;
-        if (productId == null || productId.isEmpty()) {
+        if (caseUuid == null || caseUuid.isEmpty()) {
             fragmentParameter = "";
         } else {
-            fragmentParameter = productId;
+            fragmentParameter = caseUuid;
         }
 
         Page page = SurveillanceUI.get().getPage();
@@ -66,7 +70,7 @@ public class CaseController implements Serializable {
                 // Ensure this is selected even if coming directly here from
                 // login
                 try {
-                    CaseDto caze = findCaze(uuidOrNew);
+                    CaseDto caze = findCase(uuidOrNew);
                     view.selectRow(caze);
                 } catch (NumberFormatException e) {
                 }
@@ -74,7 +78,7 @@ public class CaseController implements Serializable {
         }
     }
 
-    private CaseDto findCaze(String uuid) {
+    private CaseDto findCase(String uuid) {
         return FacadeProvider.getCaseFacade().getByUuid(uuid);
     }
 

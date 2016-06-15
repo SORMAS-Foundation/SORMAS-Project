@@ -7,6 +7,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
@@ -19,7 +20,7 @@ import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.user.User;
 
-@Entity
+@Entity(name="caze")
 public class Case extends AbstractDomainObject {
 	
 	private static final long serialVersionUID = -2697795184663562129L;
@@ -46,8 +47,8 @@ public class Case extends AbstractDomainObject {
 	private User surveillanceOfficer;
 	private User surveillanceSupervisor;
 	
-	@OneToOne(cascade = CascadeType.ALL, mappedBy=Case.PERSON)
-	@Column(nullable=false)
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(nullable=false)
 	public Person getPerson() {
 		return person;
 	}
