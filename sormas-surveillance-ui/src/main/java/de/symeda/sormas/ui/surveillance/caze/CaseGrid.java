@@ -7,11 +7,14 @@ import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.MethodProperty;
 import com.vaadin.data.util.converter.Converter;
+import com.vaadin.data.util.filter.Compare.Equal;
 import com.vaadin.data.util.filter.Or;
 import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.ui.Grid;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDto;
+import de.symeda.sormas.api.caze.CaseStatus;
 
 public class CaseGrid extends Grid {
 
@@ -24,7 +27,7 @@ public class CaseGrid extends Grid {
 
         BeanItemContainer<CaseDto> container = new BeanItemContainer<CaseDto>(CaseDto.class);
         setContainerDataSource(container);
-        setColumnOrder(CaseDto.UUID, CaseDto.CASE_STATUS, CaseDto.DESCRIPTION);
+        setColumnOrder(CaseDto.UUID, CaseDto.CASE_STATUS, CaseDto.DISEASE);
         getColumn(CaseDto.UUID).setConverter(new Converter<String, String>() {
 			
         	private static final long serialVersionUID = -5274112323551652930L;
@@ -61,18 +64,34 @@ public class CaseGrid extends Grid {
      *            string to look for
      */
     public void setFilter(String filterString) {
-        getContainer().removeAllContainerFilters();
+    	removeAllFilter();
         if (filterString.length() > 0) {
             SimpleStringFilter nameFilter = new SimpleStringFilter(
-                    "productName", filterString, true, false);
-            SimpleStringFilter availabilityFilter = new SimpleStringFilter(
-                    "availability", filterString, true, false);
-            SimpleStringFilter categoryFilter = new SimpleStringFilter(
-                    "category", filterString, true, false);
+            		CaseDto.PERSON, filterString, true, false);
+            SimpleStringFilter descFilter = new SimpleStringFilter(
+            		CaseDto.DESCRIPTION, filterString, true, false);
+            SimpleStringFilter statusFilter = new SimpleStringFilter(
+            		CaseDto.CASE_STATUS, filterString, true, false);
             getContainer().addContainerFilter(
-                    new Or(nameFilter, availabilityFilter, categoryFilter));
+                    new Or(nameFilter, descFilter, statusFilter));
         }
 
+    }
+    
+    public void setFilter(CaseStatus statusToFilter) {
+    	removeAllFilter();
+    	Equal filter = new Equal(CaseDto.CASE_STATUS, statusToFilter);  
+        getContainer().addContainerFilter(filter);
+    }
+    
+    public void setFilter(Disease disease) {
+    	removeAllFilter();
+    	Equal filter = new Equal(CaseDto.DISEASE, disease);  
+        getContainer().addContainerFilter(filter);
+	}
+    
+    public void removeAllFilter() {
+    	getContainer().removeAllContainerFilters();
     }
 
     @SuppressWarnings("unchecked")
@@ -108,4 +127,6 @@ public class CaseGrid extends Grid {
     public void remove(CaseDto caze) {
         getContainer().removeItem(caze);
     }
+
+	
 }

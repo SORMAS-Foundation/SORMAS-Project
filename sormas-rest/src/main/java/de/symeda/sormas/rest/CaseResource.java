@@ -36,4 +36,16 @@ public class CaseResource implements CaseFacade {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public CaseDto saveCase(CaseDto dto) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void createDemo() {
+		// TODO Auto-generated method stub
+		
+	}
 }

@@ -3,6 +3,8 @@ package de.symeda.sormas.ui.surveillance.caze;
 import java.io.Serializable;
 
 import com.vaadin.server.Page;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDto;
@@ -22,13 +24,14 @@ public class CaseController implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private CasesView view;
+	private CaseForm caseEditForm;
 
     public CaseController(CasesView simpleCrudView) {
         view = simpleCrudView;
     }
 
     public void init() {
-        editCase(null);
+        showCaseNavigation(null);
         // Hide and disable if not admin
         if (!SurveillanceUI.get().getAccessControl().isUserInRole("admin")) {
             view.setNewCaseEnabled(false);
@@ -37,7 +40,7 @@ public class CaseController implements Serializable {
         // Create demo-content
         FacadeProvider.getCaseFacade().createDemo();
         
-        view.show(FacadeProvider.getCaseFacade().getAllCases());
+        showCaseOverView();
     }
 
     public void cancelCase() {
@@ -81,7 +84,31 @@ public class CaseController implements Serializable {
     private CaseDto findCase(String uuid) {
         return FacadeProvider.getCaseFacade().getByUuid(uuid);
     }
+    
+    
+    public void showCaseOverView() {
+		view.clearSelection();
+		view.edit(null);
+		view.show(FacadeProvider.getCaseFacade().getAllCases());
+	}
 
+    public void showCaseNavigation(CaseDto caze) {
+    	view.clearSelection();
+        if (caze == null) {
+            setFragmentParameter("");
+        } else {
+            setFragmentParameter(caze.getUuid());
+        }
+        view.edit(caze);
+        caseEditForm.editCase(caze);
+    }
+
+    public void newCase() {
+        view.clearSelection();
+        setFragmentParameter("new");
+        view.edit(new CaseDto());
+    }
+    
     public void updateCase(CaseDto caze) {
     	//FacadeProvider.getCaseFacade().update(caze);
         view.showSaveNotification(CaseHelper.getShortUuid(caze) + " updated");
@@ -101,24 +128,22 @@ public class CaseController implements Serializable {
         setFragmentParameter("");
     }
 
-    public void editCase(CaseDto caze) {
-        if (caze == null) {
-            setFragmentParameter("");
-        } else {
-            setFragmentParameter(caze.getUuid());
-        }
-        view.edit(caze);
-    }
-
-    public void newCase() {
-        view.clearSelection();
-        setFragmentParameter("new");
-        view.edit(new CaseDto());
-    }
-
     public void rowSelected(CaseDto product) {
         if (SurveillanceUI.get().getAccessControl().isUserInRole("admin")) {
-            editCase(product);
+            showCaseNavigation(product);
         }
     }
+    
+    
+    
+    public Component getCaseDataView() {
+    	VerticalLayout formLayout = new VerticalLayout();
+        caseEditForm = new CaseForm(this);
+        formLayout.addComponent(caseEditForm);
+        formLayout.setSizeFull();
+        formLayout.setExpandRatio(caseEditForm, 1);
+        return formLayout;
+    }
+
+	
 }

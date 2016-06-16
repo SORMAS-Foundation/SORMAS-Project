@@ -1,6 +1,6 @@
 package de.symeda.sormas.api.person;
 
-import de.symeda.sormas.api.caze.DataTransferObject;
+import de.symeda.sormas.api.DataTransferObject;
 
 public class PersonDto extends DataTransferObject {
 

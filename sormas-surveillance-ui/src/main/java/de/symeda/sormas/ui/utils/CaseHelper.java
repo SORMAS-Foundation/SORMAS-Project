@@ -1,6 +1,6 @@
 package de.symeda.sormas.ui.utils;
 
-import de.symeda.sormas.api.caze.DataTransferObject;
+import de.symeda.sormas.api.DataTransferObject;
 
 public final class CaseHelper {
 

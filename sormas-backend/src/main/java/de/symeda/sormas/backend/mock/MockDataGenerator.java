@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDto;
+import de.symeda.sormas.api.caze.CaseStatus;
 import de.symeda.sormas.api.person.PersonDto;
 
 public class MockDataGenerator {
@@ -42,7 +44,7 @@ public class MockDataGenerator {
 
     public static List<CaseDto> createCases() {
         List<CaseDto> cases = new ArrayList<CaseDto>();
-        for (int i = 0; i < 1; i++) {
+        for (int i = 0; i < 5; i++) {
             CaseDto p = createCase();
             cases.add(p);
         }
@@ -53,6 +55,8 @@ public class MockDataGenerator {
         CaseDto c = new CaseDto();
         c.setUuid(java.util.UUID.randomUUID().toString());
         c.setDescription(generateName());
+        c.setCaseStatus(generateStatus());
+        c.setDisease(Disease.EBOLA);
         return c;
     }
 
@@ -64,6 +68,10 @@ public class MockDataGenerator {
     	return personDto;
     }
     
+    
+    private static CaseStatus generateStatus() {
+        return CaseStatus.values()[random.nextInt(CaseStatus.values().length)];
+    }
 
     private static String generateName() {
         return word1[random.nextInt(word1.length)] + " "
