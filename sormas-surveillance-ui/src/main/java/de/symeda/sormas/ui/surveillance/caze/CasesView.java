@@ -83,9 +83,9 @@ public class CasesView extends CssLayout implements View {
         
         //topLayout.addComponent(new Label("<h3>status:</h3>", ContentMode.HTML));
     	
-    	Button statusProbable = new Button("probable", e -> grid.setFilter(CaseStatus.PROBABLE));
-    	statusProbable.setStyleName(ValoTheme.BUTTON_LINK);
-        topLayout.addComponent(statusProbable);
+    	Button statusPossible = new Button("possible", e -> grid.setFilter(CaseStatus.POSSIBLE));
+    	statusPossible.setStyleName(ValoTheme.BUTTON_LINK);
+        topLayout.addComponent(statusPossible);
         
         Button statusInvestigated = new Button("investigated", e -> grid.setFilter(CaseStatus.INVESTIGATED));
         statusInvestigated.setStyleName(ValoTheme.BUTTON_LINK);

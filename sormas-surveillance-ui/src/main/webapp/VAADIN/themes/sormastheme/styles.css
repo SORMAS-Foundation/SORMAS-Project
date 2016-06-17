@@ -1,3 +1,7 @@
+@import "font-awesome.min.css";
+
+@import "bootstrap-reduced.css";
+
 /**
  * Checks if a list contains a certain value.
  * 
@@ -13376,6 +13380,10 @@ div.v-layout.v-horizontal.v-widget {
 
 .sormastheme .product-form-wrapper .form-layout > .v-expand > .v-slot:last-child {
 	padding-bottom: 18px;
+}
+
+.sormastheme .v-caption {
+	display: block;
 }
 
 .sormastheme .product-form {

@@ -212,6 +212,32 @@ public class LayoutUtil {
 //		}
 //		return StringEscapeUtils.escapeHtml4(stringToBeEscaped);
 //	}
+	
+	
+	/**
+	 * Erstellt eine "Drittel"-Spalte (span4).
+	 */
+	public static FluidColumn oneOfThreeCol(String content) {
+		return fluidColumnCss(null, 4, 0, content);
+	}
+
+	/**
+	 * Erstellt eine "Zwei-Drittel"-Spalte (span8).
+	 */
+	public static FluidColumn twoOfThreeCol(String content) {
+		return fluidColumnCss(null, 8, 0, content);
+	}
+
+	/**
+	 * Erstellt eine "Halb"-Spalte (span6).
+	 */
+	public static FluidColumn oneOfTwoCol(String content) {
+		return fluidColumnCss(null, 6, 0, content);
+	}
+
+	public static FluidColumn oneOfTwoCol(String cssClasses, String content) {
+		return fluidColumnCss(cssClasses, 6, 0, content);
+	}
 
 	public static final class FluidColumn {
 
