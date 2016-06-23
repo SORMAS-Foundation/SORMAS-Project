@@ -9,12 +9,12 @@ import javax.ejb.SessionContext;
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Root;
 
-
-import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.user.Permission;
 import de.symeda.sormas.backend.util.ModelConstants;
 
@@ -65,8 +65,21 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 
 	@Override
 	public ADO getByUuid(String uuid) {
-		//ADO result = JpaHelper.simpleSingleQuery(em, getElementClass(), AbstractDomainObject.UUID, uuid);
-		return null;
+		
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		ParameterExpression<String> uuidParam = cb.parameter(String.class, "uuid");
+		CriteriaQuery<ADO> cq = cb.createQuery(getElementClass());
+		Root<ADO> from = cq.from(getElementClass());
+		cq.where(cb.equal(from.get(AbstractDomainObject.UUID), uuidParam));
+		
+		TypedQuery<ADO> q = em.createQuery(cq)
+			.setParameter(uuidParam, uuid);
+		
+		ADO entity = q.getResultList().stream()
+				.findFirst()
+				.orElse(null);
+		
+		return entity;
 	}
 
 	@Override
@@ -76,6 +89,7 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 		} else if (!em.contains(ado)) {
 			throw new EntityExistsException("Das Entity ist nicht attacht: " + getElementClass().getSimpleName() + "#" + ado.getUuid());
 		}
+		em.flush();
 	}
 
 	@Override

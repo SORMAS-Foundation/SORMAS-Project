@@ -314,7 +314,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends
 	 */
 	public NativeButton getCommitButton() {
 		if (commitButton == null) {
-			commitButton = new NativeButton("Speichern");
+			commitButton = new NativeButton("save");
 
 			commitButton.addClickListener(new ClickListener() { 
 				private static final long serialVersionUID = 1L;
@@ -335,7 +335,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends
 	 */
 	public NativeButton getDiscardButton() {
 		if (discardButton == null) {
-			discardButton = new NativeButton("Verwerfen");
+			discardButton = new NativeButton("cancel");
 
 			discardButton.addClickListener(new ClickListener() {
 				private static final long serialVersionUID = 1L;

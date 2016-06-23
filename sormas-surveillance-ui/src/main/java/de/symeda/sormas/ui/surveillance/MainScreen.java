@@ -13,6 +13,7 @@ import de.symeda.sormas.ui.surveillance.caze.CasesView;
  * 
  * 
  */
+@SuppressWarnings("serial")
 public class MainScreen extends HorizontalLayout {
     private Menu menu;
 
@@ -31,8 +32,11 @@ public class MainScreen extends HorizontalLayout {
                 CasesView.VIEW_NAME, FontAwesome.EDIT);
         menu.addView(new AboutView(), AboutView.VIEW_NAME, AboutView.VIEW_NAME,
                 FontAwesome.INFO_CIRCLE);
-
+        
         navigator.addViewChangeListener(viewChangeListener);
+        
+        
+        ui.setNavigator(navigator);
 
         addComponent(menu);
         addComponent(viewContainer);

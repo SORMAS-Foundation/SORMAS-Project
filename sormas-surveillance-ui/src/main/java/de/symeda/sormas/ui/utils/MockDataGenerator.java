@@ -1,11 +1,11 @@
-package de.symeda.sormas.backend.mock;
+package de.symeda.sormas.ui.utils;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.caze.CaseDto;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseStatus;
 import de.symeda.sormas.api.person.PersonDto;
 
@@ -42,17 +42,17 @@ public class MockDataGenerator {
 		    "Jalloh", "Anikulapo-Kuti","Iwu", "Anenih", "Mensah", "Biobaku","Tinibu", "Sesay", "Akinyemi", "Akiloye", "Adeyemi", 
 		    "Adesida", "Omehia", "Sekibo", "Amaechi", "Bankole", "Nnamani", "Turay", "Okadigbo", "Yeboah", "Ojukwu"};
 
-    public static List<CaseDto> createCases() {
-        List<CaseDto> cases = new ArrayList<CaseDto>();
+    public static List<CaseDataDto> createCases() {
+        List<CaseDataDto> cases = new ArrayList<CaseDataDto>();
         for (int i = 0; i < 5; i++) {
-            CaseDto p = createCase();
+            CaseDataDto p = createCase();
             cases.add(p);
         }
         return cases;
     }
 
-    private static CaseDto createCase() {
-        CaseDto c = new CaseDto();
+    private static CaseDataDto createCase() {
+        CaseDataDto c = new CaseDataDto();
         c.setUuid(java.util.UUID.randomUUID().toString());
         c.setDescription(generateName());
         c.setCaseStatus(generateStatus());

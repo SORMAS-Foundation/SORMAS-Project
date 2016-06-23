@@ -2,6 +2,7 @@ package de.symeda.sormas.backend.common;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.Date;
 
 import javax.persistence.Basic;
@@ -11,8 +12,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.SequenceGenerator;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.persistence.Version;
 import javax.validation.constraints.Size;
@@ -42,7 +41,7 @@ public abstract class AbstractDomainObject implements Serializable, Cloneable, D
 
 	private Long id;
 	private String uuid;
-	private Date creationDate;
+	private Timestamp creationDate;
 	private Timestamp changeDate;
 
 	@Override
@@ -81,15 +80,14 @@ public abstract class AbstractDomainObject implements Serializable, Cloneable, D
 	}
 
 	@Column(nullable = false)
-	@Temporal(TemporalType.TIMESTAMP)
-	public Date getCreationDate() {
+	public Timestamp getCreationDate() {
 		if (creationDate == null) {
-			creationDate = new Date();
+			creationDate = Timestamp.from(Instant.now());
 		}
 		return creationDate;
 	}
 
-	public void setCreationDate(Date creationDate) {
+	public void setCreationDate(Timestamp creationDate) {
 		this.creationDate = creationDate;
 	}
 

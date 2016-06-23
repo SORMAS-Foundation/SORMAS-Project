@@ -9,8 +9,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.caze.CaseDto;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
+import de.symeda.sormas.api.person.PersonDto;
 
 /**
  * @see https://jersey.java.net/documentation/latest/
@@ -25,27 +26,28 @@ public class CaseResource implements CaseFacade {
 	@GET
 	@Path("/{uuid}")
 	@Override
-	public CaseDto getByUuid(@PathParam("uuid") String uuid) {
+	public CaseDataDto getCaseDataByUuid(@PathParam("uuid") String uuid) {
 		
-		CaseDto caze = FacadeProvider.getCaseFacade().getByUuid(uuid);
+		CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(uuid);
 		return caze;
 	}
 
 	@Override
-	public List<CaseDto> getAllCases() {
+	public List<CaseDataDto> getAllCases() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public CaseDto saveCase(CaseDto dto) {
+	public CaseDataDto saveCase(CaseDataDto dto) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public void createDemo() {
+	public CaseDataDto createCase(String personUuid, CaseDataDto caseDto) {
 		// TODO Auto-generated method stub
-		
+		return null;
 	}
+
 }

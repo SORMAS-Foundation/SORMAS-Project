@@ -13,7 +13,7 @@ import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.ui.Grid;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.caze.CaseDto;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseStatus;
 
 public class CaseGrid extends Grid {
@@ -25,10 +25,10 @@ public class CaseGrid extends Grid {
 
         setSelectionMode(SelectionMode.SINGLE);
 
-        BeanItemContainer<CaseDto> container = new BeanItemContainer<CaseDto>(CaseDto.class);
+        BeanItemContainer<CaseDataDto> container = new BeanItemContainer<CaseDataDto>(CaseDataDto.class);
         setContainerDataSource(container);
-        setColumnOrder(CaseDto.UUID, CaseDto.CASE_STATUS, CaseDto.DISEASE);
-        getColumn(CaseDto.UUID).setConverter(new Converter<String, String>() {
+        setColumnOrder(CaseDataDto.UUID, CaseDataDto.CASE_STATUS, CaseDataDto.DISEASE);
+        getColumn(CaseDataDto.UUID).setConverter(new Converter<String, String>() {
 			
         	private static final long serialVersionUID = -5274112323551652930L;
 
@@ -67,11 +67,11 @@ public class CaseGrid extends Grid {
     	removeAllFilter();
         if (filterString.length() > 0) {
             SimpleStringFilter nameFilter = new SimpleStringFilter(
-            		CaseDto.PERSON, filterString, true, false);
+            		CaseDataDto.PERSON, filterString, true, false);
             SimpleStringFilter descFilter = new SimpleStringFilter(
-            		CaseDto.DESCRIPTION, filterString, true, false);
+            		CaseDataDto.DESCRIPTION, filterString, true, false);
             SimpleStringFilter statusFilter = new SimpleStringFilter(
-            		CaseDto.CASE_STATUS, filterString, true, false);
+            		CaseDataDto.CASE_STATUS, filterString, true, false);
             getContainer().addContainerFilter(
                     new Or(nameFilter, descFilter, statusFilter));
         }
@@ -80,13 +80,13 @@ public class CaseGrid extends Grid {
     
     public void setFilter(CaseStatus statusToFilter) {
     	removeAllFilter();
-    	Equal filter = new Equal(CaseDto.CASE_STATUS, statusToFilter);  
+    	Equal filter = new Equal(CaseDataDto.CASE_STATUS, statusToFilter);  
         getContainer().addContainerFilter(filter);
     }
     
     public void setFilter(Disease disease) {
     	removeAllFilter();
-    	Equal filter = new Equal(CaseDto.DISEASE, disease);  
+    	Equal filter = new Equal(CaseDataDto.DISEASE, disease);  
         getContainer().addContainerFilter(filter);
 	}
     
@@ -95,28 +95,28 @@ public class CaseGrid extends Grid {
     }
 
     @SuppressWarnings("unchecked")
-	private BeanItemContainer<CaseDto> getContainer() {
-        return (BeanItemContainer<CaseDto>) super.getContainerDataSource();
+	private BeanItemContainer<CaseDataDto> getContainer() {
+        return (BeanItemContainer<CaseDataDto>) super.getContainerDataSource();
     }
 
     @Override
-    public CaseDto getSelectedRow() throws IllegalStateException {
-        return (CaseDto) super.getSelectedRow();
+    public CaseDataDto getSelectedRow() throws IllegalStateException {
+        return (CaseDataDto) super.getSelectedRow();
     }
 
-    public void setCases(Collection<CaseDto> cases) {
+    public void setCases(Collection<CaseDataDto> cases) {
         getContainer().removeAllItems();
         getContainer().addAll(cases);
     }
 
-    public void refresh(CaseDto caze) {
+    public void refresh(CaseDataDto caze) {
         // We avoid updating the whole table through the backend here so we can
         // get a partial update for the grid
-        BeanItem<CaseDto> item = getContainer().getItem(caze);
+        BeanItem<CaseDataDto> item = getContainer().getItem(caze);
         if (item != null) {
             // Updated product
             @SuppressWarnings("rawtypes")
-			MethodProperty p = (MethodProperty) item.getItemProperty(CaseDto.UUID);
+			MethodProperty p = (MethodProperty) item.getItemProperty(CaseDataDto.UUID);
             p.fireValueChange();
         } else {
             // New product
@@ -124,7 +124,7 @@ public class CaseGrid extends Grid {
         }
     }
 
-    public void remove(CaseDto caze) {
+    public void remove(CaseDataDto caze) {
         getContainer().removeItem(caze);
     }
 

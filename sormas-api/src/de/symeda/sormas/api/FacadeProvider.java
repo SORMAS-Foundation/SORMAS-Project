@@ -4,6 +4,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
 import de.symeda.sormas.api.caze.CaseFacade;
+import de.symeda.sormas.api.person.PersonFacade;
 
 public class FacadeProvider {
 	
@@ -30,6 +31,10 @@ public class FacadeProvider {
 	
 	public static CaseFacade getCaseFacade() {
 		return get().lookupEjbRemote(CaseFacade.class);
+	}
+	
+	public static PersonFacade getPersonFacade() {
+		return get().lookupEjbRemote(PersonFacade.class);
 	}
 	
 	@SuppressWarnings("unchecked")

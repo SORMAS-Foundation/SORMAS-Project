@@ -2,26 +2,23 @@ package de.symeda.sormas.ui.surveillance.caze;
 
 import java.util.Collection;
 
-import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Grid.SelectionModel;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.caze.CaseDto;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseStatus;
 import de.symeda.sormas.samples.ResetButtonForTextField;
-import de.symeda.sormas.ui.surveillance.navigation.CaseNavigation;
+import de.symeda.sormas.ui.surveillance.ControllerProvider;
+import de.symeda.sormas.ui.utils.AbstractView;
 
 /**
  * A view for performing create-read-update-delete operations on products.
@@ -29,7 +26,7 @@ import de.symeda.sormas.ui.surveillance.navigation.CaseNavigation;
  * See also {@link CaseController} for fetching the data, the actual CRUD
  * operations and controlling the view based on events from outside.
  */
-public class CasesView extends CssLayout implements View {
+public class CasesView extends AbstractView {
 
 	private static final long serialVersionUID = -3533557348144005469L;
 	
@@ -37,14 +34,10 @@ public class CasesView extends CssLayout implements View {
     private CaseGrid grid;
     
 
-    private CaseController viewLogic = new CaseController(this);
+    private CaseController viewLogic = ControllerProvider.getCaseController();
     private Button newCase;
 
 	private VerticalLayout gridLayout;
-
-	private VerticalLayout caseNavigationLayout;
-	private CaseNavigation caseNavigation;
-
 
     public CasesView() {
         setSizeFull();
@@ -62,17 +55,13 @@ public class CasesView extends CssLayout implements View {
         gridLayout.setStyleName("crud-main-layout");
         addComponent(gridLayout);
         
-        caseNavigation = new CaseNavigation(viewLogic);
-		caseNavigationLayout = new VerticalLayout(caseNavigation);
-        caseNavigationLayout.setMargin(true);
-        caseNavigationLayout.setSpacing(true);
-        caseNavigationLayout.setSizeFull();
-        addComponent(caseNavigationLayout);
-
         viewLogic.init();
+        setNewCaseEnabled(!viewLogic.isAdmin());
+        viewLogic.setUriFragmentParameter("");
     }
 
-    public HorizontalLayout createTopBar() {
+
+	public HorizontalLayout createTopBar() {
     	HorizontalLayout topLayout = new HorizontalLayout();
     	topLayout.setSpacing(true);
     	topLayout.setWidth("100%");
@@ -107,7 +96,7 @@ public class CasesView extends CssLayout implements View {
         newCase = new Button("New case");
         newCase.addStyleName(ValoTheme.BUTTON_PRIMARY);
         newCase.setIcon(FontAwesome.PLUS_CIRCLE);
-        newCase.addClickListener(e -> viewLogic.newCase());
+//        newCase.addClickListener(e -> viewLogic.newCase());
         topLayout.addComponent(newCase);
 
         topLayout.setComponentAlignment(filter, Alignment.MIDDLE_LEFT);
@@ -118,15 +107,7 @@ public class CasesView extends CssLayout implements View {
 
     @Override
     public void enter(ViewChangeEvent event) {
-        viewLogic.enter(event.getParameters());
-    }
-
-    public void showError(String msg) {
-        Notification.show(msg, Type.ERROR_MESSAGE);
-    }
-
-    public void showSaveNotification(String msg) {
-        Notification.show(msg, Type.TRAY_NOTIFICATION);
+    	setData(viewLogic.getAllCaseData());
     }
 
     public void setNewCaseEnabled(boolean enabled) {
@@ -137,35 +118,25 @@ public class CasesView extends CssLayout implements View {
         grid.getSelectionModel().reset();
     }
 
-    public void selectRow(CaseDto row) {
+    public void selectRow(CaseDataDto row) {
         ((SelectionModel.Single) grid.getSelectionModel()).select(row);
     }
 
-    public CaseDto getSelectedRow() {
+    public CaseDataDto getSelectedRow() {
         return grid.getSelectedRow();
     }
 
-    public void edit(CaseDto caze) {
-        if (caze != null) {
-        	caseNavigationLayout.setVisible(true);
-        	caseNavigation.setInitialSelectedTab();
-            gridLayout.setVisible(false);
-        } else {
-        	caseNavigationLayout.setVisible(false);
-        	gridLayout.setVisible(true);
-        }
-    }
 
-    public void show(Collection<CaseDto> cases) {
+    public void setData(Collection<CaseDataDto> cases) {
         grid.setCases(cases);
     }
 
-    public void refresh(CaseDto product) {
+    public void refresh(CaseDataDto product) {
         grid.refresh(product);
         grid.scrollTo(product);
     }
 
-    public void remove(CaseDto caze) {
+    public void remove(CaseDataDto caze) {
         grid.remove(caze);
     }
 

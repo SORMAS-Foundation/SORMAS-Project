@@ -117,6 +117,13 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
       }
     }
   }
+  
+  .v-panel {
+  	background: inherit;
+    border: medium none;
+    border-radius: 0;
+    box-shadow: none;
+  }
 
   // makes the CRUD view keep the sidebar editor within the view as sidebar is absolutely positioned
   .crud-view {

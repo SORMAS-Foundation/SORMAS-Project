@@ -1,10 +1,12 @@
 package de.symeda.sormas.backend.person;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.Singleton;
+import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
@@ -15,36 +17,45 @@ public class PersonFacadeEjb implements PersonFacade {
 	@EJB
 	private PersonService ps;
 	
-	private List<PersonDto> persons;
-	
 	@Override
 	public List<PersonDto> getAllPerson() {
-		List<Person> personsDB = ps.getAll();
-		persons = new ArrayList<>();
-		if(personsDB!=null && personsDB.size()>0) {
-			for (Person person : personsDB) {
-				persons.add(toDto(person));
-			}
-		}
-		return persons;
+
+		return ps.getAll().stream()
+			.map(c -> toDto(c))
+			.collect(Collectors.toList());
 	}
 
 	@Override
 	public PersonDto getByUuid(String uuid) {
-		return persons.stream().filter(c -> c.getUuid().equals(uuid)).findFirst().orElse(null);
+		return Optional.of(uuid)
+				.map(u -> ps.getByUuid(u))
+				.map(c -> toDto(c))
+				.orElse(null);
 	}
 	
 	@Override
 	public PersonDto savePerson(PersonDto dto) {
-		Person person = ps.toPerson(dto);
+		Person person = toPerson(dto);
 		ps.ensurePersisted(person);
 		
 		return toDto(person);
 		
 	}
 	
+	public Person toPerson(@NotNull PersonDto dto) {
+		Person bo = ps.getByUuid(dto.getUuid());
+		if(bo==null) {
+			bo = ps.createPerson();
+		}
+		bo.setUuid(dto.getUuid());
+		bo.setFirstName(dto.getFirstName());
+		bo.setLastName(dto.getLastName());
+		return bo;
+	}
+	
 	public static PersonDto toDto(Person person) {
 		PersonDto dto = new PersonDto();
+		dto.setChangeDate(person.getChangeDate());
 		dto.setUuid(person.getUuid());
 		dto.setFirstName(person.getFirstName());
 		dto.setLastName(person.getLastName());

@@ -7,12 +7,12 @@ import javax.ejb.Remote;
 @Remote
 public interface CaseFacade {
 
-    public abstract List<CaseDto> getAllCases();
+    public abstract List<CaseDataDto> getAllCases();
 
-    public abstract CaseDto getByUuid(String uuid);
+    public abstract CaseDataDto getCaseDataByUuid(String uuid);
+    
+    public abstract CaseDataDto saveCase(CaseDataDto dto);
 
-    public abstract CaseDto saveCase(CaseDto dto);
-
-    public abstract void createDemo();
+    public abstract CaseDataDto createCase(String personUuid, CaseDataDto caseDto);
 
 }

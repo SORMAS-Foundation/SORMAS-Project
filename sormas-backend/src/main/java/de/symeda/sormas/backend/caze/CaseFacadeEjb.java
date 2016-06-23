@@ -1,16 +1,16 @@
 package de.symeda.sormas.backend.caze;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.Singleton;
+import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.caze.CaseDto;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
-import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.person.PersonFacade;
-import de.symeda.sormas.backend.mock.MockDataGenerator;
+import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.person.PersonService;
 
@@ -23,58 +23,59 @@ public class CaseFacadeEjb implements CaseFacade {
 	@EJB
 	private PersonService ps;
 	
-	@EJB
-	private PersonFacade pf;
-	
-	private List<CaseDto> cases;
 	
 	@Override
-	public List<CaseDto> getAllCases() {
-		List<Case> casesDB = cs.getAll();
-		cases = new ArrayList<>();
-		if(casesDB!=null && casesDB.size()>0) {
-			for (Case caze : casesDB) {
-				cases.add(toDto(caze));
-			}
-		}
-		return cases;
+	public List<CaseDataDto> getAllCases() {
+		return cs.getAll().stream()
+			.map(c -> toCaseDataDto(c))
+			.collect(Collectors.toList());
 	}
 
 	@Override
-	public CaseDto getByUuid(String uuid) {
-		return cases.stream().filter(c -> c.getUuid().equals(uuid)).findFirst().orElse(null);
+	public CaseDataDto getCaseDataByUuid(String uuid) {
+		return Optional.of(uuid)
+			.map(u -> cs.getByUuid(u))
+			.map(c -> toCaseDataDto(c))
+			.orElse(null);
 	}
 	
 	@Override
-	public CaseDto saveCase(CaseDto dto) {
-		
-//		if(dto.getPerson() != null) {
-//			PersonDto personDto = pf.savePerson(dto.getPerson());
-//			dto.setPersonDto(personDto);
-//		}
-		
-		Case caze = cs.toCase(dto);
+	public CaseDataDto saveCase(CaseDataDto dto) {
+		Case caze = fromCaseDataDto(dto);
 		cs.ensurePersisted(caze);
 		
-		return toDto(caze);
+		return toCaseDataDto(caze);
 		
 	}
 	
 	@Override
-	public void createDemo() {
-		List<CaseDto> cases = MockDataGenerator.createCases();
-		for (CaseDto dto : cases) {
-			PersonDto personDto = MockDataGenerator.createPerson();
-			//personDto = pf.savePerson(personDto);
-			dto.setPersonDto(personDto);
-			saveCase(dto);
-
-		}
+	public CaseDataDto createCase(String personUuid, CaseDataDto caseDto) {
+		Person person = ps.getByUuid(personUuid);
+		
+		Case caze = fromCaseDataDto(caseDto);
+		caze.setPerson(person);
+		cs.ensurePersisted(caze);
+		
+		return toCaseDataDto(caze);
+		
 	}
 	
-	public static CaseDto toDto(Case caze) {
-		CaseDto dto = new CaseDto();
+	
+	public Case fromCaseDataDto(@NotNull CaseDataDto dto) {
+		boolean createCase = dto.getChangeDate() == null;
+		Case caze = createCase ? new Case() : cs.getByUuid(dto.getUuid());
+		caze.setUuid(dto.getUuid());
+		caze.setDisease(dto.getDisease());
+		caze.setDescription(dto.getDescription());
+		caze.setCaseStatus(dto.getCaseStatus());
+		return caze;
+	}
+	
+	public static CaseDataDto toCaseDataDto(Case caze) {
+		CaseDataDto dto = new CaseDataDto();
+		dto.setChangeDate(caze.getChangeDate());
 		dto.setUuid(caze.getUuid());
+		dto.setDisease(caze.getDisease());
 		dto.setCaseStatus(caze.getCaseStatus());
 		dto.setDescription(caze.getDescription());
 		

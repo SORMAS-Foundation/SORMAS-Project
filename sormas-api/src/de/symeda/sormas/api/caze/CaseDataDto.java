@@ -4,7 +4,7 @@ import de.symeda.sormas.api.DataTransferObject;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.person.PersonDto;
 
-public class CaseDto extends DataTransferObject {
+public class CaseDataDto extends DataTransferObject {
 
 	private static final long serialVersionUID = 5007131477733638086L;
 	

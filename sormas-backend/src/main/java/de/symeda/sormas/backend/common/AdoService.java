@@ -3,6 +3,7 @@ package de.symeda.sormas.backend.common;
 import java.util.List;
 
 import javax.persistence.EntityExistsException;
+import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 
@@ -12,7 +13,7 @@ public interface AdoService<ADO extends AbstractDomainObject> {
 
 	ADO getById(long id);
 
-	ADO getByUuid(String uuid);
+	ADO getByUuid(@NotNull String uuid);
 
 //	/**
 //	 * @deprecated Das ist ein Hibernate-spezifisches Feature

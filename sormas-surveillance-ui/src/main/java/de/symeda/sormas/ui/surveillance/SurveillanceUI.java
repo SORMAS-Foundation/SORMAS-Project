@@ -1,18 +1,21 @@
 package de.symeda.sormas.ui.surveillance;
 
-import javax.inject.Inject;
 import javax.servlet.annotation.WebServlet;
 
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.annotations.Viewport;
 import com.vaadin.annotations.Widgetset;
+import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Responsive;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.ui.surveillance.caze.CaseDataView;
+import de.symeda.sormas.ui.surveillance.caze.CasesView;
+import de.symeda.sormas.ui.surveillance.caze.PatientInformationView;
 import de.symeda.sormas.ui.utils.authentication.AccessControl;
 import de.symeda.sormas.ui.utils.authentication.BasicAccessControl;
 import de.symeda.sormas.ui.utils.authentication.LoginScreen;
@@ -26,12 +29,14 @@ import de.symeda.sormas.ui.utils.authentication.LoginScreen.LoginListener;
  * mobile devices. Instead of device based scaling (default), using responsive
  * layouts.
  */
+@SuppressWarnings("serial")
 @Viewport("user-scalable=no,initial-scale=1.0")
 @Theme("sormastheme")
 @Widgetset("de.symeda.sormas.SormasWidgetset")
 public class SurveillanceUI extends UI {
 
     private AccessControl accessControl = new BasicAccessControl();
+    
 
     @Override
     protected void init(VaadinRequest vaadinRequest) {
