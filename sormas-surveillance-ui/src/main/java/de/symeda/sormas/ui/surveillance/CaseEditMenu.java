@@ -7,6 +7,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 /**
@@ -17,17 +18,14 @@ public class CaseEditMenu extends CssLayout {
 
     private Map<String, Button> viewButtons = new HashMap<String, Button>();
 
-    private CssLayout menuItemsLayout;
-    private CssLayout menuPart;
+    private HorizontalLayout menuItemsLayout;
     
     public CaseEditMenu() {
-        menuPart = new CssLayout();
+        menuItemsLayout = new HorizontalLayout();
+        menuItemsLayout.setSpacing(true);
+        menuItemsLayout.setWidth("100%");
+        addComponent(menuItemsLayout);
 
-        // container for the navigation buttons, which are added by addView()
-        menuItemsLayout = new CssLayout();
-        menuPart.addComponent(menuItemsLayout);
-
-        addComponent(menuPart);
     }
 
     public void addView(final String name, String caption) {
@@ -36,10 +34,17 @@ public class CaseEditMenu extends CssLayout {
     
     public void addView(final String name, String caption, String caseUuid) {
     	String target = name+(caseUuid!=null&&!caseUuid.isEmpty()?"/"+caseUuid:"");
+    	
     	Button button = new Button(caption, e -> SurveillanceUI.get().getNavigator().navigateTo(target));
-    	button.setPrimaryStyleName(ValoTheme.MENU_ITEM);
+    	button.setPrimaryStyleName(ValoTheme.BUTTON_LINK);
+    	
     	menuItemsLayout.addComponent(button);
     	viewButtons.put(name, button);
+    }
+    
+    public void removeAllViews() {
+    	menuItemsLayout.removeAllComponents();
+    	viewButtons.clear();
     }
 
     /**

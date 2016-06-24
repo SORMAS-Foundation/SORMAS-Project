@@ -44,7 +44,7 @@ public class PatientInformationForm extends AbstractEditForm<PersonDto> {
 
 		for (String propertyId : formProperties.keySet()) {
 			Field<?> field = getFieldGroup().buildAndBind(captions.get(propertyId), propertyId, formProperties.get(propertyId));
-			field.setReadOnly(true);
+//			field.setReadOnly(true);
 			field.setSizeFull();
 	        addComponent(field, propertyId);
 		}
