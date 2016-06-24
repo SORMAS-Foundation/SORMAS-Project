@@ -66,7 +66,7 @@ public class CasesView extends AbstractView {
     	topLayout.setSpacing(true);
     	topLayout.setWidth("100%");
     	
-    	Button statusAll = new Button("all", e -> grid.removeAllFilter());
+    	Button statusAll = new Button("all", e -> grid.removeAllStatusFilter());
         statusAll.setStyleName(ValoTheme.BUTTON_LINK);
         topLayout.addComponent(statusAll);
         

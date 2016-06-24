@@ -8,7 +8,6 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.themes.ValoTheme;
 
 /**
  * Case navigation menu presenting a list of available views to the user.
@@ -23,8 +22,10 @@ public class CaseEditMenu extends CssLayout {
     public CaseEditMenu() {
         menuItemsLayout = new HorizontalLayout();
         menuItemsLayout.setSpacing(true);
-        menuItemsLayout.setWidth("100%");
+        menuItemsLayout.setSizeUndefined();
         addComponent(menuItemsLayout);
+        
+        setSizeUndefined();
 
     }
 
@@ -36,7 +37,7 @@ public class CaseEditMenu extends CssLayout {
     	String target = name+(caseUuid!=null&&!caseUuid.isEmpty()?"/"+caseUuid:"");
     	
     	Button button = new Button(caption, e -> SurveillanceUI.get().getNavigator().navigateTo(target));
-    	button.setPrimaryStyleName(ValoTheme.BUTTON_LINK);
+//    	button.setPrimaryStyleName(ValoTheme.BUTTON_LINK);
     	
     	menuItemsLayout.addComponent(button);
     	viewButtons.put(name, button);
@@ -63,8 +64,6 @@ public class CaseEditMenu extends CssLayout {
             selected.addStyleName("selected");
         }
     }
-    
-    
     
     public void updateLinkTarget(String name, String uuid) {
     	removeAllClicklisteners(viewButtons.get(name));

@@ -64,34 +64,37 @@ public class CaseGrid extends Grid {
      *            string to look for
      */
     public void setFilter(String filterString) {
-    	removeAllFilter();
+    	getContainer().removeContainerFilters(CaseDataDto.PERSON);
+    	getContainer().removeContainerFilters(CaseDataDto.DESCRIPTION);
+//    	getContainer().removeContainerFilters(CaseDataDto.CASE_STATUS);
         if (filterString.length() > 0) {
             SimpleStringFilter nameFilter = new SimpleStringFilter(
             		CaseDataDto.PERSON, filterString, true, false);
             SimpleStringFilter descFilter = new SimpleStringFilter(
             		CaseDataDto.DESCRIPTION, filterString, true, false);
-            SimpleStringFilter statusFilter = new SimpleStringFilter(
-            		CaseDataDto.CASE_STATUS, filterString, true, false);
+//            SimpleStringFilter statusFilter = new SimpleStringFilter(
+//            		CaseDataDto.CASE_STATUS, filterString, true, false);
             getContainer().addContainerFilter(
-                    new Or(nameFilter, descFilter, statusFilter));
+//            new Or(nameFilter, descFilter, statusFilter));
+            new Or(nameFilter, descFilter));
         }
 
     }
     
     public void setFilter(CaseStatus statusToFilter) {
-    	removeAllFilter();
+    	removeAllStatusFilter();
     	Equal filter = new Equal(CaseDataDto.CASE_STATUS, statusToFilter);  
         getContainer().addContainerFilter(filter);
     }
     
     public void setFilter(Disease disease) {
-    	removeAllFilter();
+    	getContainer().removeContainerFilters(CaseDataDto.DISEASE);
     	Equal filter = new Equal(CaseDataDto.DISEASE, disease);  
         getContainer().addContainerFilter(filter);
 	}
     
-    public void removeAllFilter() {
-    	getContainer().removeAllContainerFilters();
+    public void removeAllStatusFilter() {
+    	getContainer().removeContainerFilters(CaseDataDto.CASE_STATUS);
     }
 
     @SuppressWarnings("unchecked")

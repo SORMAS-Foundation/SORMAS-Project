@@ -2,7 +2,7 @@ package de.symeda.sormas.ui.surveillance;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.CssLayout;
 
 import de.symeda.sormas.ui.surveillance.caze.CaseController;
 import de.symeda.sormas.ui.surveillance.caze.CaseDataView;
@@ -16,23 +16,24 @@ public abstract class AbstractCaseView extends AbstractView {
 	
     protected CaseController viewLogic = ControllerProvider.getCaseController();
     public CaseEditMenu caseEditMenu;
-    protected HorizontalLayout caseEditLayout;
+    protected CssLayout caseEditLayout;
     protected String viewName;
 
 	private String caseUuid;
 	
 
     protected AbstractCaseView(String viewName) {
-        setSizeFull();
+        setWidth("900px");
+        setMargin(true);
+        setSpacing(true);
         addStyleName("crud-view");
         this.viewName = viewName;
         
         caseEditMenu = new CaseEditMenu();
     	addComponent(caseEditMenu);
+    	setExpandRatio(caseEditMenu, 0);
         
-        caseEditLayout = new HorizontalLayout();
-        caseEditLayout.setMargin(true);
-        caseEditLayout.setSpacing(true);
+        caseEditLayout = new CssLayout();
         caseEditLayout.setSizeFull();
         addComponent(caseEditLayout);
     }
