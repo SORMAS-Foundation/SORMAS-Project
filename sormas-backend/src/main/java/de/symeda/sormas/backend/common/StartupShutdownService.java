@@ -1,5 +1,6 @@
 package de.symeda.sormas.backend.common;
 
+import java.util.Arrays;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -13,6 +14,8 @@ import javax.ejb.TransactionManagementType;
 
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.facility.Facility;
+import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.region.Community;
@@ -34,6 +37,8 @@ public class StartupShutdownService {
 	private PersonService personService;
 	@EJB
 	private RegionService regionService;
+	@EJB
+	private FacilityService facilityService;
 	
 	@PostConstruct
 	public void startup() {
@@ -56,8 +61,11 @@ public class StartupShutdownService {
 	}
 
 	private void initRegionMockData() {
-		if (regionService.getAll().isEmpty()) {
-	    	List<Region> regions = MockDataGenerator.createRegions();
+		List<Region> regions = regionService.getAll();
+		if (regions.isEmpty()) {
+	    	regions = Arrays.asList(
+	    			MockDataGenerator.importRegion("Abia")
+	    			);
 	    	
 			for (Region region : regions) {
 				for (District district : region.getDistricts()) {
@@ -67,6 +75,15 @@ public class StartupShutdownService {
 					regionService.persist(district);
 				}
 				regionService.persist(region);
+			}
+		}
+		
+		if (facilityService.getAll().isEmpty()) {
+			for (Region region : regions) {
+				List<Facility> facilities = MockDataGenerator.importFacilities(region);
+				for (Facility facility : facilities) {
+					facilityService.persist(facility);
+				}
 			}
 		}
 	}

@@ -15,6 +15,7 @@
 		<class>de.symeda.sormas.backend.region.Region</class>
 		<class>de.symeda.sormas.backend.region.District</class>
 		<class>de.symeda.sormas.backend.region.Community</class>
+		<class>de.symeda.sormas.backend.facility.Facility</class>
 
 
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>

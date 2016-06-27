@@ -1,13 +1,19 @@
 package de.symeda.sormas.backend.util;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseStatus;
+import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.facility.Facility;
+import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
@@ -87,34 +93,98 @@ public class MockDataGenerator {
 		return lastnames[random.nextInt(lastnames.length)];
 	}
 
-	public static List<Region> createRegions() {
+	public static Region importRegion(String name) {
+		
+		InputStream stream = MockDataGenerator.class.getResourceAsStream("/facilities/"+name+".csv");
+		BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+
 		Region region = new Region();
-		region.setName("ABIA");
+		region.setName(name);
 		region.setDistricts(new ArrayList<District>());
-		createDistrict(region, "ABA NORTH", "OSUSU WARD 1","OSUSU WARD 11","UMUOGOR WARD","UMUOLA WARD","URATTA WARD",
-				"ARIARIA WARD","ASAOKPULOR WARD","EZIAMA WARD","ASAOKPUALAJA","INDUSTRIAL WARD","OGBOR WARD 1",
-				"OGBOR WARD 11","OLD GRA WARD");
-		createDistrict(region, "ABA SOUTH", "GLOCESTER","TOWN HALL WARD","IGWEBUIKE WARD","UMUOGELE WARD",
-				"EZIUKWU WARD 1","EZIUKWU WARD 11","NGWA WARD 1","NGWA WARD 11","ENYIMBA WARD","ELUOHAZU WARD",
-				"IHEORJI","OKPOROENYI","EKEOHA","ABA RIVER","ABA TOWN HALL","ASA WARD");
-		return Arrays.asList(region);
+
+		District district = null;
+		Community community = null;
+		try {
+			while (reader.ready()) {
+				String line = reader.readLine();
+				String[] columns = line.split(";");
+				if (columns.length < 2)
+					continue;
+				
+				if (columns[0].length() > 0) {
+					district = new District();
+					district.setName(columns[0]);
+					district.setRegion(region);
+					district.setCommunities(new ArrayList<Community>());
+					region.getDistricts().add(district);
+				}
+				
+				if (columns[1].length() > 0) {
+					community = new Community();
+					community.setName(columns[1]);
+					community.setDistrict(district);
+					district.getCommunities().add(community);
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return region;
 	}
 	
-	public static District createDistrict(Region region, String name, String ...communityNames) {
-		District district = new District();
-		district.setName(name);
-		List<Community> communities = new ArrayList<Community>();
-		for	(String communityName : communityNames) {
-			Community community = new Community();
-			community.setName(communityName);
-			community.setDistrict(district);
-			communities.add(community);
-		}
-		district.setCommunities(communities);
+	public static List<Facility> importFacilities(Region region) {
 		
-		district.setRegion(region);
-		region.getDistricts().add(district);
-		return district;
+		List<Facility> result = new ArrayList<Facility>();
+		
+		InputStream stream = MockDataGenerator.class.getResourceAsStream("/facilities/"+region.getName()+".csv");
+		BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+
+		District district = null;
+		Community community = null;
+		try {
+			while (reader.ready()) {
+				String line = reader.readLine();
+				String[] columns = line.split(";");
+				if (columns.length < 5)
+					continue;
+				
+				if (columns[0].length() > 0) {
+					district = null;
+					for (District d : region.getDistricts()) {
+						if (columns[0].equals(d.getName())) {
+							district = d;
+							break;
+						}
+					}
+				}
+				
+				if (columns[1].length() > 0) {
+					community = null;
+					for (Community c : district.getCommunities()) {
+						if (columns[1].equals(c.getName())) {
+							community = c;
+							break;
+						}
+					}
+				}
+				
+				Facility facility = new Facility();
+				facility.setName(columns[2]);
+				facility.setType(FacilityType.valueOf(columns[3]));
+				facility.setPublicOwnership("PUBLIC".equals(columns[4]));
+				Location location = new Location();
+				location.setRegion(region);
+				location.setDistrict(district);
+				location.setCommunity(community);
+				facility.setLocation(location);
+				result.add(facility);				
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return result;
 	}
 }
 
