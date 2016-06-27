@@ -16,6 +16,8 @@ import javax.persistence.Transient;
 import javax.persistence.Version;
 import javax.validation.constraints.Size;
 
+import de.symeda.sormas.api.DataHelper;
+
 /**
  * TODO: Übersetzung und UUID anpassen
  * 
@@ -65,16 +67,16 @@ public abstract class AbstractDomainObject implements Serializable, Cloneable, D
 	}
 
 	@Basic(optional = false)
-	@Size(min = 36, max = 36)
+	@Size(min = 0, max = 36)
 	@Column(nullable = false, unique = true, length = 36)
 	@Override
 	public String getUuid() {
 		if (uuid == null) {
-			uuid = java.util.UUID.randomUUID().toString();
+			uuid = DataHelper.createUuid();
 		}
 		return uuid;
 	}
-
+	
 	public void setUuid(String uuid) {
 		this.uuid = uuid;
 	}

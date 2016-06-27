@@ -12,11 +12,9 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
-import de.symeda.sormas.ui.surveillance.CaseEditMenu;
 import de.symeda.sormas.ui.surveillance.SurveillanceUI;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
-import de.symeda.sormas.ui.utils.MockDataGenerator;
 
 /**
  * This class provides an interface for the logical operations between the CRUD
@@ -44,17 +42,7 @@ public class CaseController implements Serializable {
 
     public void init() {
         // Create demo-content
-        createDemoContent();
         registerViews();
-    }
-    
-    private void createDemoContent() {
-    	List<CaseDataDto> cases = MockDataGenerator.createCases();
-    	
-		for (CaseDataDto caseDto : cases) {
-			PersonDto personDto = pf.savePerson(MockDataGenerator.createPerson());
-			cf.createCase(personDto.getUuid(), caseDto);
-		}
     }
     
     private void registerViews() {

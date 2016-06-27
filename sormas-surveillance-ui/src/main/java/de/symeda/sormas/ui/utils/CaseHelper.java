@@ -11,7 +11,7 @@ public final class CaseHelper {
 	public static final String getShortUuid(String uuid) {
 		if (uuid == null)
 			return null;
-		return uuid.substring(0, 4);
+		return uuid.substring(0, 6).toUpperCase();
 	}
 	
 }

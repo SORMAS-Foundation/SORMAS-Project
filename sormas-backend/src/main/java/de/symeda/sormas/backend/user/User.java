@@ -20,7 +20,7 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.region.Region;
 
-@Entity
+@Entity(name="users")
 public class User extends AbstractDomainObject {
 	
 	private static final long serialVersionUID = -629432920970152112L;

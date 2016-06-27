@@ -1,13 +1,17 @@
-package de.symeda.sormas.ui.utils;
+package de.symeda.sormas.backend.util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseStatus;
-import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.region.Community;
+import de.symeda.sormas.backend.region.District;
+import de.symeda.sormas.backend.region.Region;
 
 public class MockDataGenerator {
 	
@@ -42,30 +46,28 @@ public class MockDataGenerator {
 		    "Jalloh", "Anikulapo-Kuti","Iwu", "Anenih", "Mensah", "Biobaku","Tinibu", "Sesay", "Akinyemi", "Akiloye", "Adeyemi", 
 		    "Adesida", "Omehia", "Sekibo", "Amaechi", "Bankole", "Nnamani", "Turay", "Okadigbo", "Yeboah", "Ojukwu"};
 
-    public static List<CaseDataDto> createCases() {
-        List<CaseDataDto> cases = new ArrayList<CaseDataDto>();
+    public static List<Case> createCases() {
+        List<Case> cases = new ArrayList<Case>();
         for (int i = 0; i < 5; i++) {
-            CaseDataDto p = createCase();
+            Case p = createCase();
             cases.add(p);
         }
         return cases;
     }
 
-    private static CaseDataDto createCase() {
-        CaseDataDto c = new CaseDataDto();
-        c.setUuid(java.util.UUID.randomUUID().toString());
-        c.setDescription(generateName());
-        c.setCaseStatus(generateStatus());
-        c.setDisease(Disease.EBOLA);
-        return c;
+    private static Case createCase() {
+    	Case dto = new Case();
+        dto.setDescription(generateName());
+        dto.setCaseStatus(generateStatus());
+        dto.setDisease(Disease.EBOLA);
+        return dto;
     }
 
-    public static PersonDto createPerson() {
-    	PersonDto personDto = new PersonDto();
-    	personDto.setUuid(java.util.UUID.randomUUID().toString());
-    	personDto.setFirstName(generateFirstName());
-    	personDto.setLastName(generateLastName());
-    	return personDto;
+    public static Person createPerson() {
+    	Person dto = new Person();
+    	dto.setFirstName(generateFirstName());
+    	dto.setLastName(generateLastName());
+    	return dto;
     }
     
     
@@ -84,6 +86,35 @@ public class MockDataGenerator {
 	private static String generateLastName() {
 		return lastnames[random.nextInt(lastnames.length)];
 	}
+
+	public static List<Region> createRegions() {
+		Region region = new Region();
+		region.setName("ABIA");
+		region.setDistricts(new ArrayList<District>());
+		createDistrict(region, "ABA NORTH", "OSUSU WARD 1","OSUSU WARD 11","UMUOGOR WARD","UMUOLA WARD","URATTA WARD",
+				"ARIARIA WARD","ASAOKPULOR WARD","EZIAMA WARD","ASAOKPUALAJA","INDUSTRIAL WARD","OGBOR WARD 1",
+				"OGBOR WARD 11","OLD GRA WARD");
+		createDistrict(region, "ABA SOUTH", "GLOCESTER","TOWN HALL WARD","IGWEBUIKE WARD","UMUOGELE WARD",
+				"EZIUKWU WARD 1","EZIUKWU WARD 11","NGWA WARD 1","NGWA WARD 11","ENYIMBA WARD","ELUOHAZU WARD",
+				"IHEORJI","OKPOROENYI","EKEOHA","ABA RIVER","ABA TOWN HALL","ASA WARD");
+		return Arrays.asList(region);
+	}
 	
+	public static District createDistrict(Region region, String name, String ...communityNames) {
+		District district = new District();
+		district.setName(name);
+		List<Community> communities = new ArrayList<Community>();
+		for	(String communityName : communityNames) {
+			Community community = new Community();
+			community.setName(communityName);
+			community.setDistrict(district);
+			communities.add(community);
+		}
+		district.setCommunities(communities);
+		
+		district.setRegion(region);
+		region.getDistricts().add(district);
+		return district;
+	}
 }
 

@@ -9,12 +9,6 @@ import de.symeda.sormas.backend.common.AbstractAdoService;
 
 @Stateless
 @LocalBean
-//@RolesAllowed({
-//		Permission._ADMIN,
-//		Permission._USER })
-//@DeclareRoles({
-//		Permission._ADMIN,
-//		Permission._USER })
 public class PersonService extends AbstractAdoService<Person> {
 
 	public PersonService() {

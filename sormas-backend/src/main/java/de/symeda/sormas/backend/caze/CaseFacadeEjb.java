@@ -18,8 +18,7 @@ import de.symeda.sormas.backend.person.PersonService;
 public class CaseFacadeEjb implements CaseFacade {
 	
 	@EJB
-	private CaseService cs;
-	
+	private CaseService cs;	
 	@EJB
 	private PersonService ps;
 	

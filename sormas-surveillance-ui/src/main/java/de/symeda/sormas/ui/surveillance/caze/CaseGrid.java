@@ -1,20 +1,21 @@
 package de.symeda.sormas.ui.surveillance.caze;
 
 import java.util.Collection;
-import java.util.Locale;
 
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.MethodProperty;
-import com.vaadin.data.util.converter.Converter;
 import com.vaadin.data.util.filter.Compare.Equal;
 import com.vaadin.data.util.filter.Or;
 import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.ui.Grid;
+import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseStatus;
+import de.symeda.sormas.ui.utils.CaseHelper;
+import elemental.json.JsonValue;
 
 public class CaseGrid extends Grid {
 
@@ -28,34 +29,10 @@ public class CaseGrid extends Grid {
         BeanItemContainer<CaseDataDto> container = new BeanItemContainer<CaseDataDto>(CaseDataDto.class);
         setContainerDataSource(container);
         setColumnOrder(CaseDataDto.UUID, CaseDataDto.CASE_STATUS, CaseDataDto.DISEASE);
-        getColumn(CaseDataDto.UUID).setConverter(new Converter<String, String>() {
-			
-        	private static final long serialVersionUID = -5274112323551652930L;
-
-			@Override
-			public String convertToModel(String value, Class<? extends String> targetType, Locale locale)
-					throws com.vaadin.data.util.converter.Converter.ConversionException {
-				throw new UnsupportedOperationException();
-			}
-
-			@Override
-			public String convertToPresentation(String value, Class<? extends String> targetType, Locale locale)
-					throws com.vaadin.data.util.converter.Converter.ConversionException {
-				return value;//CaseHelper.getShortUuid(value);
-			}
-
-			@Override
-			public Class<String> getModelType() {
-				return String.class;
-			}
-
-			@Override
-			public Class<String> getPresentationType() {
-				return String.class;
-			}
-        });
-    }
-    
+        getColumn(CaseDataDto.UUID).setRenderer(new UuidRenderer());
+        getColumn(CaseDataDto.UUID).setHeaderCaption("ID");
+	}
+	
     /**
      * Filter the grid based on a search string that is searched for in the
      * product name, availability and category columns.
@@ -130,6 +107,15 @@ public class CaseGrid extends Grid {
     public void remove(CaseDataDto caze) {
         getContainer().removeItem(caze);
     }
-
-	
+    
+    public static class UuidRenderer extends HtmlRenderer {
+   	 
+        @Override
+        public JsonValue encode(String value) {
+        	value = "<span title='" + value + "'>" + CaseHelper.getShortUuid(value) + "</span>";
+            return super.encode(value);
+        }
+    }
 }
+
+
