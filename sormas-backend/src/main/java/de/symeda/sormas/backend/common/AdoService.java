@@ -15,27 +15,12 @@ public interface AdoService<ADO extends AbstractDomainObject> {
 
 	ADO getByUuid(@NotNull String uuid);
 
-//	/**
-//	 * @deprecated Das ist ein Hibernate-spezifisches Feature
-//	 * @param saveme
-//	 */
-//	@Deprecated
-//	void saveOrUpdate(ADO saveme);
-
 	/**
 	 * <b>DELETES</b> an entity from the database!
 	 * 
 	 * @param deleteme
 	 */
 	void delete(ADO deleteme);
-
-	/**
-	 * @deprecated re-attachen eines detachten Entities ist eher die Ausnahme
-	 * @param mergeme
-	 * @return
-	 */
-	@Deprecated
-	ADO merge(ADO mergeme);
 
 	/**
 	 * Speichert ein neues Objekt in der Datenbank.
@@ -51,8 +36,7 @@ public interface AdoService<ADO extends AbstractDomainObject> {
 	 * Das ado ist nach dem Aufruf attacht.
 	 * 
 	 * @param ado
-	 * @throws EntityExistsException
-	 *             wenn das ado detacht ist
+	 * @throws EntityExistsException wenn das ado detacht ist
 	 */
 	void ensurePersisted(ADO ado) throws EntityExistsException;
 
@@ -60,5 +44,4 @@ public interface AdoService<ADO extends AbstractDomainObject> {
 	 * JPA-Session flushen
 	 */
 	void doFlush();
-
 }

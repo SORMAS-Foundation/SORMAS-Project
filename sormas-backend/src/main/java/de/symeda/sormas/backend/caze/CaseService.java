@@ -6,8 +6,6 @@ import javax.ejb.Stateless;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.person.Person;
 
-
-
 @Stateless
 @LocalBean
 public class CaseService extends AbstractAdoService<Case> {

@@ -6,7 +6,7 @@ import de.symeda.sormas.ui.surveillance.AbstractCaseView;
 
 /**
  * View for reading and editing the patient information fields.
- * Contains the {@link PatientInformationForm}.
+ * Contains the {@link CasePersonForm}.
  * @author Stefan Szczesny
  *
  */

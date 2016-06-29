@@ -129,7 +129,7 @@ public class LayoutUtil {
 		return w;
 	}
 
-	public static String fluidRowLocs(String cssClasses, String... locs) {
+	public static String fluidRowLocs(String... locs) {
 		return fluidRowLocsCss(null, locs);
 	}
 	
@@ -182,6 +182,10 @@ public class LayoutUtil {
 
 	public static FluidColumn fluidColumnCss(String cssClasses, int span, int offset, String content) {
 		return new FluidColumn(cssClasses, span, offset, content);
+	}
+
+	public static FluidColumn fluidColumn(int span, int offset, String content) {
+		return new FluidColumn(null, span, offset, content);
 	}
 
 	public static String div(String... contents) {

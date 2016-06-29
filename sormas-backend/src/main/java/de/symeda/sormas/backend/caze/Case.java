@@ -16,6 +16,7 @@ import javax.persistence.TemporalType;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseStatus;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.user.User;
@@ -31,6 +32,7 @@ public class Case extends AbstractDomainObject {
 	private String description;
 	private Disease disease;
 	private CaseStatus caseStatus;
+	private Facility healthFacility;
 	
 	private User reporter;
 	private Date reportDate;
@@ -174,6 +176,14 @@ public class Case extends AbstractDomainObject {
 	}
 	public void setSurveillanceSupervisor(User surveillanceSupervisor) {
 		this.surveillanceSupervisor = surveillanceSupervisor;
+	}
+
+	@ManyToOne(cascade = {})
+	public Facility getHealthFacility() {
+		return healthFacility;
+	}
+	public void setHealthFacility(Facility healthFacility) {
+		this.healthFacility = healthFacility;
 	}
 
 }

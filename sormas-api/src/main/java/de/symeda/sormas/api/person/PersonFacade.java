@@ -7,9 +7,9 @@ import javax.ejb.Remote;
 @Remote
 public interface PersonFacade {
 
-    public abstract List<PersonDto> getAllPerson();
+    public abstract List<CasePersonDto> getAllPerson();
 
-    public abstract PersonDto getByUuid(String uuid);
+    public abstract CasePersonDto getByUuid(String uuid);
 
-    public abstract PersonDto savePerson(PersonDto dto);
+    public abstract CasePersonDto savePerson(CasePersonDto dto);
 }

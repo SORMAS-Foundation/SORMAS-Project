@@ -2,9 +2,11 @@ package de.symeda.sormas.api.person;
 
 import de.symeda.sormas.api.DataTransferObject;
 
-public class PersonDto extends DataTransferObject {
+public class CasePersonDto extends DataTransferObject {
 
 	private static final long serialVersionUID = -8558187171374254398L;
+
+	public static final String I18N_PREFIX = "CasePerson";
 
 	public static final String FIRST_NAME = "firstName";
 	public static final String LAST_NAME = "lastName";

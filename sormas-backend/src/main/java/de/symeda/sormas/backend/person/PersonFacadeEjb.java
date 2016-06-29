@@ -5,20 +5,20 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
-import javax.ejb.Singleton;
+import javax.ejb.Stateless;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.CasePersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
 
-@Singleton(name = "PersonFacade")
+@Stateless(name = "PersonFacade")
 public class PersonFacadeEjb implements PersonFacade {
 	
 	@EJB
 	private PersonService ps;
 	
 	@Override
-	public List<PersonDto> getAllPerson() {
+	public List<CasePersonDto> getAllPerson() {
 
 		return ps.getAll().stream()
 			.map(c -> toDto(c))
@@ -26,7 +26,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 
 	@Override
-	public PersonDto getByUuid(String uuid) {
+	public CasePersonDto getByUuid(String uuid) {
 		return Optional.of(uuid)
 				.map(u -> ps.getByUuid(u))
 				.map(c -> toDto(c))
@@ -34,7 +34,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 	
 	@Override
-	public PersonDto savePerson(PersonDto dto) {
+	public CasePersonDto savePerson(CasePersonDto dto) {
 		Person person = toPerson(dto);
 		ps.ensurePersisted(person);
 		
@@ -42,7 +42,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		
 	}
 	
-	public Person toPerson(@NotNull PersonDto dto) {
+	public Person toPerson(@NotNull CasePersonDto dto) {
 		Person bo = ps.getByUuid(dto.getUuid());
 		if(bo==null) {
 			bo = ps.createPerson();
@@ -53,8 +53,8 @@ public class PersonFacadeEjb implements PersonFacade {
 		return bo;
 	}
 	
-	public static PersonDto toDto(Person person) {
-		PersonDto dto = new PersonDto();
+	public static CasePersonDto toDto(Person person) {
+		CasePersonDto dto = new CasePersonDto();
 		dto.setChangeDate(person.getChangeDate());
 		dto.setUuid(person.getUuid());
 		dto.setFirstName(person.getFirstName());

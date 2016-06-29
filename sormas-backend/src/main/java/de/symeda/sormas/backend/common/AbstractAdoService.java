@@ -104,11 +104,6 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 	}
 
 	@Override
-	public ADO merge(ADO mergeme) {
-		return em.merge(mergeme);
-	}
-
-	@Override
 	public void doFlush() {
 		em.flush();
 	}

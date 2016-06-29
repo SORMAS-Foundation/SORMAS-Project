@@ -10,7 +10,7 @@ import com.vaadin.ui.VerticalLayout;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
-import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.CasePersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.ui.surveillance.SurveillanceUI;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -153,27 +153,27 @@ public class CaseController implements Serializable {
         return editView;
     }
 	
-	public CommitDiscardWrapperComponent<PatientInformationForm> getPatientInformationEditComponent(String caseUuid) {
+	public CommitDiscardWrapperComponent<CasePersonForm> getPatientInformationEditComponent(String caseUuid) {
     	
     	
     	VerticalLayout formLayout = new VerticalLayout();
-    	PatientInformationForm caseEditForm = new PatientInformationForm();
+    	CasePersonForm caseEditForm = new CasePersonForm();
         formLayout.addComponent(caseEditForm);
         formLayout.setSizeFull();
         formLayout.setExpandRatio(caseEditForm, 1);
         
         CaseDataDto caseDataDto = findCase(caseUuid);
-        PersonDto personDto = pf.getByUuid(caseDataDto.getPerson().getUuid());
+        CasePersonDto personDto = pf.getByUuid(caseDataDto.getPerson().getUuid());
         caseEditForm.setDto(personDto);
         
-        final CommitDiscardWrapperComponent<PatientInformationForm> editView = new CommitDiscardWrapperComponent<PatientInformationForm>(caseEditForm, caseEditForm.getFieldGroup());
+        final CommitDiscardWrapperComponent<CasePersonForm> editView = new CommitDiscardWrapperComponent<CasePersonForm>(caseEditForm, caseEditForm.getFieldGroup());
         
         editView.addCommitListener(new CommitListener() {
         	
         	@Override
         	public void onCommit() {
         		if (caseEditForm.getFieldGroup().isValid()) {
-        			PersonDto dto = caseEditForm.getDto();
+        			CasePersonDto dto = caseEditForm.getDto();
         			pf.savePerson(dto);
         			overview(null);
         		}

@@ -15,6 +15,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseStatus;
 import de.symeda.sormas.ui.utils.CaseHelper;
+import de.symeda.sormas.ui.utils.I18nProperties;
 import elemental.json.JsonValue;
 
 public class CaseGrid extends Grid {
@@ -30,7 +31,11 @@ public class CaseGrid extends Grid {
         setContainerDataSource(container);
         setColumnOrder(CaseDataDto.UUID, CaseDataDto.CASE_STATUS, CaseDataDto.DISEASE);
         getColumn(CaseDataDto.UUID).setRenderer(new UuidRenderer());
-        getColumn(CaseDataDto.UUID).setHeaderCaption("ID");
+        
+        for (Column column : getColumns()) {
+        	column.setHeaderCaption(I18nProperties.getFieldCaption(
+        			CaseDataDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
+        }
 	}
 	
     /**
@@ -42,18 +47,15 @@ public class CaseGrid extends Grid {
      */
     public void setFilter(String filterString) {
     	getContainer().removeContainerFilters(CaseDataDto.PERSON);
-    	getContainer().removeContainerFilters(CaseDataDto.DESCRIPTION);
 //    	getContainer().removeContainerFilters(CaseDataDto.CASE_STATUS);
         if (filterString.length() > 0) {
             SimpleStringFilter nameFilter = new SimpleStringFilter(
             		CaseDataDto.PERSON, filterString, true, false);
-            SimpleStringFilter descFilter = new SimpleStringFilter(
-            		CaseDataDto.DESCRIPTION, filterString, true, false);
 //            SimpleStringFilter statusFilter = new SimpleStringFilter(
 //            		CaseDataDto.CASE_STATUS, filterString, true, false);
             getContainer().addContainerFilter(
 //            new Or(nameFilter, descFilter, statusFilter));
-            new Or(nameFilter, descFilter));
+            new Or(nameFilter));
         }
 
     }

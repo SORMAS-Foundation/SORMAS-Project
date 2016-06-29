@@ -53,4 +53,15 @@ public class Facility extends AbstractDomainObject {
 		this.publicOwnership = publicOwnership;
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder caption = new StringBuilder();
+		caption.append(name);
+		if (location != null) {
+			if (location.getCommunity() != null) {
+				caption.append(" (").append(location.getCommunity().getName()).append(")");
+			}
+		}
+		return caption.toString();
+	}
 }
