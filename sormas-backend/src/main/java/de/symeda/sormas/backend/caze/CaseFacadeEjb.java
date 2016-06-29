@@ -9,11 +9,11 @@ import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
-import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.person.PersonService;
+import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 
 @Stateless(name = "CaseFacade")
@@ -25,6 +25,8 @@ public class CaseFacadeEjb implements CaseFacade {
 	private PersonService personService;
 	@EJB
 	private FacilityService facilityService;
+	@EJB
+	private UserService userService;
 	
 	
 	@Override
@@ -72,12 +74,15 @@ public class CaseFacadeEjb implements CaseFacade {
 		caze.setUuid(dto.getUuid());
 		caze.setDisease(dto.getDisease());
 		caze.setCaseStatus(dto.getCaseStatus());
-		if (dto.getHealthFacility() != null) {
-			Facility facility = facilityService.getByUuid(dto.getHealthFacility().getUuid());
-			caze.setHealthFacility(facility);
-		} else {
-			caze.setHealthFacility(null);
-		}
+		caze.setHealthFacility(DtoHelper.fromReferenceDto(dto.getHealthFacility(), facilityService));
+
+		caze.setSurveillanceOfficer(DtoHelper.fromReferenceDto(dto.getSurveillanceOfficer(), userService));
+		caze.setSurveillanceSupervisor(DtoHelper.fromReferenceDto(dto.getSurveillanceSupervisor(), userService));
+		caze.setCaseOfficer(DtoHelper.fromReferenceDto(dto.getCaseOfficer(), userService));
+		caze.setCaseSupervisor(DtoHelper.fromReferenceDto(dto.getCaseSupervisor(), userService));
+		caze.setContactOfficer(DtoHelper.fromReferenceDto(dto.getContactOfficer(), userService));
+		caze.setContactSupervisor(DtoHelper.fromReferenceDto(dto.getContactSupervisor(), userService));
+
 		return caze;
 	}
 	
@@ -92,7 +97,17 @@ public class CaseFacadeEjb implements CaseFacade {
 		dto.setCaseStatus(caze.getCaseStatus());
 		dto.setPerson(PersonFacadeEjb.toDto(caze.getPerson()));
 		dto.setHealthFacility(DtoHelper.toReferenceDto(caze.getHealthFacility()));
-		dto.setReporter(DtoHelper.toReferenceDto(caze.getReporter()));
+		
+		dto.setReportingUser(DtoHelper.toReferenceDto(caze.getReportingUser()));
+		dto.setReportDate(caze.getReportDate());
+		dto.setInvestigatedDate(caze.getInvestigatedDate());
+
+		dto.setSurveillanceOfficer(DtoHelper.toReferenceDto(caze.getSurveillanceOfficer()));
+		dto.setSurveillanceSupervisor(DtoHelper.toReferenceDto(caze.getSurveillanceSupervisor()));
+		dto.setCaseOfficer(DtoHelper.toReferenceDto(caze.getCaseOfficer()));
+		dto.setCaseSupervisor(DtoHelper.toReferenceDto(caze.getCaseSupervisor()));
+		dto.setContactOfficer(DtoHelper.toReferenceDto(caze.getContactOfficer()));
+		dto.setContactSupervisor(DtoHelper.toReferenceDto(caze.getContactSupervisor()));
 		
 		return dto;
 	}

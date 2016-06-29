@@ -9,5 +9,5 @@ import de.symeda.sormas.api.ReferenceDto;
 @Remote
 public interface UserFacade {
 
-    public abstract List<ReferenceDto> getAllAsReference();
+    public abstract List<ReferenceDto> getListAsReference(UserRole userRole);
 }

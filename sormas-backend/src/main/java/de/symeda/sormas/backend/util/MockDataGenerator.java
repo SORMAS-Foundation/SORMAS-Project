@@ -5,12 +5,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseStatus;
 import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.location.Location;
@@ -18,6 +22,7 @@ import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.user.User;
 
 public class MockDataGenerator {
 	
@@ -54,7 +59,7 @@ public class MockDataGenerator {
 
     public static List<Case> createCases() {
         List<Case> cases = new ArrayList<Case>();
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 20; i++) {
             Case p = createCase();
             cases.add(p);
         }
@@ -62,18 +67,30 @@ public class MockDataGenerator {
     }
 
     private static Case createCase() {
-    	Case dto = new Case();
-        dto.setDescription(generateName());
-        dto.setCaseStatus(generateStatus());
-        dto.setDisease(Disease.EBOLA);
-        return dto;
+    	Case caze = new Case();
+    	caze.setDescription(generateName());
+    	caze.setCaseStatus(generateStatus());
+    	caze.setDisease(Disease.EBOLA);
+		caze.setReportDate(new Date());
+        return caze;
     }
 
     public static Person createPerson() {
-    	Person dto = new Person();
-    	dto.setFirstName(generateFirstName());
-    	dto.setLastName(generateLastName());
-    	return dto;
+    	Person person = new Person();
+    	person.setFirstName(generateFirstName());
+    	person.setLastName(generateLastName());
+    	return person;
+    }
+    
+    public static User createUser(UserRole userRole) {
+    	User user = new User();
+    	user.setFirstName(generateFirstName());
+    	user.setLastName(generateLastName());
+    	user.setUserRoles(new HashSet<UserRole>(Arrays.asList(userRole)));
+    	user.setUserName(user.getFirstName() + user.getLastName());
+    	user.setPassword("");
+    	user.setSeed("");
+    	return user;
     }
     
     

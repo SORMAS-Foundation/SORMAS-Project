@@ -34,7 +34,7 @@ public class Case extends AbstractDomainObject {
 	private CaseStatus caseStatus;
 	private Facility healthFacility;
 	
-	private User reporter;
+	private User reportingUser;
 	private Date reportDate;
 	private Date investigatedDate;
 	private Date suspectDate;
@@ -48,6 +48,10 @@ public class Case extends AbstractDomainObject {
 	
 	private User surveillanceOfficer;
 	private User surveillanceSupervisor;
+	private User caseOfficer;
+	private User caseSupervisor;
+	private User contactOfficer;
+	private User contactSupervisor;
 	
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(nullable=false)
@@ -83,11 +87,11 @@ public class Case extends AbstractDomainObject {
 	}
 	
 	@ManyToOne(cascade = {})
-	public User getReporter() {
-		return reporter;
+	public User getReportingUser() {
+		return reportingUser;
 	}
-	public void setReporter(User reporter) {
-		this.reporter = reporter;
+	public void setReportingUser(User reportingUser) {
+		this.reportingUser = reportingUser;
 	}
 	
 	@Temporal(TemporalType.TIMESTAMP)
@@ -154,6 +158,13 @@ public class Case extends AbstractDomainObject {
 		this.recoveredDate = recoveredDate;
 	}
 	
+	@ManyToOne(cascade = {})
+	public Facility getHealthFacility() {
+		return healthFacility;
+	}
+	public void setHealthFacility(Facility healthFacility) {
+		this.healthFacility = healthFacility;
+	}
 	@ManyToOne(cascade = CascadeType.ALL)
 	public Location getIllLocation() {
 		return illLocation;
@@ -179,11 +190,35 @@ public class Case extends AbstractDomainObject {
 	}
 
 	@ManyToOne(cascade = {})
-	public Facility getHealthFacility() {
-		return healthFacility;
+	public User getCaseOfficer() {
+		return caseOfficer;
 	}
-	public void setHealthFacility(Facility healthFacility) {
-		this.healthFacility = healthFacility;
+	public void setCaseOfficer(User caseOfficer) {
+		this.caseOfficer = caseOfficer;
+	}
+
+	@ManyToOne(cascade = {})
+	public User getCaseSupervisor() {
+		return caseSupervisor;
+	}
+	public void setCaseSupervisor(User caseSupervisor) {
+		this.caseSupervisor = caseSupervisor;
+	}
+
+	@ManyToOne(cascade = {})
+	public User getContactOfficer() {
+		return contactOfficer;
+	}
+	public void setContactOfficer(User contactOfficer) {
+		this.contactOfficer = contactOfficer;
+	}
+
+	@ManyToOne(cascade = {})
+	public User getContactSupervisor() {
+		return contactSupervisor;
+	}
+	public void setContactSupervisor(User contactSupervisor) {
+		this.contactSupervisor = contactSupervisor;
 	}
 
 }

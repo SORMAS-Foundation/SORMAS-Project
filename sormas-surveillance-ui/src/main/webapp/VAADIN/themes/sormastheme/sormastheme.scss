@@ -1,31 +1,6 @@
 // If you edit this file you need to compile the theme. See README.md for details.
 
 // Global variable overrides. Must be declared before importing Valo.
-
-// Defines the plaintext font size, weight and family. Font size affects general component sizing.
-//$v-font-size: 16px;
-//$v-font-weight: 300;
-//$v-font-family: "Open Sans", sans-serif;
-
-// Defines the border used by all components.
-//$v-border: 1px solid (v-shade 0.7);
-//$v-border-radius: 4px;
-
-// Affects the color of some component elements, e.g Button, Panel title, etc
-//$v-background-color: hsl(210, 0%, 98%);
-// Affects the color of content areas, e.g  Panel and Window content, TextField input etc
-//$v-app-background-color: $v-background-color;
-
-// Affects the visual appearance of all components
-//$v-gradient: v-linear 8%;
-//$v-bevel-depth: 30%;
-//$v-shadow-opacity: 5%;
-
-// Defines colors for indicating status (focus, success, failure)
-//$v-focus-color: valo-focus-color(); // Calculates a suitable color automatically
-//$v-friendly-color: #2c9720;
-//$v-error-indicator-color: #ed473b;
-
 // For more information, see: https://vaadin.com/book/-/page/themes.valo.html
 // Example variants can be copy/pasted from https://vaadin.com/wiki/-/wiki/Main/Valo+Examples
 
@@ -118,6 +93,20 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
     }
   }
   
+  .valo-content {
+  	overflow: auto;
+  }
+  
+  .v-caption {
+    padding-bottom: 0.1em;
+  }
+  
+  .v-widget.v-textfield, .v-widget.v-select, .v-widget.v-datefield,
+  .v-widget.v-filterselect {
+  	margin-bottom: 10px;
+  }
+  
+  
   .v-panel {
   	background: inherit;
     border: medium none;
@@ -133,70 +122,11 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
       width: round($v-unit-size * 9);
     }
   }
-
-  // sidebar editor for CRUD, scrolls if there is not enough space vertically
-  .product-form-wrapper {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    z-index: 100;
-    width: round($v-unit-size * 9);
-    height: 100%;
-    overflow: auto;
-    padding: $v-layout-spacing-vertical $v-layout-spacing-horizontal;
-    background-color: $editor-background-color;
-    color: valo-font-color($editor-background-color, 0.8);
-
-    // Set the context color for the style mixins
-    $temp: $v-app-background-color;
-    $v-app-background-color: $editor-background-color;
-
-    .v-textfield {
-      @include valo-textfield-style($background-color: $editor-embed-background-color);
-    }
-
-    .v-checkbox {
-      @include valo-checkbox-style($background-color: $editor-raised-background-color);
-    }
-
-    .v-filterselect {
-      @include valo-combobox-style($background-color: $editor-raised-background-color, $bevel: $v-bevel, $gradient: $v-gradient);
-    }
-
-    // Restore variable
-    $v-app-background-color: $temp;
-
-    .v-button {
-      display: block;
-    }
-
-    .v-caption {
-      color: $editor-caption-font-color;
-    }
-
-    // try to ensure there is space under the last button also on small displays (does not work on IE8)
-    .form-layout > .v-expand > .v-slot:last-child {
-      padding-bottom: $v-layout-spacing-vertical;
-    }
-
-  }
   
   .v-caption {
       display: block;
    }
   
-  .product-form {
-    right: 0;
-    @include transition(all 300ms);
-    @include transform(translatex(100%));
-  }
-
-  // Enables animation for opening CRUD editor
-  .visible {
-  	@include transform(none);
-    @include box-shadow($editor-shadow);
-  }
-
   // About view
 
   .about-view {
@@ -297,9 +227,6 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
 
   // Editor should take whole browser width when we are under 550px in width.
   .v-ui[width-range~="0-550px"] {
-    .product-form-wrapper {
-      width:100%;
-    }
 
     // Remove margins around the grid and reduce top bar margins on small screens
     .crud-view .crud-main-layout {

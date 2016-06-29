@@ -2,6 +2,7 @@ package de.symeda.sormas.backend.common;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -12,6 +13,7 @@ import javax.ejb.Startup;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.facility.Facility;
@@ -23,6 +25,8 @@ import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.user.Permission;
+import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.MockDataGenerator;
 
 @Singleton(name = "StartupShutdownService")
@@ -31,6 +35,8 @@ import de.symeda.sormas.backend.util.MockDataGenerator;
 @TransactionManagement(TransactionManagementType.CONTAINER)
 public class StartupShutdownService {
 
+	@EJB
+	private UserService userService;
 	@EJB
 	private CaseService caseService;
 	@EJB
@@ -42,15 +48,45 @@ public class StartupShutdownService {
 	
 	@PostConstruct
 	public void startup() {
-		initCaseMockData();
 		initRegionMockData();
+		initUserMockData();
+		initCaseMockData();
+	}
+
+	private void initUserMockData() {
+		if (userService.getAll().isEmpty()) {
+			userService.persist(MockDataGenerator.createUser(UserRole.SURVEILLANCE_SUPERVISOR));
+			userService.persist(MockDataGenerator.createUser(UserRole.SURVEILLANCE_SUPERVISOR));
+			userService.persist(MockDataGenerator.createUser(UserRole.SURVEILLANCE_OFFICER));
+			userService.persist(MockDataGenerator.createUser(UserRole.SURVEILLANCE_OFFICER));
+			userService.persist(MockDataGenerator.createUser(UserRole.SURVEILLANCE_OFFICER));
+			userService.persist(MockDataGenerator.createUser(UserRole.SURVEILLANCE_OFFICER));
+			userService.persist(MockDataGenerator.createUser(UserRole.SURVEILLANCE_OFFICER));
+			userService.persist(MockDataGenerator.createUser(UserRole.INFORMANT));
+			userService.persist(MockDataGenerator.createUser(UserRole.INFORMANT));
+			userService.persist(MockDataGenerator.createUser(UserRole.INFORMANT));
+			userService.persist(MockDataGenerator.createUser(UserRole.INFORMANT));
+			userService.persist(MockDataGenerator.createUser(UserRole.INFORMANT));
+		}
 	}
 
 	private void initCaseMockData() {
 		if (caseService.getAll().isEmpty()) {
-	    	List<Case> cases = MockDataGenerator.createCases();
+			Random random = new Random();
+			List<User> informants = userService.getListByUserRole(UserRole.INFORMANT);
+			List<User> survOffs = userService.getListByUserRole(UserRole.SURVEILLANCE_OFFICER);
+			List<User> survSups = userService.getListByUserRole(UserRole.SURVEILLANCE_SUPERVISOR);
+			List<Facility> facilities = facilityService.getAll();
+			
+			List<Case> cases = MockDataGenerator.createCases();
 	    	
 			for (Case caze : cases) {
+				
+				caze.setReportingUser(informants.get(random.nextInt(informants.size())));
+				caze.setSurveillanceSupervisor(survSups.get(random.nextInt(survSups.size())));
+				caze.setSurveillanceOfficer(survOffs.get(random.nextInt(survOffs.size())));
+				caze.setHealthFacility(facilities.get(random.nextInt(facilities.size())));
+
 				Person person = MockDataGenerator.createPerson();
 				personService.persist(person);
 
@@ -92,5 +128,4 @@ public class StartupShutdownService {
 	public void shutdown() {
 
 	}
-
 }

@@ -131,6 +131,9 @@ public class Base32 {
         }
 
         int outputLength = (data.length * 8 + SHIFT - 1) / SHIFT;
+        if (separatorBlockSize > 0) {
+        	outputLength += outputLength / separatorBlockSize - 1; 
+        }
         StringBuilder result = new StringBuilder(outputLength);
 
         int buffer = data[0];
@@ -151,7 +154,9 @@ public class Base32 {
             int index = MASK & (buffer >> (bitsLeft - SHIFT));
             bitsLeft -= SHIFT;
             result.append(DIGITS[index]);
-            if (separatorBlockSize > 0 && (result.length() + 1) % (separatorBlockSize+1) == 0)
+            if (separatorBlockSize > 0 
+            		&& (result.length() + 1) % (separatorBlockSize+1) == 0
+            		&& outputLength - result.length() > separatorBlockSize/2)
             	result.append(SEPARATOR);
         }
         return result.toString();

@@ -24,19 +24,14 @@ import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.NativeButton;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.RichTextArea;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.ValoTheme;
 
-/**
- * Fügt commit- und discard-buttons an ein Formular. Optional auch einen delete-button (falls ein {@link DeleteListener}
- * gesetzt ist)
- * 
- * @author Martin Wahnschaffe
- */
+
 public class CommitDiscardWrapperComponent<C extends Component> extends
 		VerticalLayout implements Buffered {
 
@@ -71,10 +66,10 @@ public class CommitDiscardWrapperComponent<C extends Component> extends
 	private FieldGroup fieldGroup;
 
 	private HorizontalLayout buttonsPanel;
-	private NativeButton commitButton;
-	private NativeButton discardButton;
+	private Button commitButton;
+	private Button discardButton;
 
-	private NativeButton deleteButton;
+	private Button deleteButton;
 	private ConfirmationComponent deleteConfirmationComponent;
 
 	private boolean commited = false;
@@ -117,12 +112,9 @@ public class CommitDiscardWrapperComponent<C extends Component> extends
 		this.fieldGroup = fieldGroup;
 		
 		if (contentPanel != null) {
-			//um diese Komponente zu recyceln
-			
 			contentPanel.setContent(wrappedComponent);
 			applyAutoFocusing();
 			applyAutoDisabling();
-			
 			return;
 		}
 
@@ -130,8 +122,6 @@ public class CommitDiscardWrapperComponent<C extends Component> extends
 		setWidth(100, Unit.PERCENTAGE);
 
 		contentPanel = new Panel(component);
-		// workaround für vaadin Rundungsfehler (v-table-body)
-		contentPanel.addStyleName("savethetableborder");
 		updateInternalWidth();
 		updateInternalHeight();
 		addComponent(contentPanel);
@@ -141,13 +131,13 @@ public class CommitDiscardWrapperComponent<C extends Component> extends
 		buttonsPanel.setMargin(false);
 		buttonsPanel.setWidth(100, Unit.PERCENTAGE);
 
-		NativeButton discardButton = getDiscardButton();
+		Button discardButton = getDiscardButton();
 		buttonsPanel.addComponent(discardButton);
 		buttonsPanel.setComponentAlignment(discardButton,
 				Alignment.BOTTOM_RIGHT);
 		buttonsPanel.setExpandRatio(discardButton, 1);
 
-		NativeButton commitButton = getCommitButton();
+		Button commitButton = getCommitButton();
 		buttonsPanel.addComponent(commitButton);
 		buttonsPanel
 				.setComponentAlignment(commitButton, Alignment.BOTTOM_RIGHT);
@@ -270,8 +260,6 @@ public class CommitDiscardWrapperComponent<C extends Component> extends
 			actions = new ArrayList<>();
 		}
 
-		// TODO die Notifiers könnten Subkomponenten vom Wrappee sein (um z.B.
-		// TextAreas rauslassen zu können)
 		Collection<Notifier> notifiers = Arrays.asList((Notifier) contentPanel);
 
 		if (shortcutsEnabled) {
@@ -312,9 +300,10 @@ public class CommitDiscardWrapperComponent<C extends Component> extends
 	 * Das passiert in setWrappedComponent().
 	 * @return
 	 */
-	public NativeButton getCommitButton() {
+	public Button getCommitButton() {
 		if (commitButton == null) {
-			commitButton = new NativeButton("save");
+			commitButton = new Button("save");
+			commitButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 
 			commitButton.addClickListener(new ClickListener() { 
 				private static final long serialVersionUID = 1L;
@@ -333,9 +322,10 @@ public class CommitDiscardWrapperComponent<C extends Component> extends
 	 * Das passiert in setWrappedComponent().
 	 * @return
 	 */
-	public NativeButton getDiscardButton() {
+	public Button getDiscardButton() {
 		if (discardButton == null) {
-			discardButton = new NativeButton("cancel");
+			discardButton = new Button("discard");
+			discardButton.addStyleName(ValoTheme.BUTTON_LINK);
 
 			discardButton.addClickListener(new ClickListener() {
 				private static final long serialVersionUID = 1L;
@@ -353,9 +343,10 @@ public class CommitDiscardWrapperComponent<C extends Component> extends
 	 * Dazu muss addDeleteListener() aufgerufen werden. 
 	 * @return
 	 */
-	public NativeButton getDeleteButton() {
+	public Button getDeleteButton() {
 		if (deleteButton == null) {
-			deleteButton = new NativeButton("Löschen");
+			deleteButton = new Button("delete");
+			deleteButton.addStyleName(ValoTheme.BUTTON_LINK);
 			deleteButton.addClickListener(new ClickListener() {
 				private static final long serialVersionUID = 1L;
 				@Override
@@ -399,7 +390,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends
 				}
 			};
 			deleteConfirmationComponent.getConfirmButton().setCaption(
-					"Wirklich löschen?");
+					"Really delete?");
 		}
 		return deleteConfirmationComponent;
 	}
@@ -422,49 +413,29 @@ public class CommitDiscardWrapperComponent<C extends Component> extends
 
 	@Override
 	public void commit() {
-//		try {
 
-			if (fieldGroup != null)
-			{
-				try {
-					fieldGroup.commit();
-				} 
-				catch (CommitException e) {
-					if (e.getCause() instanceof InvalidValueException)
-						throw (InvalidValueException)e.getCause();
-					else if (e.getCause() instanceof SourceException)
-						throw (SourceException)e.getCause();
-					else
-						throw new CommitRuntimeException(e);
-				}
+		if (fieldGroup != null)
+		{
+			try {
+				fieldGroup.commit();
+			} 
+			catch (CommitException e) {
+				if (e.getCause() instanceof InvalidValueException)
+					throw (InvalidValueException)e.getCause();
+				else if (e.getCause() instanceof SourceException)
+					throw (SourceException)e.getCause();
+				else
+					throw new CommitRuntimeException(e);
 			}
-			else if (wrappedComponent instanceof Buffered) {
-				((Buffered) wrappedComponent).commit();
-			} else {
-				// NOOP
-			}
+		}
+		else if (wrappedComponent instanceof Buffered) {
+			((Buffered) wrappedComponent).commit();
+		} else {
+			// NOOP
+		}
 
-			onCommit();
-			commited = true;
-//		} catch (CommitException | Validator.InvalidValueException ex) {
-//			String msg;
-//			Throwable cause = ex.getCause();
-//			if (ex instanceof Validator.InvalidValueException) {
-//				msg = ex.getMessage();
-//
-//			} else if (cause instanceof Validator.InvalidValueException) {
-//				msg = cause.getMessage();
-//
-//			} else {
-//				msg = ex.getMessage();
-//			}
-//
-//			logger.debug(ex.getMessage());//, ex);
-//			VaadinUiUtil.showWarning("Bitte überprüfen Sie die Eingaben.", msg);
-//			return;
-//		} catch (SilentCommitException ex) {
-//			return;
-//		}
+		onCommit();
+		commited = true;
 
 		onDone();
 

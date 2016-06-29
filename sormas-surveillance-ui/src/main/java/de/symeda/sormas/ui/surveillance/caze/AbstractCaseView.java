@@ -1,21 +1,18 @@
-package de.symeda.sormas.ui.surveillance;
+package de.symeda.sormas.ui.surveillance.caze;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 
-import de.symeda.sormas.ui.surveillance.caze.CaseController;
-import de.symeda.sormas.ui.surveillance.caze.CaseDataView;
-import de.symeda.sormas.ui.surveillance.caze.CasesView;
-import de.symeda.sormas.ui.surveillance.caze.PatientInformationView;
+import de.symeda.sormas.ui.surveillance.ControllerProvider;
+import de.symeda.sormas.ui.surveillance.SubNavigationMenu;
 import de.symeda.sormas.ui.utils.AbstractView;
 
+@SuppressWarnings("serial")
 public abstract class AbstractCaseView extends AbstractView {
 
-	private static final long serialVersionUID = -1L;
-	
     protected CaseController viewLogic = ControllerProvider.getCaseController();
-    public CaseEditMenu caseEditMenu;
+    public SubNavigationMenu caseNavigationMenu;
     protected CssLayout caseEditLayout;
     protected String viewName;
 
@@ -23,19 +20,20 @@ public abstract class AbstractCaseView extends AbstractView {
 	
 
     protected AbstractCaseView(String viewName) {
-        setWidth("900px");
+        setWidth(900, Unit.PIXELS);
+        setHeight(100, Unit.PERCENTAGE);
         setMargin(true);
-        setSpacing(true);
-        addStyleName("crud-view");
         this.viewName = viewName;
         
-        caseEditMenu = new CaseEditMenu();
-    	addComponent(caseEditMenu);
-    	setExpandRatio(caseEditMenu, 0);
+        caseNavigationMenu = new SubNavigationMenu();
+    	addComponent(caseNavigationMenu);
+    	setExpandRatio(caseNavigationMenu, 0);
         
         caseEditLayout = new CssLayout();
-        caseEditLayout.setSizeFull();
+        caseEditLayout.setWidth(100, Unit.PERCENTAGE);
+        caseEditLayout.setHeightUndefined();
         addComponent(caseEditLayout);
+    	setExpandRatio(caseEditLayout, 1);
     }
     
     @Override
@@ -46,17 +44,17 @@ public abstract class AbstractCaseView extends AbstractView {
     };
     
     public void refreshCaseEditMenu(String uuid) {
-    	caseEditMenu.removeAllViews();
-    	caseEditMenu.addView(CasesView.VIEW_NAME, "Overview");
-    	caseEditMenu.addView(CaseDataView.VIEW_NAME, "Case Data", uuid);
-    	caseEditMenu.addView(PatientInformationView.VIEW_NAME, "Patient Information", uuid);
+    	caseNavigationMenu.removeAllViews();
+    	caseNavigationMenu.addView(CasesView.VIEW_NAME, "Cases List");
+    	caseNavigationMenu.addView(CaseDataView.VIEW_NAME, "Case Data", uuid);
+    	caseNavigationMenu.addView(PatientInformationView.VIEW_NAME, "Patient Information", uuid);
     }
     
     protected String getCaseUuid() {
 		return caseUuid;
 	}
     
-    protected void setComponent(Component newComponent) {
+    protected void setEditComponent(Component newComponent) {
     	caseEditLayout.removeAllComponents();
     	caseEditLayout.addComponent(newComponent);
     }
@@ -66,6 +64,6 @@ public abstract class AbstractCaseView extends AbstractView {
 	}
     
     public void selectInMenu() {
-    	caseEditMenu.setActiveView(viewName);
+    	caseNavigationMenu.setActiveView(viewName);
     }
 }

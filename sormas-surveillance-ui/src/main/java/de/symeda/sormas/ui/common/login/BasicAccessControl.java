@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.utils.authentication;
+package de.symeda.sormas.ui.common.login;
 
 /**
  * Default mock implementation of {@link AccessControl}. This implementation

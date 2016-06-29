@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.utils.authentication;
+package de.symeda.sormas.ui.common.login;
 
 import java.io.Serializable;
 

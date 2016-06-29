@@ -12,10 +12,10 @@ import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
 
-import de.symeda.sormas.ui.utils.authentication.AccessControl;
-import de.symeda.sormas.ui.utils.authentication.BasicAccessControl;
-import de.symeda.sormas.ui.utils.authentication.LoginScreen;
-import de.symeda.sormas.ui.utils.authentication.LoginScreen.LoginListener;
+import de.symeda.sormas.ui.common.login.AccessControl;
+import de.symeda.sormas.ui.common.login.BasicAccessControl;
+import de.symeda.sormas.ui.common.login.LoginScreen;
+import de.symeda.sormas.ui.common.login.LoginScreen.LoginListener;
 
 /**
  * Main UI class of the application that shows either the login screen or the

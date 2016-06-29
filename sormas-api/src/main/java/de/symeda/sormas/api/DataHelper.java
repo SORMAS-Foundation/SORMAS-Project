@@ -8,7 +8,7 @@ public final class DataHelper {
 		//uuid = java.util.UUID.randomUUID().toString();
 		java.util.UUID randomUuid = java.util.UUID.randomUUID();
 		byte[] bytes = longToBytes(randomUuid.getLeastSignificantBits(), randomUuid.getMostSignificantBits());
-		String uuid = Base32.encode(bytes, 10);
+		String uuid = Base32.encode(bytes, 6);
 		return uuid;
 	}
 	

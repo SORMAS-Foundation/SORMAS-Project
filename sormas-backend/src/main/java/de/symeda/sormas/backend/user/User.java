@@ -25,11 +25,24 @@ public class User extends AbstractDomainObject {
 	
 	private static final long serialVersionUID = -629432920970152112L;
 
+	public static final String USER_NAME = "userName";
+	public static final String PASSWORD = "password";
+	public static final String SEED = "seed";
+	public static final String ACTIVE = "active";
+	public static final String FIRST_NAME = "firstName";
+	public static final String LAST_NAME = "lastName";
+	public static final String USER_EMAIL = "userEmail";
+	public static final String PHONE = "phone";
+	public static final String ADDRESS = "address";
+	public static final String REGION = "region";
+	public static final String USER_ROLES = "userRoles";
+
+	
 	private String userName;
 	private String password;
 	private String seed;
 
-	private boolean aktiv = true;
+	private boolean active = true;
 
 	private String firstName;
 	private String lastName;
@@ -67,12 +80,13 @@ public class User extends AbstractDomainObject {
 	
 	@Column(nullable = false)
 	public boolean isAktiv() {
-		return aktiv;
+		return active;
 	}
 	public void setAktiv(boolean aktiv) {
-		this.aktiv = aktiv;
+		this.active = aktiv;
 	}
 	
+	@Column(nullable = false)
 	public String getFirstName() {
 		return firstName;
 	}
@@ -80,6 +94,7 @@ public class User extends AbstractDomainObject {
 		this.firstName = firstName;
 	}
 	
+	@Column(nullable = false)
 	public String getLastName() {
 		return lastName;
 	}
@@ -130,5 +145,10 @@ public class User extends AbstractDomainObject {
 	}
 	public void setUserRoles(Set<UserRole> userRoles) {
 		this.userRoles = userRoles;
+	}
+	
+	@Override
+	public String toString() {
+		return getFirstName() + " " + getLastName();
 	}
 }

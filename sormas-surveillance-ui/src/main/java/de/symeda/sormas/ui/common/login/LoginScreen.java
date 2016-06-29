@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.utils.authentication;
+package de.symeda.sormas.ui.common.login;
 
 import java.io.Serializable;
 
@@ -66,9 +66,9 @@ public class LoginScreen extends CssLayout {
         loginForm.setMargin(false);
 
         loginForm.addComponent(username = new TextField("Username", "admin"));
-        username.setWidth(15, Unit.EM);
+        username.setWidth(16, Unit.EM);
         loginForm.addComponent(password = new PasswordField("Password"));
-        password.setWidth(15, Unit.EM);
+        password.setWidth(16, Unit.EM);
         password.setDescription("Write anything");
         CssLayout buttons = new CssLayout();
         buttons.setStyleName("buttons");

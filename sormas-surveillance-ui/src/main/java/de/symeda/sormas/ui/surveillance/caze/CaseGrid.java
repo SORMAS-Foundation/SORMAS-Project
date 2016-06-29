@@ -29,7 +29,10 @@ public class CaseGrid extends Grid {
 
         BeanItemContainer<CaseDataDto> container = new BeanItemContainer<CaseDataDto>(CaseDataDto.class);
         setContainerDataSource(container);
-        setColumnOrder(CaseDataDto.UUID, CaseDataDto.CASE_STATUS, CaseDataDto.DISEASE);
+        setColumns(CaseDataDto.UUID, CaseDataDto.DISEASE, CaseDataDto.CASE_STATUS, CaseDataDto.PERSON, 
+        		CaseDataDto.HEALTH_FACILITY, CaseDataDto.REPORTING_USER, CaseDataDto.REPORT_DATE, 
+        		CaseDataDto.SURVEILLANCE_OFFICER, CaseDataDto.INVESTIGATED_DATE);
+
         getColumn(CaseDataDto.UUID).setRenderer(new UuidRenderer());
         
         for (Column column : getColumns()) {

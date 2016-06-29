@@ -2,8 +2,6 @@ package de.symeda.sormas.ui.surveillance.caze;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 
-import de.symeda.sormas.ui.surveillance.AbstractCaseView;
-
 /**
  * View for reading and editing the patient information fields.
  * Contains the {@link CasePersonForm}.
@@ -23,6 +21,6 @@ public class PatientInformationView extends AbstractCaseView {
     @Override
     public void enter(ViewChangeEvent event) {
     	super.enter(event);
-    	setComponent(getViewLogic().getPatientInformationEditComponent(getCaseUuid()));
+    	setEditComponent(getViewLogic().getPatientInformationEditComponent(getCaseUuid()));
     }
 }

@@ -8,6 +8,7 @@ import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.user.UserFacade;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.util.DtoHelper;
 
 @Stateless(name = "UserFacade")
@@ -17,8 +18,8 @@ public class UserFacadeEjb implements UserFacade {
 	private UserService us;
 
 	@Override
-	public List<ReferenceDto> getAllAsReference() {
-		return us.getAll().stream()
+	public List<ReferenceDto> getListAsReference(UserRole userRole) {
+		return us.getListByUserRole(userRole).stream()
 				.map(f -> DtoHelper.toReferenceDto(f))
 				.collect(Collectors.toList());
 	}
