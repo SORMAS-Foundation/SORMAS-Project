@@ -2,6 +2,8 @@ package de.symeda.sormas.ui.surveillance.caze;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 
+import de.symeda.sormas.ui.surveillance.ControllerProvider;
+
 /**
  * CaseDataView for reading and editing the case data fields.
  * Contains the {@link CaseDataForm}.
@@ -21,6 +23,6 @@ public class CaseDataView extends AbstractCaseView {
     @Override
     public void enter(ViewChangeEvent event) {
     	super.enter(event);
-    	setEditComponent(getViewLogic().getCaseDataEditComponent(getCaseUuid()));
+    	setEditComponent(ControllerProvider.getCaseController().getCaseDataEditComponent(getCaseUuid()));
     }
 }

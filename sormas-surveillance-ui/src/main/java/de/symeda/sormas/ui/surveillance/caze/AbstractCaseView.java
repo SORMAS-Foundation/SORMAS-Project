@@ -4,20 +4,17 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 
-import de.symeda.sormas.ui.surveillance.ControllerProvider;
 import de.symeda.sormas.ui.surveillance.SubNavigationMenu;
 import de.symeda.sormas.ui.utils.AbstractView;
 
 @SuppressWarnings("serial")
 public abstract class AbstractCaseView extends AbstractView {
 
-    protected CaseController viewLogic = ControllerProvider.getCaseController();
+    protected final String viewName;
+
     public SubNavigationMenu caseNavigationMenu;
     protected CssLayout caseEditLayout;
-    protected String viewName;
-
 	private String caseUuid;
-	
 
     protected AbstractCaseView(String viewName) {
         setWidth(900, Unit.PIXELS);
@@ -47,7 +44,7 @@ public abstract class AbstractCaseView extends AbstractView {
     	caseNavigationMenu.removeAllViews();
     	caseNavigationMenu.addView(CasesView.VIEW_NAME, "Cases List");
     	caseNavigationMenu.addView(CaseDataView.VIEW_NAME, "Case Data", uuid);
-    	caseNavigationMenu.addView(PatientInformationView.VIEW_NAME, "Patient Information", uuid);
+    	caseNavigationMenu.addView(CasePersonView.VIEW_NAME, "Patient Information", uuid);
     }
     
     protected String getCaseUuid() {
@@ -58,11 +55,7 @@ public abstract class AbstractCaseView extends AbstractView {
     	caseEditLayout.removeAllComponents();
     	caseEditLayout.addComponent(newComponent);
     }
-    
-    protected CaseController getViewLogic() {
-		return this.viewLogic;
-	}
-    
+
     public void selectInMenu() {
     	caseNavigationMenu.setActiveView(viewName);
     }

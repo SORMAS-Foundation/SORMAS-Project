@@ -37,7 +37,7 @@ public class CaseController {
     public void registerViews(Navigator navigator) {
     	navigator.addView(CasesView.VIEW_NAME, CasesView.class);
     	navigator.addView(CaseDataView.VIEW_NAME, CaseDataView.class);
-    	navigator.addView(PatientInformationView.VIEW_NAME, PatientInformationView.class);
+    	navigator.addView(CasePersonView.VIEW_NAME, CasePersonView.class);
 	}
     
     public void create() {
@@ -131,7 +131,7 @@ public class CaseController {
         return editView;
     }
 	
-	public CommitDiscardWrapperComponent<CasePersonForm> getPatientInformationEditComponent(String caseUuid) {
+	public CommitDiscardWrapperComponent<CasePersonForm> getCasePersonEditComponent(String caseUuid) {
     	
     	
     	VerticalLayout formLayout = new VerticalLayout();
