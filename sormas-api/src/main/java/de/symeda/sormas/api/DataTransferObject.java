@@ -28,4 +28,30 @@ public abstract class DataTransferObject implements Serializable {
 		this.uuid = uuid;
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null) {
+			return false;
+		}
+
+		if (getUuid() != null && o instanceof DataTransferObject 
+				&& ((DataTransferObject) o).getUuid() != null) {
+			// this works, because we are using UUIDs
+			DataTransferObject ado = (DataTransferObject) o;
+			return getUuid().equals(ado.getUuid());
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	public int hashCode() {
+		if (getUuid() != null) {
+			return getUuid().hashCode();
+		}
+		return 0;
+	}
 }

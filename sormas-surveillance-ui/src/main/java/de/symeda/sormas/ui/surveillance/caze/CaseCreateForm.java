@@ -9,6 +9,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.ui.surveillance.ControllerProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
@@ -31,6 +32,8 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 					LayoutUtil.fluidRowLocs(CaseDataDto.HEALTH_FACILITY)
 					);
 
+    private ComboBox persons;
+    
     public CaseCreateForm() {
         super(CaseDataDto.class, CaseDataDto.I18N_PREFIX);
     }
@@ -42,21 +45,46 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
     	addField(CaseDataDto.DISEASE, NativeSelect.class);
     	addField(CaseDataDto.REPORT_DATE, DateField.class);
     	
-    	addField(CaseDataDto.PERSON, ComboBox.class)
-			.addItems(FacadeProvider.getPersonFacade().getAllNoCaseAsReference());
+    	persons = addField(CaseDataDto.PERSON, ComboBox.class);
+    	updatePersonsSelect();
     	
     	Button personCreateButton = new Button(null, FontAwesome.PLUS_SQUARE);
     	personCreateButton.setDescription("Create new person");
     	personCreateButton.addStyleName(ValoTheme.BUTTON_LINK);
     	personCreateButton.addStyleName(CssStyles.FORCE_CAPTION);
-    	personCreateButton.addClickListener(e -> ControllerProvider.getPersonController().create());
+    	personCreateButton.addClickListener(e -> createPersonClicked());
     	addComponent(personCreateButton, PERSON_CREATE);    	
 
     	// TODO use only facilities from own region or district?!
     	addField(CaseDataDto.HEALTH_FACILITY, ComboBox.class)
 			.addItems(FacadeProvider.getFacilityFacade().getAllAsReference());
     	
+    	setRequired(true, CaseDataDto.DISEASE, CaseDataDto.REPORT_DATE, CaseDataDto.PERSON, CaseDataDto.HEALTH_FACILITY);
     	setReadOnly(true, CaseDataDto.UUID);
+    }
+    
+    private void createPersonClicked() {
+    	ControllerProvider.getPersonController().create(
+    			person ->  {
+    				if (person != null) {
+    					updatePersonsSelect();
+    					// try to select new person
+    					for (Object itemId : persons.getItemIds()) {
+    						ReferenceDto dto = (ReferenceDto)itemId;
+    						if (dto.getUuid().equals(person.getUuid())) {
+    							persons.setValue(dto);
+    							break;
+    						}
+						}
+    				}
+    			});
+    }
+    
+    private void updatePersonsSelect() {
+    	Object value = persons.getValue();
+    	persons.removeAllItems();
+    	persons.addItems(FacadeProvider.getPersonFacade().getAllNoCaseAsReference());
+    	persons.setValue(value);
     }
     
 	@Override

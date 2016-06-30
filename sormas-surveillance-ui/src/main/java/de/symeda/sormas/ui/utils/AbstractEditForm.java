@@ -5,6 +5,7 @@ import com.vaadin.data.fieldgroup.DefaultFieldGroupFieldFactory;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.AbstractSelect;
+import com.vaadin.ui.AbstractTextField;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Field;
 
@@ -52,6 +53,13 @@ public abstract class AbstractEditForm <DTO extends DataTransferObject> extends 
 				}
 				
 				return null;
+			}
+			
+			@Override
+			protected <T extends AbstractTextField> T createAbstractTextField(Class<T> fieldType) {
+				T textField = super.createAbstractTextField(fieldType);
+				textField.setNullRepresentation("");
+				return textField;
 			}
 		});
 
@@ -108,6 +116,12 @@ public abstract class AbstractEditForm <DTO extends DataTransferObject> extends 
 	protected void setReadOnly(boolean readOnly, String ...propertyIds) {
 		for (String propertyId : propertyIds) {
 			getFieldGroup().getField(propertyId).setReadOnly(readOnly);
+		}
+	}
+	
+	protected void setRequired(boolean required, String ...propertyIds) {
+		for (String propertyId : propertyIds) {
+			getFieldGroup().getField(propertyId).setRequired(required);
 		}
 	}
 

@@ -1,7 +1,6 @@
 package de.symeda.sormas.ui.surveillance.caze;
 
 import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.TextField;
@@ -61,6 +60,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
     	addField(CaseDataDto.CONTACT_SUPERVISOR, ComboBox.class);
     	addField(CaseDataDto.CONTACT_OFFICER, ComboBox.class);
     	
+    	setRequired(true, CaseDataDto.HEALTH_FACILITY);
     	setReadOnly(true, CaseDataDto.UUID, 
     			CaseDataDto.CASE_STATUS, CaseDataDto.DISEASE, 
     			CaseDataDto.REPORTING_USER, CaseDataDto.REPORT_DATE, 

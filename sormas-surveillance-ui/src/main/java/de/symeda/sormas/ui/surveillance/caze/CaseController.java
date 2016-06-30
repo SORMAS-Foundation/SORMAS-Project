@@ -13,6 +13,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
+import de.symeda.sormas.api.caze.CaseStatus;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.ui.surveillance.SurveillanceUI;
@@ -85,6 +86,7 @@ public class CaseController {
     	caze.setReportDate(new Date());
     	caze.setUuid(DataHelper.createUuid());
     	caze.setDisease(Disease.EBOLA);
+    	caze.setCaseStatus(CaseStatus.POSSIBLE);
     	return caze;
     }
     

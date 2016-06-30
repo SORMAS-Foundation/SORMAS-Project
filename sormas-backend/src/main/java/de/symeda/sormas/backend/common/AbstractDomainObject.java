@@ -67,7 +67,7 @@ public abstract class AbstractDomainObject implements Serializable, Cloneable, D
 	}
 
 	@Basic(optional = false)
-	@Size(min = 0, max = 36)
+	@Size(min = 29, max = 29)
 	@Column(nullable = false, unique = true, length = 36)
 	@Override
 	public String getUuid() {
@@ -125,14 +125,13 @@ public abstract class AbstractDomainObject implements Serializable, Cloneable, D
 		}
 
 		if (o instanceof DomainObject) {
-			// Dieser Abschnitt geht, weil wir global unique ID's haben
+			// this works, because we are using UUIDs
 			DomainObject ado = (DomainObject) o;
 			return getUuid().equals(ado.getUuid());
 
 		} else {
 			return false;
 		}
-
 	}
 
 	@Override

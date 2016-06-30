@@ -498,9 +498,9 @@ public class CommitDiscardWrapperComponent<C extends Component> extends
 	            }
             }
 			if (htmlMsg.length() == 0) {
-				VaadinUiUtil.showWarning("Bitte überprüfen Sie die Eingaben", "");
+				VaadinUiUtil.showWarning("Please check the input data", "");
 			} else {
-				Notification warning = VaadinUiUtil.showWarning("Bitte überprüfen Sie die Eingaben", htmlMsg.toString());
+				Notification warning = VaadinUiUtil.showWarning("Please check the input data", htmlMsg.toString());
 				warning.setHtmlContentAllowed(true);
 			}
 		} 
