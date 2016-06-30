@@ -13027,6 +13027,10 @@ div.v-layout.v-horizontal.v-widget {
 	display: block;
 }
 
+.sormastheme .force-caption {
+	margin-top: 1.5em;
+}
+
 .sormastheme .about-view {
 	overflow: auto;
 }

@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.utils;
+package de.symeda.sormas.api;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,6 +10,7 @@ public class I18nProperties {
 
 	private final Properties fieldCaptionProperties;
 	private final Properties fieldDescriptionProperties;
+	private final Properties enumProperties;
 
 	private static I18nProperties getInstance() {
 		if (instance == null)
@@ -19,6 +20,16 @@ public class I18nProperties {
 	
 	public static String getFieldCaption(String key) {
 		return getInstance().fieldCaptionProperties.getProperty(key);
+	}
+
+	@SuppressWarnings("rawtypes")
+	public static String getEnumCaption(Enum value) {
+		String caption = getInstance().enumProperties.getProperty(value.getClass().getSimpleName() + "." + value.name());
+		if (caption != null) {
+			return caption;
+		} else {
+			return value.name();
+		}
 	}
 
 	public static String getFieldCaption(String key, String defaultValue) {
@@ -59,6 +70,7 @@ public class I18nProperties {
 	private I18nProperties() {
 		fieldCaptionProperties = loadProperties("/fieldCaptions.properties");
 		fieldDescriptionProperties = loadProperties("/fieldDescriptions.properties");
+		enumProperties = loadProperties("/enum.properties");
 	}
 	
 	public static Properties loadProperties(String fileName) {
@@ -68,6 +80,7 @@ public class I18nProperties {
 			return properties;
 		} catch (IOException e) {
 			throw new RuntimeException(e);
+			// TODO logging
 			//logger.error("Could not read file " + fileName, e);
 		}
 		//return null;

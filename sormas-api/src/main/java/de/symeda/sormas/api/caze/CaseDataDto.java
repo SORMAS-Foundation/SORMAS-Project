@@ -5,7 +5,6 @@ import java.util.Date;
 import de.symeda.sormas.api.DataTransferObject;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ReferenceDto;
-import de.symeda.sormas.api.person.CasePersonDto;
 
 public class CaseDataDto extends DataTransferObject {
 
@@ -27,7 +26,7 @@ public class CaseDataDto extends DataTransferObject {
 	public static final String CONTACT_OFFICER = "contactOfficer";
 	public static final String CONTACT_SUPERVISOR = "contactSupervisor";
 	
-	private CasePersonDto person;
+	private ReferenceDto person;
 	private CaseStatus caseStatus;
 	private Disease disease;
 	private ReferenceDto healthFacility;
@@ -50,11 +49,11 @@ public class CaseDataDto extends DataTransferObject {
 		this.caseStatus = caseStatus;
 	}
 	
-	public CasePersonDto getPerson() {
+	public ReferenceDto getPerson() {
 		return person;
 	}
 	
-	public void setPerson(CasePersonDto personDto) {
+	public void setPerson(ReferenceDto personDto) {
 		this.person = personDto;
 	}
 

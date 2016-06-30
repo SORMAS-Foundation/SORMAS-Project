@@ -27,14 +27,16 @@ public class MainScreen extends HorizontalLayout {
 
         final Navigator navigator = new Navigator(ui, viewContainer);
         navigator.setErrorView(ErrorView.class);
+        
+        ControllerProvider.getCaseController().registerViews(navigator);
+        
         menu = new Menu(navigator);
         menu.addView(new CasesView(), CasesView.VIEW_NAME,
                 CasesView.VIEW_NAME, FontAwesome.EDIT);
         menu.addView(new AboutView(), AboutView.VIEW_NAME, AboutView.VIEW_NAME,
                 FontAwesome.INFO_CIRCLE);
         
-        navigator.addViewChangeListener(viewChangeListener);
-        
+        navigator.addViewChangeListener(viewChangeListener);        
         
         ui.setNavigator(navigator);
 

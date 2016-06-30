@@ -138,7 +138,7 @@ public class LayoutUtil {
 		int w = calcFluidColWidth(cols);
 
 		for (int i = 0; i < cols.length; i++) {
-			cols[i] = fluidColumnCss(null, w, 0, locCss(null, locs[i]));
+			cols[i] = fluidColumnLoc(w, 0, locs[i]);
 		}
 		return LayoutUtil.fluidRowCss(cssClasses, cols);
 	}
@@ -188,6 +188,10 @@ public class LayoutUtil {
 		return new FluidColumn(null, span, offset, content);
 	}
 
+	public static FluidColumn fluidColumnLoc(int span, int offset, String loc) {
+		return fluidColumn(span, offset, loc(loc));
+	}
+	
 	public static String div(String... contents) {
 		return divCss(null, contents);
 	}

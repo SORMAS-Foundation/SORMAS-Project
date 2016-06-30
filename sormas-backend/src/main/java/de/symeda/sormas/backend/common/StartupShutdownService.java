@@ -50,7 +50,7 @@ public class StartupShutdownService {
 	public void startup() {
 		initRegionMockData();
 		initUserMockData();
-		initCaseMockData();
+		initCaseAndPersonMockData();
 	}
 
 	private void initUserMockData() {
@@ -70,7 +70,7 @@ public class StartupShutdownService {
 		}
 	}
 
-	private void initCaseMockData() {
+	private void initCaseAndPersonMockData() {
 		if (caseService.getAll().isEmpty()) {
 			Random random = new Random();
 			List<User> informants = userService.getListByUserRole(UserRole.INFORMANT);
@@ -92,6 +92,12 @@ public class StartupShutdownService {
 
 				caze.setPerson(person);
 				caseService.persist(caze);
+			}
+			
+			for (int i=0; i<5; i++) {
+				// some dummy persons
+				Person person = MockDataGenerator.createPerson();
+				personService.persist(person);
 			}
 		}
 	}

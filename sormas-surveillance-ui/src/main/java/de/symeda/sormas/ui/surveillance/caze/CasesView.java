@@ -31,10 +31,8 @@ public class CasesView extends AbstractView {
 	private static final long serialVersionUID = -3533557348144005469L;
 	
 	public static final String VIEW_NAME = "cases";
-    private CaseGrid grid;
-    
 
-    private CaseController viewLogic = ControllerProvider.getCaseController();
+	private CaseGrid grid;    
     private Button newCase;
 
 	private VerticalLayout gridLayout;
@@ -44,7 +42,8 @@ public class CasesView extends AbstractView {
         addStyleName("crud-view");
 
         grid = new CaseGrid();
-        grid.addSelectionListener(e -> viewLogic.rowSelected(grid.getSelectedRow()));
+        grid.addSelectionListener(e -> ControllerProvider.getCaseController().edit(grid.getSelectedRow()));
+
         gridLayout = new VerticalLayout();
         gridLayout.addComponent(createTopBar());
         gridLayout.addComponent(grid);
@@ -53,11 +52,8 @@ public class CasesView extends AbstractView {
         gridLayout.setSizeFull();
         gridLayout.setExpandRatio(grid, 1);
         gridLayout.setStyleName("crud-main-layout");
-        addComponent(gridLayout);
         
-        viewLogic.init();
-        setNewCaseEnabled(!viewLogic.isAdmin());
-        viewLogic.setUriFragmentParameter("");
+        addComponent(gridLayout);
     }
 
 
@@ -70,8 +66,6 @@ public class CasesView extends AbstractView {
         statusAll.setStyleName(ValoTheme.BUTTON_LINK);
         topLayout.addComponent(statusAll);
         
-        //topLayout.addComponent(new Label("<h3>status:</h3>", ContentMode.HTML));
-    	
     	Button statusPossible = new Button("possible", e -> grid.setFilter(CaseStatus.POSSIBLE));
     	statusPossible.setStyleName(ValoTheme.BUTTON_LINK);
         topLayout.addComponent(statusPossible);
@@ -96,7 +90,7 @@ public class CasesView extends AbstractView {
         newCase = new Button("New case");
         newCase.addStyleName(ValoTheme.BUTTON_PRIMARY);
         newCase.setIcon(FontAwesome.PLUS_CIRCLE);
-//        newCase.addClickListener(e -> viewLogic.newCase());
+        newCase.addClickListener(e -> ControllerProvider.getCaseController().create());
         topLayout.addComponent(newCase);
 
         topLayout.setComponentAlignment(filter, Alignment.MIDDLE_LEFT);
@@ -107,11 +101,7 @@ public class CasesView extends AbstractView {
 
     @Override
     public void enter(ViewChangeEvent event) {
-    	setData(viewLogic.getAllCaseData());
-    }
-
-    public void setNewCaseEnabled(boolean enabled) {
-        newCase.setEnabled(enabled);
+    	setData(ControllerProvider.getCaseController().getAllCaseData());
     }
 
     public void clearSelection() {

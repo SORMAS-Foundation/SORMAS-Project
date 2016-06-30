@@ -9,6 +9,7 @@ import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Field;
 
 import de.symeda.sormas.api.DataTransferObject;
+import de.symeda.sormas.api.I18nProperties;
 
 @SuppressWarnings("serial")
 public abstract class AbstractEditForm <DTO extends DataTransferObject> extends CustomLayout implements DtoEditForm<DTO> {

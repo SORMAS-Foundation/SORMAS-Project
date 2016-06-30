@@ -8,8 +8,10 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.person.CasePersonDto;
+import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
+import de.symeda.sormas.backend.util.DtoHelper;
 
 @Stateless(name = "PersonFacade")
 public class PersonFacadeEjb implements PersonFacade {
@@ -18,7 +20,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	private PersonService ps;
 	
 	@Override
-	public List<CasePersonDto> getAllPerson() {
+	public List<PersonDto> getAllPersons() {
 
 		return ps.getAll().stream()
 			.map(c -> toDto(c))
@@ -26,7 +28,15 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 
 	@Override
-	public CasePersonDto getByUuid(String uuid) {
+	public List<ReferenceDto> getAllNoCaseAsReference() {
+
+		return ps.getAllNoCase().stream()
+				.map(c -> DtoHelper.toReferenceDto(c))
+				.collect(Collectors.toList());
+	}
+
+	@Override
+	public PersonDto getByUuid(String uuid) {
 		return Optional.of(uuid)
 				.map(u -> ps.getByUuid(u))
 				.map(c -> toDto(c))
@@ -34,7 +44,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 	
 	@Override
-	public CasePersonDto savePerson(CasePersonDto dto) {
+	public PersonDto savePerson(PersonDto dto) {
 		Person person = toPerson(dto);
 		ps.ensurePersisted(person);
 		
@@ -42,7 +52,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		
 	}
 	
-	public Person toPerson(@NotNull CasePersonDto dto) {
+	public Person toPerson(@NotNull PersonDto dto) {
 		Person bo = ps.getByUuid(dto.getUuid());
 		if(bo==null) {
 			bo = ps.createPerson();
@@ -53,8 +63,8 @@ public class PersonFacadeEjb implements PersonFacade {
 		return bo;
 	}
 	
-	public static CasePersonDto toDto(Person person) {
-		CasePersonDto dto = new CasePersonDto();
+	public static PersonDto toDto(Person person) {
+		PersonDto dto = new PersonDto();
 		dto.setChangeDate(person.getChangeDate());
 		dto.setUuid(person.getUuid());
 		dto.setFirstName(person.getFirstName());

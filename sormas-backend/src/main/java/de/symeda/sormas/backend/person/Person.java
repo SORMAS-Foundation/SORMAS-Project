@@ -13,7 +13,6 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import de.symeda.sormas.api.person.BurialConductor;
-import de.symeda.sormas.api.person.MaritalStatus;
 import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.backend.caze.Case;
@@ -24,6 +23,14 @@ import de.symeda.sormas.backend.location.Location;
 public class Person extends AbstractDomainObject {
 	
 	private static final long serialVersionUID = -1735038738114840087L;
+	
+	public static final String FIRST_NAME = "firstName";
+	public static final String LAST_NAME = "lastName";
+	public static final String BIRTH_DATE = "birthDate";
+	public static final String APPROXIMATE_AGE = "approximateAge";
+	public static final String ADDRESS = "address";
+	public static final String SEX = "sex";
+	public static final String CAZE = "caze";
 
 	private String firstName;
 	private String lastName;
@@ -35,7 +42,6 @@ public class Person extends AbstractDomainObject {
 	
 	// TODO private Ethnicity ethnicity;
 	private Sex sex;
-	private MaritalStatus maritalStatus;
 	
 	private Case caze;
 	
@@ -102,14 +108,6 @@ public class Person extends AbstractDomainObject {
 	}
 	public void setSex(Sex sex) {
 		this.sex = sex;
-	}
-	
-	@Enumerated(EnumType.STRING)
-	public MaritalStatus getMaritalStatus() {
-		return maritalStatus;
-	}
-	public void setMaritalStatus(MaritalStatus maritalStatus) {
-		this.maritalStatus = maritalStatus;
 	}
 
 	@OneToOne(cascade = CascadeType.ALL, mappedBy=Case.PERSON)
@@ -187,5 +185,10 @@ public class Person extends AbstractDomainObject {
 	}
 	public void setOccupationFacility(String occupationFacility) {
 		this.occupationFacility = occupationFacility;
+	}
+	
+	@Override
+	public String toString() {
+		return getFirstName() + " " + getLastName();
 	}
 }

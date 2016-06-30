@@ -11,7 +11,6 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.person.Person;
-import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -73,6 +72,9 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		caze.setUuid(dto.getUuid());
 		caze.setDisease(dto.getDisease());
+		caze.setReportDate(dto.getReportDate());
+		caze.setReportingUser(DtoHelper.fromReferenceDto(dto.getReportingUser(), userService));
+		caze.setPerson(DtoHelper.fromReferenceDto(dto.getPerson(), personService));
 		caze.setCaseStatus(dto.getCaseStatus());
 		caze.setHealthFacility(DtoHelper.fromReferenceDto(dto.getHealthFacility(), facilityService));
 
@@ -95,7 +97,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		dto.setUuid(caze.getUuid());
 		dto.setDisease(caze.getDisease());
 		dto.setCaseStatus(caze.getCaseStatus());
-		dto.setPerson(PersonFacadeEjb.toDto(caze.getPerson()));
+		dto.setPerson(DtoHelper.toReferenceDto(caze.getPerson()));
 		dto.setHealthFacility(DtoHelper.toReferenceDto(caze.getHealthFacility()));
 		
 		dto.setReportingUser(DtoHelper.toReferenceDto(caze.getReportingUser()));

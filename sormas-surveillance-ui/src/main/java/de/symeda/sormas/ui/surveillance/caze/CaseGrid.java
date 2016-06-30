@@ -12,10 +12,10 @@ import com.vaadin.ui.Grid;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseStatus;
 import de.symeda.sormas.ui.utils.CaseHelper;
-import de.symeda.sormas.ui.utils.I18nProperties;
 import elemental.json.JsonValue;
 
 public class CaseGrid extends Grid {
