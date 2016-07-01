@@ -57,13 +57,6 @@
             <version>5.1.0.CR1</version>
         </dependency>
 
-        <!-- Testing -->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.11</version>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 
     <build>
@@ -109,32 +102,6 @@
                             <goal>update-theme</goal>
                             <!-- Comment out compile-theme goal to use on-the-fly theme compilation -->
                             <goal>compile-theme</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <!-- TODO remove? -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-failsafe-plugin</artifactId>
-                <version>2.16</version>
-                <executions>
-                    <execution>
-                        <id>default</id>
-                        <configuration>
-                            <skip>true</skip>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>integration-test</id>
-                        <goals>
-                            <goal>integration-test</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>verify</id>
-                        <goals>
-                            <goal>verify</goal>
                         </goals>
                     </execution>
                 </executions>
