@@ -9,6 +9,7 @@ import javax.ejb.Stateless;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.person.CasePersonDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -44,11 +45,28 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 	
 	@Override
+	public CasePersonDto getCasePersonByUuid(String uuid) {
+		return Optional.of(uuid)
+				.map(u -> ps.getByUuid(u))
+				.map(c -> toCasePersonDto(c))
+				.orElse(null);
+	}
+	
+	@Override
 	public PersonDto savePerson(PersonDto dto) {
 		Person person = toPerson(dto);
 		ps.ensurePersisted(person);
 		
 		return toDto(person);
+		
+	}
+	
+	@Override
+	public CasePersonDto savePerson(CasePersonDto dto) {
+		Person person = toPerson(dto);
+		ps.ensurePersisted(person);
+		
+		return toCasePersonDto(person);
 		
 	}
 	
@@ -63,6 +81,27 @@ public class PersonFacadeEjb implements PersonFacade {
 		return bo;
 	}
 	
+	public Person toPerson(@NotNull CasePersonDto dto) {
+		Person bo = ps.getByUuid(dto.getUuid());
+		if(bo==null) {
+			bo = ps.createPerson();
+		}
+		bo.setUuid(dto.getUuid());
+		bo.setFirstName(dto.getFirstName());
+		bo.setLastName(dto.getLastName());
+		bo.setSex(dto.getSex());
+		
+		bo.setBirthDate(dto.getBirthDate());
+		bo.setDeathDate(dto.getDeathDate());
+		bo.setDead(dto.getDeathDate()!=null);
+		
+		bo.setPhone(dto.getPhone());
+		bo.setOccupationType(dto.getOccupationType());
+		bo.setOccupationDetails(dto.getOccupationDetails());
+		bo.setOccupationFacility(dto.getOccupationFacility());
+		return bo;
+	}
+	
 	public static PersonDto toDto(Person person) {
 		PersonDto dto = new PersonDto();
 		dto.setChangeDate(person.getChangeDate());
@@ -72,5 +111,27 @@ public class PersonFacadeEjb implements PersonFacade {
 		return dto;
 	}
 	
-	
+	public static CasePersonDto toCasePersonDto(Person person) {
+		CasePersonDto dto = new CasePersonDto();
+		dto.setChangeDate(person.getChangeDate());
+		dto.setUuid(person.getUuid());
+		
+		dto.setFirstName(person.getFirstName());
+		dto.setLastName(person.getLastName());
+		dto.setSex(person.getSex());
+		
+		dto.setBirthDate(person.getBirthDate());
+		dto.setDeathDate(person.getDeathDate());
+		dto.setApproximateAge(DtoHelper.getApproximateAge(
+				person.getBirthDate(),
+				person.getDeathDate()
+				));
+		
+		dto.setPhone(person.getPhone());
+		dto.setOccupationType(person.getOccupationType());
+		dto.setOccupationDetails(person.getOccupationDetails());
+		dto.setOccupationFacility(person.getOccupationFacility());
+		return dto;
+	}
+
 }

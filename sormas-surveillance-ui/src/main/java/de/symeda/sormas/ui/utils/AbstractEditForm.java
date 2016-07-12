@@ -1,5 +1,6 @@
 package de.symeda.sormas.ui.utils;
 
+import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.data.fieldgroup.DefaultFieldGroupFieldFactory;
 import com.vaadin.data.util.BeanItem;
@@ -40,7 +41,7 @@ public abstract class AbstractEditForm <DTO extends DataTransferObject> extends 
 		};
 		
 		fieldGroup.setFieldFactory(new DefaultFieldGroupFieldFactory() {
-			@SuppressWarnings("unchecked")
+			@SuppressWarnings({ "unchecked", "rawtypes" })
 			@Override
 			public <T extends Field> T createField(Class<?> type, Class<T> fieldType) {
 				T field = super.createField(type, fieldType);
@@ -97,6 +98,7 @@ public abstract class AbstractEditForm <DTO extends DataTransferObject> extends 
 		return this.fieldGroup;
 	}
 
+	@SuppressWarnings("rawtypes")
 	protected <T extends Field> T addField(String propertyId, Class<T> fieldType) {
 		T field = getFieldGroup().buildAndBind(propertyId, (Object)propertyId, fieldType);
 
@@ -119,9 +121,21 @@ public abstract class AbstractEditForm <DTO extends DataTransferObject> extends 
 		}
 	}
 	
+	protected void setVisible(boolean visible, String ...propertyIds) {
+		for (String propertyId : propertyIds) {
+			getFieldGroup().getField(propertyId).setVisible(visible);
+		}
+	}
+	
 	protected void setRequired(boolean required, String ...propertyIds) {
 		for (String propertyId : propertyIds) {
 			getFieldGroup().getField(propertyId).setRequired(required);
+		}
+	}
+
+	protected void addListener(String propertyId, ValueChangeListener ...listeners) {
+		for (ValueChangeListener listener : listeners) {
+			getFieldGroup().getField(propertyId).addValueChangeListener(listener);
 		}
 	}
 

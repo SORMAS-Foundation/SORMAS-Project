@@ -14,6 +14,11 @@ public interface PersonFacade {
     public abstract List<ReferenceDto> getAllNoCaseAsReference();
 
     public abstract PersonDto getByUuid(String uuid);
+    
+    public abstract CasePersonDto getCasePersonByUuid(String uuid);
 
     public abstract PersonDto savePerson(PersonDto dto);
+
+    public abstract CasePersonDto savePerson(CasePersonDto dto);
+    
 }

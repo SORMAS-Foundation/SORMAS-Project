@@ -2,9 +2,6 @@ package de.symeda.sormas.api.person;
 
 import de.symeda.sormas.api.DataTransferObject;
 
-/**
- * TODO split to PersonDto and CasePersonDto?
- */
 public class PersonDto extends DataTransferObject {
 
 	private static final long serialVersionUID = -8558187171374254398L;
@@ -34,11 +31,9 @@ public class PersonDto extends DataTransferObject {
 		this.lastName = lastName;
 	}
 	
-	
 	@Override
 	public String toString() {
 		return firstName + " " + lastName;
 	}
-	
 	
 }
