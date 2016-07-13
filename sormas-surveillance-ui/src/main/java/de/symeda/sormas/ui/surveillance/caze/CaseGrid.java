@@ -50,12 +50,8 @@ public class CaseGrid extends Grid {
      */
     public void setFilter(String filterString) {
     	getContainer().removeContainerFilters(CaseDataDto.PERSON);
-//    	getContainer().removeContainerFilters(CaseDataDto.CASE_STATUS);
         if (filterString.length() > 0) {
-            SimpleStringFilter nameFilter = new SimpleStringFilter(
-            		CaseDataDto.PERSON, filterString, true, false);
-//            SimpleStringFilter statusFilter = new SimpleStringFilter(
-//            		CaseDataDto.CASE_STATUS, filterString, true, false);
+            SimpleStringFilter nameFilter = new SimpleStringFilter(CaseDataDto.PERSON, filterString, true, false);
             getContainer().addContainerFilter(
 //            new Or(nameFilter, descFilter, statusFilter));
             new Or(nameFilter));
@@ -65,14 +61,18 @@ public class CaseGrid extends Grid {
     
     public void setFilter(CaseStatus statusToFilter) {
     	removeAllStatusFilter();
-    	Equal filter = new Equal(CaseDataDto.CASE_STATUS, statusToFilter);  
-        getContainer().addContainerFilter(filter);
+    	if (statusToFilter != null) {
+	    	Equal filter = new Equal(CaseDataDto.CASE_STATUS, statusToFilter);  
+	        getContainer().addContainerFilter(filter);
+    	}
     }
     
     public void setFilter(Disease disease) {
     	getContainer().removeContainerFilters(CaseDataDto.DISEASE);
-    	Equal filter = new Equal(CaseDataDto.DISEASE, disease);  
-        getContainer().addContainerFilter(filter);
+    	if (disease != null) {
+	    	Equal filter = new Equal(CaseDataDto.DISEASE, disease);  
+	        getContainer().addContainerFilter(filter);
+    	}
 	}
     
     public void removeAllStatusFilter() {
