@@ -133,7 +133,7 @@ public abstract class AbstractEditForm <DTO extends DataTransferObject> extends 
 		}
 	}
 
-	protected void addListener(String propertyId, ValueChangeListener ...listeners) {
+	protected void addFieldListener(String propertyId, ValueChangeListener ...listeners) {
 		for (ValueChangeListener listener : listeners) {
 			getFieldGroup().getField(propertyId).addValueChangeListener(listener);
 		}

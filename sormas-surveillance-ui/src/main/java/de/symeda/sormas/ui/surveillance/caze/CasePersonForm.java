@@ -80,9 +80,9 @@ public class CasePersonForm extends AbstractEditForm<CasePersonDto> {
     			CasePersonDto.OCCUPATION_FACILITY);
     	
     	// add some listeners 
-    	addListener(CasePersonDto.BIRTH_DATE, e -> updateApproximateAge());
-    	addListener(CasePersonDto.DEATH_DATE, e -> updateApproximateAge());
-    	addListener(CasePersonDto.OCCUPATION_TYPE, e -> toogleOccupationMetaFields());
+    	addFieldListener(CasePersonDto.BIRTH_DATE, e -> updateApproximateAge());
+    	addFieldListener(CasePersonDto.DEATH_DATE, e -> updateApproximateAge());
+    	addFieldListener(CasePersonDto.OCCUPATION_TYPE, e -> toogleOccupationMetaFields());
     }
 
 
