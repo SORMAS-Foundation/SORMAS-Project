@@ -5,3 +5,7 @@
 *.metadata
 *.recommenders
 *.idea
+/sormas-backend/bin
+/sormas-rest/bin
+/sormas-surveillance-ui/bin
+/sormas-widgetset/bin
