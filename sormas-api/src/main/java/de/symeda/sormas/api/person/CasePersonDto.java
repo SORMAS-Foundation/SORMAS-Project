@@ -3,6 +3,7 @@ package de.symeda.sormas.api.person;
 import java.util.Date;
 
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.location.LocationDto;
 
 public class CasePersonDto extends PersonDto {
 
@@ -18,6 +19,7 @@ public class CasePersonDto extends PersonDto {
 	public static final String APPROXIMATE_AGE_TYPE = "approximateAgeType";
 	
 	public static final String PHONE = "phone";
+	public static final String ADDRESS = "address";
 	
 	public static final String OCCUPATION_TYPE = "occupationType";
 	public static final String OCCUPATION_DETAILS = "occupationDetails";
@@ -32,11 +34,13 @@ public class CasePersonDto extends PersonDto {
 	private ApproximateAgeType approximateAgeType;
 		
 	private String phone;
+	private LocationDto address;
 	
 	private OccupationType occupationType;
 	private String occupationDetails;
 	private ReferenceDto occupationFacility;
 	
+
 	public Date getBirthDate() {
 		return birthDate;
 	}
@@ -83,6 +87,14 @@ public class CasePersonDto extends PersonDto {
 
 	public void setPhone(String phone) {
 		this.phone = phone;
+	}
+
+	public LocationDto getAddress() {
+		return address;
+	}
+
+	public void setAddress(LocationDto address) {
+		this.address = address;
 	}
 
 	public OccupationType getOccupationType() {

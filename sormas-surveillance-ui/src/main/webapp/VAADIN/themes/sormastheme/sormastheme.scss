@@ -101,7 +101,7 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
     padding-bottom: 0.1em;
   }
   
-  .v-widget.v-textfield, .v-widget.v-select, .v-widget.v-datefield,
+  .v-widget.v-textfield, .v-widget.v-textarea, .v-widget.v-select, .v-widget.v-datefield,
   .v-widget.v-filterselect {
   	margin-bottom: 10px;
   }

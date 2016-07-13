@@ -13,6 +13,7 @@ import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.CasePersonDto;
 import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.ui.surveillance.location.LocationForm;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -39,6 +40,7 @@ public class CasePersonForm extends AbstractEditForm<CasePersonDto> {
 					))+
     		LayoutUtil.h3(CssStyles.VSPACE3, "Permanent Residence")+
     		LayoutUtil.div(
+    				LayoutUtil.fluidRowLocsCss(CssStyles.VSPACE4, CasePersonDto.ADDRESS),
     				LayoutUtil.fluidRowCss(
 						CssStyles.VSPACE4,
 						LayoutUtil.oneOfThreeCol(LayoutUtil.loc(CasePersonDto.PHONE))
@@ -69,6 +71,7 @@ public class CasePersonForm extends AbstractEditForm<CasePersonDto> {
     	addField(CasePersonDto.APPROXIMATE_AGE, TextField.class);
     	addField(CasePersonDto.APPROXIMATE_AGE_TYPE, NativeSelect.class);
     	
+    	addField(CasePersonDto.ADDRESS, LocationForm.class).setCaption(null);
     	addField(CasePersonDto.PHONE, TextField.class);
 
     	addField(CasePersonDto.OCCUPATION_TYPE, NativeSelect.class);
@@ -94,13 +97,12 @@ public class CasePersonForm extends AbstractEditForm<CasePersonDto> {
     	addFieldListener(CasePersonDto.DEATH_DATE, e -> updateApproximateAge());
     	addFieldListener(CasePersonDto.OCCUPATION_TYPE, e -> toogleOccupationMetaFields());
     }
-
-    @Override
-    protected void setLayout() {
-    	setTemplateContents(HTML_LAYOUT);
-    }
-
-
+    
+	@Override
+	protected String createHtmlLayout() {
+		 return HTML_LAYOUT;
+	}
+	
 	private void updateReadyOnlyApproximateAge() {
 		boolean readonly = false;
 		if(getFieldGroup().getField(CasePersonDto.BIRTH_DATE).getValue()!=null) {

@@ -16,6 +16,7 @@ public class Location extends AbstractDomainObject {
 
 	private String address;
 	private String details;
+	private String city;
 	
 	private Region region;
 	private District district;
@@ -39,6 +40,14 @@ public class Location extends AbstractDomainObject {
 	}
 	public void setDetails(String details) {
 		this.details = details;
+	}
+	
+	@Column(length = 255)
+	public String getCity() {
+		return city;
+	}
+	public void setCity(String city) {
+		this.city = city;
 	}
 
 	@ManyToOne(cascade = {})

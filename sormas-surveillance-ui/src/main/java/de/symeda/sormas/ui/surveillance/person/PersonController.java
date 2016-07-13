@@ -24,7 +24,7 @@ public class PersonController {
     	final CommitDiscardWrapperComponent<PersonCreateForm> createComponent = getPersonCreateComponent();
     	if (doneConsumer != null) {
     		createComponent.addDoneListener(() -> 
-    		doneConsumer.accept(createComponent.isCommited() ? createComponent.getWrappedComponent().getDto() : null));
+    		doneConsumer.accept(createComponent.isCommited() ? createComponent.getWrappedComponent().getValue() : null));
     	}
     	VaadinUiUtil.showModalPopupWindow(createComponent, "Create new person");    	
     }
@@ -38,7 +38,7 @@ public class PersonController {
     public CommitDiscardWrapperComponent<PersonCreateForm> getPersonCreateComponent() {
     	
     	PersonCreateForm createForm = new PersonCreateForm();
-        createForm.setDto(createNewPerson());
+        createForm.setValue(createNewPerson());
         final CommitDiscardWrapperComponent<PersonCreateForm> editView = new CommitDiscardWrapperComponent<PersonCreateForm>(createForm, createForm.getFieldGroup());
         editView.setWidth(400, Unit.PIXELS);
         
@@ -46,7 +46,7 @@ public class PersonController {
         	@Override
         	public void onCommit() {
         		if (createForm.getFieldGroup().isValid()) {
-        			PersonDto dto = createForm.getDto();
+        			PersonDto dto = createForm.getValue();
         			personFacade.savePerson(dto);
         		}
         	}

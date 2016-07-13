@@ -14,6 +14,7 @@ import de.symeda.sormas.api.person.CasePersonDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -25,6 +26,8 @@ public class PersonFacadeEjb implements PersonFacade {
 	private PersonService personService;
 	@EJB
 	private FacilityService facilityService;
+	@EJB
+	private LocationFacadeEjb locationFacade;
 	
 	@Override
 	public List<PersonDto> getAllPersons() {
@@ -69,7 +72,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	
 	@Override
 	public CasePersonDto savePerson(CasePersonDto dto) {
-		Person person = toPerson(dto);
+		Person person = fromCasePersonDto(dto);
 		personService.ensurePersisted(person);
 		
 		return toCasePersonDto(person);
@@ -87,7 +90,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		return bo;
 	}
 	
-	public Person toPerson(@NotNull CasePersonDto dto) {
+	public Person fromCasePersonDto(@NotNull CasePersonDto dto) {
 		Person bo = personService.getByUuid(dto.getUuid());
 		if(bo==null) {
 			bo = personService.createPerson();
@@ -104,6 +107,8 @@ public class PersonFacadeEjb implements PersonFacade {
 		bo.setDead(dto.getDeathDate()!=null);
 		
 		bo.setPhone(dto.getPhone());
+		bo.setAddress(locationFacade.fromLocationDto(dto.getAddress()));
+		
 		bo.setOccupationType(dto.getOccupationType());
 		bo.setOccupationDetails(dto.getOccupationDetails());
 		bo.setOccupationFacility(DtoHelper.fromReferenceDto(dto.getOccupationFacility(), facilityService));
@@ -116,6 +121,9 @@ public class PersonFacadeEjb implements PersonFacade {
 		dto.setUuid(person.getUuid());
 		dto.setFirstName(person.getFirstName());
 		dto.setLastName(person.getLastName());
+		if (person.getCaze() != null) {
+			dto.setCaseUuid(person.getCaze().getUuid());
+		}
 		return dto;
 	}
 	
@@ -127,6 +135,9 @@ public class PersonFacadeEjb implements PersonFacade {
 		dto.setFirstName(person.getFirstName());
 		dto.setLastName(person.getLastName());
 		dto.setSex(person.getSex());
+		if (person.getCaze() != null) {
+			dto.setCaseUuid(person.getCaze().getUuid());
+		}
 		
 		dto.setBirthDate(person.getBirthDate());
 		dto.setDeathDate(person.getDeathDate());
@@ -144,6 +155,8 @@ public class PersonFacadeEjb implements PersonFacade {
 		}
 		
 		dto.setPhone(person.getPhone());
+		dto.setAddress(LocationFacadeEjb.toLocationDto(person.getAddress()));
+		
 		dto.setOccupationType(person.getOccupationType());
 		dto.setOccupationDetails(person.getOccupationDetails());
 		dto.setOccupationFacility(DtoHelper.toReferenceDto(person.getOccupationFacility()));

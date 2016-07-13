@@ -33,8 +33,7 @@ public class PersonCreateForm extends AbstractEditForm<PersonDto> {
     }
     
 	@Override
-	protected void setLayout() {
-		 setTemplateContents(HTML_LAYOUT);
+	protected String createHtmlLayout() {
+		 return HTML_LAYOUT;
 	}
-
 }

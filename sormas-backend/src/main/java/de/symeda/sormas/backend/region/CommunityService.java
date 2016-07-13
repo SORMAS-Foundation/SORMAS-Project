@@ -9,9 +9,9 @@ import de.symeda.sormas.backend.common.AbstractAdoService;
 
 @Stateless
 @LocalBean
-public class RegionService extends AbstractAdoService<Region> {
+public class CommunityService extends AbstractAdoService<Community> {
 	
-	public RegionService() {
-		super(Region.class);
+	public CommunityService() {
+		super(Community.class);
 	}
 }

@@ -49,7 +49,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
         statusChangeLayout = new VerticalLayout();
         statusChangeLayout.setSpacing(false);
         statusChangeLayout.setMargin(false);
-        addComponent(statusChangeLayout, STATUS_CHANGE);
+        getContent().addComponent(statusChangeLayout, STATUS_CHANGE);
     }
 
     @Override
@@ -100,8 +100,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
     }
     
 	@Override
-	protected void setLayout() {
-		 setTemplateContents(HTML_LAYOUT);
+	protected String createHtmlLayout() {
+		 return HTML_LAYOUT;
 	}
 
 }

@@ -34,4 +34,8 @@ public class Community extends AbstractDomainObject {
 		this.district = district;
 	}
 
+	@Override
+	public String toString() {
+		return getName();
+	}
 }

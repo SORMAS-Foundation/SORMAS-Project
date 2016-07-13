@@ -6,6 +6,9 @@ import javax.naming.NamingException;
 import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.facility.FacilityFacade;
 import de.symeda.sormas.api.person.PersonFacade;
+import de.symeda.sormas.api.region.CommunityFacade;
+import de.symeda.sormas.api.region.DistrictFacade;
+import de.symeda.sormas.api.region.RegionFacade;
 import de.symeda.sormas.api.user.UserFacade;
 
 public class FacadeProvider {
@@ -41,6 +44,18 @@ public class FacadeProvider {
 
 	public static FacilityFacade getFacilityFacade() {
 		return get().lookupEjbRemote(FacilityFacade.class);
+	}
+	
+	public static RegionFacade getRegionFacade() {
+		return get().lookupEjbRemote(RegionFacade.class);
+	}
+	
+	public static DistrictFacade getDistrictFacade() {
+		return get().lookupEjbRemote(DistrictFacade.class);
+	}
+	
+	public static CommunityFacade getCommunityFacade() {
+		return get().lookupEjbRemote(CommunityFacade.class);
 	}
 
 	public static UserFacade getUserFacade() {

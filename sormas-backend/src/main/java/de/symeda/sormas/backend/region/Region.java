@@ -35,4 +35,9 @@ public class Region extends AbstractDomainObject {
 	public void setDistricts(List<District> districts) {
 		this.districts = districts;
 	}
+	
+	@Override
+	public String toString() {
+		return getName();
+	}
 }

@@ -13004,7 +13004,7 @@ div.v-layout.v-horizontal.v-widget {
 	padding-bottom: 0.1em;
 }
 
-.sormastheme .v-widget.v-textfield, .sormastheme .v-widget.v-select, .sormastheme .v-widget.v-datefield, .sormastheme .v-widget.v-filterselect {
+.sormastheme .v-widget.v-textfield, .sormastheme .v-widget.v-textarea, .sormastheme .v-widget.v-select, .sormastheme .v-widget.v-datefield, .sormastheme .v-widget.v-filterselect {
 	margin-bottom: 10px;
 }
 

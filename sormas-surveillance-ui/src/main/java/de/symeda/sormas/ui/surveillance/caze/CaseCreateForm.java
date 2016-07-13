@@ -53,7 +53,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
     	personCreateButton.addStyleName(ValoTheme.BUTTON_LINK);
     	personCreateButton.addStyleName(CssStyles.FORCE_CAPTION);
     	personCreateButton.addClickListener(e -> createPersonClicked());
-    	addComponent(personCreateButton, PERSON_CREATE);    	
+    	getContent().addComponent(personCreateButton, PERSON_CREATE);    	
 
     	// TODO use only facilities from own region or district?!
     	addField(CaseDataDto.HEALTH_FACILITY, ComboBox.class)
@@ -88,8 +88,8 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
     }
     
 	@Override
-	protected void setLayout() {
-		 setTemplateContents(HTML_LAYOUT);
+	protected String createHtmlLayout() {
+		 return HTML_LAYOUT;
 	}
 
 }

@@ -49,10 +49,14 @@ public class CaseController {
     
     public void edit(CaseDataDto caze) {
    		String navigationState = CaseDataView.VIEW_NAME + "/" + caze.getUuid();
-   		SurveillanceUI.get().getNavigator().navigateTo(navigationState);
-	
+   		SurveillanceUI.get().getNavigator().navigateTo(navigationState);	
     }
-    
+
+    public void edit(CasePersonDto person) {
+   		String navigationState = CasePersonView.VIEW_NAME + "/" + person.getCaseUuid();
+   		SurveillanceUI.get().getNavigator().navigateTo(navigationState);	
+    }
+
     public void overview() {
     	String navigationState = CasesView.VIEW_NAME;
     	SurveillanceUI.get().getNavigator().navigateTo(navigationState);
@@ -95,7 +99,7 @@ public class CaseController {
     public CommitDiscardWrapperComponent<CaseCreateForm> getCaseCreateComponent() {
     	
     	CaseCreateForm caseCreateForm = new CaseCreateForm();
-        caseCreateForm.setDto(createNewCase());
+        caseCreateForm.setValue(createNewCase());
         final CommitDiscardWrapperComponent<CaseCreateForm> editView = new CommitDiscardWrapperComponent<CaseCreateForm>(caseCreateForm, caseCreateForm.getFieldGroup());
         editView.setWidth(400, Unit.PIXELS);
         
@@ -103,7 +107,7 @@ public class CaseController {
         	@Override
         	public void onCommit() {
         		if (caseCreateForm.getFieldGroup().isValid()) {
-        			CaseDataDto dto = caseCreateForm.getDto();
+        			CaseDataDto dto = caseCreateForm.getValue();
         			cf.saveCase(dto);
         			edit(dto);
         		}
@@ -117,14 +121,14 @@ public class CaseController {
     	
     	CaseDataForm caseEditForm = new CaseDataForm();
     	CaseDataDto caze = findCase(caseUuid);
-        caseEditForm.setDto(caze);
+        caseEditForm.setValue(caze);
         final CommitDiscardWrapperComponent<CaseDataForm> editView = new CommitDiscardWrapperComponent<CaseDataForm>(caseEditForm, caseEditForm.getFieldGroup());
         
         editView.addCommitListener(new CommitListener() {
         	@Override
         	public void onCommit() {
         		if (caseEditForm.getFieldGroup().isValid()) {
-        			CaseDataDto cazeDto = caseEditForm.getDto();
+        			CaseDataDto cazeDto = caseEditForm.getValue();
         			cazeDto = cf.saveCase(cazeDto);
         			edit(cazeDto);
         		}
@@ -155,7 +159,7 @@ public class CaseController {
         
         CaseDataDto caseDataDto = findCase(caseUuid);
         CasePersonDto personDto = pf.getCasePersonByUuid(caseDataDto.getPerson().getUuid());
-        caseEditForm.setDto(personDto);
+        caseEditForm.setValue(personDto);
         
         final CommitDiscardWrapperComponent<CasePersonForm> editView = new CommitDiscardWrapperComponent<CasePersonForm>(caseEditForm, caseEditForm.getFieldGroup());
         
@@ -164,9 +168,9 @@ public class CaseController {
         	@Override
         	public void onCommit() {
         		if (caseEditForm.getFieldGroup().isValid()) {
-        			CasePersonDto dto = caseEditForm.getDto();
+        			CasePersonDto dto = caseEditForm.getValue();
         			dto = pf.savePerson(dto);
-        			caseEditForm.setDto(dto);
+        			edit(dto);
         		}
         	}
         });

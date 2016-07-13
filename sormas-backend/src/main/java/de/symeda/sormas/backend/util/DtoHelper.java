@@ -1,10 +1,5 @@
 package de.symeda.sormas.backend.util;
 
-import java.time.LocalDate;
-import java.time.Period;
-import java.time.ZoneId;
-import java.util.Date;
-
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;

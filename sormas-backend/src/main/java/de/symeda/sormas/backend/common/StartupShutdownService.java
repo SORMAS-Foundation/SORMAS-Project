@@ -21,7 +21,9 @@ import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.region.Community;
+import de.symeda.sormas.backend.region.CommunityService;
 import de.symeda.sormas.backend.region.District;
+import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.user.Permission;
@@ -43,6 +45,10 @@ public class StartupShutdownService {
 	private PersonService personService;
 	@EJB
 	private RegionService regionService;
+	@EJB
+	private DistrictService districtService;
+	@EJB
+	private CommunityService communityService;
 	@EJB
 	private FacilityService facilityService;
 	
@@ -112,9 +118,9 @@ public class StartupShutdownService {
 			for (Region region : regions) {
 				for (District district : region.getDistricts()) {
 					for (Community community : district.getCommunities()) {
-						regionService.persist(community);
+						communityService.persist(community);
 					}
-					regionService.persist(district);
+					districtService.persist(district);
 				}
 				regionService.persist(region);
 			}

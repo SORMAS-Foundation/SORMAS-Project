@@ -49,4 +49,9 @@ public class District extends AbstractDomainObject {
 	public void setCommunities(List<Community> communities) {
 		this.communities = communities;
 	}
+	
+	@Override
+	public String toString() {
+		return getName();
+	}
 }

@@ -1,27 +1,33 @@
 package de.symeda.sormas.ui.utils;
 
-import com.vaadin.data.Property.ValueChangeListener;
+import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.data.fieldgroup.DefaultFieldGroupFieldFactory;
+import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.AbstractTextField;
+import com.vaadin.ui.CustomField;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Field;
 
 import de.symeda.sormas.api.DataTransferObject;
 import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.ui.surveillance.location.LocationForm;
 
 @SuppressWarnings("serial")
-public abstract class AbstractEditForm <DTO extends DataTransferObject> extends CustomLayout implements DtoEditForm<DTO> {
+public abstract class AbstractEditForm <DTO extends DataTransferObject> extends CustomField<DTO> {// implements DtoEditForm<DTO> {
 
 	private final BeanFieldGroup<DTO> fieldGroup;
 	
-	private final String propertyI18nPrefix;	
+	private final String propertyI18nPrefix;
+
+	private Class<DTO> type;
 	
 	protected AbstractEditForm(Class<DTO> type, String propertyI18nPrefix) {
 		
+		this.type = type;
 		this.propertyI18nPrefix = propertyI18nPrefix;
 		
 		fieldGroup = new BeanFieldGroup<DTO>(type) {
@@ -52,6 +58,9 @@ public abstract class AbstractEditForm <DTO extends DataTransferObject> extends 
 				if (AbstractSelect.class.isAssignableFrom(fieldType)) {
 					return (T) createCompatibleSelect((Class<? extends AbstractSelect>) fieldType);
 				}
+				if (LocationForm.class.isAssignableFrom(fieldType)) {
+					return (T) new LocationForm();
+				}
 				
 				return null;
 			}
@@ -63,22 +72,37 @@ public abstract class AbstractEditForm <DTO extends DataTransferObject> extends 
 				return textField;
 			}
 		});
-
-		initLayout();
-	}
-	
-	public void initLayout() {
-		setLayout();
-	    setSizeFull();
+		
 		addFields();
 	}
-	
-	protected abstract void setLayout();
-	protected abstract void addFields();
-	
+
+	@Override
+	public CustomLayout initContent() {
+		
+		String htmlLayout = createHtmlLayout();
+		CustomLayout layout = new CustomLayout();
+		layout.setTemplateContents(htmlLayout);
+		layout.setSizeFull();
+	    setSizeFull();
+		
+		return layout;
+	}
 	
 	@Override
-	public DTO getDto() {
+	public Class<? extends DTO> getType() {
+		return type;
+	}
+	
+	@Override
+	protected CustomLayout getContent() {
+		return (CustomLayout)super.getContent();
+	}
+	
+	protected abstract String createHtmlLayout();
+	protected abstract void addFields();	
+	
+	@Override
+	protected DTO getInternalValue() {
 		BeanItem<DTO> beanItem = getFieldGroup().getItemDataSource();
 		if (beanItem == null) {
 			return null;
@@ -88,12 +112,36 @@ public abstract class AbstractEditForm <DTO extends DataTransferObject> extends 
 	}
 
 	@Override
-	public void setDto(DTO dto) {
+	protected void setInternalValue(DTO newValue) {
+		super.setInternalValue(newValue);
 		BeanFieldGroup<DTO> fieldGroup = getFieldGroup();
-		fieldGroup.setItemDataSource(new BeanItem<DTO>(dto));
+		fieldGroup.setItemDataSource(newValue);
+	}
+	
+	@Override
+	public boolean isModified() {
+		if (getFieldGroup().isModified()) {
+			return true;
+		}
+		return super.isModified();
+	}
+	
+	@Override
+	public void commit() throws SourceException, InvalidValueException {
+		try {
+			getFieldGroup().commit();
+		} catch (CommitException e) {
+			throw new SourceException(this, e);
+		}
+		super.commit();
+	}
+	
+	@Override
+	public void discard() throws SourceException {
+		getFieldGroup().discard();
+		super.discard();
 	}
 
-	@Override
 	public BeanFieldGroup<DTO> getFieldGroup() {
 		return this.fieldGroup;
 	}
@@ -111,7 +159,7 @@ public abstract class AbstractEditForm <DTO extends DataTransferObject> extends 
 		
 		field.setWidth(100, Unit.PERCENTAGE);
         
-		addComponent(field, propertyId);
+		getContent().addComponent(field, propertyId);
         return field;
 	}
 	
