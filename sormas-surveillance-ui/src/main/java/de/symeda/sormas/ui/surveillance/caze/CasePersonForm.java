@@ -8,8 +8,8 @@ import com.vaadin.ui.TextField;
 
 import de.symeda.sormas.api.person.CasePersonDto;
 import de.symeda.sormas.api.person.OccupationType;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
-import de.symeda.sormas.ui.utils.CaseHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
@@ -96,7 +96,7 @@ public class CasePersonForm extends AbstractEditForm<CasePersonDto> {
 		TextField textField = (TextField)getFieldGroup().getField(CasePersonDto.APPROXIMATE_AGE);
 		// textfield must be writeable for update
 		textField.setReadOnly(false);
-		textField.setValue(CaseHelper.getApproximateAge(
+		textField.setValue(DateHelper.getApproximateAge(
 				(Date) getFieldGroup().getField(CasePersonDto.BIRTH_DATE).getValue(),
 				(Date) getFieldGroup().getField(CasePersonDto.DEATH_DATE).getValue())
 				);

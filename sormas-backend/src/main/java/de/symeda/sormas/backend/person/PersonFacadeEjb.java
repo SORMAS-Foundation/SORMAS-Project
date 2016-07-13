@@ -12,6 +12,7 @@ import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.person.CasePersonDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.util.DtoHelper;
 
 @Stateless(name = "PersonFacade")
@@ -122,7 +123,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		
 		dto.setBirthDate(person.getBirthDate());
 		dto.setDeathDate(person.getDeathDate());
-		dto.setApproximateAge(DtoHelper.getApproximateAge(
+		dto.setApproximateAge(DateHelper.getApproximateAge(
 				person.getBirthDate(),
 				person.getDeathDate()
 				));

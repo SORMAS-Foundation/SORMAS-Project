@@ -4,10 +4,10 @@ import java.util.function.Consumer;
 
 import com.vaadin.server.Sizeable.Unit;
 
-import de.symeda.sormas.api.DataHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;

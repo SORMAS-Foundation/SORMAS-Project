@@ -16,7 +16,7 @@ import javax.persistence.Transient;
 import javax.persistence.Version;
 import javax.validation.constraints.Size;
 
-import de.symeda.sormas.api.DataHelper;
+import de.symeda.sormas.api.utils.DataHelper;
 
 /**
  * TODO: Übersetzung und UUID anpassen

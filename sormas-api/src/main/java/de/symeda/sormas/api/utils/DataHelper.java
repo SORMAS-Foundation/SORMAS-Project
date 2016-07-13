@@ -1,4 +1,4 @@
-package de.symeda.sormas.api;
+package de.symeda.sormas.api.utils;
 
 import java.nio.ByteBuffer;
 

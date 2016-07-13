@@ -1,4 +1,4 @@
-package de.symeda.sormas.api;
+package de.symeda.sormas.api.utils;
 
 /*
  * Taken with small modifications
