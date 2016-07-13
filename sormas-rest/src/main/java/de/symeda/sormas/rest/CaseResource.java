@@ -11,6 +11,7 @@ import javax.ws.rs.core.MediaType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
+import de.symeda.sormas.api.caze.CaseStatus;
 import de.symeda.sormas.api.person.PersonDto;
 
 /**
@@ -46,6 +47,12 @@ public class CaseResource implements CaseFacade {
 
 	@Override
 	public CaseDataDto createCase(String personUuid, CaseDataDto caseDto) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public CaseDataDto changeCaseStatus(String uuid, CaseStatus targetStatus) {
 		// TODO Auto-generated method stub
 		return null;
 	}

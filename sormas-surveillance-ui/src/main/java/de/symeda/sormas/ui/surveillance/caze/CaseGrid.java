@@ -15,7 +15,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseStatus;
-import de.symeda.sormas.ui.utils.CaseHelper;
+import de.symeda.sormas.api.utils.DataHelper;
 import elemental.json.JsonValue;
 
 public class CaseGrid extends Grid {
@@ -25,7 +25,7 @@ public class CaseGrid extends Grid {
 	public CaseGrid() {
         setSizeFull();
 
-        setSelectionMode(SelectionMode.SINGLE);
+        setSelectionMode(SelectionMode.NONE);
 
         BeanItemContainer<CaseDataDto> container = new BeanItemContainer<CaseDataDto>(CaseDataDto.class);
         setContainerDataSource(container);
@@ -84,11 +84,6 @@ public class CaseGrid extends Grid {
         return (BeanItemContainer<CaseDataDto>) super.getContainerDataSource();
     }
 
-    @Override
-    public CaseDataDto getSelectedRow() throws IllegalStateException {
-        return (CaseDataDto) super.getSelectedRow();
-    }
-
     public void setCases(Collection<CaseDataDto> cases) {
         getContainer().removeAllItems();
         getContainer().addAll(cases);
@@ -113,11 +108,12 @@ public class CaseGrid extends Grid {
         getContainer().removeItem(caze);
     }
     
-    public static class UuidRenderer extends HtmlRenderer {
+    @SuppressWarnings("serial")
+	public static class UuidRenderer extends HtmlRenderer {
    	 
         @Override
         public JsonValue encode(String value) {
-        	value = "<span title='" + value + "'>" + CaseHelper.getShortUuid(value) + "</span>";
+        	value = "<span title='" + value + "'>" + DataHelper.getShortUuid(value) + "</span>";
             return super.encode(value);
         }
     }

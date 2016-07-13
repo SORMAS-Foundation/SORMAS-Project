@@ -1,14 +1,19 @@
 package de.symeda.sormas.backend.caze;
 
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
+import javax.ejb.EJBException;
 import javax.ejb.Stateless;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
+import de.symeda.sormas.api.caze.CaseHelper;
+import de.symeda.sormas.api.caze.CaseStatus;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonService;
@@ -60,6 +65,56 @@ public class CaseFacadeEjb implements CaseFacade {
 		return toCaseDataDto(caze);
 	}
 	
+	@Override
+	public CaseDataDto changeCaseStatus(String uuid, CaseStatus targetStatus) {
+		
+		Case caze = caseService.getByUuid(uuid);
+		if (caze == null) {
+			throw new EJBException("Case not found: " + uuid);
+		}
+		CaseStatus currentStatus = caze.getCaseStatus();
+		
+		if (targetStatus.equals(currentStatus)) {
+			throw new EJBException("Case status equals existing: " + targetStatus);
+		}
+		
+		boolean targetStatusFound = false;
+		for (CaseStatus status : CaseHelper.getPossibleStatusChanges(currentStatus, UserRole.SURVEILLANCE_SUPERVISOR)) {
+			if (status.equals(targetStatus)) {
+				targetStatusFound = true;
+				break;
+			}
+		}
+		if (!targetStatusFound) {
+			throw new EJBException("Case status change not allowed from '" + currentStatus + "' to '" + targetStatus + "'");
+		}
+		
+		caze.setCaseStatus(targetStatus);
+		
+		switch (targetStatus) {
+		case INVESTIGATED:
+			caze.setInvestigatedDate(new Date());
+			break;
+		case CONFIRMED:
+			caze.setConfirmedDate(new Date());
+			break;
+		case NO_CASE:
+			caze.setNoCaseDate(new Date());
+			break;
+		case RECOVERED:
+			caze.setRecoveredDate(new Date());
+			break;
+		case SUSPECT:
+			caze.setSuspectDate(new Date());
+			break;
+			// TODO others...
+			// TODO what about going back and forth?
+		default:
+			break;
+		}
+		
+		return toCaseDataDto(caze);
+	}
 	
 	public Case fromCaseDataDto(@NotNull CaseDataDto dto) {
 		

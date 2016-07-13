@@ -12,9 +12,11 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
+import de.symeda.sormas.api.caze.CaseHelper;
 import de.symeda.sormas.api.caze.CaseStatus;
 import de.symeda.sormas.api.person.CasePersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.surveillance.SurveillanceUI;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -51,7 +53,7 @@ public class CaseController {
 	
     }
     
-    public void overview(CaseDataDto caze) {
+    public void overview() {
     	String navigationState = CasesView.VIEW_NAME;
     	SurveillanceUI.get().getNavigator().navigateTo(navigationState);
     }
@@ -103,7 +105,7 @@ public class CaseController {
         		if (caseCreateForm.getFieldGroup().isValid()) {
         			CaseDataDto dto = caseCreateForm.getDto();
         			cf.saveCase(dto);
-        			overview(null);
+        			edit(dto);
         		}
         	}
         });
@@ -111,22 +113,33 @@ public class CaseController {
         return editView;
     }
 
-    public CommitDiscardWrapperComponent<CaseDataForm> getCaseDataEditComponent(String caseUuid) {
+    public CommitDiscardWrapperComponent<CaseDataForm> getCaseDataEditComponent(final String caseUuid) {
     	
     	CaseDataForm caseEditForm = new CaseDataForm();
-        caseEditForm.setDto(findCase(caseUuid));
+    	CaseDataDto caze = findCase(caseUuid);
+        caseEditForm.setDto(caze);
         final CommitDiscardWrapperComponent<CaseDataForm> editView = new CommitDiscardWrapperComponent<CaseDataForm>(caseEditForm, caseEditForm.getFieldGroup());
         
         editView.addCommitListener(new CommitListener() {
         	@Override
         	public void onCommit() {
         		if (caseEditForm.getFieldGroup().isValid()) {
-        			CaseDataDto dto = caseEditForm.getDto();
-        			cf.saveCase(dto);
-        			overview(null);
+        			CaseDataDto cazeDto = caseEditForm.getDto();
+        			cazeDto = cf.saveCase(cazeDto);
+        			edit(cazeDto);
         		}
         	}
         });
+        
+        caseEditForm.setStatusChangeButtons(
+        		CaseHelper.getPossibleStatusChanges(caze.getCaseStatus(), UserRole.SURVEILLANCE_SUPERVISOR), 
+        		status -> {
+        			if (editView.isModified()) {
+        				editView.commit();
+        			}
+        			CaseDataDto cazeDto = cf.changeCaseStatus(caseUuid, status);
+        			edit(cazeDto); // might be done twice - that's ok		
+        		});
         
         return editView;
     }
@@ -152,8 +165,8 @@ public class CaseController {
         	public void onCommit() {
         		if (caseEditForm.getFieldGroup().isValid()) {
         			CasePersonDto dto = caseEditForm.getDto();
-        			pf.savePerson(dto);
-        			overview(null);
+        			dto = pf.savePerson(dto);
+        			caseEditForm.setDto(dto);
         		}
         	}
         });

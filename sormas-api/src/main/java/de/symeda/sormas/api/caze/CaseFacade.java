@@ -15,4 +15,6 @@ public interface CaseFacade {
 
     public abstract CaseDataDto createCase(String personUuid, CaseDataDto caseDto);
 
+    public abstract CaseDataDto changeCaseStatus(String uuid, CaseStatus targetStatus);
+
 }

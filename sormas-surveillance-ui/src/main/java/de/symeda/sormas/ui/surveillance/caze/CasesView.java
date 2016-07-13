@@ -7,7 +7,6 @@ import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.Grid.SelectionModel;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
@@ -42,7 +41,7 @@ public class CasesView extends AbstractView {
         addStyleName("crud-view");
 
         grid = new CaseGrid();
-        grid.addSelectionListener(e -> ControllerProvider.getCaseController().edit(grid.getSelectedRow()));
+        grid.addItemClickListener(e -> ControllerProvider.getCaseController().edit((CaseDataDto)e.getItemId()));
 
         gridLayout = new VerticalLayout();
         gridLayout.addComponent(createTopBar());
@@ -107,15 +106,6 @@ public class CasesView extends AbstractView {
     public void clearSelection() {
         grid.getSelectionModel().reset();
     }
-
-    public void selectRow(CaseDataDto row) {
-        ((SelectionModel.Single) grid.getSelectionModel()).select(row);
-    }
-
-    public CaseDataDto getSelectedRow() {
-        return grid.getSelectedRow();
-    }
-
 
     public void setData(Collection<CaseDataDto> cases) {
         grid.setCases(cases);

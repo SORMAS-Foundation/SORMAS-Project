@@ -52,6 +52,11 @@ public class MainScreen extends HorizontalLayout {
 
         @Override
         public boolean beforeViewChange(ViewChangeEvent event) {
+        	if (event.getViewName().isEmpty()) {
+        		// redirect to default view
+        		SurveillanceUI.get().getNavigator().navigateTo(CasesView.VIEW_NAME);
+        		return false;
+        	}
             return true;
         }
 
@@ -59,6 +64,9 @@ public class MainScreen extends HorizontalLayout {
         public void afterViewChange(ViewChangeEvent event) {
             menu.setActiveView(event.getViewName());
         }
+        
+        
+        
 
     };
 }

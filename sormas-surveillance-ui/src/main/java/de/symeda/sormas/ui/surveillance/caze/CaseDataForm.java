@@ -1,11 +1,13 @@
 package de.symeda.sormas.ui.surveillance.caze;
 
+import java.util.function.Consumer;
+
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -20,30 +22,34 @@ import de.symeda.sormas.ui.utils.LayoutUtil;
 @SuppressWarnings("serial")
 public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	
-	private static final String CHANGE_TO_SUSPECT = "changeToSuspect";
-	private static final String CHANGE_TO_NONCASE = "changeToNoncase";
+	private static final String STATUS_CHANGE = "statusChange";
 
     private static final String HTML_LAYOUT = 
     		LayoutUtil.h3(CssStyles.VSPACE3, "Case data")+
 			
 			LayoutUtil.divCss(CssStyles.VSPACE2, 
-		    		LayoutUtil.fluidRowLocs(CaseDataDto.UUID, CaseDataDto.CASE_STATUS, CHANGE_TO_SUSPECT),
-		    		LayoutUtil.fluidRowLocs(CaseDataDto.REPORTING_USER, CaseDataDto.REPORT_DATE, CHANGE_TO_NONCASE),
-		    		LayoutUtil.fluidRowCss(
-						CssStyles.VSPACE4,
-						LayoutUtil.oneOfThreeCol(LayoutUtil.loc(CaseDataDto.DISEASE)),
-						LayoutUtil.oneOfThreeCol(LayoutUtil.loc(CaseDataDto.HEALTH_FACILITY))
-					)
+		    		LayoutUtil.fluidRowCss(CssStyles.VSPACE4,
+		    				LayoutUtil.fluidColumn(8, 0, 
+		    						LayoutUtil.fluidRowLocs(CaseDataDto.UUID, CaseDataDto.CASE_STATUS) +
+		    						LayoutUtil.fluidRowLocs(CaseDataDto.REPORTING_USER, CaseDataDto.REPORT_DATE) +
+				    				LayoutUtil.fluidRowLocs(CaseDataDto.DISEASE, CaseDataDto.HEALTH_FACILITY)),
+		    				LayoutUtil.fluidColumnLoc(4, 0,  STATUS_CHANGE)
+		    		)
 		    )+
     		LayoutUtil.h3(CssStyles.VSPACE3, "Responsible users")+
     		LayoutUtil.divCss(CssStyles.VSPACE2, 
     				LayoutUtil.fluidRowLocs(CaseDataDto.SURVEILLANCE_OFFICER, CaseDataDto.CASE_OFFICER, CaseDataDto.CONTACT_OFFICER),
     				LayoutUtil.fluidRowLocs(CaseDataDto.SURVEILLANCE_SUPERVISOR, CaseDataDto.CASE_SUPERVISOR, CaseDataDto.CONTACT_SUPERVISOR)
 			);
-    
+
+    private final VerticalLayout statusChangeLayout;
 
     public CaseDataForm() {
         super(CaseDataDto.class, CaseDataDto.I18N_PREFIX);
+        statusChangeLayout = new VerticalLayout();
+        statusChangeLayout.setSpacing(false);
+        statusChangeLayout.setMargin(false);
+        addComponent(statusChangeLayout, STATUS_CHANGE);
     }
 
     @Override
@@ -75,29 +81,24 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
     			CaseDataDto.REPORTING_USER, CaseDataDto.REPORT_DATE, 
     			CaseDataDto.CASE_SUPERVISOR, CaseDataDto.CASE_OFFICER, 
     			CaseDataDto.CONTACT_SUPERVISOR, CaseDataDto.CONTACT_OFFICER);
-
-    	// TODO show these buttons only for chosen userroles
-    	addComponent(createButton(CHANGE_TO_SUSPECT, e -> setCaseStatus(CaseStatus.SUSPECT)), CHANGE_TO_SUSPECT);   
-    	addComponent(createButton(CHANGE_TO_NONCASE, e -> setCaseStatus(CaseStatus.NO_CASE)), CHANGE_TO_NONCASE);   
 	}
     
-    private Button createButton(String propertyId, ClickListener listener) {
-    	Button button = new Button();
-    	button.setCaption(I18nProperties.getButtonCaption(getPropertyI18nPrefix()+"."+propertyId, propertyId));
-    	button.addStyleName(ValoTheme.BUTTON_PRIMARY);
-    	button.addStyleName(CssStyles.FORCE_CAPTION);
-    	button.setWidth(100, Unit.PERCENTAGE);
-    	button.addClickListener(listener);
-    	return button;
+    public void setStatusChangeButtons(Iterable<CaseStatus> statuses, Consumer<CaseStatus> statusChangeConsumer) {
+    	
+    	statusChangeLayout.removeAllComponents();
+    	
+    	for (final CaseStatus status : statuses) {
+        	Button button = new Button();
+        	String caption = I18nProperties.getButtonCaption(getPropertyI18nPrefix()+"."+STATUS_CHANGE, "%s");
+        	button.setCaption(String.format(caption, status.toString()));
+        	button.addStyleName(ValoTheme.BUTTON_PRIMARY);
+        	button.addStyleName(CssStyles.FORCE_CAPTION);
+        	button.setWidth(100, Unit.PERCENTAGE);
+        	button.addClickListener(e -> statusChangeConsumer.accept(status));
+        	statusChangeLayout.addComponent(button);
+    	}
     }
     
-	private void setCaseStatus(CaseStatus status) {
-		NativeSelect field = (NativeSelect)getFieldGroup().getField(CaseDataDto.CASE_STATUS);
-		field.setReadOnly(false);
-		field.setValue(status);
-		field.setReadOnly(true);
-	}
-
 	@Override
 	protected void setLayout() {
 		 setTemplateContents(HTML_LAYOUT);
