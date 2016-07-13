@@ -12,11 +12,13 @@ import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.BurialConductor;
 import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.location.Location;
 
 @Entity
@@ -36,6 +38,7 @@ public class Person extends AbstractDomainObject {
 	private String lastName;
 	private Date birthDate;
 	private Integer approximateAge;
+	private ApproximateAgeType approximateAgeType;
 	
 	private Location address;
 	private String phone;
@@ -54,7 +57,7 @@ public class Person extends AbstractDomainObject {
 
 	private OccupationType occupationType;
 	private String occupationDetails;
-	private String occupationFacility;
+	private Facility occupationFacility;
 	
 	@Column(nullable = false)
 	public String getFirstName() {
@@ -85,6 +88,14 @@ public class Person extends AbstractDomainObject {
 	}
 	public void setApproximateAge(Integer approximateAge) {
 		this.approximateAge = approximateAge;
+	}
+	
+	public ApproximateAgeType getApproximateAgeType() {
+		return approximateAgeType;
+	}
+	
+	public void setApproximateAgeType(ApproximateAgeType approximateAgeType) {
+		this.approximateAgeType = approximateAgeType;
 	}
 	
 	@ManyToOne(cascade = CascadeType.ALL)
@@ -180,10 +191,10 @@ public class Person extends AbstractDomainObject {
 		this.occupationDetails = occupationDetails;
 	}
 	
-	public String getOccupationFacility() {
+	public Facility getOccupationFacility() {
 		return occupationFacility;
 	}
-	public void setOccupationFacility(String occupationFacility) {
+	public void setOccupationFacility(Facility occupationFacility) {
 		this.occupationFacility = occupationFacility;
 	}
 	

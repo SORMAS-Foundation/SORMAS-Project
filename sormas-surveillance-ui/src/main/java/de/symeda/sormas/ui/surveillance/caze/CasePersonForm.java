@@ -2,13 +2,18 @@ package de.symeda.sormas.ui.surveillance.caze;
 
 import java.util.Date;
 
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.TextField;
 
+import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.CasePersonDto;
 import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.LayoutUtil;
@@ -30,7 +35,7 @@ public class CasePersonForm extends AbstractEditForm<CasePersonDto> {
 						CssStyles.VSPACE4,
 						LayoutUtil.oneOfThreeCol(LayoutUtil.loc(CasePersonDto.BIRTH_DATE)),
 						LayoutUtil.oneOfThreeCol(LayoutUtil.loc(CasePersonDto.DEATH_DATE)),
-						LayoutUtil.oneOfThreeCol(LayoutUtil.loc(CasePersonDto.APPROXIMATE_AGE))
+						LayoutUtil.oneOfThreeCol(LayoutUtil.fluidRowLocs(CasePersonDto.APPROXIMATE_AGE, CasePersonDto.APPROXIMATE_AGE_TYPE))
 					))+
     		LayoutUtil.h3(CssStyles.VSPACE3, "Permanent Residence")+
     		LayoutUtil.div(
@@ -62,45 +67,65 @@ public class CasePersonForm extends AbstractEditForm<CasePersonDto> {
     	addField(CasePersonDto.BIRTH_DATE, DateField.class);
     	addField(CasePersonDto.DEATH_DATE, DateField.class);
     	addField(CasePersonDto.APPROXIMATE_AGE, TextField.class);
+    	addField(CasePersonDto.APPROXIMATE_AGE_TYPE, NativeSelect.class);
     	
     	addField(CasePersonDto.PHONE, TextField.class);
 
     	addField(CasePersonDto.OCCUPATION_TYPE, NativeSelect.class);
     	addField(CasePersonDto.OCCUPATION_DETAILS, TextField.class);
-    	addField(CasePersonDto.OCCUPATION_FACILITY, TextField.class);
+    	addField(CasePersonDto.OCCUPATION_FACILITY, ComboBox.class)
+		.addItems(FacadeProvider.getFacilityFacade().getAllAsReference());
     	
     	
     	setRequired(true, 
     			CasePersonDto.FIRST_NAME, 
     			CasePersonDto.LAST_NAME);
-    	setReadOnly(true, 
-    			CasePersonDto.APPROXIMATE_AGE);
+//    	setReadOnly(true, 
+//    			CasePersonDto.APPROXIMATE_AGE);
     	setVisible(false, 
     			CasePersonDto.OCCUPATION_DETAILS,
     			CasePersonDto.OCCUPATION_FACILITY);
     	
     	// add some listeners 
-    	addFieldListener(CasePersonDto.BIRTH_DATE, e -> updateApproximateAge());
+    	addFieldListener(CasePersonDto.BIRTH_DATE, e -> {
+    		updateApproximateAge();
+    		updateReadyOnlyApproximateAge();
+    	});
     	addFieldListener(CasePersonDto.DEATH_DATE, e -> updateApproximateAge());
     	addFieldListener(CasePersonDto.OCCUPATION_TYPE, e -> toogleOccupationMetaFields());
     }
 
+    @Override
+    protected void setLayout() {
+    	setTemplateContents(HTML_LAYOUT);
+    }
 
 
-	@Override
-	protected void setLayout() {
-		setTemplateContents(HTML_LAYOUT);
+	private void updateReadyOnlyApproximateAge() {
+		boolean readonly = false;
+		if(getFieldGroup().getField(CasePersonDto.BIRTH_DATE).getValue()!=null) {
+			readonly = true;
+		}
+		getFieldGroup().getField(CasePersonDto.APPROXIMATE_AGE).setReadOnly(readonly);
+		getFieldGroup().getField(CasePersonDto.APPROXIMATE_AGE_TYPE).setReadOnly(readonly);
 	}
+
     
 	private void updateApproximateAge() {
-		TextField textField = (TextField)getFieldGroup().getField(CasePersonDto.APPROXIMATE_AGE);
-		// textfield must be writeable for update
-		textField.setReadOnly(false);
-		textField.setValue(DateHelper.getApproximateAge(
+		Pair<Integer, ApproximateAgeType> pair = DateHelper.getApproximateAge(
 				(Date) getFieldGroup().getField(CasePersonDto.BIRTH_DATE).getValue(),
-				(Date) getFieldGroup().getField(CasePersonDto.DEATH_DATE).getValue())
+				(Date) getFieldGroup().getField(CasePersonDto.DEATH_DATE).getValue()
 				);
+		
+		TextField textField = (TextField)getFieldGroup().getField(CasePersonDto.APPROXIMATE_AGE);
+		textField.setReadOnly(false);
+		textField.setValue(pair.getElement0()!=null?String.valueOf(pair.getElement0()):null);
 		textField.setReadOnly(true);
+		
+		NativeSelect nativeSelect = (NativeSelect)getFieldGroup().getField(CasePersonDto.APPROXIMATE_AGE_TYPE);
+		nativeSelect.setReadOnly(false);
+		nativeSelect.setValue(String.valueOf(pair.getElement1()));
+		nativeSelect.setReadOnly(true);
 	}
 	
 	private Object toogleOccupationMetaFields() {
