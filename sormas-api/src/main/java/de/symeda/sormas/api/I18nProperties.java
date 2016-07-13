@@ -10,6 +10,7 @@ public class I18nProperties {
 
 	private final Properties fieldCaptionProperties;
 	private final Properties fieldDescriptionProperties;
+	private final Properties buttonCaptionProperties;
 	private final Properties enumProperties;
 
 	private static I18nProperties getInstance() {
@@ -46,6 +47,10 @@ public class I18nProperties {
 		}
 		return result;
 	}
+	
+	public static String getButtonCaption(String key, String defaultValue) {
+		return getInstance().buttonCaptionProperties.getProperty(key, defaultValue);
+	}
 
 	public static String getFieldDescription(String key) {
 		return getInstance().fieldDescriptionProperties.getProperty(key);
@@ -70,6 +75,7 @@ public class I18nProperties {
 	private I18nProperties() {
 		fieldCaptionProperties = loadProperties("/fieldCaptions.properties");
 		fieldDescriptionProperties = loadProperties("/fieldDescriptions.properties");
+		buttonCaptionProperties = loadProperties("/buttonCaptions.properties");
 		enumProperties = loadProperties("/enum.properties");
 	}
 	
