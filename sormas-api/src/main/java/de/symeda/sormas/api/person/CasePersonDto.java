@@ -13,6 +13,7 @@ public class CasePersonDto extends PersonDto {
 
 	public static final String SEX = "sex";
 
+	public static final String PRESENT_CONDITION = "presentCondition";
 	public static final String BIRTH_DATE = "birthDate";
 	public static final String DEATH_DATE = "deathDate";
 	public static final String APPROXIMATE_AGE = "approximateAge";
@@ -28,6 +29,8 @@ public class CasePersonDto extends PersonDto {
 	
 	private Sex sex;
 	
+	
+	private PresentCondition presentCondition;
 	private Date birthDate;
 	private Date deathDate;
 	private Integer approximateAge;
@@ -39,6 +42,7 @@ public class CasePersonDto extends PersonDto {
 	private OccupationType occupationType;
 	private String occupationDetails;
 	private ReferenceDto occupationFacility;
+
 	
 
 	public Date getBirthDate() {
@@ -71,6 +75,13 @@ public class CasePersonDto extends PersonDto {
 
 	public void setSex(Sex sex) {
 		this.sex = sex;
+	}
+	
+	public PresentCondition getPresentCondition() {
+		return presentCondition;
+	}
+	public void setPresentCondition(PresentCondition presentCondition) {
+		this.presentCondition = presentCondition;
 	}
 
 	public Date getDeathDate() {

@@ -15,6 +15,7 @@ import javax.persistence.TemporalType;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.BurialConductor;
 import de.symeda.sormas.api.person.OccupationType;
+import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -48,6 +49,7 @@ public class Person extends AbstractDomainObject {
 	
 	private Case caze;
 	
+	private PresentCondition presentCondition;
 	private boolean dead;
 	private Date deathDate;
 	private Location deathLocation;
@@ -128,6 +130,13 @@ public class Person extends AbstractDomainObject {
 	public void setCaze(Case caze) {
 		this.caze = caze;
 	}
+	
+	public PresentCondition getPresentCondition() {
+		return presentCondition;
+	}
+	public void setPresentCondition(PresentCondition presentCondition) {
+		this.presentCondition = presentCondition;
+	}
 
 	public boolean isDead() {
 		return dead;
@@ -202,4 +211,5 @@ public class Person extends AbstractDomainObject {
 	public String toString() {
 		return getFirstName() + " " + getLastName();
 	}
+	
 }

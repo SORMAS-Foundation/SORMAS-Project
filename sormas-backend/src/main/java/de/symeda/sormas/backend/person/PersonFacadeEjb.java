@@ -100,6 +100,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		bo.setLastName(dto.getLastName());
 		bo.setSex(dto.getSex());
 		
+		bo.setPresentCondition(dto.getPresentCondition());
 		bo.setBirthDate(dto.getBirthDate());
 		bo.setApproximateAge(dto.getApproximateAge());
 		bo.setApproximateAgeType(dto.getApproximateAgeType());
@@ -139,6 +140,7 @@ public class PersonFacadeEjb implements PersonFacade {
 			dto.setCaseUuid(person.getCaze().getUuid());
 		}
 		
+		dto.setPresentCondition(person.getPresentCondition());
 		dto.setBirthDate(person.getBirthDate());
 		dto.setDeathDate(person.getDeathDate());
 		if(person.getBirthDate()!=null) {
