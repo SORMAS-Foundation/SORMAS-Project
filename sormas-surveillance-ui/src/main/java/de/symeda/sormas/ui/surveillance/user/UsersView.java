@@ -4,19 +4,13 @@ import java.util.Collection;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
-import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.caze.CaseStatus;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.samples.ResetButtonForTextField;
 import de.symeda.sormas.ui.surveillance.ControllerProvider;
 import de.symeda.sormas.ui.utils.AbstractView;
 
@@ -87,10 +81,10 @@ public class UsersView extends AbstractView {
 //        filter.addTextChangeListener(e -> grid.setFilter(e.getText()));
 //        topLayout.addComponent(filter);
 
-        newCase = new Button("New case");
+        newCase = new Button("New user");
         newCase.addStyleName(ValoTheme.BUTTON_PRIMARY);
         newCase.setIcon(FontAwesome.PLUS_CIRCLE);
-        newCase.addClickListener(e -> ControllerProvider.getCaseController().create());
+        newCase.addClickListener(e -> ControllerProvider.getUserController().create());
         topLayout.addComponent(newCase);
 
 //        topLayout.setComponentAlignment(filter, Alignment.MIDDLE_LEFT);

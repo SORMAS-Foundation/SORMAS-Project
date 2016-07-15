@@ -21,6 +21,11 @@ public class UserService extends AbstractAdoService<User> {
 		super(User.class);
 	}
 	
+	public User createUser() {
+		User user = new User();
+		return user;
+	}
+	
 	public List<User> getListByUserRole(UserRole userRole) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<User> cq = cb.createQuery(getElementClass());

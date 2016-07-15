@@ -80,4 +80,13 @@ public class LocationDto extends DataTransferObject {
 	public void setLongitude(Float longitude) {
 		this.longitude = longitude;
 	}
+	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(address!=null?address + " ":"");
+		sb.append(details!=null?details + " ":"");
+		sb.append(city!=null?city:"");
+		return sb.toString();
+	}
 }

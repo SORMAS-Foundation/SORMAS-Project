@@ -6,15 +6,11 @@ import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.MethodProperty;
 import com.vaadin.data.util.filter.Compare.Equal;
-import com.vaadin.data.util.filter.Or;
-import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
-import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.caze.CaseStatus;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import elemental.json.JsonValue;
@@ -32,8 +28,6 @@ public class UserGrid extends Grid {
         setContainerDataSource(container);
         setColumns(UserDto.ACTIVE, UserDto.USER_NAME, UserDto.NAME, UserDto.USER_EMAIL, UserDto.ADDRESS);
 
-//        getColumn(UserDto.ADDRESS).setRenderer(new AdressRenderer());
-        
         for (Column column : getColumns()) {
         	column.setHeaderCaption(I18nProperties.getFieldCaption(
         			UserDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
@@ -72,14 +66,6 @@ public class UserGrid extends Grid {
     	}
     }
     
-//    public void setFilter(Disease disease) {
-//    	getContainer().removeContainerFilters(CaseDataDto.DISEASE);
-//    	if (disease != null) {
-//	    	Equal filter = new Equal(CaseDataDto.DISEASE, disease);  
-//	        getContainer().addContainerFilter(filter);
-//    	}
-//	}
-    
     public void removeAllStatusFilter() {
     	getContainer().removeContainerFilters(CaseDataDto.CASE_STATUS);
     }
@@ -114,11 +100,11 @@ public class UserGrid extends Grid {
     }
     
     @SuppressWarnings("serial")
-	public static class AdressRenderer extends HtmlRenderer {
+	public static class ActiveRenderer extends HtmlRenderer {
    	 
         @Override
         public JsonValue encode(String value) {
-        	value = "<span>" + value + "</span>";
+        	
             return super.encode(value);
         }
     }

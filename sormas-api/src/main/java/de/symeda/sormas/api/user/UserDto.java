@@ -109,6 +109,4 @@ public class UserDto extends DataTransferObject {
 		return firstName + " " + lastName;
 	}
 
-	
-
 }

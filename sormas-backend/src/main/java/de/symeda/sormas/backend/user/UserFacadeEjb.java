@@ -1,5 +1,7 @@
 package de.symeda.sormas.backend.user;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -11,6 +13,7 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserFacade;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
+import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.util.DtoHelper;
 
 @Stateless(name = "UserFacade")
@@ -18,6 +21,8 @@ public class UserFacadeEjb implements UserFacade {
 	
 	@EJB
 	private UserService us;
+	@EJB
+	private LocationFacadeEjb locationFacade;
 
 	@Override
 	public List<ReferenceDto> getListAsReference(UserRole userRole) {
@@ -34,8 +39,29 @@ public class UserFacadeEjb implements UserFacade {
 				.collect(Collectors.toList());
 	}
 
+	@Override
+	public UserDto getByUuid(String uuid) {
+		return toDto(us.getByUuid(uuid));
+	}
+
+	@Override
+	public UserDto saveUser(UserDto dto) {
+		User user = toUser(dto);
+		
+		// TODO #24 remove this mock
+		user.setUserRoles(new HashSet<UserRole>(Arrays.asList(UserRole.SURVEILLANCE_OFFICER)));
+    	user.setUserName(user.getFirstName() + user.getLastName());
+		user.setPassword("");
+		user.setSeed("");
+		
+		us.ensurePersisted(user);
+		
+		return toDto(user);
+	}
+	
 	private UserDto toDto(User user) {
 		UserDto dto = new UserDto();
+		dto.setUuid(user.getUuid());
 		dto.setActive(user.isAktiv());
 		dto.setUserName(user.getUserName());
 		dto.setFirstName(user.getFirstName());
@@ -45,16 +71,24 @@ public class UserFacadeEjb implements UserFacade {
 		dto.setAddress(LocationFacadeEjb.toLocationDto(user.getAddress()));
 		return dto;
 	}
+	
+	
+	private User toUser(UserDto dto) {
+		User bo = us.getByUuid(dto.getUuid());
+		if(bo==null) {
+			bo = us.createUser();
+		}
+		bo.setUuid(dto.getUuid());
 
-	@Override
-	public UserDto getByUuid(String uuid) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+		bo.setAktiv(dto.isActive());
+		bo.setFirstName(dto.getFirstName());
+		bo.setLastName(dto.getLastName());
+		bo.setPhone(dto.getPhone());
+		bo.setAddress(locationFacade.fromLocationDto(dto.getAddress()));
+		
+		bo.setUserName(dto.getUserName());
+		bo.setUserEmail(dto.getUserEmail());
 
-	@Override
-	public UserDto saveUser(UserDto dto) {
-		// TODO Auto-generated method stub
-		return null;
+		return bo;
 	}
 }
