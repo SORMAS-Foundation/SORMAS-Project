@@ -6,6 +6,7 @@ import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.MethodProperty;
 import com.vaadin.data.util.filter.Compare.Equal;
+import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
@@ -26,8 +27,10 @@ public class UserGrid extends Grid {
 
         BeanItemContainer<UserDto> container = new BeanItemContainer<UserDto>(UserDto.class);
         setContainerDataSource(container);
-        setColumns(UserDto.ACTIVE, UserDto.USER_NAME, UserDto.NAME, UserDto.USER_EMAIL, UserDto.ADDRESS);
-
+        setColumns(UserDto.ACTIVE, UserDto.USER_NAME, UserDto.NAME, UserDto.USER_EMAIL, UserDto.ADDRESS, UserDto.LGA);
+        
+        getColumn(UserDto.ACTIVE).setRenderer(new ActiveRenderer());
+        
         for (Column column : getColumns()) {
         	column.setHeaderCaption(I18nProperties.getFieldCaption(
         			UserDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
@@ -104,8 +107,11 @@ public class UserGrid extends Grid {
    	 
         @Override
         public JsonValue encode(String value) {
-        	
-            return super.encode(value);
+        	String iconValue = FontAwesome.CHECK_SQUARE_O.getHtml();
+        	if(!Boolean.parseBoolean(value)) {
+        		iconValue = FontAwesome.SQUARE_O.getHtml();
+        	}
+            return super.encode(iconValue);
         }
     }
 }

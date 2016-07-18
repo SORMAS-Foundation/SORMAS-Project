@@ -3,6 +3,7 @@ package de.symeda.sormas.api.user;
 import java.util.Set;
 
 import de.symeda.sormas.api.DataTransferObject;
+import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
 
 public class UserDto extends DataTransferObject {
@@ -19,6 +20,7 @@ public class UserDto extends DataTransferObject {
 	public static final String USER_EMAIL = "userEmail";
 	public static final String PHONE = "phone";
 	public static final String ADDRESS = "address";
+	public static final String LGA = "lga";
 	
 	public static final String USER_ROLES = "userRoles";
 
@@ -95,6 +97,9 @@ public class UserDto extends DataTransferObject {
 		this.address = address;
 	}
 	
+	public ReferenceDto getLga() {
+		return ((address!=null&&address.getDistrict()!=null)?address.getDistrict():null);
+	}
 	
 	public Set<UserRole> getUserRoles() {
 		return userRoles;
@@ -106,7 +111,7 @@ public class UserDto extends DataTransferObject {
 	
 	@Override
 	public String toString() {
-		return firstName + " " + lastName;
+		return firstName + " " + lastName.toUpperCase();
 	}
 
 }
