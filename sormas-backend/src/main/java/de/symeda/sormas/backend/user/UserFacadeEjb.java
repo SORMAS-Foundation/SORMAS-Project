@@ -13,7 +13,6 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserFacade;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
-import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.util.DtoHelper;
 
 @Stateless(name = "UserFacade")
@@ -49,7 +48,9 @@ public class UserFacadeEjb implements UserFacade {
 		User user = toUser(dto);
 		
 		// TODO #24 remove this mock
-		user.setUserRoles(new HashSet<UserRole>(Arrays.asList(UserRole.SURVEILLANCE_OFFICER)));
+		if(dto.getUserRoles().isEmpty()) {
+			user.setUserRoles(new HashSet<UserRole>(Arrays.asList(UserRole.SURVEILLANCE_OFFICER)));
+		}
     	user.setUserName(user.getFirstName() + user.getLastName());
 		user.setPassword("");
 		user.setSeed("");
@@ -69,6 +70,9 @@ public class UserFacadeEjb implements UserFacade {
 		dto.setUserEmail(user.getUserEmail());
 		dto.setPhone(user.getPhone());
 		dto.setAddress(LocationFacadeEjb.toLocationDto(user.getAddress()));
+		
+		user.getUserRoles().size();
+		dto.setUserRoles(user.getUserRoles());
 		return dto;
 	}
 	
@@ -88,6 +92,8 @@ public class UserFacadeEjb implements UserFacade {
 		
 		bo.setUserName(dto.getUserName());
 		bo.setUserEmail(dto.getUserEmail());
+		
+		bo.setUserRoles(dto.getUserRoles());
 
 		return bo;
 	}

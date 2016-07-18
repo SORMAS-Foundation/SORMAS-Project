@@ -1,8 +1,11 @@
 package de.symeda.sormas.ui.surveillance.user;
 
+import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TextField;
 
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.ui.surveillance.ControllerProvider;
 import de.symeda.sormas.ui.surveillance.location.LocationForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -20,6 +23,11 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 			LayoutUtil.h3(CssStyles.VSPACE3, "Adress")+
 			LayoutUtil.divCss(CssStyles.VSPACE2,
 					LayoutUtil.fluidRowLocs(UserDto.ADDRESS)
+					)+
+			LayoutUtil.h3(CssStyles.VSPACE3, "User data")+
+			LayoutUtil.divCss(CssStyles.VSPACE2,
+					LayoutUtil.fluidRowLocs(UserDto.ACTIVE),
+					LayoutUtil.fluidRowLocs(UserDto.USER_NAME, UserDto.USER_ROLES)
 					);
 
     public UserEditForm() {
@@ -35,6 +43,14 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
     	addField(UserDto.PHONE, TextField.class);
     	
     	addField(UserDto.ADDRESS, LocationForm.class).setCaption(null);
+    	
+    	addField(UserDto.ACTIVE, CheckBox.class);
+    	addField(UserDto.USER_NAME, TextField.class);
+    	addField(UserDto.USER_ROLES, OptionGroup.class);
+    	OptionGroup userRoles = (OptionGroup) getFieldGroup().getField(UserDto.USER_ROLES);
+    	userRoles.setMultiSelect(true);
+    	userRoles.addItems(ControllerProvider.getUserController().getUserRoles());
+    	
     	
     	setRequired(true, UserDto.FIRST_NAME, UserDto.LAST_NAME);
     }

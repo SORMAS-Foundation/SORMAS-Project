@@ -1,7 +1,5 @@
 package de.symeda.sormas.ui.surveillance.user;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 
 import com.vaadin.server.Page;
@@ -9,13 +7,11 @@ import com.vaadin.server.Sizeable.Unit;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.location.LocationDto;
-import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserFacade;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.surveillance.SurveillanceUI;
-import de.symeda.sormas.ui.surveillance.person.PersonCreateForm;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -46,6 +42,15 @@ public class UserController {
     public void overview() {
     	String navigationState = UsersView.VIEW_NAME;
     	SurveillanceUI.get().getNavigator().navigateTo(navigationState);
+    }
+    
+    /**
+     * @TODO check for Session-login - userrole
+     * @return
+     */
+    public Object[] getUserRoles() {
+    	UserRole[] roles = {UserRole.CASE_OFFICER,UserRole.INFORMANT};
+    	return roles;
     }
 
     /**
