@@ -32,7 +32,7 @@ public class UserFacadeEjb implements UserFacade {
 	
 	
 	@Override
-	public List<UserDto> getAll(UserRole userRole) {
+	public List<UserDto> getAll(UserRole... userRole) {
 		return us.getListByUserRole(userRole).stream()
 				.map(f -> toDto(f))
 				.collect(Collectors.toList());

@@ -26,12 +26,14 @@ public class UserService extends AbstractAdoService<User> {
 		return user;
 	}
 	
-	public List<User> getListByUserRole(UserRole userRole) {
+	public List<User> getListByUserRole(UserRole... userRole) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<User> cq = cb.createQuery(getElementClass());
 		Root<User> from = cq.from(getElementClass());
 		Join<User, UserRole> userRoles = from.join(User.USER_ROLES);
-		cq.where(cb.equal(userRoles, userRole));
+		for (UserRole role : userRole) {
+			cq.where(cb.equal(userRoles, role));
+		}
 		cq.orderBy(cb.asc(from.get(AbstractDomainObject.ID)));
 		return em.createQuery(cq).getResultList();
 	}

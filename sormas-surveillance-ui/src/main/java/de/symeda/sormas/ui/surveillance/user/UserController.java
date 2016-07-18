@@ -49,7 +49,7 @@ public class UserController {
      * @return
      */
     public Object[] getUserRoles() {
-    	UserRole[] roles = {UserRole.CASE_OFFICER,UserRole.INFORMANT};
+    	UserRole[] roles = {UserRole.SURVEILLANCE_OFFICER,UserRole.INFORMANT};
     	return roles;
     }
 
@@ -71,7 +71,7 @@ public class UserController {
     
 
     public List<UserDto> getAllSurveillanceOfficers() {
-    	return FacadeProvider.getUserFacade().getAll(UserRole.SURVEILLANCE_OFFICER);
+    	return FacadeProvider.getUserFacade().getAll(UserRole.SURVEILLANCE_OFFICER, UserRole.INFORMANT);
     }
     
     

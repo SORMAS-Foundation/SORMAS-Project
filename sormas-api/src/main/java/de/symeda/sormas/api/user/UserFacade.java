@@ -11,7 +11,7 @@ public interface UserFacade {
 
     public abstract List<ReferenceDto> getListAsReference(UserRole userRole);
     
-    public abstract List<UserDto> getAll(UserRole role);
+    public abstract List<UserDto> getAll(UserRole... role);
     
     public abstract UserDto getByUuid(String uuid);
     

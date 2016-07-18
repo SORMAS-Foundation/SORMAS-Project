@@ -11,6 +11,7 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.surveillance.ControllerProvider;
 import de.symeda.sormas.ui.utils.AbstractView;
 
@@ -60,9 +61,13 @@ public class UsersView extends AbstractView {
         statusAll.setStyleName(ValoTheme.BUTTON_LINK);
         topLayout.addComponent(statusAll);
         
-//    	Button statusPossible = new Button("possible", e -> grid.setFilter(CaseStatus.POSSIBLE));
-//    	statusPossible.setStyleName(ValoTheme.BUTTON_LINK);
-//        topLayout.addComponent(statusPossible);
+    	Button surveillanceOfficerFilter = new Button("Surveillance Officer", e -> grid.setFilter(UserRole.SURVEILLANCE_OFFICER));
+    	surveillanceOfficerFilter.setStyleName(ValoTheme.BUTTON_LINK);
+        topLayout.addComponent(surveillanceOfficerFilter);
+        
+        Button informantFilter = new Button("Informant", e -> grid.setFilter(UserRole.INFORMANT));
+    	informantFilter.setStyleName(ValoTheme.BUTTON_LINK);
+        topLayout.addComponent(informantFilter);
 //        
 //        Button statusInvestigated = new Button("investigated", e -> grid.setFilter(CaseStatus.INVESTIGATED));
 //        statusInvestigated.setStyleName(ValoTheme.BUTTON_LINK);

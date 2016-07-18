@@ -2,10 +2,12 @@ package de.symeda.sormas.ui.surveillance.user;
 
 import java.util.Collection;
 
+import com.vaadin.data.Container.Filter;
+import com.vaadin.data.Item;
+import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.MethodProperty;
-import com.vaadin.data.util.filter.Compare.Equal;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.renderers.HtmlRenderer;
@@ -37,40 +39,17 @@ public class UserGrid extends Grid {
         }
 	}
 	
-    /**
-     * Filter the grid based on a search string that is searched for in the
-     * product name, availability and category columns.
-     *
-     * @param filterString
-     *            string to look for
-     */
-//    public void setFilter(String filterString) {
-//    	getContainer().removeContainerFilters(CaseDataDto.PERSON);
-//        if (filterString.length() > 0) {
-//            SimpleStringFilter nameFilter = new SimpleStringFilter(CaseDataDto.PERSON, filterString, true, false);
-//            getContainer().addContainerFilter(
-////            new Or(nameFilter, descFilter, statusFilter));
-//            new Or(nameFilter));
-//        }
-//
-//    }
-    
     public void setFilter(UserRole roleToFilter) {
     	removeAllStatusFilter();
     	if (roleToFilter != null) {
     		
-//    		Vergleich in einer Liste!!!!
-//    		for (iterable_type iterable_element : iterable) {
-//				
-//			}
-    		
-	    	Equal filter = new Equal(UserDto.USER_ROLES, roleToFilter);  
-	        getContainer().addContainerFilter(filter);
+    		RoleFilter roleFilter = new RoleFilter(UserDto.USER_ROLES, roleToFilter);
+	        getContainer().addContainerFilter(roleFilter);
     	}
     }
     
     public void removeAllStatusFilter() {
-    	getContainer().removeContainerFilters(CaseDataDto.CASE_STATUS);
+    	getContainer().removeContainerFilters(UserDto.USER_ROLES);
     }
 
     @SuppressWarnings("unchecked")
@@ -113,6 +92,66 @@ public class UserGrid extends Grid {
         	}
             return super.encode(iconValue);
         }
+    }
+    
+    @SuppressWarnings("serial")
+	public class RoleFilter implements Filter {
+    	
+    	private Object propertyId;
+        private UserRole roleToFilter;
+        
+        public RoleFilter(Object propertyId, UserRole roleToFilter) {
+            this.propertyId = propertyId;
+            this.roleToFilter = roleToFilter;
+        }
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public boolean passesFilter(Object itemId, Item item) throws UnsupportedOperationException {
+			final Property<?> p = item.getItemProperty(getPropertyId());
+	        if (null == p) {
+	            return false;
+	        }
+	        Collection<UserRole> roles = (Collection<UserRole>) p.getValue();
+        	for (UserRole role : roles) {
+				if(compareEquals(roleToFilter, role)) {
+					return true;
+				}
+			}
+	        
+	        // all cases should have been processed above
+	        return false;
+		}
+
+		@Override
+		public boolean appliesToProperty(Object propertyId) {
+			return getPropertyId().equals(propertyId);
+		}
+		
+		public UserRole getRoleToFilter() {
+			return this.roleToFilter;
+		}
+		
+		public Object getPropertyId() {
+	        return propertyId;
+	    }
+		
+		@SuppressWarnings({ "unchecked", "rawtypes" })
+		private boolean compareEquals(Object valueOne, Object valueTwo) {
+	        if (valueOne == null || valueTwo == null) {
+	            return (valueTwo == valueOne);
+	        } else if (valueOne == valueTwo) {
+	            return true;
+	        } else if (valueOne instanceof Comparable
+	                && valueTwo.getClass()
+	                        .isAssignableFrom(valueOne.getClass())) {
+	            return ((Comparable) valueOne).compareTo(valueTwo) == 0;
+	        } else {
+	            return valueOne.equals(valueTwo);
+	        }
+	    }
+
+    	
     }
 }
 
