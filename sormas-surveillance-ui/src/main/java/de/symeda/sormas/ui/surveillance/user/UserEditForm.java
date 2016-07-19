@@ -1,5 +1,6 @@
 package de.symeda.sormas.ui.surveillance.user;
 
+import com.vaadin.data.Validator;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TextField;
@@ -52,11 +53,34 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
     	userRoles.addItems(ControllerProvider.getUserController().getUserRoles());
     	
     	
-    	setRequired(true, UserDto.FIRST_NAME, UserDto.LAST_NAME);
+    	setRequired(true, UserDto.FIRST_NAME, UserDto.LAST_NAME, UserDto.USER_NAME);
+    	addValidator(UserDto.USER_NAME, new UserNameValidator());
+    	
+    	addFieldListener(UserDto.FIRST_NAME, e -> suggestUserName());
+    	addFieldListener(UserDto.LAST_NAME, e -> suggestUserName());
     }
     
+	private void suggestUserName() {
+		TextField fnField = (TextField)getFieldGroup().getField(UserDto.FIRST_NAME);
+		TextField lnField = (TextField)getFieldGroup().getField(UserDto.LAST_NAME);
+		TextField unField = (TextField)getFieldGroup().getField(UserDto.USER_NAME);
+		if(!fnField.isEmpty() && !lnField.isEmpty() && unField.isEmpty()) {
+			unField.setValue(ControllerProvider.getUserController().getSuggestedUsername(fnField.getValue(), lnField.getValue()));
+		}
+	}
+
 	@Override
 	protected String createHtmlLayout() {
 		 return HTML_LAYOUT;
+	}
+
+	class UserNameValidator implements Validator {
+	    @Override
+	    public void validate(Object value)
+	            throws InvalidValueException {
+	    	UserDto dto = getValue();
+	        if (!(value instanceof String && ControllerProvider.getUserController().isLoginUnique(dto.getUuid(),(String)value)))
+	            throw new InvalidValueException("User name is not unique!");
+	    }
 	}
 }

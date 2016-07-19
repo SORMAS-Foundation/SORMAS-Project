@@ -4,14 +4,18 @@ import java.util.Collection;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.samples.ResetButtonForTextField;
 import de.symeda.sormas.ui.surveillance.ControllerProvider;
 import de.symeda.sormas.ui.utils.AbstractView;
 
@@ -26,6 +30,8 @@ public class UsersView extends AbstractView {
 	private static final long serialVersionUID = -3533557348144005469L;
 	
 	public static final String VIEW_NAME = "users";
+	public static final String ACTIVE_FILTER = "Active";
+	public static final String INACTIVE_FILTER = "Inactive";
 
 	private UserGrid grid;    
     private Button newCase;
@@ -68,23 +74,23 @@ public class UsersView extends AbstractView {
         Button informantFilter = new Button("Informant", e -> grid.setFilter(UserRole.INFORMANT));
     	informantFilter.setStyleName(ValoTheme.BUTTON_LINK);
         topLayout.addComponent(informantFilter);
-//        
-//        Button statusInvestigated = new Button("investigated", e -> grid.setFilter(CaseStatus.INVESTIGATED));
-//        statusInvestigated.setStyleName(ValoTheme.BUTTON_LINK);
-//        topLayout.addComponent(statusInvestigated);
-//        
-//        ComboBox diseaseFilter = new ComboBox();
-//        diseaseFilter.addItem(Disease.EBOLA);
-//        diseaseFilter.addValueChangeListener(e->grid.setFilter(((Disease)e.getProperty().getValue())));
-//        topLayout.addComponent(diseaseFilter);
-//    	
-//        TextField filter = new TextField();
-//        filter.setStyleName("filter-textfield");
-//        filter.setInputPrompt("Search case");
-//        ResetButtonForTextField.extend(filter);
-//        filter.setImmediate(true);
-//        filter.addTextChangeListener(e -> grid.setFilter(e.getText()));
-//        topLayout.addComponent(filter);
+
+        ComboBox activeFilter = new ComboBox();
+        activeFilter.addItems(ACTIVE_FILTER,INACTIVE_FILTER);
+        activeFilter.addValueChangeListener(e-> {
+        	String value = (String)e.getProperty().getValue();
+			grid.setFilter(value!=null?ACTIVE_FILTER.equals(value):null);
+        });
+        	
+        topLayout.addComponent(activeFilter);
+
+        TextField filter = new TextField();
+        filter.setStyleName("filter-textfield");
+        filter.setInputPrompt("Search user");
+        ResetButtonForTextField.extend(filter);
+        filter.setImmediate(true);
+        filter.addTextChangeListener(e -> grid.setFilter(e.getText()));
+        topLayout.addComponent(filter);
 
         newCase = new Button("New user");
         newCase.addStyleName(ValoTheme.BUTTON_PRIMARY);
@@ -92,8 +98,8 @@ public class UsersView extends AbstractView {
         newCase.addClickListener(e -> ControllerProvider.getUserController().create());
         topLayout.addComponent(newCase);
 
-//        topLayout.setComponentAlignment(filter, Alignment.MIDDLE_LEFT);
-//        topLayout.setExpandRatio(filter, 1);
+        topLayout.setComponentAlignment(filter, Alignment.MIDDLE_LEFT);
+        topLayout.setExpandRatio(filter, 1);
         topLayout.setStyleName("top-bar");
         return topLayout;
     }

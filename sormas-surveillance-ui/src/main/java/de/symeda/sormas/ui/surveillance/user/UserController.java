@@ -71,7 +71,8 @@ public class UserController {
     
 
     public List<UserDto> getAllSurveillanceOfficers() {
-    	return FacadeProvider.getUserFacade().getAll(UserRole.SURVEILLANCE_OFFICER, UserRole.INFORMANT);
+//    	return FacadeProvider.getUserFacade().getAll(UserRole.SURVEILLANCE_OFFICER, UserRole.INFORMANT);
+    	return FacadeProvider.getUserFacade().getAll(UserRole.SURVEILLANCE_OFFICER);
     }
     
     
@@ -132,5 +133,18 @@ public class UserController {
     private UserDto findUser(String uuid) {
         return uf.getByUuid(uuid);
     }
+
+	public boolean isLoginUnique(String uuid, String userName) {
+		return uf.isLoginUnique(uuid, userName);
+	}
+
+	public String getSuggestedUsername(String value, String value2) {
+		StringBuilder sb = new StringBuilder();
+		String trim = value.toLowerCase().replaceAll("\\s", "");
+		sb.append(trim.length()>4?trim.substring(0, 4):trim);
+		String trim2 = value2.toLowerCase().replaceAll("\\s", "");
+		sb.append(trim2.length()>4?trim2.substring(0, 4):trim2);
+		return sb.toString();
+	}
 
 }

@@ -16,6 +16,8 @@ public interface UserFacade {
     public abstract UserDto getByUuid(String uuid);
     
     public abstract UserDto saveUser(UserDto dto);
+
+    public abstract boolean isLoginUnique(String uuid, String userName);
     
     
 }

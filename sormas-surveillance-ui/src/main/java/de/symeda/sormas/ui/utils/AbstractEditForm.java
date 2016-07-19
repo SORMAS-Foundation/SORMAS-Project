@@ -1,5 +1,6 @@
 package de.symeda.sormas.ui.utils;
 
+import com.vaadin.data.Validator;
 import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.data.fieldgroup.DefaultFieldGroupFieldFactory;
@@ -184,6 +185,12 @@ public abstract class AbstractEditForm <DTO extends DataTransferObject> extends 
 	protected void addFieldListener(String propertyId, ValueChangeListener ...listeners) {
 		for (ValueChangeListener listener : listeners) {
 			getFieldGroup().getField(propertyId).addValueChangeListener(listener);
+		}
+	}
+	
+	protected void addValidator(String propertyId, Validator... validators) {
+		for (Validator validator : validators) {
+			getFieldGroup().getField(propertyId).addValidator(validator);
 		}
 	}
 

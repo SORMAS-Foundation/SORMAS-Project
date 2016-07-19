@@ -8,6 +8,9 @@ import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.MethodProperty;
+import com.vaadin.data.util.filter.Or;
+import com.vaadin.data.util.filter.SimpleStringFilter;
+import com.vaadin.data.util.filter.Compare.Equal;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.renderers.HtmlRenderer;
@@ -50,6 +53,29 @@ public class UserGrid extends Grid {
     
     public void removeAllStatusFilter() {
     	getContainer().removeContainerFilters(UserDto.USER_ROLES);
+    }
+    
+    
+    public void setFilter(Boolean active) {
+    	removeAllActiveFilter();
+    	if(active!=null) {
+    		Equal activeFilter = new Equal(UserDto.ACTIVE,active);
+    		getContainer().addContainerFilter(activeFilter);
+    	}
+    }
+
+	private void removeAllActiveFilter() {
+		getContainer().removeContainerFilters(UserDto.ACTIVE);
+	}
+	
+	public void setFilter(String filterString) {
+    	getContainer().removeContainerFilters(UserDto.NAME);
+        if (filterString.length() > 0) {
+            SimpleStringFilter nameFilter = new SimpleStringFilter(UserDto.NAME, filterString, true, false);
+            getContainer().addContainerFilter(
+//            new Or(nameFilter, descFilter, statusFilter));
+            new Or(nameFilter));
+        }
     }
 
     @SuppressWarnings("unchecked")

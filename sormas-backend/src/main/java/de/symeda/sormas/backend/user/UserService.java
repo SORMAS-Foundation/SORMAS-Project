@@ -4,9 +4,11 @@ import java.util.List;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
+import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.user.UserRole;
@@ -36,5 +38,22 @@ public class UserService extends AbstractAdoService<User> {
 		}
 		cq.orderBy(cb.asc(from.get(AbstractDomainObject.ID)));
 		return em.createQuery(cq).getResultList();
+	}
+
+	public boolean isLoginUnique(String uuid, String userName) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		ParameterExpression<String> userNameParam = cb.parameter(String.class, User.USER_NAME);
+		CriteriaQuery<User> cq = cb.createQuery(getElementClass());
+		Root<User> from = cq.from(getElementClass());
+		cq.where(cb.equal(from.get(User.USER_NAME), userNameParam));
+		
+		TypedQuery<User> q = em.createQuery(cq)
+			.setParameter(userNameParam, userName);
+		
+		User entity = q.getResultList().stream()
+				.findFirst()
+				.orElse(null);
+		
+		return entity==null || (entity!=null&&entity.getUuid().equals(uuid));
 	}
 }

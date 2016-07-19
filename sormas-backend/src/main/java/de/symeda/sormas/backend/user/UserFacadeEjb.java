@@ -51,7 +51,6 @@ public class UserFacadeEjb implements UserFacade {
 		if(dto.getUserRoles().isEmpty()) {
 			user.setUserRoles(new HashSet<UserRole>(Arrays.asList(UserRole.SURVEILLANCE_OFFICER)));
 		}
-    	user.setUserName(user.getFirstName() + user.getLastName());
 		user.setPassword("");
 		user.setSeed("");
 		
@@ -96,5 +95,10 @@ public class UserFacadeEjb implements UserFacade {
 		bo.setUserRoles(dto.getUserRoles());
 
 		return bo;
+	}
+	
+	@Override
+	public boolean isLoginUnique(String uuid, String userName) {
+		return us.isLoginUnique(uuid, userName);
 	}
 }
