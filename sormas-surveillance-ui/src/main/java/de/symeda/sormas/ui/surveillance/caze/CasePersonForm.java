@@ -4,10 +4,12 @@ import java.util.Date;
 
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
+import com.vaadin.ui.Field;
 import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.CasePersonDto;
 import de.symeda.sormas.api.person.OccupationType;
@@ -177,27 +179,26 @@ public class CasePersonForm extends AbstractEditForm<CasePersonDto> {
 		}
 	}
 	
-	// TODO fix the vaadin update caption bug
 	private void updateOccupationFieldCaptions() {
-//		OccupationType type = (OccupationType) ((NativeSelect)getFieldGroup().getField(CasePersonDto.OCCUPATION_TYPE)).getValue();
-//		Field<?> od = getFieldGroup().getField(CasePersonDto.OCCUPATION_DETAILS);
-//		switch(type) {
-//			case BUSINESSMAN_WOMAN:
-//				od.setCaption(I18nProperties.getFieldCaption(getPropertyI18nPrefix()+".business."+CasePersonDto.OCCUPATION_DETAILS));
-//				break;
-//			case TRANSPORTER:
-//				od.setCaption(I18nProperties.getFieldCaption(getPropertyI18nPrefix()+".transporter."+CasePersonDto.OCCUPATION_DETAILS));
-//				break;
-//			case OTHER:
-//				od.setCaption(I18nProperties.getFieldCaption(getPropertyI18nPrefix()+".other."+CasePersonDto.OCCUPATION_DETAILS));
-//				break;
-//			case HEALTHCARE_WORKER:
-//				od.setCaption(I18nProperties.getFieldCaption(getPropertyI18nPrefix()+".healthcare."+CasePersonDto.OCCUPATION_DETAILS));
-//				break;
-//			default:
-//				od.setCaption(I18nProperties.getFieldCaption(getPropertyI18nPrefix()+"."+CasePersonDto.OCCUPATION_DETAILS));
-//				break;
-//		
-//		}
+		OccupationType type = (OccupationType) ((NativeSelect)getFieldGroup().getField(CasePersonDto.OCCUPATION_TYPE)).getValue();
+		Field<?> od = getFieldGroup().getField(CasePersonDto.OCCUPATION_DETAILS);
+		switch(type) {
+			case BUSINESSMAN_WOMAN:
+				od.setCaption(I18nProperties.getFieldCaption(getPropertyI18nPrefix()+".business."+CasePersonDto.OCCUPATION_DETAILS));
+				break;
+			case TRANSPORTER:
+				od.setCaption(I18nProperties.getFieldCaption(getPropertyI18nPrefix()+".transporter."+CasePersonDto.OCCUPATION_DETAILS));
+				break;
+			case OTHER:
+				od.setCaption(I18nProperties.getFieldCaption(getPropertyI18nPrefix()+".other."+CasePersonDto.OCCUPATION_DETAILS));
+				break;
+			case HEALTHCARE_WORKER:
+				od.setCaption(I18nProperties.getFieldCaption(getPropertyI18nPrefix()+".healthcare."+CasePersonDto.OCCUPATION_DETAILS));
+				break;
+			default:
+				od.setCaption(I18nProperties.getFieldCaption(getPropertyI18nPrefix()+"."+CasePersonDto.OCCUPATION_DETAILS));
+				break;
+		
+		}
 	}
 }
