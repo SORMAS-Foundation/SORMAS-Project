@@ -19,5 +19,7 @@ public interface UserFacade {
 
     public abstract boolean isLoginUnique(String uuid, String userName);
     
+    public abstract String resetPassword(String uuid);
+    
     
 }

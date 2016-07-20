@@ -14,6 +14,7 @@ import javax.persistence.criteria.Root;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.util.PasswordHelper;
 
 @Stateless
 @LocalBean
@@ -55,5 +56,20 @@ public class UserService extends AbstractAdoService<User> {
 				.orElse(null);
 		
 		return entity==null || (entity!=null&&entity.getUuid().equals(uuid));
+	}
+	
+	public String resetPassword(String userUuid) {
+		User user = getByUuid(userUuid);
+
+		if (user == null) {
+//			logger.warn("resetPassword() for unknown user '{}'", realmUserUuid);
+			return null;
+		}
+
+		String password = PasswordHelper.createPass(12);
+		user.setSeed(PasswordHelper.createPass(16));
+		user.setPassword(PasswordHelper.encodePassword(password, user.getSeed()));
+
+		return password;
 	}
 }

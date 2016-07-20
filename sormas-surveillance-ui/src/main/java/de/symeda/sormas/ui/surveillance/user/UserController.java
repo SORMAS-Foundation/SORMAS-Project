@@ -4,6 +4,10 @@ import java.util.List;
 
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
+import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.location.LocationDto;
@@ -14,6 +18,8 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.surveillance.SurveillanceUI;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
+import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DoneListener;
+import de.symeda.sormas.ui.utils.ConfirmationComponent;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class UserController {
@@ -145,6 +151,43 @@ public class UserController {
 		String trim2 = value2.toLowerCase().replaceAll("\\s", "");
 		sb.append(trim2.length()>4?trim2.substring(0, 4):trim2);
 		return sb.toString();
+	}
+	
+	
+	public void confirmNewPassword(String userUuid) {
+		final ConfirmationComponent newPasswortComponent = new ConfirmationComponent(false) {
+			private static final long serialVersionUID = 1L;
+			@Override
+			protected void onConfirm() {
+				makeNewPassword(userUuid);
+			}
+
+			@Override
+			protected void onCancel() {
+			}
+		};
+		newPasswortComponent.getConfirmButton().setCaption("Really update password?");
+		newPasswortComponent.getCancelButton().setCaption("Cancel");
+		Window popupWindow = VaadinUiUtil.showPopupWindow(newPasswortComponent);
+		
+		newPasswortComponent.addDoneListener(new DoneListener() {
+			public void onDone() {
+				popupWindow.close();
+			}
+		});
+		popupWindow.setCaption("Update password");
+		newPasswortComponent.setMargin(true);    	
+    }
+	
+	public void makeNewPassword(String userUuid) {
+		String newPassword = uf.resetPassword(userUuid);
+		
+		VerticalLayout layout = new VerticalLayout();
+		layout.addComponent(new Label("Please copy this password, it is shown only once."));
+		layout.addComponent(new Label("<h2>"+newPassword+"</h2>", ContentMode.HTML));
+		Window popupWindow = VaadinUiUtil.showPopupWindow(layout);
+		popupWindow.setCaption("Update password");
+		layout.setMargin(true);    	
 	}
 
 }

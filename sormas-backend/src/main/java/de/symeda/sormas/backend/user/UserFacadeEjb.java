@@ -101,4 +101,10 @@ public class UserFacadeEjb implements UserFacade {
 	public boolean isLoginUnique(String uuid, String userName) {
 		return us.isLoginUnique(uuid, userName);
 	}
+
+
+	@Override
+	public String resetPassword(String uuid) {
+		return us.resetPassword(uuid);
+	}
 }
