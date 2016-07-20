@@ -26,12 +26,12 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// name of the database file for your application -- change to something appropriate for your app
 	private static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	private static final int DATABASE_VERSION = 2;
+	private static final int DATABASE_VERSION = 3;
 
 	// the DAO object we use to access the SimpleData table
-	private Dao<Case, Integer> caseDao = null;
-	private RuntimeExceptionDao<Case, Integer> simpleCaseDao = null;
-	private RuntimeExceptionDao<Person, Integer> simplePersonDao = null;
+	private Dao<Case, Long> caseDao = null;
+	private RuntimeExceptionDao<Case, Long> simpleCaseDao = null;
+	private RuntimeExceptionDao<Person, Long> simplePersonDao = null;
 
 	public DatabaseHelper(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);//, R.raw.ormlite_config);
@@ -85,7 +85,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 * Returns the Database Access Object (DAO) for our SimpleData class. It will create it or just give the cached
 	 * value.
 	 */
-	public Dao<Case, Integer> getCaseDao() throws SQLException {
+	public Dao<Case, Long> getCaseDao() throws SQLException {
 		if (caseDao == null) {
 			caseDao = getDao(Case.class);
 		}
@@ -96,14 +96,14 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 * Returns the RuntimeExceptionDao (Database Access Object) version of a Dao for our SimpleData class. It will
 	 * create it or just give the cached value. RuntimeExceptionDao only through RuntimeExceptions.
 	 */
-	public RuntimeExceptionDao<Case, Integer> getSimpleCaseDao() {
+	public RuntimeExceptionDao<Case, Long> getSimpleCaseDao() {
 		if (simpleCaseDao == null) {
 			simpleCaseDao = getRuntimeExceptionDao(Case.class);
 		}
 		return simpleCaseDao;
 	}
 
-	public RuntimeExceptionDao<Person, Integer> getSimplePersonDao() {
+	public RuntimeExceptionDao<Person, Long> getSimplePersonDao() {
 		if (simplePersonDao == null) {
 			simplePersonDao = getRuntimeExceptionDao(Person.class);
 		}

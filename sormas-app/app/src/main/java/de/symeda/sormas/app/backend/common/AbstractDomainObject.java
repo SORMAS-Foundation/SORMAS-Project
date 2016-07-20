@@ -39,6 +39,7 @@ public abstract class AbstractDomainObject implements Serializable, Cloneable, D
 	public static final String CHANGE_DATE = "changeDate";
 
 	@Id
+	@GeneratedValue
 	private Long id;
 
 	@DatabaseField(uniqueCombo=true)

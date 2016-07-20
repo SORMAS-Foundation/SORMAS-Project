@@ -6,8 +6,12 @@ import android.os.Bundle;
 
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 import com.j256.ormlite.dao.RuntimeExceptionDao;
+import com.j256.ormlite.stmt.DeleteBuilder;
+import com.j256.ormlite.support.DatabaseConnection;
+import com.j256.ormlite.table.TableUtils;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -30,6 +34,15 @@ public class MyActivity extends OrmLiteBaseActivity<DatabaseHelper> {
         setContentView(R.layout.activity_my);
 
         try {
+            try {
+                // temp: delete old data
+                RuntimeExceptionDao<Person, Long> personDao = getHelper().getSimplePersonDao();
+                TableUtils.clearTable(personDao.getConnectionSource(), Case.class);
+                TableUtils.clearTable(personDao.getConnectionSource(), Person.class);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
             // todo asynchronous calls: Cases have to wait for Persons
             Integer syncedPersons = new SyncPersonsTask().execute().get();
             Integer syncedCases = new SyncCasesTask().execute().get();
@@ -67,11 +80,7 @@ public class MyActivity extends OrmLiteBaseActivity<DatabaseHelper> {
                 e.printStackTrace();
             }
 
-            RuntimeExceptionDao<Person, Integer> dao = getHelper().getSimplePersonDao();
-
-            // temp: delete old persons
-            List<Person> oldEntities = dao.queryForAll();
-            dao.delete(oldEntities);
+            RuntimeExceptionDao<Person, Long> dao = getHelper().getSimplePersonDao();
 
             for (PersonDto dto : result) {
                 Person person = new Person();
@@ -84,6 +93,7 @@ public class MyActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 
             if (result != null)
                 return result.size();
+
             return null;
         }
 
@@ -112,18 +122,13 @@ public class MyActivity extends OrmLiteBaseActivity<DatabaseHelper> {
             Call<List<CaseDataDto>> cazesCall = caseFacade.getAllCases();
             try {
                 result = cazesCall.execute().body();
-
             } catch (IOException e) {
                 // TODO proper exception handling/logging
                 e.printStackTrace();
             }
 
-            RuntimeExceptionDao<Case, Integer> caseDao = getHelper().getSimpleCaseDao();
-            RuntimeExceptionDao<Person, Integer> personDao = getHelper().getSimplePersonDao();
-
-            // temp: delete old cases
-            List<Case> oldEntities = caseDao.queryForAll();
-            caseDao.delete(oldEntities);
+            RuntimeExceptionDao<Case, Long> caseDao = getHelper().getSimpleCaseDao();
+            RuntimeExceptionDao<Person, Long> personDao = getHelper().getSimplePersonDao();
 
             for (CaseDataDto dto : result) {
                 Case caze = new Case();
