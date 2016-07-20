@@ -12,10 +12,10 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.CaseStatus;
-import de.symeda.sormas.api.person.PersonDto;
 
 /**
- * @see https://jersey.java.net/documentation/latest/
+ * @see <a href="https://jersey.java.net/documentation/latest/">Jersey documentation</a>
+ * @see <a href="https://jersey.java.net/documentation/latest/jaxrs-resources.html#d0e2051">Jersey documentation HTTP Methods</a>
  *
  */
 @Path("/cases")
@@ -33,10 +33,11 @@ public class CaseResource implements CaseFacade {
 		return caze;
 	}
 
+	@GET
+	@Path("/all")
 	@Override
 	public List<CaseDataDto> getAllCases() {
-		// TODO Auto-generated method stub
-		return null;
+		return FacadeProvider.getCaseFacade().getAllCases();
 	}
 
 	@Override

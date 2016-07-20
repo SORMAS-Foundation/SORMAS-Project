@@ -32,7 +32,11 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:23.3.0'
-    compile 'de.symeda.sormas:sormas-api:0.0.1-SNAPSHOT'
     compile 'com.squareup.retrofit2:retrofit:2.0.2'
     compile 'com.squareup.retrofit2:converter-gson:2.0.2'
+    compile 'com.j256.ormlite:ormlite-core:4.48'
+    compile 'com.j256.ormlite:ormlite-android:4.48'
+    compile group: 'javax.persistence', name: 'persistence-api', version: '1.0.2'
+
+    compile 'de.symeda.sormas:sormas-api:0.0.1-SNAPSHOT'
 }
