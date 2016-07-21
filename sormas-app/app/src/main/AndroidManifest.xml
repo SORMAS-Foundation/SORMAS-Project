@@ -11,7 +11,7 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="de.symeda.sormas.app.MyActivity">
+        <activity android:name="de.symeda.sormas.app.SurveillanceActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
