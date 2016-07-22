@@ -14,7 +14,9 @@ import com.j256.ormlite.table.TableUtils;
 
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.backend.person.PersonDao;
 
 /**
  * Database helper class used to manage the creation and upgrading of your database. This class also usually provides
@@ -26,14 +28,21 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// name of the database file for your application -- change to something appropriate for your app
 	private static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	private static final int DATABASE_VERSION = 3;
+	private static final int DATABASE_VERSION = 6;
 
-	// the DAO object we use to access the SimpleData table
-	private Dao<Case, Long> caseDao = null;
-	private RuntimeExceptionDao<Case, Long> simpleCaseDao = null;
-	private RuntimeExceptionDao<Person, Long> simplePersonDao = null;
+	public static DatabaseHelper instance = null;
 
-	public DatabaseHelper(Context context) {
+	public static void init(Context context) {
+		if (instance != null) {
+			logger.error("DatabaseHelper has already been initalized");
+		}
+		instance = new DatabaseHelper(context);
+	}
+
+	private PersonDao personDao = null;
+	private CaseDao caseDao = null;
+
+	private DatabaseHelper(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);//, R.raw.ormlite_config);
 	}
 
@@ -51,16 +60,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			Log.e(DatabaseHelper.class.getName(), "Can't create database", e);
 			throw new RuntimeException(e);
 		}
-//
-//		// here we try inserting data in the on-create as a test
-//		RuntimeExceptionDao<Case, Integer> dao = getSimpleDataDao();
-//		long millis = System.currentTimeMillis();
-//		// create some entries in the onCreate
-//		SimpleData simple = new SimpleData(millis);
-//		dao.create(simple);
-//		simple = new SimpleData(millis + 1);
-//		dao.create(simple);
-//		Log.i(DatabaseHelper.class.getName(), "created new entries in onCreate: " + millis);
 	}
 
 	/**
@@ -81,33 +80,28 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		}
 	}
 
-	/**
-	 * Returns the Database Access Object (DAO) for our SimpleData class. It will create it or just give the cached
-	 * value.
-	 */
-	public Dao<Case, Long> getCaseDao() throws SQLException {
-		if (caseDao == null) {
-			caseDao = getDao(Case.class);
+	public static CaseDao getCaseDao() {
+		if (instance.caseDao == null) {
+			try {
+				instance.caseDao = new CaseDao((Dao<Case, Long>) instance.getDao(Case.class));
+			} catch (SQLException e) {
+				Log.e(DatabaseHelper.class.getName(), "Can't create CaseDao", e);
+				throw new RuntimeException(e);
+			}
 		}
-		return caseDao;
+		return instance.caseDao;
 	}
 
-	/**
-	 * Returns the RuntimeExceptionDao (Database Access Object) version of a Dao for our SimpleData class. It will
-	 * create it or just give the cached value. RuntimeExceptionDao only through RuntimeExceptions.
-	 */
-	public RuntimeExceptionDao<Case, Long> getSimpleCaseDao() {
-		if (simpleCaseDao == null) {
-			simpleCaseDao = getRuntimeExceptionDao(Case.class);
+	public static PersonDao getPersonDao() {
+		if (instance.personDao == null) {
+			try {
+				instance.personDao = new PersonDao((Dao<Person, Long>) instance.getDao(Person.class));
+			} catch (SQLException e) {
+				Log.e(DatabaseHelper.class.getName(), "Can't create PersonDao", e);
+				throw new RuntimeException(e);
+			}
 		}
-		return simpleCaseDao;
-	}
-
-	public RuntimeExceptionDao<Person, Long> getSimplePersonDao() {
-		if (simplePersonDao == null) {
-			simplePersonDao = getRuntimeExceptionDao(Person.class);
-		}
-		return simplePersonDao;
+		return instance.personDao;
 	}
 
 	/**
@@ -117,7 +111,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public void close() {
 		super.close();
 		caseDao = null;
-		simpleCaseDao = null;
-		simplePersonDao = null;
+		personDao = null;
 	}
 }

@@ -11,8 +11,9 @@ public final class DtoHelper {
 			return null;
 		}
 		ReferenceDto dto = new ReferenceDto();
-		dto.setUuid(entity.getUuid());
+		dto.setCreationDate(entity.getCreationDate());
 		dto.setChangeDate(entity.getChangeDate());
+		dto.setUuid(entity.getUuid());
 		dto.setCaption(entity.toString());
 		return dto;
 	}

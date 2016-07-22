@@ -18,7 +18,9 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasAppView;
 import de.symeda.sormas.app.SurveillanceActivity;
 import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.person.SyncPersonsTask;
 
 /**
@@ -35,14 +37,14 @@ public class CasesView extends SormasAppView<SurveillanceActivity> {
 
     @Override
     protected void init() {
-        try {
-            // temp: delete old data
-            RuntimeExceptionDao<Person, Long> personDao = getContext().getHelper().getSimplePersonDao();
-            TableUtils.clearTable(personDao.getConnectionSource(), Case.class);
-            TableUtils.clearTable(personDao.getConnectionSource(), Person.class);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            // temp: delete old data
+//            PersonDao personDao = DatabaseHelper.getPersonDao();
+//            TableUtils.clearTable(personDao.getConnectionSource(), Case.class);
+//            TableUtils.clearTable(personDao.getConnectionSource(), Person.class);
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
     }
 
     @Override
@@ -56,8 +58,8 @@ public class CasesView extends SormasAppView<SurveillanceActivity> {
 
         try {
             // todo asynchronous calls: Cases have to wait for Persons
-            Integer syncedPersons = new SyncPersonsTask(getContext()).execute().get();
-            List<CaseDataDto> syncedCases = new SyncCasesTask(getContext()).execute().get();
+            Integer syncedPersons = new SyncPersonsTask().execute().get();
+            List<CaseDataDto> syncedCases = new SyncCasesTask().execute().get();
             populateListView(syncedCases);
 
         } catch (InterruptedException e) {

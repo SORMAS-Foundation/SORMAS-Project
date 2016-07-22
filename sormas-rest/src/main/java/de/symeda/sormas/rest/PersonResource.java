@@ -1,5 +1,6 @@
 package de.symeda.sormas.rest;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.ws.rs.GET;
@@ -30,9 +31,11 @@ public class PersonResource {
 		return dto;
 	}
 
-	@GET
-	@Path("/all")
-	public List<PersonDto> getAllPersons() {
+	@GET @Path("/all/{since}")
+	public List<PersonDto> getAllPersons(@PathParam("since") Long since) {
+		if (since != null) {
+			return FacadeProvider.getPersonFacade().getAllPersonsAfter(new Date(since));
+		}
 		return FacadeProvider.getPersonFacade().getAllPersons();
 	}
 }

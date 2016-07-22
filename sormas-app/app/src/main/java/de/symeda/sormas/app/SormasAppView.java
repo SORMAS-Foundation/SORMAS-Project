@@ -1,5 +1,6 @@
 package de.symeda.sormas.app;
 
+import android.app.Activity;
 import android.widget.TextView;
 
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
@@ -7,7 +8,7 @@ import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 /**
  * Created by Stefan Szczesny on 21.07.2016.
  */
-public abstract class SormasAppView<A extends OrmLiteBaseActivity> {
+public abstract class SormasAppView<A extends Activity> {
 
     private A context;
 

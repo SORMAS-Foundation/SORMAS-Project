@@ -65,6 +65,7 @@ public class LocationFacadeEjb implements LocationFacade {
 			dto.setUuid(DataHelper.createUuid());
 		}
 		else {		
+			dto.setCreationDate(location.getCreationDate());
 			dto.setChangeDate(location.getChangeDate());
 			dto.setUuid(location.getUuid());
 			

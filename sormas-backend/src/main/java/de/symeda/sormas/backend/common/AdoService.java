@@ -5,8 +5,6 @@ import java.util.List;
 import javax.persistence.EntityExistsException;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.backend.common.AbstractDomainObject;
-
 public interface AdoService<ADO extends AbstractDomainObject> {
 
 	List<ADO> getAll();

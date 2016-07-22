@@ -10,12 +10,15 @@ import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 import com.j256.ormlite.dao.RuntimeExceptionDao;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.rest.CaseFacadeRetro;
 import retrofit2.Call;
 import retrofit2.Retrofit;
@@ -26,26 +29,24 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 public class SyncCasesTask extends AsyncTask<Void, Void, List<CaseDataDto>> {
 
-    private OrmLiteBaseActivity context;
-
-    public SyncCasesTask(OrmLiteBaseActivity context) {
-        this.context = context;
-    }
-
     @Override
     protected List<CaseDataDto> doInBackground(Void... params) {
+
+        List<CaseDataDto> result = null;
+
+        CaseDao caseDao = DatabaseHelper.getCaseDao();
+        Date maxModifiedDate = caseDao.getLatestChangeDate();
 
         // 10.0.2.2 points to localhost from emulator
         // SSL not working because of missing certificate
         Retrofit retrofit = new Retrofit.Builder()
+                //.baseUrl("http://wahnschaffe.symeda:8080/sormas-rest/")
                 .baseUrl("http://10.0.2.2:8080/sormas-rest/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
-        List<CaseDataDto> result = null;
-
         CaseFacadeRetro caseFacade = retrofit.create(CaseFacadeRetro.class);
-        Call<List<CaseDataDto>> cazesCall = caseFacade.getAllCases();
+        Call<List<CaseDataDto>> cazesCall = caseFacade.getAllCases(maxModifiedDate != null ? maxModifiedDate.getTime() : 0);
         try {
             result = cazesCall.execute().body();
         } catch (IOException e) {
@@ -53,24 +54,31 @@ public class SyncCasesTask extends AsyncTask<Void, Void, List<CaseDataDto>> {
             e.printStackTrace();
         }
 
-        RuntimeExceptionDao<Case, Long> caseDao = ((DatabaseHelper)context.getHelper()).getSimpleCaseDao();
-        RuntimeExceptionDao<Person, Long> personDao = ((DatabaseHelper)context.getHelper()).getSimplePersonDao();
+        if (result != null) {
+            PersonDao personDao = DatabaseHelper.getPersonDao();
 
-        for (CaseDataDto dto : result) {
-            Case caze = new Case();
-            caze.setUuid(dto.getUuid());
+            for (CaseDataDto dto : result) {
 
-            List<Person> matchingPersons = personDao.queryForEq(Person.UUID, dto.getPerson().getUuid());
-            caze.setPerson(matchingPersons.get(0));
+                Case caze = caseDao.queryUuid(dto.getUuid());
+                if (caze == null) {
+                    caze = new Case();
+                    caze.setCreationDate(dto.getCreationDate());
+                    caze.setUuid(dto.getUuid());
 
-            caze.setDisease(dto.getDisease());
-            caze.setCaseStatus(dto.getCaseStatus());
+                    Person person = personDao.queryUuid(dto.getPerson().getUuid());
+                    caze.setPerson(person);
+                }
 
-            caseDao.createOrUpdate(caze);
-        }
+                caze.setChangeDate(dto.getChangeDate());
 
-        if (result != null)
+                caze.setDisease(dto.getDisease());
+                caze.setCaseStatus(dto.getCaseStatus());
+
+                caseDao.createOrUpdate(caze);
+            }
+
             return result;
+        }
         return null;
     }
 

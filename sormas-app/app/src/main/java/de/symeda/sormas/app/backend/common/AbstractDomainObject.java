@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.backend.common;
 
+import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 
 import java.io.Serializable;
@@ -13,6 +14,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.SequenceGenerator;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.persistence.Version;
 
@@ -45,15 +48,13 @@ public abstract class AbstractDomainObject implements Serializable, Cloneable, D
 	@DatabaseField(uniqueCombo=true)
 	private boolean modified;
 
-	//@Column(nullable = false, length = 29)
 	@DatabaseField(uniqueCombo=true, canBeNull = false, width = 29)
 	private String uuid;
 
-	@Column(nullable = false)
+	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = false)
 	private Date creationDate;
 
-	@Version
-	@Column(nullable = false)
+	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = false, version = true)
 	private Date changeDate;
 
 	@Override
@@ -83,9 +84,6 @@ public abstract class AbstractDomainObject implements Serializable, Cloneable, D
 
 	@Override
 	public String getUuid() {
-		if (uuid == null) {
-			uuid = DataHelper.createUuid();
-		}
 		return uuid;
 	}
 	
@@ -94,9 +92,6 @@ public abstract class AbstractDomainObject implements Serializable, Cloneable, D
 	}
 
 	public Date getCreationDate() {
-		if (creationDate == null) {
-			creationDate = new Timestamp(System.currentTimeMillis());//Timestamp.from(Instant.now());
-		}
 		return creationDate;
 	}
 
@@ -113,7 +108,7 @@ public abstract class AbstractDomainObject implements Serializable, Cloneable, D
 		return changeDate;
 	}
 
-	public void setChangeDate(Timestamp changeDate) {
+	public void setChangeDate(Date changeDate) {
 		this.changeDate = changeDate;
 	}
 

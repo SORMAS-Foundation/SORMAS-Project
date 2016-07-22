@@ -1,5 +1,6 @@
 package de.symeda.sormas.rest;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.ws.rs.GET;
@@ -10,8 +11,6 @@ import javax.ws.rs.core.MediaType;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.caze.CaseFacade;
-import de.symeda.sormas.api.caze.CaseStatus;
 
 /**
  * @see <a href="https://jersey.java.net/documentation/latest/">Jersey documentation</a>
@@ -22,11 +21,10 @@ import de.symeda.sormas.api.caze.CaseStatus;
 @Produces({
 	MediaType.APPLICATION_JSON + "; charset=UTF-8"
 	})
-public class CaseResource implements CaseFacade {
+public class CaseResource {
 
 	@GET
 	@Path("/{uuid}")
-	@Override
 	public CaseDataDto getCaseDataByUuid(@PathParam("uuid") String uuid) {
 		
 		CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(uuid);
@@ -34,28 +32,11 @@ public class CaseResource implements CaseFacade {
 	}
 
 	@GET
-	@Path("/all")
-	@Override
-	public List<CaseDataDto> getAllCases() {
+	@Path("/all/{since}")
+	public List<CaseDataDto> getAllCases(@PathParam("since") Long since) {
+		if (since != null) {
+			return FacadeProvider.getCaseFacade().getAllCasesAfter(new Date(since));
+		}
 		return FacadeProvider.getCaseFacade().getAllCases();
 	}
-
-	@Override
-	public CaseDataDto saveCase(CaseDataDto dto) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public CaseDataDto createCase(String personUuid, CaseDataDto caseDto) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public CaseDataDto changeCaseStatus(String uuid, CaseStatus targetStatus) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 }

@@ -7,10 +7,21 @@ public abstract class DataTransferObject implements Serializable {
 
 	private static final long serialVersionUID = -1L;
 
+	public static final String CREATION_DATE = "creationDate";
+	public static final String CHANGE_DATE = "changeDate";
 	public static final String UUID = "uuid";
 
+	private Timestamp creationDate;
 	private Timestamp changeDate;
 	private String uuid;
+
+	public Timestamp getCreationDate() {
+		return creationDate;
+	}
+
+	public void setCreationDate(Timestamp creationDate) {
+		this.creationDate = creationDate;
+	}
 
 	public Timestamp getChangeDate() {
 		return changeDate;

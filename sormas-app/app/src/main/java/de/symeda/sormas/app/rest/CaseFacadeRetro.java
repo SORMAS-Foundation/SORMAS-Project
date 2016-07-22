@@ -1,5 +1,7 @@
 package de.symeda.sormas.app.rest;
 
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -15,7 +17,7 @@ public interface CaseFacadeRetro {
     @GET("cases/{uuid}")
     Call<CaseDataDto> getByUuid(@Path("uuid") String uuid);
 
-    @GET("cases/all")
-    Call<List<CaseDataDto>> getAllCases();
+    @GET("cases/all/{since}")
+    Call<List<CaseDataDto>> getAllCases(@Path("since") long since);
 
 }

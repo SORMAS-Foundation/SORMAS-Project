@@ -1,6 +1,7 @@
 package de.symeda.sormas.app;
 
 
+import android.app.Activity;
 import android.os.Bundle;
 
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
@@ -10,7 +11,7 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.caze.CaseEditView;
 import de.symeda.sormas.app.caze.CasesView;
 
-public class SurveillanceActivity extends OrmLiteBaseActivity<DatabaseHelper> {
+public class SurveillanceActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

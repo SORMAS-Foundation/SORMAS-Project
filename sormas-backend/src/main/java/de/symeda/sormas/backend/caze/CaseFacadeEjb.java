@@ -41,6 +41,13 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
+	public List<CaseDataDto> getAllCasesAfter(Date date) {
+		return caseService.getAllAfter(date).stream()
+			.map(c -> toCaseDataDto(c))
+			.collect(Collectors.toList());
+	}
+
+	@Override
 	public CaseDataDto getCaseDataByUuid(String uuid) {
 		return toCaseDataDto(caseService.getByUuid(uuid));
 	}
@@ -148,6 +155,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			return null;
 		}
 		CaseDataDto dto = new CaseDataDto();
+		dto.setCreationDate(caze.getChangeDate());
 		dto.setChangeDate(caze.getChangeDate());
 		dto.setUuid(caze.getUuid());
 		dto.setDisease(caze.getDisease());

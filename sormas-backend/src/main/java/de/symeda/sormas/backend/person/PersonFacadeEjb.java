@@ -1,5 +1,6 @@
 package de.symeda.sormas.backend.person;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -13,10 +14,10 @@ import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.CasePersonDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
-import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.facility.FacilityService;
+import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.util.DtoHelper;
 
 @Stateless(name = "PersonFacade")
@@ -33,6 +34,13 @@ public class PersonFacadeEjb implements PersonFacade {
 	public List<PersonDto> getAllPersons() {
 
 		return personService.getAll().stream()
+			.map(c -> toDto(c))
+			.collect(Collectors.toList());
+	}
+	
+	@Override
+	public List<PersonDto> getAllPersonsAfter(Date date) {
+		return personService.getAllAfter(date).stream()
 			.map(c -> toDto(c))
 			.collect(Collectors.toList());
 	}
@@ -118,6 +126,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	
 	public static PersonDto toDto(Person person) {
 		PersonDto dto = new PersonDto();
+		dto.setCreationDate(person.getCreationDate());
 		dto.setChangeDate(person.getChangeDate());
 		dto.setUuid(person.getUuid());
 		dto.setFirstName(person.getFirstName());
@@ -130,6 +139,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	
 	public static CasePersonDto toCasePersonDto(Person person) {
 		CasePersonDto dto = new CasePersonDto();
+		dto.setCreationDate(person.getCreationDate());
 		dto.setChangeDate(person.getChangeDate());
 		dto.setUuid(person.getUuid());
 		

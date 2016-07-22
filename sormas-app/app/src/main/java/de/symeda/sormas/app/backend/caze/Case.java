@@ -20,11 +20,13 @@ import de.symeda.sormas.api.caze.CaseStatus;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.person.Person;
 
-@Entity(name="cases")
-@DatabaseTable(tableName = "cases")
+@Entity(name=Case.TABLE_NAME)
+@DatabaseTable(tableName = Case.TABLE_NAME)
 public class Case extends AbstractDomainObject {
 	
 	private static final long serialVersionUID = -2697795184663562129L;
+
+	public static final String TABLE_NAME = "cases";
 
 	public static final String PERSON = "person";
 

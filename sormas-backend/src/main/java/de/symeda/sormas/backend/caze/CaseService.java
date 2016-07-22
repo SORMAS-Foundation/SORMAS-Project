@@ -20,4 +20,5 @@ public class CaseService extends AbstractAdoService<Case> {
 		caze.setPerson(person);
 		return caze;
 	}
+
 }
