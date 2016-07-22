@@ -1,6 +1,5 @@
 package de.symeda.sormas.app.caze;
 
-import android.app.Activity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -15,8 +14,8 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.app.SormasAppView;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.SormasAppView;
 import de.symeda.sormas.app.SurveillanceActivity;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.person.Person;
@@ -27,16 +26,15 @@ import de.symeda.sormas.app.person.SyncPersonsTask;
  */
 public class CasesView extends SormasAppView<SurveillanceActivity> {
 
-    public CasesView(SurveillanceActivity context, int viewId) {
-        super(context, viewId);
+    public static final int VIEW_ID = R.layout.cases_view;
+    public static final String VIEW_LABEL = "Cases";
+
+    public CasesView(SurveillanceActivity context) {
+        super(context);
     }
 
     @Override
     protected void init() {
-        getContext().setContentView(getViewId());
-        TextView t = (TextView) getContext().findViewById(R.id.view_header_label);
-        t.setText("Cases");
-
         try {
             // temp: delete old data
             RuntimeExceptionDao<Person, Long> personDao = getContext().getHelper().getSimplePersonDao();
@@ -48,13 +46,20 @@ public class CasesView extends SormasAppView<SurveillanceActivity> {
     }
 
     @Override
+    protected String getViewName() {
+        return "Cases";
+    }
+
+    @Override
     protected void show() {
+        super.show();
+
         try {
             // todo asynchronous calls: Cases have to wait for Persons
             Integer syncedPersons = new SyncPersonsTask(getContext()).execute().get();
             List<CaseDataDto> syncedCases = new SyncCasesTask(getContext()).execute().get();
             populateListView(syncedCases);
-            //new AlertDialog.Builder(this).setTitle("synced: " + syncedCases.size()).show();
+
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
@@ -80,8 +85,9 @@ public class CasesView extends SormasAppView<SurveillanceActivity> {
                     AdapterView<?> parent,
                     View viewClicked,
                     int position, long id) {
-                String message = "You clicked # " + position + ", which is: " + cases.get(position).getPerson().toString();
-                Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
+                //String message = "You clicked # " + position + ", which is: " + cases.get(position).getPerson().toString();
+                //Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
+                getContext().showCaseEditView(cases.get(position));
             }
         });
     }

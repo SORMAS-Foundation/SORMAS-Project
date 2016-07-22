@@ -1,7 +1,6 @@
 package de.symeda.sormas.app;
 
-import android.app.Activity;
-import android.content.Context;
+import android.widget.TextView;
 
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 
@@ -10,26 +9,23 @@ import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
  */
 public abstract class SormasAppView<A extends OrmLiteBaseActivity> {
 
-    private int viewId;
     private A context;
 
-    public SormasAppView(A context, int viewId) {
+    public SormasAppView(A context) {
         this.context = context;
-        this.viewId = viewId;
         init();
-        show();
     }
 
     protected abstract void init();
-    protected abstract void show();
+
+    protected abstract String getViewName();
+
+    protected void show() {
+        TextView t = (TextView) getContext().findViewById(R.id.view_header_label);
+        t.setText(getViewName());
+    }
 
     public A getContext() {
         return this.context;
     }
-
-    public int getViewId() {
-        return this.viewId;
-    }
-
-
 }
