@@ -31,7 +31,8 @@
 
     </LinearLayout>
 
-    <TabHost
+    <!--<android.support.v4.app.FragmentTabHost
+
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/tab_host">
@@ -72,5 +73,5 @@
                     android:orientation="vertical"></LinearLayout>
             </FrameLayout>
         </LinearLayout>
-    </TabHost>
+    </android.support.v4.app.FragmentTabHost>-->
 </LinearLayout>

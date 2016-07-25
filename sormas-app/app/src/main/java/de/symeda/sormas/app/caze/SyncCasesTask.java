@@ -41,7 +41,8 @@ public class SyncCasesTask extends AsyncTask<Void, Void, List<CaseDataDto>> {
         // SSL not working because of missing certificate
         Retrofit retrofit = new Retrofit.Builder()
                 //.baseUrl("http://wahnschaffe.symeda:8080/sormas-rest/")
-                .baseUrl("http://10.0.2.2:8080/sormas-rest/")
+                .baseUrl("http://szczesny.symeda:8080/sormas-rest/")
+                //.baseUrl("http://10.0.2.2:8080/sormas-rest/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
