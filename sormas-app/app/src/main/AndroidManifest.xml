@@ -19,7 +19,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".caze.CaseEditActivity" />
+        <activity
+            android:name=".caze.CaseEditActivity"
+            android:parentActivityName=".SurveillanceActivity" >
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".SurveillanceActivity" />
+        </activity>
         <activity android:name=".caze.CaseDataActivity" />
     </application>
 

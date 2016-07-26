@@ -17,20 +17,6 @@
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
 
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/view_header_label"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp"
-        android:background="#33b5e5"
-        android:shadowColor="@android:color/darker_gray"
-        android:textColor="@android:color/primary_text_dark"
-        android:textStyle="bold"
-        android:textSize="@dimen/abc_action_bar_content_inset_material"
-        android:layout_alignLeft="@+id/cases_list_view"
-        android:layout_alignStart="@+id/cases_list_view"
-        android:paddingLeft="10dp" />
 
     <ListView
         android:layout_width="wrap_content"
@@ -38,5 +24,5 @@
         android:id="@+id/cases_list_view"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/view_header_label" />
+        android:layout_below="@+id/my_toolbar" />
 </RelativeLayout>
