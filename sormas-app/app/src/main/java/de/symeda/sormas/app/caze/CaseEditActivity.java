@@ -10,10 +10,14 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SurveillanceActivity;
+import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.caze.CaseDao;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 
 /**
  * Created by Stefan Szczesny on 21.07.2016.
@@ -70,6 +74,18 @@ public class CaseEditActivity extends AppCompatActivity {
         tabHost.addTab(tab2);*/
 
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+
+        CaseDao caseDao = DatabaseHelper.getCaseDao();
+        String caseUuid = getIntent().getExtras().getString(Case.UUID);
+        Case caze = caseDao.queryUuid(caseUuid);
+        Toast toast = Toast.makeText(this, caze.getPerson().toString(), Toast.LENGTH_LONG);
+        toast.show();
     }
 
     @Override

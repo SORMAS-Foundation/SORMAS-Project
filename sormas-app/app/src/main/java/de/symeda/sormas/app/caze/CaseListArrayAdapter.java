@@ -42,8 +42,6 @@ public class CaseListArrayAdapter extends ArrayAdapter<Case> {
             convertView = inflater.inflate(this.resource, parent, false);
         }
 
-        PersonDao pdao = DatabaseHelper.getPersonDao();
-
         TextView head1 = (TextView) convertView.findViewById(R.id.cli_head1);
         Case caze = values.get(position);
 

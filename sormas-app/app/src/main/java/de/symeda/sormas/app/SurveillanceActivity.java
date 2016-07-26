@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -58,12 +59,12 @@ public class SurveillanceActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_reload) {
             refreshLocalDB();
             refreshCaseList();
             return true;
         }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -77,6 +78,8 @@ public class SurveillanceActivity extends AppCompatActivity {
             // todo asynchronous calls: Cases have to wait for Persons
             Integer syncedPersons = new SyncPersonsTask().execute().get();
             List<CaseDataDto> syncedCases = new SyncCasesTask().execute().get();
+            Toast toast = Toast.makeText(this, "refreshed local db", Toast.LENGTH_SHORT);
+            toast.show();
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
@@ -86,6 +89,7 @@ public class SurveillanceActivity extends AppCompatActivity {
 
     public void showCaseEditView(Case caze) {
         Intent intent = new Intent(this, CaseEditActivity.class);
+        intent.putExtra(Case.UUID, caze.getUuid());
         startActivity(intent);
     }
 
