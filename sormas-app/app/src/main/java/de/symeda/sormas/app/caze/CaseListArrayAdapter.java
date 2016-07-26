@@ -1,6 +1,7 @@
 package de.symeda.sormas.app.caze;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,19 +10,24 @@ import android.widget.TextView;
 
 import java.util.List;
 
-import de.symeda.sormas.api.ReferenceDto;
-import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.backend.person.PersonDao;
 
 /**
  * Created by Stefan Szczesny on 21.07.2016.
  */
-public class CaseListArrayAdapter extends ArrayAdapter<CaseDataDto> {
+public class CaseListArrayAdapter extends ArrayAdapter<Case> {
+
+    private static final String TAG = CaseListArrayAdapter.class.getSimpleName();
+
     private final Context context;
     private int resource;
-    private final List<CaseDataDto> values;
+    private final List<Case> values;
 
-    public CaseListArrayAdapter(Context context, int resource, List<CaseDataDto> values) {
+    public CaseListArrayAdapter(Context context, int resource, List<Case> values) {
         super(context, resource, values);
         this.context = context;
         this.resource = resource;
@@ -36,9 +42,15 @@ public class CaseListArrayAdapter extends ArrayAdapter<CaseDataDto> {
             convertView = inflater.inflate(this.resource, parent, false);
         }
 
+        PersonDao pdao = DatabaseHelper.getPersonDao();
+
         TextView head1 = (TextView) convertView.findViewById(R.id.cli_head1);
-        CaseDataDto caze = values.get(position);
-        ReferenceDto person = caze.getPerson();
+        Case caze = values.get(position);
+
+        Log.v(TAG, "caze=" + caze);
+        Log.v(TAG, "person=" + caze.getPerson().getUuid());
+
+        Person person = caze.getPerson();
         head1.setText(person.toString());
 
         TextView sub1 = (TextView) convertView.findViewById(R.id.cli_sub1);

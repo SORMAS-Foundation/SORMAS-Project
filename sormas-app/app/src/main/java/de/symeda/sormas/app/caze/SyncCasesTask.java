@@ -5,6 +5,7 @@ package de.symeda.sormas.app.caze;
  */
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 import com.j256.ormlite.dao.RuntimeExceptionDao;
@@ -29,6 +30,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 public class SyncCasesTask extends AsyncTask<Void, Void, List<CaseDataDto>> {
 
+    private static final String TAG = SyncCasesTask.class.getSimpleName();
+
     @Override
     protected List<CaseDataDto> doInBackground(Void... params) {
 
@@ -36,6 +39,9 @@ public class SyncCasesTask extends AsyncTask<Void, Void, List<CaseDataDto>> {
 
         CaseDao caseDao = DatabaseHelper.getCaseDao();
         Date maxModifiedDate = caseDao.getLatestChangeDate();
+
+        Log.v(TAG, "maxModifiedDate=" + maxModifiedDate);
+        Log.v(TAG, "maxModifiedDate=" + maxModifiedDate.getTime());
 
         // 10.0.2.2 points to localhost from emulator
         // SSL not working because of missing certificate
@@ -54,6 +60,8 @@ public class SyncCasesTask extends AsyncTask<Void, Void, List<CaseDataDto>> {
             // TODO proper exception handling/logging
             e.printStackTrace();
         }
+
+        Log.v(TAG, "cases=" + result);
 
         if (result != null) {
             PersonDao personDao = DatabaseHelper.getPersonDao();

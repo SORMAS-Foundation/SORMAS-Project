@@ -15,6 +15,9 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.caze.CaseDao;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.caze.CaseEditActivity;
 import de.symeda.sormas.app.caze.CaseListArrayAdapter;
 import de.symeda.sormas.app.caze.SyncCasesTask;
@@ -27,21 +30,29 @@ public class SurveillanceActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.cases_view);
 
-        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
-        setSupportActionBar(myToolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        if (toolbar != null) {
+            setSupportActionBar(toolbar);
+        }
 
 
         try {
             // todo asynchronous calls: Cases have to wait for Persons
             Integer syncedPersons = new SyncPersonsTask().execute().get();
             List<CaseDataDto> syncedCases = new SyncCasesTask().execute().get();
-            populateListView(syncedCases);
-
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        CaseDao caseDao = DatabaseHelper.getCaseDao();
+        populateListView(caseDao.queryForAll());
     }
 
     @Override
@@ -51,7 +62,7 @@ public class SurveillanceActivity extends AppCompatActivity {
         return true;
     }
 
-    public void showCaseEditView(CaseDataDto dto) {
+    public void showCaseEditView(Case caze) {
         Intent intent = new Intent(this, CaseEditActivity.class);
         startActivity(intent);
     }
@@ -61,7 +72,7 @@ public class SurveillanceActivity extends AppCompatActivity {
      * Create a list of cases and bind a itemClickListener
      * @param cases
      */
-    private void populateListView(final List<CaseDataDto> cases) {
+    private void populateListView(final List<Case> cases) {
         CaseListArrayAdapter adapter = new CaseListArrayAdapter(
                 this,                       // Context for the activity.
                 R.layout.case_list_item,    // Layout to use (create)

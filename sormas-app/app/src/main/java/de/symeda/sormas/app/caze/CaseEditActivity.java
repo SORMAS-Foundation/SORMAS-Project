@@ -1,8 +1,11 @@
 package de.symeda.sormas.app.caze;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.widget.Button;
 
@@ -13,7 +16,7 @@ import de.symeda.sormas.app.SurveillanceActivity;
 /**
  * Created by Stefan Szczesny on 21.07.2016.
  */
-public class CaseEditActivity extends Activity {
+public class CaseEditActivity extends AppCompatActivity {
 
     //private FragmentTabHost mTabHost;
 
@@ -23,12 +26,18 @@ public class CaseEditActivity extends Activity {
 
         setContentView(R.layout.case_edit_layout);
 
+        Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        if (toolbar != null) {
+            setSupportActionBar(toolbar);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
 
-        final Button button = (Button) findViewById(R.id.button_back);
+
+        /*final Button button = (Button) findViewById(R.id.button_back);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 showCasesView();            }
-        });
+        });*/
 
 
         /*TabHost tabHost = (TabHost) findViewById(R.id.tab_host);
@@ -58,6 +67,13 @@ public class CaseEditActivity extends Activity {
         tabHost.addTab(tab2);*/
 
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.edit_caze_action_bar, menu);
+        return true;
     }
 
     public void setData(CaseDataDto dto) {
