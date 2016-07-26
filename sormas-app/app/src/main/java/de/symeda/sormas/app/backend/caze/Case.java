@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.backend.caze;
 
+import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 import java.util.Date;
@@ -30,8 +31,7 @@ public class Case extends AbstractDomainObject {
 
 	public static final String PERSON = "person";
 
-	@OneToOne(cascade = CascadeType.ALL)
-	@JoinColumn(nullable=false)
+	@DatabaseField(foreign = true, foreignAutoRefresh=true, canBeNull = false)
 	private Person person;
 
 	@Column(length=512)
