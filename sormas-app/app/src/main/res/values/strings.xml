@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Sormas App</string>
-    <string name="action_favorite">Favorite</string>
+    <string name="action_reload">Refresh</string>
     <string name="action_settings">Settings</string>
     <string name="action_save">Save</string>
 </resources>
