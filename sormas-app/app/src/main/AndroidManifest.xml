@@ -27,7 +27,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".SurveillanceActivity" />
         </activity>
-        <activity android:name=".caze.CaseDataActivity" />
     </application>
 
 </manifest>

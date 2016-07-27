@@ -15,47 +15,18 @@
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
 
-    <!--<android.support.v4.app.FragmentTabHost
-
+    <de.symeda.sormas.app.util.SlidingTabLayout
+        android:id="@+id/tabs"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/tab_host">
+        android:elevation="2dp"
+        android:background="@color/colorPrimary"/>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+    <android.support.v4.view.ViewPager
+        android:id="@+id/pager"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:layout_weight="1" >
+    </android.support.v4.view.ViewPager>
 
-            <TabWidget
-                android:id="@android:id/tabs"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="#33b5e5"></TabWidget>
-
-            <FrameLayout
-                android:id="@android:id/tabcontent"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <LinearLayout
-                    android:id="@+id/linearLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:longClickable="true"></LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/linearLayout2"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"></LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/linearLayout3"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"></LinearLayout>
-            </FrameLayout>
-        </LinearLayout>
-    </android.support.v4.app.FragmentTabHost>-->
 </LinearLayout>

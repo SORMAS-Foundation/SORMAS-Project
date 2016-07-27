@@ -2,6 +2,7 @@
 <resources>
     <color name="colorPrimary"> #03a9f4</color>
     <color name="colorPrimaryDark">#01579b</color>
+    <color name="tabsScrollColor">#01579b</color>
     <color name="colorAccent">#FFFFFF</color>
 
     <color name="textColorPrimary">#FFFFFF</color>

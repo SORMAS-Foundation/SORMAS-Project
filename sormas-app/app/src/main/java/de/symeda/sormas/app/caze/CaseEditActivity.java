@@ -1,30 +1,31 @@
 package de.symeda.sormas.app.caze;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
 
-import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.SurveillanceActivity;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.util.SlidingTabLayout;
+
 
 /**
  * Created by Stefan Szczesny on 21.07.2016.
  */
 public class CaseEditActivity extends AppCompatActivity {
 
-    //private FragmentTabHost mTabHost;
+    private ViewPager pager;
+    private CaseEditPagerAdapter adapter;
+    private SlidingTabLayout tabs;
+    private CharSequence titles[];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,43 +37,14 @@ public class CaseEditActivity extends AppCompatActivity {
         if (toolbar != null) {
             setSupportActionBar(toolbar);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setTitle("Case");
+            getSupportActionBar().setTitle(getResources().getText(R.string.case_headline));
         }
 
-
-        /*final Button button = (Button) findViewById(R.id.button_back);
-        button.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                showCasesView();            }
-        });*/
-
-
-        /*TabHost tabHost = (TabHost) findViewById(R.id.tab_host);
-
-        mTabHost.setup(this, getSupportFragmentManager(), R.id.realtabcontent);
-
-        mTabHost.addTab(mTabHost.newTabSpec("simple").setIndicator("Simple"),
-                FragmentStackSupport.CountingFragment.class, null);
-        mTabHost.addTab(mTabHost.newTabSpec("contacts").setIndicator("Contacts"),
-                LoaderCursorSupport.CursorLoaderListFragment.class, null);
-        mTabHost.addTab(mTabHost.newTabSpec("custom").setIndicator("Custom"),
-                LoaderCustomSupport.AppListFragment.class, null);
-        mTabHost.addTab(mTabHost.newTabSpec("throttle").setIndicator("Throttle"),
-                LoaderThrottleSupport.ThrottledLoaderListFragment.class, null);
-
-
-
-        TabSpec tab1 = tabHost.newTabSpec("First Tab");
-        tab1.setIndicator("Tab1");
-        tab1.setContent(new Intent(this, CaseDataActivity.class));
-        TabSpec tab2 = tabHost.newTabSpec("Second Tab");
-        tab2.setIndicator("Tab2");
-        tab2.setContent(new Intent(this, CasePersonActivity.class));
-
-        // Add the tabs  to the TabHost to display.
-        tabHost.addTab(tab1);
-        tabHost.addTab(tab2);*/
-
+        // Creating titles for the tabs
+        titles = new CharSequence[]{
+                getResources().getText(R.string.case_data_headline),
+                getResources().getText(R.string.patient_headline)
+        };
 
     }
 
@@ -80,12 +52,8 @@ public class CaseEditActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-
-        CaseDao caseDao = DatabaseHelper.getCaseDao();
         String caseUuid = getIntent().getExtras().getString(Case.UUID);
-        Case caze = caseDao.queryUuid(caseUuid);
-        Toast toast = Toast.makeText(this, caze.getPerson().toString(), Toast.LENGTH_LONG);
-        toast.show();
+        createTabViews(caseUuid);
     }
 
     @Override
@@ -108,14 +76,28 @@ public class CaseEditActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void setData(CaseDataDto dto) {
-        //populateFormView(dto);
+
+    private void createTabViews(String caseUuid) {
+        // Creating The ViewPagerAdapter and Passing Fragment Manager, Titles fot the Tabs and Number Of Tabs.
+        adapter =  new CaseEditPagerAdapter(getSupportFragmentManager(),titles, caseUuid);
+
+        // Assigning ViewPager View and setting the adapter
+        pager = (ViewPager) findViewById(R.id.pager);
+        pager.setAdapter(adapter);
+
+        // Assiging the Sliding Tab Layout View
+        tabs = (SlidingTabLayout) findViewById(R.id.tabs);
+        tabs.setDistributeEvenly(true); // To make the Tabs Fixed set this true, This makes the tabs Space Evenly in Available width
+
+        // Setting Custom Color for the Scroll bar indicator of the Tab View
+        tabs.setCustomTabColorizer(new SlidingTabLayout.TabColorizer() {
+            @Override
+            public int getIndicatorColor(int position) {
+                return getResources().getColor(R.color.tabsScrollColor);
+            }
+        });
+
+        // Setting the ViewPager For the SlidingTabsLayout
+        tabs.setViewPager(pager);
     }
-
-    public void showCasesView() {
-        Intent intent = new Intent(this, SurveillanceActivity.class);
-        startActivity(intent);
-    }
-
-
 }

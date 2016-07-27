@@ -1,6 +1,18 @@
 <resources>
     <string name="app_name">Sormas App</string>
+
+    <!-- actions -->
     <string name="action_reload">Refresh</string>
     <string name="action_settings">Settings</string>
     <string name="action_save">Save</string>
+
+    <!-- headlines -->
+    <string name="case_headline">Case</string>
+    <string name="cases_headline">Cases</string>
+
+    <string name="case_data_headline">Case data</string>
+    <string name="patient_headline">Patient</string>
+    <string name="symptoms_data_headline">Symptoms</string>
+
+    <string name="person_information_headline">Person information</string>
 </resources>
