@@ -15,8 +15,20 @@ import com.j256.ormlite.table.TableUtils;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
+import de.symeda.sormas.app.backend.facility.Facility;
+import de.symeda.sormas.app.backend.facility.FacilityDao;
+import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDao;
+import de.symeda.sormas.app.backend.region.Community;
+import de.symeda.sormas.app.backend.region.CommunityDao;
+import de.symeda.sormas.app.backend.region.District;
+import de.symeda.sormas.app.backend.region.DistrictDao;
+import de.symeda.sormas.app.backend.region.Region;
+import de.symeda.sormas.app.backend.region.RegionDao;
+import de.symeda.sormas.app.backend.user.User;
+import de.symeda.sormas.app.backend.user.UserDao;
+import de.symeda.sormas.app.backend.user.UserRoleToUser;
 
 /**
  * Database helper class used to manage the creation and upgrading of your database. This class also usually provides
@@ -28,7 +40,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// name of the database file for your application -- change to something appropriate for your app
 	private static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	private static final int DATABASE_VERSION = 6;
+	private static final int DATABASE_VERSION = 11;
 
 	public static DatabaseHelper instance = null;
 
@@ -41,6 +53,11 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	private PersonDao personDao = null;
 	private CaseDao caseDao = null;
+	private FacilityDao facilityDao = null;
+	private RegionDao regionDao = null;
+	private DistrictDao districtDao = null;
+	private CommunityDao communityDao = null;
+	private UserDao userDao = null;
 
 	private DatabaseHelper(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);//, R.raw.ormlite_config);
@@ -54,6 +71,13 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public void onCreate(SQLiteDatabase db, ConnectionSource connectionSource) {
 		try {
 			Log.i(DatabaseHelper.class.getName(), "onCreate");
+			TableUtils.createTable(connectionSource, Location.class);
+			TableUtils.createTable(connectionSource, Region.class);
+			TableUtils.createTable(connectionSource, District.class);
+			TableUtils.createTable(connectionSource, Community.class);
+			TableUtils.createTable(connectionSource, Facility.class);
+			TableUtils.createTable(connectionSource, User.class);
+			TableUtils.createTable(connectionSource, UserRoleToUser.class);
 			TableUtils.createTable(connectionSource, Person.class);
 			TableUtils.createTable(connectionSource, Case.class);
 		} catch (SQLException e) {
@@ -72,6 +96,13 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			Log.i(DatabaseHelper.class.getName(), "onUpgrade");
 			TableUtils.dropTable(connectionSource, Case.class, true);
 			TableUtils.dropTable(connectionSource, Person.class, true);
+			TableUtils.dropTable(connectionSource, Location.class, true);
+			TableUtils.dropTable(connectionSource, Region.class, true);
+			TableUtils.dropTable(connectionSource, District.class, true);
+			TableUtils.dropTable(connectionSource, Community.class, true);
+			TableUtils.dropTable(connectionSource, Facility.class, true);
+			TableUtils.dropTable(connectionSource, User.class, true);
+			TableUtils.dropTable(connectionSource, UserRoleToUser.class, true);
 			// after we drop the old databases, we create the new ones
 			onCreate(db, connectionSource);
 		} catch (SQLException e) {
@@ -82,11 +113,15 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	public static CaseDao getCaseDao() {
 		if (instance.caseDao == null) {
-			try {
-				instance.caseDao = new CaseDao((Dao<Case, Long>) instance.getDao(Case.class));
-			} catch (SQLException e) {
-				Log.e(DatabaseHelper.class.getName(), "Can't create CaseDao", e);
-				throw new RuntimeException(e);
+			synchronized (DatabaseHelper.class) {
+				if (instance.caseDao == null) {
+					try {
+						instance.caseDao = new CaseDao((Dao<Case, Long>) instance.getDao(Case.class));
+					} catch (SQLException e) {
+						Log.e(DatabaseHelper.class.getName(), "Can't create CaseDao", e);
+						throw new RuntimeException(e);
+					}
+				}
 			}
 		}
 		return instance.caseDao;
@@ -94,14 +129,98 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	public static PersonDao getPersonDao() {
 		if (instance.personDao == null) {
-			try {
-				instance.personDao = new PersonDao((Dao<Person, Long>) instance.getDao(Person.class));
-			} catch (SQLException e) {
-				Log.e(DatabaseHelper.class.getName(), "Can't create PersonDao", e);
-				throw new RuntimeException(e);
+			synchronized (DatabaseHelper.class) {
+				if (instance.personDao == null) {
+					try {
+						instance.personDao = new PersonDao((Dao<Person, Long>) instance.getDao(Person.class));
+					} catch (SQLException e) {
+						Log.e(DatabaseHelper.class.getName(), "Can't create PersonDao", e);
+						throw new RuntimeException(e);
+					}
+				}
 			}
 		}
 		return instance.personDao;
+	}
+
+	public static FacilityDao getFacilityDao() {
+		if (instance.facilityDao == null) {
+			synchronized (DatabaseHelper.class) {
+				if (instance.facilityDao == null) {
+					try {
+						instance.facilityDao = new FacilityDao((Dao<Facility, Long>) instance.getDao(Facility.class));
+					} catch (SQLException e) {
+						Log.e(DatabaseHelper.class.getName(), "Can't create FacilityDao", e);
+						throw new RuntimeException(e);
+					}
+				}
+			}
+		}
+		return instance.facilityDao;
+	}
+
+	public static RegionDao getRegionDao() {
+		if (instance.regionDao == null) {
+			synchronized (DatabaseHelper.class) {
+				if (instance.regionDao == null) {
+					try {
+						instance.regionDao = new RegionDao((Dao<Region, Long>) instance.getDao(Region.class));
+					} catch (SQLException e) {
+						Log.e(DatabaseHelper.class.getName(), "Can't create RegionDao", e);
+						throw new RuntimeException(e);
+					}
+				}
+			}
+		}
+		return instance.regionDao;
+	}
+
+	public static DistrictDao getDistrictDao() {
+		if (instance.districtDao == null) {
+			synchronized (DatabaseHelper.class) {
+				if (instance.districtDao == null) {
+					try {
+						instance.districtDao = new DistrictDao((Dao<District, Long>) instance.getDao(District.class));
+					} catch (SQLException e) {
+						Log.e(DatabaseHelper.class.getName(), "Can't create DistrictDao", e);
+						throw new RuntimeException(e);
+					}
+				}
+			}
+		}
+		return instance.districtDao;
+	}
+
+	public static CommunityDao getCommunityDao() {
+		if (instance.communityDao == null) {
+			synchronized (DatabaseHelper.class) {
+				if (instance.communityDao == null) {
+					try {
+						instance.communityDao = new CommunityDao((Dao<Community, Long>) instance.getDao(Community.class));
+					} catch (SQLException e) {
+						Log.e(DatabaseHelper.class.getName(), "Can't create CommunityDao", e);
+						throw new RuntimeException(e);
+					}
+				}
+			}
+		}
+		return instance.communityDao;
+	}
+
+	public static UserDao getUserDao() {
+		if (instance.userDao == null) {
+			synchronized (DatabaseHelper.class) {
+				if (instance.userDao == null) {
+					try {
+						instance.userDao = new UserDao((Dao<User, Long>) instance.getDao(User.class));
+					} catch (SQLException e) {
+						Log.e(DatabaseHelper.class.getName(), "Can't create UserDao", e);
+						throw new RuntimeException(e);
+					}
+				}
+			}
+		}
+		return instance.userDao;
 	}
 
 	/**
@@ -112,5 +231,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		super.close();
 		caseDao = null;
 		personDao = null;
+		facilityDao = null;
+		regionDao = null;
+		districtDao = null;
+		communityDao = null;
+		userDao = null;
 	}
 }

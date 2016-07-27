@@ -1,6 +1,7 @@
 package de.symeda.sormas.backend.user;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,13 +20,13 @@ import de.symeda.sormas.backend.util.DtoHelper;
 public class UserFacadeEjb implements UserFacade {
 	
 	@EJB
-	private UserService us;
+	private UserService service;
 	@EJB
 	private LocationFacadeEjb locationFacade;
 
 	@Override
 	public List<ReferenceDto> getListAsReference(UserRole userRole) {
-		return us.getListByUserRole(userRole).stream()
+		return service.getListByUserRole(userRole).stream()
 				.map(f -> DtoHelper.toReferenceDto(f))
 				.collect(Collectors.toList());
 	}
@@ -33,14 +34,21 @@ public class UserFacadeEjb implements UserFacade {
 	
 	@Override
 	public List<UserDto> getAll(UserRole... userRole) {
-		return us.getListByUserRole(userRole).stream()
+		return service.getListByUserRole(userRole).stream()
 				.map(f -> toDto(f))
 				.collect(Collectors.toList());
+	}
+	
+	@Override
+	public List<UserDto> getAllAfter(Date date) {
+		return service.getAllAfter(date).stream()
+			.map(c -> toDto(c))
+			.collect(Collectors.toList());
 	}
 
 	@Override
 	public UserDto getByUuid(String uuid) {
-		return toDto(us.getByUuid(uuid));
+		return toDto(service.getByUuid(uuid));
 	}
 
 	@Override
@@ -54,32 +62,35 @@ public class UserFacadeEjb implements UserFacade {
 		user.setPassword("");
 		user.setSeed("");
 		
-		us.ensurePersisted(user);
+		service.ensurePersisted(user);
 		
 		return toDto(user);
 	}
 	
-	private UserDto toDto(User user) {
+	private UserDto toDto(User entity) {
 		UserDto dto = new UserDto();
-		dto.setUuid(user.getUuid());
-		dto.setActive(user.isAktiv());
-		dto.setUserName(user.getUserName());
-		dto.setFirstName(user.getFirstName());
-		dto.setLastName(user.getLastName());
-		dto.setUserEmail(user.getUserEmail());
-		dto.setPhone(user.getPhone());
-		dto.setAddress(LocationFacadeEjb.toLocationDto(user.getAddress()));
+		dto.setUuid(entity.getUuid());
+		dto.setCreationDate(entity.getCreationDate());
+		dto.setChangeDate(entity.getChangeDate());
 		
-		user.getUserRoles().size();
-		dto.setUserRoles(user.getUserRoles());
+		dto.setActive(entity.isAktiv());
+		dto.setUserName(entity.getUserName());
+		dto.setFirstName(entity.getFirstName());
+		dto.setLastName(entity.getLastName());
+		dto.setUserEmail(entity.getUserEmail());
+		dto.setPhone(entity.getPhone());
+		dto.setAddress(LocationFacadeEjb.toLocationDto(entity.getAddress()));
+		
+		entity.getUserRoles().size();
+		dto.setUserRoles(entity.getUserRoles());
 		return dto;
 	}
 	
 	
 	private User toUser(UserDto dto) {
-		User bo = us.getByUuid(dto.getUuid());
+		User bo = service.getByUuid(dto.getUuid());
 		if(bo==null) {
-			bo = us.createUser();
+			bo = service.createUser();
 		}
 		bo.setUuid(dto.getUuid());
 
@@ -99,12 +110,12 @@ public class UserFacadeEjb implements UserFacade {
 	
 	@Override
 	public boolean isLoginUnique(String uuid, String userName) {
-		return us.isLoginUnique(uuid, userName);
+		return service.isLoginUnique(uuid, userName);
 	}
 
 
 	@Override
 	public String resetPassword(String uuid) {
-		return us.resetPassword(uuid);
+		return service.resetPassword(uuid);
 	}
 }

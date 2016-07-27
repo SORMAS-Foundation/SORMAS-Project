@@ -9,6 +9,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -20,11 +21,13 @@ import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.facility.Facility;
+import de.symeda.sormas.app.backend.location.Location;
 //import de.symeda.sormas.backend.facility.Facility;
 //import de.symeda.sormas.backend.location.Location;
 
-@Entity
-@DatabaseTable
+@Entity(name=Person.TABLE_NAME)
+@DatabaseTable(tableName = Person.TABLE_NAME)
 public class Person extends AbstractDomainObject {
 	
 	private static final long serialVersionUID = -1735038738114840087L;
@@ -48,8 +51,9 @@ public class Person extends AbstractDomainObject {
 	private Integer approximateAge;
 	@Enumerated(EnumType.STRING)
 	private ApproximateAgeType approximateAgeType;
-	
-	//private Location address;
+
+	@ManyToOne(cascade = CascadeType.ALL)
+	private Location address;
 	private String phone;
 	
 	// TODO private Ethnicity ethnicity;
@@ -63,19 +67,20 @@ public class Person extends AbstractDomainObject {
 	private boolean dead;
 	@Temporal(TemporalType.DATE)
 	private Date deathDate;
-	//	@ManyToOne(cascade = CascadeType.ALL)
-	//private Location deathLocation;
+	@ManyToOne(cascade = CascadeType.ALL)
+	private Location deathLocation;
 	@Temporal(TemporalType.DATE)
 	private Date burialDate;
-	//	@ManyToOne(cascade = CascadeType.ALL)
-	//private Location burialLocation;
+	@ManyToOne(cascade = CascadeType.ALL)
+	private Location burialLocation;
 	@Enumerated(EnumType.STRING)
 	private BurialConductor burialConductor;
 
 	@Enumerated(EnumType.STRING)
 	private OccupationType occupationType;
 	private String occupationDetails;
-	//private Facility occupationFacility;
+	@ManyToOne(cascade = {})
+	private Facility occupationFacility;
 	
 	public String getFirstName() {
 		return firstName;
@@ -113,13 +118,12 @@ public class Person extends AbstractDomainObject {
 		this.approximateAgeType = approximateAgeType;
 	}
 	
-//	@ManyToOne(cascade = CascadeType.ALL)
-//	public Location getAddress() {
-//		return address;
-//	}
-//	public void setAddress(Location address) {
-//		this.address = address;
-//	}
+	public Location getAddress() {
+		return address;
+	}
+	public void setAddress(Location address) {
+		this.address = address;
+	}
 
 	public String getPhone() {
 		return phone;
@@ -163,12 +167,12 @@ public class Person extends AbstractDomainObject {
 		this.deathDate = deathDate;
 	}
 	
-//	public Location getDeathLocation() {
-//		return deathLocation;
-//	}
-//	public void setDeathLocation(Location deathLocation) {
-//		this.deathLocation = deathLocation;
-//	}
+	public Location getDeathLocation() {
+		return deathLocation;
+	}
+	public void setDeathLocation(Location deathLocation) {
+		this.deathLocation = deathLocation;
+	}
 	
 	public Date getBurialDate() {
 		return burialDate;
@@ -177,12 +181,12 @@ public class Person extends AbstractDomainObject {
 		this.burialDate = burialDate;
 	}
 	
-//	public Location getBurialLocation() {
-//		return burialLocation;
-//	}
-//	public void setBurialLocation(Location burialLocation) {
-//		this.burialLocation = burialLocation;
-//	}
+	public Location getBurialLocation() {
+		return burialLocation;
+	}
+	public void setBurialLocation(Location burialLocation) {
+		this.burialLocation = burialLocation;
+	}
 	
 	public BurialConductor getBurialConductor() {
 		return burialConductor;
@@ -205,12 +209,12 @@ public class Person extends AbstractDomainObject {
 		this.occupationDetails = occupationDetails;
 	}
 	
-//	public Facility getOccupationFacility() {
-//		return occupationFacility;
-//	}
-//	public void setOccupationFacility(Facility occupationFacility) {
-//		this.occupationFacility = occupationFacility;
-//	}
+	public Facility getOccupationFacility() {
+		return occupationFacility;
+	}
+	public void setOccupationFacility(Facility occupationFacility) {
+		this.occupationFacility = occupationFacility;
+	}
 	
 	@Override
 	public String toString() {

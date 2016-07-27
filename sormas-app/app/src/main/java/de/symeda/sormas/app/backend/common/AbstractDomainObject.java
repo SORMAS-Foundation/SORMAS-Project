@@ -35,11 +35,10 @@ import de.symeda.sormas.api.utils.DataHelper;
 @MappedSuperclass
 public abstract class AbstractDomainObject implements Serializable, Cloneable, DomainObject {
 
-	private static final long serialVersionUID = 3957437214306161226L;
-
 	public static final String ID = "id";
 	public static final String CREATION_DATE = "creationDate";
 	public static final String CHANGE_DATE = "changeDate";
+	public static final String LOCAL_CHANGE_DATE = "localChangeDate";
 
 	@Id
 	@GeneratedValue
@@ -54,8 +53,11 @@ public abstract class AbstractDomainObject implements Serializable, Cloneable, D
 	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = false)
 	private Date creationDate;
 
-	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = false, version = true)
+	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = false)
 	private Date changeDate;
+
+	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = false, version = true)
+	private Date localChangeDate;
 
 	@Override
 	public AbstractDomainObject clone() {
@@ -112,9 +114,17 @@ public abstract class AbstractDomainObject implements Serializable, Cloneable, D
 		this.changeDate = changeDate;
 	}
 
+	public Date getLocalChangeDate() {
+		return localChangeDate;
+	}
+
+	public void setLocalChangeDate(Date localChangeDate) {
+		this.localChangeDate = localChangeDate;
+	}
+
 	@Override
 	public Date getVersion() {
-		return getChangeDate();
+		return getLocalChangeDate();
 	}
 
 	@Override

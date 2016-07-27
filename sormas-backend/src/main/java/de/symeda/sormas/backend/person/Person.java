@@ -200,6 +200,7 @@ public class Person extends AbstractDomainObject {
 		this.occupationDetails = occupationDetails;
 	}
 	
+	@ManyToOne(cascade = {})
 	public Facility getOccupationFacility() {
 		return occupationFacility;
 	}

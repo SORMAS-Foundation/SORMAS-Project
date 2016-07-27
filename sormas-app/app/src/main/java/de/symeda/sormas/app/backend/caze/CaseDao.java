@@ -15,4 +15,9 @@ public class CaseDao extends AbstractAdoDao<Case> {
     public CaseDao(Dao<Case,Long> innerDao) throws SQLException {
         super(innerDao);
     }
+
+    @Override
+    public String getTableName() {
+        return Case.TABLE_NAME;
+    }
 }

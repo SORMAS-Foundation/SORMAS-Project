@@ -15,10 +15,7 @@ import retrofit2.http.Path;
  */
 public interface PersonFacadeRetro {
 
-    @GET("persons/{uuid}")
-    Call<PersonDto> getByUuid(@Path("uuid") String uuid);
-
     @GET("persons/all/{since}")
-    Call<List<PersonDto>> getAllPersons(@Path("since") long since);
+    Call<List<PersonDto>> getAll(@Path("since") long since);
 
 }

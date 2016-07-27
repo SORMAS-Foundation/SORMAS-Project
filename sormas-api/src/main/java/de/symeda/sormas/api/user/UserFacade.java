@@ -1,5 +1,6 @@
 package de.symeda.sormas.api.user;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.ejb.Remote;
@@ -9,17 +10,17 @@ import de.symeda.sormas.api.ReferenceDto;
 @Remote
 public interface UserFacade {
 
-    public abstract List<ReferenceDto> getListAsReference(UserRole userRole);
+    List<ReferenceDto> getListAsReference(UserRole userRole);
     
-    public abstract List<UserDto> getAll(UserRole... role);
+    List<UserDto> getAll(UserRole... role);
     
-    public abstract UserDto getByUuid(String uuid);
+    UserDto getByUuid(String uuid);
     
-    public abstract UserDto saveUser(UserDto dto);
+    UserDto saveUser(UserDto dto);
 
-    public abstract boolean isLoginUnique(String uuid, String userName);
+    boolean isLoginUnique(String uuid, String userName);
     
-    public abstract String resetPassword(String uuid);
-    
-    
+    String resetPassword(String uuid);
+
+	List<UserDto> getAllAfter(Date date);
 }

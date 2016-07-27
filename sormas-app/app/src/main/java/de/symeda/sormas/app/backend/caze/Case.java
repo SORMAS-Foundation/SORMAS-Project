@@ -19,13 +19,16 @@ import javax.persistence.TemporalType;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseStatus;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.facility.Facility;
+import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.backend.user.User;
 
 @Entity(name=Case.TABLE_NAME)
 @DatabaseTable(tableName = Case.TABLE_NAME)
 public class Case extends AbstractDomainObject {
 	
-	private static final long serialVersionUID = -2697795184663562129L;
+	private static final long serialVersionUID = -2697795184163562129L;
 
 	public static final String TABLE_NAME = "cases";
 
@@ -43,11 +46,11 @@ public class Case extends AbstractDomainObject {
 	@Enumerated(EnumType.STRING)
 	private CaseStatus caseStatus;
 
-//	@ManyToOne(cascade = {})
-	//private Facility healthFacility;
+	@ManyToOne(cascade = {})
+	private Facility healthFacility;
 
-	//	@ManyToOne(cascade = {})
-	//private User reportingUser;
+	@ManyToOne(cascade = {})
+	private User reportingUser;
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date reportDate;
 	@Temporal(TemporalType.TIMESTAMP)
@@ -65,21 +68,21 @@ public class Case extends AbstractDomainObject {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date recoveredDate;
 
-//	@ManyToOne(cascade = CascadeType.ALL)
-	//private Location illLocation;
+	@ManyToOne(cascade = CascadeType.ALL)
+	private Location illLocation;
 
-//	@ManyToOne(cascade = CascadeType.ALL)
-	//private User surveillanceOfficer;
-//	@ManyToOne(cascade = CascadeType.ALL)
-	//private User surveillanceSupervisor;
-//	@ManyToOne(cascade = CascadeType.ALL)
-	//private User caseOfficer;
-//	@ManyToOne(cascade = CascadeType.ALL)
-	//private User caseSupervisor;
-//	@ManyToOne(cascade = CascadeType.ALL)
-	//private User contactOfficer;
-//	@ManyToOne(cascade = CascadeType.ALL)
-	//private User contactSupervisor;
+	@ManyToOne(cascade = CascadeType.ALL)
+	private User surveillanceOfficer;
+	@ManyToOne(cascade = CascadeType.ALL)
+	private User surveillanceSupervisor;
+	@ManyToOne(cascade = CascadeType.ALL)
+	private User caseOfficer;
+	@ManyToOne(cascade = CascadeType.ALL)
+	private User caseSupervisor;
+	@ManyToOne(cascade = CascadeType.ALL)
+	private User contactOfficer;
+	@ManyToOne(cascade = CascadeType.ALL)
+	private User contactSupervisor;
 	
 	public Person getPerson() {
 		return person;
@@ -109,12 +112,12 @@ public class Case extends AbstractDomainObject {
 		this.caseStatus = caseStatus;
 	}
 	
-//	public User getReportingUser() {
-//		return reportingUser;
-//	}
-//	public void setReportingUser(User reportingUser) {
-//		this.reportingUser = reportingUser;
-//	}
+	public User getReportingUser() {
+		return reportingUser;
+	}
+	public void setReportingUser(User reportingUser) {
+		this.reportingUser = reportingUser;
+	}
 	
 	public Date getReportDate() {
 		return reportDate;
@@ -172,59 +175,59 @@ public class Case extends AbstractDomainObject {
 		this.recoveredDate = recoveredDate;
 	}
 	
-//	public Facility getHealthFacility() {
-//		return healthFacility;
-//	}
-//	public void setHealthFacility(Facility healthFacility) {
-//		this.healthFacility = healthFacility;
-//	}
-//	public Location getIllLocation() {
-//		return illLocation;
-//	}
-//	public void setIllLocation(Location illLocation) {
-//		this.illLocation = illLocation;
-//	}
-//
-//	public User getSurveillanceOfficer() {
-//		return surveillanceOfficer;
-//	}
-//	public void setSurveillanceOfficer(User surveillanceOfficer) {
-//		this.surveillanceOfficer = surveillanceOfficer;
-//	}
-//
-//	public User getSurveillanceSupervisor() {
-//		return surveillanceSupervisor;
-//	}
-//	public void setSurveillanceSupervisor(User surveillanceSupervisor) {
-//		this.surveillanceSupervisor = surveillanceSupervisor;
-//	}
-//
-//	public User getCaseOfficer() {
-//		return caseOfficer;
-//	}
-//	public void setCaseOfficer(User caseOfficer) {
-//		this.caseOfficer = caseOfficer;
-//	}
-//
-//	public User getCaseSupervisor() {
-//		return caseSupervisor;
-//	}
-//	public void setCaseSupervisor(User caseSupervisor) {
-//		this.caseSupervisor = caseSupervisor;
-//	}
-//
-//	public User getContactOfficer() {
-//		return contactOfficer;
-//	}
-//	public void setContactOfficer(User contactOfficer) {
-//		this.contactOfficer = contactOfficer;
-//	}
-//
-//	public User getContactSupervisor() {
-//		return contactSupervisor;
-//	}
-//	public void setContactSupervisor(User contactSupervisor) {
-//		this.contactSupervisor = contactSupervisor;
-//	}
+	public Facility getHealthFacility() {
+		return healthFacility;
+	}
+	public void setHealthFacility(Facility healthFacility) {
+		this.healthFacility = healthFacility;
+	}
+	public Location getIllLocation() {
+		return illLocation;
+	}
+	public void setIllLocation(Location illLocation) {
+		this.illLocation = illLocation;
+	}
+
+	public User getSurveillanceOfficer() {
+		return surveillanceOfficer;
+	}
+	public void setSurveillanceOfficer(User surveillanceOfficer) {
+		this.surveillanceOfficer = surveillanceOfficer;
+	}
+
+	public User getSurveillanceSupervisor() {
+		return surveillanceSupervisor;
+	}
+	public void setSurveillanceSupervisor(User surveillanceSupervisor) {
+		this.surveillanceSupervisor = surveillanceSupervisor;
+	}
+
+	public User getCaseOfficer() {
+		return caseOfficer;
+	}
+	public void setCaseOfficer(User caseOfficer) {
+		this.caseOfficer = caseOfficer;
+	}
+
+	public User getCaseSupervisor() {
+		return caseSupervisor;
+	}
+	public void setCaseSupervisor(User caseSupervisor) {
+		this.caseSupervisor = caseSupervisor;
+	}
+
+	public User getContactOfficer() {
+		return contactOfficer;
+	}
+	public void setContactOfficer(User contactOfficer) {
+		this.contactOfficer = contactOfficer;
+	}
+
+	public User getContactSupervisor() {
+		return contactSupervisor;
+	}
+	public void setContactSupervisor(User contactSupervisor) {
+		this.contactSupervisor = contactSupervisor;
+	}
 
 }

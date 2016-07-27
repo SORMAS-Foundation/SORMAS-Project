@@ -45,8 +45,8 @@ public class CaseListArrayAdapter extends ArrayAdapter<Case> {
         TextView head1 = (TextView) convertView.findViewById(R.id.cli_head1);
         Case caze = values.get(position);
 
-        Log.v(TAG, "caze=" + caze);
-        Log.v(TAG, "person=" + caze.getPerson().getUuid());
+//        Log.v(TAG, "caze=" + caze);
+//        Log.v(TAG, "person=" + caze.getPerson().getUuid());
 
         Person person = caze.getPerson();
         head1.setText(person.toString());

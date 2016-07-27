@@ -1,7 +1,5 @@
 package de.symeda.sormas.app.rest;
 
-import java.sql.Timestamp;
-import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -14,10 +12,7 @@ import retrofit2.http.Path;
  */
 public interface CaseFacadeRetro {
 
-    @GET("cases/{uuid}")
-    Call<CaseDataDto> getByUuid(@Path("uuid") String uuid);
-
     @GET("cases/all/{since}")
-    Call<List<CaseDataDto>> getAllCases(@Path("since") long since);
+    Call<List<CaseDataDto>> getAll(@Path("since") long since);
 
 }

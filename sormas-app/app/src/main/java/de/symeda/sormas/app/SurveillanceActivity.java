@@ -20,10 +20,12 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.caze.CaseEditActivity;
 import de.symeda.sormas.app.caze.CaseListArrayAdapter;
 import de.symeda.sormas.app.caze.SyncCasesTask;
 import de.symeda.sormas.app.person.SyncPersonsTask;
+import de.symeda.sormas.app.util.SyncInfrastructureTask;
 
 public class SurveillanceActivity extends AppCompatActivity {
 
@@ -76,8 +78,12 @@ public class SurveillanceActivity extends AppCompatActivity {
     private void refreshLocalDB() {
         try {
             // todo asynchronous calls: Cases have to wait for Persons
-            Integer syncedPersons = new SyncPersonsTask().execute().get();
-            List<CaseDataDto> syncedCases = new SyncCasesTask().execute().get();
+            new SyncInfrastructureTask().execute().get();
+            new SyncPersonsTask().execute().get();
+            new SyncCasesTask().execute().get();
+
+            List<Facility> facilities = DatabaseHelper.getFacilityDao().queryForAll();
+
             Toast toast = Toast.makeText(this, "refreshed local db", Toast.LENGTH_SHORT);
             toast.show();
         } catch (InterruptedException e) {

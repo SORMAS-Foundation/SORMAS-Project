@@ -41,9 +41,11 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> extends R
         }
     }
 
+    public abstract String getTableName();
+
     public Date getLatestChangeDate() {
-        String query = "SELECT MAX(" + Case.CHANGE_DATE + ") FROM " + Case.TABLE_NAME
-                + " WHERE " + Case.MODIFIED + " = ?";
+        String query = "SELECT MAX(" + AbstractDomainObject.CHANGE_DATE + ") FROM " + getTableName()
+                + " WHERE " + AbstractDomainObject.MODIFIED + " = ?";
         GenericRawResults<Object[]> maxChangeDateResult = queryRaw(query, new DataType[]{DataType.DATE_LONG}, "0");
         try {
             List<Object[]> dateResults = maxChangeDateResult.getResults();
