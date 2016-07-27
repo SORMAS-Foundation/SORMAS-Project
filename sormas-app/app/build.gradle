@@ -22,6 +22,11 @@ android {
         exclude 'META-INF/maven/de.symeda.sormas/sormas-api/pom.properties'
         exclude 'META-INF/maven/de.symeda.sormas/sormas-api/pom.xml'
     }
+
+    dataBinding {
+        enabled = true
+    }
+
 }
 
 repositories {
@@ -39,4 +44,5 @@ dependencies {
     compile group: 'javax.persistence', name: 'persistence-api', version: '1.0.2'
 
     compile 'de.symeda.sormas:sormas-api:0.0.1-SNAPSHOT'
+    compile 'com.google.android.gms:play-services-appindexing:8.1.0'
 }

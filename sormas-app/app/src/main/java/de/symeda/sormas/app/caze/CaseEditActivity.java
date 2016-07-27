@@ -12,8 +12,7 @@ import android.widget.Toast;
 
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
-import de.symeda.sormas.app.backend.caze.CaseDao;
-import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.util.SlidingTabLayout;
 
 
@@ -26,6 +25,7 @@ public class CaseEditActivity extends AppCompatActivity {
     private CaseEditPagerAdapter adapter;
     private SlidingTabLayout tabs;
     private CharSequence titles[];
+    private String caseUuid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +52,7 @@ public class CaseEditActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        String caseUuid = getIntent().getExtras().getString(Case.UUID);
+        caseUuid = getIntent().getExtras().getString(Case.UUID);
         createTabViews(caseUuid);
     }
 
@@ -72,6 +72,12 @@ public class CaseEditActivity extends AppCompatActivity {
 
                 //Home/back button
                 return true;
+
+            case R.id.action_save:
+                Person person = (Person)adapter.getViewobject(1);
+                Toast.makeText(this, person.toString(), Toast.LENGTH_SHORT).show();
+                return true;
+
         }
         return super.onOptionsItemSelected(item);
     }
@@ -79,7 +85,7 @@ public class CaseEditActivity extends AppCompatActivity {
 
     private void createTabViews(String caseUuid) {
         // Creating The ViewPagerAdapter and Passing Fragment Manager, Titles fot the Tabs and Number Of Tabs.
-        adapter =  new CaseEditPagerAdapter(getSupportFragmentManager(),titles, caseUuid);
+        adapter = new CaseEditPagerAdapter(getSupportFragmentManager(), titles, caseUuid);
 
         // Assigning ViewPager View and setting the adapter
         pager = (ViewPager) findViewById(R.id.pager);
@@ -100,4 +106,5 @@ public class CaseEditActivity extends AppCompatActivity {
         // Setting the ViewPager For the SlidingTabsLayout
         tabs.setViewPager(pager);
     }
+
 }

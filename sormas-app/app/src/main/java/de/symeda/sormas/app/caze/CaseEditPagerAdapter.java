@@ -6,6 +6,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
 import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 
 /**
  * Created by Stefan Szczesny on 27.07.2016.
@@ -16,6 +17,8 @@ public class CaseEditPagerAdapter extends FragmentStatePagerAdapter {
 
     private CharSequence Titles[]; // This will Store the Titles of the Tabs which are Going to be passed when ViewPagerAdapter is created
     private Bundle caseEditBundle; // this bundle contains the uuids
+    private CaseDataTab caseDataTab;
+    private CasePersonTab casePersonTab;
 
 
     // Build a Constructor and assign the passed Values to appropriate values in the class
@@ -30,16 +33,19 @@ public class CaseEditPagerAdapter extends FragmentStatePagerAdapter {
     //This method return the fragment for the every position in the View Pager
     @Override
     public Fragment getItem(int position) {
-
-        if(position == 0) {
-            CaseDataTab caseDataTab = new CaseDataTab();
-            return caseDataTab;
+        Fragment frag = null;
+        switch (position) {
+            case 0:
+                caseDataTab = new CaseDataTab();
+                frag = caseDataTab;
+                break;
+            case 1:
+                casePersonTab = new CasePersonTab();
+                casePersonTab.setArguments(caseEditBundle);
+                frag = casePersonTab;
+                break;
         }
-        else {
-            CasePersonTab casePersonTab = new CasePersonTab();
-            casePersonTab.setArguments(caseEditBundle);
-            return casePersonTab;
-        }
+        return frag;
     }
 
     // This method return the titles for the Tabs in the Tab Strip
@@ -52,5 +58,18 @@ public class CaseEditPagerAdapter extends FragmentStatePagerAdapter {
     @Override
     public int getCount() {
         return Titles.length;
+    }
+
+    public AbstractDomainObject getViewobject(int position) {
+        AbstractDomainObject ado = null;
+        switch (position) {
+            case 0:
+                ado= null;
+                break;
+            case 1:
+                ado = casePersonTab.getPerson();
+                break;
+        }
+        return ado;
     }
 }
