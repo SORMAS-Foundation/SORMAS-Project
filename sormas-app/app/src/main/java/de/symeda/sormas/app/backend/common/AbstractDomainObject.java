@@ -1,25 +1,16 @@
 package de.symeda.sormas.app.backend.common;
 
+import android.databinding.BaseObservable;
+
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 
 import java.io.Serializable;
-import java.sql.Timestamp;
 import java.util.Date;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Transient;
-import javax.persistence.Version;
-
-import de.symeda.sormas.api.utils.DataHelper;
 
 /**
  * TODO: Übersetzung und UUID anpassen
@@ -33,7 +24,7 @@ import de.symeda.sormas.api.utils.DataHelper;
  * @author reise
  */
 @MappedSuperclass
-public abstract class AbstractDomainObject implements Serializable, Cloneable, DomainObject {
+public abstract class AbstractDomainObject extends BaseObservable implements Serializable, Cloneable, DomainObject  {
 
 	public static final String ID = "id";
 	public static final String CREATION_DATE = "creationDate";

@@ -12,7 +12,10 @@ import android.widget.Toast;
 
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.caze.CaseDao;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.util.SlidingTabLayout;
 
 
@@ -74,8 +77,10 @@ public class CaseEditActivity extends AppCompatActivity {
                 return true;
 
             case R.id.action_save:
-                Person person = (Person)adapter.getViewobject(1);
-                Toast.makeText(this, person.toString(), Toast.LENGTH_SHORT).show();
+                Person person = (Person)adapter.getData(1);
+                PersonDao personDao = DatabaseHelper.getPersonDao();
+                personDao.createOrUpdate(person);
+                Toast.makeText(this, person.toString() + " saved", Toast.LENGTH_SHORT).show();
                 return true;
 
         }

@@ -1,5 +1,7 @@
 package de.symeda.sormas.app.backend.person;
 
+import android.databinding.Bindable;
+
 import com.j256.ormlite.table.DatabaseTable;
 
 import java.util.Date;
@@ -81,14 +83,16 @@ public class Person extends AbstractDomainObject {
 	private String occupationDetails;
 	@ManyToOne(cascade = {})
 	private Facility occupationFacility;
-	
+
+	@Bindable
 	public String getFirstName() {
 		return firstName;
 	}
 	public void setFirstName(String firstName) {
 		this.firstName = firstName;
 	}
-	
+
+	@Bindable
 	public String getLastName() {
 		return lastName;
 	}
@@ -96,13 +100,15 @@ public class Person extends AbstractDomainObject {
 		this.lastName = lastName;
 	}
 
+	@Bindable
 	public Date getBirthDate() {
 		return birthDate;
 	}
 	public void setBirthDate(Date birthDate) {
 		this.birthDate = birthDate;
 	}
-	
+
+	@Bindable
 	public Integer getApproximateAge() {
 		return approximateAge;
 	}
