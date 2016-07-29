@@ -1,7 +1,5 @@
 package de.symeda.sormas.ui.surveillance.user;
 
-import java.util.List;
-
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.shared.ui.label.ContentMode;
@@ -75,12 +73,6 @@ public class UserController {
                 + fragmentParameter, false);
     }
     
-
-    public List<UserDto> getAllSurveillanceOfficers() {
-//    	return FacadeProvider.getUserFacade().getAll(UserRole.SURVEILLANCE_OFFICER, UserRole.INFORMANT);
-    	return FacadeProvider.getUserFacade().getAll(UserRole.SURVEILLANCE_OFFICER);
-    }
-    
     
     public CommitDiscardWrapperComponent<UserEditForm> getUserEditComponent(final String userUuid) {
     	
@@ -88,7 +80,7 @@ public class UserController {
     	UserDto caze = findUser(userUuid);
         userEditForm.setValue(caze);
         final CommitDiscardWrapperComponent<UserEditForm> editView = new CommitDiscardWrapperComponent<UserEditForm>(userEditForm, userEditForm.getFieldGroup());
-        editView.setWidth(400, Unit.PIXELS);
+        editView.setWidth(480, Unit.PIXELS);
         
         editView.addCommitListener(new CommitListener() {
         	@Override

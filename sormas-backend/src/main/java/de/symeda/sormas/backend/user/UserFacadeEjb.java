@@ -26,15 +26,15 @@ public class UserFacadeEjb implements UserFacade {
 
 	@Override
 	public List<ReferenceDto> getListAsReference(UserRole userRole) {
-		return service.getListByUserRole(userRole).stream()
+		return service.getListByUserRoles(userRole).stream()
 				.map(f -> DtoHelper.toReferenceDto(f))
 				.collect(Collectors.toList());
 	}
 	
 	
 	@Override
-	public List<UserDto> getAll(UserRole... userRole) {
-		return service.getListByUserRole(userRole).stream()
+	public List<UserDto> getAll(UserRole... userRoles) {
+		return service.getListByUserRoles(userRoles).stream()
 				.map(f -> toDto(f))
 				.collect(Collectors.toList());
 	}

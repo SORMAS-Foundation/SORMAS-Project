@@ -1,6 +1,8 @@
 package de.symeda.sormas.ui.surveillance.user;
 
 import java.util.Collection;
+import java.util.Locale;
+import java.util.Set;
 
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Item;
@@ -8,6 +10,8 @@ import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.MethodProperty;
+import com.vaadin.data.util.converter.Converter;
+import com.vaadin.data.util.converter.StringToCollectionConverter;
 import com.vaadin.data.util.filter.Or;
 import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.data.util.filter.Compare.Equal;
@@ -32,10 +36,12 @@ public class UserGrid extends Grid {
 
         BeanItemContainer<UserDto> container = new BeanItemContainer<UserDto>(UserDto.class);
         setContainerDataSource(container);
-        setColumns(UserDto.ACTIVE, UserDto.USER_NAME, UserDto.NAME, UserDto.USER_EMAIL, UserDto.ADDRESS, UserDto.LGA);
+        setColumns(UserDto.ACTIVE, UserDto.USER_ROLES, UserDto.USER_NAME, UserDto.NAME, UserDto.USER_EMAIL, UserDto.ADDRESS, UserDto.LGA);
         
         getColumn(UserDto.ACTIVE).setRenderer(new ActiveRenderer());
-        
+
+        getColumn(UserDto.USER_ROLES).setConverter(new StringToCollectionConverter());
+
         for (Column column : getColumns()) {
         	column.setHeaderCaption(I18nProperties.getFieldCaption(
         			UserDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));

@@ -1,5 +1,6 @@
 package de.symeda.sormas.backend.user;
 
+import java.util.Arrays;
 import java.util.List;
 
 import javax.ejb.LocalBean;
@@ -8,6 +9,7 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Root;
 
@@ -29,14 +31,12 @@ public class UserService extends AbstractAdoService<User> {
 		return user;
 	}
 	
-	public List<User> getListByUserRole(UserRole... userRole) {
+	public List<User> getListByUserRoles(UserRole... userRole) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<User> cq = cb.createQuery(getElementClass());
 		Root<User> from = cq.from(getElementClass());
-		Join<User, UserRole> userRoles = from.join(User.USER_ROLES);
-		for (UserRole role : userRole) {
-			cq.where(cb.equal(userRoles, role));
-		}
+		Join<User, UserRole> userRoles = from.join(User.USER_ROLES, JoinType.LEFT);
+		cq.where(userRoles.in(Arrays.asList(userRole)));
 		cq.orderBy(cb.asc(from.get(AbstractDomainObject.ID)));
 		return em.createQuery(cq).getResultList();
 	}

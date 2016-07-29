@@ -1,6 +1,6 @@
 package de.symeda.sormas.ui.surveillance.user;
 
-import java.util.Collection;
+import java.util.List;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
@@ -12,6 +12,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
@@ -106,15 +107,12 @@ public class UsersView extends AbstractView {
 
     @Override
     public void enter(ViewChangeEvent event) {
-    	setData(ControllerProvider.getUserController().getAllSurveillanceOfficers());
+    	List<UserDto> users = FacadeProvider.getUserFacade().getAll(UserRole.INFORMANT, UserRole.SURVEILLANCE_OFFICER);
+        grid.setUsers(users);
     }
 
     public void clearSelection() {
         grid.getSelectionModel().reset();
-    }
-
-    public void setData(Collection<UserDto> users) {
-        grid.setUsers(users);
     }
 
     public void refresh(UserDto product) {
