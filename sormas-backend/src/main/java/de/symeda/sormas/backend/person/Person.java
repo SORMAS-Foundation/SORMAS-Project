@@ -17,6 +17,7 @@ import de.symeda.sormas.api.person.BurialConductor;
 import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.facility.Facility;
@@ -210,7 +211,13 @@ public class Person extends AbstractDomainObject {
 	
 	@Override
 	public String toString() {
-		return getFirstName() + " " + getLastName();
+		StringBuilder builder = new StringBuilder();
+		builder.append(getFirstName()).append(" ").append(getLastName().toUpperCase());
+		if (getBirthDate() != null)
+			builder.append(" (").append(DateHelper.formatDMY(getBirthDate())).append(")");
+		if (getAddress() != null && getAddress().getCommunity() != null)
+			builder.append(" - ").append(getAddress().getCommunity().getName());
+		return builder.toString();
 	}
 	
 }

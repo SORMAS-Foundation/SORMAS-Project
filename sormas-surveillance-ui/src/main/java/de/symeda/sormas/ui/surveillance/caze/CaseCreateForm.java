@@ -24,12 +24,12 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
     private static final String HTML_LAYOUT = 
     		LayoutUtil.h3(CssStyles.VSPACE3, "Create new case")+
 			LayoutUtil.divCss(CssStyles.VSPACE2,
-					LayoutUtil.fluidRowLocs(CaseDataDto.UUID),
 					LayoutUtil.fluidRowLocs(CaseDataDto.DISEASE, CaseDataDto.REPORT_DATE),
 					LayoutUtil.fluidRow(
 							LayoutUtil.fluidColumnLoc(10, 0, CaseDataDto.PERSON),
 							LayoutUtil.fluidColumnLoc(2, 0, PERSON_CREATE)),
-					LayoutUtil.fluidRowLocs(CaseDataDto.HEALTH_FACILITY)
+					LayoutUtil.fluidRowLocs(CaseDataDto.HEALTH_FACILITY),
+					LayoutUtil.fluidRowLocs(CaseDataDto.UUID, "")
 					);
 
     private ComboBox persons;

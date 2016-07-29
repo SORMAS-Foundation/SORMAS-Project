@@ -1,5 +1,6 @@
 package de.symeda.sormas.api.utils;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.ZoneId;
@@ -9,6 +10,8 @@ import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 
 public final class DateHelper {
+
+	private static final SimpleDateFormat dMy_FORMAT = new SimpleDateFormat("dd.MM.yy");
 
 	public static final Pair<Integer, ApproximateAgeType> getApproximateAge(Date birthDate, Date deathDate) {
 		if (birthDate == null)
@@ -31,4 +34,19 @@ public final class DateHelper {
 	}
 	
 	
+	/**
+	 * Formats to "dd.MM.yy"
+	 * @return
+	 */
+	public static String formatDMY(Date date) {
+		if (date != null) {
+			return clone(dMy_FORMAT).format(date);
+		} else {
+			return "";
+		}
+	}
+	
+	private static SimpleDateFormat clone(SimpleDateFormat sdf) {
+		return (SimpleDateFormat) sdf.clone();
+	}
 }
