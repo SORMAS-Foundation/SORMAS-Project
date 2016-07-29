@@ -135,7 +135,7 @@ public class CaseController {
         	}
         });
         
-        caseEditForm.setStatusChangeButtons(
+        caseEditForm.setStatusChangeButtons(caze.getCaseStatus(),
         		CaseHelper.getPossibleStatusChanges(caze.getCaseStatus(), UserRole.SURVEILLANCE_SUPERVISOR), 
         		status -> {
         			if (editView.isModified()) {

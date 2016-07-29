@@ -13,6 +13,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseHelper;
 import de.symeda.sormas.api.caze.CaseStatus;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
@@ -23,6 +24,7 @@ import de.symeda.sormas.ui.utils.LayoutUtil;
 public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	
 	private static final String STATUS_CHANGE = "statusChange";
+	private static final String STATUS_BACK = "statusBack";
 
     private static final String HTML_LAYOUT = 
     		LayoutUtil.h3(CssStyles.VSPACE3, "Case data")+
@@ -83,15 +85,21 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
     			CaseDataDto.CONTACT_SUPERVISOR, CaseDataDto.CONTACT_OFFICER);
 	}
     
-    public void setStatusChangeButtons(Iterable<CaseStatus> statuses, Consumer<CaseStatus> statusChangeConsumer) {
+    public void setStatusChangeButtons(CaseStatus currentStatus, Iterable<CaseStatus> statuses, Consumer<CaseStatus> statusChangeConsumer) {
     	
     	statusChangeLayout.removeAllComponents();
     	
     	for (final CaseStatus status : statuses) {
         	Button button = new Button();
-        	String caption = I18nProperties.getButtonCaption(getPropertyI18nPrefix()+"."+STATUS_CHANGE, "%s");
+        	boolean isBackward = CaseHelper.isBackward(currentStatus, status);
+        	String caption = I18nProperties.getButtonCaption(
+        			getPropertyI18nPrefix()+"."+ (isBackward ? STATUS_BACK : STATUS_CHANGE), "%s");
         	button.setCaption(String.format(caption, status.toString()));
-        	button.addStyleName(ValoTheme.BUTTON_PRIMARY);
+        	if (CaseHelper.isPrimary(currentStatus, status)) {
+        		button.addStyleName(ValoTheme.BUTTON_PRIMARY);
+        	} else if (isBackward) {
+        		button.addStyleName(ValoTheme.BUTTON_LINK);
+        	}
         	button.addStyleName(CssStyles.FORCE_CAPTION);
         	button.setWidth(100, Unit.PERCENTAGE);
         	button.addClickListener(e -> statusChangeConsumer.accept(status));

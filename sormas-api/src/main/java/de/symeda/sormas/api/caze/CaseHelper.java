@@ -26,4 +26,36 @@ public final class CaseHelper {
 		
 		throw new UnsupportedOperationException("User role not implemented: " + userRole);
 	}
+	
+	public static boolean isPrimary(CaseStatus currentStatus, CaseStatus nextStatus) {
+		
+		switch (currentStatus) {
+		case POSSIBLE:
+			return nextStatus == CaseStatus.INVESTIGATED;
+		case INVESTIGATED:
+			return nextStatus == CaseStatus.SUSPECT;
+		case SUSPECT:
+			return false;
+		case NO_CASE:
+			return false;
+		default:
+			return false;
+		}
+	}
+	
+	public static boolean isBackward(CaseStatus currentStatus, CaseStatus nextStatus) {
+		
+		switch (currentStatus) {
+		case POSSIBLE:
+			return false;
+		case INVESTIGATED:
+			return nextStatus == CaseStatus.POSSIBLE;
+		case SUSPECT:
+			return nextStatus == CaseStatus.INVESTIGATED;
+		case NO_CASE:
+			return nextStatus == CaseStatus.INVESTIGATED;
+		default:
+			return false;
+		}
+	}
 }
