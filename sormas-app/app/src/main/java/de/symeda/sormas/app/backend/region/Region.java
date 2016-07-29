@@ -4,6 +4,7 @@ import com.j256.ormlite.table.DatabaseTable;
 
 import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
@@ -21,8 +22,12 @@ public class Region extends AbstractDomainObject {
 
 	public static final String NAME = "name";
 	public static final String DISTRICTS = "districts";
-	
+
+	@Column
 	private String name;
+
+	@OneToMany(mappedBy = District.REGION, cascade = {}, fetch = FetchType.LAZY)
+	@OrderBy(District.NAME)
 	private List<District> districts;
 	
 	public String getName() {
@@ -32,8 +37,6 @@ public class Region extends AbstractDomainObject {
 		this.name = name;
 	}
 	
-	@OneToMany(mappedBy = District.REGION, cascade = {}, fetch = FetchType.LAZY)
-	@OrderBy(District.NAME)
 	public List<District> getDistricts() {
 		return districts;
 	}

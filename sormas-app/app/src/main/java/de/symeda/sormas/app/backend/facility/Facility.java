@@ -3,6 +3,7 @@ package de.symeda.sormas.app.backend.facility;
 import com.j256.ormlite.table.DatabaseTable;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -23,10 +24,14 @@ public class Facility extends AbstractDomainObject {
 
 	public static final String NAME = "name";
 	public static final String LOCATION = "location";
-	
+
+	@Column
 	private String name;
+	@ManyToOne(cascade = CascadeType.ALL)
 	private Location location;
+	@Enumerated(EnumType.STRING)
 	private FacilityType type;
+	@Column
 	private boolean publicOwnership;
 	
 	public String getName() {
@@ -36,7 +41,6 @@ public class Facility extends AbstractDomainObject {
 		this.name = name;
 	}
 
-	@ManyToOne(cascade = CascadeType.ALL)
 	public Location getLocation() {
 		return location;
 	}
@@ -44,7 +48,6 @@ public class Facility extends AbstractDomainObject {
 		this.location = location;
 	}
 	
-	@Enumerated(EnumType.STRING)
 	public FacilityType getType() {
 		return type;
 	}

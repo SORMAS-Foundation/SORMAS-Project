@@ -34,22 +34,26 @@ public class User extends AbstractDomainObject {
 	public static final String REGION = "region";
 	public static final String USER_ROLES = "userRoles";
 
-	
+	@Column(nullable = false)
 	private String userName;
+	@Column(nullable = false)
+	private boolean active;
 
-	private boolean active = true;
-
+	@Column(nullable = false)
 	private String firstName;
+	@Column(nullable = false)
 	private String lastName;
+	@Column
 	private String userEmail;
+	@Column
 	private String phone;
+	@ManyToOne(cascade = CascadeType.ALL)
 	private Location address;
-	
+	@ManyToOne(cascade = {})
 	private Region region;
 	@ForeignCollectionField(eager = true)
 	private Collection<UserRoleToUser> userRoles;
 	
-	@Column(nullable = false)
 	public String getUserName() {
 		return userName;
 	}
@@ -57,7 +61,6 @@ public class User extends AbstractDomainObject {
 		this.userName = userName;
 	}
 	
-	@Column(nullable = false)
 	public boolean isAktiv() {
 		return active;
 	}
@@ -65,7 +68,6 @@ public class User extends AbstractDomainObject {
 		this.active = aktiv;
 	}
 	
-	@Column(nullable = false)
 	public String getFirstName() {
 		return firstName;
 	}
@@ -73,7 +75,6 @@ public class User extends AbstractDomainObject {
 		this.firstName = firstName;
 	}
 	
-	@Column(nullable = false)
 	public String getLastName() {
 		return lastName;
 	}
@@ -95,7 +96,6 @@ public class User extends AbstractDomainObject {
 		this.phone = phone;
 	}
 	
-	@ManyToOne(cascade = CascadeType.ALL)
 	public Location getAddress() {
 		return address;
 	}
@@ -103,7 +103,6 @@ public class User extends AbstractDomainObject {
 		this.address = address;
 	}
 
-	@ManyToOne(cascade = {})
 	public Region getRegion() {
 		return region;
 	}

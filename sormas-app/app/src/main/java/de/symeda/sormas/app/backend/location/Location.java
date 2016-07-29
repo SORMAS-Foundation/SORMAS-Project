@@ -19,20 +19,26 @@ public class Location extends AbstractDomainObject {
 
 	public static final String TABLE_NAME = "location";
 
-
+	@Column(length = 255)
 	private String address;
+	@Column(length = 255)
 	private String details;
+	@Column(length = 255)
 	private String city;
-	
+
+	@ManyToOne(cascade = {})
 	private Region region;
+	@ManyToOne(cascade = {})
 	private District district;
+	@ManyToOne(cascade = {})
 	private Community community;
-	
+
+	@Column(columnDefinition = "float8")
 	private Float latitude;
+	@Column(columnDefinition = "float8")
 	private Float longitude;
 
 	
-	@Column(length = 255)
 	public String getAddress() {
 		return address;
 	}
@@ -40,7 +46,6 @@ public class Location extends AbstractDomainObject {
 		this.address = address;
 	}
 
-	@Column(length = 255)
 	public String getDetails() {
 		return details;
 	}
@@ -48,7 +53,6 @@ public class Location extends AbstractDomainObject {
 		this.details = details;
 	}
 	
-	@Column(length = 255)
 	public String getCity() {
 		return city;
 	}
@@ -56,7 +60,6 @@ public class Location extends AbstractDomainObject {
 		this.city = city;
 	}
 
-	@ManyToOne(cascade = {})
 	public Region getRegion() {
 		return region;
 	}
@@ -64,7 +67,6 @@ public class Location extends AbstractDomainObject {
 		this.region = region;
 	}
 
-	@ManyToOne(cascade = {})
 	public District getDistrict() {
 		return district;
 	}
@@ -72,7 +74,6 @@ public class Location extends AbstractDomainObject {
 		this.district = district;
 	}
 
-	@ManyToOne(cascade = {})
 	public Community getCommunity() {
 		return community;
 	}
@@ -80,7 +81,6 @@ public class Location extends AbstractDomainObject {
 		this.community = community;
 	}
 	
-	@Column(columnDefinition = "float8")
 	public Float getLatitude() {
 		return latitude;
 	}
@@ -88,7 +88,6 @@ public class Location extends AbstractDomainObject {
 		this.latitude = latitude;
 	}
 	
-	@Column(columnDefinition = "float8")
 	public Float getLongitude() {
 		return longitude;
 	}

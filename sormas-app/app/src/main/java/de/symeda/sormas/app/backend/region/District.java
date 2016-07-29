@@ -5,6 +5,7 @@ import com.j256.ormlite.table.DatabaseTable;
 import java.util.List;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -25,9 +26,16 @@ public class District extends AbstractDomainObject {
 	public static final String NAME = "name";
 	public static final String REGION = "region";
 	public static final String COMMUNITIES = "communities";
-	
+
+	@Column
 	private String name;
+
+	@ManyToOne(cascade = CascadeType.REFRESH, optional = false)
+	@JoinColumn(nullable = false)
 	private Region region;
+
+	@OneToMany(mappedBy = Community.DISTRICT, cascade = {}, fetch = FetchType.LAZY)
+	@OrderBy(District.NAME)
 	private List<Community> communities;
 	
 	public String getName() {
@@ -37,8 +45,6 @@ public class District extends AbstractDomainObject {
 		this.name = name;
 	}
 	
-	@ManyToOne(cascade = CascadeType.REFRESH, optional = false)
-	@JoinColumn(nullable = false)
 	public Region getRegion() {
 		return region;
 	}
@@ -46,8 +52,6 @@ public class District extends AbstractDomainObject {
 		this.region = region;
 	}
 
-	@OneToMany(mappedBy = Community.DISTRICT, cascade = {}, fetch = FetchType.LAZY)
-	@OrderBy(District.NAME)
 	public List<Community> getCommunities() {
 		return communities;
 	}

@@ -3,6 +3,7 @@ package de.symeda.sormas.app.backend.region;
 import com.j256.ormlite.table.DatabaseTable;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -20,7 +21,10 @@ public class Community extends AbstractDomainObject {
 	public static final String NAME = "name";
 	public static final String DISTRICT = "district";
 
+	@Column
 	private String name;
+	@ManyToOne(cascade = CascadeType.REFRESH, optional = false)
+	@JoinColumn(nullable = false)
 	private District district;
 	
 	public String getName() {
@@ -30,8 +34,6 @@ public class Community extends AbstractDomainObject {
 		this.name = name;
 	}
 	
-	@ManyToOne(cascade = CascadeType.REFRESH, optional = false)
-	@JoinColumn(nullable = false)
 	public District getDistrict() {
 		return district;
 	}

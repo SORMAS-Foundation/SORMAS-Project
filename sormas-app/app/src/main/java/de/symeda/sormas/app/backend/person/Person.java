@@ -50,12 +50,14 @@ public class Person extends AbstractDomainObject {
 	private String lastName;
 	@Temporal(TemporalType.DATE)
 	private Date birthDate;
+	@Column
 	private Integer approximateAge;
 	@Enumerated(EnumType.STRING)
 	private ApproximateAgeType approximateAgeType;
 
 	@ManyToOne(cascade = CascadeType.ALL)
 	private Location address;
+	@Column(length = 255)
 	private String phone;
 	
 	// TODO private Ethnicity ethnicity;
@@ -64,8 +66,10 @@ public class Person extends AbstractDomainObject {
 
 	@OneToOne(cascade = CascadeType.ALL, mappedBy=Case.PERSON)
 	private Case caze;
-	
+
+	@Enumerated(EnumType.STRING)
 	private PresentCondition presentCondition;
+	@Column
 	private boolean dead;
 	@Temporal(TemporalType.DATE)
 	private Date deathDate;
@@ -80,6 +84,7 @@ public class Person extends AbstractDomainObject {
 
 	@Enumerated(EnumType.STRING)
 	private OccupationType occupationType;
+	@Column
 	private String occupationDetails;
 	@ManyToOne(cascade = {})
 	private Facility occupationFacility;
