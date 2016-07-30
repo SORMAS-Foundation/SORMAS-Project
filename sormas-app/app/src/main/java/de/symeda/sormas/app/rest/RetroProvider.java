@@ -24,9 +24,9 @@ public final class RetroProvider {
         // 10.0.2.2 points to localhost from emulator
         // SSL not working because of missing certificate
         retrofit = new Retrofit.Builder()
-                //.baseUrl("http://wahnschaffe.symeda:8080/sormas-rest/")
+                .baseUrl("http://wahnschaffe.symeda:8080/sormas-rest/")
                 //.baseUrl("http://szczesny.symeda:8080/sormas-rest/")
-                .baseUrl("http://10.0.2.2:8080/sormas-rest/")
+                //.baseUrl("http://10.0.2.2:8080/sormas-rest/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
     }

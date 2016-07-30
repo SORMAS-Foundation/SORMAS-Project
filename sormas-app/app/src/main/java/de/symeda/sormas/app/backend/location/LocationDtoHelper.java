@@ -3,6 +3,7 @@ package de.symeda.sormas.app.backend.location;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.facility.Facility;
 
 /**
@@ -20,7 +21,12 @@ public class LocationDtoHelper extends AdoDtoHelper<Location, LocationDto> {
 
         ado.setAddress(dto.getAddress());
         ado.setCity(dto.getCity());
-        //ado.setCommunity(dto.getCommunity());
-        // TODO ...
+        ado.setDetails(dto.getDetails());
+        ado.setLatitude(dto.getLatitude());
+        ado.setLongitude(dto.getLongitude());
+
+        ado.setCommunity(DatabaseHelper.getCommunityDao().queryUuid(dto.getCommunity().getUuid()));
+        ado.setDistrict(DatabaseHelper.getDistrictDao().queryUuid(dto.getDistrict().getUuid()));
+        ado.setRegion(DatabaseHelper.getRegionDao().queryUuid(dto.getRegion().getUuid()));
     }
 }

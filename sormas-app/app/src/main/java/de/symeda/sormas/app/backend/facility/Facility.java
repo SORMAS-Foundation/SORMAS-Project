@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.backend.facility;
 
+import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 import javax.persistence.CascadeType;
@@ -27,7 +28,7 @@ public class Facility extends AbstractDomainObject {
 
 	@Column
 	private String name;
-	@ManyToOne(cascade = CascadeType.ALL)
+	@DatabaseField(foreign = true, foreignAutoCreate = true, foreignAutoRefresh = true)
 	private Location location;
 	@Enumerated(EnumType.STRING)
 	private FacilityType type;

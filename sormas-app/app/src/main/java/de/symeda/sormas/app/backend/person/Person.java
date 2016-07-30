@@ -2,6 +2,7 @@ package de.symeda.sormas.app.backend.person;
 
 import android.databinding.Bindable;
 
+import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 import java.util.Date;
@@ -25,8 +26,6 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.location.Location;
-//import de.symeda.sormas.backend.facility.Facility;
-//import de.symeda.sormas.backend.location.Location;
 
 @Entity(name=Person.TABLE_NAME)
 @DatabaseTable(tableName = Person.TABLE_NAME)
@@ -55,7 +54,7 @@ public class Person extends AbstractDomainObject {
 	@Enumerated(EnumType.STRING)
 	private ApproximateAgeType approximateAgeType;
 
-	@ManyToOne(cascade = CascadeType.ALL)
+	@DatabaseField(foreign = true, foreignAutoCreate = true, foreignAutoRefresh = true)
 	private Location address;
 	@Column(length = 255)
 	private String phone;
@@ -64,7 +63,7 @@ public class Person extends AbstractDomainObject {
 	@Enumerated(EnumType.STRING)
 	private Sex sex;
 
-	@OneToOne(cascade = CascadeType.ALL, mappedBy=Case.PERSON)
+	@OneToOne(mappedBy=Case.PERSON)
 	private Case caze;
 
 	@Enumerated(EnumType.STRING)
@@ -73,11 +72,11 @@ public class Person extends AbstractDomainObject {
 	private boolean dead;
 	@Temporal(TemporalType.DATE)
 	private Date deathDate;
-	@ManyToOne(cascade = CascadeType.ALL)
+	@DatabaseField(foreign = true, foreignAutoCreate = true, foreignAutoRefresh = true)
 	private Location deathLocation;
 	@Temporal(TemporalType.DATE)
 	private Date burialDate;
-	@ManyToOne(cascade = CascadeType.ALL)
+	@DatabaseField(foreign = true, foreignAutoCreate = true, foreignAutoRefresh = true)
 	private Location burialLocation;
 	@Enumerated(EnumType.STRING)
 	private BurialConductor burialConductor;

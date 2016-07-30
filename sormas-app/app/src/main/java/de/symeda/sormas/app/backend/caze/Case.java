@@ -68,20 +68,20 @@ public class Case extends AbstractDomainObject {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date recoveredDate;
 
-	@ManyToOne(cascade = CascadeType.ALL)
+	@DatabaseField(foreign = true, foreignAutoCreate = true, foreignAutoRefresh = true)
 	private Location illLocation;
 
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne(cascade = {})
 	private User surveillanceOfficer;
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne(cascade = {})
 	private User surveillanceSupervisor;
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne(cascade = {})
 	private User caseOfficer;
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne(cascade = {})
 	private User caseSupervisor;
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne(cascade = {})
 	private User contactOfficer;
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne(cascade = {})
 	private User contactSupervisor;
 	
 	public Person getPerson() {

@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.backend.user;
 
+import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
 
@@ -47,7 +48,7 @@ public class User extends AbstractDomainObject {
 	private String userEmail;
 	@Column
 	private String phone;
-	@ManyToOne(cascade = CascadeType.ALL)
+	@DatabaseField(foreign = true, foreignAutoCreate = true, foreignAutoRefresh = true)
 	private Location address;
 	@ManyToOne(cascade = {})
 	private Region region;
