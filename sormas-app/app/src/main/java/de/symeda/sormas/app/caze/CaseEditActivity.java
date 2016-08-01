@@ -12,7 +12,6 @@ import android.widget.Toast;
 
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
-import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDao;
@@ -40,13 +39,13 @@ public class CaseEditActivity extends AppCompatActivity {
         if (toolbar != null) {
             setSupportActionBar(toolbar);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setTitle(getResources().getText(R.string.case_headline));
+            getSupportActionBar().setTitle(getResources().getText(R.string.headline_case));
         }
 
         // Creating titles for the tabs
         titles = new CharSequence[]{
-                getResources().getText(R.string.case_data_headline),
-                getResources().getText(R.string.patient_headline)
+                getResources().getText(R.string.headline_case_data),
+                getResources().getText(R.string.headline_patient)
         };
 
     }

@@ -2,6 +2,7 @@ package de.symeda.sormas.app.backend.person;
 
 import android.databinding.Bindable;
 
+import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
@@ -47,7 +48,8 @@ public class Person extends AbstractDomainObject {
 	private String firstName;
 	@Column(nullable = false)
 	private String lastName;
-	@Temporal(TemporalType.DATE)
+	//@Temporal(TemporalType.DATE)
+	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
 	private Date birthDate;
 	@Column
 	private Integer approximateAge;
@@ -104,7 +106,6 @@ public class Person extends AbstractDomainObject {
 		this.lastName = lastName;
 	}
 
-	@Bindable
 	public Date getBirthDate() {
 		return birthDate;
 	}

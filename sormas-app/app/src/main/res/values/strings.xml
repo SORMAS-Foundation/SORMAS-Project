@@ -5,16 +5,21 @@
     <string name="action_reload">Refresh</string>
     <string name="action_settings">Settings</string>
     <string name="action_save">Save</string>
+    <string name="action_clear">Clear</string>
 
     <!-- headlines -->
-    <string name="case_headline">Case</string>
-    <string name="cases_headline">Cases</string>
+    <string name="headline_date_picker">Select a date</string>
 
-    <string name="case_data_headline">Case data</string>
-    <string name="patient_headline">Patient</string>
-    <string name="symptoms_data_headline">Symptoms</string>
+    <string name="headline_case">Case</string>
+    <string name="headline_cases">Cases</string>
 
-    <string name="person_information_headline">Person information</string>
+    <string name="headline_case_data">Case data</string>
+    <string name="headline_patient">Patient</string>
+    <string name="headline_symptoms_data">Symptoms</string>
+
+    <string name="headline_person_information">Person information</string>
+
+    <!-- forms -->
     <string name="form_first_name">Surname</string>
     <string name="form_last_name">Other name</string>
     <string name="form_date_of_birth">Date of birth</string>

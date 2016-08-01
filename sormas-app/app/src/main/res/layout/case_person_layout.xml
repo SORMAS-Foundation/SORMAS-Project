@@ -17,7 +17,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="@string/person_information_headline"
+            android:text="@string/headline_person_information"
             android:id="@+id/person_information_headline"
             android:textColor="@android:color/tab_indicator_text"
             android:textSize="@dimen/abc_text_size_body_1_material"
@@ -48,32 +48,41 @@
                 android:text="@={person.lastName}"/>
         </android.support.design.widget.TextInputLayout>
 
+
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <android.support.design.widget.TextInputLayout
+            <LinearLayout
+                android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.5">
-                <!--<EditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="date"
-                    android:ems="10"
-                    android:date="@={person.birthDate}"
-                    android:layout_alignParentTop="true"
-                    android:hint="@string/form_date_of_birth" />-->
 
-                <EditText
-                    android:layout_width="match_parent"
+                <ImageButton
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:inputType="date"
-                    android:ems="10"
-                    android:layout_alignParentTop="true"
-                    android:hint="@string/form_date_of_birth" />
-            </android.support.design.widget.TextInputLayout>
+                    android:id="@+id/form_cp_btn_birth_date"
+                    android:src="@drawable/ic_event_black_24dp"
+                    android:layout_gravity="center"
+                    android:background="#ffffff"
+                    android:layout_marginRight="5dp" />
+
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <EditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="date"
+                        android:ems="10"
+                        android:layout_alignParentTop="true"
+                        android:id="@+id/form_cp_date_of_birth"
+                        android:hint="@string/form_date_of_birth" />
+                </android.support.design.widget.TextInputLayout>
+            </LinearLayout>
 
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
@@ -183,6 +192,7 @@
                     android:hint="@string/form_date_of_death" />
             </android.support.design.widget.TextInputLayout>
         </LinearLayout>
+
 
     </LinearLayout>
 </layout>
