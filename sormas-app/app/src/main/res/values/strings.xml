@@ -24,9 +24,10 @@
     <string name="form_last_name">Other name</string>
     <string name="form_date_of_birth">Date of birth</string>
     <string name="form_approximate_age">Approximate age (years)</string>
-    <string name="form_gender">Gender</string>
+    <string name="form_cp_gender">Gender</string>
     <string name="form_phone">Phonenumber</string>
     <string name="form_owner_of_phone">Owner of phone</string>
-    <string name="form_status_of_patient">Status of patient</string>
+    <string name="form_cp_status_of_patient">Status of patient</string>
     <string name="form_date_of_death">Date of death</string>
+    <string name="headline_gender">Gender</string>
 </resources>

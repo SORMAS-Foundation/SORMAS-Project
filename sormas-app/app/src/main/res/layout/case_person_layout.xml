@@ -84,6 +84,70 @@
                 </android.support.design.widget.TextInputLayout>
             </LinearLayout>
 
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:paddingTop="@dimen/spinner_padding"
+                android:paddingBottom="@dimen/spinner_padding">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/form_cp_status_of_patient"
+                    android:textSize="@dimen/field_caption_size"
+                    android:layout_marginLeft="@dimen/field_caption_margin_left"
+                    android:layout_marginBottom="@dimen/field_caption_margin_bottom" />
+
+                <Spinner
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/form_cp_status_of_patient"
+                    android:ems="10"
+                    android:layout_alignParentTop="true"
+                    style="@style/Base.Widget.AppCompat.Spinner.Underlined" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5">
+
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/form_cp_btn_date_of_death"
+                    android:src="@drawable/ic_event_black_24dp"
+                    android:layout_gravity="center"
+                    android:background="#ffffff"
+                    android:layout_marginRight="5dp" />
+
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <EditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="date"
+                        android:ems="10"
+                        android:layout_alignParentTop="true"
+                        android:id="@+id/form_cp_date_of_death"
+                        android:hint="@string/form_date_of_death" />
+                </android.support.design.widget.TextInputLayout>
+            </LinearLayout>
+
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -97,6 +161,7 @@
                     android:layout_alignParentTop="true"
                     android:hint="@string/form_approximate_age" />
             </android.support.design.widget.TextInputLayout>
+
         </LinearLayout>
 
         <LinearLayout
@@ -104,24 +169,37 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <android.support.design.widget.TextInputLayout
+            <LinearLayout
+                android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.5">
+                android:layout_weight="0.5"
+                android:paddingTop="@dimen/spinner_padding"
+                android:paddingBottom="@dimen/spinner_padding">
 
-                <EditText
+                <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="date"
+                    android:text="@string/form_cp_gender"
+                    android:textSize="@dimen/field_caption_size"
+                    android:layout_marginLeft="@dimen/field_caption_margin_left"
+                    android:layout_marginBottom="@dimen/field_caption_margin_bottom" />
+
+                <Spinner
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/form_cp_gender"
                     android:ems="10"
                     android:layout_alignParentTop="true"
-                    android:hint="@string/form_gender" />
-            </android.support.design.widget.TextInputLayout>
+                    style="@style/Base.Widget.AppCompat.Spinner.Underlined" />
+
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="0.5">
+
             </LinearLayout>
         </LinearLayout>
 
@@ -156,40 +234,6 @@
                     android:ems="10"
                     android:layout_alignParentTop="true"
                     android:hint="@string/form_owner_of_phone" />
-            </android.support.design.widget.TextInputLayout>
-        </LinearLayout>
-
-
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.5">
-
-                <EditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="date"
-                    android:ems="10"
-                    android:layout_alignParentTop="true"
-                    android:hint="@string/form_status_of_patient" />
-            </android.support.design.widget.TextInputLayout>
-
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.5">
-                <EditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="text"
-                    android:ems="10"
-                    android:layout_alignParentTop="true"
-                    android:hint="@string/form_date_of_death" />
             </android.support.design.widget.TextInputLayout>
         </LinearLayout>
 
