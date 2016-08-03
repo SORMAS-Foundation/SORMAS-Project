@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.util;
 
+import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.view.View;
@@ -15,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 
@@ -30,7 +32,7 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
      * @param dateFieldId
      * @param btnDatePickerId
      */
-    protected void addDateField(final int dateFieldId, int btnDatePickerId) {
+    protected void addDateField(final int dateFieldId, int btnDatePickerId, final DatePickerDialog.OnDateSetListener ...moreListeners) {
         final TextView dateField = (TextView) getView().findViewById(dateFieldId);
         //dateField.setEnabled(false);
 
@@ -49,7 +51,9 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
                         model.put(dateFieldId, DateHelper.getDateZero(yy,mm,dd));
                         // Set value to ui
                         dateField.setText(DateHelper.formatDDMMYY((Date) model.get(dateFieldId)));
-
+                        for( DatePickerDialog.OnDateSetListener listener:moreListeners) {
+                            listener.onDateSet(view,yy,mm,dd);
+                        }
                     }
                     @Override
                     public void onClear() {
@@ -73,7 +77,7 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
     protected void addSpinnerField(final int spinnerFieldId, Class enumClass, final AdapterView.OnItemSelectedListener ...moreListeners) {
         final Spinner spinner = (Spinner) getView().findViewById(spinnerFieldId);
 
-        List<Item> items = DataHelper.getEnumItems(enumClass);
+        List<Item> items = DataUtils.getEnumItems(enumClass);
         ArrayAdapter<Item> adapter = new ArrayAdapter<Item>(
                 getActivity(),
                 android.R.layout.simple_spinner_item,
@@ -109,6 +113,11 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
             }
             spinner.setSelection(i);
         }
+    }
+
+    protected void deactivateField(View v) {
+        v.setEnabled(false);
+        v.clearFocus();
     }
 
 

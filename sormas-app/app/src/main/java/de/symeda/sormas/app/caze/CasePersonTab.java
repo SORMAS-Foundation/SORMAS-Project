@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.caze;
 
+import android.app.DatePickerDialog;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -7,13 +8,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.DatePicker;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.Date;
 
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
@@ -21,8 +23,10 @@ import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.databinding.CasePersonLayoutBinding;
+import de.symeda.sormas.app.util.DateUtils;
 import de.symeda.sormas.app.util.FormTab;
 import de.symeda.sormas.app.util.Item;
+
 
 /**
  * Created by Stefan Szczesny on 27.07.2016.
@@ -49,18 +53,34 @@ public class CasePersonTab extends FormTab {
         final Person person = caze.getPerson();
         binding.setPerson(person);
 
-        // binding non-string-fields to ui
+        // binding non-string-fields to model
         getModel().put(R.id.form_cp_date_of_birth,caze.getPerson().getBirthDate());
-        addDateField(R.id.form_cp_date_of_birth, R.id.form_cp_btn_birth_date);
-
         getModel().put(R.id.form_cp_gender,caze.getPerson().getSex());
+        getModel().put(R.id.form_cp_date_of_death,caze.getPerson().getDeathDate());
+        getModel().put(R.id.form_cp_status_of_patient,caze.getPerson().getPresentCondition());
+
+
+        // date of birth
+        addDateField(R.id.form_cp_date_of_birth, R.id.form_cp_btn_birth_date, new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int yy, int mm, int dd) {
+                updateApproximateAgeField();
+            }
+        });
+
+        // gender
         addSpinnerField(R.id.form_cp_gender, Sex.class);
 
+        // date of death
+        addDateField(R.id.form_cp_date_of_death, R.id.form_cp_btn_date_of_death, new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int yy, int mm, int dd) {
+                updateApproximateAgeField();
+            }
+        });
 
-        getModel().put(R.id.form_cp_date_of_death,caze.getPerson().getDeathDate());
-        addDateField(R.id.form_cp_date_of_death, R.id.form_cp_btn_date_of_death);
 
-        getModel().put(R.id.form_cp_status_of_patient,caze.getPerson().getPresentCondition());
+        // status of patient
         final TextView dateOfDeathField = (TextView) getView().findViewById(R.id.form_cp_date_of_death);
         addSpinnerField(R.id.form_cp_status_of_patient, PresentCondition.class, new AdapterView.OnItemSelectedListener() {
             @Override
@@ -71,18 +91,37 @@ public class CasePersonTab extends FormTab {
                     dateOfDeathField.setEnabled(true);
                 }
                 else {
-                    dateOfDeathField.setEnabled(false);
-                    dateOfDeathField.clearFocus();
+                    deactivateField(dateOfDeathField);
                 }
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                dateOfDeathField.setEnabled(false);
-                dateOfDeathField.clearFocus();
+                deactivateField(dateOfDeathField);
             }
         });
 
+    }
+
+    private void updateApproximateAgeField() {
+        Date birthDate = (Date)getModel().get(R.id.form_cp_date_of_birth);
+        TextView approximateAgeTextField = (TextView) getView().findViewById(R.id.form_cp_approximate_age);
+        if(birthDate!=null) {
+            deactivateField(approximateAgeTextField);
+            Date to = new Date();
+            if((Date)getModel().get(R.id.form_cp_date_of_death)!= null){
+                to = (Date)getModel().get(R.id.form_cp_date_of_death);
+            }
+            Float approximateAgeYears = DateUtils.getApproximateAgeYears(birthDate,to);
+            String age = String.format("%.2f", approximateAgeYears);
+            if(approximateAgeYears>=1) {
+                age = String.valueOf(Math.round(approximateAgeYears));
+            }
+            approximateAgeTextField.setText(age);
+        }
+        else {
+            approximateAgeTextField.setEnabled(true);
+        }
     }
 
     @Override

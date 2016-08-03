@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * Created by Stefan Szczesny on 02.08.2016.
  */
-public class DataHelper {
+public class DataUtils {
 
     public static <E>  List<Item> getEnumItems(Class<E> clazz) {
 

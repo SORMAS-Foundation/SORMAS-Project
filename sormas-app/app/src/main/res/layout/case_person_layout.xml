@@ -157,7 +157,7 @@
                     android:layout_height="wrap_content"
                     android:inputType="text"
                     android:ems="10"
-                    android:text="@{person.approximateAge.toString}"
+                    android:id="@+id/form_cp_approximate_age"
                     android:layout_alignParentTop="true"
                     android:hint="@string/form_approximate_age" />
             </android.support.design.widget.TextInputLayout>
