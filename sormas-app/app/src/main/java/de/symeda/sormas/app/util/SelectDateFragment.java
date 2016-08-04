@@ -24,7 +24,6 @@ public abstract class SelectDateFragment extends DialogFragment implements DateP
 
     public static final String DATE = "DATE";
 
-
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Date date = (Date) getArguments().get(DATE);
@@ -35,13 +34,14 @@ public abstract class SelectDateFragment extends DialogFragment implements DateP
         int yy = calendar.get(Calendar.YEAR);
         int mm = calendar.get(Calendar.MONTH);
         int dd = calendar.get(Calendar.DAY_OF_MONTH);
-        DatePickerDialog datePickerClear = new DatePickerDialog(getActivity(), this, yy, mm, dd);
+        final DatePickerDialog datePickerClear = new DatePickerDialog(getActivity(), this, yy, mm, dd);
         datePickerClear.setButton(
                 DialogInterface.BUTTON_NEUTRAL,
                 getResources().getText(R.string.action_clear),
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        datePickerClear.cancel();
                         onClear();
                     }
                 });

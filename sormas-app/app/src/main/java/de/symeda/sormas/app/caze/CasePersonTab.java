@@ -13,9 +13,11 @@ import android.widget.TextView;
 
 import java.util.Date;
 
+import de.symeda.sormas.api.person.ApproximateAgeType;
+import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
@@ -53,11 +55,12 @@ public class CasePersonTab extends FormTab {
         final Person person = caze.getPerson();
         binding.setPerson(person);
 
-        // binding non-string-fields to model
+        // ================ Person information ================
         getModel().put(R.id.form_cp_date_of_birth,caze.getPerson().getBirthDate());
         getModel().put(R.id.form_cp_gender,caze.getPerson().getSex());
         getModel().put(R.id.form_cp_date_of_death,caze.getPerson().getDeathDate());
         getModel().put(R.id.form_cp_status_of_patient,caze.getPerson().getPresentCondition());
+        getModel().put(R.id.form_cp_approximate_age,caze.getPerson().getApproximateAge());
 
 
         // date of birth
@@ -101,6 +104,12 @@ public class CasePersonTab extends FormTab {
             }
         });
 
+
+        // ================ Occupation ================
+        getModel().put(R.id.form_cp_occupation,caze.getPerson().getOccupationType());
+
+        addSpinnerField(R.id.form_cp_occupation, OccupationType.class);
+
     }
 
     private void updateApproximateAgeField() {
@@ -112,12 +121,14 @@ public class CasePersonTab extends FormTab {
             if((Date)getModel().get(R.id.form_cp_date_of_death)!= null){
                 to = (Date)getModel().get(R.id.form_cp_date_of_death);
             }
-            Float approximateAgeYears = DateUtils.getApproximateAgeYears(birthDate,to);
-            String age = String.format("%.2f", approximateAgeYears);
-            if(approximateAgeYears>=1) {
-                age = String.valueOf(Math.round(approximateAgeYears));
+            DataHelper.Pair<Integer, ApproximateAgeType> approximateAge = DateUtils.getApproximateAgeYears(birthDate,to);
+            String age = String.valueOf(approximateAge.getElement0());
+            if(ApproximateAgeType.MONTHS.equals(approximateAge.getElement1())) {
+                 age = String.format("%.2f", ((float)approximateAge.getElement0()/12));
             }
             approximateAgeTextField.setText(age);
+            getModel().put(R.id.form_cp_approximate_age, approximateAge.getElement0());
+            getModel().put(R.id.form_cp_approximate_age_type, approximateAge.getElement0());
         }
         else {
             approximateAgeTextField.setEnabled(true);
@@ -140,6 +151,12 @@ public class CasePersonTab extends FormTab {
         ((Person)ado).setBirthDate((Date)getModel().get(R.id.form_cp_date_of_birth));
         ((Person)ado).setSex((Sex)getModel().get(R.id.form_cp_gender));
         ((Person)ado).setPresentCondition((PresentCondition)getModel().get(R.id.form_cp_status_of_patient));
+        ((Person)ado).setDeathDate((Date)getModel().get(R.id.form_cp_date_of_death));
+        ((Person)ado).setApproximateAge((Integer)getModel().get(R.id.form_cp_approximate_age));
+        ((Person)ado).setApproximateAgeType((ApproximateAgeType)getModel().get(R.id.form_cp_approximate_age_type));
+
+        ((Person)ado).setOccupationType((OccupationType) getModel().get(R.id.form_cp_occupation));
+
         return ado;
     }
 }

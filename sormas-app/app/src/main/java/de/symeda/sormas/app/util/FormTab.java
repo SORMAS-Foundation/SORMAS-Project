@@ -58,7 +58,8 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
                     @Override
                     public void onClear() {
                         model.put(dateFieldId, null);
-                        dateField.setText(null);
+                        dateField.setText("");
+                        dateField.clearFocus();
                     }
                 };
                 Bundle dateBundle = new Bundle();

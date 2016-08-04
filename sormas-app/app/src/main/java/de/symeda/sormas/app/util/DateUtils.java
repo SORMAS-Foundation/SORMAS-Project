@@ -9,29 +9,34 @@ import org.joda.time.Years;
 
 import java.util.Date;
 
+import de.symeda.sormas.api.person.ApproximateAgeType;
+import de.symeda.sormas.api.utils.DataHelper.Pair;
+
 /**
  * Created by Stefan Szczesny on 03.08.2016.
  */
 public class DateUtils {
 
-    public static final float getApproximateAgeYears(Date birthDate, Date deathDate) {
+    /**
+     * JodaTime based
+     * @param birthDate
+     * @param deathDate
+     * @return
+     */
+    public static final Pair<Integer, ApproximateAgeType> getApproximateAgeYears(Date birthDate, Date deathDate) {
         if (birthDate == null)
-            return 0;
+            return Pair.createPair(null, ApproximateAgeType.YEARS);
 
         DateTime toDate = deathDate==null?DateTime.now(): new DateTime(deathDate);
         DateTime startDate = new DateTime(birthDate);
-
-        Period period = new Period(startDate, toDate);
-
-        // able to calculate whole months between two dates easily
         Years years = Years.yearsBetween(startDate, toDate);
 
         if(years.getYears()<1) {
             Months months = Months.monthsBetween(startDate, toDate);
-            return (float) months.getMonths()/12;
+            return Pair.createPair(months.getMonths(), ApproximateAgeType.MONTHS);
         }
         else {
-            return years.getYears();
+            return Pair.createPair(years.getYears(), ApproximateAgeType.YEARS);
         }
     }
 }
