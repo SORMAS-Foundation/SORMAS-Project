@@ -19,6 +19,8 @@ import java.util.Map;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.facility.FacilityDao;
 
 /**
  * Created by Stefan Szczesny on 01.08.2016.
@@ -71,14 +73,29 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
     }
 
     /**
-     * Fill the model-map and the ui for given Enum.
+     * Fill the spinner for the given enum, set the selected entry, register the base listeners and the given ones.
      * @param spinnerFieldId
      * @param enumClass
      */
     protected void addSpinnerField(final int spinnerFieldId, Class enumClass, final AdapterView.OnItemSelectedListener ...moreListeners) {
-        final Spinner spinner = (Spinner) getView().findViewById(spinnerFieldId);
-
         List<Item> items = DataUtils.getEnumItems(enumClass);
+        makeSpinnerField(spinnerFieldId, items, moreListeners);
+    }
+
+    /**
+     * Fill the spinner for facility selection.
+     * See {@see addSpinnerField()}
+     * @param spinnerFieldId
+     * @param moreListeners
+     */
+    protected void addFacilitySpinnerField(final int spinnerFieldId, final AdapterView.OnItemSelectedListener ...moreListeners) {
+        FacilityDao facilityDao = DatabaseHelper.getFacilityDao();
+        List<Item> items = DataUtils.getItems(facilityDao.queryForAll());
+        makeSpinnerField(spinnerFieldId,items, moreListeners);
+    }
+
+    private void makeSpinnerField(final int spinnerFieldId, List<Item> items, final AdapterView.OnItemSelectedListener[] moreListeners) {
+        final Spinner spinner = (Spinner) getView().findViewById(spinnerFieldId);
         ArrayAdapter<Item> adapter = new ArrayAdapter<Item>(
                 getActivity(),
                 android.R.layout.simple_spinner_item,
