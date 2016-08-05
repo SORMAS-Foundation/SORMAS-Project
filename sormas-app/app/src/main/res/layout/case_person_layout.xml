@@ -299,6 +299,62 @@
 
             </LinearLayout>
 
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/form_cp_occupation_details_view" >
+
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" >
+
+                    <EditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="date"
+                        android:ems="10"
+                        android:layout_alignParentTop="true"
+                        android:text="@={person.occupationDetails}"
+                        android:id="@+id/form_cp_occupation_details"/>
+                </android.support.design.widget.TextInputLayout>
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/form_cp_occupation_facility_view">
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="@dimen/spinner_padding"
+                    android:paddingBottom="@dimen/spinner_padding">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/headline_form_cp_occupation_facility"
+                        android:textSize="@dimen/field_caption_size"
+                        android:layout_marginLeft="@dimen/field_caption_margin_left"
+                        android:layout_marginBottom="@dimen/field_caption_margin_bottom" />
+
+                    <Spinner
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/form_cp_occupation_facility"
+                        android:ems="10"
+                        android:layout_alignParentTop="true"
+                        style="@style/Base.Widget.AppCompat.Spinner.Underlined" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
 
         </LinearLayout>
     </ScrollView>

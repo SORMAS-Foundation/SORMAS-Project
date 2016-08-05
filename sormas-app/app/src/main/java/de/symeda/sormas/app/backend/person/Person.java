@@ -212,7 +212,8 @@ public class Person extends AbstractDomainObject {
 	public void setOccupationType(OccupationType occupationType) {
 		this.occupationType = occupationType;
 	}
-	
+
+	@Bindable
 	public String getOccupationDetails() {
 		return occupationDetails;
 	}

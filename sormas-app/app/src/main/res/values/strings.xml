@@ -33,4 +33,10 @@
     <string name="headline_permanent_residence">Permanent residence</string>
     <string name="headline_occupation">Occupation</string>
     <string name="form_cp_occupation">Occupation</string>
+    <string name="headline_form_cp_occupation_details">Occupation details</string>
+    <string name="headline_form_cp_occupation_facility">Facility</string>
+    <string name="headline_form_cp_occupation_details_business">Type of business</string>
+    <string name="headline_form_cp_occupation_details_transport">Type of transport</string>
+    <string name="headline_form_cp_occupation_details_other">Please specify occupation</string>
+    <string name="headline_form_cp_occupation_details_healthcare">Position</string>
 </resources>

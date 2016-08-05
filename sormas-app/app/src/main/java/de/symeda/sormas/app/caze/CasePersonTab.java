@@ -9,11 +9,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.DatePicker;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.Date;
 
+import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.person.ApproximateAgeType;
+import de.symeda.sormas.api.person.CasePersonDto;
 import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
@@ -107,8 +111,66 @@ public class CasePersonTab extends FormTab {
 
         // ================ Occupation ================
         getModel().put(R.id.form_cp_occupation,caze.getPerson().getOccupationType());
+        getModel().put(R.id.form_cp_occupation_facility,caze.getPerson().getOccupationFacility());
 
-        addSpinnerField(R.id.form_cp_occupation, OccupationType.class);
+        final LinearLayout occupationDetailsLayout = (LinearLayout) getView().findViewById(R.id.form_cp_occupation_details_view);
+        final EditText occupationDetailsField = (EditText) getView().findViewById(R.id.form_cp_occupation_details);
+        final LinearLayout occupationFacilityLayout = (LinearLayout) getView().findViewById(R.id.form_cp_occupation_facility_view);
+        addSpinnerField(R.id.form_cp_occupation, OccupationType.class, new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+                Item item = (Item)parent.getItemAtPosition(position);
+                switch((OccupationType)item.getValue()) {
+                    case BUSINESSMAN_WOMAN:
+                    case TRANSPORTER:
+                    case OTHER:
+                        occupationDetailsLayout.setVisibility(View.VISIBLE);
+                        occupationFacilityLayout.setVisibility(View.INVISIBLE);
+                        break;
+                    case HEALTHCARE_WORKER:
+                        occupationDetailsLayout.setVisibility(View.VISIBLE);
+                        occupationFacilityLayout.setVisibility(View.VISIBLE);
+                        break;
+                    default:
+                        occupationDetailsLayout.setVisibility(View.INVISIBLE);
+                        occupationFacilityLayout.setVisibility(View.INVISIBLE);
+                        break;
+                }
+
+                switch((OccupationType)item.getValue()) {
+                    case BUSINESSMAN_WOMAN:
+                        occupationDetailsField.setHint(getResources().getString(R.string.headline_form_cp_occupation_details_business));
+                        break;
+                    case TRANSPORTER:
+                        occupationDetailsField.setHint(getResources().getString(R.string.headline_form_cp_occupation_details_transport));
+                        break;
+                    case OTHER:
+                        occupationDetailsField.setHint(getResources().getString(R.string.headline_form_cp_occupation_details_other));
+                        break;
+                    case HEALTHCARE_WORKER:
+                        occupationDetailsField.setHint(getResources().getString(R.string.headline_form_cp_occupation_details_healthcare));
+                        break;
+                    default:
+                        occupationDetailsField.setHint(getResources().getString(R.string.headline_form_cp_occupation_details));
+                        break;
+                }
+
+
+                if(item.getValue()!=null && !PresentCondition.ALIVE.equals(item.getValue())) {
+                    dateOfDeathField.setEnabled(true);
+                }
+                else {
+                    deactivateField(dateOfDeathField);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                deactivateField(dateOfDeathField);
+            }
+        });
+
 
     }
 
