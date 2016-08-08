@@ -39,4 +39,12 @@
     <string name="headline_form_cp_occupation_details_transport">Type of transport</string>
     <string name="headline_form_cp_occupation_details_other">Please specify occupation</string>
     <string name="headline_form_cp_occupation_details_healthcare">Position</string>
+    <string name="form_address">Address</string>
+    <string name="form_address_details">Details</string>
+    <string name="form_address_city">City</string>
+    <string name="form_address_ward">Ward</string>
+    <string name="form_address_lga">LGA</string>
+    <string name="form_address_state">State</string>
+    <string name="form_address_latitude">Latitude</string>
+    <string name="form_address_longitude">Longitude</string>
 </resources>

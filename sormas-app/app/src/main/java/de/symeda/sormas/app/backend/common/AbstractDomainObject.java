@@ -47,6 +47,10 @@ public abstract class AbstractDomainObject extends BaseObservable implements Ser
 	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = false)
 	private Date changeDate;
 
+	/**
+	 * Date when the entity was last updated from the server
+	 * or locally modified.
+	 */
 	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = false, version = true)
 	private Date localChangeDate;
 

@@ -15,7 +15,7 @@ import de.symeda.sormas.api.utils.DataHelper.Pair;
 public final class DateHelper {
 
 	private static final SimpleDateFormat dMy_FORMAT = new SimpleDateFormat("dd.MM.yy");
-	private static final SimpleDateFormat DDMMYY_FORMAT = new SimpleDateFormat("dd/MM/yy");
+	private static final SimpleDateFormat DDMMYY_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 
 	public static final Pair<Integer, ApproximateAgeType> getApproximateAge(Date birthDate, Date deathDate) {
 		if (birthDate == null)
@@ -54,7 +54,7 @@ public final class DateHelper {
 	 * Formats to "dd/MM/yy"
 	 * @return
 	 */
-	public static String formatDDMMYY(Date date) {
+	public static String formatDDMMYYYY(Date date) {
         if (date != null) {
             return clone(DDMMYY_FORMAT).format(date);
         } else {

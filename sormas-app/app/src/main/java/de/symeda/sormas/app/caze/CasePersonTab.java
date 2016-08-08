@@ -13,6 +13,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.Date;
+import java.util.Map;
 
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.OccupationType;
@@ -25,8 +26,13 @@ import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.facility.Facility;
+import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.backend.region.Community;
+import de.symeda.sormas.app.backend.region.District;
+import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.databinding.CasePersonLayoutBinding;
+import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.DateUtils;
 import de.symeda.sormas.app.util.FormTab;
 import de.symeda.sormas.app.util.Item;
@@ -106,6 +112,12 @@ public class CasePersonTab extends FormTab {
         updateApproximateAgeField();
 
 
+        // ================ Address ================
+        getModel().put(R.id.form_cp_address,null);
+        addLocationField(R.id.form_cp_address);
+
+
+
         // ================ Occupation ================
         getModel().put(R.id.form_cp_occupation,caze.getPerson().getOccupationType());
         getModel().put(R.id.form_cp_occupation_facility,caze.getPerson().getOccupationFacility());
@@ -117,10 +129,8 @@ public class CasePersonTab extends FormTab {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 Item item = (Item)parent.getItemAtPosition(position);
-                if(item!=null){
-                    updateVisibilityOccupationFields(item, occupationDetailsLayout, occupationFacilityLayout);
-                    updateHeadlineOccupationDetailsFields(item, occupationDetailsCaption);
-                }
+                updateVisibilityOccupationFields(item, occupationDetailsLayout, occupationFacilityLayout);
+                updateHeadlineOccupationDetailsFields(item, occupationDetailsCaption);
             }
 
             @Override
@@ -136,41 +146,52 @@ public class CasePersonTab extends FormTab {
     }
 
     private void updateHeadlineOccupationDetailsFields(Item item, TextView occupationDetailsCaption) {
-        switch((OccupationType)item.getValue()) {
-            case BUSINESSMAN_WOMAN:
-                occupationDetailsCaption.setText(getResources().getString(R.string.headline_form_cp_occupation_details_business));
-                break;
-            case TRANSPORTER:
-                occupationDetailsCaption.setText(getResources().getString(R.string.headline_form_cp_occupation_details_transport));
-                break;
-            case OTHER:
-                occupationDetailsCaption.setText(getResources().getString(R.string.headline_form_cp_occupation_details_other));
-                break;
-            case HEALTHCARE_WORKER:
-                occupationDetailsCaption.setText(getResources().getString(R.string.headline_form_cp_occupation_details_healthcare));
-                break;
-            default:
-                occupationDetailsCaption.setText(getResources().getString(R.string.headline_form_cp_occupation_details));
-                break;
+        if(item.getValue()!=null) {
+            switch ((OccupationType) item.getValue()) {
+                case BUSINESSMAN_WOMAN:
+                    occupationDetailsCaption.setText(getResources().getString(R.string.headline_form_cp_occupation_details_business));
+                    break;
+                case TRANSPORTER:
+                    occupationDetailsCaption.setText(getResources().getString(R.string.headline_form_cp_occupation_details_transport));
+                    break;
+                case OTHER:
+                    occupationDetailsCaption.setText(getResources().getString(R.string.headline_form_cp_occupation_details_other));
+                    break;
+                case HEALTHCARE_WORKER:
+                    occupationDetailsCaption.setText(getResources().getString(R.string.headline_form_cp_occupation_details_healthcare));
+                    break;
+                default:
+                    occupationDetailsCaption.setText(getResources().getString(R.string.headline_form_cp_occupation_details));
+                    break;
+            }
+        }
+        else {
+            occupationDetailsCaption.setText(getResources().getString(R.string.headline_form_cp_occupation_details));
         }
     }
 
     private void updateVisibilityOccupationFields(Item item, LinearLayout occupationDetailsLayout, LinearLayout occupationFacilityLayout) {
-        switch((OccupationType)item.getValue()) {
-            case BUSINESSMAN_WOMAN:
-            case TRANSPORTER:
-            case OTHER:
-                occupationDetailsLayout.setVisibility(View.VISIBLE);
-                occupationFacilityLayout.setVisibility(View.INVISIBLE);
-                break;
-            case HEALTHCARE_WORKER:
-                occupationDetailsLayout.setVisibility(View.VISIBLE);
-                occupationFacilityLayout.setVisibility(View.VISIBLE);
-                break;
-            default:
-                occupationDetailsLayout.setVisibility(View.INVISIBLE);
-                occupationFacilityLayout.setVisibility(View.INVISIBLE);
-                break;
+        if(item.getValue()!=null) {
+            switch ((OccupationType) item.getValue()) {
+                case BUSINESSMAN_WOMAN:
+                case TRANSPORTER:
+                case OTHER:
+                    occupationDetailsLayout.setVisibility(View.VISIBLE);
+                    occupationFacilityLayout.setVisibility(View.INVISIBLE);
+                    break;
+                case HEALTHCARE_WORKER:
+                    occupationDetailsLayout.setVisibility(View.VISIBLE);
+                    occupationFacilityLayout.setVisibility(View.VISIBLE);
+                    break;
+                default:
+                    occupationDetailsLayout.setVisibility(View.INVISIBLE);
+                    occupationFacilityLayout.setVisibility(View.INVISIBLE);
+                    break;
+            }
+        }
+        else {
+            occupationDetailsLayout.setVisibility(View.INVISIBLE);
+            occupationFacilityLayout.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -219,16 +240,49 @@ public class CasePersonTab extends FormTab {
     @Override
     protected AbstractDomainObject commit(AbstractDomainObject ado) {
         // Set value to model
-        ((Person)ado).setBirthDate((Date)getModel().get(R.id.form_cp_date_of_birth));
-        ((Person)ado).setSex((Sex)getModel().get(R.id.form_cp_gender));
-        ((Person)ado).setPresentCondition((PresentCondition)getModel().get(R.id.form_cp_status_of_patient));
-        ((Person)ado).setDeathDate((Date)getModel().get(R.id.form_cp_date_of_death));
-        ((Person)ado).setApproximateAge((Integer)getModel().get(R.id.form_cp_approximate_age));
-        ((Person)ado).setApproximateAgeType((ApproximateAgeType)getModel().get(R.id.form_cp_approximate_age_type));
+        Person person = (Person) ado;
+        person.setBirthDate((Date)getModel().get(R.id.form_cp_date_of_birth));
+        person.setSex((Sex)getModel().get(R.id.form_cp_gender));
+        person.setPresentCondition((PresentCondition)getModel().get(R.id.form_cp_status_of_patient));
+        person.setDeathDate((Date)getModel().get(R.id.form_cp_date_of_death));
+        person.setApproximateAge((Integer)getModel().get(R.id.form_cp_approximate_age));
+        person.setApproximateAgeType((ApproximateAgeType)getModel().get(R.id.form_cp_approximate_age_type));
 
-        ((Person)ado).setOccupationType((OccupationType) getModel().get(R.id.form_cp_occupation));
-        ((Person)ado).setOccupationFacility((Facility) getModel().get(R.id.form_cp_occupation_facility));
+        Map<Integer, Object> innerModel = (Map<Integer, Object>)getModel().get(R.id.form_cp_address);
+        for (Object value:innerModel.values()) {
+            if(value!=null) {
 
-        return ado;
+                Location location = null;
+                try {
+                    location = person.getAddress()!=null?person.getAddress(): DataUtils.createNew(Location.class);
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                } catch (java.lang.InstantiationException e) {
+                    e.printStackTrace();
+                }
+                location.setAddress((String)innerModel.get(R.id.form_location_address));
+                location.setDetails((String)innerModel.get(R.id.form_location_address_details));
+                location.setCity((String)innerModel.get(R.id.form_location_address_city));
+                location.setRegion((Region)innerModel.get(R.id.form_location_address_state));
+                location.setDistrict((District)innerModel.get(R.id.form_location_address_lga));
+                location.setCommunity((Community)innerModel.get(R.id.form_location_address_ward));
+                location.setLatitude((Float)innerModel.get(R.id.form_location_address_latitude));
+                location.setLongitude((Float)innerModel.get(R.id.form_location_address_longitude));
+
+                if(location.getUuid()==null) {
+                    location.setUuid(DataHelper.createUuid());
+                }
+
+                person.setAddress(location);
+
+                break;
+            }
+        }
+
+
+        person.setOccupationType((OccupationType) getModel().get(R.id.form_cp_occupation));
+        person.setOccupationFacility((Facility) getModel().get(R.id.form_cp_occupation_facility));
+
+        return person;
     }
 }

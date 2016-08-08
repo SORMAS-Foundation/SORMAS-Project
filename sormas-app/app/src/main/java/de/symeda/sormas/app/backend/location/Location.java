@@ -1,5 +1,7 @@
 package de.symeda.sormas.app.backend.location;
 
+import android.databinding.Bindable;
+
 import com.j256.ormlite.table.DatabaseTable;
 
 import javax.persistence.Column;
@@ -38,7 +40,7 @@ public class Location extends AbstractDomainObject {
 	@Column(columnDefinition = "float8")
 	private Float longitude;
 
-	
+	@Bindable
 	public String getAddress() {
 		return address;
 	}
@@ -46,13 +48,15 @@ public class Location extends AbstractDomainObject {
 		this.address = address;
 	}
 
+	@Bindable
 	public String getDetails() {
 		return details;
 	}
 	public void setDetails(String details) {
 		this.details = details;
 	}
-	
+
+	@Bindable
 	public String getCity() {
 		return city;
 	}
