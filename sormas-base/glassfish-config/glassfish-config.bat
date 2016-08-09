@@ -73,7 +73,7 @@ Echo Press [Enter] to continue...
 PAUSE >nul
 
 %ASADMIN% set server-config.security-service.activate-default-principal-to-role-mapping=true
-%ASADMIN% create-auth-realm --classname org.wamblee.glassfish.auth.FlexibleJdbcRealm --property "jaas.context=%DOMAIN_NAME%Realm:sql.password=SELECT password FROM users WHERE username\=? AND aktiv\=true:sql.groups=SELECT userrole FROM userroles INNER JOIN users ON userroles.user_id = users.id WHERE users.username\=?:sql.seed=SELECT seed FROM users WHERE username\=?:datasource.jndi=jdbc/%DOMAIN_NAME%UsersDataPool:assign-groups=AUTHED_USER:password.digest=SHA-256:charset=UTF-8" %DOMAIN_NAME%-realm
+%ASADMIN% create-auth-realm --classname org.wamblee.glassfish.auth.FlexibleJdbcRealm --property "jaas.context=%DOMAIN_NAME%Realm:sql.password=SELECT password FROM users WHERE username\=? AND aktiv\=true:sql.groups=SELECT userrole FROM userroles INNER JOIN users ON userroles.user_id\=users.id WHERE users.username\=?:sql.seed=SELECT seed FROM users WHERE username\=?:datasource.jndi=jdbc/%DOMAIN_NAME%UsersDataPool:assign-groups=AUTHED_USER:password.digest=SHA-256:charset=UTF-8" %DOMAIN_NAME%-realm
 %ASADMIN% set server-config.security-service.default-realm=%DOMAIN_NAME%-realm
 
 %ASADMIN% set server-config.http-service.sso-enabled=true
@@ -100,9 +100,9 @@ REM %ASADMIN% set-log-attributes com.sun.enterprise.server.logging.GFFileHandler
 %ASADMIN% set-log-levels javax.enterprise.system.util.level=SEVERE
 cp logback.xml %DOMAIN_DIR%\config\
 
-#REM Login-Auditierung aktivieren
-#%ASADMIN% set configs.config.server-config.security-service.audit-enabled=true
-#%ASADMIN% create-audit-module --classname=de.symeda.glassfish.audit.LoginAttemptAuditModule --target=server-config LoginAttemptAudit
+REM Login-Auditierung aktivieren
+REM %ASADMIN% set configs.config.server-config.security-service.audit-enabled=true
+REM %ASADMIN% create-audit-module --classname=de.symeda.glassfish.audit.LoginAttemptAuditModule --target=server-config LoginAttemptAudit
 
 Echo Press [Enter] to continue...
 PAUSE >nul
@@ -140,7 +140,7 @@ REM PAUSE >nul
 
 CALL %GLASSFISH_HOME%/bin/asadmin stop-domain %DOMAIN_NAME%
 
-Press [Enter] to restart server now. Cancel with STRG+C
+Echo Press [Enter] to restart server now. Cancel with STRG+C
 PAUSE >nul
 
 CALL %GLASSFISH_HOME%/bin/asadmin start-domain %DOMAIN_NAME%
