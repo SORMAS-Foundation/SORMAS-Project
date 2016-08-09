@@ -61,18 +61,36 @@ public class StartupShutdownService {
 
 	private void initUserMockData() {
 		if (userService.getAll().isEmpty()) {
-			userService.persist(MockDataGenerator.createUser(UserRole.SURVEILLANCE_SUPERVISOR));
-			userService.persist(MockDataGenerator.createUser(UserRole.SURVEILLANCE_SUPERVISOR));
-			userService.persist(MockDataGenerator.createUser(UserRole.SURVEILLANCE_OFFICER));
-			userService.persist(MockDataGenerator.createUser(UserRole.SURVEILLANCE_OFFICER));
-			userService.persist(MockDataGenerator.createUser(UserRole.SURVEILLANCE_OFFICER));
-			userService.persist(MockDataGenerator.createUser(UserRole.SURVEILLANCE_OFFICER));
-			userService.persist(MockDataGenerator.createUser(UserRole.SURVEILLANCE_OFFICER));
-			userService.persist(MockDataGenerator.createUser(UserRole.INFORMANT));
-			userService.persist(MockDataGenerator.createUser(UserRole.INFORMANT));
-			userService.persist(MockDataGenerator.createUser(UserRole.INFORMANT));
-			userService.persist(MockDataGenerator.createUser(UserRole.INFORMANT));
-			userService.persist(MockDataGenerator.createUser(UserRole.INFORMANT));
+			
+			Region region = regionService.getAll().get(0);
+
+			User admin = MockDataGenerator.createUser(null, "ad", "min", "");
+			userService.persist(admin);
+
+			User surveillanceSupervisor = MockDataGenerator.createUser(UserRole.SURVEILLANCE_SUPERVISOR, "Sunkanmi", "Sesay", "Sunkanmi");
+			surveillanceSupervisor.setRegion(region);
+			userService.persist(surveillanceSupervisor);
+
+			User surveillanceOfficer = MockDataGenerator.createUser(UserRole.SURVEILLANCE_OFFICER, "Sanaa", "Obasanjo", "Sanaa");
+			surveillanceOfficer.setRegion(region);
+			userService.persist(surveillanceOfficer);
+
+			User informant = MockDataGenerator.createUser(UserRole.INFORMANT, "Sangodele", "Ibori", "Sango");
+			informant.setRegion(region);
+			informant.setAssociatedOfficer(surveillanceOfficer);
+			userService.persist(informant);
+
+			
+//			userService.persist(MockDataGenerator.createUser(UserRole.SURVEILLANCE_OFFICER));
+//			userService.persist(MockDataGenerator.createUser(UserRole.SURVEILLANCE_OFFICER));
+//			userService.persist(MockDataGenerator.createUser(UserRole.SURVEILLANCE_OFFICER));
+//			userService.persist(MockDataGenerator.createUser(UserRole.SURVEILLANCE_OFFICER));
+//			userService.persist(MockDataGenerator.createUser(UserRole.SURVEILLANCE_OFFICER));
+//			userService.persist(MockDataGenerator.createUser(UserRole.INFORMANT));
+//			userService.persist(MockDataGenerator.createUser(UserRole.INFORMANT));
+//			userService.persist(MockDataGenerator.createUser(UserRole.INFORMANT));
+//			userService.persist(MockDataGenerator.createUser(UserRole.INFORMANT));
+//			userService.persist(MockDataGenerator.createUser(UserRole.INFORMANT));
 		}
 	}
 

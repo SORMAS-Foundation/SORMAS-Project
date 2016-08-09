@@ -9,3 +9,5 @@
 /sormas-rest/bin
 /sormas-surveillance-ui/bin
 /sormas-widgetset/bin
+/deploy/bundles
+deploy

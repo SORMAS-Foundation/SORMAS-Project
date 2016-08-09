@@ -1,21 +1,23 @@
 package de.symeda.sormas.ui.surveillance;
 
+import java.util.Properties;
+
 import javax.servlet.annotation.WebServlet;
 
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.annotations.Viewport;
 import com.vaadin.annotations.Widgetset;
+import com.vaadin.server.DeploymentConfiguration;
 import com.vaadin.server.Responsive;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
 
-import de.symeda.sormas.ui.common.login.AccessControl;
-import de.symeda.sormas.ui.common.login.BasicAccessControl;
-import de.symeda.sormas.ui.common.login.LoginScreen;
-import de.symeda.sormas.ui.common.login.LoginScreen.LoginListener;
+import de.symeda.sormas.ui.login.LoginHelper;
+import de.symeda.sormas.ui.login.LoginScreen;
+import de.symeda.sormas.ui.login.LoginScreen.LoginListener;
 
 /**
  * Main UI class of the application that shows either the login screen or the
@@ -31,9 +33,6 @@ import de.symeda.sormas.ui.common.login.LoginScreen.LoginListener;
 @Widgetset("de.symeda.sormas.SormasWidgetset")
 public class SurveillanceUI extends UI {
 
-    private AccessControl accessControl = new BasicAccessControl();
-    
-
     @Override
     protected void init(VaadinRequest vaadinRequest) {
         Responsive.makeResponsive(this);
@@ -41,15 +40,17 @@ public class SurveillanceUI extends UI {
         getPage().setTitle("Surveillance");
         
         // XXX
-        accessControl.signIn("admin", "");
+        //accessControl.signIn("admin", "");
         
-        if (!accessControl.isUserSignedIn()) {
-            setContent(new LoginScreen(accessControl, new LoginListener() {
+        if (!LoginHelper.isUserSignedIn()) {
+        	
+            setContent(new LoginScreen(new LoginListener() {
                 @Override
                 public void loginSuccessful() {
                     showMainView();
                 }
             }));
+            
         } else {
             showMainView();
         }
@@ -65,13 +66,18 @@ public class SurveillanceUI extends UI {
         return (SurveillanceUI) UI.getCurrent();
     }
 
-    public AccessControl getAccessControl() {
-        return accessControl;
-    }
-
     @WebServlet(urlPatterns = "/*", name = "SurveillanceUIServlet", asyncSupported = true)
     @VaadinServletConfiguration(ui = SurveillanceUI.class, productionMode = false)
     public static class SurveillanceUIServlet extends VaadinServlet {
 
+    	//private static final String VAADIN_RESOURCES = "/sormas-widgetset";
+
+    	@Override
+    	protected DeploymentConfiguration createDeploymentConfiguration(Properties initParameters) {
+
+    		//initParameters.setProperty(Constants.PARAMETER_VAADIN_RESOURCES, VAADIN_RESOURCES);
+    		
+    		return super.createDeploymentConfiguration(initParameters);
+    	}
     }
 }

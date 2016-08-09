@@ -53,6 +53,8 @@ public class User extends AbstractDomainObject {
 	private Region region;
 	private Set<UserRole> userRoles;
 	
+	private User associatedOfficer;
+	
 	@Column(nullable = false)
 	public String getUserName() {
 		return userName;
@@ -147,6 +149,13 @@ public class User extends AbstractDomainObject {
 		this.userRoles = userRoles;
 	}
 	
+	@ManyToOne(cascade = {})
+	public User getAssociatedOfficer() {
+		return associatedOfficer;
+	}
+	public void setAssociatedOfficer(User associatedOfficer) {
+		this.associatedOfficer = associatedOfficer;
+	}
 	@Override
 	public String toString() {
 		return getFirstName() + " " + getLastName();

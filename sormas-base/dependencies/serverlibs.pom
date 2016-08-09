@@ -1,0 +1,34 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<artifactId>sormas-serverlibs</artifactId>
+	<description>Lists the jars that need to be deployed on the server (for example, in /lib) are set to provided in the projects. This is usually to jars that are not OSGI-compliant.</description>
+	<packaging>pom</packaging>
+
+    <parent>
+        <artifactId>sormas-base</artifactId>
+        <groupId>de.symeda.sormas</groupId>
+        <version>0.0.1-SNAPSHOT</version>
+        <relativePath>../</relativePath>
+    </parent>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<scope>compile</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.wamblee.glassfish</groupId>
+			<artifactId>flexiblejdbcrealm-deploy</artifactId>
+			<version>1.2</version>
+			<scope>compile</scope>
+			<classifier>all</classifier>
+		</dependency>
+		
+	</dependencies>
+
+</project>
+

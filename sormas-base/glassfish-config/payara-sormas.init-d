@@ -1,0 +1,28 @@
+#! /bin/sh
+### BEGIN INIT INFO
+# Provides:          Start and stop script for Payara-Server
+# Required-Start:    postgresql
+# Required-Stop:     postgresql
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Payara-Server v4.1
+# Description:       Payara-Server v4.1
+### END INIT INFO
+# Author: Martin Wahnschaffe <m.wahnschaffe@symeda.de>
+
+
+GLASSFISH_HOME=${GLASSFISH_HOME:-"/opt/payara-sormas/glassfish"}
+
+case "$1" in
+start)
+    su - glassfish -c "$GLASSFISH_HOME/bin/asadmin start-domain sormas"
+    ;;
+stop)
+    su - glassfish -c "$GLASSFISH_HOME/bin/asadmin stop-domain sormas"
+    ;;
+restart)
+    su - glassfish -c "$GLASSFISH_HOME/bin/asadmin restart-domain sormas"
+    ;;
+*)
+    echo "usage: $0 (start|stop|restart|help)"
+esac

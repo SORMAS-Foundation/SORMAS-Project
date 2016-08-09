@@ -14,6 +14,7 @@ import java.util.Random;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseStatus;
 import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.user.UserHelper;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.facility.Facility;
@@ -82,14 +83,16 @@ public class MockDataGenerator {
     	return person;
     }
     
-    public static User createUser(UserRole userRole) {
+    public static User createUser(UserRole userRole, String firstName, String lastName, String password) {
     	User user = new User();
-    	user.setFirstName(generateFirstName());
-    	user.setLastName(generateLastName());
-    	user.setUserRoles(new HashSet<UserRole>(Arrays.asList(userRole)));
-    	user.setUserName(user.getFirstName() + user.getLastName());
-    	user.setPassword("");
-    	user.setSeed("");
+    	user.setFirstName(firstName);
+    	user.setLastName(lastName);
+    	if (userRole != null) {
+    		user.setUserRoles(new HashSet<UserRole>(Arrays.asList(userRole)));
+    	}
+    	user.setUserName(UserHelper.getSuggestedUsername(user.getFirstName(), user.getLastName()));
+		user.setSeed(PasswordHelper.createPass(16));
+		user.setPassword(PasswordHelper.encodePassword(password, user.getSeed()));
     	return user;
     }
     
@@ -103,10 +106,11 @@ public class MockDataGenerator {
                 + word2[random.nextInt(word2.length)];
     }
 
-	private static String generateFirstName() {
+	public static String generateFirstName() {
 	    return firstnames[random.nextInt(firstnames.length)];
 	}
-	private static String generateLastName() {
+	
+	public static String generateLastName() {
 		return lastnames[random.nextInt(lastnames.length)];
 	}
 

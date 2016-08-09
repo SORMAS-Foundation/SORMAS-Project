@@ -32,10 +32,6 @@ public class CaseController {
     	
     }
     
-    public boolean isAdmin() {
-    	return SurveillanceUI.get().getAccessControl().isUserInRole("admin");
-    }
-
     public void registerViews(Navigator navigator) {
     	navigator.addView(CasesView.VIEW_NAME, CasesView.class);
     	navigator.addView(CaseDataView.VIEW_NAME, CaseDataView.class);

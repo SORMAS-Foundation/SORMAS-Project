@@ -1,8 +1,6 @@
 package de.symeda.sormas.backend.user;
 
-import java.util.Arrays;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -50,17 +48,15 @@ public class UserFacadeEjb implements UserFacade {
 	public UserDto getByUuid(String uuid) {
 		return toDto(service.getByUuid(uuid));
 	}
+	
+	@Override
+	public UserDto getByUserName(String userName) {
+		return toDto(service.getByUserName(userName));
+	}
 
 	@Override
 	public UserDto saveUser(UserDto dto) {
 		User user = toUser(dto);
-		
-		// TODO #24 remove this mock
-		if(dto.getUserRoles().isEmpty()) {
-			user.setUserRoles(new HashSet<UserRole>(Arrays.asList(UserRole.SURVEILLANCE_OFFICER)));
-		}
-		user.setPassword("");
-		user.setSeed("");
 		
 		service.ensurePersisted(user);
 		

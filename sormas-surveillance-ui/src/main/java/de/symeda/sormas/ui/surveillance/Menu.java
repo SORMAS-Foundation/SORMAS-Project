@@ -6,10 +6,8 @@ import java.util.Map;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
 import com.vaadin.server.FontAwesome;
-import com.vaadin.server.Page;
 import com.vaadin.server.Resource;
 import com.vaadin.server.ThemeResource;
-import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -22,6 +20,8 @@ import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.themes.ValoTheme;
+
+import de.symeda.sormas.ui.login.LoginHelper;
 
 /**
  * Responsive navigation menu presenting a list of available views to the user.
@@ -64,8 +64,8 @@ public class Menu extends CssLayout {
 
             @Override
             public void menuSelected(MenuItem selectedItem) {
-                VaadinSession.getCurrent().getSession().invalidate();
-                Page.getCurrent().reload();
+            	LoginHelper.logout();
+
             }
         });
 

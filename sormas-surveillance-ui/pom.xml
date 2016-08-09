@@ -27,14 +27,12 @@
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-server</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.vaadin</groupId>
-            <artifactId>vaadin-push</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-themes</artifactId>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -56,6 +54,12 @@
             <artifactId>hibernate-validator</artifactId>
             <version>5.1.0.CR1</version>
         </dependency>
+        
+        <dependency>
+		   <groupId>org.vaadin.addons</groupId>
+		   <artifactId>loginform</artifactId>
+		   <version>0.6.2</version>
+		</dependency>
 
     </dependencies>
 

@@ -9,6 +9,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserHelper;
 import de.symeda.sormas.ui.surveillance.ControllerProvider;
 import de.symeda.sormas.ui.surveillance.location.LocationForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
@@ -66,7 +67,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
     	getContent().addComponent(newPasswordButton, NEW_PASSWORD);
     	
     	
-    	setRequired(true, UserDto.FIRST_NAME, UserDto.LAST_NAME, UserDto.USER_NAME);
+    	setRequired(true, UserDto.FIRST_NAME, UserDto.LAST_NAME, UserDto.USER_NAME, UserDto.USER_ROLES);
     	addValidator(UserDto.USER_NAME, new UserNameValidator());
     	
     	addFieldListener(UserDto.FIRST_NAME, e -> suggestUserName());
@@ -83,7 +84,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 		TextField lnField = (TextField)getFieldGroup().getField(UserDto.LAST_NAME);
 		TextField unField = (TextField)getFieldGroup().getField(UserDto.USER_NAME);
 		if(!fnField.isEmpty() && !lnField.isEmpty() && unField.isEmpty()) {
-			unField.setValue(ControllerProvider.getUserController().getSuggestedUsername(fnField.getValue(), lnField.getValue()));
+			unField.setValue(UserHelper.getSuggestedUsername(fnField.getValue(), lnField.getValue()));
 		}
 	}
 

@@ -26,8 +26,31 @@ public class UserService extends AbstractAdoService<User> {
 		super(User.class);
 	}
 	
+	public User getByUserName(String userName) {
+		
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		ParameterExpression<String> userNameParam = cb.parameter(String.class, User.USER_NAME);
+		CriteriaQuery<User> cq = cb.createQuery(getElementClass());
+		Root<User> from = cq.from(getElementClass());
+		cq.where(cb.equal(from.get(User.USER_NAME), userNameParam));
+		
+		TypedQuery<User> q = em.createQuery(cq)
+			.setParameter(userNameParam, userName);
+		
+		User entity = q.getResultList().stream()
+				.findFirst()
+				.orElse(null);
+		
+		return entity;
+	}
+	
 	public User createUser() {
 		User user = new User();
+		// dummy password to make sure no one can login with this user
+		String password = PasswordHelper.createPass(12);
+		user.setSeed(PasswordHelper.createPass(16));
+		user.setPassword(PasswordHelper.encodePassword(password, user.getSeed()));
+		
 		return user;
 	}
 	

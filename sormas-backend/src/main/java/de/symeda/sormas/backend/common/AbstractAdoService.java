@@ -79,7 +79,7 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 	public ADO getByUuid(String uuid) {
 		
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		ParameterExpression<String> uuidParam = cb.parameter(String.class, "uuid");
+		ParameterExpression<String> uuidParam = cb.parameter(String.class, AbstractDomainObject.UUID);
 		CriteriaQuery<ADO> cq = cb.createQuery(getElementClass());
 		Root<ADO> from = cq.from(getElementClass());
 		cq.where(cb.equal(from.get(AbstractDomainObject.UUID), uuidParam));

@@ -32,12 +32,9 @@ public class MainScreen extends HorizontalLayout {
         ControllerProvider.getCaseController().registerViews(navigator);
         
         menu = new Menu(navigator);
-        menu.addView(new CasesView(), CasesView.VIEW_NAME,
-                CasesView.VIEW_NAME, FontAwesome.EDIT);
-        menu.addView(new UsersView(), UsersView.VIEW_NAME,
-        		UsersView.VIEW_NAME, FontAwesome.USERS);
-        menu.addView(new AboutView(), AboutView.VIEW_NAME, AboutView.VIEW_NAME,
-                FontAwesome.INFO_CIRCLE);
+        menu.addView(new CasesView(), CasesView.VIEW_NAME, "Cases", FontAwesome.EDIT);
+        menu.addView(new UsersView(), UsersView.VIEW_NAME, "Officers", FontAwesome.USERS);
+        menu.addView(new AboutView(), AboutView.VIEW_NAME, "About", FontAwesome.INFO_CIRCLE);
         
         navigator.addViewChangeListener(viewChangeListener);        
         
@@ -67,9 +64,5 @@ public class MainScreen extends HorizontalLayout {
         public void afterViewChange(ViewChangeEvent event) {
             menu.setActiveView(event.getViewName());
         }
-        
-        
-        
-
     };
 }
