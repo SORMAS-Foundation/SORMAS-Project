@@ -80,15 +80,27 @@ public class CaseEditActivity extends AppCompatActivity {
                 LocationDao locLocationDao = DatabaseHelper.getLocationDao();
                 PersonDao personDao = DatabaseHelper.getPersonDao();
 
+                int currentTab = pager.getCurrentItem();
 
-                Person person = (Person)adapter.getData(1);
+                // case data tab
+                if(currentTab==0) {
 
-                if(person.getAddress()!=null) {
-                    locLocationDao.createOrUpdate(person.getAddress());
+                    Toast.makeText(this, "casedata saved", Toast.LENGTH_SHORT).show();
                 }
 
-                personDao.createOrUpdate(person);
-                Toast.makeText(this, person.toString() + " saved", Toast.LENGTH_SHORT).show();
+                // case person tab
+                else if(currentTab==1) {
+                    Person person = (Person)adapter.getData(1);
+
+                    if(person.getAddress()!=null) {
+                        locLocationDao.createOrUpdate(person.getAddress());
+                    }
+
+                    personDao.createOrUpdate(person);
+                    Toast.makeText(this, person.toString() + " saved", Toast.LENGTH_SHORT).show();
+                }
+
+
                 return true;
 
         }
@@ -104,7 +116,7 @@ public class CaseEditActivity extends AppCompatActivity {
         pager = (ViewPager) findViewById(R.id.pager);
         pager.setAdapter(adapter);
 
-        // Assiging the Sliding Tab Layout View
+        // Assigning the Sliding Tab Layout View
         tabs = (SlidingTabLayout) findViewById(R.id.tabs);
         tabs.setDistributeEvenly(true); // To make the Tabs Fixed set this true, This makes the tabs Space Evenly in Available width
 

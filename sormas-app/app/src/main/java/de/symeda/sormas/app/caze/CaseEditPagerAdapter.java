@@ -37,6 +37,7 @@ public class CaseEditPagerAdapter extends FragmentStatePagerAdapter {
         switch (position) {
             case 0:
                 caseDataTab = new CaseDataTab();
+                caseDataTab.setArguments(caseEditBundle);
                 frag = caseDataTab;
                 break;
             case 1:
