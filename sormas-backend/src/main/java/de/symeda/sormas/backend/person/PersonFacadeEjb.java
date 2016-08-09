@@ -116,6 +116,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		bo.setDead(dto.getDeathDate()!=null);
 		
 		bo.setPhone(dto.getPhone());
+		bo.setPhoneOwner(dto.getPhoneOwner());
 		bo.setAddress(locationFacade.fromLocationDto(dto.getAddress()));
 		
 		bo.setOccupationType(dto.getOccupationType());
@@ -167,6 +168,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		}
 		
 		dto.setPhone(person.getPhone());
+		dto.setPhoneOwner(person.getPhoneOwner());
 		dto.setAddress(LocationFacadeEjb.toLocationDto(person.getAddress()));
 		
 		dto.setOccupationType(person.getOccupationType());

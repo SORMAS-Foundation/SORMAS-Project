@@ -134,7 +134,8 @@ public class MockDataGenerator {
 				
 				if (columns[0].length() > 0) {
 					district = new District();
-					district.setName(columns[0]);
+					String districtName = columns[0].substring(0, 1).toUpperCase() + columns[0].substring(1).toLowerCase();
+					district.setName(districtName);
 					district.setRegion(region);
 					district.setCommunities(new ArrayList<Community>());
 					region.getDistricts().add(district);
@@ -142,7 +143,8 @@ public class MockDataGenerator {
 				
 				if (columns[1].length() > 0) {
 					community = new Community();
-					community.setName(columns[1]);
+					String communityName = columns[1].substring(0, 1).toUpperCase() + columns[1].substring(1).toLowerCase();
+					community.setName(communityName);
 					community.setDistrict(district);
 					district.getCommunities().add(community);
 				}
@@ -170,20 +172,20 @@ public class MockDataGenerator {
 				if (columns.length < 5)
 					continue;
 				
-				if (columns[0].length() > 0) {
+				if (region != null && columns[0].length() > 0) {
 					district = null;
 					for (District d : region.getDistricts()) {
-						if (columns[0].equals(d.getName())) {
+						if (columns[0].equalsIgnoreCase(d.getName())) {
 							district = d;
 							break;
 						}
 					}
 				}
 				
-				if (columns[1].length() > 0) {
+				if (district != null && columns[1].length() > 0) {
 					community = null;
 					for (Community c : district.getCommunities()) {
-						if (columns[1].equals(c.getName())) {
+						if (columns[1].equalsIgnoreCase(c.getName())) {
 							community = c;
 							break;
 						}
@@ -191,7 +193,8 @@ public class MockDataGenerator {
 				}
 				
 				Facility facility = new Facility();
-				facility.setName(columns[2]);
+				String facilityName = columns[2].substring(0, 1).toUpperCase() + columns[2].substring(1).toLowerCase();
+				facility.setName(facilityName);
 				facility.setType(FacilityType.valueOf(columns[3]));
 				facility.setPublicOwnership("PUBLIC".equals(columns[4]));
 				Location location = new Location();

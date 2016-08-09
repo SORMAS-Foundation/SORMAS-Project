@@ -44,6 +44,7 @@ public class Person extends AbstractDomainObject {
 	
 	private Location address;
 	private String phone;
+	private String phoneOwner;
 	
 	// TODO private Ethnicity ethnicity;
 	private Sex sex;
@@ -114,6 +115,13 @@ public class Person extends AbstractDomainObject {
 	}
 	public void setPhone(String phone) {
 		this.phone = phone;
+	}
+	
+	public String getPhoneOwner() {
+		return phoneOwner;
+	}
+	public void setPhoneOwner(String phoneOwner) {
+		this.phoneOwner = phoneOwner;
 	}
 	
 	@Enumerated(EnumType.STRING)

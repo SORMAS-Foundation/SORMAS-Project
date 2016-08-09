@@ -23,7 +23,7 @@
 		<shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
 		<validation-mode>CALLBACK</validation-mode>
 		<properties>
-			<property name="eclipselink.ddl-generation" value="drop-and-create-tables" />
+			<property name="eclipselink.ddl-generation" value="none" />
 			<property name="eclipselink.target-database" value="PostgreSQL" /> 
 		</properties>
 	</persistence-unit>

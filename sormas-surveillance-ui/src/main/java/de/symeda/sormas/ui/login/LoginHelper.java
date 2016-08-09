@@ -9,7 +9,9 @@ import com.vaadin.server.VaadinServletService;
 import com.vaadin.server.VaadinSession;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.utils.DataHelper;
 
 
 /**
@@ -59,10 +61,18 @@ public class LoginHelper {
 		return null;
     }
     
-    public UserDto getCurrentUser() {
+    public static UserDto getCurrentUser() {
     	String userName = getCurrentUserName();
     	if (userName != null) {
     		return FacadeProvider.getUserFacade().getByUserName(userName);
+    	}
+    	return null;
+    }
+    
+    public static ReferenceDto getCurrentUserAsReference() {
+    	UserDto currentUser = getCurrentUser();
+    	if (currentUser != null) {
+    		return DataHelper.toReferenceDto(currentUser);
     	}
     	return null;
     }

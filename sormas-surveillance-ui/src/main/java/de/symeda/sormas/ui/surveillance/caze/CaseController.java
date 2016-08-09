@@ -10,14 +10,17 @@ import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.CaseHelper;
 import de.symeda.sormas.api.caze.CaseStatus;
 import de.symeda.sormas.api.person.CasePersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
+import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.surveillance.SurveillanceUI;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
@@ -85,10 +88,19 @@ public class CaseController {
 
     private CaseDataDto createNewCase() {
     	CaseDataDto caze = new CaseDataDto();
-    	caze.setReportDate(new Date());
     	caze.setUuid(DataHelper.createUuid());
+    	
     	caze.setDisease(Disease.EBOLA);
     	caze.setCaseStatus(CaseStatus.POSSIBLE);
+    	
+    	caze.setReportDate(new Date());
+    	UserDto user = LoginHelper.getCurrentUser();
+    	ReferenceDto userReference = DataHelper.toReferenceDto(user);
+    	caze.setReportingUser(userReference);
+    	if (user.getUserRoles().contains(UserRole.SURVEILLANCE_SUPERVISOR)) {
+    		caze.setSurveillanceSupervisor(userReference);
+    	}
+
     	return caze;
     }
     

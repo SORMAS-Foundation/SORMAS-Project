@@ -3,6 +3,7 @@ package de.symeda.sormas.api.utils;
 import java.nio.ByteBuffer;
 
 import de.symeda.sormas.api.DataTransferObject;
+import de.symeda.sormas.api.ReferenceDto;
 
 public final class DataHelper {
 
@@ -52,6 +53,17 @@ public final class DataHelper {
 	    public V getElement1() {
 	        return element1;
 	    }
-
+	}
+	
+	public static ReferenceDto toReferenceDto(DataTransferObject sourceDto) {
+		if (sourceDto == null) {
+			return null;
+		}
+		ReferenceDto dto = new ReferenceDto();
+		dto.setCreationDate(sourceDto.getCreationDate());
+		dto.setChangeDate(sourceDto.getChangeDate());
+		dto.setUuid(sourceDto.getUuid());
+		dto.setCaption(sourceDto.toString());
+		return dto;
 	}
 }

@@ -56,7 +56,7 @@ public class StartupShutdownService {
 	public void startup() {
 		initRegionMockData();
 		initUserMockData();
-		initCaseAndPersonMockData();
+		//initCaseAndPersonMockData();
 	}
 
 	private void initUserMockData() {
@@ -134,6 +134,10 @@ public class StartupShutdownService {
 	    			);
 	    	
 			for (Region region : regions) {
+				// limit the test data to 5 districts
+				while (region.getDistricts().size() > 5) {
+					region.getDistricts().remove(5);
+				}
 				for (District district : region.getDistricts()) {
 					for (Community community : district.getCommunities()) {
 						communityService.persist(community);
@@ -148,7 +152,10 @@ public class StartupShutdownService {
 			for (Region region : regions) {
 				List<Facility> facilities = MockDataGenerator.importFacilities(region);
 				for (Facility facility : facilities) {
-					facilityService.persist(facility);
+					// only save facilities whose districts exist
+					if (facility.getLocation().getDistrict() != null) {
+						facilityService.persist(facility);
+					}
 				}
 			}
 		}

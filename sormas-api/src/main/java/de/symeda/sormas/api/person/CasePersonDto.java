@@ -20,6 +20,7 @@ public class CasePersonDto extends PersonDto {
 	public static final String APPROXIMATE_AGE_TYPE = "approximateAgeType";
 	
 	public static final String PHONE = "phone";
+	public static final String PHONE_OWNER = "phoneOwner";
 	public static final String ADDRESS = "address";
 	
 	public static final String OCCUPATION_TYPE = "occupationType";
@@ -37,6 +38,7 @@ public class CasePersonDto extends PersonDto {
 	private ApproximateAgeType approximateAgeType;
 		
 	private String phone;
+	private String phoneOwner;
 	private LocationDto address;
 	
 	private OccupationType occupationType;
@@ -98,6 +100,14 @@ public class CasePersonDto extends PersonDto {
 
 	public void setPhone(String phone) {
 		this.phone = phone;
+	}
+
+	public String getPhoneOwner() {
+		return phoneOwner;
+	}
+
+	public void setPhoneOwner(String phoneOwner) {
+		this.phoneOwner = phoneOwner;
 	}
 
 	public LocationDto getAddress() {

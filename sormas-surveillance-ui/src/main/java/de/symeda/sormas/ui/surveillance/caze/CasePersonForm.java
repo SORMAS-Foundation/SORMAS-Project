@@ -36,6 +36,11 @@ public class CasePersonForm extends AbstractEditForm<CasePersonDto> {
 					),
     				LayoutUtil.fluidRowCss(
 						CssStyles.VSPACE4,
+						LayoutUtil.oneOfThreeCol(LayoutUtil.loc(CasePersonDto.PHONE)),
+						LayoutUtil.oneOfThreeCol(LayoutUtil.loc(CasePersonDto.PHONE_OWNER))
+					),
+    				LayoutUtil.fluidRowCss(
+						CssStyles.VSPACE4,
 						LayoutUtil.oneOfThreeCol(LayoutUtil.loc(CasePersonDto.PRESENT_CONDITION)),
 						LayoutUtil.oneOfThreeCol(LayoutUtil.loc(CasePersonDto.BIRTH_DATE)),
 						LayoutUtil.oneOfThreeCol(LayoutUtil.fluidRowLocs(CasePersonDto.APPROXIMATE_AGE, CasePersonDto.APPROXIMATE_AGE_TYPE))
@@ -46,11 +51,7 @@ public class CasePersonForm extends AbstractEditForm<CasePersonDto> {
 						))+
     		LayoutUtil.h3(CssStyles.VSPACE3, "Permanent Residence")+
     		LayoutUtil.div(
-    				LayoutUtil.fluidRowLocsCss(CssStyles.VSPACE4, CasePersonDto.ADDRESS),
-    				LayoutUtil.fluidRowCss(
-						CssStyles.VSPACE4,
-						LayoutUtil.oneOfThreeCol(LayoutUtil.loc(CasePersonDto.PHONE))
-					)
+    				LayoutUtil.fluidRowLocsCss(CssStyles.VSPACE4, CasePersonDto.ADDRESS)
 				)+
     		LayoutUtil.h3(CssStyles.VSPACE3, "Occupation")+
     		LayoutUtil.div(
@@ -80,6 +81,7 @@ public class CasePersonForm extends AbstractEditForm<CasePersonDto> {
     	
     	addField(CasePersonDto.ADDRESS, LocationForm.class).setCaption(null);
     	addField(CasePersonDto.PHONE, TextField.class);
+    	addField(CasePersonDto.PHONE_OWNER, TextField.class);
 
     	addField(CasePersonDto.OCCUPATION_TYPE, NativeSelect.class);
     	addField(CasePersonDto.OCCUPATION_DETAILS, TextField.class);
