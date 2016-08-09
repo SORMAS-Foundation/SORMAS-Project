@@ -98,4 +98,13 @@ public class Location extends AbstractDomainObject {
 	public void setLongitude(Float longitude) {
 		this.longitude = longitude;
 	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(getRegion()!=null?getRegion():"");
+		sb.append(getDistrict()!=null?", " + getDistrict():"");
+		sb.append(getCommunity()!=null?", " + getCommunity():"");
+		return sb.toString();
+	}
 }

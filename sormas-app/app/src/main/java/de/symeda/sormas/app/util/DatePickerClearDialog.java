@@ -6,9 +6,9 @@ import android.content.Context;
 /**
  * Created by Stefan Szczesny on 01.08.2016.
  */
-public class DatePickerClear extends DatePickerDialog {
+public class DatePickerClearDialog extends DatePickerDialog {
 
-    public DatePickerClear(Context context, OnDateSetListener callBack,
+    public DatePickerClearDialog(Context context, OnDateSetListener callBack,
                                  int year, int monthOfYear, int dayOfMonth) {
         super(context, 0, callBack, year, monthOfYear, dayOfMonth);
 

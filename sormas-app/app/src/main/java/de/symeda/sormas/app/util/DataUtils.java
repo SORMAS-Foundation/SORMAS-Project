@@ -38,7 +38,6 @@ public class DataUtils {
         Date now = new Date();
         e.setCreationDate(now);
         e.setChangeDate(now);
-        e.setLocalChangeDate(now);
         return e;
     }
 

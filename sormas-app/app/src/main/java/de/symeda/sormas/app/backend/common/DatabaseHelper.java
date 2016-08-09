@@ -18,6 +18,7 @@ import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.facility.FacilityDao;
 import de.symeda.sormas.app.backend.location.Location;
+import de.symeda.sormas.app.backend.location.LocationDao;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.backend.region.Community;
@@ -53,6 +54,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	private PersonDao personDao = null;
 	private CaseDao caseDao = null;
+	private LocationDao locationDao = null;
 	private FacilityDao facilityDao = null;
 	private RegionDao regionDao = null;
 	private DistrictDao districtDao = null;
@@ -141,6 +143,22 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			}
 		}
 		return instance.personDao;
+	}
+
+	public static LocationDao getLocationDao() {
+		if (instance.locationDao == null) {
+			synchronized (DatabaseHelper.class) {
+				if (instance.locationDao == null) {
+					try {
+						instance.locationDao = new LocationDao((Dao<Location, Long>) instance.getDao(Location.class));
+					} catch (SQLException e) {
+						Log.e(DatabaseHelper.class.getName(), "Can't create PersonDao", e);
+						throw new RuntimeException(e);
+					}
+				}
+			}
+		}
+		return instance.locationDao;
 	}
 
 	public static FacilityDao getFacilityDao() {

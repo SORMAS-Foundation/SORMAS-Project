@@ -113,8 +113,8 @@ public class CasePersonTab extends FormTab {
 
 
         // ================ Address ================
-        getModel().put(R.id.form_cp_address,null);
-        addLocationField(R.id.form_cp_address);
+        getModel().put(R.id.form_cp_address,caze.getPerson().getAddress());
+        addLocationField(R.id.form_cp_address, R.id.form_cp_btn_address);
 
 
 
@@ -248,37 +248,7 @@ public class CasePersonTab extends FormTab {
         person.setApproximateAge((Integer)getModel().get(R.id.form_cp_approximate_age));
         person.setApproximateAgeType((ApproximateAgeType)getModel().get(R.id.form_cp_approximate_age_type));
 
-        Map<Integer, Object> innerModel = (Map<Integer, Object>)getModel().get(R.id.form_cp_address);
-        for (Object value:innerModel.values()) {
-            if(value!=null) {
-
-                Location location = null;
-                try {
-                    location = person.getAddress()!=null?person.getAddress(): DataUtils.createNew(Location.class);
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                } catch (java.lang.InstantiationException e) {
-                    e.printStackTrace();
-                }
-                location.setAddress((String)innerModel.get(R.id.form_location_address));
-                location.setDetails((String)innerModel.get(R.id.form_location_address_details));
-                location.setCity((String)innerModel.get(R.id.form_location_address_city));
-                location.setRegion((Region)innerModel.get(R.id.form_location_address_state));
-                location.setDistrict((District)innerModel.get(R.id.form_location_address_lga));
-                location.setCommunity((Community)innerModel.get(R.id.form_location_address_ward));
-                location.setLatitude((Float)innerModel.get(R.id.form_location_address_latitude));
-                location.setLongitude((Float)innerModel.get(R.id.form_location_address_longitude));
-
-                if(location.getUuid()==null) {
-                    location.setUuid(DataHelper.createUuid());
-                }
-
-                person.setAddress(location);
-
-                break;
-            }
-        }
-
+        person.setAddress((Location)getModel().get(R.id.form_cp_address));
 
         person.setOccupationType((OccupationType) getModel().get(R.id.form_cp_occupation));
         person.setOccupationFacility((Facility) getModel().get(R.id.form_cp_occupation_facility));

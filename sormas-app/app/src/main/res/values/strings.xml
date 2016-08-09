@@ -47,4 +47,5 @@
     <string name="form_address_state">State</string>
     <string name="form_address_latitude">Latitude</string>
     <string name="form_address_longitude">Longitude</string>
+    <string name="headline_location">Location</string>
 </resources>

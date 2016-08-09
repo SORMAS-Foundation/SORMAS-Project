@@ -13,6 +13,7 @@ import android.widget.Toast;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.location.LocationDao;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.util.SlidingTabLayout;
@@ -76,8 +77,16 @@ public class CaseEditActivity extends AppCompatActivity {
                 return true;
 
             case R.id.action_save:
-                Person person = (Person)adapter.getData(1);
+                LocationDao locLocationDao = DatabaseHelper.getLocationDao();
                 PersonDao personDao = DatabaseHelper.getPersonDao();
+
+
+                Person person = (Person)adapter.getData(1);
+
+                if(person.getAddress()!=null) {
+                    locLocationDao.createOrUpdate(person.getAddress());
+                }
+
                 personDao.createOrUpdate(person);
                 Toast.makeText(this, person.toString() + " saved", Toast.LENGTH_SHORT).show();
                 return true;
