@@ -180,16 +180,25 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
         Location location = null;
         try {
             location = model.get(locationFieldId)!=null?(Location)model.get(locationFieldId): DataUtils.createNew(Location.class);
-            RegionDao regionDao = DatabaseHelper.getRegionDao();
-            location.setRegion(regionDao.queryForId(location.getRegion().getId()));
-            DistrictDao districtDao = DatabaseHelper.getDistrictDao();
-            location.setDistrict(districtDao.queryForId(location.getDistrict().getId()));
-            CommunityDao communityDaoDao = DatabaseHelper.getCommunityDao();
-            location.setCommunity(communityDaoDao.queryForId(location.getCommunity().getId()));
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         } catch (java.lang.InstantiationException e) {
             e.printStackTrace();
+        }
+
+        if(location.getRegion()!=null) {
+            RegionDao regionDao = DatabaseHelper.getRegionDao();
+            location.setRegion(regionDao.queryForId(location.getRegion().getId()));
+        }
+
+        if(location.getDistrict()!=null) {
+            DistrictDao districtDao = DatabaseHelper.getDistrictDao();
+            location.setDistrict(districtDao.queryForId(location.getDistrict().getId()));
+        }
+
+        if(location.getCommunity()!=null) {
+            CommunityDao communityDaoDao = DatabaseHelper.getCommunityDao();
+            location.setCommunity(communityDaoDao.queryForId(location.getCommunity().getId()));
         }
         final Location finalLocation = location;
 
