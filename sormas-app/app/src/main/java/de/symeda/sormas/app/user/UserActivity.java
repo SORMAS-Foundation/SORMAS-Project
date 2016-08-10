@@ -11,6 +11,8 @@ import android.view.MenuItem;
 
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.user.User;
 
 
 /**
@@ -57,12 +59,14 @@ public class UserActivity extends AppCompatActivity {
                 return true;
 
             case R.id.action_save:
-                AbstractDomainObject ado = userTab.getData();
+                User user = userTab.getData();
 
-                // TODO save the ado
+                if (user != null) {
+                    ConfigProvider.setUser(user);
+                    return true;
+                }
 
-                return true;
-
+                return false;
         }
         return super.onOptionsItemSelected(item);
     }

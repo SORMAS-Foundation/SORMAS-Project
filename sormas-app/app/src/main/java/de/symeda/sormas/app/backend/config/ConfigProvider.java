@@ -4,9 +4,11 @@ import android.content.Context;
 import android.util.Log;
 
 import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.table.TableUtils;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
@@ -17,6 +19,7 @@ import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.location.LocationDao;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.backend.user.UserDtoHelper;
+import de.symeda.sormas.app.caze.SyncCasesTask;
 import de.symeda.sormas.app.rest.DtoFacadeRetro;
 import de.symeda.sormas.app.rest.RetroProvider;
 import retrofit2.Call;
@@ -77,7 +80,24 @@ public final class ConfigProvider {
     }
 
     public static synchronized void setUser(User user) {
+        if (user != null && user.equals(instance.user))
+            return;
+
         instance.user = user;
         DatabaseHelper.getConfigDao().createOrUpdate(new Config(KEY_USER_UUID, user.getUuid()));
+
+        try {
+            TableUtils.clearTable(DatabaseHelper.getCaseDao().getConnectionSource(), Case.class);
+        } catch (SQLException e) {
+            Log.e(ConfigProvider.class.getName(), "User switch: Clearing cases failed");
+        }
+
+        try {
+            new SyncCasesTask().execute().get();
+        } catch (InterruptedException e) {
+            Log.e(ConfigProvider.class.getName(), e.toString(), e);
+        } catch (ExecutionException e) {
+            Log.e(ConfigProvider.class.getName(), e.toString(), e);
+        }
     }
 }

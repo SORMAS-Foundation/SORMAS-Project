@@ -114,7 +114,12 @@ public class User extends AbstractDomainObject {
 	
 	@Override
 	public String toString() {
-		return getFirstName() + " " + getLastName();
+
+		String result = getFirstName() + " " + getLastName().toUpperCase();
+		if (getUserRole() != null) {
+			result += " (" + getUserRole() + ")";
+		}
+		return result;
 	}
 
 	public UserRole getUserRole() {

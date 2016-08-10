@@ -32,6 +32,13 @@ public class DataUtils {
         return listOut;
     }
 
+    public static <E>  List<Item> addItems(List<Item> items, List<E> listIn) {
+        for (E listInEntry: listIn) {
+            items.add(new Item<E>(listInEntry.toString(),listInEntry));
+        }
+        return items;
+    }
+
     public static <E extends AbstractDomainObject> E createNew(Class<E> clazz) throws IllegalAccessException, InstantiationException {
         E e = clazz.newInstance();
         e.setUuid(DataHelper.createUuid());

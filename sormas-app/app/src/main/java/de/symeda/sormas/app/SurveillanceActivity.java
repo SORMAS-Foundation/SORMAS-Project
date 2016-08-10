@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -95,9 +96,9 @@ public class SurveillanceActivity extends AppCompatActivity {
             Toast toast = Toast.makeText(this, "refreshed local db", Toast.LENGTH_SHORT);
             toast.show();
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            Log.e(SurveillanceActivity.class.getName(), e.toString(), e);
         } catch (ExecutionException e) {
-            e.printStackTrace();
+            Log.e(SurveillanceActivity.class.getName(), e.toString(), e);
         }
     }
 

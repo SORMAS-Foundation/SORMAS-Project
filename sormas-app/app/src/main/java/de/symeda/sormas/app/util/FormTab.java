@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
@@ -128,10 +129,21 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
         makeSpinnerField(model,parentView,spinnerFieldId,items, moreListeners);
     }
 
-    protected void addUserSpinnerField(final int spinnerFieldId, final AdapterView.OnItemSelectedListener ...moreListeners) {
-        UserDao facilityDao = DatabaseHelper.getUserDao();
-        List<Item> items = DataUtils.getItems(facilityDao.queryForAll());
-        makeSpinnerField(spinnerFieldId,items, moreListeners);
+    protected void addUserSpinnerField(final int spinnerFieldId, List<UserRole> userRoles, final AdapterView.OnItemSelectedListener ...moreListeners) {
+        UserDao userDao = DatabaseHelper.getUserDao();
+        List<Item> items = null;
+        if (userRoles.size() == 0) {
+            items = DataUtils.getItems(userDao.queryForAll());
+        } else {
+            for (UserRole userRole : userRoles) {
+                if (items == null) {
+                    items = DataUtils.getItems(userDao.queryForEq(User.USER_ROLE, userRole));
+                } else {
+                    items = DataUtils.addItems(items, userDao.queryForEq(User.USER_ROLE, userRole));
+                }
+            }
+        }
+        makeSpinnerField(spinnerFieldId,items,moreListeners);
     }
 
     private void makeSpinnerField(final int spinnerFieldId, List<Item> items, final AdapterView.OnItemSelectedListener[] moreListeners) {
