@@ -3,6 +3,7 @@ package de.symeda.sormas.api.caze;
 import de.symeda.sormas.api.I18nProperties;
 
 public enum CaseStatus {
+	NEW,
 	POSSIBLE, 
 	INVESTIGATED, 
 	SUSPECT, 
