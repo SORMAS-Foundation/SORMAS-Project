@@ -16,7 +16,6 @@ import android.widget.Toast;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -25,6 +24,7 @@ import de.symeda.sormas.app.caze.CaseEditActivity;
 import de.symeda.sormas.app.caze.CaseListArrayAdapter;
 import de.symeda.sormas.app.caze.SyncCasesTask;
 import de.symeda.sormas.app.person.SyncPersonsTask;
+import de.symeda.sormas.app.user.UserActivity;
 import de.symeda.sormas.app.util.SyncInfrastructureTask;
 
 public class SurveillanceActivity extends AppCompatActivity {
@@ -32,7 +32,7 @@ public class SurveillanceActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.cases_view);
+        setContentView(R.layout.cases_activity_layout);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);
         if (toolbar != null) {
@@ -59,13 +59,21 @@ public class SurveillanceActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
 
-        if (id == R.id.action_reload) {
-            refreshLocalDB();
-            refreshCaseList();
-            return true;
+        switch(item.getItemId()) {
+            case R.id.action_reload:
+                refreshLocalDB();
+                refreshCaseList();
+                return true;
+
+            case R.id.action_user:
+                showUserView();
+                return true;
+
+            default:
+                break;
         }
+
 
         return super.onOptionsItemSelected(item);
     }
@@ -96,6 +104,12 @@ public class SurveillanceActivity extends AppCompatActivity {
     public void showCaseEditView(Case caze) {
         Intent intent = new Intent(this, CaseEditActivity.class);
         intent.putExtra(Case.UUID, caze.getUuid());
+        startActivity(intent);
+    }
+
+    public void showUserView() {
+        Intent intent = new Intent(this, UserActivity.class);
+        //intent.putExtra(Case.UUID, caze.getUuid());
         startActivity(intent);
     }
 

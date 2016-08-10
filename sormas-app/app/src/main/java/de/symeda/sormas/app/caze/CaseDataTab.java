@@ -9,9 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import java.lang.reflect.Array;
-import java.util.List;
-
 import de.symeda.sormas.api.caze.CaseHelper;
 import de.symeda.sormas.api.caze.CaseStatus;
 import de.symeda.sormas.api.user.UserRole;
@@ -22,7 +19,7 @@ import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.facility.FacilityDao;
-import de.symeda.sormas.app.databinding.CazeDataLayoutBinding;
+import de.symeda.sormas.app.databinding.CazeDataFragmentLayoutBinding;
 import de.symeda.sormas.app.util.FormTab;
 
 /**
@@ -30,13 +27,13 @@ import de.symeda.sormas.app.util.FormTab;
  */
 public class CaseDataTab extends FormTab {
 
-    private CazeDataLayoutBinding binding;
+    private CazeDataFragmentLayoutBinding binding;
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         initModel();
-        binding = DataBindingUtil.inflate(inflater, R.layout.caze_data_layout, container, false);
+        binding = DataBindingUtil.inflate(inflater, R.layout.caze_data_fragment_layout, container, false);
         return binding.getRoot();
     }
 

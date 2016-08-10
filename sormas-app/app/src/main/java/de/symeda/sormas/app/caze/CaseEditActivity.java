@@ -36,7 +36,7 @@ public class CaseEditActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.case_edit_layout);
+        setContentView(R.layout.case_edit_activity_layout);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);
         if (toolbar != null) {

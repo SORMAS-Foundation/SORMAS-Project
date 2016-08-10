@@ -56,4 +56,8 @@
     <string name="headline_case_administration">Case administration</string>
     <string name="form_cd_surveillance_officer">Surveillance Officer</string>
     <string name="headline_responsible">Responsible</string>
+    <string name="headline_user">User</string>
+    <string name="headline_user_administration">User</string>
+    <string name="action_user">User</string>
+    <string name="form_u_select_user">Select a user</string>
 </resources>

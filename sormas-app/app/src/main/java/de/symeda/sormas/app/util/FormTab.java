@@ -4,7 +4,6 @@ import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.databinding.BindingAdapter;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,6 +36,7 @@ import de.symeda.sormas.app.backend.region.DistrictDao;
 import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.backend.region.RegionDao;
 import de.symeda.sormas.app.backend.user.User;
+import de.symeda.sormas.app.backend.user.UserDao;
 
 /**
  * Created by Stefan Szczesny on 01.08.2016.
@@ -128,6 +128,12 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
         makeSpinnerField(model,parentView,spinnerFieldId,items, moreListeners);
     }
 
+    protected void addUserSpinnerField(final int spinnerFieldId, final AdapterView.OnItemSelectedListener ...moreListeners) {
+        UserDao facilityDao = DatabaseHelper.getUserDao();
+        List<Item> items = DataUtils.getItems(facilityDao.queryForAll());
+        makeSpinnerField(spinnerFieldId,items, moreListeners);
+    }
+
     private void makeSpinnerField(final int spinnerFieldId, List<Item> items, final AdapterView.OnItemSelectedListener[] moreListeners) {
         makeSpinnerField(getModel(), getView(), spinnerFieldId, items, moreListeners);
     }
@@ -174,7 +180,7 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
     }
 
     /**
-     * Fill the location_layout.xml fragment and bind the given properties the a local model.
+     * Fill the location_fragment_layout.xml fragment and bind the given properties the a local model.
      * The local model is bound to the global model by the given fieldId and has to be committed backwards to the parent object.
      * @param locationFieldId
      */
@@ -220,7 +226,7 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
                     @Override
                     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                              Bundle savedInstanceState) {
-                        View parentView = inflater.inflate(R.layout.location_layout, container, false);
+                        View parentView = inflater.inflate(R.layout.location_fragment_layout, container, false);
 
                         innerModel.put(R.id.form_location_address, finalLocation.getAddress());
                         EditText addressField = (EditText) parentView.findViewById(R.id.form_location_address);
