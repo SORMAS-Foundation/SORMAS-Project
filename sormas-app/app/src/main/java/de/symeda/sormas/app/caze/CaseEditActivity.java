@@ -10,8 +10,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.location.LocationDao;
 import de.symeda.sormas.app.backend.person.Person;
@@ -77,26 +79,32 @@ public class CaseEditActivity extends AppCompatActivity {
                 return true;
 
             case R.id.action_save:
-                LocationDao locLocationDao = DatabaseHelper.getLocationDao();
-                PersonDao personDao = DatabaseHelper.getPersonDao();
 
                 int currentTab = pager.getCurrentItem();
 
                 // case data tab
                 if(currentTab==0) {
+                    CaseDao caseDao = DatabaseHelper.getCaseDao();
 
-                    Toast.makeText(this, "casedata saved", Toast.LENGTH_SHORT).show();
+                    Case caze = (Case) adapter.getData(0);
+
+                    caseDao.save(caze);
+
+                    Toast.makeText(this, "case "+ DataHelper.getShortUuid(caze.getUuid()) +" saved", Toast.LENGTH_SHORT).show();
                 }
 
                 // case person tab
                 else if(currentTab==1) {
+                    LocationDao locLocationDao = DatabaseHelper.getLocationDao();
+                    PersonDao personDao = DatabaseHelper.getPersonDao();
+
                     Person person = (Person)adapter.getData(1);
 
                     if(person.getAddress()!=null) {
-                        locLocationDao.createOrUpdate(person.getAddress());
+                        locLocationDao.save(person.getAddress());
                     }
 
-                    personDao.createOrUpdate(person);
+                    personDao.save(person);
                     Toast.makeText(this, person.toString() + " saved", Toast.LENGTH_SHORT).show();
                 }
 

@@ -2,7 +2,9 @@ package de.symeda.sormas.app.util;
 
 import android.app.DatePickerDialog;
 import android.content.DialogInterface;
+import android.databinding.BindingAdapter;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,18 +22,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.facility.FacilityDao;
 import de.symeda.sormas.app.backend.location.Location;
+import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.CommunityDao;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.DistrictDao;
 import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.backend.region.RegionDao;
+import de.symeda.sormas.app.backend.user.User;
 
 /**
  * Created by Stefan Szczesny on 01.08.2016.
@@ -304,4 +309,32 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
     }
 
     protected abstract AbstractDomainObject commit(AbstractDomainObject ado);
+
+
+    @BindingAdapter("bind:enum")
+    public static void setEnum(TextView textView, Enum e){
+        textView.setText(e.toString());
+    }
+
+
+    @BindingAdapter("bind:short_uuid")
+    public static void setShortUuid(TextView textView, String uuid){
+        textView.setText(DataHelper.getShortUuid(uuid));
+    }
+
+    @BindingAdapter("bind:date")
+    public static void setDate(TextView textView, Date date){
+        textView.setText(DateHelper.formatDDMMYYYY(date));
+    }
+
+    @BindingAdapter("bind:person")
+    public static void setPerson(TextView textView, Person person){
+        textView.setText(person!=null?person.toString():null);
+    }
+
+    @BindingAdapter("bind:user")
+    public static void setUser(TextView textView, User user){
+        textView.setText(user!=null?user.toString():null);
+    }
+
 }

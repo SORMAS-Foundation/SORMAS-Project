@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -93,7 +94,7 @@ public class CasePersonTab extends FormTab {
 
 
         // status of patient
-        final TextView dateOfDeathField = (TextView) getView().findViewById(R.id.form_cp_date_of_death);
+        final EditText dateOfDeathField = (EditText) getView().findViewById(R.id.form_cp_date_of_death);
         addSpinnerField(R.id.form_cp_status_of_patient, PresentCondition.class, new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {

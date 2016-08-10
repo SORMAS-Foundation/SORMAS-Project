@@ -44,9 +44,10 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> extends R
     public abstract String getTableName();
 
     public Date getLatestChangeDate() {
+        // TODO rollback comment, when
         String query = "SELECT MAX(" + AbstractDomainObject.CHANGE_DATE + ") FROM " + getTableName()
-                + " WHERE " + AbstractDomainObject.MODIFIED + " = ?";
-        GenericRawResults<Object[]> maxChangeDateResult = queryRaw(query, new DataType[]{DataType.DATE_LONG}, "0");
+                ;//+ " WHERE " + AbstractDomainObject.MODIFIED + " = ?";
+        GenericRawResults<Object[]> maxChangeDateResult = queryRaw(query, new DataType[]{DataType.DATE_LONG});//, "0");
         try {
             List<Object[]> dateResults = maxChangeDateResult.getResults();
             if (dateResults.size() > 0) {
@@ -57,5 +58,10 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> extends R
             throw new RuntimeException(e);
         }
         return null;
+    }
+
+    public void save(ADO ado) {
+        ado.setModified(true);
+        createOrUpdate(ado);
     }
 }

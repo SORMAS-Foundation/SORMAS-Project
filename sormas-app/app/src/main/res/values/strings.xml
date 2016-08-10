@@ -48,4 +48,12 @@
     <string name="form_address_latitude">Latitude</string>
     <string name="form_address_longitude">Longitude</string>
     <string name="headline_location">Location</string>
+    <string name="form_cd_case_id">Case ID</string>
+    <string name="form_cd_case_status">Case status</string>
+    <string name="form_cd_report_date">Report date</string>
+    <string name="form_cd_reporter">Reporter</string>
+    <string name="form_cd_health_facility">Health facility</string>
+    <string name="headline_case_administration">Case administration</string>
+    <string name="form_cd_surveillance_officer">Surveillance Officer</string>
+    <string name="headline_responsible">Responsible</string>
 </resources>
