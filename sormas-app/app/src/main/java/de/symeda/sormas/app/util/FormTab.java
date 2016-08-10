@@ -15,7 +15,9 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -25,11 +27,13 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.facility.FacilityDao;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.CommunityDao;
 import de.symeda.sormas.app.backend.region.District;
@@ -145,6 +149,19 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
         }
         makeSpinnerField(spinnerFieldId,items,moreListeners);
     }
+
+    protected void addPersonSpinnerField(final int spinnerFieldId, final AdapterView.OnItemSelectedListener ...moreListeners) {
+        PersonDao personDao = DatabaseHelper.getPersonDao();
+        List<Item> items = null;
+        try {
+            items = DataUtils.getItems(personDao.getAllPersonsWithoutCase());
+        } catch (SQLException e) {
+            Toast.makeText(getContext(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+        }
+        makeSpinnerField(spinnerFieldId,items, moreListeners);
+    }
+
 
     private void makeSpinnerField(final int spinnerFieldId, List<Item> items, final AdapterView.OnItemSelectedListener[] moreListeners) {
         makeSpinnerField(getModel(), getView(), spinnerFieldId, items, moreListeners);

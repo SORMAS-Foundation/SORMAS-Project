@@ -35,6 +35,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".SurveillanceActivity" />
         </activity>
+        <activity
+            android:name=".caze.CaseNewActivity"
+            android:parentActivityName=".SurveillanceActivity" >
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".SurveillanceActivity" />
+        </activity>
 
         <!-- ATTENTION: This was auto-generated to add Google Play services to your project for
      App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information. -->

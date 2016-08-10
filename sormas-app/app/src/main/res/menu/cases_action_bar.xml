@@ -5,7 +5,13 @@
         android:id="@+id/action_reload"
         android:icon="@drawable/ic_autorenew_black_24dp"
         android:title="@string/action_reload"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/action_new_case"
+        android:icon="@drawable/ic_add_black_24dp"
+        android:title="@string/action_new_case"
+        app:showAsAction="always"/>
 
     <!-- Settings, should always be in the overflow -->
     <item android:id="@+id/action_user"

@@ -23,6 +23,7 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.caze.CaseEditActivity;
 import de.symeda.sormas.app.caze.CaseListArrayAdapter;
+import de.symeda.sormas.app.caze.CaseNewActivity;
 import de.symeda.sormas.app.caze.SyncCasesTask;
 import de.symeda.sormas.app.person.SyncPersonsTask;
 import de.symeda.sormas.app.user.UserActivity;
@@ -54,7 +55,7 @@ public class SurveillanceActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.list_action_bar, menu);
+        inflater.inflate(R.menu.cases_action_bar, menu);
         return true;
     }
 
@@ -65,6 +66,10 @@ public class SurveillanceActivity extends AppCompatActivity {
             case R.id.action_reload:
                 refreshLocalDB();
                 refreshCaseList();
+                return true;
+
+            case R.id.action_new_case:
+                showCaseNewView();
                 return true;
 
             case R.id.action_user:
@@ -110,6 +115,12 @@ public class SurveillanceActivity extends AppCompatActivity {
 
     public void showUserView() {
         Intent intent = new Intent(this, UserActivity.class);
+        //intent.putExtra(Case.UUID, caze.getUuid());
+        startActivity(intent);
+    }
+
+    public void showCaseNewView() {
+        Intent intent = new Intent(this, CaseNewActivity.class);
         //intent.putExtra(Case.UUID, caze.getUuid());
         startActivity(intent);
     }

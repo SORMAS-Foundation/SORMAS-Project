@@ -111,7 +111,7 @@
                         android:layout_width="match_parent" android:layout_height="wrap_content"
                         android:layout_marginBottom="@dimen/field_caption_margin_bottom" android:textSize="@dimen/field_caption_size"
                         android:layout_marginLeft="@dimen/field_caption_margin_left"
-                        android:text="@string/form_cd_report_date" />
+                        android:text="@string/form_disease" />
                     <TextView
                         android:layout_width="match_parent" android:layout_height="@dimen/field_height"
                         custom:enum="@{caze.disease}" />

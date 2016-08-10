@@ -60,4 +60,8 @@
     <string name="headline_user_administration">User</string>
     <string name="action_user">User</string>
     <string name="form_u_select_user">Select a user</string>
+    <string name="action_new_case">New case</string>
+    <string name="headline_new_case">Create new case</string>
+    <string name="form_disease">Disease</string>
+    <string name="form_cn_person">Person</string>
 </resources>

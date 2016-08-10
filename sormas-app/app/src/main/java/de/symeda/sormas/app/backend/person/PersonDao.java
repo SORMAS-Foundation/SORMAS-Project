@@ -2,6 +2,8 @@ package de.symeda.sormas.app.backend.person;
 
 import com.j256.ormlite.dao.BaseDaoImpl;
 import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.Where;
 import com.j256.ormlite.support.ConnectionSource;
 
 import java.sql.SQLException;
@@ -25,6 +27,10 @@ public class PersonDao extends AbstractAdoDao<Person> {
     @Override
     public String getTableName() {
         return Person.TABLE_NAME;
+    }
+
+    public List<Person> getAllPersonsWithoutCase() throws SQLException {
+        return queryBuilder().where().isNull("caze_id").query();
     }
 
 }
