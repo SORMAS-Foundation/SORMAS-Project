@@ -23,6 +23,14 @@ public class UserRoleToUser {
     @DatabaseField(foreign = true)
     private User user;
 
+    public UserRoleToUser() { }
+
+    public UserRoleToUser(User user, UserRole userRole) {
+        this.user = user;
+        this.userRole = userRole;
+    }
+
+
     public UserRole getUserRole() {
         return userRole;
     }

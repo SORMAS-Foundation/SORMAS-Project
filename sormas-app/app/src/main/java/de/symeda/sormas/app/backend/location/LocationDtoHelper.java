@@ -25,8 +25,20 @@ public class LocationDtoHelper extends AdoDtoHelper<Location, LocationDto> {
         ado.setLatitude(dto.getLatitude());
         ado.setLongitude(dto.getLongitude());
 
-        ado.setCommunity(DatabaseHelper.getCommunityDao().queryUuid(dto.getCommunity().getUuid()));
-        ado.setDistrict(DatabaseHelper.getDistrictDao().queryUuid(dto.getDistrict().getUuid()));
-        ado.setRegion(DatabaseHelper.getRegionDao().queryUuid(dto.getRegion().getUuid()));
+        if (dto.getCommunity() != null) {
+            ado.setCommunity(DatabaseHelper.getCommunityDao().queryUuid(dto.getCommunity().getUuid()));
+        } else {
+            ado.setCommunity(null);
+        }
+        if (dto.getDistrict() != null) {
+            ado.setDistrict(DatabaseHelper.getDistrictDao().queryUuid(dto.getDistrict().getUuid()));
+        } else {
+            ado.setDistrict(null);
+        }
+        if (dto.getRegion() != null) {
+            ado.setRegion(DatabaseHelper.getRegionDao().queryUuid(dto.getRegion().getUuid()));
+        } else {
+            ado.setRegion(null);
+        }
     }
 }

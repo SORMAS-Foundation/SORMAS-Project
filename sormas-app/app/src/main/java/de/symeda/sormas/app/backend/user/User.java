@@ -9,8 +9,11 @@ import java.util.Collection;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.ManyToOne;
 
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.region.Region;
@@ -24,8 +27,6 @@ public class User extends AbstractDomainObject {
 	public static final String TABLE_NAME = "users";
 
 	public static final String USER_NAME = "userName";
-	public static final String PASSWORD = "password";
-	public static final String SEED = "seed";
 	public static final String ACTIVE = "active";
 	public static final String FIRST_NAME = "firstName";
 	public static final String LAST_NAME = "lastName";
@@ -33,7 +34,7 @@ public class User extends AbstractDomainObject {
 	public static final String PHONE = "phone";
 	public static final String ADDRESS = "address";
 	public static final String REGION = "region";
-	public static final String USER_ROLES = "userRoles";
+	public static final String USER_ROLE = "userRole";
 
 	@Column(nullable = false)
 	private String userName;
@@ -52,8 +53,8 @@ public class User extends AbstractDomainObject {
 	private Location address;
 	@ManyToOne(cascade = {})
 	private Region region;
-	@ForeignCollectionField(eager = true)
-	private Collection<UserRoleToUser> userRoles;
+	@Enumerated(EnumType.STRING)
+	private UserRole userRole;
 	
 	public String getUserName() {
 		return userName;
@@ -111,23 +112,16 @@ public class User extends AbstractDomainObject {
 		this.region = region;
 	}
 	
-//	@ElementCollection(fetch=FetchType.LAZY)
-//	@Enumerated(EnumType.STRING)
-//	@CollectionTable(
-//	        name="userroles",
-//	        joinColumns=@JoinColumn(name="user_id", referencedColumnName=User.ID, nullable = false),
-//	        uniqueConstraints=@UniqueConstraint(columnNames={"user_id", "userrole"})
-//	  )
-//	@Column(name = "userrole", nullable = false)
-	public Collection<UserRoleToUser> getUserRoles() {
-		return userRoles;
-	}
-	public void setUserRoles(Collection<UserRoleToUser> userRoles) {
-		this.userRoles = userRoles;
-	}
-	
 	@Override
 	public String toString() {
 		return getFirstName() + " " + getLastName();
+	}
+
+	public UserRole getUserRole() {
+		return userRole;
+	}
+
+	public void setUserRole(UserRole userRole) {
+		this.userRole = userRole;
 	}
 }

@@ -7,7 +7,6 @@ import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.location.LocationFacade;
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.region.CommunityService;
 import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.RegionService;
@@ -58,28 +57,26 @@ public class LocationFacadeEjb implements LocationFacade {
 	
 	public static LocationDto toLocationDto(Location location) {
 		
+		if (location == null) {
+			return null;
+		}
+
 		LocationDto dto = new LocationDto();
 		
-		if (location == null) {
-			// make sure there is a location object
-			dto.setUuid(DataHelper.createUuid());
-		}
-		else {		
-			dto.setCreationDate(location.getCreationDate());
-			dto.setChangeDate(location.getChangeDate());
-			dto.setUuid(location.getUuid());
-			
-			dto.setAddress(location.getAddress());
-			dto.setDetails(location.getDetails());
-			dto.setCity(location.getCity());
-			
-			dto.setRegion(DtoHelper.toReferenceDto(location.getRegion()));
-			dto.setDistrict(DtoHelper.toReferenceDto(location.getDistrict()));
-			dto.setCommunity(DtoHelper.toReferenceDto(location.getCommunity()));
-			
-			dto.setLatitude(location.getLatitude());
-			dto.setLongitude(location.getLongitude());
-		}
+		dto.setCreationDate(location.getCreationDate());
+		dto.setChangeDate(location.getChangeDate());
+		dto.setUuid(location.getUuid());
+		
+		dto.setAddress(location.getAddress());
+		dto.setDetails(location.getDetails());
+		dto.setCity(location.getCity());
+		
+		dto.setRegion(DtoHelper.toReferenceDto(location.getRegion()));
+		dto.setDistrict(DtoHelper.toReferenceDto(location.getDistrict()));
+		dto.setCommunity(DtoHelper.toReferenceDto(location.getCommunity()));
+		
+		dto.setLatitude(location.getLatitude());
+		dto.setLongitude(location.getLongitude());
 		
 		return dto;
 	}

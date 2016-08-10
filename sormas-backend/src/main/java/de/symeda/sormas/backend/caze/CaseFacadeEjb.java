@@ -17,6 +17,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonService;
+import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 
@@ -41,8 +42,11 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
-	public List<CaseDataDto> getAllCasesAfter(Date date) {
-		return caseService.getAllAfter(date).stream()
+	public List<CaseDataDto> getAllCasesAfter(Date date, String userUuid) {
+		
+		User user = userService.getByUuid(userUuid);
+		
+		return caseService.getAllAfter(date, user).stream()
 			.map(c -> toCaseDataDto(c))
 			.collect(Collectors.toList());
 	}

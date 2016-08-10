@@ -19,9 +19,11 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.caze.CaseDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.backend.person.PersonDtoHelper;
+import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.rest.CaseFacadeRetro;
 import de.symeda.sormas.app.rest.DtoFacadeRetro;
 import de.symeda.sormas.app.rest.RetroProvider;
@@ -44,7 +46,8 @@ public class SyncCasesTask extends AsyncTask<Void, Void, Void> {
         new CaseDtoHelper().syncEntities(new DtoFacadeRetro<CaseDataDto>() {
             @Override
             public Call<List<CaseDataDto>> getAll(long since) {
-                return RetroProvider.getCaseFacade().getAll(since);
+                User user = ConfigProvider.getUser();
+                return RetroProvider.getCaseFacade().getAll(user.getUuid(), since);
             }
         }, DatabaseHelper.getCaseDao());
         return null;

@@ -26,7 +26,19 @@ public class Case extends AbstractDomainObject {
 	
 	private static final long serialVersionUID = -2697795184663562129L;
 
+	public static final String CASE_STATUS = "caseStatus";
 	public static final String PERSON = "person";
+	public static final String DISEASE = "disease";
+	public static final String HEALTH_FACILITY = "healthFacility";
+	public static final String REPORTING_USER = "reportingUser";
+	public static final String REPORT_DATE = "reportDate";
+	public static final String INVESTIGATED_DATE = "investigatedDate";
+	public static final String SURVEILLANCE_OFFICER = "surveillanceOfficer";
+	public static final String SURVEILLANCE_SUPERVISOR = "surveillanceSupervisor";
+	public static final String CASE_OFFICER = "caseOfficer";
+	public static final String CASE_SUPERVISOR = "caseSupervisor";
+	public static final String CONTACT_OFFICER = "contactOfficer";
+	public static final String CONTACT_SUPERVISOR = "contactSupervisor";
 	
 	private Person person;
 	private String description;

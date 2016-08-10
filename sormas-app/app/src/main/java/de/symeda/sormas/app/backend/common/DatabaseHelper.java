@@ -15,6 +15,8 @@ import com.j256.ormlite.table.TableUtils;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
+import de.symeda.sormas.app.backend.config.Config;
+import de.symeda.sormas.app.backend.config.ConfigDao;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.facility.FacilityDao;
 import de.symeda.sormas.app.backend.location.Location;
@@ -41,17 +43,18 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// name of the database file for your application -- change to something appropriate for your app
 	private static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	private static final int DATABASE_VERSION = 17;
+	private static final int DATABASE_VERSION = 16;
 
 	public static DatabaseHelper instance = null;
 
 	public static void init(Context context) {
 		if (instance != null) {
-			logger.error("DatabaseHelper has already been initalized");
+			Log.e(DatabaseHelper.class.getName(),"DatabaseHelper has already been initalized");
 		}
 		instance = new DatabaseHelper(context);
 	}
 
+	private ConfigDao configDao = null;
 	private PersonDao personDao = null;
 	private CaseDao caseDao = null;
 	private LocationDao locationDao = null;
@@ -73,6 +76,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public void onCreate(SQLiteDatabase db, ConnectionSource connectionSource) {
 		try {
 			Log.i(DatabaseHelper.class.getName(), "onCreate");
+			TableUtils.createTable(connectionSource, Config.class);
 			TableUtils.createTable(connectionSource, Location.class);
 			TableUtils.createTable(connectionSource, Region.class);
 			TableUtils.createTable(connectionSource, District.class);
@@ -105,12 +109,29 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.dropTable(connectionSource, Facility.class, true);
 			TableUtils.dropTable(connectionSource, User.class, true);
 			TableUtils.dropTable(connectionSource, UserRoleToUser.class, true);
+			TableUtils.dropTable(connectionSource, Config.class, true);
 			// after we drop the old databases, we create the new ones
 			onCreate(db, connectionSource);
 		} catch (SQLException e) {
 			Log.e(DatabaseHelper.class.getName(), "Can't drop databases", e);
 			throw new RuntimeException(e);
 		}
+	}
+
+	public static ConfigDao getConfigDao() {
+		if (instance.configDao == null) {
+			synchronized (DatabaseHelper.class) {
+				if (instance.configDao == null) {
+					try {
+						instance.configDao = new ConfigDao((Dao<Config, String>) instance.getDao(Config.class));
+					} catch (SQLException e) {
+						Log.e(DatabaseHelper.class.getName(), "Can't create ConfigDao", e);
+						throw new RuntimeException(e);
+					}
+				}
+			}
+		}
+		return instance.configDao;
 	}
 
 	public static CaseDao getCaseDao() {

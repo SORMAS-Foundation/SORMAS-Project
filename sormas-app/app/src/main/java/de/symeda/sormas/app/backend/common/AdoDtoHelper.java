@@ -28,6 +28,10 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 
     public ADO fillOrCreateFromDto(ADO ado, DTO dto) {
 
+        if (dto == null) {
+            return null;
+        }
+
         if (ado == null) {
             ado = create();
             ado.setCreationDate(dto.getCreationDate());
@@ -44,6 +48,8 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
     public abstract ADO create();
 
     public abstract void fillInnerFromDto(ADO ado, DTO dto);
+
+    public void createOrUpdateMembers(ADO ado) { }
 
     public void syncEntities(DtoFacadeRetro<DTO> facade, final AbstractAdoDao<ADO> dao) {
 
@@ -67,9 +73,12 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
                             } else {
                                 result = dao.update(ado);
                             }
+
                             if (result != 1) {
                                 Log.e(dao.getTableName(), "Could not create or update entity: " + ado);
                             }
+
+                            createOrUpdateMembers(ado);
                         }
                         return null;
                     }

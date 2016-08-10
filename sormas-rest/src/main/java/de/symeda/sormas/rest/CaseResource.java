@@ -11,6 +11,8 @@ import javax.ws.rs.core.MediaType;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserRole;
 
 /**
  * @see <a href="https://jersey.java.net/documentation/latest/">Jersey documentation</a>
@@ -32,11 +34,10 @@ public class CaseResource {
 	}
 
 	@GET
-	@Path("/all/{since}")
-	public List<CaseDataDto> getAllCases(@PathParam("since") Long since) {
-		if (since != null) {
-			return FacadeProvider.getCaseFacade().getAllCasesAfter(new Date(since));
-		}
-		return FacadeProvider.getCaseFacade().getAllCases();
+	@Path("/all/{user}/{since}")
+	public List<CaseDataDto> getAllCases(@PathParam("user") String userUuid, @PathParam("since") long since) {
+		
+		List<CaseDataDto> cases = FacadeProvider.getCaseFacade().getAllCasesAfter(new Date(since), userUuid);
+		return cases;
 	}
 }

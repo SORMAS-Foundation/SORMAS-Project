@@ -10,7 +10,7 @@ public interface CaseFacade {
 
     List<CaseDataDto> getAllCases();
 
-	List<CaseDataDto> getAllCasesAfter(Date date);
+	List<CaseDataDto> getAllCasesAfter(Date date, String userUuid);
 
 	CaseDataDto getCaseDataByUuid(String uuid);
     
