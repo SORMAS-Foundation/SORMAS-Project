@@ -8,11 +8,9 @@ import android.util.Log;
 
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.dao.RuntimeExceptionDao;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 
-import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.config.Config;
@@ -31,7 +29,6 @@ import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.backend.region.RegionDao;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.backend.user.UserDao;
-import de.symeda.sormas.app.backend.user.UserRoleToUser;
 
 /**
  * Database helper class used to manage the creation and upgrading of your database. This class also usually provides
@@ -43,7 +40,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// name of the database file for your application -- change to something appropriate for your app
 	private static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	private static final int DATABASE_VERSION = 18;
+	private static final int DATABASE_VERSION = 20;
 
 	public static DatabaseHelper instance = null;
 
@@ -83,7 +80,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.createTable(connectionSource, Community.class);
 			TableUtils.createTable(connectionSource, Facility.class);
 			TableUtils.createTable(connectionSource, User.class);
-			TableUtils.createTable(connectionSource, UserRoleToUser.class);
 			TableUtils.createTable(connectionSource, Person.class);
 			TableUtils.createTable(connectionSource, Case.class);
 		} catch (SQLException e) {
@@ -108,7 +104,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.dropTable(connectionSource, Community.class, true);
 			TableUtils.dropTable(connectionSource, Facility.class, true);
 			TableUtils.dropTable(connectionSource, User.class, true);
-			TableUtils.dropTable(connectionSource, UserRoleToUser.class, true);
 			TableUtils.dropTable(connectionSource, Config.class, true);
 			// after we drop the old databases, we create the new ones
 			onCreate(db, connectionSource);

@@ -68,7 +68,7 @@ public class Case extends AbstractDomainObject {
 	@DatabaseField(foreign = true, foreignAutoCreate = true, foreignAutoRefresh = true)
 	private Location illLocation;
 
-	@ManyToOne(cascade = {})
+	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 1)
 	private User surveillanceOfficer;
 	@ManyToOne(cascade = {})
 	private User surveillanceSupervisor;

@@ -3,6 +3,8 @@ package de.symeda.sormas.app.backend.user;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import de.symeda.sormas.api.region.RegionDto;
@@ -31,8 +33,22 @@ public class UserDtoHelper extends AdoDtoHelper<User, UserDto> {
         throw new UnsupportedOperationException();
     }
 
+    protected void preparePulledResult(List<UserDto> result) {
+        Collections.sort(result, new Comparator<UserDto>() {
+            @Override
+            public int compare(UserDto lhs, UserDto rhs) {
+                if (lhs.getAssociatedOfficer() == null && rhs.getAssociatedOfficer() != null) {
+                    return -1;
+                } else if (lhs.getAssociatedOfficer() != null && rhs.getAssociatedOfficer() == null) {
+                    return 1;
+                }
+                return 0;
+            }
+        });
+    }
+
     @Override
-    public void fillInnerFromDto(User ado, UserDto dto) {
+    protected void fillInnerFromDto(User ado, UserDto dto) {
 
         ado.setAktiv(dto.isActive());
         ado.setUserName(dto.getUserName());
@@ -47,12 +63,18 @@ public class UserDtoHelper extends AdoDtoHelper<User, UserDto> {
             }
         }
 
+        if (dto.getAssociatedOfficer() != null) {
+            ado.setAssociatedOfficer(DatabaseHelper.getUserDao().queryUuid(dto.getAssociatedOfficer().getUuid()));
+        } else {
+            ado.setAssociatedOfficer(null);
+        }
+
         ado.setAddress(locationHelper.fillOrCreateFromDto(ado.getAddress(), dto.getAddress()));
         ado.setPhone(dto.getPhone());
     }
 
     @Override
-    public void fillInnerFromAdo(UserDto userDto, User user) {
+    protected void fillInnerFromAdo(UserDto userDto, User user) {
         // TODO
         throw new UnsupportedOperationException();
     }

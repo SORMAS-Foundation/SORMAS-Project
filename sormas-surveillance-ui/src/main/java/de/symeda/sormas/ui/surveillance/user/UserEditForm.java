@@ -1,15 +1,20 @@
 package de.symeda.sormas.ui.surveillance.user;
 
+import java.util.Set;
+
 import com.vaadin.data.Validator;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserHelper;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.surveillance.ControllerProvider;
 import de.symeda.sormas.ui.surveillance.location.LocationForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
@@ -35,6 +40,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 			LayoutUtil.divCss(CssStyles.VSPACE2,
 					LayoutUtil.fluidRowLocs(UserDto.ACTIVE),
 					LayoutUtil.fluidRowLocs(UserDto.USER_NAME, UserDto.USER_ROLES),
+					LayoutUtil.fluidRowLocs("", UserDto.ASSOCIATED_OFFICER),
 					LayoutUtil.fluidRowLocs(NEW_PASSWORD)
 					);
 
@@ -65,13 +71,28 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 //    	newPasswordButton.addStyleName(CssStyles.FORCE_CAPTION);
     	newPasswordButton.addClickListener(e -> newPasswordClicked());
     	getContent().addComponent(newPasswordButton, NEW_PASSWORD);
-    	
+
+    	// for informant
+    	ComboBox associatedOfficer = addField(UserDto.ASSOCIATED_OFFICER, ComboBox.class);
+    	associatedOfficer.addItems(FacadeProvider.getUserFacade().getListAsReference(UserRole.SURVEILLANCE_OFFICER));
+    	updateAssociatedOfficerField();
     	
     	setRequired(true, UserDto.FIRST_NAME, UserDto.LAST_NAME, UserDto.USER_NAME, UserDto.USER_ROLES);
     	addValidator(UserDto.USER_NAME, new UserNameValidator());
     	
     	addFieldListener(UserDto.FIRST_NAME, e -> suggestUserName());
     	addFieldListener(UserDto.LAST_NAME, e -> suggestUserName());
+    	addFieldListener(UserDto.USER_ROLES, e -> updateAssociatedOfficerField());
+    }
+
+    private void updateAssociatedOfficerField() {
+    	ComboBox associatedOfficer = (ComboBox)getFieldGroup().getField(UserDto.ASSOCIATED_OFFICER);
+    	OptionGroup userRoles = (OptionGroup)getFieldGroup().getField(UserDto.USER_ROLES);
+    	Set<UserRole> value = (Set<UserRole>)userRoles.getValue();
+    	associatedOfficer.setVisible(value.contains(UserRole.INFORMANT));
+    	if (!associatedOfficer.isVisible()) {
+    		associatedOfficer.clear();
+    	}
     }
     
 	private void newPasswordClicked() {

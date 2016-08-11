@@ -11,11 +11,13 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import de.symeda.sormas.api.caze.CaseStatus;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.user.User;
 
 
 /**
@@ -65,7 +67,13 @@ public class CaseNewActivity extends AppCompatActivity {
                 Case caze = caseNewTab.getData();
 
                 caze.setCaseStatus(CaseStatus.NEW);
-                caze.setReportingUser(ConfigProvider.getUser());
+                User user = ConfigProvider.getUser();
+                caze.setReportingUser(user);
+                if (user.getUserRole() == UserRole.SURVEILLANCE_OFFICER) {
+                    caze.setSurveillanceOfficer(user);
+                } else  if (user.getUserRole() == UserRole.INFORMANT) {
+                    caze.setSurveillanceOfficer(user.getAssociatedOfficer());
+                }
 
                 CaseDao caseDao = DatabaseHelper.getCaseDao();
                 caseDao.save(caze);

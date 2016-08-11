@@ -5,6 +5,7 @@ import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.backend.user.User;
 
 /**
  * Created by Martin Wahnschaffe on 27.07.2016.
@@ -31,9 +32,31 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
         } else {
             ado.setHealthFacility(null);
         }
-        ado.setPerson(DatabaseHelper.getPersonDao().queryUuid(dto.getPerson().getUuid()));
+        if (dto.getPerson() != null) {
+            ado.setPerson(DatabaseHelper.getPersonDao().queryUuid(dto.getPerson().getUuid()));
+        } else {
+            ado.setPerson(null);
+        }
         ado.setInvestigatedDate(dto.getInvestigatedDate());
         ado.setReportDate(dto.getReportDate());
+
+        if (dto.getReportingUser() != null) {
+            ado.setReportingUser(DatabaseHelper.getUserDao().queryUuid(dto.getReportingUser().getUuid()));
+        } else {
+            ado.setReportingUser(null);
+        }
+
+        if (dto.getSurveillanceOfficer() != null) {
+            ado.setSurveillanceOfficer(DatabaseHelper.getUserDao().queryUuid(dto.getSurveillanceOfficer().getUuid()));
+        } else {
+            ado.setSurveillanceOfficer(null);
+        }
+        if (dto.getSurveillanceSupervisor() != null) {
+            ado.setSurveillanceSupervisor(DatabaseHelper.getUserDao().queryUuid(dto.getSurveillanceSupervisor().getUuid()));
+        } else {
+            ado.setSurveillanceSupervisor(null);
+        }
+        // TODO user
     }
 
     @Override
@@ -54,5 +77,26 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
         }
         dto.setInvestigatedDate(dto.getInvestigatedDate());
         dto.setReportDate(dto.getReportDate());
+
+        if (ado.getReportingUser() != null) {
+            User user = DatabaseHelper.getUserDao().queryForId(ado.getReportingUser().getId());
+            dto.setReportingUser(AdoDtoHelper.toReferenceDto(user));
+        } else {
+            dto.setReportingUser(null);
+        }
+
+        if (ado.getSurveillanceOfficer() != null) {
+            User user = DatabaseHelper.getUserDao().queryForId(ado.getSurveillanceOfficer().getId());
+            dto.setSurveillanceOfficer(AdoDtoHelper.toReferenceDto(user));
+        } else {
+            dto.setSurveillanceOfficer(null);
+        }
+        if (ado.getSurveillanceSupervisor() != null) {
+            User user = DatabaseHelper.getUserDao().queryForId(ado.getSurveillanceSupervisor().getId());
+            dto.setSurveillanceSupervisor(AdoDtoHelper.toReferenceDto(user));
+        } else {
+            dto.setSurveillanceSupervisor(null);
+        }
+        // TODO user
     }
 }

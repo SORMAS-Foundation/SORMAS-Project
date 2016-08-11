@@ -16,6 +16,7 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.facility.FacilityDao;
 import de.symeda.sormas.app.databinding.CazeDataFragmentLayoutBinding;
@@ -51,7 +52,7 @@ public class CaseDataTab extends FormTab {
         addFacilitySpinnerField(R.id.form_cd_health_facility);
 
         Button btnCaseAdministration = (Button) getView().findViewById(R.id.form_cd_btn_case_administration);
-        Iterable<CaseStatus> possibleStatus = CaseHelper.getPossibleStatusChanges(caze.getCaseStatus(), UserRole.SURVEILLANCE_OFFICER);
+        Iterable<CaseStatus> possibleStatus = CaseHelper.getPossibleStatusChanges(caze.getCaseStatus(), ConfigProvider.getUser().getUserRole());
         if(possibleStatus.iterator().hasNext()) {
             final CaseStatus caseStatus = possibleStatus.iterator().next();
 

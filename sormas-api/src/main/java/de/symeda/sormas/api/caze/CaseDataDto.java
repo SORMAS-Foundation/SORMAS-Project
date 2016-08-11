@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import de.symeda.sormas.api.DataTransferObject;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ReferenceDto;
-import de.symeda.sormas.api.utils.DateAdapter;
+import de.symeda.sormas.api.utils.PreciseDateAdapter;
 
 public class CaseDataDto extends DataTransferObject {
 
@@ -84,20 +84,22 @@ public class CaseDataDto extends DataTransferObject {
 		this.healthFacility = healthFacility;
 	}
 
+	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public Date getReportDate() {
 		return reportDate;
 	}
 
-	@XmlJavaTypeAdapter(DateAdapter.class)
+	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public void setReportDate(Date reportDate) {
 		this.reportDate = reportDate;
 	}
 
+	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public Date getInvestigatedDate() {
 		return investigatedDate;
 	}
 
-	@XmlJavaTypeAdapter(DateAdapter.class)
+	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public void setInvestigatedDate(Date investigatedDate) {
 		this.investigatedDate = investigatedDate;
 	}

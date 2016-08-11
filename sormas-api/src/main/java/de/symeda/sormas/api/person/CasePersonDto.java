@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
-import de.symeda.sormas.api.utils.DateAdapter;
+import de.symeda.sormas.api.utils.PreciseDateAdapter;
 
 public class CasePersonDto extends PersonDto {
 
@@ -48,12 +48,12 @@ public class CasePersonDto extends PersonDto {
 	private ReferenceDto occupationFacility;
 
 	
-
+	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public Date getBirthDate() {
 		return birthDate;
 	}
 
-	@XmlJavaTypeAdapter(DateAdapter.class)
+	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public void setBirthDate(Date birthDate) {
 		this.birthDate = birthDate;
 	}
@@ -89,11 +89,12 @@ public class CasePersonDto extends PersonDto {
 		this.presentCondition = presentCondition;
 	}
 
+	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public Date getDeathDate() {
 		return deathDate;
 	}
 
-	@XmlJavaTypeAdapter(DateAdapter.class)
+	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public void setDeathDate(Date deathDate) {
 		this.deathDate = deathDate;
 	}

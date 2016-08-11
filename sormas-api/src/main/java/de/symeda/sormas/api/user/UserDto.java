@@ -21,8 +21,8 @@ public class UserDto extends DataTransferObject {
 	public static final String PHONE = "phone";
 	public static final String ADDRESS = "address";
 	public static final String LGA = "lga";
-	
 	public static final String USER_ROLES = "userRoles";
+	public static final String ASSOCIATED_OFFICER = "associatedOfficer";
 
 	private boolean active = true;
 	
@@ -36,6 +36,7 @@ public class UserDto extends DataTransferObject {
 	
 	private Set<UserRole> userRoles;
 
+	private ReferenceDto associatedOfficer;
 	
 	public boolean isActive() {
 		return active;
@@ -112,6 +113,14 @@ public class UserDto extends DataTransferObject {
 	@Override
 	public String toString() {
 		return firstName + " " + lastName.toUpperCase();
+	}
+
+	public ReferenceDto getAssociatedOfficer() {
+		return associatedOfficer;
+	}
+
+	public void setAssociatedOfficer(ReferenceDto associatedOfficer) {
+		this.associatedOfficer = associatedOfficer;
 	}
 
 }

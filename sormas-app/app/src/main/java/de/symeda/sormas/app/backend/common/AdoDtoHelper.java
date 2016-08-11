@@ -54,10 +54,12 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
     public abstract ADO create();
     public abstract DTO createDto();
 
-    public abstract void fillInnerFromDto(ADO ado, DTO dto);
-    public abstract void fillInnerFromAdo(DTO dto, ADO ado);
+    protected abstract void fillInnerFromDto(ADO ado, DTO dto);
+    protected abstract void fillInnerFromAdo(DTO dto, ADO ado);
 
-    public void createOrUpdateMembers(ADO ado) { }
+    protected void createOrUpdateMembers(ADO ado) { }
+
+    protected void preparePulledResult(List<DTO> result) { }
 
     public void pullEntities(DtoGetInterface<DTO> getInterface, final AbstractAdoDao<ADO> dao) {
 
@@ -69,7 +71,7 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
             Response<List<DTO>> response = dtoCall.execute();
             final List<DTO> result  = response.body();
             if (result != null) {
-
+                preparePulledResult(result);
                 dao.callBatchTasks(new Callable<Void>() {
                     public Void call() throws Exception {
                         boolean empty = dao.countOf() == 0;
@@ -108,6 +110,10 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
         for (ADO ado : modifiedAdos) {
             DTO dto = adoToDto(ado);
             modifiedDtos.add(dto);
+        }
+
+        if (modifiedDtos.isEmpty()) {
+            return;
         }
 
         Call<Integer> call = postInterface.postAll(modifiedDtos);

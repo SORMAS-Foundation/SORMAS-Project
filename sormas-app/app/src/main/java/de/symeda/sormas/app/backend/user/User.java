@@ -51,6 +51,8 @@ public class User extends AbstractDomainObject {
 	private Region region;
 	@Enumerated(EnumType.STRING)
 	private UserRole userRole;
+	@ManyToOne(cascade = {})
+	private User associatedOfficer;
 	
 	public String getUserName() {
 		return userName;
@@ -124,5 +126,13 @@ public class User extends AbstractDomainObject {
 
 	public void setUserRole(UserRole userRole) {
 		this.userRole = userRole;
+	}
+
+	public User getAssociatedOfficer() {
+		return associatedOfficer;
+	}
+
+	public void setAssociatedOfficer(User associatedOfficer) {
+		this.associatedOfficer = associatedOfficer;
 	}
 }

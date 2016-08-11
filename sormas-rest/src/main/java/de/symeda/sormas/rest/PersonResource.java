@@ -27,7 +27,8 @@ public class PersonResource {
 
 	@GET @Path("/all/{since}")
 	public List<CasePersonDto> getAllPersons(@PathParam("since") long since) {
-		return FacadeProvider.getPersonFacade().getAllCasePersonsAfter(new Date(since));
+		List<CasePersonDto> result = FacadeProvider.getPersonFacade().getAllCasePersonsAfter(new Date(since));
+		return result;
 	}
 	
 	@POST @Path("/push")

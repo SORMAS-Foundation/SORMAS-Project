@@ -77,6 +77,8 @@ public class UserFacadeEjb implements UserFacade {
 		dto.setPhone(entity.getPhone());
 		dto.setAddress(LocationFacadeEjb.toLocationDto(entity.getAddress()));
 		
+		dto.setAssociatedOfficer(DtoHelper.toReferenceDto(entity.getAssociatedOfficer()));
+		
 		entity.getUserRoles().size();
 		dto.setUserRoles(entity.getUserRoles());
 		return dto;
@@ -99,6 +101,8 @@ public class UserFacadeEjb implements UserFacade {
 		bo.setUserName(dto.getUserName());
 		bo.setUserEmail(dto.getUserEmail());
 		
+		bo.setAssociatedOfficer(DtoHelper.fromReferenceDto(dto.getAssociatedOfficer(), service));
+
 		bo.setUserRoles(dto.getUserRoles());
 
 		return bo;

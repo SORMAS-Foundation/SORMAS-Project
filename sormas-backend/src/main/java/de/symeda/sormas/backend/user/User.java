@@ -120,6 +120,9 @@ public class User extends AbstractDomainObject {
 	
 	@ManyToOne(cascade = CascadeType.ALL)
 	public Location getAddress() {
+		if (address == null) {
+			address = new Location();
+		}
 		return address;
 	}
 	public void setAddress(Location address) {

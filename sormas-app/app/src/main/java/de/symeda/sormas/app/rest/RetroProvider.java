@@ -29,7 +29,7 @@ public final class RetroProvider {
 
         Gson gson = new GsonBuilder()
                 //.setDateFormat(DateFormat.LONG)
-                .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
+                .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
                 .create();
 
         // 10.0.2.2 points to localhost from emulator
