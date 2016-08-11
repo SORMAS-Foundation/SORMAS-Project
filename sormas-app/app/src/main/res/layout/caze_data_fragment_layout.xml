@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:custom="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
         <variable name="caze" type="de.symeda.sormas.app.backend.caze.Case"/>
@@ -14,7 +14,7 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="10dp"
+            android:padding="10sp"
             android:theme="@style/AppTheme">
 
             <!-- ============= CASE_INFORMATION ============= -->
@@ -27,7 +27,7 @@
                 android:textColor="@android:color/tab_indicator_text"
                 android:textSize="@dimen/abc_text_size_body_1_material"
                 android:textStyle="bold"
-                android:paddingBottom="10dp" />
+                android:paddingBottom="10sp" />
 
 
 
@@ -46,7 +46,7 @@
                         android:text="@string/form_cd_case_id" />
                     <TextView
                         android:layout_width="match_parent" android:layout_height="@dimen/field_height"
-                        custom:short_uuid="@{caze.uuid}" />
+                        app:short_uuid="@{caze.uuid}" />
                 </LinearLayout>
 
                 <LinearLayout android:orientation="vertical"
@@ -59,7 +59,7 @@
                         android:text="@string/form_cd_case_status" />
                     <TextView
                         android:layout_width="match_parent" android:layout_height="@dimen/field_height"
-                        custom:enum="@{caze.caseStatus}" />
+                        app:enum="@{caze.caseStatus}" />
 
                 </LinearLayout>
             </LinearLayout>
@@ -79,7 +79,7 @@
                         android:text="@string/form_cd_report_date" />
                     <TextView
                         android:layout_width="match_parent" android:layout_height="@dimen/field_height"
-                        custom:date="@{caze.reportDate}" />
+                        app:date="@{caze.reportDate}" />
                 </LinearLayout>
 
                 <LinearLayout android:orientation="vertical"
@@ -92,7 +92,7 @@
                         android:text="@string/form_cd_reporter" />
                     <TextView
                         android:layout_width="match_parent" android:layout_height="@dimen/field_height"
-                        custom:user="@{caze.reportingUser}" />
+                        app:user="@{caze.reportingUser}" />
 
                 </LinearLayout>
 
@@ -114,7 +114,7 @@
                         android:text="@string/form_disease" />
                     <TextView
                         android:layout_width="match_parent" android:layout_height="@dimen/field_height"
-                        custom:enum="@{caze.disease}" />
+                        app:enum="@{caze.disease}" />
                 </LinearLayout>
 
                 <LinearLayout android:orientation="vertical"
@@ -168,8 +168,8 @@
                 android:textColor="@android:color/tab_indicator_text"
                 android:textSize="@dimen/abc_text_size_body_1_material"
                 android:textStyle="bold"
-                android:paddingTop="30dp"
-                android:paddingBottom="10dp" />
+                android:paddingTop="30sp"
+                android:paddingBottom="10sp" />
 
 
             <Button
@@ -188,8 +188,8 @@
                 android:textColor="@android:color/tab_indicator_text"
                 android:textSize="@dimen/abc_text_size_body_1_material"
                 android:textStyle="bold"
-                android:paddingTop="30dp"
-                android:paddingBottom="10dp" />
+                android:paddingTop="30sp"
+                android:paddingBottom="10sp" />
 
 
             <LinearLayout
@@ -207,7 +207,7 @@
                         android:text="@string/form_cd_surveillance_officer" />
                     <TextView
                         android:layout_width="match_parent" android:layout_height="@dimen/field_height"
-                        custom:user="@{caze.surveillanceOfficer}" />
+                        app:user="@{caze.surveillanceOfficer}" />
                 </LinearLayout>
 
                 <LinearLayout android:orientation="vertical"

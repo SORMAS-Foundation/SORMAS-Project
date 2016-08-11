@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="10dp"
+    android:theme="@style/AppTheme">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout android:orientation="vertical"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:paddingTop="@dimen/spinner_padding" android:paddingBottom="@dimen/spinner_padding"
+            android:layout_weight="0.5">
+            <TextView
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/field_caption_margin_bottom" android:textSize="@dimen/field_caption_size"
+                android:layout_marginLeft="@dimen/field_caption_margin_left"
+                android:text="@string/form_first_name" />
+            <EditText
+                android:layout_width="match_parent" android:layout_height="@dimen/field_height"
+                android:inputType="text"
+                android:id="@+id/form_first_name" />
+        </LinearLayout>
+
+        <LinearLayout android:orientation="vertical"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:paddingTop="@dimen/spinner_padding" android:paddingBottom="@dimen/spinner_padding"
+            android:layout_weight="0.5">
+            <TextView
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/field_caption_margin_bottom" android:textSize="@dimen/field_caption_size"
+                android:layout_marginLeft="@dimen/field_caption_margin_left"
+                android:text="@string/form_last_name" />
+            <EditText
+                android:layout_width="match_parent" android:layout_height="@dimen/field_height"
+                android:inputType="text"
+                android:id="@+id/form_last_name" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout android:orientation="vertical"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:paddingTop="@dimen/spinner_padding" android:paddingBottom="@dimen/spinner_padding"
+            android:layout_weight="0.5">
+            <TextView
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/field_caption_margin_bottom" android:textSize="@dimen/field_caption_size"
+                android:layout_marginLeft="@dimen/field_caption_margin_left"
+                android:text="@string/form_person_id" />
+            <EditText
+                android:layout_width="match_parent" android:layout_height="@dimen/field_height"
+                android:inputType="text"
+                android:id="@+id/form_person_id" />
+        </LinearLayout>
+
+        <LinearLayout android:orientation="vertical"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:paddingTop="@dimen/spinner_padding" android:paddingBottom="@dimen/spinner_padding"
+            android:layout_weight="0.5">
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

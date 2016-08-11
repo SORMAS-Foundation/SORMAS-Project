@@ -86,8 +86,4 @@ public class CaseDataTab extends FormTab {
         return commit(binding.getCaze());
     }
 
-    private void reloadFragment() {
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
-        ft.detach(this).attach(this).commit();
-    }
 }

@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.databinding.BindingAdapter;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,7 +28,6 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.facility.FacilityDao;
@@ -62,6 +62,7 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
         // Set initial value to ui
         if(model.get(dateFieldId)!=null) {
             dateField.setText(DateHelper.formatDDMMYYYY((Date) model.get(dateFieldId)));
+            dateField.clearFocus();
         }
 
         ImageButton btn = (ImageButton) getView().findViewById(btnDatePickerId);
@@ -220,9 +221,8 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
         Location location = null;
         try {
             location = model.get(locationFieldId)!=null?(Location)model.get(locationFieldId): DataUtils.createNew(Location.class);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (java.lang.InstantiationException e) {
+        } catch (Exception e) {
+            Toast.makeText(getContext(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
 
@@ -344,6 +344,11 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
     }
 
     protected abstract AbstractDomainObject commit(AbstractDomainObject ado);
+
+    protected void reloadFragment() {
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        ft.detach(this).attach(this).commit();
+    }
 
 
     @BindingAdapter("bind:enum")

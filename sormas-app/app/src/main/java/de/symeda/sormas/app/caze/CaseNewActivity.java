@@ -8,14 +8,16 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.Toast;
+
+import java.util.Date;
 
 import de.symeda.sormas.api.caze.CaseStatus;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
-import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.user.UserTab;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 
 
 /**
@@ -62,10 +64,16 @@ public class CaseNewActivity extends AppCompatActivity {
                 return true;
 
             case R.id.action_save:
-                CaseDao caseDao = DatabaseHelper.getCaseDao();
                 Case caze = caseNewTab.getData();
+
                 caze.setCaseStatus(CaseStatus.NEW);
+                caze.setReportingUser(ConfigProvider.getUser());
+
+                CaseDao caseDao = DatabaseHelper.getCaseDao();
                 caseDao.save(caze);
+
+                Toast.makeText(this, caze.getPerson().toString() + " saved", Toast.LENGTH_SHORT).show();
+                NavUtils.navigateUpFromSameTask(this);
                 return true;
 
         }

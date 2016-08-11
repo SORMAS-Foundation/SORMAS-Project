@@ -64,4 +64,8 @@
     <string name="headline_new_case">Create new case</string>
     <string name="form_disease">Disease</string>
     <string name="form_cn_person">Person</string>
+    <string name="headline_new_Person">Add new person</string>
+    <string name="form_person_id">Person ID</string>
+    <string name="action_new_person">Add person</string>
+    <string name="action_dimiss">Dismiss</string>
 </resources>
