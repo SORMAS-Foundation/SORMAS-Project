@@ -43,10 +43,10 @@ public class Case extends AbstractDomainObject {
 	@Enumerated(EnumType.STRING)
 	private CaseStatus caseStatus;
 
-	@ManyToOne(cascade = {})
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private Facility healthFacility;
 
-	@ManyToOne(cascade = {})
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private User reportingUser;
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date reportDate;

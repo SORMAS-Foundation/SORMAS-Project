@@ -6,6 +6,7 @@ import android.databinding.BindingAdapter;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -215,114 +216,109 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
      * @param locationFieldId
      */
     protected void addLocationField(final int locationFieldId, int locationBtnId) {
-        // inner model for location, has to be committed for each item
-        final Map<Integer,Object> innerModel = new HashMap<>();
-
-        Location location = null;
         try {
-            location = model.get(locationFieldId)!=null?(Location)model.get(locationFieldId): DataUtils.createNew(Location.class);
+            // inner model for location, has to be committed for each item
+            final Map<Integer,Object> innerModel = new HashMap<>();
+            final Location location = model.get(locationFieldId)!=null?(Location)model.get(locationFieldId): DataUtils.createNew(Location.class);
+
+            if(location.getRegion()!=null) {
+                RegionDao regionDao = DatabaseHelper.getRegionDao();
+                location.setRegion(regionDao.queryForId(location.getRegion().getId()));
+            }
+
+            if(location.getDistrict()!=null) {
+                DistrictDao districtDao = DatabaseHelper.getDistrictDao();
+                location.setDistrict(districtDao.queryForId(location.getDistrict().getId()));
+            }
+
+            if(location.getCommunity()!=null) {
+                CommunityDao communityDaoDao = DatabaseHelper.getCommunityDao();
+                location.setCommunity(communityDaoDao.queryForId(location.getCommunity().getId()));
+            }
+
+            // set the TextField for the location
+            final EditText locationText = (EditText) getView().findViewById(locationFieldId);
+            locationText.setEnabled(false);
+            locationText.setText(location.toString());
+
+            ImageButton btn = (ImageButton) getView().findViewById(locationBtnId);
+            btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View arg0) {
+
+                    AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
+                    dialogBuilder.setTitle(getResources().getString(R.string.headline_location));
+
+                    final View dialogView = getActivity().getLayoutInflater().inflate(R.layout.location_fragment_layout, null);
+                    dialogBuilder.setView(dialogView);
+
+                    innerModel.put(R.id.form_location_address, location.getAddress());
+                    EditText addressField = (EditText) dialogView.findViewById(R.id.form_location_address);
+                    addressField.setText((String)innerModel.get(R.id.form_location_address));
+
+                    innerModel.put(R.id.form_location_address_details, location.getDetails());
+                    EditText detailsField = (EditText) dialogView.findViewById(R.id.form_location_address_details);
+                    detailsField.setText((String)innerModel.get(R.id.form_location_address_details));
+
+                    innerModel.put(R.id.form_location_address_city, location.getCity());
+                    EditText cityField = (EditText) dialogView.findViewById(R.id.form_location_address_city);
+                    cityField.setText((String)innerModel.get(R.id.form_location_address_city));
+
+                    innerModel.put(R.id.form_location_address_state, location.getRegion());
+                    addRegionSpinnerField(innerModel,dialogView, R.id.form_location_address_state);
+
+                    innerModel.put(R.id.form_location_address_lga, location.getDistrict());
+                    addDistrictSpinnerField(innerModel,dialogView, R.id.form_location_address_lga);
+
+                    innerModel.put(R.id.form_location_address_ward, location.getCommunity());
+                    addCommunitySpinnerField(innerModel,dialogView, R.id.form_location_address_ward);
+
+                    innerModel.put(R.id.form_location_address_latitude, location.getLatitude());
+                    EditText latitudeField = (EditText) dialogView.findViewById(R.id.form_location_address_latitude);
+                    latitudeField.setText((String)innerModel.get(R.id.form_location_address_latitude));
+
+                    innerModel.put(R.id.form_location_address_longitude, location.getLongitude());
+                    EditText longitudeField = (EditText) dialogView.findViewById(R.id.form_location_address_longitude);
+                    longitudeField.setText((String)innerModel.get(R.id.form_location_address_longitude));
+
+                    dialogBuilder.setPositiveButton(getResources().getString(R.string.action_done), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int id) {
+                            EditText addressField = (EditText) dialogView.findViewById(R.id.form_location_address);
+                            location.setAddress(addressField.getText().toString());
+
+                            EditText detailsField = (EditText) dialogView.findViewById(R.id.form_location_address_details);
+                            location.setDetails(detailsField.getText().toString());
+
+                            EditText cityField = (EditText) dialogView.findViewById(R.id.form_location_address_city);
+                            location.setCity(cityField.getText().toString());
+
+                            location.setRegion((Region)innerModel.get(R.id.form_location_address_state));
+                            location.setDistrict((District)innerModel.get(R.id.form_location_address_lga));
+                            location.setCommunity((Community)innerModel.get(R.id.form_location_address_ward));
+
+                            location.setLatitude((Float)innerModel.get(R.id.form_location_address_latitude));
+                            location.setLongitude((Float)innerModel.get(R.id.form_location_address_longitude));
+
+                            locationText.setText(location.toString());
+                            // put the inner model for the given fieldID
+                            model.put(locationFieldId, location);
+                        }
+                    });
+                    dialogBuilder.setNegativeButton(getResources().getString(R.string.action_dimiss), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int id) {
+                        }
+                    });
+
+                    AlertDialog newPersonDialog = dialogBuilder.create();
+                    newPersonDialog.show();
+                }
+            });
         } catch (Exception e) {
             Toast.makeText(getContext(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
-
-        if(location.getRegion()!=null) {
-            RegionDao regionDao = DatabaseHelper.getRegionDao();
-            location.setRegion(regionDao.queryForId(location.getRegion().getId()));
-        }
-
-        if(location.getDistrict()!=null) {
-            DistrictDao districtDao = DatabaseHelper.getDistrictDao();
-            location.setDistrict(districtDao.queryForId(location.getDistrict().getId()));
-        }
-
-        if(location.getCommunity()!=null) {
-            CommunityDao communityDaoDao = DatabaseHelper.getCommunityDao();
-            location.setCommunity(communityDaoDao.queryForId(location.getCommunity().getId()));
-        }
-        final Location finalLocation = location;
-
-        // set the TextField for the location
-        final EditText locationText = (EditText) getView().findViewById(locationFieldId);
-        locationText.setEnabled(false);
-        locationText.setText(finalLocation.toString());
-
-        ImageButton btn = (ImageButton) getView().findViewById(locationBtnId);
-        btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View arg0) {
-                LocationDialogFragment locationFragment = new LocationDialogFragment() {
-                    @Override
-                    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                             Bundle savedInstanceState) {
-                        View parentView = inflater.inflate(R.layout.location_fragment_layout, container, false);
-
-                        innerModel.put(R.id.form_location_address, finalLocation.getAddress());
-                        EditText addressField = (EditText) parentView.findViewById(R.id.form_location_address);
-                        addressField.setText((String)innerModel.get(R.id.form_location_address));
-
-                        innerModel.put(R.id.form_location_address_details, finalLocation.getDetails());
-                        EditText detailsField = (EditText) parentView.findViewById(R.id.form_location_address_details);
-                        detailsField.setText((String)innerModel.get(R.id.form_location_address_details));
-
-                        innerModel.put(R.id.form_location_address_city, finalLocation.getCity());
-                        EditText cityField = (EditText) parentView.findViewById(R.id.form_location_address_city);
-                        cityField.setText((String)innerModel.get(R.id.form_location_address_city));
-
-                        innerModel.put(R.id.form_location_address_state, finalLocation.getRegion());
-                        addRegionSpinnerField(innerModel,parentView, R.id.form_location_address_state);
-
-                        innerModel.put(R.id.form_location_address_lga, finalLocation.getDistrict());
-                        addDistrictSpinnerField(innerModel,parentView, R.id.form_location_address_lga);
-
-                        innerModel.put(R.id.form_location_address_ward, finalLocation.getCommunity());
-                        addCommunitySpinnerField(innerModel,parentView, R.id.form_location_address_ward);
-
-                        innerModel.put(R.id.form_location_address_latitude, finalLocation.getLatitude());
-                        EditText latitudeField = (EditText) parentView.findViewById(R.id.form_location_address_latitude);
-                        latitudeField.setText((String)innerModel.get(R.id.form_location_address_latitude));
-
-                        innerModel.put(R.id.form_location_address_longitude, finalLocation.getLongitude());
-                        EditText longitudeField = (EditText) parentView.findViewById(R.id.form_location_address_longitude);
-                        longitudeField.setText((String)innerModel.get(R.id.form_location_address_longitude));
-
-
-                        getDialog().setTitle( getResources().getText(R.string.headline_location).toString());
-
-                        return parentView;
-                    }
-
-                    @Override
-                    public void onDismiss(DialogInterface dialog) {
-                        super.onDismiss(dialog);
-
-                        EditText addressField = (EditText) getView().findViewById(R.id.form_location_address);
-                        finalLocation.setAddress(addressField.getText().toString());
-
-                        EditText detailsField = (EditText) getView().findViewById(R.id.form_location_address_details);
-                        finalLocation.setDetails(detailsField.getText().toString());
-
-                        EditText cityField = (EditText) getView().findViewById(R.id.form_location_address_city);
-                        finalLocation.setCity(cityField.getText().toString());
-
-                        finalLocation.setRegion((Region)innerModel.get(R.id.form_location_address_state));
-                        finalLocation.setDistrict((District)innerModel.get(R.id.form_location_address_lga));
-                        finalLocation.setCommunity((Community)innerModel.get(R.id.form_location_address_ward));
-
-                        finalLocation.setLatitude((Float)innerModel.get(R.id.form_location_address_latitude));
-                        finalLocation.setLongitude((Float)innerModel.get(R.id.form_location_address_longitude));
-
-                        locationText.setText(finalLocation.toString());
-                        // put the inner model for the given fieldID
-                        model.put(locationFieldId, finalLocation);
-
-                    }
-                };
-                locationFragment.show(getFragmentManager(), getResources().getText(R.string.headline_location).toString());
-            }
-        });
-
-
     }
 
     protected void deactivateField(View v) {

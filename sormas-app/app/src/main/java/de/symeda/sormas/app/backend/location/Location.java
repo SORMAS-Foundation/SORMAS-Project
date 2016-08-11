@@ -2,6 +2,7 @@ package de.symeda.sormas.app.backend.location;
 
 import android.databinding.Bindable;
 
+import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 import javax.persistence.Column;
@@ -28,11 +29,11 @@ public class Location extends AbstractDomainObject {
 	@Column(length = 255)
 	private String city;
 
-	@ManyToOne(cascade = {})
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private Region region;
-	@ManyToOne(cascade = {})
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private District district;
-	@ManyToOne(cascade = {})
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private Community community;
 
 	@Column(columnDefinition = "float8")

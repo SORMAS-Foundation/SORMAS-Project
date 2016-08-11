@@ -12,11 +12,6 @@ import java.util.List;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
-import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.facility.Facility;
-import de.symeda.sormas.app.backend.facility.FacilityDao;
-import de.symeda.sormas.app.backend.user.User;
-import de.symeda.sormas.app.backend.user.UserDao;
 
 /**
  * Created by Stefan Szczesny on 21.07.2016.
@@ -59,23 +54,11 @@ public class CaseListArrayAdapter extends ArrayAdapter<Case> {
         person.setText(caze.getPerson().toString());
 
         TextView facility = (TextView) convertView.findViewById(R.id.cli_facility);
-        if(caze.getHealthFacility()!=null) {
-            FacilityDao facilityDao = DatabaseHelper.getFacilityDao();
-            Facility fac = facilityDao.queryForId(caze.getHealthFacility().getId());
-            facility.setText(fac.toString());
-        }
+        facility.setText(caze.getHealthFacility()!=null?caze.getHealthFacility().toString():null);
 
         TextView reporter = (TextView) convertView.findViewById(R.id.cli_reporter);
-        if(caze.getReportingUser()!=null) {
-            UserDao userDao = DatabaseHelper.getUserDao();
-            User user = userDao.queryForId(caze.getReportingUser().getId());
-            reporter.setText(user.toString());
-        }
+        reporter.setText(caze.getReportingUser()!=null?caze.getReportingUser().toString():null);
 
         return convertView;
     }
-
-
 }
-
-
