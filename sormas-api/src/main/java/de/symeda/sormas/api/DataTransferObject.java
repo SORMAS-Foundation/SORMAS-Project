@@ -1,7 +1,11 @@
 package de.symeda.sormas.api;
 
 import java.io.Serializable;
-import java.sql.Timestamp;
+import java.util.Date;
+
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import de.symeda.sormas.api.utils.DateAdapter;
 
 public abstract class DataTransferObject implements Serializable {
 
@@ -11,23 +15,25 @@ public abstract class DataTransferObject implements Serializable {
 	public static final String CHANGE_DATE = "changeDate";
 	public static final String UUID = "uuid";
 
-	private Timestamp creationDate;
-	private Timestamp changeDate;
+	private Date creationDate;
+	private Date changeDate;
 	private String uuid;
 
-	public Timestamp getCreationDate() {
+	public Date getCreationDate() {
 		return creationDate;
 	}
 
-	public void setCreationDate(Timestamp creationDate) {
+	@XmlJavaTypeAdapter(DateAdapter.class)
+	public void setCreationDate(Date creationDate) {
 		this.creationDate = creationDate;
 	}
 
-	public Timestamp getChangeDate() {
+	public Date getChangeDate() {
 		return changeDate;
 	}
 	
-	public void setChangeDate(Timestamp changeDate) {
+	@XmlJavaTypeAdapter(DateAdapter.class)
+	public void setChangeDate(Date changeDate) {
 		this.changeDate = changeDate;
 	}
 	
@@ -66,3 +72,5 @@ public abstract class DataTransferObject implements Serializable {
 		return 0;
 	}
 }
+
+

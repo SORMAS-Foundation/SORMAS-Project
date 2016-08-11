@@ -2,24 +2,18 @@ package de.symeda.sormas.app.backend.common;
 
 import android.util.Log;
 
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.logger.Logger;
-import com.j256.ormlite.logger.LoggerFactory;
-
 import java.io.IOException;
+import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Callable;
 
 import de.symeda.sormas.api.DataTransferObject;
-import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.app.backend.caze.CaseDao;
-import de.symeda.sormas.app.backend.caze.CaseDtoHelper;
-import de.symeda.sormas.app.backend.region.Region;
-import de.symeda.sormas.app.rest.CaseFacadeRetro;
-import de.symeda.sormas.app.rest.DtoFacadeRetro;
-import de.symeda.sormas.app.rest.RetroProvider;
+import de.symeda.sormas.api.ReferenceDto;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
+import retrofit2.Response;
 
 /**
  * Created by Martin Wahnschaffe on 27.07.2016.
@@ -45,20 +39,35 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
         return ado;
     }
 
+    public DTO adoToDto(ADO ado) {
+
+        DTO dto = createDto();
+        dto.setUuid(ado.getUuid());
+        dto.setChangeDate(new Timestamp(ado.getLocalChangeDate().getTime()));
+        dto.setCreationDate(new Timestamp(ado.getCreationDate().getTime()));
+
+        fillInnerFromAdo(dto, ado);
+
+        return dto;
+    }
+
     public abstract ADO create();
+    public abstract DTO createDto();
 
     public abstract void fillInnerFromDto(ADO ado, DTO dto);
+    public abstract void fillInnerFromAdo(DTO dto, ADO ado);
 
     public void createOrUpdateMembers(ADO ado) { }
 
-    public void syncEntities(DtoFacadeRetro<DTO> facade, final AbstractAdoDao<ADO> dao) {
+    public void pullEntities(DtoGetInterface<DTO> getInterface, final AbstractAdoDao<ADO> dao) {
 
         Date maxModifiedDate = dao.getLatestChangeDate();
 
-        Call<List<DTO>> dtoCall = facade.getAll(maxModifiedDate != null ? maxModifiedDate.getTime() : 0);
+        Call<List<DTO>> dtoCall = getInterface.getAll(maxModifiedDate != null ? maxModifiedDate.getTime() : 0);
 
         try {
-            final List<DTO> result  = dtoCall.execute().body();
+            Response<List<DTO>> response = dtoCall.execute();
+            final List<DTO> result  = response.body();
             if (result != null) {
 
                 dao.callBatchTasks(new Callable<Void>() {
@@ -84,10 +93,68 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
                     }
                 });
 
-                Log.d(dao.getTableName(), "Synced: " + result.size());
+                Log.d(dao.getTableName(), "Pulled: " + result.size());
             }
         } catch (IOException e) {
             Log.e(dao.getTableName(), e.toString(), e);
         }
+    }
+
+    public void pushEntities(DtoPostInterface<DTO> postInterface, final AbstractAdoDao<ADO> dao) {
+
+        final List<ADO> modifiedAdos = dao.queryForEq(ADO.MODIFIED, true);
+
+        List<DTO> modifiedDtos = new ArrayList<>(modifiedAdos.size());
+        for (ADO ado : modifiedAdos) {
+            DTO dto = adoToDto(ado);
+            modifiedDtos.add(dto);
+        }
+
+        Call<Integer> call = postInterface.postAll(modifiedDtos);
+
+        try {
+            final Integer result = call.execute().body();
+            if (result == null || result != modifiedAdos.size()) {
+                Log.e(dao.getTableName(), "PostAll result '" + result + "' does not match expected '" + modifiedAdos.size() + "'");
+            } else {
+
+                dao.callBatchTasks(new Callable<Void>() {
+                    public Void call() throws Exception {
+                        for (ADO ado : modifiedAdos) {
+                            ado.setModified(false);
+                            ado.setChangeDate(ado.getLocalChangeDate());
+                            dao.update(ado);
+                        }
+                        return null;
+                    }
+                });
+
+                Log.d(dao.getTableName(), "Pushed: " + modifiedAdos.size());
+            }
+        } catch (IOException e) {
+            Log.e(dao.getTableName(), e.toString(), e);
+        }
+    }
+
+    public interface DtoGetInterface<DTO extends DataTransferObject> {
+
+        Call<List<DTO>> getAll(long since);
+    }
+
+    public interface DtoPostInterface<DTO extends DataTransferObject> {
+
+        Call<Integer> postAll(List<DTO> dtos);
+    }
+
+    public static ReferenceDto toReferenceDto(AbstractDomainObject ado) {
+        if (ado == null) {
+            return null;
+        }
+        ReferenceDto dto = new ReferenceDto();
+        dto.setChangeDate(ado.getChangeDate());
+        dto.setCreationDate(ado.getCreationDate());
+        dto.setUuid(ado.getUuid());
+        dto.setCaption(ado.toString());
+        return dto;
     }
 }

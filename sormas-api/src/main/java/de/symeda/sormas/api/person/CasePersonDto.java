@@ -2,8 +2,11 @@ package de.symeda.sormas.api.person;
 
 import java.util.Date;
 
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.utils.DateAdapter;
 
 public class CasePersonDto extends PersonDto {
 
@@ -29,8 +32,7 @@ public class CasePersonDto extends PersonDto {
 	
 	
 	private Sex sex;
-	
-	
+		
 	private PresentCondition presentCondition;
 	private Date birthDate;
 	private Date deathDate;
@@ -51,6 +53,7 @@ public class CasePersonDto extends PersonDto {
 		return birthDate;
 	}
 
+	@XmlJavaTypeAdapter(DateAdapter.class)
 	public void setBirthDate(Date birthDate) {
 		this.birthDate = birthDate;
 	}
@@ -90,6 +93,7 @@ public class CasePersonDto extends PersonDto {
 		return deathDate;
 	}
 
+	@XmlJavaTypeAdapter(DateAdapter.class)
 	public void setDeathDate(Date deathDate) {
 		this.deathDate = deathDate;
 	}

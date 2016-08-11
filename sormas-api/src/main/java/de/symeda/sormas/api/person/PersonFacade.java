@@ -19,6 +19,8 @@ public interface PersonFacade {
     PersonDto getByUuid(String uuid);
     
     CasePersonDto getCasePersonByUuid(String uuid);
+    
+	List<CasePersonDto> getAllCasePersonsAfter(Date date);
 
     PersonDto savePerson(PersonDto dto);
 

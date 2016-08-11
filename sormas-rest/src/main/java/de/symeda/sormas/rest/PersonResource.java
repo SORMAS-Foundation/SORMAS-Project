@@ -4,13 +4,15 @@ import java.util.Date;
 import java.util.List;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.CasePersonDto;
+import de.symeda.sormas.api.person.PersonFacade;
 
 /**
  * @see <a href="https://jersey.java.net/documentation/latest/">Jersey documentation</a>
@@ -23,19 +25,19 @@ import de.symeda.sormas.api.person.PersonDto;
 	})
 public class PersonResource {
 
-	@GET
-	@Path("/{uuid}")
-	public PersonDto getByUuid(@PathParam("uuid") String uuid) {
-		
-		PersonDto dto = FacadeProvider.getPersonFacade().getByUuid(uuid);
-		return dto;
-	}
-
 	@GET @Path("/all/{since}")
-	public List<PersonDto> getAllPersons(@PathParam("since") Long since) {
-		if (since != null) {
-			return FacadeProvider.getPersonFacade().getAllPersonsAfter(new Date(since));
+	public List<CasePersonDto> getAllPersons(@PathParam("since") long since) {
+		return FacadeProvider.getPersonFacade().getAllCasePersonsAfter(new Date(since));
+	}
+	
+	@POST @Path("/push")
+	public Integer postPersons(List<CasePersonDto> dtos) {
+		
+		PersonFacade personFacade = FacadeProvider.getPersonFacade();
+		for (CasePersonDto dto : dtos) {
+			personFacade.savePerson(dto);
 		}
-		return FacadeProvider.getPersonFacade().getAllPersons();
+		
+		return dtos.size();
 	}
 }

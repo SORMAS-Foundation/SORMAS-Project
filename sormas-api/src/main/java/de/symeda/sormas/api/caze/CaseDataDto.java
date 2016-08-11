@@ -2,9 +2,12 @@ package de.symeda.sormas.api.caze;
 
 import java.util.Date;
 
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
 import de.symeda.sormas.api.DataTransferObject;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.utils.DateAdapter;
 
 public class CaseDataDto extends DataTransferObject {
 
@@ -85,6 +88,7 @@ public class CaseDataDto extends DataTransferObject {
 		return reportDate;
 	}
 
+	@XmlJavaTypeAdapter(DateAdapter.class)
 	public void setReportDate(Date reportDate) {
 		this.reportDate = reportDate;
 	}
@@ -93,6 +97,7 @@ public class CaseDataDto extends DataTransferObject {
 		return investigatedDate;
 	}
 
+	@XmlJavaTypeAdapter(DateAdapter.class)
 	public void setInvestigatedDate(Date investigatedDate) {
 		this.investigatedDate = investigatedDate;
 	}

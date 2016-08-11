@@ -60,7 +60,9 @@ public class Person extends AbstractDomainObject {
 	private Location address;
 	@Column(length = 255)
 	private String phone;
-	
+	@Column(length = 255)
+	private String phoneOwner;
+
 	// TODO private Ethnicity ethnicity;
 	@Enumerated(EnumType.STRING)
 	private Sex sex;
@@ -142,7 +144,14 @@ public class Person extends AbstractDomainObject {
 	public void setPhone(String phone) {
 		this.phone = phone;
 	}
-	
+
+	public String getPhoneOwner() {
+		return phone;
+	}
+	public void setPhoneOwner(String phoneOwner) {
+		this.phoneOwner = phoneOwner;
+	}
+
 	public Sex getSex() {
 		return sex;
 	}

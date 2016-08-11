@@ -32,6 +32,9 @@ public class Facility extends AbstractDomainObject {
 
 	@ManyToOne(cascade = CascadeType.ALL)
 	public Location getLocation() {
+		if (location == null) {
+			location = new Location();
+		}
 		return location;
 	}
 	public void setLocation(Location location) {

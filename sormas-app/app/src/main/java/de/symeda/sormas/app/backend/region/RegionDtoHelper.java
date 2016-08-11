@@ -17,8 +17,18 @@ public class RegionDtoHelper extends AdoDtoHelper<Region, RegionDto> {
     }
 
     @Override
+    public RegionDto createDto() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public void fillInnerFromDto(Region ado, RegionDto dto) {
 
         ado.setName(dto.getName());
+    }
+
+    @Override
+    public void fillInnerFromAdo(RegionDto regionDto, Region region) {
+        throw new UnsupportedOperationException();
     }
 }

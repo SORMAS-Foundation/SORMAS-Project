@@ -43,7 +43,7 @@ public class Case extends AbstractDomainObject {
 	@Enumerated(EnumType.STRING)
 	private CaseStatus caseStatus;
 
-	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
 	private Facility healthFacility;
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)

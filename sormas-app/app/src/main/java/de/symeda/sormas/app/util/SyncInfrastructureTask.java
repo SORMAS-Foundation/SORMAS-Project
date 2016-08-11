@@ -12,13 +12,14 @@ import de.symeda.sormas.api.region.CommunityDto;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.app.backend.common.AdoDtoHelper;
+import de.symeda.sormas.app.backend.common.AdoDtoHelper.DtoGetInterface;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.facility.FacilityDtoHelper;
 import de.symeda.sormas.app.backend.region.CommunityDtoHelper;
 import de.symeda.sormas.app.backend.region.DistrictDtoHelper;
 import de.symeda.sormas.app.backend.region.RegionDtoHelper;
 import de.symeda.sormas.app.backend.user.UserDtoHelper;
-import de.symeda.sormas.app.rest.DtoFacadeRetro;
 import de.symeda.sormas.app.rest.RetroProvider;
 import retrofit2.Call;
 
@@ -36,35 +37,35 @@ public class SyncInfrastructureTask extends AsyncTask<Void, Void, Void> {
     @Override
     protected Void doInBackground(Void... params) {
 
-        new RegionDtoHelper().syncEntities(new DtoFacadeRetro<RegionDto>() {
+        new RegionDtoHelper().pullEntities(new DtoGetInterface<RegionDto>() {
             @Override
             public Call<List<RegionDto>> getAll(long since) {
                 return RetroProvider.getRegionFacade().getAll(since);
             }
         }, DatabaseHelper.getRegionDao());
 
-        new DistrictDtoHelper().syncEntities(new DtoFacadeRetro<DistrictDto>() {
+        new DistrictDtoHelper().pullEntities(new DtoGetInterface<DistrictDto>() {
             @Override
             public Call<List<DistrictDto>> getAll(long since) {
                 return RetroProvider.getDistrictFacade().getAll(since);
             }
         }, DatabaseHelper.getDistrictDao());
 
-        new CommunityDtoHelper().syncEntities(new DtoFacadeRetro<CommunityDto>() {
+        new CommunityDtoHelper().pullEntities(new DtoGetInterface<CommunityDto>() {
             @Override
             public Call<List<CommunityDto>> getAll(long since) {
                 return RetroProvider.getCommunityFacade().getAll(since);
             }
         }, DatabaseHelper.getCommunityDao());
 
-        new FacilityDtoHelper().syncEntities(new DtoFacadeRetro<FacilityDto>() {
+        new FacilityDtoHelper().pullEntities(new DtoGetInterface<FacilityDto>() {
             @Override
             public Call<List<FacilityDto>> getAll(long since) {
                 return RetroProvider.getFacilityFacade().getAll(since);
             }
         }, DatabaseHelper.getFacilityDao());
 
-        new UserDtoHelper().syncEntities(new DtoFacadeRetro<UserDto>() {
+        new UserDtoHelper().pullEntities(new DtoGetInterface<UserDto>() {
             @Override
             public Call<List<UserDto>> getAll(long since) {
                 return RetroProvider.getUserFacade().getAll(since);

@@ -24,7 +24,6 @@ public class PersonService extends AbstractAdoService<Person> {
 	}
 
 	public Person createPerson() {
-
 		Person person = new Person();
 		return person;
 	}

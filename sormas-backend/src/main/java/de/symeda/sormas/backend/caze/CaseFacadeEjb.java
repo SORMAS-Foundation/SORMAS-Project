@@ -1,5 +1,6 @@
 package de.symeda.sormas.backend.caze;
 
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -129,14 +130,16 @@ public class CaseFacadeEjb implements CaseFacade {
 	
 	public Case fromCaseDataDto(@NotNull CaseDataDto dto) {
 		
-		Case caze;
-		if (dto.getChangeDate() == null) {
+		Case caze = caseService.getByUuid(dto.getUuid());
+		if (caze == null) {
 			caze = new Case();
-		} else {
-			caze = caseService.getByUuid(dto.getUuid());
+			if (dto.getCreationDate() != null) {
+				caze.setCreationDate(new Timestamp(dto.getCreationDate().getTime()));
+			}
 		}
 
 		caze.setUuid(dto.getUuid());
+				
 		caze.setDisease(dto.getDisease());
 		caze.setReportDate(dto.getReportDate());
 		caze.setReportingUser(DtoHelper.fromReferenceDto(dto.getReportingUser(), userService));

@@ -1,13 +1,12 @@
 package de.symeda.sormas.app.rest;
 
-import java.sql.Timestamp;
-import java.util.Date;
 import java.util.List;
 
-import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.CasePersonDto;
 import retrofit2.Call;
+import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.POST;
 import retrofit2.http.Path;
 
 /**
@@ -16,6 +15,8 @@ import retrofit2.http.Path;
 public interface PersonFacadeRetro {
 
     @GET("persons/all/{since}")
-    Call<List<PersonDto>> getAll(@Path("since") long since);
+    Call<List<CasePersonDto>> getAll(@Path("since") long since);
 
+    @POST("persons/push")
+    Call<Integer> postAll(@Body List<CasePersonDto> dtos);
 }

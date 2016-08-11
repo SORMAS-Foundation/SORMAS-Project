@@ -3,7 +3,6 @@ package de.symeda.sormas.backend.location;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.location.LocationFacade;
@@ -25,9 +24,8 @@ public class LocationFacadeEjb implements LocationFacade {
 	private DistrictService districtService;
 	@EJB
 	private CommunityService communityService;
-	
-	
-	public Location fromLocationDto(@NotNull LocationDto dto) {		
+		
+	public Location fromLocationDto(LocationDto dto) {		
 		if (dto == null) {
 			return null;
 		}

@@ -16,9 +16,19 @@ public class CommunityDtoHelper extends AdoDtoHelper<Community, CommunityDto> {
     }
 
     @Override
+    public CommunityDto createDto() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public void fillInnerFromDto(Community ado, CommunityDto dto) {
 
         ado.setName(dto.getName());
         ado.setDistrict(DatabaseHelper.getDistrictDao().queryUuid(dto.getDistrict().getUuid()));
+    }
+
+    @Override
+    public void fillInnerFromAdo(CommunityDto communityDto, Community community) {
+        throw new UnsupportedOperationException();
     }
 }

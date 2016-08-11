@@ -13,10 +13,11 @@ import java.util.List;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.app.backend.caze.CaseDtoHelper;
+import de.symeda.sormas.app.backend.common.AdoDtoHelper;
+import de.symeda.sormas.app.backend.common.AdoDtoHelper.DtoGetInterface;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.user.User;
-import de.symeda.sormas.app.rest.DtoFacadeRetro;
 import de.symeda.sormas.app.rest.RetroProvider;
 import retrofit2.Call;
 
@@ -32,13 +33,21 @@ public class SyncCasesTask extends AsyncTask<Void, Void, Void> {
     @Override
     protected Void doInBackground(Void... params) {
 
-        new CaseDtoHelper().syncEntities(new DtoFacadeRetro<CaseDataDto>() {
+        new CaseDtoHelper().pullEntities(new DtoGetInterface<CaseDataDto>() {
             @Override
             public Call<List<CaseDataDto>> getAll(long since) {
                 User user = ConfigProvider.getUser();
                 return RetroProvider.getCaseFacade().getAll(user.getUuid(), since);
             }
         }, DatabaseHelper.getCaseDao());
+
+        new CaseDtoHelper().pushEntities(new AdoDtoHelper.DtoPostInterface<CaseDataDto>() {
+            @Override
+            public Call<Integer> postAll(List<CaseDataDto> dtos) {
+                return RetroProvider.getCaseFacade().postAll(dtos);
+            }
+        }, DatabaseHelper.getCaseDao());
+
         return null;
     }
 

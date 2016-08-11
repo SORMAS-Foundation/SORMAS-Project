@@ -1,5 +1,6 @@
 package de.symeda.sormas.backend.person;
 
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -42,6 +43,13 @@ public class PersonFacadeEjb implements PersonFacade {
 	public List<PersonDto> getAllPersonsAfter(Date date) {
 		return personService.getAllAfter(date).stream()
 			.map(c -> toDto(c))
+			.collect(Collectors.toList());
+	}
+	
+	@Override
+	public List<CasePersonDto> getAllCasePersonsAfter(Date date) {
+		return personService.getAllAfter(date).stream()
+			.map(c -> toCasePersonDto(c))
 			.collect(Collectors.toList());
 	}
 
@@ -91,6 +99,9 @@ public class PersonFacadeEjb implements PersonFacade {
 		Person bo = personService.getByUuid(dto.getUuid());
 		if(bo==null) {
 			bo = personService.createPerson();
+			if (dto.getCreationDate() != null) {
+				bo.setCreationDate(new Timestamp(dto.getCreationDate().getTime()));
+			}
 		}
 		bo.setUuid(dto.getUuid());
 		bo.setFirstName(dto.getFirstName());
@@ -102,6 +113,9 @@ public class PersonFacadeEjb implements PersonFacade {
 		Person bo = personService.getByUuid(dto.getUuid());
 		if(bo==null) {
 			bo = personService.createPerson();
+			if (dto.getCreationDate() != null) {
+				bo.setCreationDate(new Timestamp(dto.getCreationDate().getTime()));
+			}
 		}
 		bo.setUuid(dto.getUuid());
 		bo.setFirstName(dto.getFirstName());

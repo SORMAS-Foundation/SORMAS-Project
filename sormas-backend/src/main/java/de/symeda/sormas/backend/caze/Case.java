@@ -179,6 +179,9 @@ public class Case extends AbstractDomainObject {
 	}
 	@ManyToOne(cascade = CascadeType.ALL)
 	public Location getIllLocation() {
+		if (illLocation == null) {
+			illLocation = new Location();
+		}
 		return illLocation;
 	}
 	public void setIllLocation(Location illLocation) {

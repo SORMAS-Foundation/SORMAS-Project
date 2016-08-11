@@ -17,6 +17,11 @@ public class LocationDtoHelper extends AdoDtoHelper<Location, LocationDto> {
     }
 
     @Override
+    public LocationDto createDto() {
+        return new LocationDto();
+    }
+
+    @Override
     public void fillInnerFromDto(Location ado, LocationDto dto) {
 
         ado.setAddress(dto.getAddress());
@@ -39,6 +44,32 @@ public class LocationDtoHelper extends AdoDtoHelper<Location, LocationDto> {
             ado.setRegion(DatabaseHelper.getRegionDao().queryUuid(dto.getRegion().getUuid()));
         } else {
             ado.setRegion(null);
+        }
+    }
+
+    @Override
+    public void fillInnerFromAdo(LocationDto dto, Location ado) {
+
+        dto.setAddress(ado.getAddress());
+        dto.setCity(ado.getCity());
+        dto.setDetails(ado.getDetails());
+        dto.setLatitude(ado.getLatitude());
+        dto.setLongitude(ado.getLongitude());
+
+        if (ado.getCommunity() != null) {
+            dto.setCommunity(AdoDtoHelper.toReferenceDto(DatabaseHelper.getCommunityDao().queryForId(ado.getCommunity().getId())));
+        } else {
+            dto.setCommunity(null);
+        }
+        if (ado.getDistrict() != null) {
+            dto.setDistrict(AdoDtoHelper.toReferenceDto(DatabaseHelper.getDistrictDao().queryForId(ado.getDistrict().getId())));
+        } else {
+            dto.setDistrict(null);
+        }
+        if (ado.getRegion() != null) {
+            dto.setRegion(AdoDtoHelper.toReferenceDto(DatabaseHelper.getRegionDao().queryForId(ado.getRegion().getId())));
+        } else {
+            dto.setRegion(null);
         }
     }
 }

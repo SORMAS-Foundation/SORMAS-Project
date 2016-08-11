@@ -92,7 +92,6 @@ public class SurveillanceActivity extends AppCompatActivity {
     private void refreshLocalDB() {
         try {
             // todo asynchronous calls: Cases have to wait for Persons
-            new SyncInfrastructureTask().execute().get();
             new SyncPersonsTask().execute().get();
             new SyncCasesTask().execute().get();
 

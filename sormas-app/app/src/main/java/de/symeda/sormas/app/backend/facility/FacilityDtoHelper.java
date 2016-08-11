@@ -19,11 +19,21 @@ public class FacilityDtoHelper extends AdoDtoHelper<Facility, FacilityDto> {
     }
 
     @Override
+    public FacilityDto createDto() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public void fillInnerFromDto(Facility ado, FacilityDto dto) {
 
         ado.setLocation(locationHelper.fillOrCreateFromDto(ado.getLocation(), dto.getLocation()));
         ado.setName(dto.getName());
         ado.setPublicOwnership(dto.isPublicOwnership());
         ado.setType(dto.getType());
+    }
+
+    @Override
+    public void fillInnerFromAdo(FacilityDto facilityDto, Facility facility) {
+        throw new UnsupportedOperationException();
     }
 }

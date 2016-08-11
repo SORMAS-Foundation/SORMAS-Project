@@ -26,6 +26,12 @@ public class UserDtoHelper extends AdoDtoHelper<User, UserDto> {
     }
 
     @Override
+    public UserDto createDto() {
+        // TODO
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public void fillInnerFromDto(User ado, UserDto dto) {
 
         ado.setAktiv(dto.isActive());
@@ -43,5 +49,11 @@ public class UserDtoHelper extends AdoDtoHelper<User, UserDto> {
 
         ado.setAddress(locationHelper.fillOrCreateFromDto(ado.getAddress(), dto.getAddress()));
         ado.setPhone(dto.getPhone());
+    }
+
+    @Override
+    public void fillInnerFromAdo(UserDto userDto, User user) {
+        // TODO
+        throw new UnsupportedOperationException();
     }
 }

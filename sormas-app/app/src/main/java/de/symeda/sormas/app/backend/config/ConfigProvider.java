@@ -1,9 +1,7 @@
 package de.symeda.sormas.app.backend.config;
 
-import android.content.Context;
 import android.util.Log;
 
-import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.table.TableUtils;
 
 import java.sql.SQLException;
@@ -13,14 +11,12 @@ import java.util.concurrent.ExecutionException;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.app.backend.caze.Case;
-import de.symeda.sormas.app.backend.caze.CaseDao;
+import de.symeda.sormas.app.backend.common.AdoDtoHelper;
+import de.symeda.sormas.app.backend.common.AdoDtoHelper.DtoGetInterface;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.location.Location;
-import de.symeda.sormas.app.backend.location.LocationDao;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.backend.user.UserDtoHelper;
 import de.symeda.sormas.app.caze.SyncCasesTask;
-import de.symeda.sormas.app.rest.DtoFacadeRetro;
 import de.symeda.sormas.app.rest.RetroProvider;
 import retrofit2.Call;
 
@@ -58,7 +54,7 @@ public final class ConfigProvider {
                         List<User> users = DatabaseHelper.getUserDao().queryForAll();
                         if (users.size() == 0) {
                             // no user existing yet? Try to load them from the server
-                            new UserDtoHelper().syncEntities(new DtoFacadeRetro<UserDto>() {
+                            new UserDtoHelper().pullEntities(new DtoGetInterface<UserDto>() {
                                 @Override
                                 public Call<List<UserDto>> getAll(long since) {
                                     return RetroProvider.getUserFacade().getAll(since);

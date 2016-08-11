@@ -104,6 +104,9 @@ public class Person extends AbstractDomainObject {
 	
 	@ManyToOne(cascade = CascadeType.ALL)
 	public Location getAddress() {
+		if (address == null) {
+			address = new Location();
+		}
 		return address;
 	}
 	public void setAddress(Location address) {
@@ -164,6 +167,9 @@ public class Person extends AbstractDomainObject {
 	
 	@ManyToOne(cascade = CascadeType.ALL)
 	public Location getDeathLocation() {
+		if (deathLocation == null) {
+			deathLocation = new Location();
+		}
 		return deathLocation;
 	}
 	public void setDeathLocation(Location deathLocation) {
@@ -180,6 +186,9 @@ public class Person extends AbstractDomainObject {
 	
 	@ManyToOne(cascade = CascadeType.ALL)
 	public Location getBurialLocation() {
+		if (burialLocation == null) {
+			burialLocation = new Location();
+		}
 		return burialLocation;
 	}
 	public void setBurialLocation(Location burialLocation) {

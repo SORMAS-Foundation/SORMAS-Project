@@ -23,6 +23,6 @@
 		<dependency>
 			<groupId>javax</groupId>
 			<artifactId>javaee-web-api</artifactId>
-		</dependency>
+		</dependency>		
 	</dependencies>
 </project>
