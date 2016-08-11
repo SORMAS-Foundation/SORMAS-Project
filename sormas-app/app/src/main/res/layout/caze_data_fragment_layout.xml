@@ -14,7 +14,7 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="10sp"
+            android:padding="10dp"
             android:theme="@style/AppTheme">
 
             <!-- ============= CASE_INFORMATION ============= -->
@@ -27,7 +27,7 @@
                 android:textColor="@android:color/tab_indicator_text"
                 android:textSize="@dimen/abc_text_size_body_1_material"
                 android:textStyle="bold"
-                android:paddingBottom="10sp" />
+                android:paddingBottom="10dp" />
 
 
 
@@ -168,8 +168,8 @@
                 android:textColor="@android:color/tab_indicator_text"
                 android:textSize="@dimen/abc_text_size_body_1_material"
                 android:textStyle="bold"
-                android:paddingTop="30sp"
-                android:paddingBottom="10sp" />
+                android:paddingTop="30dp"
+                android:paddingBottom="10dp" />
 
 
             <Button
@@ -188,8 +188,8 @@
                 android:textColor="@android:color/tab_indicator_text"
                 android:textSize="@dimen/abc_text_size_body_1_material"
                 android:textStyle="bold"
-                android:paddingTop="30sp"
-                android:paddingBottom="10sp" />
+                android:paddingTop="30dp"
+                android:paddingBottom="10dp" />
 
 
             <LinearLayout

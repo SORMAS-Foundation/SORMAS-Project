@@ -1,12 +1,12 @@
 <resources>
     <!-- Default screen margins, per the Android Design guidelines. -->
-    <dimen name="activity_horizontal_margin">16sp</dimen>
-    <dimen name="activity_vertical_margin">16sp</dimen>
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
 
-    <dimen name="field_caption_size">12sp</dimen>
-    <dimen name="field_caption_margin_left">4sp</dimen>
-    <dimen name="field_caption_margin_bottom">0sp</dimen>
-    <dimen name="field_height">40sp</dimen>
-    <dimen name="field_spinner_height">39sp</dimen>
-    <dimen name="spinner_padding">2sp</dimen>
+    <dimen name="field_caption_size">12dp</dimen>
+    <dimen name="field_caption_margin_left">4dp</dimen>
+    <dimen name="field_caption_margin_bottom">0dp</dimen>
+    <dimen name="field_height">40dp</dimen>
+    <dimen name="field_spinner_height">39dp</dimen>
+    <dimen name="spinner_padding">2dp</dimen>
 </resources>
