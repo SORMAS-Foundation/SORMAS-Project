@@ -12,10 +12,8 @@ import java.util.Arrays;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
-import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.user.User;
-import de.symeda.sormas.app.backend.user.UserDao;
 import de.symeda.sormas.app.databinding.UserFragmentLayoutBinding;
 import de.symeda.sormas.app.util.FormTab;
 

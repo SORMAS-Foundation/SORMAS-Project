@@ -1,7 +1,6 @@
 package de.symeda.sormas.app.caze;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,15 +9,12 @@ import android.widget.TextView;
 
 import java.util.List;
 
-import de.symeda.sormas.api.caze.CaseHelper;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.facility.FacilityDao;
-import de.symeda.sormas.app.backend.person.Person;
-import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.backend.user.UserDao;
 
@@ -49,7 +45,6 @@ public class CaseListArrayAdapter extends ArrayAdapter<Case> {
         }
 
         Case caze = values.get(position);
-
 
         TextView uuid = (TextView) convertView.findViewById(R.id.cli_uuid);
         uuid.setText(DataHelper.getShortUuid(caze.getUuid()));
