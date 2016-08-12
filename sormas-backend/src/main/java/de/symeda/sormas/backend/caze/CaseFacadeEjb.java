@@ -133,12 +133,11 @@ public class CaseFacadeEjb implements CaseFacade {
 		Case caze = caseService.getByUuid(dto.getUuid());
 		if (caze == null) {
 			caze = new Case();
+			caze.setUuid(dto.getUuid());
 			if (dto.getCreationDate() != null) {
 				caze.setCreationDate(new Timestamp(dto.getCreationDate().getTime()));
 			}
 		}
-
-		caze.setUuid(dto.getUuid());
 				
 		caze.setDisease(dto.getDisease());
 		caze.setReportDate(dto.getReportDate());

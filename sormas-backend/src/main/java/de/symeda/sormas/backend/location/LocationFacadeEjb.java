@@ -1,5 +1,7 @@
 package de.symeda.sormas.backend.location;
 
+import java.sql.Timestamp;
+
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -30,14 +32,14 @@ public class LocationFacadeEjb implements LocationFacade {
 			return null;
 		}
 		
-		Location location;
-		if (dto.getChangeDate() == null) {
+		Location location = locationService.getByUuid(dto.getUuid());
+		if (location == null) {
 			location = new Location();
-		} else {
-			location = locationService.getByUuid(dto.getUuid());
-		}
-
-		location.setUuid(dto.getUuid());
+			location.setUuid(dto.getUuid());
+			if (dto.getCreationDate() != null) {
+				location.setCreationDate(new Timestamp(dto.getCreationDate().getTime()));
+			}
+		} 
 		
 		location.setAddress(dto.getAddress());
 		location.setDetails(dto.getDetails());

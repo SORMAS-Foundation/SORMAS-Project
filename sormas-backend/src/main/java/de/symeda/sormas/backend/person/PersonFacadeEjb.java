@@ -113,11 +113,11 @@ public class PersonFacadeEjb implements PersonFacade {
 		Person bo = personService.getByUuid(dto.getUuid());
 		if(bo==null) {
 			bo = personService.createPerson();
+			bo.setUuid(dto.getUuid());
 			if (dto.getCreationDate() != null) {
 				bo.setCreationDate(new Timestamp(dto.getCreationDate().getTime()));
 			}
 		}
-		bo.setUuid(dto.getUuid());
 		
 		// case uuid is ignored!
 		
