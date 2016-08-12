@@ -40,7 +40,7 @@ public class SurveillanceUI extends UI {
         getPage().setTitle("Surveillance");
         
         // XXX
-        LoginHelper.login("SunkSesa", "Sunkanmi");
+        //LoginHelper.login("SunkSesa", "Sunkanmi");
         
         if (!LoginHelper.isUserSignedIn()) {
         	
