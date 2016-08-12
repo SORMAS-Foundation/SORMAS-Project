@@ -9,9 +9,9 @@ REM ------ Config BEGIN ------
 
 REM GLASSFISH
 set GLASSFISH_HOME=\srv\payara-sormas\glassfish
-set LOG_HOME=\var\log\glassfish\sormas
 set DOMAIN_NAME=sormas
 set DOMAIN_DIR=%GLASSFISH_HOME%\domains\%DOMAIN_NAME%
+set LOG_HOME=\var\log\glassfish\sormas
 set PORT_BASE=6000
 set PORT_ADMIN=6048
 
@@ -27,37 +27,42 @@ set MAIL_FROM=noreply@symeda.de
 
 REM ------ Config END ------
 
+REM placholder for synching with sh script
 
-REM patch jboss-logging to 3.3.0
-REM -- remove old version
+
+
+REM patching gf-modules
+REM -- removing old versions
+
 del %GLASSFISH_HOME%\modules\jboss-logging.jar
 
-REM -- copy new version
+REM -- placing new versions
 copy /Y .\gf-modules\*.jar %GLASSFISH_HOME%\modules
 
+REM setting ASADMIN_CALL and creating domain
 set ASADMIN=CALL %GLASSFISH_HOME%\bin\asadmin --port %PORT_ADMIN%
-
-
 CALL %GLASSFISH_HOME%/bin/asadmin create-domain --portbase %PORT_BASE% %DOMAIN_NAME%
 
 Echo Press [Enter] to continue...
 PAUSE >nul
 
-REM copy server-libs
+REM copying server-libs
 copy /Y .\serverlibs\*.jar %DOMAIN_DIR%\lib
 
-REM copy bundles
+REM copying bundles
 mkdir %DOMAIN_DIR%\autodeploy\bundles
 copy /Y .\bundles\*.jar %DOMAIN_DIR%\autodeploy\bundles
 
+REM copying libs completed
 Echo Press [Enter] to continue...
 PAUSE >nul
 
 ECHO %DOMAIN_NAME%Realm { org.wamblee.glassfish.auth.FlexibleJdbcLoginModule required; }; >> %GLASSFISH_HOME%/domains/%DOMAIN_NAME%/config/login.conf
 
 
-CALL %GLASSFISH_HOME%/bin/asadmin start-domain %DOMAIN_NAME%
+REM placholder for synching with sh script
 
+CALL %GLASSFISH_HOME%/bin/asadmin start-domain %DOMAIN_NAME%
 Echo Press [Enter] to continue...
 PAUSE >nul
 
@@ -85,7 +90,10 @@ PAUSE >nul
 %ASADMIN% create-javamail-resource --mailhost localhost --mailuser user --fromaddress %MAIL_FROM% mail/MailSession
 
 %ASADMIN% create-custom-resource --restype java.util.Properties --factoryclass org.glassfish.resources.custom.factory.PropertiesFactory --property "org.glassfish.resources.custom.factory.PropertiesFactory.fileName=domains/%DOMAIN_NAME%/%DOMAIN_NAME%.properties" %DOMAIN_NAME%/Properties
+
 copy .\%DOMAIN_NAME%.properties %DOMAIN_DIR%
+
+cp logback.xml %DOMAIN_DIR%\config\
 
 Echo Press [Enter] to continue...
 PAUSE >nul
@@ -98,7 +106,9 @@ REM %ASADMIN% set-log-attributes com.sun.enterprise.server.logging.GFFileHandler
 %ASADMIN% set-log-attributes com.sun.enterprise.server.logging.GFFileHandler.rotationOnDateChange=true
 %ASADMIN% set-log-levels org.wamblee.glassfish.auth.HexEncoder.level=SEVERE
 %ASADMIN% set-log-levels javax.enterprise.system.util.level=SEVERE
-cp logback.xml %DOMAIN_DIR%\config\
+
+Echo Press [Enter] to continue...
+PAUSE >nul
 
 REM Login-Auditierung aktivieren
 REM %ASADMIN% set configs.config.server-config.security-service.audit-enabled=true
@@ -107,8 +117,7 @@ REM %ASADMIN% create-audit-module --classname=de.symeda.glassfish.audit.LoginAtt
 Echo Press [Enter] to continue...
 PAUSE >nul
 
-Echo Server nur an localhost binden ist auskommentiert...
-REM nur auf localhost hören
+Echo make the glassfish listen to localhost only (commented out)
 REM %ASADMIN% set configs.config.server-config.http-service.virtual-server.server.network-listeners=http-listener-1
 REM %ASADMIN% delete-network-listener --target=server-config http-listener-2
 REM %ASADMIN% set configs.config.server-config.network-config.network-listeners.network-listener.admin-listener.address=127.0.0.1
@@ -132,7 +141,6 @@ REM PAUSE >nul
 REM Templates einfügen
 REM mkdir %DOMAIN_DIR%\templates
 REM xcopy /Y /E .\templates\* %DOMAIN_DIR%\templates
-REM del %DOMAIN_DIR%\templates\*.md
 
 REM Echo Press [Enter] to continue...
 REM PAUSE >nul
