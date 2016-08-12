@@ -1,58 +1,34 @@
+#  Requirements:
+#  * Payara 4.1.1 installed and proper Java-Version configured in asenv.conf 
+#  * Database created
+#  * glassfish-config-directory prepared
+#  * directory /var/log/glassfish/${DOMAIN_NAME} exists and is owned by user 'glassfish'
 
 
-THIS NEEDS TO BE UPDATED FROM glassfish-config.bat
-
-
-
-#  Voraussetzungen:
-#  * Payara 4.1.1 installiert und korrekte Java-Version in asenv.conf eingetragen
-#  * Datenbank eingerichtet
-#  * glassfish-config-Verzeichnis vorbereitet und das Script wird aus ebendiesem Verzeichnis heraus ausgeführt (caseplus-base/build.xml:collect-all)
-#  * Verzeichnis /var/log/glassfish/po-eap existiert und gehört dem User glassfish
-#
-# Nach Abschluss
-#  * chown -R glassfish:glassfish /var/log/glassfish/po-eap
-#  * domain.xml prüfen (RAM usw.)
-
-#
 
 # ------ Config BEGIN ------
 
 # GLASSFISH
-GLASSFISH_HOME=/opt/payara-162-caseplus-po-eap/glassfish
-DOMAIN_NAME=po-eap
+GLASSFISH_HOME=/opt/payara-162-sormas/glassfish
+DOMAIN_NAME=sormas
 DOMAIN_DIR=${GLASSFISH_HOME}/domains/${DOMAIN_NAME}
-LOG_HOME=/var/log/glassfish/caseplus-po-eap
-PORT_BASE=7000
-PORT_ADMIN=7048
+LOG_HOME=/var/log/glassfish/sormas
+PORT_BASE=10000
+PORT_ADMIN=10048
 
 # DB
-DB_USER=po_eap_user
-DB_USER_AUDITLOG=po_eap_user
-DB_NAME=po_eap_db
-DB_NAME_AUDITLOG=po_eap_auditlog_db
+DB_USER=sormas_user
+DB_PW=sormas_db
+DB_NAME=sormas_db
 DB_SERVER=localhost
 DB_PORT=5432
-#DB_PW
-#DB_PW_AUDITLOG
-read -p "Password for ${DB_NAME}? -> " DB_PW
-read -p "Password for ${DB_NAME_AUDITLOG}? -> " DB_PW_AUDITLOG
-
-#von Hand ausführen:
-#su postgres
-#psql
-#CREATE USER po_eap_user WITH PASSWORD '...' CREATEDB;
-#CREATE DATABASE po_eap_db WITH OWNER = po_eap_user ENCODING = 'UTF8';
-#CREATE DATABASE po_eap_auditlog_db WITH OWNER = po_eap_user ENCODING = 'UTF8';
-#\q
-#exit
 
 # MAIL
 MAIL_FROM=noreply@symeda.de
 
 # ------ Config END ------
 
-echo '--- bevor es los geht, sind alle Werte richtig konfiguriert?'
+echo '--- all values set properly?'
 echo 
 echo 'GF_HOME: ${GLASSFISH_HOME}'
 echo 'Domain Name: ${DOMAIN_NAME}'
@@ -63,31 +39,31 @@ echo 'Admin Port: ${PORT_ADMIN}'
 
 read -p "Press [Enter] to continue..."
 
-#Installationverzeichnis auf glassfish ändern, damit beim Kopieren auch der richtige Besiter erhalten bleibt.
+#setting owner of the deploy-directory to glassfish, in order to maintain proper permissions
 #chown -R glassfish:glassfish /root/deploy/
 
-# gf-modules patchen
-##alte Versionen entfernen
+# patching gf-modules
+##removing old versions
 
 rm ${GLASSFISH_HOME}/modules/jboss-logging.jar
 
-##neue Version einfügen
+##placing new versions
 cp gf-modules/*.jar ${GLASSFISH_HOME}/modules/
 
-
+# setting ASADMIN_CALL and creating domain
 ASADMIN="${GLASSFISH_HOME}/bin/asadmin --port ${PORT_ADMIN}"
-
 ${GLASSFISH_HOME}/bin/asadmin create-domain --portbase ${PORT_BASE} ${DOMAIN_NAME}
+
 read -p "Press [Enter] to continue..."
 
-#server-libs bereit legen
+# copying server-libs
 cp serverlibs/*.jar ${DOMAIN_DIR}/lib/
 
-#bundles bereit legen
+# copying bundles
 mkdir -p ${DOMAIN_DIR}/autodeploy/bundles
 cp -a bundles/*.jar ${DOMAIN_DIR}/autodeploy/bundles/
 
-#Libs kopieren beendet
+#copying libs completed
 read -p "Press [Enter] to continue..."
 
 
@@ -101,30 +77,29 @@ read -p "Press [Enter] to continue..."
 ${GLASSFISH_HOME}/bin/asadmin start-domain ${DOMAIN_NAME}
 read -p "Press [Enter] to continue..."
 
-# regulärer Pool
+# JDBC pool
 ${ASADMIN} create-jdbc-connection-pool --restype javax.sql.ConnectionPoolDataSource --datasourceclassname org.postgresql.ds.PGConnectionPoolDataSource --isconnectvalidatereq true --validationmethod custom-validation --validationclassname org.glassfish.api.jdbc.validation.PostgresConnectionValidation --property "portNumber=${DB_PORT}:databaseName=${DB_NAME}:serverName=${DB_SERVER}:user=${DB_USER}:password=${DB_PW}" ${DOMAIN_NAME}DataPool
 ${ASADMIN} create-jdbc-resource --connectionpoolid ${DOMAIN_NAME}DataPool jdbc/${DOMAIN_NAME}DataPool
 
-# Pool für Auditlog
-${ASADMIN} create-jdbc-connection-pool --restype javax.sql.XADataSource --datasourceclassname org.postgresql.xa.PGXADataSource --isconnectvalidatereq true --validationmethod custom-validation --validationclassname org.glassfish.api.jdbc.validation.PostgresConnectionValidation --property "portNumber=${DB_PORT}:databaseName=${DB_NAME_AUDITLOG}:serverName=${DB_SERVER}:user=${DB_USER_AUDITLOG}:password=${DB_PW_AUDITLOG}" ${DOMAIN_NAME}AuditlogPool
-${ASADMIN} create-jdbc-resource --connectionpoolid ${DOMAIN_NAME}AuditlogPool jdbc/${DOMAIN_NAME}AuditlogPool
-
-# ohne Connection Pool, weil die flexible jdbc realm scheinbar die Connection im Cache hält
+# User datasource without pool (flexible jdbc realm seems to keep connections in cache)
 ${ASADMIN} create-jdbc-connection-pool --restype javax.sql.DataSource --datasourceclassname org.postgresql.ds.PGSimpleDataSource --isconnectvalidatereq true --validationmethod custom-validation --validationclassname org.glassfish.api.jdbc.validation.PostgresConnectionValidation --property "portNumber=${DB_PORT}:databaseName=${DB_NAME}:serverName=${DB_SERVER}:user=${DB_USER}:password=${DB_PW}" ${DOMAIN_NAME}UsersDataPool
 ${ASADMIN} create-jdbc-resource --connectionpoolid ${DOMAIN_NAME}UsersDataPool jdbc/${DOMAIN_NAME}UsersDataPool
+
 read -p "Press [Enter] to continue..."
 
 ${ASADMIN} set server-config.security-service.activate-default-principal-to-role-mapping=true
-${ASADMIN} create-auth-realm --classname org.wamblee.glassfish.auth.FlexibleJdbcRealm --property "jaas.context=${DOMAIN_NAME}Realm:sql.password=SELECT password FROM realm_user WHERE useremail\=? AND aktiv\=true:sql.groups=SELECT groups  FROM realm_user_groups  WHERE useremail\=?:sql.seed=SELECT seed FROM realm_user WHERE useremail\=?:datasource.jndi=jdbc/${DOMAIN_NAME}UsersDataPool:assign-groups=AUTHED_USER:password.digest=SHA-256:charset=UTF-8" ${DOMAIN_NAME}-realm
+${ASADMIN} create-auth-realm --classname org.wamblee.glassfish.auth.FlexibleJdbcRealm --property "jaas.context=${DOMAIN_NAME}Realm:sql.password=SELECT password FROM users WHERE username\=? AND aktiv\=true:sql.groups=SELECT userrole FROM userroles INNER JOIN users ON userroles.user_id\=users.id WHERE users.username\=?:sql.seed=SELECT seed FROM users WHERE username\=?:datasource.jndi=jdbc/${DOMAIN_NAME}UsersDataPool:assign-groups=AUTHED_USER:password.digest=SHA-256:charset=UTF-8" ${DOMAIN_NAME}-realm
 ${ASADMIN} set server-config.security-service.default-realm=${DOMAIN_NAME}-realm
 
 ${ASADMIN} set server-config.http-service.sso-enabled=true
 ${ASADMIN} set server-config.http-service.virtual-server.server.sso-cookie-secure=true
+
 read -p "Press [Enter] to continue..."
 
 ${ASADMIN} create-javamail-resource --mailhost localhost --mailuser user --fromaddress ${MAIL_FROM} mail/MailSession
 
-${ASADMIN} create-custom-resource --restype java.util.Properties --factoryclass org.glassfish.resources.custom.factory.PropertiesFactory --property "org.glassfish.resources.custom.factory.PropertiesFactory.fileName=domains/${DOMAIN_NAME}/${DOMAIN_NAME}.properties" po-eap/Properties
+${ASADMIN} create-custom-resource --restype java.util.Properties --factoryclass org.glassfish.resources.custom.factory.PropertiesFactory --property "org.glassfish.resources.custom.factory.PropertiesFactory.fileName=domains/${DOMAIN_NAME}/${DOMAIN_NAME}.properties" ${DOMAIN_NAME}/Properties
+
 cp ./${DOMAIN_NAME}.properties ${DOMAIN_DIR}
 chown glassfish:glassfish ${DOMAIN_DIR}/${DOMAIN_NAME}.properties
 
@@ -140,14 +115,17 @@ ${ASADMIN} set-log-attributes com.sun.enterprise.server.logging.GFFileHandler.ma
 ${ASADMIN} set-log-attributes com.sun.enterprise.server.logging.GFFileHandler.rotationLimitInBytes=0
 ${ASADMIN} set-log-attributes com.sun.enterprise.server.logging.GFFileHandler.rotationOnDateChange=true
 ${ASADMIN} set-log-levels org.wamblee.glassfish.auth.HexEncoder.level=SEVERE
+${ASADMIN} set-log-levels javax.enterprise.system.util.level=SEVERE
+
 read -p "Press [Enter] to continue..."
 
 #Login-Auditierung aktivieren
-${ASADMIN} set configs.config.server-config.security-service.audit-enabled=true
-${ASADMIN} create-audit-module --classname=de.symeda.glassfish.audit.LoginAttemptAuditModule --target=server-config LoginAttemptAudit
+#${ASADMIN} set configs.config.server-config.security-service.audit-enabled=true
+#${ASADMIN} create-audit-module --classname=de.symeda.glassfish.audit.LoginAttemptAuditModule --target=server-config LoginAttemptAudit
+
 read -p "Press [Enter] to continue..."
 
-#nur auf localhost hören
+#make the glassfish listen to localhost only
 ${ASADMIN} set configs.config.server-config.http-service.virtual-server.server.network-listeners=http-listener-1
 ${ASADMIN} delete-network-listener --target=server-config http-listener-2
 ${ASADMIN} set configs.config.server-config.network-config.network-listeners.network-listener.admin-listener.address=127.0.0.1
@@ -157,36 +135,39 @@ ${ASADMIN} set configs.config.server-config.iiop-service.iiop-listener.SSL.addre
 ${ASADMIN} set configs.config.server-config.iiop-service.iiop-listener.SSL_MUTUALAUTH.address=127.0.0.1
 ${ASADMIN} set configs.config.server-config.jms-service.jms-host.default_JMS_host.host=127.0.0.1
 ${ASADMIN} set configs.config.server-config.admin-service.jmx-connector.system.address=127.0.0.1
+
 read -p "Press [Enter] to continue..."
 
-#Applications deployed
+#Applications deployen
 cp -a applications/*.*ar ${DOMAIN_DIR}/autodeploy/
+
 read -p "Press [Enter] to continue..."
 
 
 #templates einfügen
-mkdir ${DOMAIN_DIR}/templates/
-cp -a templates/* ${DOMAIN_DIR}/templates/
-read -p "Press [Enter] to continue..."
+#mkdir ${DOMAIN_DIR}/templates/
+#cp -a templates/* ${DOMAIN_DIR}/templates/
+
+#read -p "Press [Enter] to continue..."
 
 
 ${GLASSFISH_HOME}/bin/asadmin stop-domain ${DOMAIN_NAME}
+
 read -p "Press [Enter] to continue..."
 
-##nicht den Server starten, weil er dann als root ausgeführt wird
+##do not run the server here (as in bat script), because it will be executed as root
 #${GLASSFISH_HOME}/bin/asadmin start-domain ${DOMAIN_NAME}
 
 chown -R glassfish:glassfish ${GLASSFISH_HOME}
 
-echo 'Installation abgeschlossen. Bitte Server mit init.d Skript starten wegen der Berechtigungen' 
+echo 'setup completed. Please run the server using the init.d script for the proper permissions' 
 
-echo 'Folgendes noch überprüfen'
-echo '  - update-rc.d payara-* defaults bereits ausgeführt?'
-echo '  - caseplus.properties korrekt an das System angepasst?'
-echo '  - logback.xml überprüfen'
-echo '  - JVM-Dimensionierung angemessen?'
-echo '  - payara-default-domains gelöscht?'
-echo '  - SQL ausgeführt?'
+echo 'Checklist'
+echo '  - update-rc.d payara-* defaults already executed?'
+echo '  - sormas.properties adjusted to this system?'
+echo '  - verify logback.xml'
+echo '  - JVM parameters fit?'
+echo '  - payara-default-domains deleted?'
 echo '  - Java-Version in asenv.conf?'
-echo '  - Apache korrekt konfiguriert?'
-echo '  - Konfiguration aus der alten Domain (properties, logback) übernehmen?'
+echo '  - Apache properly configured?'
+echo '  - using configuration from an older domain (properties, logback)?'
