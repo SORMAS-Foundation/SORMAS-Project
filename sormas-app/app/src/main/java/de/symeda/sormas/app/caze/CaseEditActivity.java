@@ -18,6 +18,7 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.location.LocationDao;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDao;
+import de.symeda.sormas.app.person.SyncPersonsTask;
 import de.symeda.sormas.app.util.SlidingTabLayout;
 
 
@@ -89,8 +90,9 @@ public class CaseEditActivity extends AppCompatActivity {
                     Case caze = (Case) adapter.getData(0);
 
                     caseDao.save(caze);
-
                     Toast.makeText(this, "case "+ DataHelper.getShortUuid(caze.getUuid()) +" saved", Toast.LENGTH_SHORT).show();
+
+                    new SyncCasesTask().execute();
                 }
 
                 // case person tab
@@ -103,9 +105,10 @@ public class CaseEditActivity extends AppCompatActivity {
                     if(person.getAddress()!=null) {
                         locLocationDao.save(person.getAddress());
                     }
-
                     personDao.save(person);
                     Toast.makeText(this, person.toString() + " saved", Toast.LENGTH_SHORT).show();
+
+                    new SyncPersonsTask().execute();
                 }
 
 

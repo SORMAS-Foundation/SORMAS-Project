@@ -31,7 +31,7 @@ public class Case extends AbstractDomainObject {
 
 	public static final String PERSON = "person";
 
-	@DatabaseField(foreign = true, foreignAutoRefresh=true, canBeNull = false)
+	@DatabaseField(foreign = true, foreignAutoRefresh=true, canBeNull = false, unique = true)
 	private Person person;
 
 	@Column(length=512)

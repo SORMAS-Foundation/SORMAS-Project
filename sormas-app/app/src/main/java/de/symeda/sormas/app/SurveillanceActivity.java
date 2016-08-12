@@ -42,7 +42,7 @@ public class SurveillanceActivity extends AppCompatActivity {
             getSupportActionBar().setTitle("Cases");
         }
 
-        refreshLocalDB();
+        //refreshLocalDB();
     }
 
     @Override
@@ -91,11 +91,9 @@ public class SurveillanceActivity extends AppCompatActivity {
 
     private void refreshLocalDB() {
         try {
-            // todo asynchronous calls: Cases have to wait for Persons
+            // user explicitely called -> wait
             new SyncPersonsTask().execute().get();
             new SyncCasesTask().execute().get();
-
-            List<Facility> facilities = DatabaseHelper.getFacilityDao().queryForAll();
 
             Toast toast = Toast.makeText(this, "refreshed local db", Toast.LENGTH_SHORT);
             toast.show();

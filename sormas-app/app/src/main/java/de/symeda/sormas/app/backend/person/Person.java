@@ -42,7 +42,7 @@ public class Person extends AbstractDomainObject {
 	public static final String APPROXIMATE_AGE = "approximateAge";
 	public static final String ADDRESS = "address";
 	public static final String SEX = "sex";
-	public static final String CAZE = "caze";
+	public static final String CASE_UUID = "caseUuid";
 
 	@Column(nullable = false)
 	private String firstName;
@@ -67,8 +67,9 @@ public class Person extends AbstractDomainObject {
 	@Enumerated(EnumType.STRING)
 	private Sex sex;
 
-	@OneToOne(mappedBy=Case.PERSON)
-	private Case caze;
+	// Make sure this is always in sync with Case.person
+	@DatabaseField(unique=true, width = 29)
+	private String caseUuid;
 
 	@Enumerated(EnumType.STRING)
 	private PresentCondition presentCondition;
@@ -159,13 +160,6 @@ public class Person extends AbstractDomainObject {
 		this.sex = sex;
 	}
 
-	public Case getCaze() {
-		return caze;
-	}
-	public void setCaze(Case caze) {
-		this.caze = caze;
-	}
-	
 	public PresentCondition getPresentCondition() {
 		return presentCondition;
 	}
@@ -241,5 +235,12 @@ public class Person extends AbstractDomainObject {
 	public String toString() {
 		return getFirstName() + " " + getLastName();
 	}
-	
+
+	public String getCaseUuid() {
+		return caseUuid;
+	}
+
+	public void setCaseUuid(String caseUuid) {
+		this.caseUuid = caseUuid;
+	}
 }

@@ -40,7 +40,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// name of the database file for your application -- change to something appropriate for your app
 	private static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	private static final int DATABASE_VERSION = 20;
+	private static final int DATABASE_VERSION = 25;
 
 	public static DatabaseHelper instance = null;
 
@@ -63,6 +63,25 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	private DatabaseHelper(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);//, R.raw.ormlite_config);
+	}
+
+	public static void clearTables() {
+		ConnectionSource connectionSource = getCaseDao().getConnectionSource();
+		try {
+			TableUtils.clearTable(connectionSource, Case.class);
+			TableUtils.clearTable(connectionSource, Person.class);
+			TableUtils.clearTable(connectionSource, Location.class);
+			TableUtils.clearTable(connectionSource, Region.class);
+			TableUtils.clearTable(connectionSource, District.class);
+			TableUtils.clearTable(connectionSource, Community.class);
+			TableUtils.clearTable(connectionSource, Facility.class);
+			TableUtils.clearTable(connectionSource, User.class);
+			// keep config!
+			//TableUtils.clearTable(connectionSource, Config.class);
+		} catch (SQLException e) {
+			Log.e(DatabaseHelper.class.getName(), "Can't clear database", e);
+			throw new RuntimeException(e);
+		}
 	}
 
 	/**

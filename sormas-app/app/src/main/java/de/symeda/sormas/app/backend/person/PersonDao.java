@@ -14,6 +14,7 @@ import javax.persistence.NonUniqueResultException;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 
 /**
  * Created by Martin Wahnschaffe on 22.07.2016.
@@ -30,7 +31,8 @@ public class PersonDao extends AbstractAdoDao<Person> {
     }
 
     public List<Person> getAllPersonsWithoutCase() throws SQLException {
-        return queryBuilder().where().isNull("caze_id").query();
+
+        return queryBuilder().where().isNull(Person.CASE_UUID).query();
     }
 
 }

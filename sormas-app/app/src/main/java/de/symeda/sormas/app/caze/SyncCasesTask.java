@@ -37,7 +37,10 @@ public class SyncCasesTask extends AsyncTask<Void, Void, Void> {
             @Override
             public Call<List<CaseDataDto>> getAll(long since) {
                 User user = ConfigProvider.getUser();
-                return RetroProvider.getCaseFacade().getAll(user.getUuid(), since);
+                if (user != null) {
+                    return RetroProvider.getCaseFacade().getAll(user.getUuid(), since);
+                }
+                return null;
             }
         }, DatabaseHelper.getCaseDao());
 

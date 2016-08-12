@@ -58,10 +58,15 @@ public class UserActivity extends AppCompatActivity {
                 return true;
 
             case R.id.action_save:
-                User user = userTab.getData();
-
+                User user = userTab.getUser();
                 if (user != null) {
                     ConfigProvider.setUser(user);
+                    return true;
+                }
+
+                String serverUrl = userTab.getServerUrl();
+                if (serverUrl != null) {
+                    ConfigProvider.setServerUrl(serverUrl);
                     return true;
                 }
 

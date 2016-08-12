@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 
 import java.text.DateFormat;
 
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -35,11 +36,13 @@ public final class RetroProvider {
         // 10.0.2.2 points to localhost from emulator
         // SSL not working because of missing certificate
         retrofit = new Retrofit.Builder()
-                .baseUrl("http://wahnschaffe.symeda:6080/sormas-rest/")
-                //.baseUrl("http://szczesny.symeda:6080/sormas-rest/")
-                //.baseUrl("http://10.0.2.2:8080/sormas-rest/")
+                .baseUrl(ConfigProvider.getServerRestUrl())
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
+    }
+
+    public static void reset() {
+        instance = new RetroProvider();
     }
 
     public static CaseFacadeRetro getCaseFacade() {

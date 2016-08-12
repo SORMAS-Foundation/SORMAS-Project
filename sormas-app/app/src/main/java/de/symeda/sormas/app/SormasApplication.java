@@ -7,6 +7,8 @@ import java.util.concurrent.ExecutionException;
 
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.caze.SyncCasesTask;
+import de.symeda.sormas.app.person.SyncPersonsTask;
 import de.symeda.sormas.app.util.SyncInfrastructureTask;
 
 /**
@@ -20,6 +22,8 @@ public class SormasApplication extends Application {
         ConfigProvider.init();
         try {
             new SyncInfrastructureTask().execute().get();
+            new SyncPersonsTask().execute().get();
+            new SyncCasesTask().execute().get();
         } catch (InterruptedException e) {
             Log.e(SurveillanceActivity.class.getName(), e.toString(), e);
         } catch (ExecutionException e) {

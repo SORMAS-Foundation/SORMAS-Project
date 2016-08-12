@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import java.util.Date;
@@ -21,6 +22,7 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDao;
+import de.symeda.sormas.app.person.SyncPersonsTask;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.FormTab;
 
@@ -106,10 +108,14 @@ public class CaseNewTab extends FormTab {
                     PersonDao personDao = DatabaseHelper.getPersonDao();
                     personDao.save(personNew);
 
-                    // refresh reference for pre-selection in personField
-                   person = personNew;
+                    new SyncPersonsTask().execute();
 
-                    reloadFragment();
+                    // refresh reference for pre-selection in personField
+                    person = personNew;
+                    addPersonSpinnerField(R.id.form_cn_person);
+                    Spinner spinner = (Spinner) getView().findViewById(R.id.form_cn_person);
+                    spinner.setSelection(spinner.getAdapter().getCount() - 1);
+                    //reloadFragment();
                 }
             });
             dialogBuilder.setNegativeButton(getResources().getString(R.string.action_dimiss), new DialogInterface.OnClickListener() {

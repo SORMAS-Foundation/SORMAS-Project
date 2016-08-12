@@ -51,6 +51,22 @@
             </LinearLayout>
 
 
+            <LinearLayout android:orientation="vertical"
+                          android:layout_width="match_parent" android:layout_height="wrap_content"
+                          android:paddingTop="@dimen/spinner_padding" android:paddingBottom="@dimen/spinner_padding"
+                          android:layout_weight="0.5">
+                <TextView
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/field_caption_margin_bottom" android:textSize="@dimen/field_caption_size"
+                    android:layout_marginLeft="@dimen/field_caption_margin_left"
+                    android:text="@string/form_server_url" />
+                <EditText
+                    android:layout_width="match_parent" android:layout_height="@dimen/field_height"
+                    android:inputType="text"
+                    android:id="@+id/form_server_url" />
+            </LinearLayout>
+
+
         </LinearLayout>
     </ScrollView>
 </layout>

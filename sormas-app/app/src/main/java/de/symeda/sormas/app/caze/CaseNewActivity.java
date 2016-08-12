@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.caze;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NavUtils;
@@ -17,6 +18,8 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.backend.user.User;
 
 
@@ -78,8 +81,23 @@ public class CaseNewActivity extends AppCompatActivity {
                 CaseDao caseDao = DatabaseHelper.getCaseDao();
                 caseDao.save(caze);
 
+                // set person's case uuid
+                PersonDao personDao = DatabaseHelper.getPersonDao();
+                Person person = personDao.queryForId(caze.getPerson().getId());
+                person.setCaseUuid(caze.getUuid());
+                DatabaseHelper.getPersonDao().save(person);
+
+                new SyncCasesTask().execute();
+
                 Toast.makeText(this, caze.getPerson().toString() + " saved", Toast.LENGTH_SHORT).show();
+
                 NavUtils.navigateUpFromSameTask(this);
+
+                // open case edit view
+                Intent intent = new Intent(this, CaseEditActivity.class);
+                intent.putExtra(Case.UUID, caze.getUuid());
+                startActivity(intent);
+
                 return true;
 
         }

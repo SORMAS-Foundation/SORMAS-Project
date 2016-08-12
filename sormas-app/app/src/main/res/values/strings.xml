@@ -20,8 +20,8 @@
     <string name="headline_person_information">Person information</string>
 
     <!-- forms -->
-    <string name="form_first_name">Surname</string>
-    <string name="form_last_name">Other name</string>
+    <string name="form_first_name">First name</string>
+    <string name="form_last_name">Last name</string>
     <string name="form_date_of_birth">Date of birth</string>
     <string name="form_approximate_age">Approximate age (years)</string>
     <string name="form_cp_gender">Gender</string>
@@ -69,4 +69,5 @@
     <string name="action_new_person">Add person</string>
     <string name="action_dimiss">Dismiss</string>
     <string name="action_done">Done</string>
+    <string name="form_server_url">Server address</string>
 </resources>

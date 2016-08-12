@@ -30,6 +30,7 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, CasePersonDto> {
     @Override
     public void fillInnerFromDto(Person ado, CasePersonDto dto) {
 
+        ado.setCaseUuid(dto.getCaseUuid());
         ado.setFirstName(dto.getFirstName());
         ado.setLastName(dto.getLastName());
         ado.setSex(dto.getSex());
@@ -55,6 +56,7 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, CasePersonDto> {
     @Override
     public void fillInnerFromAdo(CasePersonDto dto, Person ado) {
 
+        dto.setCaseUuid(ado.getCaseUuid());
         dto.setFirstName(ado.getFirstName());
         dto.setLastName(ado.getLastName());
         dto.setSex(ado.getSex());

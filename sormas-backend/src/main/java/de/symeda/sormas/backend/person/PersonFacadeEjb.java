@@ -118,6 +118,9 @@ public class PersonFacadeEjb implements PersonFacade {
 			}
 		}
 		bo.setUuid(dto.getUuid());
+		
+		// case uuid is ignored!
+		
 		bo.setFirstName(dto.getFirstName());
 		bo.setLastName(dto.getLastName());
 		bo.setSex(dto.getSex());
