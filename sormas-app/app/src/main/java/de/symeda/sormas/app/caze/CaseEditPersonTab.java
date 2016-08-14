@@ -37,7 +37,7 @@ import de.symeda.sormas.app.util.Item;
 /**
  * Created by Stefan Szczesny on 27.07.2016.
  */
-public class CasePersonTab extends FormTab {
+public class CaseEditPersonTab extends FormTab {
 
     private CasePersonFragmentLayoutBinding binding;
 
@@ -137,8 +137,6 @@ public class CasePersonTab extends FormTab {
 
 
         addFacilitySpinnerField(R.id.form_cp_occupation_facility);
-
-
     }
 
     private void updateHeadlineOccupationDetailsFields(Item item, TextView occupationDetailsCaption) {

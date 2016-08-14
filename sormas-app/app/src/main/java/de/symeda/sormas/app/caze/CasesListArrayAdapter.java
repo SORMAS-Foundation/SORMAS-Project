@@ -7,8 +7,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import java.util.List;
-
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
@@ -16,19 +14,17 @@ import de.symeda.sormas.app.backend.caze.Case;
 /**
  * Created by Stefan Szczesny on 21.07.2016.
  */
-public class CaseListArrayAdapter extends ArrayAdapter<Case> {
+public class CasesListArrayAdapter extends ArrayAdapter<Case> {
 
-    private static final String TAG = CaseListArrayAdapter.class.getSimpleName();
+    private static final String TAG = CasesListArrayAdapter.class.getSimpleName();
 
     private final Context context;
     private int resource;
-    private final List<Case> values;
 
-    public CaseListArrayAdapter(Context context, int resource, List<Case> values) {
-        super(context, resource, values);
+    public CasesListArrayAdapter(Context context, int resource) {
+        super(context, resource);
         this.context = context;
         this.resource = resource;
-        this.values = values;
     }
 
     @Override
@@ -39,7 +35,7 @@ public class CaseListArrayAdapter extends ArrayAdapter<Case> {
             convertView = inflater.inflate(this.resource, parent, false);
         }
 
-        Case caze = values.get(position);
+        Case caze = (Case)getItem(position);
 
         TextView uuid = (TextView) convertView.findViewById(R.id.cli_uuid);
         uuid.setText(DataHelper.getShortUuid(caze.getUuid()));

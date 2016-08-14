@@ -25,7 +25,7 @@ import de.symeda.sormas.app.util.FormTab;
 /**
  * Created by Stefan Szczesny on 27.07.2016.
  */
-public class CaseDataTab extends FormTab {
+public class CaseEditDataTab extends FormTab {
 
     private CazeDataFragmentLayoutBinding binding;
 

@@ -3,33 +3,35 @@ package de.symeda.sormas.app;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.Toast;
 
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import de.symeda.sormas.api.caze.CaseStatus;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.caze.CaseEditActivity;
-import de.symeda.sormas.app.caze.CaseListArrayAdapter;
+import de.symeda.sormas.app.caze.CasesListFilterAdapter;
 import de.symeda.sormas.app.caze.CaseNewActivity;
 import de.symeda.sormas.app.caze.SyncCasesTask;
 import de.symeda.sormas.app.person.SyncPersonsTask;
 import de.symeda.sormas.app.user.UserActivity;
-import de.symeda.sormas.app.util.SyncInfrastructureTask;
+import de.symeda.sormas.app.util.SlidingTabLayout;
 
 public class SurveillanceActivity extends AppCompatActivity {
+
+    private ViewPager pager;
+    private CasesListFilterAdapter adapter;
+    private SlidingTabLayout tabs;
+    private CharSequence titles[];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +44,12 @@ public class SurveillanceActivity extends AppCompatActivity {
             getSupportActionBar().setTitle("Cases");
         }
 
+        // Creating titles for the tabs
+        titles = new CharSequence[]{
+                CaseStatus.POSSIBLE.toString(),
+                CaseStatus.INVESTIGATED.toString()
+        };
+
         //refreshLocalDB();
     }
 
@@ -49,6 +57,7 @@ public class SurveillanceActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
+        createTabViews();
         refreshCaseList();
     }
 
@@ -84,9 +93,33 @@ public class SurveillanceActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    private void createTabViews() {
+        // Creating The ViewPagerAdapter and Passing Fragment Manager, Titles fot the Tabs and Number Of Tabs.
+        adapter = new CasesListFilterAdapter(getSupportFragmentManager());
+
+        // Assigning ViewPager View and setting the adapter
+        pager = (ViewPager) findViewById(R.id.pager);
+        pager.setAdapter(adapter);
+
+        // Assigning the Sliding Tab Layout View
+        tabs = (SlidingTabLayout) findViewById(R.id.tabs);
+        tabs.setDistributeEvenly(true); // To make the Tabs Fixed set this true, This makes the tabs Space Evenly in Available width
+
+        // Setting Custom Color for the Scroll bar indicator of the Tab View
+        tabs.setCustomTabColorizer(new SlidingTabLayout.TabColorizer() {
+            @Override
+            public int getIndicatorColor(int position) {
+                return getResources().getColor(R.color.tabsScrollColor);
+            }
+        });
+
+        // Setting the ViewPager For the SlidingTabsLayout
+        tabs.setViewPager(pager);
+    }
+
     private void refreshCaseList() {
         CaseDao caseDao = DatabaseHelper.getCaseDao();
-        populateListView(caseDao.queryForAll());
+        //populateListView(caseDao.queryForAll());
     }
 
     private void refreshLocalDB() {
@@ -123,27 +156,27 @@ public class SurveillanceActivity extends AppCompatActivity {
     }
 
 
-    /**
-     * Create a list of cases and bind a itemClickListener
-     * @param cases
-     */
-    private void populateListView(final List<Case> cases) {
-        CaseListArrayAdapter adapter = new CaseListArrayAdapter(
-                this,                       // Context for the activity.
-                R.layout.case_list_item,    // Layout to use (create)
-                cases);                     // Items to be displayed // Configure the list view.
-
-        ListView list = (ListView) findViewById(R.id.cases_list_view);
-        list.setAdapter(adapter);
-        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(
-                    AdapterView<?> parent,
-                    View viewClicked,
-                    int position, long id) {
-                showCaseEditView(cases.get(position));
-            }
-        });
-    }
+//    /**
+//     * Create a list of cases and bind a itemClickListener
+//     * @param cases
+//     */
+//    private void populateListView(final List<Case> cases) {
+//        CasesListArrayAdapter adapter = new CasesListArrayAdapter(
+//                this,                       // Context for the activity.
+//                R.layout.cases_list_item,    // Layout to use (create)
+//                cases);                     // Items to be displayed // Configure the list view.
+//
+//        ListView list = (ListView) findViewById(R.id.cases_list_view);
+//        list.setAdapter(adapter);
+//        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(
+//                    AdapterView<?> parent,
+//                    View viewClicked,
+//                    int position, long id) {
+//                showCaseEditView(cases.get(position));
+//            }
+//        });
+//    }
 
 }

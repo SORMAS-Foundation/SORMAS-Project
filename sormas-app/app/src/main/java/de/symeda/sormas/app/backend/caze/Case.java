@@ -30,6 +30,7 @@ public class Case extends AbstractDomainObject {
 	public static final String TABLE_NAME = "cases";
 
 	public static final String PERSON = "person";
+	public static final String CASE_STATUS = "caseStatus";
 
 	@DatabaseField(foreign = true, foreignAutoRefresh=true, canBeNull = false, unique = true)
 	private Person person;

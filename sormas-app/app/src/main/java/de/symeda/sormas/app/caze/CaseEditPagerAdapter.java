@@ -17,8 +17,8 @@ public class CaseEditPagerAdapter extends FragmentStatePagerAdapter {
 
     private CharSequence Titles[]; // This will Store the Titles of the Tabs which are Going to be passed when ViewPagerAdapter is created
     private Bundle caseEditBundle; // this bundle contains the uuids
-    private CaseDataTab caseDataTab;
-    private CasePersonTab casePersonTab;
+    private CaseEditDataTab caseEditDataTab;
+    private CaseEditPersonTab caseEditPersonTab;
 
 
     // Build a Constructor and assign the passed Values to appropriate values in the class
@@ -36,14 +36,14 @@ public class CaseEditPagerAdapter extends FragmentStatePagerAdapter {
         Fragment frag = null;
         switch (position) {
             case 0:
-                caseDataTab = new CaseDataTab();
-                caseDataTab.setArguments(caseEditBundle);
-                frag = caseDataTab;
+                caseEditDataTab = new CaseEditDataTab();
+                caseEditDataTab.setArguments(caseEditBundle);
+                frag = caseEditDataTab;
                 break;
             case 1:
-                casePersonTab = new CasePersonTab();
-                casePersonTab.setArguments(caseEditBundle);
-                frag = casePersonTab;
+                caseEditPersonTab = new CaseEditPersonTab();
+                caseEditPersonTab.setArguments(caseEditBundle);
+                frag = caseEditPersonTab;
                 break;
         }
         return frag;
@@ -65,10 +65,10 @@ public class CaseEditPagerAdapter extends FragmentStatePagerAdapter {
         AbstractDomainObject ado = null;
         switch (position) {
             case 0:
-                ado= caseDataTab.getData();
+                ado= caseEditDataTab.getData();
                 break;
             case 1:
-                ado = casePersonTab.getData();
+                ado = caseEditPersonTab.getData();
                 break;
         }
         return ado;
