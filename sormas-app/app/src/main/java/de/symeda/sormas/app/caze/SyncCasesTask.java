@@ -5,6 +5,7 @@ package de.symeda.sormas.app.caze;
  */
 
 import android.os.AsyncTask;
+import android.support.v4.app.ListFragment;
 
 import com.j256.ormlite.logger.Logger;
 import com.j256.ormlite.logger.LoggerFactory;
@@ -53,9 +54,4 @@ public class SyncCasesTask extends AsyncTask<Void, Void, Void> {
 
         return null;
     }
-
-    protected void onPostExecute(Integer result) {
-
-    }
-
 }

@@ -54,9 +54,9 @@ public class CaseEditDataTab extends FormTab {
         Button btnCaseAdministration = (Button) getView().findViewById(R.id.form_cd_btn_case_administration);
         Iterable<CaseStatus> possibleStatus = CaseHelper.getPossibleStatusChanges(caze.getCaseStatus(), ConfigProvider.getUser().getUserRole());
         if(possibleStatus.iterator().hasNext()) {
+            btnCaseAdministration.setVisibility(View.VISIBLE);
             final CaseStatus caseStatus = possibleStatus.iterator().next();
-
-            btnCaseAdministration.setText("change to " + caseStatus.toString());
+            btnCaseAdministration.setText(caseStatus.getChangeString());
             btnCaseAdministration.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -66,8 +66,7 @@ public class CaseEditDataTab extends FormTab {
             });
         }
         else {
-            btnCaseAdministration.setText("changed to " + caze.getCaseStatus().toString());
-            btnCaseAdministration.setEnabled(false);
+            btnCaseAdministration.setVisibility(View.INVISIBLE);
         }
 
     }

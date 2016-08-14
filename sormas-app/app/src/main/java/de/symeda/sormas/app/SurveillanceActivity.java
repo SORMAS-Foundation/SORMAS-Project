@@ -3,6 +3,8 @@ package de.symeda.sormas.app;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.ListFragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -10,6 +12,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import java.util.concurrent.ExecutionException;
@@ -21,6 +24,7 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.caze.CaseEditActivity;
 import de.symeda.sormas.app.caze.CasesListFilterAdapter;
 import de.symeda.sormas.app.caze.CaseNewActivity;
+import de.symeda.sormas.app.caze.CasesListFragment;
 import de.symeda.sormas.app.caze.SyncCasesTask;
 import de.symeda.sormas.app.person.SyncPersonsTask;
 import de.symeda.sormas.app.user.UserActivity;
@@ -31,7 +35,6 @@ public class SurveillanceActivity extends AppCompatActivity {
     private ViewPager pager;
     private CasesListFilterAdapter adapter;
     private SlidingTabLayout tabs;
-    private CharSequence titles[];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,13 +47,7 @@ public class SurveillanceActivity extends AppCompatActivity {
             getSupportActionBar().setTitle("Cases");
         }
 
-        // Creating titles for the tabs
-        titles = new CharSequence[]{
-                CaseStatus.POSSIBLE.toString(),
-                CaseStatus.INVESTIGATED.toString()
-        };
-
-        //refreshLocalDB();
+        refreshLocalDB();
     }
 
     @Override
@@ -123,24 +120,25 @@ public class SurveillanceActivity extends AppCompatActivity {
     }
 
     private void refreshLocalDB() {
-        try {
-            // user explicitely called -> wait
-            new SyncPersonsTask().execute().get();
-            new SyncCasesTask().execute().get();
 
-            Toast toast = Toast.makeText(this, "refreshed local db", Toast.LENGTH_SHORT);
-            toast.show();
-        } catch (InterruptedException e) {
-            Log.e(SurveillanceActivity.class.getName(), e.toString(), e);
-        } catch (ExecutionException e) {
-            Log.e(SurveillanceActivity.class.getName(), e.toString(), e);
-        }
-    }
+        new SyncPersonsTask() {
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                new SyncCasesTask() {
+                    @Override
+                    protected void onPostExecute(Void aVoid) {
+                        for (Fragment fragement : getSupportFragmentManager().getFragments()) {
+                            if (fragement instanceof CasesListFragment) {
+                                fragement.onResume();
+                            }
+                        }
 
-    public void showCaseEditView(Case caze) {
-        Intent intent = new Intent(this, CaseEditActivity.class);
-        intent.putExtra(Case.UUID, caze.getUuid());
-        startActivity(intent);
+                        Toast toast = Toast.makeText(SurveillanceActivity.this, "refreshed local db", Toast.LENGTH_SHORT);
+                        toast.show();
+                    }
+                }.execute();
+            }
+        }.execute();
     }
 
     public void showUserView() {

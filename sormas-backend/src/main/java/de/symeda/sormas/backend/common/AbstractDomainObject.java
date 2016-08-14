@@ -3,7 +3,6 @@ package de.symeda.sormas.backend.common;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.Date;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -12,7 +11,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.SequenceGenerator;
-import javax.persistence.Transient;
 import javax.persistence.Version;
 import javax.validation.constraints.Size;
 
@@ -30,7 +28,7 @@ import de.symeda.sormas.api.utils.DataHelper;
  * @author reise
  */
 @MappedSuperclass
-public abstract class AbstractDomainObject implements Serializable, Cloneable, DomainObject {
+public abstract class AbstractDomainObject implements Serializable, Cloneable {
 
 	private static final long serialVersionUID = 3957437214306161226L;
 
@@ -38,6 +36,7 @@ public abstract class AbstractDomainObject implements Serializable, Cloneable, D
 	private static final String SEQ_SQL_NAME = "entity_seq";
 
 	public static final String ID = "id";
+	public static final String UUID = "uuid";
 	public static final String CREATION_DATE = "creationDate";
 	public static final String CHANGE_DATE = "changeDate";
 
@@ -69,7 +68,6 @@ public abstract class AbstractDomainObject implements Serializable, Cloneable, D
 	@Basic(optional = false)
 	@Size(min = 29, max = 29)
 	@Column(nullable = false, unique = true, length = 36)
-	@Override
 	public String getUuid() {
 		if (uuid == null) {
 			uuid = DataHelper.createUuid();
@@ -93,12 +91,6 @@ public abstract class AbstractDomainObject implements Serializable, Cloneable, D
 		this.creationDate = creationDate;
 	}
 
-	@Override
-	@Transient
-	public Date getCreation() {
-		return getCreationDate();
-	}
-
 	@Version
 	@Column(nullable = false)
 	public Timestamp getChangeDate() {
@@ -110,12 +102,6 @@ public abstract class AbstractDomainObject implements Serializable, Cloneable, D
 	}
 
 	@Override
-	@Transient
-	public Date getVersion() {
-		return getChangeDate();
-	}
-
-	@Override
 	public boolean equals(Object o) {
 		if (this == o) {
 			return true;
@@ -124,9 +110,9 @@ public abstract class AbstractDomainObject implements Serializable, Cloneable, D
 			return false;
 		}
 
-		if (o instanceof DomainObject) {
+		if (o instanceof AbstractDomainObject) {
 			// this works, because we are using UUIDs
-			DomainObject ado = (DomainObject) o;
+			AbstractDomainObject ado = (AbstractDomainObject) o;
 			return getUuid().equals(ado.getUuid());
 
 		} else {

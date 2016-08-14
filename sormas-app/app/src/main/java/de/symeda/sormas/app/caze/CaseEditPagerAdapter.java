@@ -15,7 +15,7 @@ import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 
 public class CaseEditPagerAdapter extends FragmentStatePagerAdapter {
 
-    private CharSequence Titles[]; // This will Store the Titles of the Tabs which are Going to be passed when ViewPagerAdapter is created
+    private CharSequence titles[]; // This will Store the titles of the Tabs which are Going to be passed when ViewPagerAdapter is created
     private Bundle caseEditBundle; // this bundle contains the uuids
     private CaseEditDataTab caseEditDataTab;
     private CaseEditPersonTab caseEditPersonTab;
@@ -24,10 +24,9 @@ public class CaseEditPagerAdapter extends FragmentStatePagerAdapter {
     // Build a Constructor and assign the passed Values to appropriate values in the class
     public CaseEditPagerAdapter(FragmentManager fm, CharSequence mTitles[], String caseUuid) {
         super(fm);
-        this.Titles = mTitles;
+        this.titles = mTitles;
         caseEditBundle = new Bundle();
         caseEditBundle.putString(Case.UUID, caseUuid);
-
     }
 
     //This method return the fragment for the every position in the View Pager
@@ -52,13 +51,13 @@ public class CaseEditPagerAdapter extends FragmentStatePagerAdapter {
     // This method return the titles for the Tabs in the Tab Strip
     @Override
     public CharSequence getPageTitle(int position) {
-        return Titles[position];
+        return titles[position];
     }
 
     // This method return the Number of tabs for the tabs Strip
     @Override
     public int getCount() {
-        return Titles.length;
+        return titles.length;
     }
 
     public AbstractDomainObject getData(int position) {

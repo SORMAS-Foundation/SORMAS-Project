@@ -89,30 +89,25 @@ public class CaseEditPersonTab extends FormTab {
 
 
         // status of patient
-        final EditText dateOfDeathField = (EditText) getView().findViewById(R.id.form_cp_date_of_death);
         addSpinnerField(R.id.form_cp_status_of_patient, PresentCondition.class, new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Item item = (Item)parent.getItemAtPosition(position);
-                updateDateOfDeathField((PresentCondition)item.getValue(), dateOfDeathField);
+                updateDateOfDeathField();
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                deactivateField(dateOfDeathField);
+                updateDateOfDeathField();
             }
         });
 
         // evaluate the model and set the ui
-        updateDateOfDeathField((PresentCondition)getModel().get(R.id.form_cp_status_of_patient),dateOfDeathField);
+        updateDateOfDeathField();
         updateApproximateAgeField();
-
 
         // ================ Address ================
         getModel().put(R.id.form_cp_address,caze.getPerson().getAddress());
         addLocationField(R.id.form_cp_address, R.id.form_cp_btn_address);
-
-
 
         // ================ Occupation ================
         getModel().put(R.id.form_cp_occupation,caze.getPerson().getOccupationType());
@@ -131,7 +126,7 @@ public class CaseEditPersonTab extends FormTab {
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                deactivateField(dateOfDeathField);
+                deactivateField(occupationDetailsLayout);
             }
         });
 
@@ -189,13 +184,12 @@ public class CaseEditPersonTab extends FormTab {
         }
     }
 
-    private void updateDateOfDeathField(Enum item, TextView dateOfDeathField) {
-        if(item!=null && !PresentCondition.ALIVE.equals(item)) {
-            dateOfDeathField.setEnabled(true);
-        }
-        else {
-            deactivateField(dateOfDeathField);
-        }
+    private void updateDateOfDeathField() {
+
+        PresentCondition condition = (PresentCondition)getModel().get(R.id.form_cp_status_of_patient);
+
+        setFieldVisible(getView().findViewById(R.id.form_cp_date_of_death_wrap), condition != null
+                && (PresentCondition.DEAD.equals(condition) || PresentCondition.BURIED.equals(condition)));
     }
 
     private void updateApproximateAgeField() {

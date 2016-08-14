@@ -3,7 +3,6 @@ package de.symeda.sormas.api.caze;
 import de.symeda.sormas.api.I18nProperties;
 
 public enum CaseStatus {
-	NEW,
 	POSSIBLE, 
 	INVESTIGATED, 
 	SUSPECT, 
@@ -17,4 +16,9 @@ public enum CaseStatus {
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	};
+	
+	public String getChangeString() {
+		return I18nProperties.getButtonCaption(getClass().getSimpleName() + "." + name(), name());
+	};
+
 }

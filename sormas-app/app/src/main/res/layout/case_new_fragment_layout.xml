@@ -24,17 +24,16 @@
                 android:paddingBottom="10dp" />
 
 
-
-            <LinearLayout
+            <!--<LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content">-->
 
                 <LinearLayout
                     android:orientation="horizontal"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.5">
+                    android:layout_height="wrap_content">
+                    <!--android:layout_weight="0.5"-->
 
                     <ImageButton
                         android:layout_width="wrap_content"
@@ -64,8 +63,12 @@
 
 
                 <LinearLayout android:orientation="vertical"
-                    android:layout_width="match_parent" android:layout_height="wrap_content"
-                    android:layout_weight="0.5" android:paddingTop="@dimen/spinner_padding" android:paddingBottom="@dimen/spinner_padding">
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="@dimen/spinner_padding"
+                    android:paddingBottom="@dimen/spinner_padding">
+                    <!--android:layout_weight="0.5"-->
+
                     <TextView
                         android:layout_width="match_parent" android:layout_height="wrap_content"
                         android:layout_marginBottom="@dimen/field_caption_margin_bottom" android:textSize="@dimen/field_caption_size"
@@ -83,14 +86,14 @@
 
 
 
-            </LinearLayout>
+            <!--</LinearLayout>-->
 
 
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.5">
+                android:layout_height="wrap_content">
+                <!--android:layout_weight="0.5"-->
 
                 <ImageButton
                     android:layout_width="wrap_content"

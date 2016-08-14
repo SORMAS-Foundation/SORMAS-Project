@@ -1,7 +1,5 @@
 package de.symeda.sormas.ui.surveillance.caze;
 
-import java.util.Collection;
-
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Alignment;
@@ -100,15 +98,11 @@ public class CasesView extends AbstractView {
 
     @Override
     public void enter(ViewChangeEvent event) {
-    	setData(ControllerProvider.getCaseController().getAllCaseData());
+    	grid.reload();
     }
 
     public void clearSelection() {
         grid.getSelectionModel().reset();
-    }
-
-    public void setData(Collection<CaseDataDto> cases) {
-        grid.setCases(cases);
     }
 
     public void refresh(CaseDataDto product) {

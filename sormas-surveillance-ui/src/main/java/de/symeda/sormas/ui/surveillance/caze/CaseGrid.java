@@ -1,6 +1,6 @@
 package de.symeda.sormas.ui.surveillance.caze;
 
-import java.util.Collection;
+import java.util.List;
 
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
@@ -16,6 +16,7 @@ import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseStatus;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.ui.surveillance.ControllerProvider;
 import elemental.json.JsonValue;
 
 public class CaseGrid extends Grid {
@@ -39,6 +40,8 @@ public class CaseGrid extends Grid {
         	column.setHeaderCaption(I18nProperties.getFieldCaption(
         			CaseDataDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
         }
+        
+        reload();
 	}
 	
     /**
@@ -59,7 +62,16 @@ public class CaseGrid extends Grid {
 
     }
     
-    public void setFilter(CaseStatus statusToFilter) {
+    public void setFilter(Disease disease) {
+		getContainer().removeContainerFilters(CaseDataDto.DISEASE);
+		if (disease != null) {
+	    	Equal filter = new Equal(CaseDataDto.DISEASE, disease);  
+	        getContainer().addContainerFilter(filter);
+		}
+	}
+
+	public void setFilter(CaseStatus statusToFilter) {
+		// TODO use query instead of filter?
     	removeAllStatusFilter();
     	if (statusToFilter != null) {
 	    	Equal filter = new Equal(CaseDataDto.CASE_STATUS, statusToFilter);  
@@ -67,15 +79,8 @@ public class CaseGrid extends Grid {
     	}
     }
     
-    public void setFilter(Disease disease) {
-    	getContainer().removeContainerFilters(CaseDataDto.DISEASE);
-    	if (disease != null) {
-	    	Equal filter = new Equal(CaseDataDto.DISEASE, disease);  
-	        getContainer().addContainerFilter(filter);
-    	}
-	}
-    
     public void removeAllStatusFilter() {
+    	reload();
     	getContainer().removeContainerFilters(CaseDataDto.CASE_STATUS);
     }
 
@@ -83,10 +88,11 @@ public class CaseGrid extends Grid {
 	private BeanItemContainer<CaseDataDto> getContainer() {
         return (BeanItemContainer<CaseDataDto>) super.getContainerDataSource();
     }
-
-    public void setCases(Collection<CaseDataDto> cases) {
+    
+    public void reload() {
+    	List<CaseDataDto> cases = ControllerProvider.getCaseController().getAllCaseData();
         getContainer().removeAllItems();
-        getContainer().addAll(cases);
+        getContainer().addAll(cases);    	
     }
 
     public void refresh(CaseDataDto caze) {

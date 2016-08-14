@@ -69,7 +69,7 @@ public class CaseNewActivity extends AppCompatActivity {
             case R.id.action_save:
                 Case caze = caseNewTab.getData();
 
-                caze.setCaseStatus(CaseStatus.NEW);
+                caze.setCaseStatus(CaseStatus.POSSIBLE);
                 User user = ConfigProvider.getUser();
                 caze.setReportingUser(user);
                 if (user.getUserRole() == UserRole.SURVEILLANCE_OFFICER) {
@@ -95,7 +95,8 @@ public class CaseNewActivity extends AppCompatActivity {
 
                 // open case edit view
                 Intent intent = new Intent(this, CaseEditActivity.class);
-                intent.putExtra(Case.UUID, caze.getUuid());
+                intent.putExtra(CaseEditActivity.KEY_CASE_UUID, caze.getUuid());
+                intent.putExtra(CaseEditActivity.KEY_PAGE, 1);
                 startActivity(intent);
 
                 return true;

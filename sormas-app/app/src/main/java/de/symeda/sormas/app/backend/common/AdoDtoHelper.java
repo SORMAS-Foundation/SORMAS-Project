@@ -64,6 +64,9 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
     public void pullEntities(DtoGetInterface<DTO> getInterface, final AbstractAdoDao<ADO> dao) {
 
         Date maxModifiedDate = dao.getLatestChangeDate();
+        // server change date has higher precision
+        // adding 1 is workaround to make sure we don't get entities we already know
+        maxModifiedDate.setTime(maxModifiedDate.getTime()+1);
 
         Call<List<DTO>> dtoCall = getInterface.getAll(maxModifiedDate != null ? maxModifiedDate.getTime() : 0);
         if (dtoCall == null) {

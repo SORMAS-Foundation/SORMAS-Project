@@ -96,70 +96,6 @@
 
                 </LinearLayout>
 
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.5"
-                    android:paddingTop="@dimen/spinner_padding"
-                    android:paddingBottom="@dimen/spinner_padding">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/form_cp_status_of_patient"
-                        android:textSize="@dimen/field_caption_size"
-                        android:layout_marginLeft="@dimen/field_caption_margin_left"
-                        android:layout_marginBottom="@dimen/field_caption_margin_bottom" />
-
-                    <Spinner
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/field_spinner_height"
-                        android:id="@+id/form_cp_status_of_patient"
-                        android:layout_alignParentTop="true"
-                        style="@style/Base.Widget.AppCompat.Spinner.Underlined" />
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-
-            <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <LinearLayout
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.5">
-
-                    <ImageButton
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/form_cp_btn_date_of_death"
-                        android:src="@drawable/ic_event_black_24dp"
-                        android:layout_gravity="center"
-                        android:background="#ffffff"
-                        android:layout_marginRight="5dp" />
-
-                    <LinearLayout android:orientation="vertical"
-                        android:layout_width="match_parent" android:layout_height="wrap_content"
-                        android:paddingTop="@dimen/spinner_padding" android:paddingBottom="@dimen/spinner_padding">
-                        <TextView
-                            android:layout_width="match_parent" android:layout_height="wrap_content"
-                            android:layout_marginBottom="@dimen/field_caption_margin_bottom"
-                            android:textSize="@dimen/field_caption_size"
-                            android:layout_marginLeft="@dimen/field_caption_margin_left"
-                            android:text="@string/form_date_of_death" />
-                        <EditText
-                            android:layout_width="match_parent" android:layout_height="@dimen/field_height"
-                            android:inputType="date"
-                            android:id="@+id/form_cp_date_of_death" />
-                    </LinearLayout>
-
-                </LinearLayout>
 
                 <LinearLayout android:orientation="vertical"
                     android:layout_width="match_parent" android:layout_height="wrap_content"
@@ -175,6 +111,65 @@
                         android:id="@+id/form_cp_approximate_age" />
                 </LinearLayout>
 
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:paddingTop="@dimen/spinner_padding"
+                    android:paddingBottom="@dimen/spinner_padding">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/form_cp_status_of_patient"
+                        android:textSize="@dimen/field_caption_size"
+                        android:layout_marginLeft="@dimen/field_caption_margin_left"
+                        android:layout_marginBottom="@dimen/field_caption_margin_bottom" />
+                    <Spinner
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/field_spinner_height"
+                        android:id="@+id/form_cp_status_of_patient"
+                        android:layout_alignParentTop="true"
+                        style="@style/Base.Widget.AppCompat.Spinner.Underlined" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/form_cp_date_of_death_wrap"
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5">
+                    <ImageButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/form_cp_btn_date_of_death"
+                        android:src="@drawable/ic_event_black_24dp"
+                        android:layout_gravity="center"
+                        android:background="#ffffff"
+                        android:layout_marginRight="5dp" />
+                    <LinearLayout android:orientation="vertical"
+                        android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:paddingTop="@dimen/spinner_padding" android:paddingBottom="@dimen/spinner_padding">
+                        <TextView
+                            android:layout_width="match_parent" android:layout_height="wrap_content"
+                            android:layout_marginBottom="@dimen/field_caption_margin_bottom"
+                            android:textSize="@dimen/field_caption_size"
+                            android:layout_marginLeft="@dimen/field_caption_margin_left"
+                            android:text="@string/form_date_of_death" />
+                        <EditText
+                            android:layout_width="match_parent" android:layout_height="@dimen/field_height"
+                            android:inputType="date"
+                            android:id="@+id/form_cp_date_of_death" />
+                    </LinearLayout>
+                </LinearLayout>
             </LinearLayout>
 
             <LinearLayout

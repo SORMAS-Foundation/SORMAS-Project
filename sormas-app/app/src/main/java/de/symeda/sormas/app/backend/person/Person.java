@@ -48,7 +48,6 @@ public class Person extends AbstractDomainObject {
 	private String firstName;
 	@Column(nullable = false)
 	private String lastName;
-	//@Temporal(TemporalType.DATE)
 	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
 	private Date birthDate;
 	@Column
@@ -75,11 +74,11 @@ public class Person extends AbstractDomainObject {
 	private PresentCondition presentCondition;
 	@Column
 	private boolean dead;
-	@Temporal(TemporalType.DATE)
+	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
 	private Date deathDate;
 	@DatabaseField(foreign = true, foreignAutoCreate = true, foreignAutoRefresh = true)
 	private Location deathLocation;
-	@Temporal(TemporalType.DATE)
+	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
 	private Date burialDate;
 	@DatabaseField(foreign = true, foreignAutoCreate = true, foreignAutoRefresh = true)
 	private Location burialLocation;

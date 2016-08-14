@@ -169,7 +169,7 @@ public class CasePersonForm extends AbstractEditForm<CasePersonDto> {
 		PresentCondition type = (PresentCondition) ((NativeSelect)getFieldGroup().getField(CasePersonDto.PRESENT_CONDITION)).getValue();
 		switch (type) {
 		case DEAD:
-		case BURRIED:
+		case BURIED:
 			setVisible(true, 
 					CasePersonDto.DEATH_DATE);
 			break;

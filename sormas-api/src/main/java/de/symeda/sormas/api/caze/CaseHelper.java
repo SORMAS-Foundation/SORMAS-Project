@@ -11,8 +11,6 @@ public final class CaseHelper {
 
 		if (UserRole.SURVEILLANCE_SUPERVISOR.equals(userRole)) {
 			switch (currentStatus) {
-			case NEW:
-				return Arrays.asList(CaseStatus.POSSIBLE);
 			case POSSIBLE:
 				return Arrays.asList(CaseStatus.INVESTIGATED);
 			case INVESTIGATED:
@@ -27,8 +25,6 @@ public final class CaseHelper {
 		}
 		else if (UserRole.SURVEILLANCE_OFFICER.equals(userRole)) {
 			switch (currentStatus) {
-			case NEW:
-				return Arrays.asList(CaseStatus.POSSIBLE);
 			case POSSIBLE:
 				return Arrays.asList(CaseStatus.INVESTIGATED);
 			default:
@@ -37,8 +33,6 @@ public final class CaseHelper {
 		}		
 		else if (UserRole.INFORMANT.equals(userRole)) {
 			switch (currentStatus) {
-			case NEW:
-				return Arrays.asList(CaseStatus.POSSIBLE);
 			default:
 				return Collections.emptyList();
 			}
@@ -50,8 +44,6 @@ public final class CaseHelper {
 	public static boolean isPrimary(CaseStatus currentStatus, CaseStatus nextStatus) {
 		
 		switch (currentStatus) {
-		case NEW:
-			return nextStatus == CaseStatus.POSSIBLE;
 		case POSSIBLE:
 			return nextStatus == CaseStatus.INVESTIGATED;
 		case INVESTIGATED:

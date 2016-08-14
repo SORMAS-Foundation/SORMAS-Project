@@ -39,8 +39,4 @@ public class SyncPersonsTask extends AsyncTask<Void, Void, Void> {
 
         return null;
     }
-
-    protected void onPostExecute(Integer result) {
-
-    }
 }

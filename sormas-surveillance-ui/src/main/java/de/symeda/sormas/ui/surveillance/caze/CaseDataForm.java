@@ -11,7 +11,6 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseHelper;
 import de.symeda.sormas.api.caze.CaseStatus;
@@ -24,7 +23,6 @@ import de.symeda.sormas.ui.utils.LayoutUtil;
 public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	
 	private static final String STATUS_CHANGE = "statusChange";
-	private static final String STATUS_BACK = "statusBack";
 
     private static final String HTML_LAYOUT = 
     		LayoutUtil.h3(CssStyles.VSPACE3, "Case data")+
@@ -91,14 +89,12 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
     	
     	for (final CaseStatus status : statuses) {
         	Button button = new Button();
-        	boolean isBackward = CaseHelper.isBackward(currentStatus, status);
-        	String caption = I18nProperties.getButtonCaption(
-        			getPropertyI18nPrefix()+"."+ (isBackward ? STATUS_BACK : STATUS_CHANGE), "%s");
-        	button.setCaption(String.format(caption, status.toString()));
+//        	boolean isBackward = CaseHelper.isBackward(currentStatus, status);
+        	button.setCaption(status.getChangeString());
         	if (CaseHelper.isPrimary(currentStatus, status)) {
         		button.addStyleName(ValoTheme.BUTTON_PRIMARY);
-        	} else if (isBackward) {
-        		button.addStyleName(ValoTheme.BUTTON_LINK);
+//        	} else if (isBackward) {
+//        		button.addStyleName(ValoTheme.BUTTON_LINK);
         	}
         	button.addStyleName(CssStyles.FORCE_CAPTION);
         	button.setWidth(100, Unit.PERCENTAGE);

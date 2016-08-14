@@ -21,7 +21,7 @@ public class CasesListFilterAdapter extends FragmentStatePagerAdapter {
     // Build a Constructor and assign the passed Values to appropriate values in the class
     public CasesListFilterAdapter(FragmentManager fm) {
         super(fm);
-        this.statusFilters = new CaseStatus[] { CaseStatus.POSSIBLE, CaseStatus.INVESTIGATED, null };
+        this.statusFilters = new CaseStatus[] { CaseStatus.POSSIBLE, null };
     }
 
     //This method return the fragment for the every position in the View Pager

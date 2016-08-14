@@ -27,6 +27,9 @@ import de.symeda.sormas.app.util.SlidingTabLayout;
  */
 public class CaseEditActivity extends AppCompatActivity {
 
+    public static final String KEY_CASE_UUID = "caseUuid";
+    public static final String KEY_PAGE = "page";
+
     private ViewPager pager;
     private CaseEditPagerAdapter adapter;
     private SlidingTabLayout tabs;
@@ -51,15 +54,19 @@ public class CaseEditActivity extends AppCompatActivity {
                 getResources().getText(R.string.headline_case_data),
                 getResources().getText(R.string.headline_patient)
         };
-
     }
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        caseUuid = getIntent().getExtras().getString(Case.UUID);
+        Bundle params = getIntent().getExtras();
+        caseUuid = params.getString(KEY_CASE_UUID);
         createTabViews(caseUuid);
+
+        if (params.containsKey(KEY_PAGE)) {
+            pager.setCurrentItem(params.getInt(KEY_PAGE));
+        }
     }
 
     @Override
@@ -111,6 +118,8 @@ public class CaseEditActivity extends AppCompatActivity {
                     new SyncPersonsTask().execute();
                 }
 
+                onResume();
+                pager.setCurrentItem(currentTab);
 
                 return true;
 

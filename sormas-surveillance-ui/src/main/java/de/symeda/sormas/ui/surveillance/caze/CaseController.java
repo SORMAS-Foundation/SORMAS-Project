@@ -91,7 +91,7 @@ public class CaseController {
     	caze.setUuid(DataHelper.createUuid());
     	
     	caze.setDisease(Disease.EBOLA);
-    	caze.setCaseStatus(CaseStatus.NEW);
+    	caze.setCaseStatus(CaseStatus.POSSIBLE);
     	
     	caze.setReportDate(new Date());
     	UserDto user = LoginHelper.getCurrentUser();
