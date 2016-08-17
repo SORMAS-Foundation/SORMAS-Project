@@ -146,7 +146,7 @@ public class Person extends AbstractDomainObject {
 	}
 
 	public String getPhoneOwner() {
-		return phone;
+		return phoneOwner;
 	}
 	public void setPhoneOwner(String phoneOwner) {
 		this.phoneOwner = phoneOwner;

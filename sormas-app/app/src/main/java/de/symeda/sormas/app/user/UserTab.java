@@ -38,9 +38,11 @@ public class UserTab extends FormTab {
 
     @Override
     public void onResume() {
-        super.onResume();
 
         getModel().put(R.id.form_u_select_user, ConfigProvider.getUser());
+
+        super.onResume();
+
         addUserSpinnerField(R.id.form_u_select_user, Arrays.asList(UserRole.INFORMANT, UserRole.SURVEILLANCE_OFFICER));
 
         // TODO move to settings screen?

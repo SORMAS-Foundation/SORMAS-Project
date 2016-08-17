@@ -103,9 +103,17 @@ public class Location extends AbstractDomainObject {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append(getRegion()!=null?getRegion():"");
-		sb.append(getDistrict()!=null?", " + getDistrict():"");
-		sb.append(getCommunity()!=null?", " + getCommunity():"");
-		return sb.toString();
+		if (getAddress() != null) {
+			sb.append(getAddress());
+		}
+		if (getDetails() != null) {
+			sb.append(" ").append(getDetails());
+		}
+		if (getCity() != null) {
+			sb.append(" ").append(getCity());
+		} else if (getCommunity() != null) {
+			sb.append(" ").append(getCommunity());
+		}
+		return sb.toString().trim();
 	}
 }

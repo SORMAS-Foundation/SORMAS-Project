@@ -13,11 +13,11 @@
             android:layout_width="match_parent" android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/field_caption_margin_bottom" android:textSize="@dimen/field_caption_size"
             android:layout_marginLeft="@dimen/field_caption_margin_left"
-            android:text="@string/form_first_name" />
+            android:text="@string/form_p_first_name" />
         <EditText
             android:layout_width="match_parent" android:layout_height="@dimen/field_height"
             android:inputType="text"
-            android:id="@+id/form_first_name" />
+            android:id="@+id/form_p_first_name" />
     </LinearLayout>
 
     <LinearLayout android:orientation="vertical"
@@ -27,11 +27,11 @@
             android:layout_width="match_parent" android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/field_caption_margin_bottom" android:textSize="@dimen/field_caption_size"
             android:layout_marginLeft="@dimen/field_caption_margin_left"
-            android:text="@string/form_last_name" />
+            android:text="@string/form_p_last_name" />
         <EditText
             android:layout_width="match_parent" android:layout_height="@dimen/field_height"
             android:inputType="text"
-            android:id="@+id/form_last_name" />
+            android:id="@+id/form_p_last_name" />
     </LinearLayout>
 
     <LinearLayout
@@ -51,7 +51,7 @@
             <EditText
                 android:layout_width="match_parent" android:layout_height="@dimen/field_height"
                 android:inputType="text"
-                android:id="@+id/form_person_id" />
+                android:id="@+id/form_p_person_id" />
         </LinearLayout>
 
     </LinearLayout>

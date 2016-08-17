@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.caze;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -58,8 +59,6 @@ public class CaseNewTab extends FormTab {
     public void onResume() {
         super.onResume();
 
-        Toast.makeText(getContext(), "Person in model: " + getModel().get(R.id.form_cn_person), Toast.LENGTH_SHORT).show();
-
         addSpinnerField(R.id.form_cn_disease, Disease.class);
         addDateField(R.id.form_cn_date_of_report, R.id.form_cn_btn_date_of_report);
         addPersonSpinnerField(R.id.form_cn_person);
@@ -72,7 +71,6 @@ public class CaseNewTab extends FormTab {
                 showNewPersonDialog(R.id.form_cn_btn_add_person);
             }
         });
-
     }
 
     /**
@@ -86,15 +84,14 @@ public class CaseNewTab extends FormTab {
 
             AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
             dialogBuilder.setTitle(getResources().getString(R.string.headline_new_Person));
-            //dialogBuilder.setCancelable(false);
 
             final View dialogView = getActivity().getLayoutInflater().inflate(R.layout.person_new_frament_layout, null);
             dialogBuilder.setView(dialogView);
 
-            final EditText firstName = (EditText) dialogView.findViewById(R.id.form_first_name);
-            final EditText lastName = (EditText) dialogView.findViewById(R.id.form_last_name);
+            final EditText firstName = (EditText) dialogView.findViewById(R.id.form_p_first_name);
+            final EditText lastName = (EditText) dialogView.findViewById(R.id.form_p_last_name);
 
-            EditText uuid = (EditText) dialogView.findViewById(R.id.form_person_id);
+            EditText uuid = (EditText) dialogView.findViewById(R.id.form_p_person_id);
             uuid.setText(personNew.getUuid());
             uuid.setEnabled(false);
 
@@ -131,9 +128,7 @@ public class CaseNewTab extends FormTab {
             Toast.makeText(getContext(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
-
     }
-
 
     @Override
     protected AbstractDomainObject commit(AbstractDomainObject ado) {

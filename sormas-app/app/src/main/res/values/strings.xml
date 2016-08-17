@@ -20,15 +20,16 @@
     <string name="headline_person_information">Person information</string>
 
     <!-- forms -->
-    <string name="form_first_name">First name</string>
-    <string name="form_last_name">Last name</string>
-    <string name="form_date_of_birth">Date of birth</string>
-    <string name="form_approximate_age">Approximate age (years)</string>
-    <string name="form_cp_gender">Gender</string>
-    <string name="form_phone">Phone number</string>
-    <string name="form_owner_of_phone">Owner of phone</string>
-    <string name="form_cp_status_of_patient">Status of patient</string>
-    <string name="form_date_of_death">Date of death</string>
+    <string name="form_p_first_name">First name</string>
+    <string name="form_p_last_name">Last name</string>
+    <string name="form_p_date_of_birth">Date of birth</string>
+    <string name="form_p_approximate_age">Approximate age</string>
+    <string name="form_p_approximate_age_type">Age type</string>
+    <string name="form_p_gender">Gender</string>
+    <string name="form_p_phone">Phone number</string>
+    <string name="form_p_owner_of_phone">Owner of phone</string>
+    <string name="form_p_status_of_patient">Status of patient</string>
+    <string name="form_p_date_of_death">Date of death</string>
     <string name="headline_gender">Gender</string>
     <string name="headline_permanent_residence">Permanent residence</string>
     <string name="headline_occupation">Occupation</string>

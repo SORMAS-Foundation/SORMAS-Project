@@ -127,9 +127,11 @@ public class SurveillanceActivity extends AppCompatActivity {
                 new SyncCasesTask() {
                     @Override
                     protected void onPostExecute(Void aVoid) {
-                        for (Fragment fragement : getSupportFragmentManager().getFragments()) {
-                            if (fragement instanceof CasesListFragment) {
-                                fragement.onResume();
+                        if (getSupportFragmentManager() != null && getSupportFragmentManager().getFragments() != null) {
+                            for (Fragment fragement : getSupportFragmentManager().getFragments()) {
+                                if (fragement instanceof CasesListFragment) {
+                                    fragement.onResume();
+                                }
                             }
                         }
 

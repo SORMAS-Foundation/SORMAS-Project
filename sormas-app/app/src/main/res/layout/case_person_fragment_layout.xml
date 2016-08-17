@@ -36,7 +36,7 @@
                     android:layout_width="match_parent" android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/field_caption_margin_bottom" android:textSize="@dimen/field_caption_size"
                     android:layout_marginLeft="@dimen/field_caption_margin_left"
-                    android:text="@string/form_first_name" />
+                    android:text="@string/form_p_first_name" />
                 <EditText
                     android:layout_width="match_parent" android:layout_height="@dimen/field_height"
                     android:inputType="textPersonName"
@@ -51,7 +51,7 @@
                     android:layout_width="match_parent" android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/field_caption_margin_bottom" android:textSize="@dimen/field_caption_size"
                     android:layout_marginLeft="@dimen/field_caption_margin_left"
-                    android:text="@string/form_last_name" />
+                    android:text="@string/form_p_last_name" />
                 <EditText
                     android:layout_width="match_parent" android:layout_height="@dimen/field_height"
                     android:inputType="textPersonName"
@@ -87,15 +87,46 @@
                             android:layout_marginBottom="@dimen/field_caption_margin_bottom"
                             android:textSize="@dimen/field_caption_size"
                             android:layout_marginLeft="@dimen/field_caption_margin_left"
-                            android:text="@string/form_date_of_birth" />
+                            android:text="@string/form_p_date_of_birth" />
                         <EditText
                             android:layout_width="match_parent" android:layout_height="@dimen/field_height"
                             android:inputType="date"
-                            android:id="@+id/form_cp_date_of_birth" />
+                            android:id="@+id/form_p_date_of_birth" />
                     </LinearLayout>
 
                 </LinearLayout>
 
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:paddingTop="@dimen/spinner_padding"
+                    android:paddingBottom="@dimen/spinner_padding">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/form_p_gender"
+                        android:textSize="@dimen/field_caption_size"
+                        android:layout_marginLeft="@dimen/field_caption_margin_left"
+                        android:layout_marginBottom="@dimen/field_caption_margin_bottom" />
+
+                    <Spinner
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/field_spinner_height"
+                        android:id="@+id/form_p_gender"
+                        android:layout_alignParentTop="true"
+                        style="@style/Base.Widget.AppCompat.Spinner.Underlined" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
                 <LinearLayout android:orientation="vertical"
                     android:layout_width="match_parent" android:layout_height="wrap_content"
@@ -104,14 +135,37 @@
                         android:layout_width="match_parent" android:layout_height="wrap_content"
                         android:layout_marginBottom="@dimen/field_caption_margin_bottom" android:textSize="@dimen/field_caption_size"
                         android:layout_marginLeft="@dimen/field_caption_margin_left"
-                        android:text="@string/form_approximate_age" />
+                        android:text="@string/form_p_approximate_age" />
                     <EditText
                         android:layout_width="match_parent" android:layout_height="@dimen/field_height"
                         android:inputType="text"
-                        android:id="@+id/form_cp_approximate_age" />
+                        android:id="@+id/form_p_approximate_age" />
                 </LinearLayout>
 
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/form_p_approximate_age_type"
+                        android:textSize="@dimen/field_caption_size"
+                        android:layout_marginLeft="@dimen/field_caption_margin_left"
+                        android:layout_marginBottom="@dimen/field_caption_margin_bottom" />
+
+                    <Spinner
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/field_spinner_height"
+                        android:id="@+id/form_p_approximate_age_type"
+                        android:layout_alignParentTop="true"
+                        style="@style/Base.Widget.AppCompat.Spinner.Underlined" />
+
+                </LinearLayout>
             </LinearLayout>
+
 
 
             <LinearLayout
@@ -123,20 +177,18 @@
                     android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.5"
-                    android:paddingTop="@dimen/spinner_padding"
-                    android:paddingBottom="@dimen/spinner_padding">
+                    android:layout_weight="0.5">
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/form_cp_status_of_patient"
+                        android:text="@string/form_p_status_of_patient"
                         android:textSize="@dimen/field_caption_size"
                         android:layout_marginLeft="@dimen/field_caption_margin_left"
                         android:layout_marginBottom="@dimen/field_caption_margin_bottom" />
                     <Spinner
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/field_spinner_height"
-                        android:id="@+id/form_cp_status_of_patient"
+                        android:id="@+id/form_p_status_of_patient"
                         android:layout_alignParentTop="true"
                         style="@style/Base.Widget.AppCompat.Spinner.Underlined" />
                 </LinearLayout>
@@ -163,52 +215,15 @@
                             android:layout_marginBottom="@dimen/field_caption_margin_bottom"
                             android:textSize="@dimen/field_caption_size"
                             android:layout_marginLeft="@dimen/field_caption_margin_left"
-                            android:text="@string/form_date_of_death" />
+                            android:text="@string/form_p_date_of_death" />
                         <EditText
                             android:layout_width="match_parent" android:layout_height="@dimen/field_height"
                             android:inputType="date"
-                            android:id="@+id/form_cp_date_of_death" />
+                            android:id="@+id/form_p_date_of_death" />
                     </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
 
-            <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.5"
-                    android:paddingTop="@dimen/spinner_padding"
-                    android:paddingBottom="@dimen/spinner_padding">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/form_cp_gender"
-                        android:textSize="@dimen/field_caption_size"
-                        android:layout_marginLeft="@dimen/field_caption_margin_left"
-                        android:layout_marginBottom="@dimen/field_caption_margin_bottom" />
-
-                    <Spinner
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/field_spinner_height"
-                        android:id="@+id/form_cp_gender"
-                        android:layout_alignParentTop="true"
-                        style="@style/Base.Widget.AppCompat.Spinner.Underlined" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="0.5">
-
-                </LinearLayout>
-            </LinearLayout>
 
             <LinearLayout
                 android:orientation="horizontal"
@@ -222,7 +237,7 @@
                         android:layout_width="match_parent" android:layout_height="wrap_content"
                         android:layout_marginBottom="@dimen/field_caption_margin_bottom" android:textSize="@dimen/field_caption_size"
                         android:layout_marginLeft="@dimen/field_caption_margin_left"
-                        android:text="@string/form_phone" />
+                        android:text="@string/form_p_phone" />
                     <EditText
                         android:layout_width="match_parent" android:layout_height="@dimen/field_height"
                         android:inputType="text"
@@ -236,10 +251,11 @@
                         android:layout_width="match_parent" android:layout_height="wrap_content"
                         android:layout_marginBottom="@dimen/field_caption_margin_bottom" android:textSize="@dimen/field_caption_size"
                         android:layout_marginLeft="@dimen/field_caption_margin_left"
-                        android:text="@string/form_owner_of_phone" />
+                        android:text="@string/form_p_owner_of_phone" />
                     <EditText
                         android:layout_width="match_parent" android:layout_height="@dimen/field_height"
-                        android:inputType="text" />
+                        android:inputType="text"
+                        android:text="@={person.phoneOwner}" />
                 </LinearLayout>
 
             </LinearLayout>

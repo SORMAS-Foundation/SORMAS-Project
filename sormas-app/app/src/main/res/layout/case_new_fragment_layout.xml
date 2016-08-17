@@ -24,76 +24,64 @@
                 android:paddingBottom="10dp" />
 
 
-            <!--<LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">-->
-
-                <LinearLayout
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                    <!--android:layout_weight="0.5"-->
-
-                    <ImageButton
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/form_cn_btn_date_of_report"
-                        android:src="@drawable/ic_event_black_24dp"
-                        android:layout_gravity="center"
-                        android:background="#ffffff"
-                        android:layout_marginRight="5dp" />
-
-                    <LinearLayout android:orientation="vertical"
-                        android:layout_width="match_parent" android:layout_height="wrap_content"
-                        android:paddingTop="@dimen/spinner_padding" android:paddingBottom="@dimen/spinner_padding">
-                        <TextView
-                            android:layout_width="match_parent" android:layout_height="wrap_content"
-                            android:layout_marginBottom="@dimen/field_caption_margin_bottom"
-                            android:textSize="@dimen/field_caption_size"
-                            android:layout_marginLeft="@dimen/field_caption_margin_left"
-                            android:text="@string/form_cd_report_date" />
-                        <EditText
-                            android:layout_width="match_parent" android:layout_height="@dimen/field_height"
-                            android:inputType="date"
-                            android:id="@+id/form_cn_date_of_report" />
-                    </LinearLayout>
-                </LinearLayout>
-
-
-
-                <LinearLayout android:orientation="vertical"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingTop="@dimen/spinner_padding"
-                    android:paddingBottom="@dimen/spinner_padding">
-                    <!--android:layout_weight="0.5"-->
-
-                    <TextView
-                        android:layout_width="match_parent" android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/field_caption_margin_bottom" android:textSize="@dimen/field_caption_size"
-                        android:layout_marginLeft="@dimen/field_caption_margin_left"
-                        android:text="@string/form_disease" />
-                    <Spinner
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/field_spinner_height"
-                        android:id="@+id/form_cn_disease"
-                        android:ems="10"
-                        android:layout_alignParentTop="true"
-                        style="@style/Base.Widget.AppCompat.Spinner.Underlined" />
-                </LinearLayout>
-
-
-
-
-            <!--</LinearLayout>-->
-
-
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <!--android:layout_weight="0.5"-->
+
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/form_cn_btn_date_of_report"
+                    android:src="@drawable/ic_event_black_24dp"
+                    android:layout_gravity="center"
+                    android:background="#ffffff"
+                    android:layout_marginRight="5dp" />
+
+                <LinearLayout android:orientation="vertical"
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:paddingTop="@dimen/spinner_padding" android:paddingBottom="@dimen/spinner_padding">
+                    <TextView
+                        android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/field_caption_margin_bottom"
+                        android:textSize="@dimen/field_caption_size"
+                        android:layout_marginLeft="@dimen/field_caption_margin_left"
+                        android:text="@string/form_cd_report_date" />
+                    <EditText
+                        android:layout_width="match_parent" android:layout_height="@dimen/field_height"
+                        android:inputType="date"
+                        android:id="@+id/form_cn_date_of_report" />
+                </LinearLayout>
+            </LinearLayout>
+
+
+
+            <LinearLayout android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/spinner_padding"
+                android:paddingBottom="@dimen/spinner_padding">
+                <!--android:layout_weight="0.5"-->
+
+                <TextView
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/field_caption_margin_bottom" android:textSize="@dimen/field_caption_size"
+                    android:layout_marginLeft="@dimen/field_caption_margin_left"
+                    android:text="@string/form_disease" />
+                <Spinner
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/field_spinner_height"
+                    android:id="@+id/form_cn_disease"
+                    android:ems="10"
+                    android:layout_alignParentTop="true"
+                    style="@style/Base.Widget.AppCompat.Spinner.Underlined" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
                 <ImageButton
                     android:layout_width="wrap_content"
