@@ -123,6 +123,7 @@
             </LinearLayout>
         </LinearLayout>
 
+        <!--
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
@@ -143,6 +144,7 @@
                     android:id="@+id/form_location_address_latitude" />
             </LinearLayout>
 
+
             <LinearLayout android:orientation="vertical"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:paddingTop="@dimen/spinner_padding" android:paddingBottom="@dimen/spinner_padding"
@@ -157,6 +159,9 @@
                     android:inputType="text"
                     android:id="@+id/form_location_address_longitude" />
             </LinearLayout>
+
         </LinearLayout>
+        -->
+
     </LinearLayout>
 </FrameLayout>

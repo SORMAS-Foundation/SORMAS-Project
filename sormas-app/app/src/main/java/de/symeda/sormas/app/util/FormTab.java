@@ -273,13 +273,17 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
                     innerModel.put(R.id.form_location_address_ward, location.getCommunity());
                     addCommunitySpinnerField(innerModel,dialogView, R.id.form_location_address_ward);
 
+
+                    /*
                     innerModel.put(R.id.form_location_address_latitude, location.getLatitude());
                     EditText latitudeField = (EditText) dialogView.findViewById(R.id.form_location_address_latitude);
                     latitudeField.setText((String)innerModel.get(R.id.form_location_address_latitude));
 
+
                     innerModel.put(R.id.form_location_address_longitude, location.getLongitude());
                     EditText longitudeField = (EditText) dialogView.findViewById(R.id.form_location_address_longitude);
                     longitudeField.setText((String)innerModel.get(R.id.form_location_address_longitude));
+                    */
 
                     dialogBuilder.setPositiveButton(getResources().getString(R.string.action_done), new DialogInterface.OnClickListener() {
                         @Override
@@ -297,8 +301,10 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
                             location.setDistrict((District)innerModel.get(R.id.form_location_address_lga));
                             location.setCommunity((Community)innerModel.get(R.id.form_location_address_ward));
 
+                            /*
                             location.setLatitude((Float)innerModel.get(R.id.form_location_address_latitude));
                             location.setLongitude((Float)innerModel.get(R.id.form_location_address_longitude));
+                            */
 
                             locationText.setText(location.toString());
                             // put the inner model for the given fieldID

@@ -111,7 +111,7 @@ public final class ConfigProvider {
                     }
 
                     if (instance.serverRestUrl == null) {
-                        setServerUrl("http://sormas.symeda.de/sormas-rest/");
+                        setServerUrl("https://sormas.symeda.de/sormas-rest/");
                     }
                 }
             }

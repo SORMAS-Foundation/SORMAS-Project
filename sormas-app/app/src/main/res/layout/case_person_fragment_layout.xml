@@ -58,6 +58,38 @@
                     android:text="@={person.lastName}" />
             </LinearLayout>
 
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:paddingTop="@dimen/spinner_padding"
+                    android:paddingBottom="@dimen/spinner_padding">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/form_p_gender"
+                        android:textSize="@dimen/field_caption_size"
+                        android:layout_marginLeft="@dimen/field_caption_margin_left"
+                        android:layout_marginBottom="@dimen/field_caption_margin_bottom" />
+
+                    <Spinner
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/field_spinner_height"
+                        android:id="@+id/form_p_gender"
+                        android:layout_alignParentTop="true"
+                        style="@style/Base.Widget.AppCompat.Spinner.Underlined" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
 
             <LinearLayout
                 android:orientation="horizontal"
@@ -96,30 +128,6 @@
 
                 </LinearLayout>
 
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.5"
-                    android:paddingTop="@dimen/spinner_padding"
-                    android:paddingBottom="@dimen/spinner_padding">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/form_p_gender"
-                        android:textSize="@dimen/field_caption_size"
-                        android:layout_marginLeft="@dimen/field_caption_margin_left"
-                        android:layout_marginBottom="@dimen/field_caption_margin_bottom" />
-
-                    <Spinner
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/field_spinner_height"
-                        android:id="@+id/form_p_gender"
-                        android:layout_alignParentTop="true"
-                        style="@style/Base.Widget.AppCompat.Spinner.Underlined" />
-
-                </LinearLayout>
 
             </LinearLayout>
 
