@@ -38,8 +38,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		    )+
     		LayoutUtil.h3(CssStyles.VSPACE3, "Responsible users")+
     		LayoutUtil.divCss(CssStyles.VSPACE2, 
-    				LayoutUtil.fluidRowLocs(CaseDataDto.SURVEILLANCE_OFFICER, CaseDataDto.CASE_OFFICER, CaseDataDto.CONTACT_OFFICER),
-    				LayoutUtil.fluidRowLocs(CaseDataDto.SURVEILLANCE_SUPERVISOR, CaseDataDto.CASE_SUPERVISOR, CaseDataDto.CONTACT_SUPERVISOR)
+    				LayoutUtil.fluidRowLocs(CaseDataDto.SURVEILLANCE_OFFICER, CaseDataDto.CASE_OFFICER, CaseDataDto.CONTACT_OFFICER)
+    				//LayoutUtil.fluidRowLocs(CaseDataDto.SURVEILLANCE_SUPERVISOR, CaseDataDto.CASE_SUPERVISOR, CaseDataDto.CONTACT_SUPERVISOR)
 			);
 
     private final VerticalLayout statusChangeLayout;
@@ -64,23 +64,22 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
     	addField(CaseDataDto.HEALTH_FACILITY, ComboBox.class)
 			.addItems(FacadeProvider.getFacilityFacade().getAllAsReference());
     	
+//    	addField(CaseDataDto.SURVEILLANCE_SUPERVISOR, ComboBox.class)
+//			.addItems(FacadeProvider.getUserFacade().getListAsReference(UserRole.SURVEILLANCE_SUPERVISOR));
+//    	addField(CaseDataDto.CASE_SUPERVISOR, ComboBox.class);
+//    	addField(CaseDataDto.CONTACT_SUPERVISOR, ComboBox.class);
+
     	// TODO use only users from own region or district?!
-    	addField(CaseDataDto.SURVEILLANCE_SUPERVISOR, ComboBox.class)
-			.addItems(FacadeProvider.getUserFacade().getListAsReference(UserRole.SURVEILLANCE_SUPERVISOR));
     	addField(CaseDataDto.SURVEILLANCE_OFFICER, ComboBox.class)
 			.addItems(FacadeProvider.getUserFacade().getListAsReference(UserRole.SURVEILLANCE_OFFICER));
-
-    	addField(CaseDataDto.CASE_SUPERVISOR, ComboBox.class);
     	addField(CaseDataDto.CASE_OFFICER, ComboBox.class);
-    	addField(CaseDataDto.CONTACT_SUPERVISOR, ComboBox.class);
     	addField(CaseDataDto.CONTACT_OFFICER, ComboBox.class);
     	
     	setRequired(true, CaseDataDto.HEALTH_FACILITY);
     	setReadOnly(true, CaseDataDto.UUID, 
     			CaseDataDto.CASE_STATUS, CaseDataDto.DISEASE, 
     			CaseDataDto.REPORTING_USER, CaseDataDto.REPORT_DATE, 
-    			CaseDataDto.CASE_SUPERVISOR, CaseDataDto.CASE_OFFICER, 
-    			CaseDataDto.CONTACT_SUPERVISOR, CaseDataDto.CONTACT_OFFICER);
+    			CaseDataDto.CASE_OFFICER, CaseDataDto.CONTACT_OFFICER);
 	}
     
     public void setStatusChangeButtons(CaseStatus currentStatus, Iterable<CaseStatus> statuses, Consumer<CaseStatus> statusChangeConsumer) {

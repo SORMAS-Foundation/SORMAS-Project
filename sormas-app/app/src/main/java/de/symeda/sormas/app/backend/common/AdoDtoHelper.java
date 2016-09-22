@@ -57,8 +57,6 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
     protected abstract void fillInnerFromDto(ADO ado, DTO dto);
     protected abstract void fillInnerFromAdo(DTO dto, ADO ado);
 
-    protected void createOrUpdateMembers(ADO ado) { }
-
     protected void preparePulledResult(List<DTO> result) { }
 
     public void pullEntities(DtoGetInterface<DTO> getInterface, final AbstractAdoDao<ADO> dao) {
@@ -84,18 +82,7 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
                         for (DTO dto : result) {
                             ADO ado = empty ? null : dao.queryUuid(dto.getUuid());
                             ado = fillOrCreateFromDto(ado, dto);
-                            int result;
-                            if (ado.getId() == null) {
-                                result = dao.create(ado);
-                            } else {
-                                result = dao.update(ado);
-                            }
-
-                            if (result != 1) {
-                                Log.e(dao.getTableName(), "Could not create or update entity: " + ado);
-                            }
-
-                            createOrUpdateMembers(ado);
+                            dao.saveUnmodified(ado);
                         }
                         return null;
                     }
@@ -134,7 +121,8 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
                     public Void call() throws Exception {
                         for (ADO ado : modifiedAdos) {
                             ado.setModified(false);
-                            ado.setChangeDate(ado.getLocalChangeDate());
+                            // TODO set change date to timestamp returned by server
+                            //ado.setChangeDate(ado.getLocalChangeDate());
                             dao.update(ado);
                         }
                         return null;

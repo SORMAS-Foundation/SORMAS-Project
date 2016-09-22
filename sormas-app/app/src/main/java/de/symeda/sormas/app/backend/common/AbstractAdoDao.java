@@ -1,5 +1,7 @@
 package de.symeda.sormas.app.backend.common;
 
+import android.util.Log;
+
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.GenericRawResults;
 import com.j256.ormlite.dao.RuntimeExceptionDao;
@@ -54,8 +56,33 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> extends R
         return null;
     }
 
-    public void save(ADO ado) {
+    public boolean save(ADO ado) {
         ado.setModified(true);
-        createOrUpdate(ado);
+
+        int result;
+        if (ado.getId() == null) {
+            result = create(ado);
+        } else {
+            result = update(ado);
+        }
+        if (result != 1) {
+            Log.e(getTableName(), "Could not create or update entity: " + ado);
+            return false;
+        }
+        return true;
+    }
+
+    public boolean saveUnmodified(ADO ado) {
+        int result;
+        if (ado.getId() == null) {
+            result = create(ado);
+        } else {
+            result = update(ado);
+        }
+        if (result != 1) {
+            Log.e(getTableName(), "Could not create or update entity: " + ado);
+            return false;
+        }
+        return true;
     }
 }

@@ -30,6 +30,16 @@ public class PersonDao extends AbstractAdoDao<Person> {
         return Person.TABLE_NAME;
     }
 
+    @Override
+    public boolean saveUnmodified(Person person) {
+
+        if (person.getAddress() != null) {
+            DatabaseHelper.getLocationDao().saveUnmodified(person.getAddress());
+        }
+
+        return super.saveUnmodified(person);
+    }
+
     public List<Person> getAllPersonsWithoutCase() throws SQLException {
 
         return queryBuilder().where().isNull(Person.CASE_UUID).query();

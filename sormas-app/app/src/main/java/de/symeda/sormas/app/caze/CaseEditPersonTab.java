@@ -220,6 +220,7 @@ public class CaseEditPersonTab extends FormTab {
         }
         else {
             approximateAgeTextField.setEnabled(true);
+            approximateAgeTypeField.setEnabled(true);
         }
     }
 

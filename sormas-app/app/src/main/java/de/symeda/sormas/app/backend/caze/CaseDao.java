@@ -24,7 +24,6 @@ public class CaseDao extends AbstractAdoDao<Case> {
     }
 
 
-
     public void changeCaseStatus(Case caze, CaseStatus targetStatus) {
         caze.setCaseStatus(targetStatus);
 
