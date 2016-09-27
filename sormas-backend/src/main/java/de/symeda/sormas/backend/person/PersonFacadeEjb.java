@@ -1,7 +1,9 @@
 package de.symeda.sormas.backend.person;
 
 import java.sql.Timestamp;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -126,7 +128,9 @@ public class PersonFacadeEjb implements PersonFacade {
 		bo.setSex(dto.getSex());
 		
 		bo.setPresentCondition(dto.getPresentCondition());
-		bo.setBirthDate(dto.getBirthDate());
+		bo.setBirthdateDD(dto.getBirthdateDD());
+		bo.setBirthdateMM(dto.getBirthdateMM());
+		bo.setBirthdateYYYY(dto.getBirthdateYYYY());
 		bo.setApproximateAge(dto.getApproximateAge());
 		bo.setApproximateAgeType(dto.getApproximateAgeType());
 		bo.setDeathDate(dto.getDeathDate());
@@ -169,11 +173,17 @@ public class PersonFacadeEjb implements PersonFacade {
 		}
 		
 		dto.setPresentCondition(person.getPresentCondition());
-		dto.setBirthDate(person.getBirthDate());
+		dto.setBirthdateDD(person.getBirthdateDD());
+		dto.setBirthdateMM(person.getBirthdateMM());
+		dto.setBirthdateYYYY(person.getBirthdateYYYY());
 		dto.setDeathDate(person.getDeathDate());
-		if(person.getBirthDate()!=null) {
+		
+		if (person.getBirthdateYYYY() != null) {
+			Calendar birthdate = new GregorianCalendar();
+			birthdate.set(person.getBirthdateYYYY(), person.getBirthdateMM()!=null?person.getBirthdateMM()-1:0, person.getBirthdateDD()!=null?person.getBirthdateDD():1);
+			
 			Pair<Integer, ApproximateAgeType> pair = DateHelper.getApproximateAge(
-					person.getBirthDate(),
+					birthdate.getTime(),
 					person.getDeathDate()
 					);
 			dto.setApproximateAge(pair.getElement0());

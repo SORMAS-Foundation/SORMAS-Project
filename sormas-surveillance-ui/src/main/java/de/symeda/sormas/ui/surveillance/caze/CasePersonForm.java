@@ -1,6 +1,8 @@
 package de.symeda.sormas.ui.surveillance.caze;
 
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
@@ -19,6 +21,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.surveillance.location.LocationForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
 public class CasePersonForm extends AbstractEditForm<CasePersonDto> {
@@ -42,7 +45,14 @@ public class CasePersonForm extends AbstractEditForm<CasePersonDto> {
     				LayoutUtil.fluidRowCss(
 						CssStyles.VSPACE4,
 						LayoutUtil.oneOfThreeCol(LayoutUtil.loc(CasePersonDto.PRESENT_CONDITION)),
-						LayoutUtil.oneOfThreeCol(LayoutUtil.loc(CasePersonDto.BIRTH_DATE)),
+						LayoutUtil.oneOfThreeCol(
+								LayoutUtil.fluidRowCss(null,
+										LayoutUtil.oneOfThreeCol(LayoutUtil.loc(CasePersonDto.BIRTH_DATE_DD)),
+										LayoutUtil.oneOfThreeCol(LayoutUtil.loc(CasePersonDto.BIRTH_DATE_MM)),
+										LayoutUtil.oneOfThreeCol(LayoutUtil.loc(CasePersonDto.BIRTH_DATE_YYYY))
+								)
+								
+						),
 						LayoutUtil.oneOfThreeCol(LayoutUtil.fluidRowLocs(CasePersonDto.APPROXIMATE_AGE, CasePersonDto.APPROXIMATE_AGE_TYPE))
 					),
 		    		LayoutUtil.fluidRowCss(
@@ -74,7 +84,25 @@ public class CasePersonForm extends AbstractEditForm<CasePersonDto> {
     	addField(CasePersonDto.SEX, NativeSelect.class);
     	
     	addField(CasePersonDto.PRESENT_CONDITION, NativeSelect.class);
-    	addField(CasePersonDto.BIRTH_DATE, DateField.class);
+    	NativeSelect days = addField(CasePersonDto.BIRTH_DATE_DD, NativeSelect.class);
+    	// @TODO: Done for nullselection Bug, fixed in Vaadin 7.7.3
+    	days.setNullSelectionAllowed(true);
+    	days.setNullSelectionItemId("");
+    	days.addItems(FieldHelper.getDaysInMonth());
+    	NativeSelect months = addField(CasePersonDto.BIRTH_DATE_MM, NativeSelect.class);
+    	// @TODO: Done for nullselection Bug, fixed in Vaadin 7.7.3
+    	months.setNullSelectionAllowed(true);
+    	months.setNullSelectionItemId("");
+    	months.addItems(FieldHelper.getMonthsInYear());
+    	NativeSelect years = addField(CasePersonDto.BIRTH_DATE_YYYY, NativeSelect.class);
+    	// @TODO: Done for nullselection Bug, fixed in Vaadin 7.7.3
+    	years.setNullSelectionAllowed(true);
+    	years.setNullSelectionItemId("");
+    	Calendar now = new GregorianCalendar();
+		for(int i=1900; i<=now.get(Calendar.YEAR);i++) {
+			years.addItem(i);
+			years.setItemCaption(i, String.valueOf(i));
+		}
     	addField(CasePersonDto.DEATH_DATE, DateField.class);
     	addField(CasePersonDto.APPROXIMATE_AGE, TextField.class);
     	addField(CasePersonDto.APPROXIMATE_AGE_TYPE, NativeSelect.class);
@@ -97,10 +125,19 @@ public class CasePersonForm extends AbstractEditForm<CasePersonDto> {
     			CasePersonDto.DEATH_DATE);
     	
     	// add some listeners 
-    	addFieldListener(CasePersonDto.BIRTH_DATE, e -> {
+    	addFieldListener(CasePersonDto.BIRTH_DATE_DD, e -> {
     		updateApproximateAge();
     		updateReadyOnlyApproximateAge();
     	});
+    	addFieldListener(CasePersonDto.BIRTH_DATE_MM, e -> {
+    		updateApproximateAge();
+    		updateReadyOnlyApproximateAge();
+    	});
+    	addFieldListener(CasePersonDto.BIRTH_DATE_YYYY, e -> {
+    		updateApproximateAge();
+    		updateReadyOnlyApproximateAge();
+    	});
+    	
     	addFieldListener(CasePersonDto.PRESENT_CONDITION, e -> toogleDeathFields());
     	addFieldListener(CasePersonDto.DEATH_DATE, e -> updateApproximateAge());
     	addFieldListener(CasePersonDto.OCCUPATION_TYPE, e -> {
@@ -116,7 +153,9 @@ public class CasePersonForm extends AbstractEditForm<CasePersonDto> {
 	
 	private void updateReadyOnlyApproximateAge() {
 		boolean readonly = false;
-		if(getFieldGroup().getField(CasePersonDto.BIRTH_DATE).getValue()!=null) {
+		if(getFieldGroup().getField(CasePersonDto.BIRTH_DATE_DD).getValue()!=null
+			&& getFieldGroup().getField(CasePersonDto.BIRTH_DATE_MM).getValue()!=null
+			&& getFieldGroup().getField(CasePersonDto.BIRTH_DATE_YYYY).getValue()!=null) {
 			readonly = true;
 		}
 		getFieldGroup().getField(CasePersonDto.APPROXIMATE_AGE).setReadOnly(readonly);
@@ -125,20 +164,28 @@ public class CasePersonForm extends AbstractEditForm<CasePersonDto> {
 
     
 	private void updateApproximateAge() {
-		Pair<Integer, ApproximateAgeType> pair = DateHelper.getApproximateAge(
-				(Date) getFieldGroup().getField(CasePersonDto.BIRTH_DATE).getValue(),
-				(Date) getFieldGroup().getField(CasePersonDto.DEATH_DATE).getValue()
-				);
 		
-		TextField textField = (TextField)getFieldGroup().getField(CasePersonDto.APPROXIMATE_AGE);
-		textField.setReadOnly(false);
-		textField.setValue(pair.getElement0()!=null?String.valueOf(pair.getElement0()):null);
-		textField.setReadOnly(true);
-		
-		NativeSelect nativeSelect = (NativeSelect)getFieldGroup().getField(CasePersonDto.APPROXIMATE_AGE_TYPE);
-		nativeSelect.setReadOnly(false);
-		nativeSelect.setValue(String.valueOf(pair.getElement1()));
-		nativeSelect.setReadOnly(true);
+		if (getFieldGroup().getField(CasePersonDto.BIRTH_DATE_YYYY).getValue() != null && getFieldGroup().getField(CasePersonDto.BIRTH_DATE_YYYY).getValue() != "") {
+			Calendar birthdate = new GregorianCalendar();
+			birthdate.set(
+					(int)getFieldGroup().getField(CasePersonDto.BIRTH_DATE_YYYY).getValue(), 
+					getFieldGroup().getField(CasePersonDto.BIRTH_DATE_MM).getValue()!=null?(int) getFieldGroup().getField(CasePersonDto.BIRTH_DATE_MM).getValue()-1:0, 
+					getFieldGroup().getField(CasePersonDto.BIRTH_DATE_DD).getValue()!=null?(int) getFieldGroup().getField(CasePersonDto.BIRTH_DATE_DD).getValue():1);
+			Pair<Integer, ApproximateAgeType> pair = DateHelper.getApproximateAge(
+					(Date) birthdate.getTime(),
+					(Date) getFieldGroup().getField(CasePersonDto.DEATH_DATE).getValue()
+					);
+			
+			TextField textField = (TextField)getFieldGroup().getField(CasePersonDto.APPROXIMATE_AGE);
+			textField.setReadOnly(false);
+			textField.setValue(pair.getElement0()!=null?String.valueOf(pair.getElement0()):null);
+			textField.setReadOnly(true);
+			
+			NativeSelect nativeSelect = (NativeSelect)getFieldGroup().getField(CasePersonDto.APPROXIMATE_AGE_TYPE);
+			nativeSelect.setReadOnly(false);
+			nativeSelect.setValue(String.valueOf(pair.getElement1()));
+			nativeSelect.setReadOnly(true);
+		}
 	}
 	
 	private void toogleOccupationMetaFields() {

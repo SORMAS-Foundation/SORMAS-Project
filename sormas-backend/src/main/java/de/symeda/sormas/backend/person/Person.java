@@ -17,7 +17,6 @@ import de.symeda.sormas.api.person.BurialConductor;
 import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.facility.Facility;
@@ -38,7 +37,6 @@ public class Person extends AbstractDomainObject {
 
 	private String firstName;
 	private String lastName;
-	private Date birthDate;
 	private Integer approximateAge;
 	private ApproximateAgeType approximateAgeType;
 	
@@ -52,6 +50,9 @@ public class Person extends AbstractDomainObject {
 	private Case caze;
 	
 	private PresentCondition presentCondition;
+	private Integer birthdateDD;
+	private Integer birthdateMM;
+	private Integer birthdateYYYY;
 	private boolean dead;
 	private Date deathDate;
 	private Location deathLocation;
@@ -79,12 +80,31 @@ public class Person extends AbstractDomainObject {
 		this.lastName = lastName;
 	}
 
-	@Temporal(TemporalType.DATE)
-	public Date getBirthDate() {
-		return birthDate;
+	@Column(name = "birthdate_dd")
+	public Integer getBirthdateDD() {
+		return birthdateDD;
 	}
-	public void setBirthDate(Date birthDate) {
-		this.birthDate = birthDate;
+
+	public void setBirthdateDD(Integer birthdateDD) {
+		this.birthdateDD = birthdateDD;
+	}
+	
+	@Column(name = "birthdate_mm")
+	public Integer getBirthdateMM() {
+		return birthdateMM;
+	}
+	
+	public void setBirthdateMM(Integer birthdateMM) {
+		this.birthdateMM = birthdateMM;
+	}
+	
+	@Column(name = "birthdate_yyyy")
+	public Integer getBirthdateYYYY() {
+		return birthdateYYYY;
+	}
+	
+	public void setBirthdateYYYY(Integer birthdateYYYY) {
+		this.birthdateYYYY = birthdateYYYY;
 	}
 	
 	public Integer getApproximateAge() {
@@ -230,8 +250,12 @@ public class Person extends AbstractDomainObject {
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
 		builder.append(getFirstName()).append(" ").append(getLastName().toUpperCase());
-		if (getBirthDate() != null)
-			builder.append(" (").append(DateHelper.formatDMY(getBirthDate())).append(")");
+//		if (getBirthdateDD() != null && getBirthdateMM() != null && getBirthdateYYYY() != null) {
+//			Calendar birthdate = new GregorianCalendar();
+//			birthdate.set(getBirthdateYYYY(), getBirthdateMM(), getBirthdateDD());
+//			
+//			builder.append(" (").append(DateHelper.formatDMY(birthdate.getTime())).append(")");
+//		}
 		if (getAddress() != null && getAddress().getCommunity() != null)
 			builder.append(" - ").append(getAddress().getCommunity().getName());
 		return builder.toString();

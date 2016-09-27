@@ -17,7 +17,9 @@ public class CasePersonDto extends PersonDto {
 	public static final String SEX = "sex";
 
 	public static final String PRESENT_CONDITION = "presentCondition";
-	public static final String BIRTH_DATE = "birthDate";
+	public static final String BIRTH_DATE_DD = "birthdateDD";
+	public static final String BIRTH_DATE_MM = "birthdateMM";
+	public static final String BIRTH_DATE_YYYY = "birthdateYYYY";
 	public static final String DEATH_DATE = "deathDate";
 	public static final String APPROXIMATE_AGE = "approximateAge";
 	public static final String APPROXIMATE_AGE_TYPE = "approximateAgeType";
@@ -34,7 +36,9 @@ public class CasePersonDto extends PersonDto {
 	private Sex sex;
 		
 	private PresentCondition presentCondition;
-	private Date birthDate;
+	private Integer birthdateDD;
+	private Integer birthdateMM;
+	private Integer birthdateYYYY;
 	private Date deathDate;
 	private Integer approximateAge;
 	private ApproximateAgeType approximateAgeType;
@@ -48,14 +52,28 @@ public class CasePersonDto extends PersonDto {
 	private ReferenceDto occupationFacility;
 
 	
-	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
-	public Date getBirthDate() {
-		return birthDate;
+	public Integer getBirthdateDD() {
+		return birthdateDD;
 	}
 
-	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
-	public void setBirthDate(Date birthDate) {
-		this.birthDate = birthDate;
+	public void setBirthdateDD(Integer birthdateDD) {
+		this.birthdateDD = birthdateDD;
+	}
+	
+	public Integer getBirthdateMM() {
+		return birthdateMM;
+	}
+	
+	public void setBirthdateMM(Integer birthdateMM) {
+		this.birthdateMM = birthdateMM;
+	}
+	
+	public Integer getBirthdateYYYY() {
+		return birthdateYYYY;
+	}
+	
+	public void setBirthdateYYYY(Integer birthdateYYYY) {
+		this.birthdateYYYY = birthdateYYYY;
 	}
 
 	public Integer getApproximateAge() {
