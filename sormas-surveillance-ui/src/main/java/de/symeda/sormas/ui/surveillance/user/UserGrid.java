@@ -1,20 +1,19 @@
 package de.symeda.sormas.ui.surveillance.user;
 
 import java.util.Collection;
-import java.util.Locale;
-import java.util.Set;
 
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.data.util.GeneratedPropertyContainer;
 import com.vaadin.data.util.MethodProperty;
-import com.vaadin.data.util.converter.Converter;
+import com.vaadin.data.util.PropertyValueGenerator;
 import com.vaadin.data.util.converter.StringToCollectionConverter;
+import com.vaadin.data.util.filter.Compare.Equal;
 import com.vaadin.data.util.filter.Or;
 import com.vaadin.data.util.filter.SimpleStringFilter;
-import com.vaadin.data.util.filter.Compare.Equal;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.renderers.HtmlRenderer;
@@ -28,17 +27,38 @@ import elemental.json.JsonValue;
 public class UserGrid extends Grid {
 
 	private static final long serialVersionUID = -1L;
+	
+	private static final String EDIT_BTN_ID = "edit";
 
+	@SuppressWarnings("serial")
 	public UserGrid() {
         setSizeFull();
 
         setSelectionMode(SelectionMode.NONE);
 
         BeanItemContainer<UserDto> container = new BeanItemContainer<UserDto>(UserDto.class);
-        setContainerDataSource(container);
-        setColumns(UserDto.ACTIVE, UserDto.USER_ROLES, UserDto.USER_NAME, UserDto.NAME, UserDto.USER_EMAIL, UserDto.ADDRESS, UserDto.LGA);
+        GeneratedPropertyContainer editContainer = new GeneratedPropertyContainer(container);
+        // edit button
+        editContainer.addGeneratedProperty(EDIT_BTN_ID, new PropertyValueGenerator<String>() {
+			@Override
+			public String getValue(Item item, Object itemId, Object propertyId) {
+				return FontAwesome.PENCIL_SQUARE.getHtml();
+			}
+			@Override
+			public Class<String> getType() {
+				return String.class;
+			}
+		});
+        
+        setContainerDataSource(editContainer);
+        
+        setColumns(EDIT_BTN_ID, UserDto.ACTIVE, UserDto.USER_ROLES, UserDto.USER_NAME, UserDto.NAME, UserDto.USER_EMAIL, UserDto.ADDRESS, UserDto.LGA);
+
+        getColumn(EDIT_BTN_ID).setRenderer(new HtmlRenderer());
+        getColumn(EDIT_BTN_ID).setWidth(60);
         
         getColumn(UserDto.ACTIVE).setRenderer(new ActiveRenderer());
+        getColumn(UserDto.ACTIVE).setWidth(80);
 
         getColumn(UserDto.USER_ROLES).setConverter(new StringToCollectionConverter());
 
@@ -86,7 +106,8 @@ public class UserGrid extends Grid {
 
     @SuppressWarnings("unchecked")
 	private BeanItemContainer<UserDto> getContainer() {
-        return (BeanItemContainer<UserDto>) super.getContainerDataSource();
+    	GeneratedPropertyContainer container = (GeneratedPropertyContainer) super.getContainerDataSource();
+        return (BeanItemContainer<UserDto>) container.getWrappedContainer();
     }
 
     public void setUsers(Collection<UserDto> users) {

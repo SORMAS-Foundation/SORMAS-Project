@@ -119,7 +119,7 @@ public class CaseGrid extends Grid {
    	 
         @Override
         public JsonValue encode(String value) {
-        	value = "<span title='" + value + "'>" + DataHelper.getShortUuid(value) + "</span>";
+        	value = "<a title='" + value + "'>" + DataHelper.getShortUuid(value) + "</a>";
             return super.encode(value);
         }
     }
