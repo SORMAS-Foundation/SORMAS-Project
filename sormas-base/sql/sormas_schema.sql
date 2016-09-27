@@ -635,3 +635,14 @@ ALTER TABLE person ADD COLUMN phoneowner character varying(255);
   
 INSERT INTO schema_version (version_number, comment) VALUES (1, 'Init database');
 
+
+-- 2016-09-27; #55; sszczesny
+ALTER TABLE person DROP COLUMN birthdate;
+ALTER TABLE person ADD COLUMN birthdate_dd integer;
+ALTER TABLE person ADD COLUMN birthdate_mm integer;
+ALTER TABLE person ADD COLUMN birthdate_yyyy integer;
+
+INSERT INTO schema_version (version_number, comment) VALUES (2, 'Geburtsdatum in 3 Felder aufteilen');
+
+
+
