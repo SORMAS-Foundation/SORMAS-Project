@@ -49,7 +49,7 @@ public class CasePersonForm extends AbstractEditForm<CasePersonDto> {
 							CssStyles.VSPACE4,
 							LayoutUtil.oneOfThreeCol(LayoutUtil.loc(CasePersonDto.DEATH_DATE))
 						))+
-    		LayoutUtil.h3(CssStyles.VSPACE3, "Permanent Residence")+
+    		LayoutUtil.h3(CssStyles.VSPACE3, "Permanent residence of person")+
     		LayoutUtil.div(
     				LayoutUtil.fluidRowLocsCss(CssStyles.VSPACE4, CasePersonDto.ADDRESS)
 				)+
