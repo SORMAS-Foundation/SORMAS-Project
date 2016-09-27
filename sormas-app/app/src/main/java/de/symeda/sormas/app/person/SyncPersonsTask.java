@@ -33,6 +33,7 @@ public class SyncPersonsTask extends AsyncTask<Void, Void, Void> {
         new PersonDtoHelper().pushEntities(new DtoPostInterface<CasePersonDto>() {
             @Override
             public Call<Integer> postAll(List<CasePersonDto> dtos) {
+                // TODO postAll should return the date&time the server used as modifiedDate
                 return RetroProvider.getPersonFacade().postAll(dtos);
             }
         }, DatabaseHelper.getPersonDao());
