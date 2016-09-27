@@ -4,6 +4,8 @@ import android.app.DatePickerDialog;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -69,12 +71,17 @@ public class CaseEditPersonTab extends FormTab {
 
 
         // date of birth
-        addDateField(R.id.form_p_date_of_birth, R.id.form_cp_btn_birth_date, new DatePickerDialog.OnDateSetListener() {
+        addDateField(R.id.form_p_date_of_birth).addTextChangedListener(new TextWatcher() {
             @Override
-            public void onDateSet(DatePicker view, int yy, int mm, int dd) {
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) { }
+            @Override
+            public void afterTextChanged(Editable s) {
                 updateApproximateAgeField();
             }
         });
+
         // age type
         addSpinnerField(R.id.form_p_approximate_age_type, ApproximateAgeType.class);
 
@@ -82,9 +89,13 @@ public class CaseEditPersonTab extends FormTab {
         addSpinnerField(R.id.form_p_gender, Sex.class);
 
         // date of death
-        addDateField(R.id.form_p_date_of_death, R.id.form_cp_btn_date_of_death, new DatePickerDialog.OnDateSetListener() {
+        addDateField(R.id.form_p_date_of_death).addTextChangedListener(new TextWatcher() {
             @Override
-            public void onDateSet(DatePicker view, int yy, int mm, int dd) {
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) { }
+            @Override
+            public void afterTextChanged(Editable s) {
                 updateApproximateAgeField();
             }
         });
@@ -189,7 +200,7 @@ public class CaseEditPersonTab extends FormTab {
 
         PresentCondition condition = (PresentCondition)getModel().get(R.id.form_p_status_of_patient);
 
-        setFieldVisible(getView().findViewById(R.id.form_cp_date_of_death_wrap), condition != null
+        setFieldVisible(getView().findViewById(R.id.cp_date_of_death_layout), condition != null
                 && (PresentCondition.DEAD.equals(condition) || PresentCondition.BURIED.equals(condition)));
     }
 

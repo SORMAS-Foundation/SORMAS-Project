@@ -10,7 +10,6 @@ import android.widget.Button;
 
 import de.symeda.sormas.api.caze.CaseHelper;
 import de.symeda.sormas.api.caze.CaseStatus;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
@@ -19,7 +18,7 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.facility.FacilityDao;
-import de.symeda.sormas.app.databinding.CazeDataFragmentLayoutBinding;
+import de.symeda.sormas.app.databinding.CaseDataFragmentLayoutBinding;
 import de.symeda.sormas.app.util.FormTab;
 
 /**
@@ -27,13 +26,12 @@ import de.symeda.sormas.app.util.FormTab;
  */
 public class CaseEditDataTab extends FormTab {
 
-    private CazeDataFragmentLayoutBinding binding;
-
+    private CaseDataFragmentLayoutBinding binding;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         initModel();
-        binding = DataBindingUtil.inflate(inflater, R.layout.caze_data_fragment_layout, container, false);
+        binding = DataBindingUtil.inflate(inflater, R.layout.case_data_fragment_layout, container, false);
         return binding.getRoot();
     }
 

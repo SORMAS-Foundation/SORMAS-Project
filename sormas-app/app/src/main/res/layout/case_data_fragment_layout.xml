@@ -30,7 +30,6 @@
                 android:paddingBottom="10dp" />
 
 
-
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
@@ -120,9 +119,7 @@
                 <LinearLayout android:orientation="vertical"
                     android:layout_width="match_parent" android:layout_height="wrap_content"
                     android:layout_weight="0.5" android:paddingTop="@dimen/spinner_padding" android:paddingBottom="@dimen/spinner_padding">
-
                 </LinearLayout>
-
             </LinearLayout>
 
 
@@ -170,7 +167,6 @@
                 android:textStyle="bold"
                 android:paddingTop="30dp"
                 android:paddingBottom="10dp" />
-
 
             <Button
                 android:layout_width="match_parent"

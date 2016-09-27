@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,11 +55,10 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
     /**
      * Fill the model-map and fill the ui. Appends an DatePickerDialog for open on button click and the nested binding.
      * @param dateFieldId
-     * @param btnDatePickerId
      */
-    protected void addDateField(final int dateFieldId, int btnDatePickerId, final DatePickerDialog.OnDateSetListener ...moreListeners) {
+    protected TextView addDateField(final int dateFieldId) {
         final TextView dateField = (TextView) getView().findViewById(dateFieldId);
-        //dateField.setEnabled(false);
+        dateField.setInputType(InputType.TYPE_NULL);
 
         // Set initial value to ui
         if(model.get(dateFieldId)!=null) {
@@ -66,33 +66,43 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
             dateField.clearFocus();
         }
 
-        ImageButton btn = (ImageButton) getView().findViewById(btnDatePickerId);
-        btn.setOnClickListener(new View.OnClickListener() {
+        dateField.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
-                SelectDateFragment newFragment = new SelectDateFragment(){
-                    @Override
-                    public void onDateSet(DatePicker view, int yy, int mm, int dd) {
-                        model.put(dateFieldId, DateHelper.getDateZero(yy,mm,dd));
-                        // Set value to ui
-                        dateField.setText(DateHelper.formatDDMMYYYY((Date) model.get(dateFieldId)));
-                        for( DatePickerDialog.OnDateSetListener listener:moreListeners) {
-                            listener.onDateSet(view,yy,mm,dd);
-                        }
-                    }
-                    @Override
-                    public void onClear() {
-                        model.put(dateFieldId, null);
-                        dateField.setText("");
-                        dateField.clearFocus();
-                    }
-                };
-                Bundle dateBundle = new Bundle();
-                dateBundle.putSerializable(SelectDateFragment.DATE, (Date) model.get(dateFieldId));
-                newFragment.setArguments(dateBundle);
-                newFragment.show(getFragmentManager(), getResources().getText(R.string.headline_date_picker).toString());
+                showDateFragment(dateFieldId, dateField);
             }
         });
+        dateField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    showDateFragment(dateFieldId, dateField);
+                }
+            }
+        });
+
+        return dateField;
+    }
+
+    private void showDateFragment(final int dateFieldId, final TextView dateField) {
+        SelectDateFragment newFragment = new SelectDateFragment(){
+            @Override
+            public void onDateSet(DatePicker view, int yy, int mm, int dd) {
+                model.put(dateFieldId, DateHelper.getDateZero(yy,mm,dd));
+                dateField.setText(DateHelper.formatDDMMYYYY((Date) model.get(dateFieldId)));
+            }
+            @Override
+            public void onClear() {
+                model.put(dateFieldId, null);
+                dateField.setText("");
+                dateField.clearFocus();
+            }
+        };
+
+        Bundle dateBundle = new Bundle();
+        dateBundle.putSerializable(SelectDateFragment.DATE, (Date) model.get(dateFieldId));
+        newFragment.setArguments(dateBundle);
+        newFragment.show(getFragmentManager(), getResources().getText(R.string.headline_date_picker).toString());
     }
 
     /**

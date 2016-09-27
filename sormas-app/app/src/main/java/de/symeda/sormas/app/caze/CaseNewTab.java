@@ -60,7 +60,7 @@ public class CaseNewTab extends FormTab {
         super.onResume();
 
         addSpinnerField(R.id.form_cn_disease, Disease.class);
-        addDateField(R.id.form_cn_date_of_report, R.id.form_cn_btn_date_of_report);
+        addDateField(R.id.form_cn_date_of_report);
         addPersonSpinnerField(R.id.form_cn_person);
         addFacilitySpinnerField(R.id.form_cn_health_facility);
 
@@ -91,9 +91,9 @@ public class CaseNewTab extends FormTab {
             final EditText firstName = (EditText) dialogView.findViewById(R.id.form_p_first_name);
             final EditText lastName = (EditText) dialogView.findViewById(R.id.form_p_last_name);
 
-            EditText uuid = (EditText) dialogView.findViewById(R.id.form_p_person_id);
-            uuid.setText(personNew.getUuid());
-            uuid.setEnabled(false);
+//            EditText uuid = (EditText) dialogView.findViewById(R.id.form_p_person_id);
+//            uuid.setText(personNew.getUuid());
+//            uuid.setEnabled(false);
 
             dialogBuilder.setPositiveButton(getResources().getString(R.string.action_new_person), new DialogInterface.OnClickListener() {
                 @Override

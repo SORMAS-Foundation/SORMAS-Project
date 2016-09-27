@@ -34,7 +34,7 @@
             android:id="@+id/form_p_last_name" />
     </LinearLayout>
 
-    <LinearLayout
+    <!--<LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -53,6 +53,6 @@
                 android:inputType="text"
                 android:id="@+id/form_p_person_id" />
         </LinearLayout>
+    </LinearLayout>-->
 
-    </LinearLayout>
 </LinearLayout>

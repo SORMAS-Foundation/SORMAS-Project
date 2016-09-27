@@ -31,7 +31,7 @@
     <string name="form_p_status_of_patient">Status of patient</string>
     <string name="form_p_date_of_death">Date of death</string>
     <string name="headline_gender">Gender</string>
-    <string name="headline_permanent_residence">Permanent residence</string>
+    <string name="headline_permanent_residence">Permanent residence of person</string>
     <string name="headline_occupation">Occupation</string>
     <string name="form_cp_occupation">Occupation</string>
     <string name="headline_form_cp_occupation_details">Occupation details</string>
