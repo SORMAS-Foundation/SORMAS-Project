@@ -50,9 +50,10 @@ public class PersonFacadeEjb implements PersonFacade {
 	
 	@Override
 	public List<CasePersonDto> getAllCasePersonsAfter(Date date) {
-		return personService.getAllAfter(date).stream()
+		List<CasePersonDto> result = personService.getAllAfter(date).stream()
 			.map(c -> toCasePersonDto(c))
 			.collect(Collectors.toList());
+		return result;
 	}
 
 	@Override
