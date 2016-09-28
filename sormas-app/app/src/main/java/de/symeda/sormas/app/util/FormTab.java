@@ -21,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -112,6 +113,14 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
      */
     protected void addSpinnerField(final int spinnerFieldId, Class enumClass, final AdapterView.OnItemSelectedListener ...moreListeners) {
         List<Item> items = DataUtils.getEnumItems(enumClass);
+        makeSpinnerField(spinnerFieldId, items, moreListeners);
+    }
+
+    /**
+     * Fill the spinner for the given list, set the selected entry, register the base listeners and the given ones.
+     * @param spinnerFieldId
+     */
+    protected void addSpinnerField(final int spinnerFieldId, List<Item> items, final AdapterView.OnItemSelectedListener ...moreListeners) {
         makeSpinnerField(spinnerFieldId, items, moreListeners);
     }
 
@@ -369,6 +378,17 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
     protected void reloadFragment() {
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         ft.detach(this).attach(this).commit();
+    }
+
+    protected List<Item> toItems(List<?> listBefore, boolean withNull) {
+        List<Item> listItems = new ArrayList<>();
+        if(withNull) {
+            listItems.add(new Item("",null));
+        }
+        for (Object o : listBefore) {
+            listItems.add(new Item(String.valueOf(o),o));
+        }
+        return listItems;
     }
 
 

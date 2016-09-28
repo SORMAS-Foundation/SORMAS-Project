@@ -22,7 +22,7 @@
     <!-- forms -->
     <string name="form_p_first_name">First name</string>
     <string name="form_p_last_name">Last name</string>
-    <string name="form_p_date_of_birth">Date of birth</string>
+    <string name="form_p_date_of_birth">Date of birth (day / month / year)</string>
     <string name="form_p_approximate_age">Approximate age</string>
     <string name="form_p_approximate_age_type">Age type</string>
     <string name="form_p_gender">Gender</string>

@@ -38,7 +38,6 @@ public class Person extends AbstractDomainObject {
 
 	public static final String FIRST_NAME = "firstName";
 	public static final String LAST_NAME = "lastName";
-	public static final String BIRTH_DATE = "birthDate";
 	public static final String APPROXIMATE_AGE = "approximateAge";
 	public static final String ADDRESS = "address";
 	public static final String SEX = "sex";
@@ -48,8 +47,12 @@ public class Person extends AbstractDomainObject {
 	private String firstName;
 	@Column(nullable = false)
 	private String lastName;
-	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
-	private Date birthDate;
+	@Column
+	private Integer birthdateDD;
+	@Column
+	private Integer birthdateMM;
+	@Column
+	private Integer birthdateYYYY;
 	@Column
 	private Integer approximateAge;
 	@Enumerated(EnumType.STRING)
@@ -108,11 +111,28 @@ public class Person extends AbstractDomainObject {
 		this.lastName = lastName;
 	}
 
-	public Date getBirthDate() {
-		return birthDate;
+	public Integer getBirthdateDD() {
+		return birthdateDD;
 	}
-	public void setBirthDate(Date birthDate) {
-		this.birthDate = birthDate;
+
+	public void setBirthdateDD(Integer birthdateDD) {
+		this.birthdateDD = birthdateDD;
+	}
+
+	public Integer getBirthdateMM() {
+		return birthdateMM;
+	}
+
+	public void setBirthdateMM(Integer birthdateMM) {
+		this.birthdateMM = birthdateMM;
+	}
+
+	public Integer getBirthdateYYYY() {
+		return birthdateYYYY;
+	}
+
+	public void setBirthdateYYYY(Integer birthdateYYYY) {
+		this.birthdateYYYY = birthdateYYYY;
 	}
 
 	@Bindable

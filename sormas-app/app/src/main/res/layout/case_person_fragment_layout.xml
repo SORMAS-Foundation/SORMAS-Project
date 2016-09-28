@@ -95,20 +95,54 @@
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
-
-                <LinearLayout android:orientation="vertical"
+                <TextView
                     android:layout_width="match_parent" android:layout_height="wrap_content"
-                    android:paddingTop="@dimen/spinner_padding" android:paddingBottom="@dimen/spinner_padding">
-                    <TextView
+                    android:layout_marginBottom="@dimen/field_caption_margin_bottom"
+                    android:textSize="@dimen/field_caption_size"
+                    android:layout_marginLeft="@dimen/field_caption_margin_left"
+                    android:text="@string/form_p_date_of_birth" />
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                    <LinearLayout android:orientation="vertical"
                         android:layout_width="match_parent" android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/field_caption_margin_bottom"
-                        android:textSize="@dimen/field_caption_size"
-                        android:layout_marginLeft="@dimen/field_caption_margin_left"
-                        android:text="@string/form_p_date_of_birth" />
-                    <EditText
-                        android:layout_width="match_parent" android:layout_height="@dimen/field_height"
-                        android:id="@+id/form_p_date_of_birth" />
-                </LinearLayout>
+                        android:layout_weight="0.33" android:paddingTop="@dimen/spinner_padding" android:paddingBottom="@dimen/spinner_padding">
+
+                        <Spinner
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/field_spinner_height"
+                            android:id="@+id/form_p_date_of_birth_dd"
+                            android:layout_alignParentTop="true"
+                            style="@style/Base.Widget.AppCompat.Spinner.Underlined" />
+                    </LinearLayout>
+
+                    <LinearLayout android:orientation="vertical"
+                        android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:layout_weight="0.33" android:paddingTop="@dimen/spinner_padding" android:paddingBottom="@dimen/spinner_padding">
+                        <Spinner
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/field_spinner_height"
+                            android:id="@+id/form_p_date_of_birth_mm"
+                            android:layout_alignParentTop="true"
+                            style="@style/Base.Widget.AppCompat.Spinner.Underlined" />
+                    </LinearLayout>
+
+                    <LinearLayout android:orientation="vertical"
+                        android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:layout_weight="0.33" android:paddingTop="@dimen/spinner_padding" android:paddingBottom="@dimen/spinner_padding">
+                        <Spinner
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/field_spinner_height"
+                            android:id="@+id/form_p_date_of_birth_yyyy"
+                            android:layout_alignParentTop="true"
+                            style="@style/Base.Widget.AppCompat.Spinner.Underlined" />
+                    </LinearLayout>
+
             </LinearLayout>
 
             <LinearLayout

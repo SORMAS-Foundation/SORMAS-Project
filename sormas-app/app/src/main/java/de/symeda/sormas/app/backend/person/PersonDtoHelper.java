@@ -34,7 +34,9 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, CasePersonDto> {
         ado.setFirstName(dto.getFirstName());
         ado.setLastName(dto.getLastName());
         ado.setSex(dto.getSex());
-        ado.setBirthDate(dto.getBirthDate());
+        ado.setBirthdateDD(dto.getBirthdateDD());
+        ado.setBirthdateMM(dto.getBirthdateMM());
+        ado.setBirthdateYYYY(dto.getBirthdateYYYY());
         ado.setApproximateAge(dto.getApproximateAge());
         ado.setApproximateAgeType(dto.getApproximateAgeType());
         ado.setPhone(dto.getPhone());
@@ -60,7 +62,9 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, CasePersonDto> {
         dto.setFirstName(ado.getFirstName());
         dto.setLastName(ado.getLastName());
         dto.setSex(ado.getSex());
-        dto.setBirthDate(ado.getBirthDate());
+        dto.setBirthdateDD(ado.getBirthdateDD());
+        dto.setBirthdateMM(ado.getBirthdateMM());
+        dto.setBirthdateYYYY(ado.getBirthdateYYYY());
         dto.setApproximateAge(ado.getApproximateAge());
         dto.setApproximateAgeType(ado.getApproximateAgeType());
         dto.setPhone(ado.getPhone());
