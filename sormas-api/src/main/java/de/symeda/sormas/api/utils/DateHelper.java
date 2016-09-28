@@ -5,9 +5,11 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
@@ -80,4 +82,41 @@ public final class DateHelper {
         calendar.set(year,month,day,0,0,0);
         return calendar.getTime();
     }
+    
+    /**
+     * Returns a list for days in month (1-31)
+     * @return
+     */
+    public static List<Integer> getDaysInMonth() {
+		List<Integer> x = new ArrayList<Integer>();
+		for(int i=1; i<=31;i++) {
+			x.add(i);
+		}
+		return x;
+	}
+	
+    /**
+     * Returns a list of months in years (1-12)
+     * @return
+     */
+	public static List<Integer> getMonthsInYear() {
+		List<Integer> x = new ArrayList<Integer>();
+		for(int i=1; i<=12;i++) {
+			x.add(i);
+		}
+		return x;
+	}
+	
+	/**
+	 * Returnsa list of years from 1900 to now.
+	 * @return
+	 */
+	public static List<Integer> getYearsToNow() {
+		List<Integer> x = new ArrayList<Integer>();
+		Calendar now = new GregorianCalendar();
+		for(int i=1900; i<=now.get(Calendar.YEAR);i++) {
+			x.add(i);
+		}
+		return x;
+	}
 }

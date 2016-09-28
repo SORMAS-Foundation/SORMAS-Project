@@ -4,6 +4,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.Field;
@@ -21,7 +22,6 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.surveillance.location.LocationForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
 public class CasePersonForm extends AbstractEditForm<CasePersonDto> {
@@ -88,21 +88,18 @@ public class CasePersonForm extends AbstractEditForm<CasePersonDto> {
     	// @TODO: Done for nullselection Bug, fixed in Vaadin 7.7.3
     	days.setNullSelectionAllowed(true);
     	days.setNullSelectionItemId("");
-    	days.addItems(FieldHelper.getDaysInMonth());
+    	days.addItems(DateHelper.getDaysInMonth());
     	NativeSelect months = addField(CasePersonDto.BIRTH_DATE_MM, NativeSelect.class);
     	// @TODO: Done for nullselection Bug, fixed in Vaadin 7.7.3
     	months.setNullSelectionAllowed(true);
     	months.setNullSelectionItemId("");
-    	months.addItems(FieldHelper.getMonthsInYear());
+    	months.addItems(DateHelper.getMonthsInYear());
     	NativeSelect years = addField(CasePersonDto.BIRTH_DATE_YYYY, NativeSelect.class);
     	// @TODO: Done for nullselection Bug, fixed in Vaadin 7.7.3
     	years.setNullSelectionAllowed(true);
     	years.setNullSelectionItemId("");
-    	Calendar now = new GregorianCalendar();
-		for(int i=1900; i<=now.get(Calendar.YEAR);i++) {
-			years.addItem(i);
-			years.setItemCaption(i, String.valueOf(i));
-		}
+		years.addItems(DateHelper.getYearsToNow());
+		years.setItemCaptionMode(ItemCaptionMode.ID_TOSTRING);
     	addField(CasePersonDto.DEATH_DATE, DateField.class);
     	addField(CasePersonDto.APPROXIMATE_AGE, TextField.class);
     	addField(CasePersonDto.APPROXIMATE_AGE_TYPE, NativeSelect.class);
@@ -153,9 +150,7 @@ public class CasePersonForm extends AbstractEditForm<CasePersonDto> {
 	
 	private void updateReadyOnlyApproximateAge() {
 		boolean readonly = false;
-		if(getFieldGroup().getField(CasePersonDto.BIRTH_DATE_DD).getValue()!=null
-			&& getFieldGroup().getField(CasePersonDto.BIRTH_DATE_MM).getValue()!=null
-			&& getFieldGroup().getField(CasePersonDto.BIRTH_DATE_YYYY).getValue()!=null) {
+		if(getFieldGroup().getField(CasePersonDto.BIRTH_DATE_YYYY).getValue()!=null) {
 			readonly = true;
 		}
 		getFieldGroup().getField(CasePersonDto.APPROXIMATE_AGE).setReadOnly(readonly);
