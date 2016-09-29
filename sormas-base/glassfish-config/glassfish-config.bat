@@ -93,7 +93,7 @@ PAUSE >nul
 
 copy .\%DOMAIN_NAME%.properties %DOMAIN_DIR%
 
-cp logback.xml %DOMAIN_DIR%\config\
+copy /Y .\logback.xml %DOMAIN_DIR%\config
 
 Echo Press [Enter] to continue...
 PAUSE >nul
