@@ -163,9 +163,9 @@ public class CasePersonForm extends AbstractEditForm<CasePersonDto> {
 		if (getFieldGroup().getField(CasePersonDto.BIRTH_DATE_YYYY).getValue() != null && getFieldGroup().getField(CasePersonDto.BIRTH_DATE_YYYY).getValue() != "") {
 			Calendar birthdate = new GregorianCalendar();
 			birthdate.set(
-					(int)getFieldGroup().getField(CasePersonDto.BIRTH_DATE_YYYY).getValue(), 
-					getFieldGroup().getField(CasePersonDto.BIRTH_DATE_MM).getValue()!=null?(int) getFieldGroup().getField(CasePersonDto.BIRTH_DATE_MM).getValue()-1:0, 
-					getFieldGroup().getField(CasePersonDto.BIRTH_DATE_DD).getValue()!=null?(int) getFieldGroup().getField(CasePersonDto.BIRTH_DATE_DD).getValue():1);
+					(Integer)getFieldGroup().getField(CasePersonDto.BIRTH_DATE_YYYY).getValue(), 
+					getFieldGroup().getField(CasePersonDto.BIRTH_DATE_MM).getValue()!=null?(Integer) getFieldGroup().getField(CasePersonDto.BIRTH_DATE_MM).getValue()-1:0, 
+					getFieldGroup().getField(CasePersonDto.BIRTH_DATE_DD).getValue()!=null?(Integer) getFieldGroup().getField(CasePersonDto.BIRTH_DATE_DD).getValue():1);
 			Pair<Integer, ApproximateAgeType> pair = DateHelper.getApproximateAge(
 					(Date) birthdate.getTime(),
 					(Date) getFieldGroup().getField(CasePersonDto.DEATH_DATE).getValue()
