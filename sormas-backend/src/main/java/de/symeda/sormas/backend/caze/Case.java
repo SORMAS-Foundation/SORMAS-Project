@@ -19,6 +19,7 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
 
 @Entity(name="cases")
@@ -64,6 +65,8 @@ public class Case extends AbstractDomainObject {
 	private User caseSupervisor;
 	private User contactOfficer;
 	private User contactSupervisor;
+	
+	private Symptoms symptoms;
 	
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(nullable=false)
@@ -177,6 +180,7 @@ public class Case extends AbstractDomainObject {
 	public void setHealthFacility(Facility healthFacility) {
 		this.healthFacility = healthFacility;
 	}
+	
 	@ManyToOne(cascade = CascadeType.ALL)
 	public Location getIllLocation() {
 		if (illLocation == null) {
@@ -235,5 +239,12 @@ public class Case extends AbstractDomainObject {
 	public void setContactSupervisor(User contactSupervisor) {
 		this.contactSupervisor = contactSupervisor;
 	}
-
+	
+	@OneToOne(cascade = CascadeType.ALL)
+	public Symptoms getSymptoms() {
+		return symptoms;
+	}
+	public void setSymptoms(Symptoms symptoms) {
+		this.symptoms = symptoms;
+	}
 }

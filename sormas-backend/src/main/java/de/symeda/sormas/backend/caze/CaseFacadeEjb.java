@@ -18,6 +18,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonService;
+import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -153,6 +154,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		caze.setContactOfficer(DtoHelper.fromReferenceDto(dto.getContactOfficer(), userService));
 		caze.setContactSupervisor(DtoHelper.fromReferenceDto(dto.getContactSupervisor(), userService));
 
+
 		return caze;
 	}
 	
@@ -179,6 +181,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		dto.setCaseSupervisor(DtoHelper.toReferenceDto(caze.getCaseSupervisor()));
 		dto.setContactOfficer(DtoHelper.toReferenceDto(caze.getContactOfficer()));
 		dto.setContactSupervisor(DtoHelper.toReferenceDto(caze.getContactSupervisor()));
+		
+		dto.setSymptoms(SymptomsFacadeEjb.toSymptomsDto(caze.getSymptoms()));
 		
 		return dto;
 	}

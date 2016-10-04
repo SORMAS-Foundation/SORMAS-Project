@@ -642,7 +642,58 @@ ALTER TABLE person ADD COLUMN birthdate_dd integer;
 ALTER TABLE person ADD COLUMN birthdate_mm integer;
 ALTER TABLE person ADD COLUMN birthdate_yyyy integer;
 
-INSERT INTO schema_version (version_number, comment) VALUES (2, 'Geburtsdatum in 3 Felder aufteilen');
+INSERT INTO schema_version (version_number, comment) VALUES (2, 'Split person birthdate year, month, day');
 
 
+-- 2016-10-04; #58
+CREATE TABLE symptoms (
+id bigint not null, 
+abdominalpain varchar(255),
+anorexiaappetiteloss varchar(255),
+bleedingvagina varchar(255),
+changedate timestamp not null,
+chestpain varchar(255),
+comaunconscious varchar(255),
+confuseddisoriented varchar(255),
+conjunctivitis varchar(255),
+cough varchar(255),
+creationdate timestamp not null,
+diarrhea varchar(255),
+difficultybreathing varchar(255),
+difficultyswallowing varchar(255),
+digestedbloodvomit varchar(255),
+epistaxis varchar(255),
+eyepainlightsensitive varchar(255),
+fever varchar(255),
+gumsbleeding varchar(255),
+headache varchar(255),
+hematemesis varchar(255),
+hematuria varchar(255),
+hemoptysis varchar(255),
+hiccups varchar(255),
+injectionsitebleeding varchar(255),
+intensefatigueweakness varchar(255),
+jaundice varchar(255),
+jointpain varchar(255),
+melena varchar(255),
+musclepain varchar(255),
+otherhemorrhagic varchar(255),
+otherhemorrhagictext varchar(255),
+othernonhemorrhagic varchar(255),
+othernonhemorrhagicsymptoms varchar(255),
+petechiae varchar(255),
+skinrash varchar(255),
+sorethroat varchar(255), 
+onsetdate timestamp without time zone;
+temperature integer,
+temperaturesource varchar(255),
+unexplainedbleeding varchar(255),
+uuid varchar(36) not null unique,
+vomitingnausea varchar(255),
+PRIMARY KEY (id));
+
+ALTER TABLE cases ADD COLUMN symptoms_id bigint;
+ALTER TABLE cases ADD CONSTRAINT fk_cases_symptoms_id FOREIGN KEY (symptoms_id) REFERENCES symptoms (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+INSERT INTO schema_version (version_number, comment) VALUES (3, 'Symptoms');
 

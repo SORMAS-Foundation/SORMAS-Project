@@ -7,6 +7,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import de.symeda.sormas.api.DataTransferObject;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.utils.PreciseDateAdapter;
 
 public class CaseDataDto extends DataTransferObject {
@@ -36,6 +37,8 @@ public class CaseDataDto extends DataTransferObject {
 	private ReferenceDto reportingUser;
 	private Date reportDate;
 	private Date investigatedDate;
+	
+	private SymptomsDto symptoms;
 
 	private ReferenceDto surveillanceOfficer;
 	private ReferenceDto surveillanceSupervisor;
@@ -150,5 +153,13 @@ public class CaseDataDto extends DataTransferObject {
 
 	public void setContactSupervisor(ReferenceDto contactSupervisor) {
 		this.contactSupervisor = contactSupervisor;
+	}
+
+	public SymptomsDto getSymptoms() {
+		return symptoms;
+	}
+
+	public void setSymptoms(SymptomsDto symptoms) {
+		this.symptoms = symptoms;
 	}
 }

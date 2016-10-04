@@ -6,9 +6,11 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
-import de.symeda.sormas.api.symptoms.FeverMeasured;
 import de.symeda.sormas.api.symptoms.SymptomState;
+import de.symeda.sormas.api.symptoms.TemperatureSource;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 
 @Entity
@@ -16,16 +18,16 @@ public class Symptoms extends AbstractDomainObject {
 
 	private static final long serialVersionUID = 1467852910743225822L;
 	
-	private Date initOnset;
+	private Date onsetDate;
+	
+	private int temperature;
+	private TemperatureSource temperatureSource;
 	
 	private SymptomState fever;
-	private int feverTemp;
-	private FeverMeasured feverMeasured;
-	
-	private SymptomState vomiting;
-	private SymptomState diarrha;
-	private SymptomState intenseFatigue;
-	private SymptomState anorexia;
+	private SymptomState vomitingNausea;
+	private SymptomState diarrhea;
+	private SymptomState intenseFatigueWeakness;
+	private SymptomState anorexiaAppetiteLoss;
 	private SymptomState abdominalPain;
 	private SymptomState chestPain;
 	private SymptomState musclePain;
@@ -39,34 +41,52 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState conjunctivitis;
 	private SymptomState skinRash;
 	private SymptomState hiccups;
-	private SymptomState painBehindEyes;
-	private SymptomState coma;
-	private SymptomState confusedOrDisoriented;
+	private SymptomState eyePainLightSensitive;
+	private SymptomState comaUnconscious;
+	private SymptomState confusedDisoriented;
 	private SymptomState unexplainedBleeding;
-	private SymptomState bleedingGums;
-	private SymptomState bleedingInjectionSite;
+	private SymptomState gumsBleeding;
+	private SymptomState injectionSiteBleeding;
 	private SymptomState epistaxis;
 	private SymptomState melena;
 	private SymptomState hematemesis;
-	private SymptomState digestedBloodInVomit;
+	private SymptomState digestedBloodVomit;
 	private SymptomState hemoptysis;
-	private SymptomState bleedingFromVagina;
+	private SymptomState bleedingVagina;
 	private SymptomState petechiae;
 	private SymptomState hematuria;
 	
-	private SymptomState other;
-	private String otherSymptoms;
+	private SymptomState otherHemorrhagic;
+	private String otherHemorrhagicText;
 	
 	private SymptomState otherNonHemorrhagic;
 	private String otherNonHemorrhagicSymptoms;
 	
-	public Date getInitOnset() {
-		return initOnset;
-	}
-	public void setInitOnset(Date initOnset) {
-		this.initOnset = initOnset;
+	
+	
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getOnsetDate() {
+		return onsetDate;
 	}
 	
+	public void setOnsetDate(Date onsetDate) {
+		this.onsetDate = onsetDate;
+	}
+
+	public int getTemperature() {
+		return temperature;
+	}
+	public void setTemperature(int temperature) {
+		this.temperature = temperature;
+	}
+	
+	@Enumerated(EnumType.STRING)
+	public TemperatureSource getTemperatureSource() {
+		return temperatureSource;
+	}
+	public void setTemperatureSource(TemperatureSource temperatureSource) {
+		this.temperatureSource = temperatureSource;
+	}
 	@Enumerated(EnumType.STRING)
 	public SymptomState getFever() {
 		return fever;
@@ -74,54 +94,34 @@ public class Symptoms extends AbstractDomainObject {
 	public void setFever(SymptomState fever) {
 		this.fever = fever;
 	}
-	
-	public int getFeverTemp() {
-		return feverTemp;
-	}
-	public void setFeverTemp(int feverTemp) {
-		this.feverTemp = feverTemp;
-	}
-
 	@Enumerated(EnumType.STRING)
-	public FeverMeasured getFeverMeasured() {
-		return feverMeasured;
+	public SymptomState getVomitingNausea() {
+		return vomitingNausea;
 	}
-	public void setFeverMeasured(FeverMeasured feverMeasured) {
-		this.feverMeasured = feverMeasured;
+	public void setVomitingNausea(SymptomState vomitingNausea) {
+		this.vomitingNausea = vomitingNausea;
 	}
-	
 	@Enumerated(EnumType.STRING)
-	public SymptomState getVomiting() {
-		return vomiting;
+	public SymptomState getDiarrhea() {
+		return diarrhea;
 	}
-	public void setVomiting(SymptomState vomiting) {
-		this.vomiting = vomiting;
+	public void setDiarrhea(SymptomState diarrhea) {
+		this.diarrhea = diarrhea;
 	}
-	
 	@Enumerated(EnumType.STRING)
-	public SymptomState getDiarrha() {
-		return diarrha;
+	public SymptomState getIntenseFatigueWeakness() {
+		return intenseFatigueWeakness;
 	}
-	public void setDiarrha(SymptomState diarrha) {
-		this.diarrha = diarrha;
+	public void setIntenseFatigueWeakness(SymptomState intenseFatigueWeakness) {
+		this.intenseFatigueWeakness = intenseFatigueWeakness;
 	}
-	
-	@Enumerated(EnumType.STRING)	
-	public SymptomState getIntenseFatigue() {
-		return intenseFatigue;
-	}
-	public void setIntenseFatigue(SymptomState intenseFatigue) {
-		this.intenseFatigue = intenseFatigue;
-	}
-	
 	@Enumerated(EnumType.STRING)
-	public SymptomState getAnorexia() {
-		return anorexia;
+	public SymptomState getAnorexiaAppetiteLoss() {
+		return anorexiaAppetiteLoss;
 	}
-	public void setAnorexia(SymptomState anorexia) {
-		this.anorexia = anorexia;
+	public void setAnorexiaAppetiteLoss(SymptomState anorexiaAppetiteLoss) {
+		this.anorexiaAppetiteLoss = anorexiaAppetiteLoss;
 	}
-	
 	@Enumerated(EnumType.STRING)
 	public SymptomState getAbdominalPain() {
 		return abdominalPain;
@@ -129,7 +129,6 @@ public class Symptoms extends AbstractDomainObject {
 	public void setAbdominalPain(SymptomState abdominalPain) {
 		this.abdominalPain = abdominalPain;
 	}
-	
 	@Enumerated(EnumType.STRING)
 	public SymptomState getChestPain() {
 		return chestPain;
@@ -137,7 +136,6 @@ public class Symptoms extends AbstractDomainObject {
 	public void setChestPain(SymptomState chestPain) {
 		this.chestPain = chestPain;
 	}
-	
 	@Enumerated(EnumType.STRING)
 	public SymptomState getMusclePain() {
 		return musclePain;
@@ -145,7 +143,6 @@ public class Symptoms extends AbstractDomainObject {
 	public void setMusclePain(SymptomState musclePain) {
 		this.musclePain = musclePain;
 	}
-	
 	@Enumerated(EnumType.STRING)
 	public SymptomState getJointPain() {
 		return jointPain;
@@ -153,7 +150,6 @@ public class Symptoms extends AbstractDomainObject {
 	public void setJointPain(SymptomState jointPain) {
 		this.jointPain = jointPain;
 	}
-	
 	@Enumerated(EnumType.STRING)
 	public SymptomState getHeadache() {
 		return headache;
@@ -161,7 +157,6 @@ public class Symptoms extends AbstractDomainObject {
 	public void setHeadache(SymptomState headache) {
 		this.headache = headache;
 	}
-	
 	@Enumerated(EnumType.STRING)
 	public SymptomState getCough() {
 		return cough;
@@ -169,7 +164,6 @@ public class Symptoms extends AbstractDomainObject {
 	public void setCough(SymptomState cough) {
 		this.cough = cough;
 	}
-	
 	@Enumerated(EnumType.STRING)
 	public SymptomState getDifficultyBreathing() {
 		return difficultyBreathing;
@@ -177,7 +171,6 @@ public class Symptoms extends AbstractDomainObject {
 	public void setDifficultyBreathing(SymptomState difficultyBreathing) {
 		this.difficultyBreathing = difficultyBreathing;
 	}
-	
 	@Enumerated(EnumType.STRING)
 	public SymptomState getDifficultySwallowing() {
 		return difficultySwallowing;
@@ -185,7 +178,6 @@ public class Symptoms extends AbstractDomainObject {
 	public void setDifficultySwallowing(SymptomState difficultySwallowing) {
 		this.difficultySwallowing = difficultySwallowing;
 	}
-	
 	@Enumerated(EnumType.STRING)
 	public SymptomState getSoreThroat() {
 		return soreThroat;
@@ -193,7 +185,6 @@ public class Symptoms extends AbstractDomainObject {
 	public void setSoreThroat(SymptomState soreThroat) {
 		this.soreThroat = soreThroat;
 	}
-	
 	@Enumerated(EnumType.STRING)
 	public SymptomState getJaundice() {
 		return jaundice;
@@ -201,7 +192,6 @@ public class Symptoms extends AbstractDomainObject {
 	public void setJaundice(SymptomState jaundice) {
 		this.jaundice = jaundice;
 	}
-	
 	@Enumerated(EnumType.STRING)
 	public SymptomState getConjunctivitis() {
 		return conjunctivitis;
@@ -209,7 +199,6 @@ public class Symptoms extends AbstractDomainObject {
 	public void setConjunctivitis(SymptomState conjunctivitis) {
 		this.conjunctivitis = conjunctivitis;
 	}
-	
 	@Enumerated(EnumType.STRING)
 	public SymptomState getSkinRash() {
 		return skinRash;
@@ -217,7 +206,6 @@ public class Symptoms extends AbstractDomainObject {
 	public void setSkinRash(SymptomState skinRash) {
 		this.skinRash = skinRash;
 	}
-	
 	@Enumerated(EnumType.STRING)
 	public SymptomState getHiccups() {
 		return hiccups;
@@ -225,31 +213,27 @@ public class Symptoms extends AbstractDomainObject {
 	public void setHiccups(SymptomState hiccups) {
 		this.hiccups = hiccups;
 	}
-
 	@Enumerated(EnumType.STRING)
-	public SymptomState getPainBehindEyes() {
-		return painBehindEyes;
+	public SymptomState getEyePainLightSensitive() {
+		return eyePainLightSensitive;
 	}
-	public void setPainBehindEyes(SymptomState painBehindEyes) {
-		this.painBehindEyes = painBehindEyes;
+	public void setEyePainLightSensitive(SymptomState eyePainLightSensitive) {
+		this.eyePainLightSensitive = eyePainLightSensitive;
 	}
-	
 	@Enumerated(EnumType.STRING)
-	public SymptomState getComa() {
-		return coma;
+	public SymptomState getComaUnconscious() {
+		return comaUnconscious;
 	}
-	public void setComa(SymptomState coma) {
-		this.coma = coma;
+	public void setComaUnconscious(SymptomState comaUnconscious) {
+		this.comaUnconscious = comaUnconscious;
 	}
-	
 	@Enumerated(EnumType.STRING)
-	public SymptomState getConfusedOrDisoriented() {
-		return confusedOrDisoriented;
+	public SymptomState getConfusedDisoriented() {
+		return confusedDisoriented;
 	}
-	public void setConfusedOrDisoriented(SymptomState confusedOrDisoriented) {
-		this.confusedOrDisoriented = confusedOrDisoriented;
+	public void setConfusedDisoriented(SymptomState confusedDisoriented) {
+		this.confusedDisoriented = confusedDisoriented;
 	}
-	
 	@Enumerated(EnumType.STRING)
 	public SymptomState getUnexplainedBleeding() {
 		return unexplainedBleeding;
@@ -257,23 +241,20 @@ public class Symptoms extends AbstractDomainObject {
 	public void setUnexplainedBleeding(SymptomState unexplainedBleeding) {
 		this.unexplainedBleeding = unexplainedBleeding;
 	}
-	
 	@Enumerated(EnumType.STRING)
-	public SymptomState getBleedingGums() {
-		return bleedingGums;
+	public SymptomState getGumsBleeding() {
+		return gumsBleeding;
 	}
-	public void setBleedingGums(SymptomState bleedingGums) {
-		this.bleedingGums = bleedingGums;
+	public void setGumsBleeding(SymptomState gumsBleeding) {
+		this.gumsBleeding = gumsBleeding;
 	}
-	
 	@Enumerated(EnumType.STRING)
-	public SymptomState getBleedingInjectionSite() {
-		return bleedingInjectionSite;
+	public SymptomState getInjectionSiteBleeding() {
+		return injectionSiteBleeding;
 	}
-	public void setBleedingInjectionSite(SymptomState bleedingInjectionSite) {
-		this.bleedingInjectionSite = bleedingInjectionSite;
+	public void setInjectionSiteBleeding(SymptomState injectionSiteBleeding) {
+		this.injectionSiteBleeding = injectionSiteBleeding;
 	}
-	
 	@Enumerated(EnumType.STRING)
 	public SymptomState getEpistaxis() {
 		return epistaxis;
@@ -281,7 +262,6 @@ public class Symptoms extends AbstractDomainObject {
 	public void setEpistaxis(SymptomState epistaxis) {
 		this.epistaxis = epistaxis;
 	}
-	
 	@Enumerated(EnumType.STRING)
 	public SymptomState getMelena() {
 		return melena;
@@ -289,7 +269,6 @@ public class Symptoms extends AbstractDomainObject {
 	public void setMelena(SymptomState melena) {
 		this.melena = melena;
 	}
-	
 	@Enumerated(EnumType.STRING)
 	public SymptomState getHematemesis() {
 		return hematemesis;
@@ -297,15 +276,13 @@ public class Symptoms extends AbstractDomainObject {
 	public void setHematemesis(SymptomState hematemesis) {
 		this.hematemesis = hematemesis;
 	}
-	
 	@Enumerated(EnumType.STRING)
-	public SymptomState getDigestedBloodInVomit() {
-		return digestedBloodInVomit;
+	public SymptomState getDigestedBloodVomit() {
+		return digestedBloodVomit;
 	}
-	public void setDigestedBloodInVomit(SymptomState digestedBloodInVomit) {
-		this.digestedBloodInVomit = digestedBloodInVomit;
+	public void setDigestedBloodVomit(SymptomState digestedBloodVomit) {
+		this.digestedBloodVomit = digestedBloodVomit;
 	}
-	
 	@Enumerated(EnumType.STRING)
 	public SymptomState getHemoptysis() {
 		return hemoptysis;
@@ -313,15 +290,13 @@ public class Symptoms extends AbstractDomainObject {
 	public void setHemoptysis(SymptomState hemoptysis) {
 		this.hemoptysis = hemoptysis;
 	}
-	
 	@Enumerated(EnumType.STRING)
-	public SymptomState getBleedingFromVagina() {
-		return bleedingFromVagina;
+	public SymptomState getBleedingVagina() {
+		return bleedingVagina;
 	}
-	public void setBleedingFromVagina(SymptomState bleedingFromVagina) {
-		this.bleedingFromVagina = bleedingFromVagina;
+	public void setBleedingVagina(SymptomState bleedingVagina) {
+		this.bleedingVagina = bleedingVagina;
 	}
-	
 	@Enumerated(EnumType.STRING)
 	public SymptomState getPetechiae() {
 		return petechiae;
@@ -329,7 +304,6 @@ public class Symptoms extends AbstractDomainObject {
 	public void setPetechiae(SymptomState petechiae) {
 		this.petechiae = petechiae;
 	}
-	
 	@Enumerated(EnumType.STRING)
 	public SymptomState getHematuria() {
 		return hematuria;
@@ -337,23 +311,20 @@ public class Symptoms extends AbstractDomainObject {
 	public void setHematuria(SymptomState hematuria) {
 		this.hematuria = hematuria;
 	}
-	
 	@Enumerated(EnumType.STRING)
-	public SymptomState getOther() {
-		return other;
+	public SymptomState getOtherHemorrhagic() {
+		return otherHemorrhagic;
 	}
-	public void setOther(SymptomState other) {
-		this.other = other;
+	public void setOtherHemorrhagic(SymptomState otherHemorrhagic) {
+		this.otherHemorrhagic = otherHemorrhagic;
 	}
-	
-	@Column(length = 255)
-	public String getOtherSymptoms() {
-		return otherSymptoms;
+	@Column(length=255)
+	public String getOtherHemorrhagicText() {
+		return otherHemorrhagicText;
 	}
-	public void setOtherSymptoms(String otherSymptoms) {
-		this.otherSymptoms = otherSymptoms;
+	public void setOtherHemorrhagicText(String otherHemorrhagicText) {
+		this.otherHemorrhagicText = otherHemorrhagicText;
 	}
-
 	@Enumerated(EnumType.STRING)
 	public SymptomState getOtherNonHemorrhagic() {
 		return otherNonHemorrhagic;
@@ -361,12 +332,12 @@ public class Symptoms extends AbstractDomainObject {
 	public void setOtherNonHemorrhagic(SymptomState otherNonHemorrhagic) {
 		this.otherNonHemorrhagic = otherNonHemorrhagic;
 	}
-	
-	@Column(length = 255)
+	@Column(length=255)
 	public String getOtherNonHemorrhagicSymptoms() {
 		return otherNonHemorrhagicSymptoms;
 	}
 	public void setOtherNonHemorrhagicSymptoms(String otherNonHemorrhagicSymptoms) {
 		this.otherNonHemorrhagicSymptoms = otherNonHemorrhagicSymptoms;
 	}
+	
 }

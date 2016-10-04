@@ -6,18 +6,18 @@ import de.symeda.sormas.api.DataTransferObject;
 
 public class SymptomsDto extends DataTransferObject {
 
-	private static final long serialVersionUID = 1467852910743226822L;
+	private static final long serialVersionUID = 4146526547904182448L;
+
+	private Date onsetDate;
 	
-	private Date initOnset;
+	private int temperature;
+	private TemperatureSource temperatureSource;
 	
 	private SymptomState fever;
-	private int feverTemp;
-	private FeverMeasured feverMeasured;
-	
-	private SymptomState vomiting;
-	private SymptomState diarrha;
-	private SymptomState intenseFatigue;
-	private SymptomState anorexia;
+	private SymptomState vomitingNausea;
+	private SymptomState diarrhea;
+	private SymptomState intenseFatigueWeakness;
+	private SymptomState anorexiaAppetiteLoss;
 	private SymptomState abdominalPain;
 	private SymptomState chestPain;
 	private SymptomState musclePain;
@@ -31,297 +31,259 @@ public class SymptomsDto extends DataTransferObject {
 	private SymptomState conjunctivitis;
 	private SymptomState skinRash;
 	private SymptomState hiccups;
-	private SymptomState painBehindEyes;
-	private SymptomState coma;
-	private SymptomState confusedOrDisoriented;
+	private SymptomState eyePainLightSensitive;
+	private SymptomState comaUnconscious;
+	private SymptomState confusedDisoriented;
 	private SymptomState unexplainedBleeding;
-	private SymptomState bleedingGums;
-	private SymptomState bleedingInjectionSite;
+	private SymptomState gumsBleeding;
+	private SymptomState injectionSiteBleeding;
 	private SymptomState epistaxis;
 	private SymptomState melena;
 	private SymptomState hematemesis;
-	private SymptomState digestedBloodInVomit;
+	private SymptomState digestedBloodVomit;
 	private SymptomState hemoptysis;
-	private SymptomState bleedingFromVagina;
+	private SymptomState bleedingVagina;
 	private SymptomState petechiae;
 	private SymptomState hematuria;
 	
-	private SymptomState other;
-	private String otherSymptoms;
+	private SymptomState otherHemorrhagic;
+	private String otherHemorrhagicText;
 	
 	private SymptomState otherNonHemorrhagic;
 	private String otherNonHemorrhagicSymptoms;
-	
-	public Date getInitOnset() {
-		return initOnset;
+	public Date getOnsetDate() {
+		return onsetDate;
 	}
-	public void setInitOnset(Date initOnset) {
-		this.initOnset = initOnset;
+	public void setOnsetDate(Date onsetDate) {
+		this.onsetDate = onsetDate;
 	}
-	
+	public int getTemperature() {
+		return temperature;
+	}
+	public void setTemperature(int temperature) {
+		this.temperature = temperature;
+	}
+	public TemperatureSource getTemperatureSource() {
+		return temperatureSource;
+	}
+	public void setTemperatureSource(TemperatureSource temperatureSource) {
+		this.temperatureSource = temperatureSource;
+	}
 	public SymptomState getFever() {
 		return fever;
 	}
 	public void setFever(SymptomState fever) {
 		this.fever = fever;
 	}
-	
-	public int getFeverTemp() {
-		return feverTemp;
+	public SymptomState getVomitingNausea() {
+		return vomitingNausea;
 	}
-	public void setFeverTemp(int feverTemp) {
-		this.feverTemp = feverTemp;
+	public void setVomitingNausea(SymptomState vomitingNausea) {
+		this.vomitingNausea = vomitingNausea;
 	}
-
-	public FeverMeasured getFeverMeasured() {
-		return feverMeasured;
+	public SymptomState getDiarrhea() {
+		return diarrhea;
 	}
-	public void setFeverMeasured(FeverMeasured feverMeasured) {
-		this.feverMeasured = feverMeasured;
+	public void setDiarrhea(SymptomState diarrhea) {
+		this.diarrhea = diarrhea;
 	}
-	
-	public SymptomState getVomiting() {
-		return vomiting;
+	public SymptomState getIntenseFatigueWeakness() {
+		return intenseFatigueWeakness;
 	}
-	public void setVomiting(SymptomState vomiting) {
-		this.vomiting = vomiting;
+	public void setIntenseFatigueWeakness(SymptomState intenseFatigueWeakness) {
+		this.intenseFatigueWeakness = intenseFatigueWeakness;
 	}
-	
-	public SymptomState getDiarrha() {
-		return diarrha;
+	public SymptomState getAnorexiaAppetiteLoss() {
+		return anorexiaAppetiteLoss;
 	}
-	public void setDiarrha(SymptomState diarrha) {
-		this.diarrha = diarrha;
+	public void setAnorexiaAppetiteLoss(SymptomState anorexiaAppetiteLoss) {
+		this.anorexiaAppetiteLoss = anorexiaAppetiteLoss;
 	}
-	
-	public SymptomState getIntenseFatigue() {
-		return intenseFatigue;
-	}
-	public void setIntenseFatigue(SymptomState intenseFatigue) {
-		this.intenseFatigue = intenseFatigue;
-	}
-	
-	public SymptomState getAnorexia() {
-		return anorexia;
-	}
-	public void setAnorexia(SymptomState anorexia) {
-		this.anorexia = anorexia;
-	}
-	
 	public SymptomState getAbdominalPain() {
 		return abdominalPain;
 	}
 	public void setAbdominalPain(SymptomState abdominalPain) {
 		this.abdominalPain = abdominalPain;
 	}
-	
 	public SymptomState getChestPain() {
 		return chestPain;
 	}
 	public void setChestPain(SymptomState chestPain) {
 		this.chestPain = chestPain;
 	}
-	
 	public SymptomState getMusclePain() {
 		return musclePain;
 	}
 	public void setMusclePain(SymptomState musclePain) {
 		this.musclePain = musclePain;
 	}
-	
 	public SymptomState getJointPain() {
 		return jointPain;
 	}
 	public void setJointPain(SymptomState jointPain) {
 		this.jointPain = jointPain;
 	}
-	
 	public SymptomState getHeadache() {
 		return headache;
 	}
 	public void setHeadache(SymptomState headache) {
 		this.headache = headache;
 	}
-	
 	public SymptomState getCough() {
 		return cough;
 	}
 	public void setCough(SymptomState cough) {
 		this.cough = cough;
 	}
-	
 	public SymptomState getDifficultyBreathing() {
 		return difficultyBreathing;
 	}
 	public void setDifficultyBreathing(SymptomState difficultyBreathing) {
 		this.difficultyBreathing = difficultyBreathing;
 	}
-	
 	public SymptomState getDifficultySwallowing() {
 		return difficultySwallowing;
 	}
 	public void setDifficultySwallowing(SymptomState difficultySwallowing) {
 		this.difficultySwallowing = difficultySwallowing;
 	}
-	
 	public SymptomState getSoreThroat() {
 		return soreThroat;
 	}
 	public void setSoreThroat(SymptomState soreThroat) {
 		this.soreThroat = soreThroat;
 	}
-	
 	public SymptomState getJaundice() {
 		return jaundice;
 	}
 	public void setJaundice(SymptomState jaundice) {
 		this.jaundice = jaundice;
 	}
-	
 	public SymptomState getConjunctivitis() {
 		return conjunctivitis;
 	}
 	public void setConjunctivitis(SymptomState conjunctivitis) {
 		this.conjunctivitis = conjunctivitis;
 	}
-	
 	public SymptomState getSkinRash() {
 		return skinRash;
 	}
 	public void setSkinRash(SymptomState skinRash) {
 		this.skinRash = skinRash;
 	}
-	
 	public SymptomState getHiccups() {
 		return hiccups;
 	}
 	public void setHiccups(SymptomState hiccups) {
 		this.hiccups = hiccups;
 	}
-
-	public SymptomState getPainBehindEyes() {
-		return painBehindEyes;
+	public SymptomState getEyePainLightSensitive() {
+		return eyePainLightSensitive;
 	}
-	public void setPainBehindEyes(SymptomState painBehindEyes) {
-		this.painBehindEyes = painBehindEyes;
+	public void setEyePainLightSensitive(SymptomState eyePainLightSensitive) {
+		this.eyePainLightSensitive = eyePainLightSensitive;
 	}
-	
-	public SymptomState getComa() {
-		return coma;
+	public SymptomState getComaUnconscious() {
+		return comaUnconscious;
 	}
-	public void setComa(SymptomState coma) {
-		this.coma = coma;
+	public void setComaUnconscious(SymptomState comaUnconscious) {
+		this.comaUnconscious = comaUnconscious;
 	}
-	
-	public SymptomState getConfusedOrDisoriented() {
-		return confusedOrDisoriented;
+	public SymptomState getConfusedDisoriented() {
+		return confusedDisoriented;
 	}
-	public void setConfusedOrDisoriented(SymptomState confusedOrDisoriented) {
-		this.confusedOrDisoriented = confusedOrDisoriented;
+	public void setConfusedDisoriented(SymptomState confusedDisoriented) {
+		this.confusedDisoriented = confusedDisoriented;
 	}
-	
 	public SymptomState getUnexplainedBleeding() {
 		return unexplainedBleeding;
 	}
 	public void setUnexplainedBleeding(SymptomState unexplainedBleeding) {
 		this.unexplainedBleeding = unexplainedBleeding;
 	}
-	
-	public SymptomState getBleedingGums() {
-		return bleedingGums;
+	public SymptomState getGumsBleeding() {
+		return gumsBleeding;
 	}
-	public void setBleedingGums(SymptomState bleedingGums) {
-		this.bleedingGums = bleedingGums;
+	public void setGumsBleeding(SymptomState gumsBleeding) {
+		this.gumsBleeding = gumsBleeding;
 	}
-	
-	public SymptomState getBleedingInjectionSite() {
-		return bleedingInjectionSite;
+	public SymptomState getInjectionSiteBleeding() {
+		return injectionSiteBleeding;
 	}
-	public void setBleedingInjectionSite(SymptomState bleedingInjectionSite) {
-		this.bleedingInjectionSite = bleedingInjectionSite;
+	public void setInjectionSiteBleeding(SymptomState injectionSiteBleeding) {
+		this.injectionSiteBleeding = injectionSiteBleeding;
 	}
-	
 	public SymptomState getEpistaxis() {
 		return epistaxis;
 	}
 	public void setEpistaxis(SymptomState epistaxis) {
 		this.epistaxis = epistaxis;
 	}
-	
 	public SymptomState getMelena() {
 		return melena;
 	}
 	public void setMelena(SymptomState melena) {
 		this.melena = melena;
 	}
-	
 	public SymptomState getHematemesis() {
 		return hematemesis;
 	}
 	public void setHematemesis(SymptomState hematemesis) {
 		this.hematemesis = hematemesis;
 	}
-	
-	public SymptomState getDigestedBloodInVomit() {
-		return digestedBloodInVomit;
+	public SymptomState getDigestedBloodVomit() {
+		return digestedBloodVomit;
 	}
-	public void setDigestedBloodInVomit(SymptomState digestedBloodInVomit) {
-		this.digestedBloodInVomit = digestedBloodInVomit;
+	public void setDigestedBloodVomit(SymptomState digestedBloodVomit) {
+		this.digestedBloodVomit = digestedBloodVomit;
 	}
-	
 	public SymptomState getHemoptysis() {
 		return hemoptysis;
 	}
 	public void setHemoptysis(SymptomState hemoptysis) {
 		this.hemoptysis = hemoptysis;
 	}
-	
-	public SymptomState getBleedingFromVagina() {
-		return bleedingFromVagina;
+	public SymptomState getBleedingVagina() {
+		return bleedingVagina;
 	}
-	public void setBleedingFromVagina(SymptomState bleedingFromVagina) {
-		this.bleedingFromVagina = bleedingFromVagina;
+	public void setBleedingVagina(SymptomState bleedingVagina) {
+		this.bleedingVagina = bleedingVagina;
 	}
-	
 	public SymptomState getPetechiae() {
 		return petechiae;
 	}
 	public void setPetechiae(SymptomState petechiae) {
 		this.petechiae = petechiae;
 	}
-	
 	public SymptomState getHematuria() {
 		return hematuria;
 	}
 	public void setHematuria(SymptomState hematuria) {
 		this.hematuria = hematuria;
 	}
-	
-	public SymptomState getOther() {
-		return other;
+	public SymptomState getOtherHemorrhagic() {
+		return otherHemorrhagic;
 	}
-	public void setOther(SymptomState other) {
-		this.other = other;
+	public void setOtherHemorrhagic(SymptomState otherHemorrhagic) {
+		this.otherHemorrhagic = otherHemorrhagic;
 	}
-	
-	public String getOtherSymptoms() {
-		return otherSymptoms;
+	public String getOtherHemorrhagicText() {
+		return otherHemorrhagicText;
 	}
-	public void setOtherSymptoms(String otherSymptoms) {
-		this.otherSymptoms = otherSymptoms;
+	public void setOtherHemorrhagicText(String otherHemorrhagicText) {
+		this.otherHemorrhagicText = otherHemorrhagicText;
 	}
-
 	public SymptomState getOtherNonHemorrhagic() {
 		return otherNonHemorrhagic;
 	}
 	public void setOtherNonHemorrhagic(SymptomState otherNonHemorrhagic) {
 		this.otherNonHemorrhagic = otherNonHemorrhagic;
 	}
-	
 	public String getOtherNonHemorrhagicSymptoms() {
 		return otherNonHemorrhagicSymptoms;
 	}
 	public void setOtherNonHemorrhagicSymptoms(String otherNonHemorrhagicSymptoms) {
 		this.otherNonHemorrhagicSymptoms = otherNonHemorrhagicSymptoms;
 	}
+	
 }

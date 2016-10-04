@@ -3,32 +3,17 @@ package de.symeda.sormas.backend.symptoms;
 import java.sql.Timestamp;
 
 import javax.ejb.EJB;
-import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
-import de.symeda.sormas.api.location.LocationDto;
-import de.symeda.sormas.api.location.LocationFacade;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsFacade;
-import de.symeda.sormas.backend.region.CommunityService;
-import de.symeda.sormas.backend.region.DistrictService;
-import de.symeda.sormas.backend.region.RegionService;
-import de.symeda.sormas.backend.util.DtoHelper;
 
 @Stateless(name = "SymptomsFacade")
-@LocalBean
 public class SymptomsFacadeEjb implements SymptomsFacade {
 	
 	@EJB
 	private SymptomsService symptomsService;
 
-	@EJB
-	private RegionService regionService;
-	@EJB
-	private DistrictService districtService;
-	@EJB
-	private CommunityService communityService;
-		
 	public Symptoms fromSymptomsDto(SymptomsDto dto) {		
 		if (dto == null) {
 			return null;
@@ -43,7 +28,47 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 			}
 		} 
 		
-		// @TODO symptoms.set ...
+		Symptoms a = symptoms;
+		SymptomsDto b = dto;
+		a.setAbdominalPain(b.getAbdominalPain());
+		a.setAnorexiaAppetiteLoss(b.getAnorexiaAppetiteLoss());
+		a.setBleedingVagina(b.getBleedingVagina());
+		a.setChestPain(b.getChestPain());
+		a.setComaUnconscious(b.getComaUnconscious());
+		a.setConfusedDisoriented(b.getConfusedDisoriented());
+		a.setConjunctivitis(b.getConjunctivitis());
+		a.setCough(b.getCough());
+		a.setDiarrhea(b.getDiarrhea());
+		a.setDifficultyBreathing(b.getDifficultyBreathing());
+		a.setDifficultySwallowing(b.getDifficultySwallowing());
+		a.setDigestedBloodVomit(b.getDigestedBloodVomit());
+		a.setEpistaxis(b.getEpistaxis());
+		a.setEyePainLightSensitive(b.getEyePainLightSensitive());
+		a.setFever(b.getFever());
+		a.setGumsBleeding(b.getGumsBleeding());
+		a.setHeadache(b.getHeadache());
+		a.setHematemesis(b.getHematemesis());
+		a.setHematuria(b.getHematuria());
+		a.setHemoptysis(b.getHemoptysis());
+		a.setHiccups(b.getHiccups());
+		a.setInjectionSiteBleeding(b.getInjectionSiteBleeding());
+		a.setIntenseFatigueWeakness(b.getIntenseFatigueWeakness());
+		a.setJaundice(b.getJaundice());
+		a.setJointPain(b.getJointPain());
+		a.setMelena(b.getMelena());
+		a.setMusclePain(b.getMusclePain());
+		a.setOnsetDate(b.getOnsetDate());
+		a.setOtherHemorrhagic(b.getOtherHemorrhagic());
+		a.setOtherHemorrhagicText(b.getOtherHemorrhagicText());
+		a.setOtherNonHemorrhagic(b.getOtherNonHemorrhagic());
+		a.setOtherNonHemorrhagicSymptoms(b.getOtherNonHemorrhagicSymptoms());
+		a.setPetechiae(b.getPetechiae());
+		a.setSkinRash(b.getSkinRash());
+		a.setSoreThroat(b.getSoreThroat());
+		a.setTemperature(b.getTemperature());
+		a.setTemperatureSource(b.getTemperatureSource());
+		a.setUnexplainedBleeding(b.getUnexplainedBleeding());
+		a.setVomitingNausea(b.getVomitingNausea());		
 		
 		return symptoms;
 	}
@@ -54,10 +79,53 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 			return null;
 		}
 
-		SymptomsDto dto = new SymptomsDto();
+		SymptomsDto a = new SymptomsDto();
+		Symptoms b = symptoms;
 		
-		// @TODO dto.set ...
+		a.setCreationDate(b.getCreationDate());
+		a.setChangeDate(b.getChangeDate());
+		a.setUuid(b.getUuid());
 		
-		return dto;
+		a.setAbdominalPain(b.getAbdominalPain());
+		a.setAnorexiaAppetiteLoss(b.getAnorexiaAppetiteLoss());
+		a.setBleedingVagina(b.getBleedingVagina());
+		a.setChestPain(b.getChestPain());
+		a.setComaUnconscious(b.getComaUnconscious());
+		a.setConfusedDisoriented(b.getConfusedDisoriented());
+		a.setConjunctivitis(b.getConjunctivitis());
+		a.setCough(b.getCough());
+		a.setDiarrhea(b.getDiarrhea());
+		a.setDifficultyBreathing(b.getDifficultyBreathing());
+		a.setDifficultySwallowing(b.getDifficultySwallowing());
+		a.setDigestedBloodVomit(b.getDigestedBloodVomit());
+		a.setEpistaxis(b.getEpistaxis());
+		a.setEyePainLightSensitive(b.getEyePainLightSensitive());
+		a.setFever(b.getFever());
+		a.setGumsBleeding(b.getGumsBleeding());
+		a.setHeadache(b.getHeadache());
+		a.setHematemesis(b.getHematemesis());
+		a.setHematuria(b.getHematuria());
+		a.setHemoptysis(b.getHemoptysis());
+		a.setHiccups(b.getHiccups());
+		a.setInjectionSiteBleeding(b.getInjectionSiteBleeding());
+		a.setIntenseFatigueWeakness(b.getIntenseFatigueWeakness());
+		a.setJaundice(b.getJaundice());
+		a.setJointPain(b.getJointPain());
+		a.setMelena(b.getMelena());
+		a.setMusclePain(b.getMusclePain());
+		a.setOnsetDate(b.getOnsetDate());
+		a.setOtherHemorrhagic(b.getOtherHemorrhagic());
+		a.setOtherHemorrhagicText(b.getOtherHemorrhagicText());
+		a.setOtherNonHemorrhagic(b.getOtherNonHemorrhagic());
+		a.setOtherNonHemorrhagicSymptoms(b.getOtherNonHemorrhagicSymptoms());
+		a.setPetechiae(b.getPetechiae());
+		a.setSkinRash(b.getSkinRash());
+		a.setSoreThroat(b.getSoreThroat());
+		a.setTemperature(b.getTemperature());
+		a.setTemperatureSource(b.getTemperatureSource());
+		a.setUnexplainedBleeding(b.getUnexplainedBleeding());
+		a.setVomitingNausea(b.getVomitingNausea());	
+		
+		return a;
 	}
 }
