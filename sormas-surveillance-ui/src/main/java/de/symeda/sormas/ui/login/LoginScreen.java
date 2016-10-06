@@ -2,14 +2,13 @@ package de.symeda.sormas.ui.login;
 
 import java.io.Serializable;
 
-import com.ejt.vaadin.loginform.DefaultVerticalLoginForm;
-import com.ejt.vaadin.loginform.LoginForm;
 import com.vaadin.server.Page;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.LoginForm;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 
@@ -19,16 +18,11 @@ import com.vaadin.ui.VerticalLayout;
 @SuppressWarnings("serial")
 public class LoginScreen extends CssLayout {
 
-//    private TextField username;
-//    private PasswordField password;
-//    private Button login;
-//    private Button forgotPassword;
     private LoginListener loginListener;
 
     public LoginScreen(LoginListener loginListener) {
         this.loginListener = loginListener;
         buildUI();
-        //username.focus();
     }
 
     private void buildUI() {
@@ -54,48 +48,15 @@ public class LoginScreen extends CssLayout {
     }
 
     private Component buildLoginForm() {
-    	LoginForm loginForm = new DefaultVerticalLoginForm();
+    	LoginForm loginForm = new LoginForm();
     	
     	loginForm.addLoginListener(event -> {
-    		login(event.getUserName(), event.getPassword());
+    		login(event.getLoginParameter("username"), event.getLoginParameter("password"));
     	});
 
         loginForm.addStyleName("login-form");
         loginForm.setSizeUndefined();
-        //loginForm.setMargin(false);
-
-//        loginForm.addComponent(username = new TextField("Username"));
-//        username.setWidth(16, Unit.EM);
-//        loginForm.addComponent(password = new PasswordField("Password"));
-//        password.setWidth(16, Unit.EM);
-//        password.setDescription("Write anything");
-//        CssLayout buttons = new CssLayout();
-//        buttons.setStyleName("buttons");
-//        loginForm.addComponent(buttons);
-
-//        buttons.addComponent(login = new Button("Login"));
-//        login.setDisableOnClick(true);
-//        login.addClickListener(new Button.ClickListener() {
-//            @Override
-//            public void buttonClick(Button.ClickEvent event) {
-//                try {
-//                    login();
-//                } finally {
-//                    login.setEnabled(true);
-//                }
-//            }
-//        });
-//        login.setClickShortcut(ShortcutAction.KeyCode.ENTER);
-//        login.addStyleName(ValoTheme.BUTTON_FRIENDLY);
-//
-//        buttons.addComponent(forgotPassword = new Button("Forgot password?"));
-//        forgotPassword.addClickListener(new Button.ClickListener() {
-//            @Override
-//            public void buttonClick(Button.ClickEvent event) {
-//                showNotification(new Notification("Hint: Try anything"));
-//            }
-//        });
-//        forgotPassword.addStyleName(ValoTheme.BUTTON_LINK);
+        
         return loginForm;
     }
 

@@ -3,11 +3,9 @@ package de.symeda.sormas.ui.utils;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.converter.Converter;
 import com.vaadin.server.Page;
-import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
@@ -150,23 +148,23 @@ public class VaadinUiUtil {
 		}
 	}
 
-	/**
-	 * Setzt den escapeten descriptionText als Description.<br/> 
-	 * AbstractComponent.description wird als HTML angezeigt, damit kann es schnell zu HTML-Injection-Problemen kommen.
-	 * 
-	 * @param c
-	 * @param description
-	 */
-	public static void setDescriptionText(AbstractComponent c, String descriptionText) {
-		if (c == null) {
-			return;
-		}
-		if (descriptionText == null) {
-			c.setDescription(null);
-		} else {
-			c.setDescription(SafeHtmlUtils.htmlEscape(descriptionText));
-		}
-	}
+//	/**
+//	 * Setzt den escapeten descriptionText als Description.<br/> 
+//	 * AbstractComponent.description wird als HTML angezeigt, damit kann es schnell zu HTML-Injection-Problemen kommen.
+//	 * 
+//	 * @param c
+//	 * @param description
+//	 */
+//	public static void setDescriptionText(AbstractComponent c, String descriptionText) {
+//		if (c == null) {
+//			return;
+//		}
+//		if (descriptionText == null) {
+//			c.setDescription(null);
+//		} else {
+//			c.setDescription(SafeHtmlUtils.htmlEscape(descriptionText));
+//		}
+//	}
 
 	/**
 	 * Setzt den Ã¼bergebenen {@code value} per {@link Converter} auf das {@link Field}.<br />

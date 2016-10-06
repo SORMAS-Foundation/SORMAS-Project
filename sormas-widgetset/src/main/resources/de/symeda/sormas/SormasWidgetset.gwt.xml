@@ -8,5 +8,5 @@
 
     
 
-    <inherits name="com.ejt.vaadin.loginform.WidgetSet" />
+    
 </module>
