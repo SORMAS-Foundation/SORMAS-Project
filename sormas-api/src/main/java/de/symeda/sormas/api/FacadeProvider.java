@@ -9,6 +9,7 @@ import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.region.CommunityFacade;
 import de.symeda.sormas.api.region.DistrictFacade;
 import de.symeda.sormas.api.region.RegionFacade;
+import de.symeda.sormas.api.symptoms.SymptomsFacade;
 import de.symeda.sormas.api.user.UserFacade;
 
 public class FacadeProvider {
@@ -40,6 +41,10 @@ public class FacadeProvider {
 	
 	public static PersonFacade getPersonFacade() {
 		return get().lookupEjbRemote(PersonFacade.class);
+	}
+
+	public static SymptomsFacade getSymptomsFacade() {
+		return get().lookupEjbRemote(SymptomsFacade.class);
 	}
 
 	public static FacilityFacade getFacilityFacade() {

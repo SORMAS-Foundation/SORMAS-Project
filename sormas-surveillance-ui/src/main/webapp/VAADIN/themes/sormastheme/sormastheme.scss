@@ -106,6 +106,21 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
   	margin-bottom: 10px;
   }
   
+  .v-caption-inline-optiongroup {
+  	float: left;
+  	padding-top: 7px;
+  	height: 22px;
+  	padding-bottom: 1px;
+  	margin-bottom: -30px;
+  }
+
+  .v-select-optiongroup-inline-optiongroup {
+  	text-align: right;
+  }
+  
+  .v-select-optiongroup-inline-optiongroup .v-select-option {
+  	display: inline-block;
+  }
   
   .v-panel {
   	background: inherit;

@@ -242,6 +242,9 @@ public class Case extends AbstractDomainObject {
 	
 	@OneToOne(cascade = CascadeType.ALL)
 	public Symptoms getSymptoms() {
+		if (symptoms == null) {
+			symptoms = new Symptoms();
+		}
 		return symptoms;
 	}
 	public void setSymptoms(Symptoms symptoms) {

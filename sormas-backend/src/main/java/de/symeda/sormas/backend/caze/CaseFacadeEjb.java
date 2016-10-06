@@ -62,9 +62,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	public CaseDataDto saveCase(CaseDataDto dto) {
 		Case caze = fromCaseDataDto(dto);
 		caseService.ensurePersisted(caze);
-		
 		return toCaseDataDto(caze);
-		
 	}
 	
 	@Override

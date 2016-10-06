@@ -692,6 +692,8 @@ uuid varchar(36) not null unique,
 vomitingnausea varchar(255),
 PRIMARY KEY (id));
 
+ALTER TABLE symptoms OWNER TO sormas_user;
+
 ALTER TABLE cases ADD COLUMN symptoms_id bigint;
 ALTER TABLE cases ADD CONSTRAINT fk_cases_symptoms_id FOREIGN KEY (symptoms_id) REFERENCES symptoms (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
 

@@ -128,4 +128,10 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		
 		return a;
 	}
+
+	@Override
+	public SymptomsDto saveSymptoms(SymptomsDto dto) {
+		Symptoms ado = fromSymptomsDto(dto);
+		symptomsService.ensurePersisted(ado);
+		return toSymptomsDto(ado);	}
 }

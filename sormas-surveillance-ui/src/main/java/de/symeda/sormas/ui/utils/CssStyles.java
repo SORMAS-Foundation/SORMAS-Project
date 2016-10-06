@@ -35,10 +35,14 @@ public final class CssStyles {
 	public static final String BUTTON_SMALL = "btn-small";
 	public static final String BUTTON_MINI = "btn-mini";
 	/**
-	 * Ehält gleiche Margins wie ein Field
+	 * Receives same margins as a field
 	 */
 	public static final String BUTTON_FIELD = "btn-field";
-
+	/**
+	 * Puts the options right aligned in line with the caption
+	 */
+	public static final String INLINE_OPTIONGROUP = "inline-optiongroup";
+		
 	public static final String LINK_ACTIVE = "active";
 
 	public static final String LABEL_SMALL = "small";
@@ -63,13 +67,6 @@ public final class CssStyles {
 
 	public static final String ALIGN_CENTERED = "align-centered";
 
-	/**
-	 * @deprecated use #style
-	 */
-	@Deprecated
-	public static void addStyleNames(Component component, String... styles) {
-		style(component, styles);
-	}
 
 	public static void style(Component component, String... styles) {
 		for (String style : styles)

@@ -17,6 +17,8 @@ import de.symeda.sormas.api.caze.CaseHelper;
 import de.symeda.sormas.api.caze.CaseStatus;
 import de.symeda.sormas.api.person.CasePersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
+import de.symeda.sormas.api.symptoms.SymptomsDto;
+import de.symeda.sormas.api.symptoms.SymptomsFacade;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -30,6 +32,7 @@ public class CaseController {
 
 	private PersonFacade pf = FacadeProvider.getPersonFacade();
 	private CaseFacade cf = FacadeProvider.getCaseFacade();
+	private SymptomsFacade sf = FacadeProvider.getSymptomsFacade();
 	
     public CaseController() {
     	
@@ -39,6 +42,7 @@ public class CaseController {
     	navigator.addView(CasesView.VIEW_NAME, CasesView.class);
     	navigator.addView(CaseDataView.VIEW_NAME, CaseDataView.class);
     	navigator.addView(CasePersonView.VIEW_NAME, CasePersonView.class);
+    	navigator.addView(CaseSymptomsView.VIEW_NAME, CaseSymptomsView.class);
 	}
     
     public void create() {
@@ -46,16 +50,21 @@ public class CaseController {
     	VaadinUiUtil.showModalPopupWindow(caseCreateComponent, "Create new case");    	
     }
     
-    public void edit(CaseDataDto caze) {
-   		String navigationState = CaseDataView.VIEW_NAME + "/" + caze.getUuid();
+    public void editData(String caseUuid) {
+   		String navigationState = CaseDataView.VIEW_NAME + "/" + caseUuid;
    		SurveillanceUI.get().getNavigator().navigateTo(navigationState);	
     }
 
-    public void edit(CasePersonDto person) {
-   		String navigationState = CasePersonView.VIEW_NAME + "/" + person.getCaseUuid();
+    public void editSymptoms(String caseUuid) {
+   		String navigationState = CaseSymptomsView.VIEW_NAME + "/" + caseUuid;
    		SurveillanceUI.get().getNavigator().navigateTo(navigationState);	
     }
 
+    public void editPerson(String caseUuid) {
+   		String navigationState = CasePersonView.VIEW_NAME + "/" + caseUuid;
+   		SurveillanceUI.get().getNavigator().navigateTo(navigationState);	
+    }
+    
     public void overview() {
     	String navigationState = CasesView.VIEW_NAME;
     	SurveillanceUI.get().getNavigator().navigateTo(navigationState);
@@ -117,7 +126,7 @@ public class CaseController {
         		if (caseCreateForm.getFieldGroup().isValid()) {
         			CaseDataDto dto = caseCreateForm.getValue();
         			cf.saveCase(dto);
-        			edit(dto);
+        			editData(dto.getUuid());
         		}
         	}
         });
@@ -138,7 +147,7 @@ public class CaseController {
         		if (caseEditForm.getFieldGroup().isValid()) {
         			CaseDataDto cazeDto = caseEditForm.getValue();
         			cazeDto = cf.saveCase(cazeDto);
-        			edit(cazeDto);
+        			editData(cazeDto.getUuid());
         		}
         	}
         });
@@ -150,15 +159,14 @@ public class CaseController {
         				editView.commit();
         			}
         			CaseDataDto cazeDto = cf.changeCaseStatus(caseUuid, status);
-        			edit(cazeDto); // might be done twice - that's ok		
+        			editData(cazeDto.getUuid()); // might be done twice - that's ok		
         		});
         
         return editView;
     }
 	
 	public CommitDiscardWrapperComponent<CasePersonForm> getCasePersonEditComponent(String caseUuid) {
-    	
-    	
+    	    	
     	VerticalLayout formLayout = new VerticalLayout();
     	CasePersonForm caseEditForm = new CasePersonForm();
         formLayout.addComponent(caseEditForm);
@@ -178,7 +186,7 @@ public class CaseController {
         		if (caseEditForm.getFieldGroup().isValid()) {
         			CasePersonDto dto = caseEditForm.getValue();
         			dto = pf.savePerson(dto);
-        			edit(dto);
+        			editPerson(dto.getCaseUuid());
         		}
         	}
         });
@@ -186,6 +194,31 @@ public class CaseController {
         return editView;
     }
 
-    
-    
+	public CommitDiscardWrapperComponent<CaseSymptomsForm> getCaseSymptomsEditComponent(final String caseUuid) {
+    	
+    	VerticalLayout formLayout = new VerticalLayout();
+    	CaseSymptomsForm caseEditForm = new CaseSymptomsForm();
+        formLayout.addComponent(caseEditForm);
+        formLayout.setSizeFull();
+        formLayout.setExpandRatio(caseEditForm, 1);
+        
+        CaseDataDto caseDataDto = findCase(caseUuid);
+        caseEditForm.setValue(caseDataDto.getSymptoms());
+        
+        final CommitDiscardWrapperComponent<CaseSymptomsForm> editView = new CommitDiscardWrapperComponent<CaseSymptomsForm>(caseEditForm, caseEditForm.getFieldGroup());
+        
+        editView.addCommitListener(new CommitListener() {
+        	
+        	@Override
+        	public void onCommit() {
+        		if (caseEditForm.getFieldGroup().isValid()) {
+        			SymptomsDto dto = caseEditForm.getValue();
+        			dto = sf.saveSymptoms(dto);
+        			editSymptoms(caseUuid);
+        		}
+        	}
+        });
+        
+        return editView;
+    }    
 }

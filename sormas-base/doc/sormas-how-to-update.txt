@@ -1,0 +1,8 @@
+== How to update SORMAS ==
+1. start server
+2. update database: open sormas_schema.sql and execute ONLY the new part (compare based on table schema_version)
+3. copy sormas-ear.ear, sormas-rest.war, sormas-surveillance-ui.war to C:\srv\payara-sormas\glassfish\domains\sormas\autodeploy
+   after some seconds the server should be updated (wait until nothing happens in the log)
+4. try to login at https://IP:6081/sormas-surveillance-ui
+   if it doesn't work: restart the server
+5. update the mobile app with the new apk file 

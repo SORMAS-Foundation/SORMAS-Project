@@ -6,7 +6,49 @@ import de.symeda.sormas.api.DataTransferObject;
 
 public class SymptomsDto extends DataTransferObject {
 
+	public static final String I18N_PREFIX = "Symptoms";
+
 	private static final long serialVersionUID = 4146526547904182448L;
+	
+	public static final String ABDOMINAL_PAIN = "abdominalPain";
+	public static final String ANOREXIA_APPETITE_LOSS = "anorexiaAppetiteLoss";
+	public static final String BLEEDING_VAGINA = "bleedingVagina";
+	public static final String CHEST_PAIN = "chestPain";
+	public static final String COMA_UNCONSCIOUS = "comaUnconscious";
+	public static final String CONFUSED_DISORIENTED = "confusedDisoriented";
+	public static final String CONJUNCTIVITIS = "conjunctivitis";
+	public static final String COUGH = "cough";
+	public static final String DIARRHEA = "diarrhea";
+	public static final String DIFFICULTY_BREATHING = "difficultyBreathing";
+	public static final String DIFFICULTY_SWALLOWING = "difficultySwallowing";
+	public static final String DIGESTED_BLOOD_VOMIT = "digestedBloodVomit";
+	public static final String EPISTAXIS = "epistaxis";
+	public static final String EYE_PAIN_LIGHT_SENSITIVE = "eyePainLightSensitive";
+	public static final String FEVER = "fever";
+	public static final String GUMS_BLEEDING = "gumsBleeding";
+	public static final String HEADACHE = "headache";
+	public static final String HEMATEMESIS = "hematemesis";
+	public static final String HEMATURIA = "hematuria";
+	public static final String HEMOPTYSIS = "hemoptysis";
+	public static final String HICCUPS = "hiccups";
+	public static final String INJECTION_SITE_BLEEDING = "injectionSiteBleeding";
+	public static final String INTENSE_FATIGUE_WEAKNESS = "intenseFatigueWeakness";
+	public static final String JAUNDICE = "jaundice";
+	public static final String JOINT_PAIN = "jointPain";
+	public static final String MELENA = "melena";
+	public static final String MUSCLE_PAIN = "musclePain";
+	public static final String ONSET_DATE = "onsetDate";
+	public static final String OTHER_HEMORRHAGIC = "otherHemorrhagic";
+	public static final String OTHER_HEMORRHAGIC_TEXT = "otherHemorrhagicText";
+	public static final String OTHER_NON_HEMORRHAGIC = "otherNonHemorrhagic";
+	public static final String OTHER_NON_HEMORRHAGIC_SYMPTOMS = "otherNonHemorrhagicSymptoms";
+	public static final String PETECHIAE = "petechiae";
+	public static final String SKIN_RASH = "skinRash";
+	public static final String SORE_THROAT = "soreThroat";
+	public static final String TEMPERATURE = "temperature";
+	public static final String TEMPERATURE_SOURCE = "temperatureSource";
+	public static final String UNEXPLAINED_BLEEDING = "unexplainedBleeding";
+	public static final String VOMITING_NAUSEA = "vomitingNausea";
 
 	private Date onsetDate;
 	

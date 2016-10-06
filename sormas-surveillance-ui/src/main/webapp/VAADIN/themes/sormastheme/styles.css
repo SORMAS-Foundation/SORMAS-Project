@@ -1005,7 +1005,7 @@
  */
 
 .v-vaadin-version:after {
-	content: "7.6.6";
+	content: "7.7.3";
 }
 
 .v-widget {
@@ -3104,21 +3104,20 @@ div.v-layout.v-horizontal.v-widget {
 	-ms-backface-visibility: hidden;
 	backface-visibility: hidden;
 	padding: 4px 4px;
-	-webkit-box-sizing: border-box;
-	-moz-box-sizing: border-box;
-	box-sizing: border-box;
-	position: relative;
-	z-index: 1;
-}
-
-.sormastheme .v-filterselect-suggestpopup [class$="suggestmenu"][style*="height"] {
 	-webkit-box-sizing: content-box;
 	-moz-box-sizing: content-box;
 	box-sizing: content-box;
+	position: relative;
+	z-index: 1;
+	display: block;
 }
 
 .sormastheme .v-filterselect-suggestpopup table, .sormastheme .v-filterselect-suggestpopup tbody, .sormastheme .v-filterselect-suggestpopup tr, .sormastheme .v-filterselect-suggestpopup td {
 	display: block;
+	width: 100%;
+	overflow-y: hidden;
+	float: left;
+	clear: both;
 }
 
 .sormastheme .v-filterselect-suggestpopup .gwt-MenuItem {
@@ -3129,6 +3128,10 @@ div.v-layout.v-horizontal.v-widget {
 	font-weight: 400;
 	white-space: nowrap;
 	position: relative;
+	height: 23px;
+	box-sizing: border-box;
+	text-overflow: ellipsis;
+	overflow-x: hidden;
 }
 
 .sormastheme .v-filterselect-suggestpopup .gwt-MenuItem:active:before {
@@ -9230,6 +9233,11 @@ div.v-layout.v-horizontal.v-widget {
 	display: inline;
 }
 
+.sormastheme .v-on.v-disabled, .sormastheme .v-off.v-disabled {
+	opacity: 0.5;
+	filter: alpha(opacity=50) ;
+}
+
 .sormastheme .v-off:before {
 	visibility: hidden;
 }
@@ -10947,6 +10955,12 @@ div.v-layout.v-horizontal.v-widget {
 	content: "\f054";
 }
 
+.sormastheme .v-select-twincol-error .v-select-twincol-options, .sormastheme .v-select-twincol-error .v-select-twincol-selections {
+	border-color: #eb2977 !important;
+	background: #fffbfc;
+	color: #6c213f;
+}
+
 .sormastheme .v-select select {
 	border: 1px solid #c5c5c5;
 	background-color: #fafafa;
@@ -10973,6 +10987,12 @@ div.v-layout.v-horizontal.v-widget {
 .sormastheme .v-select-select  + .v-textfield  + .v-nativebutton {
 	margin-top: 8px;
 	margin-left: 8px;
+}
+
+.sormastheme .v-select-error .v-select-select {
+	border-color: #eb2977 !important;
+	background: #fffbfc;
+	color: #6c213f;
 }
 
 .sormastheme .v-calendar-header-day {
@@ -11415,6 +11435,11 @@ div.v-layout.v-horizontal.v-widget {
 	user-select: text;
 }
 
+.sormastheme .v-label.v-disabled {
+	opacity: 0.5;
+	filter: alpha(opacity=50) ;
+}
+
 .sormastheme .v-label-undef-w {
 	white-space: nowrap;
 }
@@ -11694,6 +11719,12 @@ div.v-layout.v-horizontal.v-widget {
 .sormastheme .v-select-select  + .v-textfield  + .v-nativebutton {
 	margin-top: 8px;
 	margin-left: 8px;
+}
+
+.sormastheme .v-select-error .v-select-select {
+	border-color: #eb2977 !important;
+	background: #fffbfc;
+	color: #6c213f;
 }
 
 .sormastheme .v-popupview {
@@ -13006,6 +13037,22 @@ div.v-layout.v-horizontal.v-widget {
 
 .sormastheme .v-widget.v-textfield, .sormastheme .v-widget.v-textarea, .sormastheme .v-widget.v-select, .sormastheme .v-widget.v-datefield, .sormastheme .v-widget.v-filterselect {
 	margin-bottom: 10px;
+}
+
+.sormastheme .v-caption-inline-optiongroup {
+	float: left;
+	padding-top: 7px;
+	height: 22px;
+	padding-bottom: 1px;
+	margin-bottom: -30px;
+}
+
+.sormastheme .v-select-optiongroup-inline-optiongroup {
+	text-align: right;
+}
+
+.sormastheme .v-select-optiongroup-inline-optiongroup .v-select-option {
+	display: inline-block;
 }
 
 .sormastheme .v-panel {

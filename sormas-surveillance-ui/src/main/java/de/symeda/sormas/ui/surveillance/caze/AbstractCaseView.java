@@ -45,6 +45,7 @@ public abstract class AbstractCaseView extends AbstractView {
     	caseNavigationMenu.addView(CasesView.VIEW_NAME, "Cases List");
     	caseNavigationMenu.addView(CaseDataView.VIEW_NAME, "Case Data", uuid);
     	caseNavigationMenu.addView(CasePersonView.VIEW_NAME, "Patient Information", uuid);
+    	caseNavigationMenu.addView(CaseSymptomsView.VIEW_NAME, "Symptoms", uuid);
     }
     
     protected String getCaseUuid() {

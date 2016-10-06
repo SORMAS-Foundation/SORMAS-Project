@@ -39,7 +39,8 @@ public class CasesView extends AbstractView {
         addStyleName("crud-view");
 
         grid = new CaseGrid();
-        grid.addItemClickListener(e -> ControllerProvider.getCaseController().edit((CaseDataDto)e.getItemId()));
+        grid.addItemClickListener(e -> ControllerProvider.getCaseController().editData(
+        		((CaseDataDto)e.getItemId()).getUuid()));
 
         gridLayout = new VerticalLayout();
         gridLayout.addComponent(createTopBar());
