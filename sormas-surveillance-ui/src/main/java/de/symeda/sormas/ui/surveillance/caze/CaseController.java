@@ -6,6 +6,8 @@ import java.util.List;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.Disease;
@@ -126,6 +128,7 @@ public class CaseController {
         		if (caseCreateForm.getFieldGroup().isValid()) {
         			CaseDataDto dto = caseCreateForm.getValue();
         			cf.saveCase(dto);
+        			Notification.show("New case created", Type.TRAY_NOTIFICATION);
         			editData(dto.getUuid());
         		}
         	}
@@ -147,6 +150,7 @@ public class CaseController {
         		if (caseEditForm.getFieldGroup().isValid()) {
         			CaseDataDto cazeDto = caseEditForm.getValue();
         			cazeDto = cf.saveCase(cazeDto);
+        			Notification.show("Case data saved", Type.TRAY_NOTIFICATION);
         			editData(cazeDto.getUuid());
         		}
         	}
@@ -186,6 +190,7 @@ public class CaseController {
         		if (caseEditForm.getFieldGroup().isValid()) {
         			CasePersonDto dto = caseEditForm.getValue();
         			dto = pf.savePerson(dto);
+        			Notification.show("Patient information saved", Type.TRAY_NOTIFICATION);
         			editPerson(dto.getCaseUuid());
         		}
         	}
@@ -214,6 +219,7 @@ public class CaseController {
         		if (caseEditForm.getFieldGroup().isValid()) {
         			SymptomsDto dto = caseEditForm.getValue();
         			dto = sf.saveSymptoms(dto);
+        			Notification.show("Case symptoms saved", Type.TRAY_NOTIFICATION);
         			editSymptoms(caseUuid);
         		}
         	}
