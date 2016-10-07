@@ -121,7 +121,7 @@ public class Person extends AbstractDomainObject {
 		this.approximateAgeType = approximateAgeType;
 	}
 	
-	@ManyToOne(cascade = CascadeType.ALL)
+	@OneToOne(cascade = CascadeType.ALL)
 	public Location getAddress() {
 		if (address == null) {
 			address = new Location();
@@ -184,7 +184,7 @@ public class Person extends AbstractDomainObject {
 		this.deathDate = deathDate;
 	}
 	
-	@ManyToOne(cascade = CascadeType.ALL)
+	@OneToOne(cascade = CascadeType.ALL)
 	public Location getDeathLocation() {
 		if (deathLocation == null) {
 			deathLocation = new Location();
@@ -203,7 +203,7 @@ public class Person extends AbstractDomainObject {
 		this.burialDate = burialDate;
 	}
 	
-	@ManyToOne(cascade = CascadeType.ALL)
+	@OneToOne(cascade = CascadeType.ALL)
 	public Location getBurialLocation() {
 		if (burialLocation == null) {
 			burialLocation = new Location();

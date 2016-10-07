@@ -181,7 +181,7 @@ public class Case extends AbstractDomainObject {
 		this.healthFacility = healthFacility;
 	}
 	
-	@ManyToOne(cascade = CascadeType.ALL)
+	@OneToOne(cascade = CascadeType.ALL)
 	public Location getIllLocation() {
 		if (illLocation == null) {
 			illLocation = new Location();

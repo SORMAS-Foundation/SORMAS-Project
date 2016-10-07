@@ -2,7 +2,10 @@ package de.symeda.sormas.api.symptoms;
 
 import java.util.Date;
 
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
 import de.symeda.sormas.api.DataTransferObject;
+import de.symeda.sormas.api.utils.PreciseDateAdapter;
 
 public class SymptomsDto extends DataTransferObject {
 
@@ -93,6 +96,8 @@ public class SymptomsDto extends DataTransferObject {
 	
 	private SymptomState otherNonHemorrhagic;
 	private String otherNonHemorrhagicSymptoms;
+	
+	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public Date getOnsetDate() {
 		return onsetDate;
 	}

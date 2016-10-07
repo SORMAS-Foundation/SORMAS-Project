@@ -14,7 +14,6 @@ import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.util.DtoHelper;
 
 @Stateless(name = "LocationFacade")
-@LocalBean
 public class LocationFacadeEjb implements LocationFacade {
 	
 	@EJB
@@ -79,5 +78,10 @@ public class LocationFacadeEjb implements LocationFacade {
 		dto.setLongitude(location.getLongitude());
 		
 		return dto;
+	}
+	
+	@LocalBean
+	@Stateless
+	public static class LocationFacadeEjbLocal extends LocationFacadeEjb {
 	}
 }

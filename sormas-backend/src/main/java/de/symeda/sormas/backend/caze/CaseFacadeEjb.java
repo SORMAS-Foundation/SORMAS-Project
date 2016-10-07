@@ -19,6 +19,7 @@ import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
+import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLocal;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -34,7 +35,8 @@ public class CaseFacadeEjb implements CaseFacade {
 	private FacilityService facilityService;
 	@EJB
 	private UserService userService;
-	
+	@EJB
+	private SymptomsFacadeEjbLocal symptomsFacade;
 	
 	@Override
 	public List<CaseDataDto> getAllCases() {
@@ -152,6 +154,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		caze.setContactOfficer(DtoHelper.fromReferenceDto(dto.getContactOfficer(), userService));
 		caze.setContactSupervisor(DtoHelper.fromReferenceDto(dto.getContactSupervisor(), userService));
 
+		// this is explicitly not saved here 
+		//caze.setSymptoms(symptomsFacade.fromSymptomsDto(dto.getSymptoms()));
 
 		return caze;
 	}

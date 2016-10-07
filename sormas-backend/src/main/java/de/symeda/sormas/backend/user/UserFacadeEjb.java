@@ -12,6 +12,7 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserFacade;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
+import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
 import de.symeda.sormas.backend.util.DtoHelper;
 
 @Stateless(name = "UserFacade")
@@ -20,7 +21,7 @@ public class UserFacadeEjb implements UserFacade {
 	@EJB
 	private UserService service;
 	@EJB
-	private LocationFacadeEjb locationFacade;
+	private LocationFacadeEjbLocal locationFacade;
 
 	@Override
 	public List<ReferenceDto> getListAsReference(UserRole userRole) {

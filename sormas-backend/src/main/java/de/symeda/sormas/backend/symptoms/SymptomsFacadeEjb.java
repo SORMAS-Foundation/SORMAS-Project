@@ -3,6 +3,7 @@ package de.symeda.sormas.backend.symptoms;
 import java.sql.Timestamp;
 
 import javax.ejb.EJB;
+import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.symptoms.SymptomsDto;
@@ -134,4 +135,10 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		Symptoms ado = fromSymptomsDto(dto);
 		symptomsService.ensurePersisted(ado);
 		return toSymptomsDto(ado);	}
+	
+	@LocalBean
+	@Stateless
+	public static class SymptomsFacadeEjbLocal extends SymptomsFacadeEjb {
+	}
 }
+

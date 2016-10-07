@@ -21,6 +21,7 @@ import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
+import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
 import de.symeda.sormas.backend.util.DtoHelper;
 
 @Stateless(name = "PersonFacade")
@@ -31,7 +32,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	@EJB
 	private FacilityService facilityService;
 	@EJB
-	private LocationFacadeEjb locationFacade;
+	private LocationFacadeEjbLocal locationFacade;
 	
 	@Override
 	public List<PersonDto> getAllPersons() {
