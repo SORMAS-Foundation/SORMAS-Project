@@ -20,7 +20,7 @@ public class Symptoms extends AbstractDomainObject {
 	
 	private Date onsetDate;
 	
-	private int temperature;
+	private float temperature;
 	private TemperatureSource temperatureSource;
 	
 	private SymptomState fever;
@@ -73,10 +73,10 @@ public class Symptoms extends AbstractDomainObject {
 		this.onsetDate = onsetDate;
 	}
 
-	public int getTemperature() {
+	public float getTemperature() {
 		return temperature;
 	}
-	public void setTemperature(int temperature) {
+	public void setTemperature(float temperature) {
 		this.temperature = temperature;
 	}
 	

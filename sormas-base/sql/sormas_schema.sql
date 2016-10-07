@@ -685,7 +685,7 @@ petechiae varchar(255),
 skinrash varchar(255),
 sorethroat varchar(255), 
 onsetdate timestamp without time zone;
-temperature integer,
+temperature real,
 temperaturesource varchar(255),
 unexplainedbleeding varchar(255),
 uuid varchar(36) not null unique,

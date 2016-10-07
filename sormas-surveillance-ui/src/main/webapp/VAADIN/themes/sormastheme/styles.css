@@ -13078,6 +13078,10 @@ div.v-layout.v-horizontal.v-widget {
 	margin-top: 1.5em;
 }
 
+.sormastheme .v-readonly, .sormastheme .v-caption-v-readonly {
+	color: #aaa;
+}
+
 .sormastheme .about-view {
 	overflow: auto;
 }

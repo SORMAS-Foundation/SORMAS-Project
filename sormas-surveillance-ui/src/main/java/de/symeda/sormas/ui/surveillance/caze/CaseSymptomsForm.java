@@ -1,10 +1,15 @@
 package de.symeda.sormas.ui.surveillance.caze;
 
+import java.util.Arrays;
+
 import com.vaadin.ui.NativeSelect;
 
+import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
+import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
 @SuppressWarnings("serial")
@@ -24,11 +29,14 @@ public class CaseSymptomsForm extends AbstractEditForm<SymptomsDto> {
 									SymptomsDto.SKIN_RASH, SymptomsDto.HICCUPS, SymptomsDto.EYE_PAIN_LIGHT_SENSITIVE,
 									SymptomsDto.COMA_UNCONSCIOUS, SymptomsDto.CONFUSED_DISORIENTED)),
 					LayoutUtil.fluidColumn(6, 0,
-							LayoutUtil.locs(SymptomsDto.UNEXPLAINED_BLEEDING, SymptomsDto.GUMS_BLEEDING,
+							LayoutUtil.locsCss(CssStyles.VSPACE3,
+									SymptomsDto.UNEXPLAINED_BLEEDING, SymptomsDto.GUMS_BLEEDING,
 									SymptomsDto.INJECTION_SITE_BLEEDING, SymptomsDto.EPISTAXIS, SymptomsDto.MELENA,
 									SymptomsDto.HEMATEMESIS, SymptomsDto.DIGESTED_BLOOD_VOMIT, SymptomsDto.HEMOPTYSIS,
-									SymptomsDto.BLEEDING_VAGINA, SymptomsDto.PETECHIAE, SymptomsDto.HEMATURIA,
-									SymptomsDto.OTHER_HEMORRHAGIC, SymptomsDto.OTHER_HEMORRHAGIC_TEXT,
+									SymptomsDto.BLEEDING_VAGINA, SymptomsDto.PETECHIAE, SymptomsDto.HEMATURIA)+
+							LayoutUtil.locsCss(CssStyles.VSPACE3,
+									SymptomsDto.OTHER_HEMORRHAGIC, SymptomsDto.OTHER_HEMORRHAGIC_TEXT)+
+							LayoutUtil.locsCss(CssStyles.VSPACE3,
 									SymptomsDto.OTHER_NON_HEMORRHAGIC, SymptomsDto.OTHER_NON_HEMORRHAGIC_SYMPTOMS)));
 
 	public CaseSymptomsForm() {
@@ -39,7 +47,12 @@ public class CaseSymptomsForm extends AbstractEditForm<SymptomsDto> {
 	protected void addFields() {
 
 		addField(SymptomsDto.ONSET_DATE);
-		addField(SymptomsDto.TEMPERATURE, NativeSelect.class);
+		NativeSelect temperature = addField(SymptomsDto.TEMPERATURE, NativeSelect.class);
+		for (Float temperatureValue : SymptomsHelper.getTemperatureValues()) {
+			temperature.addItem(temperatureValue);
+			temperature.setItemCaption(temperatureValue, SymptomsHelper.getTemperatureString(temperatureValue));
+		}
+		
 		addField(SymptomsDto.TEMPERATURE_SOURCE);
 
 		addFields(SymptomsDto.FEVER, SymptomsDto.VOMITING_NAUSEA, SymptomsDto.DIARRHEA,
@@ -54,6 +67,24 @@ public class CaseSymptomsForm extends AbstractEditForm<SymptomsDto> {
 				SymptomsDto.HEMOPTYSIS, SymptomsDto.BLEEDING_VAGINA, SymptomsDto.PETECHIAE, SymptomsDto.HEMATURIA,
 				SymptomsDto.OTHER_HEMORRHAGIC, SymptomsDto.OTHER_HEMORRHAGIC_TEXT, SymptomsDto.OTHER_NON_HEMORRHAGIC,
 				SymptomsDto.OTHER_NON_HEMORRHAGIC_SYMPTOMS);
+
+		FieldHelper.setReadOnlyWhen(getFieldGroup(), 
+				Arrays.asList(SymptomsDto.GUMS_BLEEDING, SymptomsDto.INJECTION_SITE_BLEEDING,
+				SymptomsDto.EPISTAXIS, SymptomsDto.MELENA, SymptomsDto.HEMATEMESIS, SymptomsDto.DIGESTED_BLOOD_VOMIT,
+				SymptomsDto.HEMOPTYSIS, SymptomsDto.BLEEDING_VAGINA, SymptomsDto.PETECHIAE, SymptomsDto.HEMATURIA,
+				SymptomsDto.OTHER_HEMORRHAGIC, SymptomsDto.OTHER_HEMORRHAGIC_TEXT),
+				SymptomsDto.UNEXPLAINED_BLEEDING, 
+				Arrays.asList(null, SymptomState.NO, SymptomState.UNKNOWN), true);
+
+		FieldHelper.setVisibleWhen(getFieldGroup(), 
+				Arrays.asList(SymptomsDto.OTHER_HEMORRHAGIC_TEXT),
+				SymptomsDto.OTHER_HEMORRHAGIC, 
+				Arrays.asList(SymptomState.YES), true);
+
+		FieldHelper.setVisibleWhen(getFieldGroup(), 
+				Arrays.asList(SymptomsDto.OTHER_NON_HEMORRHAGIC_SYMPTOMS),
+				SymptomsDto.OTHER_NON_HEMORRHAGIC, 
+				Arrays.asList(SymptomState.YES), true);
 
 		setRequired(true, SymptomsDto.ONSET_DATE);
 		// setReadOnly(true, );

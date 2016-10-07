@@ -146,6 +146,10 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
 	margin-top: 1.5em;
   }
   
+  .v-readonly, .v-caption-v-readonly {
+  	color: #aaa;
+  }
+  
   // About view
 
   .about-view {

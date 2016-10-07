@@ -42,6 +42,10 @@ public class LayoutUtil {
 		return sb.toString();
 	}
 
+	public static String locsCss(String css, String... locations) {
+		return divCss(css, locs(locations));
+	}
+
 	public static String flowLocs(String... locations) {
 		StringBuilder sb = new StringBuilder();
 		for (String location : locations) {
