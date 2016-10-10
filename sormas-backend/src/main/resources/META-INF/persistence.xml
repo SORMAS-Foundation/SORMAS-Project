@@ -12,6 +12,7 @@
 		<class>de.symeda.sormas.backend.person.Person</class>
 		<class>de.symeda.sormas.backend.location.Location</class>
 		<class>de.symeda.sormas.backend.symptoms.Symptoms</class>
+		<class>de.symeda.sormas.backend.task.Task</class>
 		<class>de.symeda.sormas.backend.user.User</class>
 		<class>de.symeda.sormas.backend.region.Region</class>
 		<class>de.symeda.sormas.backend.region.District</class>

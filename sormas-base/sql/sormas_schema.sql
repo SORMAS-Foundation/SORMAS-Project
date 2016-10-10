@@ -699,3 +699,29 @@ ALTER TABLE cases ADD CONSTRAINT fk_cases_symptoms_id FOREIGN KEY (symptoms_id) 
 
 INSERT INTO schema_version (version_number, comment) VALUES (3, 'Symptoms');
 
+
+CREATE TABLE task (
+id bigint not null,
+assigneereply varchar(512), 
+changedate timestamp not null, 
+creationdate timestamp not null, 
+creatorcomment varchar(512), 
+duedate timestamp, 
+perceivedstart timestamp, 
+statuschangedate timestamp, 
+taskcontext varchar(255), 
+taskstatus varchar(255), 
+tasktype varchar(255), 
+uuid varchar(36) not null unique, 
+assigneeuser_id bigint, 
+caze_id bigint, 
+creatoruser_id bigint, 
+PRIMARY KEY (id));
+
+ALTER TABLE task OWNER TO sormas_user;
+
+ALTER TABLE task ADD CONSTRAINT fk_task_caze_id FOREIGN KEY (caze_id) REFERENCES cases (id);
+ALTER TABLE task ADD CONSTRAINT fk_task_creatoruser_id FOREIGN KEY (creatoruser_id) REFERENCES users (id);
+ALTER TABLE task ADD CONSTRAINT fk_task_assigneeuser_id FOREIGN KEY (assigneeuser_id) REFERENCES users (id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (4, 'Task');

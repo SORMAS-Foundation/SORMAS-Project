@@ -101,6 +101,7 @@ public class SymptomsDto extends DataTransferObject {
 	public Date getOnsetDate() {
 		return onsetDate;
 	}
+	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public void setOnsetDate(Date onsetDate) {
 		this.onsetDate = onsetDate;
 	}

@@ -7,14 +7,14 @@ import java.lang.reflect.Method;
 
 import org.junit.Test;
 
-import de.symeda.sormas.api.symptoms.SymptomsDto;
+import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.symptoms.Symptoms;
+import de.symeda.sormas.backend.task.Task;
 
 public class DtoAdoCodeGenerator {
 
-	Class<?> ado = Symptoms.class;
-	Class<?> dto = SymptomsDto.class;
+	Class<?> ado = Task.class;
+	Class<?> dto = TaskDto.class;
 
 	@Test
 	public void generateCopyJava() throws IntrospectionException {

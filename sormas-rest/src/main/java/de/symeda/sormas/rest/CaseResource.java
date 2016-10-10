@@ -33,7 +33,8 @@ public class CaseResource {
 		return cases;
 	}
 	
-	@POST @Path("/push")
+	@POST 
+	@Path("/push")
 	public Integer postCases(List<CaseDataDto> dtos) {
 		
 		CaseFacade caseFacade = FacadeProvider.getCaseFacade();

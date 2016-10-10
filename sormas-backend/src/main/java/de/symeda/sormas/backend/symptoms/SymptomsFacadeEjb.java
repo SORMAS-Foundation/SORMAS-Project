@@ -13,14 +13,14 @@ import de.symeda.sormas.api.symptoms.SymptomsFacade;
 public class SymptomsFacadeEjb implements SymptomsFacade {
 	
 	@EJB
-	private SymptomsService symptomsService;
+	private SymptomsService service;
 
-	public Symptoms fromSymptomsDto(SymptomsDto dto) {		
+	public Symptoms fromDto(SymptomsDto dto) {		
 		if (dto == null) {
 			return null;
 		}
 		
-		Symptoms symptoms = symptomsService.getByUuid(dto.getUuid());
+		Symptoms symptoms = service.getByUuid(dto.getUuid());
 		if (symptoms == null) {
 			symptoms = new Symptoms();
 			symptoms.setUuid(dto.getUuid());
@@ -74,7 +74,7 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		return symptoms;
 	}
 	
-	public static SymptomsDto toSymptomsDto(Symptoms symptoms) {
+	public static SymptomsDto toDto(Symptoms symptoms) {
 		
 		if (symptoms == null) {
 			return null;
@@ -132,9 +132,9 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 
 	@Override
 	public SymptomsDto saveSymptoms(SymptomsDto dto) {
-		Symptoms ado = fromSymptomsDto(dto);
-		symptomsService.ensurePersisted(ado);
-		return toSymptomsDto(ado);	}
+		Symptoms ado = fromDto(dto);
+		service.ensurePersisted(ado);
+		return toDto(ado);	}
 	
 	@LocalBean
 	@Stateless
