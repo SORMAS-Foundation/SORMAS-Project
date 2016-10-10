@@ -684,7 +684,7 @@ othernonhemorrhagicsymptoms varchar(255),
 petechiae varchar(255),
 skinrash varchar(255),
 sorethroat varchar(255), 
-onsetdate timestamp without time zone;
+onsetdate timestamp without time zone,
 temperature real,
 temperaturesource varchar(255),
 unexplainedbleeding varchar(255),
