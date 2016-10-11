@@ -1,16 +1,25 @@
 package de.symeda.sormas.app.backend.caze;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.backend.symptoms.Symptoms;
+import de.symeda.sormas.app.backend.symptoms.SymptomsDtoHelper;
 import de.symeda.sormas.app.backend.user.User;
 
 /**
  * Created by Martin Wahnschaffe on 27.07.2016.
  */
 public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
+
+    private SymptomsDtoHelper symptomsDtoHelper;
+
+    public CaseDtoHelper() {
+        symptomsDtoHelper = new SymptomsDtoHelper();
+    }
 
     @Override
     public Case create() {
@@ -39,11 +48,21 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
         }
         ado.setInvestigatedDate(dto.getInvestigatedDate());
         ado.setReportDate(dto.getReportDate());
-
         if (dto.getReportingUser() != null) {
             ado.setReportingUser(DatabaseHelper.getUserDao().queryUuid(dto.getReportingUser().getUuid()));
         } else {
             ado.setReportingUser(null);
+        }
+
+        if (dto.getSymptoms() != null) {
+            Symptoms symptoms = DatabaseHelper.getSymptomsDao().queryUuid(dto.getSymptoms().getUuid());
+            if(symptoms!=null) {
+                symptoms = symptomsDtoHelper.create();
+                symptomsDtoHelper.fillInnerFromDto(symptoms, dto.getSymptoms());
+            }
+            ado.setSymptoms(symptoms);
+        } else {
+            ado.setSymptoms(null);
         }
 
         if (dto.getSurveillanceOfficer() != null) {
@@ -83,6 +102,15 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
             dto.setReportingUser(AdoDtoHelper.toReferenceDto(user));
         } else {
             dto.setReportingUser(null);
+        }
+
+        if (ado.getSymptoms() != null) {
+            Symptoms symptoms = DatabaseHelper.getSymptomsDao().queryForId(ado.getSymptoms().getId());
+            SymptomsDto symptomsDto = symptomsDtoHelper.createDto();
+            symptomsDtoHelper.fillInnerFromAdo(symptomsDto, symptoms);
+            dto.setSymptoms(symptomsDto);
+        } else {
+            ado.setSymptoms(null);
         }
 
         if (ado.getSurveillanceOfficer() != null) {

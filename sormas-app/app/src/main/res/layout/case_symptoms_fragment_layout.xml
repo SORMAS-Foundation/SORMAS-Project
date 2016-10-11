@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+        <variable name="symptoms" type="de.symeda.sormas.app.backend.symptoms.Symptoms"/>
+    </data>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="10dp"
+            android:theme="@style/AppTheme">
+
+            <!-- ============= SYMPTOMS ============= -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="@string/headline_symptoms_data"
+                android:id="@+id/person_information_headline"
+                android:textColor="@android:color/tab_indicator_text"
+                android:textSize="@dimen/abc_text_size_body_1_material"
+                android:textStyle="bold"
+                android:paddingBottom="10dp" />
+
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_fever"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                layout="@layout/field_yes_no"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_vomitingNausea"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                layout="@layout/field_yes_no"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_diarrhea"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                layout="@layout/field_yes_no"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_intenseFatigueWeakness"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                layout="@layout/field_yes_no"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_anorexiaAppetiteLoss"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                layout="@layout/field_yes_no"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_abdominalPain"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                layout="@layout/field_yes_no"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_chestPain"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                layout="@layout/field_yes_no"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_musclePain"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                layout="@layout/field_yes_no"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_jointPain"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                layout="@layout/field_yes_no"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_headache"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                layout="@layout/field_yes_no"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_cough"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                layout="@layout/field_yes_no"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_difficultyBreathing"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                layout="@layout/field_yes_no"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_difficultySwallowing"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                layout="@layout/field_yes_no"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_soreThroat"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                layout="@layout/field_yes_no"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_jaundice"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                layout="@layout/field_yes_no"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_conjunctivitis"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                layout="@layout/field_yes_no"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_skinRash"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                layout="@layout/field_yes_no"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_hiccups"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                layout="@layout/field_yes_no"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_eyePainLightSensitive"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                layout="@layout/field_yes_no"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_comaUnconscious"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                layout="@layout/field_yes_no"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_confusedDisoriented"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                layout="@layout/field_yes_no"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_unexplainedBleeding"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                layout="@layout/field_yes_no"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_gumsBleeding"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                layout="@layout/field_yes_no"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_injectionSiteBleeding"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                layout="@layout/field_yes_no"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_epistaxis"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                layout="@layout/field_yes_no"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_melena"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                layout="@layout/field_yes_no"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_hematemesis"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                layout="@layout/field_yes_no"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_digestedBloodVomit"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                layout="@layout/field_yes_no"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_hemoptysis"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                layout="@layout/field_yes_no"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_bleedingVagina"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                layout="@layout/field_yes_no"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_petechiae"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                layout="@layout/field_yes_no"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_hematuria"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                layout="@layout/field_yes_no"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_otherHemorrhagic"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                layout="@layout/field_yes_no"/>
+
+
+        </LinearLayout>
+    </ScrollView>
+</layout>

@@ -19,6 +19,7 @@ public class CaseEditPagerAdapter extends FragmentStatePagerAdapter {
     private Bundle caseEditBundle; // this bundle contains the uuids
     private CaseEditDataTab caseEditDataTab;
     private CaseEditPersonTab caseEditPersonTab;
+    private CaseEditSymptomsTab caseEditSymptomsTab;
 
 
     // Build a Constructor and assign the passed Values to appropriate values in the class
@@ -44,6 +45,11 @@ public class CaseEditPagerAdapter extends FragmentStatePagerAdapter {
                 caseEditPersonTab.setArguments(caseEditBundle);
                 frag = caseEditPersonTab;
                 break;
+            case 2:
+                caseEditSymptomsTab = new CaseEditSymptomsTab();
+                caseEditSymptomsTab.setArguments(caseEditBundle);
+                frag = caseEditSymptomsTab;
+                break;
         }
         return frag;
     }
@@ -68,6 +74,9 @@ public class CaseEditPagerAdapter extends FragmentStatePagerAdapter {
                 break;
             case 1:
                 ado = caseEditPersonTab.getData();
+                break;
+            case 2:
+                ado = caseEditSymptomsTab.getData();
                 break;
         }
         return ado;

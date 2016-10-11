@@ -19,6 +19,7 @@ import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.user.User;
 
 @Entity(name=Case.TABLE_NAME)
@@ -46,6 +47,9 @@ public class Case extends AbstractDomainObject {
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
 	private Facility healthFacility;
+
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	private Symptoms symptoms;
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private User reportingUser;
@@ -184,6 +188,13 @@ public class Case extends AbstractDomainObject {
 	}
 	public void setIllLocation(Location illLocation) {
 		this.illLocation = illLocation;
+	}
+
+	public Symptoms getSymptoms() {
+		return symptoms;
+	}
+	public void setSymptoms(Symptoms symptoms) {
+		this.symptoms = symptoms;
 	}
 
 	public User getSurveillanceOfficer() {

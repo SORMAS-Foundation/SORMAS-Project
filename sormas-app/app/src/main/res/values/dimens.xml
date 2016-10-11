@@ -9,4 +9,5 @@
     <dimen name="field_height">40dp</dimen>
     <dimen name="field_spinner_height">39dp</dimen>
     <dimen name="spinner_padding">2dp</dimen>
+    <dimen name="field_yes_no_caption_margin_top">10dp</dimen>
 </resources>

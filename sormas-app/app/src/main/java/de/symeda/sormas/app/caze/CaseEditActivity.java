@@ -52,7 +52,8 @@ public class CaseEditActivity extends AppCompatActivity {
         // Creating titles for the tabs
         titles = new CharSequence[]{
                 getResources().getText(R.string.headline_case_data),
-                getResources().getText(R.string.headline_patient)
+                getResources().getText(R.string.headline_patient),
+                "Symptoms"
         };
     }
 

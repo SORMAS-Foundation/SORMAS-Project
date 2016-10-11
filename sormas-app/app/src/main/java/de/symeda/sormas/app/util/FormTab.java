@@ -1,6 +1,5 @@
 package de.symeda.sormas.app.util;
 
-import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.databinding.BindingAdapter;
 import android.os.Bundle;
@@ -8,14 +7,13 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.text.InputType;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -45,6 +44,7 @@ import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.backend.region.RegionDao;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.backend.user.UserDao;
+import de.symeda.sormas.app.component.SymptomStateField;
 
 /**
  * Created by Stefan Szczesny on 01.08.2016.
@@ -105,6 +105,51 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
         newFragment.setArguments(dateBundle);
         newFragment.show(getFragmentManager(), getResources().getText(R.string.headline_date_picker).toString());
     }
+
+    /**
+     * Adds a YesNoField for given ID, Caption without any Listener.
+     * @param yesNoFieldId
+     * @param caption
+     */
+    protected  void addSymptomStateField(final int yesNoFieldId, String caption) {
+        makeSymptomStateField(yesNoFieldId,caption,true,null);
+    }
+
+    /**
+     * Adds a YesNoField for given ID, Caption without a Listener. Sets the visibility of the field.
+     * @param yesNoFieldId
+     * @param caption
+     * @param visible
+     */
+    protected  void addSymptomStateField(final int yesNoFieldId, String caption, boolean visible) {
+        makeSymptomStateField(yesNoFieldId,caption,visible,null);
+    }
+
+
+    /**
+     * Adds a YesNoField for given ID, Caption and Listener. Sets the visibility of the field.
+     * @param yesNoFieldId
+     * @param caption
+     * @param visible
+     * @param listener
+     */
+    protected  void addSymptomStateField(final int yesNoFieldId, String caption, boolean visible, RadioGroup.OnCheckedChangeListener listener) {
+        makeSymptomStateField(yesNoFieldId,caption,visible,listener);
+    }
+
+    private void makeSymptomStateField(final int yesNoFieldId, String caption, boolean visible, RadioGroup.OnCheckedChangeListener listener) {
+        final SymptomStateField symptomStateField = (SymptomStateField) getView().findViewById(yesNoFieldId);
+        if(visible) {
+            symptomStateField.setVisibility(View.VISIBLE);
+            symptomStateField.setCaption(caption);
+            symptomStateField.setValue(((SymptomState)model.get(yesNoFieldId)));
+            symptomStateField.setOnCheckedChangeListener(listener);
+        }
+        else {
+            symptomStateField.setVisibility(View.GONE);
+        }
+    }
+
 
     /**
      * Fill the spinner for the given enum, set the selected entry, register the base listeners and the given ones.
