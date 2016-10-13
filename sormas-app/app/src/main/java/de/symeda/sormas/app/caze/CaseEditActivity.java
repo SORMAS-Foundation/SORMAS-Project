@@ -18,6 +18,8 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.location.LocationDao;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDao;
+import de.symeda.sormas.app.backend.symptoms.Symptoms;
+import de.symeda.sormas.app.backend.symptoms.SymptomsDao;
 import de.symeda.sormas.app.person.SyncPersonsTask;
 import de.symeda.sormas.app.util.SlidingTabLayout;
 
@@ -117,6 +119,24 @@ public class CaseEditActivity extends AppCompatActivity {
                     Toast.makeText(this, person.toString() + " saved", Toast.LENGTH_SHORT).show();
 
                     new SyncPersonsTask().execute();
+                }
+
+                // case symptoms tab
+                else if(currentTab==2) {
+                    SymptomsDao symptomsDao = DatabaseHelper.getSymptomsDao();
+
+                    Symptoms symptoms = (Symptoms)adapter.getData(2);
+
+                    if(symptoms!=null) {
+                        symptomsDao.save(symptoms);
+                    }
+
+                    CaseDao caseDao = DatabaseHelper.getCaseDao();
+                    caseDao.markAsModified(caseUuid);
+
+                    Toast.makeText(this, "symptoms saved", Toast.LENGTH_SHORT).show();
+
+                    new SyncCasesTask().execute();
                 }
 
                 onResume();

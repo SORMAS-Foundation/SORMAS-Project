@@ -36,6 +36,12 @@ public class PersonDao extends AbstractAdoDao<Person> {
         if (person.getAddress() != null) {
             DatabaseHelper.getLocationDao().saveUnmodified(person.getAddress());
         }
+        if (person.getBurialLocation() != null) {
+            DatabaseHelper.getLocationDao().saveUnmodified(person.getBurialLocation());
+        }
+        if (person.getDeathLocation() != null) {
+            DatabaseHelper.getLocationDao().saveUnmodified(person.getDeathLocation());
+        }
 
         return super.saveUnmodified(person);
     }

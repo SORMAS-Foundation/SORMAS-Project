@@ -107,4 +107,9 @@
     <string name="symptoms_petechiae">Petechiae</string>
     <string name="symptoms_hematuria">Hematuria</string>
     <string name="symptoms_otherHemorrhagic">Other hemorrhagic</string>
+    <string name="symptoms_otherNonHemorrhagic">Other non hemorrhagic</string>
+    <string name="symptoms_onsetDate">Onset date</string>
+    <string name="symptoms_ifYes">If yes, please specify</string>
+    <string name="symptoms_temperature">Temperature</string>
+    <string name="symptoms_temperatureSource">Temperature source</string>
 </resources>

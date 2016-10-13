@@ -133,21 +133,34 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
      * @param visible
      * @param listener
      */
-    protected  void addSymptomStateField(final int yesNoFieldId, String caption, boolean visible, RadioGroup.OnCheckedChangeListener listener) {
+    protected  void addSymptomStateField(final int yesNoFieldId, String caption, boolean visible, RadioGroup.OnCheckedChangeListener ...listener) {
         makeSymptomStateField(yesNoFieldId,caption,visible,listener);
     }
 
-    private void makeSymptomStateField(final int yesNoFieldId, String caption, boolean visible, RadioGroup.OnCheckedChangeListener listener) {
+    private void makeSymptomStateField(final int yesNoFieldId, String caption, boolean visible, final RadioGroup.OnCheckedChangeListener[] moreListeners) {
         final SymptomStateField symptomStateField = (SymptomStateField) getView().findViewById(yesNoFieldId);
         if(visible) {
             symptomStateField.setVisibility(View.VISIBLE);
             symptomStateField.setCaption(caption);
             symptomStateField.setValue(((SymptomState)model.get(yesNoFieldId)));
-            symptomStateField.setOnCheckedChangeListener(listener);
         }
         else {
             symptomStateField.setVisibility(View.GONE);
         }
+
+        symptomStateField.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                // commit to model
+                model.put(yesNoFieldId, symptomStateField.getValue());
+                // bubble to more listeners
+                if (moreListeners!=null) {
+                    for (RadioGroup.OnCheckedChangeListener listener : moreListeners) {
+                        listener.onCheckedChanged(group, checkedId);
+                    }
+                }
+            }
+        });
     }
 
 
@@ -268,7 +281,9 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
                 }
                 i++;
             }
-            spinner.setSelection(i);
+            if(i<items.size()) {
+                spinner.setSelection(i);
+            }
         }
 
         return model;

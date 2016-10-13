@@ -7,6 +7,7 @@ import java.util.Date;
 
 import de.symeda.sormas.api.caze.CaseStatus;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.person.Person;
 
 /**
@@ -23,6 +24,23 @@ public class CaseDao extends AbstractAdoDao<Case> {
         return Case.TABLE_NAME;
     }
 
+    @Override
+    public boolean saveUnmodified(Case caze) {
+
+        if (caze.getIllLocation() != null) {
+            DatabaseHelper.getLocationDao().saveUnmodified(caze.getIllLocation());
+        }
+        if (caze.getSymptoms() != null) {
+            DatabaseHelper.getSymptomsDao().saveUnmodified(caze.getSymptoms());
+        }
+
+        return super.saveUnmodified(caze);
+    }
+
+    public void markAsModified(String uuid) {
+        Case caze = queryUuid(uuid);
+        save(caze);
+    }
 
     public void changeCaseStatus(Case caze, CaseStatus targetStatus) {
         caze.setCaseStatus(targetStatus);

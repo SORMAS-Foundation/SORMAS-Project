@@ -28,6 +28,73 @@
                 android:textStyle="bold"
                 android:paddingBottom="10dp" />
 
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:id="@+id/cp_date_of_death_layout">
+                <TextView
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/field_caption_margin_bottom"
+                    android:textSize="@dimen/field_caption_size"
+                    android:layout_marginLeft="@dimen/field_caption_margin_left"
+                    android:text="@string/symptoms_onsetDate" />
+                <EditText
+                    android:layout_width="match_parent" android:layout_height="@dimen/field_height"
+                    android:id="@+id/symptoms_onsetDate" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:paddingTop="@dimen/spinner_padding"
+                android:paddingBottom="@dimen/spinner_padding">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/symptoms_temperature"
+                    android:textSize="@dimen/field_caption_size"
+                    android:layout_marginLeft="@dimen/field_caption_margin_left"
+                    android:layout_marginBottom="@dimen/field_caption_margin_bottom" />
+
+                <Spinner
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/field_spinner_height"
+                    android:id="@+id/symptoms_temperature"
+                    android:layout_alignParentTop="true"
+                    style="@style/Base.Widget.AppCompat.Spinner.Underlined" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:paddingTop="@dimen/spinner_padding"
+                android:paddingBottom="@dimen/spinner_padding">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/symptoms_temperatureSource"
+                    android:textSize="@dimen/field_caption_size"
+                    android:layout_marginLeft="@dimen/field_caption_margin_left"
+                    android:layout_marginBottom="@dimen/field_caption_margin_bottom" />
+
+                <Spinner
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/field_spinner_height"
+                    android:id="@+id/symptoms_temperatureSource"
+                    android:layout_alignParentTop="true"
+                    style="@style/Base.Widget.AppCompat.Spinner.Underlined" />
+
+            </LinearLayout>
+
 
             <de.symeda.sormas.app.component.SymptomStateField
                 android:id="@+id/symptoms_fever"
@@ -226,6 +293,44 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 layout="@layout/field_yes_no"/>
+
+            <LinearLayout
+                android:id="@+id/symptoms_otherHemorrhagicText"
+                android:orientation="vertical"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:paddingTop="@dimen/spinner_padding" android:paddingBottom="@dimen/spinner_padding">
+                <TextView
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/field_caption_margin_bottom" android:textSize="@dimen/field_caption_size"
+                    android:layout_marginLeft="@dimen/field_caption_margin_left"
+                    android:text="@string/symptoms_ifYes" />
+                <EditText
+                    android:layout_width="match_parent" android:layout_height="@dimen/field_height"
+                    android:inputType="textPersonName"
+                    android:text="@={symptoms.otherHemorrhagicText}" />
+            </LinearLayout>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_otherNonHemorrhagic"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                layout="@layout/field_yes_no"/>
+
+            <LinearLayout
+                android:id="@+id/symptoms_otherNonHemorrhagicSymptoms"
+                android:orientation="vertical"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:paddingTop="@dimen/spinner_padding" android:paddingBottom="@dimen/spinner_padding">
+                <TextView
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/field_caption_margin_bottom" android:textSize="@dimen/field_caption_size"
+                    android:layout_marginLeft="@dimen/field_caption_margin_left"
+                    android:text="@string/symptoms_ifYes" />
+                <EditText
+                    android:layout_width="match_parent" android:layout_height="@dimen/field_height"
+                    android:inputType="textPersonName"
+                    android:text="@={symptoms.otherNonHemorrhagicSymptoms}" />
+            </LinearLayout>
 
 
         </LinearLayout>

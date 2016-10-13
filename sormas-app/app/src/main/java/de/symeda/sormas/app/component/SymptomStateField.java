@@ -17,8 +17,8 @@ import de.symeda.sormas.app.R;
 
 public class SymptomStateField extends LinearLayout {
 
-    private RadioGroup mRadioGroup;
-    private TextView mCaption;
+    private RadioGroup radioGroup;
+    private TextView caption;
 
     public SymptomStateField(Context context) {
         super(context);
@@ -53,27 +53,37 @@ public class SymptomStateField extends LinearLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        mRadioGroup = (RadioGroup) this
+        radioGroup = (RadioGroup) this
                 .findViewById(R.id.radio_group);
-        mCaption = (TextView) this
+        caption = (TextView) this
                 .findViewById(R.id.radio_caption);
     }
 
     public void setCaption(String caption) {
-        mCaption.setText(caption);
+        this.caption.setText(caption);
     }
 
     public void setValue(SymptomState state) {
         if(state!=null) {
-            ((RadioButton) mRadioGroup.getChildAt(state.ordinal())).setChecked(true);
+            ((RadioButton) radioGroup.getChildAt(state.ordinal())).setChecked(true);
         }
     }
 
     public SymptomState getValue() {
-        return mRadioGroup.getCheckedRadioButtonId()>0?SymptomState.values()[mRadioGroup.getCheckedRadioButtonId()]:null;
+        int indexSelected = radioGroup.indexOfChild(radioGroup
+                .findViewById(radioGroup.getCheckedRadioButtonId()));
+        return indexSelected>-1?SymptomState.values()[indexSelected]:null;
     }
 
     public void setOnCheckedChangeListener(RadioGroup.OnCheckedChangeListener listener) {
-        mRadioGroup.setOnCheckedChangeListener(listener);
+        radioGroup.setOnCheckedChangeListener(listener);
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+        for (int i = 0; i < radioGroup.getChildCount(); i++) {
+            radioGroup.getChildAt(i).setEnabled(enabled);
+        }
     }
 }

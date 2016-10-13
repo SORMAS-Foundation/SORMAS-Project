@@ -15,6 +15,8 @@ import java.util.List;
 
 import javax.persistence.NonUniqueResultException;
 
+import de.symeda.sormas.api.ReferenceDto;
+
 /**
  * Created by Martin Wahnschaffe on 22.07.2016.
  */
@@ -35,6 +37,15 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> extends R
         } else {
             throw new NonUniqueResultException("Found multiple results for uuid: " + uuid);
         }
+    }
+
+    public ADO getByReferenceDto(ReferenceDto dto) {
+        if (dto == null) {
+            return null;
+        }
+
+        ADO ado = queryUuid(dto.getUuid());
+        return ado;
     }
 
     public abstract String getTableName();

@@ -3,40 +3,27 @@ package de.symeda.sormas.app.caze;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.LinearLayout;
-import android.widget.Spinner;
-import android.widget.TextView;
+import android.widget.RadioGroup;
 
-import java.util.Calendar;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.GregorianCalendar;
+import java.util.List;
 
-import de.symeda.sormas.api.person.ApproximateAgeType;
-import de.symeda.sormas.api.person.OccupationType;
-import de.symeda.sormas.api.person.PresentCondition;
-import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.symptoms.SymptomState;
-import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.symptoms.SymptomsHelper;
+import de.symeda.sormas.api.symptoms.TemperatureSource;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.facility.Facility;
-import de.symeda.sormas.app.backend.location.Location;
-import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
-import de.symeda.sormas.app.component.SymptomStateField;
-import de.symeda.sormas.app.databinding.CasePersonFragmentLayoutBinding;
 import de.symeda.sormas.app.databinding.CaseSymptomsFragmentLayoutBinding;
-import de.symeda.sormas.app.util.DateUtils;
 import de.symeda.sormas.app.util.FormTab;
 import de.symeda.sormas.app.util.Item;
 
@@ -63,43 +50,57 @@ public class CaseEditSymptomsTab extends FormTab {
         CaseDao caseDao = DatabaseHelper.getCaseDao();
         Case caze = caseDao.queryUuid(caseUuid);
 
-        //final Symptoms symptoms = caze.getSymptoms();
-        //getModel().put(R.id.symptoms_fever, symptoms.getFever());
+        final Symptoms symptoms = caze.getSymptoms();
+        binding.setSymptoms(symptoms);
 
-        SymptomState stateTestYes = SymptomState.YES;
-        getModel().put(R.id.symptoms_fever, stateTestYes);
-        getModel().put(R.id.symptoms_vomitingNausea, null);
-        getModel().put(R.id.symptoms_diarrhea, null);
-        getModel().put(R.id.symptoms_intenseFatigueWeakness, null);
-        getModel().put(R.id.symptoms_anorexiaAppetiteLoss, stateTestYes);
-        getModel().put(R.id.symptoms_abdominalPain, stateTestYes);
-        getModel().put(R.id.symptoms_chestPain, null);
-        getModel().put(R.id.symptoms_musclePain, null);
-        getModel().put(R.id.symptoms_jointPain, null);
-        getModel().put(R.id.symptoms_headache, null);
-        getModel().put(R.id.symptoms_cough, null);
-        getModel().put(R.id.symptoms_difficultyBreathing, null);
-        getModel().put(R.id.symptoms_difficultySwallowing, null);
-        getModel().put(R.id.symptoms_soreThroat, null);
-        getModel().put(R.id.symptoms_jaundice, null);
-        getModel().put(R.id.symptoms_conjunctivitis, null);
-        getModel().put(R.id.symptoms_skinRash, null);
-        getModel().put(R.id.symptoms_hiccups, null);
-        getModel().put(R.id.symptoms_eyePainLightSensitive, null);
-        getModel().put(R.id.symptoms_comaUnconscious, null);
-        getModel().put(R.id.symptoms_confusedDisoriented, null);
-        getModel().put(R.id.symptoms_unexplainedBleeding, null);
-        getModel().put(R.id.symptoms_gumsBleeding, null);
-        getModel().put(R.id.symptoms_injectionSiteBleeding, null);
-        getModel().put(R.id.symptoms_epistaxis, null);
-        getModel().put(R.id.symptoms_melena, null);
-        getModel().put(R.id.symptoms_hematemesis, null);
-        getModel().put(R.id.symptoms_digestedBloodVomit, null);
-        getModel().put(R.id.symptoms_hemoptysis, null);
-        getModel().put(R.id.symptoms_bleedingVagina, null);
-        getModel().put(R.id.symptoms_petechiae, null);
-        getModel().put(R.id.symptoms_hematuria, null);
-        getModel().put(R.id.symptoms_otherHemorrhagic, null);
+        getModel().put(R.id.symptoms_onsetDate, symptoms.getOnsetDate());
+        getModel().put(R.id.symptoms_temperature, symptoms.getTemperature());
+        getModel().put(R.id.symptoms_temperatureSource, symptoms.getTemperatureSource());
+        getModel().put(R.id.symptoms_fever, symptoms.getFever());
+        getModel().put(R.id.symptoms_vomitingNausea, symptoms.getVomitingNausea());
+        getModel().put(R.id.symptoms_diarrhea, symptoms.getDiarrhea());
+        getModel().put(R.id.symptoms_intenseFatigueWeakness, symptoms.getIntenseFatigueWeakness());
+        getModel().put(R.id.symptoms_anorexiaAppetiteLoss, symptoms.getAnorexiaAppetiteLoss());
+        getModel().put(R.id.symptoms_abdominalPain, symptoms.getAbdominalPain());
+        getModel().put(R.id.symptoms_chestPain, symptoms.getChestPain());
+        getModel().put(R.id.symptoms_musclePain, symptoms.getMusclePain());
+        getModel().put(R.id.symptoms_jointPain, symptoms.getJointPain());
+        getModel().put(R.id.symptoms_headache, symptoms.getHeadache());
+        getModel().put(R.id.symptoms_cough, symptoms.getCough());
+        getModel().put(R.id.symptoms_difficultyBreathing, symptoms.getDifficultyBreathing());
+        getModel().put(R.id.symptoms_difficultySwallowing, symptoms.getDifficultySwallowing());
+        getModel().put(R.id.symptoms_soreThroat, symptoms.getSoreThroat());
+        getModel().put(R.id.symptoms_jaundice, symptoms.getJaundice());
+        getModel().put(R.id.symptoms_conjunctivitis, symptoms.getConjunctivitis());
+        getModel().put(R.id.symptoms_skinRash, symptoms.getSkinRash());
+        getModel().put(R.id.symptoms_hiccups, symptoms.getHiccups());
+        getModel().put(R.id.symptoms_eyePainLightSensitive, symptoms.getEyePainLightSensitive());
+        getModel().put(R.id.symptoms_comaUnconscious, symptoms.getComaUnconscious());
+        getModel().put(R.id.symptoms_confusedDisoriented, symptoms.getConfusedDisoriented());
+        getModel().put(R.id.symptoms_unexplainedBleeding, symptoms.getUnexplainedBleeding());
+        getModel().put(R.id.symptoms_gumsBleeding, symptoms.getGumsBleeding());
+        getModel().put(R.id.symptoms_injectionSiteBleeding, symptoms.getInjectionSiteBleeding());
+        getModel().put(R.id.symptoms_epistaxis, symptoms.getEpistaxis());
+        getModel().put(R.id.symptoms_melena, symptoms.getMelena());
+        getModel().put(R.id.symptoms_hematemesis, symptoms.getHematemesis());
+        getModel().put(R.id.symptoms_digestedBloodVomit, symptoms.getDigestedBloodVomit());
+        getModel().put(R.id.symptoms_hemoptysis, symptoms.getHemoptysis());
+        getModel().put(R.id.symptoms_bleedingVagina, symptoms.getBleedingVagina());
+        getModel().put(R.id.symptoms_petechiae, symptoms.getPetechiae());
+        getModel().put(R.id.symptoms_hematuria, symptoms.getHematuria());
+        getModel().put(R.id.symptoms_otherHemorrhagic, symptoms.getOtherHemorrhagic());
+        getModel().put(R.id.symptoms_otherNonHemorrhagic, symptoms.getOtherNonHemorrhagic());
+
+        addDateField(R.id.symptoms_onsetDate);
+
+        List<Item> temperature = new ArrayList<>();
+        temperature.add(new Item("",null));
+        for (Float temperatureValue : SymptomsHelper.getTemperatureValues()) {
+            temperature.add(new Item(SymptomsHelper.getTemperatureString(temperatureValue),temperatureValue));
+        }
+        addSpinnerField(R.id.symptoms_temperature, temperature);
+
+        addSpinnerField(R.id.symptoms_temperatureSource, TemperatureSource.class);
 
         addSymptomStateField(R.id.symptoms_fever,getResources().getString(R.string.symptoms_fever));
         addSymptomStateField(R.id.symptoms_vomitingNausea,getResources().getString(R.string.symptoms_vomitingNausea), false);
@@ -122,7 +123,12 @@ public class CaseEditSymptomsTab extends FormTab {
         addSymptomStateField(R.id.symptoms_eyePainLightSensitive,getResources().getString(R.string.symptoms_eyePainLightSensitive));
         addSymptomStateField(R.id.symptoms_comaUnconscious,getResources().getString(R.string.symptoms_comaUnconscious));
         addSymptomStateField(R.id.symptoms_confusedDisoriented,getResources().getString(R.string.symptoms_confusedDisoriented));
-        addSymptomStateField(R.id.symptoms_unexplainedBleeding,getResources().getString(R.string.symptoms_unexplainedBleeding));
+        addSymptomStateField(R.id.symptoms_unexplainedBleeding,getResources().getString(R.string.symptoms_unexplainedBleeding), true, new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                activationUnexplainedBleedingFields();
+            }
+        });
         addSymptomStateField(R.id.symptoms_gumsBleeding,getResources().getString(R.string.symptoms_gumsBleeding));
         addSymptomStateField(R.id.symptoms_injectionSiteBleeding,getResources().getString(R.string.symptoms_injectionSiteBleeding));
         addSymptomStateField(R.id.symptoms_epistaxis,getResources().getString(R.string.symptoms_epistaxis));
@@ -133,8 +139,66 @@ public class CaseEditSymptomsTab extends FormTab {
         addSymptomStateField(R.id.symptoms_bleedingVagina,getResources().getString(R.string.symptoms_bleedingVagina));
         addSymptomStateField(R.id.symptoms_petechiae,getResources().getString(R.string.symptoms_petechiae));
         addSymptomStateField(R.id.symptoms_hematuria,getResources().getString(R.string.symptoms_hematuria));
-        addSymptomStateField(R.id.symptoms_otherHemorrhagic,getResources().getString(R.string.symptoms_otherHemorrhagic));
+        addSymptomStateField(R.id.symptoms_otherHemorrhagic,getResources().getString(R.string.symptoms_otherHemorrhagic), true, new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                visibilityOtherHemorrhagicText();
+            }
+        });
+        addSymptomStateField(R.id.symptoms_otherNonHemorrhagic,getResources().getString(R.string.symptoms_otherNonHemorrhagic), true, new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                visibilityOtherNonHemorrhagicSymptoms();
+            }
+        });
 
+        // set initial UI
+        visibilityOtherHemorrhagicText();
+        visibilityOtherNonHemorrhagicSymptoms();
+        activationUnexplainedBleedingFields();
+
+    }
+    
+    private void visibilityOtherHemorrhagicText() {
+        SymptomState symptomState = (SymptomState)getModel().get(R.id.symptoms_otherHemorrhagic);
+        getView().findViewById(R.id.symptoms_otherHemorrhagicText).setVisibility(symptomState == SymptomState.YES?View.VISIBLE:View.GONE);
+    }
+
+    private void visibilityOtherNonHemorrhagicSymptoms() {
+        SymptomState symptomState = (SymptomState)getModel().get(R.id.symptoms_otherNonHemorrhagic);
+        getView().findViewById(R.id.symptoms_otherNonHemorrhagicSymptoms).setVisibility(symptomState == SymptomState.YES?View.VISIBLE:View.GONE);
+    }
+
+
+    private void activationUnexplainedBleedingFields() {
+
+        int[] fieldIds = {
+                R.id.symptoms_gumsBleeding,
+                R.id.symptoms_injectionSiteBleeding,
+                R.id.symptoms_epistaxis,
+                R.id.symptoms_melena,
+                R.id.symptoms_hematemesis,
+                R.id.symptoms_digestedBloodVomit,
+                R.id.symptoms_hemoptysis,
+                R.id.symptoms_bleedingVagina,
+                R.id.symptoms_petechiae,
+                R.id.symptoms_hematuria,
+                R.id.symptoms_otherHemorrhagic,
+                R.id.symptoms_otherHemorrhagicText,
+                R.id.symptoms_otherNonHemorrhagic,
+                R.id.symptoms_otherNonHemorrhagicSymptoms
+        };
+
+        SymptomState symptomState = (SymptomState)getModel().get(R.id.symptoms_unexplainedBleeding);
+
+        for (int fieldId:fieldIds) {
+            if(symptomState == SymptomState.YES) {
+                activateField(getView().findViewById(fieldId));
+            }
+            else {
+                deactivateField(getView().findViewById(fieldId));
+            }
+        }
     }
 
 
@@ -151,8 +215,44 @@ public class CaseEditSymptomsTab extends FormTab {
     @Override
     protected AbstractDomainObject commit(AbstractDomainObject ado) {
         // Set value to model
-        Symptoms person = (Symptoms) ado;
+        Symptoms symptoms = (Symptoms) ado;
+        symptoms.setOnsetDate((Date) getModel().get(R.id.symptoms_onsetDate));
+        symptoms.setTemperature((Float) getModel().get(R.id.symptoms_temperature));
+        symptoms.setTemperatureSource((TemperatureSource) getModel().get(R.id.symptoms_temperatureSource));
+        symptoms.setVomitingNausea((SymptomState) getModel().get(R.id.symptoms_vomitingNausea));
+        symptoms.setDiarrhea((SymptomState) getModel().get(R.id.symptoms_diarrhea));
+        symptoms.setIntenseFatigueWeakness((SymptomState) getModel().get(R.id.symptoms_intenseFatigueWeakness));
+        symptoms.setAnorexiaAppetiteLoss((SymptomState) getModel().get(R.id.symptoms_anorexiaAppetiteLoss));
+        symptoms.setAbdominalPain((SymptomState) getModel().get(R.id.symptoms_abdominalPain));
+        symptoms.setChestPain((SymptomState) getModel().get(R.id.symptoms_chestPain));
+        symptoms.setMusclePain((SymptomState) getModel().get(R.id.symptoms_musclePain));
+        symptoms.setJointPain((SymptomState) getModel().get(R.id.symptoms_jointPain));
+        symptoms.setHeadache((SymptomState) getModel().get(R.id.symptoms_headache));
+        symptoms.setCough((SymptomState) getModel().get(R.id.symptoms_cough));
+        symptoms.setDifficultyBreathing((SymptomState) getModel().get(R.id.symptoms_difficultyBreathing));
+        symptoms.setDifficultySwallowing((SymptomState) getModel().get(R.id.symptoms_difficultySwallowing));
+        symptoms.setSoreThroat((SymptomState) getModel().get(R.id.symptoms_soreThroat));
+        symptoms.setJaundice((SymptomState) getModel().get(R.id.symptoms_jaundice));
+        symptoms.setConjunctivitis((SymptomState) getModel().get(R.id.symptoms_conjunctivitis));
+        symptoms.setSkinRash((SymptomState) getModel().get(R.id.symptoms_skinRash));
+        symptoms.setHiccups((SymptomState) getModel().get(R.id.symptoms_hiccups));
+        symptoms.setEyePainLightSensitive((SymptomState) getModel().get(R.id.symptoms_eyePainLightSensitive));
+        symptoms.setComaUnconscious((SymptomState) getModel().get(R.id.symptoms_comaUnconscious));
+        symptoms.setConfusedDisoriented((SymptomState) getModel().get(R.id.symptoms_confusedDisoriented));
+        symptoms.setUnexplainedBleeding((SymptomState) getModel().get(R.id.symptoms_unexplainedBleeding));
+        symptoms.setGumsBleeding((SymptomState) getModel().get(R.id.symptoms_gumsBleeding));
+        symptoms.setInjectionSiteBleeding((SymptomState) getModel().get(R.id.symptoms_injectionSiteBleeding));
+        symptoms.setEpistaxis((SymptomState) getModel().get(R.id.symptoms_epistaxis));
+        symptoms.setMelena((SymptomState) getModel().get(R.id.symptoms_melena));
+        symptoms.setHematemesis((SymptomState) getModel().get(R.id.symptoms_hematemesis));
+        symptoms.setDigestedBloodVomit((SymptomState) getModel().get(R.id.symptoms_digestedBloodVomit));
+        symptoms.setHemoptysis((SymptomState) getModel().get(R.id.symptoms_hemoptysis));
+        symptoms.setBleedingVagina((SymptomState) getModel().get(R.id.symptoms_bleedingVagina));
+        symptoms.setPetechiae((SymptomState) getModel().get(R.id.symptoms_petechiae));
+        symptoms.setHematuria((SymptomState) getModel().get(R.id.symptoms_hematuria));
+        symptoms.setOtherHemorrhagic((SymptomState) getModel().get(R.id.symptoms_otherHemorrhagic));
+        symptoms.setOtherNonHemorrhagic((SymptomState) getModel().get(R.id.symptoms_otherNonHemorrhagic));
 
-        return person;
+        return symptoms;
     }
 }

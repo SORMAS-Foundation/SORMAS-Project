@@ -9,6 +9,7 @@ import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.symptoms.SymptomsDtoHelper;
 import de.symeda.sormas.app.backend.user.User;
+import de.symeda.sormas.app.backend.user.UserDtoHelper;
 
 /**
  * Created by Martin Wahnschaffe on 27.07.2016.
@@ -16,6 +17,7 @@ import de.symeda.sormas.app.backend.user.User;
 public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 
     private SymptomsDtoHelper symptomsDtoHelper;
+    private UserDtoHelper userDtoHelper;
 
     public CaseDtoHelper() {
         symptomsDtoHelper = new SymptomsDtoHelper();
@@ -54,27 +56,11 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
             ado.setReportingUser(null);
         }
 
-        if (dto.getSymptoms() != null) {
-            Symptoms symptoms = DatabaseHelper.getSymptomsDao().queryUuid(dto.getSymptoms().getUuid());
-            if(symptoms!=null) {
-                symptoms = symptomsDtoHelper.create();
-                symptomsDtoHelper.fillInnerFromDto(symptoms, dto.getSymptoms());
-            }
-            ado.setSymptoms(symptoms);
-        } else {
-            ado.setSymptoms(null);
-        }
+        ado.setSymptoms(symptomsDtoHelper.fillOrCreateFromDto(ado.getSymptoms(), dto.getSymptoms()));
 
-        if (dto.getSurveillanceOfficer() != null) {
-            ado.setSurveillanceOfficer(DatabaseHelper.getUserDao().queryUuid(dto.getSurveillanceOfficer().getUuid()));
-        } else {
-            ado.setSurveillanceOfficer(null);
-        }
-        if (dto.getSurveillanceSupervisor() != null) {
-            ado.setSurveillanceSupervisor(DatabaseHelper.getUserDao().queryUuid(dto.getSurveillanceSupervisor().getUuid()));
-        } else {
-            ado.setSurveillanceSupervisor(null);
-        }
+        ado.setSurveillanceOfficer(DatabaseHelper.getUserDao().getByReferenceDto(dto.getSurveillanceOfficer()));
+        ado.setSurveillanceSupervisor(DatabaseHelper.getUserDao().getByReferenceDto(dto.getSurveillanceSupervisor()));
+
         // TODO user
     }
 
