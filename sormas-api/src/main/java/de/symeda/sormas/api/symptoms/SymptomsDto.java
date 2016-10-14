@@ -105,7 +105,7 @@ public class SymptomsDto extends DataTransferObject {
 	public void setOnsetDate(Date onsetDate) {
 		this.onsetDate = onsetDate;
 	}
-	public float getTemperature() {
+	public Float getTemperature() {
 		return temperature;
 	}
 	public void setTemperature(Float temperature) {
