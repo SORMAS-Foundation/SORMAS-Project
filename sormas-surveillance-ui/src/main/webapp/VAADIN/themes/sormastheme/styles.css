@@ -13039,7 +13039,7 @@ div.v-layout.v-horizontal.v-widget {
 	margin-bottom: 10px;
 }
 
-.sormastheme .v-caption-inline-optiongroup {
+.sormastheme .v-caption-row-optiongroup {
 	float: left;
 	padding-top: 7px;
 	height: 22px;
@@ -13047,11 +13047,11 @@ div.v-layout.v-horizontal.v-widget {
 	margin-bottom: -30px;
 }
 
-.sormastheme .v-select-optiongroup-inline-optiongroup {
+.sormastheme .v-select-optiongroup-row-optiongroup {
 	text-align: right;
 }
 
-.sormastheme .v-select-optiongroup-inline-optiongroup .v-select-option {
+.sormastheme .v-select-optiongroup-row-optiongroup .v-select-option, .sormastheme .v-select-optiongroup-inline-optiongroup .v-select-option {
 	display: inline-block;
 }
 

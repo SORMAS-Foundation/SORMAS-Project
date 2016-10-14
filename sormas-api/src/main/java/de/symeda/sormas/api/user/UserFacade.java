@@ -25,4 +25,6 @@ public interface UserFacade {
 	List<UserDto> getAllAfter(Date date);
 
 	UserDto getByUserName(String userName);
+
+	List<ReferenceDto> getAllAfterAsReference(Date date);
 }

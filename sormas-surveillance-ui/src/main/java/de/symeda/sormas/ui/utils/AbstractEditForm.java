@@ -1,7 +1,5 @@
 package de.symeda.sormas.ui.utils;
 
-import java.util.Arrays;
-
 import com.vaadin.data.Validator;
 import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
@@ -11,7 +9,6 @@ import com.vaadin.data.util.BeanItem;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.AbstractTextField;
-import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.CustomField;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Field;
@@ -58,14 +55,28 @@ public abstract class AbstractEditForm <DTO extends DataTransferObject> extends 
 			@Override
 			public <T extends Field> T createField(Class<?> type, Class<T> fieldType) {
 				
-				if (AbstractSelect.class.isAssignableFrom(fieldType)) {
+				if (type.isEnum()) {
+					if (SymptomState.class.isAssignableFrom(type)) {
+						OptionGroup field = super.createField(type, OptionGroup.class);
+						CssStyles.style(field, CssStyles.ROW_OPTIONGROUP);
+						return (T) field;
+					} else {
+						if (!AbstractSelect.class.isAssignableFrom(fieldType)) {
+							fieldType = (Class<T>) NativeSelect.class;
+						}
+						T field = super.createField(type, fieldType);
+						if (OptionGroup.class.isAssignableFrom(fieldType)) {
+							CssStyles.style(field, CssStyles.INLINE_OPTIONGROUP);
+						}
+						return field;
+					}
+				}
+				else if (AbstractSelect.class.isAssignableFrom(fieldType)) {
 					return (T) createCompatibleSelect((Class<? extends AbstractSelect>) fieldType);
 				} else if (LocationForm.class.isAssignableFrom(fieldType)) {
 					return (T) new LocationForm();
-				} else if (type.isEnum() && OptionGroup.class != fieldType) { // ComboBoxen für Enum-Values
-					return (T) createEnumField(type);
-				}
-
+				} 
+				
 				return super.createField(type, fieldType);
 			}
 			
@@ -77,32 +88,32 @@ public abstract class AbstractEditForm <DTO extends DataTransferObject> extends 
 			}
 			
 
-			@SuppressWarnings("rawtypes")
-			protected Field createEnumField(Class<?> type) {
-				Object[] enumConstants = type.getEnumConstants();
-
-				if (SymptomState.class.isAssignableFrom(type)) {
-					OptionGroup field = new OptionGroup(null, Arrays.asList(SymptomState.values()));
-					CssStyles.style(field, CssStyles.INLINE_OPTIONGROUP);
-					field.setImmediate(false);
-					field.setNullSelectionAllowed(false);
-					field.setMultiSelect(false);
-					return field;
-				} else {
-					AbstractSelect cb;
-					if (enumConstants.length <= 20) {
-						cb = new NativeSelect();
-					} else {
-						ComboBox ccb = new ComboBox();
-						ccb.setPageLength(enumConstants.length);
-						cb = ccb;
-					}
-					for (Object o : enumConstants) {
-						cb.addItem(o);
-					}
-					return cb;
-				}
-			}
+//			@SuppressWarnings("rawtypes")
+//			protected Field createEnumField(Class<?> type) {
+//				Object[] enumConstants = type.getEnumConstants();
+//
+//				if (SymptomState.class.isAssignableFrom(type)) {
+//					OptionGroup field = new OptionGroup(null, Arrays.asList(SymptomState.values()));
+//					CssStyles.style(field, CssStyles.INLINE_OPTIONGROUP);
+//					field.setImmediate(false);
+//					field.setNullSelectionAllowed(false);
+//					field.setMultiSelect(false);
+//					return field;
+//				} else {
+//					AbstractSelect cb;
+//					if (enumConstants.length <= 20) {
+//						cb = new NativeSelect();
+//					} else {
+//						ComboBox ccb = new ComboBox();
+//						ccb.setPageLength(enumConstants.length);
+//						cb = ccb;
+//					}
+//					for (Object o : enumConstants) {
+//						cb.addItem(o);
+//					}
+//					return cb;
+//				}
+//			}
 		});
 		
 		addFields();

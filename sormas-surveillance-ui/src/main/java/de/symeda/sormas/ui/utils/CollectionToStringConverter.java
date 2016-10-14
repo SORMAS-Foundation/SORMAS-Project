@@ -9,6 +9,7 @@ import com.vaadin.data.util.converter.Converter;
  * A converter that allows displaying a collection as a comma separated list of
  * strings.
  */
+@SuppressWarnings("serial")
 public class CollectionToStringConverter implements
         Converter<String, Collection> {
 
@@ -17,7 +18,7 @@ public class CollectionToStringConverter implements
             Class<? extends Collection> targetType, Locale locale)
             throws com.vaadin.data.util.converter.Converter.ConversionException {
         throw new UnsupportedOperationException(
-                "Can only convert from collection to string");
+                "Can only convert from Collection to String");
     }
 
     @Override

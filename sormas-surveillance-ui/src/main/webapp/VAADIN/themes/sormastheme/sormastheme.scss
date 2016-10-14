@@ -106,7 +106,7 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
   	margin-bottom: 10px;
   }
   
-  .v-caption-inline-optiongroup {
+  .v-caption-row-optiongroup {
   	float: left;
   	padding-top: 7px;
   	height: 22px;
@@ -114,11 +114,12 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
   	margin-bottom: -30px;
   }
 
-  .v-select-optiongroup-inline-optiongroup {
+  .v-select-optiongroup-row-optiongroup {
   	text-align: right;
   }
   
-  .v-select-optiongroup-inline-optiongroup .v-select-option {
+  .v-select-optiongroup-row-optiongroup .v-select-option,
+  .v-select-optiongroup-inline-optiongroup .v-select-option  {
   	display: inline-block;
   }
   

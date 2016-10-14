@@ -49,10 +49,25 @@ public class TaskFacadeEjb implements TaskFacade {
 		a.setDueDate(b.getDueDate());
 		a.setPerceivedStart(b.getPerceivedStart());
 		a.setStatusChangeDate(b.getStatusChangeDate());
-		a.setTaskContext(b.getTaskContext());
 		a.setTaskStatus(b.getTaskStatus());
-		a.setTaskType(b.getTaskType());	
-		a.setCaze(DtoHelper.fromReferenceDto(b.getCaze(), caseService));
+		a.setTaskType(b.getTaskType());
+		
+		a.setTaskContext(b.getTaskContext());
+		if (b.getTaskContext() != null) {
+			switch (b.getTaskContext()) {
+			case CASE:
+				a.setCaze(DtoHelper.fromReferenceDto(b.getCaze(), caseService));
+	//			a.setEvent(null);
+	//			a.setContact(null);
+				break;
+				default:
+					throw new UnsupportedOperationException(b.getTaskContext() + " is not implemented");
+			}
+		} else {
+			a.setCaze(null);
+//			a.setEvent(null);
+//			a.setContact(null);
+		}
 		
 		return task;
 	}

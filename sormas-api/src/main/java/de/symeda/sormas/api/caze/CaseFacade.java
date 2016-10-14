@@ -5,10 +5,10 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
+import de.symeda.sormas.api.ReferenceDto;
+
 @Remote
 public interface CaseFacade {
-
-    List<CaseDataDto> getAllCases();
 
 	List<CaseDataDto> getAllCasesAfter(Date date, String userUuid);
 
@@ -19,4 +19,6 @@ public interface CaseFacade {
     CaseDataDto createCase(String personUuid, CaseDataDto caseDto);
 
    	CaseDataDto changeCaseStatus(String uuid, CaseStatus targetStatus);
+
+	List<ReferenceDto> getAllCasesAfterAsReference(Date date, String userUuid);
 }

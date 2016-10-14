@@ -2,6 +2,7 @@ package de.symeda.sormas.ui.surveillance;
 
 import de.symeda.sormas.ui.surveillance.caze.CaseController;
 import de.symeda.sormas.ui.surveillance.person.PersonController;
+import de.symeda.sormas.ui.surveillance.task.TaskController;
 import de.symeda.sormas.ui.surveillance.user.UserController;
 import de.symeda.sormas.ui.utils.BaseControllerProvider;
 
@@ -13,6 +14,7 @@ public class ControllerProvider extends BaseControllerProvider {
 	private final CaseController caseController;
 	private final PersonController personController;
 	private final UserController userController;
+	private final TaskController taskController;
 
 	public ControllerProvider() {
 		super();
@@ -20,6 +22,7 @@ public class ControllerProvider extends BaseControllerProvider {
 		caseController = new CaseController();
 		personController = new PersonController();
 		userController = new UserController();
+		taskController = new TaskController();
 	}
 
 	protected static ControllerProvider get() {
@@ -38,4 +41,7 @@ public class ControllerProvider extends BaseControllerProvider {
 		return get().userController;
 	}
 
+	public static TaskController getTaskController() {
+		return get().taskController;
+	}
 }

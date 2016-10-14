@@ -41,6 +41,10 @@ public final class CssStyles {
 	/**
 	 * Puts the options right aligned in line with the caption
 	 */
+	public static final String ROW_OPTIONGROUP = "row-optiongroup";
+	/**
+	 * Puts the options in one line
+	 */
 	public static final String INLINE_OPTIONGROUP = "inline-optiongroup";
 		
 	public static final String LINK_ACTIVE = "active";

@@ -39,20 +39,22 @@ public class CaseService extends AbstractAdoService<Case> {
 		CriteriaQuery<Case> cq = cb.createQuery(getElementClass());
 		Root<Case> from = cq.from(getElementClass());
 
-		Predicate userFilter = cb.equal(from.get(Case.REPORTING_USER), user);
+		Predicate filter = cb.equal(from.get(Case.REPORTING_USER), user);
 		if (user.getUserRoles().contains(UserRole.SURVEILLANCE_OFFICER)) {
-			userFilter = cb.or(userFilter, cb.equal(from.get(Case.SURVEILLANCE_OFFICER), user));
+			filter = cb.or(filter, cb.equal(from.get(Case.SURVEILLANCE_OFFICER), user));
 		}
 		if (user.getUserRoles().contains(UserRole.SURVEILLANCE_SUPERVISOR)) {
-			userFilter = cb.or(userFilter, cb.equal(from.get(Case.SURVEILLANCE_SUPERVISOR), user));
+			filter = cb.or(filter, cb.equal(from.get(Case.SURVEILLANCE_SUPERVISOR), user));
 		}
 		
-		cq.where(cb.and(userFilter, cb.greaterThan(from.get(AbstractDomainObject.CHANGE_DATE), date)));
+		if (date != null) {
+			filter = cb.and(filter, cb.greaterThan(from.get(AbstractDomainObject.CHANGE_DATE), date));
+		}
+
+		cq.where(filter);
 		cq.orderBy(cb.asc(from.get(AbstractDomainObject.ID)));
 
 		List<Case> resultList = em.createQuery(cq).getResultList();
 		return resultList;
 	}
-
-
 }

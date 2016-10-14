@@ -30,10 +30,14 @@ public class TaskService extends AbstractAdoService<Task> {
 		CriteriaQuery<Task> cq = cb.createQuery(getElementClass());
 		Root<Task> from = cq.from(getElementClass());
 
-		Predicate userFilter = cb.equal(from.get(Task.ASSIGNEE_USER), user);
-		userFilter = cb.or(userFilter, cb.equal(from.get(Task.CREATOR_USER), user));
+		Predicate filter = cb.equal(from.get(Task.ASSIGNEE_USER), user);
+		filter = cb.or(filter, cb.equal(from.get(Task.CREATOR_USER), user));
 		
-		cq.where(cb.and(userFilter, cb.greaterThan(from.get(AbstractDomainObject.CHANGE_DATE), date)));
+		if (date != null) {
+			filter = cb.and(filter, cb.greaterThan(from.get(AbstractDomainObject.CHANGE_DATE), date));
+		}
+		
+		cq.where(filter);
 		cq.orderBy(cb.asc(from.get(AbstractDomainObject.ID)));
 
 		List<Task> resultList = em.createQuery(cq).getResultList();

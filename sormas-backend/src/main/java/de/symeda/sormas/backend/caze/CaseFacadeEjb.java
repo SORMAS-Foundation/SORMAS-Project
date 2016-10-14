@@ -10,6 +10,7 @@ import javax.ejb.EJBException;
 import javax.ejb.Stateless;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.CaseHelper;
@@ -37,13 +38,6 @@ public class CaseFacadeEjb implements CaseFacade {
 	private UserService userService;
 	@EJB
 	private SymptomsFacadeEjbLocal symptomsFacade;
-	
-	@Override
-	public List<CaseDataDto> getAllCases() {
-		return caseService.getAll().stream()
-			.map(c -> toCaseDataDto(c))
-			.collect(Collectors.toList());
-	}
 
 	@Override
 	public List<CaseDataDto> getAllCasesAfter(Date date, String userUuid) {
@@ -52,6 +46,16 @@ public class CaseFacadeEjb implements CaseFacade {
 		
 		return caseService.getAllAfter(date, user).stream()
 			.map(c -> toCaseDataDto(c))
+			.collect(Collectors.toList());
+	}
+	
+	@Override
+	public List<ReferenceDto> getAllCasesAfterAsReference(Date date, String userUuid) {
+		
+		User user = userService.getByUuid(userUuid);
+		
+		return caseService.getAllAfter(date, user).stream()
+			.map(c -> DtoHelper.toReferenceDto(c))
 			.collect(Collectors.toList());
 	}
 
@@ -165,7 +169,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			return null;
 		}
 		CaseDataDto dto = new CaseDataDto();
-		dto.setCreationDate(caze.getChangeDate());
+		dto.setCreationDate(caze.getCreationDate());
 		dto.setChangeDate(caze.getChangeDate());
 		dto.setUuid(caze.getUuid());
 		dto.setDisease(caze.getDisease());

@@ -9,19 +9,16 @@ import com.vaadin.data.util.filter.Compare.Equal;
 import com.vaadin.data.util.filter.Or;
 import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.ui.Grid;
-import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseStatus;
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.surveillance.ControllerProvider;
-import elemental.json.JsonValue;
+import de.symeda.sormas.ui.utils.UuidRenderer;
 
+@SuppressWarnings("serial")
 public class CaseGrid extends Grid {
-
-	private static final long serialVersionUID = -3413165328323165362L;
 
 	public CaseGrid() {
         setSizeFull();
@@ -112,16 +109,6 @@ public class CaseGrid extends Grid {
 
     public void remove(CaseDataDto caze) {
         getContainer().removeItem(caze);
-    }
-    
-    @SuppressWarnings("serial")
-	public static class UuidRenderer extends HtmlRenderer {
-   	 
-        @Override
-        public JsonValue encode(String value) {
-        	value = "<a title='" + value + "'>" + DataHelper.getShortUuid(value) + "</a>";
-            return super.encode(value);
-        }
     }
 }
 

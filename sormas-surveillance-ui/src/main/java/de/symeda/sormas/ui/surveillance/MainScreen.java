@@ -7,6 +7,7 @@ import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 
 import de.symeda.sormas.ui.surveillance.caze.CasesView;
+import de.symeda.sormas.ui.surveillance.task.TasksView;
 import de.symeda.sormas.ui.surveillance.user.UsersView;
 
 /**
@@ -33,6 +34,7 @@ public class MainScreen extends HorizontalLayout {
         
         menu = new Menu(navigator);
         menu.addView(new CasesView(), CasesView.VIEW_NAME, "Cases", FontAwesome.EDIT);
+        menu.addView(new TasksView(), TasksView.VIEW_NAME, "Tasks", FontAwesome.TASKS);
         menu.addView(new UsersView(), UsersView.VIEW_NAME, "Officers", FontAwesome.USERS);
         menu.addView(new AboutView(), AboutView.VIEW_NAME, "About", FontAwesome.INFO_CIRCLE);
         

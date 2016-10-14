@@ -63,7 +63,9 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<ADO> cq = cb.createQuery(getElementClass());
 		Root<ADO> from = cq.from(getElementClass());
-		cq.where(cb.greaterThan(from.get(AbstractDomainObject.CHANGE_DATE), date));
+		if (date != null) {
+			cq.where(cb.greaterThan(from.get(AbstractDomainObject.CHANGE_DATE), date));
+		}
 		cq.orderBy(cb.asc(from.get(AbstractDomainObject.ID)));
 
 		return em.createQuery(cq).getResultList();

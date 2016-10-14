@@ -1,5 +1,6 @@
 package de.symeda.sormas.ui.utils;
 
+import java.util.Arrays;
 import java.util.List;
 
 import com.vaadin.data.fieldgroup.FieldGroup;
@@ -7,6 +8,11 @@ import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Field;
 
 public final class FieldHelper {
+
+	public static void setReadOnlyWhen(FieldGroup fieldGroup, Object targetPropertyId, 
+			Object sourcePropertyId, List<Object> sourceValues, boolean clearOnReadOnly) {
+		setReadOnlyWhen(fieldGroup, Arrays.asList(targetPropertyId), sourcePropertyId, sourceValues, clearOnReadOnly);
+	}
 
 	public static void setReadOnlyWhen(final FieldGroup fieldGroup, List<Object> targetPropertyIds, 
 			Object sourcePropertyId, final List<Object> sourceValues, final boolean clearOnReadOnly) {
@@ -52,6 +58,11 @@ public final class FieldHelper {
 		});
 	}
 
+	public static void setVisibleWhen(FieldGroup fieldGroup, Object targetPropertyId, 
+			Object sourcePropertyId, List<Object> sourceValues, boolean clearOnHidden) {
+		setVisibleWhen(fieldGroup, Arrays.asList(targetPropertyId), sourcePropertyId, sourceValues, clearOnHidden);
+	}
+
 	public static void setVisibleWhen(final FieldGroup fieldGroup, List<Object> targetPropertyIds, 
 			Object sourcePropertyId, final List<Object> sourceValues, final boolean clearOnHidden) {
 
@@ -82,6 +93,25 @@ public final class FieldHelper {
 				}
 			}
 		});
+	}
+
+	public static void setFirstVisibleClearOthers(Field<?> first, Field<?> ...others) {
+		if (first != null) {
+			first.setVisible(true);
+		}
+		for (Field<?> other : others) {
+			other.setVisible(false);
+			other.setValue(null);
+		}
+	}
+	
+	public static void setFirstRequired(Field<?> first, Field<?> ...others) {
+		if (first != null) {
+			first.setRequired(true);
+		}
+		for (Field<?> other : others) {
+			other.setRequired(false);
+		}
 	}
 
 }

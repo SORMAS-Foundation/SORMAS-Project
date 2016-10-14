@@ -44,6 +44,13 @@ public class UserFacadeEjb implements UserFacade {
 			.map(c -> toDto(c))
 			.collect(Collectors.toList());
 	}
+	
+	@Override
+	public List<ReferenceDto> getAllAfterAsReference(Date date) {
+		return service.getAllAfter(date).stream()
+			.map(c -> DtoHelper.toReferenceDto(c))
+			.collect(Collectors.toList());
+	}
 
 	@Override
 	public UserDto getByUuid(String uuid) {

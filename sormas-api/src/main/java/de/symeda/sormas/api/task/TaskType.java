@@ -1,6 +1,7 @@
 package de.symeda.sormas.api.task;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -57,6 +58,9 @@ public enum TaskType {
 	}
 	
 	public static List<TaskType> getTaskTypes(TaskContext taskContext) {
+		if (taskContext == null) {
+			return Arrays.asList(TaskType.values());
+		}
 		return taskTypesByContext.get(taskContext);
 	}
 }

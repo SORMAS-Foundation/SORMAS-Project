@@ -250,4 +250,10 @@ public class Case extends AbstractDomainObject {
 	public void setSymptoms(Symptoms symptoms) {
 		this.symptoms = symptoms;
 	}
+	
+	@Override
+	public String toString() {
+		return getPerson().toString();
+	}
+	
 }

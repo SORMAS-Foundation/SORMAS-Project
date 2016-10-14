@@ -34,7 +34,7 @@ public class Task extends AbstractDomainObject {
 	public static final String STATUS_CHANGE_DATE = "statusChangeDate";
 	public static final String TASK_CONTEXT = "taskContext";
 	public static final String TASK_STATUS = "taskStatus";
-	public static final String TASK_TYPE = "tasktType";
+	public static final String TASK_TYPE = "taskType";
 	
 	private TaskContext taskContext;
 	private Case caze;
