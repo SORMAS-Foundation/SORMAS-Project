@@ -2,8 +2,9 @@ package de.symeda.sormas.ui.surveillance.caze;
 
 import java.util.Arrays;
 
-import com.vaadin.ui.NativeSelect;
+import com.vaadin.ui.ComboBox;
 
+import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
@@ -18,6 +19,7 @@ public class CaseSymptomsForm extends AbstractEditForm<SymptomsDto> {
 	private static final String HTML_LAYOUT = LayoutUtil.h3(CssStyles.VSPACE3, "Case symptoms")
 			+ LayoutUtil.divCss(CssStyles.VSPACE3,
 				LayoutUtil.fluidRowLocs(SymptomsDto.ONSET_DATE, "", SymptomsDto.TEMPERATURE, SymptomsDto.TEMPERATURE_SOURCE))
+			+ LayoutUtil.divCss(CssStyles.VSPACE3, I18nProperties.getFieldCaption("Symptoms.hint"))
 			+ LayoutUtil.fluidRow(
 					LayoutUtil.fluidColumn(6, 0,
 							LayoutUtil.locs(SymptomsDto.FEVER, SymptomsDto.VOMITING_NAUSEA, SymptomsDto.DIARRHEA,
@@ -47,7 +49,7 @@ public class CaseSymptomsForm extends AbstractEditForm<SymptomsDto> {
 	protected void addFields() {
 
 		addField(SymptomsDto.ONSET_DATE);
-		NativeSelect temperature = addField(SymptomsDto.TEMPERATURE, NativeSelect.class);
+		ComboBox temperature = addField(SymptomsDto.TEMPERATURE, ComboBox.class);
 		for (Float temperatureValue : SymptomsHelper.getTemperatureValues()) {
 			temperature.addItem(temperatureValue);
 			temperature.setItemCaption(temperatureValue, SymptomsHelper.getTemperatureString(temperatureValue));
