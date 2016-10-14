@@ -102,6 +102,7 @@ public class CaseEditSymptomsTab extends FormTab {
 
         addSpinnerField(R.id.symptoms_temperatureSource, TemperatureSource.class);
 
+        // Disable each field by using the boolean parameter: addSymptomStateField(R.id.symptoms_fever,getResources().getString(R.string.symptoms_fever), false);
         addSymptomStateField(R.id.symptoms_fever,getResources().getString(R.string.symptoms_fever));
         addSymptomStateField(R.id.symptoms_vomitingNausea,getResources().getString(R.string.symptoms_vomitingNausea));
         addSymptomStateField(R.id.symptoms_diarrhea,getResources().getString(R.string.symptoms_diarrhea));
@@ -184,9 +185,7 @@ public class CaseEditSymptomsTab extends FormTab {
                 R.id.symptoms_petechiae,
                 R.id.symptoms_hematuria,
                 R.id.symptoms_otherHemorrhagic,
-                R.id.symptoms_otherHemorrhagicText,
-                R.id.symptoms_otherNonHemorrhagic,
-                R.id.symptoms_otherNonHemorrhagicSymptoms
+                R.id.symptoms_otherHemorrhagicText
         };
 
         SymptomState symptomState = (SymptomState)getModel().get(R.id.symptoms_unexplainedBleeding);

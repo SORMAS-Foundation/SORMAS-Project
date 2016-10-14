@@ -16,18 +16,6 @@
             android:padding="10dp"
             android:theme="@style/AppTheme">
 
-            <!-- ============= SYMPTOMS ============= -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="@string/headline_symptoms_data"
-                android:id="@+id/person_information_headline"
-                android:textColor="@android:color/tab_indicator_text"
-                android:textSize="@dimen/abc_text_size_body_1_material"
-                android:textStyle="bold"
-                android:paddingBottom="10dp" />
-
             <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="match_parent"
@@ -94,6 +82,28 @@
                     style="@style/Base.Widget.AppCompat.Spinner.Underlined" />
 
             </LinearLayout>
+
+
+            <!-- ============= SYMPTOMS ============= -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="@string/headline_symptoms_data"
+                android:id="@+id/person_information_headline"
+                android:textColor="@android:color/tab_indicator_text"
+                android:textSize="@dimen/abc_text_size_body_1_material"
+                android:textStyle="bold"
+                android:paddingBottom="10dp" />
+
+            <TextView
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/field_caption_margin_bottom"
+                android:textSize="@dimen/field_caption_size"
+                android:layout_marginLeft="@dimen/field_caption_margin_left"
+                android:text="@string/symptoms_infoText"
+                android:paddingBottom="10dp"/>
+
 
 
             <de.symeda.sormas.app.component.SymptomStateField
@@ -222,6 +232,18 @@
                 android:layout_height="match_parent"
                 layout="@layout/field_yes_no"/>
 
+
+            <!-- ============= SYMPTOMS Unexplained bleeding from any side ============= -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="@string/headline_symptoms_unexplainedBleeding"
+                android:textColor="@android:color/tab_indicator_text"
+                android:textSize="@dimen/abc_text_size_body_1_material"
+                android:textStyle="bold"
+                android:paddingBottom="10dp" />
+
             <de.symeda.sormas.app.component.SymptomStateField
                 android:id="@+id/symptoms_unexplainedBleeding"
                 android:layout_width="match_parent"
@@ -309,6 +331,18 @@
                     android:inputType="textPersonName"
                     android:text="@={symptoms.otherHemorrhagicText}" />
             </LinearLayout>
+
+
+            <!-- ============= SYMPTOMS Other non-hemorrhagis clinical symptoms ============= -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="@string/headline_symptoms_otherNonHemorrhagic"
+                android:textColor="@android:color/tab_indicator_text"
+                android:textSize="@dimen/abc_text_size_body_1_material"
+                android:textStyle="bold"
+                android:paddingBottom="10dp" />
 
             <de.symeda.sormas.app.component.SymptomStateField
                 android:id="@+id/symptoms_otherNonHemorrhagic"

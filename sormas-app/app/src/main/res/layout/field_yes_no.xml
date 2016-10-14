@@ -12,6 +12,7 @@
             android:layout_weight="0.6"
             android:id="@+id/radio_caption"
             android:textSize="@dimen/field_caption_size"
+            android:textColor="?android:attr/editTextColor"
             android:layout_marginLeft="@dimen/field_caption_margin_left"
             android:layout_marginTop="@dimen/field_yes_no_caption_margin_top" />
 
@@ -20,7 +21,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="0.4"
+            android:gravity="right"
             android:paddingTop="@dimen/spinner_padding"
+            android:paddingRight="@dimen/spinner_padding"
             android:paddingBottom="@dimen/spinner_padding">
 
             <RadioGroup
@@ -31,17 +34,22 @@
 
                 <RadioButton
                     android:text="@string/field_yes_no_yes"
+                    android:textSize="@dimen/field_caption_size"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:textColor="?attr/colorControlNormal" />
                 <RadioButton
                     android:text="@string/field_yes_no_no"
+                    android:textSize="@dimen/field_caption_size"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:textColor="?attr/colorControlNormal" />
                 <RadioButton
                     android:text="@string/field_yes_no_unk"
+                    android:textSize="@dimen/field_caption_size"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-
+                    android:layout_height="wrap_content"
+                    android:textColor="?attr/colorControlNormal" />
             </RadioGroup>
 
         </LinearLayout>

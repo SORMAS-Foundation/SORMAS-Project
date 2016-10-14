@@ -108,8 +108,11 @@
     <string name="symptoms_hematuria">Hematuria</string>
     <string name="symptoms_otherHemorrhagic">Other hemorrhagic</string>
     <string name="symptoms_otherNonHemorrhagic">Other non hemorrhagic</string>
-    <string name="symptoms_onsetDate">Onset date</string>
+    <string name="symptoms_onsetDate">Date of initial symptoms onset</string>
     <string name="symptoms_ifYes">If yes, please specify</string>
     <string name="symptoms_temperature">Temperature</string>
     <string name="symptoms_temperatureSource">Temperature source</string>
+    <string name="headline_symptoms_unexplainedBleeding">Unexplained bleeding from any side</string>
+    <string name="headline_symptoms_otherNonHemorrhagic">Other non-hemorrhagis clinical symptoms</string>
+    <string name="symptoms_infoText">Please tick an awnswer for ALL symptoms indicating if they occurd during this illness between symptom onset and case detection.</string>
 </resources>
