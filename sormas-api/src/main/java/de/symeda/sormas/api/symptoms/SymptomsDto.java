@@ -55,7 +55,7 @@ public class SymptomsDto extends DataTransferObject {
 
 	private Date onsetDate;
 	
-	private float temperature;
+	private Float temperature;
 	private TemperatureSource temperatureSource;
 	
 	private SymptomState fever;
@@ -108,7 +108,7 @@ public class SymptomsDto extends DataTransferObject {
 	public float getTemperature() {
 		return temperature;
 	}
-	public void setTemperature(float temperature) {
+	public void setTemperature(Float temperature) {
 		this.temperature = temperature;
 	}
 	public TemperatureSource getTemperatureSource() {

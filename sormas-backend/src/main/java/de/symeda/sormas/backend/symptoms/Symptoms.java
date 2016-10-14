@@ -20,7 +20,7 @@ public class Symptoms extends AbstractDomainObject {
 	
 	private Date onsetDate;
 	
-	private float temperature;
+	private Float temperature;
 	private TemperatureSource temperatureSource;
 	
 	private SymptomState fever;
@@ -73,10 +73,11 @@ public class Symptoms extends AbstractDomainObject {
 		this.onsetDate = onsetDate;
 	}
 
-	public float getTemperature() {
+	@Column(columnDefinition = "float8")
+	public Float getTemperature() {
 		return temperature;
 	}
-	public void setTemperature(float temperature) {
+	public void setTemperature(Float temperature) {
 		this.temperature = temperature;
 	}
 	
