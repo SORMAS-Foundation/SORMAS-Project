@@ -26,7 +26,8 @@ public class Symptoms extends AbstractDomainObject {
 	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
 	private Date onsetDate;
 
-	private float temperature;
+	@Column(columnDefinition = "float8")
+	private Float temperature;
 
 	@Enumerated(EnumType.STRING)
 	private TemperatureSource temperatureSource;
@@ -149,10 +150,10 @@ public class Symptoms extends AbstractDomainObject {
 		this.onsetDate = onsetDate;
 	}
 
-	public float getTemperature() {
+	public Float getTemperature() {
 		return temperature;
 	}
-	public void setTemperature(float temperature) {
+	public void setTemperature(Float temperature) {
 		this.temperature = temperature;
 	}
 

@@ -59,18 +59,14 @@ public class UserActivity extends AppCompatActivity {
 
             case R.id.action_save:
                 User user = userTab.getUser();
-                if (user != null) {
-                    ConfigProvider.setUser(user);
-                    return true;
-                }
+                ConfigProvider.setUser(user);
 
                 String serverUrl = userTab.getServerUrl();
-                if (serverUrl != null) {
-                    ConfigProvider.setServerUrl(serverUrl);
-                    return true;
-                }
+                ConfigProvider.setServerUrl(serverUrl);
 
-                return false;
+                onResume();
+
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }

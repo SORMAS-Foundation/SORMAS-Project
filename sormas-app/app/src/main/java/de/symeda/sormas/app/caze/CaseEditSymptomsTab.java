@@ -103,7 +103,7 @@ public class CaseEditSymptomsTab extends FormTab {
         addSpinnerField(R.id.symptoms_temperatureSource, TemperatureSource.class);
 
         addSymptomStateField(R.id.symptoms_fever,getResources().getString(R.string.symptoms_fever));
-        addSymptomStateField(R.id.symptoms_vomitingNausea,getResources().getString(R.string.symptoms_vomitingNausea), false);
+        addSymptomStateField(R.id.symptoms_vomitingNausea,getResources().getString(R.string.symptoms_vomitingNausea));
         addSymptomStateField(R.id.symptoms_diarrhea,getResources().getString(R.string.symptoms_diarrhea));
         addSymptomStateField(R.id.symptoms_intenseFatigueWeakness,getResources().getString(R.string.symptoms_intenseFatigueWeakness));
         addSymptomStateField(R.id.symptoms_anorexiaAppetiteLoss,getResources().getString(R.string.symptoms_anorexiaAppetiteLoss));
@@ -219,6 +219,7 @@ public class CaseEditSymptomsTab extends FormTab {
         symptoms.setOnsetDate((Date) getModel().get(R.id.symptoms_onsetDate));
         symptoms.setTemperature((Float) getModel().get(R.id.symptoms_temperature));
         symptoms.setTemperatureSource((TemperatureSource) getModel().get(R.id.symptoms_temperatureSource));
+        symptoms.setFever((SymptomState) getModel().get(R.id.symptoms_fever));
         symptoms.setVomitingNausea((SymptomState) getModel().get(R.id.symptoms_vomitingNausea));
         symptoms.setDiarrhea((SymptomState) getModel().get(R.id.symptoms_diarrhea));
         symptoms.setIntenseFatigueWeakness((SymptomState) getModel().get(R.id.symptoms_intenseFatigueWeakness));

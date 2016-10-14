@@ -88,7 +88,7 @@ public final class ConfigProvider {
 
         boolean wasNull = instance.user == null;
         instance.user = user;
-        DatabaseHelper.getConfigDao().createOrUpdate(new Config(KEY_USER_UUID, user.getUuid()));
+        DatabaseHelper.getConfigDao().createOrUpdate(new Config(KEY_USER_UUID, user != null ? user.getUuid() : null));
 
         if (!wasNull) {
             try {

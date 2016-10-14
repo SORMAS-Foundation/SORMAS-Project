@@ -40,6 +40,7 @@ public class Case extends AbstractDomainObject {
 	public static final String CASE_SUPERVISOR = "caseSupervisor";
 	public static final String CONTACT_OFFICER = "contactOfficer";
 	public static final String CONTACT_SUPERVISOR = "contactSupervisor";
+	public static final String SYMPTOMS = "symptoms";
 	
 	private Person person;
 	private String description;
