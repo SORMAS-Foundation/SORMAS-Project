@@ -1,6 +1,7 @@
 package de.symeda.sormas.backend.task;
 
 import java.sql.Timestamp;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -110,6 +111,10 @@ public class TaskFacadeEjb implements TaskFacade {
 	@Override
 	public List<TaskDto> getAllAfter(Date date, String userUuid) {
 		User user = userService.getByUuid(userUuid);
+		
+		if (user == null) {
+			return Collections.emptyList();
+		}
 		
 		return service.getAllAfter(date, user).stream()
 			.map(c -> toDto(c))

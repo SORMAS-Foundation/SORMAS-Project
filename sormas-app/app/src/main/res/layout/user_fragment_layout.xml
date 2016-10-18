@@ -24,8 +24,6 @@
                 android:textStyle="bold"
                 android:paddingBottom="10dp" />
 
-
-
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
@@ -47,9 +45,7 @@
                         android:layout_alignParentTop="true"
                         style="@style/Base.Widget.AppCompat.Spinner.Underlined" />
                 </LinearLayout>
-
             </LinearLayout>
-
 
             <LinearLayout android:orientation="vertical"
                           android:layout_width="match_parent" android:layout_height="wrap_content"
@@ -62,10 +58,9 @@
                     android:text="@string/form_server_url" />
                 <EditText
                     android:layout_width="match_parent" android:layout_height="@dimen/field_height"
-                    android:inputType="text"
+                    android:inputType="textUri"
                     android:id="@+id/form_server_url" />
             </LinearLayout>
-
 
         </LinearLayout>
     </ScrollView>

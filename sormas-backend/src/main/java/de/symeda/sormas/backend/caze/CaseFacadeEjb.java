@@ -1,6 +1,7 @@
 package de.symeda.sormas.backend.caze;
 
 import java.sql.Timestamp;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -43,6 +44,10 @@ public class CaseFacadeEjb implements CaseFacade {
 	public List<CaseDataDto> getAllCasesAfter(Date date, String userUuid) {
 		
 		User user = userService.getByUuid(userUuid);
+		
+		if (user == null) {
+			return Collections.emptyList();
+		}
 		
 		return caseService.getAllAfter(date, user).stream()
 			.map(c -> toCaseDataDto(c))

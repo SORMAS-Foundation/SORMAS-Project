@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.backend.config;
 
+import android.databinding.tool.util.StringUtils;
 import android.util.Log;
 
 import com.j256.ormlite.table.TableUtils;
@@ -57,18 +58,7 @@ public final class ConfigProvider {
                     if (instance.user == null) {
                         // no user found. Take first surveillance officer...
                         List<User> users = DatabaseHelper.getUserDao().queryForAll();
-                        // this seems to lock the thread and isn't necessary anyway
-//                        if (users.size() == 0) {
-//                            // no user existing yet? Try to load them from the server
-//                            try {
-//                                new SyncUsersTask().execute().get();
-//                            } catch (InterruptedException e) {
-//                                Log.e(ConfigProvider.class.getName(), e.toString(), e);
-//                            } catch (ExecutionException e) {
-//                                Log.e(ConfigProvider.class.getName(), e.toString(), e);
-//                            }
-//                            users = DatabaseHelper.getUserDao().queryForAll();
-//                        }
+
                         for (User dbUser : users) {
                             if (UserRole.SURVEILLANCE_OFFICER.equals(dbUser.getUserRole())) {
                                 // got it
@@ -88,7 +78,11 @@ public final class ConfigProvider {
 
         boolean wasNull = instance.user == null;
         instance.user = user;
-        DatabaseHelper.getConfigDao().createOrUpdate(new Config(KEY_USER_UUID, user != null ? user.getUuid() : null));
+        if (user == null) {
+            DatabaseHelper.getConfigDao().delete(new Config(KEY_USER_UUID, ""));
+        } else {
+            DatabaseHelper.getConfigDao().createOrUpdate(new Config(KEY_USER_UUID, user.getUuid()));
+        }
 
         if (!wasNull) {
             try {
@@ -119,25 +113,42 @@ public final class ConfigProvider {
     }
 
     public static void setServerUrl(String serverRestUrl) {
-        if (serverRestUrl != null && serverRestUrl.equals(instance.serverRestUrl))
+
+        if (serverRestUrl != null && serverRestUrl.isEmpty()) {
+            serverRestUrl = null;
+        }
+
+        if (serverRestUrl == instance.serverRestUrl
+                || (serverRestUrl != null && serverRestUrl.equals(instance.serverRestUrl)))
             return;
+
+        // make sure no wrong user is set
+        setUser(null);
 
         boolean wasNull = instance.serverRestUrl == null;
         instance.serverRestUrl = serverRestUrl;
-        DatabaseHelper.getConfigDao().createOrUpdate(new Config(KEY_SERVER_REST_URL, serverRestUrl));
+
+        if (serverRestUrl == null) {
+            DatabaseHelper.getConfigDao().delete(new Config(KEY_SERVER_REST_URL, ""));
+        } else {
+            DatabaseHelper.getConfigDao().createOrUpdate(new Config(KEY_SERVER_REST_URL, serverRestUrl));
+        }
 
         if (!wasNull) {
             // reset everything
             RetroProvider.reset();
             DatabaseHelper.clearTables();
-            try {
-                new SyncInfrastructureTask().execute().get();
-                new SyncPersonsTask().execute().get();
-                new SyncCasesTask().execute().get();
-            } catch (InterruptedException e) {
-                Log.e(ConfigProvider.class.getName(), e.toString(), e);
-            } catch (ExecutionException e) {
-                Log.e(ConfigProvider.class.getName(), e.toString(), e);
+
+            if (serverRestUrl != null) {
+                try {
+                    new SyncInfrastructureTask().execute().get();
+                    new SyncPersonsTask().execute().get();
+                    new SyncCasesTask().execute().get();
+                } catch (InterruptedException e) {
+                    Log.e(ConfigProvider.class.getName(), e.toString(), e);
+                } catch (ExecutionException e) {
+                    Log.e(ConfigProvider.class.getName(), e.toString(), e);
+                }
             }
         }
     }

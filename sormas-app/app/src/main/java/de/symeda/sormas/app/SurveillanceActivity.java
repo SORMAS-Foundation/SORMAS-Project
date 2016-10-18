@@ -55,7 +55,6 @@ public class SurveillanceActivity extends AppCompatActivity {
         super.onResume();
 
         createTabViews();
-        refreshCaseList();
     }
 
     @Override
@@ -71,7 +70,6 @@ public class SurveillanceActivity extends AppCompatActivity {
         switch(item.getItemId()) {
             case R.id.action_reload:
                 refreshLocalDB();
-                refreshCaseList();
                 return true;
 
             case R.id.action_new_case:
@@ -114,11 +112,6 @@ public class SurveillanceActivity extends AppCompatActivity {
         tabs.setViewPager(pager);
     }
 
-    private void refreshCaseList() {
-        CaseDao caseDao = DatabaseHelper.getCaseDao();
-        //populateListView(caseDao.queryForAll());
-    }
-
     private void refreshLocalDB() {
 
         new SyncPersonsTask() {
@@ -154,29 +147,4 @@ public class SurveillanceActivity extends AppCompatActivity {
         //intent.putExtra(Case.UUID, caze.getUuid());
         startActivity(intent);
     }
-
-
-//    /**
-//     * Create a list of cases and bind a itemClickListener
-//     * @param cases
-//     */
-//    private void populateListView(final List<Case> cases) {
-//        CasesListArrayAdapter adapter = new CasesListArrayAdapter(
-//                this,                       // Context for the activity.
-//                R.layout.cases_list_item,    // Layout to use (create)
-//                cases);                     // Items to be displayed // Configure the list view.
-//
-//        ListView list = (ListView) findViewById(R.id.cases_list_view);
-//        list.setAdapter(adapter);
-//        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(
-//                    AdapterView<?> parent,
-//                    View viewClicked,
-//                    int position, long id) {
-//                showCaseEditView(cases.get(position));
-//            }
-//        });
-//    }
-
 }

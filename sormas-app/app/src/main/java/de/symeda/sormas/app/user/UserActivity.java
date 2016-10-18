@@ -35,10 +35,18 @@ public class UserActivity extends AppCompatActivity {
             getSupportActionBar().setTitle(getResources().getText(R.string.headline_user));
         }
 
+        // FIXME not sure what this is exactly doing
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         userTab = new UserTab();
         ft.add(R.id.fragment_frame, userTab).commit();
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        userTab.onResume();
     }
 
     @Override
