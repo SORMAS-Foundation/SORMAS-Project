@@ -700,6 +700,9 @@ ALTER TABLE cases ADD CONSTRAINT fk_cases_symptoms_id FOREIGN KEY (symptoms_id) 
 INSERT INTO schema_version (version_number, comment) VALUES (3, 'Symptoms');
 
 
+
+-- 2016-10-14; #63
+
 CREATE TABLE task (
 id bigint not null,
 assigneereply varchar(512), 
