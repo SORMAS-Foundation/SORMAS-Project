@@ -47,7 +47,9 @@ public class TaskFacadeEjb implements TaskFacade {
 		a.setAssigneeReply(b.getAssigneeReply());
 		a.setCreatorUser(DtoHelper.fromReferenceDto(b.getCreatorUser(), userService));
 		a.setCreatorComment(b.getCreatorComment());
+		a.setPriority(b.getPriority());
 		a.setDueDate(b.getDueDate());
+		a.setSuggestedStart(b.getSuggestedStart());
 		a.setPerceivedStart(b.getPerceivedStart());
 		a.setStatusChangeDate(b.getStatusChangeDate());
 		a.setTaskStatus(b.getTaskStatus());
@@ -90,7 +92,9 @@ public class TaskFacadeEjb implements TaskFacade {
 		a.setAssigneeReply(b.getAssigneeReply());
 		a.setCreatorUser(DtoHelper.toReferenceDto(b.getCreatorUser()));
 		a.setCreatorComment(b.getCreatorComment());
+		a.setPriority(b.getPriority());
 		a.setDueDate(b.getDueDate());
+		a.setSuggestedStart(b.getSuggestedStart());
 		a.setPerceivedStart(b.getPerceivedStart());
 		a.setStatusChangeDate(b.getStatusChangeDate());
 		a.setTaskContext(b.getTaskContext());

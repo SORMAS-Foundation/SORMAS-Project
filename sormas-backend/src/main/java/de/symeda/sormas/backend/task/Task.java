@@ -11,6 +11,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import de.symeda.sormas.api.task.TaskContext;
+import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.backend.caze.Case;
@@ -28,7 +29,9 @@ public class Task extends AbstractDomainObject {
 	public static final String CONTACT = "contact";
 	public static final String CREATOR_COMMENT = "creatorComment";
 	public static final String CREATOR_USER = "creatorUser";
+	public static final String PRIORITY = "priority";
 	public static final String DUE_DATE = "dueDate";
+	public static final String SUGGESTED_START = "suggestedStart";
 	public static final String EVENT = "event";
 	public static final String PERCEIVED_START = "perceivedStart";
 	public static final String STATUS_CHANGE_DATE = "statusChangeDate";
@@ -40,7 +43,9 @@ public class Task extends AbstractDomainObject {
 	private Case caze;
 	
 	private TaskType taskType;
+	private TaskPriority priority;
 	private Date dueDate;
+	private Date suggestedStart;
 	private TaskStatus taskStatus;
 	private Date statusChangeDate;
 	private Date perceivedStart;
@@ -136,5 +141,21 @@ public class Task extends AbstractDomainObject {
 	}
 	public void setAssigneeReply(String assigneeReply) {
 		this.assigneeReply = assigneeReply;
+	}
+	
+	@Enumerated(EnumType.STRING)
+	public TaskPriority getPriority() {
+		return priority;
+	}
+	public void setPriority(TaskPriority priority) {
+		this.priority = priority;
+	}
+	
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getSuggestedStart() {
+		return suggestedStart;
+	}
+	public void setSuggestedStart(Date suggestedStart) {
+		this.suggestedStart = suggestedStart;
 	}
 }

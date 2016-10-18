@@ -728,3 +728,10 @@ ALTER TABLE task ADD CONSTRAINT fk_task_creatoruser_id FOREIGN KEY (creatoruser_
 ALTER TABLE task ADD CONSTRAINT fk_task_assigneeuser_id FOREIGN KEY (assigneeuser_id) REFERENCES users (id);
 
 INSERT INTO schema_version (version_number, comment) VALUES (4, 'Task');
+
+-- 2016-10-18; #63 additions
+
+ALTER TABLE task ADD COLUMN priority varchar(255);
+ALTER TABLE task ADD COLUMN suggestedstart timestamp;
+
+INSERT INTO schema_version (version_number, comment) VALUES (5, 'Task priority & suggested start');

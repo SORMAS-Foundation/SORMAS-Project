@@ -20,7 +20,9 @@ public class TaskDto extends DataTransferObject {
 	public static final String CONTACT = "contact";
 	public static final String CREATOR_COMMENT = "creatorComment";
 	public static final String CREATOR_USER = "creatorUser";
+	public static final String PRIORITY = "priority";
 	public static final String DUE_DATE = "dueDate";
+	public static final String SUGGESTED_START = "suggestedStart";
 	public static final String EVENT = "event";
 	public static final String PERCEIVED_START = "perceivedStart";
 	public static final String STATUS_CHANGE_DATE = "statusChangeDate";
@@ -34,7 +36,9 @@ public class TaskDto extends DataTransferObject {
 	private ReferenceDto contact;
 	
 	private TaskType taskType;
+	private TaskPriority priority;
 	private Date dueDate;
+	private Date suggestedStart;
 	private TaskStatus taskStatus;
 	private Date statusChangeDate;
 	private Date perceivedStart;
@@ -83,6 +87,15 @@ public class TaskDto extends DataTransferObject {
 	public void setDueDate(Date dueDate) {
 		this.dueDate = dueDate;
 	}
+	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
+	public Date getSuggestedStart() {
+		return suggestedStart;
+	}
+	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
+	public void setSuggestedStart(Date suggestedStart) {
+		this.suggestedStart = suggestedStart;
+	}
+
 	public TaskStatus getTaskStatus() {
 		return taskStatus;
 	}
@@ -128,5 +141,11 @@ public class TaskDto extends DataTransferObject {
 	}
 	public void setAssigneeReply(String assigneeReply) {
 		this.assigneeReply = assigneeReply;
+	}
+	public TaskPriority getPriority() {
+		return priority;
+	}
+	public void setPriority(TaskPriority priority) {
+		this.priority = priority;
 	}
 }

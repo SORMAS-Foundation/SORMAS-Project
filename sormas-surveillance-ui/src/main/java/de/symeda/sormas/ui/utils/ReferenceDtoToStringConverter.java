@@ -18,6 +18,9 @@ public final class ReferenceDtoToStringConverter implements Converter<String, Re
 	@Override
 	public String convertToPresentation(ReferenceDto value, Class<? extends String> targetType, Locale locale)
 			throws com.vaadin.data.util.converter.Converter.ConversionException {
+		if (value == null) {
+			return "";
+		}
 		return value.getUuid();
 	}
 
