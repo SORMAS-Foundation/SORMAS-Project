@@ -39,7 +39,9 @@ public class CaseEditSymptomsTab extends FormTab {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         initModel();
         binding = DataBindingUtil.inflate(inflater, R.layout.case_symptoms_fragment_layout, container, false);
-        return binding.getRoot();
+        View view = binding.getRoot();
+        //view.requestFocus();
+        return view;
     }
 
     @Override
@@ -158,11 +160,15 @@ public class CaseEditSymptomsTab extends FormTab {
         visibilityOtherNonHemorrhagicSymptoms();
         activationUnexplainedBleedingFields();
 
+        // @TODO: Workaround, find a better solution. Remove autofocus on first field.
+        getView().requestFocus();
+
     }
     
     private void visibilityOtherHemorrhagicText() {
         SymptomState symptomState = (SymptomState)getModel().get(R.id.symptoms_otherHemorrhagic);
         getView().findViewById(R.id.symptoms_otherHemorrhagicText).setVisibility(symptomState == SymptomState.YES?View.VISIBLE:View.GONE);
+        getView().findViewById(R.id.symptoms_otherHemorrhagicText_caption).setVisibility(symptomState == SymptomState.YES?View.VISIBLE:View.GONE);
     }
 
     private void visibilityOtherNonHemorrhagicSymptoms() {
@@ -185,7 +191,8 @@ public class CaseEditSymptomsTab extends FormTab {
                 R.id.symptoms_petechiae,
                 R.id.symptoms_hematuria,
                 R.id.symptoms_otherHemorrhagic,
-                R.id.symptoms_otherHemorrhagicText
+                R.id.symptoms_otherHemorrhagicText,
+                R.id.symptoms_otherHemorrhagicText_caption
         };
 
         SymptomState symptomState = (SymptomState)getModel().get(R.id.symptoms_unexplainedBleeding);

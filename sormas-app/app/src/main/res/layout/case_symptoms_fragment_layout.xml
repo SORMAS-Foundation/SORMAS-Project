@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:descendantFocusability="beforeDescendants"
+    android:focusableInTouchMode="true">
 
     <data>
         <variable name="symptoms" type="de.symeda.sormas.app.backend.symptoms.Symptoms"/>
@@ -317,16 +319,18 @@
                 layout="@layout/field_yes_no"/>
 
             <LinearLayout
-                android:id="@+id/symptoms_otherHemorrhagicText"
+
                 android:orientation="vertical"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:paddingTop="@dimen/spinner_padding" android:paddingBottom="@dimen/spinner_padding">
                 <TextView
+                    android:id="@+id/symptoms_otherHemorrhagicText_caption"
                     android:layout_width="match_parent" android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/field_caption_margin_bottom" android:textSize="@dimen/field_caption_size"
                     android:layout_marginLeft="@dimen/field_caption_margin_left"
                     android:text="@string/symptoms_ifYes" />
                 <EditText
+                    android:id="@+id/symptoms_otherHemorrhagicText"
                     android:layout_width="match_parent" android:layout_height="@dimen/field_height"
                     android:inputType="textPersonName"
                     android:text="@={symptoms.otherHemorrhagicText}" />

@@ -167,6 +167,10 @@ public class CaseEditPersonTab extends FormTab {
         });
 
         addFacilitySpinnerField(R.id.form_cp_occupation_facility);
+
+
+        // @TODO: Workaround, find a better solution. Remove autofocus on first field.
+        getView().requestFocus();
     }
 
     private void updateHeadlineOccupationDetailsFields(Item item, TextView occupationDetailsCaption) {
