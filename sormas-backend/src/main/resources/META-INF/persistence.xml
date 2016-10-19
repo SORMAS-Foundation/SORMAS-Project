@@ -27,6 +27,7 @@
 		<properties>
 			<property name="eclipselink.ddl-generation" value="none" />
 			<!-- 
+			<property name="eclipselink.ddl-generation" value="create-or-extend-tables" />
 			<property name="eclipselink.ddl-generation.output-mode" value="sql-script" />
 		    <property name="eclipselink.application-location" value="C:/srv" />
 		    <property name="eclipselink.create-ddl-jdbc-file-name" value="create.sql"/>			
