@@ -155,6 +155,9 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
   .force-caption {
 	margin-top: 1.5em;
   }
+  .no-margin, .h1.no-margin, .h2.no-margin, .h3.no-margin, .h4.no-margin, .h5.no-margin {
+  	margin: 0;
+  }
   
   .v-readonly, .v-caption-v-readonly {
   	color: #aaa;

@@ -6,6 +6,7 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -14,6 +15,7 @@ import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.surveillance.ControllerProvider;
 import de.symeda.sormas.ui.utils.AbstractView;
+import de.symeda.sormas.ui.utils.CssStyles;
 
 @SuppressWarnings("serial")
 public class TasksView extends AbstractView {
@@ -50,6 +52,11 @@ public class TasksView extends AbstractView {
     	HorizontalLayout topLayout = new HorizontalLayout();
     	topLayout.setSpacing(true);
     	topLayout.setWidth(100, Unit.PERCENTAGE);
+    	
+    	Label header = new Label("Tasks");
+    	header.setSizeUndefined();
+    	CssStyles.style(header, CssStyles.H2, CssStyles.NO_MARGIN);
+    	topLayout.addComponent(header);
     	
     	HorizontalLayout buttonFilterLayout = new HorizontalLayout();
     	{

@@ -13,6 +13,7 @@ public final class CssStyles {
 	public static final String H3 = "h3";
 	public static final String H4 = "h4";
 	public static final String H5 = "h5";
+	public static final String NO_MARGIN = "no-margin";
 
 	public static final String VSPACE0 = "vspace0";
 	public static final String VSPACE1 = "vspace1";
