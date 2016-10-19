@@ -9,20 +9,14 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.app.SurveillanceActivity;
 import de.symeda.sormas.app.backend.caze.Case;
-import de.symeda.sormas.app.backend.common.AdoDtoHelper.DtoGetInterface;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.user.User;
-import de.symeda.sormas.app.backend.user.UserDtoHelper;
 import de.symeda.sormas.app.caze.SyncCasesTask;
 import de.symeda.sormas.app.person.SyncPersonsTask;
 import de.symeda.sormas.app.rest.RetroProvider;
-import de.symeda.sormas.app.user.SyncUsersTask;
 import de.symeda.sormas.app.util.SyncInfrastructureTask;
-import retrofit2.Call;
 
 /**
  * Created by Martin Wahnschaffe on 10.08.2016.

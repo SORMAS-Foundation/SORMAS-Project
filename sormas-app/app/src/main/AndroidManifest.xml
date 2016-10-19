@@ -12,7 +12,7 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".SurveillanceActivity">
+        <activity android:name=".caze.CasesActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -20,27 +20,25 @@
         </activity>
         <activity
             android:name=".caze.CaseEditActivity"
-            android:parentActivityName=".SurveillanceActivity" >
+            android:parentActivityName=".caze.CasesActivity" >
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".SurveillanceActivity" />
-        </activity>
-        <activity
-            android:name=".user.UserActivity"
-            android:parentActivityName=".SurveillanceActivity" >
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".SurveillanceActivity" />
+                android:value=".caze.CasesActivity" />
         </activity>
         <activity
             android:name=".caze.CaseNewActivity"
-            android:parentActivityName=".SurveillanceActivity" >
+            android:parentActivityName=".caze.CasesActivity" >
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".SurveillanceActivity" />
+                android:value=".caze.CasesActivity" />
+        </activity>
+
+        <activity android:name=".user.UserActivity">
+        </activity>
+
+        <activity android:name=".task.TasksActivity">
         </activity>
 
         <!-- ATTENTION: This was auto-generated to add Google Play services to your project for

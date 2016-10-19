@@ -10,6 +10,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.SormasRootActivity;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.user.User;
 
@@ -17,16 +18,17 @@ import de.symeda.sormas.app.backend.user.User;
 /**
  * Created by Stefan Szczesny on 21.07.2016.
  */
-public class UserActivity extends AppCompatActivity {
+public class UserActivity extends SormasRootActivity {
 
 
     private UserTab userTab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setContentView(R.layout.sormas_root_activity_layout);
+
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.basic_activity_layout);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);
         if (toolbar != null) {
@@ -59,11 +61,6 @@ public class UserActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-
-            case android.R.id.home:
-                //Home/back button
-                NavUtils.navigateUpFromSameTask(this);
-                return true;
 
             case R.id.action_save:
                 User user = userTab.getUser();

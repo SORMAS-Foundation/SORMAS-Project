@@ -35,7 +35,7 @@ public class CaseNewActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.basic_activity_layout);
+        setContentView(R.layout.sormas_root_activity_layout);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);
         if (toolbar != null) {
