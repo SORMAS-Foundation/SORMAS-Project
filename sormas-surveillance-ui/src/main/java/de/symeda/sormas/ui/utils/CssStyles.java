@@ -70,6 +70,11 @@ public final class CssStyles {
 	public static final String ALIGN_RIGHT = "align-right";
 
 	public static final String ALIGN_CENTERED = "align-centered";
+	
+	public static final String PRIORITY_HIGH = "priority-high";
+	public static final String PRIORITY_NORMAL = "priority-normal";
+	public static final String PRIORITY_LOW = "priority-low";
+
 
 
 	public static void style(Component component, String... styles) {

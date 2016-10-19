@@ -124,5 +124,11 @@ public class TaskFacadeEjb implements TaskFacade {
 			.map(c -> toDto(c))
 			.collect(Collectors.toList());
 	}
+	
+	@Override
+	public long getTaskCount(String userUuid) {
+		// TODO cache...
+		return service.getTaskCount(userUuid);
+	}
 }
 

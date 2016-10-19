@@ -12,6 +12,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.Size;
 
@@ -161,6 +162,16 @@ public class User extends AbstractDomainObject {
 	}
 	@Override
 	public String toString() {
-		return getFirstName() + " " + getLastName();
+		return getFirstName() + " " + getLastName().toUpperCase();
+	}
+	
+	@Transient
+	public boolean isSupervisor() {
+		for (UserRole userRole : getUserRoles()) {
+			if (userRole.isSupervisor()) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

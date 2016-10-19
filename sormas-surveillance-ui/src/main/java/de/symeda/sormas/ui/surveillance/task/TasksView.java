@@ -9,8 +9,9 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
-import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.task.TaskDto;
+import de.symeda.sormas.api.task.TaskStatus;
+import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.surveillance.ControllerProvider;
 import de.symeda.sormas.ui.utils.AbstractView;
 
@@ -48,24 +49,31 @@ public class TasksView extends AbstractView {
 	public HorizontalLayout createTopBar() {
     	HorizontalLayout topLayout = new HorizontalLayout();
     	topLayout.setSpacing(true);
-    	topLayout.setWidth("100%");
+    	topLayout.setWidth(100, Unit.PERCENTAGE);
     	
-//    	Button statusAll = new Button("all", e -> grid.filterTaskStatus(null));
-//        statusAll.setStyleName(ValoTheme.BUTTON_LINK);
-//        topLayout.addComponent(statusAll);
-//        
-//    	Button statusPossible = new Button("possible", e -> grid.filterTaskStatus(Tas.POSSIBLE));
-//    	statusPossible.setStyleName(ValoTheme.BUTTON_LINK);
-//        topLayout.addComponent(statusPossible);
-//        
-//        Button statusInvestigated = new Button("investigated", e -> grid.filterTaskStatus(CaseStatus.INVESTIGATED));
-//        statusInvestigated.setStyleName(ValoTheme.BUTTON_LINK);
-//        topLayout.addComponent(statusInvestigated);
+    	HorizontalLayout buttonFilterLayout = new HorizontalLayout();
+    	{
+	    	Button statusAll = new Button("all", e -> grid.filterAssignee(null));
+	        statusAll.setStyleName(ValoTheme.BUTTON_LINK);
+	        buttonFilterLayout.addComponent(statusAll);
+	        
+	    	Button statusPossible = new Button("officer tasks", e -> grid.filterExcludeAssignee(LoginHelper.getCurrentUserAsReference()));
+	    	statusPossible.setStyleName(ValoTheme.BUTTON_LINK);
+	    	buttonFilterLayout.addComponent(statusPossible);
+	        
+	        Button statusInvestigated = new Button("my tasks", e -> grid.filterAssignee(LoginHelper.getCurrentUserAsReference()));
+	        statusInvestigated.setStyleName(ValoTheme.BUTTON_LINK);
+	        buttonFilterLayout.addComponent(statusInvestigated);
+    	}
+    	topLayout.addComponent(buttonFilterLayout);
         
-        ComboBox assigneeFilter = new ComboBox();
-        // TODO add assignees
-        assigneeFilter.addValueChangeListener(e->grid.filterAssignee((ReferenceDto)e.getProperty().getValue()));
-        topLayout.addComponent(assigneeFilter);
+        ComboBox statusFilter = new ComboBox();
+        statusFilter.addItem("all");
+        statusFilter.setNullSelectionItemId("all");
+        statusFilter.addItems((Object[])TaskStatus.values());
+        statusFilter.addValueChangeListener(e->grid.filterTaskStatus((TaskStatus)e.getProperty().getValue()));
+        statusFilter.setValue(TaskStatus.PENDING);
+        topLayout.addComponent(statusFilter);
     	
         newButton = new Button("New task");
         newButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
@@ -73,8 +81,8 @@ public class TasksView extends AbstractView {
         newButton.addClickListener(e -> ControllerProvider.getTaskController().create());
         topLayout.addComponent(newButton);
 
-        topLayout.setComponentAlignment(assigneeFilter, Alignment.MIDDLE_LEFT);
-        topLayout.setExpandRatio(assigneeFilter, 1);
+        topLayout.setComponentAlignment(statusFilter, Alignment.MIDDLE_LEFT);
+        topLayout.setExpandRatio(statusFilter, 1);
         topLayout.setStyleName("top-bar");
         return topLayout;
     }

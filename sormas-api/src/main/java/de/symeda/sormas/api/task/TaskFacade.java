@@ -12,4 +12,6 @@ public interface TaskFacade {
 
 	List<TaskDto> getAllAfter(Date date, String userUuid);
 
+	long getTaskCount(String userUuid);
+
 }

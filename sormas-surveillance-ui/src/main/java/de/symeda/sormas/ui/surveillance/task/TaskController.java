@@ -6,6 +6,7 @@ import java.util.List;
 import com.vaadin.server.Sizeable.Unit;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.user.UserDto;
@@ -64,5 +65,10 @@ public class TaskController {
     	task.setCreatorUser(LoginHelper.getCurrentUserAsReference());
     	task.setTaskStatus(TaskStatus.PENDING);
     	return task;
+    }
+    
+    public String getUserCaptionWithTaskCount(ReferenceDto user) {
+    	long taskCount = FacadeProvider.getTaskFacade().getTaskCount(user.getUuid());
+    	return user.getCaption() + " (" + taskCount + ")";
     }
 }

@@ -13027,6 +13027,16 @@ div.v-layout.v-horizontal.v-widget {
 	height: 100%;
 }
 
+.sormastheme .v-grid-cell.priority-high {
+	background-color: #C0504D;
+	color: white;
+}
+
+.sormastheme .v-grid-cell.priority-normal {
+	background-color: #4F81BD;
+	color: white;
+}
+
 .sormastheme .valo-content {
 	overflow: auto;
 }

@@ -29,6 +29,7 @@ public class TaskDto extends DataTransferObject {
 	public static final String TASK_CONTEXT = "taskContext";
 	public static final String TASK_STATUS = "taskStatus";
 	public static final String TASK_TYPE = "taskType";
+	public static final String CONTEXT_REFERENCE = "contextReference";
 
 	private TaskContext taskContext;
 	private ReferenceDto caze;
@@ -147,5 +148,18 @@ public class TaskDto extends DataTransferObject {
 	}
 	public void setPriority(TaskPriority priority) {
 		this.priority = priority;
+	}
+	
+	public ReferenceDto getContextReference() {
+		switch (taskContext) {
+		case CASE:
+			return getCaze();
+		case CONTACT:
+			return getContact();
+		case EVENT:
+			return getEvent();
+		default:
+			throw new IndexOutOfBoundsException(taskContext.toString());
+		}
 	}
 }

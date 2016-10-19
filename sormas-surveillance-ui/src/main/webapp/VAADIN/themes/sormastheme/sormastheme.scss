@@ -93,6 +93,15 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
     }
   }
   
+  .v-grid-cell.priority-high {
+    background-color: #C0504D;
+    color: white;
+  }
+  .v-grid-cell.priority-normal {
+    background-color: #4F81BD;
+    color: white;
+  }
+  
   .valo-content {
   	overflow: auto;
   }
