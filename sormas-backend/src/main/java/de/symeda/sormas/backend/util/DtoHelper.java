@@ -1,28 +1,32 @@
 package de.symeda.sormas.backend.util;
 
+import de.symeda.sormas.api.DataTransferObject;
 import de.symeda.sormas.api.ReferenceDto;
-import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 
 public final class DtoHelper {
 
+	/**
+	 * @deprecated inherit ReferenceDto (@see UserFacadeEjb)
+	 */
+	@Deprecated
 	public static ReferenceDto toReferenceDto(AbstractDomainObject entity) {
 		if (entity == null) {
 			return null;
 		}
 		ReferenceDto dto = new ReferenceDto();
-		dto.setCreationDate(entity.getCreationDate());
-		dto.setChangeDate(entity.getChangeDate());
-		dto.setUuid(entity.getUuid());
-		dto.setCaption(entity.toString());
+		fillReferenceDto(dto, entity);
 		return dto;
 	}
 	
-	public static <T extends AbstractDomainObject> T fromReferenceDto(ReferenceDto dto, AbstractAdoService<T> service) {
-		if (dto != null) {
-			return service.getByUuid(dto.getUuid());
-		} else {
-			return null;
-		}
+	public static void fillDto(DataTransferObject dto, AbstractDomainObject entity) {
+		dto.setCreationDate(entity.getCreationDate());
+		dto.setChangeDate(entity.getChangeDate());
+		dto.setUuid(entity.getUuid());
+	}
+	
+	public static void fillReferenceDto(ReferenceDto dto, AbstractDomainObject entity) {
+		fillDto(dto, entity);
+		dto.setCaption(entity.toString());
 	}
 }

@@ -3,11 +3,14 @@ package de.symeda.sormas.ui.surveillance.task;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang3.time.DateUtils;
+
 import com.vaadin.server.Sizeable.Unit;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.task.TaskDto;
+import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -61,9 +64,11 @@ public class TaskController {
     private TaskDto createNewTask() {
     	TaskDto task = new TaskDto();
     	task.setUuid(DataHelper.createUuid());
-    	task.setDueDate(new Date());
+    	task.setDueDate(DateUtils.addDays(new Date(), 1));
+    	task.setSuggestedStart(DateUtils.addHours(new Date(), 16));
     	task.setCreatorUser(LoginHelper.getCurrentUserAsReference());
     	task.setTaskStatus(TaskStatus.PENDING);
+    	task.setPriority(TaskPriority.NORMAL);
     	return task;
     }
     

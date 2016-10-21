@@ -36,7 +36,7 @@ public class UserDto extends DataTransferObject {
 	
 	private Set<UserRole> userRoles;
 
-	private ReferenceDto associatedOfficer;
+	private UserReferenceDto associatedOfficer;
 	
 	public boolean isActive() {
 		return active;
@@ -115,11 +115,11 @@ public class UserDto extends DataTransferObject {
 		return firstName + " " + lastName.toUpperCase();
 	}
 
-	public ReferenceDto getAssociatedOfficer() {
+	public UserReferenceDto getAssociatedOfficer() {
 		return associatedOfficer;
 	}
 
-	public void setAssociatedOfficer(ReferenceDto associatedOfficer) {
+	public void setAssociatedOfficer(UserReferenceDto associatedOfficer) {
 		this.associatedOfficer = associatedOfficer;
 	}
 

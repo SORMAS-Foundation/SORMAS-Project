@@ -6,6 +6,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import de.symeda.sormas.api.DataTransferObject;
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.PreciseDateAdapter;
 
 public class TaskDto extends DataTransferObject {
@@ -44,9 +45,9 @@ public class TaskDto extends DataTransferObject {
 	private Date statusChangeDate;
 	private Date perceivedStart;
 	
-	private ReferenceDto creatorUser;
+	private UserReferenceDto creatorUser;
 	private String creatorComment;
-	private ReferenceDto assigneeUser;
+	private UserReferenceDto assigneeUser;
 	private String assigneeReply;
 	
 
@@ -119,10 +120,10 @@ public class TaskDto extends DataTransferObject {
 	public void setPerceivedStart(Date perceivedStart) {
 		this.perceivedStart = perceivedStart;
 	}
-	public ReferenceDto getCreatorUser() {
+	public UserReferenceDto getCreatorUser() {
 		return creatorUser;
 	}
-	public void setCreatorUser(ReferenceDto creatorUser) {
+	public void setCreatorUser(UserReferenceDto creatorUser) {
 		this.creatorUser = creatorUser;
 	}
 	public String getCreatorComment() {
@@ -131,10 +132,10 @@ public class TaskDto extends DataTransferObject {
 	public void setCreatorComment(String creatorComment) {
 		this.creatorComment = creatorComment;
 	}
-	public ReferenceDto getAssigneeUser() {
+	public UserReferenceDto getAssigneeUser() {
 		return assigneeUser;
 	}
-	public void setAssigneeUser(ReferenceDto assigneeUser) {
+	public void setAssigneeUser(UserReferenceDto assigneeUser) {
 		this.assigneeUser = assigneeUser;
 	}
 	public String getAssigneeReply() {

@@ -71,7 +71,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
     	// TODO use only users from own region or district?!
     	addField(CaseDataDto.SURVEILLANCE_OFFICER, ComboBox.class)
-			.addItems(FacadeProvider.getUserFacade().getListAsReference(UserRole.SURVEILLANCE_OFFICER));
+			.addItems(FacadeProvider.getUserFacade().getAllAsReference(UserRole.SURVEILLANCE_OFFICER));
     	addField(CaseDataDto.CASE_OFFICER, ComboBox.class);
     	addField(CaseDataDto.CONTACT_OFFICER, ComboBox.class);
     	

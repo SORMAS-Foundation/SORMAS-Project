@@ -8,6 +8,7 @@ import de.symeda.sormas.api.DataTransferObject;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.PreciseDateAdapter;
 
 public class CaseDataDto extends DataTransferObject {
@@ -34,18 +35,18 @@ public class CaseDataDto extends DataTransferObject {
 	private CaseStatus caseStatus;
 	private Disease disease;
 	private ReferenceDto healthFacility;
-	private ReferenceDto reportingUser;
+	private UserReferenceDto reportingUser;
 	private Date reportDate;
 	private Date investigatedDate;
 	
 	private SymptomsDto symptoms;
 
-	private ReferenceDto surveillanceOfficer;
-	private ReferenceDto surveillanceSupervisor;
-	private ReferenceDto caseOfficer;
-	private ReferenceDto caseSupervisor;
-	private ReferenceDto contactOfficer;
-	private ReferenceDto contactSupervisor;
+	private UserReferenceDto surveillanceOfficer;
+	private UserReferenceDto surveillanceSupervisor;
+	private UserReferenceDto caseOfficer;
+	private UserReferenceDto caseSupervisor;
+	private UserReferenceDto contactOfficer;
+	private UserReferenceDto contactSupervisor;
 	
 	public CaseStatus getCaseStatus() {
 		return caseStatus;
@@ -71,11 +72,11 @@ public class CaseDataDto extends DataTransferObject {
 		this.disease = disease;
 	}
 
-	public ReferenceDto getReportingUser() {
+	public UserReferenceDto getReportingUser() {
 		return reportingUser;
 	}
 
-	public void setReportingUser(ReferenceDto reportingUser) {
+	public void setReportingUser(UserReferenceDto reportingUser) {
 		this.reportingUser = reportingUser;
 	}
 
@@ -107,51 +108,51 @@ public class CaseDataDto extends DataTransferObject {
 		this.investigatedDate = investigatedDate;
 	}
 
-	public ReferenceDto getSurveillanceOfficer() {
+	public UserReferenceDto getSurveillanceOfficer() {
 		return surveillanceOfficer;
 	}
 
-	public void setSurveillanceOfficer(ReferenceDto surveillanceOfficer) {
+	public void setSurveillanceOfficer(UserReferenceDto surveillanceOfficer) {
 		this.surveillanceOfficer = surveillanceOfficer;
 	}
 
-	public ReferenceDto getSurveillanceSupervisor() {
+	public UserReferenceDto getSurveillanceSupervisor() {
 		return surveillanceSupervisor;
 	}
 
-	public void setSurveillanceSupervisor(ReferenceDto surveillanceSupervisor) {
+	public void setSurveillanceSupervisor(UserReferenceDto surveillanceSupervisor) {
 		this.surveillanceSupervisor = surveillanceSupervisor;
 	}
 
-	public ReferenceDto getCaseOfficer() {
+	public UserReferenceDto getCaseOfficer() {
 		return caseOfficer;
 	}
 
-	public void setCaseOfficer(ReferenceDto caseOfficer) {
+	public void setCaseOfficer(UserReferenceDto caseOfficer) {
 		this.caseOfficer = caseOfficer;
 	}
 
-	public ReferenceDto getCaseSupervisor() {
+	public UserReferenceDto getCaseSupervisor() {
 		return caseSupervisor;
 	}
 
-	public void setCaseSupervisor(ReferenceDto caseSupervisor) {
+	public void setCaseSupervisor(UserReferenceDto caseSupervisor) {
 		this.caseSupervisor = caseSupervisor;
 	}
 
-	public ReferenceDto getContactOfficer() {
+	public UserReferenceDto getContactOfficer() {
 		return contactOfficer;
 	}
 
-	public void setContactOfficer(ReferenceDto contactOfficer) {
+	public void setContactOfficer(UserReferenceDto contactOfficer) {
 		this.contactOfficer = contactOfficer;
 	}
 
-	public ReferenceDto getContactSupervisor() {
+	public UserReferenceDto getContactSupervisor() {
 		return contactSupervisor;
 	}
 
-	public void setContactSupervisor(ReferenceDto contactSupervisor) {
+	public void setContactSupervisor(UserReferenceDto contactSupervisor) {
 		this.contactSupervisor = contactSupervisor;
 	}
 

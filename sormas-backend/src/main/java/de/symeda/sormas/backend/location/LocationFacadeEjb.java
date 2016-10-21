@@ -44,9 +44,9 @@ public class LocationFacadeEjb implements LocationFacade {
 		location.setDetails(dto.getDetails());
 		location.setCity(dto.getCity());
 		
-		location.setRegion(DtoHelper.fromReferenceDto(dto.getRegion(), regionService));
-		location.setDistrict(DtoHelper.fromReferenceDto(dto.getDistrict(), districtService));
-		location.setCommunity(DtoHelper.fromReferenceDto(dto.getCommunity(), communityService));
+		location.setRegion(regionService.getByReferenceDto(dto.getRegion()));
+		location.setDistrict(districtService.getByReferenceDto(dto.getDistrict()));
+		location.setCommunity(communityService.getByReferenceDto(dto.getCommunity()));
 		
 		location.setLatitude(dto.getLatitude());
 		location.setLongitude(dto.getLongitude());
@@ -54,28 +54,25 @@ public class LocationFacadeEjb implements LocationFacade {
 		return location;
 	}
 	
-	public static LocationDto toLocationDto(Location location) {
+	public static LocationDto toLocationDto(Location entity) {
 		
-		if (location == null) {
+		if (entity == null) {
 			return null;
 		}
 
 		LocationDto dto = new LocationDto();
+		DtoHelper.fillDto(dto, entity);
 		
-		dto.setCreationDate(location.getCreationDate());
-		dto.setChangeDate(location.getChangeDate());
-		dto.setUuid(location.getUuid());
+		dto.setAddress(entity.getAddress());
+		dto.setDetails(entity.getDetails());
+		dto.setCity(entity.getCity());
 		
-		dto.setAddress(location.getAddress());
-		dto.setDetails(location.getDetails());
-		dto.setCity(location.getCity());
+		dto.setRegion(DtoHelper.toReferenceDto(entity.getRegion()));
+		dto.setDistrict(DtoHelper.toReferenceDto(entity.getDistrict()));
+		dto.setCommunity(DtoHelper.toReferenceDto(entity.getCommunity()));
 		
-		dto.setRegion(DtoHelper.toReferenceDto(location.getRegion()));
-		dto.setDistrict(DtoHelper.toReferenceDto(location.getDistrict()));
-		dto.setCommunity(DtoHelper.toReferenceDto(location.getCommunity()));
-		
-		dto.setLatitude(location.getLatitude());
-		dto.setLongitude(location.getLongitude());
+		dto.setLatitude(entity.getLatitude());
+		dto.setLongitude(entity.getLongitude());
 		
 		return dto;
 	}

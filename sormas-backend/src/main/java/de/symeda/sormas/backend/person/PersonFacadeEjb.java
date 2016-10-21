@@ -144,7 +144,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		
 		bo.setOccupationType(dto.getOccupationType());
 		bo.setOccupationDetails(dto.getOccupationDetails());
-		bo.setOccupationFacility(DtoHelper.fromReferenceDto(dto.getOccupationFacility(), facilityService));
+		bo.setOccupationFacility(facilityService.getByReferenceDto(dto.getOccupationFacility()));
 		return bo;
 	}
 	

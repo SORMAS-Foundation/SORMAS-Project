@@ -16,6 +16,7 @@ import javax.persistence.criteria.Root;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.util.PasswordHelper;
 
 @Stateless
@@ -26,6 +27,15 @@ public class UserService extends AbstractAdoService<User> {
 		super(User.class);
 	}
 	
+	public User createUser() {
+		User user = new User();
+		// dummy password to make sure no one can login with this user
+		String password = PasswordHelper.createPass(12);
+		user.setSeed(PasswordHelper.createPass(16));
+		user.setPassword(PasswordHelper.encodePassword(password, user.getSeed()));		
+		return user;
+	}
+
 	public User getByUserName(String userName) {
 		
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -44,22 +54,21 @@ public class UserService extends AbstractAdoService<User> {
 		return entity;
 	}
 	
-	public User createUser() {
-		User user = new User();
-		// dummy password to make sure no one can login with this user
-		String password = PasswordHelper.createPass(12);
-		user.setSeed(PasswordHelper.createPass(16));
-		user.setPassword(PasswordHelper.encodePassword(password, user.getSeed()));
-		
-		return user;
-	}
-	
-	public List<User> getListByUserRoles(UserRole... userRole) {
+	public List<User> getAllByUserRoles(UserRole... userRole) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<User> cq = cb.createQuery(getElementClass());
 		Root<User> from = cq.from(getElementClass());
 		Join<User, UserRole> userRoles = from.join(User.USER_ROLES, JoinType.LEFT);
 		cq.where(userRoles.in(Arrays.asList(userRole)));
+		cq.orderBy(cb.asc(from.get(AbstractDomainObject.ID)));
+		return em.createQuery(cq).getResultList();
+	}
+	
+	public List<User> getAllByRegion(Region region) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<User> cq = cb.createQuery(getElementClass());
+		Root<User> from = cq.from(getElementClass());
+		cq.where(cb.equal(from.get(User.REGION), region));
 		cq.orderBy(cb.asc(from.get(AbstractDomainObject.ID)));
 		return em.createQuery(cq).getResultList();
 	}

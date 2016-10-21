@@ -74,7 +74,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 
     	// for informant
     	ComboBox associatedOfficer = addField(UserDto.ASSOCIATED_OFFICER, ComboBox.class);
-    	associatedOfficer.addItems(FacadeProvider.getUserFacade().getListAsReference(UserRole.SURVEILLANCE_OFFICER));
+    	associatedOfficer.addItems(FacadeProvider.getUserFacade().getAllAsReference(UserRole.SURVEILLANCE_OFFICER));
     	updateAssociatedOfficerField();
     	
     	setRequired(true, UserDto.FIRST_NAME, UserDto.LAST_NAME, UserDto.USER_NAME, UserDto.USER_ROLES);

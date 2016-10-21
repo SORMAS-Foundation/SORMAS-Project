@@ -5,12 +5,10 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
-import de.symeda.sormas.api.ReferenceDto;
-
 @Remote
 public interface UserFacade {
 
-    List<ReferenceDto> getListAsReference(UserRole userRole);
+    List<UserReferenceDto> getAllAsReference(UserRole userRole);
     
     List<UserDto> getAll(UserRole... role);
     
@@ -26,5 +24,9 @@ public interface UserFacade {
 
 	UserDto getByUserName(String userName);
 
-	List<ReferenceDto> getAllAfterAsReference(Date date);
+	UserReferenceDto getByUserNameAsReference(String userName);
+
+	List<UserReferenceDto> getAllAfterAsReference(Date date);
+
+	List<UserReferenceDto> getAssignableUsers(UserReferenceDto assigningUser);
 }

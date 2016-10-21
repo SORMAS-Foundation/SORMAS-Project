@@ -13,6 +13,7 @@ import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskFacade;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 
@@ -25,7 +26,9 @@ public class TaskFacadeEjb implements TaskFacade {
 	private UserService userService;
 	@EJB
 	private CaseService caseService;
-
+	@EJB
+	private UserFacadeEjbLocal userFacade;
+	
 	public Task fromDto(TaskDto dto) {		
 		if (dto == null) {
 			return null;
@@ -43,9 +46,9 @@ public class TaskFacadeEjb implements TaskFacade {
 		Task a = task;
 		TaskDto b = dto;
 		
-		a.setAssigneeUser(DtoHelper.fromReferenceDto(b.getAssigneeUser(), userService));
+		a.setAssigneeUser(userService.getByReferenceDto(b.getAssigneeUser()));
 		a.setAssigneeReply(b.getAssigneeReply());
-		a.setCreatorUser(DtoHelper.fromReferenceDto(b.getCreatorUser(), userService));
+		a.setCreatorUser(userService.getByReferenceDto(b.getCreatorUser()));
 		a.setCreatorComment(b.getCreatorComment());
 		a.setPriority(b.getPriority());
 		a.setDueDate(b.getDueDate());
@@ -59,7 +62,7 @@ public class TaskFacadeEjb implements TaskFacade {
 		if (b.getTaskContext() != null) {
 			switch (b.getTaskContext()) {
 			case CASE:
-				a.setCaze(DtoHelper.fromReferenceDto(b.getCaze(), caseService));
+				a.setCaze(caseService.getByReferenceDto(b.getCaze()));
 	//			a.setEvent(null);
 	//			a.setContact(null);
 				break;
@@ -75,7 +78,7 @@ public class TaskFacadeEjb implements TaskFacade {
 		return task;
 	}
 	
-	public static TaskDto toDto(Task task) {
+	public TaskDto toDto(Task task) {
 		
 		if (task == null) {
 			return null;
@@ -88,9 +91,9 @@ public class TaskFacadeEjb implements TaskFacade {
 		a.setChangeDate(b.getChangeDate());
 		a.setUuid(b.getUuid());
 		
-		a.setAssigneeUser(DtoHelper.toReferenceDto(b.getAssigneeUser()));
+		a.setAssigneeUser(userFacade.toReferenceDto(b.getAssigneeUser()));
 		a.setAssigneeReply(b.getAssigneeReply());
-		a.setCreatorUser(DtoHelper.toReferenceDto(b.getCreatorUser()));
+		a.setCreatorUser(userFacade.toReferenceDto(b.getCreatorUser()));
 		a.setCreatorComment(b.getCreatorComment());
 		a.setPriority(b.getPriority());
 		a.setDueDate(b.getDueDate());

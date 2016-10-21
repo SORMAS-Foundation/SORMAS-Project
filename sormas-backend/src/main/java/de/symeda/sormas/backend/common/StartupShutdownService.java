@@ -97,9 +97,9 @@ public class StartupShutdownService {
 	private void initCaseAndPersonMockData() {
 		if (caseService.getAll().isEmpty()) {
 			Random random = new Random();
-			List<User> informants = userService.getListByUserRoles(UserRole.INFORMANT);
-			List<User> survOffs = userService.getListByUserRoles(UserRole.SURVEILLANCE_OFFICER);
-			List<User> survSups = userService.getListByUserRoles(UserRole.SURVEILLANCE_SUPERVISOR);
+			List<User> informants = userService.getAllByUserRoles(UserRole.INFORMANT);
+			List<User> survOffs = userService.getAllByUserRoles(UserRole.SURVEILLANCE_OFFICER);
+			List<User> survSups = userService.getAllByUserRoles(UserRole.SURVEILLANCE_SUPERVISOR);
 			List<Facility> facilities = facilityService.getAll();
 			
 			List<Case> cases = MockDataGenerator.createCases();

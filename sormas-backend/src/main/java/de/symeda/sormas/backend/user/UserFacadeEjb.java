@@ -1,15 +1,17 @@
 package de.symeda.sormas.backend.user;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
+import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
-import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserFacade;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
@@ -24,16 +26,30 @@ public class UserFacadeEjb implements UserFacade {
 	private LocationFacadeEjbLocal locationFacade;
 
 	@Override
-	public List<ReferenceDto> getListAsReference(UserRole userRole) {
-		return service.getListByUserRoles(userRole).stream()
-				.map(f -> DtoHelper.toReferenceDto(f))
+	public List<UserReferenceDto> getAllAsReference(UserRole userRole) {
+		return service.getAllByUserRoles(userRole).stream()
+				.map(f -> toReferenceDto(f))
 				.collect(Collectors.toList());
 	}
 	
 	
 	@Override
+	public List<UserReferenceDto> getAssignableUsers(UserReferenceDto assigningUser) {
+		User user = service.getByReferenceDto(assigningUser);
+		
+		if (user != null && user.getRegion() != null) {
+			return service.getAllByRegion(user.getRegion()).stream()
+					.map(f -> toReferenceDto(f))
+					.collect(Collectors.toList());
+		}
+		
+		return Collections.emptyList();
+	}
+
+
+	@Override
 	public List<UserDto> getAll(UserRole... userRoles) {
-		return service.getListByUserRoles(userRoles).stream()
+		return service.getAllByUserRoles(userRoles).stream()
 				.map(f -> toDto(f))
 				.collect(Collectors.toList());
 	}
@@ -46,9 +62,9 @@ public class UserFacadeEjb implements UserFacade {
 	}
 	
 	@Override
-	public List<ReferenceDto> getAllAfterAsReference(Date date) {
+	public List<UserReferenceDto> getAllAfterAsReference(Date date) {
 		return service.getAllAfter(date).stream()
-			.map(c -> DtoHelper.toReferenceDto(c))
+			.map(c -> toReferenceDto(c))
 			.collect(Collectors.toList());
 	}
 
@@ -61,6 +77,11 @@ public class UserFacadeEjb implements UserFacade {
 	public UserDto getByUserName(String userName) {
 		return toDto(service.getByUserName(userName));
 	}
+	
+	@Override
+	public UserReferenceDto getByUserNameAsReference(String userName) {
+		return toReferenceDto(service.getByUserName(userName));
+	}
 
 	@Override
 	public UserDto saveUser(UserDto dto) {
@@ -71,11 +92,9 @@ public class UserFacadeEjb implements UserFacade {
 		return toDto(user);
 	}
 	
-	private UserDto toDto(User entity) {
+	public UserDto toDto(User entity) {
 		UserDto dto = new UserDto();
-		dto.setUuid(entity.getUuid());
-		dto.setCreationDate(entity.getCreationDate());
-		dto.setChangeDate(entity.getChangeDate());
+		DtoHelper.fillDto(dto, entity);
 		
 		dto.setActive(entity.isAktiv());
 		dto.setUserName(entity.getUserName());
@@ -85,13 +104,21 @@ public class UserFacadeEjb implements UserFacade {
 		dto.setPhone(entity.getPhone());
 		dto.setAddress(LocationFacadeEjb.toLocationDto(entity.getAddress()));
 		
-		dto.setAssociatedOfficer(DtoHelper.toReferenceDto(entity.getAssociatedOfficer()));
+		dto.setAssociatedOfficer(toReferenceDto(entity.getAssociatedOfficer()));
 		
 		entity.getUserRoles().size();
 		dto.setUserRoles(entity.getUserRoles());
 		return dto;
 	}
 	
+	public UserReferenceDto toReferenceDto(User entity) {
+		if (entity == null) {
+			return null;
+		}
+		UserReferenceDto dto = new UserReferenceDto();
+		DtoHelper.fillReferenceDto(dto, entity);
+		return dto;
+	}	
 	
 	private User toUser(UserDto dto) {
 		User bo = service.getByUuid(dto.getUuid());
@@ -109,7 +136,7 @@ public class UserFacadeEjb implements UserFacade {
 		bo.setUserName(dto.getUserName());
 		bo.setUserEmail(dto.getUserEmail());
 		
-		bo.setAssociatedOfficer(DtoHelper.fromReferenceDto(dto.getAssociatedOfficer(), service));
+		bo.setAssociatedOfficer(service.getByReferenceDto(dto.getAssociatedOfficer()));
 
 		bo.setUserRoles(dto.getUserRoles());
 
@@ -125,5 +152,10 @@ public class UserFacadeEjb implements UserFacade {
 	@Override
 	public String resetPassword(String uuid) {
 		return service.resetPassword(uuid);
+	}
+	
+	@LocalBean
+	@Stateless
+	public static class UserFacadeEjbLocal extends UserFacadeEjb {
 	}
 }

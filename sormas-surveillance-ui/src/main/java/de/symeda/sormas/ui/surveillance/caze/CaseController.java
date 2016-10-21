@@ -12,7 +12,6 @@ import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.CaseHelper;
@@ -22,6 +21,7 @@ import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsFacade;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.login.LoginHelper;
@@ -107,7 +107,7 @@ public class CaseController {
     	
     	caze.setReportDate(new Date());
     	UserDto user = LoginHelper.getCurrentUser();
-    	ReferenceDto userReference = DataHelper.toReferenceDto(user);
+    	UserReferenceDto userReference = LoginHelper.getCurrentUserAsReference();
     	caze.setReportingUser(userReference);
     	if (user.getUserRoles().contains(UserRole.SURVEILLANCE_SUPERVISOR)) {
     		caze.setSurveillanceSupervisor(userReference);

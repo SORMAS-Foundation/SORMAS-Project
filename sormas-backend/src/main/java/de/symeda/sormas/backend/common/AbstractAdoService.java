@@ -16,6 +16,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.backend.user.Permission;
 import de.symeda.sormas.backend.util.ModelConstants;
 
@@ -77,6 +78,14 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 		return result;
 	}
 
+	public ADO getByReferenceDto(ReferenceDto dto) {
+		if (dto != null) {
+			return getByUuid(dto.getUuid());
+		} else {
+			return null;
+		}
+	}
+	
 	@Override
 	public ADO getByUuid(String uuid) {
 		

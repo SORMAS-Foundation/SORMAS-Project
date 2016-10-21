@@ -3,8 +3,10 @@ package de.symeda.sormas.ui.surveillance.task;
 import java.util.List;
 
 import com.vaadin.data.Property;
+import com.vaadin.shared.ui.datefield.Resolution;
 import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.DateField;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TextArea;
@@ -14,7 +16,9 @@ import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskType;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.ui.login.LoginHelper;
+import de.symeda.sormas.ui.surveillance.ControllerProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
@@ -23,9 +27,11 @@ import de.symeda.sormas.ui.utils.LayoutUtil;
 public class TaskEditForm extends AbstractEditForm<TaskDto> {
 	
     private static final String HTML_LAYOUT = 
-    		LayoutUtil.fluidRow(LayoutUtil.loc(TaskDto.TASK_CONTEXT), LayoutUtil.locs(TaskDto.CAZE, TaskDto.EVENT, TaskDto.CONTACT))+
+    		LayoutUtil.fluidRow(LayoutUtil.loc(TaskDto.TASK_CONTEXT), 
+    				LayoutUtil.locs(TaskDto.CAZE, TaskDto.EVENT, TaskDto.CONTACT))+
 			LayoutUtil.fluidRowLocs(TaskDto.TASK_TYPE)+
-			LayoutUtil.fluidRowLocs(TaskDto.ASSIGNEE_USER, TaskDto.DUE_DATE)+
+			LayoutUtil.fluidRowLocs(TaskDto.SUGGESTED_START, TaskDto.DUE_DATE)+
+			LayoutUtil.fluidRowLocs(TaskDto.ASSIGNEE_USER, TaskDto.PRIORITY)+
 			LayoutUtil.fluidRowLocs(TaskDto.CREATOR_COMMENT)
 			;
 
@@ -39,7 +45,9 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
     	addField(TaskDto.CAZE, ComboBox.class);
     	addField(TaskDto.EVENT, ComboBox.class);
     	addField(TaskDto.CONTACT, ComboBox.class);
-    	addField(TaskDto.DUE_DATE);
+    	addField(TaskDto.SUGGESTED_START, DateField.class).setResolution(Resolution.MINUTE);
+    	addField(TaskDto.DUE_DATE, DateField.class).setResolution(Resolution.MINUTE);
+    	addField(TaskDto.PRIORITY, ComboBox.class);
 
     	OptionGroup taskContext = addField(TaskDto.TASK_CONTEXT, OptionGroup.class);
     	taskContext.setImmediate(true);
@@ -66,8 +74,12 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 		});
     	
     	ComboBox assigneeUser = addField(TaskDto.ASSIGNEE_USER, ComboBox.class);
-    	List<ReferenceDto> users = FacadeProvider.getUserFacade().getAllAfterAsReference(null);
-    	assigneeUser.addItems(users);
+    	List<UserReferenceDto> users = FacadeProvider.getUserFacade().getAssignableUsers(LoginHelper.getCurrentUserAsReference());
+    	TaskController taskController = ControllerProvider.getTaskController();
+    	for (UserReferenceDto user : users) {
+        	assigneeUser.addItem(user);
+    		assigneeUser.setItemCaption(user, taskController.getUserCaptionWithTaskCount(user));
+    	}
 
     	addField(TaskDto.CREATOR_COMMENT, TextArea.class).setRows(2);
     	
