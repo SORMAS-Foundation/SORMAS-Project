@@ -3,7 +3,6 @@ package de.symeda.sormas.app;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -16,10 +15,8 @@ import android.widget.ListView;
 
 import de.symeda.sormas.app.caze.CaseNewActivity;
 import de.symeda.sormas.app.caze.CasesActivity;
-import de.symeda.sormas.app.caze.CasesListFilterAdapter;
 import de.symeda.sormas.app.task.TasksActivity;
 import de.symeda.sormas.app.user.UserActivity;
-import de.symeda.sormas.app.util.SlidingTabLayout;
 
 public abstract class SormasRootActivity extends AppCompatActivity {
 
@@ -28,23 +25,21 @@ public abstract class SormasRootActivity extends AppCompatActivity {
     private String[] menuTitles;
     private ListView menuDrawerList;
 
-    private ViewPager pager;
-    private CasesListFilterAdapter adapter;
-    private SlidingTabLayout tabs;
     private CharSequence mainViewTitle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        menuTitles = getResources().getStringArray(R.array.main_side_menu);
-        // init set first menuItem
-        mainViewTitle = menuTitles[0];
+        menuTitles = new String[]{
+                getResources().getString(R.string.main_menu_cases),
+                getResources().getString(R.string.main_menu_tasks),
+                getResources().getString(R.string.main_menu_user)
+                };
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);
         if (toolbar != null) {
             setSupportActionBar(toolbar);
-            getSupportActionBar().setTitle(mainViewTitle);
         }
 
         menuDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -80,7 +75,7 @@ public abstract class SormasRootActivity extends AppCompatActivity {
     @Override
     public void setTitle(CharSequence title) {
         mainViewTitle = title;
-        getActionBar().setTitle(mainViewTitle);
+        getSupportActionBar().setTitle(mainViewTitle);
     }
 
     private void setupDrawer() {

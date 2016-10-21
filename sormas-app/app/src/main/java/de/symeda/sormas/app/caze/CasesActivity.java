@@ -4,6 +4,8 @@ package de.symeda.sormas.app.caze;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
@@ -23,8 +25,9 @@ public class CasesActivity extends SormasRootActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setContentView(R.layout.cases_activity_layout);
-
         super.onCreate(savedInstanceState);
+        setTitle(getResources().getString(R.string.main_menu_cases));
+
         refreshLocalDB();
     }
 
@@ -34,6 +37,13 @@ public class CasesActivity extends SormasRootActivity {
 
         createTabViews();
         refreshCaseList();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.cases_action_bar, menu);
+        return true;
     }
 
     @Override
@@ -47,10 +57,6 @@ public class CasesActivity extends SormasRootActivity {
 
             case R.id.action_new_case:
                 showCaseNewView();
-                return true;
-
-            case R.id.action_user:
-                showUserView();
                 return true;
 
             default:

@@ -25,9 +25,10 @@ public class TasksActivity extends SormasRootActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setContentView(R.layout.cases_activity_layout);
-
+        setContentView(R.layout.tasks_activity_layout);
         super.onCreate(savedInstanceState);
+        setTitle(getResources().getString(R.string.main_menu_tasks));
+
         refreshLocalDB();
     }
 
@@ -48,10 +49,6 @@ public class TasksActivity extends SormasRootActivity {
 
             case R.id.action_new_case:
                 showCaseNewView();
-                return true;
-
-            case R.id.action_user:
-                showUserView();
                 return true;
 
             default:

@@ -28,14 +28,7 @@ public class UserActivity extends SormasRootActivity {
         setContentView(R.layout.sormas_root_activity_layout);
 
         super.onCreate(savedInstanceState);
-
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);
-        if (toolbar != null) {
-            setSupportActionBar(toolbar);
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setTitle(getResources().getText(R.string.headline_user));
-        }
+        setTitle(getResources().getString(R.string.main_menu_user));
 
         // FIXME not sure what this is exactly doing
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
