@@ -52,8 +52,9 @@ public enum TaskType {
 			taskTypesByContext.get(taskContext).add(taskType);
 		}
 		
+		// make lists in the map unmodifiable
 		for (TaskContext taskcontext : taskTypesByContext.keySet()) {
-			taskTypesByContext.replace(taskcontext, Collections.unmodifiableList(taskTypesByContext.get(taskcontext)));
+			taskTypesByContext.put(taskcontext, Collections.unmodifiableList(taskTypesByContext.get(taskcontext)));
 		}
 	}
 	

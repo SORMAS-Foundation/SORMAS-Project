@@ -1,15 +1,16 @@
 package de.symeda.sormas.api.utils;
 
 import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.Period;
-import java.time.ZoneId;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+
+import org.joda.time.DateTime;
+import org.joda.time.Months;
+import org.joda.time.Years;
 
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
@@ -21,18 +22,35 @@ public final class DateHelper {
 
 	public static final Pair<Integer, ApproximateAgeType> getApproximateAge(Date birthDate, Date deathDate) {
 		if (birthDate == null)
-			return Pair.createPair(null, ApproximateAgeType.YEARS);
-		
-		LocalDate toDate = deathDate==null?LocalDate.now():Instant.ofEpochMilli(deathDate.getTime()).atZone(ZoneId.systemDefault()).toLocalDate();
-		LocalDate birthdate = birthDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-		Period period = Period.between(birthdate, toDate);
-		
-		if(period.getYears()<1) {
-			return Pair.createPair(period.getMonths(), ApproximateAgeType.MONTHS);
-		}
-		else {
-			return Pair.createPair(period.getYears(), ApproximateAgeType.YEARS);
-		}
+            return Pair.createPair(null, ApproximateAgeType.YEARS);
+
+        DateTime toDate = deathDate==null?DateTime.now(): new DateTime(deathDate);
+        DateTime startDate = new DateTime(birthDate);
+        Years years = Years.yearsBetween(startDate, toDate);
+        
+
+        if(years.getYears()<1) {
+            Months months = Months.monthsBetween(startDate, toDate);
+            return Pair.createPair(months.getMonths(), ApproximateAgeType.MONTHS);
+        }
+        else {
+            return Pair.createPair(years.getYears(), ApproximateAgeType.YEARS);
+        }
+        
+// 		Same code for Java8		
+//		if (birthDate == null)
+//			return Pair.createPair(null, ApproximateAgeType.YEARS);
+//		
+//		LocalDate toDate = deathDate==null?LocalDate.now():Instant.ofEpochMilli(deathDate.getTime()).atZone(ZoneId.systemDefault()).toLocalDate();
+//		LocalDate birthdate = birthDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+//		Period period = Period.between(birthdate, toDate);
+//		
+//		if(period.getYears()<1) {
+//			return Pair.createPair(period.getMonths(), ApproximateAgeType.MONTHS);
+//		}
+//		else {
+//			return Pair.createPair(period.getYears(), ApproximateAgeType.YEARS);
+//		}
 	}
 	
 	public static final Pair<Integer, ApproximateAgeType> getApproximateAge(Date birthDate) {

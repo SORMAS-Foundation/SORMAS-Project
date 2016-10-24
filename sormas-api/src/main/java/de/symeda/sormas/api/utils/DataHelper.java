@@ -16,7 +16,7 @@ public final class DataHelper {
 	}
 	
 	public static byte[] longToBytes(long x, long y) {
-	    ByteBuffer buffer = ByteBuffer.allocate(2*Long.BYTES);
+	    ByteBuffer buffer = ByteBuffer.allocate(2*Long.SIZE/8);
 	    buffer.putLong(x);
 	    buffer.putLong(y);
 	    return buffer.array();
