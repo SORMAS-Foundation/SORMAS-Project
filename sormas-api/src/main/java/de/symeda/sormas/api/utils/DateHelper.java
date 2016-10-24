@@ -1,5 +1,6 @@
 package de.symeda.sormas.api.utils;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ public final class DateHelper {
 
 	private static final SimpleDateFormat dMy_FORMAT = new SimpleDateFormat("dd.MM.yy");
 	private static final SimpleDateFormat DDMMYY_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
+	private static final SimpleDateFormat hm_FORMAT = new SimpleDateFormat("HH:mm");
 
 	public static final Pair<Integer, ApproximateAgeType> getApproximateAge(Date birthDate, Date deathDate) {
 		if (birthDate == null)
@@ -57,7 +59,34 @@ public final class DateHelper {
 		return getApproximateAge(birthDate, null);
 	}
 	
-	
+	/**
+	 * Formats to "HH:mm"
+	 * @return
+	 */
+	public static String formatHourMinute(Date date) {
+		if (date != null) {
+			return clone(hm_FORMAT).format(date);
+		} else {
+			return "";
+		}
+	}
+
+	/**
+	 * Formats to "HH:mm"
+	 * @return
+	 */
+	public static Date parseHourMinute(String date) {
+		if (date != null) {
+			try {
+				return clone(hm_FORMAT).parse(date);
+			} catch (ParseException e) {
+				return null;
+			}
+		} else {
+			return null;
+		}
+	}
+
 	/**
 	 * Formats to "dd.MM.yy"
 	 * @return

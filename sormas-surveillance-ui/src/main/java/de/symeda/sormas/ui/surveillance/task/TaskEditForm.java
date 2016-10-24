@@ -3,10 +3,8 @@ package de.symeda.sormas.ui.surveillance.task;
 import java.util.List;
 
 import com.vaadin.data.Property;
-import com.vaadin.shared.ui.datefield.Resolution;
 import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.DateField;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TextArea;
@@ -20,6 +18,7 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.surveillance.ControllerProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
+import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
@@ -45,8 +44,8 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
     	addField(TaskDto.CAZE, ComboBox.class);
     	addField(TaskDto.EVENT, ComboBox.class);
     	addField(TaskDto.CONTACT, ComboBox.class);
-    	addField(TaskDto.SUGGESTED_START, DateField.class).setResolution(Resolution.MINUTE);
-    	addField(TaskDto.DUE_DATE, DateField.class).setResolution(Resolution.MINUTE);
+    	addField(TaskDto.SUGGESTED_START, DateTimeField.class);
+    	addField(TaskDto.DUE_DATE, DateTimeField.class);
     	addField(TaskDto.PRIORITY, ComboBox.class);
 
     	OptionGroup taskContext = addField(TaskDto.TASK_CONTEXT, OptionGroup.class);

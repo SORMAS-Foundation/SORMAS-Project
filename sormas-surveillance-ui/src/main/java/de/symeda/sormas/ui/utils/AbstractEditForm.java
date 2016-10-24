@@ -73,8 +73,12 @@ public abstract class AbstractEditForm <DTO extends DataTransferObject> extends 
 				}
 				else if (AbstractSelect.class.isAssignableFrom(fieldType)) {
 					return (T) createCompatibleSelect((Class<? extends AbstractSelect>) fieldType);
-				} else if (LocationForm.class.isAssignableFrom(fieldType)) {
+				} 
+				else if (LocationForm.class.isAssignableFrom(fieldType)) {
 					return (T) new LocationForm();
+				} 
+				else if (DateTimeField.class.isAssignableFrom(fieldType)) {
+					return (T) new DateTimeField();
 				} 
 				
 				return super.createField(type, fieldType);
