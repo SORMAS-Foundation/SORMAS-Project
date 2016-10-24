@@ -32,7 +32,6 @@ import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.databinding.CasePersonFragmentLayoutBinding;
-import de.symeda.sormas.app.util.DateUtils;
 import de.symeda.sormas.app.util.FormTab;
 import de.symeda.sormas.app.util.Item;
 
@@ -251,7 +250,7 @@ public class CaseEditPersonTab extends FormTab {
             if((Date)getModel().get(R.id.form_p_date_of_death)!= null){
                 to = (Date)getModel().get(R.id.form_p_date_of_death);
             }
-            DataHelper.Pair<Integer, ApproximateAgeType> approximateAge = DateUtils.getApproximateAgeYears(birthDate.getTime(),to);
+            DataHelper.Pair<Integer, ApproximateAgeType> approximateAge = DateHelper.getApproximateAge(birthDate.getTime(),to);
             ApproximateAgeType ageType = approximateAge.getElement1();
             approximateAgeTextField.setText(String.valueOf(approximateAge.getElement0()));
             for (int i=0; i<approximateAgeTypeField.getCount(); i++) {
