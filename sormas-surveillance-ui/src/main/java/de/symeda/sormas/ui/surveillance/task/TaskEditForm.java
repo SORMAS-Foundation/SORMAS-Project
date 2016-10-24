@@ -31,14 +31,20 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 			LayoutUtil.fluidRowLocs(TaskDto.TASK_TYPE)+
 			LayoutUtil.fluidRowLocs(TaskDto.SUGGESTED_START, TaskDto.DUE_DATE)+
 			LayoutUtil.fluidRowLocs(TaskDto.ASSIGNEE_USER, TaskDto.PRIORITY)+
-			LayoutUtil.fluidRowLocs(TaskDto.CREATOR_COMMENT)
+			LayoutUtil.fluidRowLocs(TaskDto.CREATOR_COMMENT)+
+			LayoutUtil.fluidRowLocs(TaskDto.ASSIGNEE_REPLY)+
+			LayoutUtil.fluidRowLocs(TaskDto.TASK_STATUS)
 			;
 
     public TaskEditForm() {
         super(TaskDto.class, TaskDto.I18N_PREFIX);
+        addValueChangeListener(e -> {
+    		updateByTaskContext();
+    		updateByCreatingAndAssignee();
+        });
     }
-
-    @Override
+    
+	@Override
 	protected void addFields() {
 
     	addField(TaskDto.CAZE, ComboBox.class);
@@ -47,14 +53,14 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
     	addField(TaskDto.SUGGESTED_START, DateTimeField.class);
     	addField(TaskDto.DUE_DATE, DateTimeField.class);
     	addField(TaskDto.PRIORITY, ComboBox.class);
+    	addField(TaskDto.TASK_STATUS, OptionGroup.class);
 
     	OptionGroup taskContext = addField(TaskDto.TASK_CONTEXT, OptionGroup.class);
     	taskContext.setImmediate(true);
     	taskContext.addValueChangeListener(new Property.ValueChangeListener() {
 			@Override
 			public void valueChange(Property.ValueChangeEvent event) {
-				TaskContext taskContext = (TaskContext)event.getProperty().getValue();
-				updateByTaskContext(taskContext);
+				updateByTaskContext();
 			}
 		});
     	    	
@@ -73,6 +79,8 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 		});
     	
     	ComboBox assigneeUser = addField(TaskDto.ASSIGNEE_USER, ComboBox.class);
+    	assigneeUser.addValueChangeListener(e -> updateByCreatingAndAssignee());
+    	assigneeUser.setImmediate(true);
     	List<UserReferenceDto> users = FacadeProvider.getUserFacade().getAssignableUsers(LoginHelper.getCurrentUserAsReference());
     	TaskController taskController = ControllerProvider.getTaskController();
     	for (UserReferenceDto user : users) {
@@ -81,13 +89,39 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
     	}
 
     	addField(TaskDto.CREATOR_COMMENT, TextArea.class).setRows(2);
+    	addField(TaskDto.ASSIGNEE_REPLY, TextArea.class).setRows(2);
     	
     	setRequired(true, TaskDto.TASK_CONTEXT, TaskDto.TASK_TYPE, TaskDto.ASSIGNEE_USER, TaskDto.DUE_DATE);
-    	
-    	updateByTaskContext((TaskContext) taskContext.getValue());
     }
 
-	private void updateByTaskContext(TaskContext taskContext) {
+	private void updateByCreatingAndAssignee() {
+		
+		TaskDto value = getValue();
+		if (value != null) {
+			boolean creating = value.getCreationDate() == null;
+	
+			UserReferenceDto user = LoginHelper.getCurrentUserAsReference();
+			boolean creator = user.equals(value.getCreatorUser());
+			boolean assignee = user.equals(getFieldGroup().getField(TaskDto.ASSIGNEE_USER).getValue());
+			
+			setVisible(!creating || assignee, TaskDto.ASSIGNEE_REPLY, TaskDto.TASK_STATUS);
+			if (creating && !assignee) {
+				discard(TaskDto.ASSIGNEE_REPLY, TaskDto.TASK_STATUS);
+			}
+			
+			setReadOnly(!(assignee || creator), TaskDto.TASK_STATUS);
+			setReadOnly(!assignee, TaskDto.ASSIGNEE_REPLY);
+			setReadOnly(!creator, TaskDto.CAZE, TaskDto.EVENT, TaskDto.CONTACT, 
+					TaskDto.TASK_CONTEXT, TaskDto.TASK_TYPE, 
+					TaskDto.PRIORITY, TaskDto.SUGGESTED_START, TaskDto.DUE_DATE,
+					TaskDto.ASSIGNEE_USER, TaskDto.CREATOR_COMMENT);
+		}
+	}
+
+	private void updateByTaskContext() {
+		
+		TaskContext taskContext = (TaskContext)getFieldGroup().getField(TaskDto.TASK_CONTEXT).getValue();
+		
 		// Task types depending on task context
 		ComboBox taskType = (ComboBox) getFieldGroup().getField(TaskDto.TASK_TYPE);
 		Object tempValue = taskType.getValue();
@@ -107,8 +141,10 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 				FieldHelper.setFirstVisibleClearOthers(caze, eventField, contact);
 				FieldHelper.setFirstRequired(caze, eventField, contact);
 				List<ReferenceDto> cases = FacadeProvider.getCaseFacade().getAllCasesAfterAsReference(null, LoginHelper.getCurrentUser().getUuid());
+				Object value = caze.getValue();
 				caze.removeAllItems();
 				caze.addItems(cases);
+				caze.setValue(value);
 				break;
 			case EVENT:
 				FieldHelper.setFirstVisibleClearOthers(eventField, caze, contact);

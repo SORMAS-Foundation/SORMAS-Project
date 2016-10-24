@@ -233,6 +233,12 @@ public abstract class AbstractEditForm <DTO extends DataTransferObject> extends 
 		}
 	}
 	
+	protected void discard(String ...propertyIds) {
+		for (String propertyId : propertyIds) {
+			getFieldGroup().getField(propertyId).discard();
+		}
+	}
+	
 	protected void setRequired(boolean required, String ...propertyIds) {
 		for (String propertyId : propertyIds) {
 			getFieldGroup().getField(propertyId).setRequired(required);

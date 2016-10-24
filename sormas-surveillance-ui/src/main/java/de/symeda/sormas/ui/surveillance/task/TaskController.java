@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.time.DateUtils;
 
+import com.vaadin.navigator.View;
 import com.vaadin.server.Sizeable.Unit;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -32,17 +33,7 @@ public class TaskController {
     }
 
 	public void create() {
-    	CommitDiscardWrapperComponent<TaskEditForm> createComponent = getTaskCreateComponent();
-    	VaadinUiUtil.showModalPopupWindow(createComponent, "Create new task");   
-	}
-	
-    public void overview() {
-    	String navigationState = TasksView.VIEW_NAME;
-    	SurveillanceUI.get().getNavigator().navigateTo(navigationState);
-    }
-    
-    public CommitDiscardWrapperComponent<TaskEditForm> getTaskCreateComponent() {
-    	
+		
     	TaskEditForm createForm = new TaskEditForm();
         createForm.setValue(createNewTask());
         final CommitDiscardWrapperComponent<TaskEditForm> editView = new CommitDiscardWrapperComponent<TaskEditForm>(createForm, createForm.getFieldGroup());
@@ -58,8 +49,44 @@ public class TaskController {
         		}
         	}
         });
-        return editView;
-    }  
+
+        VaadinUiUtil.showModalPopupWindow(editView, "Create new task");   
+	}
+
+	public void edit(TaskDto dto) {
+		
+		// get fresh data
+		dto = FacadeProvider.getTaskFacade().getByUuid(dto.getUuid());
+		
+    	TaskEditForm form = new TaskEditForm();
+        form.setValue(dto);
+        final CommitDiscardWrapperComponent<TaskEditForm> editView = new CommitDiscardWrapperComponent<TaskEditForm>(form, form.getFieldGroup());
+        editView.setWidth(560, Unit.PIXELS);
+        
+        editView.addCommitListener(new CommitListener() {
+        	@Override
+        	public void onCommit() {
+        		if (form.getFieldGroup().isValid()) {
+        			TaskDto dto = form.getValue();
+        			FacadeProvider.getTaskFacade().saveTask(dto);
+        			overview();
+        		}
+        	}
+        });
+
+        VaadinUiUtil.showModalPopupWindow(editView, "Edit task");
+	}
+
+    public void overview() {
+    	View currentView = SurveillanceUI.get().getNavigator().getCurrentView();
+    	if (currentView instanceof TasksView) {
+    		// force refresh, because view didn't change
+    		((TasksView)currentView).enter(null);
+    	} else {
+	    	String navigationState = TasksView.VIEW_NAME;
+	    	SurveillanceUI.get().getNavigator().navigateTo(navigationState);
+    	}
+    }
     
     private TaskDto createNewTask() {
     	TaskDto task = new TaskDto();

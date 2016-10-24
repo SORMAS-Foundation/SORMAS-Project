@@ -133,5 +133,10 @@ public class TaskFacadeEjb implements TaskFacade {
 		// TODO cache...
 		return service.getTaskCount(userUuid);
 	}
+
+	@Override
+	public TaskDto getByUuid(String uuid) {
+		return toDto(service.getByUuid(uuid));
+	}
 }
 

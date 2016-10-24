@@ -13037,6 +13037,14 @@ div.v-layout.v-horizontal.v-widget {
 	color: white;
 }
 
+.sormastheme .v-grid-row.status-discarded .v-grid-cell {
+	text-decoration: line-through;
+}
+
+.sormastheme .v-grid-row.status-done .v-grid-cell {
+	font-style: italic;
+}
+
 .sormastheme .valo-content {
 	overflow: auto;
 }

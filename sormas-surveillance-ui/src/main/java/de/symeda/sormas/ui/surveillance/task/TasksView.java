@@ -10,7 +10,6 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
-import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.surveillance.ControllerProvider;
@@ -97,18 +96,5 @@ public class TasksView extends AbstractView {
     @Override
     public void enter(ViewChangeEvent event) {
     	grid.reload();
-    }
-
-    public void clearSelection() {
-        grid.getSelectionModel().reset();
-    }
-
-    public void refresh(TaskDto task) {
-        grid.refresh(task);
-        grid.scrollTo(task);
-    }
-
-    public void remove(TaskDto task) {
-        grid.remove(task);
     }
 }

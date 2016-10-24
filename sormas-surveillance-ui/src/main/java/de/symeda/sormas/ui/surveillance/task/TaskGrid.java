@@ -6,19 +6,18 @@ import java.util.Locale;
 
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Item;
-import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.GeneratedPropertyContainer;
-import com.vaadin.data.util.MethodProperty;
 import com.vaadin.data.util.PropertyValueGenerator;
 import com.vaadin.data.util.filter.Compare.Equal;
 import com.vaadin.data.util.filter.Not;
+import com.vaadin.event.ItemClickEvent;
+import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.renderers.DateRenderer;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
-import de.symeda.sormas.api.DataTransferObject;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.task.TaskDto;
@@ -29,14 +28,63 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.HtmlReferenceDtoConverter;
 
 @SuppressWarnings("serial")
-public class TaskGrid extends Grid {
+public class TaskGrid extends Grid implements ItemClickListener {
 
 	private static final String EDIT_BTN_ID = "edit";
+
+	private final class TaskGridRowStyleGenerator implements RowStyleGenerator {
+		@Override
+		public String getStyle(RowReference row) {
+			TaskDto task = (TaskDto)row.getItemId();
+			if (task != null) {
+				switch (task.getTaskStatus()) {
+				case DISCARDED:
+					return CssStyles.STATUS_DISCARDED;
+				case DONE:
+					return CssStyles.STATUS_DONE;
+				case PENDING:
+					return CssStyles.STATUS_PENDING;
+				default:
+					throw new IndexOutOfBoundsException(task.getTaskStatus().toString());
+				}
+			}
+			return null;
+		}
+	}
+
+	private final class TaskGridCellStyleGenerator implements CellStyleGenerator {
+		@Override
+		public String getStyle(CellReference cell) {
+			if (TaskDto.PRIORITY.equals(cell.getPropertyId())) {
+				TaskPriority priority = (TaskPriority)cell.getProperty().getValue();
+				if (priority != null) {
+				switch (priority) {
+				case HIGH:
+					return CssStyles.PRIORITY_HIGH;
+				case NORMAL:
+					return CssStyles.PRIORITY_NORMAL;
+				case LOW:
+					return CssStyles.PRIORITY_LOW;
+				default:
+					throw new IndexOutOfBoundsException(priority.toString());
+				}
+				}
+			}
+			else if (TaskDto.DUE_DATE.equals(cell.getPropertyId())) {
+				Date dueDate = (Date)cell.getProperty().getValue();
+				if (dueDate != null && dueDate.before(new Date())) {
+					return CssStyles.PRIORITY_HIGH;
+				}
+			}
+			return null;
+		}
+	}
 
 	public TaskGrid() {
         setSizeFull();
 
-        setSelectionMode(SelectionMode.NONE);
+        setCellStyleGenerator(new TaskGridCellStyleGenerator());
+		setRowStyleGenerator(new TaskGridRowStyleGenerator());
 
         BeanItemContainer<TaskDto> container = new BeanItemContainer<TaskDto>(TaskDto.class);
         GeneratedPropertyContainer editContainer = new GeneratedPropertyContainer(container);
@@ -64,35 +112,6 @@ public class TaskGrid extends Grid {
         getColumn(TaskDto.DUE_DATE).setRenderer(new DateRenderer("%1$tH:%1$tM %1$td.%1$tm.%1$ty"));
         getColumn(TaskDto.SUGGESTED_START).setRenderer(new DateRenderer("%1$tH:%1$tM %1$td.%1$tm.%1$ty"));
         
-        setCellStyleGenerator(new CellStyleGenerator() {
-			
-			@Override
-			public String getStyle(CellReference cell) {
-				if (TaskDto.PRIORITY.equals(cell.getPropertyId())) {
-					TaskPriority priority = (TaskPriority)cell.getProperty().getValue();
-					if (priority != null) {
-					switch (priority) {
-					case HIGH:
-						return CssStyles.PRIORITY_HIGH;
-					case NORMAL:
-						return CssStyles.PRIORITY_NORMAL;
-					case LOW:
-						return CssStyles.PRIORITY_LOW;
-					default:
-						throw new IndexOutOfBoundsException(priority.toString());
-					}
-					}
-				}
-				else if (TaskDto.DUE_DATE.equals(cell.getPropertyId())) {
-					Date dueDate = (Date)cell.getProperty().getValue();
-					if (dueDate != null && dueDate.before(new Date())) {
-						return CssStyles.PRIORITY_HIGH;
-					}
-				}
-				return null;
-			}
-		});
-
         getColumn(TaskDto.CONTEXT_REFERENCE).setRenderer(new HtmlRenderer(), new HtmlReferenceDtoConverter());
         
         getColumn(TaskDto.ASSIGNEE_USER).setConverter(new HtmlReferenceDtoConverter() {
@@ -113,6 +132,9 @@ public class TaskGrid extends Grid {
         			TaskDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
         }
         
+        setSelectionMode(SelectionMode.NONE);        
+		addItemClickListener(this);
+
         reload();
 	}
     
@@ -155,24 +177,26 @@ public class TaskGrid extends Grid {
         getContainer().addAll(tasks);    	
     }
 
-    public void refresh(TaskDto entry) {
-        // We avoid updating the whole table through the backend here so we can
-        // get a partial update for the grid
-        BeanItem<TaskDto> item = getContainer().getItem(entry);
-        if (item != null) {
-            // Updated product
-            @SuppressWarnings("rawtypes")
-			MethodProperty p = (MethodProperty) item.getItemProperty(DataTransferObject.UUID);
-            p.fireValueChange();
-        } else {
-            // New product
-            getContainer().addBean(entry);
-        }
-    }
-
-    public void remove(TaskDto entry) {
-        getContainer().removeItem(entry);
-    }
+	@Override
+	public void itemClick(ItemClickEvent event) {
+		TaskDto task = (TaskDto)event.getItemId();
+		if (TaskDto.CONTEXT_REFERENCE.equals(event.getPropertyId())) {
+			switch (task.getTaskContext()) {
+			case CASE:
+				ControllerProvider.getCaseController().editData(task.getCaze().getUuid());
+				return;
+			case CONTACT:
+				return;
+			case EVENT:
+				return;
+			default:
+				throw new IndexOutOfBoundsException(task.getTaskContext().toString());
+			}
+		} 
+		else if (EDIT_BTN_ID.equals(event.getPropertyId()) || event.isDoubleClick()) {
+			ControllerProvider.getTaskController().edit(task);
+		}
+	}
 }
 
 

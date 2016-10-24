@@ -101,6 +101,13 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
     background-color: #4F81BD;
     color: white;
   }
+
+  .v-grid-row.status-discarded .v-grid-cell {
+    text-decoration: line-through;
+  }
+  .v-grid-row.status-done .v-grid-cell {
+    font-style: italic;
+  }
   
   .valo-content {
   	overflow: auto;

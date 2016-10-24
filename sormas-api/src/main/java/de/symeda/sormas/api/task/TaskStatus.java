@@ -5,7 +5,7 @@ import de.symeda.sormas.api.I18nProperties;
 public enum TaskStatus {
 	PENDING,
 	DONE,
-	DICARDED
+	DISCARDED
 	;
 	
 	public String toString() {

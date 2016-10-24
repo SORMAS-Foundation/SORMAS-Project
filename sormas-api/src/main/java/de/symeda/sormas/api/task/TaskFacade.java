@@ -14,4 +14,6 @@ public interface TaskFacade {
 
 	long getTaskCount(String userUuid);
 
+	TaskDto getByUuid(String uuid);
+
 }
