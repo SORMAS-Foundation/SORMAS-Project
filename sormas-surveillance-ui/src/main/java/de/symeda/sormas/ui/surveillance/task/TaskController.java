@@ -1,9 +1,8 @@
 package de.symeda.sormas.ui.surveillance.task;
 
-import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.lang3.time.DateUtils;
+import org.joda.time.DateTime;
 
 import com.vaadin.navigator.View;
 import com.vaadin.server.Sizeable.Unit;
@@ -91,8 +90,8 @@ public class TaskController {
     private TaskDto createNewTask() {
     	TaskDto task = new TaskDto();
     	task.setUuid(DataHelper.createUuid());
-    	task.setDueDate(DateUtils.addDays(new Date(), 1));
-    	task.setSuggestedStart(DateUtils.addHours(new Date(), 16));
+    	task.setDueDate(new DateTime().plusDays(1).toDate());
+    	task.setSuggestedStart(new DateTime().plusHours(16).toDate());
     	task.setCreatorUser(LoginHelper.getCurrentUserAsReference());
     	task.setTaskStatus(TaskStatus.PENDING);
     	task.setPriority(TaskPriority.NORMAL);

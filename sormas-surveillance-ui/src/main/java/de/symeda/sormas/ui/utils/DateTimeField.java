@@ -1,9 +1,9 @@
 package de.symeda.sormas.ui.utils;
 
-import java.util.Calendar;
 import java.util.Date;
 
-import org.apache.commons.lang3.time.DateUtils;
+import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.ui.AbstractSelect.NewItemHandler;
@@ -77,7 +77,7 @@ public class DateTimeField extends CustomField<Date> {
 		if (dateField != null && timeField != null) {
 		
 			if (newValue != null) {
-				dateField.setValue(DateUtils.truncate(newValue, Calendar.DATE));
+				dateField.setValue(new LocalDate(newValue).toDate());
 				timeField.setValue(ensureTimeEntry(newValue));
 			}
 			else {
@@ -92,11 +92,12 @@ public class DateTimeField extends CustomField<Date> {
 		
 		if (dateField != null && timeField != null) {
 			Date date = dateField.getValue();
-			Integer totalMinutes = (Integer)timeField.getValue();
 			if (date != null) {
+				Integer totalMinutes = (Integer)timeField.getValue();
 				if (totalMinutes != null) {
-					date = DateUtils.setHours(date, (totalMinutes / 60) % 24);
-					date = DateUtils.setMinutes(date, totalMinutes % 60);
+					DateTime dateTime = new DateTime(date);
+					dateTime = dateTime.withHourOfDay((totalMinutes / 60) % 24).withMinuteOfHour( totalMinutes % 60);
+					date = dateTime.toDate();
 				}
 				return date;
 			}
@@ -113,7 +114,7 @@ public class DateTimeField extends CustomField<Date> {
 		if (time == null) {
 			return null;
 		}
-		int totalMinutes = Integer.valueOf((int)DateUtils.getFragmentInMinutes(time, Calendar.DATE)) % (24*60);
+		int totalMinutes = new DateTime(time).minuteOfDay().get();
 		return ensureTimeEntry((totalMinutes / 60)%24, totalMinutes % 60);
 	}
 	
