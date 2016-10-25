@@ -25,6 +25,7 @@ public final class RetroProvider {
     private RegionFacadeRetro regionFacadeRetro;
     private FacilityFacadeRetro facilityFacadeRetro;
     private UserFacadeRetro userFacadeRetro;
+    private TaskFacadeRetro taskFacadeRetro;
 
     private RetroProvider() {
 
@@ -120,5 +121,16 @@ public final class RetroProvider {
             }
         }
         return instance.userFacadeRetro;
+    }
+    
+    public static TaskFacadeRetro getTaskFacade() {
+        if (instance.taskFacadeRetro == null) {
+            synchronized ((RetroProvider.class)) {
+                if (instance.taskFacadeRetro == null) {
+                    instance.taskFacadeRetro = instance.retrofit.create(TaskFacadeRetro.class);
+                }
+            }
+        }
+        return instance.taskFacadeRetro;
     }
 }

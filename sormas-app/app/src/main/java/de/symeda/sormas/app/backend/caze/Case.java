@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.backend.caze;
 
+import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
@@ -53,22 +54,10 @@ public class Case extends AbstractDomainObject {
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private User reportingUser;
-	@Temporal(TemporalType.TIMESTAMP)
+	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
 	private Date reportDate;
-	@Temporal(TemporalType.TIMESTAMP)
+	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
 	private Date investigatedDate;
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date suspectDate;
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date confirmedDate;
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date negativeDate;
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date postiveDate;
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date noCaseDate;
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date recoveredDate;
 
 	@DatabaseField(foreign = true, foreignAutoCreate = true, foreignAutoRefresh = true)
 	private Location illLocation;
@@ -133,48 +122,6 @@ public class Case extends AbstractDomainObject {
 	}
 	public void setInvestigatedDate(Date investigatedDate) {
 		this.investigatedDate = investigatedDate;
-	}
-
-	public Date getSuspectDate() {
-		return suspectDate;
-	}
-	public void setSuspectDate(Date suspectDate) {
-		this.suspectDate = suspectDate;
-	}
-
-	public Date getConfirmedDate() {
-		return confirmedDate;
-	}
-	public void setConfirmedDate(Date confirmedDate) {
-		this.confirmedDate = confirmedDate;
-	}
-
-	public Date getNegativeDate() {
-		return negativeDate;
-	}
-	public void setNegativeDate(Date negativeDate) {
-		this.negativeDate = negativeDate;
-	}
-
-	public Date getPostiveDate() {
-		return postiveDate;
-	}
-	public void setPostiveDate(Date postiveDate) {
-		this.postiveDate = postiveDate;
-	}
-
-	public Date getNoCaseDate() {
-		return noCaseDate;
-	}
-	public void setNoCaseDate(Date noCaseDate) {
-		this.noCaseDate = noCaseDate;
-	}
-
-	public Date getRecoveredDate() {
-		return recoveredDate;
-	}
-	public void setRecoveredDate(Date recoveredDate) {
-		this.recoveredDate = recoveredDate;
 	}
 	
 	public Facility getHealthFacility() {

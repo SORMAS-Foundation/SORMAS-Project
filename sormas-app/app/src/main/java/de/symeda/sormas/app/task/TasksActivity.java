@@ -9,8 +9,6 @@ import android.widget.Toast;
 
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasRootActivity;
-import de.symeda.sormas.app.backend.caze.CaseDao;
-import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.caze.CasesListFilterAdapter;
 import de.symeda.sormas.app.caze.CasesListFragment;
 import de.symeda.sormas.app.caze.SyncCasesTask;
@@ -20,7 +18,7 @@ import de.symeda.sormas.app.util.SlidingTabLayout;
 public class TasksActivity extends SormasRootActivity {
 
     private ViewPager pager;
-    private CasesListFilterAdapter adapter;
+    private TasksListFilterAdapter adapter;
     private SlidingTabLayout tabs;
 
     @Override
@@ -61,7 +59,7 @@ public class TasksActivity extends SormasRootActivity {
 
     private void createTabViews() {
         // Creating The ViewPagerAdapter and Passing Fragment Manager, Titles fot the Tabs and Number Of Tabs.
-        adapter = new CasesListFilterAdapter(getSupportFragmentManager());
+        adapter = new TasksListFilterAdapter(getSupportFragmentManager());
 
         // Assigning ViewPager View and setting the adapter
         pager = (ViewPager) findViewById(R.id.pager);
@@ -85,24 +83,19 @@ public class TasksActivity extends SormasRootActivity {
 
     private void refreshLocalDB() {
 
-        new SyncPersonsTask() {
+        new SyncTasksTask() {
             @Override
             protected void onPostExecute(Void aVoid) {
-                new SyncCasesTask() {
-                    @Override
-                    protected void onPostExecute(Void aVoid) {
-                        if (getSupportFragmentManager() != null && getSupportFragmentManager().getFragments() != null) {
-                            for (Fragment fragement : getSupportFragmentManager().getFragments()) {
-                                if (fragement instanceof CasesListFragment) {
-                                    fragement.onResume();
-                                }
-                            }
+                if (getSupportFragmentManager() != null && getSupportFragmentManager().getFragments() != null) {
+                    for (Fragment fragement : getSupportFragmentManager().getFragments()) {
+                        if (fragement instanceof TasksListFragment) {
+                            fragement.onResume();
                         }
-
-                        Toast toast = Toast.makeText(TasksActivity.this, "refreshed local db", Toast.LENGTH_SHORT);
-                        toast.show();
                     }
-                }.execute();
+                }
+
+                Toast toast = Toast.makeText(TasksActivity.this, "refreshed local db", Toast.LENGTH_SHORT);
+                toast.show();
             }
         }.execute();
     }

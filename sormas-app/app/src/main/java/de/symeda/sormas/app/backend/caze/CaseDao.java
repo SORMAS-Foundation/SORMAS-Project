@@ -49,18 +49,18 @@ public class CaseDao extends AbstractAdoDao<Case> {
             case INVESTIGATED:
                 caze.setInvestigatedDate(new Date());
                 break;
-            case CONFIRMED:
-                caze.setConfirmedDate(new Date());
-                break;
-            case NO_CASE:
-                caze.setNoCaseDate(new Date());
-                break;
-            case RECOVERED:
-                caze.setRecoveredDate(new Date());
-                break;
-            case SUSPECT:
-                caze.setSuspectDate(new Date());
-                break;
+//            case CONFIRMED:
+//                caze.setConfirmedDate(new Date());
+//                break;
+//            case NO_CASE:
+//                caze.setNoCaseDate(new Date());
+//                break;
+//            case RECOVERED:
+//                caze.setRecoveredDate(new Date());
+//                break;
+//            case SUSPECT:
+//                caze.setSuspectDate(new Date());
+//                break;
             // TODO others...
             // TODO what about going back and forth?
             default:

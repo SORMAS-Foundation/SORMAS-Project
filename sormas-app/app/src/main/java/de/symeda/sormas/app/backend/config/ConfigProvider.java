@@ -12,6 +12,8 @@ import java.util.concurrent.ExecutionException;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.symptoms.Symptoms;
+import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.caze.SyncCasesTask;
 import de.symeda.sormas.app.person.SyncPersonsTask;
@@ -81,8 +83,10 @@ public final class ConfigProvider {
         if (!wasNull) {
             try {
                 TableUtils.clearTable(DatabaseHelper.getCaseDao().getConnectionSource(), Case.class);
+                TableUtils.clearTable(DatabaseHelper.getSymptomsDao().getConnectionSource(), Symptoms.class);
+                TableUtils.clearTable(DatabaseHelper.getTaskDao().getConnectionSource(), Task.class);
             } catch (SQLException e) {
-                Log.e(ConfigProvider.class.getName(), "User switch: Clearing cases failed");
+                Log.e(ConfigProvider.class.getName(), "User switch: Clearing tables failed");
             }
         }
     }

@@ -54,7 +54,7 @@ public class CaseEditPersonTab extends FormTab {
     public void onResume() {
         super.onResume();
 
-        final String caseUuid = (String) getArguments().getString(Case.UUID);
+        final String caseUuid = getArguments().getString(Case.UUID);
         CaseDao caseDao = DatabaseHelper.getCaseDao();
         Case caze = caseDao.queryUuid(caseUuid);
 
@@ -247,7 +247,7 @@ public class CaseEditPersonTab extends FormTab {
             birthDate.set(birthyear, birthmonth!=null?birthmonth-1:0, birthday!=null?birthday:1);
 
             Date to = new Date();
-            if((Date)getModel().get(R.id.form_p_date_of_death)!= null){
+            if(getModel().get(R.id.form_p_date_of_death) != null){
                 to = (Date)getModel().get(R.id.form_p_date_of_death);
             }
             DataHelper.Pair<Integer, ApproximateAgeType> approximateAge = DateHelper.getApproximateAge(birthDate.getTime(),to);
