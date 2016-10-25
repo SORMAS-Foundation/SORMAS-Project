@@ -11,6 +11,7 @@ import java.util.concurrent.Callable;
 
 import de.symeda.sormas.api.DataTransferObject;
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Response;
@@ -155,10 +156,19 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
             return null;
         }
         ReferenceDto dto = new ReferenceDto();
+        fillReferenceDto(dto, ado);
+        return dto;
+    }
+
+    public static void fillDto(DataTransferObject dto, AbstractDomainObject ado) {
+
         dto.setChangeDate(ado.getChangeDate());
         dto.setCreationDate(ado.getCreationDate());
         dto.setUuid(ado.getUuid());
-        dto.setCaption(ado.toString());
-        return dto;
+    }
+
+    public static void fillReferenceDto(ReferenceDto dto, AbstractDomainObject entity) {
+        fillDto(dto, entity);
+        dto.setCaption(entity.toString());
     }
 }

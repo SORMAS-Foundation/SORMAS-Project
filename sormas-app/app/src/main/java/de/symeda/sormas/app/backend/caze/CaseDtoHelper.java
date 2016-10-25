@@ -85,7 +85,7 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 
         if (ado.getReportingUser() != null) {
             User user = DatabaseHelper.getUserDao().queryForId(ado.getReportingUser().getId());
-            dto.setReportingUser(AdoDtoHelper.toReferenceDto(user));
+            dto.setReportingUser(UserDtoHelper.toReferenceDto(user));
         } else {
             dto.setReportingUser(null);
         }
@@ -101,13 +101,13 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 
         if (ado.getSurveillanceOfficer() != null) {
             User user = DatabaseHelper.getUserDao().queryForId(ado.getSurveillanceOfficer().getId());
-            dto.setSurveillanceOfficer(AdoDtoHelper.toReferenceDto(user));
+            dto.setSurveillanceOfficer(UserDtoHelper.toReferenceDto(user));
         } else {
             dto.setSurveillanceOfficer(null);
         }
         if (ado.getSurveillanceSupervisor() != null) {
             User user = DatabaseHelper.getUserDao().queryForId(ado.getSurveillanceSupervisor().getId());
-            dto.setSurveillanceSupervisor(AdoDtoHelper.toReferenceDto(user));
+            dto.setSurveillanceSupervisor(UserDtoHelper.toReferenceDto(user));
         } else {
             dto.setSurveillanceSupervisor(null);
         }

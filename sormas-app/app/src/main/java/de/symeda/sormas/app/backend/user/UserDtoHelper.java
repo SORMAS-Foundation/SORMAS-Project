@@ -7,9 +7,12 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.location.LocationDtoHelper;
@@ -77,5 +80,14 @@ public class UserDtoHelper extends AdoDtoHelper<User, UserDto> {
     protected void fillInnerFromAdo(UserDto userDto, User user) {
         // TODO
         throw new UnsupportedOperationException();
+    }
+
+    public static UserReferenceDto toReferenceDto(User ado) {
+        if (ado == null) {
+            return null;
+        }
+        UserReferenceDto dto = new UserReferenceDto();
+        fillReferenceDto(dto, ado);
+        return dto;
     }
 }
