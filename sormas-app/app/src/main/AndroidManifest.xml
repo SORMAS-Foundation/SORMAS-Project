@@ -40,6 +40,14 @@
 
         <activity android:name=".task.TasksActivity">
         </activity>
+        <activity
+            android:name=".task.TaskEditActivity"
+            android:parentActivityName=".task.TasksActivity" >
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".task.TasksActivity" />
+        </activity>
 
         <!-- ATTENTION: This was auto-generated to add Google Play services to your project for
      App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information. -->

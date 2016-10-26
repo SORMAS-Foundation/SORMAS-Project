@@ -13,6 +13,7 @@ import android.widget.ArrayAdapter;
 import java.util.List;
 
 import de.symeda.sormas.api.caze.CaseStatus;
+import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -39,16 +40,13 @@ public class TasksListFragment extends ListFragment {
 
         List<Task> tasks;
         Bundle arguments = getArguments();
-        /*
-        if (arguments.containsKey(ARG_FILTER_STATUS)) {
-            TaskStatus filterStatus = (CaseStatus)arguments.getSerializable(ARG_FILTER_STATUS);
-            tasks = DatabaseHelper.getCaseDao().queryForEq(Case.CASE_STATUS, filterStatus);
-        } else {
-            tasks = DatabaseHelper.getCaseDao().queryForAll();
-        }
-        */
 
-        tasks = DatabaseHelper.getTaskDao().queryForAll();
+        if (arguments.containsKey(ARG_FILTER_STATUS)) {
+            TaskStatus filterStatus = (TaskStatus)arguments.getSerializable(ARG_FILTER_STATUS);
+            tasks = DatabaseHelper.getTaskDao().queryForEq(Task.TASK_STATUS, filterStatus);
+        } else {
+            tasks = DatabaseHelper.getTaskDao().queryForAll();
+        }
 
         ArrayAdapter<Task> listAdapter = (ArrayAdapter<Task>)getListAdapter();
         listAdapter.clear();
@@ -70,15 +68,15 @@ public class TasksListFragment extends ListFragment {
                     AdapterView<?> parent,
                     View viewClicked,
                     int position, long id) {
-                Case caze = (Case)getListAdapter().getItem(position);
-                showCaseEditView(caze);
+                Task task = (Task)getListAdapter().getItem(position);
+                showTaskEditView(task);
             }
         });
     }
 
-    public void showCaseEditView(Case caze) {
-        Intent intent = new Intent(getActivity(), CaseEditActivity.class);
-        intent.putExtra(CaseEditActivity.KEY_CASE_UUID, caze.getUuid());
+    public void showTaskEditView(Task task) {
+        Intent intent = new Intent(getActivity(), TaskEditActivity.class);
+        intent.putExtra(Task.UUID, task.getUuid());
         startActivity(intent);
     }
 }

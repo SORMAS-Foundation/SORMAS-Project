@@ -30,7 +30,7 @@ public class UserActivity extends SormasRootActivity {
         super.onCreate(savedInstanceState);
         setTitle(getResources().getString(R.string.main_menu_user));
 
-        // FIXME not sure what this is exactly doing
+        // setting the fragment_frame
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         userTab = new UserTab();
         ft.add(R.id.fragment_frame, userTab).commit();

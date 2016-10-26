@@ -6,7 +6,7 @@
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content" >
 
 
 
@@ -16,7 +16,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.7"
             android:paddingTop="@dimen/spinner_padding"
-            android:paddingBottom="@dimen/spinner_padding">
+            android:paddingBottom="@dimen/spinner_padding"
+            android:layout_marginBottom="@dimen/spinner_padding" >
 
             <TextView
                 android:layout_width="match_parent"
@@ -42,7 +43,11 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.3"
             android:paddingTop="@dimen/spinner_padding"
-            android:paddingBottom="@dimen/spinner_padding">
+            android:paddingBottom="@dimen/spinner_padding"
+            android:layout_marginBottom="@dimen/spinner_padding" >
+
+
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -61,5 +66,10 @@
 
 
         </LinearLayout>
+
+        <View
+            android:layout_width="10dp"
+            android:layout_height="match_parent"
+            android:id="@+id/task_priority_li" />
     </LinearLayout>
 </RelativeLayout>

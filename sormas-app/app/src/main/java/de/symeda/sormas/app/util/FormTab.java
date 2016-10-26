@@ -452,28 +452,28 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
     }
 
 
-    @BindingAdapter("bind:enum")
+    @BindingAdapter("app:enum")
     public static void setEnum(TextView textView, Enum e){
         textView.setText(e.toString());
     }
 
 
-    @BindingAdapter("bind:short_uuid")
+    @BindingAdapter("app:short_uuid")
     public static void setShortUuid(TextView textView, String uuid){
         textView.setText(DataHelper.getShortUuid(uuid));
     }
 
-    @BindingAdapter("bind:date")
+    @BindingAdapter("app:date")
     public static void setDate(TextView textView, Date date){
         textView.setText(DateHelper.formatDDMMYYYY(date));
     }
 
-    @BindingAdapter("bind:person")
+    @BindingAdapter("app:person")
     public static void setPerson(TextView textView, Person person){
         textView.setText(person!=null?person.toString():null);
     }
 
-    @BindingAdapter("bind:user")
+    @BindingAdapter("app:user")
     public static void setUser(TextView textView, User user){
         textView.setText(user!=null?user.toString():null);
     }

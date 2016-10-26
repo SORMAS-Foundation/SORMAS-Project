@@ -5,9 +5,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Space;
 import android.widget.TextView;
 
+import com.google.common.io.Resources;
+
+import java.util.Date;
+
+import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.task.Task;
@@ -42,8 +49,37 @@ public class TasksListArrayAdapter extends ArrayAdapter<Task> {
         uuid.setText(DataHelper.getShortUuid(task.getUuid()));
 
         TextView dueDate = (TextView) convertView.findViewById(R.id.task_dueDate_li);
-        dueDate.setText(task.getDueDate().toString());
+        dueDate.setText(DateHelper.formatDDMMYYYY(task.getDueDate()));
 
+        Date now = new Date();
+        int textColor = task.getDueDate().compareTo(now)<=0?R.color.textColorRed:R.color.textColorPrimaryDark;
+        dueDate.setTextColor(getContext().getResources().getColor(textColor));
+
+        TextView taskType = (TextView) convertView.findViewById(R.id.task_taskType_li);
+        taskType.setText(task.getTaskType().toString());
+
+        TextView creatorComment = (TextView) convertView.findViewById(R.id.task_creatorComment_li);
+        creatorComment.setText(task.getCreatorComment().toString());
+
+        View priority = (View) convertView.findViewById(R.id.task_priority_li);
+        if(task.getPriority()!=null) {
+            Integer priorityColor = null;;
+            switch (task.getPriority()) {
+                case HIGH:
+                    priorityColor = R.color.textColorRed;
+                    break;
+                case NORMAL:
+                    priorityColor = R.color.colorPrimaryDark;
+                    break;
+                case LOW:
+                    priorityColor = R.color.colorInvisible;
+                    break;
+            }
+
+            if(priorityColor!=null) {
+                priority.setBackgroundColor(getContext().getResources().getColor(priorityColor));
+            }
+        }
 
         return convertView;
     }
