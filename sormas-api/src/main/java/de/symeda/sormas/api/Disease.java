@@ -1,7 +1,12 @@
 package de.symeda.sormas.api;
 
 public enum Disease {
-	EBOLA
+	EVD,
+	LASSA,
+	AVIAN_INFLUENCA,
+	CSM,
+	CHOLERA,
+	MEASLES
 	;
 	
 	public String toString() {

@@ -71,7 +71,7 @@ public class CasesView extends AbstractView {
         topLayout.addComponent(statusInvestigated);
         
         ComboBox diseaseFilter = new ComboBox();
-        diseaseFilter.addItem(Disease.EBOLA);
+        diseaseFilter.addItem(Disease.EVD);
         diseaseFilter.addValueChangeListener(e->grid.setFilter(((Disease)e.getProperty().getValue())));
         topLayout.addComponent(diseaseFilter);
     	

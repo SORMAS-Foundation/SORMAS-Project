@@ -102,7 +102,7 @@ public class CaseController {
     	CaseDataDto caze = new CaseDataDto();
     	caze.setUuid(DataHelper.createUuid());
     	
-    	caze.setDisease(Disease.EBOLA);
+    	caze.setDisease(Disease.EVD);
     	caze.setCaseStatus(CaseStatus.POSSIBLE);
     	
     	caze.setReportDate(new Date());

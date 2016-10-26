@@ -71,7 +71,7 @@ public class MockDataGenerator {
     	Case caze = new Case();
     	caze.setDescription(generateName());
     	caze.setCaseStatus(generateStatus());
-    	caze.setDisease(Disease.EBOLA);
+    	caze.setDisease(Disease.EVD);
 		caze.setReportDate(new Date());
         return caze;
     }

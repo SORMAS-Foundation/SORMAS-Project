@@ -737,3 +737,34 @@ DELETE FROM task;
 
 INSERT INTO schema_version (version_number, comment) VALUES (5, 'Task priority & suggested start');
 
+-- 2016-10-25; #78 disease config
+
+UPDATE cases SET disease='EVD' WHERE disease='EBOLA';
+
+ALTER TABLE symptoms DROP COLUMN difficultyswallowing;
+ALTER TABLE symptoms DROP COLUMN intensefatigueweakness;
+ALTER TABLE symptoms RENAME othernonhemorrhagicsymptoms TO othernonhemorrhagicsymptomstext;
+ALTER TABLE symptoms RENAME othernonhemorrhagic TO othernonhemorrhagicsymptoms;
+ALTER TABLE symptoms RENAME otherhemorrhagictext TO otherhemorrhagicsymptomstext;
+ALTER TABLE symptoms RENAME otherhemorrhagic TO otherhemorrhagicsymptoms;
+ALTER TABLE symptoms RENAME vomitingnausea  TO vomiting;
+ALTER TABLE symptoms ADD COLUMN chills character varying(255);
+ALTER TABLE symptoms ADD COLUMN dehydration character varying(255);
+ALTER TABLE symptoms ADD COLUMN fatigueweakness character varying(255);
+ALTER TABLE symptoms ADD COLUMN highbloodpressure character varying(255);
+ALTER TABLE symptoms ADD COLUMN kopliksspots character varying(255);
+ALTER TABLE symptoms ADD COLUMN lethargy character varying(255);
+ALTER TABLE symptoms ADD COLUMN lowbloodpressure character varying(255);
+ALTER TABLE symptoms ADD COLUMN nausea character varying(255);
+ALTER TABLE symptoms ADD COLUMN neckstiffness character varying(255);
+ALTER TABLE symptoms ADD COLUMN oedema character varying(255);
+ALTER TABLE symptoms ADD COLUMN onsetsymptom character varying(255);
+ALTER TABLE symptoms ADD COLUMN otitismedia character varying(255);
+ALTER TABLE symptoms ADD COLUMN refusalfeedordrink character varying(255);
+ALTER TABLE symptoms ADD COLUMN runnynose character varying(255);
+ALTER TABLE symptoms ADD COLUMN seizures character varying(255);
+ALTER TABLE symptoms ADD COLUMN sepsis character varying(255);
+ALTER TABLE symptoms ADD COLUMN swollenlymphnodes character varying(255);
+ALTER TABLE symptoms ADD COLUMN symptomatic boolean;
+
+INSERT INTO schema_version (version_number, comment) VALUES (6, 'EBOLA -> EVD; Symptoms');
