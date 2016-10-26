@@ -148,7 +148,7 @@ public class SymptomsDto extends DataTransferObject {
 	private SymptomState highBloodPressure;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.CHOLERA})
 	private SymptomState lowBloodPressure;
-	@Diseases({Disease.EVD,Disease.LASSA})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.CHOLERA})
 	private SymptomState unexplainedBleeding;
 	@Diseases({Disease.EVD,Disease.LASSA})
 	private SymptomState gumsBleeding;

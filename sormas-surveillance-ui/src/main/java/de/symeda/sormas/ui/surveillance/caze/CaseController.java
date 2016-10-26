@@ -202,13 +202,14 @@ public class CaseController {
 
 	public CommitDiscardWrapperComponent<CaseSymptomsForm> getCaseSymptomsEditComponent(final String caseUuid) {
     	
-    	VerticalLayout formLayout = new VerticalLayout();
-    	CaseSymptomsForm caseEditForm = new CaseSymptomsForm();
+        CaseDataDto caseDataDto = findCase(caseUuid);
+
+        VerticalLayout formLayout = new VerticalLayout();
+    	CaseSymptomsForm caseEditForm = new CaseSymptomsForm(caseDataDto.getDisease());
         formLayout.addComponent(caseEditForm);
         formLayout.setSizeFull();
         formLayout.setExpandRatio(caseEditForm, 1);
         
-        CaseDataDto caseDataDto = findCase(caseUuid);
         caseEditForm.setValue(caseDataDto.getSymptoms());
         
         final CommitDiscardWrapperComponent<CaseSymptomsForm> editView = new CommitDiscardWrapperComponent<CaseSymptomsForm>(caseEditForm, caseEditForm.getFieldGroup());

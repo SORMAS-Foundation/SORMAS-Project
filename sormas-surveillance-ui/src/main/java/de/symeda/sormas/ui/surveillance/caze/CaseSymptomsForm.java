@@ -4,10 +4,12 @@ import java.util.Arrays;
 
 import com.vaadin.ui.ComboBox;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
+import de.symeda.sormas.api.utils.Diseases.DiseasesConfiguration;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -45,13 +47,25 @@ public class CaseSymptomsForm extends AbstractEditForm<SymptomsDto> {
 									SymptomsDto.OTHER_HEMORRHAGIC_SYMPTOMS, SymptomsDto.OTHER_HEMORRHAGIC_SYMPTOMS_TEXT)+
 							LayoutUtil.locsCss(CssStyles.VSPACE3,
 									SymptomsDto.OTHER_NON_HEMORRHAGIC_SYMPTOMS, SymptomsDto.OTHER_NON_HEMORRHAGIC_SYMPTOMS_TEXT)));
+	
+	private final Disease disease;
 
-	public CaseSymptomsForm() {
+	public CaseSymptomsForm(Disease disease) {
 		super(SymptomsDto.class, SymptomsDto.I18N_PREFIX);
+		this.disease = disease;
+		if (disease == null) {
+			throw new IllegalArgumentException("disease cannot be null");
+		}
+		addFields();
 	}
 
 	@Override
 	protected void addFields() {
+		
+		if (disease == null) {
+			// workaround to stop initialization until disease is set 
+			return;
+		}
 
 		addField(SymptomsDto.ONSET_DATE);
 		ComboBox temperature = addField(SymptomsDto.TEMPERATURE, ComboBox.class);
@@ -101,6 +115,11 @@ public class CaseSymptomsForm extends AbstractEditForm<SymptomsDto> {
 				Arrays.asList(SymptomsDto.OTHER_NON_HEMORRHAGIC_SYMPTOMS_TEXT),
 				SymptomsDto.OTHER_NON_HEMORRHAGIC_SYMPTOMS, 
 				Arrays.asList(SymptomState.YES), true);
+		
+		for (Object propertyId : getFieldGroup().getBoundPropertyIds()) {
+			boolean visible = DiseasesConfiguration.isDefinedOrMissing(SymptomsDto.class, (String)propertyId, disease);
+			getFieldGroup().getField(propertyId).setVisible(visible);
+		}
 
 		setRequired(true, SymptomsDto.ONSET_DATE);
 		// setReadOnly(true, );
