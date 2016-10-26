@@ -20,6 +20,7 @@ import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.user.User;
+import de.symeda.sormas.app.util.DataUtils;
 
 @Entity(name= Task.TABLE_NAME)
 @DatabaseTable(tableName = Task.TABLE_NAME)
@@ -90,6 +91,16 @@ public class Task extends AbstractDomainObject {
 	}
 	public void setTaskContext(TaskContext taskContext) {
 		this.taskContext = taskContext;
+	}
+
+	public AbstractDomainObject getAssociatedLink() {
+		switch (getTaskContext()) {
+
+			case CASE:
+				return getCaze();
+			default:
+				throw new IndexOutOfBoundsException(DataUtils.toString(getTaskContext()));
+		}
 	}
 
 	public Case getCaze() {
