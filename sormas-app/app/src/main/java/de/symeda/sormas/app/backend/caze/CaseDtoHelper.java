@@ -92,8 +92,7 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 
         if (ado.getSymptoms() != null) {
             Symptoms symptoms = DatabaseHelper.getSymptomsDao().queryForId(ado.getSymptoms().getId());
-            SymptomsDto symptomsDto = symptomsDtoHelper.createDto();
-            symptomsDtoHelper.fillInnerFromAdo(symptomsDto, symptoms);
+            SymptomsDto symptomsDto = symptomsDtoHelper.adoToDto(symptoms);
             dto.setSymptoms(symptomsDto);
         } else {
             ado.setSymptoms(null);

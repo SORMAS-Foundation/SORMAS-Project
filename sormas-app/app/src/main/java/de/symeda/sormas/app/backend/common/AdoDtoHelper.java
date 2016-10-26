@@ -52,8 +52,8 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
         return dto;
     }
 
-    public abstract ADO create();
-    public abstract DTO createDto();
+    protected abstract ADO create();
+    protected abstract DTO createDto();
 
     protected abstract void fillInnerFromDto(ADO ado, DTO dto);
     protected abstract void fillInnerFromAdo(DTO dto, ADO ado);

@@ -59,9 +59,7 @@ public class CaseEditSymptomsTab extends FormTab {
         getModel().put(R.id.symptoms_temperature, symptoms.getTemperature());
         getModel().put(R.id.symptoms_temperatureSource, symptoms.getTemperatureSource());
         getModel().put(R.id.symptoms_fever, symptoms.getFever());
-        getModel().put(R.id.symptoms_vomitingNausea, symptoms.getVomitingNausea());
         getModel().put(R.id.symptoms_diarrhea, symptoms.getDiarrhea());
-        getModel().put(R.id.symptoms_intenseFatigueWeakness, symptoms.getIntenseFatigueWeakness());
         getModel().put(R.id.symptoms_anorexiaAppetiteLoss, symptoms.getAnorexiaAppetiteLoss());
         getModel().put(R.id.symptoms_abdominalPain, symptoms.getAbdominalPain());
         getModel().put(R.id.symptoms_chestPain, symptoms.getChestPain());
@@ -70,7 +68,6 @@ public class CaseEditSymptomsTab extends FormTab {
         getModel().put(R.id.symptoms_headache, symptoms.getHeadache());
         getModel().put(R.id.symptoms_cough, symptoms.getCough());
         getModel().put(R.id.symptoms_difficultyBreathing, symptoms.getDifficultyBreathing());
-        getModel().put(R.id.symptoms_difficultySwallowing, symptoms.getDifficultySwallowing());
         getModel().put(R.id.symptoms_soreThroat, symptoms.getSoreThroat());
         getModel().put(R.id.symptoms_jaundice, symptoms.getJaundice());
         getModel().put(R.id.symptoms_conjunctivitis, symptoms.getConjunctivitis());
@@ -90,8 +87,8 @@ public class CaseEditSymptomsTab extends FormTab {
         getModel().put(R.id.symptoms_bleedingVagina, symptoms.getBleedingVagina());
         getModel().put(R.id.symptoms_petechiae, symptoms.getPetechiae());
         getModel().put(R.id.symptoms_hematuria, symptoms.getHematuria());
-        getModel().put(R.id.symptoms_otherHemorrhagic, symptoms.getOtherHemorrhagic());
-        getModel().put(R.id.symptoms_otherNonHemorrhagic, symptoms.getOtherNonHemorrhagic());
+        getModel().put(R.id.symptoms_otherHemorrhagicSymptoms, symptoms.getOtherHemorrhagicSymptoms());
+        getModel().put(R.id.symptoms_otherNonHemorrhagicSymptoms, symptoms.getOtherNonHemorrhagicSymptoms());
 
         addDateField(R.id.symptoms_onsetDate);
 
@@ -106,9 +103,8 @@ public class CaseEditSymptomsTab extends FormTab {
 
         // Disable each field by using the boolean parameter: addSymptomStateField(R.id.symptoms_fever,getResources().getString(R.string.symptoms_fever), false);
         addSymptomStateField(R.id.symptoms_fever,getResources().getString(R.string.symptoms_fever));
-        addSymptomStateField(R.id.symptoms_vomitingNausea,getResources().getString(R.string.symptoms_vomitingNausea));
+        addSymptomStateField(R.id.symptoms_vomiting,getResources().getString(R.string.symptoms_vomitingNausea));
         addSymptomStateField(R.id.symptoms_diarrhea,getResources().getString(R.string.symptoms_diarrhea));
-        addSymptomStateField(R.id.symptoms_intenseFatigueWeakness,getResources().getString(R.string.symptoms_intenseFatigueWeakness));
         addSymptomStateField(R.id.symptoms_anorexiaAppetiteLoss,getResources().getString(R.string.symptoms_anorexiaAppetiteLoss));
         addSymptomStateField(R.id.symptoms_abdominalPain,getResources().getString(R.string.symptoms_abdominalPain));
         addSymptomStateField(R.id.symptoms_chestPain,getResources().getString(R.string.symptoms_chestPain));
@@ -117,7 +113,6 @@ public class CaseEditSymptomsTab extends FormTab {
         addSymptomStateField(R.id.symptoms_headache,getResources().getString(R.string.symptoms_headache));
         addSymptomStateField(R.id.symptoms_cough,getResources().getString(R.string.symptoms_cough));
         addSymptomStateField(R.id.symptoms_difficultyBreathing,getResources().getString(R.string.symptoms_difficultyBreathing));
-        addSymptomStateField(R.id.symptoms_difficultySwallowing,getResources().getString(R.string.symptoms_difficultySwallowing));
         addSymptomStateField(R.id.symptoms_soreThroat,getResources().getString(R.string.symptoms_soreThroat));
         addSymptomStateField(R.id.symptoms_jaundice,getResources().getString(R.string.symptoms_jaundice));
         addSymptomStateField(R.id.symptoms_conjunctivitis,getResources().getString(R.string.symptoms_conjunctivitis));
@@ -142,13 +137,13 @@ public class CaseEditSymptomsTab extends FormTab {
         addSymptomStateField(R.id.symptoms_bleedingVagina,getResources().getString(R.string.symptoms_bleedingVagina));
         addSymptomStateField(R.id.symptoms_petechiae,getResources().getString(R.string.symptoms_petechiae));
         addSymptomStateField(R.id.symptoms_hematuria,getResources().getString(R.string.symptoms_hematuria));
-        addSymptomStateField(R.id.symptoms_otherHemorrhagic,getResources().getString(R.string.symptoms_otherHemorrhagic), true, new RadioGroup.OnCheckedChangeListener() {
+        addSymptomStateField(R.id.symptoms_otherHemorrhagicSymptoms,getResources().getString(R.string.symptoms_otherHemorrhagic), true, new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 visibilityOtherHemorrhagicText();
             }
         });
-        addSymptomStateField(R.id.symptoms_otherNonHemorrhagic,getResources().getString(R.string.symptoms_otherNonHemorrhagic), true, new RadioGroup.OnCheckedChangeListener() {
+        addSymptomStateField(R.id.symptoms_otherNonHemorrhagicSymptoms,getResources().getString(R.string.symptoms_otherNonHemorrhagic), true, new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 visibilityOtherNonHemorrhagicSymptoms();
@@ -166,14 +161,13 @@ public class CaseEditSymptomsTab extends FormTab {
     }
     
     private void visibilityOtherHemorrhagicText() {
-        SymptomState symptomState = (SymptomState)getModel().get(R.id.symptoms_otherHemorrhagic);
-        getView().findViewById(R.id.symptoms_otherHemorrhagicText).setVisibility(symptomState == SymptomState.YES?View.VISIBLE:View.GONE);
-        getView().findViewById(R.id.symptoms_otherHemorrhagicText_caption).setVisibility(symptomState == SymptomState.YES?View.VISIBLE:View.GONE);
+        SymptomState symptomState = (SymptomState)getModel().get(R.id.symptoms_otherHemorrhagicSymptoms);
+        getView().findViewById(R.id.symptoms_otherHemorrhagicSymptomsText).setVisibility(symptomState == SymptomState.YES?View.VISIBLE:View.GONE);
     }
 
     private void visibilityOtherNonHemorrhagicSymptoms() {
-        SymptomState symptomState = (SymptomState)getModel().get(R.id.symptoms_otherNonHemorrhagic);
-        getView().findViewById(R.id.symptoms_otherNonHemorrhagicSymptoms).setVisibility(symptomState == SymptomState.YES?View.VISIBLE:View.GONE);
+        SymptomState symptomState = (SymptomState)getModel().get(R.id.symptoms_otherNonHemorrhagicSymptoms);
+        getView().findViewById(R.id.symptoms_otherNonHemorrhagicSymptomsText).setVisibility(symptomState == SymptomState.YES?View.VISIBLE:View.GONE);
     }
 
 
@@ -190,9 +184,8 @@ public class CaseEditSymptomsTab extends FormTab {
                 R.id.symptoms_bleedingVagina,
                 R.id.symptoms_petechiae,
                 R.id.symptoms_hematuria,
-                R.id.symptoms_otherHemorrhagic,
-                R.id.symptoms_otherHemorrhagicText,
-                R.id.symptoms_otherHemorrhagicText_caption
+                R.id.symptoms_otherHemorrhagicSymptoms,
+                R.id.symptoms_otherNonHemorrhagicSymptoms
         };
 
         SymptomState symptomState = (SymptomState)getModel().get(R.id.symptoms_unexplainedBleeding);
@@ -226,9 +219,8 @@ public class CaseEditSymptomsTab extends FormTab {
         symptoms.setTemperature((Float) getModel().get(R.id.symptoms_temperature));
         symptoms.setTemperatureSource((TemperatureSource) getModel().get(R.id.symptoms_temperatureSource));
         symptoms.setFever((SymptomState) getModel().get(R.id.symptoms_fever));
-        symptoms.setVomitingNausea((SymptomState) getModel().get(R.id.symptoms_vomitingNausea));
+        symptoms.setVomiting((SymptomState) getModel().get(R.id.symptoms_vomiting));
         symptoms.setDiarrhea((SymptomState) getModel().get(R.id.symptoms_diarrhea));
-        symptoms.setIntenseFatigueWeakness((SymptomState) getModel().get(R.id.symptoms_intenseFatigueWeakness));
         symptoms.setAnorexiaAppetiteLoss((SymptomState) getModel().get(R.id.symptoms_anorexiaAppetiteLoss));
         symptoms.setAbdominalPain((SymptomState) getModel().get(R.id.symptoms_abdominalPain));
         symptoms.setChestPain((SymptomState) getModel().get(R.id.symptoms_chestPain));
@@ -237,7 +229,6 @@ public class CaseEditSymptomsTab extends FormTab {
         symptoms.setHeadache((SymptomState) getModel().get(R.id.symptoms_headache));
         symptoms.setCough((SymptomState) getModel().get(R.id.symptoms_cough));
         symptoms.setDifficultyBreathing((SymptomState) getModel().get(R.id.symptoms_difficultyBreathing));
-        symptoms.setDifficultySwallowing((SymptomState) getModel().get(R.id.symptoms_difficultySwallowing));
         symptoms.setSoreThroat((SymptomState) getModel().get(R.id.symptoms_soreThroat));
         symptoms.setJaundice((SymptomState) getModel().get(R.id.symptoms_jaundice));
         symptoms.setConjunctivitis((SymptomState) getModel().get(R.id.symptoms_conjunctivitis));
@@ -257,8 +248,8 @@ public class CaseEditSymptomsTab extends FormTab {
         symptoms.setBleedingVagina((SymptomState) getModel().get(R.id.symptoms_bleedingVagina));
         symptoms.setPetechiae((SymptomState) getModel().get(R.id.symptoms_petechiae));
         symptoms.setHematuria((SymptomState) getModel().get(R.id.symptoms_hematuria));
-        symptoms.setOtherHemorrhagic((SymptomState) getModel().get(R.id.symptoms_otherHemorrhagic));
-        symptoms.setOtherNonHemorrhagic((SymptomState) getModel().get(R.id.symptoms_otherNonHemorrhagic));
+        symptoms.setOtherHemorrhagicSymptoms((SymptomState) getModel().get(R.id.symptoms_otherHemorrhagicSymptoms));
+        symptoms.setOtherNonHemorrhagicSymptoms((SymptomState) getModel().get(R.id.symptoms_otherNonHemorrhagicSymptoms));
 
         return symptoms;
     }

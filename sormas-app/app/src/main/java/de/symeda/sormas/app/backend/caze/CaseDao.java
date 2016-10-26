@@ -1,12 +1,16 @@
 package de.symeda.sormas.app.backend.caze;
 
 import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.dao.GenericRawResults;
+import com.j256.ormlite.field.DataType;
 
 import java.sql.SQLException;
 import java.util.Date;
+import java.util.List;
 
 import de.symeda.sormas.api.caze.CaseStatus;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
+import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.person.Person;
 
@@ -37,6 +41,19 @@ public class CaseDao extends AbstractAdoDao<Case> {
         return super.saveUnmodified(caze);
     }
 
+    @Override
+    public Date getLatestChangeDate() {
+
+        Date cazeDate = super.getLatestChangeDate();
+        if (cazeDate == null) {
+            return null;
+        }
+        Date symptomsDate = DatabaseHelper.getSymptomsDao().getLatestChangeDate();
+        if (symptomsDate != null && symptomsDate.after(cazeDate)) {
+            cazeDate = symptomsDate;
+        }
+        return cazeDate;
+    }
     public void markAsModified(String uuid) {
         Case caze = queryUuid(uuid);
         save(caze);

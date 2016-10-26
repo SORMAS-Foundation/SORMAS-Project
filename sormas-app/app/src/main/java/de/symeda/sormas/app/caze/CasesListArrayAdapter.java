@@ -41,10 +41,10 @@ public class CasesListArrayAdapter extends ArrayAdapter<Case> {
         uuid.setText(DataHelper.getShortUuid(caze.getUuid()));
 
         TextView disease = (TextView) convertView.findViewById(R.id.cli_disease);
-        disease.setText(caze.getDisease().toString());
+        disease.setText(caze.getDisease()!=null?caze.getDisease().toString():null);
 
         TextView caseStatus = (TextView) convertView.findViewById(R.id.cli_case_satus);
-        caseStatus.setText(caze.getCaseStatus().toString());
+        caseStatus.setText(caze.getCaseStatus()!=null?caze.getCaseStatus().toString():null);
 
         TextView person = (TextView) convertView.findViewById(R.id.cli_person);
         person.setText(caze.getPerson().toString());
