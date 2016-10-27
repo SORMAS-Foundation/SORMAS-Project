@@ -30,6 +30,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.facility.FacilityDao;
@@ -468,6 +469,11 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
         textView.setText(DateHelper.formatDDMMYYYY(date));
     }
 
+    @BindingAdapter("app:dateTime")
+    public static void setDateTime(TextView textView, Date date){
+        textView.setText(DateHelper.formatHmDDMMYYYY(date));
+    }
+
     @BindingAdapter("app:person")
     public static void setPerson(TextView textView, Person person){
         textView.setText(person!=null?person.toString():null);
@@ -476,6 +482,11 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
     @BindingAdapter("app:user")
     public static void setUser(TextView textView, User user){
         textView.setText(user!=null?user.toString():null);
+    }
+
+    @BindingAdapter("app:caze")
+    public static void setCaze(TextView textView, Case caze){
+        textView.setText(caze!=null?DataHelper.getShortUuid(caze.getUuid()) + (caze.getPerson()!=null?" " + caze.getPerson().toString():null):null);
     }
 
 }

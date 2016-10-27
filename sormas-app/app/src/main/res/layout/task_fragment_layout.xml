@@ -36,9 +36,8 @@
                 <TextView
                     android:layout_width="match_parent" android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/field_caption_margin_bottom" android:textSize="@dimen/field_caption_size"
-                    android:layout_marginLeft="@dimen/field_caption_margin_left"
                     android:text="@string/task_taskType" />
-                <EditText
+                <TextView
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/field_height"
                     android:inputType="text"
@@ -48,23 +47,164 @@
             <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="@dimen/spinner_padding"
-                android:paddingBottom="@dimen/spinner_padding"
-                android:layout_weight="0.5">
+                android:layout_height="wrap_content">
 
                 <TextView
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/field_caption_margin_bottom" android:textSize="@dimen/field_caption_size"
+                    android:text="@string/task_case" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/field_height"
+                    android:inputType="text"
+                    app:caze="@{task.caze}" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/field_caption_margin_bottom"
-                    android:textSize="@dimen/field_caption_size"
-                    android:layout_marginLeft="@dimen/field_caption_margin_left"
-                    android:text="@string/task_taskPriority" />
-                <EditText
-                    android:layout_width="match_parent" android:layout_height="@dimen/field_height"
-                    android:inputType="text"
-                    app:enum="@{task.priority}" />
+                    android:layout_weight="0.5">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/field_caption_margin_bottom"
+                        android:textSize="@dimen/field_caption_size"
+                        android:text="@string/task_taskPriority" />
+                    <TextView
+                        android:layout_width="match_parent" android:layout_height="@dimen/field_height"
+                        android:inputType="text"
+                        app:enum="@{task.priority}" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/field_caption_margin_bottom"
+                        android:textSize="@dimen/field_caption_size"
+                        android:text="@string/task_taskStatus" />
+                    <TextView
+                        android:layout_width="match_parent" android:layout_height="@dimen/field_height"
+                        android:inputType="text"
+                        app:enum="@{task.taskStatus}" />
+                </LinearLayout>
             </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/field_caption_margin_bottom"
+                        android:textSize="@dimen/field_caption_size"
+                        android:text="@string/task_suggestedStart" />
+                    <TextView
+                        android:layout_width="match_parent" android:layout_height="@dimen/field_height"
+                        android:inputType="text"
+                        app:dateTime="@{task.suggestedStart}" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/field_caption_margin_bottom"
+                        android:textSize="@dimen/field_caption_size"
+                        android:text="@string/task_dueDate" />
+                    <TextView
+                        android:layout_width="match_parent" android:layout_height="@dimen/field_height"
+                        android:inputType="text"
+                        app:dateTime="@{task.dueDate}" />
+                </LinearLayout>
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/field_caption_margin_bottom" android:textSize="@dimen/field_caption_size"
+                    android:text="@string/task_creatorComment" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/field_height"
+                    android:inputType="text"
+                    android:text="@{task.creatorComment}" />
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/field_caption_margin_bottom" android:textSize="@dimen/field_caption_size"
+                    android:text="@string/task_creatorUser" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/field_height"
+                    android:inputType="text"
+                    app:user="@{task.creatorUser}" />
+            </LinearLayout>
+
+
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/field_caption_margin_bottom" android:textSize="@dimen/field_caption_size"
+                    android:text="@string/task_assigneeReply" />
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/field_height"
+                    android:inputType="text"
+                    android:text="@={task.assigneeReply}" />
+            </LinearLayout>
+
+            <android.support.v4.widget.Space
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/list_item_margin_bottom" />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/colorPrimary"
+                android:id="@+id/task_done_btn"/>
 
         </LinearLayout>
     </ScrollView>

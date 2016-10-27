@@ -20,7 +20,7 @@ public class TasksListFilterAdapter extends FragmentStatePagerAdapter {
     // Build a Constructor and assign the passed Values to appropriate values in the class
     public TasksListFilterAdapter(FragmentManager fm) {
         super(fm);
-        this.statusFilters = new TaskStatus[] { TaskStatus.PENDING, TaskStatus.DONE, TaskStatus.DISCARDED, null };
+        this.statusFilters = new TaskStatus[] { TaskStatus.PENDING, TaskStatus.DONE, null };
     }
 
     //This method return the fragment for the every position in the View Pager

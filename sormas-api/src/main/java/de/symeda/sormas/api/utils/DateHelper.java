@@ -20,6 +20,8 @@ public final class DateHelper {
 
 	private static final SimpleDateFormat dMy_FORMAT = new SimpleDateFormat("dd.MM.yy");
 	private static final SimpleDateFormat DDMMYY_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
+	private static final SimpleDateFormat hmDDMMYY_FORMAT = new SimpleDateFormat("HH:mm dd/MM/yyyy");
+	
 	private static final SimpleDateFormat hm_FORMAT = new SimpleDateFormat("HH:mm");
 
 	public static final Pair<Integer, ApproximateAgeType> getApproximateAge(Date birthDate, Date deathDate) {
@@ -106,6 +108,18 @@ public final class DateHelper {
 	public static String formatDDMMYYYY(Date date) {
         if (date != null) {
             return clone(DDMMYY_FORMAT).format(date);
+        } else {
+            return "";
+        }
+    }
+	
+	/**
+	 * Formats to "HH:mm dd/MM/yy"
+	 * @return
+	 */
+	public static String formatHmDDMMYYYY(Date date) {
+        if (date != null) {
+            return clone(hmDDMMYY_FORMAT).format(date);
         } else {
             return "";
         }

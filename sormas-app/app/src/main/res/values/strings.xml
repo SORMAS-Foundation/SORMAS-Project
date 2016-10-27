@@ -129,5 +129,12 @@
 
     <string name="task_taskType">Task type</string>
     <string name="task_taskPriority">Task priority</string>
+    <string name="task_case">Associated case</string>
+    <string name="task_taskStatus">Task status</string>
+    <string name="task_suggestedStart">Suggested start</string>
+    <string name="task_dueDate"><![CDATA[Due date & time]]></string>
+    <string name="task_creatorComment">Creator comment</string>
+    <string name="task_creatorUser">Created by</string>
+    <string name="task_assigneeReply">Your comment</string>
 
 </resources>
