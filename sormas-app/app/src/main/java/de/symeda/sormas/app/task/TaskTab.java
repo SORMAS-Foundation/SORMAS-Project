@@ -62,7 +62,7 @@ public class TaskTab extends FormTab {
             });
         }
         else {
-            taskDoneBtn.setVisibility(View.INVISIBLE);
+            taskDoneBtn.setVisibility(View.GONE);
         }
     }
 
