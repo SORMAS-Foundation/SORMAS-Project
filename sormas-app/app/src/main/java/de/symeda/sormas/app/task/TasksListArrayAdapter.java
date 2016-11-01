@@ -2,6 +2,7 @@ package de.symeda.sormas.app.task;
 
 import android.content.Context;
 import android.databinding.tool.util.StringUtils;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,7 @@ import android.widget.TextView;
 import java.util.Date;
 
 import de.symeda.sormas.api.task.TaskPriority;
+import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
@@ -46,24 +48,35 @@ public class TasksListArrayAdapter extends ArrayAdapter<Task> {
 
         Task task = (Task) getItem(position);
 
+        int fontface = Typeface.NORMAL;
+        if(TaskStatus.DONE.equals(task.getTaskStatus())) {
+            fontface = Typeface.ITALIC;
+        }
+
         TextView uuid = (TextView) convertView.findViewById(R.id.task_uuid_li);
         AbstractDomainObject associatedLink = task.getAssociatedLink();
         if (associatedLink != null) {
             uuid.setText(DataHelper.getShortUuid(associatedLink.getUuid()));
         }
+        uuid.setTypeface(null, fontface);
 
         TextView dueDate = (TextView) convertView.findViewById(R.id.task_dueDate_li);
         dueDate.setText(DateHelper.formatDDMMYYYY(task.getDueDate()));
+        dueDate.setTypeface(null, fontface);
 
         Date now = new Date();
-        int textColor = task.getDueDate().compareTo(now) <= 0 ? R.color.textColorRed : R.color.textColorPrimaryDark;
+        int textColor = task.getDueDate().compareTo(now) <= 0 && !TaskStatus.DONE.equals(task.getTaskStatus()) ? R.color.textColorRed : R.color.textColorPrimaryDark;
         dueDate.setTextColor(getContext().getResources().getColor(textColor));
 
         TextView taskType = (TextView) convertView.findViewById(R.id.task_taskType_li);
         taskType.setText(DataUtils.toString(task.getTaskType()));
+        taskType.setTypeface(null, fontface);
+
 
         TextView creatorComment = (TextView) convertView.findViewById(R.id.task_creatorComment_li);
         creatorComment.setText(task.getCreatorComment());
+        creatorComment.setTypeface(null, fontface);
+
 
         View priority = (View) convertView.findViewById(R.id.task_priority_li);
         if (task.getPriority() != null) {
