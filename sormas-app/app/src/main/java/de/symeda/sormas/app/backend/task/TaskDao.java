@@ -49,11 +49,12 @@ public class TaskDao extends AbstractAdoDao<Task> {
 
     /**
      * Gets all pending tasks.
+     * Ordered by priority, then due date - oldes (most due) first
      * @return
      */
     public List<Task> queryPending() {
         try {
-            return queryBuilder().orderBy(Task.PRIORITY, true).orderBy(Task.DUE_DATE, false).where().eq(Task.TASK_STATUS, TaskStatus.PENDING).query();
+            return queryBuilder().orderBy(Task.PRIORITY, true).orderBy(Task.DUE_DATE, true).where().eq(Task.TASK_STATUS, TaskStatus.PENDING).query();
         } catch (SQLException e) {
             logger.log(LOG_LEVEL, e, "queryFinished threw exception");
             throw new RuntimeException(e);
@@ -62,6 +63,7 @@ public class TaskDao extends AbstractAdoDao<Task> {
 
     /**
      * Gets all done and discarded tasks.
+     * Ordered by due date - newest first
      * @return
      */
     public List<Task> queryFinished() {
