@@ -8,8 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import de.symeda.sormas.api.caze.CaseHelper;
-import de.symeda.sormas.api.caze.CaseStatus;
 import de.symeda.sormas.api.task.TaskHelper;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.app.R;

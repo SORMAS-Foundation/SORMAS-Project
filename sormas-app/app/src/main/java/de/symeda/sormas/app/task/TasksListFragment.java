@@ -12,14 +12,10 @@ import android.widget.ArrayAdapter;
 
 import java.util.List;
 
-import de.symeda.sormas.api.caze.CaseStatus;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.task.Task;
-import de.symeda.sormas.app.caze.CaseEditActivity;
-import de.symeda.sormas.app.caze.CasesListArrayAdapter;
 
 /**
  * Created by Stefan Szczesny on 24.10.2016.
@@ -41,11 +37,10 @@ public class TasksListFragment extends ListFragment {
         List<Task> tasks;
         Bundle arguments = getArguments();
 
-        if (arguments.containsKey(ARG_FILTER_STATUS)) {
-            TaskStatus filterStatus = (TaskStatus)arguments.getSerializable(ARG_FILTER_STATUS);
-            tasks = DatabaseHelper.getTaskDao().queryForEq(Task.TASK_STATUS, filterStatus);
+        if (arguments.containsKey(ARG_FILTER_STATUS) && TaskStatus.PENDING.equals((TaskStatus)arguments.getSerializable(ARG_FILTER_STATUS))) {
+            tasks = DatabaseHelper.getTaskDao().queryPending();
         } else {
-            tasks = DatabaseHelper.getTaskDao().queryForAll();
+            tasks = DatabaseHelper.getTaskDao().queryFinished();
         }
 
         ArrayAdapter<Task> listAdapter = (ArrayAdapter<Task>)getListAdapter();

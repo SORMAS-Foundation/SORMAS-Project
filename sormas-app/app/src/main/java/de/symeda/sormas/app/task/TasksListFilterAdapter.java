@@ -5,7 +5,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
-import de.symeda.sormas.api.caze.CaseStatus;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.app.caze.CasesListFragment;
 
@@ -20,7 +19,7 @@ public class TasksListFilterAdapter extends FragmentStatePagerAdapter {
     // Build a Constructor and assign the passed Values to appropriate values in the class
     public TasksListFilterAdapter(FragmentManager fm) {
         super(fm);
-        this.statusFilters = new TaskStatus[] { TaskStatus.PENDING, TaskStatus.DONE, null };
+        this.statusFilters = new TaskStatus[] { TaskStatus.PENDING, null };
     }
 
     //This method return the fragment for the every position in the View Pager
@@ -46,7 +45,7 @@ public class TasksListFilterAdapter extends FragmentStatePagerAdapter {
         if (taskStatus != null) {
             return taskStatus.toString();
         }
-        return "All";
+        return TaskStatus.DONE.toString();
     }
 
     // This method return the Number of tabs for the tabs Strip

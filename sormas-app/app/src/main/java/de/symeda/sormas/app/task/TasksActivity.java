@@ -9,10 +9,6 @@ import android.widget.Toast;
 
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasRootActivity;
-import de.symeda.sormas.app.caze.CasesListFilterAdapter;
-import de.symeda.sormas.app.caze.CasesListFragment;
-import de.symeda.sormas.app.caze.SyncCasesTask;
-import de.symeda.sormas.app.person.SyncPersonsTask;
 import de.symeda.sormas.app.util.SlidingTabLayout;
 
 public class TasksActivity extends SormasRootActivity {

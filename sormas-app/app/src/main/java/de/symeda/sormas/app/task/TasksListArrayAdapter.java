@@ -2,6 +2,7 @@ package de.symeda.sormas.app.task;
 
 import android.content.Context;
 import android.databinding.tool.util.StringUtils;
+import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -48,35 +49,31 @@ public class TasksListArrayAdapter extends ArrayAdapter<Task> {
 
         Task task = (Task) getItem(position);
 
-        int fontface = Typeface.NORMAL;
-        if(TaskStatus.DONE.equals(task.getTaskStatus())) {
-            fontface = Typeface.ITALIC;
-        }
+
 
         TextView uuid = (TextView) convertView.findViewById(R.id.task_uuid_li);
         AbstractDomainObject associatedLink = task.getAssociatedLink();
         if (associatedLink != null) {
             uuid.setText(DataHelper.getShortUuid(associatedLink.getUuid()));
         }
-        uuid.setTypeface(null, fontface);
+        setFontStyle(uuid, task.getTaskStatus());
 
         TextView dueDate = (TextView) convertView.findViewById(R.id.task_dueDate_li);
         dueDate.setText(DateHelper.formatDDMMYYYY(task.getDueDate()));
-        dueDate.setTypeface(null, fontface);
 
-        Date now = new Date();
-        int textColor = task.getDueDate().compareTo(now) <= 0 && !TaskStatus.DONE.equals(task.getTaskStatus()) ? R.color.textColorRed : R.color.textColorPrimaryDark;
-        dueDate.setTextColor(getContext().getResources().getColor(textColor));
+        Integer dueDateColor = null;
+        if(task.getDueDate().compareTo(new Date()) <= 0 && !TaskStatus.DONE.equals(task.getTaskStatus())) {
+            dueDateColor = R.color.textColorRed;
+        }
+        setFontStyle(dueDate, task.getTaskStatus(),dueDateColor);
 
         TextView taskType = (TextView) convertView.findViewById(R.id.task_taskType_li);
         taskType.setText(DataUtils.toString(task.getTaskType()));
-        taskType.setTypeface(null, fontface);
-
+        setFontStyle(taskType, task.getTaskStatus());
 
         TextView creatorComment = (TextView) convertView.findViewById(R.id.task_creatorComment_li);
         creatorComment.setText(task.getCreatorComment());
-        creatorComment.setTypeface(null, fontface);
-
+        setFontStyle(creatorComment, task.getTaskStatus());
 
         View priority = (View) convertView.findViewById(R.id.task_priority_li);
         if (task.getPriority() != null) {
@@ -100,5 +97,32 @@ public class TasksListArrayAdapter extends ArrayAdapter<Task> {
         }
 
         return convertView;
+    }
+
+
+    private void setFontStyle(TextView textView, TaskStatus taskStatus) {
+        setFontStyle(textView,taskStatus,null);
+    }
+
+    private void setFontStyle(TextView textView, TaskStatus taskStatus, Integer textColorGiven) {
+        int fontface = Typeface.NORMAL;
+        int textColor = R.color.textColorPrimaryDark;
+        textView.setPaintFlags(textView.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+
+//        if(TaskStatus.DONE.equals(taskStatus)) {
+//            fontface = Typeface.ITALIC;
+//        }
+//        else
+        if(TaskStatus.DISCARDED.equals(taskStatus)) {
+            textView.setPaintFlags(textView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            textColor = R.color.textColorPrimaryLight;
+        }
+
+        if(textColorGiven != null) {
+            textColor = textColorGiven;
+        }
+
+        textView.setTypeface(null, fontface);
+        textView.setTextColor(getContext().getResources().getColor(textColor));
     }
 }

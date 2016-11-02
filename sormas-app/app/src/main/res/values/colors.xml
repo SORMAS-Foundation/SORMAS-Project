@@ -9,6 +9,7 @@
 
     <color name="textColorPrimary">#FFFFFF</color>
     <color name="textColorPrimaryDark">#8a000000</color>
+    <color name="textColorPrimaryLight">#33000000</color>
 
 
     <color name="textColorRed">#e61610</color>
