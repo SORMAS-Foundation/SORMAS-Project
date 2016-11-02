@@ -10,6 +10,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.region.Region;
@@ -72,13 +73,14 @@ public class TaskService extends AbstractAdoService<Task> {
 		return resultList;
 	}
 
-	public long getTaskCount(String userUuid) {
+	public long getPendingTaskCount(String userUuid) {
 		
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Task> from = cq.from(getElementClass());
 		
 		Predicate filter = cb.equal(from.get(Task.ASSIGNEE_USER).get(User.UUID), userUuid);
+		filter = cb.and(cb.equal(from.get(Task.TASK_STATUS), TaskStatus.PENDING));
 		cq.where(filter);
 		
 		cq.select(cb.countDistinct(from));

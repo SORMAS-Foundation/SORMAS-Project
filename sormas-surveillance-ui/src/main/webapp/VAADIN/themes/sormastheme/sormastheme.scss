@@ -104,9 +104,10 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
 
   .v-grid-row.status-discarded .v-grid-cell {
     text-decoration: line-through;
+    color: #888;
   }
   .v-grid-row.status-done .v-grid-cell {
-    font-style: italic;
+    color: #888;
   }
   
   .valo-content {

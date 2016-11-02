@@ -85,7 +85,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
     	TaskController taskController = ControllerProvider.getTaskController();
     	for (UserReferenceDto user : users) {
         	assigneeUser.addItem(user);
-    		assigneeUser.setItemCaption(user, taskController.getUserCaptionWithTaskCount(user));
+    		assigneeUser.setItemCaption(user, taskController.getUserCaptionWithPendingTaskCount(user));
     	}
 
     	addField(TaskDto.CREATOR_COMMENT, TextArea.class).setRows(2);

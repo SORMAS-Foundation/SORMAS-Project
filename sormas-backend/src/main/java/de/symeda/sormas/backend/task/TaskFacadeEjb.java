@@ -129,9 +129,9 @@ public class TaskFacadeEjb implements TaskFacade {
 	}
 	
 	@Override
-	public long getTaskCount(String userUuid) {
+	public long getPendingTaskCount(String userUuid) {
 		// TODO cache...
-		return service.getTaskCount(userUuid);
+		return service.getPendingTaskCount(userUuid);
 	}
 
 	@Override

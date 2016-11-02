@@ -12,7 +12,7 @@ public interface TaskFacade {
 
 	List<TaskDto> getAllAfter(Date date, String userUuid);
 
-	long getTaskCount(String userUuid);
+	long getPendingTaskCount(String userUuid);
 
 	TaskDto getByUuid(String uuid);
 

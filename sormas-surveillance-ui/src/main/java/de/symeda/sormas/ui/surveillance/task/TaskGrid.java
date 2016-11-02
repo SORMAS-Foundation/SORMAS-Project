@@ -1,5 +1,6 @@
 package de.symeda.sormas.ui.surveillance.task;
 
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -119,7 +120,7 @@ public class TaskGrid extends Grid implements ItemClickListener {
         	public String convertToPresentation(ReferenceDto value, Class<? extends String> targetType, Locale locale) throws ConversionException {
         		String html;
         		if (value != null) {
-        			html = ControllerProvider.getTaskController().getUserCaptionWithTaskCount(value);
+        			html = ControllerProvider.getTaskController().getUserCaptionWithPendingTaskCount(value);
         		} else {
         			html = "";
         		}
@@ -173,6 +174,28 @@ public class TaskGrid extends Grid implements ItemClickListener {
     
     public void reload() {
     	List<TaskDto> tasks = ControllerProvider.getTaskController().getAllTasks();
+    	tasks.sort(new Comparator<TaskDto>() {
+
+			@Override
+			public int compare(TaskDto o1, TaskDto o2) {
+				if (o1.getTaskStatus() != o2.getTaskStatus()) {
+					if (o1.getTaskStatus() == TaskStatus.PENDING)
+						return -1;
+					if (o2.getTaskStatus() == TaskStatus.PENDING)
+						return 1;
+				}
+				
+				if (o1.getTaskStatus() == TaskStatus.PENDING) {
+					if (o1.getPriority() != o2.getPriority()) {
+						return o1.getPriority().compareTo(o2.getPriority());
+					}
+					return o1.getDueDate().compareTo(o2.getDueDate());
+				}
+				else {
+					return -o1.getDueDate().compareTo(o2.getDueDate());
+				}
+			}
+		});
         getContainer().removeAllItems();
         getContainer().addAll(tasks);    	
     }

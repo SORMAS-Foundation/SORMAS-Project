@@ -98,8 +98,8 @@ public class TaskController {
     	return task;
     }
     
-    public String getUserCaptionWithTaskCount(ReferenceDto user) {
-    	long taskCount = FacadeProvider.getTaskFacade().getTaskCount(user.getUuid());
+    public String getUserCaptionWithPendingTaskCount(ReferenceDto user) {
+    	long taskCount = FacadeProvider.getTaskFacade().getPendingTaskCount(user.getUuid());
     	return user.getCaption() + " (" + taskCount + ")";
     }
 }
