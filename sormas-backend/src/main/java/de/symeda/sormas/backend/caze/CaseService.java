@@ -45,9 +45,11 @@ public class CaseService extends AbstractAdoService<Case> {
 		if (user.getUserRoles().contains(UserRole.SURVEILLANCE_OFFICER)) {
 			filter = cb.or(filter, cb.equal(from.get(Case.SURVEILLANCE_OFFICER), user));
 		}
-		if (user.getUserRoles().contains(UserRole.SURVEILLANCE_SUPERVISOR)) {
-			filter = cb.or(filter, cb.equal(from.get(Case.SURVEILLANCE_SUPERVISOR), user));
-		}
+		
+		// TODO add Filter by Region...
+//		if (user.getUserRoles().contains(UserRole.SURVEILLANCE_SUPERVISOR)) {
+//			filter = cb.or(filter, cb.equal(from.get(Case.SURVEILLANCE_SUPERVISOR), user));
+//		}
 		
 		if (date != null) {
 			Predicate dateFilter = cb.greaterThan(from.get(AbstractDomainObject.CHANGE_DATE), date);
