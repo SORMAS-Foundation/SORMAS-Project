@@ -20,7 +20,10 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDao;
+import de.symeda.sormas.app.backend.symptoms.Symptoms;
+import de.symeda.sormas.app.backend.symptoms.SymptomsDao;
 import de.symeda.sormas.app.backend.user.User;
+import de.symeda.sormas.app.util.DataUtils;
 
 
 /**
@@ -67,39 +70,50 @@ public class CaseNewActivity extends AppCompatActivity {
                 return true;
 
             case R.id.action_save:
-                Case caze = caseNewTab.getData();
+                try {
+                    Case caze = caseNewTab.getData();
 
-                caze.setCaseStatus(CaseStatus.POSSIBLE);
-                User user = ConfigProvider.getUser();
-                caze.setReportingUser(user);
-                if (user.getUserRole() == UserRole.SURVEILLANCE_OFFICER) {
-                    caze.setSurveillanceOfficer(user);
-                } else  if (user.getUserRole() == UserRole.INFORMANT) {
-                    caze.setSurveillanceOfficer(user.getAssociatedOfficer());
+                    caze.setCaseStatus(CaseStatus.POSSIBLE);
+                    User user = ConfigProvider.getUser();
+                    caze.setReportingUser(user);
+                    if (user.getUserRole() == UserRole.SURVEILLANCE_OFFICER) {
+                        caze.setSurveillanceOfficer(user);
+                    } else if (user.getUserRole() == UserRole.INFORMANT) {
+                        caze.setSurveillanceOfficer(user.getAssociatedOfficer());
+                    }
+
+                    SymptomsDao symptomsDao = DatabaseHelper.getSymptomsDao();
+                    Symptoms symptoms = DataUtils.createNew(Symptoms.class);
+                    symptomsDao.save(symptoms);
+
+                    caze.setSymptoms(symptoms);
+
+                    CaseDao caseDao = DatabaseHelper.getCaseDao();
+                    caseDao.save(caze);
+
+                    // set person's case uuid
+                    PersonDao personDao = DatabaseHelper.getPersonDao();
+                    Person person = personDao.queryForId(caze.getPerson().getId());
+                    person.setCaseUuid(caze.getUuid());
+                    DatabaseHelper.getPersonDao().save(person);
+
+                    new SyncCasesTask().execute();
+
+                    Toast.makeText(this, caze.getPerson().toString() + " saved", Toast.LENGTH_SHORT).show();
+
+                    NavUtils.navigateUpFromSameTask(this);
+
+                    // open case edit view
+                    Intent intent = new Intent(this, CaseEditActivity.class);
+                    intent.putExtra(CaseEditActivity.KEY_CASE_UUID, caze.getUuid());
+                    intent.putExtra(CaseEditActivity.KEY_PAGE, 1);
+                    startActivity(intent);
+
+                    return true;
+                } catch (Exception e) {
+                    Toast.makeText(this, "Error while saving the case. " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    e.printStackTrace();
                 }
-
-                CaseDao caseDao = DatabaseHelper.getCaseDao();
-                caseDao.save(caze);
-
-                // set person's case uuid
-                PersonDao personDao = DatabaseHelper.getPersonDao();
-                Person person = personDao.queryForId(caze.getPerson().getId());
-                person.setCaseUuid(caze.getUuid());
-                DatabaseHelper.getPersonDao().save(person);
-
-                new SyncCasesTask().execute();
-
-                Toast.makeText(this, caze.getPerson().toString() + " saved", Toast.LENGTH_SHORT).show();
-
-                NavUtils.navigateUpFromSameTask(this);
-
-                // open case edit view
-                Intent intent = new Intent(this, CaseEditActivity.class);
-                intent.putExtra(CaseEditActivity.KEY_CASE_UUID, caze.getUuid());
-                intent.putExtra(CaseEditActivity.KEY_PAGE, 1);
-                startActivity(intent);
-
-                return true;
 
         }
         return super.onOptionsItemSelected(item);
