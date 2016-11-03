@@ -47,18 +47,24 @@ public class CaseService extends AbstractAdoService<Case> {
 		}
 		
 		// TODO add Filter by Region...
-//		if (user.getUserRoles().contains(UserRole.SURVEILLANCE_SUPERVISOR)) {
-//			filter = cb.or(filter, cb.equal(from.get(Case.SURVEILLANCE_SUPERVISOR), user));
-//		}
+		if (user.getUserRoles().contains(UserRole.SURVEILLANCE_SUPERVISOR)) {
+			filter = null;//cb.or(filter, cb.equal(from.get(Case.SURVEILLANCE_SUPERVISOR), user));
+		}
 		
 		if (date != null) {
 			Predicate dateFilter = cb.greaterThan(from.get(AbstractDomainObject.CHANGE_DATE), date);
 			Join<Case, Symptoms> symptoms = from.join(Case.SYMPTOMS);
 			dateFilter = cb.or(dateFilter, cb.greaterThan(symptoms.get(AbstractDomainObject.CHANGE_DATE), date));
-			filter = cb.and(filter, dateFilter);
+			if (filter != null) {
+				filter = cb.and(filter, dateFilter);
+			} else {
+				filter = dateFilter;
+			}
 		}
 
-		cq.where(filter);
+		if (filter != null) {
+			cq.where(filter);
+		}
 		cq.orderBy(cb.asc(from.get(AbstractDomainObject.ID)));
 
 		List<Case> resultList = em.createQuery(cq).getResultList();
