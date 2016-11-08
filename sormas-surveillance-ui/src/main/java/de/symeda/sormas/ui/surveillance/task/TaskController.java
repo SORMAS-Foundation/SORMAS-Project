@@ -90,8 +90,8 @@ public class TaskController {
     private TaskDto createNewTask() {
     	TaskDto task = new TaskDto();
     	task.setUuid(DataHelper.createUuid());
-    	task.setDueDate(new DateTime().plusDays(1).toDate());
-    	task.setSuggestedStart(new DateTime().plusHours(16).toDate());
+    	task.setDueDate(new DateTime().plusDays(1).toDate()); // tomorrow
+    	task.setSuggestedStart(new DateTime().toDate()); // now
     	task.setCreatorUser(LoginHelper.getCurrentUserAsReference());
     	task.setTaskStatus(TaskStatus.PENDING);
     	task.setPriority(TaskPriority.NORMAL);
