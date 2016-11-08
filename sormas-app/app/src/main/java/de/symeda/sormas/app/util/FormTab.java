@@ -25,7 +25,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -106,64 +105,6 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
         newFragment.setArguments(dateBundle);
         newFragment.show(getFragmentManager(), getResources().getText(R.string.headline_date_picker).toString());
     }
-
-    /**
-     * Adds a YesNoField for given ID, Caption without any Listener.
-     * @param yesNoFieldId
-     * @param caption
-     */
-    protected  void addSymptomStateField(final int yesNoFieldId, String caption) {
-        makeSymptomStateField(yesNoFieldId,caption,true,null);
-    }
-
-    /**
-     * Adds a YesNoField for given ID, Caption without a Listener. Sets the visibility of the field.
-     * @param yesNoFieldId
-     * @param caption
-     * @param visible
-     */
-    protected  void addSymptomStateField(final int yesNoFieldId, String caption, boolean visible) {
-        makeSymptomStateField(yesNoFieldId,caption,visible,null);
-    }
-
-
-    /**
-     * Adds a YesNoField for given ID, Caption and Listener. Sets the visibility of the field.
-     * @param yesNoFieldId
-     * @param caption
-     * @param visible
-     * @param listener
-     */
-    protected  void addSymptomStateField(final int yesNoFieldId, String caption, boolean visible, RadioGroup.OnCheckedChangeListener ...listener) {
-        makeSymptomStateField(yesNoFieldId,caption,visible,listener);
-    }
-
-    private void makeSymptomStateField(final int yesNoFieldId, String caption, boolean visible, final RadioGroup.OnCheckedChangeListener[] moreListeners) {
-        final SymptomStateField symptomStateField = (SymptomStateField) getView().findViewById(yesNoFieldId);
-        if(visible) {
-            symptomStateField.setVisibility(View.VISIBLE);
-            symptomStateField.setCaption(caption);
-            symptomStateField.setValue(((SymptomState)model.get(yesNoFieldId)));
-        }
-        else {
-            symptomStateField.setVisibility(View.GONE);
-        }
-
-        symptomStateField.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                // commit to model
-                model.put(yesNoFieldId, symptomStateField.getValue());
-                // bubble to more listeners
-                if (moreListeners!=null) {
-                    for (RadioGroup.OnCheckedChangeListener listener : moreListeners) {
-                        listener.onCheckedChanged(group, checkedId);
-                    }
-                }
-            }
-        });
-    }
-
 
     /**
      * Fill the spinner for the given enum, set the selected entry, register the base listeners and the given ones.
@@ -425,7 +366,7 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
         v.setEnabled(true);
     }
 
-
+    @Deprecated
     protected Map<Integer, Object> getModel() {
         return model;
     }

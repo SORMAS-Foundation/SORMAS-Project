@@ -22,6 +22,7 @@ import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.symptoms.SymptomsDao;
+import de.symeda.sormas.app.component.PropertyField;
 import de.symeda.sormas.app.component.SymptomStateField;
 import de.symeda.sormas.app.person.SyncPersonsTask;
 import de.symeda.sormas.app.util.SlidingTabLayout;
@@ -110,11 +111,12 @@ public class CaseEditActivity extends AppCompatActivity {
                         StringBuilder sb = new StringBuilder();
 
                         LinearLayout caseSymptomsForm = (LinearLayout) this.findViewById(R.id.case_symptoms_form);
+
                         for (int i = 0; i < caseSymptomsForm.getChildCount(); i++) {
-                            if (caseSymptomsForm.getChildAt(i) instanceof SymptomStateField) {
-                                sb
-                                        .append(caseSymptomsForm.getResources().getResourceName(caseSymptomsForm.getChildAt(i).getId()))
-                                        .append(" ");
+                            if (caseSymptomsForm.getChildAt(i) instanceof PropertyField) {
+                                PropertyField propertyField = (PropertyField)caseSymptomsForm.getChildAt(i);
+                                sb.append(propertyField.getCaption()).append("<br>")
+                                        .append(propertyField.getDescription()).append("<br>");
                             }
                         }
 
