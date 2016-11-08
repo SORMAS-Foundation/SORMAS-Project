@@ -136,5 +136,8 @@
     <string name="task_creatorComment">Creator comment</string>
     <string name="task_creatorUser">Created by</string>
     <string name="task_assigneeReply">Your comment</string>
+    <string name="headline_symptoms">Symptoms</string>
+    <string name="action_help">Help</string>
+    <string name="headline_help">Help</string>
 
 </resources>

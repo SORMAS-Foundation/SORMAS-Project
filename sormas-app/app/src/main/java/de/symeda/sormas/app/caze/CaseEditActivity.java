@@ -3,11 +3,13 @@ package de.symeda.sormas.app.caze;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import de.symeda.sormas.api.utils.DataHelper;
@@ -20,6 +22,7 @@ import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.symptoms.SymptomsDao;
+import de.symeda.sormas.app.component.SymptomStateField;
 import de.symeda.sormas.app.person.SyncPersonsTask;
 import de.symeda.sormas.app.util.SlidingTabLayout;
 
@@ -55,7 +58,7 @@ public class CaseEditActivity extends AppCompatActivity {
         titles = new CharSequence[]{
                 getResources().getText(R.string.headline_case_data),
                 getResources().getText(R.string.headline_patient),
-                "Symptoms"
+                getResources().getText(R.string.headline_symptoms)
         };
     }
 
@@ -81,6 +84,7 @@ public class CaseEditActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        int currentTab = pager.getCurrentItem();
         switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button
             case android.R.id.home:
@@ -89,54 +93,91 @@ public class CaseEditActivity extends AppCompatActivity {
                 //Home/back button
                 return true;
 
+            // Help button
+            case R.id.action_help:
+                switch(currentTab) {
+                    // case data tab
+                    case 0:
+
+                        break;
+
+                    // case person tab
+                    case 1:
+                        break;
+
+                    // case symptoms tab
+                    case 2:
+                        StringBuilder sb = new StringBuilder();
+
+                        LinearLayout caseSymptomsForm = (LinearLayout) this.findViewById(R.id.case_symptoms_form);
+                        for (int i = 0; i < caseSymptomsForm.getChildCount(); i++) {
+                            if (caseSymptomsForm.getChildAt(i) instanceof SymptomStateField) {
+                                sb
+                                        .append(caseSymptomsForm.getResources().getResourceName(caseSymptomsForm.getChildAt(i).getId()))
+                                        .append(" ");
+                            }
+                        }
+
+                        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                        builder.setMessage(sb.toString()).setTitle(getResources().getText(R.string.headline_help));
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
+
+                        break;
+                }
+
+
+                return true;
+
+            // Save button
             case R.id.action_save:
+                CaseDao caseDao = DatabaseHelper.getCaseDao();
 
-                int currentTab = pager.getCurrentItem();
 
-                // case data tab
-                if(currentTab==0) {
-                    CaseDao caseDao = DatabaseHelper.getCaseDao();
+                switch(currentTab) {
+                    // case data tab
+                    case 0:
 
-                    Case caze = (Case) adapter.getData(0);
+                        Case caze = (Case) adapter.getData(0);
 
-                    caseDao.save(caze);
-                    Toast.makeText(this, "case "+ DataHelper.getShortUuid(caze.getUuid()) +" saved", Toast.LENGTH_SHORT).show();
+                        caseDao.save(caze);
+                        Toast.makeText(this, "case "+ DataHelper.getShortUuid(caze.getUuid()) +" saved", Toast.LENGTH_SHORT).show();
 
-                    new SyncCasesTask().execute();
-                }
+                        new SyncCasesTask().execute();
+                        break;
 
-                // case person tab
-                else if(currentTab==1) {
-                    LocationDao locLocationDao = DatabaseHelper.getLocationDao();
-                    PersonDao personDao = DatabaseHelper.getPersonDao();
+                    // case person tab
+                    case 1:
+                        LocationDao locLocationDao = DatabaseHelper.getLocationDao();
+                        PersonDao personDao = DatabaseHelper.getPersonDao();
 
-                    Person person = (Person)adapter.getData(1);
+                        Person person = (Person)adapter.getData(1);
 
-                    if(person.getAddress()!=null) {
-                        locLocationDao.save(person.getAddress());
-                    }
-                    personDao.save(person);
-                    Toast.makeText(this, person.toString() + " saved", Toast.LENGTH_SHORT).show();
+                        if(person.getAddress()!=null) {
+                            locLocationDao.save(person.getAddress());
+                        }
+                        personDao.save(person);
+                        Toast.makeText(this, person.toString() + " saved", Toast.LENGTH_SHORT).show();
 
-                    new SyncPersonsTask().execute();
-                }
+                        new SyncPersonsTask().execute();
+                        break;
 
-                // case symptoms tab
-                else if(currentTab==2) {
-                    SymptomsDao symptomsDao = DatabaseHelper.getSymptomsDao();
+                    // case symptoms tab
+                    case 2:
+                        SymptomsDao symptomsDao = DatabaseHelper.getSymptomsDao();
 
-                    Symptoms symptoms = (Symptoms)adapter.getData(2);
+                        Symptoms symptoms = (Symptoms)adapter.getData(2);
 
-                    if(symptoms!=null) {
-                        symptomsDao.save(symptoms);
-                    }
+                        if(symptoms!=null) {
+                            symptomsDao.save(symptoms);
+                        }
 
-                    CaseDao caseDao = DatabaseHelper.getCaseDao();
-                    caseDao.markAsModified(caseUuid);
+                        caseDao.markAsModified(caseUuid);
 
-                    Toast.makeText(this, "symptoms saved", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "symptoms saved", Toast.LENGTH_SHORT).show();
 
-                    new SyncCasesTask().execute();
+                        new SyncCasesTask().execute();
+                        break;
                 }
 
                 onResume();
