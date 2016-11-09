@@ -66,6 +66,20 @@ public class UserDtoHelper extends AdoDtoHelper<User, UserDto> {
             }
         }
 
+
+        if (dto.getRegion() != null) {
+            ado.setRegion(DatabaseHelper.getRegionDao().queryUuid(dto.getRegion().getUuid()));
+        } else {
+            ado.setRegion(null);
+        }
+
+        if (dto.getDistrict() != null) {
+            ado.setDistrict(DatabaseHelper.getDistrictDao().queryUuid(dto.getDistrict().getUuid()));
+        } else {
+            ado.setDistrict(null);
+        }
+
+
         if (dto.getAssociatedOfficer() != null) {
             ado.setAssociatedOfficer(DatabaseHelper.getUserDao().queryUuid(dto.getAssociatedOfficer().getUuid()));
         } else {

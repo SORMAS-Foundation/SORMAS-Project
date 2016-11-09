@@ -1,11 +1,17 @@
 package de.symeda.sormas.app.backend.caze;
 
+import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.backend.region.Community;
+import de.symeda.sormas.app.backend.region.District;
+import de.symeda.sormas.app.backend.region.Region;
+import de.symeda.sormas.app.backend.region.RegionDtoHelper;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.symptoms.SymptomsDtoHelper;
 import de.symeda.sormas.app.backend.user.User;
@@ -17,10 +23,12 @@ import de.symeda.sormas.app.backend.user.UserDtoHelper;
 public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 
     private SymptomsDtoHelper symptomsDtoHelper;
+    private RegionDtoHelper regionDtoHelper;
     private UserDtoHelper userDtoHelper;
 
     public CaseDtoHelper() {
         symptomsDtoHelper = new SymptomsDtoHelper();
+        regionDtoHelper = new RegionDtoHelper();
     }
 
     @Override
@@ -58,8 +66,25 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 
         ado.setSymptoms(symptomsDtoHelper.fillOrCreateFromDto(ado.getSymptoms(), dto.getSymptoms()));
 
+        if (dto.getRegion() != null) {
+            ado.setRegion(DatabaseHelper.getRegionDao().queryUuid(dto.getRegion().getUuid()));
+        } else {
+            ado.setRegion(null);
+        }
+
+        if (dto.getDistrict() != null) {
+            ado.setDistrict(DatabaseHelper.getDistrictDao().queryUuid(dto.getDistrict().getUuid()));
+        } else {
+            ado.setDistrict(null);
+        }
+
+        if (dto.getCommunity() != null) {
+            ado.setCommunity(DatabaseHelper.getCommunityDao().queryUuid(dto.getCommunity().getUuid()));
+        } else {
+            ado.setCommunity(null);
+        }
+
         ado.setSurveillanceOfficer(DatabaseHelper.getUserDao().getByReferenceDto(dto.getSurveillanceOfficer()));
-        ado.setSurveillanceSupervisor(DatabaseHelper.getUserDao().getByReferenceDto(dto.getSurveillanceSupervisor()));
 
         // TODO user
     }
@@ -95,7 +120,32 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
             SymptomsDto symptomsDto = symptomsDtoHelper.adoToDto(symptoms);
             dto.setSymptoms(symptomsDto);
         } else {
-            ado.setSymptoms(null);
+            dto.setSymptoms(null);
+        }
+
+        if (ado.getRegion() != null) {
+            Region region = DatabaseHelper.getRegionDao().queryForId(ado.getRegion().getId());
+            ReferenceDto regionDto = AdoDtoHelper.toReferenceDto(region);
+            dto.setRegion(regionDto);
+        } else {
+            dto.setRegion(null);
+        }
+
+
+        if (ado.getDistrict() != null) {
+            District district = DatabaseHelper.getDistrictDao().queryForId(ado.getDistrict().getId());
+            ReferenceDto districtDto = AdoDtoHelper.toReferenceDto(district);
+            dto.setRegion(districtDto);
+        } else {
+            dto.setSymptoms(null);
+        }
+
+        if (ado.getCommunity() != null) {
+            Community community = DatabaseHelper.getCommunityDao().queryForId(ado.getCommunity().getId());
+            ReferenceDto communityDto = AdoDtoHelper.toReferenceDto(community);
+            dto.setCommunity(communityDto);
+        } else {
+            dto.setCommunity(null);
         }
 
         if (ado.getSurveillanceOfficer() != null) {
@@ -103,12 +153,6 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
             dto.setSurveillanceOfficer(UserDtoHelper.toReferenceDto(user));
         } else {
             dto.setSurveillanceOfficer(null);
-        }
-        if (ado.getSurveillanceSupervisor() != null) {
-            User user = DatabaseHelper.getUserDao().queryForId(ado.getSurveillanceSupervisor().getId());
-            dto.setSurveillanceSupervisor(UserDtoHelper.toReferenceDto(user));
-        } else {
-            dto.setSurveillanceSupervisor(null);
         }
         // TODO user
     }

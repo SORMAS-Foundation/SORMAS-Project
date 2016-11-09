@@ -20,6 +20,9 @@ import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.backend.region.Community;
+import de.symeda.sormas.app.backend.region.District;
+import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.user.User;
 
@@ -46,6 +49,15 @@ public class Case extends AbstractDomainObject {
 	@Enumerated(EnumType.STRING)
 	private CaseStatus caseStatus;
 
+	@DatabaseField(foreign = true, foreignAutoCreate = true, foreignAutoRefresh = true)
+	private Region region;
+
+	@DatabaseField(foreign = true, foreignAutoCreate = true, foreignAutoRefresh = true)
+	private District district;
+
+	@DatabaseField(foreign = true, foreignAutoCreate = true, foreignAutoRefresh = true)
+	private Community community;
+
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
 	private Facility healthFacility;
 
@@ -65,16 +77,10 @@ public class Case extends AbstractDomainObject {
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 1)
 	private User surveillanceOfficer;
 	@ManyToOne(cascade = {})
-	private User surveillanceSupervisor;
-	@ManyToOne(cascade = {})
 	private User caseOfficer;
 	@ManyToOne(cascade = {})
-	private User caseSupervisor;
-	@ManyToOne(cascade = {})
 	private User contactOfficer;
-	@ManyToOne(cascade = {})
-	private User contactSupervisor;
-	
+
 	public Person getPerson() {
 		return person;
 	}
@@ -101,6 +107,27 @@ public class Case extends AbstractDomainObject {
 	}
 	public void setCaseStatus(CaseStatus caseStatus) {
 		this.caseStatus = caseStatus;
+	}
+
+	public Region getRegion() {
+		return region;
+	}
+	public void setRegion(Region region) {
+		this.region = region;
+	}
+
+	public District getDistrict() {
+		return district;
+	}
+	public void setDistrict(District district) {
+		this.district = district;
+	}
+
+	public Community getCommunity() {
+		return community;
+	}
+	public void setCommunity(Community community) {
+		this.community = community;
 	}
 	
 	public User getReportingUser() {
@@ -151,13 +178,6 @@ public class Case extends AbstractDomainObject {
 		this.surveillanceOfficer = surveillanceOfficer;
 	}
 
-	public User getSurveillanceSupervisor() {
-		return surveillanceSupervisor;
-	}
-	public void setSurveillanceSupervisor(User surveillanceSupervisor) {
-		this.surveillanceSupervisor = surveillanceSupervisor;
-	}
-
 	public User getCaseOfficer() {
 		return caseOfficer;
 	}
@@ -165,25 +185,11 @@ public class Case extends AbstractDomainObject {
 		this.caseOfficer = caseOfficer;
 	}
 
-	public User getCaseSupervisor() {
-		return caseSupervisor;
-	}
-	public void setCaseSupervisor(User caseSupervisor) {
-		this.caseSupervisor = caseSupervisor;
-	}
-
 	public User getContactOfficer() {
 		return contactOfficer;
 	}
 	public void setContactOfficer(User contactOfficer) {
 		this.contactOfficer = contactOfficer;
-	}
-
-	public User getContactSupervisor() {
-		return contactSupervisor;
-	}
-	public void setContactSupervisor(User contactSupervisor) {
-		this.contactSupervisor = contactSupervisor;
 	}
 
 }
