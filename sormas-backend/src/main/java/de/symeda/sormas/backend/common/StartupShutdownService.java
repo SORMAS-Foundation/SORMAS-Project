@@ -95,11 +95,14 @@ public class StartupShutdownService {
 	}
 
 	private void initCaseAndPersonMockData() {
+		
+		Region region = regionService.getAll().get(0);
+		
 		if (caseService.getAll().isEmpty()) {
 			Random random = new Random();
-			List<User> informants = userService.getAllByUserRoles(UserRole.INFORMANT);
-			List<User> survOffs = userService.getAllByUserRoles(UserRole.SURVEILLANCE_OFFICER);
-			List<User> survSups = userService.getAllByUserRoles(UserRole.SURVEILLANCE_SUPERVISOR);
+			List<User> informants = userService.getAllByRegionAndUserRoles(null, UserRole.INFORMANT);
+			List<User> survOffs = userService.getAllByRegionAndUserRoles(null, UserRole.SURVEILLANCE_OFFICER);
+			List<User> survSups = userService.getAllByRegionAndUserRoles(null, UserRole.SURVEILLANCE_SUPERVISOR);
 			List<Facility> facilities = facilityService.getAll();
 			
 			List<Case> cases = MockDataGenerator.createCases();
@@ -107,7 +110,8 @@ public class StartupShutdownService {
 			for (Case caze : cases) {
 				
 				caze.setReportingUser(informants.get(random.nextInt(informants.size())));
-				caze.setSurveillanceSupervisor(survSups.get(random.nextInt(survSups.size())));
+				
+				caze.setRegion(region);
 				caze.setSurveillanceOfficer(survOffs.get(random.nextInt(survOffs.size())));
 				caze.setHealthFacility(facilities.get(random.nextInt(facilities.size())));
 

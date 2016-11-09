@@ -111,7 +111,7 @@ public class CasePersonForm extends AbstractEditForm<CasePersonDto> {
     	addField(CasePersonDto.OCCUPATION_TYPE, NativeSelect.class);
     	addField(CasePersonDto.OCCUPATION_DETAILS, TextField.class);
     	addField(CasePersonDto.OCCUPATION_FACILITY, ComboBox.class)
-			.addItems(FacadeProvider.getFacilityFacade().getAllAsReference());
+			.addItems(FacadeProvider.getFacilityFacade().getAll());
     	
     	setRequired(true, 
     			CasePersonDto.FIRST_NAME, 

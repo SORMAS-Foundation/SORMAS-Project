@@ -3,14 +3,13 @@ package de.symeda.sormas.ui.surveillance.caze;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.DateField;
 import com.vaadin.ui.NativeSelect;
-import com.vaadin.ui.TextField;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.ui.surveillance.ControllerProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -22,14 +21,13 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 	private static final String PERSON_CREATE = "PersonCreate";
 
     private static final String HTML_LAYOUT = 
-    		LayoutUtil.h3(CssStyles.VSPACE3, "Create new case")+
 			LayoutUtil.divCss(CssStyles.VSPACE2,
-					LayoutUtil.fluidRowLocs(CaseDataDto.DISEASE, CaseDataDto.REPORT_DATE),
+					LayoutUtil.fluidRowLocs(CaseDataDto.DISEASE, ""),
+					LayoutUtil.fluidRowLocs(CaseDataDto.REGION, CaseDataDto.DISTRICT),
+					LayoutUtil.fluidRowLocs(CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY),
 					LayoutUtil.fluidRow(
 							LayoutUtil.fluidColumnLoc(10, 0, CaseDataDto.PERSON),
-							LayoutUtil.fluidColumnLoc(2, 0, PERSON_CREATE)),
-					LayoutUtil.fluidRowLocs(CaseDataDto.HEALTH_FACILITY),
-					LayoutUtil.fluidRowLocs(CaseDataDto.UUID, "")
+							LayoutUtil.fluidColumnLoc(2, 0, PERSON_CREATE))
 					);
 
     private ComboBox persons;
@@ -40,10 +38,8 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 
     @Override
 	protected void addFields() {
-    	addField(CaseDataDto.UUID, TextField.class);
 
     	addField(CaseDataDto.DISEASE, NativeSelect.class);
-    	addField(CaseDataDto.REPORT_DATE, DateField.class);
     	
     	persons = addField(CaseDataDto.PERSON, ComboBox.class);
     	updatePersonsSelect();
@@ -53,14 +49,38 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
     	personCreateButton.addStyleName(ValoTheme.BUTTON_LINK);
     	personCreateButton.addStyleName(CssStyles.FORCE_CAPTION);
     	personCreateButton.addClickListener(e -> createPersonClicked());
-    	getContent().addComponent(personCreateButton, PERSON_CREATE);    	
-
-    	// TODO use only facilities from own region or district?!
-    	addField(CaseDataDto.HEALTH_FACILITY, ComboBox.class)
-			.addItems(FacadeProvider.getFacilityFacade().getAllAsReference());
+    	getContent().addComponent(personCreateButton, PERSON_CREATE);    
     	
-    	setRequired(true, CaseDataDto.DISEASE, CaseDataDto.REPORT_DATE, CaseDataDto.PERSON, CaseDataDto.HEALTH_FACILITY);
-    	setReadOnly(true, CaseDataDto.UUID);
+    	ComboBox region = addField(CaseDataDto.REGION, ComboBox.class);
+    	ComboBox district = addField(CaseDataDto.DISTRICT, ComboBox.class);
+    	ComboBox community = addField(CaseDataDto.COMMUNITY, ComboBox.class);
+    	ComboBox facility = addField(CaseDataDto.HEALTH_FACILITY, ComboBox.class);
+    	
+    	region.addValueChangeListener(e -> {
+    		district.removeAllItems();
+    		ReferenceDto regionDto = (ReferenceDto)e.getProperty().getValue();
+    		if (regionDto != null) {
+    			district.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(regionDto.getUuid()));
+    		}
+    	});
+    	district.addValueChangeListener(e -> {
+    		community.removeAllItems();
+    		ReferenceDto districtDto = (ReferenceDto)e.getProperty().getValue();
+    		if (districtDto != null) {
+    			community.addItems(FacadeProvider.getCommunityFacade().getAllByDistrict(districtDto.getUuid()));
+    		}
+    	});
+    	community.addValueChangeListener(e -> {
+    		facility.removeAllItems();
+    		ReferenceDto communityDto = (ReferenceDto)e.getProperty().getValue();
+    		if (communityDto != null) {
+    			facility.addItems(FacadeProvider.getFacilityFacade().getAllByCommunity(communityDto.getUuid()));
+    		}
+    	});
+		region.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
+
+    	setRequired(true, CaseDataDto.DISEASE, CaseDataDto.PERSON, 
+    			CaseDataDto.REGION, CaseDataDto.DISTRICT, CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY);
     }
     
     private void createPersonClicked() {
@@ -91,5 +111,4 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 	protected String createHtmlLayout() {
 		 return HTML_LAYOUT;
 	}
-
 }

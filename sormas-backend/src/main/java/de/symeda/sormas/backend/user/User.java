@@ -19,6 +19,7 @@ import javax.validation.constraints.Size;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.location.Location;
+import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 
 @Entity(name="users")
@@ -36,6 +37,7 @@ public class User extends AbstractDomainObject {
 	public static final String PHONE = "phone";
 	public static final String ADDRESS = "address";
 	public static final String REGION = "region";
+	public static final String DISTRICT = "district";
 	public static final String USER_ROLES = "userRoles";
 
 	
@@ -52,6 +54,7 @@ public class User extends AbstractDomainObject {
 	private Location address;
 	
 	private Region region;
+	private District district;
 	private Set<UserRole> userRoles;
 	
 	private User associatedOfficer;
@@ -173,5 +176,13 @@ public class User extends AbstractDomainObject {
 			}
 		}
 		return false;
+	}
+	
+	@ManyToOne(cascade = {})
+	public District getDistrict() {
+		return district;
+	}
+	public void setDistrict(District district) {
+		this.district = district;
 	}
 }

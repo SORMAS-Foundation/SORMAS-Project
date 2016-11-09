@@ -40,14 +40,14 @@ public class LocationForm extends AbstractEditForm<LocationDto> {
     		district.removeAllItems();
     		ReferenceDto regionDto = (ReferenceDto)e.getProperty().getValue();
     		if (regionDto != null) {
-    			district.addItems(FacadeProvider.getDistrictFacade().getAllAsReference(regionDto.getUuid()));
+    			district.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(regionDto.getUuid()));
     		}
     	});
     	district.addValueChangeListener(e -> {
     		community.removeAllItems();
     		ReferenceDto districtDto = (ReferenceDto)e.getProperty().getValue();
     		if (districtDto != null) {
-    			community.addItems(FacadeProvider.getCommunityFacade().getAllAsReference(districtDto.getUuid()));
+    			community.addItems(FacadeProvider.getCommunityFacade().getAllByDistrict(districtDto.getUuid()));
     		}
     	});
 		region.addItems(FacadeProvider.getRegionFacade().getAllAsReference());

@@ -2,11 +2,10 @@ package de.symeda.sormas.api.user;
 
 import java.util.Set;
 
-import de.symeda.sormas.api.DataTransferObject;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
 
-public class UserDto extends DataTransferObject {
+public class UserDto extends UserReferenceDto {
 
 	private static final long serialVersionUID = -8558187171374254398L;
 
@@ -20,8 +19,9 @@ public class UserDto extends DataTransferObject {
 	public static final String USER_EMAIL = "userEmail";
 	public static final String PHONE = "phone";
 	public static final String ADDRESS = "address";
-	public static final String LGA = "lga";
 	public static final String USER_ROLES = "userRoles";
+	public static final String REGION = "region";
+	public static final String DISTRICT = "district";
 	public static final String ASSOCIATED_OFFICER = "associatedOfficer";
 
 	private boolean active = true;
@@ -32,10 +32,11 @@ public class UserDto extends DataTransferObject {
 	private String lastName;
 	private String userEmail;
 	private String phone;
-	private LocationDto address;
+	private LocationDto address;	
 	
+	private ReferenceDto region;
+	private ReferenceDto district;
 	private Set<UserRole> userRoles;
-
 	private UserReferenceDto associatedOfficer;
 	
 	public boolean isActive() {
@@ -98,10 +99,6 @@ public class UserDto extends DataTransferObject {
 		this.address = address;
 	}
 	
-	public ReferenceDto getLga() {
-		return ((address!=null&&address.getDistrict()!=null)?address.getDistrict():null);
-	}
-	
 	public Set<UserRole> getUserRoles() {
 		return userRoles;
 	}
@@ -115,12 +112,29 @@ public class UserDto extends DataTransferObject {
 		return firstName + " " + lastName.toUpperCase();
 	}
 
+	
 	public UserReferenceDto getAssociatedOfficer() {
 		return associatedOfficer;
 	}
 
 	public void setAssociatedOfficer(UserReferenceDto associatedOfficer) {
 		this.associatedOfficer = associatedOfficer;
+	}
+
+	public ReferenceDto getRegion() {
+		return region;
+	}
+
+	public void setRegion(ReferenceDto region) {
+		this.region = region;
+	}
+
+	public ReferenceDto getDistrict() {
+		return district;
+	}
+
+	public void setDistrict(ReferenceDto district) {
+		this.district = district;
 	}
 
 }

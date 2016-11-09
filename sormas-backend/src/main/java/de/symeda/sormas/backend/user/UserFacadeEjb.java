@@ -15,6 +15,8 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
+import de.symeda.sormas.backend.region.DistrictService;
+import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.util.DtoHelper;
 
 @Stateless(name = "UserFacade")
@@ -24,21 +26,17 @@ public class UserFacadeEjb implements UserFacade {
 	private UserService service;
 	@EJB
 	private LocationFacadeEjbLocal locationFacade;
+	@EJB
+	private RegionService regionService;
+	@EJB
+	private DistrictService districtService;
 
 	@Override
-	public List<UserReferenceDto> getAllAsReference(UserRole userRole) {
-		return service.getAllByUserRoles(userRole).stream()
-				.map(f -> toReferenceDto(f))
-				.collect(Collectors.toList());
-	}
-	
-	
-	@Override
-	public List<UserReferenceDto> getAssignableUsers(UserReferenceDto assigningUser) {
+	public List<UserReferenceDto> getAssignableUsers(UserReferenceDto assigningUser, UserRole ...assignableRoles) {
 		User user = service.getByReferenceDto(assigningUser);
 		
 		if (user != null && user.getRegion() != null) {
-			return service.getAllByRegion(user.getRegion()).stream()
+			return service.getAllByRegionAndUserRoles(user.getRegion(), assignableRoles).stream()
 					.map(f -> toReferenceDto(f))
 					.collect(Collectors.toList());
 		}
@@ -48,8 +46,8 @@ public class UserFacadeEjb implements UserFacade {
 
 
 	@Override
-	public List<UserDto> getAll(UserRole... userRoles) {
-		return service.getAllByUserRoles(userRoles).stream()
+	public List<UserDto> getAll(UserRole... roles) {
+		return service.getAllByRegionAndUserRoles(null, roles).stream()
 				.map(f -> toDto(f))
 				.collect(Collectors.toList());
 	}
@@ -94,7 +92,7 @@ public class UserFacadeEjb implements UserFacade {
 	
 	public UserDto toDto(User entity) {
 		UserDto dto = new UserDto();
-		DtoHelper.fillDto(dto, entity);
+		DtoHelper.fillReferenceDto(dto, entity);
 		
 		dto.setActive(entity.isAktiv());
 		dto.setUserName(entity.getUserName());
@@ -104,6 +102,8 @@ public class UserFacadeEjb implements UserFacade {
 		dto.setPhone(entity.getPhone());
 		dto.setAddress(LocationFacadeEjb.toLocationDto(entity.getAddress()));
 		
+		dto.setRegion(DtoHelper.toReferenceDto(entity.getRegion()));
+		dto.setDistrict(DtoHelper.toReferenceDto(entity.getDistrict()));
 		dto.setAssociatedOfficer(toReferenceDto(entity.getAssociatedOfficer()));
 		
 		entity.getUserRoles().size();
@@ -121,26 +121,28 @@ public class UserFacadeEjb implements UserFacade {
 	}	
 	
 	private User toUser(UserDto dto) {
-		User bo = service.getByUuid(dto.getUuid());
-		if(bo==null) {
-			bo = service.createUser();
+		User entity = service.getByUuid(dto.getUuid());
+		if(entity==null) {
+			entity = service.createUser();
 		}
-		bo.setUuid(dto.getUuid());
+		entity.setUuid(dto.getUuid());
 
-		bo.setAktiv(dto.isActive());
-		bo.setFirstName(dto.getFirstName());
-		bo.setLastName(dto.getLastName());
-		bo.setPhone(dto.getPhone());
-		bo.setAddress(locationFacade.fromLocationDto(dto.getAddress()));
+		entity.setAktiv(dto.isActive());
+		entity.setFirstName(dto.getFirstName());
+		entity.setLastName(dto.getLastName());
+		entity.setPhone(dto.getPhone());
+		entity.setAddress(locationFacade.fromLocationDto(dto.getAddress()));
 		
-		bo.setUserName(dto.getUserName());
-		bo.setUserEmail(dto.getUserEmail());
+		entity.setUserName(dto.getUserName());
+		entity.setUserEmail(dto.getUserEmail());
 		
-		bo.setAssociatedOfficer(service.getByReferenceDto(dto.getAssociatedOfficer()));
+		entity.setRegion(regionService.getByReferenceDto(dto.getRegion()));
+		entity.setDistrict(districtService.getByReferenceDto(dto.getDistrict()));
+		entity.setAssociatedOfficer(service.getByReferenceDto(dto.getAssociatedOfficer()));
 
-		bo.setUserRoles(dto.getUserRoles());
+		entity.setUserRoles(dto.getUserRoles());
 
-		return bo;
+		return entity;
 	}
 	
 	@Override

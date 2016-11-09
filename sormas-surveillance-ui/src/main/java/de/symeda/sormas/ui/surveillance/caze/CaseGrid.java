@@ -12,6 +12,7 @@ import com.vaadin.ui.Grid;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseStatus;
 import de.symeda.sormas.ui.surveillance.ControllerProvider;
@@ -28,7 +29,8 @@ public class CaseGrid extends Grid {
         BeanItemContainer<CaseDataDto> container = new BeanItemContainer<CaseDataDto>(CaseDataDto.class);
         setContainerDataSource(container);
         setColumns(CaseDataDto.UUID, CaseDataDto.DISEASE, CaseDataDto.CASE_STATUS, CaseDataDto.PERSON, 
-        		CaseDataDto.HEALTH_FACILITY, CaseDataDto.REPORTING_USER, CaseDataDto.REPORT_DATE, 
+        		CaseDataDto.DISTRICT,  CaseDataDto.HEALTH_FACILITY, 
+        		CaseDataDto.REPORTING_USER, CaseDataDto.REPORT_DATE, 
         		CaseDataDto.SURVEILLANCE_OFFICER, CaseDataDto.INVESTIGATED_DATE);
 
         getColumn(CaseDataDto.UUID).setRenderer(new UuidRenderer());
@@ -62,7 +64,7 @@ public class CaseGrid extends Grid {
 
     }
     
-    public void setFilter(Disease disease) {
+    public void setDiseaseFilter(Disease disease) {
 		getContainer().removeContainerFilters(CaseDataDto.DISEASE);
 		if (disease != null) {
 	    	Equal filter = new Equal(CaseDataDto.DISEASE, disease);  
@@ -70,11 +72,26 @@ public class CaseGrid extends Grid {
 		}
 	}
 
-	public void setFilter(CaseStatus statusToFilter) {
-		// TODO use query instead of filter?
+    public void setDistrictFilter(ReferenceDto district) {
+		getContainer().removeContainerFilters(CaseDataDto.DISTRICT);
+		if (district != null) {
+	    	Equal filter = new Equal(CaseDataDto.DISTRICT, district);  
+	        getContainer().addContainerFilter(filter);
+		}
+	}
+    
+    public void setSurveillanceOfficerFilter(ReferenceDto surveillanceOfficer) {
+		getContainer().removeContainerFilters(CaseDataDto.SURVEILLANCE_OFFICER);
+		if (surveillanceOfficer != null) {
+	    	Equal filter = new Equal(CaseDataDto.SURVEILLANCE_OFFICER, surveillanceOfficer);  
+	        getContainer().addContainerFilter(filter);
+		}
+	}
+
+	public void setStatusFilter(CaseStatus status) {
     	removeAllStatusFilter();
-    	if (statusToFilter != null) {
-	    	Equal filter = new Equal(CaseDataDto.CASE_STATUS, statusToFilter);  
+    	if (status != null) {
+	    	Equal filter = new Equal(CaseDataDto.CASE_STATUS, status);  
 	        getContainer().addContainerFilter(filter);
     	}
     }

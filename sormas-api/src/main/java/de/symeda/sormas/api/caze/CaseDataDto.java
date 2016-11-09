@@ -20,33 +20,34 @@ public class CaseDataDto extends DataTransferObject {
 	public static final String CASE_STATUS = "caseStatus";
 	public static final String PERSON = "person";
 	public static final String DISEASE = "disease";
+	public static final String REGION = "region";
+	public static final String DISTRICT = "district";
+	public static final String COMMUNITY = "community";
 	public static final String HEALTH_FACILITY = "healthFacility";
 	public static final String REPORTING_USER = "reportingUser";
 	public static final String REPORT_DATE = "reportDate";
 	public static final String INVESTIGATED_DATE = "investigatedDate";
 	public static final String SURVEILLANCE_OFFICER = "surveillanceOfficer";
-	public static final String SURVEILLANCE_SUPERVISOR = "surveillanceSupervisor";
 	public static final String CASE_OFFICER = "caseOfficer";
-	public static final String CASE_SUPERVISOR = "caseSupervisor";
 	public static final String CONTACT_OFFICER = "contactOfficer";
-	public static final String CONTACT_SUPERVISOR = "contactSupervisor";
 	
 	private ReferenceDto person;
 	private CaseStatus caseStatus;
 	private Disease disease;
-	private ReferenceDto healthFacility;
 	private UserReferenceDto reportingUser;
 	private Date reportDate;
 	private Date investigatedDate;
-	
+
+	private ReferenceDto region;
+	private ReferenceDto district;
+	private ReferenceDto community;
+	private ReferenceDto healthFacility;
+
 	private SymptomsDto symptoms;
 
 	private UserReferenceDto surveillanceOfficer;
-	private UserReferenceDto surveillanceSupervisor;
 	private UserReferenceDto caseOfficer;
-	private UserReferenceDto caseSupervisor;
 	private UserReferenceDto contactOfficer;
-	private UserReferenceDto contactSupervisor;
 	
 	public CaseStatus getCaseStatus() {
 		return caseStatus;
@@ -116,28 +117,12 @@ public class CaseDataDto extends DataTransferObject {
 		this.surveillanceOfficer = surveillanceOfficer;
 	}
 
-	public UserReferenceDto getSurveillanceSupervisor() {
-		return surveillanceSupervisor;
-	}
-
-	public void setSurveillanceSupervisor(UserReferenceDto surveillanceSupervisor) {
-		this.surveillanceSupervisor = surveillanceSupervisor;
-	}
-
 	public UserReferenceDto getCaseOfficer() {
 		return caseOfficer;
 	}
 
 	public void setCaseOfficer(UserReferenceDto caseOfficer) {
 		this.caseOfficer = caseOfficer;
-	}
-
-	public UserReferenceDto getCaseSupervisor() {
-		return caseSupervisor;
-	}
-
-	public void setCaseSupervisor(UserReferenceDto caseSupervisor) {
-		this.caseSupervisor = caseSupervisor;
 	}
 
 	public UserReferenceDto getContactOfficer() {
@@ -148,19 +133,35 @@ public class CaseDataDto extends DataTransferObject {
 		this.contactOfficer = contactOfficer;
 	}
 
-	public UserReferenceDto getContactSupervisor() {
-		return contactSupervisor;
-	}
-
-	public void setContactSupervisor(UserReferenceDto contactSupervisor) {
-		this.contactSupervisor = contactSupervisor;
-	}
-
 	public SymptomsDto getSymptoms() {
 		return symptoms;
 	}
 
 	public void setSymptoms(SymptomsDto symptoms) {
 		this.symptoms = symptoms;
+	}
+
+	public ReferenceDto getRegion() {
+		return region;
+	}
+
+	public void setRegion(ReferenceDto region) {
+		this.region = region;
+	}
+
+	public ReferenceDto getDistrict() {
+		return district;
+	}
+
+	public void setDistrict(ReferenceDto district) {
+		this.district = district;
+	}
+
+	public ReferenceDto getCommunity() {
+		return community;
+	}
+
+	public void setCommunity(ReferenceDto community) {
+		this.community = community;
 	}
 }

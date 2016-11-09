@@ -10,7 +10,9 @@ import de.symeda.sormas.api.ReferenceDto;
 @Remote
 public interface FacilityFacade {
 
-	List<ReferenceDto> getAllAsReference();
+	List<ReferenceDto> getAll();
+	
+    List<ReferenceDto> getAllByCommunity(String communityUuid);
 
 	List<FacilityDto> getAllAfter(Date date);
 }

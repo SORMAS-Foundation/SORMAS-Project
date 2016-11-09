@@ -20,6 +20,9 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonService;
+import de.symeda.sormas.backend.region.CommunityService;
+import de.symeda.sormas.backend.region.DistrictService;
+import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLocal;
 import de.symeda.sormas.backend.user.User;
@@ -42,7 +45,14 @@ public class CaseFacadeEjb implements CaseFacade {
 	private SymptomsFacadeEjbLocal symptomsFacade;
 	@EJB
 	private UserFacadeEjbLocal userFacade;
+	@EJB
+	private RegionService regionService;
+	@EJB
+	private DistrictService districtService;
+	@EJB
+	private CommunityService communityService;
 
+	
 	@Override
 	public List<CaseDataDto> getAllCasesAfter(Date date, String userUuid) {
 		
@@ -157,14 +167,15 @@ public class CaseFacadeEjb implements CaseFacade {
 		caze.setReportingUser(userService.getByReferenceDto(dto.getReportingUser()));
 		caze.setPerson(personService.getByReferenceDto(dto.getPerson()));
 		caze.setCaseStatus(dto.getCaseStatus());
+
+		caze.setRegion(regionService.getByReferenceDto(dto.getRegion()));
+		caze.setDistrict(districtService.getByReferenceDto(dto.getDistrict()));
+		caze.setCommunity(communityService.getByReferenceDto(dto.getCommunity()));
 		caze.setHealthFacility(facilityService.getByReferenceDto(dto.getHealthFacility()));
 
 		caze.setSurveillanceOfficer(userService.getByReferenceDto(dto.getSurveillanceOfficer()));
-		caze.setSurveillanceSupervisor(userService.getByReferenceDto(dto.getSurveillanceSupervisor()));
 		caze.setCaseOfficer(userService.getByReferenceDto(dto.getCaseOfficer()));
-		caze.setCaseSupervisor(userService.getByReferenceDto(dto.getCaseSupervisor()));
 		caze.setContactOfficer(userService.getByReferenceDto(dto.getContactOfficer()));
-		caze.setContactSupervisor(userService.getByReferenceDto(dto.getContactSupervisor()));
 
 		// TODO: split into multiple view dependant dtos?
 		caze.setSymptoms(symptomsFacade.fromDto(dto.getSymptoms()));
@@ -172,31 +183,32 @@ public class CaseFacadeEjb implements CaseFacade {
 		return caze;
 	}
 	
-	public CaseDataDto toCaseDataDto(Case caze) {
-		if (caze == null) {
+	public CaseDataDto toCaseDataDto(Case entity) {
+		if (entity == null) {
 			return null;
 		}
 		CaseDataDto dto = new CaseDataDto();
-		dto.setCreationDate(caze.getCreationDate());
-		dto.setChangeDate(caze.getChangeDate());
-		dto.setUuid(caze.getUuid());
-		dto.setDisease(caze.getDisease());
-		dto.setCaseStatus(caze.getCaseStatus());
-		dto.setPerson(DtoHelper.toReferenceDto(caze.getPerson()));
-		dto.setHealthFacility(DtoHelper.toReferenceDto(caze.getHealthFacility()));
+		dto.setCreationDate(entity.getCreationDate());
+		dto.setChangeDate(entity.getChangeDate());
+		dto.setUuid(entity.getUuid());
+		dto.setDisease(entity.getDisease());
+		dto.setCaseStatus(entity.getCaseStatus());
+		dto.setPerson(DtoHelper.toReferenceDto(entity.getPerson()));
 		
-		dto.setReportingUser(userFacade.toReferenceDto(caze.getReportingUser()));
-		dto.setReportDate(caze.getReportDate());
-		dto.setInvestigatedDate(caze.getInvestigatedDate());
+		dto.setRegion(DtoHelper.toReferenceDto(entity.getRegion()));
+		dto.setDistrict(DtoHelper.toReferenceDto(entity.getDistrict()));
+		dto.setCommunity(DtoHelper.toReferenceDto(entity.getCommunity()));
+		dto.setHealthFacility(DtoHelper.toReferenceDto(entity.getHealthFacility()));
+		
+		dto.setReportingUser(userFacade.toReferenceDto(entity.getReportingUser()));
+		dto.setReportDate(entity.getReportDate());
+		dto.setInvestigatedDate(entity.getInvestigatedDate());
 
-		dto.setSurveillanceOfficer(userFacade.toReferenceDto(caze.getSurveillanceOfficer()));
-		dto.setSurveillanceSupervisor(userFacade.toReferenceDto(caze.getSurveillanceSupervisor()));
-		dto.setCaseOfficer(userFacade.toReferenceDto(caze.getCaseOfficer()));
-		dto.setCaseSupervisor(userFacade.toReferenceDto(caze.getCaseSupervisor()));
-		dto.setContactOfficer(userFacade.toReferenceDto(caze.getContactOfficer()));
-		dto.setContactSupervisor(userFacade.toReferenceDto(caze.getContactSupervisor()));
+		dto.setSurveillanceOfficer(userFacade.toReferenceDto(entity.getSurveillanceOfficer()));
+		dto.setCaseOfficer(userFacade.toReferenceDto(entity.getCaseOfficer()));
+		dto.setContactOfficer(userFacade.toReferenceDto(entity.getContactOfficer()));
 		
-		dto.setSymptoms(SymptomsFacadeEjb.toDto(caze.getSymptoms()));
+		dto.setSymptoms(SymptomsFacadeEjb.toDto(entity.getSymptoms()));
 		
 		return dto;
 	}

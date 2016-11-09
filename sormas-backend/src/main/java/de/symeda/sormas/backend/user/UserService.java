@@ -11,6 +11,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.ParameterExpression;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.user.UserRole;
@@ -54,21 +55,30 @@ public class UserService extends AbstractAdoService<User> {
 		return entity;
 	}
 	
-	public List<User> getAllByUserRoles(UserRole... userRole) {
+	public List<User> getAllByRegionAndUserRoles(Region region, UserRole... userRoles) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<User> cq = cb.createQuery(getElementClass());
 		Root<User> from = cq.from(getElementClass());
-		Join<User, UserRole> userRoles = from.join(User.USER_ROLES, JoinType.LEFT);
-		cq.where(userRoles.in(Arrays.asList(userRole)));
-		cq.orderBy(cb.asc(from.get(AbstractDomainObject.ID)));
-		return em.createQuery(cq).getResultList();
-	}
-	
-	public List<User> getAllByRegion(Region region) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<User> cq = cb.createQuery(getElementClass());
-		Root<User> from = cq.from(getElementClass());
-		cq.where(cb.equal(from.get(User.REGION), region));
+		
+		Predicate filter = null;
+		if (region != null) {
+			filter = cb.equal(from.get(User.REGION), region);
+		}
+		
+		if (userRoles.length > 0) {
+			Join<User, UserRole> joinRoles = from.join(User.USER_ROLES, JoinType.LEFT);
+			Predicate rolesFilter = joinRoles.in(Arrays.asList(userRoles));
+			if (filter != null) {
+				filter = cb.and(filter, rolesFilter);
+			} else {
+				filter = rolesFilter;
+			}
+		}
+		
+		if (filter != null) {
+			cq.where(filter);
+		}
+		
 		cq.orderBy(cb.asc(from.get(AbstractDomainObject.ID)));
 		return em.createQuery(cq).getResultList();
 	}

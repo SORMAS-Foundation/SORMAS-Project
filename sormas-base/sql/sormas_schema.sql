@@ -768,3 +768,22 @@ ALTER TABLE symptoms ADD COLUMN swollenlymphnodes character varying(255);
 ALTER TABLE symptoms ADD COLUMN symptomatic boolean;
 
 INSERT INTO schema_version (version_number, comment) VALUES (6, 'EBOLA -> EVD; Symptoms');
+
+-- 2016-11-08; #90 case + user: replaced supervisor references with regional references
+
+ALTER TABLE public.cases DROP COLUMN casesupervisor_id;
+ALTER TABLE public.cases DROP COLUMN contactsupervisor_id;
+ALTER TABLE public.cases DROP COLUMN surveillancesupervisor_id;
+ALTER TABLE public.cases ADD COLUMN region_id bigint;
+ALTER TABLE public.cases ADD COLUMN district_id bigint;
+ALTER TABLE public.cases ADD COLUMN community_id bigint;
+ALTER TABLE public.cases ADD CONSTRAINT fk_cases_region_id FOREIGN KEY (region_id) REFERENCES public.region (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE public.cases ADD CONSTRAINT fk_cases_district_id FOREIGN KEY (district_id) REFERENCES public.district (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE public.cases ADD CONSTRAINT fk_cases_community_id FOREIGN KEY (community_id) REFERENCES public.community (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+UPDATE public.cases SET region_id=(SELECT id FROM public.region LIMIT 1);
+
+ALTER TABLE public.users ADD COLUMN district_id bigint;
+ALTER TABLE public.users ADD CONSTRAINT fk_users_district_id FOREIGN KEY (district_id) REFERENCES public.district (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+UPDATE public.users SET region_id=(SELECT id FROM public.region LIMIT 1);
+
+INSERT INTO schema_version (version_number, comment) VALUES (7, 'Case + User: replaced supervisor references with regional references');

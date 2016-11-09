@@ -21,7 +21,7 @@ public class CommunityFacadeEjb implements CommunityFacade {
 	private DistrictService districtService;
 
 	@Override
-	public List<ReferenceDto> getAllAsReference(String districtUuid) {
+	public List<ReferenceDto> getAllByDistrict(String districtUuid) {
 		
 		District district = districtService.getByUuid(districtUuid);
 		

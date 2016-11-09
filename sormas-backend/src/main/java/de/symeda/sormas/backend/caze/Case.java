@@ -19,6 +19,9 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.region.Community;
+import de.symeda.sormas.backend.region.District;
+import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
 
@@ -35,17 +38,18 @@ public class Case extends AbstractDomainObject {
 	public static final String REPORT_DATE = "reportDate";
 	public static final String INVESTIGATED_DATE = "investigatedDate";
 	public static final String SURVEILLANCE_OFFICER = "surveillanceOfficer";
-	public static final String SURVEILLANCE_SUPERVISOR = "surveillanceSupervisor";
 	public static final String CASE_OFFICER = "caseOfficer";
-	public static final String CASE_SUPERVISOR = "caseSupervisor";
 	public static final String CONTACT_OFFICER = "contactOfficer";
-	public static final String CONTACT_SUPERVISOR = "contactSupervisor";
 	public static final String SYMPTOMS = "symptoms";
 	
 	private Person person;
 	private String description;
 	private Disease disease;
 	private CaseStatus caseStatus;
+	
+	private Region region;
+	private District district;
+	private Community community;
 	private Facility healthFacility;
 	
 	private User reportingUser;
@@ -61,11 +65,8 @@ public class Case extends AbstractDomainObject {
 	private Location illLocation;
 	
 	private User surveillanceOfficer;
-	private User surveillanceSupervisor;
 	private User caseOfficer;
-	private User caseSupervisor;
 	private User contactOfficer;
-	private User contactSupervisor;
 	
 	private Symptoms symptoms;
 	
@@ -200,14 +201,6 @@ public class Case extends AbstractDomainObject {
 	public void setSurveillanceOfficer(User surveillanceOfficer) {
 		this.surveillanceOfficer = surveillanceOfficer;
 	}
-	
-	@ManyToOne(cascade = {})
-	public User getSurveillanceSupervisor() {
-		return surveillanceSupervisor;
-	}
-	public void setSurveillanceSupervisor(User surveillanceSupervisor) {
-		this.surveillanceSupervisor = surveillanceSupervisor;
-	}
 
 	@ManyToOne(cascade = {})
 	public User getCaseOfficer() {
@@ -218,14 +211,6 @@ public class Case extends AbstractDomainObject {
 	}
 
 	@ManyToOne(cascade = {})
-	public User getCaseSupervisor() {
-		return caseSupervisor;
-	}
-	public void setCaseSupervisor(User caseSupervisor) {
-		this.caseSupervisor = caseSupervisor;
-	}
-
-	@ManyToOne(cascade = {})
 	public User getContactOfficer() {
 		return contactOfficer;
 	}
@@ -233,13 +218,6 @@ public class Case extends AbstractDomainObject {
 		this.contactOfficer = contactOfficer;
 	}
 
-	@ManyToOne(cascade = {})
-	public User getContactSupervisor() {
-		return contactSupervisor;
-	}
-	public void setContactSupervisor(User contactSupervisor) {
-		this.contactSupervisor = contactSupervisor;
-	}
 	
 	@OneToOne(cascade = CascadeType.ALL)
 	public Symptoms getSymptoms() {
@@ -250,6 +228,30 @@ public class Case extends AbstractDomainObject {
 	}
 	public void setSymptoms(Symptoms symptoms) {
 		this.symptoms = symptoms;
+	}
+	
+	@ManyToOne(cascade = {})
+	public Region getRegion() {
+		return region;
+	}
+	public void setRegion(Region region) {
+		this.region = region;
+	}
+
+	@ManyToOne(cascade = {})
+	public District getDistrict() {
+		return district;
+	}
+	public void setDistrict(District district) {
+		this.district = district;
+	}
+
+	@ManyToOne(cascade = {})
+	public Community getCommunity() {
+		return community;
+	}
+	public void setCommunity(Community community) {
+		this.community = community;
 	}
 	
 	@Override

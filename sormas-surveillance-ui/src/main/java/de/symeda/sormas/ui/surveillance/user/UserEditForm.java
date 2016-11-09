@@ -12,9 +12,11 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserHelper;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.surveillance.ControllerProvider;
 import de.symeda.sormas.ui.surveillance.location.LocationForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
@@ -40,6 +42,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 			LayoutUtil.divCss(CssStyles.VSPACE2,
 					LayoutUtil.fluidRowLocs(UserDto.ACTIVE),
 					LayoutUtil.fluidRowLocs(UserDto.USER_NAME, UserDto.USER_ROLES),
+					LayoutUtil.fluidRowLocs(UserDto.REGION, UserDto.DISTRICT),
 					LayoutUtil.fluidRowLocs("", UserDto.ASSOCIATED_OFFICER),
 					LayoutUtil.fluidRowLocs(NEW_PASSWORD)
 					);
@@ -72,9 +75,21 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
     	newPasswordButton.addClickListener(e -> newPasswordClicked());
     	getContent().addComponent(newPasswordButton, NEW_PASSWORD);
 
+    	ComboBox region = addField(UserDto.REGION, ComboBox.class);
+    	ComboBox district = addField(UserDto.DISTRICT, ComboBox.class);
+    	region.addValueChangeListener(e -> {
+    		district.removeAllItems();
+    		ReferenceDto regionDto = (ReferenceDto)e.getProperty().getValue();
+    		if (regionDto != null) {
+    			district.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(regionDto.getUuid()));
+    		}
+    	});
+		region.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
+
     	// for informant
     	ComboBox associatedOfficer = addField(UserDto.ASSOCIATED_OFFICER, ComboBox.class);
-    	associatedOfficer.addItems(FacadeProvider.getUserFacade().getAllAsReference(UserRole.SURVEILLANCE_OFFICER));
+    	associatedOfficer.addItems(FacadeProvider.getUserFacade().getAssignableUsers(
+    			LoginHelper.getCurrentUserAsReference(), UserRole.SURVEILLANCE_OFFICER));
     	updateAssociatedOfficerField();
     	
     	setRequired(true, UserDto.FIRST_NAME, UserDto.LAST_NAME, UserDto.USER_NAME, UserDto.USER_ROLES);

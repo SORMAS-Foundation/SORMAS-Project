@@ -8,9 +8,7 @@ import javax.ejb.Remote;
 @Remote
 public interface UserFacade {
 
-    List<UserReferenceDto> getAllAsReference(UserRole userRole);
-    
-    List<UserDto> getAll(UserRole... role);
+    List<UserDto> getAll(UserRole... roles);
     
     UserDto getByUuid(String uuid);
     
@@ -28,5 +26,5 @@ public interface UserFacade {
 
 	List<UserReferenceDto> getAllAfterAsReference(Date date);
 
-	List<UserReferenceDto> getAssignableUsers(UserReferenceDto assigningUser);
+	List<UserReferenceDto> getAssignableUsers(UserReferenceDto assigningUser, UserRole... assignableRoles);
 }

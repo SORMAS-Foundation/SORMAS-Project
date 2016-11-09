@@ -21,7 +21,7 @@ public class DistrictFacadeEjb implements DistrictFacade {
 	private RegionService regionService;
 
 	@Override
-	public List<ReferenceDto> getAllAsReference(String regionUuid) {
+	public List<ReferenceDto> getAllByRegion(String regionUuid) {
 		
 		Region region = regionService.getByUuid(regionUuid);
 		

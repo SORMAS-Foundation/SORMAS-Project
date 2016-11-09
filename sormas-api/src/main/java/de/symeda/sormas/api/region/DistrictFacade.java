@@ -10,7 +10,7 @@ import de.symeda.sormas.api.ReferenceDto;
 @Remote
 public interface DistrictFacade {
 
-    List<ReferenceDto> getAllAsReference(String regionUuid);
+    List<ReferenceDto> getAllByRegion(String regionUuid);
 
 	List<DistrictDto> getAllAfter(Date date);
 }

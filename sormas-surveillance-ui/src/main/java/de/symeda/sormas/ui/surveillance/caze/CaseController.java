@@ -109,10 +109,9 @@ public class CaseController {
     	UserDto user = LoginHelper.getCurrentUser();
     	UserReferenceDto userReference = LoginHelper.getCurrentUserAsReference();
     	caze.setReportingUser(userReference);
-    	if (user.getUserRoles().contains(UserRole.SURVEILLANCE_SUPERVISOR)) {
-    		caze.setSurveillanceSupervisor(userReference);
-    	}
-
+    	caze.setRegion(user.getRegion());
+    	caze.setDistrict(user.getDistrict());
+    	
     	return caze;
     }
     
@@ -121,7 +120,7 @@ public class CaseController {
     	CaseCreateForm caseCreateForm = new CaseCreateForm();
         caseCreateForm.setValue(createNewCase());
         final CommitDiscardWrapperComponent<CaseCreateForm> editView = new CommitDiscardWrapperComponent<CaseCreateForm>(caseCreateForm, caseCreateForm.getFieldGroup());
-        editView.setWidth(400, Unit.PIXELS);
+        editView.setWidth(520, Unit.PIXELS);
         
         editView.addCommitListener(new CommitListener() {
         	@Override

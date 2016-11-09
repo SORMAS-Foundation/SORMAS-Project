@@ -14,6 +14,13 @@ public class Location extends AbstractDomainObject {
 	
 	private static final long serialVersionUID = 392776645668778670L;
 
+	public static final String ADDRESS = "address";
+	public static final String DETAILS = "details";
+	public static final String CITY = "city";
+	public static final String REGION = "region";
+	public static final String DISTRICT = "district";
+	public static final String COMMUNITY = "community";
+
 	private String address;
 	private String details;
 	private String city;
