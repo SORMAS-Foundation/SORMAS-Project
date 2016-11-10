@@ -103,8 +103,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
     	setReadOnly(true, CaseDataDto.UUID, 
     			CaseDataDto.CASE_STATUS, CaseDataDto.DISEASE, 
-    			CaseDataDto.REPORTING_USER, CaseDataDto.REPORT_DATE, 
-    			CaseDataDto.SURVEILLANCE_OFFICER, CaseDataDto.CONTACT_OFFICER);
+    			CaseDataDto.REPORTING_USER, CaseDataDto.REPORT_DATE);
 	}
     
     public void setStatusChangeButtons(CaseStatus currentStatus, Iterable<CaseStatus> statuses, Consumer<CaseStatus> statusChangeConsumer) {
