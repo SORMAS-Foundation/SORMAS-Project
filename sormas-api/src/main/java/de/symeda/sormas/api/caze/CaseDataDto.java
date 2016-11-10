@@ -6,6 +6,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.PreciseDateAdapter;
@@ -30,7 +31,7 @@ public class CaseDataDto extends CaseReferenceDto {
 	public static final String CASE_OFFICER = "caseOfficer";
 	public static final String CONTACT_OFFICER = "contactOfficer";
 	
-	private ReferenceDto person;
+	private PersonReferenceDto person;
 	private CaseStatus caseStatus;
 	private Disease disease;
 	private UserReferenceDto reportingUser;
@@ -56,11 +57,11 @@ public class CaseDataDto extends CaseReferenceDto {
 		this.caseStatus = caseStatus;
 	}
 	
-	public ReferenceDto getPerson() {
+	public PersonReferenceDto getPerson() {
 		return person;
 	}
 	
-	public void setPerson(ReferenceDto personDto) {
+	public void setPerson(PersonReferenceDto personDto) {
 		this.person = personDto;
 	}
 

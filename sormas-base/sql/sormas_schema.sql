@@ -769,7 +769,7 @@ ALTER TABLE symptoms ADD COLUMN symptomatic boolean;
 
 INSERT INTO schema_version (version_number, comment) VALUES (6, 'EBOLA -> EVD; Symptoms');
 
--- 2016-11-08; #90 case + user: replaced supervisor references with regional references
+-- 2016-11-08; case + user: replaced supervisor references with regional references #90
 
 ALTER TABLE public.cases DROP COLUMN casesupervisor_id;
 ALTER TABLE public.cases DROP COLUMN contactsupervisor_id;
@@ -787,3 +787,31 @@ ALTER TABLE public.users ADD CONSTRAINT fk_users_district_id FOREIGN KEY (distri
 UPDATE public.users SET region_id=(SELECT id FROM public.region LIMIT 1);
 
 INSERT INTO schema_version (version_number, comment) VALUES (7, 'Case + User: replaced supervisor references with regional references');
+
+-- 2016-11-10; Contact #85
+
+CREATE TABLE contact (
+id bigint not null, 
+changedate timestamp not null, 
+contactproximity varchar(255), 
+contactstatus varchar(255), 
+creationdate timestamp not null, 
+lastcontactdate timestamp, 
+reportdatetime timestamp not null, 
+uuid varchar(36) not null unique, 
+caze_id bigint not null,
+person_id bigint not null, 
+reportinguser_id bigint not null, 
+primary key (id));
+
+ALTER TABLE contact ADD CONSTRAINT fk_contact_person_id FOREIGN KEY (person_id) REFERENCES person (id);
+ALTER TABLE contact ADD CONSTRAINT fk_contact_caze_id FOREIGN KEY (caze_id) REFERENCES cases (id);
+ALTER TABLE contact ADD CONSTRAINT fk_contact_reportinguser_id FOREIGN KEY (reportinguser_id) REFERENCES users (id);
+
+ALTER TABLE public.cases ALTER COLUMN reportdate SET NOT NULL;
+ALTER TABLE public.cases ALTER COLUMN reportinguser_id SET NOT NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (8, 'Contact; Cases report not null');
+
+
+

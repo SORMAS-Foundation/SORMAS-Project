@@ -104,6 +104,7 @@ public class Case extends AbstractDomainObject {
 	}
 	
 	@ManyToOne(cascade = {})
+	@JoinColumn(nullable=false)
 	public User getReportingUser() {
 		return reportingUser;
 	}
@@ -112,6 +113,7 @@ public class Case extends AbstractDomainObject {
 	}
 	
 	@Temporal(TemporalType.TIMESTAMP)
+	@Column(nullable=false)
 	public Date getReportDate() {
 		return reportDate;
 	}

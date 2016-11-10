@@ -90,7 +90,7 @@ public class UserFacadeEjb implements UserFacade {
 		return toDto(user);
 	}
 	
-	public UserDto toDto(User entity) {
+	public static UserDto toDto(User entity) {
 		UserDto dto = new UserDto();
 		DtoHelper.fillReferenceDto(dto, entity);
 		
@@ -111,7 +111,7 @@ public class UserFacadeEjb implements UserFacade {
 		return dto;
 	}
 	
-	public UserReferenceDto toReferenceDto(User entity) {
+	public static UserReferenceDto toReferenceDto(User entity) {
 		if (entity == null) {
 			return null;
 		}

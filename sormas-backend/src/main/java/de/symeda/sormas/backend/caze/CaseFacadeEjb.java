@@ -16,10 +16,10 @@ import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.CaseHelper;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.CaseStatus;
-import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.region.CommunityService;
 import de.symeda.sormas.backend.region.DistrictService;
@@ -27,7 +27,7 @@ import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLocal;
 import de.symeda.sormas.backend.user.User;
-import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
+import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 
@@ -44,8 +44,6 @@ public class CaseFacadeEjb implements CaseFacade {
 	private UserService userService;
 	@EJB
 	private SymptomsFacadeEjbLocal symptomsFacade;
-	@EJB
-	private UserFacadeEjbLocal userFacade;
 	@EJB
 	private RegionService regionService;
 	@EJB
@@ -184,7 +182,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		return caze;
 	}
 	
-	public CaseReferenceDto toReferenceDto(Case entity) {
+	public static CaseReferenceDto toReferenceDto(Case entity) {
 		if (entity == null) {
 			return null;
 		}
@@ -193,7 +191,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		return dto;
 	}	
 	
-	public CaseDataDto toCaseDataDto(Case entity) {
+	public static CaseDataDto toCaseDataDto(Case entity) {
 		if (entity == null) {
 			return null;
 		}
@@ -202,20 +200,20 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		dto.setDisease(entity.getDisease());
 		dto.setCaseStatus(entity.getCaseStatus());
-		dto.setPerson(DtoHelper.toReferenceDto(entity.getPerson()));
+		dto.setPerson(PersonFacadeEjb.toReferenceDto(entity.getPerson()));
 		
 		dto.setRegion(DtoHelper.toReferenceDto(entity.getRegion()));
 		dto.setDistrict(DtoHelper.toReferenceDto(entity.getDistrict()));
 		dto.setCommunity(DtoHelper.toReferenceDto(entity.getCommunity()));
 		dto.setHealthFacility(DtoHelper.toReferenceDto(entity.getHealthFacility()));
 		
-		dto.setReportingUser(userFacade.toReferenceDto(entity.getReportingUser()));
+		dto.setReportingUser(UserFacadeEjb.toReferenceDto(entity.getReportingUser()));
 		dto.setReportDate(entity.getReportDate());
 		dto.setInvestigatedDate(entity.getInvestigatedDate());
 
-		dto.setSurveillanceOfficer(userFacade.toReferenceDto(entity.getSurveillanceOfficer()));
-		dto.setCaseOfficer(userFacade.toReferenceDto(entity.getCaseOfficer()));
-		dto.setContactOfficer(userFacade.toReferenceDto(entity.getContactOfficer()));
+		dto.setSurveillanceOfficer(UserFacadeEjb.toReferenceDto(entity.getSurveillanceOfficer()));
+		dto.setCaseOfficer(UserFacadeEjb.toReferenceDto(entity.getCaseOfficer()));
+		dto.setContactOfficer(UserFacadeEjb.toReferenceDto(entity.getContactOfficer()));
 		
 		dto.setSymptoms(SymptomsFacadeEjb.toDto(entity.getSymptoms()));
 		

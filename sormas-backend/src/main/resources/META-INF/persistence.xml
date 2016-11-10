@@ -7,17 +7,18 @@
 
 		<!-- <mapping-file>META-INF/listener.xml</mapping-file> -->
 
-		<class>de.symeda.sormas.backend.common.AbstractDomainObject</class>
 		<class>de.symeda.sormas.backend.caze.Case</class>
-		<class>de.symeda.sormas.backend.person.Person</class>
+		<class>de.symeda.sormas.backend.common.AbstractDomainObject</class>
+		<class>de.symeda.sormas.backend.contact.Contact</class>
+		<class>de.symeda.sormas.backend.facility.Facility</class>
 		<class>de.symeda.sormas.backend.location.Location</class>
+		<class>de.symeda.sormas.backend.person.Person</class>
+		<class>de.symeda.sormas.backend.region.Community</class>
+		<class>de.symeda.sormas.backend.region.District</class>
+		<class>de.symeda.sormas.backend.region.Region</class>
 		<class>de.symeda.sormas.backend.symptoms.Symptoms</class>
 		<class>de.symeda.sormas.backend.task.Task</class>
 		<class>de.symeda.sormas.backend.user.User</class>
-		<class>de.symeda.sormas.backend.region.Region</class>
-		<class>de.symeda.sormas.backend.region.District</class>
-		<class>de.symeda.sormas.backend.region.Community</class>
-		<class>de.symeda.sormas.backend.facility.Facility</class>
 
 
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
@@ -25,14 +26,17 @@
 		<shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
 		<validation-mode>CALLBACK</validation-mode>
 		<properties>
-			<property name="eclipselink.ddl-generation" value="none" />
+
+			<property name="eclipselink.ddl-generation" value="none" /> 
+
 			<!-- 
 			<property name="eclipselink.ddl-generation" value="create-or-extend-tables" />
 			<property name="eclipselink.ddl-generation.output-mode" value="sql-script" />
-		    <property name="eclipselink.application-location" value="C:/srv" />
+		    <property name="eclipselink.application-location" value="D:/workspaces/SORMAS" />
 		    <property name="eclipselink.create-ddl-jdbc-file-name" value="create.sql"/>			
 			<property name="eclipselink.target-database" value="PostgreSQL" /> 
-			 -->
+			-->
+
 		</properties>
 	</persistence-unit>
 </persistence>
