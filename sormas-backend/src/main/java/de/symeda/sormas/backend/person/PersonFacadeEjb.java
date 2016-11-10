@@ -12,11 +12,10 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.CasePersonDto;
-import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.facility.FacilityService;
@@ -35,17 +34,17 @@ public class PersonFacadeEjb implements PersonFacade {
 	private LocationFacadeEjbLocal locationFacade;
 	
 	@Override
-	public List<PersonDto> getAllPersons() {
+	public List<PersonReferenceDto> getAllPersons() {
 
 		return personService.getAll().stream()
-			.map(c -> toDto(c))
+			.map(c -> toReferenceDto(c))
 			.collect(Collectors.toList());
 	}
 	
 	@Override
-	public List<PersonDto> getAllPersonsAfter(Date date) {
+	public List<PersonReferenceDto> getAllPersonsAfter(Date date) {
 		return personService.getAllAfter(date).stream()
-			.map(c -> toDto(c))
+			.map(c -> toReferenceDto(c))
 			.collect(Collectors.toList());
 	}
 	
@@ -58,18 +57,18 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 
 	@Override
-	public List<ReferenceDto> getAllNoCaseAsReference() {
+	public List<PersonReferenceDto> getAllNoCasePersons() {
 
 		return personService.getAllNoCase().stream()
-				.map(c -> DtoHelper.toReferenceDto(c))
+				.map(c -> toReferenceDto(c))
 				.collect(Collectors.toList());
 	}
 
 	@Override
-	public PersonDto getByUuid(String uuid) {
+	public PersonReferenceDto getByUuid(String uuid) {
 		return Optional.of(uuid)
 				.map(u -> personService.getByUuid(u))
-				.map(c -> toDto(c))
+				.map(c -> toReferenceDto(c))
 				.orElse(null);
 	}
 	
@@ -82,11 +81,11 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 	
 	@Override
-	public PersonDto savePerson(PersonDto dto) {
+	public PersonReferenceDto savePerson(PersonReferenceDto dto) {
 		Person person = toPerson(dto);
 		personService.ensurePersisted(person);
 		
-		return toDto(person);
+		return toReferenceDto(person);
 		
 	}
 	
@@ -99,7 +98,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		
 	}
 	
-	public Person toPerson(@NotNull PersonDto dto) {
+	public Person toPerson(@NotNull PersonReferenceDto dto) {
 		Person bo = personService.getByUuid(dto.getUuid());
 		if(bo==null) {
 			bo = personService.createPerson();
@@ -148,61 +147,58 @@ public class PersonFacadeEjb implements PersonFacade {
 		return bo;
 	}
 	
-	public static PersonDto toDto(Person person) {
-		PersonDto dto = new PersonDto();
-		dto.setCreationDate(person.getCreationDate());
-		dto.setChangeDate(person.getChangeDate());
-		dto.setUuid(person.getUuid());
-		dto.setFirstName(person.getFirstName());
-		dto.setLastName(person.getLastName());
-		if (person.getCaze() != null) {
-			dto.setCaseUuid(person.getCaze().getUuid());
+	public static PersonReferenceDto toReferenceDto(Person entity) {
+		PersonReferenceDto dto = new PersonReferenceDto();
+		DtoHelper.fillReferenceDto(dto, entity);
+
+		dto.setFirstName(entity.getFirstName());
+		dto.setLastName(entity.getLastName());
+		if (entity.getCaze() != null) {
+			dto.setCaseUuid(entity.getCaze().getUuid());
 		}
 		return dto;
 	}
 	
-	public static CasePersonDto toCasePersonDto(Person person) {
+	public static CasePersonDto toCasePersonDto(Person entity) {
 		CasePersonDto dto = new CasePersonDto();
-		dto.setCreationDate(person.getCreationDate());
-		dto.setChangeDate(person.getChangeDate());
-		dto.setUuid(person.getUuid());
+		DtoHelper.fillReferenceDto(dto, entity);
 		
-		dto.setFirstName(person.getFirstName());
-		dto.setLastName(person.getLastName());
-		dto.setSex(person.getSex());
-		if (person.getCaze() != null) {
-			dto.setCaseUuid(person.getCaze().getUuid());
+		dto.setFirstName(entity.getFirstName());
+		dto.setLastName(entity.getLastName());
+		dto.setSex(entity.getSex());
+		if (entity.getCaze() != null) {
+			dto.setCaseUuid(entity.getCaze().getUuid());
 		}
 		
-		dto.setPresentCondition(person.getPresentCondition());
-		dto.setBirthdateDD(person.getBirthdateDD());
-		dto.setBirthdateMM(person.getBirthdateMM());
-		dto.setBirthdateYYYY(person.getBirthdateYYYY());
-		dto.setDeathDate(person.getDeathDate());
+		dto.setPresentCondition(entity.getPresentCondition());
+		dto.setBirthdateDD(entity.getBirthdateDD());
+		dto.setBirthdateMM(entity.getBirthdateMM());
+		dto.setBirthdateYYYY(entity.getBirthdateYYYY());
+		dto.setDeathDate(entity.getDeathDate());
 		
-		if (person.getBirthdateYYYY() != null) {
+		if (entity.getBirthdateYYYY() != null) {
 			Calendar birthdate = new GregorianCalendar();
-			birthdate.set(person.getBirthdateYYYY(), person.getBirthdateMM()!=null?person.getBirthdateMM()-1:0, person.getBirthdateDD()!=null?person.getBirthdateDD():1);
+			birthdate.set(entity.getBirthdateYYYY(), entity.getBirthdateMM()!=null?entity.getBirthdateMM()-1:0, entity.getBirthdateDD()!=null?entity.getBirthdateDD():1);
 			
 			Pair<Integer, ApproximateAgeType> pair = DateHelper.getApproximateAge(
 					birthdate.getTime(),
-					person.getDeathDate()
+					entity.getDeathDate()
 					);
 			dto.setApproximateAge(pair.getElement0());
 			dto.setApproximateAgeType(pair.getElement1());
 		}
 		else {
-			dto.setApproximateAge(person.getApproximateAge());
-			dto.setApproximateAgeType(person.getApproximateAgeType());
+			dto.setApproximateAge(entity.getApproximateAge());
+			dto.setApproximateAgeType(entity.getApproximateAgeType());
 		}
 		
-		dto.setPhone(person.getPhone());
-		dto.setPhoneOwner(person.getPhoneOwner());
-		dto.setAddress(LocationFacadeEjb.toLocationDto(person.getAddress()));
+		dto.setPhone(entity.getPhone());
+		dto.setPhoneOwner(entity.getPhoneOwner());
+		dto.setAddress(LocationFacadeEjb.toLocationDto(entity.getAddress()));
 		
-		dto.setOccupationType(person.getOccupationType());
-		dto.setOccupationDetails(person.getOccupationDetails());
-		dto.setOccupationFacility(DtoHelper.toReferenceDto(person.getOccupationFacility()));
+		dto.setOccupationType(entity.getOccupationType());
+		dto.setOccupationDetails(entity.getOccupationDetails());
+		dto.setOccupationFacility(DtoHelper.toReferenceDto(entity.getOccupationFacility()));
 		return dto;
 	}
 

@@ -1,9 +1,6 @@
 package de.symeda.sormas.app.backend.person;
 
-import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.person.CasePersonDto;
-import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.facility.Facility;

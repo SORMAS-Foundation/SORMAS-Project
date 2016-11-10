@@ -11,11 +11,12 @@ import javax.ejb.EJBException;
 import javax.ejb.Stateless;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.CaseHelper;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.CaseStatus;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.person.Person;
@@ -68,12 +69,12 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 	
 	@Override
-	public List<ReferenceDto> getAllCasesAfterAsReference(Date date, String userUuid) {
+	public List<CaseReferenceDto> getAllCasesAfterAsReference(Date date, String userUuid) {
 		
 		User user = userService.getByUuid(userUuid);
 		
 		return caseService.getAllAfter(date, user).stream()
-			.map(c -> DtoHelper.toReferenceDto(c))
+			.map(c -> toReferenceDto(c))
 			.collect(Collectors.toList());
 	}
 
@@ -183,14 +184,22 @@ public class CaseFacadeEjb implements CaseFacade {
 		return caze;
 	}
 	
+	public CaseReferenceDto toReferenceDto(Case entity) {
+		if (entity == null) {
+			return null;
+		}
+		CaseReferenceDto dto = new CaseReferenceDto();
+		DtoHelper.fillReferenceDto(dto, entity);
+		return dto;
+	}	
+	
 	public CaseDataDto toCaseDataDto(Case entity) {
 		if (entity == null) {
 			return null;
 		}
 		CaseDataDto dto = new CaseDataDto();
-		dto.setCreationDate(entity.getCreationDate());
-		dto.setChangeDate(entity.getChangeDate());
-		dto.setUuid(entity.getUuid());
+		DtoHelper.fillReferenceDto(dto, entity);
+
 		dto.setDisease(entity.getDisease());
 		dto.setCaseStatus(entity.getCaseStatus());
 		dto.setPerson(DtoHelper.toReferenceDto(entity.getPerson()));

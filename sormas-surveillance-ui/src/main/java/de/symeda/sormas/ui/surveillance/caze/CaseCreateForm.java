@@ -103,7 +103,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
     private void updatePersonsSelect() {
     	Object value = persons.getValue();
     	persons.removeAllItems();
-    	persons.addItems(FacadeProvider.getPersonFacade().getAllNoCaseAsReference());
+    	persons.addItems(FacadeProvider.getPersonFacade().getAllNoCasePersons());
     	persons.setValue(value);
     }
     

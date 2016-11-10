@@ -5,24 +5,22 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
-import de.symeda.sormas.api.ReferenceDto;
-
 @Remote
 public interface PersonFacade {
 
-    List<PersonDto> getAllPersons();
+    List<PersonReferenceDto> getAllPersons();
 
-	List<PersonDto> getAllPersonsAfter(Date date);
+	List<PersonReferenceDto> getAllPersonsAfter(Date date);
     
-    List<ReferenceDto> getAllNoCaseAsReference();
+    List<PersonReferenceDto> getAllNoCasePersons();
 
-    PersonDto getByUuid(String uuid);
+    PersonReferenceDto getByUuid(String uuid);
     
     CasePersonDto getCasePersonByUuid(String uuid);
     
 	List<CasePersonDto> getAllCasePersonsAfter(Date date);
 
-    PersonDto savePerson(PersonDto dto);
+    PersonReferenceDto savePerson(PersonReferenceDto dto);
 
     CasePersonDto savePerson(CasePersonDto dto);
 

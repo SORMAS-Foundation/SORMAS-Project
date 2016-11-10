@@ -4,14 +4,13 @@ import java.util.Date;
 
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import de.symeda.sormas.api.DataTransferObject;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.PreciseDateAdapter;
 
-public class CaseDataDto extends DataTransferObject {
+public class CaseDataDto extends CaseReferenceDto {
 
 	private static final long serialVersionUID = 5007131477733638086L;
 	

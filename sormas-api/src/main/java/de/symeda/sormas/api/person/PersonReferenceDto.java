@@ -1,8 +1,8 @@
 package de.symeda.sormas.api.person;
 
-import de.symeda.sormas.api.DataTransferObject;
+import de.symeda.sormas.api.ReferenceDto;
 
-public class PersonDto extends DataTransferObject {
+public class PersonReferenceDto extends ReferenceDto {
 
 	private static final long serialVersionUID = -8558187171374254398L;
 
@@ -16,8 +16,6 @@ public class PersonDto extends DataTransferObject {
 	private String lastName;
 	
 	private String caseUuid;
-
-		
 	
 	public String getFirstName() {
 		return firstName;
