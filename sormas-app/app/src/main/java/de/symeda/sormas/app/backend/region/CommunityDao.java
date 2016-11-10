@@ -3,6 +3,7 @@ package de.symeda.sormas.app.backend.region;
 import com.j256.ormlite.dao.Dao;
 
 import java.sql.SQLException;
+import java.util.List;
 
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.user.User;
@@ -19,6 +20,11 @@ public class CommunityDao extends AbstractAdoDao<Community> {
     @Override
     public String getTableName() {
         return Community.TABLE_NAME;
+    }
+
+
+    public List<Community> getByDistrict(District district) {
+        return queryForEq("district_id", district);
     }
 
 }

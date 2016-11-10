@@ -110,7 +110,7 @@
                         android:layout_width="match_parent" android:layout_height="wrap_content"
                         android:layout_marginBottom="@dimen/field_caption_margin_bottom" android:textSize="@dimen/field_caption_size"
                         android:layout_marginLeft="@dimen/field_caption_margin_left"
-                        android:text="@string/form_disease" />
+                        android:text="@string/case_disease" />
                     <TextView
                         android:layout_width="match_parent" android:layout_height="@dimen/field_height"
                         app:enum="@{caze.disease}" />
@@ -139,7 +139,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/form_cd_health_facility"
+                        android:text="@string/case_healthFacility"
                         android:textSize="@dimen/field_caption_size"
                         android:layout_marginLeft="@dimen/field_caption_margin_left"
                         android:layout_marginBottom="@dimen/field_caption_margin_bottom" />

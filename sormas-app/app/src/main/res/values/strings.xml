@@ -14,21 +14,46 @@
     <string name="action_settings">Settings</string>
     <string name="action_save">Save</string>
     <string name="action_clear">Clear</string>
+    <string name="action_new_person">Add person</string>
+    <string name="action_dimiss">Dismiss</string>
+    <string name="action_done">Done</string>
+    <string name="action_user">User</string>
+    <string name="action_new_case">New case</string>
+    <string name="action_help">Help</string>
+
+    <!-- field -->
+    <string name="field_yes_no_yes">Yes</string>
+    <string name="field_yes_no_no">No</string>
+    <string name="field_yes_no_unk">Unk</string>
 
     <!-- headlines -->
     <string name="headline_date_picker">Select a date</string>
-
     <string name="headline_case">Case</string>
     <string name="headline_cases">Cases</string>
-
     <string name="headline_case_data">Case data</string>
     <string name="headline_patient">Patient</string>
     <string name="headline_symptoms_data">Symptoms</string>
-
     <string name="headline_person_information">Person information</string>
-
     <string name="headline_task">Tasks</string>
     <string name="headline_task_data">Task information</string>
+    <string name="headline_form_cp_occupation_details">Occupation details</string>
+    <string name="headline_form_cp_occupation_facility">Facility</string>
+    <string name="headline_form_cp_occupation_details_business">Type of business</string>
+    <string name="headline_form_cp_occupation_details_transport">Type of transport</string>
+    <string name="headline_form_cp_occupation_details_other">Please specify occupation</string>
+    <string name="headline_form_cp_occupation_details_healthcare">Position</string>
+    <string name="headline_gender">Gender</string>
+    <string name="headline_permanent_residence">Permanent residence of person</string>
+    <string name="headline_occupation">Occupation</string>
+    <string name="headline_location">Location</string>
+    <string name="headline_responsible">Responsible</string>
+    <string name="headline_user">User</string>
+    <string name="headline_user_administration">User</string>
+    <string name="headline_case_administration">Case administration</string>
+    <string name="headline_new_case">Create new case</string>
+    <string name="headline_new_Person">Add new person</string>
+    <string name="headline_symptoms">Symptoms</string>
+    <string name="headline_help">Help</string>
 
     <!-- forms -->
     <string name="form_p_first_name">First name</string>
@@ -41,16 +66,9 @@
     <string name="form_p_owner_of_phone">Owner of phone</string>
     <string name="form_p_status_of_patient">Status of patient</string>
     <string name="form_p_date_of_death">Date of death</string>
-    <string name="headline_gender">Gender</string>
-    <string name="headline_permanent_residence">Permanent residence of person</string>
-    <string name="headline_occupation">Occupation</string>
+
     <string name="form_cp_occupation">Occupation</string>
-    <string name="headline_form_cp_occupation_details">Occupation details</string>
-    <string name="headline_form_cp_occupation_facility">Facility</string>
-    <string name="headline_form_cp_occupation_details_business">Type of business</string>
-    <string name="headline_form_cp_occupation_details_transport">Type of transport</string>
-    <string name="headline_form_cp_occupation_details_other">Please specify occupation</string>
-    <string name="headline_form_cp_occupation_details_healthcare">Position</string>
+
     <string name="form_address">Address</string>
     <string name="form_address_details">Details</string>
     <string name="form_address_city">City</string>
@@ -59,32 +77,26 @@
     <string name="form_address_state">State</string>
     <string name="form_address_latitude">Latitude</string>
     <string name="form_address_longitude">Longitude</string>
-    <string name="headline_location">Location</string>
+
     <string name="form_cd_case_id">Case ID</string>
     <string name="form_cd_case_status">Case status</string>
     <string name="form_cd_report_date">Report date</string>
     <string name="form_cd_reporter">Reporter</string>
-    <string name="form_cd_health_facility">Health facility</string>
-    <string name="headline_case_administration">Case administration</string>
+    <string name="case_healthFacility">Health facility</string>
     <string name="form_cd_surveillance_officer">Surveillance Officer</string>
-    <string name="headline_responsible">Responsible</string>
-    <string name="headline_user">User</string>
-    <string name="headline_user_administration">User</string>
-    <string name="action_user">User</string>
+
     <string name="form_u_select_user">Select a user</string>
-    <string name="action_new_case">New case</string>
-    <string name="headline_new_case">Create new case</string>
-    <string name="form_disease">Disease</string>
-    <string name="form_cn_person">Person</string>
-    <string name="headline_new_Person">Add new person</string>
+
     <string name="form_person_id">Person ID</string>
-    <string name="action_new_person">Add person</string>
-    <string name="action_dimiss">Dismiss</string>
-    <string name="action_done">Done</string>
+
     <string name="form_server_url">Server address</string>
-    <string name="field_yes_no_yes">Yes</string>
-    <string name="field_yes_no_no">No</string>
-    <string name="field_yes_no_unk">Unk</string>
+
+    <string name="case_disease">Disease</string>
+    <string name="case_region">State</string>
+    <string name="case_district">LGA</string>
+    <string name="case_community">Ward</string>
+    <string name="case_person">Person</string>
+
     <string name="symptoms_fever">Fever</string>
     <string name="symptoms_vomitingNausea">Vomiting nausea</string>
     <string name="symptoms_diarrhea">Diarrhea</string>
@@ -136,8 +148,6 @@
     <string name="task_creatorComment">Creator comment</string>
     <string name="task_creatorUser">Created by</string>
     <string name="task_assigneeReply">Your comment</string>
-    <string name="headline_symptoms">Symptoms</string>
-    <string name="action_help">Help</string>
-    <string name="headline_help">Help</string>
+
 
 </resources>

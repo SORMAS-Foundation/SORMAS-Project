@@ -13,7 +13,6 @@ import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -44,7 +43,6 @@ import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.backend.region.RegionDao;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.backend.user.UserDao;
-import de.symeda.sormas.app.component.SymptomStateField;
 
 /**
  * Created by Stefan Szczesny on 01.08.2016.
@@ -190,12 +188,7 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
 
     private Map<Integer, Object> makeSpinnerField(final Map<Integer, Object> model, View parentView, final int spinnerFieldId, List<Item> items, final AdapterView.OnItemSelectedListener[] moreListeners) {
         final Spinner spinner = (Spinner) parentView.findViewById(spinnerFieldId);
-        ArrayAdapter<Item> adapter = new ArrayAdapter<Item>(
-                getActivity(),
-                android.R.layout.simple_spinner_item,
-                items);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
+        spinner.setAdapter(getSpinerAdapter(items));
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -229,6 +222,15 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
         }
 
         return model;
+    }
+
+    protected ArrayAdapter<Item> getSpinerAdapter(List<Item> items) {
+        ArrayAdapter<Item> adapter = new ArrayAdapter<Item>(
+                getActivity(),
+                android.R.layout.simple_spinner_item,
+                items);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        return adapter;
     }
 
     /**

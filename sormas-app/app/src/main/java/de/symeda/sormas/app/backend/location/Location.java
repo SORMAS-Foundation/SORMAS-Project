@@ -21,6 +21,7 @@ public class Location extends AbstractDomainObject {
 	private static final long serialVersionUID = 392776645668778670L;
 
 	public static final String TABLE_NAME = "location";
+	public static final String COMMUNITY = "community";
 
 	@Column(length = 255)
 	private String address;
