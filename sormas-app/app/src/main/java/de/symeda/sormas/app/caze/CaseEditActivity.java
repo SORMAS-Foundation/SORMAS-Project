@@ -1,11 +1,13 @@
 package de.symeda.sormas.app.caze;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Html;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -115,14 +117,25 @@ public class CaseEditActivity extends AppCompatActivity {
                         for (int i = 0; i < caseSymptomsForm.getChildCount(); i++) {
                             if (caseSymptomsForm.getChildAt(i) instanceof PropertyField) {
                                 PropertyField propertyField = (PropertyField)caseSymptomsForm.getChildAt(i);
-                                sb.append(propertyField.getCaption()).append("<br>")
-                                        .append(propertyField.getDescription()).append("<br>");
+                                sb
+                                        .append("<b>"+propertyField.getCaption()+"</b>").append("<br>")
+                                        .append(propertyField.getDescription()).append("<br>").append("<br>");
                             }
                         }
 
                         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                        builder.setMessage(sb.toString()).setTitle(getResources().getText(R.string.headline_help));
+                        builder.setMessage(Html.fromHtml(sb.toString())).setTitle(getResources().getText(R.string.headline_help));
+                        builder.setPositiveButton("Ok",
+                            new DialogInterface.OnClickListener() {
+
+                                @Override
+                                public void onClick(DialogInterface dialog,
+                                                    int which) {
+                                    dialog.dismiss();
+                                }
+                            });
                         AlertDialog dialog = builder.create();
+                        dialog.setCancelable(true);
                         dialog.show();
 
                         break;

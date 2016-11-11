@@ -1,18 +1,12 @@
 package de.symeda.sormas.app.component;
 
 import android.content.Context;
-import android.databinding.BindingAdapter;
-import android.databinding.InverseBindingAdapter;
-import android.databinding.InverseBindingListener;
 import android.util.AttributeSet;
-import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.RadioButton;
 
 import java.util.ArrayList;
 
 import de.symeda.sormas.api.I18nProperties;
-import de.symeda.sormas.api.symptoms.SymptomState;
 
 /**
  * Created by Martin Wahnschaffe on 08.11.2016.
