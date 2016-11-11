@@ -109,17 +109,17 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
      * @param spinnerFieldId
      * @param enumClass
      */
-    protected void addSpinnerField(final int spinnerFieldId, Class enumClass, final AdapterView.OnItemSelectedListener ...moreListeners) {
+    protected Spinner addSpinnerField(final int spinnerFieldId, Class enumClass, final AdapterView.OnItemSelectedListener ...moreListeners) {
         List<Item> items = DataUtils.getEnumItems(enumClass);
-        makeSpinnerField(spinnerFieldId, items, moreListeners);
+        return makeSpinnerField(spinnerFieldId, items, moreListeners);
     }
 
     /**
      * Fill the spinner for the given list, set the selected entry, register the base listeners and the given ones.
      * @param spinnerFieldId
      */
-    protected void addSpinnerField(final int spinnerFieldId, List<Item> items, final AdapterView.OnItemSelectedListener ...moreListeners) {
-        makeSpinnerField(spinnerFieldId, items, moreListeners);
+    protected Spinner addSpinnerField(final int spinnerFieldId, List<Item> items, final AdapterView.OnItemSelectedListener ...moreListeners) {
+        return makeSpinnerField(spinnerFieldId, items, moreListeners);
     }
 
     /**
@@ -128,31 +128,31 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
      * @param spinnerFieldId
      * @param moreListeners
      */
-    protected void addFacilitySpinnerField(final int spinnerFieldId, final AdapterView.OnItemSelectedListener ...moreListeners) {
+    protected Spinner addFacilitySpinnerField(final int spinnerFieldId, final AdapterView.OnItemSelectedListener ...moreListeners) {
         FacilityDao facilityDao = DatabaseHelper.getFacilityDao();
         List<Item> items = DataUtils.getItems(facilityDao.queryForAll());
-        makeSpinnerField(spinnerFieldId,items, moreListeners);
+        return makeSpinnerField(spinnerFieldId,items, moreListeners);
     }
 
-    protected void addRegionSpinnerField(Map<Integer, Object> model, View parentView, final int spinnerFieldId, final AdapterView.OnItemSelectedListener ...moreListeners) {
+    protected Spinner addRegionSpinnerField(Map<Integer, Object> model, View parentView, final int spinnerFieldId, final AdapterView.OnItemSelectedListener ...moreListeners) {
         RegionDao regionDao = DatabaseHelper.getRegionDao();
         List<Item> items = DataUtils.getItems(regionDao.queryForAll());
-        makeSpinnerField(model,parentView,spinnerFieldId,items, moreListeners);
+        return makeSpinnerField(model,parentView,spinnerFieldId,items, moreListeners);
     }
 
-    protected void addDistrictSpinnerField(Map<Integer, Object> model, View parentView, final int spinnerFieldId, final AdapterView.OnItemSelectedListener ...moreListeners) {
+    protected Spinner addDistrictSpinnerField(Map<Integer, Object> model, View parentView, final int spinnerFieldId, final AdapterView.OnItemSelectedListener ...moreListeners) {
         DistrictDao districtDao = DatabaseHelper.getDistrictDao();
         List<Item> items = DataUtils.getItems(districtDao.queryForAll());
-        makeSpinnerField(model,parentView,spinnerFieldId,items, moreListeners);
+        return makeSpinnerField(model,parentView,spinnerFieldId,items, moreListeners);
     }
 
-    protected void addCommunitySpinnerField(Map<Integer, Object> model, View parentView,  final int spinnerFieldId, final AdapterView.OnItemSelectedListener ...moreListeners) {
+    protected Spinner addCommunitySpinnerField(Map<Integer, Object> model, View parentView,  final int spinnerFieldId, final AdapterView.OnItemSelectedListener ...moreListeners) {
         CommunityDao communityDao = DatabaseHelper.getCommunityDao();
         List<Item> items = DataUtils.getItems(communityDao.queryForAll());
-        makeSpinnerField(model,parentView,spinnerFieldId,items, moreListeners);
+        return makeSpinnerField(model,parentView,spinnerFieldId,items, moreListeners);
     }
 
-    protected void addUserSpinnerField(final int spinnerFieldId, List<UserRole> userRoles, final AdapterView.OnItemSelectedListener ...moreListeners) {
+    protected Spinner addUserSpinnerField(final int spinnerFieldId, List<UserRole> userRoles, final AdapterView.OnItemSelectedListener ...moreListeners) {
         UserDao userDao = DatabaseHelper.getUserDao();
         List<Item> items = null;
         if (userRoles.size() == 0) {
@@ -166,10 +166,10 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
                 }
             }
         }
-        makeSpinnerField(spinnerFieldId,items,moreListeners);
+        return makeSpinnerField(spinnerFieldId,items,moreListeners);
     }
 
-    protected void addPersonSpinnerField(final int spinnerFieldId, final AdapterView.OnItemSelectedListener ...moreListeners) {
+    protected Spinner addPersonSpinnerField(final int spinnerFieldId, final AdapterView.OnItemSelectedListener ...moreListeners) {
         PersonDao personDao = DatabaseHelper.getPersonDao();
         List<Item> items = null;
         try {
@@ -178,17 +178,17 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
             Toast.makeText(getContext(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
-        makeSpinnerField(spinnerFieldId,items, moreListeners);
+        return makeSpinnerField(spinnerFieldId,items, moreListeners);
     }
 
 
-    private void makeSpinnerField(final int spinnerFieldId, List<Item> items, final AdapterView.OnItemSelectedListener[] moreListeners) {
-        makeSpinnerField(getModel(), getView(), spinnerFieldId, items, moreListeners);
+    private Spinner makeSpinnerField(final int spinnerFieldId, List<Item> items, final AdapterView.OnItemSelectedListener[] moreListeners) {
+        return makeSpinnerField(getModel(), getView(), spinnerFieldId, items, moreListeners);
     }
 
-    private Map<Integer, Object> makeSpinnerField(final Map<Integer, Object> model, View parentView, final int spinnerFieldId, List<Item> items, final AdapterView.OnItemSelectedListener[] moreListeners) {
+    private Spinner makeSpinnerField(final Map<Integer, Object> model, View parentView, final int spinnerFieldId, List<Item> items, final AdapterView.OnItemSelectedListener[] moreListeners) {
         final Spinner spinner = (Spinner) parentView.findViewById(spinnerFieldId);
-        spinner.setAdapter(getSpinerAdapter(items));
+        spinner.setAdapter(makeSpinnerAdapter(items));
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -208,29 +208,44 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
         });
 
         // Set initial value to ui
-        if(model.get(spinnerFieldId)!=null) {
+        setSpinnerSelectedItem(model.get(spinnerFieldId), items, spinner);
+
+        return spinner;
+    }
+
+    private void setSpinnerSelectedItem(Object selectedItem, List<Item> items, Spinner spinner) {
+        if(selectedItem!=null) {
             int i = 0;
-            for (Item item:items) {
-                if(model.get(spinnerFieldId).equals(item.getValue())) {
+            for (Item item : items) {
+                if (selectedItem.equals(item.getValue())) {
                     break;
                 }
                 i++;
             }
-            if(i<items.size()) {
+            if (i < items.size()) {
                 spinner.setSelection(i);
             }
         }
-
-        return model;
     }
 
-    protected ArrayAdapter<Item> getSpinerAdapter(List<Item> items) {
+    protected ArrayAdapter<Item> makeSpinnerAdapter(List<Item> items) {
         ArrayAdapter<Item> adapter = new ArrayAdapter<Item>(
                 getActivity(),
                 android.R.layout.simple_spinner_item,
                 items);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         return adapter;
+    }
+
+    /**
+     * Update the spinner list and set selected value.
+     * @param selectedItem
+     * @param items
+     * @param spinner
+     */
+    protected void setSpinnerValue(Object selectedItem, List<Item> items, Spinner spinner) {
+        spinner.setAdapter(makeSpinnerAdapter(items));
+        setSpinnerSelectedItem(selectedItem, items, spinner);
     }
 
     /**

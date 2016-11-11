@@ -11,6 +11,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import java.util.Date;
+
 import de.symeda.sormas.api.caze.CaseStatus;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.app.R;
@@ -81,6 +83,7 @@ public class CaseNewActivity extends AppCompatActivity {
                     } else if (user.getUserRole() == UserRole.INFORMANT) {
                         caze.setSurveillanceOfficer(user.getAssociatedOfficer());
                     }
+                    caze.setReportDate(new Date());
 
                     SymptomsDao symptomsDao = DatabaseHelper.getSymptomsDao();
                     Symptoms symptoms = DataUtils.createNew(Symptoms.class);

@@ -105,8 +105,9 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
             Person person = DatabaseHelper.getPersonDao().queryForId(ado.getPerson().getId());
             dto.setPerson(AdoDtoHelper.toReferenceDto(person));
         }
-        dto.setInvestigatedDate(dto.getInvestigatedDate());
-        dto.setReportDate(dto.getReportDate());
+
+        dto.setInvestigatedDate(ado.getInvestigatedDate());
+        dto.setReportDate(ado.getReportDate());
 
         if (ado.getReportingUser() != null) {
             User user = DatabaseHelper.getUserDao().queryForId(ado.getReportingUser().getId());
@@ -135,9 +136,9 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
         if (ado.getDistrict() != null) {
             District district = DatabaseHelper.getDistrictDao().queryForId(ado.getDistrict().getId());
             ReferenceDto districtDto = AdoDtoHelper.toReferenceDto(district);
-            dto.setRegion(districtDto);
+            dto.setDistrict(districtDto);
         } else {
-            dto.setSymptoms(null);
+            dto.setDistrict(null);
         }
 
         if (ado.getCommunity() != null) {

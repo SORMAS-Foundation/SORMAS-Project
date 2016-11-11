@@ -124,6 +124,60 @@
 
 
             <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:paddingTop="@dimen/spinner_padding" android:paddingBottom="@dimen/spinner_padding">
+
+                <TextView
+                    android:layout_width="match_parent" android:layout_height="wrap_content" android:textSize="@dimen/field_caption_size"
+                    android:layout_marginLeft="@dimen/field_caption_margin_left" android:layout_marginBottom="@dimen/field_caption_margin_bottom"
+                    android:text="@string/case_region" />
+
+                <Spinner
+                    style="@style/Base.Widget.AppCompat.Spinner.Underlined"
+                    android:layout_width="match_parent" android:layout_height="@dimen/field_spinner_height"
+                    android:layout_alignParentTop="true"
+                    android:id="@+id/case_region_cd" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:paddingTop="@dimen/spinner_padding" android:paddingBottom="@dimen/spinner_padding">
+
+                <TextView
+                    android:layout_width="match_parent" android:layout_height="wrap_content" android:textSize="@dimen/field_caption_size"
+                    android:layout_marginLeft="@dimen/field_caption_margin_left" android:layout_marginBottom="@dimen/field_caption_margin_bottom"
+                    android:text="@string/case_district" />
+
+                <Spinner
+                    style="@style/Base.Widget.AppCompat.Spinner.Underlined"
+                    android:layout_width="match_parent" android:layout_height="@dimen/field_spinner_height"
+                    android:layout_alignParentTop="true"
+                    android:id="@+id/case_district_cd" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:paddingTop="@dimen/spinner_padding" android:paddingBottom="@dimen/spinner_padding">
+
+                <TextView
+                    android:layout_width="match_parent" android:layout_height="wrap_content" android:textSize="@dimen/field_caption_size"
+                    android:layout_marginLeft="@dimen/field_caption_margin_left" android:layout_marginBottom="@dimen/field_caption_margin_bottom"
+                    android:text="@string/case_community" />
+
+                <Spinner
+                    style="@style/Base.Widget.AppCompat.Spinner.Underlined"
+                    android:layout_width="match_parent" android:layout_height="@dimen/field_spinner_height"
+                    android:layout_alignParentTop="true"
+                    android:id="@+id/case_community_cd" />
+            </LinearLayout>
+
+
+            <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -147,7 +201,7 @@
                     <Spinner
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/field_spinner_height"
-                        android:id="@+id/form_cd_health_facility"
+                        android:id="@+id/case_healthFacility_cd"
                         android:layout_alignParentTop="true"
                         style="@style/Base.Widget.AppCompat.Spinner.Underlined" />
 

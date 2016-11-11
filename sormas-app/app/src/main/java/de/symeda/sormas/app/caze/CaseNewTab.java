@@ -53,11 +53,10 @@ public class CaseNewTab extends FormTab {
             user = ConfigProvider.getUser();
             region = DatabaseHelper.getRegionDao().queryUuid(user.getRegion().getUuid());
 
-//            getModel().put(R.id.form_cn_date_of_report, new Date());
             getModel().put(R.id.case_disease, null);
             getModel().put(R.id.case_region, region);
             getModel().put(R.id.case_district, null);
-            getModel().put(R.id.case_healthFacility, null);
+            getModel().put(R.id.case_community, null);
             getModel().put(R.id.case_healthFacility, null);
             getModel().put(R.id.case_person, person);
 
@@ -73,9 +72,9 @@ public class CaseNewTab extends FormTab {
     public void onResume() {
         super.onResume();
 
-//        addDateField(R.id.form_cn_date_of_report);
         addSpinnerField(R.id.case_disease, Disease.class);
         addPersonSpinnerField(R.id.case_person);
+        addFacilitySpinnerField(R.id.case_healthFacility);
 
 
         final List emptyList = new ArrayList<>();
@@ -90,7 +89,7 @@ public class CaseNewTab extends FormTab {
                     if(selectedValue != null) {
                         districtList = DatabaseHelper.getDistrictDao().getByRegion((Region)selectedValue);
                     }
-                    spinner.setAdapter(getSpinerAdapter(DataUtils.getItems(districtList)));
+                    spinner.setAdapter(makeSpinnerAdapter(DataUtils.getItems(districtList)));
                 }
             }
 
@@ -112,7 +111,7 @@ public class CaseNewTab extends FormTab {
                     if(selectedValue != null) {
                         communityList = DatabaseHelper.getCommunityDao().getByDistrict((District)selectedValue);
                     }
-                    spinner.setAdapter(getSpinerAdapter(DataUtils.getItems(communityList)));
+                    spinner.setAdapter(makeSpinnerAdapter(DataUtils.getItems(communityList)));
                 }
             }
 
@@ -133,7 +132,7 @@ public class CaseNewTab extends FormTab {
                     if(selectedValue != null) {
                         facilityList = DatabaseHelper.getFacilityDao().getByCommunity((Community)selectedValue);
                     }
-                    spinner.setAdapter(getSpinerAdapter(DataUtils.getItems(facilityList)));
+                    spinner.setAdapter(makeSpinnerAdapter(DataUtils.getItems(facilityList)));
                 }
             }
 
@@ -143,7 +142,7 @@ public class CaseNewTab extends FormTab {
             }
         });
 
-        addFacilitySpinnerField(R.id.case_healthFacility);
+
 
         ImageButton newPersonButton = (ImageButton) getView().findViewById(R.id.case_addPerson_btn);
         newPersonButton.setOnClickListener(new View.OnClickListener() {
@@ -213,7 +212,6 @@ public class CaseNewTab extends FormTab {
 
     @Override
     protected AbstractDomainObject commit(AbstractDomainObject ado) {
-        caze.setReportDate(new Date());
         caze.setDisease((Disease)getModel().get(R.id.case_disease));
         caze.setRegion((Region)getModel().get(R.id.case_region));
         caze.setDistrict((District)getModel().get(R.id.case_district));
