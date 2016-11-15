@@ -813,5 +813,10 @@ ALTER TABLE public.cases ALTER COLUMN reportinguser_id SET NOT NULL;
 
 INSERT INTO schema_version (version_number, comment) VALUES (8, 'Contact; Cases report not null');
 
+-- 2016-11-15; Contact #85
+
+ALTER TABLE contact ADD COLUMN description varchar(512);
+ 
+INSERT INTO schema_version (version_number, comment) VALUES (9, 'Contact.description');
 
 

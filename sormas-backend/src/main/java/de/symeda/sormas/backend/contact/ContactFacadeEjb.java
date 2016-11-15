@@ -81,6 +81,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		
 		target.setContactProximity(source.getContactProximity());
 		target.setContactStatus(source.getContactStatus());
+		target.setDescription(source.getDescription());
 
 		return target;
 	}
@@ -109,6 +110,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		
 		target.setContactProximity(source.getContactProximity());
 		target.setContactStatus(source.getContactStatus());
+		target.setDescription(source.getDescription());
 		
 		return target;
 	}

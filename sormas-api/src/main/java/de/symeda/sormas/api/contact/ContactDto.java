@@ -17,6 +17,7 @@ public class ContactDto extends ContactReferenceDto {
 	public static final String LAST_CONTACT_DATE = "lastContactDate";
 	public static final String CONTACT_PROXIMITY = "contactProximity";
 	public static final String CONTACT_STATUS = "contactStatus";
+	public static final String DESCRIPTION = "description";
 	
 	private PersonReferenceDto person;
 	private CaseReferenceDto caze;
@@ -25,6 +26,7 @@ public class ContactDto extends ContactReferenceDto {
 	private Date lastContactDate;
 	private ContactProximity contactProximity;
 	private ContactStatus contactStatus;
+	private String description;
 	
 	public PersonReferenceDto getPerson() {
 		return person;
@@ -67,6 +69,12 @@ public class ContactDto extends ContactReferenceDto {
 	}
 	public void setContactStatus(ContactStatus contactStatus) {
 		this.contactStatus = contactStatus;
+	}
+	public String getDescription() {
+		return description;
+	}
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 }
