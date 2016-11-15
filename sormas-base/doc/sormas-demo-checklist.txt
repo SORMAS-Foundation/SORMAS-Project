@@ -1,8 +1,8 @@
 == SORMAS Demo Checklist ==
 1. Connect server-laptop and mobile devices to the same network
 2. Start the SORMAS server on the laptop
-3. Make sure https://IP:6081/sormas-surveillance-ui is working on the laptop (replace IP with the laptops IP)
-4. Make sure https://IP:6081/sormas-surveillance-ui is working on the mobile device
+3. Make sure https://IP:6081/sormas-ui is working on the laptop (replace IP with the laptops IP)
+4. Make sure https://IP:6081/sormas-ui is working on the mobile device
 5. Make sure http://IP:6080/sormas-rest/regions/all/0 is working on the mobile device
   (should return something like: [{"type":"regionDto","changeDate":"2016-08-09T17:05:28.197+0200","creationDate":"2016-08-09T17:05:28.181+0200","uuid":"SXJCGZ-5WSL7C-SJGD46-WL55SEJM","name":"Abia"}])
 6. Start the app. Uninstall and reinstall it, if it crashes

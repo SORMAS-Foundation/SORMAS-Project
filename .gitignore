@@ -12,3 +12,4 @@
 /deploy/bundles
 deploy
 /sormas-base/build.properties
+/sormas-ui/bin

@@ -174,7 +174,7 @@
 
 	<!-- <target name="collect-artifacts" description="Collects artifacts">
 		<ant dir="../sormas-ear" target="3-collect" />
-		<ant dir="../sormas-surveillance-ui" target="3-collect" />
+		<ant dir="../sormas-ui" target="3-collect" />
 		<ant dir="../sormas-rest" target="3-collect" />
 	</target> -->
 

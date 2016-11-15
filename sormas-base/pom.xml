@@ -373,6 +373,6 @@
 		<module>../sormas-backend</module>
 		<module>../sormas-ear</module>
 		<module>../sormas-rest</module>
-		<module>../sormas-surveillance-ui</module>
+		<module>../sormas-ui</module>
 	</modules>
 </project>
