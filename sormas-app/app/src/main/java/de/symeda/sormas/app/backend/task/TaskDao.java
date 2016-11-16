@@ -5,6 +5,7 @@ import com.j256.ormlite.dao.RuntimeExceptionDao;
 import com.j256.ormlite.logger.Log;
 import com.j256.ormlite.logger.Logger;
 import com.j256.ormlite.logger.LoggerFactory;
+import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 
 import java.sql.SQLException;
@@ -56,7 +57,45 @@ public class TaskDao extends AbstractAdoDao<Task> {
         try {
             return queryBuilder().orderBy(Task.PRIORITY, true).orderBy(Task.DUE_DATE, true).where().eq(Task.TASK_STATUS, TaskStatus.PENDING).query();
         } catch (SQLException e) {
-            logger.log(LOG_LEVEL, e, "queryFinished threw exception");
+            logger.log(LOG_LEVEL, e, "queryPending threw exception");
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * query for the following PENDING tasks:
+     * 1. suggested start within range
+     * 2. due date within range
+     * 3. localChangeDate within range, not modified (-> has been updated on server) and suggested start before end of range
+     * Ordered by priority, then due date - oldes (most due) first
+     * @return
+     */
+    public List<Task> queryPendingForNotification(Date rangeStart, Date rangeEnd) {
+        try {
+
+            QueryBuilder builder = queryBuilder();
+
+            Where where = builder.where();
+            where.and(
+                where.eq(Task.TASK_STATUS, TaskStatus.PENDING),
+                where.or(
+                    where.between(Task.SUGGESTED_START, rangeStart, rangeEnd),
+                    where.between(Task.DUE_DATE, rangeStart, rangeEnd),
+                    where.and(
+                        where.between(Task.LOCAL_CHANGE_DATE, rangeStart, rangeEnd),
+                        where.eq(Task.MODIFIED, false),
+                        where.le(Task.SUGGESTED_START, rangeEnd)
+                    )
+                )
+            );
+
+            builder.orderBy(Task.PRIORITY, true).orderBy(Task.DUE_DATE, true);
+
+            String test = builder.prepareStatementString();
+            return builder.query();
+
+        } catch (SQLException e) {
+            logger.log(LOG_LEVEL, e, "queryPendingForNotification threw exception");
             throw new RuntimeException(e);
         }
     }

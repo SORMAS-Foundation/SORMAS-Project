@@ -1,8 +1,16 @@
 package de.symeda.sormas.app.caze;
 
+import android.app.AlarmManager;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -14,6 +22,8 @@ import android.view.MenuItem;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import java.util.Date;
+
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
@@ -24,9 +34,11 @@ import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.symptoms.SymptomsDao;
+import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.component.PropertyField;
-import de.symeda.sormas.app.component.SymptomStateField;
 import de.symeda.sormas.app.person.SyncPersonsTask;
+import de.symeda.sormas.app.task.TaskEditActivity;
+import de.symeda.sormas.app.task.TaskNotificationService;
 import de.symeda.sormas.app.util.SlidingTabLayout;
 
 
@@ -43,6 +55,10 @@ public class CaseEditActivity extends AppCompatActivity {
     private SlidingTabLayout tabs;
     private CharSequence titles[];
     private String caseUuid;
+
+//
+//    private AlarmManager alarmMgr;
+//    private PendingIntent alarmIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -212,6 +228,7 @@ public class CaseEditActivity extends AppCompatActivity {
         // Assigning ViewPager View and setting the adapter
         pager = (ViewPager) findViewById(R.id.pager);
         pager.setAdapter(adapter);
+//        pager.addOnPageChangeListener();
 
         // Assigning the Sliding Tab Layout View
         tabs = (SlidingTabLayout) findViewById(R.id.tabs);

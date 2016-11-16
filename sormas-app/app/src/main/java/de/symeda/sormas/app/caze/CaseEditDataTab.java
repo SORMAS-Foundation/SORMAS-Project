@@ -69,7 +69,7 @@ public class CaseEditDataTab extends FormTab {
         addRegionSpinnerField(getModel(), getView(), R.id.case_region_cd, new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Spinner spinner = (Spinner) getView().findViewById(R.id.case_district_cd);
+                Spinner spinner = binding.caseDistrictCd;
                 Object selectedValue = getModel().get(R.id.case_region_cd);
                 if(spinner != null) {
                     List<District> districtList = emptyList;

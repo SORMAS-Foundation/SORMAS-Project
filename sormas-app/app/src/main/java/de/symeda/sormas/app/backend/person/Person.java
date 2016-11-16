@@ -252,7 +252,9 @@ public class Person extends AbstractDomainObject {
 	
 	@Override
 	public String toString() {
-		return getFirstName() + " " + getLastName();
+		StringBuilder builder = new StringBuilder();
+		builder.append(getFirstName()).append(" ").append(getLastName().toUpperCase());
+		return builder.toString();
 	}
 
 	public String getCaseUuid() {

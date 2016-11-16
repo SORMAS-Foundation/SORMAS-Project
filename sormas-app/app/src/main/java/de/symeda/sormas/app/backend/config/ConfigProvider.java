@@ -1,11 +1,11 @@
 package de.symeda.sormas.app.backend.config;
 
-import android.databinding.tool.util.StringUtils;
 import android.util.Log;
 
 import com.j256.ormlite.table.TableUtils;
 
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -27,6 +27,7 @@ public final class ConfigProvider {
 
     private static String KEY_USER_UUID = "userUuid";
     private static String KEY_SERVER_REST_URL = "serverRestUrl";
+    private static String LAST_NOTIFICATION_DATE = "lastNotificationDate";
 
     public static ConfigProvider instance = null;
 
@@ -39,13 +40,12 @@ public final class ConfigProvider {
 
     private String serverRestUrl;
     private User user;
+    private Date lastNotificationDate;
 
     public static User getUser() {
         if (instance.user == null)
             synchronized (ConfigProvider.class) {
                 if (instance.user == null) {
-
-                    // get user from config
                     Config config = DatabaseHelper.getConfigDao().queryForId(KEY_USER_UUID);
                     if (config != null) {
                         instance.user = DatabaseHelper.getUserDao().queryUuid(config.getValue());
@@ -95,8 +95,6 @@ public final class ConfigProvider {
         if (instance.serverRestUrl == null)
             synchronized (ConfigProvider.class) {
                 if (instance.serverRestUrl == null) {
-
-                    // get user from config
                     Config config = DatabaseHelper.getConfigDao().queryForId(KEY_SERVER_REST_URL);
                     if (config != null) {
                         instance.serverRestUrl = config.getValue();
@@ -148,6 +146,33 @@ public final class ConfigProvider {
                     Log.e(ConfigProvider.class.getName(), e.toString(), e);
                 }
             }
+        }
+    }
+
+    public static Date getLastNotificationDate() {
+        if (instance.lastNotificationDate == null)
+            synchronized (ConfigProvider.class) {
+                if (instance.lastNotificationDate == null) {
+                    Config config = DatabaseHelper.getConfigDao().queryForId(LAST_NOTIFICATION_DATE);
+                    if (config != null) {
+                        instance.lastNotificationDate = new Date(Long.parseLong(config.getValue()));
+                    }
+
+                }
+            }
+        return instance.lastNotificationDate;
+    }
+
+    public static void setLastNotificationDate(Date lastNotificationDate) {
+        if (lastNotificationDate != null && lastNotificationDate.equals(instance.lastNotificationDate))
+            return;
+
+        boolean wasNull = instance.lastNotificationDate == null;
+        instance.lastNotificationDate = lastNotificationDate;
+        if (lastNotificationDate == null) {
+            DatabaseHelper.getConfigDao().delete(new Config(LAST_NOTIFICATION_DATE, ""));
+        } else {
+            DatabaseHelper.getConfigDao().createOrUpdate(new Config(LAST_NOTIFICATION_DATE, String.valueOf(lastNotificationDate.getTime())));
         }
     }
 }

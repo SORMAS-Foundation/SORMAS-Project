@@ -13,4 +13,5 @@
 
 
     <dimen name="list_item_margin_bottom">15dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
 </resources>

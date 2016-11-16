@@ -10,6 +10,7 @@ import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.caze.CasesActivity;
 import de.symeda.sormas.app.caze.SyncCasesTask;
 import de.symeda.sormas.app.person.SyncPersonsTask;
+import de.symeda.sormas.app.task.TaskNotificationService;
 import de.symeda.sormas.app.util.SyncInfrastructureTask;
 
 /**
@@ -30,6 +31,9 @@ public class SormasApplication extends Application {
         } catch (ExecutionException e) {
             Log.e(CasesActivity.class.getName(), e.toString(), e);
         }
+
+        TaskNotificationService.startTaskNotificationAlarm(this);
+
         super.onCreate();
     }
 }
