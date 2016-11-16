@@ -1,63 +1,21 @@
 package de.symeda.sormas.ui.caze;
 
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.CssLayout;
-
 import de.symeda.sormas.ui.SubNavigationMenu;
-import de.symeda.sormas.ui.utils.AbstractView;
+import de.symeda.sormas.ui.utils.AbstractSubNavigationView;
 
 @SuppressWarnings("serial")
-public abstract class AbstractCaseView extends AbstractView {
+public abstract class AbstractCaseView extends AbstractSubNavigationView {
 
-    protected final String viewName;
-
-    public SubNavigationMenu caseNavigationMenu;
-    protected CssLayout caseEditLayout;
-	private String caseUuid;
-
-    protected AbstractCaseView(String viewName) {
-        setWidth(900, Unit.PIXELS);
-        setHeight(100, Unit.PERCENTAGE);
-        setMargin(true);
-        this.viewName = viewName;
-        
-        caseNavigationMenu = new SubNavigationMenu();
-    	addComponent(caseNavigationMenu);
-    	setExpandRatio(caseNavigationMenu, 0);
-        
-        caseEditLayout = new CssLayout();
-        caseEditLayout.setWidth(100, Unit.PERCENTAGE);
-        caseEditLayout.setHeightUndefined();
-        addComponent(caseEditLayout);
-    	setExpandRatio(caseEditLayout, 1);
-    }
-    
-    @Override
-    public void enter(ViewChangeEvent event) {
-    	caseUuid = event.getParameters();
-    	refreshCaseEditMenu(caseUuid);
-		selectInMenu();
-    };
-    
-    public void refreshCaseEditMenu(String uuid) {
-    	caseNavigationMenu.removeAllViews();
-    	caseNavigationMenu.addView(CasesView.VIEW_NAME, "Cases List");
-    	caseNavigationMenu.addView(CaseDataView.VIEW_NAME, "Case Data", uuid);
-    	caseNavigationMenu.addView(CasePersonView.VIEW_NAME, "Patient Information", uuid);
-    	caseNavigationMenu.addView(CaseSymptomsView.VIEW_NAME, "Symptoms", uuid);
-    }
-    
-    protected String getCaseUuid() {
-		return caseUuid;
+	protected AbstractCaseView(String viewName) {
+		super(viewName);
 	}
-    
-    protected void setEditComponent(Component newComponent) {
-    	caseEditLayout.removeAllComponents();
-    	caseEditLayout.addComponent(newComponent);
-    }
 
-    public void selectInMenu() {
-    	caseNavigationMenu.setActiveView(viewName);
+	@Override
+	public void refreshMenu(SubNavigationMenu menu, String entityUuid) {
+		menu.removeAllViews();
+		menu.addView(CasesView.VIEW_NAME, "Cases List");
+		menu.addView(CaseDataView.VIEW_NAME, "Case Data", entityUuid);
+		menu.addView(CasePersonView.VIEW_NAME, "Patient Information", entityUuid);
+		menu.addView(CaseSymptomsView.VIEW_NAME, "Symptoms", entityUuid);
     }
 }

@@ -30,6 +30,7 @@ public class Contact extends AbstractDomainObject {
 	public static final String LAST_CONTACT_DATE = "lastContactDate";
 	public static final String CONTACT_PROXIMITY = "contactProximity";
 	public static final String CONTACT_STATUS = "contactStatus";
+	public static final String CONTACT_OFFICER = "contactOfficer";
 	public static final String DESCRIPTION = "description";
 	
 	private Person person;
@@ -39,6 +40,7 @@ public class Contact extends AbstractDomainObject {
 	private Date lastContactDate;
 	private ContactProximity contactProximity;
 	private ContactStatus contactStatus;
+	private User contactOfficer;
 	private String description;
 	
 	@ManyToOne(cascade = {})
@@ -109,5 +111,15 @@ public class Contact extends AbstractDomainObject {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	@ManyToOne(cascade = {})
+	@JoinColumn(nullable=false)
+	public User getContactOfficer() {
+		return contactOfficer;
+	}
+
+	public void setContactOfficer(User contactOfficer) {
+		this.contactOfficer = contactOfficer;
 	}	
 }

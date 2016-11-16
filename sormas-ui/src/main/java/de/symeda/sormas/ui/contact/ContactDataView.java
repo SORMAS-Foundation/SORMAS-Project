@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.caze;
+package de.symeda.sormas.ui.contact;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 
@@ -10,19 +10,19 @@ import de.symeda.sormas.ui.ControllerProvider;
  * @author Stefan Szczesny
  *
  */
-public class CaseDataView extends AbstractCaseView {
+public class ContactDataView extends AbstractContactView {
 
 	private static final long serialVersionUID = -1L;
 	
-	public static final String VIEW_NAME = "cases/data";
+	public static final String VIEW_NAME = "contacts/data";
 
-    public CaseDataView() {
+    public ContactDataView() {
     	super(VIEW_NAME);
     }
 
     @Override
     public void enter(ViewChangeEvent event) {
     	super.enter(event);
-    	setEditComponent(ControllerProvider.getCaseController().getCaseDataEditComponent(getEntityUuid()));
+    	setEditComponent(ControllerProvider.getContactController().getContactDataEditComponent(getEntityUuid()));
     }
 }

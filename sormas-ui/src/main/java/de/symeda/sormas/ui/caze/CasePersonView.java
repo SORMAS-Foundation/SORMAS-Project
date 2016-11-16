@@ -22,6 +22,6 @@ public class CasePersonView extends AbstractCaseView {
     @Override
     public void enter(ViewChangeEvent event) {
     	super.enter(event);
-    	setEditComponent(ControllerProvider.getCaseController().getCasePersonEditComponent(getCaseUuid()));
+    	setEditComponent(ControllerProvider.getCaseController().getCasePersonEditComponent(getEntityUuid()));
     }
 }

@@ -15,6 +15,7 @@ import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseStatus;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 
@@ -80,7 +81,7 @@ public class CaseGrid extends Grid {
 		}
 	}
     
-    public void setSurveillanceOfficerFilter(ReferenceDto surveillanceOfficer) {
+    public void setSurveillanceOfficerFilter(UserReferenceDto surveillanceOfficer) {
 		getContainer().removeContainerFilters(CaseDataDto.SURVEILLANCE_OFFICER);
 		if (surveillanceOfficer != null) {
 	    	Equal filter = new Equal(CaseDataDto.SURVEILLANCE_OFFICER, surveillanceOfficer);  
@@ -107,7 +108,7 @@ public class CaseGrid extends Grid {
     }
     
     public void reload() {
-    	List<CaseDataDto> cases = ControllerProvider.getCaseController().getAllCaseData();
+    	List<CaseDataDto> cases = ControllerProvider.getCaseController().getCaseIndexList();
         getContainer().removeAllItems();
         getContainer().addAll(cases);    	
     }

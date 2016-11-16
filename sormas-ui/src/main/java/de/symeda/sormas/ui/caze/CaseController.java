@@ -89,7 +89,7 @@ public class CaseController {
     }
     
 
-    public List<CaseDataDto> getAllCaseData() {
+    public List<CaseDataDto> getCaseIndexList() {
     	UserDto user = LoginHelper.getCurrentUser();
     	return FacadeProvider.getCaseFacade().getAllCasesAfter(null, user.getUuid());
     }

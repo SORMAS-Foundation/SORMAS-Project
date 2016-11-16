@@ -12,6 +12,7 @@ import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactFacade;
+import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
@@ -49,6 +50,20 @@ public class ContactFacadeEjb implements ContactFacade {
 			.collect(Collectors.toList());
 	}
 	
+	@Override
+	public List<ContactIndexDto> getIndexList(String userUuid) {
+		
+		User user = userService.getByUuid(userUuid);
+		
+		if (user == null) {
+			return Collections.emptyList();
+		}
+		
+		return service.getAllAfter(null, user).stream()
+			.map(c -> toIndexDto(c))
+			.collect(Collectors.toList());
+	}
+	
 
 	@Override
 	public ContactDto getContactByUuid(String uuid) {
@@ -81,6 +96,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		
 		target.setContactProximity(source.getContactProximity());
 		target.setContactStatus(source.getContactStatus());
+		target.setContactOfficer(userService.getByReferenceDto(source.getContactOfficer()));
 		target.setDescription(source.getDescription());
 
 		return target;
@@ -110,7 +126,28 @@ public class ContactFacadeEjb implements ContactFacade {
 		
 		target.setContactProximity(source.getContactProximity());
 		target.setContactStatus(source.getContactStatus());
+		target.setContactOfficer(UserFacadeEjb.toReferenceDto(source.getContactOfficer()));
 		target.setDescription(source.getDescription());
+		
+		return target;
+	}
+	
+	public static ContactIndexDto toIndexDto(Contact source) {
+		if (source == null) {
+			return null;
+		}
+		ContactIndexDto target = new ContactIndexDto();
+		DtoHelper.fillReferenceDto(target, source);
+
+		target.setPerson(PersonFacadeEjb.toReferenceDto(source.getPerson()));
+		target.setCaze(CaseFacadeEjb.toReferenceDto(source.getCaze()));
+		target.setCazePerson(PersonFacadeEjb.toReferenceDto(source.getCaze().getPerson()));
+		target.setCazeDisease(source.getCaze().getDisease());
+		target.setCazeDistrict(DtoHelper.toReferenceDto(source.getCaze().getDistrict()));
+		
+		target.setContactProximity(source.getContactProximity());
+		target.setContactStatus(source.getContactStatus());
+		target.setContactOfficer(UserFacadeEjb.toReferenceDto(source.getContactOfficer()));
 		
 		return target;
 	}

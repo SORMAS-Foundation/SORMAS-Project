@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.caze;
+package de.symeda.sormas.ui.contact;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
@@ -12,12 +12,11 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.ReferenceDto;
-import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.caze.CaseStatus;
+import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.caze.CaseController;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -28,22 +27,22 @@ import de.symeda.sormas.ui.utils.CssStyles;
  * See also {@link CaseController} for fetching the data, the actual CRUD
  * operations and controlling the view based on events from outside.
  */
-public class CasesView extends AbstractView {
+public class ContactsView extends AbstractView {
 
 	private static final long serialVersionUID = -3533557348144005469L;
 	
-	public static final String VIEW_NAME = "cases";
+	public static final String VIEW_NAME = "contacts";
 
-	private CaseGrid grid;    
-    private Button newCase;
+	private ContactGrid grid;    
+    private Button newButton;
 
 	private VerticalLayout gridLayout;
 
-    public CasesView() {
+    public ContactsView() {
         setSizeFull();
         addStyleName("crud-view");
 
-        grid = new CaseGrid();
+        grid = new ContactGrid();
 
         gridLayout = new VerticalLayout();
         gridLayout.addComponent(createTopBar());
@@ -64,7 +63,7 @@ public class CasesView extends AbstractView {
     	topLayout.setSpacing(true);
     	topLayout.setWidth("100%");
     	
-    	Label header = new Label("Cases");
+    	Label header = new Label("Contacts");
     	header.setSizeUndefined();
     	CssStyles.style(header, CssStyles.H2, CssStyles.NO_MARGIN);
     	topLayout.addComponent(header);
@@ -73,19 +72,19 @@ public class CasesView extends AbstractView {
         statusAll.setStyleName(ValoTheme.BUTTON_LINK);
         topLayout.addComponent(statusAll);
         
-    	Button statusPossible = new Button("possible", e -> grid.setStatusFilter(CaseStatus.POSSIBLE));
+    	Button statusPossible = new Button(ContactStatus.POSSIBLE.toString(), e -> grid.setStatusFilter(ContactStatus.POSSIBLE));
     	statusPossible.setStyleName(ValoTheme.BUTTON_LINK);
         topLayout.addComponent(statusPossible);
         
-        Button statusInvestigated = new Button("investigated", e -> grid.setStatusFilter(CaseStatus.INVESTIGATED));
+        Button statusInvestigated = new Button(ContactStatus.FOLLOW_UP.toString(), e -> grid.setStatusFilter(ContactStatus.FOLLOW_UP));
         statusInvestigated.setStyleName(ValoTheme.BUTTON_LINK);
         topLayout.addComponent(statusInvestigated);
         
-        newCase = new Button("New case");
-        newCase.addStyleName(ValoTheme.BUTTON_PRIMARY);
-        newCase.setIcon(FontAwesome.PLUS_CIRCLE);
-        newCase.addClickListener(e -> ControllerProvider.getCaseController().create());
-        topLayout.addComponent(newCase);
+        newButton = new Button("New contact");
+        newButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+        newButton.setIcon(FontAwesome.PLUS_CIRCLE);
+        //newButton.addClickListener(e -> ControllerProvider.getContactController().create());
+        topLayout.addComponent(newButton);
 
         topLayout.setExpandRatio(statusInvestigated, 1);
         topLayout.setStyleName("top-bar");
@@ -108,20 +107,12 @@ public class CasesView extends AbstractView {
         districtFilter.addValueChangeListener(e->grid.setDistrictFilter(((ReferenceDto)e.getProperty().getValue())));
         topLayout.addComponent(districtFilter);
 
-        ComboBox surveillanceOfficerFilter = new ComboBox();
-        surveillanceOfficerFilter.addItems(FacadeProvider.getUserFacade().getAssignableUsers(user, UserRole.SURVEILLANCE_OFFICER));
-        surveillanceOfficerFilter.addValueChangeListener(e->grid.setSurveillanceOfficerFilter(((UserReferenceDto)e.getProperty().getValue())));
-        topLayout.addComponent(surveillanceOfficerFilter);
+        ComboBox officerFilter = new ComboBox();
+        officerFilter.addItems(FacadeProvider.getUserFacade().getAssignableUsers(user, UserRole.CONTACT_OFFICER));
+        officerFilter.addValueChangeListener(e->grid.setContactOfficerFilter(((UserReferenceDto)e.getProperty().getValue())));
+        topLayout.addComponent(officerFilter);
 
-//        TextField filter = new TextField();
-//        filter.setStyleName("filter-textfield");
-//        filter.setInputPrompt("Search case");
-//        ResetButtonForTextField.extend(filter);
-//        filter.setImmediate(true);
-//        filter.addTextChangeListener(e -> grid.setFilter(e.getText()));
-//        topLayout.addComponent(filter);
-
-        topLayout.setExpandRatio(surveillanceOfficerFilter, 1);
+        topLayout.setExpandRatio(officerFilter, 1);
         return topLayout;
     }
 
@@ -134,13 +125,13 @@ public class CasesView extends AbstractView {
         grid.getSelectionModel().reset();
     }
 
-    public void refresh(CaseDataDto product) {
-        grid.refresh(product);
-        grid.scrollTo(product);
-    }
-
-    public void remove(CaseDataDto caze) {
-        grid.remove(caze);
-    }
+//    public void refresh(CaseDataDto product) {
+//        grid.refresh(product);
+//        grid.scrollTo(product);
+//    }
+//
+//    public void remove(CaseDataDto caze) {
+//        grid.remove(caze);
+//    }
 
 }

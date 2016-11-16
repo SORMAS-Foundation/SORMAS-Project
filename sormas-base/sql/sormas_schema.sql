@@ -819,4 +819,11 @@ ALTER TABLE contact ADD COLUMN description varchar(512);
  
 INSERT INTO schema_version (version_number, comment) VALUES (9, 'Contact.description');
 
+-- 2016-11-16; Contact #85
+
+ALTER TABLE contact ADD COLUMN contactofficer_id bigint;
+ALTER TABLE contact ADD CONSTRAINT fk_contact_contactofficer_id FOREIGN KEY (contactofficer_id) REFERENCES users (id);
+ALTER TABLE contact OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (10, 'Contact.contactOfficer + OWNER');
 

@@ -2,11 +2,13 @@ package de.symeda.sormas.api.contact;
 
 import java.util.Date;
 
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 
-public class ContactDto extends ContactReferenceDto {
+public class ContactIndexDto extends ContactReferenceDto {
 
 	private static final long serialVersionUID = -7764607075875188799L;
 
@@ -14,24 +16,24 @@ public class ContactDto extends ContactReferenceDto {
 	
 	public static final String PERSON = "person";
 	public static final String CAZE = "caze";
-	public static final String REPORT_DATE_TIME = "reportDateTime";
-	public static final String REPORTING_USER = "reportingUser";
+	public static final String CAZE_DISEASE = "cazeDisease";
+	public static final String CAZE_PERSON = "cazePerson";
+	public static final String CAZE_DISTRICT = "cazeDistrict";
 	public static final String LAST_CONTACT_DATE = "lastContactDate";
 	public static final String CONTACT_PROXIMITY = "contactProximity";
 	public static final String CONTACT_STATUS = "contactStatus";
 	public static final String CONTACT_OFFICER = "contactOfficer";
-	public static final String DESCRIPTION = "description";
-	
+
 	private PersonReferenceDto person;
 	private CaseReferenceDto caze;
-	private Date reportDateTime;
-	private UserReferenceDto reportingUser;
+	private Disease cazeDisease;
+	private PersonReferenceDto cazePerson;
+	private ReferenceDto cazeDistrict;
 	private Date lastContactDate;
 	private ContactProximity contactProximity;
 	private ContactStatus contactStatus;
 	private UserReferenceDto contactOfficer;
-	private String description;
-	
+
 	public PersonReferenceDto getPerson() {
 		return person;
 	}
@@ -43,18 +45,6 @@ public class ContactDto extends ContactReferenceDto {
 	}
 	public void setCaze(CaseReferenceDto caze) {
 		this.caze = caze;
-	}
-	public Date getReportDateTime() {
-		return reportDateTime;
-	}
-	public void setReportDateTime(Date reportDateTime) {
-		this.reportDateTime = reportDateTime;
-	}
-	public UserReferenceDto getReportingUser() {
-		return reportingUser;
-	}
-	public void setReportingUser(UserReferenceDto reportingUser) {
-		this.reportingUser = reportingUser;
 	}
 	public Date getLastContactDate() {
 		return lastContactDate;
@@ -74,11 +64,23 @@ public class ContactDto extends ContactReferenceDto {
 	public void setContactStatus(ContactStatus contactStatus) {
 		this.contactStatus = contactStatus;
 	}
-	public String getDescription() {
-		return description;
+	public Disease getCazeDisease() {
+		return cazeDisease;
 	}
-	public void setDescription(String description) {
-		this.description = description;
+	public void setCazeDisease(Disease cazeDisease) {
+		this.cazeDisease = cazeDisease;
+	}
+	public PersonReferenceDto getCazePerson() {
+		return cazePerson;
+	}
+	public void setCazePerson(PersonReferenceDto cazePerson) {
+		this.cazePerson = cazePerson;
+	}
+	public ReferenceDto getCazeDistrict() {
+		return cazeDistrict;
+	}
+	public void setCazeDistrict(ReferenceDto cazeDistrict) {
+		this.cazeDistrict = cazeDistrict;
 	}
 	public UserReferenceDto getContactOfficer() {
 		return contactOfficer;

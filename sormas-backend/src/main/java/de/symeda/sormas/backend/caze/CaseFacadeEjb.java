@@ -190,7 +190,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		DtoHelper.fillReferenceDto(dto, entity);
 		return dto;
 	}	
-	
+
 	public static CaseDataDto toCaseDataDto(Case entity) {
 		if (entity == null) {
 			return null;
