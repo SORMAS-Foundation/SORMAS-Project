@@ -4,13 +4,9 @@ import android.os.AsyncTask;
 
 import java.util.List;
 
-import de.symeda.sormas.api.person.CasePersonDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper.DtoGetInterface;
-import de.symeda.sormas.app.backend.common.AdoDtoHelper.DtoPostInterface;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.config.ConfigProvider;
-import de.symeda.sormas.app.backend.person.PersonDtoHelper;
 import de.symeda.sormas.app.backend.user.UserDtoHelper;
 import de.symeda.sormas.app.rest.RetroProvider;
 import retrofit2.Call;

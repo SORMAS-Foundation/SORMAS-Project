@@ -18,13 +18,13 @@ public interface PersonFacade {
 
     PersonReferenceDto getByUuid(String uuid);
     
-    CasePersonDto getCasePersonByUuid(String uuid);
+    PersonDto getPersonByUuid(String uuid);
     
-	List<CasePersonDto> getAllCasePersonsAfter(Date date);
+	List<PersonDto> getAllCasePersonsAfter(Date date);
 
     PersonReferenceDto savePerson(PersonReferenceDto dto);
 
-    CasePersonDto savePerson(CasePersonDto dto);
+    PersonDto savePerson(PersonDto dto);
 
 	List<PersonIndexDto> getIndexList(UserReferenceDto user);
 

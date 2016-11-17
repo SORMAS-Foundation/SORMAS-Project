@@ -8,6 +8,7 @@ import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.backend.person.PersonDtoHelper;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
@@ -103,7 +104,7 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 
         if (ado.getPerson() != null) {
             Person person = DatabaseHelper.getPersonDao().queryForId(ado.getPerson().getId());
-            dto.setPerson(AdoDtoHelper.toReferenceDto(person));
+            dto.setPerson(PersonDtoHelper.toReferenceDto(person));
         }
 
         dto.setInvestigatedDate(ado.getInvestigatedDate());

@@ -35,7 +35,7 @@ public class ContactController {
     public void registerViews(Navigator navigator) {
     	navigator.addView(ContactsView.VIEW_NAME, ContactsView.class);
     	navigator.addView(ContactDataView.VIEW_NAME, ContactDataView.class);
-    	//navigator.addView(CasePersonView.VIEW_NAME, CasePersonView.class);
+    	navigator.addView(ContactPersonView.VIEW_NAME, ContactPersonView.class);
 	}
     
     public void create() {
@@ -53,11 +53,10 @@ public class ContactController {
     	return FacadeProvider.getContactFacade().getIndexList(user.getUuid());
     }
 
-
-//    public void editPerson(String contactUuid) {
-//   		String navigationState = CasePersonView.VIEW_NAME + "/" + contactUuid;
-//   		SormasUI.get().getNavigator().navigateTo(navigationState);	
-//    }
+    public void editPerson(String contactUuid) {
+   		String navigationState = ContactPersonView.VIEW_NAME + "/" + contactUuid;
+   		SormasUI.get().getNavigator().navigateTo(navigationState);	
+    }
     
     public void overview() {
     	String navigationState = ContactsView.VIEW_NAME;
@@ -142,35 +141,4 @@ public class ContactController {
         
         return editComponent;
     }
-	
-//	public CommitDiscardWrapperComponent<CasePersonForm> getCasePersonEditComponent(String caseUuid) {
-//    	    	
-//    	VerticalLayout formLayout = new VerticalLayout();
-//    	CasePersonForm caseEditForm = new CasePersonForm();
-//        formLayout.addComponent(caseEditForm);
-//        formLayout.setSizeFull();
-//        formLayout.setExpandRatio(caseEditForm, 1);
-//        
-//        CaseDataDto caseDataDto = findCase(caseUuid);
-//        CasePersonDto personDto = pf.getCasePersonByUuid(caseDataDto.getPerson().getUuid());
-//        caseEditForm.setValue(personDto);
-//        
-//        final CommitDiscardWrapperComponent<CasePersonForm> editView = new CommitDiscardWrapperComponent<CasePersonForm>(caseEditForm, caseEditForm.getFieldGroup());
-//        
-//        editView.addCommitListener(new CommitListener() {
-//        	
-//        	@Override
-//        	public void onCommit() {
-//        		if (caseEditForm.getFieldGroup().isValid()) {
-//        			CasePersonDto dto = caseEditForm.getValue();
-//        			dto = pf.savePerson(dto);
-//        			Notification.show("Patient information saved", Type.TRAY_NOTIFICATION);
-//        			editPerson(dto.getCaseUuid());
-//        		}
-//        	}
-//        });
-//        
-//        return editView;
-//    }
-
 }

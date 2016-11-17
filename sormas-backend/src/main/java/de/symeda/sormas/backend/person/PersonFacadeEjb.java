@@ -14,7 +14,7 @@ import javax.ejb.Stateless;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.person.ApproximateAgeType;
-import de.symeda.sormas.api.person.CasePersonDto;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.person.PersonIndexDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
@@ -73,8 +73,8 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 	
 	@Override
-	public List<CasePersonDto> getAllCasePersonsAfter(Date date) {
-		List<CasePersonDto> result = service.getAllAfter(date).stream()
+	public List<PersonDto> getAllCasePersonsAfter(Date date) {
+		List<PersonDto> result = service.getAllAfter(date).stream()
 			.map(c -> toCasePersonDto(c))
 			.collect(Collectors.toList());
 		return result;
@@ -97,7 +97,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 	
 	@Override
-	public CasePersonDto getCasePersonByUuid(String uuid) {
+	public PersonDto getPersonByUuid(String uuid) {
 		return Optional.of(uuid)
 				.map(u -> service.getByUuid(u))
 				.map(c -> toCasePersonDto(c))
@@ -114,7 +114,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 	
 	@Override
-	public CasePersonDto savePerson(CasePersonDto dto) {
+	public PersonDto savePerson(PersonDto dto) {
 		Person person = fromCasePersonDto(dto);
 		service.ensurePersisted(person);
 		
@@ -136,7 +136,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		return bo;
 	}
 	
-	public Person fromCasePersonDto(@NotNull CasePersonDto dto) {
+	public Person fromCasePersonDto(@NotNull PersonDto dto) {
 		Person bo = service.getByUuid(dto.getUuid());
 		if(bo==null) {
 			bo = service.createPerson();
@@ -177,9 +177,7 @@ public class PersonFacadeEjb implements PersonFacade {
 
 		dto.setFirstName(entity.getFirstName());
 		dto.setLastName(entity.getLastName());
-		if (entity.getCaze() != null) {
-			dto.setCaseUuid(entity.getCaze().getUuid());
-		}
+		
 		return dto;
 	}
 	
@@ -211,16 +209,13 @@ public class PersonFacadeEjb implements PersonFacade {
 		return dto;
 	}
 	
-	public static CasePersonDto toCasePersonDto(Person entity) {
-		CasePersonDto dto = new CasePersonDto();
+	public static PersonDto toCasePersonDto(Person entity) {
+		PersonDto dto = new PersonDto();
 		DtoHelper.fillReferenceDto(dto, entity);
 		
 		dto.setFirstName(entity.getFirstName());
 		dto.setLastName(entity.getLastName());
 		dto.setSex(entity.getSex());
-		if (entity.getCaze() != null) {
-			dto.setCaseUuid(entity.getCaze().getUuid());
-		}
 		
 		dto.setPresentCondition(entity.getPresentCondition());
 		dto.setBirthdateDD(entity.getBirthdateDD());

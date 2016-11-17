@@ -8,7 +8,7 @@ import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.utils.PreciseDateAdapter;
 
-public class CasePersonDto extends PersonReferenceDto {
+public class PersonDto extends PersonReferenceDto {
 
 	private static final long serialVersionUID = -8558187171374254398L;
 

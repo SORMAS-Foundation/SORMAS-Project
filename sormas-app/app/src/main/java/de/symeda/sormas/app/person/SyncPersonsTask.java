@@ -4,7 +4,7 @@ import android.os.AsyncTask;
 
 import java.util.List;
 
-import de.symeda.sormas.api.person.CasePersonDto;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper.DtoGetInterface;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper.DtoPostInterface;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -23,16 +23,16 @@ public class SyncPersonsTask extends AsyncTask<Void, Void, Void> {
     @Override
     protected Void doInBackground(Void... params) {
 
-        new PersonDtoHelper().pullEntities(new DtoGetInterface<CasePersonDto>() {
+        new PersonDtoHelper().pullEntities(new DtoGetInterface<PersonDto>() {
             @Override
-            public Call<List<CasePersonDto>> getAll(long since) {
+            public Call<List<PersonDto>> getAll(long since) {
                 return RetroProvider.getPersonFacade().getAll(since);
             }
         }, DatabaseHelper.getPersonDao());
 
-        new PersonDtoHelper().pushEntities(new DtoPostInterface<CasePersonDto>() {
+        new PersonDtoHelper().pushEntities(new DtoPostInterface<PersonDto>() {
             @Override
-            public Call<Integer> postAll(List<CasePersonDto> dtos) {
+            public Call<Integer> postAll(List<PersonDto> dtos) {
                 // TODO postAll should return the date&time the server used as modifiedDate
                 return RetroProvider.getPersonFacade().postAll(dtos);
             }

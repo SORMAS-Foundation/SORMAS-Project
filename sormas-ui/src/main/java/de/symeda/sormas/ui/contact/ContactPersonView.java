@@ -1,9 +1,9 @@
-package de.symeda.sormas.ui.caze;
+package de.symeda.sormas.ui.contact;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.person.PersonEditForm;
 
@@ -12,20 +12,20 @@ import de.symeda.sormas.ui.person.PersonEditForm;
  * Contains the {@link PersonEditForm}.
  * @author Stefan Szczesny
  */
-public class CasePersonView extends AbstractCaseView {
+public class ContactPersonView extends AbstractContactView {
 
 	private static final long serialVersionUID = -1L;
 	
-	public static final String VIEW_NAME = "cases/person";
+	public static final String VIEW_NAME = "contacts/person";
 
-    public CasePersonView() {
+    public ContactPersonView() {
     	super(VIEW_NAME);
     }
 
     @Override
     public void enter(ViewChangeEvent event) {
     	super.enter(event);
-    	CaseDataDto caseData = FacadeProvider.getCaseFacade().getCaseDataByUuid(getEntityUuid());
-    	setEditComponent(ControllerProvider.getPersonController().getPersonEditComponent(caseData.getPerson().getUuid()));
+    	ContactDto dto = FacadeProvider.getContactFacade().getContactByUuid(getEntityUuid());
+    	setEditComponent(ControllerProvider.getPersonController().getPersonEditComponent(dto.getPerson().getUuid()));
     }
 }

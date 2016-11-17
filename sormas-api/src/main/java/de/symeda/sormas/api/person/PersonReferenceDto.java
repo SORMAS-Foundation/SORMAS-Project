@@ -10,12 +10,9 @@ public class PersonReferenceDto extends ReferenceDto {
 
 	public static final String FIRST_NAME = "firstName";
 	public static final String LAST_NAME = "lastName";
-	public static final String CASE_UUID = "caseUuid";
 
 	private String firstName;
 	private String lastName;
-	
-	private String caseUuid;
 	
 	public String getFirstName() {
 		return firstName;
@@ -31,14 +28,6 @@ public class PersonReferenceDto extends ReferenceDto {
 	
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
-	}
-	
-	public String getCaseUuid() {
-		return caseUuid;
-	}
-
-	public void setCaseUuid(String caseUuid) {
-		this.caseUuid = caseUuid;
 	}
 	
 	@Override

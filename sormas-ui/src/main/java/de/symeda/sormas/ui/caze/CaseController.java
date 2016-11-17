@@ -16,8 +16,6 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.CaseHelper;
 import de.symeda.sormas.api.caze.CaseStatus;
-import de.symeda.sormas.api.person.CasePersonDto;
-import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsFacade;
 import de.symeda.sormas.api.user.UserDto;
@@ -32,7 +30,6 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class CaseController {
 
-	private PersonFacade pf = FacadeProvider.getPersonFacade();
 	private CaseFacade cf = FacadeProvider.getCaseFacade();
 	private SymptomsFacade sf = FacadeProvider.getSymptomsFacade();
 	
@@ -165,36 +162,6 @@ public class CaseController {
         			CaseDataDto cazeDto = cf.changeCaseStatus(caseUuid, status);
         			editData(cazeDto.getUuid()); // might be done twice - that's ok		
         		});
-        
-        return editView;
-    }
-	
-	public CommitDiscardWrapperComponent<CasePersonForm> getCasePersonEditComponent(String caseUuid) {
-    	    	
-    	VerticalLayout formLayout = new VerticalLayout();
-    	CasePersonForm caseEditForm = new CasePersonForm();
-        formLayout.addComponent(caseEditForm);
-        formLayout.setSizeFull();
-        formLayout.setExpandRatio(caseEditForm, 1);
-        
-        CaseDataDto caseDataDto = findCase(caseUuid);
-        CasePersonDto personDto = pf.getCasePersonByUuid(caseDataDto.getPerson().getUuid());
-        caseEditForm.setValue(personDto);
-        
-        final CommitDiscardWrapperComponent<CasePersonForm> editView = new CommitDiscardWrapperComponent<CasePersonForm>(caseEditForm, caseEditForm.getFieldGroup());
-        
-        editView.addCommitListener(new CommitListener() {
-        	
-        	@Override
-        	public void onCommit() {
-        		if (caseEditForm.getFieldGroup().isValid()) {
-        			CasePersonDto dto = caseEditForm.getValue();
-        			dto = pf.savePerson(dto);
-        			Notification.show("Patient information saved", Type.TRAY_NOTIFICATION);
-        			editPerson(dto.getCaseUuid());
-        		}
-        	}
-        });
         
         return editView;
     }

@@ -11,7 +11,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.person.CasePersonDto;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
 
 /**
@@ -26,16 +26,16 @@ import de.symeda.sormas.api.person.PersonFacade;
 public class PersonResource {
 
 	@GET @Path("/all/{since}")
-	public List<CasePersonDto> getAllPersons(@PathParam("since") long since) {
-		List<CasePersonDto> result = FacadeProvider.getPersonFacade().getAllCasePersonsAfter(new Date(since));
+	public List<PersonDto> getAllPersons(@PathParam("since") long since) {
+		List<PersonDto> result = FacadeProvider.getPersonFacade().getAllCasePersonsAfter(new Date(since));
 		return result;
 	}
 	
 	@POST @Path("/push")
-	public Integer postPersons(List<CasePersonDto> dtos) {
+	public Integer postPersons(List<PersonDto> dtos) {
 		
 		PersonFacade personFacade = FacadeProvider.getPersonFacade();
-		for (CasePersonDto dto : dtos) {
+		for (PersonDto dto : dtos) {
 			personFacade.savePerson(dto);
 		}
 		

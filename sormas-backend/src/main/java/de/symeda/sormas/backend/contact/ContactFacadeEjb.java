@@ -94,6 +94,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
 		target.setReportDateTime(source.getReportDateTime());
 		
+		target.setLastContactDate(source.getLastContactDate());
 		target.setContactProximity(source.getContactProximity());
 		target.setContactStatus(source.getContactStatus());
 		target.setContactOfficer(userService.getByReferenceDto(source.getContactOfficer()));
@@ -124,6 +125,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setReportingUser(UserFacadeEjb.toReferenceDto(source.getReportingUser()));
 		target.setReportDateTime(source.getReportDateTime());
 		
+		target.setLastContactDate(source.getLastContactDate());
 		target.setContactProximity(source.getContactProximity());
 		target.setContactStatus(source.getContactStatus());
 		target.setContactOfficer(UserFacadeEjb.toReferenceDto(source.getContactOfficer()));
@@ -145,6 +147,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setCazeDisease(source.getCaze().getDisease());
 		target.setCazeDistrict(DtoHelper.toReferenceDto(source.getCaze().getDistrict()));
 		
+		target.setLastContactDate(source.getLastContactDate());
 		target.setContactProximity(source.getContactProximity());
 		target.setContactStatus(source.getContactStatus());
 		target.setContactOfficer(UserFacadeEjb.toReferenceDto(source.getContactOfficer()));

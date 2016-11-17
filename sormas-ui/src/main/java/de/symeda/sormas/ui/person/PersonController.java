@@ -3,8 +3,12 @@ package de.symeda.sormas.ui.person;
 import java.util.function.Consumer;
 
 import com.vaadin.server.Sizeable.Unit;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.Notification.Type;
+import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -98,4 +102,33 @@ public class PersonController {
         
         return editComponent;
     }  
+    
+	
+	public CommitDiscardWrapperComponent<PersonEditForm> getPersonEditComponent(String personUuid) {
+    	    	
+    	VerticalLayout formLayout = new VerticalLayout();
+    	PersonEditForm caseEditForm = new PersonEditForm();
+        formLayout.addComponent(caseEditForm);
+        formLayout.setSizeFull();
+        formLayout.setExpandRatio(caseEditForm, 1);
+        
+        PersonDto personDto = personFacade.getPersonByUuid(personUuid);
+        caseEditForm.setValue(personDto);
+        
+        final CommitDiscardWrapperComponent<PersonEditForm> editView = new CommitDiscardWrapperComponent<PersonEditForm>(caseEditForm, caseEditForm.getFieldGroup());
+        
+        editView.addCommitListener(new CommitListener() {
+        	
+        	@Override
+        	public void onCommit() {
+        		if (caseEditForm.getFieldGroup().isValid()) {
+        			PersonDto dto = caseEditForm.getValue();
+        			dto = personFacade.savePerson(dto);
+        			Notification.show("Person data saved", Type.TRAY_NOTIFICATION);
+        		}
+        	}
+        });
+        
+        return editView;
+    }
 }

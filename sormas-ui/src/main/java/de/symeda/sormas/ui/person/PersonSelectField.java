@@ -9,7 +9,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.I18nProperties;
-import de.symeda.sormas.api.person.CasePersonDto;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 
 @SuppressWarnings("serial")
@@ -37,7 +37,7 @@ public class PersonSelectField extends CustomField<PersonReferenceDto> {
 		nameLayout.setWidth(100, Unit.PERCENTAGE);
 		
 		firstNameField.setCaption(
-				I18nProperties.getFieldCaption(CasePersonDto.I18N_PREFIX, CasePersonDto.FIRST_NAME, CasePersonDto.FIRST_NAME));
+				I18nProperties.getFieldCaption(PersonDto.I18N_PREFIX, PersonDto.FIRST_NAME, PersonDto.FIRST_NAME));
 		firstNameField.setWidth(100, Unit.PERCENTAGE);
 		firstNameField.addValueChangeListener(e -> {
 			personGrid.setFirstNameFilter((String)e.getProperty().getValue());	
@@ -46,7 +46,7 @@ public class PersonSelectField extends CustomField<PersonReferenceDto> {
 		nameLayout.addComponent(firstNameField);
 		
 		lastNameField.setCaption(
-				I18nProperties.getFieldCaption(CasePersonDto.I18N_PREFIX, CasePersonDto.LAST_NAME, CasePersonDto.LAST_NAME));
+				I18nProperties.getFieldCaption(PersonDto.I18N_PREFIX, PersonDto.LAST_NAME, PersonDto.LAST_NAME));
 		lastNameField.setWidth(100, Unit.PERCENTAGE);
 		lastNameField.addValueChangeListener(e -> {
 			personGrid.setLastNameFilter((String)e.getProperty().getValue());
@@ -67,7 +67,7 @@ public class PersonSelectField extends CustomField<PersonReferenceDto> {
 		
 		createNewPerson = new OptionGroup(null);
 		createNewPerson.addItem(CREATE_PERSON);
-		createNewPerson.setItemCaption(CREATE_PERSON, I18nProperties.getFieldCaption(CasePersonDto.I18N_PREFIX, "createNew", "createNew"));
+		createNewPerson.setItemCaption(CREATE_PERSON, I18nProperties.getFieldCaption(PersonDto.I18N_PREFIX, "createNew", "createNew"));
 		// unselect grid when "create new" is selected
 		createNewPerson.addValueChangeListener(e -> {
 			if (e.getProperty().getValue() != null) {
@@ -86,7 +86,7 @@ public class PersonSelectField extends CustomField<PersonReferenceDto> {
 		if (personGrid == null) {
 			personGrid = new PersonGrid();
 			personGrid.setHeightByRows(6);
-			personGrid.setCaption(I18nProperties.getFieldCaption(CasePersonDto.I18N_PREFIX, "select", "select"));
+			personGrid.setCaption(I18nProperties.getFieldCaption(PersonDto.I18N_PREFIX, "select", "select"));
 			personGrid.setSelectionMode(SelectionMode.SINGLE);
 			personGrid.setFirstNameFilter(firstNameField.getValue());
 			personGrid.setLastNameFilter(lastNameField.getValue());

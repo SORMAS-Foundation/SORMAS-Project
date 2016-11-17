@@ -1,16 +1,19 @@
 package de.symeda.sormas.app.backend.person;
 
-import de.symeda.sormas.api.person.CasePersonDto;
+import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.location.LocationDtoHelper;
+import de.symeda.sormas.app.backend.user.User;
 
 /**
  * Created by Martin Wahnschaffe on 27.07.2016.
  */
-public class PersonDtoHelper extends AdoDtoHelper<Person, CasePersonDto> {
+public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
 
     private LocationDtoHelper locationHelper = new LocationDtoHelper();
 
@@ -20,14 +23,13 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, CasePersonDto> {
     }
 
     @Override
-    public CasePersonDto createDto() {
-        return new CasePersonDto();
+    public PersonDto createDto() {
+        return new PersonDto();
     }
 
     @Override
-    public void fillInnerFromDto(Person ado, CasePersonDto dto) {
+    public void fillInnerFromDto(Person ado, PersonDto dto) {
 
-        ado.setCaseUuid(dto.getCaseUuid());
         ado.setFirstName(dto.getFirstName());
         ado.setLastName(dto.getLastName());
         ado.setSex(dto.getSex());
@@ -53,9 +55,8 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, CasePersonDto> {
     }
 
     @Override
-    public void fillInnerFromAdo(CasePersonDto dto, Person ado) {
+    public void fillInnerFromAdo(PersonDto dto, Person ado) {
 
-        dto.setCaseUuid(ado.getCaseUuid());
         dto.setFirstName(ado.getFirstName());
         dto.setLastName(ado.getLastName());
         dto.setSex(ado.getSex());
@@ -84,5 +85,18 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, CasePersonDto> {
         }
 
         // TODO
+    }
+
+    public static PersonReferenceDto toReferenceDto(Person ado) {
+        if (ado == null) {
+            return null;
+        }
+        PersonReferenceDto dto = new PersonReferenceDto();
+        fillReferenceDto(dto, ado);
+
+        dto.setFirstName(ado.getFirstName());
+        dto.setLastName(ado.getLastName());
+
+        return dto;
     }
 }

@@ -15,6 +15,6 @@ public abstract class AbstractContactView extends AbstractSubNavigationView {
 		menu.removeAllViews();
 		menu.addView(ContactsView.VIEW_NAME, "Contacts List");
 		menu.addView(ContactDataView.VIEW_NAME, "Contact Data", entityUuid);
-//		menu.addView(CasePersonView.VIEW_NAME, "Patient Information", entityUuid);
+		menu.addView(ContactPersonView.VIEW_NAME, "Person Data", entityUuid);
     }
 }
