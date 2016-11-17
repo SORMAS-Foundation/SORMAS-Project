@@ -78,6 +78,9 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 		return result;
 	}
 
+	/**
+	 * TODO use matching ReferenceDto (e.g. UserReferenceDto)
+	 */
 	public ADO getByReferenceDto(ReferenceDto dto) {
 		if (dto != null) {
 			return getByUuid(dto.getUuid());

@@ -9,6 +9,7 @@ import com.vaadin.data.util.BeanItem;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.AbstractTextField;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Field;
@@ -199,7 +200,15 @@ public abstract class AbstractEditForm <DTO extends DataTransferObject> extends 
     	}
     }
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
+	protected <T extends Field> T addCustomField(String fieldId, Class<?> dataType, Class<T> fieldType) {
+    	T field = getFieldGroup().getFieldFactory().createField(dataType, fieldType);
+		formatField(field, fieldId);
+		getContent().addComponent(field, fieldId);
+		return field;
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	protected <T extends Field> T addField(String propertyId) {
 		return (T) addField(propertyId, Field.class);
 	}
@@ -207,53 +216,68 @@ public abstract class AbstractEditForm <DTO extends DataTransferObject> extends 
 	@SuppressWarnings("rawtypes")
 	protected <T extends Field> T addField(String propertyId, Class<T> fieldType) {
 		T field = getFieldGroup().buildAndBind(propertyId, (Object)propertyId, fieldType);
-
+		formatField(field, propertyId);
+		getContent().addComponent(field, propertyId);
+        return field;
+	}
+	
+	@SuppressWarnings("rawtypes")
+	protected <T extends Field> T formatField(T field, String propertyId) {
 		field.setCaption(I18nProperties.getFieldCaption(getPropertyI18nPrefix(), propertyId, field.getCaption()));
 		if (field instanceof AbstractField) {
 			AbstractField abstractField = (AbstractField)field;
 			abstractField.setDescription(I18nProperties.getFieldDescription(
 					getPropertyI18nPrefix(), propertyId, abstractField.getDescription()));
 		}
-		
 		field.setWidth(100, Unit.PERCENTAGE);
-        
-		getContent().addComponent(field, propertyId);
-        return field;
+		return field;
 	}
 	
-	protected void setReadOnly(boolean readOnly, String ...propertyIds) {
-		for (String propertyId : propertyIds) {
-			getFieldGroup().getField(propertyId).setReadOnly(readOnly);
+	protected Field<?> getField(String fieldOrPropertyId) {
+		Field<?> field = getFieldGroup().getField(fieldOrPropertyId);
+		if (field == null) {
+			// try to get the field from the layout
+			Component component = getContent().getComponent(fieldOrPropertyId);
+			if (component instanceof Field<?>) {
+				field = (Field<?>)component;
+			}
+		}
+		return field;
+	}
+	
+	protected void setReadOnly(boolean readOnly, String ...fieldOrPropertyIds) {
+		for (String propertyId : fieldOrPropertyIds) {
+			getField(propertyId).setReadOnly(readOnly);
 		}
 	}
 	
-	protected void setVisible(boolean visible, String ...propertyIds) {
-		for (String propertyId : propertyIds) {
-			getFieldGroup().getField(propertyId).setVisible(visible);
+	protected void setVisible(boolean visible, String ...fieldOrPropertyIds) {
+		for (String propertyId : fieldOrPropertyIds) {
+			getField(propertyId).setVisible(visible);
 		}
 	}
 	
 	protected void discard(String ...propertyIds) {
 		for (String propertyId : propertyIds) {
-			getFieldGroup().getField(propertyId).discard();
+			getField(propertyId).discard();
 		}
 	}
 	
-	protected void setRequired(boolean required, String ...propertyIds) {
-		for (String propertyId : propertyIds) {
-			getFieldGroup().getField(propertyId).setRequired(required);
+	protected void setRequired(boolean required, String ...fieldOrPropertyIds) {
+		for (String propertyId : fieldOrPropertyIds) {
+			getField(propertyId).setRequired(required);
 		}
 	}
 
-	protected void addFieldListener(String propertyId, ValueChangeListener ...listeners) {
+	protected void addFieldListeners(String fieldOrPropertyId, ValueChangeListener ...listeners) {
 		for (ValueChangeListener listener : listeners) {
-			getFieldGroup().getField(propertyId).addValueChangeListener(listener);
+			getField(fieldOrPropertyId).addValueChangeListener(listener);
 		}
 	}
 	
-	protected void addValidator(String propertyId, Validator... validators) {
+	protected void addValidators(String fieldOrPropertyId, Validator... validators) {
 		for (Validator validator : validators) {
-			getFieldGroup().getField(propertyId).addValidator(validator);
+			getField(fieldOrPropertyId).addValidator(validator);
 		}
 	}
 

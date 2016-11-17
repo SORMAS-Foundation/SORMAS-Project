@@ -16,6 +16,7 @@ import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.caze.CaseController;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.AbstractView;
@@ -83,7 +84,7 @@ public class ContactsView extends AbstractView {
         newButton = new Button("New contact");
         newButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
         newButton.setIcon(FontAwesome.PLUS_CIRCLE);
-        //newButton.addClickListener(e -> ControllerProvider.getContactController().create());
+        newButton.addClickListener(e -> ControllerProvider.getContactController().create());
         topLayout.addComponent(newButton);
 
         topLayout.setExpandRatio(statusInvestigated, 1);

@@ -5,6 +5,8 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
+import de.symeda.sormas.api.user.UserReferenceDto;
+
 @Remote
 public interface CaseFacade {
 
@@ -19,4 +21,6 @@ public interface CaseFacade {
    	CaseDataDto changeCaseStatus(String uuid, CaseStatus targetStatus);
 
 	List<CaseReferenceDto> getAllCasesAfterAsReference(Date date, String userUuid);
+
+	List<CaseReferenceDto> getSelectableCases(UserReferenceDto user);
 }

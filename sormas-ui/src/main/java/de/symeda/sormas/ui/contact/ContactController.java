@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
+import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 
@@ -16,10 +17,12 @@ import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
+import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class ContactController {
 
@@ -35,10 +38,10 @@ public class ContactController {
     	//navigator.addView(CasePersonView.VIEW_NAME, CasePersonView.class);
 	}
     
-//    public void create() {
-//    	CommitDiscardWrapperComponent<ContactCreateForm> createComponent = getContactCreateComponent();
-//    	VaadinUiUtil.showModalPopupWindow(createComponent, "Create new contact");    	
-//    }
+    public void create() {
+    	CommitDiscardWrapperComponent<ContactCreateForm> createComponent = getContactCreateComponent();
+    	VaadinUiUtil.showModalPopupWindow(createComponent, "Create new contact");    	
+    }
     
     public void editData(String contactUuid) {
    		String navigationState = ContactDataView.VIEW_NAME + "/" + contactUuid;
@@ -90,27 +93,33 @@ public class ContactController {
     	return contact;
     }
     
-//    public CommitDiscardWrapperComponent<ContactCreateForm> getContactCreateComponent() {
-//    	
-//    	ContactCreateForm createForm = new ContactCreateForm();
-//        createForm.setValue(createNewContact());
-//        final CommitDiscardWrapperComponent<ContactCreateForm> createComponent = new CommitDiscardWrapperComponent<ContactCreateForm>(createForm, createForm.getFieldGroup());
-//        createComponent.setWidth(520, Unit.PIXELS);
-//        
-//        createComponent.addCommitListener(new CommitListener() {
-//        	@Override
-//        	public void onCommit() {
-//        		if (createForm.getFieldGroup().isValid()) {
-//        			ContactDto dto = createForm.getValue();
-//        			cof.saveContact(dto);
-//        			Notification.show("New contact created", Type.TRAY_NOTIFICATION);
-//        			editData(dto.getUuid());
-//        		}
-//        	}
-//        });
-//        
-//        return createComponent;
-//    }
+    public CommitDiscardWrapperComponent<ContactCreateForm> getContactCreateComponent() {
+    	
+    	ContactCreateForm createForm = new ContactCreateForm();
+        createForm.setValue(createNewContact());
+        final CommitDiscardWrapperComponent<ContactCreateForm> createComponent = new CommitDiscardWrapperComponent<ContactCreateForm>(createForm, createForm.getFieldGroup());
+        createComponent.setWidth(520, Unit.PIXELS);
+        
+        createComponent.addCommitListener(new CommitListener() {
+        	@Override
+        	public void onCommit() {
+        		if (createForm.getFieldGroup().isValid()) {
+        			final ContactDto dto = createForm.getValue();
+        			
+        			ControllerProvider.getPersonController().selectOrCreatePerson(
+        					createForm.getPersonFirstName(), createForm.getPersonLastName(), 
+        					person -> {
+        						dto.setPerson(person);
+        						cof.saveContact(dto);
+        	        			Notification.show("New contact created", Type.TRAY_NOTIFICATION);
+        	        			editData(dto.getUuid());
+        					});
+        		}
+        	}
+        });
+        
+        return createComponent;
+    }
 
     public CommitDiscardWrapperComponent<ContactDataForm> getContactDataEditComponent(final String contactUuid) {
     	

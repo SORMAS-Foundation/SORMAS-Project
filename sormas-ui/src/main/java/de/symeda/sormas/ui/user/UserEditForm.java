@@ -93,11 +93,11 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
     	updateAssociatedOfficerField();
     	
     	setRequired(true, UserDto.FIRST_NAME, UserDto.LAST_NAME, UserDto.USER_NAME, UserDto.USER_ROLES);
-    	addValidator(UserDto.USER_NAME, new UserNameValidator());
+    	addValidators(UserDto.USER_NAME, new UserNameValidator());
     	
-    	addFieldListener(UserDto.FIRST_NAME, e -> suggestUserName());
-    	addFieldListener(UserDto.LAST_NAME, e -> suggestUserName());
-    	addFieldListener(UserDto.USER_ROLES, e -> updateAssociatedOfficerField());
+    	addFieldListeners(UserDto.FIRST_NAME, e -> suggestUserName());
+    	addFieldListeners(UserDto.LAST_NAME, e -> suggestUserName());
+    	addFieldListeners(UserDto.USER_ROLES, e -> updateAssociatedOfficerField());
     }
 
     private void updateAssociatedOfficerField() {

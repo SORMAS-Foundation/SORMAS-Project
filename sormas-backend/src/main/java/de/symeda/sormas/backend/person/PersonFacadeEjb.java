@@ -2,6 +2,7 @@ package de.symeda.sormas.backend.person;
 
 import java.sql.Timestamp;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -15,42 +16,65 @@ import javax.validation.constraints.NotNull;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.CasePersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
+import de.symeda.sormas.api.person.PersonIndexDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
+import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 
 @Stateless(name = "PersonFacade")
 public class PersonFacadeEjb implements PersonFacade {
 	
 	@EJB
-	private PersonService personService;
+	private PersonService service;
 	@EJB
 	private FacilityService facilityService;
 	@EJB
 	private LocationFacadeEjbLocal locationFacade;
+	@EJB
+	private UserService userService;
+
 	
 	@Override
 	public List<PersonReferenceDto> getAllPersons() {
 
-		return personService.getAll().stream()
+		return service.getAll().stream()
 			.map(c -> toReferenceDto(c))
 			.collect(Collectors.toList());
 	}
 	
 	@Override
+	public List<PersonIndexDto> getIndexList(UserReferenceDto userRef) {
+		
+		User user = userService.getByReferenceDto(userRef);
+		
+		if (user == null) {
+			return Collections.emptyList();
+		}
+
+		// TODO match User
+		
+		return service.getAllAfter(null).stream()
+			.map(c -> toIndexDto(c))
+			.collect(Collectors.toList());
+	}
+	
+	@Override
 	public List<PersonReferenceDto> getAllPersonsAfter(Date date) {
-		return personService.getAllAfter(date).stream()
+		return service.getAllAfter(date).stream()
 			.map(c -> toReferenceDto(c))
 			.collect(Collectors.toList());
 	}
 	
 	@Override
 	public List<CasePersonDto> getAllCasePersonsAfter(Date date) {
-		List<CasePersonDto> result = personService.getAllAfter(date).stream()
+		List<CasePersonDto> result = service.getAllAfter(date).stream()
 			.map(c -> toCasePersonDto(c))
 			.collect(Collectors.toList());
 		return result;
@@ -59,7 +83,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	@Override
 	public List<PersonReferenceDto> getAllNoCasePersons() {
 
-		return personService.getAllNoCase().stream()
+		return service.getAllNoCase().stream()
 				.map(c -> toReferenceDto(c))
 				.collect(Collectors.toList());
 	}
@@ -67,7 +91,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	@Override
 	public PersonReferenceDto getByUuid(String uuid) {
 		return Optional.of(uuid)
-				.map(u -> personService.getByUuid(u))
+				.map(u -> service.getByUuid(u))
 				.map(c -> toReferenceDto(c))
 				.orElse(null);
 	}
@@ -75,7 +99,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	@Override
 	public CasePersonDto getCasePersonByUuid(String uuid) {
 		return Optional.of(uuid)
-				.map(u -> personService.getByUuid(u))
+				.map(u -> service.getByUuid(u))
 				.map(c -> toCasePersonDto(c))
 				.orElse(null);
 	}
@@ -83,7 +107,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	@Override
 	public PersonReferenceDto savePerson(PersonReferenceDto dto) {
 		Person person = toPerson(dto);
-		personService.ensurePersisted(person);
+		service.ensurePersisted(person);
 		
 		return toReferenceDto(person);
 		
@@ -92,16 +116,16 @@ public class PersonFacadeEjb implements PersonFacade {
 	@Override
 	public CasePersonDto savePerson(CasePersonDto dto) {
 		Person person = fromCasePersonDto(dto);
-		personService.ensurePersisted(person);
+		service.ensurePersisted(person);
 		
 		return toCasePersonDto(person);
 		
 	}
 	
 	public Person toPerson(@NotNull PersonReferenceDto dto) {
-		Person bo = personService.getByUuid(dto.getUuid());
+		Person bo = service.getByUuid(dto.getUuid());
 		if(bo==null) {
-			bo = personService.createPerson();
+			bo = service.createPerson();
 			if (dto.getCreationDate() != null) {
 				bo.setCreationDate(new Timestamp(dto.getCreationDate().getTime()));
 			}
@@ -113,9 +137,9 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 	
 	public Person fromCasePersonDto(@NotNull CasePersonDto dto) {
-		Person bo = personService.getByUuid(dto.getUuid());
+		Person bo = service.getByUuid(dto.getUuid());
 		if(bo==null) {
-			bo = personService.createPerson();
+			bo = service.createPerson();
 			bo.setUuid(dto.getUuid());
 			if (dto.getCreationDate() != null) {
 				bo.setCreationDate(new Timestamp(dto.getCreationDate().getTime()));
@@ -156,6 +180,34 @@ public class PersonFacadeEjb implements PersonFacade {
 		if (entity.getCaze() != null) {
 			dto.setCaseUuid(entity.getCaze().getUuid());
 		}
+		return dto;
+	}
+	
+	public static PersonIndexDto toIndexDto(Person entity) {
+		PersonIndexDto dto = new PersonIndexDto();
+		DtoHelper.fillReferenceDto(dto, entity);
+
+		dto.setFirstName(entity.getFirstName());
+		dto.setLastName(entity.getLastName());
+		dto.setSex(entity.getSex());
+		dto.setPresentCondition(entity.getPresentCondition());
+		
+		if (entity.getBirthdateYYYY() != null) {
+			Calendar birthdate = new GregorianCalendar();
+			birthdate.set(entity.getBirthdateYYYY(), entity.getBirthdateMM()!=null?entity.getBirthdateMM()-1:0, entity.getBirthdateDD()!=null?entity.getBirthdateDD():1);
+			
+			Pair<Integer, ApproximateAgeType> pair = DateHelper.getApproximateAge(
+					birthdate.getTime(),
+					entity.getDeathDate()
+					);
+			dto.setApproximateAge(pair.getElement0());
+			dto.setApproximateAgeType(pair.getElement1());
+		}
+		else {
+			dto.setApproximateAge(entity.getApproximateAge());
+			dto.setApproximateAgeType(entity.getApproximateAgeType());
+		}
+
 		return dto;
 	}
 	

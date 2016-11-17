@@ -140,7 +140,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 			case CASE:
 				FieldHelper.setFirstVisibleClearOthers(caze, eventField, contact);
 				FieldHelper.setFirstRequired(caze, eventField, contact);
-				List<CaseReferenceDto> cases = FacadeProvider.getCaseFacade().getAllCasesAfterAsReference(null, LoginHelper.getCurrentUser().getUuid());
+				List<CaseReferenceDto> cases = FacadeProvider.getCaseFacade().getSelectableCases(LoginHelper.getCurrentUserAsReference());
 				Object value = caze.getValue();
 				caze.removeAllItems();
 				caze.addItems(cases);

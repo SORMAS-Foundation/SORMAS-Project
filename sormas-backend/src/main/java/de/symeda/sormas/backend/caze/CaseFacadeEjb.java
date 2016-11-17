@@ -16,6 +16,7 @@ import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.CaseHelper;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.CaseStatus;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.person.Person;
@@ -72,6 +73,16 @@ public class CaseFacadeEjb implements CaseFacade {
 		User user = userService.getByUuid(userUuid);
 		
 		return caseService.getAllAfter(date, user).stream()
+			.map(c -> toReferenceDto(c))
+			.collect(Collectors.toList());
+	}
+	
+	@Override
+	public List<CaseReferenceDto> getSelectableCases(UserReferenceDto userRef) {
+		
+		User user = userService.getByReferenceDto(userRef);
+
+		return caseService.getAllAfter(null, user).stream()
 			.map(c -> toReferenceDto(c))
 			.collect(Collectors.toList());
 	}

@@ -12,7 +12,7 @@ public class CasePersonDto extends PersonReferenceDto {
 
 	private static final long serialVersionUID = -8558187171374254398L;
 
-	public static final String I18N_PREFIX = "CasePerson";
+	public static final String I18N_PREFIX = "Person";
 
 	public static final String SEX = "sex";
 

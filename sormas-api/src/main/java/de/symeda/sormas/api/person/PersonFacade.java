@@ -5,6 +5,8 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
+import de.symeda.sormas.api.user.UserReferenceDto;
+
 @Remote
 public interface PersonFacade {
 
@@ -23,5 +25,7 @@ public interface PersonFacade {
     PersonReferenceDto savePerson(PersonReferenceDto dto);
 
     CasePersonDto savePerson(CasePersonDto dto);
+
+	List<PersonIndexDto> getIndexList(UserReferenceDto user);
 
 }
