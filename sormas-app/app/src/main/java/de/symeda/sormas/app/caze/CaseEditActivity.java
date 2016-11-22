@@ -56,6 +56,8 @@ public class CaseEditActivity extends AppCompatActivity {
     private CharSequence titles[];
     private String caseUuid;
 
+    private int currentTab;
+
 //
 //    private AlarmManager alarmMgr;
 //    private PendingIntent alarmIntent;
@@ -101,9 +103,33 @@ public class CaseEditActivity extends AppCompatActivity {
         return true;
     }
 
+    /*
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        switch(currentTab) {
+            // case data tab
+            case 0:
+                menu.setGroupVisible(R.id.group_action_help,false);
+                break;
+
+            // case person tab
+            case 1:
+                menu.setGroupVisible(R.id.group_action_help,false);
+                break;
+
+            // case symptoms tab
+            case 2:
+                menu.setGroupVisible(R.id.group_action_reload,true);
+                break;
+        }
+
+        return true;
+    }
+    */
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int currentTab = pager.getCurrentItem();
+        currentTab = pager.getCurrentItem();
         switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button
             case android.R.id.home:
