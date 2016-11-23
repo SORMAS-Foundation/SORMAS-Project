@@ -2,6 +2,7 @@ package de.symeda.sormas.ui.contact;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
@@ -73,21 +74,20 @@ public class ContactsView extends AbstractView {
         statusAll.setStyleName(ValoTheme.BUTTON_LINK);
         topLayout.addComponent(statusAll);
         
-    	Button statusPossible = new Button(ContactStatus.POSSIBLE.toString(), e -> grid.setStatusFilter(ContactStatus.POSSIBLE));
-    	statusPossible.setStyleName(ValoTheme.BUTTON_LINK);
-        topLayout.addComponent(statusPossible);
-        
-        Button statusInvestigated = new Button(ContactStatus.FOLLOW_UP.toString(), e -> grid.setStatusFilter(ContactStatus.FOLLOW_UP));
-        statusInvestigated.setStyleName(ValoTheme.BUTTON_LINK);
-        topLayout.addComponent(statusInvestigated);
+        for (ContactStatus status : ContactStatus.values()) {
+	    	Button statusButton = new Button(status.toString(), e -> grid.setStatusFilter(status));
+	    	statusButton.setStyleName(ValoTheme.BUTTON_LINK);
+	        topLayout.addComponent(statusButton);
+        }
         
         newButton = new Button("New contact");
         newButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
         newButton.setIcon(FontAwesome.PLUS_CIRCLE);
         newButton.addClickListener(e -> ControllerProvider.getContactController().create());
         topLayout.addComponent(newButton);
-
-        topLayout.setExpandRatio(statusInvestigated, 1);
+        topLayout.setComponentAlignment(newButton, Alignment.MIDDLE_RIGHT);
+        topLayout.setExpandRatio(newButton, 1);
+        
         topLayout.setStyleName("top-bar");
         return topLayout;
     }
