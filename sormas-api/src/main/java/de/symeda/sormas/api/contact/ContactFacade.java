@@ -5,6 +5,8 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
+import de.symeda.sormas.api.caze.CaseReferenceDto;
+
 @Remote
 public interface ContactFacade {
 
@@ -12,7 +14,11 @@ public interface ContactFacade {
 
 	List<ContactIndexDto> getIndexList(String userUuid);
 
+	List<ContactIndexDto> getIndexListByCase(String userUuid, CaseReferenceDto caseRef);
+
 	ContactDto getContactByUuid(String uuid);
     
 	ContactDto saveContact(ContactDto dto);
+
+	ContactReferenceDto getReferenceByUuid(String uuid);
 }

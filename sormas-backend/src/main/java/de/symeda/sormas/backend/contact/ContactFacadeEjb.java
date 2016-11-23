@@ -10,10 +10,12 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
@@ -64,10 +66,31 @@ public class ContactFacadeEjb implements ContactFacade {
 			.collect(Collectors.toList());
 	}
 	
+	@Override
+	public List<ContactIndexDto> getIndexListByCase(String userUuid, CaseReferenceDto caseRef) {
+		
+		User user = userService.getByUuid(userUuid);
+		
+		if (user == null) {
+			return Collections.emptyList();
+		}
+		
+		Case caze = caseService.getByReferenceDto(caseRef);
+		
+		return service.getAllByCase(caze, user).stream()
+			.map(c -> toIndexDto(c))
+			.collect(Collectors.toList());
+	}
+	
 
 	@Override
 	public ContactDto getContactByUuid(String uuid) {
 		return toDto(service.getByUuid(uuid));
+	}
+	
+	@Override
+	public ContactReferenceDto getReferenceByUuid(String uuid) {
+		return toReferenceDto(service.getByUuid(uuid));
 	}
 	
 	@Override

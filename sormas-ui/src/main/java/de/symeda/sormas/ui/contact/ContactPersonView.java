@@ -25,7 +25,7 @@ public class ContactPersonView extends AbstractContactView {
     @Override
     public void enter(ViewChangeEvent event) {
     	super.enter(event);
-    	ContactDto dto = FacadeProvider.getContactFacade().getContactByUuid(getEntityUuid());
-    	setEditComponent(ControllerProvider.getPersonController().getPersonEditComponent(dto.getPerson().getUuid()));
+    	ContactDto dto = FacadeProvider.getContactFacade().getContactByUuid(getContactRef().getUuid());
+    	setSubComponent(ControllerProvider.getPersonController().getPersonEditComponent(dto.getPerson().getUuid()));
     }
 }

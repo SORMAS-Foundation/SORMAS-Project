@@ -206,7 +206,7 @@ public class TaskGrid extends Grid implements ItemClickListener {
 		if (TaskDto.CONTEXT_REFERENCE.equals(event.getPropertyId())) {
 			switch (task.getTaskContext()) {
 			case CASE:
-				ControllerProvider.getCaseController().editData(task.getCaze().getUuid());
+				ControllerProvider.getCaseController().navigateToData(task.getCaze().getUuid());
 				return;
 			case CONTACT:
 				return;

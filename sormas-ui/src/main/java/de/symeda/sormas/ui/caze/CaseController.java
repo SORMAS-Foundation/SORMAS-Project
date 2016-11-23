@@ -42,6 +42,7 @@ public class CaseController {
     	navigator.addView(CaseDataView.VIEW_NAME, CaseDataView.class);
     	navigator.addView(CasePersonView.VIEW_NAME, CasePersonView.class);
     	navigator.addView(CaseSymptomsView.VIEW_NAME, CaseSymptomsView.class);
+    	navigator.addView(CaseContactsView.VIEW_NAME, CaseContactsView.class);
 	}
     
     public void create() {
@@ -49,22 +50,22 @@ public class CaseController {
     	VaadinUiUtil.showModalPopupWindow(caseCreateComponent, "Create new case");    	
     }
     
-    public void editData(String caseUuid) {
+    public void navigateToData(String caseUuid) {
    		String navigationState = CaseDataView.VIEW_NAME + "/" + caseUuid;
    		SormasUI.get().getNavigator().navigateTo(navigationState);	
     }
 
-    public void editSymptoms(String caseUuid) {
+    public void navigateToSymptoms(String caseUuid) {
    		String navigationState = CaseSymptomsView.VIEW_NAME + "/" + caseUuid;
    		SormasUI.get().getNavigator().navigateTo(navigationState);	
     }
 
-    public void editPerson(String caseUuid) {
+    public void nativagateToPerson(String caseUuid) {
    		String navigationState = CasePersonView.VIEW_NAME + "/" + caseUuid;
    		SormasUI.get().getNavigator().navigateTo(navigationState);	
     }
     
-    public void overview() {
+    public void navigateToIndex() {
     	String navigationState = CasesView.VIEW_NAME;
     	SormasUI.get().getNavigator().navigateTo(navigationState);
     }
@@ -126,7 +127,7 @@ public class CaseController {
         			CaseDataDto dto = caseCreateForm.getValue();
         			cf.saveCase(dto);
         			Notification.show("New case created", Type.TRAY_NOTIFICATION);
-        			editData(dto.getUuid());
+        			navigateToData(dto.getUuid());
         		}
         	}
         });
@@ -148,7 +149,7 @@ public class CaseController {
         			CaseDataDto cazeDto = caseEditForm.getValue();
         			cazeDto = cf.saveCase(cazeDto);
         			Notification.show("Case data saved", Type.TRAY_NOTIFICATION);
-        			editData(cazeDto.getUuid());
+        			navigateToData(cazeDto.getUuid());
         		}
         	}
         });
@@ -160,7 +161,7 @@ public class CaseController {
         				editView.commit();
         			}
         			CaseDataDto cazeDto = cf.changeCaseStatus(caseUuid, status);
-        			editData(cazeDto.getUuid()); // might be done twice - that's ok		
+        			navigateToData(cazeDto.getUuid()); // might be done twice - that's ok		
         		});
         
         return editView;
@@ -188,7 +189,7 @@ public class CaseController {
         			SymptomsDto dto = caseEditForm.getValue();
         			dto = sf.saveSymptoms(dto);
         			Notification.show("Case symptoms saved", Type.TRAY_NOTIFICATION);
-        			editSymptoms(caseUuid);
+        			navigateToSymptoms(caseUuid);
         		}
         	}
         });

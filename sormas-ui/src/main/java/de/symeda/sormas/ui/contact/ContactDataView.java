@@ -23,6 +23,6 @@ public class ContactDataView extends AbstractContactView {
     @Override
     public void enter(ViewChangeEvent event) {
     	super.enter(event);
-    	setEditComponent(ControllerProvider.getContactController().getContactDataEditComponent(getEntityUuid()));
+    	setSubComponent(ControllerProvider.getContactController().getContactDataEditComponent(getContactRef().getUuid()));
     }
 }

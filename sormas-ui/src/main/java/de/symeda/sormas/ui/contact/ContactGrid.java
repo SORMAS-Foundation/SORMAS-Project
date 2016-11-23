@@ -7,21 +7,36 @@ import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.MethodProperty;
 import com.vaadin.data.util.filter.Compare.Equal;
 import com.vaadin.ui.Grid;
+import com.vaadin.ui.renderers.DateRenderer;
+import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactStatus;
+import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.login.LoginHelper;
+import de.symeda.sormas.ui.utils.HtmlReferenceDtoConverter;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 
 @SuppressWarnings("serial")
 public class ContactGrid extends Grid {
 
+	private final CaseReferenceDto caseRef;
+
 	public ContactGrid() {
-        setSizeFull();
+		this(null);
+	}
+	
+	public ContactGrid(CaseReferenceDto caseRef) {
+        this.caseRef = caseRef;
+		setSizeFull();
 
         setSelectionMode(SelectionMode.NONE);
 
@@ -29,19 +44,27 @@ public class ContactGrid extends Grid {
         setContainerDataSource(container);
         setColumns(ContactIndexDto.UUID, ContactIndexDto.PERSON, ContactIndexDto.CONTACT_PROXIMITY, 
         		ContactIndexDto.LAST_CONTACT_DATE, 
-        		ContactIndexDto.CAZE_DISEASE, ContactIndexDto.CAZE, ContactIndexDto.CAZE_PERSON,
+        		ContactIndexDto.CAZE_DISEASE, ContactIndexDto.CAZE,
         		ContactIndexDto.CONTACT_OFFICER
         		);
 
         getColumn(ContactIndexDto.UUID).setRenderer(new UuidRenderer());
+        getColumn(ContactIndexDto.CAZE).setRenderer(new HtmlRenderer(), new HtmlReferenceDtoConverter());
+        getColumn(ContactIndexDto.LAST_CONTACT_DATE).setRenderer(new DateRenderer(DateHelper.getShortDateFormat()));
         
         for (Column column : getColumns()) {
         	column.setHeaderCaption(I18nProperties.getFieldCaption(
         			ContactIndexDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
         }
         
-        addItemClickListener(e -> ControllerProvider.getContactController().editData(
-        		((ContactIndexDto)e.getItemId()).getUuid()));
+        addItemClickListener(e -> {
+        	ContactIndexDto indexDto = (ContactIndexDto)e.getItemId();
+        	if (ContactIndexDto.CAZE.equals(e.getPropertyId())) {
+        		ControllerProvider.getCaseController().navigateToData(indexDto.getCaze().getUuid());
+        	} else {
+        		ControllerProvider.getContactController().editData(indexDto.getUuid());
+        	}
+        });
         
         reload();
 	}
@@ -90,8 +113,10 @@ public class ContactGrid extends Grid {
     }
     
     public void reload() {
-    	List<ContactIndexDto> entries = ControllerProvider.getContactController().getIndexList();
-        getContainer().removeAllItems();
+    	UserDto user = LoginHelper.getCurrentUser();
+    	List<ContactIndexDto> entries = FacadeProvider.getContactFacade().getIndexListByCase(user.getUuid(), caseRef);
+
+    	getContainer().removeAllItems();
         getContainer().addAll(entries);    	
     }
 

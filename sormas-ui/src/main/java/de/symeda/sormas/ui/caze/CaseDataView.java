@@ -23,6 +23,6 @@ public class CaseDataView extends AbstractCaseView {
     @Override
     public void enter(ViewChangeEvent event) {
     	super.enter(event);
-    	setEditComponent(ControllerProvider.getCaseController().getCaseDataEditComponent(getEntityUuid()));
+    	setSubComponent(ControllerProvider.getCaseController().getCaseDataEditComponent(getCaseRef().getUuid()));
     }
 }

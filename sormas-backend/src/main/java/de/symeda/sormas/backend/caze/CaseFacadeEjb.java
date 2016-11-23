@@ -93,6 +93,11 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 	
 	@Override
+	public CaseReferenceDto getReferenceByUuid(String uuid) {
+		return toReferenceDto(caseService.getByUuid(uuid));
+	}
+
+	@Override
 	public CaseDataDto saveCase(CaseDataDto dto) {
 		Case caze = fromCaseDataDto(dto);
 		caseService.ensurePersisted(caze);

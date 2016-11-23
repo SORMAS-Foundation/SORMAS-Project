@@ -33,11 +33,15 @@ public class SubNavigationMenu extends CssLayout {
     }
 
     public void addView(final String name, String caption) {
-    	addView(name, caption, null);
+    	addView(name, caption, null, true);
     }
     
-    public void addView(final String name, String caption, String subItemUuid) {
-    	String target = "#!" + name+(subItemUuid != null ? "/"+subItemUuid : "");
+    public void addView(final String name, String caption, String params) {
+    	addView(name, caption, params, false);
+    }
+    
+    public void addView(final String name, String caption, String params, boolean isBackNavigation) {
+    	String target = "#!" + name+(params != null ? "/"+params : "");
 
     	CssLayout tabItemCell = new CssLayout();
     	tabItemCell.setSizeUndefined();
@@ -50,7 +54,7 @@ public class SubNavigationMenu extends CssLayout {
 
     	Link link = new Link(caption, new ExternalResource(target));
     	link.addStyleName("v-caption");
-    	if (subItemUuid == null)
+    	if (isBackNavigation)
     		link.setIcon(FontAwesome.ARROW_CIRCLE_LEFT);
     	tabItem.addComponent(link);
     	

@@ -25,7 +25,7 @@ public class CasePersonView extends AbstractCaseView {
     @Override
     public void enter(ViewChangeEvent event) {
     	super.enter(event);
-    	CaseDataDto caseData = FacadeProvider.getCaseFacade().getCaseDataByUuid(getEntityUuid());
-    	setEditComponent(ControllerProvider.getPersonController().getPersonEditComponent(caseData.getPerson().getUuid()));
+    	CaseDataDto caseData = FacadeProvider.getCaseFacade().getCaseDataByUuid(getCaseRef().getUuid());
+    	setSubComponent(ControllerProvider.getPersonController().getPersonEditComponent(caseData.getPerson().getUuid()));
     }
 }

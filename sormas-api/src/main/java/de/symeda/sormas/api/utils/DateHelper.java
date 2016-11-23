@@ -18,11 +18,10 @@ import de.symeda.sormas.api.utils.DataHelper.Pair;
 
 public final class DateHelper {
 
-	private static final SimpleDateFormat dMy_FORMAT = new SimpleDateFormat("dd.MM.yy");
-	private static final SimpleDateFormat DDMMYY_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
-	private static final SimpleDateFormat hmDDMMYY_FORMAT = new SimpleDateFormat("HH:mm dd/MM/yyyy");
-	
-	private static final SimpleDateFormat hm_FORMAT = new SimpleDateFormat("HH:mm");
+	private static final SimpleDateFormat SHORT_DATE_FORMAT = new SimpleDateFormat("dd/MM/yy");
+	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
+	private static final SimpleDateFormat TIME_DATA_FORMAT = new SimpleDateFormat("HH:mm dd/MM/yyyy");
+	private static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm");
 
 	public static final Pair<Integer, ApproximateAgeType> getApproximateAge(Date birthDate, Date deathDate) {
 		if (birthDate == null)
@@ -67,7 +66,7 @@ public final class DateHelper {
 	 */
 	public static String formatHourMinute(Date date) {
 		if (date != null) {
-			return clone(hm_FORMAT).format(date);
+			return clone(TIME_FORMAT).format(date);
 		} else {
 			return "";
 		}
@@ -80,7 +79,7 @@ public final class DateHelper {
 	public static Date parseHourMinute(String date) {
 		if (date != null) {
 			try {
-				return clone(hm_FORMAT).parse(date);
+				return clone(TIME_FORMAT).parse(date);
 			} catch (ParseException e) {
 				return null;
 			}
@@ -95,7 +94,7 @@ public final class DateHelper {
 	 */
 	public static String formatDMY(Date date) {
 		if (date != null) {
-			return clone(dMy_FORMAT).format(date);
+			return clone(SHORT_DATE_FORMAT).format(date);
 		} else {
 			return "";
 		}
@@ -107,7 +106,7 @@ public final class DateHelper {
 	 */
 	public static String formatDDMMYYYY(Date date) {
         if (date != null) {
-            return clone(DDMMYY_FORMAT).format(date);
+            return clone(DATE_FORMAT).format(date);
         } else {
             return "";
         }
@@ -119,7 +118,7 @@ public final class DateHelper {
 	 */
 	public static String formatHmDDMMYYYY(Date date) {
         if (date != null) {
-            return clone(hmDDMMYY_FORMAT).format(date);
+            return clone(TIME_DATA_FORMAT).format(date);
         } else {
             return "";
         }
@@ -179,5 +178,9 @@ public final class DateHelper {
 			x.add(i);
 		}
 		return x;
+	}
+	
+	public static SimpleDateFormat getShortDateFormat() {
+		return clone(SHORT_DATE_FORMAT);
 	}
 }

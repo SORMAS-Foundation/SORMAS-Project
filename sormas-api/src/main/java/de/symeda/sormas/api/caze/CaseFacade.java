@@ -23,4 +23,6 @@ public interface CaseFacade {
 	List<CaseReferenceDto> getAllCasesAfterAsReference(Date date, String userUuid);
 
 	List<CaseReferenceDto> getSelectableCases(UserReferenceDto user);
+
+	CaseReferenceDto getReferenceByUuid(String uuid);
 }

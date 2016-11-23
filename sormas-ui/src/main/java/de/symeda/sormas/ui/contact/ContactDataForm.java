@@ -3,6 +3,7 @@ package de.symeda.sormas.ui.contact;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.OptionGroup;
+import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -32,7 +33,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 				    				LayoutUtil.fluidRowLocs(ContactDto.DESCRIPTION) +
 				    				LayoutUtil.fluidRowLocs(ContactDto.CONTACT_OFFICER, "")
 		    						),
-		    				LayoutUtil.fluidColumnLoc(4, 0,  CASE_INFO)
+		    				LayoutUtil.fluidColumnLoc(4, 0, CASE_INFO)
 		    		)
 		    );
 
@@ -48,8 +49,9 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
     	addField(ContactDto.LAST_CONTACT_DATE, DateField.class);
     	addField(ContactDto.REPORT_DATE_TIME, DateField.class);
     	addField(ContactDto.CONTACT_PROXIMITY, OptionGroup.class);
-    	
-		UserReferenceDto currentUser = LoginHelper.getCurrentUserAsReference();
+    	addField(ContactDto.DESCRIPTION, TextArea.class).setRows(3);
+
+    	UserReferenceDto currentUser = LoginHelper.getCurrentUserAsReference();
     	addField(ContactDto.CONTACT_OFFICER, ComboBox.class)
     		.addItems(FacadeProvider.getUserFacade().getAssignableUsers(currentUser, UserRole.CONTACT_OFFICER));
     	

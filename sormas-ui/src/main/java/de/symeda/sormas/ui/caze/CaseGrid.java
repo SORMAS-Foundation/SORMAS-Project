@@ -41,7 +41,7 @@ public class CaseGrid extends Grid {
         			CaseDataDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
         }
         
-        addItemClickListener(e -> ControllerProvider.getCaseController().editData(
+        addItemClickListener(e -> ControllerProvider.getCaseController().navigateToData(
         		((CaseDataDto)e.getItemId()).getUuid()));
         
         reload();

@@ -1,7 +1,6 @@
 package de.symeda.sormas.ui.contact;
 
 import java.util.Date;
-import java.util.List;
 
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
@@ -10,11 +9,10 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactFacade;
-import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactStatus;
-import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -37,9 +35,12 @@ public class ContactController {
     	navigator.addView(ContactDataView.VIEW_NAME, ContactDataView.class);
     	navigator.addView(ContactPersonView.VIEW_NAME, ContactPersonView.class);
 	}
-    
+
     public void create() {
-    	CommitDiscardWrapperComponent<ContactCreateForm> createComponent = getContactCreateComponent();
+    	create(null);
+    }
+    public void create(CaseReferenceDto caze) {
+    	CommitDiscardWrapperComponent<ContactCreateForm> createComponent = getContactCreateComponent(caze);
     	VaadinUiUtil.showModalPopupWindow(createComponent, "Create new contact");    	
     }
     
@@ -48,11 +49,6 @@ public class ContactController {
    		SormasUI.get().getNavigator().navigateTo(navigationState);	
     }
     
-    public List<ContactIndexDto> getIndexList() {
-    	UserDto user = LoginHelper.getCurrentUser();
-    	return FacadeProvider.getContactFacade().getIndexList(user.getUuid());
-    }
-
     public void editPerson(String contactUuid) {
    		String navigationState = ContactPersonView.VIEW_NAME + "/" + contactUuid;
    		SormasUI.get().getNavigator().navigateTo(navigationState);	
@@ -79,9 +75,11 @@ public class ContactController {
                 + fragmentParameter, false);
     }
 
-    private ContactDto createNewContact() {
+    private ContactDto createNewContact(CaseReferenceDto caze) {
     	ContactDto contact = new ContactDto();
     	contact.setUuid(DataHelper.createUuid());
+    	
+    	contact.setCaze(caze);
     	
     	contact.setReportDateTime(new Date());
     	UserReferenceDto userReference = LoginHelper.getCurrentUserAsReference();
@@ -92,10 +90,10 @@ public class ContactController {
     	return contact;
     }
     
-    public CommitDiscardWrapperComponent<ContactCreateForm> getContactCreateComponent() {
+    public CommitDiscardWrapperComponent<ContactCreateForm> getContactCreateComponent(CaseReferenceDto caze) {
     	
     	ContactCreateForm createForm = new ContactCreateForm();
-        createForm.setValue(createNewContact());
+        createForm.setValue(createNewContact(caze));
         final CommitDiscardWrapperComponent<ContactCreateForm> createComponent = new CommitDiscardWrapperComponent<ContactCreateForm>(createForm, createForm.getFieldGroup());
         createComponent.setWidth(520, Unit.PIXELS);
         
@@ -120,7 +118,7 @@ public class ContactController {
         return createComponent;
     }
 
-    public CommitDiscardWrapperComponent<ContactDataForm> getContactDataEditComponent(final String contactUuid) {
+    public CommitDiscardWrapperComponent<ContactDataForm> getContactDataEditComponent(String contactUuid) {
     	
     	ContactDataForm editForm = new ContactDataForm();
     	ContactDto contact = cof.getContactByUuid(contactUuid);
