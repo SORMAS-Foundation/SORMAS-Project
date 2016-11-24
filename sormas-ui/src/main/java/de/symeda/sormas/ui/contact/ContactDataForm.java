@@ -14,6 +14,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -91,7 +92,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			
 	    	HorizontalLayout ageSexLayout = new HorizontalLayout();
 	    	ageSexLayout.setSpacing(true);
-			addDescLabel(ageSexLayout, DateHelper.formatApproximateAge(
+			addDescLabel(ageSexLayout, ApproximateAgeHelper.formatApproximateAge(
 						personDto.getApproximateAge(),personDto.getApproximateAgeType()),
 					I18nProperties.getFieldCaption(PersonDto.I18N_PREFIX, PersonDto.APPROXIMATE_AGE, PersonDto.APPROXIMATE_AGE));
 			addDescLabel(ageSexLayout, personDto.getSex(),
