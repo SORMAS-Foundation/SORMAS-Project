@@ -3,13 +3,14 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
 
-    <dimen name="field_caption_size">12dp</dimen>
+    <dimen name="field_caption_size">17dp</dimen>
+    <dimen name="field_radio_font_size">11dp</dimen>
     <dimen name="field_caption_margin_left">4dp</dimen>
     <dimen name="field_caption_margin_bottom">0dp</dimen>
     <dimen name="field_height">40dp</dimen>
     <dimen name="field_spinner_height">39dp</dimen>
     <dimen name="spinner_padding">2dp</dimen>
-    <dimen name="field_yes_no_caption_margin_top">10dp</dimen>
+    <dimen name="field_yes_no_caption_margin_top">5dp</dimen>
 
 
     <dimen name="list_item_margin_bottom">15dp</dimen>

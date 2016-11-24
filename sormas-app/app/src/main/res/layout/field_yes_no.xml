@@ -9,7 +9,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="0.6"
+            android:layout_weight="0.45"
             android:id="@+id/radio_caption"
             android:textSize="@dimen/field_caption_size"
             android:textColor="?android:attr/editTextColor"
@@ -20,7 +20,7 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="0.4"
+            android:layout_weight="0.55"
             android:gravity="right"
             android:paddingTop="@dimen/spinner_padding"
             android:paddingRight="@dimen/spinner_padding"
@@ -34,19 +34,19 @@
 
                 <RadioButton
                     android:text="@string/field_yes_no_yes"
-                    android:textSize="@dimen/field_caption_size"
+                    android:textSize="@dimen/field_radio_font_size"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="?attr/colorControlNormal" />
                 <RadioButton
                     android:text="@string/field_yes_no_no"
-                    android:textSize="@dimen/field_caption_size"
+                    android:textSize="@dimen/field_radio_font_size"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="?attr/colorControlNormal" />
                 <RadioButton
                     android:text="@string/field_yes_no_unk"
-                    android:textSize="@dimen/field_caption_size"
+                    android:textSize="@dimen/field_radio_font_size"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="?attr/colorControlNormal" />
