@@ -11,7 +11,6 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserFacade;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -25,12 +24,11 @@ public class UserController {
 	private UserFacade uf = FacadeProvider.getUserFacade();
 
     public UserController() {
-    	
     }
     
     public void create() {
     	CommitDiscardWrapperComponent<UserEditForm> caseCreateComponent = getUserCreateComponent();
-    	VaadinUiUtil.showModalPopupWindow(caseCreateComponent, "Create new user");    	
+    	VaadinUiUtil.showModalPopupWindow(caseCreateComponent, "Create new user");
     }
     
     public void edit(UserDto user) {
@@ -44,15 +42,6 @@ public class UserController {
     	SormasUI.get().getNavigator().navigateTo(navigationState);
     }
     
-    /**
-     * @TODO check for Session-login - userrole
-     * @return
-     */
-    public Object[] getUserRoles() {
-    	UserRole[] roles = {UserRole.SURVEILLANCE_OFFICER,UserRole.INFORMANT};
-    	return roles;
-    }
-
     /**
      * Update the fragment without causing navigator to change view
      */
@@ -73,10 +62,10 @@ public class UserController {
     public CommitDiscardWrapperComponent<UserEditForm> getUserEditComponent(final String userUuid) {
     	
     	UserEditForm userEditForm = new UserEditForm();
-    	UserDto caze = findUser(userUuid);
-        userEditForm.setValue(caze);
+    	UserDto userDto = FacadeProvider.getUserFacade().getByUuid(userUuid);
+        userEditForm.setValue(userDto);
         final CommitDiscardWrapperComponent<UserEditForm> editView = new CommitDiscardWrapperComponent<UserEditForm>(userEditForm, userEditForm.getFieldGroup());
-        editView.setWidth(480, Unit.PIXELS);
+        editView.setWidth(640, Unit.PIXELS);
         
         editView.addCommitListener(new CommitListener() {
         	@Override
@@ -123,15 +112,9 @@ public class UserController {
         return editView;
     }  
     
-    
-    private UserDto findUser(String uuid) {
-        return uf.getByUuid(uuid);
-    }
-
 	public boolean isLoginUnique(String uuid, String userName) {
 		return uf.isLoginUnique(uuid, userName);
 	}
-
 
 	public void confirmNewPassword(String userUuid) {
 		final ConfirmationComponent newPasswortComponent = new ConfirmationComponent(false) {

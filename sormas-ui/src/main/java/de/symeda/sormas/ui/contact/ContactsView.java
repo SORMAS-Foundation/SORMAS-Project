@@ -36,7 +36,7 @@ public class ContactsView extends AbstractView {
 	public static final String VIEW_NAME = "contacts";
 
 	private ContactGrid grid;    
-    private Button newButton;
+    private Button createButton;
 
 	private VerticalLayout gridLayout;
 
@@ -80,41 +80,40 @@ public class ContactsView extends AbstractView {
 	        topLayout.addComponent(statusButton);
         }
         
-        newButton = new Button("New contact");
-        newButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-        newButton.setIcon(FontAwesome.PLUS_CIRCLE);
-        newButton.addClickListener(e -> ControllerProvider.getContactController().create());
-        topLayout.addComponent(newButton);
-        topLayout.setComponentAlignment(newButton, Alignment.MIDDLE_RIGHT);
-        topLayout.setExpandRatio(newButton, 1);
+        createButton = new Button("New contact");
+        createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+        createButton.setIcon(FontAwesome.PLUS_CIRCLE);
+        createButton.addClickListener(e -> ControllerProvider.getContactController().create());
+        topLayout.addComponent(createButton);
+        topLayout.setComponentAlignment(createButton, Alignment.MIDDLE_RIGHT);
+        topLayout.setExpandRatio(createButton, 1);
         
         topLayout.setStyleName("top-bar");
         return topLayout;
     }
 
 	public HorizontalLayout createFilterBar() {
-    	HorizontalLayout topLayout = new HorizontalLayout();
-    	topLayout.setSpacing(true);
-    	topLayout.setWidth("100%");
+    	HorizontalLayout filterLayout = new HorizontalLayout();
+    	filterLayout.setSpacing(true);
+    	filterLayout.setSizeUndefined();
     	
         ComboBox diseaseFilter = new ComboBox();
         diseaseFilter.addItems((Object[])Disease.values());
         diseaseFilter.addValueChangeListener(e->grid.setDiseaseFilter(((Disease)e.getProperty().getValue())));
-        topLayout.addComponent(diseaseFilter);
+        filterLayout.addComponent(diseaseFilter);
 
         ComboBox districtFilter = new ComboBox();
         UserDto user = LoginHelper.getCurrentUser();
         districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(user.getRegion().getUuid()));
         districtFilter.addValueChangeListener(e->grid.setDistrictFilter(((ReferenceDto)e.getProperty().getValue())));
-        topLayout.addComponent(districtFilter);
+        filterLayout.addComponent(districtFilter);
 
         ComboBox officerFilter = new ComboBox();
         officerFilter.addItems(FacadeProvider.getUserFacade().getAssignableUsers(user, UserRole.CONTACT_OFFICER));
         officerFilter.addValueChangeListener(e->grid.setContactOfficerFilter(((UserReferenceDto)e.getProperty().getValue())));
-        topLayout.addComponent(officerFilter);
+        filterLayout.addComponent(officerFilter);
 
-        topLayout.setExpandRatio(officerFilter, 1);
-        return topLayout;
+        return filterLayout;
     }
 
     @Override

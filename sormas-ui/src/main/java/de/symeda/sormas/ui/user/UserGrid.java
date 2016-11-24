@@ -5,10 +5,8 @@ import java.util.Collection;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
-import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.GeneratedPropertyContainer;
-import com.vaadin.data.util.MethodProperty;
 import com.vaadin.data.util.PropertyValueGenerator;
 import com.vaadin.data.util.converter.StringToCollectionConverter;
 import com.vaadin.data.util.filter.Compare.Equal;
@@ -19,7 +17,6 @@ import com.vaadin.ui.Grid;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.I18nProperties;
-import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import elemental.json.JsonValue;
@@ -68,33 +65,23 @@ public class UserGrid extends Grid {
         }
 	}
 	
-    public void setFilter(UserRole roleToFilter) {
-    	removeAllStatusFilter();
+    public void setUserRoleFilter(UserRole roleToFilter) {
+    	getContainer().removeContainerFilters(UserDto.USER_ROLES);
     	if (roleToFilter != null) {
-    		
     		RoleFilter roleFilter = new RoleFilter(UserDto.USER_ROLES, roleToFilter);
 	        getContainer().addContainerFilter(roleFilter);
     	}
     }
     
-    public void removeAllStatusFilter() {
-    	getContainer().removeContainerFilters(UserDto.USER_ROLES);
-    }
-    
-    
-    public void setFilter(Boolean active) {
-    	removeAllActiveFilter();
+    public void setActiveFilter(Boolean active) {
+    	getContainer().removeContainerFilters(UserDto.ACTIVE);
     	if(active!=null) {
     		Equal activeFilter = new Equal(UserDto.ACTIVE,active);
     		getContainer().addContainerFilter(activeFilter);
     	}
     }
-
-	private void removeAllActiveFilter() {
-		getContainer().removeContainerFilters(UserDto.ACTIVE);
-	}
 	
-	public void setFilter(String filterString) {
+	public void setNameFilter(String filterString) {
     	getContainer().removeContainerFilters(UserDto.NAME);
         if (filterString.length() > 0) {
             SimpleStringFilter nameFilter = new SimpleStringFilter(UserDto.NAME, filterString, true, false);
@@ -113,25 +100,6 @@ public class UserGrid extends Grid {
     public void setUsers(Collection<UserDto> users) {
         getContainer().removeAllItems();
         getContainer().addAll(users);
-    }
-
-    public void refresh(UserDto user) {
-        // We avoid updating the whole table through the backend here so we can
-        // get a partial update for the grid
-        BeanItem<UserDto> item = getContainer().getItem(user);
-        if (item != null) {
-            // Updated product
-            @SuppressWarnings("rawtypes")
-			MethodProperty p = (MethodProperty) item.getItemProperty(UserDto.UUID);
-            p.fireValueChange();
-        } else {
-            // New product
-            getContainer().addBean(user);
-        }
-    }
-
-    public void remove(CaseDataDto caze) {
-        getContainer().removeItem(caze);
     }
     
     @SuppressWarnings("serial")
