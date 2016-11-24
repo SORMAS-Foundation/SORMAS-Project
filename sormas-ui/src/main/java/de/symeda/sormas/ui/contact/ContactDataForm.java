@@ -85,26 +85,26 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	    	PersonDto personDto = FacadeProvider.getPersonFacade().getPersonByUuid(caseDto.getPerson().getUuid());
 
 			addDescLabel(caseInfoLayout, DataHelper.getShortUuid(caseDto.getUuid()),
-					I18nProperties.getFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.UUID, CaseDataDto.UUID))
+					I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.UUID))
 				.setDescription(caseDto.getUuid());
 			addDescLabel(caseInfoLayout, caseDto.getPerson(),
-					I18nProperties.getFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.PERSON, CaseDataDto.PERSON));
+					I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.PERSON));
 			
 	    	HorizontalLayout ageSexLayout = new HorizontalLayout();
 	    	ageSexLayout.setSpacing(true);
 			addDescLabel(ageSexLayout, ApproximateAgeHelper.formatApproximateAge(
 						personDto.getApproximateAge(),personDto.getApproximateAgeType()),
-					I18nProperties.getFieldCaption(PersonDto.I18N_PREFIX, PersonDto.APPROXIMATE_AGE, PersonDto.APPROXIMATE_AGE));
+					I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, PersonDto.APPROXIMATE_AGE));
 			addDescLabel(ageSexLayout, personDto.getSex(),
-					I18nProperties.getFieldCaption(PersonDto.I18N_PREFIX, PersonDto.SEX, PersonDto.SEX));
+					I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, PersonDto.SEX));
 	    	caseInfoLayout.addComponent(ageSexLayout);
 	    	
 			addDescLabel(caseInfoLayout, caseDto.getDisease(),
-					I18nProperties.getFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISEASE, CaseDataDto.DISEASE));
+					I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISEASE));
 			addDescLabel(caseInfoLayout, caseDto.getCaseStatus(),
-					I18nProperties.getFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.CASE_STATUS, CaseDataDto.CASE_STATUS));
+					I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.CASE_STATUS));
 			addDescLabel(caseInfoLayout, DateHelper.formatDMY(caseDto.getSymptoms().getOnsetDate()),
-					I18nProperties.getFieldCaption(SymptomsDto.I18N_PREFIX, SymptomsDto.ONSET_DATE, SymptomsDto.ONSET_DATE));
+					I18nProperties.getPrefixFieldCaption(SymptomsDto.I18N_PREFIX, SymptomsDto.ONSET_DATE));
     	}
     }
 

@@ -129,7 +129,7 @@ public class TaskGrid extends Grid implements ItemClickListener {
         });
         
         for (Column column : getColumns()) {
-        	column.setHeaderCaption(I18nProperties.getFieldCaption(
+        	column.setHeaderCaption(I18nProperties.getPrefixFieldCaption(
         			TaskDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
         }
         

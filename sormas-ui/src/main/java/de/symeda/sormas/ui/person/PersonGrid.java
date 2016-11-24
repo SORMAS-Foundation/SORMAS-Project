@@ -30,7 +30,7 @@ public class PersonGrid extends Grid {
         		);
 
         for (Column column : getColumns()) {
-        	column.setHeaderCaption(I18nProperties.getFieldCaption(
+        	column.setHeaderCaption(I18nProperties.getPrefixFieldCaption(
         			PersonIndexDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
         }
         
