@@ -16,7 +16,7 @@ public interface PersonFacade {
     
     List<PersonReferenceDto> getAllNoCasePersons();
 
-    PersonReferenceDto getByUuid(String uuid);
+    PersonReferenceDto getReferenceByUuid(String uuid);
     
     PersonDto getPersonByUuid(String uuid);
     

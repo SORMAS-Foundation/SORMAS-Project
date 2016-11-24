@@ -60,6 +60,16 @@ public final class DateHelper {
 		return getApproximateAge(birthDate, null);
 	}
 	
+	public static String formatApproximateAge(Integer approximateAge, ApproximateAgeType approximateAgeType) {
+		if (approximateAge == null) {
+			return "";
+		} else if (approximateAgeType == ApproximateAgeType.MONTHS) {
+			return approximateAge + " " + approximateAgeType.toString();
+		} else {
+			return approximateAge.toString();
+		}
+	}
+	
 	/**
 	 * Formats to "HH:mm"
 	 * @return

@@ -89,7 +89,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 
 	@Override
-	public PersonReferenceDto getByUuid(String uuid) {
+	public PersonReferenceDto getReferenceByUuid(String uuid) {
 		return Optional.of(uuid)
 				.map(u -> service.getByUuid(u))
 				.map(c -> toReferenceDto(c))
