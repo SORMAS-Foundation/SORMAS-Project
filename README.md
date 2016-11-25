@@ -1,67 +1,38 @@
-sormas
-==============
-
-Template for a full-blown Vaadin application that only requires a Servlet 3.0 container to run (no other JEE dependencies).
-
-
 Project Structure
 =================
 
-The project consists of the following three modules:
+The project consists of the following modules:
 
-- parent project: common metadata and configuration
-- sormas-widgetset: widgetset, custom client side code and dependencies to widget add-ons
-- sormas-ui: main application module, development time
-- sormas-production: module that produces a production mode WAR for deployment
+- sormas-api: general business logic and definitions for data exchange between app and server
+- sormas-app: the android app
+- sormas-backend: server entity services, facades, etc.
+- sormas-base: base project that also contains build scripts
+- sormas-ear: the ear needed to build the application
+- sormas-rest: the rest interface
+- sormas-ui: the web application
 
-The production mode module recompiles the widgetset (obfuscated, not draft), activates production mode for Vaadin with a context parameter in web.xml and contains a precompiled theme. The ui module WAR contains an unobfuscated widgetset, and is meant to be used at development time only.
 
-Workflow
+Getting Started
 ========
 
-To compile the entire project, run "mvn install" in the parent project.
+This guide contains all the steps needed to set up the development environment for the SORMAS project.
 
-Other basic workflow steps:
-
-- getting started
-- compiling the whole project
-  - run "mvn install" in parent project
-- developing the application
-  - edit code in the ui module
-  - run "mvn jetty:run" in ui module
-  - open http://localhost:8080/
-- client side changes or add-ons
-  - edit code/POM in widgetset module
-  - run "mvn install" in widgetset module
-  - if a new add-on has an embedded theme, run "mvn vaadin:update-theme" in the ui module
-- debugging client side code
-  - run "mvn vaadin:run-codeserver" in widgetset module
-  - activate Super Dev Mode in the debug window of the application
-- creating a production mode war
-  - run "mvn -Pproduction package" in the production mode module or in the parent module
-- testing the production mode war
-  - run "mvn -Pproduction jetty:run-war" in the production mode module
-
-
-Developing a theme using the runtime compiler
--------------------------
-
-When developing the theme, Vaadin can be configured to compile the SASS based
-theme at runtime in the server. This way you can just modify the scss files in
-your IDE and reload the browser to see changes.
-
-To use on the runtime compilation, open pom.xml of your UI project and comment 
-out the compile-theme goal from vaadin-maven-plugin configuration. To remove 
-an existing pre-compiled theme, remove the styles.css file in the theme directory.
-
-When using the runtime compiler, running the application in the "run" mode 
-(rather than in "debug" mode) can speed up consecutive theme compilations
-significantly.
-
-The production module always automatically precompiles the theme for the production WAR.
-
-Using Vaadin pre-releases
--------------------------
-
-If Vaadin pre-releases are not enabled by default, use the Maven parameter
-"-P vaadin-prerelease" or change the activation default value of the profile in pom.xml .
+- Install the latest Eclipse version, Git for Windows and (optional) a Git client such as TortoiseGit if you don't want to handle version control from the command line/separately for the Eclipse and Android Studio projects
+- Open the Git Bash and execute the command "git config --global branch.development.rebase true" (which ensures that rebase is used when pulling rather than merge)
+- Clone the SORMAS-Open repository and import the projects to Eclipse
+	- If you're using Eclipse to clone, choose "File -> Import -> Git -> Projects from Git" and continue until you're asked to create a new project from the cloned repository; click cancel instead and use "File -> Import -> Maven -> Existing Maven Projects" to import the separate projects into your workspace
+	- If you've cloned the repository from the command line or a Git client, you obviously only need to perform the last step
+- Highlight all Eclipse projects and choose "Maven -> Update Project" from the right click menu; perform the update for all projects
+- Install Glassfish Tools and (recommended) the Vaadin Plugin for Eclipise (make sure to untick the option to also install the commercial UI designer)
+- Download payara 4.1.1.161 (possible issues with more recent versions) and extract it to a folder on your hard drive
+- Create a PostGreSQL database named "sormas_db" (password: "sormas_db") with user "sormas_user" (password: "sormas_db") as its owner, and run the SQL scripts contained in "sormas-base -> glassfish-config -> sql -> sormas_schema.sql"
+- Open "glassfish-config.bat" contained in "sormas-base -> glassfish-config" in a text editor and change GLASSFISH_HOME to the location of the Glassfish folder inside your payara installation
+- Set up a Glassfish domain called "sormas" by executing "glassfish-config.bat" from the command line
+- Set up a Glassfish 4 server in Eclipse and enter the credentials you just specified in the last step
+- Make a copy of "build.properties.example" contained in "sormas-base", rename it to "build.properties" and set "glassfish.domain.root" to the location of the sormas domain located in the "glassfish/domains" folder inside your payara installation
+- Install the latest Android Studio version (to avoid any errors, make sure to start the installation with admin rights and choose a path for the Android SDK that contains no whitespaces)
+- Open Android Studio and import the "sormas-app" project from Eclipse
+- Drag the "build.xml" file contained in "sormas-base" into the Ant view in Eclipse and execute the "install [default]", "deploy-serverlibs" and "deploy-bundles" scripts
+- Build the Android Studio project by executing the gradle build (this may be done automatically)
+- Start the Glassfish server and deploy "sormas-ear", "sormas-rest" and "sormas-ui" by dragging the respective projects onto it
+- Open your browser and type in "localhost:6080/sormas-ui" to test whether everything has been set up correctly (and to use the application)
