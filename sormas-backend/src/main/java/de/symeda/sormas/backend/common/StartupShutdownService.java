@@ -13,6 +13,7 @@ import javax.ejb.Startup;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 
+import de.symeda.sormas.api.user.UserHelper;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
@@ -91,6 +92,13 @@ public class StartupShutdownService {
 //			userService.persist(MockDataGenerator.createUser(UserRole.INFORMANT));
 //			userService.persist(MockDataGenerator.createUser(UserRole.INFORMANT));
 //			userService.persist(MockDataGenerator.createUser(UserRole.INFORMANT));
+		}
+		
+		User supervisor = userService.getByUserName(UserHelper.getSuggestedUsername("Sunkanmi", "Sesay"));
+		if (!supervisor.getUserRoles().contains(UserRole.CONTACT_SUPERVISOR)
+				|| !supervisor.getUserRoles().contains(UserRole.CASE_SUPERVISOR)) {
+			supervisor.getUserRoles().add(UserRole.CONTACT_SUPERVISOR);
+			supervisor.getUserRoles().add(UserRole.CASE_SUPERVISOR);
 		}
 	}
 

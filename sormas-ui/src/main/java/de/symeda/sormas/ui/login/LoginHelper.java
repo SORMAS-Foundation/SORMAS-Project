@@ -1,6 +1,7 @@
 package de.symeda.sormas.ui.login;
 
 import java.security.Principal;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 
@@ -11,6 +12,7 @@ import com.vaadin.server.VaadinSession;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.user.UserRole;
 
 
 /**
@@ -66,6 +68,10 @@ public class LoginHelper {
     		return FacadeProvider.getUserFacade().getByUserName(userName);
     	}
     	return null;
+    }
+    
+    public static Set<UserRole> getCurrentUserRoles() {
+    	return getCurrentUser().getUserRoles();
     }
     
     public static UserReferenceDto getCurrentUserAsReference() {

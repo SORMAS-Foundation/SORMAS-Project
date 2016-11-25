@@ -47,6 +47,9 @@ public class UserFacadeEjb implements UserFacade {
 
 	@Override
 	public List<UserDto> getAll(UserRole... roles) {
+		
+		//TODO user region of the current user
+		
 		return service.getAllByRegionAndUserRoles(null, roles).stream()
 				.map(f -> toDto(f))
 				.collect(Collectors.toList());

@@ -53,7 +53,7 @@ public class ContactGrid extends Grid {
         getColumn(ContactIndexDto.LAST_CONTACT_DATE).setRenderer(new DateRenderer(DateHelper.getShortDateFormat()));
         
         for (Column column : getColumns()) {
-        	column.setHeaderCaption(I18nProperties.getFieldCaption(
+        	column.setHeaderCaption(I18nProperties.getPrefixFieldCaption(
         			ContactIndexDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
         }
         

@@ -66,12 +66,11 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
     	addField(UserDto.USER_ROLES, OptionGroup.class);
     	OptionGroup userRoles = (OptionGroup) getFieldGroup().getField(UserDto.USER_ROLES);
     	userRoles.setMultiSelect(true);
-    	userRoles.addItems(ControllerProvider.getUserController().getUserRoles());
+    	userRoles.addItems(UserRole.getAssignableRoles(LoginHelper.getCurrentUserRoles()));
     	
     	Button newPasswordButton = new Button(null, FontAwesome.UNLOCK_ALT);
     	newPasswordButton.setCaption("Create new password");
     	newPasswordButton.addStyleName(ValoTheme.BUTTON_LINK);
-//    	newPasswordButton.addStyleName(CssStyles.FORCE_CAPTION);
     	newPasswordButton.addClickListener(e -> newPasswordClicked());
     	getContent().addComponent(newPasswordButton, NEW_PASSWORD);
 
@@ -92,7 +91,8 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
     			LoginHelper.getCurrentUserAsReference(), UserRole.SURVEILLANCE_OFFICER));
     	updateAssociatedOfficerField();
     	
-    	setRequired(true, UserDto.FIRST_NAME, UserDto.LAST_NAME, UserDto.USER_NAME, UserDto.USER_ROLES);
+    	setRequired(true, UserDto.FIRST_NAME, UserDto.LAST_NAME, UserDto.USER_NAME, UserDto.USER_ROLES,
+    			UserDto.REGION, UserDto.DISTRICT);
     	addValidators(UserDto.USER_NAME, new UserNameValidator());
     	
     	addFieldListeners(UserDto.FIRST_NAME, e -> suggestUserName());

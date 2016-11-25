@@ -18,6 +18,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 import de.symeda.sormas.api.person.ApproximateAgeType;
+import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
@@ -250,7 +251,7 @@ public class CaseEditPersonTab extends FormTab {
             if(getModel().get(R.id.form_p_date_of_death) != null){
                 to = (Date)getModel().get(R.id.form_p_date_of_death);
             }
-            DataHelper.Pair<Integer, ApproximateAgeType> approximateAge = DateHelper.getApproximateAge(birthDate.getTime(),to);
+            DataHelper.Pair<Integer, ApproximateAgeType> approximateAge = ApproximateAgeHelper.getApproximateAge(birthDate.getTime(),to);
             ApproximateAgeType ageType = approximateAge.getElement1();
             approximateAgeTextField.setText(String.valueOf(approximateAge.getElement0()));
             for (int i=0; i<approximateAgeTypeField.getCount(); i++) {

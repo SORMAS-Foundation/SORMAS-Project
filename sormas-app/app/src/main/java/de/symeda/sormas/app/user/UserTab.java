@@ -43,7 +43,7 @@ public class UserTab extends FormTab {
 
         super.onResume();
 
-        addUserSpinnerField(R.id.form_u_select_user, Arrays.asList(UserRole.INFORMANT, UserRole.SURVEILLANCE_OFFICER));
+        addUserSpinnerField(R.id.form_u_select_user, Arrays.asList(UserRole.INFORMANT, UserRole.SURVEILLANCE_OFFICER, UserRole.CASE_OFFICER, UserRole.CONTACT_OFFICER));
 
         // TODO move to settings screen?
         TextView serverUrl = (TextView) getView().findViewById(R.id.form_server_url);

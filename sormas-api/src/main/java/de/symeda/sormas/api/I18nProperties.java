@@ -19,10 +19,6 @@ public class I18nProperties {
 		return instance;
 	}
 	
-	public static String getFieldCaption(String key) {
-		return getInstance().fieldCaptionProperties.getProperty(key);
-	}
-
 	@SuppressWarnings("rawtypes")
 	public static String getEnumCaption(Enum value) {
 		String caption = getInstance().enumProperties.getProperty(value.getClass().getSimpleName() + "." + value.name());
@@ -32,15 +28,40 @@ public class I18nProperties {
 			return value.name();
 		}
 	}
+	
+	/**
+	 * Uses <param>key</param> as default value
+	 */
+	public static String getButtonCaption(String key) {
+		return getButtonCaption(key, key);
+	}
+
+	public static String getButtonCaption(String key, String defaultValue) {
+		return getInstance().buttonCaptionProperties.getProperty(key, defaultValue);
+	}
+
+	/**
+	 * Uses <param>key</param> as default value
+	 */
+	public static String getFieldCaption(String key) {
+		return getFieldCaption(key, key);
+	}
 
 	public static String getFieldCaption(String key, String defaultValue) {
 		return getInstance().fieldCaptionProperties.getProperty(key, defaultValue);
 	}
 
-	public static String getFieldCaption(String prefix, String key, String defaultValue) {
+	/**
+	 * Uses <param>key</param> as default value
+	 */
+	public static String getPrefixFieldCaption(String prefix, String key) {
+		return getPrefixFieldCaption(prefix, key, key);
+	}
+	
+	public static String getPrefixFieldCaption(String prefix, String key, String defaultValue) {
 		String result = null;
 		if (prefix != null) {
-			result = getFieldCaption(prefix + "." + key);
+			result = getInstance().fieldCaptionProperties.getProperty(prefix+"."+key);
 		}
 		if (result == null) {
 			result = getFieldCaption(key, defaultValue);
@@ -48,10 +69,6 @@ public class I18nProperties {
 		return result;
 	}
 	
-	public static String getButtonCaption(String key, String defaultValue) {
-		return getInstance().buttonCaptionProperties.getProperty(key, defaultValue);
-	}
-
 	public static String getFieldDescription(String key) {
 		return getInstance().fieldDescriptionProperties.getProperty(key);
 	}
@@ -60,7 +77,14 @@ public class I18nProperties {
 		return getInstance().fieldDescriptionProperties.getProperty(key, defaultValue);
 	}
 
-	public static String getFieldDescription(String prefix, String key, String defaultValue) {
+	/**
+	 * Uses <param>key</param> as default value
+	 */
+	public static String getPrefixFieldDescription(String prefix, String key) {
+		return getPrefixFieldDescription(prefix, key, key);
+	}
+
+	public static String getPrefixFieldDescription(String prefix, String key, String defaultValue) {
 		String result = null;
 		if (prefix != null) {
 			result = getFieldDescription(prefix + "." + key);

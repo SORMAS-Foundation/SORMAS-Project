@@ -8,6 +8,7 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
@@ -18,7 +19,9 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.samples.ResetButtonForTextField;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.AbstractView;
+import de.symeda.sormas.ui.utils.CssStyles;
 
 /**
  * A view for performing create-read-update-delete operations on products.
@@ -35,7 +38,7 @@ public class UsersView extends AbstractView {
 	public static final String INACTIVE_FILTER = "Inactive";
 
 	private UserGrid grid;    
-    private Button newCase;
+    private Button createButton;
 
 	private VerticalLayout gridLayout;
 
@@ -48,9 +51,10 @@ public class UsersView extends AbstractView {
 
         gridLayout = new VerticalLayout();
         gridLayout.addComponent(createTopBar());
+        gridLayout.addComponent(createFilterBar());
         gridLayout.addComponent(grid);
         gridLayout.setMargin(true);
-        gridLayout.setSpacing(true);
+        gridLayout.setSpacing(false);
         gridLayout.setSizeFull();
         gridLayout.setExpandRatio(grid, 1);
         gridLayout.setStyleName("crud-main-layout");
@@ -58,70 +62,67 @@ public class UsersView extends AbstractView {
         addComponent(gridLayout);
     }
 
-
 	public HorizontalLayout createTopBar() {
     	HorizontalLayout topLayout = new HorizontalLayout();
     	topLayout.setSpacing(true);
     	topLayout.setWidth("100%");
     	
-    	Button statusAll = new Button("all", e -> grid.removeAllStatusFilter());
+    	Label header = new Label("Officers");
+    	header.setSizeUndefined();
+    	CssStyles.style(header, CssStyles.H2, CssStyles.NO_MARGIN);
+    	topLayout.addComponent(header);
+    	
+    	Button statusAll = new Button("all", e -> grid.setUserRoleFilter(null));
         statusAll.setStyleName(ValoTheme.BUTTON_LINK);
         topLayout.addComponent(statusAll);
+
+        for (UserRole role : UserRole.getAssignableRoles(LoginHelper.getCurrentUserRoles())) {
+	    	Button userRoleButton = new Button(role.toString(), e -> grid.setUserRoleFilter(role));
+	    	userRoleButton.setStyleName(ValoTheme.BUTTON_LINK);
+	        topLayout.addComponent(userRoleButton);
+        }
+
+        createButton = new Button("New user");
+        createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+        createButton.setIcon(FontAwesome.PLUS_CIRCLE);
+        createButton.addClickListener(e -> ControllerProvider.getUserController().create());
+        topLayout.addComponent(createButton);
+        topLayout.setComponentAlignment(createButton, Alignment.MIDDLE_RIGHT);
+        topLayout.setExpandRatio(createButton, 1);
         
-    	Button surveillanceOfficerFilter = new Button("Surveillance Officer", e -> grid.setFilter(UserRole.SURVEILLANCE_OFFICER));
-    	surveillanceOfficerFilter.setStyleName(ValoTheme.BUTTON_LINK);
-        topLayout.addComponent(surveillanceOfficerFilter);
-        
-        Button informantFilter = new Button("Informant", e -> grid.setFilter(UserRole.INFORMANT));
-    	informantFilter.setStyleName(ValoTheme.BUTTON_LINK);
-        topLayout.addComponent(informantFilter);
+        topLayout.setStyleName("top-bar");
+        return topLayout;
+    }
+	
+	public HorizontalLayout createFilterBar() {
+    	HorizontalLayout filterLayout = new HorizontalLayout();
+    	filterLayout.setSpacing(true);
+    	filterLayout.setSizeUndefined();
 
         ComboBox activeFilter = new ComboBox();
         activeFilter.addItems(ACTIVE_FILTER,INACTIVE_FILTER);
         activeFilter.addValueChangeListener(e-> {
         	String value = (String)e.getProperty().getValue();
-			grid.setFilter(value!=null?ACTIVE_FILTER.equals(value):null);
+			grid.setActiveFilter(value!=null?ACTIVE_FILTER.equals(value):null);
         });
         	
-        topLayout.addComponent(activeFilter);
+        filterLayout.addComponent(activeFilter);
 
         TextField filter = new TextField();
         filter.setStyleName("filter-textfield");
         filter.setInputPrompt("Search user");
         ResetButtonForTextField.extend(filter);
         filter.setImmediate(true);
-        filter.addTextChangeListener(e -> grid.setFilter(e.getText()));
-        topLayout.addComponent(filter);
+        filter.addTextChangeListener(e -> grid.setNameFilter(e.getText()));
+        filterLayout.addComponent(filter);
 
-        newCase = new Button("New user");
-        newCase.addStyleName(ValoTheme.BUTTON_PRIMARY);
-        newCase.setIcon(FontAwesome.PLUS_CIRCLE);
-        newCase.addClickListener(e -> ControllerProvider.getUserController().create());
-        topLayout.addComponent(newCase);
-
-        topLayout.setComponentAlignment(filter, Alignment.MIDDLE_LEFT);
-        topLayout.setExpandRatio(filter, 1);
-        topLayout.setStyleName("top-bar");
-        return topLayout;
+        return filterLayout;
     }
 
     @Override
     public void enter(ViewChangeEvent event) {
-    	List<UserDto> users = FacadeProvider.getUserFacade().getAll(UserRole.INFORMANT, UserRole.SURVEILLANCE_OFFICER);
+    	List<UserDto> users = FacadeProvider.getUserFacade().getAll(
+    			UserRole.getAssignableRoles(LoginHelper.getCurrentUserRoles()).stream().toArray(UserRole[]::new));
         grid.setUsers(users);
     }
-
-    public void clearSelection() {
-        grid.getSelectionModel().reset();
-    }
-
-    public void refresh(UserDto product) {
-        grid.refresh(product);
-        grid.scrollTo(product);
-    }
-
-    public void remove(CaseDataDto caze) {
-        grid.remove(caze);
-    }
-
 }

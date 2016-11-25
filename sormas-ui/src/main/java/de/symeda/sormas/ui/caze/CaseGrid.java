@@ -37,7 +37,7 @@ public class CaseGrid extends Grid {
         getColumn(CaseDataDto.UUID).setRenderer(new UuidRenderer());
         
         for (Column column : getColumns()) {
-        	column.setHeaderCaption(I18nProperties.getFieldCaption(
+        	column.setHeaderCaption(I18nProperties.getPrefixFieldCaption(
         			CaseDataDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
         }
         

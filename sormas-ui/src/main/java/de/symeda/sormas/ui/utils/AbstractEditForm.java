@@ -223,10 +223,10 @@ public abstract class AbstractEditForm <DTO extends DataTransferObject> extends 
 	
 	@SuppressWarnings("rawtypes")
 	protected <T extends Field> T formatField(T field, String propertyId) {
-		field.setCaption(I18nProperties.getFieldCaption(getPropertyI18nPrefix(), propertyId, field.getCaption()));
+		field.setCaption(I18nProperties.getPrefixFieldCaption(getPropertyI18nPrefix(), propertyId, field.getCaption()));
 		if (field instanceof AbstractField) {
 			AbstractField abstractField = (AbstractField)field;
-			abstractField.setDescription(I18nProperties.getFieldDescription(
+			abstractField.setDescription(I18nProperties.getPrefixFieldDescription(
 					getPropertyI18nPrefix(), propertyId, abstractField.getDescription()));
 		}
 		field.setWidth(100, Unit.PERCENTAGE);
