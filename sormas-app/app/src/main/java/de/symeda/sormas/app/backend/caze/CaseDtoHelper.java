@@ -2,7 +2,7 @@ package de.symeda.sormas.app.backend.caze;
 
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.region.RegionDto;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -157,5 +157,16 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
             dto.setSurveillanceOfficer(null);
         }
         // TODO user
+    }
+
+
+    public static CaseReferenceDto toReferenceDto(Case ado) {
+        if (ado == null) {
+            return null;
+        }
+        CaseReferenceDto dto = new CaseReferenceDto();
+        fillReferenceDto(dto, ado);
+
+        return dto;
     }
 }

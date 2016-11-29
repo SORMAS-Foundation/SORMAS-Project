@@ -26,6 +26,7 @@ public final class RetroProvider {
     private FacilityFacadeRetro facilityFacadeRetro;
     private UserFacadeRetro userFacadeRetro;
     private TaskFacadeRetro taskFacadeRetro;
+    private ContactFacadeRetro contactFacadeRetro;
 
     private RetroProvider() {
 
@@ -132,5 +133,16 @@ public final class RetroProvider {
             }
         }
         return instance.taskFacadeRetro;
+    }
+
+    public static ContactFacadeRetro getContactFacade() {
+        if (instance.contactFacadeRetro == null) {
+            synchronized ((RetroProvider.class)) {
+                if (instance.contactFacadeRetro == null) {
+                    instance.contactFacadeRetro = instance.retrofit.create(ContactFacadeRetro.class);
+                }
+            }
+        }
+        return instance.contactFacadeRetro;
     }
 }
