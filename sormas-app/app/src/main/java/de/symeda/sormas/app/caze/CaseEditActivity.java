@@ -103,7 +103,7 @@ public class CaseEditActivity extends AppCompatActivity {
         return true;
     }
 
-    /*
+
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         switch(currentTab) {
@@ -119,13 +119,13 @@ public class CaseEditActivity extends AppCompatActivity {
 
             // case symptoms tab
             case 2:
-                menu.setGroupVisible(R.id.group_action_reload,true);
+                menu.setGroupVisible(R.id.group_action_help,true);
                 break;
         }
 
         return true;
     }
-    */
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -270,6 +270,23 @@ public class CaseEditActivity extends AppCompatActivity {
 
         // Setting the ViewPager For the SlidingTabsLayout
         tabs.setViewPager(pager);
+        tabs.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                currentTab = position;
+                invalidateOptionsMenu();
+            }
+        });
     }
 
 }

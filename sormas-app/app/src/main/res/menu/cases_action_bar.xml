@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item
-        android:id="@+id/action_reload"
-        android:icon="@drawable/ic_autorenew_black_24dp"
-        android:title="@string/action_reload"
-        app:showAsAction="always"/>
+
+    <group android:id="@+id/group_action_reload">
+        <item
+            android:id="@+id/action_reload"
+            android:icon="@drawable/ic_autorenew_black_24dp"
+            android:title="@string/action_reload"
+            app:showAsAction="always"/>
+    </group>
 
     <item
         android:id="@+id/action_new_case"
