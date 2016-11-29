@@ -1,6 +1,7 @@
 package de.symeda.sormas.backend.caze;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -9,6 +10,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -23,6 +25,7 @@ import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.symptoms.Symptoms;
+import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.user.User;
 
 @Entity(name="cases")
@@ -41,6 +44,7 @@ public class Case extends AbstractDomainObject {
 	public static final String CASE_OFFICER = "caseOfficer";
 	public static final String CONTACT_OFFICER = "contactOfficer";
 	public static final String SYMPTOMS = "symptoms";
+	public static final String TASKS = "tasks";
 	
 	private Person person;
 	private String description;
@@ -69,6 +73,8 @@ public class Case extends AbstractDomainObject {
 	private User contactOfficer;
 	
 	private Symptoms symptoms;
+	
+	private List<Task> tasks;
 	
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(nullable=false)
@@ -261,4 +267,11 @@ public class Case extends AbstractDomainObject {
 		return getPerson().toString();
 	}
 	
+	@OneToMany(cascade = {}, mappedBy = Task.CAZE)
+	public List<Task> getTasks() {
+		return tasks;
+	}
+	public void setTasks(List<Task> tasks) {
+		this.tasks = tasks;
+	}
 }

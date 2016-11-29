@@ -94,10 +94,12 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		region.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
 
 		UserReferenceDto currentUser = LoginHelper.getCurrentUserAsReference();
-    	addField(CaseDataDto.SURVEILLANCE_OFFICER, ComboBox.class)
-    		.addItems(FacadeProvider.getUserFacade().getAssignableUsers(currentUser, UserRole.SURVEILLANCE_OFFICER));
-    	addField(CaseDataDto.CONTACT_OFFICER, ComboBox.class)
-			.addItems(FacadeProvider.getUserFacade().getAssignableUsers(currentUser, UserRole.CONTACT_OFFICER));
+    	ComboBox surveillanceOfficerField = addField(CaseDataDto.SURVEILLANCE_OFFICER, ComboBox.class);
+		surveillanceOfficerField.addItems(FacadeProvider.getUserFacade().getAssignableUsers(currentUser, UserRole.SURVEILLANCE_OFFICER));
+		surveillanceOfficerField.setNullSelectionAllowed(true);
+		ComboBox contactOfficerField = addField(CaseDataDto.CONTACT_OFFICER, ComboBox.class);
+		contactOfficerField.addItems(FacadeProvider.getUserFacade().getAssignableUsers(currentUser, UserRole.CONTACT_OFFICER));
+		contactOfficerField.setNullSelectionAllowed(true);
     	
     	setRequired(true, CaseDataDto.REGION, CaseDataDto.DISTRICT, CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY);
 

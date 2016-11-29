@@ -8,6 +8,7 @@ import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
@@ -16,6 +17,7 @@ import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.symptoms.Symptoms;
+import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.user.User;
 
 @Stateless
@@ -46,6 +48,10 @@ public class CaseService extends AbstractAdoService<Case> {
 			filter = cb.or(filter, cb.equal(from.get(Case.SURVEILLANCE_OFFICER), user));
 		}
 		
+		// add cases for assigned tasks of the user
+		Join<Case, Task> tasksJoin = from.join(Case.TASKS, JoinType.LEFT);
+		filter = cb.or(filter, cb.equal(tasksJoin.get(Task.ASSIGNEE_USER), user));
+		
 		// TODO add Filter by Region...
 		if (user.getUserRoles().contains(UserRole.SURVEILLANCE_SUPERVISOR)) {
 			filter = null;//cb.or(filter, cb.equal(from.get(Case.SURVEILLANCE_SUPERVISOR), user));
@@ -66,6 +72,7 @@ public class CaseService extends AbstractAdoService<Case> {
 			cq.where(filter);
 		}
 		cq.orderBy(cb.asc(from.get(AbstractDomainObject.ID)));
+		cq.distinct(true);
 
 		List<Case> resultList = em.createQuery(cq).getResultList();
 		return resultList;
