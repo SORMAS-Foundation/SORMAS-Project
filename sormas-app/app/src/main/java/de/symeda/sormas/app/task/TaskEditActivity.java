@@ -14,6 +14,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.task.TaskDao;
+import de.symeda.sormas.app.caze.SyncCasesTask;
 
 
 /**
@@ -69,7 +70,7 @@ public class TaskEditActivity extends AppCompatActivity {
                 taskDao.save(task);
                 Toast.makeText(this, "task "+ DataHelper.getShortUuid(task.getUuid()) +" saved", Toast.LENGTH_SHORT).show();
 
-                new SyncTasksTask().execute();
+                SyncTasksTask.syncTasks(getSupportFragmentManager(), null);
 
                 return true;
         }

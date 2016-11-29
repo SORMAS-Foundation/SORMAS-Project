@@ -4,6 +4,8 @@ package de.symeda.sormas.app.task;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
@@ -23,7 +25,7 @@ public class TasksActivity extends SormasRootActivity {
         super.onCreate(savedInstanceState);
         setTitle(getResources().getString(R.string.main_menu_tasks));
 
-        refreshLocalDB();
+        SyncTasksTask.syncTasks(getSupportFragmentManager(), this);
     }
 
     @Override
@@ -33,22 +35,26 @@ public class TasksActivity extends SormasRootActivity {
         createTabViews();
     }
 
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.tasks_action_bar, menu);
+        return true;
+    }
+
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
         switch(item.getItemId()) {
             case R.id.action_reload:
-                refreshLocalDB();
-                return true;
-
-            case R.id.action_new_case:
-                showCaseNewView();
+                SyncTasksTask.syncTasks(getSupportFragmentManager(), this);
                 return true;
 
             default:
                 break;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -75,24 +81,5 @@ public class TasksActivity extends SormasRootActivity {
 
         // Setting the ViewPager For the SlidingTabsLayout
         tabs.setViewPager(pager);
-    }
-
-    private void refreshLocalDB() {
-
-        new SyncTasksTask() {
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                if (getSupportFragmentManager() != null && getSupportFragmentManager().getFragments() != null) {
-                    for (Fragment fragement : getSupportFragmentManager().getFragments()) {
-                        if (fragement instanceof TasksListFragment) {
-                            fragement.onResume();
-                        }
-                    }
-                }
-
-                Toast toast = Toast.makeText(TasksActivity.this, "refreshed local db", Toast.LENGTH_SHORT);
-                toast.show();
-            }
-        }.execute();
     }
 }

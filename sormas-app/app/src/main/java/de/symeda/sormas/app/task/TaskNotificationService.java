@@ -12,6 +12,7 @@ import android.os.IBinder;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.NotificationCompat;
 import android.text.Html;
+import android.text.TextUtils;
 import android.widget.Toast;
 
 import org.joda.time.DateTime;
@@ -31,6 +32,7 @@ import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.task.TaskDao;
 import de.symeda.sormas.app.caze.CasesActivity;
 import de.symeda.sormas.app.caze.CasesListFragment;
+import de.symeda.sormas.app.util.Callback;
 
 /**
  * Created by Stefan Szczesny on 15.11.2016.
@@ -38,16 +40,9 @@ import de.symeda.sormas.app.caze.CasesListFragment;
 
 public class TaskNotificationService extends Service {
 
-    private int NOTIFICATION_ID = 0;
-    private CaseDao caseDAO;
-    private PersonDao personDAO;
-
     @Override
     public void onCreate() {
         super.onCreate();
-
-        caseDAO = DatabaseHelper.getCaseDao();
-        personDAO = DatabaseHelper.getPersonDao();
     }
 
     @Override
@@ -64,18 +59,12 @@ public class TaskNotificationService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-        new SyncTasksTask() {
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                doTaskNotification();
-            }
-        }
-        .execute();
+        SyncTasksTask.syncTasks((Callback)null, this);
 
         return super.onStartCommand(intent, flags, startId);
     }
 
-    private void doTaskNotification() {
+    public static void doTaskNotification(Context context) {
         Date notificationRangeStart = ConfigProvider.getLastNotificationDate();
         if (notificationRangeStart == null) {
             notificationRangeStart = new DateTime().minusDays(1).toDate();
@@ -88,32 +77,38 @@ public class TaskNotificationService extends Service {
         TaskDao taskDao = DatabaseHelper.getTaskDao();
         List<Task> taskList = taskDao.queryPendingForNotification(notificationRangeStart, notificationRangeEnd);
 
+        CaseDao caseDAO = DatabaseHelper.getCaseDao();
+        PersonDao personDAO = DatabaseHelper.getPersonDao();
+
         for (Task task:taskList) {
-            Intent notificationIntent = new Intent(this, TaskEditActivity.class);
+            Intent notificationIntent = new Intent(context, TaskEditActivity.class);
             notificationIntent.putExtra(Task.UUID, task.getUuid());
 
             Case caze = caseDAO.queryForId(task.getCaze().getId());
             Person person = personDAO.queryForId(caze.getPerson().getId());
 
-            PendingIntent pi = PendingIntent.getActivity(this, 0, notificationIntent, 0);
-            Resources r = getResources();
-            Notification notification = new NotificationCompat.Builder(this)
+            PendingIntent pi = PendingIntent.getActivity(context, 0, notificationIntent, 0);
+            Resources r = context.getResources();
+
+            StringBuilder content = new StringBuilder();
+            if (!TextUtils.isEmpty(task.getCreatorComment())) {
+                content.append(task.getCreatorComment()).append("<br><br>");
+            }
+            content.append("<b>").append(person.toString())
+                    .append(" (").append(DataHelper.getShortUuid(caze.getUuid())).append(")</b>");
+
+            Notification notification = new NotificationCompat.Builder(context)
                     .setTicker(r.getString(R.string.headline_task_notification))
                     .setSmallIcon(R.mipmap.ic_launcher)
                     .setContentTitle(task.getTaskType().toString())
-                    .setStyle(new NotificationCompat.BigTextStyle().bigText(Html.fromHtml(
-                            task.getCreatorComment()
-                            +"<br><br>"
-                            +"<b>"
-                            + person.toString() + " (" + DataHelper.getShortUuid(caze.getUuid()) +")"
-                            +"</b>")))
-
+                    .setStyle(new NotificationCompat.BigTextStyle().bigText(Html.fromHtml(content.toString())))
                     .setContentIntent(pi)
                     .setAutoCancel(true)
                     .build();
 
-            NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-            notificationManager.notify(NOTIFICATION_ID, notification);
+            NotificationManager notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+            int notificationId = 0;
+            notificationManager.notify(notificationId, notification);
 
             break; // @TODO implement notification grouping
         }
@@ -132,7 +127,7 @@ public class TaskNotificationService extends Service {
         alarmMgr.setInexactRepeating(
                 AlarmManager.RTC_WAKEUP,
                 now.getTime(), // TODO start at full XX:X5 minute
-                1000 * 20,//60 * 5,
+                1000 * 60 * 5,
                 alarmIntent);
     }
 }

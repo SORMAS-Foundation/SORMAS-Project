@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
@@ -18,6 +19,8 @@ import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.caze.SyncCasesTask;
 import de.symeda.sormas.app.person.SyncPersonsTask;
 import de.symeda.sormas.app.rest.RetroProvider;
+import de.symeda.sormas.app.task.SyncTasksTask;
+import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.SyncInfrastructureTask;
 
 /**
@@ -135,17 +138,13 @@ public final class ConfigProvider {
             RetroProvider.reset();
             DatabaseHelper.clearTables();
 
-            if (serverRestUrl != null) {
-                try {
-                    new SyncInfrastructureTask().execute().get();
-                    new SyncPersonsTask().execute().get();
-                    new SyncCasesTask().execute().get();
-                } catch (InterruptedException e) {
-                    Log.e(ConfigProvider.class.getName(), e.toString(), e);
-                } catch (ExecutionException e) {
-                    Log.e(ConfigProvider.class.getName(), e.toString(), e);
+            SyncInfrastructureTask.syncInfrastructure(new Callback() {
+                @Override
+                public void call() {
+                    // this also syncs cases which syncs persons
+                    SyncTasksTask.syncTasks((Callback)null, null);
                 }
-            }
+            });
         }
     }
 

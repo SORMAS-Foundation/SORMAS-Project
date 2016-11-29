@@ -10,6 +10,7 @@ import de.symeda.sormas.app.backend.common.AdoDtoHelper.DtoPostInterface;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.person.PersonDtoHelper;
 import de.symeda.sormas.app.rest.RetroProvider;
+import de.symeda.sormas.app.util.Callback;
 import retrofit2.Call;
 
 /**
@@ -39,5 +40,16 @@ public class SyncPersonsTask extends AsyncTask<Void, Void, Void> {
         }, DatabaseHelper.getPersonDao());
 
         return null;
+    }
+
+    public static void syncPersons(final Callback callback) {
+        new SyncPersonsTask() {
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                if (callback != null) {
+                    callback.call();
+                }
+            }
+        }.execute();
     }
 }

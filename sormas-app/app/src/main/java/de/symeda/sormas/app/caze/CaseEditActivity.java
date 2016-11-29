@@ -200,7 +200,7 @@ public class CaseEditActivity extends AppCompatActivity {
                         caseDao.save(caze);
                         Toast.makeText(this, "case "+ DataHelper.getShortUuid(caze.getUuid()) +" saved", Toast.LENGTH_SHORT).show();
 
-                        new SyncCasesTask().execute();
+                        SyncCasesTask.syncCases(getSupportFragmentManager());
                         break;
 
                     // case person tab
@@ -214,7 +214,7 @@ public class CaseEditActivity extends AppCompatActivity {
                             locLocationDao.save(person.getAddress());
                         }
                         personDao.save(person);
-                        Toast.makeText(this, person.toString() + " saved", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "person " + person.toString() + " saved", Toast.LENGTH_SHORT).show();
 
                         new SyncPersonsTask().execute();
                         break;
@@ -233,7 +233,7 @@ public class CaseEditActivity extends AppCompatActivity {
 
                         Toast.makeText(this, "symptoms saved", Toast.LENGTH_SHORT).show();
 
-                        new SyncCasesTask().execute();
+                        SyncCasesTask.syncCases(getSupportFragmentManager());
                         break;
                 }
 

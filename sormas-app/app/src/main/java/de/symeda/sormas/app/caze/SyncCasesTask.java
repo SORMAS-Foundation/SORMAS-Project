@@ -5,6 +5,8 @@ package de.symeda.sormas.app.caze;
  */
 
 import android.os.AsyncTask;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.ListFragment;
 
 import com.j256.ormlite.logger.Logger;
@@ -19,7 +21,9 @@ import de.symeda.sormas.app.backend.common.AdoDtoHelper.DtoGetInterface;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.user.User;
+import de.symeda.sormas.app.person.SyncPersonsTask;
 import de.symeda.sormas.app.rest.RetroProvider;
+import de.symeda.sormas.app.util.Callback;
 import retrofit2.Call;
 
 /**
@@ -30,6 +34,9 @@ public class SyncCasesTask extends AsyncTask<Void, Void, Void> {
     private static final String TAG = SyncCasesTask.class.getSimpleName();
     protected static Logger logger = LoggerFactory.getLogger(SyncCasesTask.class);
 
+    private SyncCasesTask() {
+
+    }
 
     @Override
     protected Void doInBackground(Void... params) {
@@ -53,5 +60,44 @@ public class SyncCasesTask extends AsyncTask<Void, Void, Void> {
         }, DatabaseHelper.getCaseDao());
 
         return null;
+    }
+
+    public static void syncCases(final FragmentManager fragmentManager) {
+        if (fragmentManager != null) {
+            syncCases(new Callback() {
+                @Override
+                public void call() {
+                    if (fragmentManager.getFragments() != null) {
+                        for (Fragment fragement : fragmentManager.getFragments()) {
+                            if (fragement instanceof CasesListFragment) {
+                                fragement.onResume();
+                            }
+                        }
+                    }
+                }
+            });
+        } else {
+            syncCases((Callback)null);
+        }
+    }
+
+    public static void syncCases(final Callback callback) {
+        SyncPersonsTask.syncPersons(new Callback() {
+                                        @Override
+                                        public void call() {
+                                            syncCasesWithoutDependencies(callback);
+                                        }
+                                    });
+    }
+
+    public static AsyncTask<Void, Void, Void> syncCasesWithoutDependencies(final Callback callback) {
+        return new SyncCasesTask() {
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                if (callback != null) {
+                    callback.call();
+                }
+            }
+        }.execute();
     }
 }

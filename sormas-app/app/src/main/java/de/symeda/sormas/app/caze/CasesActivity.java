@@ -28,7 +28,7 @@ public class CasesActivity extends SormasRootActivity {
         super.onCreate(savedInstanceState);
         setTitle(getResources().getString(R.string.main_menu_cases));
 
-        refreshLocalDB();
+        SyncCasesTask.syncCases(getSupportFragmentManager());
     }
 
     @Override
@@ -36,7 +36,6 @@ public class CasesActivity extends SormasRootActivity {
         super.onResume();
 
         createTabViews();
-        refreshCaseList();
     }
 
     @Override
@@ -51,8 +50,7 @@ public class CasesActivity extends SormasRootActivity {
 
         switch(item.getItemId()) {
             case R.id.action_reload:
-                refreshLocalDB();
-                refreshCaseList();
+                SyncCasesTask.syncCases(getSupportFragmentManager());
                 return true;
 
             case R.id.action_new_case:
@@ -89,34 +87,5 @@ public class CasesActivity extends SormasRootActivity {
 
         // Setting the ViewPager For the SlidingTabsLayout
         tabs.setViewPager(pager);
-    }
-
-    private void refreshCaseList() {
-        CaseDao caseDao = DatabaseHelper.getCaseDao();
-        //populateListView(caseDao.queryForAll());
-    }
-
-    private void refreshLocalDB() {
-
-        new SyncPersonsTask() {
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                new SyncCasesTask() {
-                    @Override
-                    protected void onPostExecute(Void aVoid) {
-                        if (getSupportFragmentManager() != null && getSupportFragmentManager().getFragments() != null) {
-                            for (Fragment fragement : getSupportFragmentManager().getFragments()) {
-                                if (fragement instanceof CasesListFragment) {
-                                    fragement.onResume();
-                                }
-                            }
-                        }
-
-                        Toast toast = Toast.makeText(CasesActivity.this, "refreshed local db", Toast.LENGTH_SHORT);
-                        toast.show();
-                    }
-                }.execute();
-            }
-        }.execute();
     }
 }

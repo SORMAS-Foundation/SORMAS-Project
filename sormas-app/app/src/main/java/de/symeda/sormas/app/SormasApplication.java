@@ -10,7 +10,9 @@ import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.caze.CasesActivity;
 import de.symeda.sormas.app.caze.SyncCasesTask;
 import de.symeda.sormas.app.person.SyncPersonsTask;
+import de.symeda.sormas.app.task.SyncTasksTask;
 import de.symeda.sormas.app.task.TaskNotificationService;
+import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.SyncInfrastructureTask;
 
 /**
@@ -22,15 +24,14 @@ public class SormasApplication extends Application {
     public void onCreate() {
         DatabaseHelper.init(this);
         ConfigProvider.init();
-        try {
-            new SyncInfrastructureTask().execute().get();
-            new SyncPersonsTask().execute().get();
-            new SyncCasesTask().execute().get();
-        } catch (InterruptedException e) {
-            Log.e(CasesActivity.class.getName(), e.toString(), e);
-        } catch (ExecutionException e) {
-            Log.e(CasesActivity.class.getName(), e.toString(), e);
-        }
+
+        SyncInfrastructureTask.syncInfrastructure(new Callback() {
+            @Override
+            public void call() {
+                // this also syncs cases which syncs persons
+                SyncTasksTask.syncTasks((Callback)null, SormasApplication.this);
+            }
+        });
 
         TaskNotificationService.startTaskNotificationAlarm(this);
 

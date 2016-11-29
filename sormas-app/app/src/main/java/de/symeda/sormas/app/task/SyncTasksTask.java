@@ -1,6 +1,9 @@
 package de.symeda.sormas.app.task;
 
+import android.content.Context;
 import android.os.AsyncTask;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 
 import java.util.List;
 
@@ -11,7 +14,11 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.task.TaskDtoHelper;
 import de.symeda.sormas.app.backend.user.User;
+import de.symeda.sormas.app.caze.CasesListFragment;
+import de.symeda.sormas.app.caze.SyncCasesTask;
+import de.symeda.sormas.app.person.SyncPersonsTask;
 import de.symeda.sormas.app.rest.RetroProvider;
+import de.symeda.sormas.app.util.Callback;
 import retrofit2.Call;
 
 /**
@@ -19,7 +26,7 @@ import retrofit2.Call;
  */
 public class SyncTasksTask extends AsyncTask<Void, Void, Void> {
 
-    public SyncTasksTask() {
+    private SyncTasksTask() {
     }
 
     @Override
@@ -47,5 +54,47 @@ public class SyncTasksTask extends AsyncTask<Void, Void, Void> {
         }, DatabaseHelper.getTaskDao());
 
         return null;
+    }
+
+    public static void syncTasks(final FragmentManager fragmentManager, final Context notificationContext) {
+        if (fragmentManager != null) {
+            syncTasks(new Callback() {
+                @Override
+                public void call() {
+                    if (fragmentManager.getFragments() != null) {
+                        for (Fragment fragement : fragmentManager.getFragments()) {
+                            if (fragement instanceof TasksListFragment) {
+                                fragement.onResume();
+                            }
+                        }
+                    }
+                }
+            }, notificationContext);
+        } else {
+            syncTasks((Callback)null, notificationContext);
+        }
+    }
+
+    public static void syncTasks(final Callback callback, final Context notificationContext) {
+        SyncCasesTask.syncCases(new Callback() {
+            @Override
+            public void call() {
+                syncTasksWithoutDependencies(callback, notificationContext);
+            }
+        });
+    }
+
+    public static void syncTasksWithoutDependencies(final Callback callback, final Context notificationContext) {
+        new SyncTasksTask() {
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                if (callback != null) {
+                    callback.call();
+                }
+                if (notificationContext != null) {
+                    TaskNotificationService.doTaskNotification(notificationContext);
+                }
+            }
+        }.execute();
     }
 }

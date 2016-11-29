@@ -12,7 +12,6 @@ import de.symeda.sormas.api.region.CommunityDto;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper.DtoGetInterface;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.facility.FacilityDtoHelper;
@@ -31,7 +30,7 @@ public class SyncInfrastructureTask extends AsyncTask<Void, Void, Void> {
     private static final String TAG = SyncInfrastructureTask.class.getSimpleName();
     protected static Logger logger = LoggerFactory.getLogger(SyncInfrastructureTask.class);
 
-    public SyncInfrastructureTask() {
+    private SyncInfrastructureTask() {
     }
 
     @Override
@@ -75,8 +74,14 @@ public class SyncInfrastructureTask extends AsyncTask<Void, Void, Void> {
         return null;
     }
 
-
-    protected void onPostExecute(Integer result) {
-
+    public static void syncInfrastructure(final Callback callback) {
+        new SyncInfrastructureTask() {
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                if (callback != null) {
+                    callback.call();
+                }
+            }
+        }.execute();
     }
 }
