@@ -18,7 +18,9 @@ public class ContactDto extends ContactReferenceDto {
 	public static final String REPORTING_USER = "reportingUser";
 	public static final String LAST_CONTACT_DATE = "lastContactDate";
 	public static final String CONTACT_PROXIMITY = "contactProximity";
-	public static final String CONTACT_STATUS = "contactStatus";
+	public static final String CONTACT_CLASSIFICATION = "contactClassification";
+	public static final String FOLLOW_UP_STATUS = "followUpStatus";
+	public static final String FOLLOW_UP_UNTIL = "followUpUntil";
 	public static final String CONTACT_OFFICER = "contactOfficer";
 	public static final String DESCRIPTION = "description";
 	
@@ -28,7 +30,9 @@ public class ContactDto extends ContactReferenceDto {
 	private UserReferenceDto reportingUser;
 	private Date lastContactDate;
 	private ContactProximity contactProximity;
-	private ContactStatus contactStatus;
+	private ContactClassification contactClassification;
+	private FollowUpStatus followUpStatus;
+	private Date followUpUntil;
 	private UserReferenceDto contactOfficer;
 	private String description;
 	
@@ -68,12 +72,6 @@ public class ContactDto extends ContactReferenceDto {
 	public void setContactProximity(ContactProximity contactProximity) {
 		this.contactProximity = contactProximity;
 	}
-	public ContactStatus getContactStatus() {
-		return contactStatus;
-	}
-	public void setContactStatus(ContactStatus contactStatus) {
-		this.contactStatus = contactStatus;
-	}
 	public String getDescription() {
 		return description;
 	}
@@ -85,6 +83,24 @@ public class ContactDto extends ContactReferenceDto {
 	}
 	public void setContactOfficer(UserReferenceDto contactOfficer) {
 		this.contactOfficer = contactOfficer;
+	}
+	public FollowUpStatus getFollowUpStatus() {
+		return followUpStatus;
+	}
+	public void setFollowUpStatus(FollowUpStatus followUpStatus) {
+		this.followUpStatus = followUpStatus;
+	}
+	public ContactClassification getContactClassification() {
+		return contactClassification;
+	}
+	public void setContactClassification(ContactClassification contactClassification) {
+		this.contactClassification = contactClassification;
+	}
+	public Date getFollowUpUntil() {
+		return followUpUntil;
+	}
+	public void setFollowUpUntil(Date followUpUntil) {
+		this.followUpUntil = followUpUntil;
 	}
 
 }

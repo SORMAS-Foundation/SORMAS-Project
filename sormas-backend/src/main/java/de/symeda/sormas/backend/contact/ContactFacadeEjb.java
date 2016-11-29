@@ -119,7 +119,9 @@ public class ContactFacadeEjb implements ContactFacade {
 		
 		target.setLastContactDate(source.getLastContactDate());
 		target.setContactProximity(source.getContactProximity());
-		target.setContactStatus(source.getContactStatus());
+		target.setContactClassification(source.getContactClassification());
+		target.setFollowUpStatus(source.getFollowUpStatus());
+		target.setFollowUpUntil(source.getFollowUpUntil());
 		target.setContactOfficer(userService.getByReferenceDto(source.getContactOfficer()));
 		target.setDescription(source.getDescription());
 
@@ -150,7 +152,9 @@ public class ContactFacadeEjb implements ContactFacade {
 		
 		target.setLastContactDate(source.getLastContactDate());
 		target.setContactProximity(source.getContactProximity());
-		target.setContactStatus(source.getContactStatus());
+		target.setContactClassification(source.getContactClassification());
+		target.setFollowUpStatus(source.getFollowUpStatus());
+		target.setFollowUpUntil(source.getFollowUpUntil());
 		target.setContactOfficer(UserFacadeEjb.toReferenceDto(source.getContactOfficer()));
 		target.setDescription(source.getDescription());
 		
@@ -172,7 +176,9 @@ public class ContactFacadeEjb implements ContactFacade {
 		
 		target.setLastContactDate(source.getLastContactDate());
 		target.setContactProximity(source.getContactProximity());
-		target.setContactStatus(source.getContactStatus());
+		target.setContactClassification(source.getContactClassification());
+		target.setFollowUpStatus(source.getFollowUpStatus());
+		target.setFollowUpUntil(source.getFollowUpUntil());
 		target.setContactOfficer(UserFacadeEjb.toReferenceDto(source.getContactOfficer()));
 		
 		return target;

@@ -12,7 +12,8 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import de.symeda.sormas.api.contact.ContactProximity;
-import de.symeda.sormas.api.contact.ContactStatus;
+import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.person.Person;
@@ -29,7 +30,9 @@ public class Contact extends AbstractDomainObject {
 	public static final String REPORTING_USER = "reportingUser";
 	public static final String LAST_CONTACT_DATE = "lastContactDate";
 	public static final String CONTACT_PROXIMITY = "contactProximity";
-	public static final String CONTACT_STATUS = "contactStatus";
+	public static final String CONTACT_CLASSIFICATION = "contactClassification";
+	public static final String FOLLOW_UP_STATUS = "followUpStatus";
+	public static final String FOLLOW_UP_UNTIL = "followUpUntil";
 	public static final String CONTACT_OFFICER = "contactOfficer";
 	public static final String DESCRIPTION = "description";
 	
@@ -39,7 +42,9 @@ public class Contact extends AbstractDomainObject {
 	private User reportingUser;
 	private Date lastContactDate;
 	private ContactProximity contactProximity;
-	private ContactStatus contactStatus;
+	private ContactClassification contactClassification;
+	private FollowUpStatus followUpStatus;
+	private Date followUpUntil;
 	private User contactOfficer;
 	private String description;
 	
@@ -95,14 +100,6 @@ public class Contact extends AbstractDomainObject {
 	public void setContactProximity(ContactProximity contactProximity) {
 		this.contactProximity = contactProximity;
 	}
-	
-	@Enumerated(EnumType.STRING)
-	public ContactStatus getContactStatus() {
-		return contactStatus;
-	}
-	public void setContactStatus(ContactStatus contactStatus) {
-		this.contactStatus = contactStatus;
-	}
 
 	@Column(length=512)
 	public String getDescription() {
@@ -121,5 +118,32 @@ public class Contact extends AbstractDomainObject {
 
 	public void setContactOfficer(User contactOfficer) {
 		this.contactOfficer = contactOfficer;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public FollowUpStatus getFollowUpStatus() {
+		return followUpStatus;
+	}
+
+	public void setFollowUpStatus(FollowUpStatus followUpStatus) {
+		this.followUpStatus = followUpStatus;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getFollowUpUntil() {
+		return followUpUntil;
+	}
+
+	public void setFollowUpUntil(Date followUpUntil) {
+		this.followUpUntil = followUpUntil;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public ContactClassification getContactClassification() {
+		return contactClassification;
+	}
+
+	public void setContactClassification(ContactClassification contactClassification) {
+		this.contactClassification = contactClassification;
 	}	
 }

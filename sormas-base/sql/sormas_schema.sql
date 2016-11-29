@@ -827,3 +827,31 @@ ALTER TABLE contact OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (10, 'Contact.contactOfficer + OWNER');
 
+-- 2016-11-29; Contact Visits backend #10
+
+ALTER TABLE contact DROP COLUMN contactstatus;
+ALTER TABLE contact ADD COLUMN contactclassification varchar(255);
+ALTER TABLE contact ADD COLUMN followupstatus varchar(255);
+ALTER TABLE contact ADD COLUMN followupuntil timestamp;
+
+CREATE TABLE visit (
+	id bigint not null, 
+	uuid varchar(36) not null unique, 
+	changedate timestamp not null, 
+	creationdate timestamp not null,
+	person_id bigint not null, 
+	visituser_id bigint not null, 
+    visitremarks character varying(512),
+    disease character varying(255),
+	visitdatetime timestamp not null,
+    visitstatus character varying(255),
+	symptoms_id bigint,
+	primary key (id));
+ALTER TABLE visit OWNER TO sormas_user;
+
+ALTER TABLE visit ADD CONSTRAINT fk_visit_symptoms_id FOREIGN KEY (symptoms_id) REFERENCES symptoms (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE visit ADD CONSTRAINT fk_visit_person_id FOREIGN KEY (person_id) REFERENCES person (id);
+ALTER TABLE visit ADD CONSTRAINT fk_visit_visituser_id FOREIGN KEY (visituser_id) REFERENCES users (id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (11, 'visit, contact classification, follow-up status, follow-up until');
+

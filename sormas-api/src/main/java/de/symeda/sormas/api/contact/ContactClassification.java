@@ -2,11 +2,12 @@ package de.symeda.sormas.api.contact;
 
 import de.symeda.sormas.api.I18nProperties;
 
-public enum ContactStatus {
+public enum ContactClassification {
 	POSSIBLE,
-	FOLLOW_UP,
-	DONE,
-	NO_CONTACT
+	CONFIRMED,
+	NO_CONTACT,
+	CONVERTED, // to case
+	DROPPED, // case disproved
 	;
 	
 	public String toString() {

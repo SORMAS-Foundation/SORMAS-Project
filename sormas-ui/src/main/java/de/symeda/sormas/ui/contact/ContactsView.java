@@ -13,7 +13,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.ReferenceDto;
-import de.symeda.sormas.api.contact.ContactStatus;
+import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
@@ -70,12 +70,12 @@ public class ContactsView extends AbstractView {
     	CssStyles.style(header, CssStyles.H2, CssStyles.NO_MARGIN);
     	topLayout.addComponent(header);
     	
-    	Button statusAll = new Button("all", e -> grid.removeAllStatusFilter());
+    	Button statusAll = new Button("all", e -> grid.setClassificationFilter(null));
         statusAll.setStyleName(ValoTheme.BUTTON_LINK);
         topLayout.addComponent(statusAll);
         
-        for (ContactStatus status : ContactStatus.values()) {
-	    	Button statusButton = new Button(status.toString(), e -> grid.setStatusFilter(status));
+        for (ContactClassification status : ContactClassification.values()) {
+	    	Button statusButton = new Button(status.toString(), e -> grid.setClassificationFilter(status));
 	    	statusButton.setStyleName(ValoTheme.BUTTON_LINK);
 	        topLayout.addComponent(statusButton);
         }

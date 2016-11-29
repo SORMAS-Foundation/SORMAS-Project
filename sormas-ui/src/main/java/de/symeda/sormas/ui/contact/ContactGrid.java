@@ -16,7 +16,7 @@ import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
-import de.symeda.sormas.api.contact.ContactStatus;
+import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -94,17 +94,13 @@ public class ContactGrid extends Grid {
 		}
 	}
 
-	public void setStatusFilter(ContactStatus status) {
-    	removeAllStatusFilter();
+	public void setClassificationFilter(ContactClassification status) {
+    	reload();
+		getContainer().removeContainerFilters(ContactIndexDto.CONTACT_CLASSIFICATION);
     	if (status != null) {
-	    	Equal filter = new Equal(ContactIndexDto.CONTACT_STATUS, status);  
+	    	Equal filter = new Equal(ContactIndexDto.CONTACT_CLASSIFICATION, status);  
 	        getContainer().addContainerFilter(filter);
     	}
-    }
-    
-    public void removeAllStatusFilter() {
-    	reload();
-    	getContainer().removeContainerFilters(ContactIndexDto.CONTACT_STATUS);
     }
 
     @SuppressWarnings("unchecked")

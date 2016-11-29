@@ -37,7 +37,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			LayoutUtil.divCss(CssStyles.VSPACE2, 
 		    		LayoutUtil.fluidRowCss(CssStyles.VSPACE4,
 		    				LayoutUtil.fluidColumn(8, 0, 
-		    						LayoutUtil.fluidRowLocs(ContactDto.CONTACT_STATUS) +
+		    						LayoutUtil.fluidRowLocs(ContactDto.CONTACT_CLASSIFICATION) +
 		    						LayoutUtil.fluidRowLocs(ContactDto.UUID, ContactDto.REPORTING_USER) +
 		    						LayoutUtil.fluidRowLocs(ContactDto.LAST_CONTACT_DATE, ContactDto.REPORTING_USER) +
 		    						LayoutUtil.fluidRowLocs(ContactDto.CONTACT_PROXIMITY) +
@@ -56,7 +56,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 
     @Override
 	protected void addFields() {
-    	addField(ContactDto.CONTACT_STATUS, OptionGroup.class);
+    	addField(ContactDto.CONTACT_CLASSIFICATION, OptionGroup.class);
     	addField(ContactDto.UUID, TextField.class);
     	addField(ContactDto.REPORTING_USER, ComboBox.class);
     	addField(ContactDto.LAST_CONTACT_DATE, DateField.class);
