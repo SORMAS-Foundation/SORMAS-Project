@@ -150,6 +150,10 @@
     <string name="task_assigneeReply">Your comment</string>
     <string name="title_activity_task_notification">TaskNotificationActivity</string>
     <string name="headline_task_notification">check sormas task</string>
+    <string name="headline_contacts">Contacts</string>
+    <string name="action_add">Add new entry</string>
+    <string name="label_days">days</string>
+    <string name="label_today">today</string>
 
 
 </resources>

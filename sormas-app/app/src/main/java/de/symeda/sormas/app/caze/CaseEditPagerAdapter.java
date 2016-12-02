@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.contact.ContactsListFragment;
 
 /**
  * Created by Stefan Szczesny on 27.07.2016.
@@ -49,6 +50,11 @@ public class CaseEditPagerAdapter extends FragmentStatePagerAdapter {
                 caseEditSymptomsTab = new CaseEditSymptomsTab();
                 caseEditSymptomsTab.setArguments(caseEditBundle);
                 frag = caseEditSymptomsTab;
+                break;
+            case 3:
+                ContactsListFragment contactsListTab = new ContactsListFragment();
+                contactsListTab.setArguments(caseEditBundle);
+                frag = contactsListTab;
                 break;
         }
         return frag;

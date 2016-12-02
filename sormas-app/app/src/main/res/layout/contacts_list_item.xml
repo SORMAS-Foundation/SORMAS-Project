@@ -2,7 +2,6 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="match_parent">
 
-
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
@@ -14,13 +13,13 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.7"
             android:paddingTop="@dimen/spinner_padding"
-            android:paddingBottom="@dimen/spinner_padding">
+            android:layout_marginBottom="@dimen/list_item_margin_bottom">
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:id="@+id/cli_uuid"
+                android:id="@+id/contact_uuid_li"
                 android:paddingLeft="10dp"
                 android:paddingTop="10dp"
                 android:paddingRight="10dp" />
@@ -28,16 +27,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                android:id="@+id/cli_disease"
+                android:id="@+id/contact_lastContactDate_li"
                 android:paddingLeft="10dp" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:id="@+id/cli_case_satus"
-                android:paddingLeft="10dp"
-                android:paddingBottom="10dp" />
         </LinearLayout>
 
 
@@ -47,12 +39,13 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.3"
             android:paddingTop="@dimen/spinner_padding"
-            android:paddingBottom="@dimen/spinner_padding">
+            android:paddingRight="@dimen/spinner_padding"
+            android:layout_marginBottom="@dimen/list_item_margin_bottom">
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:id="@+id/cli_person"
+                android:id="@+id/contact_person_li"
                 android:paddingLeft="10dp"
                 android:paddingTop="10dp"
                 android:paddingRight="10dp" />
@@ -61,16 +54,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                android:id="@+id/cli_facility"
+                android:id="@+id/contact_information_li"
                 android:paddingLeft="10dp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:id="@+id/cli_reporter"
-                android:paddingLeft="10dp"
-                android:paddingBottom="10dp" />
 
         </LinearLayout>
     </LinearLayout>

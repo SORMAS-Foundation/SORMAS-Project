@@ -39,10 +39,10 @@ public class Contact extends AbstractDomainObject {
 	public static final String CONTACT_OFFICER = "contactOfficer";
 	public static final String DESCRIPTION = "description";
 
-	@DatabaseField(foreign = true, foreignAutoRefresh=true, canBeNull = false, unique = true)
+	@DatabaseField(foreign = true, foreignAutoRefresh=true, canBeNull = false)
 	private Person person;
 
-	@DatabaseField(foreign = true, foreignAutoRefresh=true, canBeNull = false, unique = true)
+	@DatabaseField(foreign = true, foreignAutoRefresh=true, canBeNull = false)
 	private Case caze;
 
 	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)

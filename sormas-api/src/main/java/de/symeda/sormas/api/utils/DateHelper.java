@@ -8,6 +8,10 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import org.joda.time.Days;
+import org.joda.time.LocalDate;
+import org.joda.time.ReadableInstant;
+
 public final class DateHelper {
 
 	private static final SimpleDateFormat SHORT_DATE_FORMAT = new SimpleDateFormat("dd/MM/yy");
@@ -124,7 +128,7 @@ public final class DateHelper {
 	}
 	
 	/**
-	 * Returnsa list of years from 1900 to now.
+	 * Returns a list of years from 1900 to now.
 	 * @return
 	 */
 	public static List<Integer> getYearsToNow() {
@@ -138,5 +142,14 @@ public final class DateHelper {
 	
 	public static SimpleDateFormat getShortDateFormat() {
 		return clone(SHORT_DATE_FORMAT);
+	}
+	
+	/**
+	 * Calculate days between the two given dates.
+	 */
+	public static int getDaysBetween(Date start, Date end) {
+		return Days.daysBetween(
+				new LocalDate(start.getTime()), 
+                new LocalDate(end.getTime())).getDays();
 	}
 }

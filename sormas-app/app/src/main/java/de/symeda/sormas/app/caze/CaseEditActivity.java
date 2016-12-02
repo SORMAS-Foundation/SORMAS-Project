@@ -1,16 +1,9 @@
 package de.symeda.sormas.app.caze;
 
-import android.app.AlarmManager;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.res.Resources;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.NavUtils;
-import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -22,8 +15,6 @@ import android.view.MenuItem;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import java.util.Date;
-
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
@@ -34,11 +25,9 @@ import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.symptoms.SymptomsDao;
-import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.component.PropertyField;
+import de.symeda.sormas.app.contact.ContactsListFragment;
 import de.symeda.sormas.app.person.SyncPersonsTask;
-import de.symeda.sormas.app.task.TaskEditActivity;
-import de.symeda.sormas.app.task.TaskNotificationService;
 import de.symeda.sormas.app.util.SlidingTabLayout;
 
 
@@ -58,10 +47,6 @@ public class CaseEditActivity extends AppCompatActivity {
 
     private int currentTab;
 
-//
-//    private AlarmManager alarmMgr;
-//    private PendingIntent alarmIntent;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,7 +64,8 @@ public class CaseEditActivity extends AppCompatActivity {
         titles = new CharSequence[]{
                 getResources().getText(R.string.headline_case_data),
                 getResources().getText(R.string.headline_patient),
-                getResources().getText(R.string.headline_symptoms)
+                getResources().getText(R.string.headline_symptoms),
+                getResources().getText(R.string.headline_contacts)
         };
     }
 
@@ -109,21 +95,32 @@ public class CaseEditActivity extends AppCompatActivity {
         switch(currentTab) {
             // case data tab
             case 0:
-                menu.setGroupVisible(R.id.group_action_help,false);
+                updateActionBarGroups(menu, false, false, true);
                 break;
 
             // case person tab
             case 1:
-                menu.setGroupVisible(R.id.group_action_help,false);
+                updateActionBarGroups(menu, false, false, true);
                 break;
 
             // case symptoms tab
             case 2:
-                menu.setGroupVisible(R.id.group_action_help,true);
+                updateActionBarGroups(menu, true, false, true);
+                break;
+
+            // case contacts tab
+            case 3:
+                updateActionBarGroups(menu,false, true, false);
                 break;
         }
 
         return true;
+    }
+
+    private void updateActionBarGroups(Menu menu, boolean help, boolean addNewEntry, boolean save) {
+        menu.setGroupVisible(R.id.group_action_help,help);
+        menu.setGroupVisible(R.id.group_action_add,addNewEntry);
+        menu.setGroupVisible(R.id.group_action_save,save);
     }
 
 
@@ -285,6 +282,12 @@ public class CaseEditActivity extends AppCompatActivity {
             public void onPageSelected(int position) {
                 currentTab = position;
                 invalidateOptionsMenu();
+
+                // TODO this has to be defined, witch fragments should resumed here
+//                Fragment fragment = adapter.getItem(position);
+//                if (fragment instanceof ContactsListFragment) {
+//                    ((ContactsListFragment)fragment).updateContacsArrayAdapter();
+//                }
             }
         });
     }

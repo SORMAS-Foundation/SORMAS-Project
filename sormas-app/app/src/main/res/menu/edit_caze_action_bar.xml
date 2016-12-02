@@ -10,11 +10,20 @@
             app:showAsAction="always|withText"/>
     </group>
 
+    <group android:id="@+id/group_action_add">
+        <item
+            android:id="@+id/action_add"
+            android:icon="@drawable/ic_add_black_24dp"
+            android:title="@string/action_add"
+            app:showAsAction="always|withText"/>
+    </group>
 
-    <item
-        android:id="@+id/action_save"
-        android:icon="@drawable/ic_save_black_24dp"
-        android:title="@string/action_save"
-        app:showAsAction="always|withText"/>
+    <group android:id="@+id/group_action_save">
+        <item
+            android:id="@+id/action_save"
+            android:icon="@drawable/ic_save_black_24dp"
+            android:title="@string/action_save"
+            app:showAsAction="always|withText"/>
+    </group>
 
 </menu>
