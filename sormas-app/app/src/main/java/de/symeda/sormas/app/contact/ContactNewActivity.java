@@ -1,4 +1,4 @@
-package de.symeda.sormas.app.caze;
+package de.symeda.sormas.app.contact;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -25,16 +25,18 @@ import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.symptoms.SymptomsDao;
 import de.symeda.sormas.app.backend.user.User;
+import de.symeda.sormas.app.caze.CaseEditActivity;
+import de.symeda.sormas.app.caze.SyncCasesTask;
 import de.symeda.sormas.app.util.DataUtils;
 
 
 /**
- * Created by Stefan Szczesny on 21.07.2016.
+ * Created by Stefan Szczesny on 02.11.2016.
  */
-public class CaseNewActivity extends AppCompatActivity {
+public class ContactNewActivity extends AppCompatActivity {
 
 
-    private CaseNewTab caseNewTab;
+    private ContactNewTab contactNewTab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,12 +48,12 @@ public class CaseNewActivity extends AppCompatActivity {
         if (toolbar != null) {
             setSupportActionBar(toolbar);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setTitle(getResources().getText(R.string.headline_new_case));
+            getSupportActionBar().setTitle(getResources().getText(R.string.headline_new_contact));
         }
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        caseNewTab = new CaseNewTab();
-        ft.add(R.id.fragment_frame, caseNewTab).commit();
+        contactNewTab = new ContactNewTab();
+        ft.add(R.id.fragment_frame, contactNewTab).commit();
 
     }
 
@@ -73,7 +75,7 @@ public class CaseNewActivity extends AppCompatActivity {
 
             case R.id.action_save:
                 try {
-                    Case caze = caseNewTab.getData();
+                    Case caze = contactNewTab.getData();
 
                     caze.setCaseStatus(CaseStatus.POSSIBLE);
                     User user = ConfigProvider.getUser();

@@ -50,6 +50,9 @@
                 android:value=".task.TasksActivity" />
         </activity>
 
+        <activity android:name=".contact.ContactNewActivity"></activity>
+        <activity android:name=".contact.ContactEditActivity"></activity>
+
 
         <receiver android:name=".SormasBootstrap"
             android:enabled="true">

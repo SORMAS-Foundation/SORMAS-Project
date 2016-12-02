@@ -154,6 +154,10 @@
     <string name="action_add">Add new entry</string>
     <string name="label_days">days</string>
     <string name="label_today">today</string>
+    <string name="headline_new_contact">Create new contact</string>
+    <string name="headline_contact_data">Contact data</string>
+    <string name="headline_visits">Visits</string>
+    <string name="headline_contact">Contact</string>
 
 
 </resources>

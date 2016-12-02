@@ -1,6 +1,7 @@
 package de.symeda.sormas.app.contact;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
@@ -24,6 +25,8 @@ import de.symeda.sormas.app.util.Callback;
  */
 public class ContactsListFragment extends ListFragment {
 
+    private String caseUuid;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.cases_list_layout, container, false);
@@ -38,7 +41,7 @@ public class ContactsListFragment extends ListFragment {
     }
 
     public void updateContacsArrayAdapter() {
-        final String caseUuid = (String) getArguments().getString(Case.UUID);
+        caseUuid = (String) getArguments().getString(Case.UUID);
         final CaseDao caseDao = DatabaseHelper.getCaseDao();
         final Case caze = caseDao.queryUuid(caseUuid);
 
@@ -81,8 +84,9 @@ public class ContactsListFragment extends ListFragment {
     }
 
     public void showContactEditView(Contact contact) {
-//        Intent intent = new Intent(getActivity(), ContactEditActivity.class);
-//        intent.putExtra(ContactEditActivity.CONTACT_UUID, contact.getUuid());
-//        startActivity(intent);
+        Intent intent = new Intent(getActivity(), ContactEditActivity.class);
+        intent.putExtra(ContactEditActivity.KEY_CONTACT_UUID, contact.getUuid());
+        intent.putExtra(ContactEditActivity.KEY_CASE_UUID, caseUuid);
+        startActivity(intent);
     }
 }

@@ -2,9 +2,6 @@ package de.symeda.sormas.app.user;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.NavUtils;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -47,7 +44,7 @@ public class UserActivity extends SormasRootActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.edit_caze_action_bar, menu);
+        inflater.inflate(R.menu.edit_action_bar, menu);
         return true;
     }
 

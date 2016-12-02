@@ -14,7 +14,6 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.task.TaskDao;
-import de.symeda.sormas.app.caze.SyncCasesTask;
 
 
 /**
@@ -55,7 +54,7 @@ public class TaskEditActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.edit_caze_action_bar, menu);
+        inflater.inflate(R.menu.edit_action_bar, menu);
         return true;
     }
 
