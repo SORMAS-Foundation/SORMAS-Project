@@ -10,8 +10,14 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.TextView;
 
+import java.util.Date;
+
 import de.symeda.sormas.api.caze.CaseStatus;
+import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.user.User;
 
 /**
  * Created by Mate Strysewske on 29.11.2016.
@@ -77,6 +83,36 @@ public class LabelField extends PropertyField<String> {
         super.setEnabled(enabled);
         textContent.setEnabled(enabled);
         textCaption.setEnabled(enabled);
+    }
+
+    @BindingAdapter("app:enumLabel")
+    public static void setEnum(LabelField labelField, Enum e) {
+        labelField.setValue(e.toString());
+    }
+
+    @BindingAdapter("app:short_uuid")
+    public static void setShortUuid(LabelField labelField, String uuid){
+        labelField.setValue(DataHelper.getShortUuid(uuid));
+    }
+
+    @BindingAdapter("app:dateLabel")
+    public static void setDate(LabelField labelField, Date date) {
+        labelField.setValue(DateHelper.formatDDMMYYYY(date));
+    }
+
+    @BindingAdapter("app:dateTimeLabel")
+    public static void setDateTime(LabelField labelField, Date date) {
+        labelField.setValue(DateHelper.formatHmDDMMYYYY(date));
+    }
+
+    @BindingAdapter("app:userLabel")
+    public static void setUser(LabelField labelField, User user) {
+        labelField.setValue(user!=null?user.toString():null);
+    }
+
+    @BindingAdapter("app:cazeLabel")
+    public static void setCaze(LabelField labelField, Case caze) {
+        labelField.setValue(caze!=null?DataHelper.getShortUuid(caze.getUuid()) + (caze.getPerson()!=null?" " + caze.getPerson().toString():null):null);
     }
 
 }

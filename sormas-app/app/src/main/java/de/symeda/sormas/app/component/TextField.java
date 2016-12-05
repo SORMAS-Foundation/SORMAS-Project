@@ -12,16 +12,17 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.location.Location;
 
 /**
  * Created by Mate Strysewske on 28.11.2016.
  */
 public class TextField extends PropertyField<String> implements TextFieldInterface {
 
-    private EditText textInput;
-    private TextView textCaption;
+    protected EditText textInput;
+    protected TextView textCaption;
 
-    private InverseBindingListener inverseBindingListener;
+    protected InverseBindingListener inverseBindingListener;
 
     public TextField(Context context) {
         super(context);
@@ -106,4 +107,19 @@ public class TextField extends PropertyField<String> implements TextFieldInterfa
         textInput.setEnabled(enabled);
         textCaption.setEnabled(enabled);
     }
+
+    @BindingAdapter("app:integer")
+    public static void setInteger(TextField textField, Integer integer) {
+        if (integer != null) {
+            textField.setValue(integer.toString());
+        }
+    }
+
+    @BindingAdapter("app:location")
+    public static void setLocation(TextField textField, Location location) {
+        if(location != null) {
+            textField.setValue(location.toString());
+        }
+    }
+
 }
