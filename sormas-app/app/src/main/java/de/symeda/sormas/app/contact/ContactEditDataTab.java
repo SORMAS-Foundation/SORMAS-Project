@@ -26,7 +26,6 @@ public class ContactEditDataTab extends FormTab {
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        initModel();
         binding = DataBindingUtil.inflate(inflater, R.layout.contact_data_fragment_layout, container, false);
         return binding.getRoot();
     }

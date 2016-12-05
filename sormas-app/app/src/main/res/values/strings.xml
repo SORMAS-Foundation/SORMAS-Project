@@ -158,6 +158,7 @@
     <string name="headline_contact_data">Contact data</string>
     <string name="headline_visits">Visits</string>
     <string name="headline_contact">Contact</string>
+    <string name="headline_contact_case">Contact case</string>
 
 
 </resources>

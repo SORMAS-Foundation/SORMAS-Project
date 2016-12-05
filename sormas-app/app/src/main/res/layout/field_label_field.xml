@@ -3,7 +3,8 @@
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:paddingBottom="@dimen/field_padding_8">
 
         <TextView
             android:layout_width="match_parent"
@@ -14,7 +15,8 @@
             android:layout_marginLeft="@dimen/field_caption_margin_left" />
         <TextView
             android:layout_width="match_parent"
-            android:layout_height="@dimen/field_height"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/field_caption_margin_left"
             android:id="@+id/text_content"/>
 
     </LinearLayout>

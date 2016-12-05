@@ -22,9 +22,9 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.55"
             android:gravity="right"
-            android:paddingTop="@dimen/spinner_padding"
-            android:paddingRight="@dimen/spinner_padding"
-            android:paddingBottom="@dimen/spinner_padding">
+            android:paddingTop="@dimen/field_padding"
+            android:paddingRight="@dimen/field_padding"
+            android:paddingBottom="@dimen/field_padding">
 
             <RadioGroup
                 android:layout_width="wrap_content"

@@ -12,7 +12,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="0.7"
-            android:paddingTop="@dimen/spinner_padding"
+            android:paddingTop="@dimen/field_padding"
             android:layout_marginBottom="@dimen/list_item_margin_bottom">
 
             <TextView
@@ -38,8 +38,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="0.3"
-            android:paddingTop="@dimen/spinner_padding"
-            android:paddingRight="@dimen/spinner_padding"
+            android:paddingTop="@dimen/field_padding"
+            android:paddingRight="@dimen/field_padding"
             android:layout_marginBottom="@dimen/list_item_margin_bottom">
             <TextView
                 android:layout_width="match_parent"

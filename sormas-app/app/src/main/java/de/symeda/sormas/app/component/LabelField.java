@@ -10,13 +10,17 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.TextView;
 
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 import de.symeda.sormas.api.caze.CaseStatus;
+import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.user.User;
 
 /**
@@ -87,7 +91,7 @@ public class LabelField extends PropertyField<String> {
 
     @BindingAdapter("app:enumLabel")
     public static void setEnum(LabelField labelField, Enum e) {
-        labelField.setValue(e.toString());
+        labelField.setValue(e!=null?e.toString():null);
     }
 
     @BindingAdapter("app:short_uuid")
@@ -108,6 +112,25 @@ public class LabelField extends PropertyField<String> {
     @BindingAdapter("app:userLabel")
     public static void setUser(LabelField labelField, User user) {
         labelField.setValue(user!=null?user.toString():null);
+    }
+
+    @BindingAdapter("app:personLabel")
+    public static void setPerson(LabelField labelField, Person person) {
+        labelField.setValue(person!=null?person.toString():null);
+    }
+
+    @BindingAdapter("app:personAgeSexLabel")
+    public static void setPersonBirthdate(LabelField labelField, Person person) {
+        String value = null;
+        if(person!=null) {
+            Calendar birthDate = new GregorianCalendar();
+            birthDate.set(person.getBirthdateYYYY(), person.getBirthdateMM()!=null?person.getBirthdateMM()-1:0, person.getBirthdateDD()!=null?person.getBirthdateDD():1);
+            DataHelper.Pair<Integer, ApproximateAgeType> approximateAge = ApproximateAgeType.ApproximateAgeHelper.getApproximateAge(birthDate.getTime(),new Date());
+            value = String.valueOf(approximateAge.getElement0()) + " " + String.valueOf(approximateAge.getElement1());
+
+            value += person.getSex()!=null?", "+person.getSex():null;
+        }
+        labelField.setValue(value);
     }
 
     @BindingAdapter("app:cazeLabel")

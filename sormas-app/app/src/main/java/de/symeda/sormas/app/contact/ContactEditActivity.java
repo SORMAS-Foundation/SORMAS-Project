@@ -17,6 +17,8 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.contact.Contact;
+import de.symeda.sormas.app.backend.contact.ContactDao;
 import de.symeda.sormas.app.caze.CaseEditActivity;
 import de.symeda.sormas.app.caze.SyncCasesTask;
 import de.symeda.sormas.app.component.AbstractEditActivity;
@@ -107,14 +109,18 @@ public class ContactEditActivity extends AbstractEditActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         currentTab = pager.getCurrentItem();
+
+
+
+
         switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button
             case android.R.id.home:
 
-                Intent intent = new Intent(this, CaseEditActivity.class);
-                intent.putExtra(CaseEditActivity.KEY_PAGE, 3);
-                intent.putExtra(CaseEditActivity.KEY_CASE_UUID, caseUuid);
-                startActivity(intent);
+                Intent intentCaseContacts = new Intent(this, CaseEditActivity.class);
+                intentCaseContacts.putExtra(CaseEditActivity.KEY_PAGE, 3);
+                intentCaseContacts.putExtra(CaseEditActivity.KEY_CASE_UUID, caseUuid);
+                startActivity(intentCaseContacts);
 
                 //Home/back button
                 return true;
@@ -169,19 +175,17 @@ public class ContactEditActivity extends AbstractEditActivity {
 
             // Save button
             case R.id.action_save:
-                CaseDao caseDao = DatabaseHelper.getCaseDao();
+                ContactDao contactDao = DatabaseHelper.getContactDao();
 
 
                 switch(currentTab) {
-                    // case data tab
+                    // contact data tab
                     case 0:
 
-                        Case caze = (Case) adapter.getData(0);
+                        Contact contact = (Contact) adapter.getData(0);
 
-                        caseDao.save(caze);
-                        Toast.makeText(this, "case "+ DataHelper.getShortUuid(caze.getUuid()) +" saved", Toast.LENGTH_SHORT).show();
-
-                        SyncCasesTask.syncCases(getSupportFragmentManager());
+                        contactDao.save(contact);
+                        Toast.makeText(this, "contact "+ DataHelper.getShortUuid(contact.getUuid()) +" saved", Toast.LENGTH_SHORT).show();
                         break;
 
                 }

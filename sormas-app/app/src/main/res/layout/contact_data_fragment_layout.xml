@@ -10,5 +10,222 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="10dp"
+            android:theme="@style/AppTheme">
+
+            <!-- ============= CONTACT_INFORMATION ============= -->
+
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <LinearLayout android:orientation="vertical"
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:layout_weight="0.5" android:paddingTop="@dimen/field_padding" android:paddingBottom="@dimen/field_padding">
+
+                    <de.symeda.sormas.app.component.LabelField
+                        android:id="@+id/contact_uuid"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        app:short_uuid="@{contact.uuid}"/>
+                </LinearLayout>
+
+                <LinearLayout android:orientation="vertical"
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:layout_weight="0.5" android:paddingTop="@dimen/field_padding" android:paddingBottom="@dimen/field_padding">
+
+                    <de.symeda.sormas.app.component.LabelField
+                        android:id="@+id/contact_followUpStatus"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        app:enumLabel="@{contact.followUpStatus}"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout android:orientation="vertical"
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:layout_weight="0.5" android:paddingTop="@dimen/field_padding" android:paddingBottom="@dimen/field_padding">
+
+                    <de.symeda.sormas.app.component.LabelField
+                        android:id="@+id/contact_reportingUser"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:userLabel="@{contact.reportingUser}"/>
+                </LinearLayout>
+
+                <LinearLayout android:orientation="vertical"
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:layout_weight="0.5" android:paddingTop="@dimen/field_padding" android:paddingBottom="@dimen/field_padding">
+
+                    <de.symeda.sormas.app.component.LabelField
+                        android:id="@+id/contact_reportDateTime"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:dateLabel="@{contact.reportDateTime}"/>
+                </LinearLayout>
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout android:orientation="vertical"
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:layout_weight="0.5" android:paddingTop="@dimen/field_padding" android:paddingBottom="@dimen/field_padding">
+
+                    <de.symeda.sormas.app.component.LabelField
+                        android:id="@+id/contact_person"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        app:personLabel="@{contact.person}"/>
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout android:orientation="vertical"
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:layout_weight="0.5" android:paddingTop="@dimen/field_padding" android:paddingBottom="@dimen/field_padding">
+
+                    <de.symeda.sormas.app.component.DateField
+                        android:id="@+id/contact_lastContactDate"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:value="@={contact.lastContactDate}"/>
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout android:orientation="vertical"
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:layout_weight="0.5" android:paddingTop="@dimen/field_padding" android:paddingBottom="@dimen/field_padding">
+
+                    <de.symeda.sormas.app.component.TextField
+                        android:id="@+id/contact_description"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:value="@={contact.description}"/>
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- ============= CONTACT_CASE_INFORMATION ============= -->
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="@string/headline_contact_case"
+                android:textColor="@android:color/tab_indicator_text"
+                android:textSize="@dimen/abc_text_size_body_1_material"
+                android:textStyle="bold"
+                android:paddingBottom="10dp" />
+
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <LinearLayout android:orientation="vertical"
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:layout_weight="0.5" android:paddingTop="@dimen/field_padding" android:paddingBottom="@dimen/field_padding">
+
+                    <de.symeda.sormas.app.component.LabelField
+                        android:id="@+id/contact_caze_uuid"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        app:short_uuid="@{contact.caze.uuid}"/>
+                </LinearLayout>
+
+                <LinearLayout android:orientation="vertical"
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:layout_weight="0.5" android:paddingTop="@dimen/field_padding" android:paddingBottom="@dimen/field_padding">
+
+                    <de.symeda.sormas.app.component.LabelField
+                        android:id="@+id/contact_caze_caseStatus"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        app:enumLabel="@{contact.caze.caseStatus}"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <LinearLayout android:orientation="vertical"
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:layout_weight="0.5" android:paddingTop="@dimen/field_padding" android:paddingBottom="@dimen/field_padding">
+
+                    <de.symeda.sormas.app.component.LabelField
+                        android:id="@+id/contact_caze_person"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        app:personLabel="@{contact.caze.person}"/>
+                </LinearLayout>
+
+                <LinearLayout android:orientation="vertical"
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:layout_weight="0.5" android:paddingTop="@dimen/field_padding" android:paddingBottom="@dimen/field_padding">
+
+                    <de.symeda.sormas.app.component.LabelField
+                        android:id="@+id/contact_caze_ageSex"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        app:personAgeSexLabel="@{contact.caze.person}"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <LinearLayout android:orientation="vertical"
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:layout_weight="0.5" android:paddingTop="@dimen/field_padding" android:paddingBottom="@dimen/field_padding">
+
+                    <de.symeda.sormas.app.component.LabelField
+                        android:id="@+id/contact_caze_disease"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        app:enumLabel="@{contact.caze.disease}"/>
+                </LinearLayout>
+
+                <LinearLayout android:orientation="vertical"
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:layout_weight="0.5" android:paddingTop="@dimen/field_padding" android:paddingBottom="@dimen/field_padding">
+
+                    <de.symeda.sormas.app.component.LabelField
+                        android:id="@+id/contact_caze_symptomsOnset"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        app:dateLabel="@{contact.caze.symptoms.onsetDate}"/>
+                </LinearLayout>
+            </LinearLayout>
+
+
+        </LinearLayout>
+
     </ScrollView>
 </layout>

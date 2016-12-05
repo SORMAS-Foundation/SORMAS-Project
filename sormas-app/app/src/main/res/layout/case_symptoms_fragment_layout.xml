@@ -41,8 +41,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.5"
-                android:paddingTop="@dimen/spinner_padding"
-                android:paddingBottom="@dimen/spinner_padding">
+                android:paddingTop="@dimen/field_padding"
+                android:paddingBottom="@dimen/field_padding">
 
                 <TextView
                     android:layout_width="match_parent"
@@ -66,8 +66,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.5"
-                android:paddingTop="@dimen/spinner_padding"
-                android:paddingBottom="@dimen/spinner_padding">
+                android:paddingTop="@dimen/field_padding"
+                android:paddingBottom="@dimen/field_padding">
 
                 <TextView
                     android:layout_width="match_parent"
@@ -311,7 +311,7 @@
                 android:id="@+id/symptoms_otherHemorrhagicSymptomsText"
                 android:orientation="vertical"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:paddingTop="@dimen/spinner_padding" android:paddingBottom="@dimen/spinner_padding">
+                android:paddingTop="@dimen/field_padding" android:paddingBottom="@dimen/field_padding">
                 <TextView
                     android:layout_width="match_parent" android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/field_caption_margin_bottom" android:textSize="@dimen/field_caption_size"
@@ -345,7 +345,7 @@
                 android:id="@+id/symptoms_otherNonHemorrhagicSymptomsText"
                 android:orientation="vertical"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:paddingTop="@dimen/spinner_padding" android:paddingBottom="@dimen/spinner_padding">
+                android:paddingTop="@dimen/field_padding" android:paddingBottom="@dimen/field_padding">
                 <TextView
                     android:layout_width="match_parent" android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/field_caption_margin_bottom" android:textSize="@dimen/field_caption_size"

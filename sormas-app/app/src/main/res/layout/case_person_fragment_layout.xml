@@ -33,7 +33,7 @@
 
             <LinearLayout android:orientation="vertical"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:paddingTop="@dimen/spinner_padding" android:paddingBottom="@dimen/spinner_padding">
+                android:paddingTop="@dimen/field_padding" android:paddingBottom="@dimen/field_padding">
                 <TextView
                     android:layout_width="match_parent" android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/field_caption_margin_bottom" android:textSize="@dimen/field_caption_size"
@@ -48,7 +48,7 @@
 
             <LinearLayout android:orientation="vertical"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:paddingTop="@dimen/spinner_padding" android:paddingBottom="@dimen/spinner_padding">
+                android:paddingTop="@dimen/field_padding" android:paddingBottom="@dimen/field_padding">
                 <TextView
                     android:layout_width="match_parent" android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/field_caption_margin_bottom" android:textSize="@dimen/field_caption_size"
@@ -70,8 +70,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.5"
-                    android:paddingTop="@dimen/spinner_padding"
-                    android:paddingBottom="@dimen/spinner_padding">
+                    android:paddingTop="@dimen/field_padding"
+                    android:paddingBottom="@dimen/field_padding">
 
                     <TextView
                         android:layout_width="match_parent"
@@ -113,7 +113,7 @@
 
                     <LinearLayout android:orientation="vertical"
                         android:layout_width="match_parent" android:layout_height="wrap_content"
-                        android:layout_weight="0.33" android:paddingTop="@dimen/spinner_padding" android:paddingBottom="@dimen/spinner_padding">
+                        android:layout_weight="0.33" android:paddingTop="@dimen/field_padding" android:paddingBottom="@dimen/field_padding">
 
                         <Spinner
                             android:layout_width="match_parent"
@@ -125,7 +125,7 @@
 
                     <LinearLayout android:orientation="vertical"
                         android:layout_width="match_parent" android:layout_height="wrap_content"
-                        android:layout_weight="0.33" android:paddingTop="@dimen/spinner_padding" android:paddingBottom="@dimen/spinner_padding">
+                        android:layout_weight="0.33" android:paddingTop="@dimen/field_padding" android:paddingBottom="@dimen/field_padding">
                         <Spinner
                             android:layout_width="match_parent"
                             android:layout_height="@dimen/field_spinner_height"
@@ -136,7 +136,7 @@
 
                     <LinearLayout android:orientation="vertical"
                         android:layout_width="match_parent" android:layout_height="wrap_content"
-                        android:layout_weight="0.33" android:paddingTop="@dimen/spinner_padding" android:paddingBottom="@dimen/spinner_padding">
+                        android:layout_weight="0.33" android:paddingTop="@dimen/field_padding" android:paddingBottom="@dimen/field_padding">
                         <Spinner
                             android:layout_width="match_parent"
                             android:layout_height="@dimen/field_spinner_height"
@@ -154,7 +154,7 @@
 
                 <LinearLayout android:orientation="vertical"
                     android:layout_width="match_parent" android:layout_height="wrap_content"
-                    android:layout_weight="0.5" android:paddingTop="@dimen/spinner_padding" android:paddingBottom="@dimen/spinner_padding">
+                    android:layout_weight="0.5" android:paddingTop="@dimen/field_padding" android:paddingBottom="@dimen/field_padding">
                     <TextView
                         android:layout_width="match_parent" android:layout_height="wrap_content"
                         android:layout_marginBottom="@dimen/field_caption_margin_bottom" android:textSize="@dimen/field_caption_size"
@@ -241,7 +241,7 @@
 
                 <LinearLayout android:orientation="vertical"
                     android:layout_width="match_parent" android:layout_height="wrap_content"
-                    android:layout_weight="0.5" android:paddingTop="@dimen/spinner_padding" android:paddingBottom="@dimen/spinner_padding">
+                    android:layout_weight="0.5" android:paddingTop="@dimen/field_padding" android:paddingBottom="@dimen/field_padding">
                     <TextView
                         android:layout_width="match_parent" android:layout_height="wrap_content"
                         android:layout_marginBottom="@dimen/field_caption_margin_bottom" android:textSize="@dimen/field_caption_size"
@@ -255,7 +255,7 @@
 
                 <LinearLayout android:orientation="vertical"
                     android:layout_width="match_parent" android:layout_height="wrap_content"
-                    android:layout_weight="0.5" android:paddingTop="@dimen/spinner_padding" android:paddingBottom="@dimen/spinner_padding">
+                    android:layout_weight="0.5" android:paddingTop="@dimen/field_padding" android:paddingBottom="@dimen/field_padding">
                     <TextView
                         android:layout_width="match_parent" android:layout_height="wrap_content"
                         android:layout_marginBottom="@dimen/field_caption_margin_bottom" android:textSize="@dimen/field_caption_size"
@@ -299,7 +299,7 @@
 
                 <LinearLayout android:orientation="vertical"
                     android:layout_width="match_parent" android:layout_height="wrap_content"
-                    android:paddingTop="@dimen/spinner_padding" android:paddingBottom="@dimen/spinner_padding">
+                    android:paddingTop="@dimen/field_padding" android:paddingBottom="@dimen/field_padding">
                     <TextView
                         android:layout_width="match_parent" android:layout_height="wrap_content"
                         android:layout_marginBottom="@dimen/field_caption_margin_bottom"
@@ -336,8 +336,8 @@
                     android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingTop="@dimen/spinner_padding"
-                    android:paddingBottom="@dimen/spinner_padding">
+                    android:paddingTop="@dimen/field_padding"
+                    android:paddingBottom="@dimen/field_padding">
 
                     <TextView
                         android:layout_width="match_parent"
@@ -361,7 +361,7 @@
 
             <LinearLayout android:orientation="vertical"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:paddingTop="@dimen/spinner_padding" android:paddingBottom="@dimen/spinner_padding"
+                android:paddingTop="@dimen/field_padding" android:paddingBottom="@dimen/field_padding"
                 android:id="@+id/form_cp_occupation_details_view" >
                 <TextView
                     android:layout_width="match_parent" android:layout_height="wrap_content"
@@ -386,8 +386,8 @@
                     android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingTop="@dimen/spinner_padding"
-                    android:paddingBottom="@dimen/spinner_padding">
+                    android:paddingTop="@dimen/field_padding"
+                    android:paddingBottom="@dimen/field_padding">
 
                     <TextView
                         android:layout_width="match_parent"

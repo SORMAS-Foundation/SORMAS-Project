@@ -9,7 +9,10 @@
     <dimen name="field_caption_margin_bottom">0dp</dimen>
     <dimen name="field_height">40dp</dimen>
     <dimen name="field_spinner_height">39dp</dimen>
-    <dimen name="spinner_padding">2dp</dimen>
+    <dimen name="field_padding">2dp</dimen>
+    <dimen name="field_padding_4">4dp</dimen>
+    <dimen name="field_padding_6">6dp</dimen>
+    <dimen name="field_padding_8">8dp</dimen>
     <dimen name="field_yes_no_caption_margin_top">5dp</dimen>
 
 
