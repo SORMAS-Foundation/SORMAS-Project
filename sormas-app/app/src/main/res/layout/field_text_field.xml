@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge  xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/text_caption"
+            android:textSize="@dimen/field_caption_size"
+            android:layout_marginBottom="@dimen/field_caption_margin_bottom"
+            android:layout_marginLeft="@dimen/field_caption_margin_left" />
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/field_height"
+            android:id="@+id/text_input"/>
+
+    </LinearLayout>
+</merge>
