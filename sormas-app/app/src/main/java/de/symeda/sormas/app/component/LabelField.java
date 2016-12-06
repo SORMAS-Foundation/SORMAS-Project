@@ -89,28 +89,28 @@ public class LabelField extends PropertyField<String> {
         textCaption.setEnabled(enabled);
     }
 
-    @BindingAdapter("app:enumLabel")
-    public static void setEnum(LabelField labelField, Enum e) {
+    @BindingAdapter("app:enum")
+    public static void setEnumForLabel(LabelField labelField, Enum e) {
         labelField.setValue(e!=null?e.toString():null);
     }
 
     @BindingAdapter("app:short_uuid")
-    public static void setShortUuid(LabelField labelField, String uuid){
+    public static void setShortUuidForLabel(LabelField labelField, String uuid){
         labelField.setValue(DataHelper.getShortUuid(uuid));
     }
 
-    @BindingAdapter("app:dateLabel")
-    public static void setDate(LabelField labelField, Date date) {
+    @BindingAdapter("app:date")
+    public static void setDateForLabel(LabelField labelField, Date date) {
         labelField.setValue(DateHelper.formatDDMMYYYY(date));
     }
 
-    @BindingAdapter("app:dateTimeLabel")
-    public static void setDateTime(LabelField labelField, Date date) {
+    @BindingAdapter("app:dateTime")
+    public static void setDateTimeForLabel(LabelField labelField, Date date) {
         labelField.setValue(DateHelper.formatHmDDMMYYYY(date));
     }
 
-    @BindingAdapter("app:userLabel")
-    public static void setUser(LabelField labelField, User user) {
+    @BindingAdapter("app:user")
+    public static void setUserForLabel(LabelField labelField, User user) {
         labelField.setValue(user!=null?user.toString():null);
     }
 
@@ -133,8 +133,8 @@ public class LabelField extends PropertyField<String> {
         labelField.setValue(value);
     }
 
-    @BindingAdapter("app:cazeLabel")
-    public static void setCaze(LabelField labelField, Case caze) {
+    @BindingAdapter("app:caze")
+    public static void setCazeForLabel(LabelField labelField, Case caze) {
         labelField.setValue(caze!=null?DataHelper.getShortUuid(caze.getUuid()) + (caze.getPerson()!=null?" " + caze.getPerson().toString():null):null);
     }
 

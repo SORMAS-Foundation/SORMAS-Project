@@ -9,7 +9,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="0.45"
+            android:layout_weight="0.6"
             android:id="@+id/radio_caption"
             android:textSize="@dimen/field_caption_size"
             android:textColor="?android:attr/editTextColor"
@@ -20,7 +20,7 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="0.55"
+            android:layout_weight="0.4"
             android:gravity="right"
             android:paddingTop="@dimen/field_padding"
             android:paddingRight="@dimen/field_padding"

@@ -25,15 +25,13 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="0.5"
                 android:id="@+id/cp_date_of_death_layout">
-                <TextView
-                    android:layout_width="match_parent" android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/field_caption_margin_bottom"
-                    android:textSize="@dimen/field_caption_size"
-                    android:layout_marginLeft="@dimen/field_caption_margin_left"
-                    android:text="@string/symptoms_onsetDate" />
-                <EditText
-                    android:layout_width="match_parent" android:layout_height="@dimen/field_height"
-                    android:id="@+id/symptoms_onsetDate" />
+
+                <de.symeda.sormas.app.component.DateField
+                    android:id="@+id/symptoms_onsetDate"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:value="@={symptoms.onsetDate}"/>
+
             </LinearLayout>
 
             <LinearLayout
@@ -44,20 +42,11 @@
                 android:paddingTop="@dimen/field_padding"
                 android:paddingBottom="@dimen/field_padding">
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/symptoms_temperature"
-                    android:textSize="@dimen/field_caption_size"
-                    android:layout_marginLeft="@dimen/field_caption_margin_left"
-                    android:layout_marginBottom="@dimen/field_caption_margin_bottom" />
-
-                <Spinner
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/field_spinner_height"
+                <de.symeda.sormas.app.component.SpinnerField
                     android:id="@+id/symptoms_temperature"
-                    android:layout_alignParentTop="true"
-                    style="@style/Base.Widget.AppCompat.Spinner.Underlined" />
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:value="@={symptoms.temperature}"/>
 
             </LinearLayout>
 
@@ -69,20 +58,11 @@
                 android:paddingTop="@dimen/field_padding"
                 android:paddingBottom="@dimen/field_padding">
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/symptoms_temperatureSource"
-                    android:textSize="@dimen/field_caption_size"
-                    android:layout_marginLeft="@dimen/field_caption_margin_left"
-                    android:layout_marginBottom="@dimen/field_caption_margin_bottom" />
-
-                <Spinner
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/field_spinner_height"
+                <de.symeda.sormas.app.component.SpinnerField
                     android:id="@+id/symptoms_temperatureSource"
-                    android:layout_alignParentTop="true"
-                    style="@style/Base.Widget.AppCompat.Spinner.Underlined" />
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:value="@={symptoms.temperatureSource}"/>
 
             </LinearLayout>
 
@@ -308,19 +288,17 @@
                 android:value="@={symptoms.otherHemorrhagicSymptoms}"/>
 
             <LinearLayout
-                android:id="@+id/symptoms_otherHemorrhagicSymptomsText"
+                android:id="@+id/symptoms_otherHemorrhagicSymptomsLayout"
                 android:orientation="vertical"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:paddingTop="@dimen/field_padding" android:paddingBottom="@dimen/field_padding">
-                <TextView
-                    android:layout_width="match_parent" android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/field_caption_margin_bottom" android:textSize="@dimen/field_caption_size"
-                    android:layout_marginLeft="@dimen/field_caption_margin_left"
-                    android:text="@string/symptoms_ifYes" />
-                <EditText
-                    android:layout_width="match_parent" android:layout_height="@dimen/field_height"
-                    android:inputType="textPersonName"
-                    android:text="@={symptoms.otherHemorrhagicSymptomsText}" />
+
+                <de.symeda.sormas.app.component.TextField
+                    android:id="@+id/symptoms_specifyOtherHemorrhagicSymptoms"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:value="@={symptoms.otherHemorrhagicSymptomsText}"/>
+
             </LinearLayout>
 
 
@@ -342,19 +320,17 @@
                 android:value="@={symptoms.otherNonHemorrhagicSymptoms}"/>
 
             <LinearLayout
-                android:id="@+id/symptoms_otherNonHemorrhagicSymptomsText"
+                android:id="@+id/symptoms_otherNonHemorrhagicSymptomsLayout"
                 android:orientation="vertical"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:paddingTop="@dimen/field_padding" android:paddingBottom="@dimen/field_padding">
-                <TextView
-                    android:layout_width="match_parent" android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/field_caption_margin_bottom" android:textSize="@dimen/field_caption_size"
-                    android:layout_marginLeft="@dimen/field_caption_margin_left"
-                    android:text="@string/symptoms_ifYes" />
-                <EditText
-                    android:layout_width="match_parent" android:layout_height="@dimen/field_height"
-                    android:inputType="textPersonName"
-                    android:text="@={symptoms.otherNonHemorrhagicSymptomsText}" />
+
+                <de.symeda.sormas.app.component.TextField
+                    android:id="@+id/symptoms_specifyNonOtherNonHemorrhagicSymptoms"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:value="@={symptoms.otherNonHemorrhagicSymptomsText}"/>
+
             </LinearLayout>
 
 

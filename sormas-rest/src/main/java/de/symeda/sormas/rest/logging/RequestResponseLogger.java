@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Servlet Filter implementation class RequestLogger
  */
-//@WebFilter("/*")
+@WebFilter("/*")
 public class RequestResponseLogger implements Filter {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());

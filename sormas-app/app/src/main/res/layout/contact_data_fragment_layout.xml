@@ -43,7 +43,7 @@
                         android:id="@+id/contact_followUpStatus"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        app:enumLabel="@{contact.followUpStatus}"/>
+                        app:enum="@{contact.followUpStatus}"/>
                 </LinearLayout>
             </LinearLayout>
 
@@ -60,7 +60,7 @@
                         android:id="@+id/contact_reportingUser"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:userLabel="@{contact.reportingUser}"/>
+                        app:user="@{contact.reportingUser}"/>
                 </LinearLayout>
 
                 <LinearLayout android:orientation="vertical"
@@ -71,7 +71,7 @@
                         android:id="@+id/contact_reportDateTime"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:dateLabel="@{contact.reportDateTime}"/>
+                        app:date="@{contact.reportDateTime}"/>
                 </LinearLayout>
             </LinearLayout>
 
@@ -166,7 +166,7 @@
                         android:id="@+id/contact_caze_caseStatus"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        app:enumLabel="@{contact.caze.caseStatus}"/>
+                        app:enum="@{contact.caze.caseStatus}"/>
                 </LinearLayout>
             </LinearLayout>
 
@@ -209,7 +209,7 @@
                         android:id="@+id/contact_caze_disease"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        app:enumLabel="@{contact.caze.disease}"/>
+                        app:enum="@{contact.caze.disease}"/>
                 </LinearLayout>
 
                 <LinearLayout android:orientation="vertical"
@@ -220,7 +220,7 @@
                         android:id="@+id/contact_caze_symptomsOnset"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        app:dateLabel="@{contact.caze.symptoms.onsetDate}"/>
+                        app:date="@{contact.caze.symptoms.onsetDate}"/>
                 </LinearLayout>
             </LinearLayout>
 

@@ -32,6 +32,10 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.component.DateField;
+import de.symeda.sormas.app.component.PropertyField;
+import de.symeda.sormas.app.component.SpinnerField;
+import de.symeda.sormas.app.component.TextField;
 import de.symeda.sormas.app.databinding.CasePersonFragmentLayoutBinding;
 import de.symeda.sormas.app.util.FormTab;
 import de.symeda.sormas.app.util.Item;
@@ -46,7 +50,6 @@ public class CaseEditPersonTab extends FormTab {
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        initModel();
         binding = DataBindingUtil.inflate(inflater, R.layout.case_person_fragment_layout, container, false);
         return binding.getRoot();
     }
@@ -62,19 +65,8 @@ public class CaseEditPersonTab extends FormTab {
         final Person person = caze.getPerson();
         binding.setPerson(person);
 
-        // ================ Person information ================
-        getModel().put(R.id.form_p_date_of_birth_dd,caze.getPerson().getBirthdateDD());
-        getModel().put(R.id.form_p_date_of_birth_mm,caze.getPerson().getBirthdateMM());
-        getModel().put(R.id.form_p_date_of_birth_yyyy,caze.getPerson().getBirthdateYYYY());
-        getModel().put(R.id.form_p_gender,caze.getPerson().getSex());
-        getModel().put(R.id.form_p_date_of_death,caze.getPerson().getDeathDate());
-        getModel().put(R.id.form_p_status_of_patient,caze.getPerson().getPresentCondition());
-        getModel().put(R.id.form_p_approximate_age,caze.getPerson().getApproximateAge());
-        getModel().put(R.id.form_p_approximate_age_type,caze.getPerson().getApproximateAgeType());
-
-
         // date of birth
-        addSpinnerField(R.id.form_p_date_of_birth_dd, toItems(DateHelper.getDaysInMonth(),true), new AdapterView.OnItemSelectedListener() {
+        addSpinnerField(R.id.person_birthdateDD, toItems(DateHelper.getDaysInMonth(),true), new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 updateApproximateAgeField();
@@ -84,7 +76,7 @@ public class CaseEditPersonTab extends FormTab {
             public void onNothingSelected(AdapterView<?> parent) {
             }
         });
-        addSpinnerField(R.id.form_p_date_of_birth_mm, toItems(DateHelper.getMonthsInYear(),true), new AdapterView.OnItemSelectedListener() {
+        addSpinnerField(R.id.person_birthdateMM, toItems(DateHelper.getMonthsInYear(),true), new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 updateApproximateAgeField();
@@ -94,7 +86,7 @@ public class CaseEditPersonTab extends FormTab {
             public void onNothingSelected(AdapterView<?> parent) {
             }
         });
-        addSpinnerField(R.id.form_p_date_of_birth_yyyy, toItems(DateHelper.getYearsToNow(),true), new AdapterView.OnItemSelectedListener() {
+        addSpinnerField(R.id.person_birthdateYYYY, toItems(DateHelper.getYearsToNow(),true), new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 updateApproximateAgeField();
@@ -106,26 +98,22 @@ public class CaseEditPersonTab extends FormTab {
         });
 
         // age type
-        addSpinnerField(R.id.form_p_approximate_age_type, ApproximateAgeType.class);
+        addSpinnerField(R.id.person_approximateAgeType, ApproximateAgeType.class);
 
         // gender
-        addSpinnerField(R.id.form_p_gender, Sex.class);
+        addSpinnerField(R.id.person_sex, Sex.class);
 
         // date of death
-        addDateField(R.id.form_p_date_of_death).addTextChangedListener(new TextWatcher() {
+        addDateField(R.id.person_deathDate).addValueChangedListener(new PropertyField.ValueChangeListener() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) { }
-            @Override
-            public void afterTextChanged(Editable s) {
+            public void onChange(PropertyField field) {
                 updateApproximateAgeField();
             }
         });
 
 
         // status of patient
-        addSpinnerField(R.id.form_p_status_of_patient, PresentCondition.class, new AdapterView.OnItemSelectedListener() {
+        addSpinnerField(R.id.person_presentCondition, PresentCondition.class, new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 updateDateOfDeathField();
@@ -142,22 +130,19 @@ public class CaseEditPersonTab extends FormTab {
         updateApproximateAgeField();
 
         // ================ Address ================
-        getModel().put(R.id.form_cp_address,caze.getPerson().getAddress());
-        addLocationField(R.id.form_cp_address, R.id.form_cp_btn_address);
+        addLocationField(person, R.id.person_address, R.id.form_cp_btn_address);
 
         // ================ Occupation ================
-        getModel().put(R.id.form_cp_occupation,caze.getPerson().getOccupationType());
-        getModel().put(R.id.form_cp_occupation_facility,caze.getPerson().getOccupationFacility());
 
         final LinearLayout occupationDetailsLayout = (LinearLayout) getView().findViewById(R.id.form_cp_occupation_details_view);
-        final TextView occupationDetailsCaption = (TextView) getView().findViewById(R.id.headline_form_cp_occupation_details);
+        final TextField occupationDetails = (TextField) getView().findViewById(R.id.person_occupationDetails);
         final LinearLayout occupationFacilityLayout = (LinearLayout) getView().findViewById(R.id.form_cp_occupation_facility_view);
-        addSpinnerField(R.id.form_cp_occupation, OccupationType.class, new AdapterView.OnItemSelectedListener() {
+        addSpinnerField(R.id.person_occupationType1, OccupationType.class, new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 Item item = (Item)parent.getItemAtPosition(position);
                 updateVisibilityOccupationFields(item, occupationDetailsLayout, occupationFacilityLayout);
-                updateHeadlineOccupationDetailsFields(item, occupationDetailsCaption);
+                updateHeadlineOccupationDetailsFields(item, occupationDetails);
             }
 
             @Override
@@ -166,35 +151,34 @@ public class CaseEditPersonTab extends FormTab {
             }
         });
 
-        addFacilitySpinnerField(R.id.form_cp_occupation_facility);
-
+        addFacilitySpinnerField(R.id.person_occupationFacility);
 
         // @TODO: Workaround, find a better solution. Remove autofocus on first field.
         getView().requestFocus();
     }
 
-    private void updateHeadlineOccupationDetailsFields(Item item, TextView occupationDetailsCaption) {
+    private void updateHeadlineOccupationDetailsFields(Item item, TextField occupationDetails) {
         if(item.getValue()!=null) {
             switch ((OccupationType) item.getValue()) {
                 case BUSINESSMAN_WOMAN:
-                    occupationDetailsCaption.setText(getResources().getString(R.string.headline_form_cp_occupation_details_business));
+                    occupationDetails.updateCaption(getResources().getString(R.string.headline_form_cp_occupation_details_business));
                     break;
                 case TRANSPORTER:
-                    occupationDetailsCaption.setText(getResources().getString(R.string.headline_form_cp_occupation_details_transport));
+                    occupationDetails.updateCaption(getResources().getString(R.string.headline_form_cp_occupation_details_transport));
                     break;
                 case OTHER:
-                    occupationDetailsCaption.setText(getResources().getString(R.string.headline_form_cp_occupation_details_other));
+                    occupationDetails.updateCaption(getResources().getString(R.string.headline_form_cp_occupation_details_other));
                     break;
                 case HEALTHCARE_WORKER:
-                    occupationDetailsCaption.setText(getResources().getString(R.string.headline_form_cp_occupation_details_healthcare));
+                    occupationDetails.updateCaption(getResources().getString(R.string.headline_form_cp_occupation_details_healthcare));
                     break;
                 default:
-                    occupationDetailsCaption.setText(getResources().getString(R.string.headline_form_cp_occupation_details));
+                    occupationDetails.updateCaption(getResources().getString(R.string.headline_form_cp_occupation_details));
                     break;
             }
         }
         else {
-            occupationDetailsCaption.setText(getResources().getString(R.string.headline_form_cp_occupation_details));
+            occupationDetails.updateCaption(getResources().getString(R.string.headline_form_cp_occupation_details));
         }
     }
 
@@ -224,46 +208,41 @@ public class CaseEditPersonTab extends FormTab {
     }
 
     private void updateDateOfDeathField() {
-
-        PresentCondition condition = (PresentCondition)getModel().get(R.id.form_p_status_of_patient);
-
+        PresentCondition condition = (PresentCondition)((SpinnerField)getView().findViewById(R.id.person_presentCondition)).getValue();
         setFieldVisible(getView().findViewById(R.id.cp_date_of_death_layout), condition != null
                 && (PresentCondition.DEAD.equals(condition) || PresentCondition.BURIED.equals(condition)));
     }
 
     private void updateApproximateAgeField() {
-        Integer birthyear = (Integer)getModel().get(R.id.form_p_date_of_birth_yyyy);
-        TextView approximateAgeTextField = (TextView) getView().findViewById(R.id.form_p_approximate_age);
-        Spinner approximateAgeTypeField = (Spinner) getView().findViewById(R.id.form_p_approximate_age_type);
+        Integer birthyear = (Integer)((SpinnerField)getView().findViewById(R.id.person_birthdateYYYY)).getValue();
+        TextField approximateAgeTextField = (TextField) getView().findViewById(R.id.person_approximateAge1);
+        SpinnerField approximateAgeTypeField = (SpinnerField) getView().findViewById(R.id.person_approximateAgeType);
 
 
         if(birthyear!=null) {
             deactivateField(approximateAgeTextField);
             deactivateField(approximateAgeTypeField);
 
-            Integer birthday = (Integer)getModel().get(R.id.form_p_date_of_birth_dd);
-            Integer birthmonth = (Integer)getModel().get(R.id.form_p_date_of_birth_mm);
+            Integer birthday = (Integer)((SpinnerField)getView().findViewById(R.id.person_birthdateDD)).getValue();
+            Integer birthmonth = (Integer)((SpinnerField)getView().findViewById(R.id.person_birthdateMM)).getValue();
 
             Calendar birthDate = new GregorianCalendar();
             birthDate.set(birthyear, birthmonth!=null?birthmonth-1:0, birthday!=null?birthday:1);
 
             Date to = new Date();
-            if(getModel().get(R.id.form_p_date_of_death) != null){
-                to = (Date)getModel().get(R.id.form_p_date_of_death);
+            if(((DateField)getView().findViewById(R.id.person_deathDate)).getValue() != null) {
+                to = ((DateField)getView().findViewById(R.id.person_deathDate)).getValue();
             }
             DataHelper.Pair<Integer, ApproximateAgeType> approximateAge = ApproximateAgeHelper.getApproximateAge(birthDate.getTime(),to);
             ApproximateAgeType ageType = approximateAge.getElement1();
-            approximateAgeTextField.setText(String.valueOf(approximateAge.getElement0()));
+            approximateAgeTextField.setValue(String.valueOf(approximateAge.getElement0()));
             for (int i=0; i<approximateAgeTypeField.getCount(); i++) {
                 Item item = (Item)approximateAgeTypeField.getItemAtPosition(i);
                 if (item != null && item.getValue() != null && item.getValue().equals(ageType)) {
-                    approximateAgeTypeField.setSelection(i);
+                    approximateAgeTypeField.setValue(i);
                     break;
                 }
             }
-
-            getModel().put(R.id.form_p_approximate_age, approximateAge.getElement0());
-            getModel().put(R.id.form_p_approximate_age_type, ageType);
         }
         else {
             approximateAgeTextField.setEnabled(true);
@@ -273,7 +252,7 @@ public class CaseEditPersonTab extends FormTab {
 
     @Override
     public AbstractDomainObject getData() {
-        return commit(binding.getPerson());
+        return binding.getPerson();
     }
 
     /**
@@ -283,22 +262,6 @@ public class CaseEditPersonTab extends FormTab {
      */
     @Override
     protected AbstractDomainObject commit(AbstractDomainObject ado) {
-        // Set value to model
-        Person person = (Person) ado;
-        person.setBirthdateDD((Integer) getModel().get(R.id.form_p_date_of_birth_dd));
-        person.setBirthdateMM((Integer) getModel().get(R.id.form_p_date_of_birth_mm));
-        person.setBirthdateYYYY((Integer) getModel().get(R.id.form_p_date_of_birth_yyyy));
-        person.setSex((Sex)getModel().get(R.id.form_p_gender));
-        person.setPresentCondition((PresentCondition)getModel().get(R.id.form_p_status_of_patient));
-        person.setDeathDate((Date)getModel().get(R.id.form_p_date_of_death));
-        person.setApproximateAge((Integer)getModel().get(R.id.form_p_approximate_age));
-        person.setApproximateAgeType((ApproximateAgeType)getModel().get(R.id.form_p_approximate_age_type));
-
-        person.setAddress((Location)getModel().get(R.id.form_cp_address));
-
-        person.setOccupationType((OccupationType) getModel().get(R.id.form_cp_occupation));
-        person.setOccupationFacility((Facility) getModel().get(R.id.form_cp_occupation_facility));
-
-        return person;
+        return null;
     }
 }

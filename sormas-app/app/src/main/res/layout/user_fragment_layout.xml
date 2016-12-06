@@ -32,18 +32,12 @@
                 <LinearLayout android:orientation="vertical"
                     android:layout_width="match_parent" android:layout_height="wrap_content"
                     android:paddingTop="@dimen/field_padding" android:paddingBottom="@dimen/field_padding">
-                    <TextView
-                        android:layout_width="match_parent" android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/field_caption_margin_bottom" android:textSize="@dimen/field_caption_size"
-                        android:layout_marginLeft="@dimen/field_caption_margin_left"
-                        android:text="@string/form_u_select_user" />
-                    <Spinner
+
+                    <de.symeda.sormas.app.component.SpinnerField
+                        android:id="@+id/config_user"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/form_u_select_user"
-                        android:ems="10"
-                        android:layout_alignParentTop="true"
-                        style="@style/Base.Widget.AppCompat.Spinner.Underlined" />
+                        android:layout_height="match_parent"/>
+
                 </LinearLayout>
             </LinearLayout>
 
@@ -51,15 +45,12 @@
                           android:layout_width="match_parent" android:layout_height="wrap_content"
                           android:paddingTop="@dimen/field_padding" android:paddingBottom="@dimen/field_padding"
                           android:layout_weight="0.5">
-                <TextView
-                    android:layout_width="match_parent" android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/field_caption_margin_bottom" android:textSize="@dimen/field_caption_size"
-                    android:layout_marginLeft="@dimen/field_caption_margin_left"
-                    android:text="@string/form_server_url" />
-                <EditText
-                    android:layout_width="match_parent" android:layout_height="@dimen/field_height"
-                    android:inputType="textUri"
-                    android:id="@+id/form_server_url" />
+
+                <de.symeda.sormas.app.component.TextField
+                    android:id="@+id/config_serverUrl"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
+
             </LinearLayout>
 
         </LinearLayout>

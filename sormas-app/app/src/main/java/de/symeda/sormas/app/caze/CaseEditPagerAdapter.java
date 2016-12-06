@@ -76,6 +76,7 @@ public class CaseEditPagerAdapter extends FragmentStatePagerAdapter {
         AbstractDomainObject ado = null;
         switch (position) {
             case 0:
+                System.out.println(caseEditDataTab != null);
                 ado= caseEditDataTab.getData();
                 break;
             case 1:

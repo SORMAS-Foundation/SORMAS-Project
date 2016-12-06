@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <data>
+        <variable name="caze" type="de.symeda.sormas.app.backend.caze.Case"/>
+    </data>
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -31,16 +35,12 @@
                 android:paddingTop="@dimen/field_padding"
                 android:paddingBottom="@dimen/field_padding">
 
-                <TextView
-                    android:layout_width="match_parent" android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/field_caption_margin_bottom" android:textSize="@dimen/field_caption_size"
-                    android:layout_marginLeft="@dimen/field_caption_margin_left"
-                    android:text="@string/case_disease" />
-                <Spinner
-                    style="@style/Base.Widget.AppCompat.Spinner.Underlined"
-                    android:layout_width="match_parent" android:layout_height="@dimen/field_spinner_height"
-                    android:layout_alignParentTop="true"
-                    android:id="@+id/case_disease" />
+                <de.symeda.sormas.app.component.SpinnerField
+                    android:id="@+id/caseData_disease"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:value="@={caze.disease}"/>
+
             </LinearLayout>
 
 
@@ -49,16 +49,11 @@
                 android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:paddingTop="@dimen/field_padding" android:paddingBottom="@dimen/field_padding">
 
-                <TextView
-                    android:layout_width="match_parent" android:layout_height="wrap_content" android:textSize="@dimen/field_caption_size"
-                    android:layout_marginLeft="@dimen/field_caption_margin_left" android:layout_marginBottom="@dimen/field_caption_margin_bottom"
-                    android:text="@string/case_region" />
-
-                <Spinner
-                    style="@style/Base.Widget.AppCompat.Spinner.Underlined"
-                    android:layout_width="match_parent" android:layout_height="@dimen/field_spinner_height"
-                    android:layout_alignParentTop="true"
-                    android:id="@+id/case_region" />
+                <de.symeda.sormas.app.component.SpinnerField
+                    android:id="@+id/caseData_region"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:value="@={caze.region}"/>
 
             </LinearLayout>
 
@@ -67,16 +62,11 @@
                 android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:paddingTop="@dimen/field_padding" android:paddingBottom="@dimen/field_padding">
 
-                <TextView
-                    android:layout_width="match_parent" android:layout_height="wrap_content" android:textSize="@dimen/field_caption_size"
-                    android:layout_marginLeft="@dimen/field_caption_margin_left" android:layout_marginBottom="@dimen/field_caption_margin_bottom"
-                    android:text="@string/case_district" />
-
-                <Spinner
-                    style="@style/Base.Widget.AppCompat.Spinner.Underlined"
-                    android:layout_width="match_parent" android:layout_height="@dimen/field_spinner_height"
-                    android:layout_alignParentTop="true"
-                    android:id="@+id/case_district" />
+                <de.symeda.sormas.app.component.SpinnerField
+                    android:id="@+id/caseData_district"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:value="@={caze.district}"/>
 
             </LinearLayout>
 
@@ -85,32 +75,24 @@
                 android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:paddingTop="@dimen/field_padding" android:paddingBottom="@dimen/field_padding">
 
-                <TextView
-                    android:layout_width="match_parent" android:layout_height="wrap_content" android:textSize="@dimen/field_caption_size"
-                    android:layout_marginLeft="@dimen/field_caption_margin_left" android:layout_marginBottom="@dimen/field_caption_margin_bottom"
-                    android:text="@string/case_community" />
+                <de.symeda.sormas.app.component.SpinnerField
+                    android:id="@+id/caseData_community"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:value="@={caze.community}"/>
 
-                <Spinner
-                    style="@style/Base.Widget.AppCompat.Spinner.Underlined"
-                    android:layout_width="match_parent" android:layout_height="@dimen/field_spinner_height"
-                    android:layout_alignParentTop="true"
-                    android:id="@+id/case_community" />
             </LinearLayout>
 
             <LinearLayout android:orientation="vertical"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:paddingTop="@dimen/field_padding" android:paddingBottom="@dimen/field_padding">
-                <TextView
-                    android:layout_width="match_parent" android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/field_caption_margin_bottom" android:textSize="@dimen/field_caption_size"
-                    android:layout_marginLeft="@dimen/field_caption_margin_left"
-                    android:text="@string/case_healthFacility" />
-                <Spinner
+
+                <de.symeda.sormas.app.component.SpinnerField
+                    android:id="@+id/caseData_healthFacility"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/field_spinner_height"
-                    android:id="@+id/case_healthFacility"
-                    android:layout_alignParentTop="true"
-                    style="@style/Base.Widget.AppCompat.Spinner.Underlined" />
+                    android:layout_height="match_parent"
+                    android:value="@={caze.healthFacility}"/>
+
             </LinearLayout>
 
 
@@ -131,17 +113,13 @@
                 <LinearLayout android:orientation="vertical"
                     android:layout_width="match_parent" android:layout_height="wrap_content"
                     android:paddingTop="@dimen/field_padding" android:paddingBottom="@dimen/field_padding">
-                    <TextView
-                        android:layout_width="match_parent" android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/field_caption_margin_bottom" android:textSize="@dimen/field_caption_size"
-                        android:layout_marginLeft="@dimen/field_caption_margin_left"
-                        android:text="@string/case_person" />
-                    <Spinner
+
+                    <de.symeda.sormas.app.component.SpinnerField
+                        android:id="@+id/caseData_person"
                         android:layout_width="match_parent"
-                        android:layout_height="@dimen/field_spinner_height"
-                        android:id="@+id/case_person"
-                        android:layout_alignParentTop="true"
-                        style="@style/Base.Widget.AppCompat.Spinner.Underlined" />
+                        android:layout_height="match_parent"
+                        android:value="@={caze.person}"/>
+
                 </LinearLayout>
             </LinearLayout>
 

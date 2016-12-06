@@ -19,11 +19,13 @@ import android.widget.Toast;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.symeda.sormas.api.caze.CaseStatus;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -43,39 +45,36 @@ import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.backend.region.RegionDao;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.backend.user.UserDao;
+import de.symeda.sormas.app.component.DateField;
+import de.symeda.sormas.app.component.LabelField;
+import de.symeda.sormas.app.component.SpinnerField;
+import de.symeda.sormas.app.component.TextField;
 
 /**
  * Created by Stefan Szczesny on 01.08.2016.
  */
 public abstract class FormTab extends DialogFragment implements FormFragment {
 
-    private Map<Integer, Object> model;
-
     /**
      * Fill the model-map and fill the ui. Appends an DatePickerDialog for open on button click and the nested binding.
      * @param dateFieldId
      */
-    protected TextView addDateField(final int dateFieldId) {
-        final TextView dateField = (TextView) getView().findViewById(dateFieldId);
+    protected DateField addDateField(final int dateFieldId) {
+        final DateField dateField = (DateField) getView().findViewById(dateFieldId);
         dateField.setInputType(InputType.TYPE_NULL);
-
-        // Set initial value to ui
-        if(model.get(dateFieldId)!=null) {
-            dateField.setText(DateHelper.formatDDMMYYYY((Date) model.get(dateFieldId)));
-            dateField.clearFocus();
-        }
+        dateField.clearFocus();
 
         dateField.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
-                showDateFragment(dateFieldId, dateField);
+                showDateFragment(dateField);
             }
         });
         dateField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (hasFocus) {
-                    showDateFragment(dateFieldId, dateField);
+                    showDateFragment(dateField);
                 }
             }
         });
@@ -83,23 +82,21 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
         return dateField;
     }
 
-    private void showDateFragment(final int dateFieldId, final TextView dateField) {
+    private void showDateFragment(final DateField dateField) {
         SelectDateFragment newFragment = new SelectDateFragment(){
             @Override
             public void onDateSet(DatePicker view, int yy, int mm, int dd) {
-                model.put(dateFieldId, DateHelper.getDateZero(yy,mm,dd));
-                dateField.setText(DateHelper.formatDDMMYYYY((Date) model.get(dateFieldId)));
+                dateField.setValue(DateHelper.getDateZero(yy, mm, dd));
             }
             @Override
             public void onClear() {
-                model.put(dateFieldId, null);
-                dateField.setText("");
+                dateField.setValue(null);
                 dateField.clearFocus();
             }
         };
 
         Bundle dateBundle = new Bundle();
-        dateBundle.putSerializable(SelectDateFragment.DATE, (Date) model.get(dateFieldId));
+        dateBundle.putSerializable(SelectDateFragment.DATE, dateField.getValue());
         newFragment.setArguments(dateBundle);
         newFragment.show(getFragmentManager(), getResources().getText(R.string.headline_date_picker).toString());
     }
@@ -109,7 +106,7 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
      * @param spinnerFieldId
      * @param enumClass
      */
-    protected Spinner addSpinnerField(final int spinnerFieldId, Class enumClass, final AdapterView.OnItemSelectedListener ...moreListeners) {
+    protected SpinnerField addSpinnerField(final int spinnerFieldId, Class enumClass, final AdapterView.OnItemSelectedListener ...moreListeners) {
         List<Item> items = DataUtils.getEnumItems(enumClass);
         return makeSpinnerField(spinnerFieldId, items, moreListeners);
     }
@@ -118,7 +115,7 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
      * Fill the spinner for the given list, set the selected entry, register the base listeners and the given ones.
      * @param spinnerFieldId
      */
-    protected Spinner addSpinnerField(final int spinnerFieldId, List<Item> items, final AdapterView.OnItemSelectedListener ...moreListeners) {
+    protected SpinnerField addSpinnerField(final int spinnerFieldId, List<Item> items, final AdapterView.OnItemSelectedListener ...moreListeners) {
         return makeSpinnerField(spinnerFieldId, items, moreListeners);
     }
 
@@ -128,31 +125,31 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
      * @param spinnerFieldId
      * @param moreListeners
      */
-    protected Spinner addFacilitySpinnerField(final int spinnerFieldId, final AdapterView.OnItemSelectedListener ...moreListeners) {
+    protected SpinnerField addFacilitySpinnerField(final int spinnerFieldId, final AdapterView.OnItemSelectedListener ...moreListeners) {
         FacilityDao facilityDao = DatabaseHelper.getFacilityDao();
         List<Item> items = DataUtils.getItems(facilityDao.queryForAll());
         return makeSpinnerField(spinnerFieldId,items, moreListeners);
     }
 
-    protected Spinner addRegionSpinnerField(Map<Integer, Object> model, View parentView, final int spinnerFieldId, final AdapterView.OnItemSelectedListener ...moreListeners) {
+    protected SpinnerField addRegionSpinnerField(View parentView, final int spinnerFieldId, final AdapterView.OnItemSelectedListener ...moreListeners) {
         RegionDao regionDao = DatabaseHelper.getRegionDao();
         List<Item> items = DataUtils.getItems(regionDao.queryForAll());
-        return makeSpinnerField(model,parentView,spinnerFieldId,items, moreListeners);
+        return makeSpinnerField(parentView,spinnerFieldId,items, moreListeners);
     }
 
-    protected Spinner addDistrictSpinnerField(Map<Integer, Object> model, View parentView, final int spinnerFieldId, final AdapterView.OnItemSelectedListener ...moreListeners) {
+    protected SpinnerField addDistrictSpinnerField(View parentView, final int spinnerFieldId, final AdapterView.OnItemSelectedListener ...moreListeners) {
         DistrictDao districtDao = DatabaseHelper.getDistrictDao();
         List<Item> items = DataUtils.getItems(districtDao.queryForAll());
-        return makeSpinnerField(model,parentView,spinnerFieldId,items, moreListeners);
+        return makeSpinnerField(parentView,spinnerFieldId,items, moreListeners);
     }
 
-    protected Spinner addCommunitySpinnerField(Map<Integer, Object> model, View parentView,  final int spinnerFieldId, final AdapterView.OnItemSelectedListener ...moreListeners) {
+    protected SpinnerField addCommunitySpinnerField(View parentView,  final int spinnerFieldId, final AdapterView.OnItemSelectedListener ...moreListeners) {
         CommunityDao communityDao = DatabaseHelper.getCommunityDao();
         List<Item> items = DataUtils.getItems(communityDao.queryForAll());
-        return makeSpinnerField(model,parentView,spinnerFieldId,items, moreListeners);
+        return makeSpinnerField(parentView,spinnerFieldId,items, moreListeners);
     }
 
-    protected Spinner addUserSpinnerField(final int spinnerFieldId, List<UserRole> userRoles, final AdapterView.OnItemSelectedListener ...moreListeners) {
+    protected SpinnerField addUserSpinnerField(final int spinnerFieldId, List<UserRole> userRoles, final AdapterView.OnItemSelectedListener ...moreListeners) {
         UserDao userDao = DatabaseHelper.getUserDao();
         List<Item> items = null;
         if (userRoles.size() == 0) {
@@ -169,7 +166,7 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
         return makeSpinnerField(spinnerFieldId,items,moreListeners);
     }
 
-    protected Spinner addPersonSpinnerField(final int spinnerFieldId, final AdapterView.OnItemSelectedListener ...moreListeners) {
+    protected SpinnerField addPersonSpinnerField(final int spinnerFieldId, final AdapterView.OnItemSelectedListener ...moreListeners) {
         PersonDao personDao = DatabaseHelper.getPersonDao();
         List<Item> items = null;
         try {
@@ -182,54 +179,46 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
     }
 
 
-    private Spinner makeSpinnerField(final int spinnerFieldId, List<Item> items, final AdapterView.OnItemSelectedListener[] moreListeners) {
-        return makeSpinnerField(getModel(), getView(), spinnerFieldId, items, moreListeners);
+    private SpinnerField makeSpinnerField(final int spinnerFieldId, List<Item> items, final AdapterView.OnItemSelectedListener[] moreListeners) {
+        return makeSpinnerField(getView(), spinnerFieldId, items, moreListeners);
     }
 
-    private Spinner makeSpinnerField(final Map<Integer, Object> model, View parentView, final int spinnerFieldId, List<Item> items, final AdapterView.OnItemSelectedListener[] moreListeners) {
-        final Spinner spinner = (Spinner) parentView.findViewById(spinnerFieldId);
-        spinner.setAdapter(makeSpinnerAdapter(items));
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+    private SpinnerField makeSpinnerField(View parentView, final int spinnerFieldId, List<Item> items, final AdapterView.OnItemSelectedListener[] moreListeners) {
+        final SpinnerField spinnerField = (SpinnerField) parentView.findViewById(spinnerFieldId);
+        spinnerField.setAdapter(makeSpinnerAdapter(items));
+        spinnerField.setItemList(items);
+
+        final List<AdapterView.OnItemSelectedListener> moreListenersAll = new ArrayList<>(Arrays.asList(moreListeners));
+
+        // This is crucial for data binding because it allows the listeners from the component
+        // classes to still work
+        if(spinnerField.getOnItemSelectedListener() != null) {
+            moreListenersAll.add(spinnerField.getOnItemSelectedListener());
+        }
+
+        spinnerField.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                model.put(spinnerFieldId, ((Item)parent.getItemAtPosition(position)).getValue());
-                for (AdapterView.OnItemSelectedListener listener:moreListeners) {
+                spinnerField.setValue(spinnerField.getItemAtPosition(position));
+                for (AdapterView.OnItemSelectedListener listener:moreListenersAll) {
                     listener.onItemSelected(parent,view,position,id);
                 }
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                model.put(spinnerFieldId, null);
+                spinnerField.setValue(null);
                 for (AdapterView.OnItemSelectedListener listener:moreListeners) {
                     listener.onNothingSelected(parent);
                 }
             }
         });
 
-        // Set initial value to ui
-        setSpinnerSelectedItem(model.get(spinnerFieldId), items, spinner);
-
-        return spinner;
-    }
-
-    private void setSpinnerSelectedItem(Object selectedItem, List<Item> items, Spinner spinner) {
-        if(selectedItem!=null) {
-            int i = 0;
-            for (Item item : items) {
-                if (selectedItem.equals(item.getValue())) {
-                    break;
-                }
-                i++;
-            }
-            if (i < items.size()) {
-                spinner.setSelection(i);
-            }
-        }
+        return spinnerField;
     }
 
     protected ArrayAdapter<Item> makeSpinnerAdapter(List<Item> items) {
-        ArrayAdapter<Item> adapter = new ArrayAdapter<Item>(
+        ArrayAdapter<Item> adapter = new ArrayAdapter<>(
                 getActivity(),
                 android.R.layout.simple_spinner_item,
                 items);
@@ -241,11 +230,12 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
      * Update the spinner list and set selected value.
      * @param selectedItem
      * @param items
-     * @param spinner
+     * @param spinnerField
      */
-    protected void setSpinnerValue(Object selectedItem, List<Item> items, Spinner spinner) {
-        spinner.setAdapter(makeSpinnerAdapter(items));
-        setSpinnerSelectedItem(selectedItem, items, spinner);
+    protected void setSpinnerValue(Object selectedItem, List<Item> items, SpinnerField spinnerField) {
+        spinnerField.setAdapter(makeSpinnerAdapter(items));
+        spinnerField.setItemList(items);
+        spinnerField.setValue(selectedItem);
     }
 
     /**
@@ -253,43 +243,38 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
      * The local model is bound to the global model by the given fieldId and has to be committed backwards to the parent object.
      * @param locationFieldId
      */
-    protected void addLocationField(final int locationFieldId, int locationBtnId) {
+    protected void addLocationField(final Person person, final int locationFieldId, int locationBtnId) {
         try {
             // inner model for location, has to be committed for each item
-            final Map<Integer,Object> innerModel = new HashMap<>();
-            final Location location = model.get(locationFieldId)!=null?(Location)model.get(locationFieldId): DataUtils.createNew(Location.class);
+            //final Map<Integer,Object> innerModel = new HashMap<>();
+            //final Location location = model.get(locationFieldId)!=null?(Location)model.get(locationFieldId): DataUtils.createNew(Location.class);
 
-            if(location.getRegion()!=null) {
-                RegionDao regionDao = DatabaseHelper.getRegionDao();
-                location.setRegion(regionDao.queryForId(location.getRegion().getId()));
-            }
+            final Location location = person.getAddress() != null ? person.getAddress() : DataUtils.createNew(Location.class);
 
-            if(location.getDistrict()!=null) {
-                DistrictDao districtDao = DatabaseHelper.getDistrictDao();
-                location.setDistrict(districtDao.queryForId(location.getDistrict().getId()));
-            }
-
-            if(location.getCommunity()!=null) {
-                CommunityDao communityDaoDao = DatabaseHelper.getCommunityDao();
-                location.setCommunity(communityDaoDao.queryForId(location.getCommunity().getId()));
-            }
+            // Null-Abfragen
+            RegionDao regionDao = DatabaseHelper.getRegionDao();
+            location.setRegion(regionDao.queryForId(location.getRegion().getId()));
+            DistrictDao districtDao = DatabaseHelper.getDistrictDao();
+            location.setDistrict(districtDao.queryForId(location.getDistrict().getId()));
+            CommunityDao communityDao = DatabaseHelper.getCommunityDao();
+            location.setCommunity(communityDao.queryForId(location.getCommunity().getId()));
 
             // set the TextField for the location
-            final EditText locationText = (EditText) getView().findViewById(locationFieldId);
+            final TextField locationText = (TextField) getView().findViewById(locationFieldId);
             locationText.setEnabled(false);
-            locationText.setText(location.toString());
+            locationText.setValue(location.toString());
 
             ImageButton btn = (ImageButton) getView().findViewById(locationBtnId);
             btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View arg0) {
-
                     AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
                     dialogBuilder.setTitle(getResources().getString(R.string.headline_location));
 
                     final View dialogView = getActivity().getLayoutInflater().inflate(R.layout.location_fragment_layout, null);
                     dialogBuilder.setView(dialogView);
 
+                    /**
                     innerModel.put(R.id.form_location_address, location.getAddress());
                     EditText addressField = (EditText) dialogView.findViewById(R.id.form_location_address);
                     addressField.setText((String)innerModel.get(R.id.form_location_address));
@@ -302,15 +287,48 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
                     EditText cityField = (EditText) dialogView.findViewById(R.id.form_location_address_city);
                     cityField.setText((String)innerModel.get(R.id.form_location_address_city));
 
-                    innerModel.put(R.id.form_location_address_state, location.getRegion());
-                    addRegionSpinnerField(innerModel,dialogView, R.id.form_location_address_state);
+                    innerModel.put(R.id.location_region, location.getRegion());
+                    addRegionSpinnerField(innerModel,dialogView, R.id.location_region);
 
-                    innerModel.put(R.id.form_location_address_lga, location.getDistrict());
-                    addDistrictSpinnerField(innerModel,dialogView, R.id.form_location_address_lga);
+                    innerModel.put(R.id.location_district, location.getDistrict());
+                    addDistrictSpinnerField(innerModel,dialogView, R.id.location_region);
 
-                    innerModel.put(R.id.form_location_address_ward, location.getCommunity());
-                    addCommunitySpinnerField(innerModel,dialogView, R.id.form_location_address_ward);
+                    innerModel.put(R.id.location_community, location.getCommunity());
+                    addCommunitySpinnerField(innerModel,dialogView, R.id.location_community);
+                     */
 
+//                    if(((SpinnerField) dialogView.findViewById(R.id.location_region)).getValue() != null) {
+//                        location.setRegion((Region)((SpinnerField) getView().findViewById(R.id.location_region)).getValue());
+//                    }
+//                    if(((SpinnerField) dialogView.findViewById(R.id.location_district)).getValue() != null) {
+//                        location.setDistrict((District)((SpinnerField) getView().findViewById(R.id.location_district)).getValue());
+//                    }
+//                    if(((SpinnerField) dialogView.findViewById(R.id.location_community)).getValue() != null) {
+//                        location.setCommunity((Community)((SpinnerField) getView().findViewById(R.id.location_community)).getValue());
+//                    }
+
+                    addRegionSpinnerField(dialogView, R.id.location_region);
+                    addDistrictSpinnerField(dialogView, R.id.location_district);
+                    addCommunitySpinnerField(dialogView, R.id.location_community);
+
+                    if(location.getRegion() != null) {
+                        ((SpinnerField) dialogView.findViewById(R.id.location_region)).setValue(location.getRegion());
+                    }
+                    if(location.getDistrict() != null) {
+                        ((SpinnerField) dialogView.findViewById(R.id.location_district)).setValue(location.getDistrict());
+                    }
+                    if(location.getCommunity() != null) {
+                        ((SpinnerField) dialogView.findViewById(R.id.location_community)).setValue(location.getCommunity());
+                    }
+                    if(location.getAddress() != null) {
+                        ((TextField) dialogView.findViewById(R.id.location_address)).setValue(location.getAddress());
+                    }
+                    if(location.getDetails() != null) {
+                        ((TextField) dialogView.findViewById(R.id.location_details)).setValue(location.getDetails());
+                    }
+                    if(location.getCity() != null) {
+                        ((TextField) dialogView.findViewById(R.id.location_city)).setValue(location.getCity());
+                    }
 
                     /*
                     innerModel.put(R.id.form_location_address_latitude, location.getLatitude());
@@ -326,27 +344,27 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
                     dialogBuilder.setPositiveButton(getResources().getString(R.string.action_done), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int id) {
-                            EditText addressField = (EditText) dialogView.findViewById(R.id.form_location_address);
-                            location.setAddress(addressField.getText().toString());
+                            TextField addressField = (TextField) dialogView.findViewById(R.id.location_address);
+                            location.setAddress(addressField.getValue());
+                            TextField detailsField = (TextField) dialogView.findViewById(R.id.location_details);
+                            location.setDetails(detailsField.getValue());
+                            TextField cityField = (TextField) dialogView.findViewById(R.id.location_city);
+                            location.setCity(cityField.getValue());
 
-                            EditText detailsField = (EditText) dialogView.findViewById(R.id.form_location_address_details);
-                            location.setDetails(detailsField.getText().toString());
-
-                            EditText cityField = (EditText) dialogView.findViewById(R.id.form_location_address_city);
-                            location.setCity(cityField.getText().toString());
-
-                            location.setRegion((Region)innerModel.get(R.id.form_location_address_state));
-                            location.setDistrict((District)innerModel.get(R.id.form_location_address_lga));
-                            location.setCommunity((Community)innerModel.get(R.id.form_location_address_ward));
+                            location.setRegion((Region)((SpinnerField) dialogView.findViewById(R.id.location_region)).getValue());
+                            location.setDistrict((District)((SpinnerField) dialogView.findViewById(R.id.location_district)).getValue());
+                            location.setCommunity((Community)((SpinnerField) dialogView.findViewById(R.id.location_community)).getValue());
 
                             /*
                             location.setLatitude((Float)innerModel.get(R.id.form_location_address_latitude));
                             location.setLongitude((Float)innerModel.get(R.id.form_location_address_longitude));
                             */
 
-                            locationText.setText(location.toString());
+                            locationText.setValue(location.toString());
                             // put the inner model for the given fieldID
-                            model.put(locationFieldId, location);
+                            //model.put(locationFieldId, location);
+
+                            person.setAddress(location);
                         }
                     });
                     dialogBuilder.setNegativeButton(getResources().getString(R.string.action_dimiss), new DialogInterface.OnClickListener() {
@@ -383,15 +401,6 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
         v.setEnabled(true);
     }
 
-    @Deprecated
-    protected Map<Integer, Object> getModel() {
-        return model;
-    }
-
-    protected void initModel() {
-        model = new HashMap<Integer, Object>();
-    }
-
     protected abstract AbstractDomainObject commit(AbstractDomainObject ado);
 
     protected void reloadFragment() {
@@ -411,40 +420,5 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
     }
 
 
-    @BindingAdapter("app:enum")
-    public static void setEnum(TextView textView, Enum e){
-        textView.setText(e.toString());
-    }
-
-
-    @BindingAdapter("app:short_uuid")
-    public static void setShortUuid(TextView textView, String uuid){
-        textView.setText(DataHelper.getShortUuid(uuid));
-    }
-
-    @BindingAdapter("app:date")
-    public static void setDate(TextView textView, Date date){
-        textView.setText(DateHelper.formatDDMMYYYY(date));
-    }
-
-    @BindingAdapter("app:dateTime")
-    public static void setDateTime(TextView textView, Date date){
-        textView.setText(DateHelper.formatHmDDMMYYYY(date));
-    }
-
-    @BindingAdapter("app:person")
-    public static void setPerson(TextView textView, Person person){
-        textView.setText(person!=null?person.toString():null);
-    }
-
-    @BindingAdapter("app:user")
-    public static void setUser(TextView textView, User user){
-        textView.setText(user!=null?user.toString():null);
-    }
-
-    @BindingAdapter("app:caze")
-    public static void setCaze(TextView textView, Case caze){
-        textView.setText(caze!=null?DataHelper.getShortUuid(caze.getUuid()) + (caze.getPerson()!=null?" " + caze.getPerson().toString():null):null);
-    }
 
 }

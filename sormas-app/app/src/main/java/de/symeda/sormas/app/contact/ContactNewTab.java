@@ -8,9 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.Spinner;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -29,6 +27,8 @@ import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.backend.user.User;
+import de.symeda.sormas.app.component.SpinnerField;
+import de.symeda.sormas.app.component.TextField;
 import de.symeda.sormas.app.person.SyncPersonsTask;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.FormTab;
@@ -45,19 +45,11 @@ public class ContactNewTab extends FormTab {
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        initModel();
 
         try {
             caze = DataUtils.createNew(Case.class);
             user = ConfigProvider.getUser();
             region = DatabaseHelper.getRegionDao().queryUuid(user.getRegion().getUuid());
-
-            getModel().put(R.id.case_disease, null);
-            getModel().put(R.id.case_region, region);
-            getModel().put(R.id.case_district, null);
-            getModel().put(R.id.case_community, null);
-            getModel().put(R.id.case_healthFacility, null);
-            getModel().put(R.id.case_person, person);
 
         } catch (Exception e) {
             Toast.makeText(getContext(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -71,18 +63,18 @@ public class ContactNewTab extends FormTab {
     public void onResume() {
         super.onResume();
 
-        addSpinnerField(R.id.case_disease, Disease.class);
-        addPersonSpinnerField(R.id.case_person);
-        addFacilitySpinnerField(R.id.case_healthFacility);
+        addSpinnerField(R.id.caseData_disease, Disease.class);
+        addPersonSpinnerField(R.id.caseData_person);
+        addFacilitySpinnerField(R.id.caseData_healthFacility);
 
 
         final List emptyList = new ArrayList<>();
 
-        addRegionSpinnerField(getModel(), getView(), R.id.case_region, new AdapterView.OnItemSelectedListener() {
+        addRegionSpinnerField(getView(), R.id.caseData_region, new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Spinner spinner = (Spinner) getView().findViewById(R.id.case_district);
-                Object selectedValue = getModel().get(R.id.case_region);
+                SpinnerField spinner = (SpinnerField) getView().findViewById(R.id.caseData_district);
+                Object selectedValue = ((SpinnerField) getView().findViewById(R.id.caseData_region)).getValue();
                 if(spinner != null) {
                     List<District> districtList = emptyList;
                     if(selectedValue != null) {
@@ -100,11 +92,11 @@ public class ContactNewTab extends FormTab {
 
 
 
-        addSpinnerField(R.id.case_district, DataUtils.getItems(emptyList), new AdapterView.OnItemSelectedListener() {
+        addSpinnerField(R.id.caseData_district, DataUtils.getItems(emptyList), new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Spinner spinner = (Spinner) getView().findViewById(R.id.case_community);
-                Object selectedValue = getModel().get(R.id.case_district);
+                SpinnerField spinner = (SpinnerField) getView().findViewById(R.id.caseData_community);
+                Object selectedValue = ((SpinnerField) getView().findViewById(R.id.caseData_district)).getValue();
                 if(spinner != null) {
                     List<Community> communityList = emptyList;
                     if(selectedValue != null) {
@@ -121,11 +113,11 @@ public class ContactNewTab extends FormTab {
         });
 
 
-        addSpinnerField(R.id.case_community, DataUtils.getItems(emptyList), new AdapterView.OnItemSelectedListener() {
+        addSpinnerField(R.id.caseData_community, DataUtils.getItems(emptyList), new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Spinner spinner = (Spinner) getView().findViewById(R.id.case_healthFacility);
-                Object selectedValue = getModel().get(R.id.case_community);
+                SpinnerField spinner = (SpinnerField) getView().findViewById(R.id.caseData_healthFacility);
+                Object selectedValue = ((SpinnerField) getView().findViewById(R.id.caseData_community)).getValue();
                 if(spinner != null) {
                     List<Facility> facilityList = emptyList;
                     if(selectedValue != null) {
@@ -164,11 +156,11 @@ public class ContactNewTab extends FormTab {
             AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
             dialogBuilder.setTitle(getResources().getString(R.string.headline_new_Person));
 
-            final View dialogView = getActivity().getLayoutInflater().inflate(R.layout.person_new_frament_layout, null);
+            final View dialogView = getActivity().getLayoutInflater().inflate(R.layout.person_new_fragment_layout, null);
             dialogBuilder.setView(dialogView);
 
-            final EditText firstName = (EditText) dialogView.findViewById(R.id.form_p_first_name);
-            final EditText lastName = (EditText) dialogView.findViewById(R.id.form_p_last_name);
+            final TextField firstName = (TextField) dialogView.findViewById(R.id.person_firstName);
+            final TextField lastName = (TextField) dialogView.findViewById(R.id.person_lastName);
 
 //            EditText uuid = (EditText) dialogView.findViewById(R.id.form_p_person_id);
 //            uuid.setText(personNew.getUuid());
@@ -177,8 +169,8 @@ public class ContactNewTab extends FormTab {
             dialogBuilder.setPositiveButton(getResources().getString(R.string.action_new_person), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int id) {
-                    personNew.setFirstName(firstName.getText().toString());
-                    personNew.setLastName(lastName.getText().toString());
+                    personNew.setFirstName(firstName.getValue().toString());
+                    personNew.setLastName(lastName.getValue().toString());
 
                     // save person
                     PersonDao personDao = DatabaseHelper.getPersonDao();
@@ -188,9 +180,9 @@ public class ContactNewTab extends FormTab {
 
                     // refresh reference for pre-selection in personField
                     person = personNew;
-                    addPersonSpinnerField(R.id.case_person);
-                    Spinner spinner = (Spinner) getView().findViewById(R.id.case_person);
-                    spinner.setSelection(spinner.getAdapter().getCount() - 1);
+                    addPersonSpinnerField(R.id.caseData_person);
+                    SpinnerField spinner = (SpinnerField) getView().findViewById(R.id.caseData_person);
+                    spinner.setValue(spinner.getItemAtPosition(spinner.getAdapter().getCount() - 1));
                     //reloadFragment();
                 }
             });
@@ -211,12 +203,12 @@ public class ContactNewTab extends FormTab {
 
     @Override
     protected AbstractDomainObject commit(AbstractDomainObject ado) {
-        caze.setDisease((Disease)getModel().get(R.id.case_disease));
-        caze.setRegion((Region)getModel().get(R.id.case_region));
-        caze.setDistrict((District)getModel().get(R.id.case_district));
-        caze.setCommunity((Community) getModel().get(R.id.case_community));
-        caze.setHealthFacility((Facility)getModel().get(R.id.case_healthFacility));
-        caze.setPerson((Person)getModel().get(R.id.case_person));
+//        caze.setDisease((Disease)getModel().get(R.id.case_disease));
+//        caze.setRegion((Region)getModel().get(R.id.case_region));
+//        caze.setDistrict((District)getModel().get(R.id.case_district));
+//        caze.setCommunity((Community) getModel().get(R.id.case_community));
+//        caze.setHealthFacility((Facility)getModel().get(R.id.case_healthFacility));
+//        caze.setPerson((Person)getModel().get(R.id.case_person));
 
         return caze;
     }

@@ -29,8 +29,6 @@ public class TaskTab extends FormTab {
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        initModel();
-
         binding = DataBindingUtil.inflate(inflater, R.layout.task_fragment_layout, container, false);
         return binding.getRoot();
     }
@@ -67,16 +65,12 @@ public class TaskTab extends FormTab {
 
     @Override
     protected AbstractDomainObject commit(AbstractDomainObject ado) {
-        Task task = (Task) ado;
-
-//        caze.setHealthFacility((Facility) getModel().get(R.id.form_cd_health_facility));
-
-        return task;
+        return null;
     }
 
     @Override
     public AbstractDomainObject getData() {
-        return commit(binding.getTask());
+        return binding.getTask();
     }
 
 }

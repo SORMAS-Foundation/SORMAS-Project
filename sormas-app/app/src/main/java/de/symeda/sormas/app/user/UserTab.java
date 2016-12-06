@@ -9,19 +9,24 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import java.util.Arrays;
+import java.util.List;
 
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.user.User;
+import de.symeda.sormas.app.backend.user.UserDao;
 import de.symeda.sormas.app.databinding.UserFragmentLayoutBinding;
+import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.FormTab;
+import de.symeda.sormas.app.util.Item;
 
 /**
  * Created by Stefan Szczesny on 27.07.2016.
  *
- * ATTENTION: This is currently not used the way it is meant to be...
+ * TODO name ConfigTab?
  */
 public class UserTab extends FormTab {
 
@@ -30,24 +35,35 @@ public class UserTab extends FormTab {
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        initModel();
-
         binding = DataBindingUtil.inflate(inflater, R.layout.user_fragment_layout, container, false);
         return binding.getRoot();
     }
 
     @Override
     public void onResume() {
-
-        getModel().put(R.id.form_u_select_user, ConfigProvider.getUser());
-
         super.onResume();
 
-        addUserSpinnerField(R.id.form_u_select_user, Arrays.asList(UserRole.INFORMANT, UserRole.SURVEILLANCE_OFFICER, UserRole.CASE_OFFICER, UserRole.CONTACT_OFFICER));
+        User user = ConfigProvider.getUser();
 
-        // TODO move to settings screen?
-        TextView serverUrl = (TextView) getView().findViewById(R.id.form_server_url);
-        serverUrl.setText((String)ConfigProvider.getServerRestUrl());
+        List<UserRole> userRoles = Arrays.asList(UserRole.INFORMANT, UserRole.SURVEILLANCE_OFFICER, UserRole.CASE_OFFICER, UserRole.CONTACT_OFFICER);
+        UserDao userDao = DatabaseHelper.getUserDao();
+        List<Item> items = null;
+        if (userRoles.size() == 0) {
+            items = DataUtils.getItems(userDao.queryForAll());
+        } else {
+            for (UserRole userRole : userRoles) {
+                if (items == null) {
+                    items = DataUtils.getItems(userDao.queryForEq(User.USER_ROLE, userRole));
+                } else {
+                    items = DataUtils.addItems(items, userDao.queryForEq(User.USER_ROLE, userRole));
+                }
+            }
+        }
+
+        binding.configUser.setItemList(items);
+        binding.configUser.setSpinnerAdapter(items);
+        binding.configUser.setValue(user);
+        binding.configServerUrl.setValue((String)ConfigProvider.getServerRestUrl());
     }
 
     @Override
@@ -56,12 +72,11 @@ public class UserTab extends FormTab {
     }
 
     public User getUser() {
-        return (User)getModel().get(R.id.form_u_select_user);
+        return (User)binding.configUser.getValue();
     }
 
     public String getServerUrl() {
-        TextView serverUrl = (TextView) getView().findViewById(R.id.form_server_url);
-        return serverUrl.getText().toString();
+        return binding.configServerUrl.getValue();
     }
 
     @Override

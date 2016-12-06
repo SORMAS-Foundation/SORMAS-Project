@@ -19,7 +19,7 @@ import de.symeda.sormas.app.backend.location.Location;
  */
 public class TextField extends PropertyField<String> implements TextFieldInterface {
 
-    protected EditText textInput;
+    protected EditText textContent;
     protected TextView textCaption;
 
     protected InverseBindingListener inverseBindingListener;
@@ -41,12 +41,12 @@ public class TextField extends PropertyField<String> implements TextFieldInterfa
 
     @Override
     public void setValue(String value) {
-        textInput.setText(value);
+        textContent.setText(value);
     }
 
     @Override
     public String getValue() {
-        return textInput.getText().toString();
+        return textContent.getText().toString();
     }
 
     @BindingAdapter("android:value")
@@ -83,8 +83,8 @@ public class TextField extends PropertyField<String> implements TextFieldInterfa
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        textInput = (EditText) this.findViewById(R.id.text_input);
-        textInput.addTextChangedListener(new TextWatcher() {
+        textContent = (EditText) this.findViewById(R.id.text_input);
+        textContent.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
             @Override
@@ -104,19 +104,19 @@ public class TextField extends PropertyField<String> implements TextFieldInterfa
     @Override
     public void setEnabled(boolean enabled) {
         super.setEnabled(enabled);
-        textInput.setEnabled(enabled);
+        textContent.setEnabled(enabled);
         textCaption.setEnabled(enabled);
     }
 
     @BindingAdapter("app:integer")
-    public static void setInteger(TextField textField, Integer integer) {
+    public static void setIntegerForTextField(TextField textField, Integer integer) {
         if (integer != null) {
             textField.setValue(integer.toString());
         }
     }
 
     @BindingAdapter("app:location")
-    public static void setLocation(TextField textField, Location location) {
+    public static void setLocationForTextField(TextField textField, Location location) {
         if(location != null) {
             textField.setValue(location.toString());
         }

@@ -40,7 +40,6 @@ public class CaseEditSymptomsTab extends FormTab {
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        initModel();
         binding = DataBindingUtil.inflate(inflater, R.layout.case_symptoms_fragment_layout, container, false);
         View view = binding.getRoot();
         //view.requestFocus();
@@ -57,10 +56,6 @@ public class CaseEditSymptomsTab extends FormTab {
 
         final Symptoms symptoms = caze.getSymptoms();
         binding.setSymptoms(symptoms);
-
-        getModel().put(R.id.symptoms_onsetDate, symptoms.getOnsetDate());
-        getModel().put(R.id.symptoms_temperature, symptoms.getTemperature());
-        getModel().put(R.id.symptoms_temperatureSource, symptoms.getTemperatureSource());
 
         addDateField(R.id.symptoms_onsetDate);
 
@@ -116,13 +111,13 @@ public class CaseEditSymptomsTab extends FormTab {
     
     private void visibilityOtherHemorrhagicSymtoms() {
         SymptomState symptomState = binding.symptomsOtherHemorrhagicSymptoms.getValue();
-        binding.symptomsOtherHemorrhagicSymptomsText.setVisibility(symptomState == SymptomState.YES?View.VISIBLE:View.GONE);
+        binding.symptomsOtherHemorrhagicSymptomsLayout.setVisibility(symptomState == SymptomState.YES?View.VISIBLE:View.GONE);
         // TODO clear value once this is a compound control
     }
 
     private void visibilityOtherNonHemorrhagicSymptoms() {
         SymptomState symptomState = binding.symptomsOtherNonHemorrhagicSymptoms.getValue();
-        binding.symptomsOtherNonHemorrhagicSymptomsText.setVisibility(symptomState == SymptomState.YES?View.VISIBLE:View.GONE);
+        binding.symptomsOtherNonHemorrhagicSymptomsLayout.setVisibility(symptomState == SymptomState.YES?View.VISIBLE:View.GONE);
         // TODO clear value once this is a compound control
     }
 
@@ -160,7 +155,7 @@ public class CaseEditSymptomsTab extends FormTab {
 
     @Override
     public AbstractDomainObject getData() {
-        return commit(binding.getSymptoms());
+        return binding.getSymptoms();
     }
 
     /**
@@ -170,12 +165,6 @@ public class CaseEditSymptomsTab extends FormTab {
      */
     @Override
     protected AbstractDomainObject commit(AbstractDomainObject ado) {
-        // Set value to model
-        Symptoms symptoms = (Symptoms) ado;
-        symptoms.setOnsetDate((Date) getModel().get(R.id.symptoms_onsetDate));
-        symptoms.setTemperature((Float) getModel().get(R.id.symptoms_temperature));
-        symptoms.setTemperatureSource((TemperatureSource) getModel().get(R.id.symptoms_temperatureSource));
-
-        return symptoms;
+        return null;
     }
 }

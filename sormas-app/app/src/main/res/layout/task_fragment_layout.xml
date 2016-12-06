@@ -33,15 +33,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <TextView
-                    android:layout_width="match_parent" android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/field_caption_margin_bottom" android:textSize="@dimen/field_caption_size"
-                    android:text="@string/task_taskType" />
-                <TextView
+                <de.symeda.sormas.app.component.LabelField
+                    android:id="@+id/task_taskType"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/field_height"
-                    android:inputType="text"
-                    app:enum="@{task.taskType}" />
+                    android:layout_height="match_parent"
+                    app:enum="@{task.taskType}"/>
+
             </LinearLayout>
 
             <LinearLayout
@@ -49,15 +46,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <TextView
-                    android:layout_width="match_parent" android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/field_caption_margin_bottom" android:textSize="@dimen/field_caption_size"
-                    android:text="@string/task_case" />
-                <TextView
+                <de.symeda.sormas.app.component.LabelField
+                    android:id="@+id/task_caze"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/field_height"
-                    android:inputType="text"
-                    app:caze="@{task.caze}" />
+                    android:layout_height="match_parent"
+                    app:caze="@{task.caze}"/>
+
             </LinearLayout>
 
             <LinearLayout
@@ -71,16 +65,12 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="0.5">
 
-                    <TextView
+                    <de.symeda.sormas.app.component.LabelField
+                        android:id="@+id/task_priority"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/field_caption_margin_bottom"
-                        android:textSize="@dimen/field_caption_size"
-                        android:text="@string/task_taskPriority" />
-                    <TextView
-                        android:layout_width="match_parent" android:layout_height="@dimen/field_height"
-                        android:inputType="text"
-                        app:enum="@{task.priority}" />
+                        android:layout_height="match_parent"
+                        app:enum="@{task.priority}"/>
+
                 </LinearLayout>
 
                 <LinearLayout
@@ -89,16 +79,12 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="0.5">
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/field_caption_margin_bottom"
-                        android:textSize="@dimen/field_caption_size"
-                        android:text="@string/task_taskStatus" />
-                    <TextView
-                        android:layout_width="match_parent" android:layout_height="@dimen/field_height"
-                        android:inputType="text"
-                        app:enum="@{task.taskStatus}" />
+                    <de.symeda.sormas.app.component.LabelField
+                    android:id="@+id/task_taskStatus"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:enum="@{task.taskStatus}"/>
+
                 </LinearLayout>
             </LinearLayout>
 
@@ -113,16 +99,12 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="0.5">
 
-                    <TextView
+                    <de.symeda.sormas.app.component.LabelField
+                        android:id="@+id/task_suggestedStart"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/field_caption_margin_bottom"
-                        android:textSize="@dimen/field_caption_size"
-                        android:text="@string/task_suggestedStart" />
-                    <TextView
-                        android:layout_width="match_parent" android:layout_height="@dimen/field_height"
-                        android:inputType="text"
-                        app:dateTime="@{task.suggestedStart}" />
+                        android:layout_height="match_parent"
+                        app:dateTime="@{task.suggestedStart}"/>
+
                 </LinearLayout>
 
                 <LinearLayout
@@ -131,16 +113,12 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="0.5">
 
-                    <TextView
+                    <de.symeda.sormas.app.component.LabelField
+                        android:id="@+id/task_dueDate"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/field_caption_margin_bottom"
-                        android:textSize="@dimen/field_caption_size"
-                        android:text="@string/task_dueDate" />
-                    <TextView
-                        android:layout_width="match_parent" android:layout_height="@dimen/field_height"
-                        android:inputType="text"
-                        app:dateTime="@{task.dueDate}" />
+                        android:layout_height="match_parent"
+                        app:dateTime="@{task.dueDate}"/>
+
                 </LinearLayout>
             </LinearLayout>
 
@@ -150,15 +128,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <TextView
-                    android:layout_width="match_parent" android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/field_caption_margin_bottom" android:textSize="@dimen/field_caption_size"
-                    android:text="@string/task_creatorComment" />
-                <TextView
+                <de.symeda.sormas.app.component.LabelField
+                    android:id="@+id/task_creatorComment"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/field_height"
-                    android:inputType="text"
-                    android:text="@{task.creatorComment}" />
+                    android:layout_height="match_parent"
+                    android:value="@{task.creatorComment}"/>
+
             </LinearLayout>
 
 
@@ -167,17 +142,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <TextView
-                    android:layout_width="match_parent" android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/field_caption_margin_bottom" android:textSize="@dimen/field_caption_size"
-                    android:text="@string/task_creatorUser" />
-                <TextView
+                <de.symeda.sormas.app.component.LabelField
+                    android:id="@+id/task_creatorUser"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/field_height"
-                    android:inputType="text"
-                    app:user="@{task.creatorUser}" />
-            </LinearLayout>
+                    android:layout_height="match_parent"
+                    app:user="@{task.creatorUser}"/>
 
+            </LinearLayout>
 
 
             <LinearLayout
@@ -185,15 +156,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <TextView
-                    android:layout_width="match_parent" android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/field_caption_margin_bottom" android:textSize="@dimen/field_caption_size"
-                    android:text="@string/task_assigneeReply" />
-                <EditText
+                <de.symeda.sormas.app.component.TextField
+                    android:id="@+id/task_assigneeReply"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/field_height"
-                    android:inputType="text"
-                    android:text="@={task.assigneeReply}" />
+                    android:layout_height="match_parent"
+                    android:value="@={task.assigneeReply}"/>
+
             </LinearLayout>
 
             <android.support.v4.widget.Space
