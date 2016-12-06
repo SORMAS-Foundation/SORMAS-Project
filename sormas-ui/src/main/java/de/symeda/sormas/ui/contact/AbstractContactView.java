@@ -1,6 +1,7 @@
 package de.symeda.sormas.ui.contact;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.ui.SubNavigationMenu;
@@ -23,10 +24,10 @@ public abstract class AbstractContactView extends AbstractSubNavigationView {
 		contactRef = contact;		
 		
 		menu.removeAllViews();
-		menu.addView(ContactsView.VIEW_NAME, "Contacts List");
-		menu.addView(CaseContactsView.VIEW_NAME, "Case Contacts", contact.getCaze().getUuid(), true);
-		menu.addView(ContactDataView.VIEW_NAME, "Contact Data", params);
-		menu.addView(ContactPersonView.VIEW_NAME, "Person Data", params);
+		menu.addView(ContactsView.VIEW_NAME, "Contacts list");
+		menu.addView(CaseContactsView.VIEW_NAME, "Case contacts", contact.getCaze().getUuid(), true);
+		menu.addView(ContactDataView.VIEW_NAME, I18nProperties.getFieldCaption(ContactDto.I18N_PREFIX), params);
+		menu.addView(ContactPersonView.VIEW_NAME, I18nProperties.getPrefixFieldCaption(ContactDto.I18N_PREFIX, ContactDto.PERSON), params);
     }
 
 	public ContactReferenceDto getContactRef() {

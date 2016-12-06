@@ -30,6 +30,7 @@ public class CaseDataDto extends CaseReferenceDto {
 	public static final String SURVEILLANCE_OFFICER = "surveillanceOfficer";
 	public static final String CASE_OFFICER = "caseOfficer";
 	public static final String CONTACT_OFFICER = "contactOfficer";
+	public static final String SYMPTOMS = "symptoms";
 	
 	private PersonReferenceDto person;
 	private CaseStatus caseStatus;
