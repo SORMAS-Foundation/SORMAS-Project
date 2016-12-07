@@ -2,10 +2,13 @@ package de.symeda.sormas.api.visit;
 
 import java.util.Date;
 
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.PreciseDateAdapter;
 
 public class VisitDto extends VisitReferenceDto {
 
@@ -32,9 +35,11 @@ public class VisitDto extends VisitReferenceDto {
 	private String visitRemarks;
 	private SymptomsDto symptoms;
 	
+	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public Date getVisitDateTime() {
 		return visitDateTime;
 	}
+	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public void setVisitDateTime(Date visitDateTime) {
 		this.visitDateTime = visitDateTime;
 	}

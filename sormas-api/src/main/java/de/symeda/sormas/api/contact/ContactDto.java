@@ -2,9 +2,12 @@ package de.symeda.sormas.api.contact;
 
 import java.util.Date;
 
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.PreciseDateAdapter;
 
 public class ContactDto extends ContactReferenceDto {
 
@@ -48,9 +51,11 @@ public class ContactDto extends ContactReferenceDto {
 	public void setCaze(CaseReferenceDto caze) {
 		this.caze = caze;
 	}
+	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public Date getReportDateTime() {
 		return reportDateTime;
 	}
+	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public void setReportDateTime(Date reportDateTime) {
 		this.reportDateTime = reportDateTime;
 	}
@@ -60,9 +65,11 @@ public class ContactDto extends ContactReferenceDto {
 	public void setReportingUser(UserReferenceDto reportingUser) {
 		this.reportingUser = reportingUser;
 	}
+	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public Date getLastContactDate() {
 		return lastContactDate;
 	}
+	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public void setLastContactDate(Date lastContactDate) {
 		this.lastContactDate = lastContactDate;
 	}
@@ -96,9 +103,11 @@ public class ContactDto extends ContactReferenceDto {
 	public void setContactClassification(ContactClassification contactClassification) {
 		this.contactClassification = contactClassification;
 	}
+	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public Date getFollowUpUntil() {
 		return followUpUntil;
 	}
+	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public void setFollowUpUntil(Date followUpUntil) {
 		this.followUpUntil = followUpUntil;
 	}
