@@ -73,6 +73,7 @@ public class CaseEditDataTab extends FormTab {
                     if(selectedValue != null) {
                         districtList = DatabaseHelper.getDistrictDao().getByRegion((Region)selectedValue);
                     }
+
                     setSpinnerValue(binding.caseDataDistrict.getValue(), DataUtils.getItems(districtList), districtSpinner);
                 }
             }

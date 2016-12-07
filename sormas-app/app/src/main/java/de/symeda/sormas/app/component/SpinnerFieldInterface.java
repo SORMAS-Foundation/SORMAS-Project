@@ -15,6 +15,5 @@ public interface SpinnerFieldInterface {
 
     public int getCount();
     public Object getItemAtPosition(int i);
-    public void setOnItemSelectedListener(AdapterView.OnItemSelectedListener listener);
 
 }

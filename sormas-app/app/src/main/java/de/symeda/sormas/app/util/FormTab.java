@@ -149,23 +149,6 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
         return makeSpinnerField(parentView,spinnerFieldId,items, moreListeners);
     }
 
-    protected SpinnerField addUserSpinnerField(final int spinnerFieldId, List<UserRole> userRoles, final AdapterView.OnItemSelectedListener ...moreListeners) {
-        UserDao userDao = DatabaseHelper.getUserDao();
-        List<Item> items = null;
-        if (userRoles.size() == 0) {
-            items = DataUtils.getItems(userDao.queryForAll());
-        } else {
-            for (UserRole userRole : userRoles) {
-                if (items == null) {
-                    items = DataUtils.getItems(userDao.queryForEq(User.USER_ROLE, userRole));
-                } else {
-                    items = DataUtils.addItems(items, userDao.queryForEq(User.USER_ROLE, userRole));
-                }
-            }
-        }
-        return makeSpinnerField(spinnerFieldId,items,moreListeners);
-    }
-
     protected SpinnerField addPersonSpinnerField(final int spinnerFieldId, final AdapterView.OnItemSelectedListener ...moreListeners) {
         PersonDao personDao = DatabaseHelper.getPersonDao();
         List<Item> items = null;
@@ -178,11 +161,9 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
         return makeSpinnerField(spinnerFieldId,items, moreListeners);
     }
 
-
     private SpinnerField makeSpinnerField(final int spinnerFieldId, List<Item> items, final AdapterView.OnItemSelectedListener[] moreListeners) {
         return makeSpinnerField(getView(), spinnerFieldId, items, moreListeners);
     }
-
 
     private SpinnerField makeSpinnerField(View parentView, final int spinnerFieldId, List<Item> items, final AdapterView.OnItemSelectedListener[] moreListeners) {
         final SpinnerField spinnerField = (SpinnerField) parentView.findViewById(spinnerFieldId);
@@ -240,14 +221,7 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
             //final Location location = model.get(locationFieldId)!=null?(Location)model.get(locationFieldId): DataUtils.createNew(Location.class);
 
             final Location location = person.getAddress() != null ? person.getAddress() : DataUtils.createNew(Location.class);
-
-            // Null-Abfragen
-            RegionDao regionDao = DatabaseHelper.getRegionDao();
-            if(location.getRegion() != null) location.setRegion(regionDao.queryForId(location.getRegion().getId()));
-            DistrictDao districtDao = DatabaseHelper.getDistrictDao();
-            if(location.getDistrict() != null) location.setDistrict(districtDao.queryForId(location.getDistrict().getId()));
-            CommunityDao communityDao = DatabaseHelper.getCommunityDao();
-            if(location.getCommunity() != null) location.setCommunity(communityDao.queryForId(location.getCommunity().getId()));
+            DatabaseHelper.getLocationDao().initializeLocation(location);
 
             // set the TextField for the location
             final TextField locationText = (TextField) getView().findViewById(locationFieldId);
