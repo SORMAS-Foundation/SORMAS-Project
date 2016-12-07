@@ -97,7 +97,9 @@
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:focusable="true"
+                android:focusableInTouchMode="true">
 
                 <LinearLayout android:orientation="vertical"
                     android:layout_width="match_parent" android:layout_height="wrap_content"
@@ -108,6 +110,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:value="@={contact.lastContactDate}"/>
+
                 </LinearLayout>
 
             </LinearLayout>

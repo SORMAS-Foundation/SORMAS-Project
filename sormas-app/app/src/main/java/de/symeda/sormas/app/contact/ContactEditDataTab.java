@@ -39,6 +39,7 @@ public class ContactEditDataTab extends FormTab {
         final Contact contact = contactDao.queryUuid(contactUuid);
         binding.setContact(contact);
 
+        addDateField(R.id.contact_lastContactDate);
     }
 
     @Override
