@@ -28,14 +28,7 @@ import de.symeda.sormas.ui.utils.UuidRenderer;
 @SuppressWarnings("serial")
 public class ContactGrid extends Grid {
 
-	private final CaseReferenceDto caseRef;
-
 	public ContactGrid() {
-		this(null);
-	}
-	
-	public ContactGrid(CaseReferenceDto caseRef) {
-        this.caseRef = caseRef;
 		setSizeFull();
 
         setSelectionMode(SelectionMode.NONE);
@@ -65,8 +58,6 @@ public class ContactGrid extends Grid {
         		ControllerProvider.getContactController().editData(indexDto.getUuid());
         	}
         });
-        
-        reload();
 	}
 	
 
@@ -95,7 +86,6 @@ public class ContactGrid extends Grid {
 	}
 
 	public void setClassificationFilter(ContactClassification status) {
-    	reload();
 		getContainer().removeContainerFilters(ContactIndexDto.CONTACT_CLASSIFICATION);
     	if (status != null) {
 	    	Equal filter = new Equal(ContactIndexDto.CONTACT_CLASSIFICATION, status);  
@@ -108,31 +98,12 @@ public class ContactGrid extends Grid {
         return (BeanItemContainer<ContactIndexDto>) super.getContainerDataSource();
     }
     
-    public void reload() {
+    public void reload(CaseReferenceDto caseRef) {
     	UserDto user = LoginHelper.getCurrentUser();
     	List<ContactIndexDto> entries = FacadeProvider.getContactFacade().getIndexListByCase(user.getUuid(), caseRef);
 
     	getContainer().removeAllItems();
         getContainer().addAll(entries);    	
-    }
-
-    public void refresh(ContactIndexDto entry) {
-        // We avoid updating the whole table through the backend here so we can
-        // get a partial update for the grid
-        BeanItem<ContactIndexDto> item = getContainer().getItem(entry);
-        if (item != null) {
-            // Updated product
-            @SuppressWarnings("rawtypes")
-			MethodProperty p = (MethodProperty) item.getItemProperty(ContactIndexDto.UUID);
-            p.fireValueChange();
-        } else {
-            // New product
-            getContainer().addBean(entry);
-        }
-    }
-
-    public void remove(ContactIndexDto caze) {
-        getContainer().removeItem(caze);
     }
 }
 

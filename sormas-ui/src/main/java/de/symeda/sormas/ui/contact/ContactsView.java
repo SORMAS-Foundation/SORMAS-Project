@@ -118,6 +118,6 @@ public class ContactsView extends AbstractView {
 
     @Override
     public void enter(ViewChangeEvent event) {
-    	grid.reload();
+    	grid.reload(null);
     }
 }

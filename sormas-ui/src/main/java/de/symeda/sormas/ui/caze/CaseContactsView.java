@@ -40,8 +40,7 @@ public class CaseContactsView extends AbstractCaseView {
         setSizeFull();
         addStyleName("crud-view");
 
-        grid = new ContactGrid(getCaseRef());
-        // set columns relevant from within case
+        grid = new ContactGrid();
         grid.setColumns(ContactIndexDto.UUID, ContactIndexDto.PERSON, ContactIndexDto.CONTACT_PROXIMITY, 
         		ContactIndexDto.LAST_CONTACT_DATE, ContactIndexDto.CONTACT_OFFICER);
 
@@ -73,7 +72,10 @@ public class CaseContactsView extends AbstractCaseView {
         topLayout.addComponent(statusAll);
         
         for (ContactClassification status : ContactClassification.values()) {
-	    	Button statusButton = new Button(status.toString(), e -> grid.setClassificationFilter(status));
+	    	Button statusButton = new Button(status.toString(), e -> {
+	    		grid.reload(getCaseRef());
+	    		grid.setClassificationFilter(status);
+	    	});
 	    	statusButton.setStyleName(ValoTheme.BUTTON_LINK);
 	        topLayout.addComponent(statusButton);
         }
@@ -113,6 +115,6 @@ public class CaseContactsView extends AbstractCaseView {
     @Override
     public void enter(ViewChangeEvent event) {
     	super.enter(event);
-    	grid.reload();
+    	grid.reload(getCaseRef());
     }
 }
