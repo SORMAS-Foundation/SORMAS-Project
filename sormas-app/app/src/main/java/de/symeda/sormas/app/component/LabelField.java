@@ -124,7 +124,7 @@ public class LabelField extends PropertyField<String> {
         String value = null;
         if(person!=null) {
             Calendar birthDate = new GregorianCalendar();
-            birthDate.set(person.getBirthdateYYYY(), person.getBirthdateMM()!=null?person.getBirthdateMM()-1:0, person.getBirthdateDD()!=null?person.getBirthdateDD():1);
+            birthDate.set(person.getBirthdateYYYY()!=null?person.getBirthdateYYYY():0, person.getBirthdateMM()!=null?person.getBirthdateMM()-1:0, person.getBirthdateDD()!=null?person.getBirthdateDD():1);
             DataHelper.Pair<Integer, ApproximateAgeType> approximateAge = ApproximateAgeType.ApproximateAgeHelper.getApproximateAge(birthDate.getTime(),new Date());
             value = String.valueOf(approximateAge.getElement0()) + " " + String.valueOf(approximateAge.getElement1());
 
