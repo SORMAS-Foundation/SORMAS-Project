@@ -54,10 +54,10 @@ public class ContactEditActivity extends AbstractEditActivity {
 
         // Creating titles for the tabs
         titles = new CharSequence[]{
-                getResources().getText(R.string.headline_contact_data),
-                getResources().getText(R.string.headline_visits),
-                getResources().getText(R.string.headline_person_information)
-        };
+                getResources().getText(R.string.headline_contact_data)}; // ,
+//                getResources().getText(R.string.headline_visits),
+//                getResources().getText(R.string.headline_person_information)
+//        };
     }
 
     @Override

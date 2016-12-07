@@ -42,16 +42,16 @@ public class ContactEditPagerAdapter extends FragmentStatePagerAdapter {
                 contactEditDataTab.setArguments(bundle);
                 frag = contactEditDataTab;
                 break;
-            case 1:
-                contactEditDataTab = new ContactEditDataTab();
-                contactEditDataTab.setArguments(bundle);
-                frag = contactEditDataTab;
-                break;
-            case 2:
-                contactEditDataTab = new ContactEditDataTab();
-                contactEditDataTab.setArguments(bundle);
-                frag = contactEditDataTab;
-                break;
+//            case 1:
+//                contactEditDataTab = new ContactEditDataTab();
+//                contactEditDataTab.setArguments(bundle);
+//                frag = contactEditDataTab;
+//                break;
+//            case 2:
+//                contactEditDataTab = new ContactEditDataTab();
+//                contactEditDataTab.setArguments(bundle);
+//                frag = contactEditDataTab;
+//                break;
 
         }
         return frag;

@@ -43,14 +43,12 @@ public class ContactEditDataTab extends FormTab {
 
     @Override
     protected AbstractDomainObject commit(AbstractDomainObject ado) {
-        Contact contact = (Contact) ado;
-
-        return contact;
+        return null;
     }
 
     @Override
     public AbstractDomainObject getData() {
-        return commit(binding.getContact());
+        return binding.getContact();
     }
 
 }
