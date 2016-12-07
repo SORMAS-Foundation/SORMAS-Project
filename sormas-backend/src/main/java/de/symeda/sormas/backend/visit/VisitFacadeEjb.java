@@ -10,11 +10,14 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitFacade;
 import de.symeda.sormas.api.visit.VisitReferenceDto;
-import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.contact.ContactService;
+import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
@@ -30,7 +33,7 @@ public class VisitFacadeEjb implements VisitFacade {
 	@EJB
 	private VisitService service;	
 	@EJB
-	private CaseService caseService;
+	private ContactService contactService;
 	@EJB
 	private PersonService personService;
 	@EJB
@@ -49,6 +52,26 @@ public class VisitFacadeEjb implements VisitFacade {
 		}
 		
 		return service.getAllAfter(date, user).stream()
+			.map(c -> toDto(c))
+			.collect(Collectors.toList());
+	}
+	
+	@Override
+	public List<VisitDto> getAllByContact(ContactReferenceDto contactRef) {
+		
+		Contact contact = contactService.getByReferenceDto(contactRef);
+		
+		return service.getAllByContact(contact).stream()
+			.map(c -> toDto(c))
+			.collect(Collectors.toList());
+	}
+	
+	@Override
+	public List<VisitDto> getAllByPerson(PersonReferenceDto personRef) {
+		
+		Person person = personService.getByReferenceDto(personRef);
+		
+		return service.getAllByPerson(person).stream()
 			.map(c -> toDto(c))
 			.collect(Collectors.toList());
 	}

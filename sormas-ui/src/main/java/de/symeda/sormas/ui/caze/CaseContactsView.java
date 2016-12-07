@@ -31,7 +31,6 @@ public class CaseContactsView extends AbstractCaseView {
 
 	private ContactGrid grid;    
     private Button newButton;
-
 	private VerticalLayout gridLayout;
 
     public CaseContactsView() {

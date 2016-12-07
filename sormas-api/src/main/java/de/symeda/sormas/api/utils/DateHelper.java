@@ -10,13 +10,13 @@ import java.util.List;
 
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
-import org.joda.time.ReadableInstant;
 
 public final class DateHelper {
 
 	private static final SimpleDateFormat SHORT_DATE_FORMAT = new SimpleDateFormat("dd/MM/yy");
 	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
-	private static final SimpleDateFormat TIME_DATA_FORMAT = new SimpleDateFormat("HH:mm dd/MM/yyyy");
+	private static final SimpleDateFormat TIME_DATE_FORMAT = new SimpleDateFormat("HH:mm dd/MM/yyyy");
+	private static final SimpleDateFormat SHORT_TIME_DATE_FORMAT = new SimpleDateFormat("HH:mm dd/MM/yy");
 	private static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm");
 
 	
@@ -78,7 +78,7 @@ public final class DateHelper {
 	 */
 	public static String formatHmDDMMYYYY(Date date) {
         if (date != null) {
-            return clone(TIME_DATA_FORMAT).format(date);
+            return clone(TIME_DATE_FORMAT).format(date);
         } else {
             return "";
         }
@@ -142,6 +142,10 @@ public final class DateHelper {
 	
 	public static SimpleDateFormat getShortDateFormat() {
 		return clone(SHORT_DATE_FORMAT);
+	}
+	
+	public static SimpleDateFormat getShortTimeDateFormat() {
+		return clone(SHORT_TIME_DATE_FORMAT);
 	}
 	
 	/**

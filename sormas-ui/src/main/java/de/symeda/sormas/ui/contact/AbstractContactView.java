@@ -27,6 +27,7 @@ public abstract class AbstractContactView extends AbstractSubNavigationView {
 		menu.addView(ContactsView.VIEW_NAME, "Contacts list");
 		menu.addView(CaseContactsView.VIEW_NAME, "Case contacts", contact.getCaze().getUuid(), true);
 		menu.addView(ContactDataView.VIEW_NAME, I18nProperties.getFieldCaption(ContactDto.I18N_PREFIX), params);
+		menu.addView(ContactVisitsView.VIEW_NAME, I18nProperties.getPrefixFieldCaption(ContactDto.I18N_PREFIX, "visits"), params);
 		menu.addView(ContactPersonView.VIEW_NAME, I18nProperties.getPrefixFieldCaption(ContactDto.I18N_PREFIX, ContactDto.PERSON), params);
     }
 

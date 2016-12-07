@@ -5,6 +5,9 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
+import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
+
 @Remote
 public interface VisitFacade {
 
@@ -15,4 +18,8 @@ public interface VisitFacade {
 	VisitReferenceDto getReferenceByUuid(String uuid);
 
 	VisitDto saveVisit(VisitDto dto);
+
+	List<VisitDto> getAllByPerson(PersonReferenceDto personRef);
+
+	List<VisitDto> getAllByContact(ContactReferenceDto contactRef);
 }

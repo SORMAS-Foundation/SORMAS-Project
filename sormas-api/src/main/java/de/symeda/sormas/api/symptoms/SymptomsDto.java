@@ -621,5 +621,4 @@ public class SymptomsDto extends DataTransferObject {
 	public void setOtherNonHemorrhagicSymptomsText(String otherNonHemorrhagicSymptomsText) {
 		this.otherNonHemorrhagicSymptomsText = otherNonHemorrhagicSymptomsText;
 	}
-
 }
