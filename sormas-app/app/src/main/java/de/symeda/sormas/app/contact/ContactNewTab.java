@@ -80,7 +80,7 @@ public class ContactNewTab extends FormTab {
                     if(selectedValue != null) {
                         districtList = DatabaseHelper.getDistrictDao().getByRegion((Region)selectedValue);
                     }
-                    spinner.setAdapter(makeSpinnerAdapter(DataUtils.getItems(districtList)));
+                    spinner.setSpinnerAdapter(DataUtils.getItems(districtList));
                 }
             }
 
@@ -102,7 +102,7 @@ public class ContactNewTab extends FormTab {
                     if(selectedValue != null) {
                         communityList = DatabaseHelper.getCommunityDao().getByDistrict((District)selectedValue);
                     }
-                    spinner.setAdapter(makeSpinnerAdapter(DataUtils.getItems(communityList)));
+                    spinner.setSpinnerAdapter(DataUtils.getItems(communityList));
                 }
             }
 
@@ -123,7 +123,7 @@ public class ContactNewTab extends FormTab {
                     if(selectedValue != null) {
                         facilityList = DatabaseHelper.getFacilityDao().getByCommunity((Community)selectedValue);
                     }
-                    spinner.setAdapter(makeSpinnerAdapter(DataUtils.getItems(facilityList)));
+                    spinner.setSpinnerAdapter(DataUtils.getItems(facilityList));
                 }
             }
 

@@ -183,10 +183,10 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
         return makeSpinnerField(getView(), spinnerFieldId, items, moreListeners);
     }
 
+
     private SpinnerField makeSpinnerField(View parentView, final int spinnerFieldId, List<Item> items, final AdapterView.OnItemSelectedListener[] moreListeners) {
         final SpinnerField spinnerField = (SpinnerField) parentView.findViewById(spinnerFieldId);
-        spinnerField.setAdapter(makeSpinnerAdapter(items));
-        spinnerField.setItemList(items);
+        spinnerField.setSpinnerAdapter(items);
 
         final List<AdapterView.OnItemSelectedListener> moreListenersAll = new ArrayList<>(Arrays.asList(moreListeners));
 
@@ -199,7 +199,7 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
         spinnerField.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                spinnerField.setValue(spinnerField.getItemAtPosition(position));
+                //spinnerField.setValue(spinnerField.getItemAtPosition(position));
                 for (AdapterView.OnItemSelectedListener listener:moreListenersAll) {
                     listener.onItemSelected(parent,view,position,id);
                 }
@@ -207,7 +207,7 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                spinnerField.setValue(null);
+                //spinnerField.setValue(null);
                 for (AdapterView.OnItemSelectedListener listener:moreListeners) {
                     listener.onNothingSelected(parent);
                 }
@@ -217,15 +217,6 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
         return spinnerField;
     }
 
-    protected ArrayAdapter<Item> makeSpinnerAdapter(List<Item> items) {
-        ArrayAdapter<Item> adapter = new ArrayAdapter<>(
-                getActivity(),
-                android.R.layout.simple_spinner_item,
-                items);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        return adapter;
-    }
-
     /**
      * Update the spinner list and set selected value.
      * @param selectedItem
@@ -233,8 +224,7 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
      * @param spinnerField
      */
     protected void setSpinnerValue(Object selectedItem, List<Item> items, SpinnerField spinnerField) {
-        spinnerField.setAdapter(makeSpinnerAdapter(items));
-        spinnerField.setItemList(items);
+        spinnerField.setSpinnerAdapter(items);
         spinnerField.setValue(selectedItem);
     }
 
@@ -253,11 +243,11 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
 
             // Null-Abfragen
             RegionDao regionDao = DatabaseHelper.getRegionDao();
-            location.setRegion(regionDao.queryForId(location.getRegion().getId()));
+            if(location.getRegion() != null) location.setRegion(regionDao.queryForId(location.getRegion().getId()));
             DistrictDao districtDao = DatabaseHelper.getDistrictDao();
-            location.setDistrict(districtDao.queryForId(location.getDistrict().getId()));
+            if(location.getDistrict() != null) location.setDistrict(districtDao.queryForId(location.getDistrict().getId()));
             CommunityDao communityDao = DatabaseHelper.getCommunityDao();
-            location.setCommunity(communityDao.queryForId(location.getCommunity().getId()));
+            if(location.getCommunity() != null) location.setCommunity(communityDao.queryForId(location.getCommunity().getId()));
 
             // set the TextField for the location
             final TextField locationText = (TextField) getView().findViewById(locationFieldId);

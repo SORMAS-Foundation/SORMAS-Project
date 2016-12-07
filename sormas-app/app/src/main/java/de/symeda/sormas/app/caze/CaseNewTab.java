@@ -82,7 +82,7 @@ public class CaseNewTab extends FormTab {
                     if(selectedValue != null) {
                         districtList = DatabaseHelper.getDistrictDao().getByRegion((Region)selectedValue);
                     }
-                    spinnerField.setAdapter(makeSpinnerAdapter(DataUtils.getItems(districtList)));
+                    spinnerField.setSpinnerAdapter(DataUtils.getItems(districtList));
                 }
             }
 
@@ -104,7 +104,7 @@ public class CaseNewTab extends FormTab {
                     if(selectedValue != null) {
                         communityList = DatabaseHelper.getCommunityDao().getByDistrict((District)selectedValue);
                     }
-                    spinnerField.setAdapter(makeSpinnerAdapter(DataUtils.getItems(communityList)));
+                    spinnerField.setSpinnerAdapter(DataUtils.getItems(communityList));
                 }
             }
 
@@ -125,7 +125,7 @@ public class CaseNewTab extends FormTab {
                     if(selectedValue != null) {
                         facilityList = DatabaseHelper.getFacilityDao().getByCommunity((Community)selectedValue);
                     }
-                    spinnerField.setAdapter(makeSpinnerAdapter(DataUtils.getItems(facilityList)));
+                    spinnerField.setSpinnerAdapter(DataUtils.getItems(facilityList));
                 }
             }
 
@@ -181,11 +181,11 @@ public class CaseNewTab extends FormTab {
                     new SyncPersonsTask().execute();
 
                     // refresh reference for pre-selection in personField
-                    // DOES NOT CURRENTLY WORK, possibly because of how the lists get added to spinners
+                    // DOES WORK NOW because we've got our own awesome custom fields :D
                     person = personNew;
                     addPersonSpinnerField(R.id.caseData_person);
                     SpinnerField spinner = (SpinnerField) getView().findViewById(R.id.caseData_person);
-                    spinner.setValue(spinner.getItemAtPosition(spinner.getAdapter().getCount() - 1));
+                    spinner.setValue(person);
                     //reloadFragment();
                 }
             });

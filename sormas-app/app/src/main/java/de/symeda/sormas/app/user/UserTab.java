@@ -26,7 +26,7 @@ import de.symeda.sormas.app.util.Item;
 /**
  * Created by Stefan Szczesny on 27.07.2016.
  *
- * TODO name ConfigTab?
+ * ATTENTION: This is currently not used the way it is meant to be...
  */
 public class UserTab extends FormTab {
 
@@ -60,7 +60,6 @@ public class UserTab extends FormTab {
             }
         }
 
-        binding.configUser.setItemList(items);
         binding.configUser.setSpinnerAdapter(items);
         binding.configUser.setValue(user);
         binding.configServerUrl.setValue((String)ConfigProvider.getServerRestUrl());
