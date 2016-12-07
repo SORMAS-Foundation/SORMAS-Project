@@ -3,8 +3,12 @@ package de.symeda.sormas.ui.utils;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import com.vaadin.data.Item;
 import com.vaadin.data.Property;
+import com.vaadin.data.util.GeneratedPropertyContainer;
+import com.vaadin.data.util.PropertyValueGenerator;
 import com.vaadin.data.util.converter.Converter;
+import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Page;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Component;
@@ -235,5 +239,20 @@ public class VaadinUiUtil {
 		@SuppressWarnings("rawtypes")
 		Property rawTypeProperty = property;
 		rawTypeProperty.setValue(value);
+	}
+	
+
+	public static void addEditColumn(GeneratedPropertyContainer editContainer, String editPropertyId) {
+		// edit button
+        editContainer.addGeneratedProperty(editPropertyId, new PropertyValueGenerator<String>() {
+			@Override
+			public String getValue(Item item, Object itemId, Object propertyId) {
+				return FontAwesome.PENCIL_SQUARE.getHtml();
+			}
+			@Override
+			public Class<String> getType() {
+				return String.class;
+			}
+		});
 	}
 }

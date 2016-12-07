@@ -6,15 +6,12 @@ import java.util.List;
 import java.util.Locale;
 
 import com.vaadin.data.Container.Filter;
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.GeneratedPropertyContainer;
-import com.vaadin.data.util.PropertyValueGenerator;
 import com.vaadin.data.util.filter.Compare.Equal;
 import com.vaadin.data.util.filter.Not;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
-import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.renderers.DateRenderer;
 import com.vaadin.ui.renderers.HtmlRenderer;
@@ -27,6 +24,7 @@ import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.HtmlReferenceDtoConverter;
+import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 @SuppressWarnings("serial")
 public class TaskGrid extends Grid implements ItemClickListener {
@@ -88,18 +86,8 @@ public class TaskGrid extends Grid implements ItemClickListener {
 		setRowStyleGenerator(new TaskGridRowStyleGenerator());
 
         BeanItemContainer<TaskDto> container = new BeanItemContainer<TaskDto>(TaskDto.class);
-        GeneratedPropertyContainer editContainer = new GeneratedPropertyContainer(container);
-        // edit button
-        editContainer.addGeneratedProperty(EDIT_BTN_ID, new PropertyValueGenerator<String>() {
-			@Override
-			public String getValue(Item item, Object itemId, Object propertyId) {
-				return FontAwesome.PENCIL_SQUARE.getHtml();
-			}
-			@Override
-			public Class<String> getType() {
-				return String.class;
-			}
-		});
+		GeneratedPropertyContainer editContainer = new GeneratedPropertyContainer(container);
+        VaadinUiUtil.addEditColumn(editContainer, EDIT_BTN_ID);
         setContainerDataSource(editContainer);
 
         setColumns(EDIT_BTN_ID, TaskDto.CONTEXT_REFERENCE, TaskDto.TASK_TYPE,  TaskDto.PRIORITY,

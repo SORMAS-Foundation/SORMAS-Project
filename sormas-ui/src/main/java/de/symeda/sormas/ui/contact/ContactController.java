@@ -10,10 +10,9 @@ import com.vaadin.ui.Notification.Type;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactFacade;
-import de.symeda.sormas.api.contact.ContactReferenceDto;
-import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -141,13 +140,4 @@ public class ContactController {
         
         return editComponent;
     }
-
-	public void editVisit(String uuid) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void createVisit(ContactReferenceDto contactRef) {
-		
-	}
 }

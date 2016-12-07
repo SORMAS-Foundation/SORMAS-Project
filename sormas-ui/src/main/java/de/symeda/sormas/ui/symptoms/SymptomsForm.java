@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.caze;
+package de.symeda.sormas.ui.symptoms;
 
 import java.util.Arrays;
 
@@ -16,9 +16,9 @@ import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
 @SuppressWarnings("serial")
-public class CaseSymptomsForm extends AbstractEditForm<SymptomsDto> {
+public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 
-	private static final String HTML_LAYOUT = LayoutUtil.h3(CssStyles.VSPACE3, "Case symptoms")
+	private static final String HTML_LAYOUT = LayoutUtil.h3(CssStyles.VSPACE3, "Symptoms")
 			+ LayoutUtil.divCss(CssStyles.VSPACE3,
 				LayoutUtil.fluidRowLocs(SymptomsDto.ONSET_DATE, "", SymptomsDto.TEMPERATURE, SymptomsDto.TEMPERATURE_SOURCE))
 			+ LayoutUtil.divCss(CssStyles.VSPACE3, I18nProperties.getFieldCaption("Symptoms.hint"))
@@ -50,7 +50,7 @@ public class CaseSymptomsForm extends AbstractEditForm<SymptomsDto> {
 	
 	private final Disease disease;
 
-	public CaseSymptomsForm(Disease disease) {
+	public SymptomsForm(Disease disease) {
 		super(SymptomsDto.class, SymptomsDto.I18N_PREFIX);
 		this.disease = disease;
 		if (disease == null) {

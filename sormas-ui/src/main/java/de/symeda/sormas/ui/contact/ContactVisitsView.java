@@ -14,6 +14,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.visit.VisitGrid;
 
 public class ContactVisitsView extends AbstractContactView {
 
@@ -71,7 +72,10 @@ public class ContactVisitsView extends AbstractContactView {
         newButton = new Button("New visit");
         newButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
         newButton.setIcon(FontAwesome.PLUS_CIRCLE);
-        newButton.addClickListener(e -> ControllerProvider.getContactController().createVisit(this.getContactRef()));
+        newButton.addClickListener(e -> {
+        	ControllerProvider.getVisitController().createVisit(this.getContactRef(), 
+        			r -> grid.reload(getContactRef()));
+        });
         topLayout.addComponent(newButton);
         topLayout.setComponentAlignment(newButton, Alignment.MIDDLE_RIGHT);
         topLayout.setExpandRatio(newButton, 1);

@@ -24,6 +24,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.login.LoginHelper;
+import de.symeda.sormas.ui.symptoms.SymptomsForm;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -167,19 +168,19 @@ public class CaseController {
         return editView;
     }
 
-	public CommitDiscardWrapperComponent<CaseSymptomsForm> getCaseSymptomsEditComponent(final String caseUuid) {
+	public CommitDiscardWrapperComponent<SymptomsForm> getCaseSymptomsEditComponent(final String caseUuid) {
     	
         CaseDataDto caseDataDto = findCase(caseUuid);
 
         VerticalLayout formLayout = new VerticalLayout();
-    	CaseSymptomsForm caseEditForm = new CaseSymptomsForm(caseDataDto.getDisease());
+    	SymptomsForm caseEditForm = new SymptomsForm(caseDataDto.getDisease());
         formLayout.addComponent(caseEditForm);
         formLayout.setSizeFull();
         formLayout.setExpandRatio(caseEditForm, 1);
         
         caseEditForm.setValue(caseDataDto.getSymptoms());
         
-        final CommitDiscardWrapperComponent<CaseSymptomsForm> editView = new CommitDiscardWrapperComponent<CaseSymptomsForm>(caseEditForm, caseEditForm.getFieldGroup());
+        final CommitDiscardWrapperComponent<SymptomsForm> editView = new CommitDiscardWrapperComponent<SymptomsForm>(caseEditForm, caseEditForm.getFieldGroup());
         
         editView.addCommitListener(new CommitListener() {
         	
