@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -40,6 +41,7 @@ public class ContactEditDataTab extends FormTab {
         binding.setContact(contact);
 
         addDateField(R.id.contact_lastContactDate);
+        addRadioGroupField(R.id.contact_contactProximity, ContactProximity.class);
     }
 
     @Override

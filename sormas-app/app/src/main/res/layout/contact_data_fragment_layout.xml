@@ -124,6 +124,26 @@
                     android:layout_width="match_parent" android:layout_height="wrap_content"
                     android:layout_weight="0.5" android:paddingTop="@dimen/field_padding" android:paddingBottom="@dimen/field_padding">
 
+                    <de.symeda.sormas.app.component.RadioGroupField
+                        android:id="@+id/contact_contactProximity"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:value="@={contact.contactProximity}"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout android:orientation="vertical"
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:layout_weight="0.5" android:paddingTop="@dimen/field_padding" android:paddingBottom="@dimen/field_padding">
+
                     <de.symeda.sormas.app.component.TextField
                         android:id="@+id/contact_description"
                         android:layout_width="match_parent"

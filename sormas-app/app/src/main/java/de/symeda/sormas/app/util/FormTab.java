@@ -47,6 +47,7 @@ import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.backend.user.UserDao;
 import de.symeda.sormas.app.component.DateField;
 import de.symeda.sormas.app.component.LabelField;
+import de.symeda.sormas.app.component.RadioGroupField;
 import de.symeda.sormas.app.component.SpinnerField;
 import de.symeda.sormas.app.component.TextField;
 
@@ -99,6 +100,17 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
         dateBundle.putSerializable(SelectDateFragment.DATE, dateField.getValue());
         newFragment.setArguments(dateBundle);
         newFragment.show(getFragmentManager(), getResources().getText(R.string.headline_date_picker).toString());
+    }
+
+    protected RadioGroupField addRadioGroupField(final int radioGroupFieldId, Class enumClass) {
+        List<Item> items = DataUtils.getEnumItems(enumClass);
+        final RadioGroupField radioGroupField = (RadioGroupField) getView().findViewById(radioGroupFieldId);
+        for(Item item : items) {
+            radioGroupField.addItem(item);
+        }
+
+
+        return radioGroupField;
     }
 
     /**

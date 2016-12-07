@@ -49,7 +49,6 @@ public class CaseEditDataTab extends FormTab {
     @Override
     public void onResume() {
         super.onResume();
-        //System.out.println("RESUME DATA TAB!");
 
         final String caseUuid = (String) getArguments().getString(Case.UUID);
         final CaseDao caseDao = DatabaseHelper.getCaseDao();
@@ -67,7 +66,6 @@ public class CaseEditDataTab extends FormTab {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 SpinnerField districtSpinner = binding.caseDataDistrict;
                 Object selectedValue = binding.caseDataRegion.getValue();
-                //System.out.println("SELECTED VALUE: " + selectedValue);
                 if(districtSpinner != null) {
                     List<District> districtList = emptyList;
                     if(selectedValue != null) {
