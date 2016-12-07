@@ -2,9 +2,7 @@ package de.symeda.sormas.ui.contact;
 
 import java.util.List;
 
-import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.data.util.MethodProperty;
 import com.vaadin.data.util.filter.Compare.Equal;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.renderers.DateRenderer;
@@ -15,8 +13,8 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactClassification;
+import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -35,8 +33,9 @@ public class ContactGrid extends Grid {
 
         BeanItemContainer<ContactIndexDto> container = new BeanItemContainer<ContactIndexDto>(ContactIndexDto.class);
         setContainerDataSource(container);
-        setColumns(ContactIndexDto.UUID, ContactIndexDto.PERSON, ContactIndexDto.CONTACT_PROXIMITY, 
-        		ContactIndexDto.LAST_CONTACT_DATE, 
+        setColumns(ContactIndexDto.UUID, ContactIndexDto.PERSON, ContactIndexDto.CONTACT_PROXIMITY,
+        		ContactIndexDto.LAST_CONTACT_DATE, ContactIndexDto.CONTACT_CLASSIFICATION, 
+        		ContactIndexDto.FOLLOW_UP_STATUS,         		 
         		ContactIndexDto.CAZE_DISEASE, ContactIndexDto.CAZE,
         		ContactIndexDto.CONTACT_OFFICER
         		);
