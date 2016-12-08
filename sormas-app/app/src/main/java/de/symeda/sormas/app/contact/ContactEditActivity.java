@@ -13,7 +13,9 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.contact.ContactDao;
+import de.symeda.sormas.app.backend.location.LocationDao;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.caze.CaseEditActivity;
 import de.symeda.sormas.app.component.AbstractEditActivity;
 
@@ -120,20 +122,25 @@ public class ContactEditActivity extends AbstractEditActivity {
 
             // Save button
             case R.id.action_save:
-                ContactDao contactDao = DatabaseHelper.getContactDao();
 
                 switch(currentTab) {
                     // contact data tab
                     case 0:
-
+                        ContactDao contactDao = DatabaseHelper.getContactDao();
                         Contact contact = (Contact) adapter.getData(0);
 
                         contactDao.save(contact);
                         Toast.makeText(this, "contact "+ DataHelper.getShortUuid(contact.getUuid()) +" saved", Toast.LENGTH_SHORT).show();
                         break;
                     case 1:
+                        LocationDao locLocationDao = DatabaseHelper.getLocationDao();
+                        PersonDao personDao = DatabaseHelper.getPersonDao();
 
-                        Person person = (Person) adapter.getData(1);
+                        Person person = (Person)adapter.getData(1);
+
+                        if(person.getAddress()!=null) {
+                            locLocationDao.save(person.getAddress());
+                        }
 
                         DatabaseHelper.getPersonDao().save(person);
                         Toast.makeText(this, "person "+ DataHelper.getShortUuid(person.getUuid()) +" saved", Toast.LENGTH_SHORT).show();
