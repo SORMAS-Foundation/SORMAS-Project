@@ -1,28 +1,21 @@
 package de.symeda.sormas.app.contact;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
-import android.text.Html;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.backend.caze.Case;
-import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.contact.ContactDao;
+import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.caze.CaseEditActivity;
-import de.symeda.sormas.app.caze.SyncCasesTask;
 import de.symeda.sormas.app.component.AbstractEditActivity;
-import de.symeda.sormas.app.component.PropertyField;
 
 
 /**
@@ -54,10 +47,10 @@ public class ContactEditActivity extends AbstractEditActivity {
 
         // Creating titles for the tabs
         titles = new CharSequence[]{
-                getResources().getText(R.string.headline_contact_data)}; // ,
-//                getResources().getText(R.string.headline_visits),
-//                getResources().getText(R.string.headline_person_information)
-//        };
+                getResources().getText(R.string.headline_contact_data),
+                getResources().getText(R.string.headline_person_information)
+        };
+//              @TODO  getResources().getText(R.string.headline_visits)
     }
 
     @Override
@@ -91,13 +84,8 @@ public class ContactEditActivity extends AbstractEditActivity {
                 updateActionBarGroups(menu, false, false, true);
                 break;
 
-            // visits tab
-            case 1:
-                updateActionBarGroups(menu, false, false, true);
-                break;
-
             // person tab
-            case 2:
+            case 1:
                 updateActionBarGroups(menu, true, false, true);
                 break;
 
@@ -127,56 +115,12 @@ public class ContactEditActivity extends AbstractEditActivity {
 
             // Help button
             case R.id.action_help:
-                switch(currentTab) {
-                    // case data tab
-                    case 0:
-
-                        break;
-
-                    // case person tab
-                    case 1:
-                        break;
-
-                    // case symptoms tab
-                    case 2:
-                        StringBuilder sb = new StringBuilder();
-
-                        LinearLayout caseSymptomsForm = (LinearLayout) this.findViewById(R.id.case_symptoms_form);
-
-                        for (int i = 0; i < caseSymptomsForm.getChildCount(); i++) {
-                            if (caseSymptomsForm.getChildAt(i) instanceof PropertyField) {
-                                PropertyField propertyField = (PropertyField)caseSymptomsForm.getChildAt(i);
-                                sb
-                                        .append("<b>"+propertyField.getCaption()+"</b>").append("<br>")
-                                        .append(propertyField.getDescription()).append("<br>").append("<br>");
-                            }
-                        }
-
-                        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                        builder.setMessage(Html.fromHtml(sb.toString())).setTitle(getResources().getText(R.string.headline_help));
-                        builder.setPositiveButton("Ok",
-                            new DialogInterface.OnClickListener() {
-
-                                @Override
-                                public void onClick(DialogInterface dialog,
-                                                    int which) {
-                                    dialog.dismiss();
-                                }
-                            });
-                        AlertDialog dialog = builder.create();
-                        dialog.setCancelable(true);
-                        dialog.show();
-
-                        break;
-                }
-
-
+                // @TODO help for contact edit tabs
                 return true;
 
             // Save button
             case R.id.action_save:
                 ContactDao contactDao = DatabaseHelper.getContactDao();
-
 
                 switch(currentTab) {
                     // contact data tab
@@ -186,6 +130,13 @@ public class ContactEditActivity extends AbstractEditActivity {
 
                         contactDao.save(contact);
                         Toast.makeText(this, "contact "+ DataHelper.getShortUuid(contact.getUuid()) +" saved", Toast.LENGTH_SHORT).show();
+                        break;
+                    case 1:
+
+                        Person person = (Person) adapter.getData(1);
+
+                        DatabaseHelper.getPersonDao().save(person);
+                        Toast.makeText(this, "person "+ DataHelper.getShortUuid(person.getUuid()) +" saved", Toast.LENGTH_SHORT).show();
                         break;
 
                 }

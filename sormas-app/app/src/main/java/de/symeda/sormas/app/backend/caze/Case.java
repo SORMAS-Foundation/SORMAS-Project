@@ -33,8 +33,6 @@ public class Case extends AbstractDomainObject {
 	private static final long serialVersionUID = -2697795184163562129L;
 
 	public static final String TABLE_NAME = "cases";
-
-	public static final String PERSON = "person";
 	public static final String CASE_STATUS = "caseStatus";
 
 	@DatabaseField(foreign = true, foreignAutoRefresh=true, canBeNull = false, unique = true)

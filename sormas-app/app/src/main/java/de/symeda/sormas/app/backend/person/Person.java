@@ -92,7 +92,7 @@ public class Person extends AbstractDomainObject {
 	private OccupationType occupationType;
 	@Column
 	private String occupationDetails;
-	@ManyToOne(cascade = {})
+	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
 	private Facility occupationFacility;
 
 	@Bindable

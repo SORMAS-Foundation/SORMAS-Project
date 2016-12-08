@@ -7,10 +7,10 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
-import de.symeda.sormas.app.caze.CaseEditDataTab;
-import de.symeda.sormas.app.caze.CaseEditPersonTab;
-import de.symeda.sormas.app.caze.CaseEditSymptomsTab;
+import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.person.PersonEditTab;
 
 /**
  * Created by Stefan Szczesny on 02.11.2016.
@@ -20,16 +20,17 @@ import de.symeda.sormas.app.caze.CaseEditSymptomsTab;
 public class ContactEditPagerAdapter extends FragmentStatePagerAdapter {
 
     private CharSequence titles[]; // This will Store the titles of the Tabs which are Going to be passed when ViewPagerAdapter is created
-    private Bundle bundle; // this bundle contains the uuids
+    private Bundle contactEditBundle; // this contactEditBundle contains the uuids
     private ContactEditDataTab contactEditDataTab;
+    private PersonEditTab personEditTab;
 
 
     // Build a Constructor and assign the passed Values to appropriate values in the class
     public ContactEditPagerAdapter(FragmentManager fm, CharSequence mTitles[], String contactUuid) {
         super(fm);
         this.titles = mTitles;
-        bundle = new Bundle();
-        bundle.putString(Contact.UUID, contactUuid);
+        contactEditBundle = new Bundle();
+        contactEditBundle.putString(Contact.UUID, contactUuid);
     }
 
     //This method return the fragment for the every position in the View Pager
@@ -39,17 +40,22 @@ public class ContactEditPagerAdapter extends FragmentStatePagerAdapter {
         switch (position) {
             case 0:
                 contactEditDataTab = new ContactEditDataTab();
-                contactEditDataTab.setArguments(bundle);
+                contactEditDataTab.setArguments(contactEditBundle);
                 frag = contactEditDataTab;
                 break;
-//            case 1:
-//                contactEditDataTab = new ContactEditDataTab();
-//                contactEditDataTab.setArguments(bundle);
-//                frag = contactEditDataTab;
-//                break;
+            case 1:
+                personEditTab = new PersonEditTab();
+
+                Bundle personEditBundle = new Bundle();
+                Contact contact = DatabaseHelper.getContactDao().queryUuid(contactEditBundle.getString(Contact.UUID));
+                personEditBundle.putString(Person.UUID, contact.getPerson().getUuid());
+
+                personEditTab.setArguments(personEditBundle);
+                frag = personEditTab;
+                break;
 //            case 2:
 //                contactEditDataTab = new ContactEditDataTab();
-//                contactEditDataTab.setArguments(bundle);
+//                contactEditDataTab.setArguments(contactEditBundle);
 //                frag = contactEditDataTab;
 //                break;
 
@@ -76,7 +82,7 @@ public class ContactEditPagerAdapter extends FragmentStatePagerAdapter {
                 ado= contactEditDataTab.getData();
                 break;
             case 1:
-                ado = null;
+                ado = personEditTab.getData();
                 break;
             case 2:
                 ado = null;

@@ -6,8 +6,12 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
 import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.contact.ContactsListFragment;
+import de.symeda.sormas.app.person.PersonEditTab;
 
 /**
  * Created by Stefan Szczesny on 27.07.2016.
@@ -19,7 +23,7 @@ public class CaseEditPagerAdapter extends FragmentStatePagerAdapter {
     private CharSequence titles[]; // This will Store the titles of the Tabs which are Going to be passed when ViewPagerAdapter is created
     private Bundle caseEditBundle; // this bundle contains the uuids
     private CaseEditDataTab caseEditDataTab;
-    private CaseEditPersonTab caseEditPersonTab;
+    private PersonEditTab personEditTab;
     private CaseEditSymptomsTab caseEditSymptomsTab;
 
 
@@ -42,9 +46,14 @@ public class CaseEditPagerAdapter extends FragmentStatePagerAdapter {
                 frag = caseEditDataTab;
                 break;
             case 1:
-                caseEditPersonTab = new CaseEditPersonTab();
-                caseEditPersonTab.setArguments(caseEditBundle);
-                frag = caseEditPersonTab;
+                personEditTab = new PersonEditTab();
+
+                Bundle personEditBundle = new Bundle();
+                Case caze = DatabaseHelper.getCaseDao().queryUuid(caseEditBundle.getString(Case.UUID));
+                personEditBundle.putString(Person.UUID, caze.getPerson().getUuid());
+
+                personEditTab.setArguments(personEditBundle);
+                frag = personEditTab;
                 break;
             case 2:
                 caseEditSymptomsTab = new CaseEditSymptomsTab();
@@ -80,7 +89,7 @@ public class CaseEditPagerAdapter extends FragmentStatePagerAdapter {
                 ado= caseEditDataTab.getData();
                 break;
             case 1:
-                ado = caseEditPersonTab.getData();
+                ado = personEditTab.getData();
                 break;
             case 2:
                 ado = caseEditSymptomsTab.getData();

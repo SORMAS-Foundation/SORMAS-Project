@@ -1,17 +1,13 @@
-package de.symeda.sormas.app.caze;
+package de.symeda.sormas.app.person;
 
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
-import android.widget.Spinner;
-import android.widget.TextView;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -29,14 +25,13 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.facility.Facility;
-import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.component.DateField;
 import de.symeda.sormas.app.component.PropertyField;
 import de.symeda.sormas.app.component.SpinnerField;
 import de.symeda.sormas.app.component.TextField;
-import de.symeda.sormas.app.databinding.CasePersonFragmentLayoutBinding;
+import de.symeda.sormas.app.databinding.PersonEditFragmentLayoutBinding;
 import de.symeda.sormas.app.util.FormTab;
 import de.symeda.sormas.app.util.Item;
 
@@ -44,13 +39,13 @@ import de.symeda.sormas.app.util.Item;
 /**
  * Created by Stefan Szczesny on 27.07.2016.
  */
-public class CaseEditPersonTab extends FormTab {
+public class PersonEditTab extends FormTab {
 
-    private CasePersonFragmentLayoutBinding binding;
+    private PersonEditFragmentLayoutBinding binding;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        binding = DataBindingUtil.inflate(inflater, R.layout.case_person_fragment_layout, container, false);
+        binding = DataBindingUtil.inflate(inflater, R.layout.person_edit_fragment_layout, container, false);
         return binding.getRoot();
     }
 
@@ -58,11 +53,9 @@ public class CaseEditPersonTab extends FormTab {
     public void onResume() {
         super.onResume();
 
-        final String caseUuid = getArguments().getString(Case.UUID);
-        CaseDao caseDao = DatabaseHelper.getCaseDao();
-        Case caze = caseDao.queryUuid(caseUuid);
-
-        final Person person = caze.getPerson();
+        final String personUuid = getArguments().getString(Person.UUID);
+        PersonDao personDao = DatabaseHelper.getPersonDao();
+        Person person = personDao.queryUuid(personUuid);
         binding.setPerson(person);
 
         // date of birth
