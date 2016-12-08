@@ -173,21 +173,21 @@ public class CaseController {
         CaseDataDto caseDataDto = findCase(caseUuid);
 
         VerticalLayout formLayout = new VerticalLayout();
-    	SymptomsForm caseEditForm = new SymptomsForm(caseDataDto.getDisease());
-        formLayout.addComponent(caseEditForm);
+    	SymptomsForm symptomsForm = new SymptomsForm(caseDataDto.getDisease());
+        formLayout.addComponent(symptomsForm);
         formLayout.setSizeFull();
-        formLayout.setExpandRatio(caseEditForm, 1);
+        formLayout.setExpandRatio(symptomsForm, 1);
         
-        caseEditForm.setValue(caseDataDto.getSymptoms());
+        symptomsForm.setValue(caseDataDto.getSymptoms());
         
-        final CommitDiscardWrapperComponent<SymptomsForm> editView = new CommitDiscardWrapperComponent<SymptomsForm>(caseEditForm, caseEditForm.getFieldGroup());
+        final CommitDiscardWrapperComponent<SymptomsForm> editView = new CommitDiscardWrapperComponent<SymptomsForm>(symptomsForm, symptomsForm.getFieldGroup());
         
         editView.addCommitListener(new CommitListener() {
         	
         	@Override
         	public void onCommit() {
-        		if (caseEditForm.getFieldGroup().isValid()) {
-        			SymptomsDto dto = caseEditForm.getValue();
+        		if (symptomsForm.getFieldGroup().isValid()) {
+        			SymptomsDto dto = symptomsForm.getValue();
         			dto = sf.saveSymptoms(dto);
         			Notification.show("Case symptoms saved", Type.TRAY_NOTIFICATION);
         			navigateToSymptoms(caseUuid);

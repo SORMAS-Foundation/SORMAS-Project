@@ -1,6 +1,8 @@
 package de.symeda.sormas.backend.contact;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -10,11 +12,13 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
@@ -96,6 +100,7 @@ public class ContactFacadeEjb implements ContactFacade {
 	@Override
 	public ContactDto saveContact(ContactDto dto) {
 		Contact entity = fromDto(dto);
+		updateFollowUpUntil(entity);
 		service.ensurePersisted(entity);
 		return toDto(entity);
 	}
@@ -182,5 +187,30 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setContactOfficer(UserFacadeEjb.toReferenceDto(source.getContactOfficer()));
 		
 		return target;
+	}
+	
+	private int getFollowUpDuration(Disease disease) {
+		switch (disease) {
+		case EVD:
+		case CHOLERA:
+			return 21;
+		case LASSA:
+			return 6;
+		default:
+			return 0;
+		}
+	}
+	
+	private void updateFollowUpUntil(Contact contact) {
+		Disease disease = contact.getCaze().getDisease();
+		int followUpDuration = getFollowUpDuration(disease);
+
+		if (followUpDuration == 0) {
+			contact.setFollowUpUntil(null);
+			contact.setFollowUpStatus(FollowUpStatus.NO_FOLLOW_UP);
+		} else {
+			LocalDate beginDate = contact.getReportDateTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+			contact.setFollowUpUntil(Date.from(beginDate.plusDays(followUpDuration).atStartOfDay(ZoneId.systemDefault()).toInstant()));
+		}
 	}
 }

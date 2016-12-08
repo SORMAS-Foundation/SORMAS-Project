@@ -10,6 +10,7 @@ import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -21,6 +22,7 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.Diseases.DiseasesConfiguration;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -38,10 +40,11 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		    		LayoutUtil.fluidRowCss(CssStyles.VSPACE4,
 		    				LayoutUtil.fluidColumn(8, 0, 
 		    						LayoutUtil.fluidRowLocs(ContactDto.CONTACT_CLASSIFICATION) +
-		    						LayoutUtil.fluidRowLocs(ContactDto.UUID, ContactDto.REPORTING_USER) +
-		    						LayoutUtil.fluidRowLocs(ContactDto.LAST_CONTACT_DATE, ContactDto.REPORTING_USER) +
+		    						LayoutUtil.fluidRowLocs(ContactDto.LAST_CONTACT_DATE, ContactDto.UUID) +
+		    						LayoutUtil.fluidRowLocs(ContactDto.REPORTING_USER, ContactDto.REPORT_DATE_TIME) +
 		    						LayoutUtil.fluidRowLocs(ContactDto.CONTACT_PROXIMITY) +
 				    				LayoutUtil.fluidRowLocs(ContactDto.DESCRIPTION) +
+				    				LayoutUtil.fluidRowLocs(ContactDto.FOLLOW_UP_STATUS, ContactDto.FOLLOW_UP_UNTIL) +
 				    				LayoutUtil.fluidRowLocs(ContactDto.CONTACT_OFFICER, "")
 		    						),
 		    				LayoutUtil.fluidColumnLoc(4, 0, CASE_INFO)
@@ -64,17 +67,29 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
     	addField(ContactDto.CONTACT_PROXIMITY, OptionGroup.class);
     	addField(ContactDto.DESCRIPTION, TextArea.class).setRows(3);
 
+    	addField(ContactDto.FOLLOW_UP_STATUS, ComboBox.class);
+    	addField(ContactDto.FOLLOW_UP_UNTIL, DateField.class);
+
     	UserReferenceDto currentUser = LoginHelper.getCurrentUserAsReference();
     	addField(ContactDto.CONTACT_OFFICER, ComboBox.class)
     		.addItems(FacadeProvider.getUserFacade().getAssignableUsers(currentUser, UserRole.CONTACT_OFFICER));
     	
-    	setReadOnly(true, ContactDto.UUID, ContactDto.REPORTING_USER, ContactDto.REPORT_DATE_TIME);
-    	
+    	setReadOnly(true, ContactDto.UUID, ContactDto.REPORTING_USER, ContactDto.REPORT_DATE_TIME, ContactDto.FOLLOW_UP_UNTIL);
+    		
     	caseInfoLayout = new VerticalLayout();
     	caseInfoLayout.setSpacing(true);
     	getContent().addComponent(caseInfoLayout, CASE_INFO);
-    	addValueChangeListener(e -> updateCaseInfo());
+    	addValueChangeListener(e -> {
+    		updateCaseInfo();
+    	});
 	}
+    
+    private void updateDiseaseConfiguration(Disease disease) {
+		for (Object propertyId : getFieldGroup().getBoundPropertyIds()) {
+			boolean visible = DiseasesConfiguration.isDefinedOrMissing(SymptomsDto.class, (String)propertyId, disease);
+			getFieldGroup().getField(propertyId).setVisible(visible);
+		}
+    }
     
     private void updateCaseInfo() {
     	caseInfoLayout.removeAllComponents();
@@ -105,6 +120,8 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 					I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.CASE_STATUS));
 			addDescLabel(caseInfoLayout, DateHelper.formatDMY(caseDto.getSymptoms().getOnsetDate()),
 					I18nProperties.getPrefixFieldCaption(SymptomsDto.I18N_PREFIX, SymptomsDto.ONSET_DATE));
+			
+			updateDiseaseConfiguration(caseDto.getDisease());
     	}
     }
 

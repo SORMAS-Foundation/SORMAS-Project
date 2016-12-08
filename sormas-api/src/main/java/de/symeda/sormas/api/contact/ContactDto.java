@@ -4,9 +4,11 @@ import java.util.Date;
 
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.PreciseDateAdapter;
 
 public class ContactDto extends ContactReferenceDto {
@@ -34,7 +36,9 @@ public class ContactDto extends ContactReferenceDto {
 	private Date lastContactDate;
 	private ContactProximity contactProximity;
 	private ContactClassification contactClassification;
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.CHOLERA})
 	private FollowUpStatus followUpStatus;
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.CHOLERA})
 	private Date followUpUntil;
 	private UserReferenceDto contactOfficer;
 	private String description;
@@ -91,6 +95,7 @@ public class ContactDto extends ContactReferenceDto {
 	public void setContactOfficer(UserReferenceDto contactOfficer) {
 		this.contactOfficer = contactOfficer;
 	}
+	
 	public FollowUpStatus getFollowUpStatus() {
 		return followUpStatus;
 	}

@@ -7,6 +7,7 @@ public enum FollowUpStatus {
 	COMPLETED,
 	CANCELED,
 	LOST,
+	NO_FOLLOW_UP,
 	;
 	
 	public String toString() {
