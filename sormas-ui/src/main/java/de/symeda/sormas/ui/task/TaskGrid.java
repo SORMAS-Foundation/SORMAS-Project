@@ -35,10 +35,12 @@ public class TaskGrid extends Grid implements ItemClickListener {
 		@Override
 		public String getStyle(RowReference row) {
 			TaskDto task = (TaskDto)row.getItemId();
-			if (task != null) {
+			if (task != null && task.getTaskStatus() != null) {
 				switch (task.getTaskStatus()) {
 				case DISCARDED:
 					return CssStyles.STATUS_DISCARDED;
+				case NOT_EXECUTABLE:
+					return CssStyles.STATUS_NOT;
 				case DONE:
 					return CssStyles.STATUS_DONE;
 				case PENDING:

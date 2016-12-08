@@ -35,12 +35,19 @@ public final class RetroProvider {
                 .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
                 .create();
 
-        // 10.0.2.2 points to localhost from emulator
-        // SSL not working because of missing certificate
-        retrofit = new Retrofit.Builder()
-                .baseUrl(ConfigProvider.getServerRestUrl())
-                .addConverterFactory(GsonConverterFactory.create(gson))
-                .build();
+        try {
+            // 10.0.2.2 points to localhost from emulator
+            // SSL not working because of missing certificate
+            retrofit = new Retrofit.Builder()
+                    .baseUrl(ConfigProvider.getServerRestUrl())
+                    .addConverterFactory(GsonConverterFactory.create(gson))
+                    .build();
+        } catch (IllegalArgumentException ex) {
+            // likely the server url is wrong -> simply reset it
+            // TODO replace this with proper error handling
+            ConfigProvider.setServerUrl(null);
+            throw ex;
+        }
     }
 
     public static void reset() {

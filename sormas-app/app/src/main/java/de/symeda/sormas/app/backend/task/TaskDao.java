@@ -50,7 +50,7 @@ public class TaskDao extends AbstractAdoDao<Task> {
 
     /**
      * Gets all pending tasks.
-     * Ordered by priority, then due date - oldes (most due) first
+     * Ordered by priority, then due date - oldest (most due) first
      * @return
      */
     public List<Task> queryPending() {
@@ -100,16 +100,30 @@ public class TaskDao extends AbstractAdoDao<Task> {
         }
     }
 
+
+    /**
+     * Gets all not executable tasks.
+     * Ordered by due date - newest first
+     * @return
+     */
+    public List<Task> queryNotExecutable() {
+        try {
+            return queryBuilder().orderBy(Task.DUE_DATE, false).where().eq(Task.TASK_STATUS, TaskStatus.NOT_EXECUTABLE).query();
+        } catch (SQLException e) {
+            logger.log(LOG_LEVEL, e, "queryPending threw exception");
+            throw new RuntimeException(e);
+        }
+    }
     /**
      * Gets all done and discarded tasks.
      * Ordered by due date - newest first
      * @return
      */
-    public List<Task> queryFinished() {
+    public List<Task> queryDoneOrDiscarded() {
         try {
             return queryBuilder().orderBy(Task.DUE_DATE, false).where().eq(Task.TASK_STATUS, TaskStatus.DONE).or().eq(Task.TASK_STATUS, TaskStatus.DISCARDED).query();
         } catch (SQLException e) {
-            logger.log(LOG_LEVEL, e, "queryFinished threw exception");
+            logger.log(LOG_LEVEL, e, "queryDoneOrDiscarded threw exception");
             throw new RuntimeException(e);
         }
     }

@@ -94,11 +94,11 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
   }
   
   .v-grid-cell.priority-high {
-    background-color: #C0504D;
+    background-color: #DFA7A5;
     color: white;
   }
   .v-grid-cell.priority-normal {
-    background-color: #4F81BD;
+    background-color: #A6BFDD;
     color: white;
   }
 
@@ -108,6 +108,9 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
   }
   .v-grid-row.status-done .v-grid-cell {
     color: #888;
+  }
+  .v-grid-row.status-not .v-grid-cell {
+    color: #C44;
   }
   
   .valo-content {

@@ -34,13 +34,19 @@ public class TasksListFragment extends ListFragment {
     public void onResume() {
         super.onResume();
 
-        List<Task> tasks;
         Bundle arguments = getArguments();
+        TaskStatus taskStatus = null;
+        if (arguments.containsKey(ARG_FILTER_STATUS)) {
+            taskStatus = (TaskStatus)arguments.getSerializable(ARG_FILTER_STATUS);
+        }
 
-        if (arguments.containsKey(ARG_FILTER_STATUS) && TaskStatus.PENDING.equals((TaskStatus)arguments.getSerializable(ARG_FILTER_STATUS))) {
+        List<Task> tasks;
+        if (taskStatus == TaskStatus.PENDING) {
             tasks = DatabaseHelper.getTaskDao().queryPending();
+        } else if (taskStatus == TaskStatus.NOT_EXECUTABLE) {
+            tasks = DatabaseHelper.getTaskDao().queryNotExecutable();
         } else {
-            tasks = DatabaseHelper.getTaskDao().queryFinished();
+            tasks = DatabaseHelper.getTaskDao().queryDoneOrDiscarded();
         }
 
         ArrayAdapter<Task> listAdapter = (ArrayAdapter<Task>)getListAdapter();

@@ -8,6 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import java.util.List;
+
 import de.symeda.sormas.api.task.TaskHelper;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.app.R;
@@ -43,22 +45,36 @@ public class TaskTab extends FormTab {
         binding.setTask(task);
         super.onResume();
 
-        Button taskDoneBtn = binding.taskDoneBtn;
-        Iterable<TaskStatus> possibleStatus = TaskHelper.getPossibleStatusChanges(task.getTaskStatus(), ConfigProvider.getUser().getUserRole());
-        if(possibleStatus.iterator().hasNext()) {
-            taskDoneBtn.setVisibility(View.VISIBLE);
-            final TaskStatus taskStatus = possibleStatus.iterator().next();
-            taskDoneBtn.setText(taskStatus.getChangeString());
-            taskDoneBtn.setOnClickListener(new View.OnClickListener() {
+        List<TaskStatus> possibleStatusChanges = TaskHelper.getPossibleStatusChanges(task.getTaskStatus(), ConfigProvider.getUser().getUserRole());
+
+        if (possibleStatusChanges.contains(TaskStatus.NOT_EXECUTABLE)) {
+            binding.taskNotExecutableBtn.setVisibility(View.VISIBLE);
+            binding.taskNotExecutableBtn.setText(TaskStatus.NOT_EXECUTABLE.getChangeString());
+            binding.taskNotExecutableBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    taskDao.changeTaskStatus(task, taskStatus);
+                    taskDao.changeTaskStatus(task, TaskStatus.NOT_EXECUTABLE);
                     reloadFragment();
                 }
             });
         }
         else {
-            taskDoneBtn.setVisibility(View.GONE);
+            binding.taskNotExecutableBtn.setVisibility(View.GONE);
+        }
+
+        if (possibleStatusChanges.contains(TaskStatus.DONE)) {
+            binding.taskDoneBtn.setVisibility(View.VISIBLE);
+            binding.taskDoneBtn.setText(TaskStatus.DONE.getChangeString());
+            binding.taskDoneBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    taskDao.changeTaskStatus(task, TaskStatus.DONE);
+                    reloadFragment();
+                }
+            });
+        }
+        else {
+            binding.taskDoneBtn.setVisibility(View.GONE);
         }
     }
 

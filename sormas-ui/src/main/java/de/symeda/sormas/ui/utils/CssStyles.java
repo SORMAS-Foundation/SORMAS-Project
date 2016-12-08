@@ -77,6 +77,7 @@ public final class CssStyles {
 	public static final String PRIORITY_LOW = "priority-low";
 	
 	public static final String STATUS_DISCARDED = "status-discarded";
+	public static final String STATUS_NOT = "status-not";
 	public static final String STATUS_DONE = "status-done";
 	public static final String STATUS_PENDING = "status-pending";
 

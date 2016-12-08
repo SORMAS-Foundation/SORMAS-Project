@@ -13045,12 +13045,12 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormastheme .v-grid-cell.priority-high {
-	background-color: #C0504D;
+	background-color: #DFA7A5;
 	color: white;
 }
 
 .sormastheme .v-grid-cell.priority-normal {
-	background-color: #4F81BD;
+	background-color: #A6BFDD;
 	color: white;
 }
 
@@ -13061,6 +13061,10 @@ div.v-layout.v-horizontal.v-widget {
 
 .sormastheme .v-grid-row.status-done .v-grid-cell {
 	color: #888;
+}
+
+.sormastheme .v-grid-row.status-not .v-grid-cell {
+	color: #C44;
 }
 
 .sormastheme .valo-content {

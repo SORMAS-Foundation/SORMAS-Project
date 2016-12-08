@@ -127,11 +127,26 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/list_item_margin_bottom" />
 
-            <Button
+            <LinearLayout
+                android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/colorPrimary"
-                android:id="@+id/task_done_btn"/>
+                android:layout_height="wrap_content">
+
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:layout_margin="2dp"
+                    android:background="@color/colorPrimary"
+                    android:id="@+id/task_not_executable_btn"/>
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:layout_margin="2dp"
+                    android:background="@color/colorPrimary"
+                    android:id="@+id/task_done_btn"/>
+            </LinearLayout>
 
         </LinearLayout>
     </ScrollView>

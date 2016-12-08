@@ -19,7 +19,8 @@ public class TasksListFilterAdapter extends FragmentStatePagerAdapter {
     // Build a Constructor and assign the passed Values to appropriate values in the class
     public TasksListFilterAdapter(FragmentManager fm) {
         super(fm);
-        this.statusFilters = new TaskStatus[] { TaskStatus.PENDING, null };
+        // task status "null" matches done and discarded tasks
+        this.statusFilters = new TaskStatus[] { TaskStatus.PENDING, null, TaskStatus.NOT_EXECUTABLE };
     }
 
     //This method return the fragment for the every position in the View Pager
@@ -30,8 +31,7 @@ public class TasksListFilterAdapter extends FragmentStatePagerAdapter {
         TaskStatus taskStatus = statusFilters[position];
         if (taskStatus != null) {
             arguments.putSerializable(TasksListFragment.ARG_FILTER_STATUS, taskStatus);
-        }
-        else {
+        } else {
             arguments.remove(CasesListFragment.ARG_FILTER_STATUS);
         }
         tasksListFragment.setArguments(arguments);
