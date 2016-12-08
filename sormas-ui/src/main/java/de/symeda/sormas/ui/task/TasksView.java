@@ -10,6 +10,8 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.login.LoginHelper;
@@ -22,7 +24,7 @@ public class TasksView extends AbstractView {
 	public static final String VIEW_NAME = "tasks";
 
 	private TaskGrid grid;    
-    private Button newButton;
+    private Button createButton;
 
 	private VerticalLayout gridLayout;
 
@@ -31,14 +33,13 @@ public class TasksView extends AbstractView {
         addStyleName("crud-view");
 
         grid = new TaskGrid();
-//        grid.addItemClickListener(e -> ControllerProvider.getCaseController().editData(
-//        		((CaseDataDto)e.getItemId()).getUuid()));
 
         gridLayout = new VerticalLayout();
         gridLayout.addComponent(createTopBar());
+        gridLayout.addComponent(createFilterBar());
         gridLayout.addComponent(grid);
         gridLayout.setMargin(true);
-        gridLayout.setSpacing(true);
+        gridLayout.setSpacing(false);
         gridLayout.setSizeFull();
         gridLayout.setExpandRatio(grid, 1);
         gridLayout.setStyleName("crud-main-layout");
@@ -51,6 +52,7 @@ public class TasksView extends AbstractView {
     	HorizontalLayout topLayout = new HorizontalLayout();
     	topLayout.setSpacing(true);
     	topLayout.setWidth(100, Unit.PERCENTAGE);
+    	topLayout.addStyleName(CssStyles.VSPACE3);
     	
     	Label header = new Label("Tasks");
     	header.setSizeUndefined();
@@ -72,25 +74,35 @@ public class TasksView extends AbstractView {
 	        buttonFilterLayout.addComponent(statusInvestigated);
     	}
     	topLayout.addComponent(buttonFilterLayout);
-        
+    	
+        createButton = new Button("New task");
+        createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+        createButton.setIcon(FontAwesome.PLUS_CIRCLE);
+        createButton.addClickListener(e -> ControllerProvider.getTaskController().create());
+        topLayout.addComponent(createButton);
+        topLayout.setComponentAlignment(createButton, Alignment.MIDDLE_RIGHT);
+        topLayout.setExpandRatio(createButton, 1);
+
+        return topLayout;
+    }
+	
+	public HorizontalLayout createFilterBar() {
+    	HorizontalLayout filterLayout = new HorizontalLayout();
+    	filterLayout.setSpacing(true);
+    	filterLayout.setSizeUndefined();
+    	filterLayout.addStyleName(CssStyles.VSPACE3);
+    	        
         ComboBox statusFilter = new ComboBox();
-        statusFilter.addItem("all");
-        statusFilter.setNullSelectionItemId("all");
+        statusFilter.setWidth(200, Unit.PIXELS);
+        statusFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(TaskDto.I18N_PREFIX, TaskDto.TASK_STATUS));
+//        statusFilter.addItem("all");
+//        statusFilter.setNullSelectionItemId("all");
         statusFilter.addItems((Object[])TaskStatus.values());
         statusFilter.addValueChangeListener(e->grid.filterTaskStatus((TaskStatus)e.getProperty().getValue()));
         statusFilter.setValue(TaskStatus.PENDING);
-        topLayout.addComponent(statusFilter);
-    	
-        newButton = new Button("New task");
-        newButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-        newButton.setIcon(FontAwesome.PLUS_CIRCLE);
-        newButton.addClickListener(e -> ControllerProvider.getTaskController().create());
-        topLayout.addComponent(newButton);
+        filterLayout.addComponent(statusFilter);
 
-        topLayout.setComponentAlignment(statusFilter, Alignment.MIDDLE_LEFT);
-        topLayout.setExpandRatio(statusFilter, 1);
-        topLayout.setStyleName("top-bar");
-        return topLayout;
+        return filterLayout;
     }
 
     @Override

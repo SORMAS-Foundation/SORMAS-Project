@@ -11,6 +11,7 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseStatus;
@@ -62,7 +63,8 @@ public class CasesView extends AbstractView {
 	public HorizontalLayout createTopBar() {
     	HorizontalLayout topLayout = new HorizontalLayout();
     	topLayout.setSpacing(true);
-    	topLayout.setWidth("100%");
+    	topLayout.setWidth(100, Unit.PERCENTAGE);
+    	topLayout.addStyleName(CssStyles.VSPACE3);
     	
     	Label header = new Label("Cases");
     	header.setSizeUndefined();
@@ -88,41 +90,38 @@ public class CasesView extends AbstractView {
         topLayout.addComponent(newCase);
 
         topLayout.setExpandRatio(statusInvestigated, 1);
-        topLayout.setStyleName("top-bar");
         return topLayout;
     }
 
 	public HorizontalLayout createFilterBar() {
-    	HorizontalLayout topLayout = new HorizontalLayout();
-    	topLayout.setSpacing(true);
-    	topLayout.setWidth("100%");
-    	
+    	HorizontalLayout filterLayout = new HorizontalLayout();
+    	filterLayout.setSpacing(true);
+    	filterLayout.setSizeUndefined();
+    	filterLayout.addStyleName(CssStyles.VSPACE3);
+
         ComboBox diseaseFilter = new ComboBox();
+        diseaseFilter.setWidth(200, Unit.PIXELS);
+        diseaseFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISEASE));
         diseaseFilter.addItems((Object[])Disease.values());
         diseaseFilter.addValueChangeListener(e->grid.setDiseaseFilter(((Disease)e.getProperty().getValue())));
-        topLayout.addComponent(diseaseFilter);
+        filterLayout.addComponent(diseaseFilter);
 
         ComboBox districtFilter = new ComboBox();
+        districtFilter.setWidth(200, Unit.PIXELS);
+        districtFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISTRICT));
         UserDto user = LoginHelper.getCurrentUser();
         districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(user.getRegion().getUuid()));
         districtFilter.addValueChangeListener(e->grid.setDistrictFilter(((ReferenceDto)e.getProperty().getValue())));
-        topLayout.addComponent(districtFilter);
+        filterLayout.addComponent(districtFilter);
 
-        ComboBox surveillanceOfficerFilter = new ComboBox();
-        surveillanceOfficerFilter.addItems(FacadeProvider.getUserFacade().getAssignableUsers(user, UserRole.SURVEILLANCE_OFFICER));
-        surveillanceOfficerFilter.addValueChangeListener(e->grid.setSurveillanceOfficerFilter(((UserReferenceDto)e.getProperty().getValue())));
-        topLayout.addComponent(surveillanceOfficerFilter);
+        ComboBox officerFilter = new ComboBox();
+        officerFilter.setWidth(240, Unit.PIXELS);
+        officerFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.SURVEILLANCE_OFFICER));
+        officerFilter.addItems(FacadeProvider.getUserFacade().getAssignableUsers(user, UserRole.SURVEILLANCE_OFFICER));
+        officerFilter.addValueChangeListener(e->grid.setSurveillanceOfficerFilter(((UserReferenceDto)e.getProperty().getValue())));
+        filterLayout.addComponent(officerFilter);
 
-//        TextField filter = new TextField();
-//        filter.setStyleName("filter-textfield");
-//        filter.setInputPrompt("Search case");
-//        ResetButtonForTextField.extend(filter);
-//        filter.setImmediate(true);
-//        filter.addTextChangeListener(e -> grid.setFilter(e.getText()));
-//        topLayout.addComponent(filter);
-
-        topLayout.setExpandRatio(surveillanceOfficerFilter, 1);
-        return topLayout;
+        return filterLayout;
     }
 
     @Override

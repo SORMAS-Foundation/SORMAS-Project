@@ -12,8 +12,10 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.contact.ContactClassification;
+import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
@@ -63,7 +65,8 @@ public class ContactsView extends AbstractView {
 	public HorizontalLayout createTopBar() {
     	HorizontalLayout topLayout = new HorizontalLayout();
     	topLayout.setSpacing(true);
-    	topLayout.setWidth("100%");
+    	topLayout.setWidth(100, Unit.PERCENTAGE);
+    	topLayout.addStyleName(CssStyles.VSPACE3);
     	
     	Label header = new Label("Contacts");
     	header.setSizeUndefined();
@@ -88,7 +91,6 @@ public class ContactsView extends AbstractView {
         topLayout.setComponentAlignment(createButton, Alignment.MIDDLE_RIGHT);
         topLayout.setExpandRatio(createButton, 1);
         
-        topLayout.setStyleName("top-bar");
         return topLayout;
     }
 
@@ -96,19 +98,26 @@ public class ContactsView extends AbstractView {
     	HorizontalLayout filterLayout = new HorizontalLayout();
     	filterLayout.setSpacing(true);
     	filterLayout.setSizeUndefined();
+    	filterLayout.addStyleName(CssStyles.VSPACE3);
     	
         ComboBox diseaseFilter = new ComboBox();
+        diseaseFilter.setWidth(200, Unit.PIXELS);
+        diseaseFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CAZE_DISEASE));
         diseaseFilter.addItems((Object[])Disease.values());
         diseaseFilter.addValueChangeListener(e->grid.setDiseaseFilter(((Disease)e.getProperty().getValue())));
         filterLayout.addComponent(diseaseFilter);
 
         ComboBox districtFilter = new ComboBox();
+        districtFilter.setWidth(200, Unit.PIXELS);
+        districtFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CAZE_DISTRICT));
         UserDto user = LoginHelper.getCurrentUser();
         districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(user.getRegion().getUuid()));
         districtFilter.addValueChangeListener(e->grid.setDistrictFilter(((ReferenceDto)e.getProperty().getValue())));
         filterLayout.addComponent(districtFilter);
 
         ComboBox officerFilter = new ComboBox();
+        officerFilter.setWidth(240, Unit.PIXELS);
+        officerFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CONTACT_OFFICER));
         officerFilter.addItems(FacadeProvider.getUserFacade().getAssignableUsers(user, UserRole.CONTACT_OFFICER));
         officerFilter.addValueChangeListener(e->grid.setContactOfficerFilter(((UserReferenceDto)e.getProperty().getValue())));
         filterLayout.addComponent(officerFilter);

@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
@@ -14,7 +15,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.samples.ResetButtonForTextField;
@@ -65,7 +66,8 @@ public class UsersView extends AbstractView {
 	public HorizontalLayout createTopBar() {
     	HorizontalLayout topLayout = new HorizontalLayout();
     	topLayout.setSpacing(true);
-    	topLayout.setWidth("100%");
+    	topLayout.setWidth(100, Unit.PERCENTAGE);
+    	topLayout.addStyleName(CssStyles.VSPACE3);
     	
     	Label header = new Label("Officers");
     	header.setSizeUndefined();
@@ -90,7 +92,6 @@ public class UsersView extends AbstractView {
         topLayout.setComponentAlignment(createButton, Alignment.MIDDLE_RIGHT);
         topLayout.setExpandRatio(createButton, 1);
         
-        topLayout.setStyleName("top-bar");
         return topLayout;
     }
 	
@@ -98,8 +99,11 @@ public class UsersView extends AbstractView {
     	HorizontalLayout filterLayout = new HorizontalLayout();
     	filterLayout.setSpacing(true);
     	filterLayout.setSizeUndefined();
+    	filterLayout.addStyleName(CssStyles.VSPACE3);
 
         ComboBox activeFilter = new ComboBox();
+        activeFilter.setWidth(200, Unit.PIXELS);
+        activeFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(UserDto.I18N_PREFIX, UserDto.ACTIVE));
         activeFilter.addItems(ACTIVE_FILTER,INACTIVE_FILTER);
         activeFilter.addValueChangeListener(e-> {
         	String value = (String)e.getProperty().getValue();
@@ -109,6 +113,7 @@ public class UsersView extends AbstractView {
         filterLayout.addComponent(activeFilter);
 
         TextField filter = new TextField();
+        filter.setWidth(200, Unit.PIXELS);
         filter.setStyleName("filter-textfield");
         filter.setInputPrompt("Search user");
         ResetButtonForTextField.extend(filter);
