@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:descendantFocusability="beforeDescendants">
 
     <data>
         <variable name="location" type="de.symeda.sormas.app.backend.location.Location"/>
@@ -10,7 +11,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="10dp"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:focusable="true"
+        android:focusableInTouchMode="true">
 
         <de.symeda.sormas.app.component.TextField
             android:id="@+id/location_address"
