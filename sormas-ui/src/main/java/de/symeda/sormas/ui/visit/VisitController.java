@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.function.Consumer;
 
 import com.vaadin.server.Sizeable.Unit;
+import com.vaadin.ui.Window;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -56,7 +57,7 @@ public class VisitController {
     	VisitEditForm createForm = new VisitEditForm(visit.getDisease());
         createForm.setValue(visit);
         final CommitDiscardWrapperComponent<VisitEditForm> editView = new CommitDiscardWrapperComponent<VisitEditForm>(createForm, createForm.getFieldGroup());
-        editView.setWidth(800, Unit.PIXELS);
+        editView.setWidth(100, Unit.PERCENTAGE);
         
         editView.addCommitListener(new CommitListener() {
         	@Override
@@ -71,7 +72,10 @@ public class VisitController {
         	}
         });
 
-        VaadinUiUtil.showModalPopupWindow(editView, "Create new visit");   
+        Window window = VaadinUiUtil.showModalPopupWindow(editView, "Create new visit");
+        // visit form is too big for typical screens
+        window.setWidth(900, Unit.PIXELS);
+		window.setHeight(80, Unit.PERCENTAGE); 
 	}
 	
     private VisitDto createNewVisit(ContactReferenceDto contactRef) {
