@@ -2,7 +2,10 @@ package de.symeda.sormas.ui.contact;
 
 import java.util.List;
 
+import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.data.util.GeneratedPropertyContainer;
+import com.vaadin.data.util.PropertyValueGenerator;
 import com.vaadin.data.util.filter.Compare.Equal;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.renderers.DateRenderer;
@@ -26,23 +29,41 @@ import de.symeda.sormas.ui.utils.UuidRenderer;
 @SuppressWarnings("serial")
 public class ContactGrid extends Grid {
 
+	public static final String NUMBER_OF_VISITS = "numberOfVisits";
+	
 	public ContactGrid() {
 		setSizeFull();
 
         setSelectionMode(SelectionMode.NONE);
 
         BeanItemContainer<ContactIndexDto> container = new BeanItemContainer<ContactIndexDto>(ContactIndexDto.class);
-        setContainerDataSource(container);
+		GeneratedPropertyContainer generatedContainer = new GeneratedPropertyContainer(container);
+        setContainerDataSource(generatedContainer);
+
+        generatedContainer.addGeneratedProperty(NUMBER_OF_VISITS, new PropertyValueGenerator<String>() {
+			@Override
+			public String getValue(Item item, Object itemId, Object propertyId) {
+				ContactIndexDto indexDto = (ContactIndexDto)itemId;
+				return String.format(I18nProperties.getPrefixFieldCaption(ContactIndexDto.I18N_PREFIX, "numberOfVisitsFormat"),
+						indexDto.getNumberOfCooperativeVisits(), indexDto.getNumberOfMissedVisits());
+			}
+			@Override
+			public Class<String> getType() {
+				return String.class;
+			}
+		});
+
         setColumns(ContactIndexDto.UUID, ContactIndexDto.PERSON, ContactIndexDto.CONTACT_PROXIMITY,
         		ContactIndexDto.LAST_CONTACT_DATE, ContactIndexDto.CONTACT_CLASSIFICATION, 
-        		ContactIndexDto.FOLLOW_UP_STATUS,         		 
+        		ContactIndexDto.FOLLOW_UP_STATUS, ContactIndexDto.FOLLOW_UP_UNTIL, NUMBER_OF_VISITS,
         		ContactIndexDto.CAZE_DISEASE, ContactIndexDto.CAZE,
         		ContactIndexDto.CONTACT_OFFICER
         		);
-
+        getColumn(ContactIndexDto.CONTACT_PROXIMITY).setWidth(200);
         getColumn(ContactIndexDto.UUID).setRenderer(new UuidRenderer());
         getColumn(ContactIndexDto.CAZE).setRenderer(new HtmlRenderer(), new HtmlReferenceDtoConverter());
         getColumn(ContactIndexDto.LAST_CONTACT_DATE).setRenderer(new DateRenderer(DateHelper.getShortDateFormat()));
+        getColumn(ContactIndexDto.FOLLOW_UP_UNTIL).setRenderer(new DateRenderer(DateHelper.getShortDateFormat()));
         
         for (Column column : getColumns()) {
         	column.setHeaderCaption(I18nProperties.getPrefixFieldCaption(
@@ -94,7 +115,8 @@ public class ContactGrid extends Grid {
 
     @SuppressWarnings("unchecked")
 	private BeanItemContainer<ContactIndexDto> getContainer() {
-        return (BeanItemContainer<ContactIndexDto>) super.getContainerDataSource();
+    	GeneratedPropertyContainer container = (GeneratedPropertyContainer) super.getContainerDataSource();
+        return (BeanItemContainer<ContactIndexDto>) container.getWrappedContainer();
     }
     
     public void reload(CaseReferenceDto caseRef) {

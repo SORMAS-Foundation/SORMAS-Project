@@ -20,7 +20,7 @@ public class HtmlReferenceDtoConverter implements Converter<String,ReferenceDto>
 		String html;
 		if (value != null) {
 			String uuid = value.getUuid();
-			html = "<a title='" + uuid + "'>" + DataHelper.getShortUuid(uuid) + " (" + value.getCaption() + ")</a>";
+			html = "<a title='" + uuid + "'>" + DataHelper.getShortUuid(uuid) + "</a> (" + value.getCaption() + ")";
 		} else {
 			html = "";
 		}

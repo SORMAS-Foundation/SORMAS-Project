@@ -25,6 +25,8 @@ public class ContactIndexDto extends ContactReferenceDto {
 	public static final String FOLLOW_UP_STATUS = "followUpStatus";
 	public static final String FOLLOW_UP_UNTIL = "followUpUntil";
 	public static final String CONTACT_OFFICER = "contactOfficer";
+	public static final String NUMBER_OF_COOPERATIVE_VISITS = "numberOfCooperativeVisits";
+	public static final String NUMBER_OF_MISSED_VISITS = "numberOfMissedVisits";
 
 	private PersonReferenceDto person;
 	private CaseReferenceDto caze;
@@ -36,6 +38,8 @@ public class ContactIndexDto extends ContactReferenceDto {
 	private ContactClassification contactClassification;
 	private FollowUpStatus followUpStatus;
 	private Date followUpUntil;
+	private int numberOfCooperativeVisits;
+	private int numberOfMissedVisits;
 	private UserReferenceDto contactOfficer;
 
 	public PersonReferenceDto getPerson() {
@@ -103,6 +107,18 @@ public class ContactIndexDto extends ContactReferenceDto {
 	}
 	public void setContactClassification(ContactClassification contactClassification) {
 		this.contactClassification = contactClassification;
+	}
+	public int getNumberOfCooperativeVisits() {
+		return numberOfCooperativeVisits;
+	}
+	public void setNumberOfCooperativeVisits(int numberOfCooperativeVisits) {
+		this.numberOfCooperativeVisits = numberOfCooperativeVisits;
+	}
+	public int getNumberOfMissedVisits() {
+		return numberOfMissedVisits;
+	}
+	public void setNumberOfMissedVisits(int numberOfMissedVisits) {
+		this.numberOfMissedVisits = numberOfMissedVisits;
 	}
 
 }

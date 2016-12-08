@@ -32,7 +32,7 @@ public class VisitController {
     	VisitEditForm editForm = new VisitEditForm(dto.getDisease());
         editForm.setValue(dto);
         final CommitDiscardWrapperComponent<VisitEditForm> editView = new CommitDiscardWrapperComponent<VisitEditForm>(editForm, editForm.getFieldGroup());
-        editView.setWidth(900, Unit.PIXELS);
+        editView.setWidth(100, Unit.PERCENTAGE);
         
         editView.addCommitListener(new CommitListener() {
         	@Override
@@ -47,8 +47,10 @@ public class VisitController {
         	}
         });
 
-        VaadinUiUtil.showModalPopupWindow(editView, "Create new visit");   
-		
+        Window window = VaadinUiUtil.showModalPopupWindow(editView, "Edit visit");
+        // visit form is too big for typical screens
+        window.setWidth(900, Unit.PIXELS);
+		window.setHeight(80, Unit.PERCENTAGE); 
 	}
 
 	public void createVisit(ContactReferenceDto contactRef, Consumer<VisitReferenceDto> doneConsumer) {

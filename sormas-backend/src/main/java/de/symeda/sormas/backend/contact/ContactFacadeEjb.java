@@ -19,6 +19,7 @@ import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
@@ -28,6 +29,8 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.visit.Visit;
+import de.symeda.sormas.backend.visit.VisitService;
 
 @Stateless(name = "ContactFacade")
 public class ContactFacadeEjb implements ContactFacade {
@@ -40,6 +43,8 @@ public class ContactFacadeEjb implements ContactFacade {
 	private PersonService personService;
 	@EJB
 	private UserService userService;
+	@EJB
+	private VisitService visitService;
 
 	
 	@Override
@@ -166,7 +171,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		return target;
 	}
 	
-	public static ContactIndexDto toIndexDto(Contact source) {
+	public ContactIndexDto toIndexDto(Contact source) {
 		if (source == null) {
 			return null;
 		}
@@ -185,6 +190,20 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setFollowUpStatus(source.getFollowUpStatus());
 		target.setFollowUpUntil(source.getFollowUpUntil());
 		target.setContactOfficer(UserFacadeEjb.toReferenceDto(source.getContactOfficer()));
+		
+		// TODO optimize performance by using count query
+		List<Visit> visits = visitService.getAllByContact(source);
+		int numberOfCooperativeVisits = 0;
+		int numberOfMissedVisits = 0;
+		for (Visit visit : visits) {
+			if (visit.getVisitStatus() == VisitStatus.COOPERATIVE) {
+				numberOfCooperativeVisits++;
+			} else {
+				numberOfMissedVisits++;
+			}
+		}
+		target.setNumberOfCooperativeVisits(numberOfCooperativeVisits);
+		target.setNumberOfMissedVisits(numberOfMissedVisits);
 		
 		return target;
 	}
