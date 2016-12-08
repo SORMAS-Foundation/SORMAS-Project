@@ -34,29 +34,23 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <LinearLayout android:orientation="vertical"
-                    android:layout_width="match_parent" android:layout_height="wrap_content"
-                    android:layout_weight="0.5" android:paddingTop="@dimen/field_padding" android:paddingBottom="@dimen/field_padding">
+                <de.symeda.sormas.app.component.LabelField
+                    android:id="@+id/caseData_uuid"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:paddingTop="@dimen/field_padding"
+                    android:paddingBottom="@dimen/field_padding"
+                    app:short_uuid="@{caze.uuid}"/>
 
-                    <de.symeda.sormas.app.component.LabelField
-                        android:id="@+id/caseData_uuid"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        app:short_uuid="@{caze.uuid}"/>
-
-                </LinearLayout>
-
-                <LinearLayout android:orientation="vertical"
-                    android:layout_width="match_parent" android:layout_height="wrap_content"
-                    android:layout_weight="0.5" android:paddingTop="@dimen/field_padding" android:paddingBottom="@dimen/field_padding">
-
-                    <de.symeda.sormas.app.component.LabelField
-                        android:id="@+id/caseData_caseStatus"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        app:enum="@{caze.caseStatus}"/>
-
-                </LinearLayout>
+                <de.symeda.sormas.app.component.LabelField
+                    android:id="@+id/caseData_caseStatus"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:paddingTop="@dimen/field_padding"
+                    android:paddingBottom="@dimen/field_padding"
+                    app:enum="@{caze.caseStatus}"/>
 
             </LinearLayout>
 
@@ -65,29 +59,23 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <LinearLayout android:orientation="vertical"
-                    android:layout_width="match_parent" android:layout_height="wrap_content"
-                    android:layout_weight="0.5" android:paddingTop="@dimen/field_padding" android:paddingBottom="@dimen/field_padding">
+                <de.symeda.sormas.app.component.LabelField
+                    android:id="@+id/caseData_reportDate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:paddingTop="@dimen/field_padding"
+                    android:paddingBottom="@dimen/field_padding"
+                    app:date="@{caze.reportDate}"/>
 
-                    <de.symeda.sormas.app.component.LabelField
-                        android:id="@+id/caseData_reportDate"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        app:date="@{caze.reportDate}"/>
-
-                </LinearLayout>
-
-                <LinearLayout android:orientation="vertical"
-                    android:layout_width="match_parent" android:layout_height="wrap_content"
-                    android:layout_weight="0.5" android:paddingTop="@dimen/field_padding" android:paddingBottom="@dimen/field_padding">
-
-                    <de.symeda.sormas.app.component.LabelField
-                        android:id="@+id/caseData_reportingUser"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        app:user="@{caze.reportingUser}"/>
-
-                </LinearLayout>
+                <de.symeda.sormas.app.component.LabelField
+                    android:id="@+id/caseData_reportingUser"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:paddingTop="@dimen/field_padding"
+                    android:paddingBottom="@dimen/field_padding"
+                    app:user="@{caze.reportingUser}"/>
 
             </LinearLayout>
 
@@ -96,17 +84,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <LinearLayout android:orientation="vertical"
-                    android:layout_width="match_parent" android:layout_height="wrap_content"
-                    android:layout_weight="0.5" android:paddingTop="@dimen/field_padding" android:paddingBottom="@dimen/field_padding">
-
-                    <de.symeda.sormas.app.component.LabelField
-                        android:id="@+id/caseData_disease"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        app:enum="@{caze.disease}"/>
-
-                </LinearLayout>
+                <de.symeda.sormas.app.component.LabelField
+                    android:id="@+id/caseData_disease"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:paddingTop="@dimen/field_padding"
+                    android:paddingBottom="@dimen/field_padding"
+                    app:enum="@{caze.disease}"/>
 
                 <LinearLayout android:orientation="vertical"
                     android:layout_width="match_parent" android:layout_height="wrap_content"
@@ -115,44 +100,29 @@
 
             </LinearLayout>
 
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:paddingTop="@dimen/field_padding" android:paddingBottom="@dimen/field_padding">
+            <de.symeda.sormas.app.component.SpinnerField
+                android:id="@+id/caseData_region"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/field_padding"
+                android:paddingBottom="@dimen/field_padding"
+                android:value="@={caze.region}"/>
 
-                <de.symeda.sormas.app.component.SpinnerField
-                    android:id="@+id/caseData_region"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:value="@={caze.region}"/>
+            <de.symeda.sormas.app.component.SpinnerField
+                android:id="@+id/caseData_district"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/field_padding"
+                android:paddingBottom="@dimen/field_padding"
+                android:value="@={caze.district}"/>
 
-            </LinearLayout>
-
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:paddingTop="@dimen/field_padding" android:paddingBottom="@dimen/field_padding">
-
-                <de.symeda.sormas.app.component.SpinnerField
-                    android:id="@+id/caseData_district"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:value="@={caze.district}"/>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:paddingTop="@dimen/field_padding" android:paddingBottom="@dimen/field_padding">
-
-                <de.symeda.sormas.app.component.SpinnerField
-                    android:id="@+id/caseData_community"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:value="@={caze.community}"/>
-
-            </LinearLayout>
+            <de.symeda.sormas.app.component.SpinnerField
+                android:id="@+id/caseData_community"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/field_padding"
+                android:paddingBottom="@dimen/field_padding"
+                android:value="@={caze.community}"/>
 
             <LinearLayout
                 android:orientation="horizontal"
@@ -160,23 +130,15 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/form_cp_occupation_facility_view">
 
-                <LinearLayout
-                    android:orientation="vertical"
+                <de.symeda.sormas.app.component.SpinnerField
+                    android:id="@+id/caseData_healthFacility"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingTop="@dimen/field_padding"
-                    android:paddingBottom="@dimen/field_padding">
-
-                    <de.symeda.sormas.app.component.SpinnerField
-                        android:id="@+id/caseData_healthFacility"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:value="@={caze.healthFacility}"/>
-
-                </LinearLayout>
+                    android:paddingBottom="@dimen/field_padding"
+                    android:value="@={caze.healthFacility}"/>
 
             </LinearLayout>
-
 
             <!-- ============= CASE_ADMINISTRATION ============= -->
             <TextView
@@ -214,17 +176,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <LinearLayout android:orientation="vertical"
-                    android:layout_width="match_parent" android:layout_height="wrap_content"
-                    android:layout_weight="0.5" android:paddingTop="@dimen/field_padding" android:paddingBottom="@dimen/field_padding">
-
-                    <de.symeda.sormas.app.component.LabelField
-                        android:id="@+id/caseData_surveillanceOfficer"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        app:user="@{caze.surveillanceOfficer}"/>
-
-                </LinearLayout>
+                <de.symeda.sormas.app.component.LabelField
+                    android:id="@+id/caseData_surveillanceOfficer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:paddingTop="@dimen/field_padding"
+                    android:paddingBottom="@dimen/field_padding"
+                    app:user="@{caze.surveillanceOfficer}"/>
 
                 <LinearLayout android:orientation="vertical"
                     android:layout_width="match_parent" android:layout_height="wrap_content"

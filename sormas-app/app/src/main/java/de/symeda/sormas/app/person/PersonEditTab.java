@@ -3,6 +3,7 @@ package de.symeda.sormas.app.person;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,7 +42,7 @@ import de.symeda.sormas.app.util.Item;
  */
 public class PersonEditTab extends FormTab {
 
-    private PersonEditFragmentLayoutBinding binding;
+    PersonEditFragmentLayoutBinding binding;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -146,6 +147,11 @@ public class PersonEditTab extends FormTab {
 
         addFacilitySpinnerField(R.id.person_occupationFacility);
 
+        // ================ Additional settings ================
+
+        binding.personApproximate1Age.setInputType(InputType.TYPE_CLASS_NUMBER);
+        binding.personPhone.setInputType(InputType.TYPE_CLASS_PHONE);
+
         // @TODO: Workaround, find a better solution. Remove autofocus on first field.
         getView().requestFocus();
     }
@@ -208,9 +214,8 @@ public class PersonEditTab extends FormTab {
 
     private void updateApproximateAgeField() {
         Integer birthyear = (Integer)((SpinnerField)getView().findViewById(R.id.person_birthdateYYYY)).getValue();
-        TextField approximateAgeTextField = (TextField) getView().findViewById(R.id.person_approximateAge1);
+        TextField approximateAgeTextField = (TextField) getView().findViewById(R.id.person_approximate1Age);
         SpinnerField approximateAgeTypeField = (SpinnerField) getView().findViewById(R.id.person_approximateAgeType);
-
 
         if(birthyear!=null) {
             deactivateField(approximateAgeTextField);
@@ -236,8 +241,7 @@ public class PersonEditTab extends FormTab {
                     break;
                 }
             }
-        }
-        else {
+        } else {
             approximateAgeTextField.setEnabled(true);
             approximateAgeTypeField.setEnabled(true);
         }

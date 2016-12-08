@@ -29,72 +29,45 @@
                 android:textStyle="bold"
                 android:paddingBottom="10dp" />
 
-            <LinearLayout android:orientation="vertical"
+            <de.symeda.sormas.app.component.SpinnerField
+                android:id="@+id/caseData_disease"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingTop="@dimen/field_padding"
-                android:paddingBottom="@dimen/field_padding">
+                android:paddingBottom="@dimen/field_padding"
+                android:value="@={caze.disease}"/>
 
-                <de.symeda.sormas.app.component.SpinnerField
-                    android:id="@+id/caseData_disease"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:value="@={caze.disease}"/>
+            <de.symeda.sormas.app.component.SpinnerField
+                android:id="@+id/caseData_region"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/field_padding"
+                android:paddingBottom="@dimen/field_padding"
+                android:value="@={caze.region}"/>
 
-            </LinearLayout>
+            <de.symeda.sormas.app.component.SpinnerField
+                android:id="@+id/caseData_district"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/field_padding"
+                android:paddingBottom="@dimen/field_padding"
+                android:value="@={caze.district}"/>
 
+            <de.symeda.sormas.app.component.SpinnerField
+                android:id="@+id/caseData_community"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/field_padding"
+                android:paddingBottom="@dimen/field_padding"
+                android:value="@={caze.community}"/>
 
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:paddingTop="@dimen/field_padding" android:paddingBottom="@dimen/field_padding">
-
-                <de.symeda.sormas.app.component.SpinnerField
-                    android:id="@+id/caseData_region"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:value="@={caze.region}"/>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:paddingTop="@dimen/field_padding" android:paddingBottom="@dimen/field_padding">
-
-                <de.symeda.sormas.app.component.SpinnerField
-                    android:id="@+id/caseData_district"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:value="@={caze.district}"/>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:paddingTop="@dimen/field_padding" android:paddingBottom="@dimen/field_padding">
-
-                <de.symeda.sormas.app.component.SpinnerField
-                    android:id="@+id/caseData_community"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:value="@={caze.community}"/>
-
-            </LinearLayout>
-
-            <LinearLayout android:orientation="vertical"
-                android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:paddingTop="@dimen/field_padding" android:paddingBottom="@dimen/field_padding">
-
-                <de.symeda.sormas.app.component.SpinnerField
-                    android:id="@+id/caseData_healthFacility"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:value="@={caze.healthFacility}"/>
-
-            </LinearLayout>
-
+            <de.symeda.sormas.app.component.SpinnerField
+                android:id="@+id/caseData_healthFacility"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/field_padding"
+                android:paddingBottom="@dimen/field_padding"
+                android:value="@={caze.healthFacility}"/>
 
             <LinearLayout
                 android:orientation="horizontal"
@@ -110,20 +83,18 @@
                     android:background="@android:color/transparent"
                     android:layout_marginRight="5dp" />
 
-                <LinearLayout android:orientation="vertical"
-                    android:layout_width="match_parent" android:layout_height="wrap_content"
-                    android:paddingTop="@dimen/field_padding" android:paddingBottom="@dimen/field_padding">
+                <de.symeda.sormas.app.component.SpinnerField
+                    android:id="@+id/caseData_person"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="@dimen/field_padding"
+                    android:paddingBottom="@dimen/field_padding"
+                    android:value="@={caze.person}"/>
 
-                    <de.symeda.sormas.app.component.SpinnerField
-                        android:id="@+id/caseData_person"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:value="@={caze.person}"/>
-
-                </LinearLayout>
             </LinearLayout>
 
-
         </LinearLayout>
+
     </ScrollView>
+
 </layout>

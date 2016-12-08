@@ -4,7 +4,10 @@ import android.content.Context;
 import android.databinding.BindingAdapter;
 import android.databinding.InverseBindingAdapter;
 import android.databinding.InverseBindingListener;
+import android.databinding.InverseBindingMethod;
+import android.databinding.InverseBindingMethods;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -17,6 +20,9 @@ import de.symeda.sormas.app.backend.location.Location;
 /**
  * Created by Mate Strysewske on 28.11.2016.
  */
+@InverseBindingMethods({
+        @InverseBindingMethod(type = TextField.class, attribute = "integer")
+})
 public class TextField extends PropertyField<String> implements TextFieldInterface {
 
     protected EditText textContent;
@@ -59,6 +65,15 @@ public class TextField extends PropertyField<String> implements TextFieldInterfa
         return view.getValue();
     }
 
+    @InverseBindingAdapter(attribute = "integer", event = "android:valueAttrChanged")
+    public static Integer getInteger(TextField view) {
+        try {
+            return Integer.valueOf(view.getValue());
+        } catch(NumberFormatException e) {
+            return null;
+        }
+    }
+
     @BindingAdapter("android:valueAttrChanged")
     public static void setListener(TextField view, InverseBindingListener listener) {
         view.inverseBindingListener = listener;
@@ -66,6 +81,10 @@ public class TextField extends PropertyField<String> implements TextFieldInterfa
 
     public void updateCaption(String newCaption) {
         textCaption.setText(newCaption);
+    }
+
+    public void setInputType(int inputType) {
+        textContent.setInputType(inputType);
     }
 
     /**
@@ -109,7 +128,7 @@ public class TextField extends PropertyField<String> implements TextFieldInterfa
     }
 
     @BindingAdapter("app:integer")
-    public static void setIntegerForTextField(TextField textField, Integer integer) {
+    public static void setInteger(TextField textField, Integer integer) {
         if (integer != null) {
             textField.setValue(integer.toString());
         }
