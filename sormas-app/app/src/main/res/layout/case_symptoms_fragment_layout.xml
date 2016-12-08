@@ -21,10 +21,10 @@
             android:focusable="true"
             android:focusableInTouchMode="true">
 
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
                 <de.symeda.sormas.app.component.DateField
                     android:id="@+id/symptoms_onsetDate"

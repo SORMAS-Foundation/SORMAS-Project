@@ -12,27 +12,44 @@
         android:padding="10dp"
         android:theme="@style/AppTheme">
 
-        <LinearLayout android:orientation="vertical"
-            android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:paddingTop="@dimen/field_padding" android:paddingBottom="@dimen/field_padding">
+        <de.symeda.sormas.app.component.TextField
+            android:id="@+id/location_address"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/field_padding"
+            android:paddingBottom="@dimen/field_padding"
+            android:value="@={location.address}"/>
 
-            <de.symeda.sormas.app.component.TextField
-                android:id="@+id/location_address"
+        <de.symeda.sormas.app.component.TextField
+            android:id="@+id/location_details"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/field_padding"
+            android:paddingBottom="@dimen/field_padding"
+            android:value="@={location.details}"/>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <de.symeda.sormas.app.component.SpinnerField
+                android:id="@+id/location_region"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:value="@={location.address}"/>
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:paddingTop="@dimen/field_padding"
+                android:paddingBottom="@dimen/field_padding"
+                android:value="@={location.region}"/>
 
-        </LinearLayout>
-
-        <LinearLayout android:orientation="vertical"
-            android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:paddingTop="@dimen/field_padding" android:paddingBottom="@dimen/field_padding">
-
-            <de.symeda.sormas.app.component.TextField
-                android:id="@+id/location_details"
+            <de.symeda.sormas.app.component.SpinnerField
+                android:id="@+id/location_district"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:value="@={location.details}"/>
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:paddingTop="@dimen/field_padding"
+                android:paddingBottom="@dimen/field_padding"
+                android:value="@={location.district}"/>
 
         </LinearLayout>
 
@@ -41,68 +58,24 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:paddingTop="@dimen/field_padding" android:paddingBottom="@dimen/field_padding"
-                android:layout_weight="0.5">
+            <de.symeda.sormas.app.component.SpinnerField
+                android:id="@+id/location_community"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:paddingTop="@dimen/field_padding"
+                android:paddingBottom="@dimen/field_padding"
+                android:value="@={location.community}"/>
 
-                <de.symeda.sormas.app.component.SpinnerField
-                    android:id="@+id/location_region"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:value="@={location.region}"/>
+            <de.symeda.sormas.app.component.TextField
+                android:id="@+id/location_city"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:paddingTop="@dimen/field_padding"
+                android:paddingBottom="@dimen/field_padding"
+                android:value="@={location.city}"/>
 
-            </LinearLayout>
-
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:paddingTop="@dimen/field_padding" android:paddingBottom="@dimen/field_padding"
-                android:layout_weight="0.5">
-
-                <de.symeda.sormas.app.component.SpinnerField
-                    android:id="@+id/location_district"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:value="@={location.district}"/>
-
-            </LinearLayout>
-
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:paddingTop="@dimen/field_padding" android:paddingBottom="@dimen/field_padding"
-                android:layout_weight="0.5">
-
-                <de.symeda.sormas.app.component.SpinnerField
-                    android:id="@+id/location_community"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:value="@={location.community}"/>
-
-            </LinearLayout>
-
-            <LinearLayout android:orientation="vertical"
-                android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:paddingTop="@dimen/field_padding" android:paddingBottom="@dimen/field_padding"
-                android:layout_weight="0.5">
-
-                <de.symeda.sormas.app.component.TextField
-                    android:id="@+id/location_city"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:value="@={location.city}"/>
-
-            </LinearLayout>
         </LinearLayout>
 
         <!--
