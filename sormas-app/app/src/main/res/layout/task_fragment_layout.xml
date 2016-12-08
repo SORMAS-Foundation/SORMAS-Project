@@ -28,64 +28,45 @@
                 android:textStyle="bold"
                 android:paddingBottom="10dp" />
 
-            <LinearLayout
-                android:orientation="vertical"
+            <de.symeda.sormas.app.component.LabelField
+                android:id="@+id/task_taskType"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/field_padding"
+                android:paddingBottom="@dimen/field_padding"
+                app:enum="@{task.taskType}"/>
 
-                <de.symeda.sormas.app.component.LabelField
-                    android:id="@+id/task_taskType"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    app:enum="@{task.taskType}"/>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:orientation="vertical"
+            <de.symeda.sormas.app.component.LabelField
+                android:id="@+id/task_caze"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <de.symeda.sormas.app.component.LabelField
-                    android:id="@+id/task_caze"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    app:caze="@{task.caze}"/>
-
-            </LinearLayout>
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/field_padding"
+                android:paddingBottom="@dimen/field_padding"
+                app:caze="@{task.caze}"/>
 
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <LinearLayout
-                    android:orientation="vertical"
+                <de.symeda.sormas.app.component.LabelField
+                    android:id="@+id/task_priority"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.5">
+                    android:layout_weight="0.5"
+                    android:paddingTop="@dimen/field_padding"
+                    android:paddingBottom="@dimen/field_padding"
+                    app:enum="@{task.priority}"/>
 
-                    <de.symeda.sormas.app.component.LabelField
-                        android:id="@+id/task_priority"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        app:enum="@{task.priority}"/>
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.5">
-
-                    <de.symeda.sormas.app.component.LabelField
+                <de.symeda.sormas.app.component.LabelField
                     android:id="@+id/task_taskStatus"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:paddingTop="@dimen/field_padding"
+                    android:paddingBottom="@dimen/field_padding"
                     app:enum="@{task.taskStatus}"/>
 
-                </LinearLayout>
             </LinearLayout>
 
             <LinearLayout
@@ -93,76 +74,50 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <LinearLayout
-                    android:orientation="vertical"
+                <de.symeda.sormas.app.component.LabelField
+                    android:id="@+id/task_suggestedStart"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.5">
+                    android:layout_weight="0.5"
+                    android:paddingTop="@dimen/field_padding"
+                    android:paddingBottom="@dimen/field_padding"
+                    app:dateTime="@{task.suggestedStart}"/>
 
-                    <de.symeda.sormas.app.component.LabelField
-                        android:id="@+id/task_suggestedStart"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        app:dateTime="@{task.suggestedStart}"/>
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:orientation="vertical"
+                <de.symeda.sormas.app.component.LabelField
+                    android:id="@+id/task_dueDate"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.5">
+                    android:layout_weight="0.5"
+                    android:paddingTop="@dimen/field_padding"
+                    android:paddingBottom="@dimen/field_padding"
+                    app:dateTime="@{task.dueDate}"/>
 
-                    <de.symeda.sormas.app.component.LabelField
-                        android:id="@+id/task_dueDate"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        app:dateTime="@{task.dueDate}"/>
-
-                </LinearLayout>
             </LinearLayout>
 
-
-            <LinearLayout
-                android:orientation="vertical"
+            <de.symeda.sormas.app.component.LabelField
+                android:id="@+id/task_creatorComment"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <de.symeda.sormas.app.component.LabelField
-                    android:id="@+id/task_creatorComment"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:value="@{task.creatorComment}"/>
-
-            </LinearLayout>
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/field_padding"
+                android:paddingBottom="@dimen/field_padding"
+                android:value="@{task.creatorComment}"/>
 
 
-            <LinearLayout
-                android:orientation="vertical"
+            <de.symeda.sormas.app.component.LabelField
+                android:id="@+id/task_creatorUser"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/field_padding"
+                android:paddingBottom="@dimen/field_padding"
+                app:user="@{task.creatorUser}"/>
 
-                <de.symeda.sormas.app.component.LabelField
-                    android:id="@+id/task_creatorUser"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    app:user="@{task.creatorUser}"/>
-
-            </LinearLayout>
-
-
-            <LinearLayout
-                android:orientation="vertical"
+            <de.symeda.sormas.app.component.TextField
+                android:id="@+id/task_assigneeReply"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <de.symeda.sormas.app.component.TextField
-                    android:id="@+id/task_assigneeReply"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:value="@={task.assigneeReply}"/>
-
-            </LinearLayout>
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/field_padding"
+                android:paddingBottom="@dimen/field_padding"
+                android:value="@={task.assigneeReply}"/>
 
             <android.support.v4.widget.Space
                 android:layout_width="match_parent"

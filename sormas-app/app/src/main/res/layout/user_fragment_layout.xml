@@ -24,34 +24,19 @@
                 android:textStyle="bold"
                 android:paddingBottom="10dp" />
 
-            <LinearLayout
-                android:orientation="horizontal"
+            <de.symeda.sormas.app.component.SpinnerField
+                android:id="@+id/config_user"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/field_padding"
+                android:paddingBottom="@dimen/field_padding" />
 
-                <LinearLayout android:orientation="vertical"
-                    android:layout_width="match_parent" android:layout_height="wrap_content"
-                    android:paddingTop="@dimen/field_padding" android:paddingBottom="@dimen/field_padding">
-
-                    <de.symeda.sormas.app.component.SpinnerField
-                        android:id="@+id/config_user"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"/>
-
-                </LinearLayout>
-            </LinearLayout>
-
-            <LinearLayout android:orientation="vertical"
-                          android:layout_width="match_parent" android:layout_height="wrap_content"
-                          android:paddingTop="@dimen/field_padding" android:paddingBottom="@dimen/field_padding"
-                          android:layout_weight="0.5">
-
-                <de.symeda.sormas.app.component.TextField
-                    android:id="@+id/config_serverUrl"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"/>
-
-            </LinearLayout>
+            <de.symeda.sormas.app.component.TextField
+                android:id="@+id/config_serverUrl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/field_padding"
+                android:paddingBottom="@dimen/field_padding" />
 
         </LinearLayout>
     </ScrollView>
