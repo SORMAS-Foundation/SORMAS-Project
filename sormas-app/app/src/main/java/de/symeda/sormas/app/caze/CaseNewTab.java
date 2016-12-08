@@ -75,8 +75,8 @@ public class CaseNewTab extends FormTab {
         addRegionSpinnerField(getView(), R.id.caseData_region, new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                SpinnerField spinnerField = (SpinnerField) getView().findViewById(R.id.caseData_district);
-                Object selectedValue = ((SpinnerField) getView().findViewById(R.id.caseData_region)).getValue();
+                SpinnerField spinnerField = binding.caseDataDistrict;
+                Object selectedValue = binding.caseDataRegion.getValue();
                 if(spinnerField != null) {
                     List<District> districtList = emptyList;
                     if(selectedValue != null) {
@@ -97,8 +97,8 @@ public class CaseNewTab extends FormTab {
         addSpinnerField(R.id.caseData_district, DataUtils.getItems(emptyList), new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                SpinnerField spinnerField = (SpinnerField) getView().findViewById(R.id.caseData_community);
-                Object selectedValue = ((SpinnerField) getView().findViewById(R.id.caseData_district)).getValue();
+                SpinnerField spinnerField = binding.caseDataCommunity;
+                Object selectedValue = binding.caseDataDistrict.getValue();
                 if(spinnerField != null) {
                     List<Community> communityList = emptyList;
                     if(selectedValue != null) {
@@ -118,8 +118,8 @@ public class CaseNewTab extends FormTab {
         addSpinnerField(R.id.caseData_community, DataUtils.getItems(emptyList), new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                SpinnerField spinnerField = (SpinnerField) getView().findViewById(R.id.caseData_healthFacility);
-                Object selectedValue = ((SpinnerField) getView().findViewById(R.id.caseData_community)).getValue();
+                SpinnerField spinnerField = binding.caseDataHealthFacility;
+                Object selectedValue = binding.caseDataCommunity.getValue();
                 if(spinnerField != null) {
                     List<Facility> facilityList = emptyList;
                     if(selectedValue != null) {
@@ -137,7 +137,7 @@ public class CaseNewTab extends FormTab {
 
 
 
-        ImageButton newPersonButton = (ImageButton) getView().findViewById(R.id.case_addPerson_btn);
+        ImageButton newPersonButton = binding.caseAddPersonBtn;
         newPersonButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -184,7 +184,7 @@ public class CaseNewTab extends FormTab {
                     // DOES WORK NOW because we've got our own awesome custom fields :D
                     person = personNew;
                     addPersonSpinnerField(R.id.caseData_person);
-                    SpinnerField spinner = (SpinnerField) getView().findViewById(R.id.caseData_person);
+                    SpinnerField spinner = binding.caseDataPerson;
                     spinner.setValue(person);
                     //reloadFragment();
                 }

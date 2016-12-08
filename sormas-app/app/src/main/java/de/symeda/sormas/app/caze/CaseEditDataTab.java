@@ -85,14 +85,14 @@ public class CaseEditDataTab extends FormTab {
         addSpinnerField(R.id.caseData_district, districtsByRegion, new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                SpinnerField spinnerField = (SpinnerField) getView().findViewById(R.id.caseData_community);
-                Object selectedValue = ((SpinnerField) getView().findViewById(R.id.caseData_district)).getValue();
+                SpinnerField spinnerField = binding.caseDataCommunity;
+                Object selectedValue = binding.caseDataDistrict.getValue();
                 if(spinnerField != null) {
                     List<Community> communityList = emptyList;
                     if(selectedValue != null) {
                         communityList = DatabaseHelper.getCommunityDao().getByDistrict((District)selectedValue);
                     }
-                    setSpinnerValue(((SpinnerField)getView().findViewById(R.id.caseData_community)).getValue(), DataUtils.getItems(communityList), spinnerField);
+                    setSpinnerValue(binding.caseDataCommunity.getValue(), DataUtils.getItems(communityList), spinnerField);
                 }
             }
 
@@ -106,14 +106,14 @@ public class CaseEditDataTab extends FormTab {
         addSpinnerField(R.id.caseData_community, communitiesByDistrict, new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                SpinnerField spinnerField = (SpinnerField) getView().findViewById(R.id.caseData_healthFacility);
-                Object selectedValue = ((SpinnerField) getView().findViewById(R.id.caseData_community)).getValue();
+                SpinnerField spinnerField = binding.caseDataHealthFacility;
+                Object selectedValue = binding.caseDataCommunity.getValue();
                 if(spinnerField != null) {
                     List<Facility> facilityList = emptyList;
                     if(selectedValue != null) {
                         facilityList = DatabaseHelper.getFacilityDao().getByCommunity((Community)selectedValue);
                     }
-                    setSpinnerValue(((SpinnerField)getView().findViewById(R.id.caseData_healthFacility)).getValue(), DataUtils.getItems(facilityList), spinnerField);
+                    setSpinnerValue(binding.caseDataHealthFacility.getValue(), DataUtils.getItems(facilityList), spinnerField);
                 }
             }
 
@@ -123,7 +123,7 @@ public class CaseEditDataTab extends FormTab {
             }
         });
 
-        Button btnCaseAdministration = (Button) getView().findViewById(R.id.form_cd_btn_case_administration);
+        Button btnCaseAdministration = binding.formCdBtnCaseAdministration;
         Iterable<CaseStatus> possibleStatus = CaseHelper.getPossibleStatusChanges(caze.getCaseStatus(), ConfigProvider.getUser().getUserRole());
         if(possibleStatus.iterator().hasNext()) {
             btnCaseAdministration.setVisibility(View.VISIBLE);

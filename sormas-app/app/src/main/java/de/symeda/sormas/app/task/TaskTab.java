@@ -43,7 +43,7 @@ public class TaskTab extends FormTab {
         binding.setTask(task);
         super.onResume();
 
-        Button taskDoneBtn = (Button) getView().findViewById(R.id.task_done_btn);
+        Button taskDoneBtn = binding.taskDoneBtn;
         Iterable<TaskStatus> possibleStatus = TaskHelper.getPossibleStatusChanges(task.getTaskStatus(), ConfigProvider.getUser().getUserRole());
         if(possibleStatus.iterator().hasNext()) {
             taskDoneBtn.setVisibility(View.VISIBLE);

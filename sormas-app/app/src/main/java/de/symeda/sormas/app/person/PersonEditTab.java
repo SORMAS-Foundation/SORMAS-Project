@@ -128,9 +128,9 @@ public class PersonEditTab extends FormTab {
 
         // ================ Occupation ================
 
-        final LinearLayout occupationDetailsLayout = (LinearLayout) getView().findViewById(R.id.form_cp_occupation_details_view);
-        final TextField occupationDetails = (TextField) getView().findViewById(R.id.person_occupationDetails);
-        final LinearLayout occupationFacilityLayout = (LinearLayout) getView().findViewById(R.id.form_cp_occupation_facility_view);
+        final LinearLayout occupationDetailsLayout = binding.formCpOccupationDetailsView;
+        final TextField occupationDetails = binding.personOccupationDetails;
+        final LinearLayout occupationFacilityLayout = binding.formCpOccupationFacilityView;
         addSpinnerField(R.id.person_occupationType1, OccupationType.class, new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -207,29 +207,30 @@ public class PersonEditTab extends FormTab {
     }
 
     private void updateDateOfDeathField() {
-        PresentCondition condition = (PresentCondition)((SpinnerField)getView().findViewById(R.id.person_presentCondition)).getValue();
-        setFieldVisible(getView().findViewById(R.id.cp_date_of_death_layout), condition != null
+        PresentCondition condition = (PresentCondition)binding.personPresentCondition.getValue();
+        setFieldVisible(binding.cpDateOfDeathLayout, condition != null
                 && (PresentCondition.DEAD.equals(condition) || PresentCondition.BURIED.equals(condition)));
+        binding.personDeathDate.clearFocus();
     }
 
     private void updateApproximateAgeField() {
-        Integer birthyear = (Integer)((SpinnerField)getView().findViewById(R.id.person_birthdateYYYY)).getValue();
-        TextField approximateAgeTextField = (TextField) getView().findViewById(R.id.person_approximate1Age);
-        SpinnerField approximateAgeTypeField = (SpinnerField) getView().findViewById(R.id.person_approximateAgeType);
+        Integer birthyear = (Integer)binding.personBirthdateYYYY.getValue();
+        TextField approximateAgeTextField = binding.personApproximate1Age;
+        SpinnerField approximateAgeTypeField = binding.personApproximateAgeType;
 
         if(birthyear!=null) {
             deactivateField(approximateAgeTextField);
             deactivateField(approximateAgeTypeField);
 
-            Integer birthday = (Integer)((SpinnerField)getView().findViewById(R.id.person_birthdateDD)).getValue();
-            Integer birthmonth = (Integer)((SpinnerField)getView().findViewById(R.id.person_birthdateMM)).getValue();
+            Integer birthday = (Integer)binding.personBirthdateDD.getValue();
+            Integer birthmonth = (Integer)binding.personBirthdateMM.getValue();
 
             Calendar birthDate = new GregorianCalendar();
             birthDate.set(birthyear, birthmonth!=null?birthmonth-1:0, birthday!=null?birthday:1);
 
             Date to = new Date();
-            if(((DateField)getView().findViewById(R.id.person_deathDate)).getValue() != null) {
-                to = ((DateField)getView().findViewById(R.id.person_deathDate)).getValue();
+            if(binding.personDeathDate.getValue() != null) {
+                to = binding.personDeathDate.getValue();
             }
             DataHelper.Pair<Integer, ApproximateAgeType> approximateAge = ApproximateAgeHelper.getApproximateAge(birthDate.getTime(),to);
             ApproximateAgeType ageType = approximateAge.getElement1();

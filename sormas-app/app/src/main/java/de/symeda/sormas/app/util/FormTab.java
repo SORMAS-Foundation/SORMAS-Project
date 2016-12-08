@@ -63,7 +63,6 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
     protected DateField addDateField(final int dateFieldId) {
         final DateField dateField = (DateField) getView().findViewById(dateFieldId);
         dateField.setInputType(InputType.TYPE_NULL);
-        dateField.clearFocus();
 
         dateField.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -80,6 +79,7 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
             }
         });
 
+        dateField.clearFocus();
         return dateField;
     }
 
