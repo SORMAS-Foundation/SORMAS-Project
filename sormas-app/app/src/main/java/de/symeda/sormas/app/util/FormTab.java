@@ -228,10 +228,6 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
      */
     protected void addLocationField(final Person person, final int locationFieldId, int locationBtnId) {
         try {
-            // inner model for location, has to be committed for each item
-            //final Map<Integer,Object> innerModel = new HashMap<>();
-            //final Location location = model.get(locationFieldId)!=null?(Location)model.get(locationFieldId): DataUtils.createNew(Location.class);
-
             final Location location = person.getAddress() != null ? person.getAddress() : DataUtils.createNew(Location.class);
             DatabaseHelper.getLocationDao().initializeLocation(location);
 
@@ -250,42 +246,49 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
                     final View dialogView = getActivity().getLayoutInflater().inflate(R.layout.location_fragment_layout, null);
                     dialogBuilder.setView(dialogView);
 
-                    /**
-                    innerModel.put(R.id.form_location_address, location.getAddress());
-                    EditText addressField = (EditText) dialogView.findViewById(R.id.form_location_address);
-                    addressField.setText((String)innerModel.get(R.id.form_location_address));
+                    final List emptyList = new ArrayList<>();
 
-                    innerModel.put(R.id.form_location_address_details, location.getDetails());
-                    EditText detailsField = (EditText) dialogView.findViewById(R.id.form_location_address_details);
-                    detailsField.setText((String)innerModel.get(R.id.form_location_address_details));
-
-                    innerModel.put(R.id.form_location_address_city, location.getCity());
-                    EditText cityField = (EditText) dialogView.findViewById(R.id.form_location_address_city);
-                    cityField.setText((String)innerModel.get(R.id.form_location_address_city));
-
-                    innerModel.put(R.id.location_region, location.getRegion());
-                    addRegionSpinnerField(innerModel,dialogView, R.id.location_region);
-
-                    innerModel.put(R.id.location_district, location.getDistrict());
-                    addDistrictSpinnerField(innerModel,dialogView, R.id.location_region);
-
-                    innerModel.put(R.id.location_community, location.getCommunity());
-                    addCommunitySpinnerField(innerModel,dialogView, R.id.location_community);
-                     */
-
-//                    if(((SpinnerField) dialogView.findViewById(R.id.location_region)).getValue() != null) {
-//                        location.setRegion((Region)((SpinnerField) getView().findViewById(R.id.location_region)).getValue());
-//                    }
-//                    if(((SpinnerField) dialogView.findViewById(R.id.location_district)).getValue() != null) {
-//                        location.setDistrict((District)((SpinnerField) getView().findViewById(R.id.location_district)).getValue());
-//                    }
-//                    if(((SpinnerField) dialogView.findViewById(R.id.location_community)).getValue() != null) {
-//                        location.setCommunity((Community)((SpinnerField) getView().findViewById(R.id.location_community)).getValue());
-//                    }
-
-                    addRegionSpinnerField(dialogView, R.id.location_region);
-                    addDistrictSpinnerField(dialogView, R.id.location_district);
                     addCommunitySpinnerField(dialogView, R.id.location_community);
+
+                    addRegionSpinnerField(dialogView, R.id.location_region, new AdapterView.OnItemSelectedListener() {
+                        @Override
+                        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                            SpinnerField districtSpinner = (SpinnerField) dialogView.findViewById(R.id.location_district);
+                            Object selectedValue = ((SpinnerField) dialogView.findViewById(R.id.location_region)).getValue();
+                            if(districtSpinner != null) {
+                                List<District> districtList = emptyList;
+                                if(selectedValue != null) {
+                                    districtList = DatabaseHelper.getDistrictDao().getByRegion((Region)selectedValue);
+                                }
+                                setSpinnerValue(districtSpinner.getValue(), DataUtils.getItems(districtList), districtSpinner);
+                            }
+                        }
+
+                        @Override
+                        public void onNothingSelected(AdapterView<?> parent) {
+
+                        }
+                    });
+
+                    addDistrictSpinnerField(dialogView, R.id.location_district, new AdapterView.OnItemSelectedListener() {
+                        @Override
+                        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                            SpinnerField communitySpinner = (SpinnerField) dialogView.findViewById(R.id.location_community);
+                            Object selectedValue = ((SpinnerField) dialogView.findViewById(R.id.location_district)).getValue();
+                            if(communitySpinner != null) {
+                                List<Community> communityList = emptyList;
+                                if(selectedValue != null) {
+                                    communityList = DatabaseHelper.getCommunityDao().getByDistrict((District)selectedValue);
+                                }
+                                setSpinnerValue(communitySpinner.getValue(), DataUtils.getItems(communityList), communitySpinner);
+                            }
+                        }
+
+                        @Override
+                        public void onNothingSelected(AdapterView<?> parent) {
+
+                        }
+                    });
 
                     if(location.getRegion() != null) {
                         ((SpinnerField) dialogView.findViewById(R.id.location_region)).setValue(location.getRegion());
@@ -306,17 +309,6 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
                         ((TextField) dialogView.findViewById(R.id.location_city)).setValue(location.getCity());
                     }
 
-                    /*
-                    innerModel.put(R.id.form_location_address_latitude, location.getLatitude());
-                    EditText latitudeField = (EditText) dialogView.findViewById(R.id.form_location_address_latitude);
-                    latitudeField.setText((String)innerModel.get(R.id.form_location_address_latitude));
-
-
-                    innerModel.put(R.id.form_location_address_longitude, location.getLongitude());
-                    EditText longitudeField = (EditText) dialogView.findViewById(R.id.form_location_address_longitude);
-                    longitudeField.setText((String)innerModel.get(R.id.form_location_address_longitude));
-                    */
-
                     dialogBuilder.setPositiveButton(getResources().getString(R.string.action_done), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int id) {
@@ -331,14 +323,7 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
                             location.setDistrict((District)((SpinnerField) dialogView.findViewById(R.id.location_district)).getValue());
                             location.setCommunity((Community)((SpinnerField) dialogView.findViewById(R.id.location_community)).getValue());
 
-                            /*
-                            location.setLatitude((Float)innerModel.get(R.id.form_location_address_latitude));
-                            location.setLongitude((Float)innerModel.get(R.id.form_location_address_longitude));
-                            */
-
                             locationText.setValue(location.toString());
-                            // put the inner model for the given fieldID
-                            //model.put(locationFieldId, location);
 
                             person.setAddress(location);
                         }
