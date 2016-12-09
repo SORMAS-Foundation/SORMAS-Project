@@ -108,8 +108,6 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
         for(Item item : items) {
             radioGroupField.addItem(item);
         }
-
-
         return radioGroupField;
     }
 
@@ -120,7 +118,7 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
      */
     protected SpinnerField addSpinnerField(final int spinnerFieldId, Class enumClass, final AdapterView.OnItemSelectedListener ...moreListeners) {
         List<Item> items = DataUtils.getEnumItems(enumClass);
-        return makeSpinnerField(spinnerFieldId, items, moreListeners);
+        return initSpinnerField(null, spinnerFieldId, items, moreListeners);
     }
 
     /**
@@ -128,7 +126,7 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
      * @param spinnerFieldId
      */
     protected SpinnerField addSpinnerField(final int spinnerFieldId, List<Item> items, final AdapterView.OnItemSelectedListener ...moreListeners) {
-        return makeSpinnerField(spinnerFieldId, items, moreListeners);
+        return initSpinnerField(null, spinnerFieldId, items, moreListeners);
     }
 
     /**
@@ -140,25 +138,25 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
     protected SpinnerField addFacilitySpinnerField(final int spinnerFieldId, final AdapterView.OnItemSelectedListener ...moreListeners) {
         FacilityDao facilityDao = DatabaseHelper.getFacilityDao();
         List<Item> items = DataUtils.getItems(facilityDao.queryForAll());
-        return makeSpinnerField(spinnerFieldId,items, moreListeners);
+        return initSpinnerField(null,spinnerFieldId,items,moreListeners);
     }
 
     protected SpinnerField addRegionSpinnerField(View parentView, final int spinnerFieldId, final AdapterView.OnItemSelectedListener ...moreListeners) {
         RegionDao regionDao = DatabaseHelper.getRegionDao();
         List<Item> items = DataUtils.getItems(regionDao.queryForAll());
-        return makeSpinnerField(parentView,spinnerFieldId,items, moreListeners);
+        return initSpinnerField(parentView,spinnerFieldId,items, moreListeners);
     }
 
     protected SpinnerField addDistrictSpinnerField(View parentView, final int spinnerFieldId, final AdapterView.OnItemSelectedListener ...moreListeners) {
         DistrictDao districtDao = DatabaseHelper.getDistrictDao();
         List<Item> items = DataUtils.getItems(districtDao.queryForAll());
-        return makeSpinnerField(parentView,spinnerFieldId,items, moreListeners);
+        return initSpinnerField(parentView,spinnerFieldId,items, moreListeners);
     }
 
     protected SpinnerField addCommunitySpinnerField(View parentView,  final int spinnerFieldId, final AdapterView.OnItemSelectedListener ...moreListeners) {
         CommunityDao communityDao = DatabaseHelper.getCommunityDao();
         List<Item> items = DataUtils.getItems(communityDao.queryForAll());
-        return makeSpinnerField(parentView,spinnerFieldId,items, moreListeners);
+        return initSpinnerField(parentView,spinnerFieldId,items, moreListeners);
     }
 
     protected SpinnerField addPersonSpinnerField(final int spinnerFieldId, final AdapterView.OnItemSelectedListener ...moreListeners) {
@@ -170,43 +168,20 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
             Toast.makeText(getContext(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
-        return makeSpinnerField(spinnerFieldId,items, moreListeners);
+        return initSpinnerField(null,spinnerFieldId,items, moreListeners);
     }
 
-    private SpinnerField makeSpinnerField(final int spinnerFieldId, List<Item> items, final AdapterView.OnItemSelectedListener[] moreListeners) {
-        return makeSpinnerField(getView(), spinnerFieldId, items, moreListeners);
-    }
-
-    private SpinnerField makeSpinnerField(View parentView, final int spinnerFieldId, List<Item> items, final AdapterView.OnItemSelectedListener[] moreListeners) {
-        final SpinnerField spinnerField = (SpinnerField) parentView.findViewById(spinnerFieldId);
-        spinnerField.setSpinnerAdapter(items);
-
-        final List<AdapterView.OnItemSelectedListener> moreListenersAll = new ArrayList<>(Arrays.asList(moreListeners));
-
-        // This is crucial for data binding because it allows the listeners from the component
-        // classes to still work
-        if(spinnerField.getOnItemSelectedListener() != null) {
-            moreListenersAll.add(spinnerField.getOnItemSelectedListener());
+    private SpinnerField initSpinnerField(View parentView, final int spinnerFieldId, List<Item> items, final AdapterView.OnItemSelectedListener[] moreListeners) {
+        final SpinnerField spinnerField;
+        if(parentView != null) {
+            spinnerField = (SpinnerField) parentView.findViewById(spinnerFieldId);
+        } else {
+            spinnerField = (SpinnerField) getView().findViewById(spinnerFieldId);
         }
-
-        spinnerField.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                //spinnerField.setValue(spinnerField.getItemAtPosition(position));
-                for (AdapterView.OnItemSelectedListener listener:moreListenersAll) {
-                    listener.onItemSelected(parent,view,position,id);
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                //spinnerField.setValue(null);
-                for (AdapterView.OnItemSelectedListener listener:moreListeners) {
-                    listener.onNothingSelected(parent);
-                }
-            }
-        });
-
+        spinnerField.setSpinnerAdapter(items);
+        for(AdapterView.OnItemSelectedListener listener : moreListeners) {
+            spinnerField.getSpinnerFieldListener().registerListener(listener);
+        }
         return spinnerField;
     }
 

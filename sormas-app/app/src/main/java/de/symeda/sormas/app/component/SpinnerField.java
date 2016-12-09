@@ -34,6 +34,7 @@ public class SpinnerField extends PropertyField<Object> implements SpinnerFieldI
     private Spinner spinnerElement;
 
     private InverseBindingListener inverseBindingListener;
+    private SpinnerFieldListener spinnerFieldListener = new SpinnerFieldListener();
 
     public SpinnerField(Context context) {
         super(context);
@@ -88,13 +89,17 @@ public class SpinnerField extends PropertyField<Object> implements SpinnerFieldI
         return spinnerElement.getAdapter();
     }
 
-    public void setOnItemSelectedListener(OnItemSelectedListener listener) {
-        spinnerElement.setOnItemSelectedListener(listener);
+    public SpinnerFieldListener getSpinnerFieldListener() {
+        return spinnerFieldListener;
     }
 
-    public OnItemSelectedListener getOnItemSelectedListener() {
-        return spinnerElement.getOnItemSelectedListener();
-    }
+//    public void setOnItemSelectedListener(OnItemSelectedListener listener) {
+//        spinnerElement.setOnItemSelectedListener(listener);
+//    }
+//
+//    public OnItemSelectedListener getOnItemSelectedListener() {
+//        return spinnerElement.getOnItemSelectedListener();
+//    }
 
     public void setSpinnerAdapter(List<Item> items) {
         ArrayAdapter<Item> adapter = new ArrayAdapter<>(
@@ -122,7 +127,7 @@ public class SpinnerField extends PropertyField<Object> implements SpinnerFieldI
         super.onFinishInflate();
 
         spinnerElement = (Spinner) this.findViewById(R.id.spinner_content);
-        spinnerElement.setOnItemSelectedListener(new Spinner.OnItemSelectedListener() {
+        spinnerFieldListener.registerListener(new Spinner.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 if (inverseBindingListener != null) {
@@ -138,6 +143,7 @@ public class SpinnerField extends PropertyField<Object> implements SpinnerFieldI
                 onValueChanged();
             }
         });
+        spinnerElement.setOnItemSelectedListener(spinnerFieldListener);
         spinnerCaption = (TextView) this.findViewById(R.id.spinner_caption);
         spinnerCaption.setText(getCaption());
     }
