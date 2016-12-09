@@ -156,7 +156,7 @@ public class CaseNewTab extends FormTab {
             final Person personNew = DataUtils.createNew(Person.class);
 
             AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
-            dialogBuilder.setTitle(getResources().getString(R.string.headline_new_Person));
+            dialogBuilder.setTitle(getResources().getString(R.string.headline_new_person));
 
             final View dialogView = getActivity().getLayoutInflater().inflate(R.layout.person_new_fragment_layout, null);
             dialogBuilder.setView(dialogView);

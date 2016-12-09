@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import java.util.Date;
+import java.util.List;
 
 import de.symeda.sormas.api.caze.CaseStatus;
 import de.symeda.sormas.api.user.UserRole;
@@ -20,6 +21,7 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
@@ -27,6 +29,7 @@ import de.symeda.sormas.app.backend.symptoms.SymptomsDao;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.caze.CaseEditActivity;
 import de.symeda.sormas.app.caze.SyncCasesTask;
+import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.DataUtils;
 
 
@@ -65,6 +68,15 @@ public class ContactNewActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        menu.setGroupVisible(R.id.group_action_help,false);
+        menu.setGroupVisible(R.id.group_action_add,false);
+        menu.setGroupVisible(R.id.group_action_save,true);
+
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
 
@@ -75,48 +87,42 @@ public class ContactNewActivity extends AppCompatActivity {
 
             case R.id.action_save:
                 try {
-                    Case caze = contactNewTab.getData();
+                    final Contact contact = contactNewTab.getData();
 
-                    caze.setCaseStatus(CaseStatus.POSSIBLE);
-                    User user = ConfigProvider.getUser();
-                    caze.setReportingUser(user);
-                    if (user.getUserRole() == UserRole.SURVEILLANCE_OFFICER) {
-                        caze.setSurveillanceOfficer(user);
-                    } else if (user.getUserRole() == UserRole.INFORMANT) {
-                        caze.setSurveillanceOfficer(user.getAssociatedOfficer());
+                    List<Person> existingPersons = DatabaseHelper.getPersonDao().getAllByName(contact.getPerson().getFirstName(), contact.getPerson().getLastName());
+                    if(existingPersons.size()>0) {
+                        contactNewTab.selectOrCreatePersonDialog(contact.getPerson(), existingPersons, new Callback() {
+                            @Override
+                            public void call() {
+                                contact.setPerson(contactNewTab.getSelectedPersonFromDialog());
+                            }
+                        });
                     }
-                    caze.setReportDate(new Date());
+                    else {
+                        // TODO save the person an contact
+                    }
 
-                    SymptomsDao symptomsDao = DatabaseHelper.getSymptomsDao();
-                    Symptoms symptoms = DataUtils.createNew(Symptoms.class);
-                    symptomsDao.save(symptoms);
+                    // save the person
+                    DatabaseHelper.getPersonDao().save(contact.getPerson());
 
-                    caze.setSymptoms(symptoms);
 
-                    CaseDao caseDao = DatabaseHelper.getCaseDao();
-                    caseDao.save(caze);
+                    contact.setReportDateTime(new Date());
 
-                    // set person's case uuid
-                    PersonDao personDao = DatabaseHelper.getPersonDao();
-                    Person person = personDao.queryForId(caze.getPerson().getId());
-                    person.setCaseUuid(caze.getUuid());
-                    DatabaseHelper.getPersonDao().save(person);
+                    DatabaseHelper.getContactDao().save(contact);
 
-                    SyncCasesTask.syncCases(getSupportFragmentManager());
-
-                    Toast.makeText(this, caze.getPerson().toString() + " saved", Toast.LENGTH_SHORT).show();
-
-                    NavUtils.navigateUpFromSameTask(this);
-
-                    // open case edit view
-                    Intent intent = new Intent(this, CaseEditActivity.class);
-                    intent.putExtra(CaseEditActivity.KEY_CASE_UUID, caze.getUuid());
-                    intent.putExtra(CaseEditActivity.KEY_PAGE, 1);
-                    startActivity(intent);
-
+                    Toast.makeText(this, contact.toString() + " saved", Toast.LENGTH_SHORT).show();
+//
+//                    NavUtils.navigateUpFromSameTask(this);
+//
+//                    // open case edit view
+//                    Intent intent = new Intent(this, CaseEditActivity.class);
+//                    intent.putExtra(CaseEditActivity.KEY_CASE_UUID, caze.getUuid());
+//                    intent.putExtra(CaseEditActivity.KEY_PAGE, 1);
+//                    startActivity(intent);
+//
                     return true;
                 } catch (Exception e) {
-                    Toast.makeText(this, "Error while saving the case. " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Error while saving the contact. " + e.getMessage(), Toast.LENGTH_SHORT).show();
                     e.printStackTrace();
                 }
 

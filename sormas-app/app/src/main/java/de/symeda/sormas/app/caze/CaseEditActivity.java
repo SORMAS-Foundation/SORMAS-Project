@@ -1,6 +1,7 @@
 package de.symeda.sormas.app.caze;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AlertDialog;
@@ -24,6 +25,7 @@ import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.symptoms.SymptomsDao;
 import de.symeda.sormas.app.component.AbstractEditActivity;
 import de.symeda.sormas.app.component.PropertyField;
+import de.symeda.sormas.app.contact.ContactNewActivity;
 import de.symeda.sormas.app.person.SyncPersonsTask;
 
 
@@ -224,6 +226,14 @@ public class CaseEditActivity extends AbstractEditActivity {
                 pager.setCurrentItem(currentTab);
 
                 return true;
+
+            // Add button
+            case R.id.action_add:
+                Intent intentContactNew = new Intent(this, ContactNewActivity.class);
+                startActivity(intentContactNew);
+
+                return true;
+
 
         }
         return super.onOptionsItemSelected(item);

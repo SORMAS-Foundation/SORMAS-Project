@@ -1,6 +1,7 @@
 package de.symeda.sormas.app.component;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.databinding.BindingAdapter;
 import android.databinding.InverseBindingAdapter;
 import android.databinding.InverseBindingListener;
@@ -23,11 +24,15 @@ import de.symeda.sormas.app.util.Item;
 
 public class RadioGroupField extends PropertyField<Object>  {
 
+    public static final String SHOW_CAPTION = "showCaption";
+
     private TextView radioGroupCaption;
     private RadioGroup radioGroup;
     private List<Object> radioGroupElements = new ArrayList<>();
 
     private InverseBindingListener inverseBindingListener;
+
+    private TypedArray attributes;
 
     public RadioGroupField(Context context) {
         super(context);
@@ -36,6 +41,7 @@ public class RadioGroupField extends PropertyField<Object>  {
 
     public RadioGroupField(Context context, AttributeSet attrs) {
         super(context, attrs);
+        attributes = context.obtainStyledAttributes(attrs, R.styleable.FieldAttrs);
         initializeViews(context);
     }
 
@@ -103,8 +109,15 @@ public class RadioGroupField extends PropertyField<Object>  {
                 onValueChanged();
             }
         });
+
         radioGroupCaption = (TextView) this.findViewById(R.id.rg_caption);
-        radioGroupCaption.setText(getCaption());
+        if(attributes.getBoolean(R.styleable.FieldAttrs_show_caption, true)) {
+            radioGroupCaption.setVisibility(View.VISIBLE);
+            radioGroupCaption.setText(getCaption());
+        }
+        else {
+            radioGroupCaption.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -117,10 +130,15 @@ public class RadioGroupField extends PropertyField<Object>  {
     public void addItem(Item item) {
         RadioButton button = new RadioButton(getContext());
         if(item.getValue() != null) {
-            button.setText(item.getValue().toString());
+            button.setText(item.getKey());
             radioGroup.addView(button);
             radioGroupElements.add(item.getValue());
         }
+    }
+
+    public void removeAllItems() {
+        radioGroup.removeAllViews();
+        radioGroupElements.clear();
     }
 
 }

@@ -63,6 +63,15 @@ public class CaseNewActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        menu.setGroupVisible(R.id.group_action_help,false);
+        menu.setGroupVisible(R.id.group_action_add,false);
+        menu.setGroupVisible(R.id.group_action_save,true);
+
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
 

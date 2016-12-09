@@ -51,7 +51,7 @@
     <string name="headline_user_administration">User</string>
     <string name="headline_case_administration">Case administration</string>
     <string name="headline_new_case">Create new case</string>
-    <string name="headline_new_Person">Add new person</string>
+    <string name="headline_new_person">Add new person</string>
     <string name="headline_symptoms">Symptoms</string>
     <string name="headline_help">Help</string>
 
@@ -159,6 +159,8 @@
     <string name="headline_visits">Visits</string>
     <string name="headline_contact">Contact</string>
     <string name="headline_contact_case">Contact case</string>
+    <string name="headline_pick_person">Pick or create a person</string>
+    <string name="action_search">Search</string>
 
 
 </resources>

@@ -34,8 +34,14 @@ public class DataUtils {
     }
 
     public static <E>  List<Item> getItems(List<E> listIn) {
+        return getItems(listIn, true);
+    }
+
+    public static <E>  List<Item> getItems(List<E> listIn, boolean withNull) {
         List<Item> listOut = new ArrayList<Item>();
-        listOut.add(new Item<E>("",null));
+        if(withNull) {
+            listOut.add(new Item<E>("",null));
+        }
         for (E listInEntry: listIn) {
             listOut.add(new Item<E>(listInEntry.toString(),listInEntry));
         }
