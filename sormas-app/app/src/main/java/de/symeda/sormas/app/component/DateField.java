@@ -4,18 +4,23 @@ import android.content.Context;
 import android.databinding.BindingAdapter;
 import android.databinding.InverseBindingAdapter;
 import android.databinding.InverseBindingListener;
+import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
 import java.util.Date;
 
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.util.DataUtils;
+import de.symeda.sormas.app.util.FormTab;
+import de.symeda.sormas.app.util.SelectDateFragment;
 
 /**
  * Created by Mate Strysewske on 29.11.2016.
@@ -94,6 +99,30 @@ public class DateField extends PropertyField<Date> implements DateFieldInterface
         LayoutInflater inflater = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         inflater.inflate(R.layout.field_date_field, this);
+    }
+
+    /**
+     * Fill the model-map and fill the ui. Appends an DatePickerDialog for open on button click and the nested binding.
+     */
+    public void initialize(final FormTab tab) {
+        this.setInputType(InputType.TYPE_NULL);
+        final DateField dateField = this;
+        this.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                tab.showDateFragment(dateField);
+            }
+        });
+        this.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    tab.showDateFragment(dateField);
+                }
+            }
+        });
+
+        this.clearFocus();
     }
 
     @Override

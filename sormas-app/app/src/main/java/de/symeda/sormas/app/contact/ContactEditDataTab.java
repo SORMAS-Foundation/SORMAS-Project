@@ -14,6 +14,7 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.contact.ContactDao;
 import de.symeda.sormas.app.databinding.ContactDataFragmentLayoutBinding;
+import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.FormTab;
 
 /**
@@ -40,8 +41,8 @@ public class ContactEditDataTab extends FormTab {
         final Contact contact = contactDao.queryUuid(contactUuid);
         binding.setContact(contact);
 
-        addDateField(R.id.contact_lastContactDate);
-        addRadioGroupField(R.id.contact_contactProximity, ContactProximity.class);
+        binding.contactLastContactDate.initialize(this);
+        binding.contactContactProximity.initialize(ContactProximity.class);
     }
 
     @Override

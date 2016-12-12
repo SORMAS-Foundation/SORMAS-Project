@@ -1,7 +1,10 @@
 package de.symeda.sormas.app.component;
 
+import android.app.Activity;
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.LinearLayout;
 
 import java.util.ArrayList;
@@ -46,6 +49,11 @@ public abstract class PropertyField<T> extends LinearLayout {
             valueChangedListeners = new ArrayList<ValueChangeListener>();
         }
         valueChangedListeners.add(listener);
+    }
+
+    public void hideKeyboard(View view) {
+        InputMethodManager inputMethodManager = (InputMethodManager)getContext().getSystemService(Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
     public void removeValueChangedListener(ValueChangeListener listener) {

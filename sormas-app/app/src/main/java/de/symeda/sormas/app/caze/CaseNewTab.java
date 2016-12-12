@@ -66,13 +66,13 @@ public class CaseNewTab extends FormTab {
 
         binding.setCaze(caze);
 
-        addSpinnerField(R.id.caseData_disease, Disease.class);
-        addPersonSpinnerField(R.id.caseData_person);
-        addFacilitySpinnerField(R.id.caseData_healthFacility);
+        DataUtils.initSpinnerField(binding.caseDataDisease, Disease.class);
+        DataUtils.initPersonSpinnerField(binding.caseDataPerson);
+        DataUtils.initFacilitySpinnerField(binding.caseDataHealthFacility);
 
         final List emptyList = new ArrayList<>();
 
-        addRegionSpinnerField(getView(), R.id.caseData_region, new AdapterView.OnItemSelectedListener() {
+        DataUtils.initRegionSpinnerField(binding.caseDataRegion, new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 SpinnerField spinnerField = binding.caseDataDistrict;
@@ -94,7 +94,7 @@ public class CaseNewTab extends FormTab {
 
 
 
-        addSpinnerField(R.id.caseData_district, DataUtils.getItems(emptyList), new AdapterView.OnItemSelectedListener() {
+        DataUtils.initSpinnerField(binding.caseDataDistrict, DataUtils.getItems(emptyList), new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 SpinnerField spinnerField = binding.caseDataCommunity;
@@ -115,7 +115,7 @@ public class CaseNewTab extends FormTab {
         });
 
 
-        addSpinnerField(R.id.caseData_community, DataUtils.getItems(emptyList), new AdapterView.OnItemSelectedListener() {
+        DataUtils.initSpinnerField(binding.caseDataCommunity, DataUtils.getItems(emptyList), new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 SpinnerField spinnerField = binding.caseDataHealthFacility;
@@ -183,7 +183,7 @@ public class CaseNewTab extends FormTab {
                     // refresh reference for pre-selection in personField
                     // DOES WORK NOW because we've got our own awesome custom fields :D
                     person = personNew;
-                    addPersonSpinnerField(R.id.caseData_person);
+                    DataUtils.initPersonSpinnerField(binding.caseDataPerson);
                     SpinnerField spinner = binding.caseDataPerson;
                     spinner.setValue(person);
                     //reloadFragment();

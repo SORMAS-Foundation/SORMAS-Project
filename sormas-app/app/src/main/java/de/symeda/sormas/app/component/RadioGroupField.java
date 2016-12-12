@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.Item;
 
 /**
@@ -80,6 +81,13 @@ public class RadioGroupField extends PropertyField<Object>  {
             return radioGroupElements.get(radioGroup.indexOfChild(checkedButton));
         } else {
             return null;
+        }
+    }
+
+    public void initialize(Class enumClass) {
+        List<Item> items = DataUtils.getEnumItems(enumClass);
+        for(Item item : items) {
+            this.addItem(item);
         }
     }
 

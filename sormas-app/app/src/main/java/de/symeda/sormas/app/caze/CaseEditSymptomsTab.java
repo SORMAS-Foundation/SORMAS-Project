@@ -27,6 +27,7 @@ import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.component.PropertyField;
 import de.symeda.sormas.app.component.SymptomStateField;
 import de.symeda.sormas.app.databinding.CaseSymptomsFragmentLayoutBinding;
+import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.FormTab;
 import de.symeda.sormas.app.util.Item;
 
@@ -57,16 +58,17 @@ public class CaseEditSymptomsTab extends FormTab {
         final Symptoms symptoms = caze.getSymptoms();
         binding.setSymptoms(symptoms);
 
-        addDateField(R.id.symptoms_onsetDate);
+        binding.symptomsOnsetDate.initialize(this);
 
         List<Item> temperature = new ArrayList<>();
         temperature.add(new Item("",null));
         for (Float temperatureValue : SymptomsHelper.getTemperatureValues()) {
             temperature.add(new Item(SymptomsHelper.getTemperatureString(temperatureValue),temperatureValue));
         }
-        addSpinnerField(R.id.symptoms_temperature, temperature);
 
-        addSpinnerField(R.id.symptoms_temperatureSource, TemperatureSource.class);
+        DataUtils.initSpinnerField(binding.symptomsTemperature, temperature);
+
+        DataUtils.initSpinnerField(binding.symptomsTemperatureSource, TemperatureSource.class);
 
         binding.symptomsUnexplainedBleeding.addValueChangedListener(new PropertyField.ValueChangeListener() {
             @Override

@@ -9,7 +9,6 @@ import java.util.List;
 /**
  * Created by Mate Strysewske on 09.12.2016.
  */
-
 public class SpinnerFieldListener implements AdapterView.OnItemSelectedListener {
     private List<AdapterView.OnItemSelectedListener> registeredListeners = new ArrayList<>();
 

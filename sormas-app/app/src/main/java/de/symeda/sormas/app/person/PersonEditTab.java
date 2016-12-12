@@ -33,6 +33,7 @@ import de.symeda.sormas.app.component.PropertyField;
 import de.symeda.sormas.app.component.SpinnerField;
 import de.symeda.sormas.app.component.TextField;
 import de.symeda.sormas.app.databinding.PersonEditFragmentLayoutBinding;
+import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.FormTab;
 import de.symeda.sormas.app.util.Item;
 
@@ -60,7 +61,7 @@ public class PersonEditTab extends FormTab {
         binding.setPerson(person);
 
         // date of birth
-        addSpinnerField(R.id.person_birthdateDD, toItems(DateHelper.getDaysInMonth(),true), new AdapterView.OnItemSelectedListener() {
+        DataUtils.initSpinnerField(binding.personBirthdateDD, toItems(DateHelper.getDaysInMonth(),true), new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 updateApproximateAgeField();
@@ -70,7 +71,7 @@ public class PersonEditTab extends FormTab {
             public void onNothingSelected(AdapterView<?> parent) {
             }
         });
-        addSpinnerField(R.id.person_birthdateMM, toItems(DateHelper.getMonthsInYear(),true), new AdapterView.OnItemSelectedListener() {
+        DataUtils.initSpinnerField(binding.personBirthdateMM, toItems(DateHelper.getMonthsInYear(),true), new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 updateApproximateAgeField();
@@ -80,7 +81,7 @@ public class PersonEditTab extends FormTab {
             public void onNothingSelected(AdapterView<?> parent) {
             }
         });
-        addSpinnerField(R.id.person_birthdateYYYY, toItems(DateHelper.getYearsToNow(),true), new AdapterView.OnItemSelectedListener() {
+        DataUtils.initSpinnerField(binding.personBirthdateYYYY, toItems(DateHelper.getYearsToNow(),true), new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 updateApproximateAgeField();
@@ -92,13 +93,14 @@ public class PersonEditTab extends FormTab {
         });
 
         // age type
-        addSpinnerField(R.id.person_approximateAgeType, ApproximateAgeType.class);
+        DataUtils.initSpinnerField(binding.personApproximateAgeType, ApproximateAgeType.class);
 
         // gender
-        addSpinnerField(R.id.person_sex, Sex.class);
+        DataUtils.initSpinnerField(binding.personSex, Sex.class);
 
         // date of death
-        addDateField(R.id.person_deathDate).addValueChangedListener(new PropertyField.ValueChangeListener() {
+        binding.personDeathDate.initialize(this);
+        binding.personDeathDate.addValueChangedListener(new PropertyField.ValueChangeListener() {
             @Override
             public void onChange(PropertyField field) {
                 updateApproximateAgeField();
@@ -107,7 +109,7 @@ public class PersonEditTab extends FormTab {
 
 
         // status of patient
-        addSpinnerField(R.id.person_presentCondition, PresentCondition.class, new AdapterView.OnItemSelectedListener() {
+        DataUtils.initSpinnerField(binding.personPresentCondition, PresentCondition.class, new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 updateDateOfDeathField();
@@ -131,7 +133,7 @@ public class PersonEditTab extends FormTab {
         final LinearLayout occupationDetailsLayout = binding.formCpOccupationDetailsView;
         final TextField occupationDetails = binding.personOccupationDetails;
         final LinearLayout occupationFacilityLayout = binding.formCpOccupationFacilityView;
-        addSpinnerField(R.id.person_occupationType1, OccupationType.class, new AdapterView.OnItemSelectedListener() {
+        DataUtils.initSpinnerField(binding.personOccupationType1, OccupationType.class, new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 Item item = (Item)parent.getItemAtPosition(position);
@@ -145,7 +147,7 @@ public class PersonEditTab extends FormTab {
             }
         });
 
-        addFacilitySpinnerField(R.id.person_occupationFacility);
+        DataUtils.initFacilitySpinnerField(binding.personOccupationFacility);
 
         // ================ Additional settings ================
 

@@ -11,7 +11,9 @@ import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.*;
 import android.widget.ArrayAdapter;
@@ -89,8 +91,8 @@ public class SpinnerField extends PropertyField<Object> implements SpinnerFieldI
         return spinnerElement.getAdapter();
     }
 
-    public SpinnerFieldListener getSpinnerFieldListener() {
-        return spinnerFieldListener;
+    public void registerListener(OnItemSelectedListener listener) {
+        spinnerFieldListener.registerListener(listener);
     }
 
 //    public void setOnItemSelectedListener(OnItemSelectedListener listener) {
@@ -108,6 +110,23 @@ public class SpinnerField extends PropertyField<Object> implements SpinnerFieldI
                 items);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerElement.setAdapter(adapter);
+    }
+
+    public void initialize(List<Item> items, final AdapterView.OnItemSelectedListener[] moreListeners) {
+        this.setSpinnerAdapter(items);
+        for(AdapterView.OnItemSelectedListener listener : moreListeners) {
+            this.registerListener(listener);
+        }
+    }
+
+    /**
+     * Update the spinner list and set selected value.
+     * @param selectedItem
+     * @param items
+     */
+    public void setAdapterAndValue(Object selectedItem, List<Item> items) {
+        this.setSpinnerAdapter(items);
+        this.setValue(selectedItem);
     }
 
     /**

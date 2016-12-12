@@ -1,6 +1,7 @@
 package de.symeda.sormas.app.util;
 
 import android.app.DatePickerDialog;
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -8,6 +9,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.text.InputType;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.DatePicker;
 import android.widget.ImageButton;
@@ -41,34 +43,7 @@ import de.symeda.sormas.app.component.TextField;
  */
 public abstract class FormTab extends DialogFragment implements FormFragment {
 
-    /**
-     * Fill the model-map and fill the ui. Appends an DatePickerDialog for open on button click and the nested binding.
-     * @param dateFieldId
-     */
-    protected DateField addDateField(final int dateFieldId) {
-        final DateField dateField = (DateField) getView().findViewById(dateFieldId);
-        dateField.setInputType(InputType.TYPE_NULL);
-
-        dateField.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View arg0) {
-                showDateFragment(dateField);
-            }
-        });
-        dateField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus) {
-                    showDateFragment(dateField);
-                }
-            }
-        });
-
-        dateField.clearFocus();
-        return dateField;
-    }
-
-    private void showDateFragment(final DateField dateField) {
+    public void showDateFragment(final DateField dateField) {
         SelectDateFragment newFragment = new SelectDateFragment();
         
         newFragment.setOnDateSetListener(new DatePickerDialog.OnDateSetListener() {
@@ -90,100 +65,6 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
         dateBundle.putSerializable(SelectDateFragment.DATE, dateField.getValue());
         newFragment.setArguments(dateBundle);
         newFragment.show(getFragmentManager(), getResources().getText(R.string.headline_date_picker).toString());
-    }
-
-    protected RadioGroupField addRadioGroupField(final int radioGroupFieldId, Class enumClass) {
-        List<Item> items = DataUtils.getEnumItems(enumClass);
-        final RadioGroupField radioGroupField = (RadioGroupField) getView().findViewById(radioGroupFieldId);
-        for(Item item : items) {
-            radioGroupField.addItem(item);
-        }
-        return radioGroupField;
-    }
-
-    /**
-     * Fill the spinner for the given enum, set the selected entry, register the base listeners and the given ones.
-     * @param spinnerFieldId
-     * @param enumClass
-     */
-    protected SpinnerField addSpinnerField(final int spinnerFieldId, Class enumClass, final AdapterView.OnItemSelectedListener ...moreListeners) {
-        List<Item> items = DataUtils.getEnumItems(enumClass);
-        return initSpinnerField(null, spinnerFieldId, items, moreListeners);
-    }
-
-    /**
-     * Fill the spinner for the given list, set the selected entry, register the base listeners and the given ones.
-     * @param spinnerFieldId
-     */
-    protected SpinnerField addSpinnerField(final int spinnerFieldId, List<Item> items, final AdapterView.OnItemSelectedListener ...moreListeners) {
-        return initSpinnerField(null, spinnerFieldId, items, moreListeners);
-    }
-
-    /**
-     * Fill the spinner for facility selection.
-     * See {@see addSpinnerField()}
-     * @param spinnerFieldId
-     * @param moreListeners
-     */
-    protected SpinnerField addFacilitySpinnerField(final int spinnerFieldId, final AdapterView.OnItemSelectedListener ...moreListeners) {
-        FacilityDao facilityDao = DatabaseHelper.getFacilityDao();
-        List<Item> items = DataUtils.getItems(facilityDao.queryForAll());
-        return initSpinnerField(null,spinnerFieldId,items,moreListeners);
-    }
-
-    protected SpinnerField addRegionSpinnerField(View parentView, final int spinnerFieldId, final AdapterView.OnItemSelectedListener ...moreListeners) {
-        RegionDao regionDao = DatabaseHelper.getRegionDao();
-        List<Item> items = DataUtils.getItems(regionDao.queryForAll());
-        return initSpinnerField(parentView,spinnerFieldId,items, moreListeners);
-    }
-
-    protected SpinnerField addDistrictSpinnerField(View parentView, final int spinnerFieldId, final AdapterView.OnItemSelectedListener ...moreListeners) {
-        DistrictDao districtDao = DatabaseHelper.getDistrictDao();
-        List<Item> items = DataUtils.getItems(districtDao.queryForAll());
-        return initSpinnerField(parentView,spinnerFieldId,items, moreListeners);
-    }
-
-    protected SpinnerField addCommunitySpinnerField(View parentView,  final int spinnerFieldId, final AdapterView.OnItemSelectedListener ...moreListeners) {
-        CommunityDao communityDao = DatabaseHelper.getCommunityDao();
-        List<Item> items = DataUtils.getItems(communityDao.queryForAll());
-        return initSpinnerField(parentView,spinnerFieldId,items, moreListeners);
-    }
-
-    protected SpinnerField addPersonSpinnerField(final int spinnerFieldId, final AdapterView.OnItemSelectedListener ...moreListeners) {
-        PersonDao personDao = DatabaseHelper.getPersonDao();
-        List<Item> items = null;
-        try {
-            items = DataUtils.getItems(personDao.getAllPersonsWithoutCase());
-        } catch (SQLException e) {
-            Toast.makeText(getContext(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
-        }
-        return initSpinnerField(null,spinnerFieldId,items, moreListeners);
-    }
-
-    private SpinnerField initSpinnerField(View parentView, final int spinnerFieldId, List<Item> items, final AdapterView.OnItemSelectedListener[] moreListeners) {
-        final SpinnerField spinnerField;
-        if(parentView != null) {
-            spinnerField = (SpinnerField) parentView.findViewById(spinnerFieldId);
-        } else {
-            spinnerField = (SpinnerField) getView().findViewById(spinnerFieldId);
-        }
-        spinnerField.setSpinnerAdapter(items);
-        for(AdapterView.OnItemSelectedListener listener : moreListeners) {
-            spinnerField.getSpinnerFieldListener().registerListener(listener);
-        }
-        return spinnerField;
-    }
-
-    /**
-     * Update the spinner list and set selected value.
-     * @param selectedItem
-     * @param items
-     * @param spinnerField
-     */
-    protected void setSpinnerValue(Object selectedItem, List<Item> items, SpinnerField spinnerField) {
-        spinnerField.setSpinnerAdapter(items);
-        spinnerField.setValue(selectedItem);
     }
 
     /**
@@ -213,9 +94,9 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
 
                     final List emptyList = new ArrayList<>();
 
-                    addCommunitySpinnerField(dialogView, R.id.location_community);
+                    DataUtils.initCommunitySpinnerField((SpinnerField)dialogView.findViewById(R.id.location_community));
 
-                    addRegionSpinnerField(dialogView, R.id.location_region, new AdapterView.OnItemSelectedListener() {
+                    DataUtils.initRegionSpinnerField((SpinnerField)dialogView.findViewById(R.id.location_region), new AdapterView.OnItemSelectedListener() {
                         @Override
                         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                             SpinnerField districtSpinner = (SpinnerField) dialogView.findViewById(R.id.location_district);
@@ -225,7 +106,7 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
                                 if(selectedValue != null) {
                                     districtList = DatabaseHelper.getDistrictDao().getByRegion((Region)selectedValue);
                                 }
-                                setSpinnerValue(districtSpinner.getValue(), DataUtils.getItems(districtList), districtSpinner);
+                                districtSpinner.setAdapterAndValue(districtSpinner.getValue(), DataUtils.getItems(districtList));
                             }
                         }
 
@@ -235,7 +116,7 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
                         }
                     });
 
-                    addDistrictSpinnerField(dialogView, R.id.location_district, new AdapterView.OnItemSelectedListener() {
+                    DataUtils.initDistrictSpinnerField((SpinnerField)dialogView.findViewById(R.id.location_district), new AdapterView.OnItemSelectedListener() {
                         @Override
                         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                             SpinnerField communitySpinner = (SpinnerField) dialogView.findViewById(R.id.location_community);
@@ -245,7 +126,7 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
                                 if(selectedValue != null) {
                                     communityList = DatabaseHelper.getCommunityDao().getByDistrict((District)selectedValue);
                                 }
-                                setSpinnerValue(communitySpinner.getValue(), DataUtils.getItems(communityList), communitySpinner);
+                                communitySpinner.setAdapterAndValue(communitySpinner.getValue(), DataUtils.getItems(communityList));
                             }
                         }
 
