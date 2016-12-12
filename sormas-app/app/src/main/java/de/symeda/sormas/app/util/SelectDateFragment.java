@@ -20,9 +20,11 @@ import de.symeda.sormas.app.R;
  * and
  * onClear()
  */
-public abstract class SelectDateFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener {
+public class SelectDateFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener {
 
     public static final String DATE = "DATE";
+    private DatePickerDialog.OnDateSetListener onDateSetListener;
+    private DialogInterface.OnClickListener onClearListener;
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -42,7 +44,7 @@ public abstract class SelectDateFragment extends DialogFragment implements DateP
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         datePickerClear.cancel();
-                        onClear();
+                        onClearListener.onClick(dialog, which);
                     }
                 });
         return datePickerClear;
@@ -50,8 +52,14 @@ public abstract class SelectDateFragment extends DialogFragment implements DateP
 
     @Override
     public void onDateSet(DatePicker view, int yy, int mm, int dd) {
+        onDateSetListener.onDateSet(view,yy,mm,dd);
     }
 
-    protected void onClear() {
+    public void setOnClearListener(DialogInterface.OnClickListener onClearListener) {
+        this.onClearListener = onClearListener;
+    }
+
+    public void setOnDateSetListener(DatePickerDialog.OnDateSetListener onDateSetListener) {
+        this.onDateSetListener = onDateSetListener;
     }
 }

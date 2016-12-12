@@ -1,7 +1,7 @@
 package de.symeda.sormas.app.util;
 
+import android.app.DatePickerDialog;
 import android.content.DialogInterface;
-import android.databinding.BindingAdapter;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentTransaction;
@@ -9,28 +9,16 @@ import android.support.v7.app.AlertDialog;
 import android.text.InputType;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
-import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import de.symeda.sormas.api.caze.CaseStatus;
-import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.facility.FacilityDao;
@@ -43,10 +31,7 @@ import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.DistrictDao;
 import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.backend.region.RegionDao;
-import de.symeda.sormas.app.backend.user.User;
-import de.symeda.sormas.app.backend.user.UserDao;
 import de.symeda.sormas.app.component.DateField;
-import de.symeda.sormas.app.component.LabelField;
 import de.symeda.sormas.app.component.RadioGroupField;
 import de.symeda.sormas.app.component.SpinnerField;
 import de.symeda.sormas.app.component.TextField;
@@ -84,17 +69,22 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
     }
 
     private void showDateFragment(final DateField dateField) {
-        SelectDateFragment newFragment = new SelectDateFragment(){
+        SelectDateFragment newFragment = new SelectDateFragment();
+        
+        newFragment.setOnDateSetListener(new DatePickerDialog.OnDateSetListener() {
             @Override
-            public void onDateSet(DatePicker view, int yy, int mm, int dd) {
+            public void onDateSet (DatePicker view,int yy, int mm, int dd){
                 dateField.setValue(DateHelper.getDateZero(yy, mm, dd));
             }
+        });
+
+        newFragment.setOnClearListener(new DialogInterface.OnClickListener() {
             @Override
-            public void onClear() {
+            public void onClick(DialogInterface dialog, int which) {
                 dateField.setValue(null);
                 dateField.clearFocus();
             }
-        };
+        });
 
         Bundle dateBundle = new Bundle();
         dateBundle.putSerializable(SelectDateFragment.DATE, dateField.getValue());
