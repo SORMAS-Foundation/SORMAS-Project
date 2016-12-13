@@ -1,8 +1,11 @@
 package de.symeda.sormas.ui.contact;
 
+import com.vaadin.data.validator.DateRangeValidator;
+import com.vaadin.shared.ui.datefield.Resolution;
 import com.vaadin.ui.AbstractLayout;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
+import com.vaadin.ui.Field;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.OptionGroup;
@@ -81,8 +84,18 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
     	getContent().addComponent(caseInfoLayout, CASE_INFO);
     	addValueChangeListener(e -> {
     		updateCaseInfo();
+    		updateLastContactDateValidator();
     	});
 	}
+    
+    protected void updateLastContactDateValidator() {
+    	Field<?> dateField = getField(ContactDto.LAST_CONTACT_DATE);
+    	dateField.removeAllValidators();
+    	if (getValue() != null) {
+	    	dateField.addValidator(new DateRangeValidator("Date of last contact has to be before date of report",
+	    			null, getValue().getReportDateTime(), Resolution.SECOND));
+    	}
+    }
     
     private void updateDiseaseConfiguration(Disease disease) {
 		for (Object propertyId : getFieldGroup().getBoundPropertyIds()) {

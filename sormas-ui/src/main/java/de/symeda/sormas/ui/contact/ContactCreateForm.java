@@ -1,6 +1,9 @@
 package de.symeda.sormas.ui.contact;
 
+import com.vaadin.data.validator.DateRangeValidator;
+import com.vaadin.shared.ui.datefield.Resolution;
 import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.Field;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
@@ -51,6 +54,19 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
     		.addItems(FacadeProvider.getUserFacade().getAssignableUsers(currentUser, UserRole.CONTACT_OFFICER));
 
     	setRequired(true, ContactDto.CAZE, FIRST_NAME, LAST_NAME, ContactDto.LAST_CONTACT_DATE, ContactDto.CONTACT_PROXIMITY);
+    	
+    	addValueChangeListener(e -> {
+    		updateLastContactDateValidator();
+    	});
+    }
+    
+    protected void updateLastContactDateValidator() {
+    	Field<?> dateField = getField(ContactDto.LAST_CONTACT_DATE);
+    	dateField.removeAllValidators();
+    	if (getValue() != null) {
+	    	dateField.addValidator(new DateRangeValidator("Date of last contact has to be before date of report",
+	    			null, getValue().getReportDateTime(), Resolution.SECOND));
+    	}
     }
     
     public String getPersonFirstName() {

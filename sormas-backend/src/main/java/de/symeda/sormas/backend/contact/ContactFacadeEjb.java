@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.validation.ValidationException;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.Disease;
@@ -128,6 +129,10 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setReportDateTime(source.getReportDateTime());
 		
 		target.setLastContactDate(source.getLastContactDate());
+		if (target.getLastContactDate() != null && target.getLastContactDate().after(target.getReportDateTime())) {
+			throw new ValidationException(Contact.LAST_CONTACT_DATE + " has to be before " + Contact.REPORT_DATE_TIME);
+		}
+		
 		target.setContactProximity(source.getContactProximity());
 		target.setContactClassification(source.getContactClassification());
 		target.setFollowUpStatus(source.getFollowUpStatus());
@@ -220,7 +225,15 @@ public class ContactFacadeEjb implements ContactFacade {
 		}
 	}
 	
-	// TODO #35 add comment with logic
+	/**
+	 * Calculates and sets the follow-up until date and status of the contact.
+	 * <ul>
+	 * <li>Disease with no follow-up: Leave empty and set follow-up status to "No follow-up"</li>
+	 * <li>Others: Use follow-up duration of the disease. Reference for calculation is the reporting date 
+	 *   (since this is always later than the last contact date and we can't be sure the last contact date is correct)
+	 *   TODO include day of last visit rule</li>
+	 * </ul>
+	 */
 	private void updateFollowUpUntil(Contact contact) {
 		Disease disease = contact.getCaze().getDisease();
 		int followUpDuration = getFollowUpDuration(disease);
