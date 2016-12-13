@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.task;
 
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -13,11 +14,14 @@ import java.util.List;
 import de.symeda.sormas.api.task.TaskHelper;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.task.TaskDao;
+import de.symeda.sormas.app.caze.CaseEditActivity;
 import de.symeda.sormas.app.databinding.TaskFragmentLayoutBinding;
 import de.symeda.sormas.app.util.FormTab;
 
@@ -76,6 +80,29 @@ public class TaskTab extends FormTab {
         else {
             binding.taskDoneBtn.setVisibility(View.GONE);
         }
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        binding.taskCaze.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final CaseDao caseDao = DatabaseHelper.getCaseDao();
+                final Case caze = caseDao.queryUuid(binding.getTask().getCaze().getUuid());
+                showCaseEditView(caze);
+            }
+        });
+
+        binding.taskCaze.appendText("\u279D");
+        binding.taskCaze.setUnderline();
+    }
+
+    public void showCaseEditView(Case caze) {
+        Intent intent = new Intent(getActivity(), CaseEditActivity.class);
+        intent.putExtra(CaseEditActivity.KEY_CASE_UUID, caze.getUuid());
+        intent.putExtra(CaseEditActivity.KEY_PARENT_TASK_UUID, binding.getTask().getUuid());
+        startActivity(intent);
     }
 
     @Override

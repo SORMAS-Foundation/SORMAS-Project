@@ -24,10 +24,13 @@ import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.symptoms.SymptomsDao;
+import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.component.AbstractEditActivity;
 import de.symeda.sormas.app.component.PropertyField;
 import de.symeda.sormas.app.contact.ContactNewActivity;
 import de.symeda.sormas.app.person.SyncPersonsTask;
+import de.symeda.sormas.app.task.TaskEditActivity;
+import de.symeda.sormas.app.task.TasksActivity;
 
 
 /**
@@ -37,10 +40,12 @@ public class CaseEditActivity extends AbstractEditActivity {
 
     public static final String KEY_CASE_UUID = "caseUuid";
     public static final String KEY_PAGE = "page";
+    public static final String KEY_PARENT_TASK_UUID = "taskUuid";
 
     private CaseEditPagerAdapter adapter;
     private CharSequence titles[];
     private String caseUuid;
+    private String parentTaskUuid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +82,9 @@ public class CaseEditActivity extends AbstractEditActivity {
 
         Bundle params = getIntent().getExtras();
         caseUuid = params.getString(KEY_CASE_UUID);
+        if(params.getString(KEY_PARENT_TASK_UUID) != null) {
+            parentTaskUuid = params.getString(KEY_PARENT_TASK_UUID);
+        }
         adapter = new CaseEditPagerAdapter(getSupportFragmentManager(), titles, caseUuid);
         createTabViews(adapter);
 
@@ -126,7 +134,13 @@ public class CaseEditActivity extends AbstractEditActivity {
         switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button
             case android.R.id.home:
-                NavUtils.navigateUpFromSameTask(this);
+                if(parentTaskUuid != null) {
+                    Intent intent = new Intent(this, TaskEditActivity.class);
+                    intent.putExtra(Task.UUID, parentTaskUuid);
+                    startActivity(intent);
+                } else {
+                    NavUtils.navigateUpFromSameTask(this);
+                }
 
                 //Home/back button
                 return true;

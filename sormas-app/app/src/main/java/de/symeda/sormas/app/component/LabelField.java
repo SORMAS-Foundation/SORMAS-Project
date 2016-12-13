@@ -4,6 +4,7 @@ import android.content.Context;
 import android.databinding.BindingAdapter;
 import android.databinding.InverseBindingAdapter;
 import android.databinding.InverseBindingListener;
+import android.graphics.Paint;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
@@ -31,6 +32,7 @@ public class LabelField extends PropertyField<String> {
 
     private TextView textCaption;
     private TextView textContent;
+    private String appendedText;
 
     public LabelField(Context context) {
         super(context);
@@ -47,9 +49,20 @@ public class LabelField extends PropertyField<String> {
         initializeViews(context);
     }
 
+    public void appendText(String text) {
+        appendedText = text;
+    }
+
+    public void setUnderline() {
+        textContent.setPaintFlags(textContent.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+    }
+
     @Override
     public void setValue(String value) {
         textContent.setText(value);
+        if(appendedText != null && appendedText != "") {
+            textContent.append(" " + appendedText);
+        }
     }
 
     @Override

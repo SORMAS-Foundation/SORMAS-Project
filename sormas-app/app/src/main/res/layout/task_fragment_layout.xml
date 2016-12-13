@@ -46,7 +46,7 @@
                 android:layout_height="wrap_content"
                 android:paddingTop="@dimen/field_padding"
                 android:paddingBottom="@dimen/field_padding"
-                app:caze="@{task.caze}"/>
+                app:caze="@{task.caze}" />
 
             <LinearLayout
                 android:orientation="horizontal"
