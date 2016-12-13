@@ -4,6 +4,7 @@ import android.content.Context;
 import android.databinding.BindingAdapter;
 import android.databinding.InverseBindingAdapter;
 import android.databinding.InverseBindingListener;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -53,8 +54,12 @@ public class LabelField extends PropertyField<String> {
         appendedText = text;
     }
 
-    public void setUnderline() {
+    public void underline() {
         textContent.setPaintFlags(textContent.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+    }
+
+    public void colorize(int color) {
+        textContent.setTextColor(color);
     }
 
     @Override

@@ -4,10 +4,10 @@ import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 import java.util.List;
 
@@ -95,7 +95,8 @@ public class TaskTab extends FormTab {
         });
 
         binding.taskCaze.appendText("\u279D");
-        binding.taskCaze.setUnderline();
+        binding.taskCaze.underline();
+        binding.taskCaze.colorize(ContextCompat.getColor(getContext(), R.color.colorPrimary));
     }
 
     public void showCaseEditView(Case caze) {
