@@ -68,12 +68,19 @@ public class VisitService extends AbstractAdoService<Visit> {
 		// only disease relevant
 		filter = cb.and(filter, cb.equal(from.get(Visit.DISEASE), contact.getCaze().getDisease()));
 		
-		//TODO #12 use report date time
-		if (contact.getLastContactDate() != null) {
-			Predicate dateFilter = cb.greaterThan(from.get(Visit.VISIT_DATE_TIME), contact.getLastContactDate());
-			filter = cb.and(filter, dateFilter);
+		// list all visits between contact date ...
+		// IMPORTANT: This is different than the calculation of "follow-up until", where the date of report is used as reference
+		// We also want to have visits that took place before.
+		if (contact.getLastContactDate() != null && contact.getLastContactDate().before(contact.getReportDateTime())) {
+			Predicate dateStartFilter = cb.greaterThan(from.get(Visit.VISIT_DATE_TIME), contact.getLastContactDate());
+			filter = cb.and(filter, dateStartFilter);
+		} else {
+			// use date of report as fallback
+			Predicate dateStartFilter = cb.greaterThan(from.get(Visit.VISIT_DATE_TIME), contact.getReportDateTime());
+			filter = cb.and(filter, dateStartFilter);
 		}
 
+		// .. and follow-up until
 		if (contact.getFollowUpUntil() != null) {
 			Predicate dateFilter = cb.lessThan(from.get(Visit.VISIT_DATE_TIME), contact.getFollowUpUntil());
 			filter = cb.and(filter, dateFilter);

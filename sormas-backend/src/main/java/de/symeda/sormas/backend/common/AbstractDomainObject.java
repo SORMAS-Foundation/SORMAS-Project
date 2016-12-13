@@ -16,17 +16,7 @@ import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.utils.DataHelper;
 
-/**
- * TODO: Übersetzung und UUID anpassen
- * 
- * Neue Objekte sollen automatisch eine UUID erhalten. Diese soll schon vor dem Speichern über getUuid() zurückgegeben werden
- * können. Die Erzeugung von UUIDs ist relativ zeitaufwändig. Die meisten Objekte werden aus der Datenbank geladen. Daher
- * sollte für diese Objekte keine UUIDs erzeugt werden. Außerdem verträgt sich das nicht mit lazy instance loading: Die UUIDs
- * werden später nicht überschrieben. Lösung: getUuid() erstellt ggf. eine UUID & der ADO-Interceptor ruft vor dem Speichern
- * getUuid() auf. Dann kann das auch gleich mit getDate() gemacht werden.
- * 
- * @author reise
- */
+
 @MappedSuperclass
 public abstract class AbstractDomainObject implements Serializable, Cloneable {
 
@@ -70,6 +60,15 @@ public abstract class AbstractDomainObject implements Serializable, Cloneable {
 	@Column(nullable = false, unique = true, length = 36)
 	public String getUuid() {
 		if (uuid == null) {
+			/** New objects should automatically get a UUID. 
+			 * This should be returned already before saving via getUuid(). 
+			 * The generation of UUIDs is relatively time-consuming. Most objects are loaded from the database. 
+			 * Therefore, no UUIDs should be created for these objects. 
+			 * This is not compatible with lazy instance loading:
+			 *  The UUIDs will not be overwritten later.
+			 * Solution: getUuid () may create a UUID & the ADO Interceptor calls getUuid() before saving.
+			 * Then this can be done immediately with getDate().
+			 */
 			uuid = DataHelper.createUuid();
 		}
 		return uuid;

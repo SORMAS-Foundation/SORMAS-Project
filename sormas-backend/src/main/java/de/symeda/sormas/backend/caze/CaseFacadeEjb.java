@@ -192,7 +192,6 @@ public class CaseFacadeEjb implements CaseFacade {
 		caze.setCaseOfficer(userService.getByReferenceDto(dto.getCaseOfficer()));
 		caze.setContactOfficer(userService.getByReferenceDto(dto.getContactOfficer()));
 
-		// TODO: split into multiple view dependant dtos?
 		caze.setSymptoms(symptomsFacade.fromDto(dto.getSymptoms()));
 
 		return caze;
