@@ -47,9 +47,12 @@ public class CaseEditActivity extends AbstractEditActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.case_edit_activity_layout);
+
+        // This makes sure that the given amount of tabs is kept in memory, which means that
+        // Android doesn't call onResume when the tab has no focus which would otherwise lead
+        // to certain spinners not displaying their values
         ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
-        //TODO #9 increase to 10 and add comment why this is needed
-        viewPager.setOffscreenPageLimit(4);
+        viewPager.setOffscreenPageLimit(10);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);
         if (toolbar != null) {
