@@ -10,11 +10,16 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.contact.Contact;
+import de.symeda.sormas.app.backend.contact.ContactDao;
 import de.symeda.sormas.app.backend.task.Task;
 
 /**
@@ -23,6 +28,9 @@ import de.symeda.sormas.app.backend.task.Task;
 public class TasksListFragment extends ListFragment {
 
     public static final String ARG_FILTER_STATUS = "filterStatus";
+
+    private String parentCaseUuid;
+    private String parentContactUuid;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -41,12 +49,32 @@ public class TasksListFragment extends ListFragment {
         }
 
         List<Task> tasks;
-        if (taskStatus == TaskStatus.PENDING) {
-            tasks = DatabaseHelper.getTaskDao().queryPending();
-        } else if (taskStatus == TaskStatus.NOT_EXECUTABLE) {
-            tasks = DatabaseHelper.getTaskDao().queryNotExecutable();
+        if(arguments.containsKey("caseUuid")) {
+            parentCaseUuid = (String)arguments.get("caseUuid");
+            final CaseDao caseDao = DatabaseHelper.getCaseDao();
+            final Case caze = caseDao.queryUuid((String)arguments.get("caseUuid"));
+            if(caze != null) {
+                tasks = DatabaseHelper.getTaskDao().queryForCase(caze);
+            } else {
+                tasks = new ArrayList<>();
+            }
+        } else if(arguments.containsKey("contactUuid")) {
+            parentContactUuid = (String)arguments.get("contactUuid");
+            final ContactDao contactDao = DatabaseHelper.getContactDao();
+            final Contact contact = contactDao.queryUuid((String)arguments.get("contactUuid"));
+            if(contact != null) {
+                tasks = DatabaseHelper.getTaskDao().queryForContact(contact);
+            } else {
+                tasks = new ArrayList<>();
+            }
         } else {
-            tasks = DatabaseHelper.getTaskDao().queryDoneOrDiscarded();
+            if (taskStatus == TaskStatus.PENDING) {
+                tasks = DatabaseHelper.getTaskDao().queryPending();
+            } else if (taskStatus == TaskStatus.NOT_EXECUTABLE) {
+                tasks = DatabaseHelper.getTaskDao().queryNotExecutable();
+            } else {
+                tasks = DatabaseHelper.getTaskDao().queryDoneOrDiscarded();
+            }
         }
 
         ArrayAdapter<Task> listAdapter = (ArrayAdapter<Task>)getListAdapter();
@@ -78,6 +106,12 @@ public class TasksListFragment extends ListFragment {
     public void showTaskEditView(Task task) {
         Intent intent = new Intent(getActivity(), TaskEditActivity.class);
         intent.putExtra(Task.UUID, task.getUuid());
+        if(parentCaseUuid != null) {
+            intent.putExtra("caseUuid", parentCaseUuid);
+        }
+        if(parentContactUuid != null) {
+            intent.putExtra("contactUuid", parentContactUuid);
+        }
         startActivity(intent);
     }
 }

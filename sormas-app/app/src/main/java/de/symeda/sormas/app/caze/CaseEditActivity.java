@@ -73,7 +73,8 @@ public class CaseEditActivity extends AbstractEditActivity {
                 getResources().getText(R.string.headline_case_data),
                 getResources().getText(R.string.headline_patient),
                 getResources().getText(R.string.headline_symptoms),
-                getResources().getText(R.string.headline_contacts)
+                getResources().getText(R.string.headline_contacts),
+                getResources().getText(R.string.headline_task)
         };
     }
 
@@ -123,6 +124,11 @@ public class CaseEditActivity extends AbstractEditActivity {
             // case contacts tab
             case 3:
                 updateActionBarGroups(menu,false, true, false);
+                break;
+
+            // case tasks tab
+            case 4:
+                updateActionBarGroups(menu, false, false, false);
                 break;
         }
 

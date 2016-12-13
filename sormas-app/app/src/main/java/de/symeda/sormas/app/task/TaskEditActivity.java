@@ -3,6 +3,7 @@ package de.symeda.sormas.app.task;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -13,10 +14,12 @@ import android.widget.Toast;
 
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.task.TaskDao;
 import de.symeda.sormas.app.caze.CaseEditActivity;
+import de.symeda.sormas.app.contact.ContactEditActivity;
 
 
 /**
@@ -25,6 +28,8 @@ import de.symeda.sormas.app.caze.CaseEditActivity;
 public class TaskEditActivity extends AppCompatActivity {
 
     private TaskTab taskTab;
+    private String parentCaseUuid;
+    private String parentContactUuid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +54,14 @@ public class TaskEditActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
+        Bundle params = getIntent().getExtras();
+        if(params.getString("caseUuid") != null) {
+            parentCaseUuid = params.getString("caseUuid");
+        }
+        if(params.getString("contactUuid") != null) {
+            parentContactUuid = params.getString("contactUuid");
+        }
+
         // pass activity arguments into tab
 
         taskTab.onResume();
@@ -64,7 +77,23 @@ public class TaskEditActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            // Respond to the action bar's Up/Home button
+            case android.R.id.home:
+                if(parentCaseUuid != null) {
+                    Intent intent = new Intent(this, CaseEditActivity.class);
+                    intent.putExtra(CaseEditActivity.KEY_CASE_UUID, parentCaseUuid);
+                    intent.putExtra(CaseEditActivity.KEY_PAGE, 4);
+                    startActivity(intent);
+                } else if(parentContactUuid != null) {
+                    Intent intent = new Intent(this, ContactEditActivity.class);
+                    intent.putExtra(ContactEditActivity.KEY_CONTACT_UUID, parentContactUuid);
+                    intent.putExtra(ContactEditActivity.KEY_PAGE, 2);
+                    startActivity(intent);
+                } else {
+                    NavUtils.navigateUpFromSameTask(this);
+                }
 
+                return true;
             case R.id.action_save:
                 Task task = (Task)taskTab.getData();
 

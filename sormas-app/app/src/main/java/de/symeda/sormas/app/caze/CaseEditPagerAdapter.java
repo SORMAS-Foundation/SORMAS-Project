@@ -5,6 +5,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
+import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
@@ -12,6 +13,7 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.contact.ContactsListFragment;
 import de.symeda.sormas.app.person.PersonEditTab;
+import de.symeda.sormas.app.task.TasksListFragment;
 
 /**
  * Created by Stefan Szczesny on 27.07.2016.
@@ -65,6 +67,12 @@ public class CaseEditPagerAdapter extends FragmentStatePagerAdapter {
                 contactsListTab.setArguments(caseEditBundle);
                 frag = contactsListTab;
                 break;
+            case 4:
+                TasksListFragment tasksListTab = new TasksListFragment();
+                Bundle arguments = new Bundle();
+                arguments.putSerializable("caseUuid", (String)caseEditBundle.get(Case.UUID));
+                tasksListTab.setArguments(arguments);
+                frag = tasksListTab;
         }
         return frag;
     }

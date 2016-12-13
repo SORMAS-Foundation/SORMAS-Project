@@ -13,7 +13,11 @@ import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.api.task.TaskStatus;
+import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.contact.Contact;
 
 /**
  * Created by Stefan Szczesny on 24.10.2016.
@@ -128,5 +132,22 @@ public class TaskDao extends AbstractAdoDao<Task> {
         }
     }
 
+    public List<Task> queryForCase(Case caze) {
+        try {
+            return queryBuilder().orderBy(Task.PRIORITY, true).orderBy(Task.DUE_DATE, true).where().eq(Task.CAZE+"_id", caze).query();
+        } catch(SQLException e) {
+            logger.log(LOG_LEVEL, e, "queryForCase threw exception");
+            throw new RuntimeException(e);
+        }
+    }
+
+    public List<Task> queryForContact(Contact contact) {
+        try {
+            return queryBuilder().orderBy(Task.PRIORITY, true).orderBy(Task.DUE_DATE, true).where().eq(Task.CONTACT+"_id", contact).query();
+        } catch(SQLException e) {
+            logger.log(LOG_LEVEL, e, "queryForContact threw exception");
+            throw new RuntimeException(e);
+        }
+    }
 
 }
