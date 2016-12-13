@@ -48,6 +48,7 @@ public class CaseEditActivity extends AbstractEditActivity {
 
         setContentView(R.layout.case_edit_activity_layout);
         ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
+        //TODO #9 increase to 10 and add comment why this is needed
         viewPager.setOffscreenPageLimit(4);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);

@@ -45,7 +45,7 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
 
     public void showDateFragment(final DateField dateField) {
         SelectDateFragment newFragment = new SelectDateFragment();
-        
+
         newFragment.setOnDateSetListener(new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet (DatePicker view,int yy, int mm, int dd){
@@ -215,6 +215,7 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
         ft.detach(this).attach(this).commit();
     }
 
+    //TODO #9 merge with DataUtils.getItems, call it toItems
     protected List<Item> toItems(List<?> listBefore, boolean withNull) {
         List<Item> listItems = new ArrayList<>();
         if(withNull) {

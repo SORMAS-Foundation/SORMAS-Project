@@ -220,6 +220,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		}
 	}
 	
+	// TODO #35 add comment with logic
 	private void updateFollowUpUntil(Contact contact) {
 		Disease disease = contact.getCaze().getDisease();
 		int followUpDuration = getFollowUpDuration(disease);

@@ -40,8 +40,9 @@ public abstract class AbstractEditActivity extends AppCompatActivity {
     protected SlidingTabLayout tabs;
     protected int currentTab;
 
-
+    // TODO #4 use android ID's for parameters
     protected void updateActionBarGroups(Menu menu, boolean help, boolean addNewEntry, boolean save) {
+        // TODO #4 all groups invisible first
         menu.setGroupVisible(R.id.group_action_help,help);
         menu.setGroupVisible(R.id.group_action_add,addNewEntry);
         menu.setGroupVisible(R.id.group_action_save,save);

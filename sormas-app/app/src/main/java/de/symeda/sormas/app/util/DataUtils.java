@@ -93,6 +93,7 @@ public class DataUtils {
 
     /**
      * Fill the spinner for the given list, set the selected entry, register the base listeners and the given ones.
+     * TODO #9 remove
      */
     public static SpinnerField initSpinnerField(SpinnerField spinnerField, List<Item> items, final AdapterView.OnItemSelectedListener ...moreListeners) {
         spinnerField.initialize(items, moreListeners);

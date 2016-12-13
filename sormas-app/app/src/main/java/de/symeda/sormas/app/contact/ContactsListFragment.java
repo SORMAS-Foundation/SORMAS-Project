@@ -20,9 +20,6 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.util.Callback;
 
-/**
- * Created by Martin on 13.08.2016.
- */
 public class ContactsListFragment extends ListFragment {
 
     private String caseUuid;
@@ -52,8 +49,7 @@ public class ContactsListFragment extends ListFragment {
                 try {
                     contacts = DatabaseHelper.getContactDao().getByCase(caze);
                 } catch (SQLException e) {
-//                    e.printStackTrace();
-                    // TODO exception handling
+                    e.printStackTrace();
                 }
                 ArrayAdapter<Contact> listAdapter = (ArrayAdapter<Contact>)getListAdapter();
                 listAdapter.clear();

@@ -68,6 +68,7 @@ public class VisitService extends AbstractAdoService<Visit> {
 		// only disease relevant
 		filter = cb.and(filter, cb.equal(from.get(Visit.DISEASE), contact.getCaze().getDisease()));
 		
+		//TODO #12 use report date time
 		if (contact.getLastContactDate() != null) {
 			Predicate dateFilter = cb.greaterThan(from.get(Visit.VISIT_DATE_TIME), contact.getLastContactDate());
 			filter = cb.and(filter, dateFilter);

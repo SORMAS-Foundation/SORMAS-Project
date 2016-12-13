@@ -31,7 +31,7 @@ public class ContactDao extends AbstractAdoDao<Contact> {
     public List<Contact> getByCase(Case caze)  throws SQLException {
 
         QueryBuilder qb = queryBuilder();
-        qb.where().eq("caze_id", caze);
+        qb.where().eq(Contact.CAZE+"_id", caze);
         qb.orderBy(Contact.LAST_CONTACT_DATE, false);
         return qb.query();
 
