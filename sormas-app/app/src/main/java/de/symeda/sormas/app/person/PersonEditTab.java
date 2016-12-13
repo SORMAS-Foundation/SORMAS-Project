@@ -29,6 +29,7 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.component.DateField;
+import de.symeda.sormas.app.component.FieldHelper;
 import de.symeda.sormas.app.component.PropertyField;
 import de.symeda.sormas.app.component.SpinnerField;
 import de.symeda.sormas.app.component.TextField;
@@ -61,7 +62,7 @@ public class PersonEditTab extends FormTab {
         binding.setPerson(person);
 
         // date of birth
-        DataUtils.initSpinnerField(binding.personBirthdateDD, toItems(DateHelper.getDaysInMonth(),true), new AdapterView.OnItemSelectedListener() {
+        FieldHelper.initSpinnerField(binding.personBirthdateDD, DataUtils.toItems(DateHelper.getDaysInMonth(),true), new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 updateApproximateAgeField();
@@ -71,7 +72,7 @@ public class PersonEditTab extends FormTab {
             public void onNothingSelected(AdapterView<?> parent) {
             }
         });
-        DataUtils.initSpinnerField(binding.personBirthdateMM, toItems(DateHelper.getMonthsInYear(),true), new AdapterView.OnItemSelectedListener() {
+        FieldHelper.initSpinnerField(binding.personBirthdateMM, DataUtils.toItems(DateHelper.getMonthsInYear(),true), new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 updateApproximateAgeField();
@@ -81,7 +82,7 @@ public class PersonEditTab extends FormTab {
             public void onNothingSelected(AdapterView<?> parent) {
             }
         });
-        DataUtils.initSpinnerField(binding.personBirthdateYYYY, toItems(DateHelper.getYearsToNow(),true), new AdapterView.OnItemSelectedListener() {
+        FieldHelper.initSpinnerField(binding.personBirthdateYYYY, DataUtils.toItems(DateHelper.getYearsToNow(),true), new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 updateApproximateAgeField();
@@ -93,10 +94,10 @@ public class PersonEditTab extends FormTab {
         });
 
         // age type
-        DataUtils.initSpinnerField(binding.personApproximateAgeType, ApproximateAgeType.class);
+        FieldHelper.initSpinnerField(binding.personApproximateAgeType, ApproximateAgeType.class);
 
         // gender
-        DataUtils.initSpinnerField(binding.personSex, Sex.class);
+        FieldHelper.initSpinnerField(binding.personSex, Sex.class);
 
         // date of death
         binding.personDeathDate.initialize(this);
@@ -109,7 +110,7 @@ public class PersonEditTab extends FormTab {
 
 
         // status of patient
-        DataUtils.initSpinnerField(binding.personPresentCondition, PresentCondition.class, new AdapterView.OnItemSelectedListener() {
+        FieldHelper.initSpinnerField(binding.personPresentCondition, PresentCondition.class, new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 updateDateOfDeathField();
@@ -133,7 +134,7 @@ public class PersonEditTab extends FormTab {
         final LinearLayout occupationDetailsLayout = binding.formCpOccupationDetailsView;
         final TextField occupationDetails = binding.personOccupationDetails;
         final LinearLayout occupationFacilityLayout = binding.formCpOccupationFacilityView;
-        DataUtils.initSpinnerField(binding.personOccupationType1, OccupationType.class, new AdapterView.OnItemSelectedListener() {
+        FieldHelper.initSpinnerField(binding.personOccupationType1, OccupationType.class, new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 Item item = (Item)parent.getItemAtPosition(position);
@@ -147,7 +148,7 @@ public class PersonEditTab extends FormTab {
             }
         });
 
-        DataUtils.initFacilitySpinnerField(binding.personOccupationFacility);
+        FieldHelper.initFacilitySpinnerField(binding.personOccupationFacility);
 
         // ================ Additional settings ================
 
@@ -255,13 +256,4 @@ public class PersonEditTab extends FormTab {
         return binding.getPerson();
     }
 
-    /**
-     * Commit all values from model to ado.
-     * @param ado
-     * @return
-     */
-    @Override
-    protected AbstractDomainObject commit(AbstractDomainObject ado) {
-        return null;
-    }
 }

@@ -34,6 +34,7 @@ import de.symeda.sormas.app.backend.region.DistrictDao;
 import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.backend.region.RegionDao;
 import de.symeda.sormas.app.component.DateField;
+import de.symeda.sormas.app.component.FieldHelper;
 import de.symeda.sormas.app.component.RadioGroupField;
 import de.symeda.sormas.app.component.SpinnerField;
 import de.symeda.sormas.app.component.TextField;
@@ -94,9 +95,9 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
 
                     final List emptyList = new ArrayList<>();
 
-                    DataUtils.initCommunitySpinnerField((SpinnerField)dialogView.findViewById(R.id.location_community));
+                    FieldHelper.initCommunitySpinnerField((SpinnerField)dialogView.findViewById(R.id.location_community));
 
-                    DataUtils.initRegionSpinnerField((SpinnerField)dialogView.findViewById(R.id.location_region), new AdapterView.OnItemSelectedListener() {
+                    FieldHelper.initRegionSpinnerField((SpinnerField)dialogView.findViewById(R.id.location_region), new AdapterView.OnItemSelectedListener() {
                         @Override
                         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                             SpinnerField districtSpinner = (SpinnerField) dialogView.findViewById(R.id.location_district);
@@ -106,7 +107,7 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
                                 if(selectedValue != null) {
                                     districtList = DatabaseHelper.getDistrictDao().getByRegion((Region)selectedValue);
                                 }
-                                districtSpinner.setAdapterAndValue(districtSpinner.getValue(), DataUtils.getItems(districtList));
+                                districtSpinner.setAdapterAndValue(districtSpinner.getValue(), DataUtils.toItems(districtList));
                             }
                         }
 
@@ -116,7 +117,7 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
                         }
                     });
 
-                    DataUtils.initDistrictSpinnerField((SpinnerField)dialogView.findViewById(R.id.location_district), new AdapterView.OnItemSelectedListener() {
+                    FieldHelper.initDistrictSpinnerField((SpinnerField)dialogView.findViewById(R.id.location_district), new AdapterView.OnItemSelectedListener() {
                         @Override
                         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                             SpinnerField communitySpinner = (SpinnerField) dialogView.findViewById(R.id.location_community);
@@ -126,7 +127,7 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
                                 if(selectedValue != null) {
                                     communityList = DatabaseHelper.getCommunityDao().getByDistrict((District)selectedValue);
                                 }
-                                communitySpinner.setAdapterAndValue(communitySpinner.getValue(), DataUtils.getItems(communityList));
+                                communitySpinner.setAdapterAndValue(communitySpinner.getValue(), DataUtils.toItems(communityList));
                             }
                         }
 
@@ -208,25 +209,9 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
         v.setEnabled(true);
     }
 
-    protected abstract AbstractDomainObject commit(AbstractDomainObject ado);
-
     protected void reloadFragment() {
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         ft.detach(this).attach(this).commit();
     }
-
-    //TODO #9 merge with DataUtils.getItems, call it toItems
-    protected List<Item> toItems(List<?> listBefore, boolean withNull) {
-        List<Item> listItems = new ArrayList<>();
-        if(withNull) {
-            listItems.add(new Item("",null));
-        }
-        for (Object o : listBefore) {
-            listItems.add(new Item(String.valueOf(o),o));
-        }
-        return listItems;
-    }
-
-
 
 }

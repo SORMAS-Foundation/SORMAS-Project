@@ -28,6 +28,7 @@ import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.backend.user.User;
+import de.symeda.sormas.app.component.FieldHelper;
 import de.symeda.sormas.app.component.SpinnerField;
 import de.symeda.sormas.app.component.TextField;
 import de.symeda.sormas.app.databinding.CaseNewFragmentLayoutBinding;
@@ -66,13 +67,13 @@ public class CaseNewTab extends FormTab {
 
         binding.setCaze(caze);
 
-        DataUtils.initSpinnerField(binding.caseDataDisease, Disease.class);
-        DataUtils.initPersonSpinnerField(binding.caseDataPerson);
-        DataUtils.initFacilitySpinnerField(binding.caseDataHealthFacility);
+        FieldHelper.initSpinnerField(binding.caseDataDisease, Disease.class);
+        FieldHelper.initPersonSpinnerField(binding.caseDataPerson);
+        FieldHelper.initFacilitySpinnerField(binding.caseDataHealthFacility);
 
         final List emptyList = new ArrayList<>();
 
-        DataUtils.initRegionSpinnerField(binding.caseDataRegion, new AdapterView.OnItemSelectedListener() {
+        FieldHelper.initRegionSpinnerField(binding.caseDataRegion, new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 SpinnerField spinnerField = binding.caseDataDistrict;
@@ -82,7 +83,7 @@ public class CaseNewTab extends FormTab {
                     if(selectedValue != null) {
                         districtList = DatabaseHelper.getDistrictDao().getByRegion((Region)selectedValue);
                     }
-                    spinnerField.setSpinnerAdapter(DataUtils.getItems(districtList));
+                    spinnerField.setSpinnerAdapter(DataUtils.toItems(districtList));
                 }
             }
 
@@ -94,7 +95,7 @@ public class CaseNewTab extends FormTab {
 
 
 
-        DataUtils.initSpinnerField(binding.caseDataDistrict, DataUtils.getItems(emptyList), new AdapterView.OnItemSelectedListener() {
+        FieldHelper.initSpinnerField(binding.caseDataDistrict, DataUtils.toItems(emptyList), new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 SpinnerField spinnerField = binding.caseDataCommunity;
@@ -104,7 +105,7 @@ public class CaseNewTab extends FormTab {
                     if(selectedValue != null) {
                         communityList = DatabaseHelper.getCommunityDao().getByDistrict((District)selectedValue);
                     }
-                    spinnerField.setSpinnerAdapter(DataUtils.getItems(communityList));
+                    spinnerField.setSpinnerAdapter(DataUtils.toItems(communityList));
                 }
             }
 
@@ -115,7 +116,7 @@ public class CaseNewTab extends FormTab {
         });
 
 
-        DataUtils.initSpinnerField(binding.caseDataCommunity, DataUtils.getItems(emptyList), new AdapterView.OnItemSelectedListener() {
+        FieldHelper.initSpinnerField(binding.caseDataCommunity, DataUtils.toItems(emptyList), new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 SpinnerField spinnerField = binding.caseDataHealthFacility;
@@ -125,7 +126,7 @@ public class CaseNewTab extends FormTab {
                     if(selectedValue != null) {
                         facilityList = DatabaseHelper.getFacilityDao().getByCommunity((Community)selectedValue);
                     }
-                    spinnerField.setSpinnerAdapter(DataUtils.getItems(facilityList));
+                    spinnerField.setSpinnerAdapter(DataUtils.toItems(facilityList));
                 }
             }
 
@@ -183,7 +184,7 @@ public class CaseNewTab extends FormTab {
                     // refresh reference for pre-selection in personField
                     // DOES WORK NOW because we've got our own awesome custom fields :D
                     person = personNew;
-                    DataUtils.initPersonSpinnerField(binding.caseDataPerson);
+                    FieldHelper.initPersonSpinnerField(binding.caseDataPerson);
                     SpinnerField spinner = binding.caseDataPerson;
                     spinner.setValue(person);
                     //reloadFragment();
@@ -202,11 +203,6 @@ public class CaseNewTab extends FormTab {
             Toast.makeText(getContext(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
-    }
-
-    @Override
-    protected AbstractDomainObject commit(AbstractDomainObject ado) {
-        return null;
     }
 
     @Override

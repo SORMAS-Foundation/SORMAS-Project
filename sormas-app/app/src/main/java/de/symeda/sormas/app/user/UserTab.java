@@ -49,11 +49,11 @@ public class UserTab extends FormTab {
         UserDao userDao = DatabaseHelper.getUserDao();
         List<Item> items = null;
         if (userRoles.size() == 0) {
-            items = DataUtils.getItems(userDao.queryForAll());
+            items = DataUtils.toItems(userDao.queryForAll());
         } else {
             for (UserRole userRole : userRoles) {
                 if (items == null) {
-                    items = DataUtils.getItems(userDao.queryForEq(User.USER_ROLE, userRole));
+                    items = DataUtils.toItems(userDao.queryForEq(User.USER_ROLE, userRole));
                 } else {
                     items = DataUtils.addItems(items, userDao.queryForEq(User.USER_ROLE, userRole));
                 }
@@ -63,11 +63,6 @@ public class UserTab extends FormTab {
         binding.configUser.setSpinnerAdapter(items);
         binding.configUser.setValue(user);
         binding.configServerUrl.setValue((String)ConfigProvider.getServerRestUrl());
-    }
-
-    @Override
-    protected AbstractDomainObject commit(AbstractDomainObject ado) {
-        return ado;
     }
 
     public User getUser() {

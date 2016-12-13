@@ -24,6 +24,7 @@ import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
+import de.symeda.sormas.app.component.FieldHelper;
 import de.symeda.sormas.app.component.PropertyField;
 import de.symeda.sormas.app.component.SymptomStateField;
 import de.symeda.sormas.app.databinding.CaseSymptomsFragmentLayoutBinding;
@@ -66,9 +67,9 @@ public class CaseEditSymptomsTab extends FormTab {
             temperature.add(new Item(SymptomsHelper.getTemperatureString(temperatureValue),temperatureValue));
         }
 
-        DataUtils.initSpinnerField(binding.symptomsTemperature, temperature);
+        FieldHelper.initSpinnerField(binding.symptomsTemperature, temperature);
 
-        DataUtils.initSpinnerField(binding.symptomsTemperatureSource, TemperatureSource.class);
+        FieldHelper.initSpinnerField(binding.symptomsTemperatureSource, TemperatureSource.class);
 
         binding.symptomsUnexplainedBleeding.addValueChangedListener(new PropertyField.ValueChangeListener() {
             @Override
@@ -160,13 +161,4 @@ public class CaseEditSymptomsTab extends FormTab {
         return binding.getSymptoms();
     }
 
-    /**
-     * Commit all values from model to ado.
-     * @param ado
-     * @return
-     */
-    @Override
-    protected AbstractDomainObject commit(AbstractDomainObject ado) {
-        return null;
-    }
 }

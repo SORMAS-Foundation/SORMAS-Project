@@ -67,8 +67,8 @@ public class ContactNewTab extends FormTab {
 
         binding.setContact(contact);
 
-        addDateField(R.id.contact_lastContactDate);
-        addRadioGroupField(R.id.contact_contactProximity, ContactProximity.class);
+        binding.contactLastContactDate.initialize(this);
+        binding.contactContactProximity.initialize(ContactProximity.class);
 
 //        ImageButton newPersonButton = (ImageButton) getView().findViewById(R.id.case_addPerson_btn);
 //        newPersonButton.setOnClickListener(new View.OnClickListener() {
@@ -139,7 +139,7 @@ public class ContactNewTab extends FormTab {
     }
 
     private void updatePersonSelectRadioGroupField(Person person, List<Person> existingPersons, View dialogView) {
-        List<Item> items = DataUtils.getItems(existingPersons, false);
+        List<Item> items = DataUtils.toItems(existingPersons, false);
         items.add(0,new Item<Person>(getResources().getString(R.string.headline_new_person),person));
 
         final RadioGroupField radioGroupField = (RadioGroupField) dialogView.findViewById(R.id.personSelect_selectedPerson);
@@ -151,11 +151,6 @@ public class ContactNewTab extends FormTab {
 
     public Person getSelectedPersonFromDialog() {
         return selectedPersonFromDialog;
-    }
-
-    @Override
-    protected AbstractDomainObject commit(AbstractDomainObject ado) {
-        return null;
     }
 
     @Override

@@ -78,12 +78,6 @@ public class TaskTab extends FormTab {
         }
     }
 
-
-    @Override
-    protected AbstractDomainObject commit(AbstractDomainObject ado) {
-        return null;
-    }
-
     @Override
     public AbstractDomainObject getData() {
         return binding.getTask();
