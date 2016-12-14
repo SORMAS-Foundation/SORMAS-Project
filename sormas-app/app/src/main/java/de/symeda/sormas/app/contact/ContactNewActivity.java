@@ -86,10 +86,7 @@ public class ContactNewActivity extends AppCompatActivity {
 //                NavUtils.navigateUpFromSameTask(this);
 
 
-                Intent intentCaseContacts = new Intent(this, CaseEditActivity.class);
-                intentCaseContacts.putExtra(CaseEditActivity.KEY_PAGE, 3);
-                intentCaseContacts.putExtra(CaseEditActivity.KEY_CASE_UUID, caseUuid);
-                startActivity(intentCaseContacts);
+                navBackToCaseContacts();
 
                 return true;
 
@@ -127,11 +124,13 @@ public class ContactNewActivity extends AppCompatActivity {
                                 public void call() {
                                     contact.setPerson(contactNewTab.getSelectedPersonFromDialog());
                                     savePersonAndContact(contact);
+                                    navBackToCaseContacts();
                                 }
                             });
                         }
                         else {
                             savePersonAndContact(contact);
+                            navBackToCaseContacts();
                         }
                     }
 
@@ -143,6 +142,13 @@ public class ContactNewActivity extends AppCompatActivity {
 
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void navBackToCaseContacts() {
+        Intent intentCaseContacts = new Intent(this, CaseEditActivity.class);
+        intentCaseContacts.putExtra(CaseEditActivity.KEY_PAGE, 3);
+        intentCaseContacts.putExtra(CaseEditActivity.KEY_CASE_UUID, caseUuid);
+        startActivity(intentCaseContacts);
     }
 
     private void savePersonAndContact(Contact contact) {

@@ -97,7 +97,12 @@ public class ContactNewTab extends FormTab {
                 public void onClick(View v) {
                     List<Person> existingPersons = null;
                     try {
-                        existingPersons = DatabaseHelper.getPersonDao().getAllByName(bindingPersonSelect.personFirstName.getValue(), bindingPersonSelect.personLastName.getValue());
+                        // update person name from the fields
+                        person.setFirstName(bindingPersonSelect.personFirstName.getValue());
+                        person.setLastName(bindingPersonSelect.personLastName.getValue());
+
+                        // search for existing person with this name
+                        existingPersons = DatabaseHelper.getPersonDao().getAllByName(person.getFirstName(), person.getLastName());
                     } catch (SQLException e) {
                         Toast.makeText(getContext(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                         e.printStackTrace();
@@ -137,10 +142,12 @@ public class ContactNewTab extends FormTab {
         List<Item> items = new ArrayList<Item>();
         for (Person existingPerson: existingPersons) {
             StringBuilder sb = new StringBuilder();
-            sb.append(existingPerson.toString() + "<br />" + existingPerson.getSex());
-            sb.append(existingPerson.getApproximateAge()!=null?" | " + existingPerson.getApproximateAge() + " " +existingPerson.getApproximateAgeType():"");
-            sb.append(existingPerson.getPresentCondition()!=null?" | " +  existingPerson.getPresentCondition():"");
-            items.add(new Item<Person>(Html.fromHtml(sb.toString()).toString(),person));
+            sb.append(existingPerson.toString());
+            sb.append(existingPerson.getSex()!=null || existingPerson.getApproximateAge()!=null || existingPerson.getPresentCondition()!=null ? "<br />":"");
+            sb.append(existingPerson.getSex()!=null ? existingPerson.getSex():"");
+            sb.append(existingPerson.getApproximateAge()!=null ? " | " + existingPerson.getApproximateAge() + " " +existingPerson.getApproximateAgeType():"");
+            sb.append(existingPerson.getPresentCondition()!=null ? " | " +  existingPerson.getPresentCondition():"");
+            items.add(new Item<Person>(Html.fromHtml(sb.toString()).toString(),existingPerson));
         }
         Item newPerson = new Item<Person>(getResources().getString(R.string.headline_new_person),person);
         items.add(0,newPerson);
