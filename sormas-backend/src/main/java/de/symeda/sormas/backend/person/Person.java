@@ -17,7 +17,6 @@ import de.symeda.sormas.api.person.BurialConductor;
 import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.location.Location;
@@ -45,8 +44,6 @@ public class Person extends AbstractDomainObject {
 	
 	// TODO private Ethnicity ethnicity;
 	private Sex sex;
-	
-	private Case caze;
 	
 	private PresentCondition presentCondition;
 	private Integer birthdateDD;
@@ -154,14 +151,6 @@ public class Person extends AbstractDomainObject {
 		this.sex = sex;
 	}
 
-	@OneToOne(cascade = CascadeType.ALL, mappedBy=Case.PERSON)
-	public Case getCaze() {
-		return caze;
-	}
-	public void setCaze(Case caze) {
-		this.caze = caze;
-	}
-	
 	public PresentCondition getPresentCondition() {
 		return presentCondition;
 	}

@@ -1,9 +1,8 @@
 package de.symeda.sormas.api.facility;
 
-import de.symeda.sormas.api.DataTransferObject;
 import de.symeda.sormas.api.location.LocationDto;
 
-public class FacilityDto extends DataTransferObject {
+public class FacilityDto extends FacilityReferenceDto {
 
 	private static final long serialVersionUID = -7987228795475507196L;
 

@@ -2,6 +2,7 @@ package de.symeda.sormas.app.backend.task;
 
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.caze.CaseDtoHelper;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.user.User;
@@ -67,11 +68,10 @@ public class TaskDtoHelper extends AdoDtoHelper<Task, TaskDto> {
     @Override
     public void fillInnerFromAdo(TaskDto dto, Task ado) {
 
-
         dto.setTaskContext(ado.getTaskContext());
         if (ado.getCaze() != null) {
             Case caze = DatabaseHelper.getCaseDao().queryForId(ado.getCaze().getId());
-            dto.setCaze(AdoDtoHelper.toReferenceDto(caze));
+            dto.setCaze(CaseDtoHelper.toReferenceDto(caze));
         } else {
             dto.setCaze(null);
         }

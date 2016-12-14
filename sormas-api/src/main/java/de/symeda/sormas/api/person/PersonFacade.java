@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 
 @Remote
@@ -12,15 +13,15 @@ public interface PersonFacade {
 
     List<PersonReferenceDto> getAllPersons();
 
-	List<PersonReferenceDto> getAllPersonsAfter(Date date);
+	List<PersonReferenceDto> getPersonReferencesAfter(Date date);
     
-    List<PersonReferenceDto> getAllNoCasePersons();
-
+	List<PersonReferenceDto> getPersonsByRegion(RegionReferenceDto regionDto);
+	
     PersonReferenceDto getReferenceByUuid(String uuid);
     
     PersonDto getPersonByUuid(String uuid);
     
-	List<PersonDto> getAllCasePersonsAfter(Date date);
+	List<PersonDto> getPersonsAfter(Date date);
 
     PersonReferenceDto savePerson(PersonReferenceDto dto);
 

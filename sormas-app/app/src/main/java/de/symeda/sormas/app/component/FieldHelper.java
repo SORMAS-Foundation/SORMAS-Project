@@ -76,13 +76,7 @@ public class FieldHelper {
 
     public static SpinnerField initPersonSpinnerField(SpinnerField spinnerField, final AdapterView.OnItemSelectedListener ...moreListeners) {
         PersonDao personDao = DatabaseHelper.getPersonDao();
-        List<Item> items = null;
-        try {
-            items = DataUtils.toItems(personDao.getAllPersonsWithoutCase());
-        } catch (SQLException e) {
-            Toast.makeText(spinnerField.getContext(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
-        }
+        List<Item> items = DataUtils.toItems(personDao.queryForAll());
         spinnerField.initialize(items, moreListeners);
         return spinnerField;
     }

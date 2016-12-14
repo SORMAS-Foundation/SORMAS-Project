@@ -5,12 +5,10 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
-import de.symeda.sormas.api.ReferenceDto;
-
 @Remote
 public interface CommunityFacade {
 
-    List<ReferenceDto> getAllByDistrict(String districtUuid);
+    List<CommunityReferenceDto> getAllByDistrict(String districtUuid);
 
 	List<CommunityDto> getAllAfter(Date date);
 }

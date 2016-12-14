@@ -18,12 +18,16 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.CaseStatus;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.person.PersonService;
+import de.symeda.sormas.backend.region.CommunityFacadeEjb;
 import de.symeda.sormas.backend.region.CommunityService;
+import de.symeda.sormas.backend.region.DistrictFacadeEjb;
 import de.symeda.sormas.backend.region.DistrictService;
+import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLocal;
@@ -217,10 +221,10 @@ public class CaseFacadeEjb implements CaseFacade {
 		dto.setCaseStatus(entity.getCaseStatus());
 		dto.setPerson(PersonFacadeEjb.toReferenceDto(entity.getPerson()));
 		
-		dto.setRegion(DtoHelper.toReferenceDto(entity.getRegion()));
-		dto.setDistrict(DtoHelper.toReferenceDto(entity.getDistrict()));
-		dto.setCommunity(DtoHelper.toReferenceDto(entity.getCommunity()));
-		dto.setHealthFacility(DtoHelper.toReferenceDto(entity.getHealthFacility()));
+		dto.setRegion(RegionFacadeEjb.toReferenceDto(entity.getRegion()));
+		dto.setDistrict(DistrictFacadeEjb.toReferenceDto(entity.getDistrict()));
+		dto.setCommunity(CommunityFacadeEjb.toReferenceDto(entity.getCommunity()));
+		dto.setHealthFacility(FacilityFacadeEjb.toReferenceDto(entity.getHealthFacility()));
 		
 		dto.setReportingUser(UserFacadeEjb.toReferenceDto(entity.getReportingUser()));
 		dto.setReportDate(entity.getReportDate());

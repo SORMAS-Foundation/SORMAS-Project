@@ -19,11 +19,15 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.person.PersonIndexDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
+import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
+import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -35,6 +39,8 @@ public class PersonFacadeEjb implements PersonFacade {
 	private PersonService service;
 	@EJB
 	private FacilityService facilityService;
+	@EJB
+	private RegionService regionService;
 	@EJB
 	private LocationFacadeEjbLocal locationFacade;
 	@EJB
@@ -66,24 +72,25 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 	
 	@Override
-	public List<PersonReferenceDto> getAllPersonsAfter(Date date) {
+	public List<PersonReferenceDto> getPersonReferencesAfter(Date date) {
 		return service.getAllAfter(date).stream()
 			.map(c -> toReferenceDto(c))
 			.collect(Collectors.toList());
 	}
 	
 	@Override
-	public List<PersonDto> getAllCasePersonsAfter(Date date) {
+	public List<PersonDto> getPersonsAfter(Date date) {
 		List<PersonDto> result = service.getAllAfter(date).stream()
-			.map(c -> toCasePersonDto(c))
+			.map(c -> toDto(c))
 			.collect(Collectors.toList());
 		return result;
 	}
 
 	@Override
-	public List<PersonReferenceDto> getAllNoCasePersons() {
+	public List<PersonReferenceDto> getPersonsByRegion(RegionReferenceDto regionDto) {
 
-		return service.getAllNoCase().stream()
+		Region region = regionService.getByReferenceDto(regionDto);
+		return service.getPersonsByRegion(region).stream()
 				.map(c -> toReferenceDto(c))
 				.collect(Collectors.toList());
 	}
@@ -100,7 +107,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	public PersonDto getPersonByUuid(String uuid) {
 		return Optional.of(uuid)
 				.map(u -> service.getByUuid(u))
-				.map(c -> toCasePersonDto(c))
+				.map(c -> toDto(c))
 				.orElse(null);
 	}
 	
@@ -118,7 +125,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		Person person = fromCasePersonDto(dto);
 		service.ensurePersisted(person);
 		
-		return toCasePersonDto(person);
+		return toDto(person);
 		
 	}
 	
@@ -209,7 +216,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		return dto;
 	}
 	
-	public static PersonDto toCasePersonDto(Person entity) {
+	public static PersonDto toDto(Person entity) {
 		PersonDto dto = new PersonDto();
 		DtoHelper.fillReferenceDto(dto, entity);
 		
@@ -245,7 +252,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		
 		dto.setOccupationType(entity.getOccupationType());
 		dto.setOccupationDetails(entity.getOccupationDetails());
-		dto.setOccupationFacility(DtoHelper.toReferenceDto(entity.getOccupationFacility()));
+		dto.setOccupationFacility(FacilityFacadeEjb.toReferenceDto(entity.getOccupationFacility()));
 		return dto;
 	}
 

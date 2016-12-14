@@ -11,11 +11,11 @@ import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskFacade;
+import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
-import de.symeda.sormas.backend.util.DtoHelper;
 
 @Stateless(name = "TaskFacade")
 public class TaskFacadeEjb implements TaskFacade {
@@ -103,7 +103,7 @@ public class TaskFacadeEjb implements TaskFacade {
 		a.setTaskContext(b.getTaskContext());
 		a.setTaskStatus(b.getTaskStatus());
 		a.setTaskType(b.getTaskType());	
-		a.setCaze(DtoHelper.toReferenceDto(b.getCaze()));
+		a.setCaze(CaseFacadeEjb.toReferenceDto(b.getCaze()));
 
 		return a;
 	}

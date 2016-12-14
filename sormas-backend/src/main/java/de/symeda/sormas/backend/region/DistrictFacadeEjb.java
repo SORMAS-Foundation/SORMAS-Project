@@ -7,9 +7,9 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
-import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictFacade;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.backend.util.DtoHelper;
 
 @Stateless(name = "DistrictFacade")
@@ -21,12 +21,12 @@ public class DistrictFacadeEjb implements DistrictFacade {
 	private RegionService regionService;
 
 	@Override
-	public List<ReferenceDto> getAllByRegion(String regionUuid) {
+	public List<DistrictReferenceDto> getAllByRegion(String regionUuid) {
 		
 		Region region = regionService.getByUuid(regionUuid);
 		
 		return region.getDistricts().stream()
-				.map(f -> DtoHelper.toReferenceDto(f))
+				.map(f -> toReferenceDto(f))
 				.collect(Collectors.toList());
 	}
 	
@@ -37,14 +37,24 @@ public class DistrictFacadeEjb implements DistrictFacade {
 			.collect(Collectors.toList());
 	}
 	
+	public static DistrictReferenceDto toReferenceDto(District entity) {
+		if (entity == null) {
+			return null;
+		}
+		DistrictReferenceDto dto = new DistrictReferenceDto();
+		DtoHelper.fillReferenceDto(dto, entity);
+		return dto;
+	}
+	
 	private DistrictDto toDto(District entity) {
+		if (entity == null) {
+			return null;
+		}
 		DistrictDto dto = new DistrictDto();
-		dto.setUuid(entity.getUuid());
-		dto.setCreationDate(entity.getCreationDate());
-		dto.setChangeDate(entity.getChangeDate());
+		DtoHelper.fillReferenceDto(dto, entity);
 		
 		dto.setName(entity.getName());
-		dto.setRegion(DtoHelper.toReferenceDto(entity.getRegion()));
+		dto.setRegion(RegionFacadeEjb.toReferenceDto(entity.getRegion()));
 
 		return dto;
 	}

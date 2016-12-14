@@ -12,7 +12,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserHelper;
 import de.symeda.sormas.api.user.UserRole;
@@ -78,7 +78,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
     	ComboBox district = addField(UserDto.DISTRICT, ComboBox.class);
     	region.addValueChangeListener(e -> {
     		district.removeAllItems();
-    		ReferenceDto regionDto = (ReferenceDto)e.getProperty().getValue();
+    		RegionReferenceDto regionDto = (RegionReferenceDto)e.getProperty().getValue();
     		if (regionDto != null) {
     			district.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(regionDto.getUuid()));
     		}

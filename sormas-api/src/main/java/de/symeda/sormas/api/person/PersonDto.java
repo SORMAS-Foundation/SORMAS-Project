@@ -4,7 +4,7 @@ import java.util.Date;
 
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.utils.PreciseDateAdapter;
 
@@ -49,7 +49,7 @@ public class PersonDto extends PersonReferenceDto {
 	
 	private OccupationType occupationType;
 	private String occupationDetails;
-	private ReferenceDto occupationFacility;
+	private FacilityReferenceDto occupationFacility;
 
 	
 	public Integer getBirthdateDD() {
@@ -157,11 +157,11 @@ public class PersonDto extends PersonReferenceDto {
 		this.occupationDetails = occupationDetails;
 	}
 
-	public ReferenceDto getOccupationFacility() {
+	public FacilityReferenceDto getOccupationFacility() {
 		return occupationFacility;
 	}
 
-	public void setOccupationFacility(ReferenceDto occupationFacility) {
+	public void setOccupationFacility(FacilityReferenceDto occupationFacility) {
 		this.occupationFacility = occupationFacility;
 	}
 }

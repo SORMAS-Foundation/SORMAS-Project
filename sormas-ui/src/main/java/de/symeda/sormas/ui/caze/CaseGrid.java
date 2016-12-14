@@ -12,9 +12,9 @@ import com.vaadin.ui.Grid;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.I18nProperties;
-import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseStatus;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.UuidRenderer;
@@ -73,7 +73,7 @@ public class CaseGrid extends Grid {
 		}
 	}
 
-    public void setDistrictFilter(ReferenceDto district) {
+    public void setDistrictFilter(DistrictReferenceDto district) {
 		getContainer().removeContainerFilters(CaseDataDto.DISTRICT);
 		if (district != null) {
 	    	Equal filter = new Equal(CaseDataDto.DISTRICT, district);  

@@ -7,9 +7,11 @@ import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.region.CommunityReferenceDto;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -41,9 +43,9 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 
     	addField(CaseDataDto.DISEASE, NativeSelect.class);
     	
-    	persons = addField(CaseDataDto.PERSON, ComboBox.class);
-    	updatePersonsSelect();
-    	
+    	persons = addField(CaseDataDto.PERSON, ComboBox.class);    	
+		updatePersonsSelect();
+
     	Button personCreateButton = new Button(null, FontAwesome.PLUS_SQUARE);
     	personCreateButton.setDescription("Create new person");
     	personCreateButton.addStyleName(ValoTheme.BUTTON_LINK);
@@ -58,21 +60,21 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
     	
     	region.addValueChangeListener(e -> {
     		district.removeAllItems();
-    		ReferenceDto regionDto = (ReferenceDto)e.getProperty().getValue();
+    		RegionReferenceDto regionDto = (RegionReferenceDto)e.getProperty().getValue();
     		if (regionDto != null) {
     			district.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(regionDto.getUuid()));
     		}
-    	});
+       	});
     	district.addValueChangeListener(e -> {
     		community.removeAllItems();
-    		ReferenceDto districtDto = (ReferenceDto)e.getProperty().getValue();
+    		DistrictReferenceDto districtDto = (DistrictReferenceDto)e.getProperty().getValue();
     		if (districtDto != null) {
     			community.addItems(FacadeProvider.getCommunityFacade().getAllByDistrict(districtDto.getUuid()));
     		}
     	});
     	community.addValueChangeListener(e -> {
     		facility.removeAllItems();
-    		ReferenceDto communityDto = (ReferenceDto)e.getProperty().getValue();
+    		CommunityReferenceDto communityDto = (CommunityReferenceDto)e.getProperty().getValue();
     		if (communityDto != null) {
     			facility.addItems(FacadeProvider.getFacilityFacade().getAllByCommunity(communityDto.getUuid()));
     		}
@@ -84,13 +86,16 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
     }
     
     private void createPersonClicked() {
+    	
+    	// TODO replace with firstname and lastname of person as done in contact creation
+    	
     	ControllerProvider.getPersonController().create(
     			person ->  {
     				if (person != null) {
     					updatePersonsSelect();
     					// try to select new person
     					for (Object itemId : persons.getItemIds()) {
-    						ReferenceDto dto = (ReferenceDto)itemId;
+    						PersonReferenceDto dto = (PersonReferenceDto)itemId;
     						if (dto.getUuid().equals(person.getUuid())) {
     							persons.setValue(dto);
     							break;
@@ -103,7 +108,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
     private void updatePersonsSelect() {
     	Object value = persons.getValue();
     	persons.removeAllItems();
-    	persons.addItems(FacadeProvider.getPersonFacade().getAllNoCasePersons());
+    	persons.addItems(FacadeProvider.getPersonFacade().getAllPersons());
     	persons.setValue(value);
     }
     

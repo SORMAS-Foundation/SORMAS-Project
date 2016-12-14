@@ -1,7 +1,9 @@
 package de.symeda.sormas.api.location;
 
 import de.symeda.sormas.api.DataTransferObject;
-import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.region.CommunityReferenceDto;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 
 public class LocationDto extends DataTransferObject {
 
@@ -22,9 +24,9 @@ public class LocationDto extends DataTransferObject {
 	private String details;
 	private String city;
 	
-	private ReferenceDto region;
-	private ReferenceDto district;
-	private ReferenceDto community;
+	private RegionReferenceDto region;
+	private DistrictReferenceDto district;
+	private CommunityReferenceDto community;
 	
 	private Float latitude;
 	private Float longitude;
@@ -50,22 +52,22 @@ public class LocationDto extends DataTransferObject {
 		this.city = city;
 	}
 	
-	public ReferenceDto getRegion() {
+	public RegionReferenceDto getRegion() {
 		return region;
 	}
-	public void setRegion(ReferenceDto region) {
+	public void setRegion(RegionReferenceDto region) {
 		this.region = region;
 	}
-	public ReferenceDto getDistrict() {
+	public DistrictReferenceDto getDistrict() {
 		return district;
 	}
-	public void setDistrict(ReferenceDto district) {
+	public void setDistrict(DistrictReferenceDto district) {
 		this.district = district;
 	}
-	public ReferenceDto getCommunity() {
+	public CommunityReferenceDto getCommunity() {
 		return community;
 	}
-	public void setCommunity(ReferenceDto community) {
+	public void setCommunity(CommunityReferenceDto community) {
 		this.community = community;
 	}
 	public Float getLatitude() {

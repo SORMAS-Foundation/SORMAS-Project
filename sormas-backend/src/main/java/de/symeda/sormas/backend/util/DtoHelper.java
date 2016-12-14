@@ -6,19 +6,6 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 
 public final class DtoHelper {
 
-	/**
-	 * @deprecated inherit ReferenceDto (@see UserFacadeEjb)
-	 */
-	@Deprecated
-	public static ReferenceDto toReferenceDto(AbstractDomainObject entity) {
-		if (entity == null) {
-			return null;
-		}
-		ReferenceDto dto = new ReferenceDto();
-		fillReferenceDto(dto, entity);
-		return dto;
-	}
-	
 	public static void fillDto(DataTransferObject dto, AbstractDomainObject entity) {
 		dto.setCreationDate(entity.getCreationDate());
 		dto.setChangeDate(entity.getChangeDate());

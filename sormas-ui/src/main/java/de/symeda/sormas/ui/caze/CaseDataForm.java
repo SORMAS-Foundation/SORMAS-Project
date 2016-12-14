@@ -12,10 +12,12 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseHelper;
 import de.symeda.sormas.api.caze.CaseStatus;
+import de.symeda.sormas.api.region.CommunityReferenceDto;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.login.LoginHelper;
@@ -72,21 +74,21 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
     	
     	region.addValueChangeListener(e -> {
     		district.removeAllItems();
-    		ReferenceDto regionDto = (ReferenceDto)e.getProperty().getValue();
+    		RegionReferenceDto regionDto = (RegionReferenceDto)e.getProperty().getValue();
     		if (regionDto != null) {
     			district.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(regionDto.getUuid()));
     		}
     	});
     	district.addValueChangeListener(e -> {
     		community.removeAllItems();
-    		ReferenceDto districtDto = (ReferenceDto)e.getProperty().getValue();
+    		DistrictReferenceDto districtDto = (DistrictReferenceDto)e.getProperty().getValue();
     		if (districtDto != null) {
     			community.addItems(FacadeProvider.getCommunityFacade().getAllByDistrict(districtDto.getUuid()));
     		}
     	});
     	community.addValueChangeListener(e -> {
     		facility.removeAllItems();
-    		ReferenceDto communityDto = (ReferenceDto)e.getProperty().getValue();
+    		CommunityReferenceDto communityDto = (CommunityReferenceDto)e.getProperty().getValue();
     		if (communityDto != null) {
     			facility.addItems(FacadeProvider.getFacilityFacade().getAllByCommunity(communityDto.getUuid()));
     		}

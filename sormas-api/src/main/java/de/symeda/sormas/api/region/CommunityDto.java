@@ -1,16 +1,13 @@
 package de.symeda.sormas.api.region;
 
-import de.symeda.sormas.api.DataTransferObject;
-import de.symeda.sormas.api.ReferenceDto;
-
-public class CommunityDto extends DataTransferObject {
+public class CommunityDto extends CommunityReferenceDto {
 
 	private static final long serialVersionUID = -8833267932522978860L;
 
 	public static final String I18N_PREFIX = "Community";
 
 	private String name;
-	private ReferenceDto district;
+	private DistrictReferenceDto district;
 	
 	public String getName() {
 		return name;
@@ -19,10 +16,10 @@ public class CommunityDto extends DataTransferObject {
 		this.name = name;
 	}
 	
-	public ReferenceDto getDistrict() {
+	public DistrictReferenceDto getDistrict() {
 		return district;
 	}
-	public void setDistrict(ReferenceDto district) {
+	public void setDistrict(DistrictReferenceDto district) {
 		this.district = district;
 	}
 	

@@ -6,6 +6,8 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import de.symeda.sormas.api.DataTransferObject;
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.PreciseDateAdapter;
 
@@ -33,9 +35,9 @@ public class TaskDto extends DataTransferObject {
 	public static final String CONTEXT_REFERENCE = "contextReference";
 
 	private TaskContext taskContext;
-	private ReferenceDto caze;
+	private CaseReferenceDto caze;
 	private ReferenceDto event;
-	private ReferenceDto contact;
+	private ContactReferenceDto contact;
 	
 	private TaskType taskType;
 	private TaskPriority priority;
@@ -57,10 +59,10 @@ public class TaskDto extends DataTransferObject {
 	public void setTaskContext(TaskContext taskContext) {
 		this.taskContext = taskContext;
 	}
-	public ReferenceDto getCaze() {
+	public CaseReferenceDto getCaze() {
 		return caze;
 	}
-	public void setCaze(ReferenceDto caze) {
+	public void setCaze(CaseReferenceDto caze) {
 		this.caze = caze;
 	}
 	public ReferenceDto getEvent() {
@@ -69,10 +71,10 @@ public class TaskDto extends DataTransferObject {
 	public void setEvent(ReferenceDto event) {
 		this.event = event;
 	}
-	public ReferenceDto getContact() {
+	public ContactReferenceDto getContact() {
 		return contact;
 	}
-	public void setContact(ReferenceDto contact) {
+	public void setContact(ContactReferenceDto contact) {
 		this.contact = contact;
 	}
 	public TaskType getTaskType() {

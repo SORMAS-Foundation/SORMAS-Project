@@ -103,12 +103,6 @@ public class CaseNewActivity extends AppCompatActivity {
                     CaseDao caseDao = DatabaseHelper.getCaseDao();
                     caseDao.save(caze);
 
-                    // set person's case uuid
-                    PersonDao personDao = DatabaseHelper.getPersonDao();
-                    Person person = personDao.queryForId(caze.getPerson().getId());
-                    person.setCaseUuid(caze.getUuid());
-                    DatabaseHelper.getPersonDao().save(person);
-
                     SyncCasesTask.syncCases(getSupportFragmentManager());
 
                     Toast.makeText(this, caze.getPerson().toString() + " saved", Toast.LENGTH_SHORT).show();

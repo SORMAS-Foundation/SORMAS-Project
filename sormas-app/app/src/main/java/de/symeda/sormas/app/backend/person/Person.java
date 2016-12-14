@@ -41,7 +41,6 @@ public class Person extends AbstractDomainObject {
 	public static final String APPROXIMATE_AGE = "approximateAge";
 	public static final String ADDRESS = "address";
 	public static final String SEX = "sex";
-	public static final String CASE_UUID = "caseUuid";
 
 	@Column(nullable = false)
 	private String firstName;
@@ -68,10 +67,6 @@ public class Person extends AbstractDomainObject {
 	// TODO private Ethnicity ethnicity;
 	@Enumerated(EnumType.STRING)
 	private Sex sex;
-
-	// Make sure this is always in sync with Case.person
-	@DatabaseField(unique=true, width = 29)
-	private String caseUuid;
 
 	@Enumerated(EnumType.STRING)
 	private PresentCondition presentCondition;
@@ -255,13 +250,5 @@ public class Person extends AbstractDomainObject {
 		StringBuilder builder = new StringBuilder();
 		builder.append(getFirstName()).append(" ").append(getLastName().toUpperCase());
 		return builder.toString();
-	}
-
-	public String getCaseUuid() {
-		return caseUuid;
-	}
-
-	public void setCaseUuid(String caseUuid) {
-		this.caseUuid = caseUuid;
 	}
 }

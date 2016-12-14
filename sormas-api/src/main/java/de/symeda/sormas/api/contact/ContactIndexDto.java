@@ -3,9 +3,9 @@ package de.symeda.sormas.api.contact;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 
 public class ContactIndexDto extends ContactReferenceDto {
@@ -32,7 +32,7 @@ public class ContactIndexDto extends ContactReferenceDto {
 	private CaseReferenceDto caze;
 	private Disease cazeDisease;
 	private PersonReferenceDto cazePerson;
-	private ReferenceDto cazeDistrict;
+	private DistrictReferenceDto cazeDistrict;
 	private Date lastContactDate;
 	private ContactProximity contactProximity;
 	private ContactClassification contactClassification;
@@ -78,10 +78,10 @@ public class ContactIndexDto extends ContactReferenceDto {
 	public void setCazePerson(PersonReferenceDto cazePerson) {
 		this.cazePerson = cazePerson;
 	}
-	public ReferenceDto getCazeDistrict() {
+	public DistrictReferenceDto getCazeDistrict() {
 		return cazeDistrict;
 	}
-	public void setCazeDistrict(ReferenceDto cazeDistrict) {
+	public void setCazeDistrict(DistrictReferenceDto cazeDistrict) {
 		this.cazeDistrict = cazeDistrict;
 	}
 	public UserReferenceDto getContactOfficer() {

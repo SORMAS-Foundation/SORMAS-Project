@@ -5,8 +5,11 @@ import java.util.Date;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.region.CommunityReferenceDto;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.PreciseDateAdapter;
@@ -39,10 +42,10 @@ public class CaseDataDto extends CaseReferenceDto {
 	private Date reportDate;
 	private Date investigatedDate;
 
-	private ReferenceDto region;
-	private ReferenceDto district;
-	private ReferenceDto community;
-	private ReferenceDto healthFacility;
+	private RegionReferenceDto region;
+	private DistrictReferenceDto district;
+	private CommunityReferenceDto community;
+	private FacilityReferenceDto healthFacility;
 
 	private SymptomsDto symptoms;
 
@@ -82,11 +85,11 @@ public class CaseDataDto extends CaseReferenceDto {
 		this.reportingUser = reportingUser;
 	}
 
-	public ReferenceDto getHealthFacility() {
+	public FacilityReferenceDto getHealthFacility() {
 		return healthFacility;
 	}
 
-	public void setHealthFacility(ReferenceDto healthFacility) {
+	public void setHealthFacility(FacilityReferenceDto healthFacility) {
 		this.healthFacility = healthFacility;
 	}
 
@@ -142,27 +145,27 @@ public class CaseDataDto extends CaseReferenceDto {
 		this.symptoms = symptoms;
 	}
 
-	public ReferenceDto getRegion() {
+	public RegionReferenceDto getRegion() {
 		return region;
 	}
 
-	public void setRegion(ReferenceDto region) {
+	public void setRegion(RegionReferenceDto region) {
 		this.region = region;
 	}
 
-	public ReferenceDto getDistrict() {
+	public DistrictReferenceDto getDistrict() {
 		return district;
 	}
 
-	public void setDistrict(ReferenceDto district) {
+	public void setDistrict(DistrictReferenceDto district) {
 		this.district = district;
 	}
 
-	public ReferenceDto getCommunity() {
+	public CommunityReferenceDto getCommunity() {
 		return community;
 	}
 
-	public void setCommunity(ReferenceDto community) {
+	public void setCommunity(CommunityReferenceDto community) {
 		this.community = community;
 	}
 }

@@ -6,6 +6,7 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.facility.Facility;
+import de.symeda.sormas.app.backend.facility.FacilityDtoHelper;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.location.LocationDtoHelper;
 import de.symeda.sormas.app.backend.user.User;
@@ -79,7 +80,7 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
         dto.setOccupationDetails(ado.getOccupationDetails());
         if (ado.getOccupationFacility() != null) {
             Facility facility = DatabaseHelper.getFacilityDao().queryForId(ado.getOccupationFacility().getId());
-            dto.setOccupationFacility(AdoDtoHelper.toReferenceDto(facility));
+            dto.setOccupationFacility(FacilityDtoHelper.toReferenceDto(facility));
         } else {
             dto.setOccupationFacility(null);
         }

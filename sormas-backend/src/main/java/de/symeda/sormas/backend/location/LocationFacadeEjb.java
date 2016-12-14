@@ -8,8 +8,11 @@ import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.location.LocationFacade;
+import de.symeda.sormas.backend.region.CommunityFacadeEjb;
 import de.symeda.sormas.backend.region.CommunityService;
+import de.symeda.sormas.backend.region.DistrictFacadeEjb;
 import de.symeda.sormas.backend.region.DistrictService;
+import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.util.DtoHelper;
 
@@ -67,9 +70,9 @@ public class LocationFacadeEjb implements LocationFacade {
 		dto.setDetails(entity.getDetails());
 		dto.setCity(entity.getCity());
 		
-		dto.setRegion(DtoHelper.toReferenceDto(entity.getRegion()));
-		dto.setDistrict(DtoHelper.toReferenceDto(entity.getDistrict()));
-		dto.setCommunity(DtoHelper.toReferenceDto(entity.getCommunity()));
+		dto.setRegion(RegionFacadeEjb.toReferenceDto(entity.getRegion()));
+		dto.setDistrict(DistrictFacadeEjb.toReferenceDto(entity.getDistrict()));
+		dto.setCommunity(CommunityFacadeEjb.toReferenceDto(entity.getCommunity()));
 		
 		dto.setLatitude(entity.getLatitude());
 		dto.setLongitude(entity.getLongitude());

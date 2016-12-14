@@ -5,8 +5,9 @@ import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
@@ -38,14 +39,14 @@ public class LocationForm extends AbstractEditForm<LocationDto> {
     	
     	region.addValueChangeListener(e -> {
     		district.removeAllItems();
-    		ReferenceDto regionDto = (ReferenceDto)e.getProperty().getValue();
+    		RegionReferenceDto regionDto = (RegionReferenceDto)e.getProperty().getValue();
     		if (regionDto != null) {
     			district.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(regionDto.getUuid()));
     		}
     	});
     	district.addValueChangeListener(e -> {
     		community.removeAllItems();
-    		ReferenceDto districtDto = (ReferenceDto)e.getProperty().getValue();
+    		DistrictReferenceDto districtDto = (DistrictReferenceDto)e.getProperty().getValue();
     		if (districtDto != null) {
     			community.addItems(FacadeProvider.getCommunityFacade().getAllByDistrict(districtDto.getUuid()));
     		}

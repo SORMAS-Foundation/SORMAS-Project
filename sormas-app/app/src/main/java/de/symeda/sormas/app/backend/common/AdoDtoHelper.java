@@ -151,15 +151,6 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
         Call<Integer> postAll(List<DTO> dtos);
     }
 
-    public static ReferenceDto toReferenceDto(AbstractDomainObject ado) {
-        if (ado == null) {
-            return null;
-        }
-        ReferenceDto dto = new ReferenceDto();
-        fillReferenceDto(dto, ado);
-        return dto;
-    }
-
     public static void fillDto(DataTransferObject dto, AbstractDomainObject ado) {
 
         dto.setChangeDate(ado.getChangeDate());

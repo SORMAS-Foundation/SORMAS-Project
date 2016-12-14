@@ -2,7 +2,7 @@ package de.symeda.sormas.api;
 
 import de.symeda.sormas.api.DataTransferObject;
 
-public class ReferenceDto extends DataTransferObject {
+public abstract class ReferenceDto extends DataTransferObject {
 
 	private static final long serialVersionUID = 4500877980734738141L;
 

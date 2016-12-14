@@ -7,10 +7,13 @@ import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.facility.Facility;
+import de.symeda.sormas.app.backend.facility.FacilityDtoHelper;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDtoHelper;
 import de.symeda.sormas.app.backend.region.Community;
+import de.symeda.sormas.app.backend.region.CommunityDtoHelper;
 import de.symeda.sormas.app.backend.region.District;
+import de.symeda.sormas.app.backend.region.DistrictDtoHelper;
 import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.backend.region.RegionDtoHelper;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
@@ -24,12 +27,9 @@ import de.symeda.sormas.app.backend.user.UserDtoHelper;
 public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 
     private SymptomsDtoHelper symptomsDtoHelper;
-    private RegionDtoHelper regionDtoHelper;
-    private UserDtoHelper userDtoHelper;
 
     public CaseDtoHelper() {
         symptomsDtoHelper = new SymptomsDtoHelper();
-        regionDtoHelper = new RegionDtoHelper();
     }
 
     @Override
@@ -97,7 +97,7 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
         dto.setDisease(ado.getDisease());
         if (ado.getHealthFacility() != null) {
             Facility facility = DatabaseHelper.getFacilityDao().queryForId(ado.getHealthFacility().getId());
-            dto.setHealthFacility(AdoDtoHelper.toReferenceDto(facility));
+            dto.setHealthFacility(FacilityDtoHelper.toReferenceDto(facility));
         } else {
             dto.setHealthFacility(null);
         }
@@ -127,8 +127,7 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 
         if (ado.getRegion() != null) {
             Region region = DatabaseHelper.getRegionDao().queryForId(ado.getRegion().getId());
-            ReferenceDto regionDto = AdoDtoHelper.toReferenceDto(region);
-            dto.setRegion(regionDto);
+            dto.setRegion(RegionDtoHelper.toReferenceDto(region));
         } else {
             dto.setRegion(null);
         }
@@ -136,16 +135,14 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 
         if (ado.getDistrict() != null) {
             District district = DatabaseHelper.getDistrictDao().queryForId(ado.getDistrict().getId());
-            ReferenceDto districtDto = AdoDtoHelper.toReferenceDto(district);
-            dto.setDistrict(districtDto);
+            dto.setDistrict(DistrictDtoHelper.toReferenceDto(district));
         } else {
             dto.setDistrict(null);
         }
 
         if (ado.getCommunity() != null) {
             Community community = DatabaseHelper.getCommunityDao().queryForId(ado.getCommunity().getId());
-            ReferenceDto communityDto = AdoDtoHelper.toReferenceDto(community);
-            dto.setCommunity(communityDto);
+            dto.setCommunity(CommunityDtoHelper.toReferenceDto(community));
         } else {
             dto.setCommunity(null);
         }

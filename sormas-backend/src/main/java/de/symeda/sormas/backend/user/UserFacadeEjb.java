@@ -15,7 +15,9 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
+import de.symeda.sormas.backend.region.DistrictFacadeEjb;
 import de.symeda.sormas.backend.region.DistrictService;
+import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.util.DtoHelper;
 
@@ -105,8 +107,8 @@ public class UserFacadeEjb implements UserFacade {
 		dto.setPhone(entity.getPhone());
 		dto.setAddress(LocationFacadeEjb.toLocationDto(entity.getAddress()));
 		
-		dto.setRegion(DtoHelper.toReferenceDto(entity.getRegion()));
-		dto.setDistrict(DtoHelper.toReferenceDto(entity.getDistrict()));
+		dto.setRegion(RegionFacadeEjb.toReferenceDto(entity.getRegion()));
+		dto.setDistrict(DistrictFacadeEjb.toReferenceDto(entity.getDistrict()));
 		dto.setAssociatedOfficer(toReferenceDto(entity.getAssociatedOfficer()));
 		
 		entity.getUserRoles().size();

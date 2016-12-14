@@ -14,10 +14,10 @@ import com.vaadin.ui.renderers.HtmlRenderer;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
-import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactIndexDto;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -89,7 +89,7 @@ public class ContactGrid extends Grid {
 		}
 	}
 
-    public void setDistrictFilter(ReferenceDto district) {
+    public void setDistrictFilter(DistrictReferenceDto district) {
 		getContainer().removeContainerFilters(ContactIndexDto.CAZE_DISTRICT);
 		if (district != null) {
 	    	Equal filter = new Equal(ContactIndexDto.CAZE_DISTRICT, district);  

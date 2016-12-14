@@ -2,8 +2,9 @@ package de.symeda.sormas.api.user;
 
 import java.util.Set;
 
-import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 
 public class UserDto extends UserReferenceDto {
 
@@ -34,8 +35,8 @@ public class UserDto extends UserReferenceDto {
 	private String phone;
 	private LocationDto address;	
 	
-	private ReferenceDto region;
-	private ReferenceDto district;
+	private RegionReferenceDto region;
+	private DistrictReferenceDto district;
 	private Set<UserRole> userRoles;
 	private UserReferenceDto associatedOfficer;
 	
@@ -121,19 +122,19 @@ public class UserDto extends UserReferenceDto {
 		this.associatedOfficer = associatedOfficer;
 	}
 
-	public ReferenceDto getRegion() {
+	public RegionReferenceDto getRegion() {
 		return region;
 	}
 
-	public void setRegion(ReferenceDto region) {
+	public void setRegion(RegionReferenceDto region) {
 		this.region = region;
 	}
 
-	public ReferenceDto getDistrict() {
+	public DistrictReferenceDto getDistrict() {
 		return district;
 	}
 
-	public void setDistrict(ReferenceDto district) {
+	public void setDistrict(DistrictReferenceDto district) {
 		this.district = district;
 	}
 

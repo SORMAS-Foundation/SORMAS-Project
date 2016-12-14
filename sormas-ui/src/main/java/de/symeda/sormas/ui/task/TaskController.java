@@ -8,11 +8,11 @@ import com.vaadin.navigator.View;
 import com.vaadin.server.Sizeable.Unit;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.login.LoginHelper;
@@ -98,7 +98,7 @@ public class TaskController {
     	return task;
     }
     
-    public String getUserCaptionWithPendingTaskCount(ReferenceDto user) {
+    public String getUserCaptionWithPendingTaskCount(UserReferenceDto user) {
     	long taskCount = FacadeProvider.getTaskFacade().getPendingTaskCount(user.getUuid());
     	return user.getCaption() + " (" + taskCount + ")";
     }

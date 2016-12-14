@@ -26,6 +26,7 @@ import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.person.PersonService;
+import de.symeda.sormas.backend.region.DistrictFacadeEjb;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
@@ -187,7 +188,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setCaze(CaseFacadeEjb.toReferenceDto(source.getCaze()));
 		target.setCazePerson(PersonFacadeEjb.toReferenceDto(source.getCaze().getPerson()));
 		target.setCazeDisease(source.getCaze().getDisease());
-		target.setCazeDistrict(DtoHelper.toReferenceDto(source.getCaze().getDistrict()));
+		target.setCazeDistrict(DistrictFacadeEjb.toReferenceDto(source.getCaze().getDistrict()));
 		
 		target.setLastContactDate(source.getLastContactDate());
 		target.setContactProximity(source.getContactProximity());

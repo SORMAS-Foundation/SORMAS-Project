@@ -7,9 +7,9 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
-import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.region.CommunityDto;
 import de.symeda.sormas.api.region.CommunityFacade;
+import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.backend.util.DtoHelper;
 
 @Stateless(name = "CommunityFacade")
@@ -21,12 +21,12 @@ public class CommunityFacadeEjb implements CommunityFacade {
 	private DistrictService districtService;
 
 	@Override
-	public List<ReferenceDto> getAllByDistrict(String districtUuid) {
+	public List<CommunityReferenceDto> getAllByDistrict(String districtUuid) {
 		
 		District district = districtService.getByUuid(districtUuid);
 		
 		return district.getCommunities().stream()
-				.map(f -> DtoHelper.toReferenceDto(f))
+				.map(f -> toReferenceDto(f))
 				.collect(Collectors.toList());
 	}
 	
@@ -37,14 +37,24 @@ public class CommunityFacadeEjb implements CommunityFacade {
 			.collect(Collectors.toList());
 	}
 	
+	public static CommunityReferenceDto toReferenceDto(Community entity) {
+		if (entity == null) {
+			return null;
+		}
+		CommunityReferenceDto dto = new CommunityReferenceDto();
+		DtoHelper.fillReferenceDto(dto, entity);
+		return dto;
+	}
+	
 	private CommunityDto toDto(Community entity) {
+		if (entity == null) {
+			return null;
+		}
 		CommunityDto dto = new CommunityDto();
-		dto.setUuid(entity.getUuid());
-		dto.setCreationDate(entity.getCreationDate());
-		dto.setChangeDate(entity.getChangeDate());
+		DtoHelper.fillReferenceDto(dto, entity);
 		
 		dto.setName(entity.getName());
-		dto.setDistrict(DtoHelper.toReferenceDto(entity.getDistrict()));
+		dto.setDistrict(DistrictFacadeEjb.toReferenceDto(entity.getDistrict()));
 
 		return dto;
 	}

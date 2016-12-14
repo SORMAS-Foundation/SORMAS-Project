@@ -5,6 +5,9 @@ import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.facility.Facility;
+import de.symeda.sormas.app.backend.region.CommunityDtoHelper;
+import de.symeda.sormas.app.backend.region.DistrictDtoHelper;
+import de.symeda.sormas.app.backend.region.RegionDtoHelper;
 
 /**
  * Created by Martin Wahnschaffe on 27.07.2016.
@@ -57,17 +60,17 @@ public class LocationDtoHelper extends AdoDtoHelper<Location, LocationDto> {
         dto.setLongitude(ado.getLongitude());
 
         if (ado.getCommunity() != null) {
-            dto.setCommunity(AdoDtoHelper.toReferenceDto(DatabaseHelper.getCommunityDao().queryForId(ado.getCommunity().getId())));
+            dto.setCommunity(CommunityDtoHelper.toReferenceDto(DatabaseHelper.getCommunityDao().queryForId(ado.getCommunity().getId())));
         } else {
             dto.setCommunity(null);
         }
         if (ado.getDistrict() != null) {
-            dto.setDistrict(AdoDtoHelper.toReferenceDto(DatabaseHelper.getDistrictDao().queryForId(ado.getDistrict().getId())));
+            dto.setDistrict(DistrictDtoHelper.toReferenceDto(DatabaseHelper.getDistrictDao().queryForId(ado.getDistrict().getId())));
         } else {
             dto.setDistrict(null);
         }
         if (ado.getRegion() != null) {
-            dto.setRegion(AdoDtoHelper.toReferenceDto(DatabaseHelper.getRegionDao().queryForId(ado.getRegion().getId())));
+            dto.setRegion(RegionDtoHelper.toReferenceDto(DatabaseHelper.getRegionDao().queryForId(ado.getRegion().getId())));
         } else {
             dto.setRegion(null);
         }

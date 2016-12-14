@@ -21,6 +21,7 @@ import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.task.TaskStatus;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.HtmlReferenceDtoConverter;
@@ -110,7 +111,7 @@ public class TaskGrid extends Grid implements ItemClickListener {
         	public String convertToPresentation(ReferenceDto value, Class<? extends String> targetType, Locale locale) throws ConversionException {
         		String html;
         		if (value != null) {
-        			html = ControllerProvider.getTaskController().getUserCaptionWithPendingTaskCount(value);
+        			html = ControllerProvider.getTaskController().getUserCaptionWithPendingTaskCount((UserReferenceDto)value);
         		} else {
         			html = "";
         		}
@@ -129,7 +130,7 @@ public class TaskGrid extends Grid implements ItemClickListener {
         reload();
 	}
     
-    public void filterAssignee(ReferenceDto userDto) {
+    public void filterAssignee(UserReferenceDto userDto) {
 		getContainer().removeContainerFilters(TaskDto.ASSIGNEE_USER);
 		if (userDto != null) {
 			Filter filter = new Equal(TaskDto.ASSIGNEE_USER, userDto);  
@@ -138,7 +139,7 @@ public class TaskGrid extends Grid implements ItemClickListener {
     	reload();
 	}
 
-    public void filterExcludeAssignee(ReferenceDto userDto) {
+    public void filterExcludeAssignee(UserReferenceDto userDto) {
 		getContainer().removeContainerFilters(TaskDto.ASSIGNEE_USER);
 		if (userDto != null) {
 	    	Filter filter = new Not(new Equal(TaskDto.ASSIGNEE_USER, userDto));  

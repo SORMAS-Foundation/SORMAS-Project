@@ -46,11 +46,6 @@ public class PersonDao extends AbstractAdoDao<Person> {
         return super.saveUnmodified(person);
     }
 
-    public List<Person> getAllPersonsWithoutCase() throws SQLException {
-
-        return queryBuilder().where().isNull(Person.CASE_UUID).query();
-    }
-
     public List<Person> getAllByName(String firstName, String lastName) throws SQLException {
         return queryBuilder().where().eq(Person.FIRST_NAME, firstName).and().eq(Person.LAST_NAME, lastName).query();
     }

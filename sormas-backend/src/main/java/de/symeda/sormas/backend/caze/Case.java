@@ -76,7 +76,7 @@ public class Case extends AbstractDomainObject {
 	
 	private List<Task> tasks;
 	
-	@OneToOne(cascade = CascadeType.ALL)
+	@ManyToOne(cascade = {})
 	@JoinColumn(nullable=false)
 	public Person getPerson() {
 		return person;

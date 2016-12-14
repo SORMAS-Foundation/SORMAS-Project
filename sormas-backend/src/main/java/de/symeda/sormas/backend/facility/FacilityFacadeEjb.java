@@ -7,9 +7,9 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
-import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityFacade;
+import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.CommunityService;
@@ -25,20 +25,20 @@ public class FacilityFacadeEjb implements FacilityFacade {
 
 	
 	@Override
-	public List<ReferenceDto> getAllByCommunity(String communityUuid) {
+	public List<FacilityReferenceDto> getAllByCommunity(String communityUuid) {
 		
 		Community community = communityService.getByUuid(communityUuid);
 		List<Facility> facilities = service.getAllByCommunity(community);
 		
 		return facilities.stream()
-				.map(f -> DtoHelper.toReferenceDto(f))
+				.map(f -> toReferenceDto(f))
 				.collect(Collectors.toList());
 	}
 	
 	@Override
-	public List<ReferenceDto> getAll() {
+	public List<FacilityReferenceDto> getAll() {
 		return service.getAll().stream()
-				.map(f -> DtoHelper.toReferenceDto(f))
+				.map(f -> toReferenceDto(f))
 				.collect(Collectors.toList());
 	}
 	
@@ -49,11 +49,21 @@ public class FacilityFacadeEjb implements FacilityFacade {
 			.collect(Collectors.toList());
 	}
 	
+	public static FacilityReferenceDto toReferenceDto(Facility entity) {
+		if (entity == null) {
+			return null;
+		}
+		FacilityReferenceDto dto = new FacilityReferenceDto();
+		DtoHelper.fillReferenceDto(dto, entity);
+		return dto;
+	}
+	
 	private FacilityDto toDto(Facility entity) {
+		if (entity == null) {
+			return null;
+		}
 		FacilityDto dto = new FacilityDto();
-		dto.setUuid(entity.getUuid());
-		dto.setCreationDate(entity.getCreationDate());
-		dto.setChangeDate(entity.getChangeDate());
+		DtoHelper.fillReferenceDto(dto, entity);
 		
 		dto.setName(entity.getName());
 		dto.setType(entity.getType());
