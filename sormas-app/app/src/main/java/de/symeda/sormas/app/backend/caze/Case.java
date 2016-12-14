@@ -11,8 +11,6 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.ManyToOne;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseStatus;
@@ -74,9 +72,9 @@ public class Case extends AbstractDomainObject {
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 1)
 	private User surveillanceOfficer;
-	@ManyToOne(cascade = {})
+	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 1)
 	private User caseOfficer;
-	@ManyToOne(cascade = {})
+	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 1)
 	private User contactOfficer;
 
 	public Person getPerson() {
