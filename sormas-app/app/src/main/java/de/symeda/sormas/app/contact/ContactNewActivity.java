@@ -96,26 +96,44 @@ public class ContactNewActivity extends AppCompatActivity {
             case R.id.action_save:
                 try {
                     final Contact contact = contactNewTab.getData();
+                    contact.setContactClassification(ContactClassification.POSSIBLE);
+                    contact.setReportingUser(ConfigProvider.getUser());
+                    contact.setReportDateTime(new Date());
+                    contact.setCaze(DatabaseHelper.getCaseDao().queryUuid(caseUuid));
 
-                if(!contact.getPerson().getFirstName().isEmpty() && !contact.getPerson().getLastName().isEmpty() ) {
+                    boolean validData = false;
 
-                    List<Person> existingPersons = DatabaseHelper.getPersonDao().getAllByName(contact.getPerson().getFirstName(), contact.getPerson().getLastName());
-                    if(existingPersons.size()>0) {
-                        contactNewTab.selectOrCreatePersonDialog(contact.getPerson(), existingPersons, new Callback() {
-                            @Override
-                            public void call() {
-                                contact.setPerson(contactNewTab.getSelectedPersonFromDialog());
-                                savePersonAndContact(contact);
-                            }
-                        });
+                    if(contact.getLastContactDate()!=null && contact.getLastContactDate().getTime() <= contact.getReportDateTime().getTime()) {
+                        validData = true;
                     }
                     else {
-                        savePersonAndContact(contact);
+                        validData = false;
+                        Toast.makeText(this, "Please make sure contact date is set and not in the future.", Toast.LENGTH_SHORT).show();
                     }
-                }
-                else {
-                    Toast.makeText(this, "Please select a person.", Toast.LENGTH_SHORT).show();
-                }
+
+                    if(!contact.getPerson().getFirstName().isEmpty() && !contact.getPerson().getLastName().isEmpty() ) {
+                        validData = true;
+                    }
+                    else {
+                        validData = false;
+                        Toast.makeText(this, "Please select a person.", Toast.LENGTH_SHORT).show();
+                    }
+
+                    if(validData) {
+                        List<Person> existingPersons = DatabaseHelper.getPersonDao().getAllByName(contact.getPerson().getFirstName(), contact.getPerson().getLastName());
+                        if(existingPersons.size()>0) {
+                            contactNewTab.selectOrCreatePersonDialog(contact.getPerson(), existingPersons, new Callback() {
+                                @Override
+                                public void call() {
+                                    contact.setPerson(contactNewTab.getSelectedPersonFromDialog());
+                                    savePersonAndContact(contact);
+                                }
+                            });
+                        }
+                        else {
+                            savePersonAndContact(contact);
+                        }
+                    }
 
                     return true;
                 } catch (Exception e) {
@@ -132,11 +150,7 @@ public class ContactNewActivity extends AppCompatActivity {
         DatabaseHelper.getPersonDao().save(contact.getPerson());
         new SyncPersonsTask().execute();
 
-        // init and save the contact
-        contact.setContactClassification(ContactClassification.POSSIBLE);
-        contact.setReportingUser(ConfigProvider.getUser());
-        contact.setReportDateTime(new Date());
-        contact.setCaze(DatabaseHelper.getCaseDao().queryUuid(caseUuid));
+        // save the contact
         DatabaseHelper.getContactDao().save(contact);
         new SyncContactsTask().execute();
 
