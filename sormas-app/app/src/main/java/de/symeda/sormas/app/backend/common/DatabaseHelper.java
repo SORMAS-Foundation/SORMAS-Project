@@ -1,7 +1,5 @@
 package de.symeda.sormas.app.backend.common;
 
-import java.sql.SQLException;
-
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
@@ -10,6 +8,8 @@ import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
+
+import java.sql.SQLException;
 
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
@@ -35,6 +35,8 @@ import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.task.TaskDao;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.backend.user.UserDao;
+import de.symeda.sormas.app.backend.visit.Visit;
+import de.symeda.sormas.app.backend.visit.VisitDao;
 
 /**
  * Database helper class used to manage the creation and upgrading of your database. This class also usually provides
@@ -46,7 +48,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// name of the database file for your application -- change to something appropriate for your app
 	private static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	private static final int DATABASE_VERSION = 39;
+	private static final int DATABASE_VERSION = 40;
 
 	private static DatabaseHelper instance = null;
 	public static void init(Context context) {
@@ -59,6 +61,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	private ConfigDao configDao = null;
 
 	private PersonDao personDao = null;
+
 	private CaseDao caseDao = null;
 	private LocationDao locationDao = null;
 	private FacilityDao facilityDao = null;
@@ -69,6 +72,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	private SymptomsDao symptomsDao = null;
 	private TaskDao taskDao = null;
 	private ContactDao contactDao = null;
+	private VisitDao visitDao;
 
 	private DatabaseHelper(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);//, R.raw.ormlite_config);
@@ -88,6 +92,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.clearTable(connectionSource, Symptoms.class);
 			TableUtils.clearTable(connectionSource, Task.class);
 			TableUtils.clearTable(connectionSource, Contact.class);
+			TableUtils.clearTable(connectionSource, Visit.class);
 			// keep config!
 			//TableUtils.clearTable(connectionSource, Config.class);
 		} catch (SQLException e) {
@@ -115,6 +120,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.createTable(connectionSource, Symptoms.class);
 			TableUtils.createTable(connectionSource, Task.class);
 			TableUtils.createTable(connectionSource, Contact.class);
+			TableUtils.createTable(connectionSource, Visit.class);
 
 			TableUtils.createTable(connectionSource, Case.class);
 		} catch (SQLException e) {
@@ -142,6 +148,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.dropTable(connectionSource, Symptoms.class, true);
 			TableUtils.dropTable(connectionSource, Task.class, true);
 			TableUtils.dropTable(connectionSource, Contact.class, true);
+			TableUtils.dropTable(connectionSource, Visit.class, true);
 			if (oldVersion < 30) {
 				TableUtils.dropTable(connectionSource, Config.class, true);
 			}
@@ -345,6 +352,22 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		return instance.contactDao;
 	}
 
+	public static VisitDao getVisitDao() {
+		if (instance.visitDao == null) {
+			synchronized (DatabaseHelper.class) {
+				if (instance.visitDao == null) {
+					try {
+						instance.visitDao = new VisitDao((Dao<Visit, Long>) instance.getDao(Visit.class));
+					} catch (SQLException e) {
+						Log.e(DatabaseHelper.class.getName(), "Can't create VisitDao", e);
+						throw new RuntimeException(e);
+					}
+				}
+			}
+		}
+		return instance.visitDao;
+	}
+
 	/**
 	 * Close the database connections and clear any cached DAOs.
 	 */
@@ -361,5 +384,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		symptomsDao = null;
 		taskDao = null;
 		contactDao = null;
+		visitDao = null;
 	}
 }
