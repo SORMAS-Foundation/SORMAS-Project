@@ -19,6 +19,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.location.LocationDao;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDao;
@@ -251,7 +252,11 @@ public class CaseEditActivity extends AbstractEditActivity {
 
             // Add button
             case R.id.action_add:
+
+                Bundle contactCreateBundle = new Bundle();
+                contactCreateBundle.putString(KEY_CASE_UUID, caseUuid);
                 Intent intentContactNew = new Intent(this, ContactNewActivity.class);
+                intentContactNew.putExtras(contactCreateBundle);
                 startActivity(intentContactNew);
 
                 return true;

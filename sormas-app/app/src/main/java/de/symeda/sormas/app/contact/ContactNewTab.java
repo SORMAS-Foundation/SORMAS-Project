@@ -5,6 +5,7 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,10 +13,13 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.api.contact.ContactProximity;
+import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -64,19 +68,10 @@ public class ContactNewTab extends FormTab {
     public void onResume() {
         super.onResume();
 
-
         binding.setContact(contact);
 
         binding.contactLastContactDate.initialize(this);
         binding.contactContactProximity.initialize(ContactProximity.class);
-
-//        ImageButton newPersonButton = (ImageButton) getView().findViewById(R.id.case_addPerson_btn);
-//        newPersonButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                showNewPersonDialog(R.id.case_addPerson_btn);
-//            }
-//        });
     }
 
     /**
@@ -84,7 +79,7 @@ public class ContactNewTab extends FormTab {
      * Saving brings a refreshed person-reference.
      * @param person
      */
-    public void selectOrCreatePersonDialog(final Person person, List<Person> existingPersons, Callback callback) {
+    public void selectOrCreatePersonDialog(final Person person, List<Person> existingPersons, final Callback callback) {
         try {
             final PersonSelectVO personSelectVO = new PersonSelectVO(person);
 
@@ -115,21 +110,21 @@ public class ContactNewTab extends FormTab {
             updatePersonSelectRadioGroupField(person, existingPersons, dialogView);
 
 
-            dialogBuilder.setPositiveButton(getResources().getString(R.string.action_new_person), new DialogInterface.OnClickListener() {
+            dialogBuilder.setPositiveButton(getResources().getString(R.string.action_select_person), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int id) {
                     selectedPersonFromDialog = (Person) bindingPersonSelect.personSelectSelectedPerson.getValue();
+                    callback.call();
                 }
             });
-            dialogBuilder.setNegativeButton(getResources().getString(R.string.action_dimiss), new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int id) {
-                }
-            });
+//            dialogBuilder.setNegativeButton(getResources().getString(R.string.action_dimiss), new DialogInterface.OnClickListener() {
+//                @Override
+//                public void onClick(DialogInterface dialog, int id) {
+//                }
+//            });
 
             AlertDialog newPersonDialog = dialogBuilder.create();
             newPersonDialog.show();
-
 
 
         } catch (Exception e) {
@@ -139,14 +134,25 @@ public class ContactNewTab extends FormTab {
     }
 
     private void updatePersonSelectRadioGroupField(Person person, List<Person> existingPersons, View dialogView) {
-        List<Item> items = DataUtils.toItems(existingPersons, false);
-        items.add(0,new Item<Person>(getResources().getString(R.string.headline_new_person),person));
+        List<Item> items = new ArrayList<Item>();
+        for (Person existingPerson: existingPersons) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(existingPerson.toString() + "<br />" + existingPerson.getSex());
+            sb.append(existingPerson.getApproximateAge()!=null?" | " + existingPerson.getApproximateAge() + " " +existingPerson.getApproximateAgeType():"");
+            sb.append(existingPerson.getPresentCondition()!=null?" | " +  existingPerson.getPresentCondition():"");
+            items.add(new Item<Person>(Html.fromHtml(sb.toString()).toString(),person));
+        }
+        Item newPerson = new Item<Person>(getResources().getString(R.string.headline_new_person),person);
+        items.add(0,newPerson);
 
         final RadioGroupField radioGroupField = (RadioGroupField) dialogView.findViewById(R.id.personSelect_selectedPerson);
         radioGroupField.removeAllItems();
         for(Item item : items) {
             radioGroupField.addItem(item);
         }
+
+        // default select new person
+        radioGroupField.setValue(person);
     }
 
     public Person getSelectedPersonFromDialog() {

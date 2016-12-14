@@ -15,22 +15,16 @@ import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.api.caze.CaseStatus;
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.backend.caze.Case;
-import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.person.Person;
-import de.symeda.sormas.app.backend.person.PersonDao;
-import de.symeda.sormas.app.backend.symptoms.Symptoms;
-import de.symeda.sormas.app.backend.symptoms.SymptomsDao;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.caze.CaseEditActivity;
-import de.symeda.sormas.app.caze.SyncCasesTask;
+import de.symeda.sormas.app.person.SyncPersonsTask;
 import de.symeda.sormas.app.util.Callback;
-import de.symeda.sormas.app.util.DataUtils;
 
 
 /**
@@ -38,12 +32,17 @@ import de.symeda.sormas.app.util.DataUtils;
  */
 public class ContactNewActivity extends AppCompatActivity {
 
+    private String caseUuid;
+
 
     private ContactNewTab contactNewTab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Bundle params = getIntent().getExtras();
+        caseUuid = params.getString(CaseEditActivity.KEY_CASE_UUID);
 
         setContentView(R.layout.sormas_root_activity_layout);
 
@@ -57,6 +56,8 @@ public class ContactNewActivity extends AppCompatActivity {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         contactNewTab = new ContactNewTab();
         ft.add(R.id.fragment_frame, contactNewTab).commit();
+
+
 
     }
 
@@ -82,12 +83,21 @@ public class ContactNewActivity extends AppCompatActivity {
 
             case android.R.id.home:
                 //Home/back button
-                NavUtils.navigateUpFromSameTask(this);
+//                NavUtils.navigateUpFromSameTask(this);
+
+
+                Intent intentCaseContacts = new Intent(this, CaseEditActivity.class);
+                intentCaseContacts.putExtra(CaseEditActivity.KEY_PAGE, 3);
+                intentCaseContacts.putExtra(CaseEditActivity.KEY_CASE_UUID, caseUuid);
+                startActivity(intentCaseContacts);
+
                 return true;
 
             case R.id.action_save:
                 try {
                     final Contact contact = contactNewTab.getData();
+
+                if(!contact.getPerson().getFirstName().isEmpty() && !contact.getPerson().getLastName().isEmpty() ) {
 
                     List<Person> existingPersons = DatabaseHelper.getPersonDao().getAllByName(contact.getPerson().getFirstName(), contact.getPerson().getLastName());
                     if(existingPersons.size()>0) {
@@ -95,31 +105,18 @@ public class ContactNewActivity extends AppCompatActivity {
                             @Override
                             public void call() {
                                 contact.setPerson(contactNewTab.getSelectedPersonFromDialog());
+                                savePersonAndContact(contact);
                             }
                         });
                     }
                     else {
-                        // TODO save the person an contact
+                        savePersonAndContact(contact);
                     }
+                }
+                else {
+                    Toast.makeText(this, "Please select a person.", Toast.LENGTH_SHORT).show();
+                }
 
-                    // save the person
-                    DatabaseHelper.getPersonDao().save(contact.getPerson());
-
-
-                    contact.setReportDateTime(new Date());
-
-                    DatabaseHelper.getContactDao().save(contact);
-
-                    Toast.makeText(this, contact.toString() + " saved", Toast.LENGTH_SHORT).show();
-//
-//                    NavUtils.navigateUpFromSameTask(this);
-//
-//                    // open case edit view
-//                    Intent intent = new Intent(this, CaseEditActivity.class);
-//                    intent.putExtra(CaseEditActivity.KEY_CASE_UUID, caze.getUuid());
-//                    intent.putExtra(CaseEditActivity.KEY_PAGE, 1);
-//                    startActivity(intent);
-//
                     return true;
                 } catch (Exception e) {
                     Toast.makeText(this, "Error while saving the contact. " + e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -130,6 +127,21 @@ public class ContactNewActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    private void savePersonAndContact(Contact contact) {
+        // save the person
+        DatabaseHelper.getPersonDao().save(contact.getPerson());
+        new SyncPersonsTask().execute();
+
+        // init and save the contact
+        contact.setContactClassification(ContactClassification.POSSIBLE);
+        contact.setReportingUser(ConfigProvider.getUser());
+        contact.setReportDateTime(new Date());
+        contact.setCaze(DatabaseHelper.getCaseDao().queryUuid(caseUuid));
+        DatabaseHelper.getContactDao().save(contact);
+        new SyncContactsTask().execute();
+
+        Toast.makeText(this, "Contact to " + contact.getPerson().toString() + " saved", Toast.LENGTH_SHORT).show();
+    }
 
 
 }

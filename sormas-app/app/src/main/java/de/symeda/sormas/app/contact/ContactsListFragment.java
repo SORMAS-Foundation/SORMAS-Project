@@ -18,6 +18,7 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
+import de.symeda.sormas.app.person.SyncPersonsTask;
 import de.symeda.sormas.app.util.Callback;
 
 public class ContactsListFragment extends ListFragment {
@@ -38,9 +39,11 @@ public class ContactsListFragment extends ListFragment {
     }
 
     public void updateContacsArrayAdapter() {
-        caseUuid = (String) getArguments().getString(Case.UUID);
+        caseUuid = getArguments().getString(Case.UUID);
         final CaseDao caseDao = DatabaseHelper.getCaseDao();
         final Case caze = caseDao.queryUuid(caseUuid);
+
+        new SyncPersonsTask().execute();
 
         SyncContactsTask.syncContacts(new Callback() {
             @Override

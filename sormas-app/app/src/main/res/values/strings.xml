@@ -161,6 +161,7 @@
     <string name="headline_contact_case">Contact case</string>
     <string name="headline_pick_person">Pick or create a person</string>
     <string name="action_search">Search</string>
+    <string name="action_select_person">Select person</string>
 
 
 </resources>
