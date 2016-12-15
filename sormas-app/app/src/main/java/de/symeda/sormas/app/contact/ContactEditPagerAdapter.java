@@ -5,13 +5,11 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
-import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.person.PersonEditTab;
-import de.symeda.sormas.app.task.TasksListFragment;
 
 /**
  * Created by Stefan Szczesny on 02.11.2016.
@@ -20,16 +18,14 @@ import de.symeda.sormas.app.task.TasksListFragment;
 
 public class ContactEditPagerAdapter extends FragmentStatePagerAdapter {
 
-    private CharSequence titles[]; // This will Store the titles of the Tabs which are Going to be passed when ViewPagerAdapter is created
     private Bundle contactEditBundle; // this contactEditBundle contains the uuids
     private ContactEditDataTab contactEditDataTab;
     private PersonEditTab personEditTab;
 
 
     // Build a Constructor and assign the passed Values to appropriate values in the class
-    public ContactEditPagerAdapter(FragmentManager fm, CharSequence mTitles[], String contactUuid) {
+    public ContactEditPagerAdapter(FragmentManager fm, String contactUuid) {
         super(fm);
-        this.titles = mTitles;
         contactEditBundle = new Bundle();
         contactEditBundle.putString(Contact.UUID, contactUuid);
     }
@@ -38,13 +34,14 @@ public class ContactEditPagerAdapter extends FragmentStatePagerAdapter {
     @Override
     public Fragment getItem(int position) {
         Fragment frag = null;
-        switch (position) {
-            case 0:
+        ContactEditTabs tab = ContactEditTabs.values()[position];
+        switch (tab) {
+            case CONTACT_DATA:
                 contactEditDataTab = new ContactEditDataTab();
                 contactEditDataTab.setArguments(contactEditBundle);
                 frag = contactEditDataTab;
                 break;
-            case 1:
+            case PERSON:
                 personEditTab = new PersonEditTab();
 
                 Bundle personEditBundle = new Bundle();
@@ -54,17 +51,19 @@ public class ContactEditPagerAdapter extends FragmentStatePagerAdapter {
                 personEditTab.setArguments(personEditBundle);
                 frag = personEditTab;
                 break;
-            case 2:
-                TasksListFragment tasksListTab = new TasksListFragment();
-                Bundle arguments = new Bundle();
-                arguments.putSerializable("contactUuid", (String)contactEditBundle.get(Contact.UUID));
-                tasksListTab.setArguments(arguments);
-                frag = tasksListTab;
-                break;
-//            case 2:
-//                contactEditDataTab = new ContactEditDataTab();
-//                contactEditDataTab.setArguments(contactEditBundle);
-//                frag = contactEditDataTab;
+//            case VISITS:
+//                TasksListFragment tasksListTab = new TasksListFragment();
+//                Bundle arguments = new Bundle();
+//                arguments.putSerializable("contactUuid", (String)contactEditBundle.get(Contact.UUID));
+//                tasksListTab.setArguments(arguments);
+//                frag = tasksListTab;
+//                break;
+//            case TASKS:
+//                TasksListFragment tasksListTab = new TasksListFragment();
+//                Bundle arguments = new Bundle();
+//                arguments.putSerializable("contactUuid", (String)contactEditBundle.get(Contact.UUID));
+//                tasksListTab.setArguments(arguments);
+//                frag = tasksListTab;
 //                break;
 
         }
@@ -74,13 +73,13 @@ public class ContactEditPagerAdapter extends FragmentStatePagerAdapter {
     // This method return the titles for the Tabs in the Tab Strip
     @Override
     public CharSequence getPageTitle(int position) {
-        return titles[position];
+        return ContactEditTabs.values()[position].toString();
     }
 
     // This method return the Number of tabs for the tabs Strip
     @Override
     public int getCount() {
-        return titles.length;
+        return ContactEditTabs.values().length;
     }
 
     public AbstractDomainObject getData(int position) {

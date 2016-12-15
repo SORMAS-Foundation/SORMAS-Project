@@ -19,7 +19,6 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.location.LocationDao;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDao;
@@ -31,7 +30,6 @@ import de.symeda.sormas.app.component.PropertyField;
 import de.symeda.sormas.app.contact.ContactNewActivity;
 import de.symeda.sormas.app.person.SyncPersonsTask;
 import de.symeda.sormas.app.task.TaskEditActivity;
-import de.symeda.sormas.app.task.TasksActivity;
 
 
 /**
@@ -44,7 +42,6 @@ public class CaseEditActivity extends AbstractEditActivity {
     public static final String KEY_PARENT_TASK_UUID = "taskUuid";
 
     private CaseEditPagerAdapter adapter;
-    private CharSequence titles[];
     private String caseUuid;
     private String parentTaskUuid;
 
@@ -68,14 +65,6 @@ public class CaseEditActivity extends AbstractEditActivity {
         }
 
 
-        // Creating titles for the tabs
-        titles = new CharSequence[]{
-                getResources().getText(R.string.headline_case_data),
-                getResources().getText(R.string.headline_patient),
-                getResources().getText(R.string.headline_symptoms),
-                getResources().getText(R.string.headline_contacts),
-                getResources().getText(R.string.headline_task)
-        };
     }
 
     @Override
@@ -87,7 +76,7 @@ public class CaseEditActivity extends AbstractEditActivity {
         if(params.getString(KEY_PARENT_TASK_UUID) != null) {
             parentTaskUuid = params.getString(KEY_PARENT_TASK_UUID);
         }
-        adapter = new CaseEditPagerAdapter(getSupportFragmentManager(), titles, caseUuid);
+        adapter = new CaseEditPagerAdapter(getSupportFragmentManager(), caseUuid);
         createTabViews(adapter);
 
         if (params.containsKey(KEY_PAGE)) {
@@ -105,29 +94,25 @@ public class CaseEditActivity extends AbstractEditActivity {
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        switch(currentTab) {
-            // case data tab
-            case 0:
+        CaseEditTabs tab = CaseEditTabs.values()[currentTab];
+        switch(tab) {
+            case CASE_DATA:
                 updateActionBarGroups(menu, false, false, true);
                 break;
 
-            // case person tab
-            case 1:
+            case PATIENT:
                 updateActionBarGroups(menu, false, false, true);
                 break;
 
-            // case symptoms tab
-            case 2:
+            case SYMPTOMS:
                 updateActionBarGroups(menu, true, false, true);
                 break;
 
-            // case contacts tab
-            case 3:
+            case CONTACTS:
                 updateActionBarGroups(menu,false, true, false);
                 break;
 
-            // case tasks tab
-            case 4:
+            case TASKS:
                 updateActionBarGroups(menu, false, false, false);
                 break;
         }
@@ -138,6 +123,7 @@ public class CaseEditActivity extends AbstractEditActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         currentTab = pager.getCurrentItem();
+        CaseEditTabs tab = CaseEditTabs.values()[currentTab];
         switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button
             case android.R.id.home:
@@ -154,18 +140,14 @@ public class CaseEditActivity extends AbstractEditActivity {
 
             // Help button
             case R.id.action_help:
-                switch(currentTab) {
-                    // case data tab
-                    case 0:
-
+                switch(tab) {
+                    case CASE_DATA:
                         break;
 
-                    // case person tab
-                    case 1:
+                    case PATIENT:
                         break;
 
-                    // case symptoms tab
-                    case 2:
+                    case SYMPTOMS:
                         StringBuilder sb = new StringBuilder();
 
                         LinearLayout caseSymptomsForm = (LinearLayout) this.findViewById(R.id.case_symptoms_form);
@@ -205,9 +187,8 @@ public class CaseEditActivity extends AbstractEditActivity {
                 CaseDao caseDao = DatabaseHelper.getCaseDao();
 
 
-                switch(currentTab) {
-                    // case data tab
-                    case 0:
+                switch(tab) {
+                    case CASE_DATA:
 
                         Case caze = (Case) adapter.getData(0);
 
@@ -217,8 +198,7 @@ public class CaseEditActivity extends AbstractEditActivity {
                         SyncCasesTask.syncCases(getSupportFragmentManager());
                         break;
 
-                    // case person tab
-                    case 1:
+                    case PATIENT:
                         LocationDao locLocationDao = DatabaseHelper.getLocationDao();
                         PersonDao personDao = DatabaseHelper.getPersonDao();
 
@@ -233,8 +213,7 @@ public class CaseEditActivity extends AbstractEditActivity {
                         new SyncPersonsTask().execute();
                         break;
 
-                    // case symptoms tab
-                    case 2:
+                    case SYMPTOMS:
                         SymptomsDao symptomsDao = DatabaseHelper.getSymptomsDao();
 
                         Symptoms symptoms = (Symptoms)adapter.getData(2);

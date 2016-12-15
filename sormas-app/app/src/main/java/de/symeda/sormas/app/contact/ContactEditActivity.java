@@ -30,7 +30,6 @@ public class ContactEditActivity extends AbstractEditActivity {
     public static final String KEY_PAGE = "page";
 
     private ContactEditPagerAdapter adapter;
-    private CharSequence titles[];
     private String caseUuid;
     private String contactUuid;
 
@@ -46,13 +45,6 @@ public class ContactEditActivity extends AbstractEditActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setTitle(getResources().getText(R.string.headline_contact));
         }
-
-        // Creating titles for the tabs
-        titles = new CharSequence[]{
-                getResources().getText(R.string.headline_contact_data),
-                getResources().getText(R.string.headline_person_information)
-        };
-//              @TODO  getResources().getText(R.string.headline_visits)
     }
 
     @Override
@@ -62,7 +54,7 @@ public class ContactEditActivity extends AbstractEditActivity {
         Bundle params = getIntent().getExtras();
         caseUuid = params.getString(KEY_CASE_UUID);
         contactUuid = params.getString(KEY_CONTACT_UUID);
-        adapter = new ContactEditPagerAdapter(getSupportFragmentManager(), titles, contactUuid);
+        adapter = new ContactEditPagerAdapter(getSupportFragmentManager(), contactUuid);
         createTabViews(adapter);
 
         if (params.containsKey(KEY_PAGE)) {
@@ -80,14 +72,15 @@ public class ContactEditActivity extends AbstractEditActivity {
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        switch(currentTab) {
+        ContactEditTabs tab = ContactEditTabs.values()[currentTab];
+        switch(tab) {
             // contact data tab
-            case 0:
+            case CONTACT_DATA:
                 updateActionBarGroups(menu, false, false, true);
                 break;
 
             // person tab
-            case 1:
+            case PERSON:
                 updateActionBarGroups(menu, true, false, true);
                 break;
 
@@ -104,9 +97,7 @@ public class ContactEditActivity extends AbstractEditActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         currentTab = pager.getCurrentItem();
-
-
-
+        ContactEditTabs tab = ContactEditTabs.values()[currentTab];
 
         switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button
@@ -128,16 +119,16 @@ public class ContactEditActivity extends AbstractEditActivity {
             // Save button
             case R.id.action_save:
 
-                switch(currentTab) {
+                switch(tab) {
                     // contact data tab
-                    case 0:
+                    case CONTACT_DATA:
                         ContactDao contactDao = DatabaseHelper.getContactDao();
                         Contact contact = (Contact) adapter.getData(0);
 
                         contactDao.save(contact);
                         Toast.makeText(this, "contact "+ DataHelper.getShortUuid(contact.getUuid()) +" saved", Toast.LENGTH_SHORT).show();
                         break;
-                    case 1:
+                    case PERSON:
                         LocationDao locLocationDao = DatabaseHelper.getLocationDao();
                         PersonDao personDao = DatabaseHelper.getPersonDao();
 
