@@ -1,6 +1,5 @@
 package de.symeda.sormas.app.backend.caze;
 
-import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
