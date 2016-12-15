@@ -14,7 +14,6 @@ import android.widget.Toast;
 import java.util.Date;
 import java.util.List;
 
-import de.symeda.sormas.api.caze.CaseStatus;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;

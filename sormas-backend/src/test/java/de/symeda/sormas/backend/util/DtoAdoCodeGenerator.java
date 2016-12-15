@@ -37,11 +37,11 @@ public class DtoAdoCodeGenerator {
 			
 			try {
 				Method toWriteMethod = ado.getMethod(property.getWriteMethod().getName(), property.getWriteMethod().getParameterTypes());
-				System.out.println("a." + toWriteMethod.getName() + "(b." + property.getReadMethod().getName() + "());");
+				System.out.println("target." + toWriteMethod.getName() + "(source." + property.getReadMethod().getName() + "());");
 			} catch (NoSuchMethodException e) {
-				System.out.println("a." + property.getWriteMethod().getName() + "(b." + property.getReadMethod().getName() + "());");
+				System.out.println("target." + property.getWriteMethod().getName() + "(source." + property.getReadMethod().getName() + "());");
 			} catch (SecurityException e) {
-				System.out.println("a." + property.getWriteMethod().getName() + "(b." + property.getReadMethod().getName() + "());");
+				System.out.println("target." + property.getWriteMethod().getName() + "(source." + property.getReadMethod().getName() + "());");
 			}
 		}
 	}

@@ -7,17 +7,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
-import javax.ejb.EJBException;
 import javax.ejb.Stateless;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
-import de.symeda.sormas.api.caze.CaseHelper;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.caze.CaseStatus;
 import de.symeda.sormas.api.user.UserReferenceDto;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.person.Person;
@@ -119,86 +115,36 @@ public class CaseFacadeEjb implements CaseFacade {
 		return toCaseDataDto(caze);
 	}
 	
-	@Override
-	public CaseDataDto changeCaseStatus(String uuid, CaseStatus targetStatus) {
+	public Case fromCaseDataDto(@NotNull CaseDataDto source) {
 		
-		Case caze = caseService.getByUuid(uuid);
-		if (caze == null) {
-			throw new EJBException("Case not found: " + uuid);
-		}
-		CaseStatus currentStatus = caze.getCaseStatus();
-		
-		if (targetStatus.equals(currentStatus)) {
-			throw new EJBException("Case status equals existing: " + targetStatus);
-		}
-		
-		boolean targetStatusFound = false;
-		for (CaseStatus status : CaseHelper.getPossibleStatusChanges(currentStatus, UserRole.SURVEILLANCE_SUPERVISOR)) {
-			if (status.equals(targetStatus)) {
-				targetStatusFound = true;
-				break;
-			}
-		}
-		if (!targetStatusFound) {
-			throw new EJBException("Case status change not allowed from '" + currentStatus + "' to '" + targetStatus + "'");
-		}
-		
-		caze.setCaseStatus(targetStatus);
-		
-		switch (targetStatus) {
-		case INVESTIGATED:
-			caze.setInvestigatedDate(new Date());
-			break;
-		case CONFIRMED:
-			caze.setConfirmedDate(new Date());
-			break;
-		case NO_CASE:
-			caze.setNoCaseDate(new Date());
-			break;
-		case RECOVERED:
-			caze.setRecoveredDate(new Date());
-			break;
-		case SUSPECT:
-			caze.setSuspectDate(new Date());
-			break;
-			// TODO others...
-			// TODO what about going back and forth?
-		default:
-			break;
-		}
-		
-		return toCaseDataDto(caze);
-	}
-	
-	public Case fromCaseDataDto(@NotNull CaseDataDto dto) {
-		
-		Case caze = caseService.getByUuid(dto.getUuid());
-		if (caze == null) {
-			caze = new Case();
-			caze.setUuid(dto.getUuid());
-			if (dto.getCreationDate() != null) {
-				caze.setCreationDate(new Timestamp(dto.getCreationDate().getTime()));
+		Case target = caseService.getByUuid(source.getUuid());
+		if (target == null) {
+			target = new Case();
+			target.setUuid(source.getUuid());
+			if (source.getCreationDate() != null) {
+				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
 			}
 		}
 				
-		caze.setDisease(dto.getDisease());
-		caze.setReportDate(dto.getReportDate());
-		caze.setReportingUser(userService.getByReferenceDto(dto.getReportingUser()));
-		caze.setPerson(personService.getByReferenceDto(dto.getPerson()));
-		caze.setCaseStatus(dto.getCaseStatus());
+		target.setDisease(source.getDisease());
+		target.setReportDate(source.getReportDate());
+		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
+		target.setPerson(personService.getByReferenceDto(source.getPerson()));
+		target.setCaseClassification(source.getCaseClassification());
+		target.setInvestigationStatus(source.getInvestigationStatus());
 
-		caze.setRegion(regionService.getByReferenceDto(dto.getRegion()));
-		caze.setDistrict(districtService.getByReferenceDto(dto.getDistrict()));
-		caze.setCommunity(communityService.getByReferenceDto(dto.getCommunity()));
-		caze.setHealthFacility(facilityService.getByReferenceDto(dto.getHealthFacility()));
+		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
+		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
+		target.setCommunity(communityService.getByReferenceDto(source.getCommunity()));
+		target.setHealthFacility(facilityService.getByReferenceDto(source.getHealthFacility()));
 
-		caze.setSurveillanceOfficer(userService.getByReferenceDto(dto.getSurveillanceOfficer()));
-		caze.setCaseOfficer(userService.getByReferenceDto(dto.getCaseOfficer()));
-		caze.setContactOfficer(userService.getByReferenceDto(dto.getContactOfficer()));
+		target.setSurveillanceOfficer(userService.getByReferenceDto(source.getSurveillanceOfficer()));
+		target.setCaseOfficer(userService.getByReferenceDto(source.getCaseOfficer()));
+		target.setContactOfficer(userService.getByReferenceDto(source.getContactOfficer()));
 
-		caze.setSymptoms(symptomsFacade.fromDto(dto.getSymptoms()));
+		target.setSymptoms(symptomsFacade.fromDto(source.getSymptoms()));
 
-		return caze;
+		return target;
 	}
 	
 	public static CaseReferenceDto toReferenceDto(Case entity) {
@@ -210,33 +156,34 @@ public class CaseFacadeEjb implements CaseFacade {
 		return dto;
 	}	
 
-	public static CaseDataDto toCaseDataDto(Case entity) {
-		if (entity == null) {
+	public static CaseDataDto toCaseDataDto(Case source) {
+		if (source == null) {
 			return null;
 		}
-		CaseDataDto dto = new CaseDataDto();
-		DtoHelper.fillReferenceDto(dto, entity);
+		CaseDataDto target = new CaseDataDto();
+		DtoHelper.fillReferenceDto(target, source);
 
-		dto.setDisease(entity.getDisease());
-		dto.setCaseStatus(entity.getCaseStatus());
-		dto.setPerson(PersonFacadeEjb.toReferenceDto(entity.getPerson()));
+		target.setDisease(source.getDisease());
+		target.setCaseClassification(source.getCaseClassification());
+		target.setInvestigationStatus(source.getInvestigationStatus());
+		target.setPerson(PersonFacadeEjb.toReferenceDto(source.getPerson()));
 		
-		dto.setRegion(RegionFacadeEjb.toReferenceDto(entity.getRegion()));
-		dto.setDistrict(DistrictFacadeEjb.toReferenceDto(entity.getDistrict()));
-		dto.setCommunity(CommunityFacadeEjb.toReferenceDto(entity.getCommunity()));
-		dto.setHealthFacility(FacilityFacadeEjb.toReferenceDto(entity.getHealthFacility()));
+		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));
+		target.setDistrict(DistrictFacadeEjb.toReferenceDto(source.getDistrict()));
+		target.setCommunity(CommunityFacadeEjb.toReferenceDto(source.getCommunity()));
+		target.setHealthFacility(FacilityFacadeEjb.toReferenceDto(source.getHealthFacility()));
 		
-		dto.setReportingUser(UserFacadeEjb.toReferenceDto(entity.getReportingUser()));
-		dto.setReportDate(entity.getReportDate());
-		dto.setInvestigatedDate(entity.getInvestigatedDate());
+		target.setReportingUser(UserFacadeEjb.toReferenceDto(source.getReportingUser()));
+		target.setReportDate(source.getReportDate());
+		target.setInvestigatedDate(source.getInvestigatedDate());
 
-		dto.setSurveillanceOfficer(UserFacadeEjb.toReferenceDto(entity.getSurveillanceOfficer()));
-		dto.setCaseOfficer(UserFacadeEjb.toReferenceDto(entity.getCaseOfficer()));
-		dto.setContactOfficer(UserFacadeEjb.toReferenceDto(entity.getContactOfficer()));
+		target.setSurveillanceOfficer(UserFacadeEjb.toReferenceDto(source.getSurveillanceOfficer()));
+		target.setCaseOfficer(UserFacadeEjb.toReferenceDto(source.getCaseOfficer()));
+		target.setContactOfficer(UserFacadeEjb.toReferenceDto(source.getContactOfficer()));
 		
-		dto.setSymptoms(SymptomsFacadeEjb.toDto(entity.getSymptoms()));
+		target.setSymptoms(SymptomsFacadeEjb.toDto(source.getSymptoms()));
 		
-		return dto;
+		return target;
 	}
 	
 }

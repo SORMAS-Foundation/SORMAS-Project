@@ -13,7 +13,8 @@ import com.vaadin.ui.Grid;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.caze.CaseStatus;
+import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -29,10 +30,11 @@ public class CaseGrid extends Grid {
 
         BeanItemContainer<CaseDataDto> container = new BeanItemContainer<CaseDataDto>(CaseDataDto.class);
         setContainerDataSource(container);
-        setColumns(CaseDataDto.UUID, CaseDataDto.DISEASE, CaseDataDto.CASE_STATUS, CaseDataDto.PERSON, 
+        setColumns(CaseDataDto.UUID, CaseDataDto.DISEASE, 
+        		CaseDataDto.CASE_CLASSIFICATION, CaseDataDto.INVESTIGATION_STATUS, CaseDataDto.PERSON, 
         		CaseDataDto.DISTRICT,  CaseDataDto.HEALTH_FACILITY, 
         		CaseDataDto.REPORTING_USER, CaseDataDto.REPORT_DATE, 
-        		CaseDataDto.SURVEILLANCE_OFFICER, CaseDataDto.INVESTIGATED_DATE);
+        		CaseDataDto.SURVEILLANCE_OFFICER);
 
         getColumn(CaseDataDto.UUID).setRenderer(new UuidRenderer());
         
@@ -89,19 +91,22 @@ public class CaseGrid extends Grid {
 		}
 	}
 
-	public void setStatusFilter(CaseStatus status) {
-    	removeAllStatusFilter();
-    	if (status != null) {
-	    	Equal filter = new Equal(CaseDataDto.CASE_STATUS, status);  
+	public void setClassificationFilter(CaseClassification classficiation) {
+		getContainer().removeContainerFilters(CaseDataDto.CASE_CLASSIFICATION);
+    	if (classficiation != null) {
+	    	Equal filter = new Equal(CaseDataDto.CASE_CLASSIFICATION, classficiation);  
 	        getContainer().addContainerFilter(filter);
     	}
     }
-    
-    public void removeAllStatusFilter() {
-    	reload();
-    	getContainer().removeContainerFilters(CaseDataDto.CASE_STATUS);
-    }
 
+	public void setInvestigationFilter(InvestigationStatus status) {
+		getContainer().removeContainerFilters(CaseDataDto.INVESTIGATION_STATUS);
+    	if (status != null) {
+	    	Equal filter = new Equal(CaseDataDto.INVESTIGATION_STATUS, status);  
+	        getContainer().addContainerFilter(filter);
+    	}
+    }
+	
     @SuppressWarnings("unchecked")
 	private BeanItemContainer<CaseDataDto> getContainer() {
         return (BeanItemContainer<CaseDataDto>) super.getContainerDataSource();

@@ -159,7 +159,7 @@
                     android:layout_weight="0.5"
                     android:paddingTop="@dimen/field_padding"
                     android:paddingBottom="@dimen/field_padding"
-                    app:enum="@{contact.caze.caseStatus}"/>
+                    app:enum="@{contact.caze.caseClassification}"/>
 
             </LinearLayout>
 

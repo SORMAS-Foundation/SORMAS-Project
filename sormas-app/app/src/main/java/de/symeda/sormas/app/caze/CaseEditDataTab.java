@@ -3,19 +3,15 @@ package de.symeda.sormas.app.caze;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.Spinner;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import de.symeda.sormas.api.caze.CaseHelper;
-import de.symeda.sormas.api.caze.CaseStatus;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
@@ -23,17 +19,14 @@ import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.facility.Facility;
-import de.symeda.sormas.app.backend.facility.FacilityDao;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
-import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.FieldHelper;
 import de.symeda.sormas.app.component.SpinnerField;
 import de.symeda.sormas.app.databinding.CaseDataFragmentLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.FormTab;
-import de.symeda.sormas.app.util.Item;
 
 /**
  * Created by Stefan Szczesny on 27.07.2016.
@@ -125,20 +118,22 @@ public class CaseEditDataTab extends FormTab {
         });
 
         Button btnCaseAdministration = binding.formCdBtnCaseAdministration;
-        Iterable<CaseStatus> possibleStatus = CaseHelper.getPossibleStatusChanges(caze.getCaseStatus(), ConfigProvider.getUser().getUserRole());
-        if(possibleStatus.iterator().hasNext()) {
-            btnCaseAdministration.setVisibility(View.VISIBLE);
-            final CaseStatus caseStatus = possibleStatus.iterator().next();
-            btnCaseAdministration.setText(caseStatus.getChangeString());
-            btnCaseAdministration.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    caseDao.changeCaseStatus(caze, caseStatus);
-                    reloadFragment();
-                }
-            });
-        }
-        else {
+        // this can later be used to manipulate the case investigation task from within the case
+//        Iterable<CaseStatus> possibleStatus = CaseHelper.getPossibleStatusChanges(caze.getCaseClassification(), ConfigProvider.getUser().getUserRole());
+//        if(possibleStatus.iterator().hasNext()) {
+//            btnCaseAdministration.setVisibility(View.VISIBLE);
+//            final CaseStatus caseStatus = possibleStatus.iterator().next();
+//            btnCaseAdministration.setText(caseStatus.getChangeString());
+//            btnCaseAdministration.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    caseDao.changeCaseStatus(caze, caseStatus);
+//                    reloadFragment();
+//                }
+//            });
+//        }
+//        else
+        {
             btnCaseAdministration.setVisibility(View.INVISIBLE);
         }
 

@@ -2,6 +2,7 @@ package de.symeda.sormas.ui.caze;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
@@ -13,7 +14,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.caze.CaseStatus;
+import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -36,7 +37,7 @@ public class CasesView extends AbstractView {
 	public static final String VIEW_NAME = "cases";
 
 	private CaseGrid grid;    
-    private Button newCase;
+    private Button createButton;
 
 	private VerticalLayout gridLayout;
 
@@ -71,25 +72,24 @@ public class CasesView extends AbstractView {
     	CssStyles.style(header, CssStyles.H2, CssStyles.NO_MARGIN);
     	topLayout.addComponent(header);
     	
-    	Button statusAll = new Button("all", e -> grid.removeAllStatusFilter());
+    	Button statusAll = new Button("all", e -> grid.setInvestigationFilter(null));
         statusAll.setStyleName(ValoTheme.BUTTON_LINK);
         topLayout.addComponent(statusAll);
         
-    	Button statusPossible = new Button("possible", e -> grid.setStatusFilter(CaseStatus.POSSIBLE));
-    	statusPossible.setStyleName(ValoTheme.BUTTON_LINK);
-        topLayout.addComponent(statusPossible);
+        for (InvestigationStatus status : InvestigationStatus.values()) {
+	    	Button statusButton = new Button(status.toString(), e -> grid.setInvestigationFilter(status));
+	    	statusButton.setStyleName(ValoTheme.BUTTON_LINK);
+	        topLayout.addComponent(statusButton);
+        }
         
-        Button statusInvestigated = new Button("investigated", e -> grid.setStatusFilter(CaseStatus.INVESTIGATED));
-        statusInvestigated.setStyleName(ValoTheme.BUTTON_LINK);
-        topLayout.addComponent(statusInvestigated);
+        createButton = new Button("New case");
+        createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+        createButton.setIcon(FontAwesome.PLUS_CIRCLE);
+        createButton.addClickListener(e -> ControllerProvider.getCaseController().create());
+        topLayout.addComponent(createButton);
+        topLayout.setComponentAlignment(createButton, Alignment.MIDDLE_RIGHT);
+        topLayout.setExpandRatio(createButton, 1);
         
-        newCase = new Button("New case");
-        newCase.addStyleName(ValoTheme.BUTTON_PRIMARY);
-        newCase.setIcon(FontAwesome.PLUS_CIRCLE);
-        newCase.addClickListener(e -> ControllerProvider.getCaseController().create());
-        topLayout.addComponent(newCase);
-
-        topLayout.setExpandRatio(statusInvestigated, 1);
         return topLayout;
     }
 

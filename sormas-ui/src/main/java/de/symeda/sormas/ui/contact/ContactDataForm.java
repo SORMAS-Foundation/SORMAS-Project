@@ -129,8 +129,8 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	    	
 			addDescLabel(caseInfoLayout, caseDto.getDisease(),
 					I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISEASE));
-			addDescLabel(caseInfoLayout, caseDto.getCaseStatus(),
-					I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.CASE_STATUS));
+			addDescLabel(caseInfoLayout, caseDto.getCaseClassification(),
+					I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.CASE_CLASSIFICATION));
 			addDescLabel(caseInfoLayout, DateHelper.formatDMY(caseDto.getSymptoms().getOnsetDate()),
 					I18nProperties.getPrefixFieldCaption(SymptomsDto.I18N_PREFIX, SymptomsDto.ONSET_DATE));
 			

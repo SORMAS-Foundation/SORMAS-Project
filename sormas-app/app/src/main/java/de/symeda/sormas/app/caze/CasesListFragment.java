@@ -12,7 +12,7 @@ import android.widget.ArrayAdapter;
 
 import java.util.List;
 
-import de.symeda.sormas.api.caze.CaseStatus;
+import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -37,8 +37,8 @@ public class CasesListFragment extends ListFragment {
         List<Case> cases;
         Bundle arguments = getArguments();
         if (arguments.containsKey(ARG_FILTER_STATUS)) {
-            CaseStatus filterStatus = (CaseStatus)arguments.getSerializable(ARG_FILTER_STATUS);
-            cases = DatabaseHelper.getCaseDao().queryForEq(Case.CASE_STATUS, filterStatus);
+            InvestigationStatus filterStatus = (InvestigationStatus)arguments.getSerializable(ARG_FILTER_STATUS);
+            cases = DatabaseHelper.getCaseDao().queryForEq(Case.INVESTIGATION_STATUS, filterStatus);
         } else {
             cases = DatabaseHelper.getCaseDao().queryForAll();
         }

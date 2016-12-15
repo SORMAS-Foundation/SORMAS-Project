@@ -12,15 +12,14 @@ import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
-import de.symeda.sormas.api.caze.CaseHelper;
-import de.symeda.sormas.api.caze.CaseStatus;
+import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsFacade;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.login.LoginHelper;
@@ -102,7 +101,8 @@ public class CaseController {
     	caze.setUuid(DataHelper.createUuid());
     	
     	caze.setDisease(Disease.EVD);
-    	caze.setCaseStatus(CaseStatus.POSSIBLE);
+    	caze.setInvestigationStatus(InvestigationStatus.PENDING);
+    	caze.setCaseClassification(CaseClassification.POSSIBLE);
     	
     	caze.setReportDate(new Date());
     	UserDto user = LoginHelper.getCurrentUser();
@@ -154,17 +154,7 @@ public class CaseController {
         		}
         	}
         });
-        
-        caseEditForm.setStatusChangeButtons(caze.getCaseStatus(),
-        		CaseHelper.getPossibleStatusChanges(caze.getCaseStatus(), UserRole.SURVEILLANCE_SUPERVISOR), 
-        		status -> {
-        			if (editView.isModified()) {
-        				editView.commit();
-        			}
-        			CaseDataDto cazeDto = cf.changeCaseStatus(caseUuid, status);
-        			navigateToData(cazeDto.getUuid()); // might be done twice - that's ok		
-        		});
-        
+
         return editView;
     }
 

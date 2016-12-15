@@ -42,115 +42,118 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
     }
 
     @Override
-    public void fillInnerFromDto(Case ado, CaseDataDto dto) {
+    public void fillInnerFromDto(Case target, CaseDataDto source) {
 
-        ado.setCaseStatus(dto.getCaseStatus());
-        ado.setDisease(dto.getDisease());
-        if (dto.getHealthFacility() != null) {
-            ado.setHealthFacility(DatabaseHelper.getFacilityDao().queryUuid(dto.getHealthFacility().getUuid()));
+        target.setCaseClassification(source.getCaseClassification());
+        target.setInvestigationStatus(source.getInvestigationStatus());
+        target.setDisease(source.getDisease());
+        if (source.getHealthFacility() != null) {
+            target.setHealthFacility(DatabaseHelper.getFacilityDao().queryUuid(source.getHealthFacility().getUuid()));
         } else {
-            ado.setHealthFacility(null);
+            target.setHealthFacility(null);
         }
-        if (dto.getPerson() != null) {
-            ado.setPerson(DatabaseHelper.getPersonDao().queryUuid(dto.getPerson().getUuid()));
+        if (source.getPerson() != null) {
+            target.setPerson(DatabaseHelper.getPersonDao().queryUuid(source.getPerson().getUuid()));
         } else {
-            ado.setPerson(null);
+            target.setPerson(null);
         }
-        ado.setInvestigatedDate(dto.getInvestigatedDate());
-        ado.setReportDate(dto.getReportDate());
-        if (dto.getReportingUser() != null) {
-            ado.setReportingUser(DatabaseHelper.getUserDao().queryUuid(dto.getReportingUser().getUuid()));
+        target.setInvestigatedDate(source.getInvestigatedDate());
+        target.setReportDate(source.getReportDate());
+        if (source.getReportingUser() != null) {
+            target.setReportingUser(DatabaseHelper.getUserDao().queryUuid(source.getReportingUser().getUuid()));
         } else {
-            ado.setReportingUser(null);
-        }
-
-        ado.setSymptoms(symptomsDtoHelper.fillOrCreateFromDto(ado.getSymptoms(), dto.getSymptoms()));
-
-        if (dto.getRegion() != null) {
-            ado.setRegion(DatabaseHelper.getRegionDao().queryUuid(dto.getRegion().getUuid()));
-        } else {
-            ado.setRegion(null);
+            target.setReportingUser(null);
         }
 
-        if (dto.getDistrict() != null) {
-            ado.setDistrict(DatabaseHelper.getDistrictDao().queryUuid(dto.getDistrict().getUuid()));
+        target.setSymptoms(symptomsDtoHelper.fillOrCreateFromDto(target.getSymptoms(), source.getSymptoms()));
+
+        if (source.getRegion() != null) {
+            target.setRegion(DatabaseHelper.getRegionDao().queryUuid(source.getRegion().getUuid()));
         } else {
-            ado.setDistrict(null);
+            target.setRegion(null);
         }
 
-        if (dto.getCommunity() != null) {
-            ado.setCommunity(DatabaseHelper.getCommunityDao().queryUuid(dto.getCommunity().getUuid()));
+        if (source.getDistrict() != null) {
+            target.setDistrict(DatabaseHelper.getDistrictDao().queryUuid(source.getDistrict().getUuid()));
         } else {
-            ado.setCommunity(null);
+            target.setDistrict(null);
         }
 
-        ado.setSurveillanceOfficer(DatabaseHelper.getUserDao().getByReferenceDto(dto.getSurveillanceOfficer()));
+        if (source.getCommunity() != null) {
+            target.setCommunity(DatabaseHelper.getCommunityDao().queryUuid(source.getCommunity().getUuid()));
+        } else {
+            target.setCommunity(null);
+        }
+
+        target.setSurveillanceOfficer(DatabaseHelper.getUserDao().getByReferenceDto(source.getSurveillanceOfficer()));
 
         // TODO user
     }
 
     @Override
-    public void fillInnerFromAdo(CaseDataDto dto, Case ado) {
+    public void fillInnerFromAdo(CaseDataDto target, Case source) {
 
-        dto.setCaseStatus(ado.getCaseStatus());
-        dto.setDisease(ado.getDisease());
-        if (ado.getHealthFacility() != null) {
-            Facility facility = DatabaseHelper.getFacilityDao().queryForId(ado.getHealthFacility().getId());
-            dto.setHealthFacility(FacilityDtoHelper.toReferenceDto(facility));
+        target.setCaseClassification(source.getCaseClassification());
+        target.setInvestigationStatus(source.getInvestigationStatus());
+
+        target.setDisease(source.getDisease());
+        if (source.getHealthFacility() != null) {
+            Facility facility = DatabaseHelper.getFacilityDao().queryForId(source.getHealthFacility().getId());
+            target.setHealthFacility(FacilityDtoHelper.toReferenceDto(facility));
         } else {
-            dto.setHealthFacility(null);
+            target.setHealthFacility(null);
         }
 
-        if (ado.getPerson() != null) {
-            Person person = DatabaseHelper.getPersonDao().queryForId(ado.getPerson().getId());
-            dto.setPerson(PersonDtoHelper.toReferenceDto(person));
+        if (source.getPerson() != null) {
+            Person person = DatabaseHelper.getPersonDao().queryForId(source.getPerson().getId());
+            target.setPerson(PersonDtoHelper.toReferenceDto(person));
         }
 
-        dto.setInvestigatedDate(ado.getInvestigatedDate());
-        dto.setReportDate(ado.getReportDate());
+        target.setInvestigatedDate(source.getInvestigatedDate());
+        target.setReportDate(source.getReportDate());
 
-        if (ado.getReportingUser() != null) {
-            User user = DatabaseHelper.getUserDao().queryForId(ado.getReportingUser().getId());
-            dto.setReportingUser(UserDtoHelper.toReferenceDto(user));
+        if (source.getReportingUser() != null) {
+            User user = DatabaseHelper.getUserDao().queryForId(source.getReportingUser().getId());
+            target.setReportingUser(UserDtoHelper.toReferenceDto(user));
         } else {
-            dto.setReportingUser(null);
+            target.setReportingUser(null);
         }
 
-        if (ado.getSymptoms() != null) {
-            Symptoms symptoms = DatabaseHelper.getSymptomsDao().queryForId(ado.getSymptoms().getId());
+        if (source.getSymptoms() != null) {
+            Symptoms symptoms = DatabaseHelper.getSymptomsDao().queryForId(source.getSymptoms().getId());
             SymptomsDto symptomsDto = symptomsDtoHelper.adoToDto(symptoms);
-            dto.setSymptoms(symptomsDto);
+            target.setSymptoms(symptomsDto);
         } else {
-            dto.setSymptoms(null);
+            target.setSymptoms(null);
         }
 
-        if (ado.getRegion() != null) {
-            Region region = DatabaseHelper.getRegionDao().queryForId(ado.getRegion().getId());
-            dto.setRegion(RegionDtoHelper.toReferenceDto(region));
+        if (source.getRegion() != null) {
+            Region region = DatabaseHelper.getRegionDao().queryForId(source.getRegion().getId());
+            target.setRegion(RegionDtoHelper.toReferenceDto(region));
         } else {
-            dto.setRegion(null);
+            target.setRegion(null);
         }
 
 
-        if (ado.getDistrict() != null) {
-            District district = DatabaseHelper.getDistrictDao().queryForId(ado.getDistrict().getId());
-            dto.setDistrict(DistrictDtoHelper.toReferenceDto(district));
+        if (source.getDistrict() != null) {
+            District district = DatabaseHelper.getDistrictDao().queryForId(source.getDistrict().getId());
+            target.setDistrict(DistrictDtoHelper.toReferenceDto(district));
         } else {
-            dto.setDistrict(null);
+            target.setDistrict(null);
         }
 
-        if (ado.getCommunity() != null) {
-            Community community = DatabaseHelper.getCommunityDao().queryForId(ado.getCommunity().getId());
-            dto.setCommunity(CommunityDtoHelper.toReferenceDto(community));
+        if (source.getCommunity() != null) {
+            Community community = DatabaseHelper.getCommunityDao().queryForId(source.getCommunity().getId());
+            target.setCommunity(CommunityDtoHelper.toReferenceDto(community));
         } else {
-            dto.setCommunity(null);
+            target.setCommunity(null);
         }
 
-        if (ado.getSurveillanceOfficer() != null) {
-            User user = DatabaseHelper.getUserDao().queryForId(ado.getSurveillanceOfficer().getId());
-            dto.setSurveillanceOfficer(UserDtoHelper.toReferenceDto(user));
+        if (source.getSurveillanceOfficer() != null) {
+            User user = DatabaseHelper.getUserDao().queryForId(source.getSurveillanceOfficer().getId());
+            target.setSurveillanceOfficer(UserDtoHelper.toReferenceDto(user));
         } else {
-            dto.setSurveillanceOfficer(null);
+            target.setSurveillanceOfficer(null);
         }
         // TODO user
     }

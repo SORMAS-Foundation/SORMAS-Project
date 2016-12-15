@@ -20,7 +20,8 @@ public class CaseDataDto extends CaseReferenceDto {
 	
 	public static final String I18N_PREFIX = "CaseData";
 	
-	public static final String CASE_STATUS = "caseStatus";
+	public static final String CASE_CLASSIFICATION = "caseClassification";
+	public static final String INVESTIGATION_STATUS = "investigationStatus";
 	public static final String PERSON = "person";
 	public static final String DISEASE = "disease";
 	public static final String REGION = "region";
@@ -36,7 +37,8 @@ public class CaseDataDto extends CaseReferenceDto {
 	public static final String SYMPTOMS = "symptoms";
 	
 	private PersonReferenceDto person;
-	private CaseStatus caseStatus;
+	private CaseClassification caseClassification;
+	private InvestigationStatus investigationStatus;
 	private Disease disease;
 	private UserReferenceDto reportingUser;
 	private Date reportDate;
@@ -53,12 +55,12 @@ public class CaseDataDto extends CaseReferenceDto {
 	private UserReferenceDto caseOfficer;
 	private UserReferenceDto contactOfficer;
 	
-	public CaseStatus getCaseStatus() {
-		return caseStatus;
+	public CaseClassification getCaseClassification() {
+		return caseClassification;
 	}
 
-	public void setCaseStatus(CaseStatus caseStatus) {
-		this.caseStatus = caseStatus;
+	public void setCaseClassification(CaseClassification caseClassification) {
+		this.caseClassification = caseClassification;
 	}
 	
 	public PersonReferenceDto getPerson() {
@@ -167,5 +169,13 @@ public class CaseDataDto extends CaseReferenceDto {
 
 	public void setCommunity(CommunityReferenceDto community) {
 		this.community = community;
+	}
+
+	public InvestigationStatus getInvestigationStatus() {
+		return investigationStatus;
+	}
+
+	public void setInvestigationStatus(InvestigationStatus investigationStatus) {
+		this.investigationStatus = investigationStatus;
 	}
 }

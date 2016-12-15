@@ -76,6 +76,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	private DatabaseHelper(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);//, R.raw.ormlite_config);
+		// HACK to make sure database is initialized - otherwise we could run into problems caused by threads
+		this.getReadableDatabase();
 	}
 
 	public static void clearTables() {
@@ -117,12 +119,11 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.createTable(connectionSource, Facility.class);
 			TableUtils.createTable(connectionSource, User.class);
 			TableUtils.createTable(connectionSource, Person.class);
+			TableUtils.createTable(connectionSource, Case.class);
 			TableUtils.createTable(connectionSource, Symptoms.class);
-			TableUtils.createTable(connectionSource, Task.class);
 			TableUtils.createTable(connectionSource, Contact.class);
 			TableUtils.createTable(connectionSource, Visit.class);
-
-			TableUtils.createTable(connectionSource, Case.class);
+			TableUtils.createTable(connectionSource, Task.class);
 		} catch (SQLException e) {
 			Log.e(DatabaseHelper.class.getName(), "Can't create database", e);
 			throw new RuntimeException(e);

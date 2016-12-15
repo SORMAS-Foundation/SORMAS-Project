@@ -16,7 +16,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import de.symeda.sormas.api.caze.CaseStatus;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;

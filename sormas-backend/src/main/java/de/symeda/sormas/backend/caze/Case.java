@@ -16,7 +16,8 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.caze.CaseStatus;
+import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.location.Location;
@@ -33,7 +34,8 @@ public class Case extends AbstractDomainObject {
 	
 	private static final long serialVersionUID = -2697795184663562129L;
 
-	public static final String CASE_STATUS = "caseStatus";
+	public static final String CASE_CLASSIFICATION = "caseClassification";
+	public static final String INVESTIGATION_STATUS = "investigationStatus";
 	public static final String PERSON = "person";
 	public static final String DISEASE = "disease";
 	public static final String HEALTH_FACILITY = "healthFacility";
@@ -49,7 +51,8 @@ public class Case extends AbstractDomainObject {
 	private Person person;
 	private String description;
 	private Disease disease;
-	private CaseStatus caseStatus;
+	private CaseClassification caseClassification;
+	private InvestigationStatus investigationStatus;
 	
 	private Region region;
 	private District district;
@@ -102,11 +105,12 @@ public class Case extends AbstractDomainObject {
 	}
 	
 	@Enumerated(EnumType.STRING)
-	public CaseStatus getCaseStatus() {
-		return caseStatus;
+	@Column(nullable=false)
+	public CaseClassification getCaseClassification() {
+		return caseClassification;
 	}
-	public void setCaseStatus(CaseStatus caseStatus) {
-		this.caseStatus = caseStatus;
+	public void setCaseClassification(CaseClassification caseStatus) {
+		this.caseClassification = caseStatus;
 	}
 	
 	@ManyToOne(cascade = {})
@@ -273,5 +277,14 @@ public class Case extends AbstractDomainObject {
 	}
 	public void setTasks(List<Task> tasks) {
 		this.tasks = tasks;
+	}
+	
+	@Enumerated(EnumType.STRING)
+	@Column(nullable=false)
+	public InvestigationStatus getInvestigationStatus() {
+		return investigationStatus;
+	}
+	public void setInvestigationStatus(InvestigationStatus investigationStatus) {
+		this.investigationStatus = investigationStatus;
 	}
 }

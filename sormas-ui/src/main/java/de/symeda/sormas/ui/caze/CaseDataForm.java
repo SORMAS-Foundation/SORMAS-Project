@@ -1,20 +1,14 @@
 package de.symeda.sormas.ui.caze;
 
-import java.util.function.Consumer;
-
-import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.caze.CaseHelper;
-import de.symeda.sormas.api.caze.CaseStatus;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -34,7 +28,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
     		LayoutUtil.h3(CssStyles.VSPACE3, "Case data")+
 			
 			LayoutUtil.divCss(CssStyles.VSPACE2, 
-					LayoutUtil.fluidRowLocs(CaseDataDto.CASE_STATUS) +
+					LayoutUtil.fluidRowLocs(CaseDataDto.CASE_CLASSIFICATION) +
+					LayoutUtil.fluidRowLocs(CaseDataDto.INVESTIGATION_STATUS) +
 		    		LayoutUtil.fluidRowCss(CssStyles.VSPACE4,
 		    				LayoutUtil.fluidColumn(8, 0, 
 		    						LayoutUtil.fluidRowLocs(CaseDataDto.UUID, CaseDataDto.DISEASE) +
@@ -62,7 +57,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
     @Override
 	protected void addFields() {
     	addField(CaseDataDto.UUID, TextField.class);
-    	addField(CaseDataDto.CASE_STATUS, OptionGroup.class);
+    	addField(CaseDataDto.CASE_CLASSIFICATION, OptionGroup.class);
+    	addField(CaseDataDto.INVESTIGATION_STATUS, OptionGroup.class);
     	addField(CaseDataDto.REPORTING_USER, ComboBox.class);
     	addField(CaseDataDto.REPORT_DATE, DateField.class);
     	addField(CaseDataDto.DISEASE, NativeSelect.class);
@@ -103,31 +99,14 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		contactOfficerField.addItems(FacadeProvider.getUserFacade().getAssignableUsers(currentUser, UserRole.CONTACT_OFFICER));
 		contactOfficerField.setNullSelectionAllowed(true);
     	
-    	setRequired(true, CaseDataDto.REGION, CaseDataDto.DISTRICT, CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY);
+    	setRequired(true, CaseDataDto.CASE_CLASSIFICATION, CaseDataDto.INVESTIGATION_STATUS,
+    			CaseDataDto.REGION, CaseDataDto.DISTRICT, CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY);
 
-    	setReadOnly(true, CaseDataDto.UUID, 
-    			CaseDataDto.CASE_STATUS, CaseDataDto.DISEASE, 
+    	setReadOnly(true, CaseDataDto.UUID, CaseDataDto.DISEASE, 
     			CaseDataDto.REPORTING_USER, CaseDataDto.REPORT_DATE);
 	}
     
-    public void setStatusChangeButtons(CaseStatus currentStatus, Iterable<CaseStatus> statuses, Consumer<CaseStatus> statusChangeConsumer) {
-    	
-    	statusChangeLayout.removeAllComponents();
-    	
-    	for (final CaseStatus status : statuses) {
-        	Button button = new Button();
-        	button.setCaption(status.getChangeString());
-        	if (CaseHelper.isPrimary(currentStatus, status)) {
-        		button.addStyleName(ValoTheme.BUTTON_PRIMARY);
-        	}
-        	button.addStyleName(CssStyles.FORCE_CAPTION);
-        	button.setWidth(100, Unit.PERCENTAGE);
-        	button.addClickListener(e -> statusChangeConsumer.accept(status));
-        	statusChangeLayout.addComponent(button);
-    	}
-    }
-    
-	@Override
+	@Override 
 	protected String createHtmlLayout() {
 		 return HTML_LAYOUT;
 	}

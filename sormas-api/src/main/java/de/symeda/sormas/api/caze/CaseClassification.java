@@ -2,23 +2,15 @@ package de.symeda.sormas.api.caze;
 
 import de.symeda.sormas.api.I18nProperties;
 
-public enum CaseStatus {
+public enum CaseClassification {
 	POSSIBLE, 
-	INVESTIGATED, 
 	SUSPECT, 
 	PROBABLE,
 	CONFIRMED, 
-	NO_CASE, 
-	RECOVERED, 
-	DECEASED
+	NO_CASE 
 	;
 	
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	};
-	
-	public String getChangeString() {
-		return I18nProperties.getButtonCaption(getClass().getSimpleName() + "." + name(), name());
-	};
-
 }

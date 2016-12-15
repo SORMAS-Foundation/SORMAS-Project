@@ -2,7 +2,11 @@ package de.symeda.sormas.app.backend.common;
 
 import android.util.Log;
 
+import com.j256.ormlite.logger.Logger;
+import com.j256.ormlite.logger.LoggerFactory;
+
 import java.io.IOException;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
@@ -20,6 +24,8 @@ import retrofit2.Response;
  * Created by Martin Wahnschaffe on 27.07.2016.
  */
 public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends DataTransferObject> {
+
+    private static final Logger logger = LoggerFactory.getLogger(AdoDtoHelper.class);
 
     public ADO fillOrCreateFromDto(ADO ado, DTO dto) {
 
@@ -83,10 +89,14 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
                         for (DTO dto : result) {
                             ADO ado = empty ? null : dao.queryUuid(dto.getUuid());
                             if (ado == null || !ado.isModified()) {
-                                // isModified check is a workarround to make sure data entered in the app is not lost (#53)
-                                // this has to be replaced with a proper merging of old and new data (#46)
-                                ado = fillOrCreateFromDto(ado, dto);
-                                dao.saveUnmodified(ado);
+                                try {
+                                    // isModified check is a workarround to make sure data entered in the app is not lost (#53)
+                                    // this has to be replaced with a proper merging of old and new data (#46)
+                                    ado = fillOrCreateFromDto(ado, dto);
+                                    dao.saveUnmodified(ado);
+                                } catch (Exception exception) {
+                                    logger.error(exception, "Exception thrown during pull process is ignored on a single entity base");
+                                }
                             }
                         }
                         return null;

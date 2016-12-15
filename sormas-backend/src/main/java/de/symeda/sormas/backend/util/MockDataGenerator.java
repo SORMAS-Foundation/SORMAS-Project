@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Random;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.caze.CaseStatus;
+import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.user.UserHelper;
 import de.symeda.sormas.api.user.UserRole;
@@ -70,7 +70,7 @@ public class MockDataGenerator {
     private static Case createCase() {
     	Case caze = new Case();
     	caze.setDescription(generateName());
-    	caze.setCaseStatus(generateStatus());
+    	caze.setCaseClassification(generateStatus());
     	caze.setDisease(Disease.EVD);
 		caze.setReportDate(new Date());
         return caze;
@@ -97,8 +97,8 @@ public class MockDataGenerator {
     }
     
     
-    private static CaseStatus generateStatus() {
-        return CaseStatus.values()[random.nextInt(CaseStatus.values().length)];
+    private static CaseClassification generateStatus() {
+        return CaseClassification.values()[random.nextInt(CaseClassification.values().length)];
     }
 
     private static String generateName() {

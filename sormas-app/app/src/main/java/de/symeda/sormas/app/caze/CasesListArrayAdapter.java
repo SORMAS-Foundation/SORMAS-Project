@@ -44,7 +44,7 @@ public class CasesListArrayAdapter extends ArrayAdapter<Case> {
         disease.setText(caze.getDisease()!=null?caze.getDisease().toString():null);
 
         TextView caseStatus = (TextView) convertView.findViewById(R.id.cli_case_satus);
-        caseStatus.setText(caze.getCaseStatus()!=null?caze.getCaseStatus().toString():null);
+        caseStatus.setText(caze.getCaseClassification()!=null?caze.getCaseClassification().toString():null);
 
         TextView person = (TextView) convertView.findViewById(R.id.cli_person);
         person.setText(caze.getPerson().toString());

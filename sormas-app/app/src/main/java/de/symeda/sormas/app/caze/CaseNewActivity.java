@@ -13,15 +13,14 @@ import android.widget.Toast;
 
 import java.util.Date;
 
-import de.symeda.sormas.api.caze.CaseStatus;
+import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
-import de.symeda.sormas.app.backend.person.Person;
-import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.symptoms.SymptomsDao;
 import de.symeda.sormas.app.backend.user.User;
@@ -84,7 +83,9 @@ public class CaseNewActivity extends AppCompatActivity {
                 try {
                     Case caze = caseNewTab.getData();
 
-                    caze.setCaseStatus(CaseStatus.POSSIBLE);
+                    caze.setCaseClassification(CaseClassification.POSSIBLE);
+                    caze.setInvestigationStatus(InvestigationStatus.PENDING);
+
                     User user = ConfigProvider.getUser();
                     caze.setReportingUser(user);
                     if (user.getUserRole() == UserRole.SURVEILLANCE_OFFICER) {

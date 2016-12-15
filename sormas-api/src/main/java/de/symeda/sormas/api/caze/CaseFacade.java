@@ -18,8 +18,6 @@ public interface CaseFacade {
 
     CaseDataDto createCase(String personUuid, CaseDataDto caseDto);
 
-   	CaseDataDto changeCaseStatus(String uuid, CaseStatus targetStatus);
-
 	List<CaseReferenceDto> getAllCasesAfterAsReference(Date date, String userUuid);
 
 	List<CaseReferenceDto> getSelectableCases(UserReferenceDto user);
