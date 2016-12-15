@@ -19,8 +19,8 @@ import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.user.User;
 
-@Entity(name= Case.TABLE_NAME)
-@DatabaseTable(tableName = Case.TABLE_NAME)
+@Entity(name= Visit.TABLE_NAME)
+@DatabaseTable(tableName = Visit.TABLE_NAME)
 public class Visit extends AbstractDomainObject {
 
 	public static final String TABLE_NAME = "visits";
