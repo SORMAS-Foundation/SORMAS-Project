@@ -50,8 +50,7 @@ public class ContactEditActivity extends AbstractEditActivity {
         // Creating titles for the tabs
         titles = new CharSequence[]{
                 getResources().getText(R.string.headline_contact_data),
-                getResources().getText(R.string.headline_person_information),
-                getResources().getText(R.string.headline_task)
+                getResources().getText(R.string.headline_person_information)
         };
 //              @TODO  getResources().getText(R.string.headline_visits)
     }
@@ -92,9 +91,10 @@ public class ContactEditActivity extends AbstractEditActivity {
                 updateActionBarGroups(menu, true, false, true);
                 break;
 
-            case 2:
-                updateActionBarGroups(menu, false, false, false);
-                break;
+            // tasks tab
+//            case 2:
+//                updateActionBarGroups(menu, false, false, false);
+//                break;
 
         }
 
