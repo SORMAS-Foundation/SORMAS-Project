@@ -22,6 +22,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.user.User;
 
@@ -156,6 +157,11 @@ public class LabelField extends PropertyField<String> {
     @BindingAdapter("app:caze")
     public static void setCazeForLabel(LabelField labelField, Case caze) {
         labelField.setValue(caze!=null?DataHelper.getShortUuid(caze.getUuid()) + (caze.getPerson()!=null?" " + caze.getPerson().toString():null):null);
+    }
+
+    @BindingAdapter("app:contact")
+    public static void setContactForLabel(LabelField labelField, Contact contact) {
+        labelField.setValue(contact!=null?DataHelper.getShortUuid(contact.getUuid()) + (contact.getPerson()!=null?" " + contact.getPerson().toString():null):null);
     }
 
 }

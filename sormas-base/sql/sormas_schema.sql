@@ -855,3 +855,9 @@ ALTER TABLE visit ADD CONSTRAINT fk_visit_visituser_id FOREIGN KEY (visituser_id
 
 INSERT INTO schema_version (version_number, comment) VALUES (11, 'visit, contact classification, follow-up status, follow-up until');
 
+-- 2016-12-15; Assign tasks to a contact #53
+
+ALTER TABLE task ADD COLUMN contact_id bigint;
+ALTER TABLE task ADD CONSTRAINT fk_task_contact_id FOREIGN KEY (contact_id) REFERENCES contact (id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (12, 'Contact added to task')

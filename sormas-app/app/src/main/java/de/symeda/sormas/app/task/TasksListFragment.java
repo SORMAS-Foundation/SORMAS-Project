@@ -28,6 +28,8 @@ import de.symeda.sormas.app.backend.task.Task;
 public class TasksListFragment extends ListFragment {
 
     public static final String ARG_FILTER_STATUS = "filterStatus";
+    public static final String KEY_CASE_UUID = "caseUuid";
+    public static final String KEY_CONTACT_UUID = "contactUuid";
 
     private String parentCaseUuid;
     private String parentContactUuid;
@@ -49,19 +51,19 @@ public class TasksListFragment extends ListFragment {
         }
 
         List<Task> tasks;
-        if(arguments.containsKey("caseUuid")) {
-            parentCaseUuid = (String)arguments.get("caseUuid");
+        if(arguments.containsKey(KEY_CASE_UUID)) {
+            parentCaseUuid = (String)arguments.get(KEY_CASE_UUID);
             final CaseDao caseDao = DatabaseHelper.getCaseDao();
-            final Case caze = caseDao.queryUuid((String)arguments.get("caseUuid"));
+            final Case caze = caseDao.queryUuid((String)arguments.get(KEY_CASE_UUID));
             if(caze != null) {
                 tasks = DatabaseHelper.getTaskDao().queryForCase(caze);
             } else {
                 tasks = new ArrayList<>();
             }
-        } else if(arguments.containsKey("contactUuid")) {
-            parentContactUuid = (String)arguments.get("contactUuid");
+        } else if(arguments.containsKey(KEY_CONTACT_UUID)) {
+            parentContactUuid = (String)arguments.get(KEY_CONTACT_UUID);
             final ContactDao contactDao = DatabaseHelper.getContactDao();
-            final Contact contact = contactDao.queryUuid((String)arguments.get("contactUuid"));
+            final Contact contact = contactDao.queryUuid((String)arguments.get(KEY_CONTACT_UUID));
             if(contact != null) {
                 tasks = DatabaseHelper.getTaskDao().queryForContact(contact);
             } else {
@@ -107,10 +109,10 @@ public class TasksListFragment extends ListFragment {
         Intent intent = new Intent(getActivity(), TaskEditActivity.class);
         intent.putExtra(Task.UUID, task.getUuid());
         if(parentCaseUuid != null) {
-            intent.putExtra("caseUuid", parentCaseUuid);
+            intent.putExtra(KEY_CASE_UUID, parentCaseUuid);
         }
         if(parentContactUuid != null) {
-            intent.putExtra("contactUuid", parentContactUuid);
+            intent.putExtra(KEY_CONTACT_UUID, parentContactUuid);
         }
         startActivity(intent);
     }

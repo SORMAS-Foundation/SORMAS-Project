@@ -1,6 +1,7 @@
 package de.symeda.sormas.backend.contact;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -8,6 +9,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
@@ -17,6 +19,7 @@ import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.user.User;
 
 @Entity
@@ -35,6 +38,7 @@ public class Contact extends AbstractDomainObject {
 	public static final String FOLLOW_UP_UNTIL = "followUpUntil";
 	public static final String CONTACT_OFFICER = "contactOfficer";
 	public static final String DESCRIPTION = "description";
+	public static final String TASKS = "tasks";
 	
 	private Person person;
 	private Case caze;
@@ -47,6 +51,8 @@ public class Contact extends AbstractDomainObject {
 	private Date followUpUntil;
 	private User contactOfficer;
 	private String description;
+	
+	private List<Task> tasks;
 	
 	@ManyToOne(cascade = {})
 	@JoinColumn(nullable=false)
@@ -146,4 +152,23 @@ public class Contact extends AbstractDomainObject {
 	public void setContactClassification(ContactClassification contactClassification) {
 		this.contactClassification = contactClassification;
 	}	
+	
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		Person contactPerson = getPerson();
+		Person casePerson = getCaze().getPerson();
+		builder.append(contactPerson.getFirstName()).append(" ").append(contactPerson.getLastName().toUpperCase());
+		builder.append(" to case ");
+		builder.append(casePerson.getFirstName()).append(" ").append(casePerson.getLastName().toUpperCase());
+		return builder.toString();
+	}
+	
+	@OneToMany(cascade = {}, mappedBy = Task.CONTACT)
+	public List<Task> getTasks() {
+		return tasks;
+	}
+	public void setTasks(List<Task> tasks) {
+		this.tasks = tasks;
+	}
 }

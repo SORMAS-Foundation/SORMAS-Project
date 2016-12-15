@@ -6,6 +6,7 @@ import java.util.List;
 import javax.ejb.Remote;
 
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.user.UserReferenceDto;
 
 @Remote
 public interface ContactFacade {
@@ -19,6 +20,8 @@ public interface ContactFacade {
 	ContactDto getContactByUuid(String uuid);
     
 	ContactDto saveContact(ContactDto dto);
+	
+	List<ContactReferenceDto> getSelectableContacts(UserReferenceDto user);
 
 	ContactReferenceDto getReferenceByUuid(String uuid);
 }

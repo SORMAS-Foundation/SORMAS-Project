@@ -56,15 +56,12 @@ public class ContactEditPagerAdapter extends FragmentStatePagerAdapter {
 //                Bundle arguments = new Bundle();
 //                arguments.putSerializable("contactUuid", (String)contactEditBundle.get(Contact.UUID));
 //                tasksListTab.setArguments(arguments);
-//                frag = tasksListTab;
-//                break;
-//            case TASKS:
-//                TasksListFragment tasksListTab = new TasksListFragment();
-//                Bundle arguments = new Bundle();
-//                arguments.putSerializable("contactUuid", (String)contactEditBundle.get(Contact.UUID));
-//                tasksListTab.setArguments(arguments);
-//                frag = tasksListTab;
-//                break;
+//                frag = tasksListTab;//                break;
+              case TASKS:
+				TasksListFragment tasksListTab = new TasksListFragment();
+                tasksListTab.setArguments(contactEditBundle);
+                frag = tasksListTab;
+                break;
 
         }
         return frag;

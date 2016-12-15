@@ -16,6 +16,7 @@ import de.symeda.sormas.app.backend.task.TaskDtoHelper;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.caze.CasesListFragment;
 import de.symeda.sormas.app.caze.SyncCasesTask;
+import de.symeda.sormas.app.contact.SyncContactsTask;
 import de.symeda.sormas.app.person.SyncPersonsTask;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.util.Callback;
@@ -79,7 +80,12 @@ public class SyncTasksTask extends AsyncTask<Void, Void, Void> {
         SyncCasesTask.syncCases(new Callback() {
             @Override
             public void call() {
-                syncTasksWithoutDependencies(callback, notificationContext);
+                SyncContactsTask.syncContacts(new Callback() {
+                    @Override
+                    public void call() {
+                        syncTasksWithoutDependencies(callback, notificationContext);
+                    }
+                });
             }
         });
     }

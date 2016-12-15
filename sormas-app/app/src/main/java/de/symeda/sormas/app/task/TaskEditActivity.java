@@ -28,8 +28,6 @@ import de.symeda.sormas.app.contact.ContactEditActivity;
 public class TaskEditActivity extends AppCompatActivity {
 
     private TaskTab taskTab;
-    private String parentCaseUuid;
-    private String parentContactUuid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,12 +53,6 @@ public class TaskEditActivity extends AppCompatActivity {
         super.onResume();
 
         Bundle params = getIntent().getExtras();
-        if(params.getString("caseUuid") != null) {
-            parentCaseUuid = params.getString("caseUuid");
-        }
-        if(params.getString("contactUuid") != null) {
-            parentContactUuid = params.getString("contactUuid");
-        }
 
         // pass activity arguments into tab
 
@@ -79,19 +71,7 @@ public class TaskEditActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button
             case android.R.id.home:
-                if(parentCaseUuid != null) {
-                    Intent intent = new Intent(this, CaseEditActivity.class);
-                    intent.putExtra(CaseEditActivity.KEY_CASE_UUID, parentCaseUuid);
-                    intent.putExtra(CaseEditActivity.KEY_PAGE, 4);
-                    startActivity(intent);
-                } else if(parentContactUuid != null) {
-                    Intent intent = new Intent(this, ContactEditActivity.class);
-                    intent.putExtra(ContactEditActivity.KEY_CONTACT_UUID, parentContactUuid);
-                    intent.putExtra(ContactEditActivity.KEY_PAGE, 2);
-                    startActivity(intent);
-                } else {
-                    NavUtils.navigateUpFromSameTask(this);
-                }
+                NavUtils.navigateUpFromSameTask(this);
 
                 return true;
             case R.id.action_save:

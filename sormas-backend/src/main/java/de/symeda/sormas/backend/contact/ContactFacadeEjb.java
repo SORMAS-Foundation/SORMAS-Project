@@ -20,6 +20,7 @@ import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
@@ -111,6 +112,14 @@ public class ContactFacadeEjb implements ContactFacade {
 		service.ensurePersisted(entity);
 		return toDto(entity);
 	}
+	
+	@Override
+	public List<ContactReferenceDto> getSelectableContacts(UserReferenceDto userRef) {
+		User user = userService.getByReferenceDto(userRef);
+		return service.getAllAfter(null, user).stream()
+				.map(c -> toReferenceDto(c))
+				.collect(Collectors.toList());
+	}
 
 	public Contact fromDto(@NotNull ContactDto source) {
 		
@@ -144,7 +153,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		return target;
 	}
 	
-	public ContactReferenceDto toReferenceDto(Contact source) {
+	public static ContactReferenceDto toReferenceDto(Contact source) {
 		if (source == null) {
 			return null;
 		}
@@ -247,4 +256,5 @@ public class ContactFacadeEjb implements ContactFacade {
 			contact.setFollowUpUntil(Date.from(beginDate.plusDays(followUpDuration).atStartOfDay(ZoneId.systemDefault()).toInstant()));
 		}
 	}
+	
 }

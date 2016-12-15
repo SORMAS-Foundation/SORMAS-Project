@@ -17,6 +17,7 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
+import de.symeda.sormas.ui.caze.CaseDataView;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
@@ -43,6 +44,11 @@ public class ContactController {
     public void create(CaseReferenceDto caze) {
     	CommitDiscardWrapperComponent<ContactCreateForm> createComponent = getContactCreateComponent(caze);
     	VaadinUiUtil.showModalPopupWindow(createComponent, "Create new contact");    	
+    }
+    
+    public void navigateToData(String contactUuid) {
+   		String navigationState = ContactDataView.VIEW_NAME + "/" + contactUuid;
+   		SormasUI.get().getNavigator().navigateTo(navigationState);	
     }
     
     public void editData(String contactUuid) {

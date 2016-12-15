@@ -13,6 +13,8 @@ import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskFacade;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.contact.ContactFacadeEjb;
+import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
@@ -26,6 +28,8 @@ public class TaskFacadeEjb implements TaskFacade {
 	private UserService userService;
 	@EJB
 	private CaseService caseService;
+	@EJB
+	private ContactService contactService;
 	@EJB
 	private UserFacadeEjbLocal userFacade;
 	
@@ -64,15 +68,19 @@ public class TaskFacadeEjb implements TaskFacade {
 			case CASE:
 				a.setCaze(caseService.getByReferenceDto(b.getCaze()));
 	//			a.setEvent(null);
-	//			a.setContact(null);
+				a.setContact(null);
 				break;
-				default:
-					throw new UnsupportedOperationException(b.getTaskContext() + " is not implemented");
+			case CONTACT:
+				a.setCaze(null);
+				a.setContact(contactService.getByReferenceDto(b.getContact()));
+				break;
+			default:
+				throw new UnsupportedOperationException(b.getTaskContext() + " is not implemented");
 			}
 		} else {
 			a.setCaze(null);
 //			a.setEvent(null);
-//			a.setContact(null);
+			a.setContact(null);
 		}
 		
 		return task;
@@ -104,6 +112,7 @@ public class TaskFacadeEjb implements TaskFacade {
 		a.setTaskStatus(b.getTaskStatus());
 		a.setTaskType(b.getTaskType());	
 		a.setCaze(CaseFacadeEjb.toReferenceDto(b.getCaze()));
+		a.setContact(ContactFacadeEjb.toReferenceDto(b.getContact()));
 
 		return a;
 	}

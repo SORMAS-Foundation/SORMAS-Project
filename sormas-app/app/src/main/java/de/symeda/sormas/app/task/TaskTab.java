@@ -19,9 +19,12 @@ import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.contact.Contact;
+import de.symeda.sormas.app.backend.contact.ContactDao;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.task.TaskDao;
 import de.symeda.sormas.app.caze.CaseEditActivity;
+import de.symeda.sormas.app.contact.ContactEditActivity;
 import de.symeda.sormas.app.databinding.TaskFragmentLayoutBinding;
 import de.symeda.sormas.app.util.FormTab;
 
@@ -48,6 +51,13 @@ public class TaskTab extends FormTab {
 
         binding.setTask(task);
         super.onResume();
+
+        if(binding.getTask().getCaze() == null) {
+            binding.taskCaze.setVisibility(View.GONE);
+        }
+        if(binding.getTask().getContact() == null) {
+            binding.taskContact.setVisibility(View.GONE);
+        }
 
         List<TaskStatus> possibleStatusChanges = TaskHelper.getPossibleStatusChanges(task.getTaskStatus(), ConfigProvider.getUser().getUserRole());
 
@@ -94,15 +104,35 @@ public class TaskTab extends FormTab {
             }
         });
 
+        binding.taskContact.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final ContactDao contactDao = DatabaseHelper.getContactDao();
+                final Contact contact = contactDao.queryUuid(binding.getTask().getContact().getUuid());
+                showContactEditView(contact);
+            }
+        });
+
         binding.taskCaze.appendText("\u279D");
         binding.taskCaze.underline();
         binding.taskCaze.colorize(ContextCompat.getColor(getContext(), R.color.colorPrimary));
+
+        binding.taskContact.appendText("\u279D");
+        binding.taskContact.underline();
+        binding.taskContact.colorize(ContextCompat.getColor(getContext(), R.color.colorPrimary));
     }
 
     public void showCaseEditView(Case caze) {
         Intent intent = new Intent(getActivity(), CaseEditActivity.class);
         intent.putExtra(CaseEditActivity.KEY_CASE_UUID, caze.getUuid());
         intent.putExtra(CaseEditActivity.KEY_PARENT_TASK_UUID, binding.getTask().getUuid());
+        startActivity(intent);
+    }
+
+    public void showContactEditView(Contact contact) {
+        Intent intent = new Intent(getActivity(), ContactEditActivity.class);
+        intent.putExtra(ContactEditActivity.KEY_CONTACT_UUID, contact.getUuid());
+        intent.putExtra(ContactEditActivity.KEY_PARENT_TASK_UUID, binding.getTask().getUuid());
         startActivity(intent);
     }
 

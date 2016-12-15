@@ -48,6 +48,14 @@
                 android:paddingBottom="@dimen/field_padding"
                 app:caze="@{task.caze}" />
 
+            <de.symeda.sormas.app.component.LabelField
+                android:id="@+id/task_contact"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/field_padding"
+                android:paddingBottom="@dimen/field_padding"
+                app:contact="@{task.contact}" />
+
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"

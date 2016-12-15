@@ -26,6 +26,8 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.contact.Contact;
+import de.symeda.sormas.app.backend.contact.ContactDao;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.backend.task.Task;
@@ -78,14 +80,23 @@ public class TaskNotificationService extends Service {
         List<Task> taskList = taskDao.queryPendingForNotification(notificationRangeStart, notificationRangeEnd);
 
         CaseDao caseDAO = DatabaseHelper.getCaseDao();
+        ContactDao contactDAO = DatabaseHelper.getContactDao();
         PersonDao personDAO = DatabaseHelper.getPersonDao();
 
         for (Task task:taskList) {
             Intent notificationIntent = new Intent(context, TaskEditActivity.class);
             notificationIntent.putExtra(Task.UUID, task.getUuid());
 
-            Case caze = caseDAO.queryForId(task.getCaze().getId());
-            Person person = personDAO.queryForId(caze.getPerson().getId());
+            Case caze = null;
+            Contact contact = null;
+            if(task.getCaze() != null) {
+                caze = caseDAO.queryForId(task.getCaze().getId());
+            }
+            if(task.getContact() != null) {
+                contact = contactDAO.queryForId(task.getContact().getId());
+            }
+
+            Person person = caze != null ? personDAO.queryForId(caze.getPerson().getId()) : personDAO.queryForId(contact.getPerson().getId());
 
             PendingIntent pi = PendingIntent.getActivity(context, 0, notificationIntent, 0);
             Resources r = context.getResources();
@@ -94,8 +105,15 @@ public class TaskNotificationService extends Service {
             if (!TextUtils.isEmpty(task.getCreatorComment())) {
                 content.append(task.getCreatorComment()).append("<br><br>");
             }
-            content.append("<b>").append(person.toString())
-                    .append(" (").append(DataHelper.getShortUuid(caze.getUuid())).append(")</b>");
+
+            if(caze != null) {
+                content.append("<b>").append(person.toString())
+                        .append(" (").append(DataHelper.getShortUuid(caze.getUuid())).append(")</b>");
+            }
+            if(contact != null) {
+                content.append("<b>").append(person.toString())
+                        .append(" (").append(DataHelper.getShortUuid(contact.getUuid())).append(")</b>");
+            }
 
             Notification notification = new NotificationCompat.Builder(context)
                     .setTicker(r.getString(R.string.headline_task_notification))

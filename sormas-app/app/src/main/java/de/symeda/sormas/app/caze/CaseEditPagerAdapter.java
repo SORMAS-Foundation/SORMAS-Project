@@ -67,9 +67,7 @@ public class CaseEditPagerAdapter extends FragmentStatePagerAdapter {
                 break;
             case TASKS:
                 TasksListFragment tasksListTab = new TasksListFragment();
-                Bundle arguments = new Bundle();
-                arguments.putSerializable("caseUuid", (String)caseEditBundle.get(Case.UUID));
-                tasksListTab.setArguments(arguments);
+                tasksListTab.setArguments(caseEditBundle);
                 frag = tasksListTab;
         }
         return frag;

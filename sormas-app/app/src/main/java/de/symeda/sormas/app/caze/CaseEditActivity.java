@@ -43,7 +43,6 @@ public class CaseEditActivity extends AbstractEditActivity {
 
     private CaseEditPagerAdapter adapter;
     private String caseUuid;
-    private String parentTaskUuid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,9 +72,6 @@ public class CaseEditActivity extends AbstractEditActivity {
 
         Bundle params = getIntent().getExtras();
         caseUuid = params.getString(KEY_CASE_UUID);
-        if(params.getString(KEY_PARENT_TASK_UUID) != null) {
-            parentTaskUuid = params.getString(KEY_PARENT_TASK_UUID);
-        }
         adapter = new CaseEditPagerAdapter(getSupportFragmentManager(), caseUuid);
         createTabViews(adapter);
 
@@ -127,13 +123,7 @@ public class CaseEditActivity extends AbstractEditActivity {
         switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button
             case android.R.id.home:
-                if(parentTaskUuid != null) {
-                    Intent intent = new Intent(this, TaskEditActivity.class);
-                    intent.putExtra(Task.UUID, parentTaskUuid);
-                    startActivity(intent);
-                } else {
-                    NavUtils.navigateUpFromSameTask(this);
-                }
+                NavUtils.navigateUpFromSameTask(this);
 
                 //Home/back button
                 return true;

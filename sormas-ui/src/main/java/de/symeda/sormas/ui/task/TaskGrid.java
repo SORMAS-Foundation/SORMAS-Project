@@ -200,6 +200,7 @@ public class TaskGrid extends Grid implements ItemClickListener {
 				ControllerProvider.getCaseController().navigateToData(task.getCaze().getUuid());
 				return;
 			case CONTACT:
+				ControllerProvider.getContactController().navigateToData(task.getContact().getUuid());
 				return;
 			case EVENT:
 				return;

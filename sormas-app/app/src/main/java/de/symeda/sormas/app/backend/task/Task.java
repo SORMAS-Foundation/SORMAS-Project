@@ -19,6 +19,7 @@ import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.util.DataUtils;
 
@@ -51,6 +52,9 @@ public class Task extends AbstractDomainObject {
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private Case caze;
+
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	private Contact contact;
 
 	@Enumerated(EnumType.STRING)
 	private TaskType taskType;
@@ -98,6 +102,8 @@ public class Task extends AbstractDomainObject {
 
 			case CASE:
 				return getCaze();
+			case CONTACT:
+				return getContact();
 			default:
 				throw new IndexOutOfBoundsException(DataUtils.toString(getTaskContext()));
 		}
@@ -108,6 +114,13 @@ public class Task extends AbstractDomainObject {
 	}
 	public void setCaze(Case caze) {
 		this.caze = caze;
+	}
+
+	public Contact getContact() {
+		return contact;
+	}
+	public void setContact(Contact contact) {
+		this.contact = contact;
 	}
 
 	public TaskType getTaskType() {

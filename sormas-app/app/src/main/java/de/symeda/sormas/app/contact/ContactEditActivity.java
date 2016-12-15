@@ -2,6 +2,7 @@ package de.symeda.sormas.app.contact;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.NavUtils;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -16,8 +17,10 @@ import de.symeda.sormas.app.backend.contact.ContactDao;
 import de.symeda.sormas.app.backend.location.LocationDao;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDao;
+import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.caze.CaseEditActivity;
 import de.symeda.sormas.app.component.AbstractEditActivity;
+import de.symeda.sormas.app.task.TaskEditActivity;
 
 
 /**
@@ -28,6 +31,7 @@ public class ContactEditActivity extends AbstractEditActivity {
     public static final String KEY_CASE_UUID = "caseUuid";
     public static final String KEY_CONTACT_UUID = "contactUuid";
     public static final String KEY_PAGE = "page";
+    public static final String KEY_PARENT_TASK_UUID = "taskUuid";
 
     private ContactEditPagerAdapter adapter;
     private String caseUuid;
@@ -45,7 +49,8 @@ public class ContactEditActivity extends AbstractEditActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setTitle(getResources().getText(R.string.headline_contact));
         }
-    }
+                getResources().getText(R.string.headline_task)
+//              @TODO  getResources().getText(R.string.headline_visits)    }
 
     @Override
     protected void onResume() {
@@ -85,9 +90,9 @@ public class ContactEditActivity extends AbstractEditActivity {
                 break;
 
             // tasks tab
-//            case 2:
-//                updateActionBarGroups(menu, false, false, false);
-//                break;
+            case 2:
+                updateActionBarGroups(menu, false, false, false);
+                break;
 
         }
 
@@ -102,11 +107,14 @@ public class ContactEditActivity extends AbstractEditActivity {
         switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button
             case android.R.id.home:
-
-                Intent intentCaseContacts = new Intent(this, CaseEditActivity.class);
-                intentCaseContacts.putExtra(CaseEditActivity.KEY_PAGE, 3);
-                intentCaseContacts.putExtra(CaseEditActivity.KEY_CASE_UUID, caseUuid);
-                startActivity(intentCaseContacts);
+                if(caseUuid != null) {
+                    Intent intentCaseContacts = new Intent(this, CaseEditActivity.class);
+                    intentCaseContacts.putExtra(CaseEditActivity.KEY_PAGE, 3);
+                    intentCaseContacts.putExtra(CaseEditActivity.KEY_CASE_UUID, caseUuid);
+                    startActivity(intentCaseContacts);
+                } else {
+                    finish();
+                }
 
                 //Home/back button
                 return true;

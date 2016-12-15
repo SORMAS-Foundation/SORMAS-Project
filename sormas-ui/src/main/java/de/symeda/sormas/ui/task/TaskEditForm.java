@@ -11,6 +11,7 @@ import com.vaadin.ui.TextArea;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskType;
@@ -154,7 +155,11 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 			case CONTACT:
 				FieldHelper.setFirstVisibleClearOthers(contact, caze, eventField);
 				FieldHelper.setFirstRequired(contact, caze, eventField);
+				List<ContactReferenceDto> contacts = FacadeProvider.getContactFacade().getSelectableContacts(LoginHelper.getCurrentUserAsReference());
+				Object contactValue = contact.getValue();
 				contact.removeAllItems();
+				contact.addItems(contacts);
+				contact.setValue(contactValue);
 				break;
 			}
 		}
