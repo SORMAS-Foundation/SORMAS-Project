@@ -49,8 +49,7 @@ public class ContactEditActivity extends AbstractEditActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setTitle(getResources().getText(R.string.headline_contact));
         }
-                getResources().getText(R.string.headline_task)
-//              @TODO  getResources().getText(R.string.headline_visits)    }
+    }
 
     @Override
     protected void onResume() {
@@ -90,7 +89,7 @@ public class ContactEditActivity extends AbstractEditActivity {
                 break;
 
             // tasks tab
-            case 2:
+            case TASKS:
                 updateActionBarGroups(menu, false, false, false);
                 break;
 

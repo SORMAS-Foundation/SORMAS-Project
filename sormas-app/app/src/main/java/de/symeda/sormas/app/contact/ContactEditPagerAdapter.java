@@ -10,6 +10,9 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.person.PersonEditTab;
+import de.symeda.sormas.app.task.TasksListFragment;
+
+import static de.symeda.sormas.app.caze.CaseEditTabs.TASKS;
 
 /**
  * Created by Stefan Szczesny on 02.11.2016.
@@ -57,12 +60,11 @@ public class ContactEditPagerAdapter extends FragmentStatePagerAdapter {
 //                arguments.putSerializable("contactUuid", (String)contactEditBundle.get(Contact.UUID));
 //                tasksListTab.setArguments(arguments);
 //                frag = tasksListTab;//                break;
-              case TASKS:
-				TasksListFragment tasksListTab = new TasksListFragment();
+            case TASKS:
+                TasksListFragment tasksListTab = new TasksListFragment();
                 tasksListTab.setArguments(contactEditBundle);
                 frag = tasksListTab;
                 break;
-
         }
         return frag;
     }
