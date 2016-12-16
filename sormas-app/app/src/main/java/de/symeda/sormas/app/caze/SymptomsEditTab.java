@@ -34,9 +34,11 @@ import de.symeda.sormas.app.util.Item;
 
 
 /**
- * Created by Stefan Szczesny on 27.07.2016.
+ * Use this tab with arguments:
+ * symptomsUuid as string
+ * disease as serialized enum
  */
-public class CaseEditSymptomsTab extends FormTab {
+public class SymptomsEditTab extends FormTab {
 
     private CaseSymptomsFragmentLayoutBinding binding;
 
@@ -52,11 +54,11 @@ public class CaseEditSymptomsTab extends FormTab {
     public void onResume() {
         super.onResume();
 
-        final String caseUuid = (String) getArguments().getString(Case.UUID);
-        CaseDao caseDao = DatabaseHelper.getCaseDao();
-        Case caze = caseDao.queryUuid(caseUuid);
+        final String symptomsUuid = getArguments().getString(Symptoms.UUID);
+        final Disease disease = (Disease) getArguments().getSerializable(Case.DISEASE);
 
-        final Symptoms symptoms = caze.getSymptoms();
+
+        Symptoms symptoms = DatabaseHelper.getSymptomsDao().queryUuid(symptomsUuid);
         binding.setSymptoms(symptoms);
 
         binding.symptomsOnsetDate.initialize(this);
@@ -95,7 +97,7 @@ public class CaseEditSymptomsTab extends FormTab {
         visibilityOtherNonHemorrhagicSymptoms();
         activationUnexplainedBleedingFields();
 
-        visibilityDisease(caze.getDisease());
+        visibilityDisease(disease);
 
         // @TODO: Workaround, find a better solution. Remove autofocus on first field.
         getView().requestFocus();

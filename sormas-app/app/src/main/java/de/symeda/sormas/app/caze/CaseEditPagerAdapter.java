@@ -9,6 +9,7 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.contact.ContactsListFragment;
 import de.symeda.sormas.app.person.PersonEditTab;
 import de.symeda.sormas.app.task.TasksListFragment;
@@ -24,7 +25,7 @@ public class CaseEditPagerAdapter extends FragmentStatePagerAdapter {
     private Bundle caseEditBundle; // this bundle contains the uuids
     private CaseEditDataTab caseEditDataTab;
     private PersonEditTab personEditTab;
-    private CaseEditSymptomsTab caseEditSymptomsTab;
+    private SymptomsEditTab symptomsEditTab;
 
 
     // Build a Constructor and assign the passed Values to appropriate values in the class
@@ -39,6 +40,7 @@ public class CaseEditPagerAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int position) {
         Fragment frag = null;
         CaseEditTabs tab = CaseEditTabs.values()[position];
+        Case caze = null;
         switch (tab) {
             case CASE_DATA:
                 caseEditDataTab = new CaseEditDataTab();
@@ -49,16 +51,22 @@ public class CaseEditPagerAdapter extends FragmentStatePagerAdapter {
                 personEditTab = new PersonEditTab();
 
                 Bundle personEditBundle = new Bundle();
-                Case caze = DatabaseHelper.getCaseDao().queryUuid(caseEditBundle.getString(Case.UUID));
+                caze = DatabaseHelper.getCaseDao().queryUuid(caseEditBundle.getString(Case.UUID));
                 personEditBundle.putString(Person.UUID, caze.getPerson().getUuid());
 
                 personEditTab.setArguments(personEditBundle);
                 frag = personEditTab;
                 break;
             case SYMPTOMS:
-                caseEditSymptomsTab = new CaseEditSymptomsTab();
-                caseEditSymptomsTab.setArguments(caseEditBundle);
-                frag = caseEditSymptomsTab;
+                symptomsEditTab = new SymptomsEditTab();
+
+                Bundle symptomsEditBundle = new Bundle();
+                caze = DatabaseHelper.getCaseDao().queryUuid(caseEditBundle.getString(Case.UUID));
+                symptomsEditBundle.putString(Symptoms.UUID, caze.getSymptoms().getUuid());
+                symptomsEditBundle.putSerializable(Case.DISEASE, caze.getDisease());
+
+                symptomsEditTab.setArguments(symptomsEditBundle);
+                frag = symptomsEditTab;
                 break;
             case CONTACTS:
                 ContactsListFragment contactsListTab = new ContactsListFragment();
@@ -96,7 +104,7 @@ public class CaseEditPagerAdapter extends FragmentStatePagerAdapter {
                 ado = personEditTab.getData();
                 break;
             case 2:
-                ado = caseEditSymptomsTab.getData();
+                ado = symptomsEditTab.getData();
                 break;
         }
         return ado;
