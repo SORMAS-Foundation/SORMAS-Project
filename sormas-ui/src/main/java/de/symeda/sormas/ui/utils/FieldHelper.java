@@ -6,6 +6,7 @@ import java.util.List;
 import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Field;
+import com.vaadin.ui.TextField;
 
 public final class FieldHelper {
 
@@ -112,6 +113,92 @@ public final class FieldHelper {
 		for (Field<?> other : others) {
 			other.setRequired(false);
 		}
+	}
+	
+	/**
+	 * Sets the field with the targetPropertyId to required when at least one of the
+	 * fields associated with the sourcePropertyIds has its value set to "Yes" or the
+	 * field associated with textFieldPropertyId is not empty. This method is intended to be used
+	 * with the onsetDate and onsetSymptom fields.
+	 * 
+	 * @param fieldGroup
+	 * @param targetPropertyId
+	 * @param sourcePropertyIds
+	 * @param sourceValues
+	 */
+	public static void setRequiredWhen(FieldGroup fieldGroup, Object targetPropertyId,
+			List<String> sourcePropertyIds, List<Object> sourceValues, Object textFieldPropertyId) {
+		
+		final Field textField = fieldGroup.getField(textFieldPropertyId);
+		if(textField instanceof AbstractField<?>) {
+			((AbstractField) textField).setImmediate(true);
+		}
+		
+		for(Object sourcePropertyId : sourcePropertyIds) {
+			Field sourceField = fieldGroup.getField(sourcePropertyId);
+			if(sourceField instanceof AbstractField<?>) {
+				((AbstractField) sourceField).setImmediate(true);
+			}
+		}
+		
+		// Initialize
+		final Field targetField = fieldGroup.getField(targetPropertyId);
+		if(doesAnyContainValue(fieldGroup, sourcePropertyIds, sourceValues) || 
+				!isEmptyTextField(fieldGroup, textFieldPropertyId)) {
+			targetField.setRequired(true);
+		} else {
+			targetField.setRequired(false);
+		}
+		
+		// Add listeners
+		addRequiredListenerToField(textField, targetField, fieldGroup, sourcePropertyIds, sourceValues, textFieldPropertyId);
+		for(Object sourcePropertyId : sourcePropertyIds) {
+			Field sourceField = fieldGroup.getField(sourcePropertyId);
+			addRequiredListenerToField(sourceField, targetField, fieldGroup, sourcePropertyIds, sourceValues, textFieldPropertyId);
+		}
+		
+		
+	}
+	
+	/**
+	 * Returns true if if the value of any field associated with the sourcePropertyIds
+	 * is set to one of the values contained in sourceValues.
+	 * 
+	 * @param fieldGroup
+	 * @param sourcePropertyIds
+	 * @param sourceValues
+	 * @return
+	 */
+	private static boolean doesAnyContainValue(FieldGroup fieldGroup, List<String> sourcePropertyIds, 
+			List<Object> sourceValues) {
+		
+		for(Object sourcePropertyId : sourcePropertyIds) {
+			Field sourceField = fieldGroup.getField(sourcePropertyId);
+			if(sourceValues.contains(sourceField.getValue())) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	private static boolean isEmptyTextField(FieldGroup fieldGroup, Object sourcePropertyId) {
+		TextField sourceField = (TextField)fieldGroup.getField(sourcePropertyId);
+		return (sourceField.getValue() == null || sourceField.getValue().isEmpty());
+	}
+	
+	private static void addRequiredListenerToField(Field field, Field targetField, FieldGroup fieldGroup, 
+			List<String> sourcePropertyIds, List<Object> sourceValues, Object textFieldPropertyId) {
+		
+		field.addValueChangeListener(event -> {
+			if(doesAnyContainValue(fieldGroup, sourcePropertyIds, sourceValues) || 
+					!isEmptyTextField(fieldGroup, textFieldPropertyId)) {
+				targetField.setRequired(true);
+			} else {
+				targetField.setRequired(false);
+			}
+		});
+		
 	}
 
 }

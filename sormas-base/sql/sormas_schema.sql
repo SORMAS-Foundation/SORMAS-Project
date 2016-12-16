@@ -868,3 +868,33 @@ ALTER TABLE cases ADD COLUMN investigationstatus character varying(255) DEFAULT 
 
 INSERT INTO schema_version (version_number, comment) VALUES (13, 'Split CaseStatus to CaseClassification and InvestigationStatus');
 
+-- 2016-12-16 Update symptoms #41
+
+ALTER TABLE symptoms DROP COLUMN comaunconscious;
+ALTER TABLE symptoms DROP COLUMN epistaxis;
+ALTER TABLE symptoms DROP COLUMN hematemesis;
+ALTER TABLE symptoms DROP COLUMN hematuria;
+ALTER TABLE symptoms DROP COLUMN jaundice;
+ALTER TABLE symptoms DROP COLUMN melena;
+ALTER TABLE symptoms DROP COLUMN petechiae;
+ALTER TABLE symptoms DROP COLUMN chills;
+ALTER TABLE symptoms DROP COLUMN highbloodpressure;
+ALTER TABLE symptoms DROP COLUMN lethargy;
+ALTER TABLE symptoms DROP COLUMN lowbloodpressure;
+ALTER TABLE symptoms DROP COLUMN oedema;
+ALTER TABLE symptoms DROP COLUMN sepsis;
+ALTER TABLE symptoms DROP COLUMN swollenlymphnodes;
+ALTER TABLE symptoms ADD COLUMN bloodinstool character varying(255);
+ALTER TABLE symptoms ADD COLUMN nosebleeding character varying(255);
+ALTER TABLE symptoms ADD COLUMN bloodyblackstool character varying(255);
+ALTER TABLE symptoms ADD COLUMN redbloodvomit character varying(255);
+ALTER TABLE symptoms ADD COLUMN coughingblood character varying(255);
+ALTER TABLE symptoms ADD COLUMN skinbruising character varying(255);
+ALTER TABLE symptoms ADD COLUMN bloodurine character varying(255);
+ALTER TABLE symptoms ADD COLUMN alteredconsciousness character varying(255);
+ALTER TABLE symptoms ADD COLUMN throbocytopenia character varying(255);
+ALTER TABLE symptoms ADD COLUMN hearingloss character varying(255);
+ALTER TABLE symptoms ADD COLUMN shock character varying(255);
+ALTER TABLE symptoms ADD COLUMN symptomscomments character varying(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (14, 'Update symptoms');
