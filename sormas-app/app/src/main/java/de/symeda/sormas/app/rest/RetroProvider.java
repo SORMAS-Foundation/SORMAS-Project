@@ -3,8 +3,6 @@ package de.symeda.sormas.app.rest;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import java.text.DateFormat;
-
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -27,6 +25,7 @@ public final class RetroProvider {
     private UserFacadeRetro userFacadeRetro;
     private TaskFacadeRetro taskFacadeRetro;
     private ContactFacadeRetro contactFacadeRetro;
+    private VisitFacadeRetro visitFacadeRetro;
 
     private RetroProvider() {
 
@@ -151,5 +150,16 @@ public final class RetroProvider {
             }
         }
         return instance.contactFacadeRetro;
+    }
+
+    public static VisitFacadeRetro getVisitFacade() {
+        if (instance.visitFacadeRetro == null) {
+            synchronized ((RetroProvider.class)) {
+                if (instance.visitFacadeRetro == null) {
+                    instance.visitFacadeRetro = instance.retrofit.create(VisitFacadeRetro.class);
+                }
+            }
+        }
+        return instance.visitFacadeRetro;
     }
 }

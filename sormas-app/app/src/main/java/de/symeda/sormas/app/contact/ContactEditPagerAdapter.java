@@ -11,8 +11,7 @@ import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.person.PersonEditTab;
 import de.symeda.sormas.app.task.TasksListFragment;
-
-import static de.symeda.sormas.app.caze.CaseEditTabs.TASKS;
+import de.symeda.sormas.app.visit.VisitsListFragment;
 
 /**
  * Created by Stefan Szczesny on 02.11.2016.
@@ -44,6 +43,7 @@ public class ContactEditPagerAdapter extends FragmentStatePagerAdapter {
                 contactEditDataTab.setArguments(contactEditBundle);
                 frag = contactEditDataTab;
                 break;
+
             case PERSON:
                 personEditTab = new PersonEditTab();
 
@@ -54,12 +54,12 @@ public class ContactEditPagerAdapter extends FragmentStatePagerAdapter {
                 personEditTab.setArguments(personEditBundle);
                 frag = personEditTab;
                 break;
-//            case VISITS:
-//                TasksListFragment tasksListTab = new TasksListFragment();
-//                Bundle arguments = new Bundle();
-//                arguments.putSerializable("contactUuid", (String)contactEditBundle.get(Contact.UUID));
-//                tasksListTab.setArguments(arguments);
-//                frag = tasksListTab;//                break;
+
+            case VISITS:
+                VisitsListFragment visitListTab = new VisitsListFragment();
+                visitListTab.setArguments(contactEditBundle);
+                frag = visitListTab;
+                break;
             case TASKS:
                 TasksListFragment tasksListTab = new TasksListFragment();
                 tasksListTab.setArguments(contactEditBundle);
@@ -82,15 +82,16 @@ public class ContactEditPagerAdapter extends FragmentStatePagerAdapter {
     }
 
     public AbstractDomainObject getData(int position) {
+        ContactEditTabs tab = ContactEditTabs.values()[position];
         AbstractDomainObject ado = null;
-        switch (position) {
-            case 0:
+        switch (tab) {
+            case CONTACT_DATA:
                 ado= contactEditDataTab.getData();
                 break;
-            case 1:
+            case PERSON:
                 ado = personEditTab.getData();
                 break;
-            case 2:
+            case VISITS:
                 ado = null;
                 break;
         }

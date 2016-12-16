@@ -6,7 +6,7 @@ import de.symeda.sormas.api.contact.ContactDto;
 public enum ContactEditTabs {
 	CONTACT_DATA,
 	PERSON,
-//	VISITS,
+	VISITS,
 	TASKS
 	;
 	

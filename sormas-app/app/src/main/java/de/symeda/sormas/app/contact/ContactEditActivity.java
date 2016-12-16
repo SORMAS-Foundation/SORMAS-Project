@@ -2,7 +2,6 @@ package de.symeda.sormas.app.contact;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.NavUtils;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -17,15 +16,10 @@ import de.symeda.sormas.app.backend.contact.ContactDao;
 import de.symeda.sormas.app.backend.location.LocationDao;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDao;
-import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.caze.CaseEditActivity;
 import de.symeda.sormas.app.component.AbstractEditActivity;
-import de.symeda.sormas.app.task.TaskEditActivity;
 
 
-/**
- * Created by Stefan Szczesny on 21.07.2016.
- */
 public class ContactEditActivity extends AbstractEditActivity {
 
     public static final String KEY_CASE_UUID = "caseUuid";
@@ -86,6 +80,11 @@ public class ContactEditActivity extends AbstractEditActivity {
             // person tab
             case PERSON:
                 updateActionBarGroups(menu, true, false, true);
+                break;
+
+            // tasks tab
+            case VISITS:
+                updateActionBarGroups(menu, false, true, false);
                 break;
 
             // tasks tab
