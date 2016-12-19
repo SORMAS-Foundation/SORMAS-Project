@@ -15,7 +15,9 @@ import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskType;
+import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
@@ -101,8 +103,9 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 		if (value != null) {
 			boolean creating = value.getCreationDate() == null;
 	
-			UserReferenceDto user = LoginHelper.getCurrentUserAsReference();
+			UserDto user = LoginHelper.getCurrentUser();
 			boolean creator = user.equals(value.getCreatorUser());
+			boolean supervisor = UserRole.isSupervisor(user.getUserRoles());
 			boolean assignee = user.equals(getFieldGroup().getField(TaskDto.ASSIGNEE_USER).getValue());
 			
 			setVisible(!creating || assignee, TaskDto.ASSIGNEE_REPLY, TaskDto.TASK_STATUS);
@@ -116,6 +119,9 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 					TaskDto.TASK_CONTEXT, TaskDto.TASK_TYPE, 
 					TaskDto.PRIORITY, TaskDto.SUGGESTED_START, TaskDto.DUE_DATE,
 					TaskDto.ASSIGNEE_USER, TaskDto.CREATOR_COMMENT);
+			setReadOnly(!(creator || supervisor), 
+					TaskDto.PRIORITY, TaskDto.SUGGESTED_START, TaskDto.DUE_DATE,
+					TaskDto.ASSIGNEE_USER, TaskDto.CREATOR_COMMENT);
 		}
 	}
 
@@ -125,47 +131,36 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 		
 		// Task types depending on task context
 		ComboBox taskType = (ComboBox) getFieldGroup().getField(TaskDto.TASK_TYPE);
-		Object tempValue = taskType.getValue();
-		taskType.removeAllItems();
-		taskType.addItems(TaskType.getTaskTypes(taskContext));
-		if (taskType.containsId(tempValue)) {
-			taskType.setValue(tempValue);
-		}
+		FieldHelper.updateItems(taskType, TaskType.getTaskTypes(taskContext));
 		
 		// context reference depending on task context
-		ComboBox caze = (ComboBox) getFieldGroup().getField(TaskDto.CAZE);
+		ComboBox caseField = (ComboBox) getFieldGroup().getField(TaskDto.CAZE);
 		ComboBox eventField = (ComboBox) getFieldGroup().getField(TaskDto.EVENT);
-		ComboBox contact = (ComboBox) getFieldGroup().getField(TaskDto.CONTACT);
+		ComboBox contactField = (ComboBox) getFieldGroup().getField(TaskDto.CONTACT);
 		if (taskContext != null) {
 			switch (taskContext) {
 			case CASE:
-				FieldHelper.setFirstVisibleClearOthers(caze, eventField, contact);
-				FieldHelper.setFirstRequired(caze, eventField, contact);
+				FieldHelper.setFirstVisibleClearOthers(caseField, eventField, contactField);
+				FieldHelper.setFirstRequired(caseField, eventField, contactField);
 				List<CaseReferenceDto> cases = FacadeProvider.getCaseFacade().getSelectableCases(LoginHelper.getCurrentUserAsReference());
-				Object value = caze.getValue();
-				caze.removeAllItems();
-				caze.addItems(cases);
-				caze.setValue(value);
+				FieldHelper.updateItems(caseField, cases);
 				break;
 			case EVENT:
-				FieldHelper.setFirstVisibleClearOthers(eventField, caze, contact);
-				FieldHelper.setFirstRequired(eventField, caze, contact);
-				eventField.removeAllItems();
+				FieldHelper.setFirstVisibleClearOthers(eventField, caseField, contactField);
+				FieldHelper.setFirstRequired(eventField, caseField, contactField);
+				FieldHelper.updateItems(eventField, null);
 				break;
 			case CONTACT:
-				FieldHelper.setFirstVisibleClearOthers(contact, caze, eventField);
-				FieldHelper.setFirstRequired(contact, caze, eventField);
+				FieldHelper.setFirstVisibleClearOthers(contactField, caseField, eventField);
+				FieldHelper.setFirstRequired(contactField, caseField, eventField);
 				List<ContactReferenceDto> contacts = FacadeProvider.getContactFacade().getSelectableContacts(LoginHelper.getCurrentUserAsReference());
-				Object contactValue = contact.getValue();
-				contact.removeAllItems();
-				contact.addItems(contacts);
-				contact.setValue(contactValue);
+				FieldHelper.updateItems(contactField, contacts);
 				break;
 			}
 		}
 		else {
-			FieldHelper.setFirstVisibleClearOthers(null, caze, eventField, contact);
-			FieldHelper.setFirstRequired(null, caze, eventField, contact);
+			FieldHelper.setFirstVisibleClearOthers(null, caseField, eventField, contactField);
+			FieldHelper.setFirstRequired(null, caseField, eventField, contactField);
 		}
 	}
 	

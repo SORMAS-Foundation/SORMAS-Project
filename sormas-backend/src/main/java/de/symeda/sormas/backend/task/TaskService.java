@@ -7,6 +7,8 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
@@ -56,8 +58,10 @@ public class TaskService extends AbstractAdoService<Task> {
 			// supervisor: all tasks in the relevant region
 			// TODO only context tasks (surveillance, case management, contact tracing)
 			Region region = user.getRegion();
-			filter = cb.equal(from.get(Task.ASSIGNEE_USER).get(User.REGION), region);
-			filter = cb.or(filter, cb.equal(from.get(Task.CREATOR_USER).get(User.REGION), region));
+			Join<Task, User> assigneeJoin = from.join(Task.ASSIGNEE_USER, JoinType.LEFT);
+			filter = cb.equal(assigneeJoin.get(User.REGION), region);
+			Join<Task, User> creatorJoin = from.join(Task.CREATOR_USER, JoinType.LEFT);
+			filter = cb.or(filter, cb.equal(creatorJoin.get(User.REGION), region));
 		} else {
 			// officer: only assigned or created tasks
 			filter = cb.equal(from.get(Task.ASSIGNEE_USER), user);
@@ -91,19 +95,83 @@ public class TaskService extends AbstractAdoService<Task> {
 		return tasks;
 	}
 
-	public long getPendingTaskCount(String userUuid) {
+	public long getCount(TaskCriteria taskCriteria) {
 		
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Task> from = cq.from(getElementClass());
 		
-		Predicate filter = cb.equal(from.get(Task.ASSIGNEE_USER).get(User.UUID), userUuid);
-		filter = cb.and(cb.equal(from.get(Task.TASK_STATUS), TaskStatus.PENDING));
-		cq.where(filter);
+		Predicate filter = buildCriteraFilter(taskCriteria, cb, from);
+		if (filter != null) {
+			cq.where(filter);
+		}
 		
 		cq.select(cb.countDistinct(from));
 
 		long count = em.createQuery(cq).getSingleResult();
 		return count;
+	}
+
+	public List<Task> findBy(TaskCriteria taskCriteria) {
+		
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Task> cq = cb.createQuery(getElementClass());
+		Root<Task> from = cq.from(getElementClass());
+
+		Predicate filter = buildCriteraFilter(taskCriteria, cb, from);
+		if (filter != null) {
+			cq.where(filter);
+		}
+		cq.orderBy(cb.asc(from.get(Task.CREATION_DATE)));
+
+		List<Task> resultList = em.createQuery(cq).getResultList();
+		return resultList;	
+	}
+
+	private Predicate buildCriteraFilter(TaskCriteria taskCriteria, CriteriaBuilder cb, Root<Task> from) {
+		Predicate filter = null;
+		if (taskCriteria.getTaskStatuses() != null && taskCriteria.getTaskStatuses().length > 0) {
+			if (taskCriteria.getTaskStatuses().length == 1) {
+				filter = and(cb, filter, cb.equal(from.get(Task.TASK_STATUS), taskCriteria.getTaskStatuses()[0]));
+			} else {
+				Predicate subFilter = null;
+				for (TaskStatus taskStatus : taskCriteria.getTaskStatuses()) {
+					subFilter = or(cb, subFilter, cb.equal(from.get(Task.TASK_STATUS), taskStatus));
+				}
+				filter = and(cb, filter, subFilter);
+			}
+		}
+		if (taskCriteria.getTaskType() != null) {
+			filter = and(cb, filter, cb.equal(from.get(Task.TASK_TYPE), taskCriteria.getTaskType()));
+		}
+		if (taskCriteria.getAssigneeUser() != null) {
+			filter = and(cb, filter, cb.equal(from.get(Task.ASSIGNEE_USER), taskCriteria.getAssigneeUser()));
+		}
+		if (taskCriteria.getCaze() != null) {
+			filter = and(cb, filter, cb.equal(from.get(Task.CAZE), taskCriteria.getCaze()));
+		}
+		return filter;
+	}
+	
+	/**
+	 * TODO move to CriteriaBuilderHelper
+	 * @param existing nullable
+	 */
+	public static Predicate and(CriteriaBuilder cb, Predicate existing, Predicate additional) {
+		if (existing == null) {
+			return additional;
+		}
+		return cb.and(existing, additional);
+	}
+	
+	/**
+	 * TODO move to CriteriaBuilderHelper
+	 * @param existing nullable
+	 */
+	public static Predicate or(CriteriaBuilder cb, Predicate existing, Predicate additional) {
+		if (existing == null) {
+			return additional;
+		}
+		return cb.or(existing, additional);
 	}
 }

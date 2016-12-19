@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.ui.AbstractField;
+import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.TextField;
 
@@ -199,5 +200,18 @@ public final class FieldHelper {
 		});
 		
 	}
+
+	public static void updateItems(AbstractSelect select, List<?> items) {
+		Object value = select.getValue();
+		boolean readOnly = select.isReadOnly();
+		select.setReadOnly(false);
+		select.removeAllItems();
+		if (items != null) {
+			select.addItems(items);
+		}
+		select.setValue(value);
+		select.setReadOnly(readOnly);
+	}
+	
 
 }

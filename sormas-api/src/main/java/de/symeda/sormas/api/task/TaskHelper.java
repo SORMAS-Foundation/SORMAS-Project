@@ -2,7 +2,10 @@ package de.symeda.sormas.api.task;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+
+import org.joda.time.DateTime;
 
 import de.symeda.sormas.api.user.UserRole;
 
@@ -40,4 +43,12 @@ public final class TaskHelper {
 		throw new UnsupportedOperationException("User role not implemented: " + userRole);
 	}
 	
+	public static Date getDefaultSuggestedStart() {
+		return new DateTime().toDate();
+	}
+	
+	public static Date getDefaultDueDate() {
+		return new DateTime().plusDays(1).toDate();
+	}
+
 }

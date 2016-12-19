@@ -54,4 +54,13 @@ public enum UserRole {
 		}
 		return result;
 	}
+	
+	public static boolean isSupervisor(Collection<UserRole> roles) {
+		for (UserRole role : roles) {
+			if (role.isSupervisor()) {
+				return true;
+			}
+		}
+		return false;
+	}
 }

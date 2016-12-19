@@ -2,13 +2,12 @@ package de.symeda.sormas.ui.task;
 
 import java.util.List;
 
-import org.joda.time.DateTime;
-
 import com.vaadin.navigator.View;
 import com.vaadin.server.Sizeable.Unit;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.task.TaskDto;
+import de.symeda.sormas.api.task.TaskHelper;
 import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.user.UserDto;
@@ -90,8 +89,8 @@ public class TaskController {
     private TaskDto createNewTask() {
     	TaskDto task = new TaskDto();
     	task.setUuid(DataHelper.createUuid());
-    	task.setDueDate(new DateTime().plusDays(1).toDate()); // tomorrow
-    	task.setSuggestedStart(new DateTime().toDate()); // now
+    	task.setSuggestedStart(TaskHelper.getDefaultSuggestedStart());
+    	task.setDueDate(TaskHelper.getDefaultDueDate());
     	task.setCreatorUser(LoginHelper.getCurrentUserAsReference());
     	task.setTaskStatus(TaskStatus.PENDING);
     	task.setPriority(TaskPriority.NORMAL);

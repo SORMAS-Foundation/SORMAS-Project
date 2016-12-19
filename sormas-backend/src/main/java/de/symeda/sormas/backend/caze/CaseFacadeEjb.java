@@ -2,18 +2,27 @@ package de.symeda.sormas.backend.caze;
 
 import java.sql.Timestamp;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
+import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.task.TaskContext;
+import de.symeda.sormas.api.task.TaskHelper;
+import de.symeda.sormas.api.task.TaskPriority;
+import de.symeda.sormas.api.task.TaskStatus;
+import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.person.Person;
@@ -27,6 +36,9 @@ import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLocal;
+import de.symeda.sormas.backend.task.Task;
+import de.symeda.sormas.backend.task.TaskCriteria;
+import de.symeda.sormas.backend.task.TaskService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
@@ -51,7 +63,8 @@ public class CaseFacadeEjb implements CaseFacade {
 	private DistrictService districtService;
 	@EJB
 	private CommunityService communityService;
-
+	@EJB
+	private TaskService taskService;
 	
 	@Override
 	public List<CaseDataDto> getAllCasesAfter(Date date, String userUuid) {
@@ -99,8 +112,12 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	@Override
 	public CaseDataDto saveCase(CaseDataDto dto) {
+		
 		Case caze = fromCaseDataDto(dto);
 		caseService.ensurePersisted(caze);
+		
+		updateCaseInvestigationProcess(caze);
+		
 		return toCaseDataDto(caze);
 	}
 	
@@ -186,4 +203,94 @@ public class CaseFacadeEjb implements CaseFacade {
 		return target;
 	}
 	
+	/**
+	 * Update case investigation status and/or create case investigation task
+	 * Call this whenever the Case or one of it's "case investigation" Tasks is modified 
+	 */
+	public void updateCaseInvestigationProcess(Case caze) {
+		
+		// any pending case investigation task?
+		long pendingCount = taskService.getCount(new TaskCriteria()
+				.taskTypeEquals(TaskType.CASE_INVESTIGATION)
+				.cazeEquals(caze)
+				.taskStatusEquals(TaskStatus.PENDING));
+		
+		if (pendingCount > 0) {
+			// set status to investigation pending
+			caze.setInvestigationStatus(InvestigationStatus.PENDING);
+			// .. and clear date
+			caze.setInvestigatedDate(null);
+		} else {
+			
+			// get "case investigation" task created last
+			List<Task> cazeTasks = taskService.findBy(new TaskCriteria()
+					.taskTypeEquals(TaskType.CASE_INVESTIGATION)
+					.cazeEquals(caze));
+			
+			if (cazeTasks.isEmpty()) {
+				// no tasks at all -> create
+				createInvestigationTask(caze);
+			} else {
+				
+				// otherwise only the last created task is relevant
+				Task youngestTask = cazeTasks.stream().max(new Comparator<Task>() {
+					@Override
+					public int compare(Task o1, Task o2) {
+						return o1.getCreationDate().compareTo(o2.getCreationDate());
+					}
+				}).get();
+				
+				switch (youngestTask.getTaskStatus()) {
+				case PENDING:
+					throw new UnsupportedOperationException("there should not be any pending tasks");
+				case DONE:
+					caze.setInvestigationStatus(InvestigationStatus.DONE);
+					caze.setInvestigatedDate(youngestTask.getStatusChangeDate());
+					break;
+				case DISCARDED:
+					caze.setInvestigationStatus(InvestigationStatus.DISCARDED);
+					caze.setInvestigatedDate(youngestTask.getStatusChangeDate());
+					break;
+				case NOT_EXECUTABLE:
+					caze.setInvestigationStatus(InvestigationStatus.PENDING);
+					caze.setInvestigatedDate(null);
+					break;
+				default:
+					break;
+				}
+			}
+		}
+	}
+
+	private void createInvestigationTask(Case caze) {
+
+		Task task = new Task();
+		task.setTaskStatus(TaskStatus.PENDING);
+		task.setTaskContext(TaskContext.CASE);
+		task.setCaze(caze);
+		task.setTaskType(TaskType.CASE_INVESTIGATION);
+		task.setSuggestedStart(TaskHelper.getDefaultSuggestedStart());
+		task.setDueDate(TaskHelper.getDefaultDueDate());
+		task.setPriority(TaskPriority.NORMAL);
+		
+		// assign officer or supervisor
+		if (caze.getSurveillanceOfficer() != null) {
+			task.setAssigneeUser(caze.getSurveillanceOfficer());
+		} else {
+			// assign the first supervisor
+			List<User> supervisors = userService.getAllByRegionAndUserRoles(caze.getRegion(), UserRole.SURVEILLANCE_SUPERVISOR);
+			if (!supervisors.isEmpty()) {
+				task.setAssigneeUser(supervisors.get(0));
+			} else {
+				throw new UnsupportedOperationException("surveillance supervisor missing for: " + caze.getRegion()); 
+			}
+		}
+		
+		taskService.ensurePersisted(task);
+	}
+	
+	@LocalBean
+	@Stateless
+	public static class CaseFacadeEjbLocal extends CaseFacadeEjb {
+	}
 }

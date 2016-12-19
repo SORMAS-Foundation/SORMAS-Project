@@ -14,12 +14,16 @@ import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskFacade;
 import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.api.task.TaskStatus;
+import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
+import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 
@@ -36,6 +40,8 @@ public class TaskFacadeEjb implements TaskFacade {
 	private ContactService contactService;
 	@EJB
 	private UserFacadeEjbLocal userFacade;
+	@EJB
+	private CaseFacadeEjbLocal caseFacade;
 	
 	public Task fromDto(TaskDto dto) {		
 		if (dto == null) {
@@ -62,7 +68,12 @@ public class TaskFacadeEjb implements TaskFacade {
 		a.setDueDate(b.getDueDate());
 		a.setSuggestedStart(b.getSuggestedStart());
 		a.setPerceivedStart(b.getPerceivedStart());
-		a.setStatusChangeDate(b.getStatusChangeDate());
+		// TODO is this a good place to do this?
+		if (a.getTaskStatus() != b.getTaskStatus()) {
+			a.setStatusChangeDate(new Date());
+		} else {
+			a.setStatusChangeDate(b.getStatusChangeDate());
+		}
 		a.setTaskStatus(b.getTaskStatus());
 		a.setTaskType(b.getTaskType());
 		
@@ -103,9 +114,9 @@ public class TaskFacadeEjb implements TaskFacade {
 		a.setChangeDate(b.getChangeDate());
 		a.setUuid(b.getUuid());
 		
-		a.setAssigneeUser(userFacade.toReferenceDto(b.getAssigneeUser()));
+		a.setAssigneeUser(UserFacadeEjb.toReferenceDto(b.getAssigneeUser()));
 		a.setAssigneeReply(b.getAssigneeReply());
-		a.setCreatorUser(userFacade.toReferenceDto(b.getCreatorUser()));
+		a.setCreatorUser(UserFacadeEjb.toReferenceDto(b.getCreatorUser()));
 		a.setCreatorComment(b.getCreatorComment());
 		a.setPriority(b.getPriority());
 		a.setDueDate(b.getDueDate());
@@ -125,6 +136,12 @@ public class TaskFacadeEjb implements TaskFacade {
 	public TaskDto saveTask(TaskDto dto) {
 		Task ado = fromDto(dto);
 		service.ensurePersisted(ado);
+		
+		// once we have to handle additional logic this should be moved to it's own function or even class 
+		if (ado.getTaskType() == TaskType.CASE_INVESTIGATION) {
+			caseFacade.updateCaseInvestigationProcess(ado.getCaze());
+		}
+		
 		return toDto(ado);	
 	}
 	
@@ -178,7 +195,8 @@ public class TaskFacadeEjb implements TaskFacade {
 	@Override
 	public long getPendingTaskCount(String userUuid) {
 		// TODO cache...
-		return service.getPendingTaskCount(userUuid);
+		User user = userService.getByUuid(userUuid);
+		return service.getCount(new TaskCriteria().taskStatusEquals(TaskStatus.PENDING).assigneeUserEquals(user));
 	}
 
 	@Override
