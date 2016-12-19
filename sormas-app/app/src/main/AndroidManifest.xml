@@ -53,6 +53,15 @@
         <activity android:name=".contact.ContactNewActivity"></activity>
         <activity android:name=".contact.ContactEditActivity"></activity>
 
+        <activity android:name=".visit.VisitEditActivity"
+            android:parentActivityName=".contact.ContactEditActivity">
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".contact.ContactEditActivity" />
+        </activity>
+
 
         <receiver android:name=".SormasBootstrap"
             android:enabled="true">

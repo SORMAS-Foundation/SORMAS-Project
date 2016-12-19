@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.visit;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
@@ -39,8 +40,6 @@ public class VisitsListFragment extends ListFragment {
         contactUuid = getArguments().getString(Contact.UUID);
         final Contact contact = DatabaseHelper.getContactDao().queryUuid(contactUuid);
 
-//        new SyncPersonsTask().execute();
-
         SyncVisitsTask.syncVisits(new Callback() {
             @Override
             public void call() {
@@ -74,9 +73,8 @@ public class VisitsListFragment extends ListFragment {
     }
 
     public void showVisitEditView(Visit visit) {
-//        Intent intent = new Intent(getActivity(), ContactEditActivity.class);
-//        intent.putExtra(ContactEditActivity.KEY_CONTACT_UUID, visit.getUuid());
-//        intent.putExtra(ContactEditActivity.KEY_CASE_UUID, contactUuid);
-//        startActivity(intent);
+        Intent intent = new Intent(getActivity(), VisitEditActivity.class);
+        intent.putExtra(Visit.UUID, visit.getUuid());
+        startActivity(intent);
     }
 }

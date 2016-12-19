@@ -12,7 +12,9 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
+import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.task.Task;
 //import kotlin.NotImplementedError;
@@ -29,6 +31,16 @@ public class VisitDao extends AbstractAdoDao<Visit> {
     @Override
     public String getTableName() {
         return Visit.TABLE_NAME;
+    }
+
+    @Override
+    public boolean saveUnmodified(Visit visit) {
+
+        if (visit.getSymptoms() != null) {
+            DatabaseHelper.getSymptomsDao().saveUnmodified(visit.getSymptoms());
+        }
+
+        return super.saveUnmodified(visit);
     }
 
     public List<Visit> getByContact(Contact contact) {

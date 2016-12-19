@@ -50,7 +50,7 @@ public class Visit extends AbstractDomainObject {
 	@Column(length=512)
 	private String visitRemarks;
 
-	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 1)
 	private Symptoms symptoms;
 	
 	public Person getPerson() {
@@ -95,10 +95,11 @@ public class Visit extends AbstractDomainObject {
 		this.visitRemarks = visitRemarks;
 	}
 
+	/**
+	 * return the symptoms, if null create new in service layer
+	 * @return
+     */
 	public Symptoms getSymptoms() {
-		if (symptoms == null) {
-			symptoms = new Symptoms();
-		}
 		return symptoms;
 	}
 	public void setSymptoms(Symptoms symptoms) {

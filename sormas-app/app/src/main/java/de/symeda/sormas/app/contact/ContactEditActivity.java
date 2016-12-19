@@ -16,8 +16,10 @@ import de.symeda.sormas.app.backend.contact.ContactDao;
 import de.symeda.sormas.app.backend.location.LocationDao;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDao;
+import de.symeda.sormas.app.backend.visit.Visit;
 import de.symeda.sormas.app.caze.CaseEditActivity;
 import de.symeda.sormas.app.component.AbstractEditActivity;
+import de.symeda.sormas.app.visit.VisitEditActivity;
 
 
 public class ContactEditActivity extends AbstractEditActivity {
@@ -152,6 +154,17 @@ public class ContactEditActivity extends AbstractEditActivity {
 
                 onResume();
                 pager.setCurrentItem(currentTab);
+
+                return true;
+
+            // Add button
+            case R.id.action_add:
+
+//                Bundle visitBundle = new Bundle();
+//                visitBundle.putString(Visit.UUID, caseUuid);
+//                Intent intentVisitEdit = new Intent(this, VisitEditActivity.class);
+//                intentVisitEdit.putExtras(visitBundle);
+//                startActivity(intentVisitEdit);
 
                 return true;
 
