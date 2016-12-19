@@ -15,7 +15,7 @@ import java.util.List;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.task.Task;
-import kotlin.NotImplementedError;
+//import kotlin.NotImplementedError;
 
 public class VisitDao extends AbstractAdoDao<Visit> {
 

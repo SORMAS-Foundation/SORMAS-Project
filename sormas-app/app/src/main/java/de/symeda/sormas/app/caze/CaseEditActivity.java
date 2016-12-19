@@ -130,7 +130,7 @@ public class CaseEditActivity extends AbstractEditActivity {
 
             // Help button
             case R.id.action_help:
-                switch(tab) {
+                switch (tab) {
                     case CASE_DATA:
                         break;
 
@@ -144,9 +144,9 @@ public class CaseEditActivity extends AbstractEditActivity {
 
                         for (int i = 0; i < caseSymptomsForm.getChildCount(); i++) {
                             if (caseSymptomsForm.getChildAt(i) instanceof PropertyField) {
-                                PropertyField propertyField = (PropertyField)caseSymptomsForm.getChildAt(i);
+                                PropertyField propertyField = (PropertyField) caseSymptomsForm.getChildAt(i);
                                 sb
-                                        .append("<b>"+propertyField.getCaption()+"</b>").append("<br>")
+                                        .append("<b>" + propertyField.getCaption() + "</b>").append("<br>")
                                         .append(propertyField.getDescription()).append("<br>").append("<br>");
                             }
                         }
@@ -154,14 +154,14 @@ public class CaseEditActivity extends AbstractEditActivity {
                         AlertDialog.Builder builder = new AlertDialog.Builder(this);
                         builder.setMessage(Html.fromHtml(sb.toString())).setTitle(getResources().getText(R.string.headline_help));
                         builder.setPositiveButton("Ok",
-                            new DialogInterface.OnClickListener() {
+                                new DialogInterface.OnClickListener() {
 
-                                @Override
-                                public void onClick(DialogInterface dialog,
-                                                    int which) {
-                                    dialog.dismiss();
-                                }
-                            });
+                                    @Override
+                                    public void onClick(DialogInterface dialog,
+                                                        int which) {
+                                        dialog.dismiss();
+                                    }
+                                });
                         AlertDialog dialog = builder.create();
                         dialog.setCancelable(true);
                         dialog.show();
@@ -177,13 +177,13 @@ public class CaseEditActivity extends AbstractEditActivity {
                 CaseDao caseDao = DatabaseHelper.getCaseDao();
 
 
-                switch(tab) {
+                switch (tab) {
                     case CASE_DATA:
 
                         Case caze = (Case) adapter.getData(0);
 
                         caseDao.save(caze);
-                        Toast.makeText(this, "case "+ DataHelper.getShortUuid(caze.getUuid()) +" saved", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "case " + DataHelper.getShortUuid(caze.getUuid()) + " saved", Toast.LENGTH_SHORT).show();
 
                         SyncCasesTask.syncCases(getSupportFragmentManager());
                         break;
@@ -192,9 +192,9 @@ public class CaseEditActivity extends AbstractEditActivity {
                         LocationDao locLocationDao = DatabaseHelper.getLocationDao();
                         PersonDao personDao = DatabaseHelper.getPersonDao();
 
-                        Person person = (Person)adapter.getData(1);
+                        Person person = (Person) adapter.getData(1);
 
-                        if(person.getAddress()!=null) {
+                        if (person.getAddress() != null) {
                             locLocationDao.save(person.getAddress());
                         }
                         personDao.save(person);
@@ -206,18 +206,29 @@ public class CaseEditActivity extends AbstractEditActivity {
                     case SYMPTOMS:
                         SymptomsDao symptomsDao = DatabaseHelper.getSymptomsDao();
 
-                        Symptoms symptoms = (Symptoms)adapter.getData(2);
+                        Symptoms symptoms = (Symptoms) adapter.getData(2);
 
-                        if(symptoms!=null) {
-                            symptomsDao.save(symptoms);
+                        boolean anySymptomSetToYes = isAnySymptomSetToYes(symptoms);
+                        // data is valid if at least one symptom/the text for other non hemorrhagic symptoms is
+                        // set to yes AND the onset date and onset symptom string have been set or no symptom is
+                        // set to YES and the text is not filled in
+                        boolean validData = !anySymptomSetToYes || ((symptoms.getOnsetDate() != null &&
+                                !symptoms.getOnsetSymptom().isEmpty()));
+                        if(validData) {
+                            if (symptoms != null) {
+                                symptomsDao.save(symptoms);
+                            }
+
+                            caseDao.markAsModified(caseUuid);
+
+                            Toast.makeText(this, "symptoms saved", Toast.LENGTH_SHORT).show();
+
+                            SyncCasesTask.syncCases(getSupportFragmentManager());
+                            break;
+                        } else {
+                            Toast.makeText(this, "Please specify an onset date and an onset symptom.", Toast.LENGTH_SHORT).show();
+                            return true;
                         }
-
-                        caseDao.markAsModified(caseUuid);
-
-                        Toast.makeText(this, "symptoms saved", Toast.LENGTH_SHORT).show();
-
-                        SyncCasesTask.syncCases(getSupportFragmentManager());
-                        break;
                 }
 
                 onResume();

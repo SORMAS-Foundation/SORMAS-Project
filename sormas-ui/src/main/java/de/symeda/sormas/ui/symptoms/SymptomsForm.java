@@ -25,25 +25,23 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			+ LayoutUtil.divCss(CssStyles.VSPACE3, I18nProperties.getFieldCaption("Symptoms.hint"))
 			+ LayoutUtil.fluidRow(
 					LayoutUtil.fluidColumn(6, 0,
-							LayoutUtil.locs(SymptomsDto.FEVER, SymptomsDto.VOMITING, SymptomsDto.DIARRHEA, SymptomsDto.BLOOD_IN_STOOL,
+							LayoutUtil.locsCss(CssStyles.VSPACE3,
+									SymptomsDto.FEVER, SymptomsDto.VOMITING, SymptomsDto.DIARRHEA, SymptomsDto.BLOOD_IN_STOOL,
 									SymptomsDto.NAUSEA, SymptomsDto.ABDOMINAL_PAIN, SymptomsDto.HEADACHE, SymptomsDto.MUSCLE_PAIN,
-									SymptomsDto.FATIGUE_WEAKNESS)),
-					LayoutUtil.fluidColumn(6,  0, 
-							LayoutUtil.locsCss(CssStyles.VSPACE3, 
+									SymptomsDto.FATIGUE_WEAKNESS)
+							+ LayoutUtil.locsCss(CssStyles.VSPACE3,
 									SymptomsDto.UNEXPLAINED_BLEEDING, SymptomsDto.GUMS_BLEEDING,
 									SymptomsDto.INJECTION_SITE_BLEEDING, SymptomsDto.NOSE_BLEEDING, SymptomsDto.BLOODY_BLACK_STOOL,
 									SymptomsDto.RED_BLOOD_VOMIT, SymptomsDto.DIGESTED_BLOOD_VOMIT, SymptomsDto.COUGHING_BLOOD,
 									SymptomsDto.BLEEDING_VAGINA, SymptomsDto.SKIN_BRUISING, SymptomsDto.BLOOD_URINE)
 							+ LayoutUtil.locsCss(CssStyles.VSPACE3,
-									SymptomsDto.OTHER_HEMORRHAGIC_SYMPTOMS, SymptomsDto.OTHER_HEMORRHAGIC_SYMPTOMS_TEXT)))
-			+ LayoutUtil.fluidRow(
+									SymptomsDto.OTHER_HEMORRHAGIC_SYMPTOMS, SymptomsDto.OTHER_HEMORRHAGIC_SYMPTOMS_TEXT)),
 					LayoutUtil.fluidColumn(6,  0, 
-							LayoutUtil.locs(SymptomsDto.SKIN_RASH, SymptomsDto.NECK_STIFFNESS, SymptomsDto.SORE_THROAT, SymptomsDto.COUGH,
+							LayoutUtil.locsCss(CssStyles.VSPACE3,
+									SymptomsDto.SKIN_RASH, SymptomsDto.NECK_STIFFNESS, SymptomsDto.SORE_THROAT, SymptomsDto.COUGH,
 									SymptomsDto.RUNNY_NOSE, SymptomsDto.DIFFICULTY_BREATHING, SymptomsDto.CHEST_PAIN,
 									SymptomsDto.CONFUSED_DISORIENTED, SymptomsDto.SEIZURES, SymptomsDto.ALTERED_CONSCIOUSNESS,
-									SymptomsDto.CONJUNCTIVITIS, SymptomsDto.EYE_PAIN_LIGHT_SENSITIVE, SymptomsDto.KOPLIKS_SPOTS)),
-					LayoutUtil.fluidColumn(6,  0,
-							LayoutUtil.locsCss(CssStyles.VSPACE3, 
+									SymptomsDto.CONJUNCTIVITIS, SymptomsDto.EYE_PAIN_LIGHT_SENSITIVE, SymptomsDto.KOPLIKS_SPOTS,
 									SymptomsDto.THROBOCYTOPENIA, SymptomsDto.OTITIS_MEDIA, SymptomsDto.HEARINGLOSS, SymptomsDto.DEHYDRATION,
 									SymptomsDto.ANOREXIA_APPETITE_LOSS, SymptomsDto.REFUSAL_FEEDOR_DRINK, SymptomsDto.JOINT_PAIN,
 									SymptomsDto.SHOCK, SymptomsDto.HICCUPS)

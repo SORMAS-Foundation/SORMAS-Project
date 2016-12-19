@@ -6,10 +6,8 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RadioGroup;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.api.Disease;
@@ -20,7 +18,6 @@ import de.symeda.sormas.api.symptoms.TemperatureSource;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
-import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
@@ -28,7 +25,6 @@ import de.symeda.sormas.app.component.FieldHelper;
 import de.symeda.sormas.app.component.PropertyField;
 import de.symeda.sormas.app.component.SymptomStateField;
 import de.symeda.sormas.app.databinding.CaseSymptomsFragmentLayoutBinding;
-import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.FormTab;
 import de.symeda.sormas.app.util.Item;
 
@@ -82,7 +78,7 @@ public class SymptomsEditTab extends FormTab {
         binding.symptomsOtherHemorrhagicSymptoms.addValueChangedListener(new PropertyField.ValueChangeListener() {
             @Override
             public void onChange(PropertyField field) {
-                visibilityOtherHemorrhagicSymtoms();
+                visibilityOtherHemorrhagicSymptoms();
             }
         });
         binding.symptomsOtherNonHemorrhagicSymptoms.addValueChangedListener(new PropertyField.ValueChangeListener() {
@@ -93,7 +89,7 @@ public class SymptomsEditTab extends FormTab {
         });
 
         // set initial UI
-        visibilityOtherHemorrhagicSymtoms();
+        visibilityOtherHemorrhagicSymptoms();
         visibilityOtherNonHemorrhagicSymptoms();
         activationUnexplainedBleedingFields();
 
@@ -114,16 +110,20 @@ public class SymptomsEditTab extends FormTab {
         }
     }
     
-    private void visibilityOtherHemorrhagicSymtoms() {
+    private void visibilityOtherHemorrhagicSymptoms() {
         SymptomState symptomState = binding.symptomsOtherHemorrhagicSymptoms.getValue();
         binding.symptomsOtherHemorrhagicSymptomsLayout.setVisibility(symptomState == SymptomState.YES?View.VISIBLE:View.GONE);
-        // TODO clear value once this is a compound control
+        if(symptomState != SymptomState.YES) {
+            binding.symptomsOther1HemorrhagicSymptomsText.setValue("");
+        }
     }
 
     private void visibilityOtherNonHemorrhagicSymptoms() {
         SymptomState symptomState = binding.symptomsOtherNonHemorrhagicSymptoms.getValue();
         binding.symptomsOtherNonHemorrhagicSymptomsLayout.setVisibility(symptomState == SymptomState.YES?View.VISIBLE:View.GONE);
-        // TODO clear value once this is a compound control
+        if(symptomState != SymptomState.YES) {
+            binding.symptomsOther1NonHemorrhagicSymptomsText.setValue("");
+        }
     }
 
 
@@ -132,15 +132,15 @@ public class SymptomsEditTab extends FormTab {
         int[] fieldIds = {
                 R.id.symptoms_gumsBleeding1,
                 R.id.symptoms_injectionSiteBleeding,
-                R.id.symptoms_epistaxis,
-                R.id.symptoms_melena,
-                R.id.symptoms_hematemesis,
+                R.id.symptoms_noseBleeding1,
+                R.id.symptoms_bloodyBlackStool,
+                R.id.symptoms_redBloodVomit,
                 R.id.symptoms_digestedBloodVomit,
-                R.id.symptoms_hemoptysis,
+                R.id.symptoms_coughingBlood,
                 R.id.symptoms_bleedingVagina,
-                R.id.symptoms_petechiae,
-                R.id.symptoms_hematuria,
-                R.id.symptoms_otherHemorrhagicSymptoms,
+                R.id.symptoms_skinBruising1,
+                R.id.symptoms_bloodUrine,
+                R.id.symptoms_otherHemorrhagicSymptoms
         };
 
         SymptomState symptomState = binding.symptomsUnexplainedBleeding.getValue();

@@ -151,12 +151,11 @@ public final class FieldHelper {
 		}
 		
 		// Add listeners
-		addRequiredListenerToField(textField, targetField, fieldGroup, sourcePropertyIds, sourceValues, textFieldPropertyId);
+		registerUpdateRequiredOnValueChange(textField, targetField, fieldGroup, sourcePropertyIds, sourceValues, textFieldPropertyId);
 		for(Object sourcePropertyId : sourcePropertyIds) {
 			Field sourceField = fieldGroup.getField(sourcePropertyId);
-			addRequiredListenerToField(sourceField, targetField, fieldGroup, sourcePropertyIds, sourceValues, textFieldPropertyId);
+			registerUpdateRequiredOnValueChange(sourceField, targetField, fieldGroup, sourcePropertyIds, sourceValues, textFieldPropertyId);
 		}
-		
 		
 	}
 	
@@ -187,7 +186,7 @@ public final class FieldHelper {
 		return (sourceField.getValue() == null || sourceField.getValue().isEmpty());
 	}
 	
-	private static void addRequiredListenerToField(Field field, Field targetField, FieldGroup fieldGroup, 
+	private static void registerUpdateRequiredOnValueChange(Field field, Field targetField, FieldGroup fieldGroup, 
 			List<String> sourcePropertyIds, List<Object> sourceValues, Object textFieldPropertyId) {
 		
 		field.addValueChangeListener(event -> {

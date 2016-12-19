@@ -14,6 +14,7 @@ import javax.persistence.Enumerated;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.TemperatureSource;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.component.SymptomStateField;
 
 @Entity(name= Symptoms.TABLE_NAME)
 @DatabaseTable(tableName = Symptoms.TABLE_NAME)
@@ -25,6 +26,12 @@ public class Symptoms extends AbstractDomainObject {
 
 	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
 	private Date onsetDate;
+	@Column(length = 255)
+	private String onsetSymptom;
+	@Column(length = 255)
+	private String symptomsComments;
+	private Boolean symptomatic;
+
 	@Column(columnDefinition = "float8")
 	private Float temperature;
 	@Enumerated(EnumType.STRING)
@@ -33,39 +40,21 @@ public class Symptoms extends AbstractDomainObject {
 	@Enumerated(EnumType.STRING)
 	private SymptomState fever;
 	@Enumerated(EnumType.STRING)
+	private SymptomState vomiting;
+	@Enumerated(EnumType.STRING)
 	private SymptomState diarrhea;
 	@Enumerated(EnumType.STRING)
-	private SymptomState anorexiaAppetiteLoss;
+	private SymptomState bloodInStool;
+	@Enumerated(EnumType.STRING)
+	private SymptomState nausea;
 	@Enumerated(EnumType.STRING)
 	private SymptomState abdominalPain;
 	@Enumerated(EnumType.STRING)
-	private SymptomState chestPain;
+	private SymptomState headache;
 	@Enumerated(EnumType.STRING)
 	private SymptomState musclePain;
 	@Enumerated(EnumType.STRING)
-	private SymptomState jointPain;
-	@Enumerated(EnumType.STRING)
-	private SymptomState headache;
-	@Enumerated(EnumType.STRING)
-	private SymptomState cough;
-	@Enumerated(EnumType.STRING)
-	private SymptomState difficultyBreathing;
-	@Enumerated(EnumType.STRING)
-	private SymptomState soreThroat;
-	@Enumerated(EnumType.STRING)
-	private SymptomState jaundice;
-	@Enumerated(EnumType.STRING)
-	private SymptomState conjunctivitis;
-	@Enumerated(EnumType.STRING)
-	private SymptomState skinRash;
-	@Enumerated(EnumType.STRING)
-	private SymptomState hiccups;
-	@Enumerated(EnumType.STRING)
-	private SymptomState eyePainLightSensitive;
-	@Enumerated(EnumType.STRING)
-	private SymptomState comaUnconscious;
-	@Enumerated(EnumType.STRING)
-	private SymptomState confusedDisoriented;
+	private SymptomState fatigueWeakness;
 	@Enumerated(EnumType.STRING)
 	private SymptomState unexplainedBleeding;
 	@Enumerated(EnumType.STRING)
@@ -73,59 +62,66 @@ public class Symptoms extends AbstractDomainObject {
 	@Enumerated(EnumType.STRING)
 	private SymptomState injectionSiteBleeding;
 	@Enumerated(EnumType.STRING)
-	private SymptomState epistaxis;
+	private SymptomState noseBleeding;
 	@Enumerated(EnumType.STRING)
-	private SymptomState melena;
+	private SymptomState bloodyBlackStool;
 	@Enumerated(EnumType.STRING)
-	private SymptomState hematemesis;
+	private SymptomState redBloodVomit;
 	@Enumerated(EnumType.STRING)
 	private SymptomState digestedBloodVomit;
 	@Enumerated(EnumType.STRING)
-	private SymptomState hemoptysis;
+	private SymptomState coughingBlood;
 	@Enumerated(EnumType.STRING)
 	private SymptomState bleedingVagina;
 	@Enumerated(EnumType.STRING)
-	private SymptomState petechiae;
+	private SymptomState skinBruising;
 	@Enumerated(EnumType.STRING)
-	private SymptomState hematuria;
+	private SymptomState bloodUrine;
 	@Enumerated(EnumType.STRING)
-	private SymptomState chills;
-	@Enumerated(EnumType.STRING)
-	private SymptomState dehydration;
-	@Enumerated(EnumType.STRING)
-	private SymptomState fatigueWeakness;
-	@Enumerated(EnumType.STRING)
-	private SymptomState highBloodPressure;
-	@Enumerated(EnumType.STRING)
-	private SymptomState kopliksSpots;
-	@Enumerated(EnumType.STRING)
-	private SymptomState lethargy;
-	@Enumerated(EnumType.STRING)
-	private SymptomState lowBloodPressure;
-	@Enumerated(EnumType.STRING)
-	private SymptomState nausea;
+	private SymptomState skinRash;
 	@Enumerated(EnumType.STRING)
 	private SymptomState neckStiffness;
 	@Enumerated(EnumType.STRING)
-	private SymptomState oedema;
-
-	private String onsetSymptom;
+	private SymptomState soreThroat;
 	@Enumerated(EnumType.STRING)
-	private SymptomState otitisMedia;
-	@Enumerated(EnumType.STRING)
-	private SymptomState refusalFeedorDrink;
+	private SymptomState cough;
 	@Enumerated(EnumType.STRING)
 	private SymptomState runnyNose;
 	@Enumerated(EnumType.STRING)
+	private SymptomState difficultyBreathing;
+	@Enumerated(EnumType.STRING)
+	private SymptomState chestPain;
+	@Enumerated(EnumType.STRING)
+	private SymptomState confusedDisoriented;
+	@Enumerated(EnumType.STRING)
 	private SymptomState seizures;
 	@Enumerated(EnumType.STRING)
-	private SymptomState sepsis;
+	private SymptomState alteredConsciousness;
 	@Enumerated(EnumType.STRING)
-	private SymptomState swollenLymphNodes;
+	private SymptomState conjunctivitis;
+	@Enumerated(EnumType.STRING)
+	private SymptomState eyePainLightSensitive;
+	@Enumerated(EnumType.STRING)
+	private SymptomState kopliksSpots;
+	@Enumerated(EnumType.STRING)
+	private SymptomState throbocytopenia;
+	@Enumerated(EnumType.STRING)
+	private SymptomState otitisMedia;
+	@Enumerated(EnumType.STRING)
+	private SymptomState hearingLoss;
+	@Enumerated(EnumType.STRING)
+	private SymptomState dehydration;
+	@Enumerated(EnumType.STRING)
+	private SymptomState anorexiaAppetiteLoss;
+	@Enumerated(EnumType.STRING)
+	private SymptomState refusalFeedorDrink;
+	@Enumerated(EnumType.STRING)
+	private SymptomState jointPain;
+	@Enumerated(EnumType.STRING)
+	private SymptomState shock;
+	@Enumerated(EnumType.STRING)
+	private SymptomState hiccups;
 
-	private Boolean symptomatic;
-	@Enumerated(EnumType.STRING)
-	private SymptomState vomiting;
 	@Enumerated(EnumType.STRING)
 	private SymptomState otherHemorrhagicSymptoms;
 	@Column(length = 255)
@@ -134,9 +130,6 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState otherNonHemorrhagicSymptoms;
 	@Column(length = 255)
 	private String otherNonHemorrhagicSymptomsText;
-
-
-
 
 	public Date getOnsetDate() {
 		return onsetDate;
@@ -228,12 +221,6 @@ public class Symptoms extends AbstractDomainObject {
 	public void setSoreThroat(SymptomState soreThroat) {
 		this.soreThroat = soreThroat;
 	}
-	public SymptomState getJaundice() {
-		return jaundice;
-	}
-	public void setJaundice(SymptomState jaundice) {
-		this.jaundice = jaundice;
-	}
 	public SymptomState getConjunctivitis() {
 		return conjunctivitis;
 	}
@@ -257,12 +244,6 @@ public class Symptoms extends AbstractDomainObject {
 	}
 	public void setEyePainLightSensitive(SymptomState eyePainLightSensitive) {
 		this.eyePainLightSensitive = eyePainLightSensitive;
-	}
-	public SymptomState getComaUnconscious() {
-		return comaUnconscious;
-	}
-	public void setComaUnconscious(SymptomState comaUnconscious) {
-		this.comaUnconscious = comaUnconscious;
 	}
 	public SymptomState getConfusedDisoriented() {
 		return confusedDisoriented;
@@ -288,61 +269,17 @@ public class Symptoms extends AbstractDomainObject {
 	public void setInjectionSiteBleeding(SymptomState injectionSiteBleeding) {
 		this.injectionSiteBleeding = injectionSiteBleeding;
 	}
-	public SymptomState getEpistaxis() {
-		return epistaxis;
-	}
-	public void setEpistaxis(SymptomState epistaxis) {
-		this.epistaxis = epistaxis;
-	}
-	public SymptomState getMelena() {
-		return melena;
-	}
-	public void setMelena(SymptomState melena) {
-		this.melena = melena;
-	}
-	public SymptomState getHematemesis() {
-		return hematemesis;
-	}
-	public void setHematemesis(SymptomState hematemesis) {
-		this.hematemesis = hematemesis;
-	}
 	public SymptomState getDigestedBloodVomit() {
 		return digestedBloodVomit;
 	}
 	public void setDigestedBloodVomit(SymptomState digestedBloodVomit) {
 		this.digestedBloodVomit = digestedBloodVomit;
 	}
-	public SymptomState getHemoptysis() {
-		return hemoptysis;
-	}
-	public void setHemoptysis(SymptomState hemoptysis) {
-		this.hemoptysis = hemoptysis;
-	}
 	public SymptomState getBleedingVagina() {
 		return bleedingVagina;
 	}
 	public void setBleedingVagina(SymptomState bleedingVagina) {
 		this.bleedingVagina = bleedingVagina;
-	}
-	public SymptomState getPetechiae() {
-		return petechiae;
-	}
-	public void setPetechiae(SymptomState petechiae) {
-		this.petechiae = petechiae;
-	}
-	public SymptomState getHematuria() {
-		return hematuria;
-	}
-	public void setHematuria(SymptomState hematuria) {
-		this.hematuria = hematuria;
-	}
-
-	public SymptomState getChills() {
-		return chills;
-	}
-
-	public void setChills(SymptomState chills) {
-		this.chills = chills;
 	}
 
 	public SymptomState getDehydration() {
@@ -361,36 +298,12 @@ public class Symptoms extends AbstractDomainObject {
 		this.fatigueWeakness = fatigueWeakness;
 	}
 
-	public SymptomState getHighBloodPressure() {
-		return highBloodPressure;
-	}
-
-	public void setHighBloodPressure(SymptomState highBloodPressure) {
-		this.highBloodPressure = highBloodPressure;
-	}
-
 	public SymptomState getKopliksSpots() {
 		return kopliksSpots;
 	}
 
 	public void setKopliksSpots(SymptomState kopliksSpots) {
 		this.kopliksSpots = kopliksSpots;
-	}
-
-	public SymptomState getLethargy() {
-		return lethargy;
-	}
-
-	public void setLethargy(SymptomState lethargy) {
-		this.lethargy = lethargy;
-	}
-
-	public SymptomState getLowBloodPressure() {
-		return lowBloodPressure;
-	}
-
-	public void setLowBloodPressure(SymptomState lowBloodPressure) {
-		this.lowBloodPressure = lowBloodPressure;
 	}
 
 	public SymptomState getNausea() {
@@ -407,14 +320,6 @@ public class Symptoms extends AbstractDomainObject {
 
 	public void setNeckStiffness(SymptomState neckStiffness) {
 		this.neckStiffness = neckStiffness;
-	}
-
-	public SymptomState getOedema() {
-		return oedema;
-	}
-
-	public void setOedema(SymptomState oedema) {
-		this.oedema = oedema;
 	}
 
 	public String getOnsetSymptom() {
@@ -447,30 +352,6 @@ public class Symptoms extends AbstractDomainObject {
 
 	public void setRunnyNose(SymptomState runnyNose) {
 		this.runnyNose = runnyNose;
-	}
-
-	public SymptomState getSeizures() {
-		return seizures;
-	}
-
-	public void setSeizures(SymptomState seizures) {
-		this.seizures = seizures;
-	}
-
-	public SymptomState getSepsis() {
-		return sepsis;
-	}
-
-	public void setSepsis(SymptomState sepsis) {
-		this.sepsis = sepsis;
-	}
-
-	public SymptomState getSwollenLymphNodes() {
-		return swollenLymphNodes;
-	}
-
-	public void setSwollenLymphNodes(SymptomState swollenLymphNodes) {
-		this.swollenLymphNodes = swollenLymphNodes;
 	}
 
 	public Boolean getSymptomatic() {
@@ -519,5 +400,109 @@ public class Symptoms extends AbstractDomainObject {
 
 	public void setOtherNonHemorrhagicSymptomsText(String otherNonHemorrhagicSymptomsText) {
 		this.otherNonHemorrhagicSymptomsText = otherNonHemorrhagicSymptomsText;
+	}
+
+	public String getSymptomsComments() {
+		return symptomsComments;
+	}
+
+	public void setSymptomsComments(String symptomsComments) {
+		this.symptomsComments = symptomsComments;
+	}
+
+	public SymptomState getBloodInStool() {
+		return bloodInStool;
+	}
+
+	public void setBloodInStool(SymptomState bloodInStool) {
+		this.bloodInStool = bloodInStool;
+	}
+
+	public SymptomState getNoseBleeding() {
+		return noseBleeding;
+	}
+
+	public void setNoseBleeding(SymptomState noseBleeding) {
+		this.noseBleeding = noseBleeding;
+	}
+
+	public SymptomState getBloodyBlackStool() {
+		return bloodyBlackStool;
+	}
+
+	public void setBloodyBlackStool(SymptomState bloodyBlackStool) {
+		this.bloodyBlackStool = bloodyBlackStool;
+	}
+
+	public SymptomState getRedBloodVomit() {
+		return redBloodVomit;
+	}
+
+	public void setRedBloodVomit(SymptomState redBloodVomit) {
+		this.redBloodVomit = redBloodVomit;
+	}
+
+	public SymptomState getCoughingBlood() {
+		return coughingBlood;
+	}
+
+	public void setCoughingBlood(SymptomState coughingBlood) {
+		this.coughingBlood = coughingBlood;
+	}
+
+	public SymptomState getSkinBruising() {
+		return skinBruising;
+	}
+
+	public void setSkinBruising(SymptomState skinBruising) {
+		this.skinBruising = skinBruising;
+	}
+
+	public SymptomState getBloodUrine() {
+		return bloodUrine;
+	}
+
+	public void setBloodUrine(SymptomState bloodUrine) {
+		this.bloodUrine = bloodUrine;
+	}
+
+	public SymptomState getThrobocytopenia() {
+		return throbocytopenia;
+	}
+
+	public void setThrobocytopenia(SymptomState throbocytopenia) {
+		this.throbocytopenia = throbocytopenia;
+	}
+
+	public SymptomState getHearingloss() {
+		return hearingLoss;
+	}
+
+	public void setHearingloss(SymptomState hearingLoss) {
+		this.hearingLoss = hearingLoss;
+	}
+
+	public SymptomState getShock() {
+		return shock;
+	}
+
+	public void setShock(SymptomState shock) {
+		this.shock = shock;
+	}
+
+	public SymptomState getSeizures() {
+		return seizures;
+	}
+
+	public void setSeizures(SymptomState seizures) {
+		this.seizures = seizures;
+	}
+
+	public SymptomState getAlteredConsciousness() {
+		return alteredConsciousness;
+	}
+
+	public void setAlteredConsciousness(SymptomState alteredConsciousness) {
+		this.alteredConsciousness = alteredConsciousness;
 	}
 }
