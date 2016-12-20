@@ -1,5 +1,7 @@
 package de.symeda.sormas.ui.contact;
 
+import org.joda.time.LocalDate;
+
 import com.vaadin.data.validator.DateRangeValidator;
 import com.vaadin.shared.ui.datefield.Resolution;
 import com.vaadin.ui.AbstractLayout;
@@ -79,6 +81,8 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
     	
     	setReadOnly(true, ContactDto.UUID, ContactDto.REPORTING_USER, ContactDto.REPORT_DATE_TIME, ContactDto.FOLLOW_UP_UNTIL);
     		
+    	setRequired(true, ContactDto.LAST_CONTACT_DATE, ContactDto.CONTACT_PROXIMITY);
+
     	caseInfoLayout = new VerticalLayout();
     	caseInfoLayout.setSpacing(true);
     	getContent().addComponent(caseInfoLayout, CASE_INFO);
@@ -93,7 +97,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
     	dateField.removeAllValidators();
     	if (getValue() != null) {
 	    	dateField.addValidator(new DateRangeValidator("Date of last contact has to be before date of report",
-	    			null, getValue().getReportDateTime(), Resolution.SECOND));
+	    			null, new LocalDate(getValue().getReportDateTime()).plusDays(1).toDate(), Resolution.SECOND));
     	}
     }
     

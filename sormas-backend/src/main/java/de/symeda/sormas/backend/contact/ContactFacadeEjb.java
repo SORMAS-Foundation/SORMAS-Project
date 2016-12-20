@@ -1,8 +1,6 @@
 package de.symeda.sormas.backend.contact;
 
 import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -12,6 +10,8 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.validation.ValidationException;
 import javax.validation.constraints.NotNull;
+
+import org.joda.time.LocalDate;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -138,7 +138,8 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
 		target.setReportDateTime(source.getReportDateTime());
 		
-		target.setLastContactDate(source.getLastContactDate());
+		// use only date, not time
+		target.setLastContactDate(new LocalDate(source.getLastContactDate()).toDate());
 		if (target.getLastContactDate() != null && target.getLastContactDate().after(target.getReportDateTime())) {
 			throw new ValidationException(Contact.LAST_CONTACT_DATE + " has to be before " + Contact.REPORT_DATE_TIME);
 		}
@@ -252,8 +253,8 @@ public class ContactFacadeEjb implements ContactFacade {
 			contact.setFollowUpUntil(null);
 			contact.setFollowUpStatus(FollowUpStatus.NO_FOLLOW_UP);
 		} else {
-			LocalDate beginDate = contact.getReportDateTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-			contact.setFollowUpUntil(Date.from(beginDate.plusDays(followUpDuration).atStartOfDay(ZoneId.systemDefault()).toInstant()));
+			LocalDate beginDate = new LocalDate(contact.getReportDateTime());
+			contact.setFollowUpUntil(beginDate.plusDays(followUpDuration).toDate());
 		}
 	}
 	

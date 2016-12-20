@@ -1,5 +1,7 @@
 package de.symeda.sormas.ui.contact;
 
+import org.joda.time.LocalDate;
+
 import com.vaadin.data.validator.DateRangeValidator;
 import com.vaadin.shared.ui.datefield.Resolution;
 import com.vaadin.ui.ComboBox;
@@ -65,7 +67,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
     	dateField.removeAllValidators();
     	if (getValue() != null) {
 	    	dateField.addValidator(new DateRangeValidator("Date of last contact has to be before date of report",
-	    			null, getValue().getReportDateTime(), Resolution.SECOND));
+	    			null, new LocalDate(getValue().getReportDateTime()).plusDays(1).toDate(), Resolution.SECOND));
     	}
     }
     
