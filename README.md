@@ -12,6 +12,7 @@ The project consists of the following modules:
 - sormas-ui: the web application
 
 
+
 Getting Started
 ========
 
