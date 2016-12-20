@@ -172,11 +172,11 @@
 		</copy>
 	</target>
 
-	<!-- <target name="collect-artifacts" description="Collects artifacts">
+	<target name="collect-artifacts" description="Collects artifacts">
 		<ant dir="../sormas-ear" target="3-collect" />
 		<ant dir="../sormas-ui" target="3-collect" />
 		<ant dir="../sormas-rest" target="3-collect" />
-	</target> -->
+	</target>
 
 	<target name="collect-all" description="collects all serverlibs, bundles and so on for the setup-script.">
 
@@ -195,8 +195,8 @@
 		<echo>Collecting gf-modules</echo>
 		<antcall target="collect-gf-modules" />
 
-		<!--<echo>Collecting SORMAS artifacts</echo>
-		<antcall target="collect-artifacts" />-->
+		<echo>Collecting SORMAS artifacts</echo>
+		<antcall target="collect-artifacts" />
 
 	</target>
 
