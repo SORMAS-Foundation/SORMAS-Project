@@ -9,10 +9,14 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskFacade;
+import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.user.User;
@@ -135,6 +139,40 @@ public class TaskFacadeEjb implements TaskFacade {
 		return service.getAllAfter(date, user).stream()
 			.map(c -> toDto(c))
 			.collect(Collectors.toList());
+	}
+	
+	@Override
+	public List<TaskDto> getAllPendingForCase(CaseDataDto caseDataDto) {
+		if(caseDataDto == null) {
+			return Collections.emptyList();
+		}
+		
+		Case caze = caseService.getByUuid(caseDataDto.getUuid());
+		
+		if(caze == null) {
+			return Collections.emptyList();
+		}
+		
+		return service.getAllPendingForCase(caze).stream()
+				.map(c -> toDto(c))
+				.collect(Collectors.toList());
+	}
+	
+	@Override
+	public List<TaskDto> getAllPendingForContact(ContactIndexDto contactDto) {
+		if(contactDto == null) {
+			return Collections.emptyList();
+		}
+		
+		Contact contact = contactService.getByUuid(contactDto.getUuid());
+		
+		if(contact == null) {
+			return Collections.emptyList();
+		}
+		
+		return service.getAllPendingForContact(contact).stream()
+				.map(c -> toDto(c))
+				.collect(Collectors.toList());
 	}
 	
 	@Override

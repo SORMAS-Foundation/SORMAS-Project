@@ -16,6 +16,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactClassification;
+import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
@@ -30,6 +31,7 @@ import de.symeda.sormas.ui.utils.UuidRenderer;
 public class ContactGrid extends Grid {
 
 	public static final String NUMBER_OF_VISITS = "numberOfVisits";
+	public static final String NUMBER_OF_PENDING_TASKS = "numberOfPendingTasks";
 	
 	public ContactGrid() {
 		setSizeFull();
@@ -52,12 +54,25 @@ public class ContactGrid extends Grid {
 				return String.class;
 			}
 		});
+        
+        generatedContainer.addGeneratedProperty(NUMBER_OF_PENDING_TASKS, new PropertyValueGenerator<String>() {
+			@Override
+			public String getValue(Item item, Object itemId, Object propertyId) {
+				ContactIndexDto contactIndexDto = (ContactIndexDto)itemId;
+				return String.format(I18nProperties.getPrefixFieldCaption(contactIndexDto.I18N_PREFIX, NUMBER_OF_PENDING_TASKS + "Format"), 
+						FacadeProvider.getTaskFacade().getAllPendingForContact(contactIndexDto).size());
+			}
+			@Override
+			public Class<String> getType() {
+				return String.class;
+			}
+		});
 
         setColumns(ContactIndexDto.UUID, ContactIndexDto.PERSON, ContactIndexDto.CONTACT_PROXIMITY,
         		ContactIndexDto.LAST_CONTACT_DATE, ContactIndexDto.CONTACT_CLASSIFICATION, 
         		ContactIndexDto.FOLLOW_UP_STATUS, ContactIndexDto.FOLLOW_UP_UNTIL, NUMBER_OF_VISITS,
         		ContactIndexDto.CAZE_DISEASE, ContactIndexDto.CAZE,
-        		ContactIndexDto.CONTACT_OFFICER
+        		ContactIndexDto.CONTACT_OFFICER, NUMBER_OF_PENDING_TASKS
         		);
         getColumn(ContactIndexDto.CONTACT_PROXIMITY).setWidth(200);
         getColumn(ContactIndexDto.UUID).setRenderer(new UuidRenderer());

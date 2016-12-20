@@ -2,18 +2,23 @@ package de.symeda.sormas.ui.caze;
 
 import java.util.List;
 
+import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.data.util.GeneratedPropertyContainer;
 import com.vaadin.data.util.MethodProperty;
+import com.vaadin.data.util.PropertyValueGenerator;
 import com.vaadin.data.util.filter.Compare.Equal;
 import com.vaadin.data.util.filter.Or;
 import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.ui.Grid;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -22,6 +27,8 @@ import de.symeda.sormas.ui.utils.UuidRenderer;
 
 @SuppressWarnings("serial")
 public class CaseGrid extends Grid {
+	
+	public static final String NUMBER_OF_PENDING_TASKS = "numberOfPendingTasks";
 
 	public CaseGrid() {
         setSizeFull();
@@ -29,12 +36,27 @@ public class CaseGrid extends Grid {
         setSelectionMode(SelectionMode.NONE);
 
         BeanItemContainer<CaseDataDto> container = new BeanItemContainer<CaseDataDto>(CaseDataDto.class);
-        setContainerDataSource(container);
+        GeneratedPropertyContainer generatedContainer = new GeneratedPropertyContainer(container);
+        setContainerDataSource(generatedContainer);
+        
+        generatedContainer.addGeneratedProperty(NUMBER_OF_PENDING_TASKS, new PropertyValueGenerator<String>() {
+			@Override
+			public String getValue(Item item, Object itemId, Object propertyId) {
+				CaseDataDto caseDataDto = (CaseDataDto)itemId;
+				return String.format(I18nProperties.getPrefixFieldCaption(caseDataDto.I18N_PREFIX, NUMBER_OF_PENDING_TASKS + "Format"), 
+						FacadeProvider.getTaskFacade().getAllPendingForCase(caseDataDto).size());
+			}
+			@Override
+			public Class<String> getType() {
+				return String.class;
+			}
+		});
+        
         setColumns(CaseDataDto.UUID, CaseDataDto.DISEASE, 
         		CaseDataDto.CASE_CLASSIFICATION, CaseDataDto.INVESTIGATION_STATUS, CaseDataDto.PERSON, 
         		CaseDataDto.DISTRICT,  CaseDataDto.HEALTH_FACILITY, 
-        		CaseDataDto.REPORTING_USER, CaseDataDto.REPORT_DATE, 
-        		CaseDataDto.SURVEILLANCE_OFFICER);
+        		CaseDataDto.REPORTING_USER, CaseDataDto.REPORT_DATE,
+        		CaseDataDto.SURVEILLANCE_OFFICER, NUMBER_OF_PENDING_TASKS);
 
         getColumn(CaseDataDto.UUID).setRenderer(new UuidRenderer());
         
@@ -109,7 +131,8 @@ public class CaseGrid extends Grid {
 	
     @SuppressWarnings("unchecked")
 	private BeanItemContainer<CaseDataDto> getContainer() {
-        return (BeanItemContainer<CaseDataDto>) super.getContainerDataSource();
+    	GeneratedPropertyContainer container = (GeneratedPropertyContainer) super.getContainerDataSource();
+        return (BeanItemContainer<CaseDataDto>) container.getWrappedContainer();
     }
     
     public void reload() {
