@@ -4,6 +4,7 @@ package de.symeda.sormas.app.task;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -82,6 +83,16 @@ public class TasksListFragment extends ListFragment {
         ArrayAdapter<Task> listAdapter = (ArrayAdapter<Task>)getListAdapter();
         listAdapter.clear();
         listAdapter.addAll(tasks);
+
+        final SwipeRefreshLayout refreshLayout = (SwipeRefreshLayout)getView().findViewById(R.id.swiperefresh);
+        if(refreshLayout != null) {
+            refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    SyncTasksTask.syncTasks(getActivity().getSupportFragmentManager(), getActivity(), refreshLayout);
+                }
+            });
+        }
     }
 
     @Override

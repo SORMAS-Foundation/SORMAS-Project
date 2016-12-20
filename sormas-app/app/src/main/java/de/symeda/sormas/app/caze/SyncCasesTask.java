@@ -7,6 +7,8 @@ package de.symeda.sormas.app.caze;
 import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.annotation.Nullable;
 
 import com.j256.ormlite.logger.Logger;
 import com.j256.ormlite.logger.LoggerFactory;
@@ -78,6 +80,11 @@ public class SyncCasesTask extends AsyncTask<Void, Void, Void> {
         } else {
             syncCases((Callback)null);
         }
+    }
+
+    public static void syncCases(final FragmentManager fragmentManager, SwipeRefreshLayout refreshLayout) {
+        syncCases(fragmentManager);
+        refreshLayout.setRefreshing(false);
     }
 
     public static void syncCases(final Callback callback) {

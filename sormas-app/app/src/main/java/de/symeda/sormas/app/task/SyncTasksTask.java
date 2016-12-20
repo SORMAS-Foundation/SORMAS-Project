@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.widget.SwipeRefreshLayout;
 
 import java.util.List;
 
@@ -74,6 +75,11 @@ public class SyncTasksTask extends AsyncTask<Void, Void, Void> {
         } else {
             syncTasks((Callback)null, notificationContext);
         }
+    }
+
+    public static void syncTasks(final FragmentManager fragmentManager, final Context notificationContext, SwipeRefreshLayout refreshLayout) {
+        syncTasks(fragmentManager, notificationContext);
+        refreshLayout.setRefreshing(false);
     }
 
     public static void syncTasks(final Callback callback, final Context notificationContext) {

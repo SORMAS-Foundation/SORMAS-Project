@@ -1,6 +1,9 @@
 package de.symeda.sormas.app.contact;
 
 import android.os.AsyncTask;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.widget.SwipeRefreshLayout;
 
 import java.util.List;
 
@@ -48,6 +51,30 @@ public class SyncContactsTask extends AsyncTask<Void, Void, Void> {
         }, DatabaseHelper.getContactDao());
 
         return null;
+    }
+
+    public static void syncContacts(final FragmentManager fragmentManager) {
+        if (fragmentManager != null) {
+            syncContacts(new Callback() {
+                @Override
+                public void call() {
+                    if (fragmentManager.getFragments() != null) {
+                        for (Fragment fragement : fragmentManager.getFragments()) {
+                            if (fragement instanceof ContactsListFragment) {
+                                fragement.onResume();
+                            }
+                        }
+                    }
+                }
+            });
+        } else {
+            syncContacts((Callback)null);
+        }
+    }
+
+    public static void syncContacts(final FragmentManager fragmentManager, SwipeRefreshLayout refreshLayout) {
+        syncContacts(fragmentManager);
+        refreshLayout.setRefreshing(false);
     }
 
     public static void syncContacts(final Callback callback) {

@@ -4,6 +4,7 @@ package de.symeda.sormas.app.contact;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,6 +37,16 @@ public class ContactsListFragment extends ListFragment {
         super.onResume();
 
         updateContacsArrayAdapter();
+
+        final SwipeRefreshLayout refreshLayout = (SwipeRefreshLayout)getView().findViewById(R.id.swiperefresh);
+        if(refreshLayout != null) {
+            refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    SyncContactsTask.syncContacts(getActivity().getSupportFragmentManager(), refreshLayout);
+                }
+            });
+        }
     }
 
     public void updateContacsArrayAdapter() {

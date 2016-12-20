@@ -4,6 +4,7 @@ package de.symeda.sormas.app.caze;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,6 +47,16 @@ public class CasesListFragment extends ListFragment {
         ArrayAdapter<Case> listAdapter = (ArrayAdapter<Case>)getListAdapter();
         listAdapter.clear();
         listAdapter.addAll(cases);
+
+        final SwipeRefreshLayout refreshLayout = (SwipeRefreshLayout)getView().findViewById(R.id.swiperefresh);
+        if(refreshLayout != null) {
+            refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    SyncCasesTask.syncCases(getActivity().getSupportFragmentManager(), refreshLayout);
+                }
+            });
+        }
     }
 
     @Override
