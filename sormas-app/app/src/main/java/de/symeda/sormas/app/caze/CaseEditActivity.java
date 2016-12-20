@@ -178,7 +178,7 @@ public class CaseEditActivity extends AbstractEditActivity {
                     case SYMPTOMS:
                         SymptomsDao symptomsDao = DatabaseHelper.getSymptomsDao();
 
-                        Symptoms symptoms = (Symptoms) adapter.getData(2);
+                        Symptoms symptoms = (Symptoms) adapter.getData(CaseEditTabs.SYMPTOMS.ordinal());
 
                         boolean anySymptomSetToYes = isAnySymptomSetToYes(symptoms);
                         // data is valid if at least one symptom/the text for other non hemorrhagic symptoms is
