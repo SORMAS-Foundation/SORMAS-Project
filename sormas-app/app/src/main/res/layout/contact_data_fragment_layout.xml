@@ -132,7 +132,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="@string/headline_contact_case"
+                android:text="@string/headline_source_case"
                 android:textColor="@android:color/tab_indicator_text"
                 android:textSize="@dimen/abc_text_size_body_1_material"
                 android:textStyle="bold"

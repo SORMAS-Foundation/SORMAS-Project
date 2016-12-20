@@ -51,7 +51,7 @@ public class ContactVisitsView extends AbstractContactView {
     	topLayout.setSpacing(true);
     	topLayout.setWidth("100%");
     	
-    	Label header = new Label("Visits");
+    	Label header = new Label("Follow-up visits");
     	header.setSizeUndefined();
     	CssStyles.style(header, CssStyles.H2, CssStyles.NO_MARGIN);
     	topLayout.addComponent(header);

@@ -156,13 +156,13 @@
     <string name="label_today">today</string>
     <string name="headline_new_contact">Create new contact</string>
     <string name="headline_contact_data">Contact data</string>
-    <string name="headline_visits">Visits</string>
+    <string name="headline_visits">Follow-up visits</string>
     <string name="headline_contact">Contact</string>
-    <string name="headline_contact_case">Contact case</string>
+    <string name="headline_source_case">Source case</string>
     <string name="headline_pick_person">Pick or create a person</string>
     <string name="action_search">Search</string>
     <string name="action_select_person">Select person</string>
-    <string name="headline_visit">Visit</string>
+    <string name="headline_visit">Follow-up visit</string>
 
 
 </resources>
