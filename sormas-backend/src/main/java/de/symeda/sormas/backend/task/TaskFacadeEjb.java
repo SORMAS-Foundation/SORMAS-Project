@@ -13,9 +13,9 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskFacade;
-import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
+import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseService;
@@ -170,7 +170,8 @@ public class TaskFacadeEjb implements TaskFacade {
 			return Collections.emptyList();
 		}
 		
-		return service.getAllPendingForCase(caze).stream()
+		return service.findBy(new TaskCriteria().cazeEquals(caze).taskStatusEquals(TaskStatus.PENDING))
+				.stream()
 				.map(c -> toDto(c))
 				.collect(Collectors.toList());
 	}
@@ -187,7 +188,8 @@ public class TaskFacadeEjb implements TaskFacade {
 			return Collections.emptyList();
 		}
 		
-		return service.getAllPendingForContact(contact).stream()
+		return service.findBy(new TaskCriteria().contactEquals(contact).taskStatusEquals(TaskStatus.PENDING))
+				.stream()
 				.map(c -> toDto(c))
 				.collect(Collectors.toList());
 	}

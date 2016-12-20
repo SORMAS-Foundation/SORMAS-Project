@@ -117,8 +117,8 @@ public class CaseEditDataTab extends FormTab {
             }
         });
 
-        Button btnCaseAdministration = binding.formCdBtnCaseAdministration;
         // this can later be used to manipulate the case investigation task from within the case
+//        Button btnCaseAdministration = binding.formCdBtnCaseAdministration;
 //        Iterable<CaseStatus> possibleStatus = CaseHelper.getPossibleStatusChanges(caze.getCaseClassification(), ConfigProvider.getUser().getUserRole());
 //        if(possibleStatus.iterator().hasNext()) {
 //            btnCaseAdministration.setVisibility(View.VISIBLE);
@@ -133,9 +133,9 @@ public class CaseEditDataTab extends FormTab {
 //            });
 //        }
 //        else
-        {
-            btnCaseAdministration.setVisibility(View.INVISIBLE);
-        }
+//        {
+//            btnCaseAdministration.setVisibility(View.INVISIBLE);
+//        }
 
     }
 

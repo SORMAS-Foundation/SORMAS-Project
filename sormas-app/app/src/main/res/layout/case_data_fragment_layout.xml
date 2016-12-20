@@ -145,7 +145,7 @@
 
             </LinearLayout>
 
-            <!-- ============= CASE_ADMINISTRATION ============= -->
+            <!-- ============= CASE_ADMINISTRATION =============
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -162,7 +162,7 @@
                 android:layout_height="wrap_content"
                 android:background="@color/colorPrimary"
                 android:id="@+id/form_cd_btn_case_administration"/>
-
+            -->
 
             <!-- ============= RESPONSIBLE ============= -->
             <TextView

@@ -3,6 +3,7 @@ package de.symeda.sormas.backend.task;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.user.User;
 
 public class TaskCriteria {
@@ -11,6 +12,7 @@ public class TaskCriteria {
 	private TaskType taskType;
 	private User assigneeUser;
 	private Case caze;
+	private Contact contact;
 	
 	public TaskStatus[] getTaskStatuses() {
 		return taskStatuses;
@@ -27,6 +29,13 @@ public class TaskCriteria {
 		this.taskType = taskType;
 		return this;
 	}
+	public User getAssigneeUser() {
+		return assigneeUser;
+	}
+	public TaskCriteria assigneeUserEquals(User assigneeUser) {
+		this.assigneeUser = assigneeUser;
+		return this;
+	}
 	public Case getCaze() {
 		return caze;
 	}
@@ -34,12 +43,11 @@ public class TaskCriteria {
 		this.caze = caze;
 		return this;
 	}
-	
-	public User getAssigneeUser() {
-		return assigneeUser;
+	public Contact getContact() {
+		return contact;
 	}
-	public TaskCriteria assigneeUserEquals(User assigneeUser) {
-		this.assigneeUser = assigneeUser;
+	public TaskCriteria contactEquals(Contact contact) {
+		this.contact = contact;
 		return this;
 	}
 	

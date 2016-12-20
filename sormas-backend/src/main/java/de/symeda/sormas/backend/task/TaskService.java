@@ -13,10 +13,8 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.task.TaskStatus;
-import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
 
@@ -79,22 +77,6 @@ public class TaskService extends AbstractAdoService<Task> {
 		return resultList;
 	}
 	
-	public List<Task> getAllPendingForCase(Case caze) {
-		List<Task> tasks = getAll();
-		tasks.removeIf(t -> t.getCaze() == null);
-		tasks.removeIf(t -> t.getCaze().getUuid() != caze.getUuid());
-		tasks.removeIf(t -> t.getTaskStatus() != TaskStatus.PENDING);
-		return tasks;
-	}
-	
-	public List<Task> getAllPendingForContact(Contact contact) {
-		List<Task> tasks = getAll();
-		tasks.removeIf(t -> t.getContact() == null);
-		tasks.removeIf(t -> t.getContact().getUuid() != contact.getUuid());
-		tasks.removeIf(t -> t.getTaskStatus() != TaskStatus.PENDING);
-		return tasks;
-	}
-
 	public long getCount(TaskCriteria taskCriteria) {
 		
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -149,6 +131,9 @@ public class TaskService extends AbstractAdoService<Task> {
 		}
 		if (taskCriteria.getCaze() != null) {
 			filter = and(cb, filter, cb.equal(from.get(Task.CAZE), taskCriteria.getCaze()));
+		}
+		if (taskCriteria.getContact() != null) {
+			filter = and(cb, filter, cb.equal(from.get(Task.CONTACT), taskCriteria.getContact()));
 		}
 		return filter;
 	}
