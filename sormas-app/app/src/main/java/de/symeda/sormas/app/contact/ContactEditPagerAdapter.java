@@ -62,7 +62,9 @@ public class ContactEditPagerAdapter extends FragmentStatePagerAdapter {
                 break;
             case TASKS:
                 TasksListFragment tasksListTab = new TasksListFragment();
-                tasksListTab.setArguments(contactEditBundle);
+                Bundle tasksListBundle = new Bundle();
+                tasksListBundle.putString(TasksListFragment.KEY_CONTACT_UUID, (String)contactEditBundle.get(Contact.UUID));
+                tasksListTab.setArguments(tasksListBundle);
                 frag = tasksListTab;
                 break;
         }
