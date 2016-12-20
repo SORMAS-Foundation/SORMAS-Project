@@ -60,6 +60,32 @@
                 android:layout_height="wrap_content">
 
                 <de.symeda.sormas.app.component.LabelField
+                    android:id="@+id/caseData_disease"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:paddingTop="@dimen/field_padding"
+                    android:paddingBottom="@dimen/field_padding"
+                    app:enum="@{caze.disease}"/>
+
+                <de.symeda.sormas.app.component.LabelField
+                    android:id="@+id/caseData_investigationStatus"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:paddingTop="@dimen/field_padding"
+                    android:paddingBottom="@dimen/field_padding"
+                    app:enum="@{caze.investigationStatus}"/>
+            </LinearLayout>
+
+
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <de.symeda.sormas.app.component.LabelField
                     android:id="@+id/caseData_reportDate"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -76,27 +102,6 @@
                     android:paddingTop="@dimen/field_padding"
                     android:paddingBottom="@dimen/field_padding"
                     app:user="@{caze.reportingUser}"/>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <de.symeda.sormas.app.component.LabelField
-                    android:id="@+id/caseData_disease"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.5"
-                    android:paddingTop="@dimen/field_padding"
-                    android:paddingBottom="@dimen/field_padding"
-                    app:enum="@{caze.disease}"/>
-
-                <LinearLayout android:orientation="vertical"
-                    android:layout_width="match_parent" android:layout_height="wrap_content"
-                    android:layout_weight="0.5" android:paddingTop="@dimen/field_padding" android:paddingBottom="@dimen/field_padding">
-                </LinearLayout>
 
             </LinearLayout>
 
