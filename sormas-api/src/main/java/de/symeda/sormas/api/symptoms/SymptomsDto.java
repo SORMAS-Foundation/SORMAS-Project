@@ -178,9 +178,11 @@ public class SymptomsDto extends DataTransferObject {
 	public void setSymptomatic(Boolean symptomatic) {
 		this.symptomatic = symptomatic;
 	}
+	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public Date getOnsetDate() {
 		return onsetDate;
 	}
+	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public void setOnsetDate(Date onsetDate) {
 		this.onsetDate = onsetDate;
 	}

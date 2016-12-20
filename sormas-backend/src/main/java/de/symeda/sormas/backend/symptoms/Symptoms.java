@@ -72,7 +72,7 @@ public class Symptoms extends AbstractDomainObject {
 	private String otherNonHemorrhagicSymptomsText;
 	private String symptomsComments;
 	
-	@Temporal(TemporalType.TIMESTAMP)
+	@Temporal(TemporalType.DATE)
 	public Date getOnsetDate() {
 		return onsetDate;
 	}
