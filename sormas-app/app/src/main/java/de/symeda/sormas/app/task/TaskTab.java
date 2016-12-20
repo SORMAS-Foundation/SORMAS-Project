@@ -8,6 +8,7 @@ import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -67,8 +68,12 @@ public class TaskTab extends FormTab {
             binding.taskNotExecutableBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    taskDao.changeTaskStatus(task, TaskStatus.NOT_EXECUTABLE);
-                    reloadFragment();
+                    if(!binding.taskAssigneeReply.getValue().isEmpty()) {
+                        taskDao.changeTaskStatus(task, TaskStatus.NOT_EXECUTABLE);
+                        reloadFragment();
+                    } else {
+                        Toast.makeText(getContext(), "An assignee reply is required to set the task status to not executable.", Toast.LENGTH_SHORT).show();
+                    }
                 }
             });
         }
