@@ -12,6 +12,7 @@ public class HelpDialog  {
 
     private AlertDialog.Builder builder;
     private AlertDialog dialog;
+    private String title;
 
 
     public HelpDialog(Context context) {
@@ -25,9 +26,7 @@ public class HelpDialog  {
                         dialog.dismiss();
                     }
                 });
-        dialog = builder.create();
-        dialog.setCancelable(true);
-        dialog.setTitle(context.getResources().getText(R.string.headline_help).toString());
+        title = context.getResources().getText(R.string.headline_help).toString();
     }
 
     public void setMessage(String message) {
@@ -35,10 +34,13 @@ public class HelpDialog  {
     }
 
     public void setTitle(String title) {
-        builder.setTitle(title);
+        this.title = title;
     }
 
     public void show() {
+        dialog = builder.create();
+        dialog.setCancelable(true);
+        dialog.setTitle(title);
         dialog.show();
     }
 

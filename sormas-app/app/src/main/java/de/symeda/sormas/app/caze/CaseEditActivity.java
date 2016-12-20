@@ -26,6 +26,7 @@ import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.symptoms.SymptomsDao;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.component.AbstractEditActivity;
+import de.symeda.sormas.app.component.HelpDialog;
 import de.symeda.sormas.app.component.PropertyField;
 import de.symeda.sormas.app.contact.ContactNewActivity;
 import de.symeda.sormas.app.person.SyncPersonsTask;
@@ -130,45 +131,16 @@ public class CaseEditActivity extends AbstractEditActivity {
 
             // Help button
             case R.id.action_help:
-                switch (tab) {
-                    case CASE_DATA:
-                        break;
+                HelpDialog helpDialog = new HelpDialog(this);
 
-                    case PATIENT:
-                        break;
-
+                switch(tab) {
                     case SYMPTOMS:
-                        StringBuilder sb = new StringBuilder();
-
-                        LinearLayout caseSymptomsForm = (LinearLayout) this.findViewById(R.id.case_symptoms_form);
-
-                        for (int i = 0; i < caseSymptomsForm.getChildCount(); i++) {
-                            if (caseSymptomsForm.getChildAt(i) instanceof PropertyField) {
-                                PropertyField propertyField = (PropertyField) caseSymptomsForm.getChildAt(i);
-                                sb
-                                        .append("<b>" + propertyField.getCaption() + "</b>").append("<br>")
-                                        .append(propertyField.getDescription()).append("<br>").append("<br>");
-                            }
-                        }
-
-                        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                        builder.setMessage(Html.fromHtml(sb.toString())).setTitle(getResources().getText(R.string.headline_help));
-                        builder.setPositiveButton("Ok",
-                                new DialogInterface.OnClickListener() {
-
-                                    @Override
-                                    public void onClick(DialogInterface dialog,
-                                                        int which) {
-                                        dialog.dismiss();
-                                    }
-                                });
-                        AlertDialog dialog = builder.create();
-                        dialog.setCancelable(true);
-                        dialog.show();
-
+                        String helpText = HelpDialog.getHelpForForm((LinearLayout) this.findViewById(R.id.case_symptoms_form));
+                        helpDialog.setMessage(Html.fromHtml(helpText).toString());
                         break;
                 }
 
+                helpDialog.show();
 
                 return true;
 

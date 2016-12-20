@@ -98,15 +98,10 @@ public class VisitEditActivity extends AbstractEditActivity {
 
             // Help button
             case R.id.action_help:
-
                 HelpDialog helpDialog = new HelpDialog(this);
 
                 switch(tab) {
-                    case VISIT_DATA:
-                        break;
-
                     case SYMPTOMS:
-                        // TODO: check case_symptoms_form vs case_symptoms_fragment_layout, seems we need a logic that discover the dynamic content of fields here too
                         String helpText = HelpDialog.getHelpForForm((LinearLayout) this.findViewById(R.id.case_symptoms_form));
                         helpDialog.setMessage(Html.fromHtml(helpText).toString());
                         break;
