@@ -1,6 +1,7 @@
 package de.symeda.sormas.app.task;
 
 import android.os.AsyncTask;
+import android.support.v4.widget.SwipeRefreshLayout;
 
 import java.util.List;
 
@@ -50,12 +51,15 @@ public class SyncVisitsTask extends AsyncTask<Void, Void, Void> {
         return null;
     }
 
-    public static void syncVisits(final Callback callback) {
+    public static void syncVisits(final Callback callback, final SwipeRefreshLayout refreshLayout) {
         new SyncVisitsTask() {
             @Override
             protected void onPostExecute(Void aVoid) {
                 if (callback != null) {
                     callback.call();
+                }
+                if(refreshLayout != null) {
+                    refreshLayout.setRefreshing(false);
                 }
             }
         }.execute();
