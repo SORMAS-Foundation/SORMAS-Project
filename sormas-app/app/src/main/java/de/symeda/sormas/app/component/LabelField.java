@@ -6,6 +6,7 @@ import android.databinding.InverseBindingAdapter;
 import android.databinding.InverseBindingListener;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
@@ -50,16 +51,11 @@ public class LabelField extends PropertyField<String> {
         initializeViews(context);
     }
 
-    public void appendText(String text) {
-        appendedText = text;
-    }
-
-    public void underline() {
+    public void makeLink(OnClickListener listener) {
+        appendedText = "\u279D";
         textContent.setPaintFlags(textContent.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
-    }
-
-    public void colorize(int color) {
-        textContent.setTextColor(color);
+        textContent.setTextColor(ContextCompat.getColor(getContext(), R.color.colorPrimary));
+        this.setOnClickListener(listener);
     }
 
     @Override

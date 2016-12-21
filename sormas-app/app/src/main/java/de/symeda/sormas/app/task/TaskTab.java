@@ -100,7 +100,7 @@ public class TaskTab extends FormTab {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        binding.taskCaze.setOnClickListener(new View.OnClickListener() {
+        binding.taskCaze.makeLink(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 final CaseDao caseDao = DatabaseHelper.getCaseDao();
@@ -108,8 +108,7 @@ public class TaskTab extends FormTab {
                 showCaseEditView(caze);
             }
         });
-
-        binding.taskContact.setOnClickListener(new View.OnClickListener() {
+        binding.taskContact.makeLink(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 final ContactDao contactDao = DatabaseHelper.getContactDao();
@@ -117,14 +116,6 @@ public class TaskTab extends FormTab {
                 showContactEditView(contact);
             }
         });
-
-        binding.taskCaze.appendText("\u279D");
-        binding.taskCaze.underline();
-        binding.taskCaze.colorize(ContextCompat.getColor(getContext(), R.color.colorPrimary));
-
-        binding.taskContact.appendText("\u279D");
-        binding.taskContact.underline();
-        binding.taskContact.colorize(ContextCompat.getColor(getContext(), R.color.colorPrimary));
     }
 
     public void showCaseEditView(Case caze) {
