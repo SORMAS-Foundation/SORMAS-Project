@@ -128,13 +128,8 @@ public final class FieldHelper {
 	 * @param sourceValues
 	 */
 	public static void setRequiredWhen(FieldGroup fieldGroup, Object targetPropertyId,
-			List<String> sourcePropertyIds, List<Object> sourceValues, Object textFieldPropertyId) {
-		
-		final Field textField = fieldGroup.getField(textFieldPropertyId);
-		if(textField instanceof AbstractField<?>) {
-			((AbstractField) textField).setImmediate(true);
-		}
-		
+			List<String> sourcePropertyIds, List<Object> sourceValues) {
+				
 		for(Object sourcePropertyId : sourcePropertyIds) {
 			Field sourceField = fieldGroup.getField(sourcePropertyId);
 			if(sourceField instanceof AbstractField<?>) {
@@ -144,18 +139,14 @@ public final class FieldHelper {
 		
 		// Initialize
 		final Field targetField = fieldGroup.getField(targetPropertyId);
-		if(doesAnyContainValue(fieldGroup, sourcePropertyIds, sourceValues) || 
-				!isEmptyTextField(fieldGroup, textFieldPropertyId)) {
-			targetField.setRequired(true);
-		} else {
-			targetField.setRequired(false);
-		}
+		targetField.setRequired(isAnySymptomSetToYes(fieldGroup, sourcePropertyIds, sourceValues));
 		
 		// Add listeners
-		registerUpdateRequiredOnValueChange(textField, targetField, fieldGroup, sourcePropertyIds, sourceValues, textFieldPropertyId);
 		for(Object sourcePropertyId : sourcePropertyIds) {
 			Field sourceField = fieldGroup.getField(sourcePropertyId);
-			registerUpdateRequiredOnValueChange(sourceField, targetField, fieldGroup, sourcePropertyIds, sourceValues, textFieldPropertyId);
+			sourceField.addValueChangeListener(event -> {
+				targetField.setRequired(isAnySymptomSetToYes(fieldGroup, sourcePropertyIds, sourceValues));
+			});
 		}
 		
 	}
@@ -169,7 +160,7 @@ public final class FieldHelper {
 	 * @param sourceValues
 	 * @return
 	 */
-	private static boolean doesAnyContainValue(FieldGroup fieldGroup, List<String> sourcePropertyIds, 
+	private static boolean isAnySymptomSetToYes(FieldGroup fieldGroup, List<String> sourcePropertyIds, 
 			List<Object> sourceValues) {
 		
 		for(Object sourcePropertyId : sourcePropertyIds) {
@@ -180,25 +171,6 @@ public final class FieldHelper {
 		}
 		
 		return false;
-	}
-	
-	private static boolean isEmptyTextField(FieldGroup fieldGroup, Object sourcePropertyId) {
-		TextField sourceField = (TextField)fieldGroup.getField(sourcePropertyId);
-		return (sourceField.getValue() == null || sourceField.getValue().isEmpty());
-	}
-	
-	private static void registerUpdateRequiredOnValueChange(Field field, Field targetField, FieldGroup fieldGroup, 
-			List<String> sourcePropertyIds, List<Object> sourceValues, Object textFieldPropertyId) {
-		
-		field.addValueChangeListener(event -> {
-			if(doesAnyContainValue(fieldGroup, sourcePropertyIds, sourceValues) || 
-					!isEmptyTextField(fieldGroup, textFieldPropertyId)) {
-				targetField.setRequired(true);
-			} else {
-				targetField.setRequired(false);
-			}
-		});
-		
 	}
 
 	public static void updateItems(AbstractSelect select, List<?> items) {

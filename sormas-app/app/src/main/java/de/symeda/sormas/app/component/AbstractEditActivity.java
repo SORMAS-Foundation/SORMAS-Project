@@ -99,17 +99,16 @@ public abstract class AbstractEditActivity extends AppCompatActivity {
                 symptoms.getSeizures(), symptoms.getAlteredConsciousness(), symptoms.getConjunctivitis(),
                 symptoms.getEyePainLightSensitive(), symptoms.getKopliksSpots(), symptoms.getThrobocytopenia(),
                 symptoms.getOtitisMedia(), symptoms.getHearingloss(), symptoms.getDehydration(), symptoms.getAnorexiaAppetiteLoss(),
-                symptoms.getRefusalFeedorDrink(), symptoms.getJointPain(), symptoms.getShock(), symptoms.getHiccups());
+                symptoms.getRefusalFeedorDrink(), symptoms.getJointPain(), symptoms.getShock(), symptoms.getHiccups(),
+                symptoms.getOtherNonHemorrhagicSymptoms());
 
-        boolean symptomSetToYes = symptoms.getOtherNonHemorrhagicSymptomsText()!=null && !symptoms.getOtherNonHemorrhagicSymptomsText().isEmpty();
         for(SymptomState symptomState : symptomStates) {
             if(symptomState == SymptomState.YES) {
-                symptomSetToYes = true;
-                break;
+                return true;
             }
         }
 
-        return symptomSetToYes;
+        return false;
     }
 
 }

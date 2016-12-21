@@ -128,12 +128,10 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 				SymptomsDto.SEIZURES, SymptomsDto.ALTERED_CONSCIOUSNESS, SymptomsDto.CONJUNCTIVITIS, SymptomsDto.EYE_PAIN_LIGHT_SENSITIVE, 
 				SymptomsDto.KOPLIKS_SPOTS, SymptomsDto.THROBOCYTOPENIA, SymptomsDto.OTITIS_MEDIA, SymptomsDto.HEARINGLOSS, SymptomsDto.DEHYDRATION,
 				SymptomsDto.ANOREXIA_APPETITE_LOSS, SymptomsDto.REFUSAL_FEEDOR_DRINK, SymptomsDto.JOINT_PAIN, SymptomsDto.SHOCK, 
-				SymptomsDto.HICCUPS, SymptomsDto.UNEXPLAINED_BLEEDING);
+				SymptomsDto.HICCUPS, SymptomsDto.UNEXPLAINED_BLEEDING, SymptomsDto.OTHER_NON_HEMORRHAGIC_SYMPTOMS);
 		
-		FieldHelper.setRequiredWhen(getFieldGroup(), SymptomsDto.ONSET_DATE, symptomFieldIds, Arrays.asList(SymptomState.YES), 
-				SymptomsDto.OTHER_NON_HEMORRHAGIC_SYMPTOMS_TEXT);
-		FieldHelper.setRequiredWhen(getFieldGroup(), SymptomsDto.ONSET_SYMPTOM, symptomFieldIds, Arrays.asList(SymptomState.YES), 
-				SymptomsDto.OTHER_NON_HEMORRHAGIC_SYMPTOMS_TEXT);
+		FieldHelper.setRequiredWhen(getFieldGroup(), SymptomsDto.ONSET_DATE, symptomFieldIds, Arrays.asList(SymptomState.YES));
+		FieldHelper.setRequiredWhen(getFieldGroup(), SymptomsDto.ONSET_SYMPTOM, symptomFieldIds, Arrays.asList(SymptomState.YES));
 		
 		
 		// setReadOnly(true, );

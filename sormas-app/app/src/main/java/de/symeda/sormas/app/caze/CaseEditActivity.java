@@ -181,11 +181,11 @@ public class CaseEditActivity extends AbstractEditActivity {
                         Symptoms symptoms = (Symptoms) adapter.getData(CaseEditTabs.SYMPTOMS.ordinal());
 
                         boolean anySymptomSetToYes = isAnySymptomSetToYes(symptoms);
-                        // data is valid if at least one symptom/the text for other non hemorrhagic symptoms is
-                        // set to yes AND the onset date and onset symptom string have been set or no symptom is
-                        // set to YES and the text is not filled in
+
+                        // data is valid if at least one symptom is set to yes AND the onset date
+                        // and onset symptom string have been set or no symptom is set to YES
                         boolean validData = !anySymptomSetToYes || ((symptoms.getOnsetDate() != null &&
-                                !symptoms.getOnsetSymptom().isEmpty()));
+                                symptoms.getOnsetSymptom() != null && !symptoms.getOnsetSymptom().isEmpty()));
                         if(validData) {
                             if (symptoms != null) {
                                 symptomsDao.save(symptoms);
@@ -198,7 +198,7 @@ public class CaseEditActivity extends AbstractEditActivity {
                             SyncCasesTask.syncCases(getSupportFragmentManager());
                             break;
                         } else {
-                            Toast.makeText(this, "Please specify an onset date and an onset symptom.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(this, "Please specify an onset date and an onset symptom.", Toast.LENGTH_LONG).show();
                             return true;
                         }
                 }

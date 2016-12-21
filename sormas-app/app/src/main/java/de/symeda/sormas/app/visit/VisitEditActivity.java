@@ -117,46 +117,55 @@ public class VisitEditActivity extends AbstractEditActivity {
                 Visit visit = (Visit) adapter.getData(VisitEditTabs.VISIT_DATA.ordinal());
                 Symptoms symptoms = (Symptoms)adapter.getData(VisitEditTabs.SYMPTOMS.ordinal());
 
-                if(symptoms!=null) {
-                    visit.setSymptoms(symptoms);
-                    DatabaseHelper.getSymptomsDao().save(symptoms);
+                boolean anySymptomSetToYes = isAnySymptomSetToYes(symptoms);
+
+                boolean validData = !anySymptomSetToYes || ((symptoms.getOnsetDate() != null &&
+                        symptoms.getOnsetSymptom() != null && !symptoms.getOnsetSymptom().isEmpty()));
+                if(validData) {
+                    if (symptoms != null) {
+                        visit.setSymptoms(symptoms);
+                        DatabaseHelper.getSymptomsDao().save(symptoms);
+                    }
+
+                    DatabaseHelper.getVisitDao().save(visit);
+                    Toast.makeText(this, "visit " + DataHelper.getShortUuid(visit.getUuid()) + " saved", Toast.LENGTH_SHORT).show();
+
+
+                    //                switch(tab) {
+                    //                    // contact data tab
+                    //                    case VISIT_DATA:
+                    //                        Visit visit = (Visit) adapter.getData(VisitEditTabs.VISIT_DATA.ordinal());
+                    //
+                    //                        DatabaseHelper.getVisitDao().save(visit);
+                    //                        Toast.makeText(this, "visit "+ DataHelper.getShortUuid(visit.getUuid()) +" saved", Toast.LENGTH_SHORT).show();
+                    //                        break;
+                    //
+                    //                    case SYMPTOMS:
+                    //                        SymptomsDao symptomsDao = DatabaseHelper.getSymptomsDao();
+                    //
+                    //                        Symptoms symptoms = (Symptoms)adapter.getData(VisitEditTabs.SYMPTOMS.ordinal());
+                    //
+                    //                        if(symptoms!=null) {
+                    //                            symptomsDao.save(symptoms);
+                    //                        }
+                    //
+                    //                        Toast.makeText(this, "symptoms saved", Toast.LENGTH_SHORT).show();
+                    //
+                    //                        new SyncVisitsTask().execute();
+                    //                        break;
+                    //
+                    //                }
+
+                    //                onResume();
+                    //                pager.setCurrentItem(currentTab);
+
+                    finish();
+
+                    return true;
+                } else {
+                    Toast.makeText(this, "Please specify an onset date and an onset symptom.", Toast.LENGTH_LONG).show();
+                    return true;
                 }
-
-                DatabaseHelper.getVisitDao().save(visit);
-                Toast.makeText(this, "visit "+ DataHelper.getShortUuid(visit.getUuid()) +" saved", Toast.LENGTH_SHORT).show();
-
-
-//                switch(tab) {
-//                    // contact data tab
-//                    case VISIT_DATA:
-//                        Visit visit = (Visit) adapter.getData(VisitEditTabs.VISIT_DATA.ordinal());
-//
-//                        DatabaseHelper.getVisitDao().save(visit);
-//                        Toast.makeText(this, "visit "+ DataHelper.getShortUuid(visit.getUuid()) +" saved", Toast.LENGTH_SHORT).show();
-//                        break;
-//
-//                    case SYMPTOMS:
-//                        SymptomsDao symptomsDao = DatabaseHelper.getSymptomsDao();
-//
-//                        Symptoms symptoms = (Symptoms)adapter.getData(VisitEditTabs.SYMPTOMS.ordinal());
-//
-//                        if(symptoms!=null) {
-//                            symptomsDao.save(symptoms);
-//                        }
-//
-//                        Toast.makeText(this, "symptoms saved", Toast.LENGTH_SHORT).show();
-//
-//                        new SyncVisitsTask().execute();
-//                        break;
-//
-//                }
-
-//                onResume();
-//                pager.setCurrentItem(currentTab);
-
-                finish();
-
-                return true;
 
         }
         return super.onOptionsItemSelected(item);
