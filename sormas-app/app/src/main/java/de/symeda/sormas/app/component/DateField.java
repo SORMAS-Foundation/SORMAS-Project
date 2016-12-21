@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.component;
 
+import android.app.Activity;
 import android.content.Context;
 import android.databinding.BindingAdapter;
 import android.databinding.InverseBindingAdapter;
@@ -11,6 +12,7 @@ import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -118,6 +120,8 @@ public class DateField extends PropertyField<Date> implements DateFieldInterface
             public void onFocusChange(View v, boolean hasFocus) {
                 if (hasFocus) {
                     tab.showDateFragment(dateField);
+                    InputMethodManager inputMethodManager = (InputMethodManager) getContext().getSystemService(Activity.INPUT_METHOD_SERVICE);
+                    inputMethodManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
                 }
             }
         });

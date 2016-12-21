@@ -21,6 +21,7 @@
             android:layout_height="wrap_content"
             android:paddingTop="@dimen/field_padding"
             android:paddingBottom="@dimen/field_padding"
+            android:nextFocusForward="@+id/location_details"
             android:value="@={location.address}"/>
 
         <de.symeda.sormas.app.component.TextField
@@ -29,6 +30,7 @@
             android:layout_height="wrap_content"
             android:paddingTop="@dimen/field_padding"
             android:paddingBottom="@dimen/field_padding"
+            android:nextFocusForward="@+id/location_region"
             android:value="@={location.details}"/>
 
         <LinearLayout
@@ -43,6 +45,7 @@
                 android:layout_weight="0.5"
                 android:paddingTop="@dimen/field_padding"
                 android:paddingBottom="@dimen/field_padding"
+                android:nextFocusForward="@+id/location_district"
                 android:value="@={location.region}"/>
 
             <de.symeda.sormas.app.component.SpinnerField
@@ -52,6 +55,7 @@
                 android:layout_weight="0.5"
                 android:paddingTop="@dimen/field_padding"
                 android:paddingBottom="@dimen/field_padding"
+                android:nextFocusForward="@+id/location_community"
                 android:value="@={location.district}"/>
 
         </LinearLayout>
@@ -68,6 +72,7 @@
                 android:layout_weight="0.5"
                 android:paddingTop="@dimen/field_padding"
                 android:paddingBottom="@dimen/field_padding"
+                android:nextFocusForward="@+id/location_city"
                 android:value="@={location.community}"/>
 
             <de.symeda.sormas.app.component.TextField

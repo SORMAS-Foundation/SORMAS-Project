@@ -163,6 +163,18 @@ public class SpinnerField extends PropertyField<Object> implements SpinnerFieldI
             }
         });
         spinnerElement.setOnItemSelectedListener(spinnerFieldListener);
+        spinnerElement.setFocusable(true);
+        spinnerElement.setFocusableInTouchMode(true);
+        spinnerElement.setOnFocusChangeListener(new OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if(hasFocus) {
+                    InputMethodManager inputMethodManager = (InputMethodManager) getContext().getSystemService(Activity.INPUT_METHOD_SERVICE);
+                    inputMethodManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                    spinnerElement.performClick();
+                }
+            }
+        });
         spinnerCaption = (TextView) this.findViewById(R.id.spinner_caption);
         spinnerCaption.setText(getCaption());
     }

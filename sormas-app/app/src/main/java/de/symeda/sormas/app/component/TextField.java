@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.component;
 
+import android.app.Activity;
 import android.content.Context;
 import android.databinding.BindingAdapter;
 import android.databinding.InverseBindingAdapter;
@@ -10,8 +11,10 @@ import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -90,6 +93,10 @@ public class TextField extends PropertyField<String> implements TextFieldInterfa
         textContent.setInputType(inputType);
     }
 
+    public void setCursorToRight() {
+        textContent.setSelection(textContent.getText().length());
+    }
+
     /**
      * Inflates the views in the layout.
      *
@@ -119,6 +126,7 @@ public class TextField extends PropertyField<String> implements TextFieldInterfa
                 onValueChanged();
             }
         });
+        setOnEditorActionListener();
         textCaption = (TextView) this.findViewById(R.id.text_caption);
         textCaption.setText(getCaption());
     }
@@ -144,4 +152,38 @@ public class TextField extends PropertyField<String> implements TextFieldInterfa
         }
     }
 
+    /**
+     * Handles hiding of the soft keyboard when custom fields are selected and management of
+     * the next button
+     */
+    private void setOnEditorActionListener() {
+        textContent.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_NEXT || actionId == EditorInfo.IME_ACTION_GO ||
+                        (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
+                    int id = getNextFocusForwardId();
+                    if(id != View.NO_ID) {
+                        View nextView = v.getRootView().findViewById(id);
+                        if(nextView.getVisibility() == VISIBLE) {
+                            nextView.requestFocus();
+                            if (!(nextView instanceof TextField)) {
+                                hideKeyboard(v);
+                            } else {
+                                ((TextField) nextView).setCursorToRight();
+                            }
+                        } else {
+                            hideKeyboard(v);
+                        }
+                    } else {
+                        hideKeyboard(v);
+                    }
+                    return true;
+                } else {
+                    hideKeyboard(v);
+                    return false;
+                }
+            }
+        });
+    }
 }

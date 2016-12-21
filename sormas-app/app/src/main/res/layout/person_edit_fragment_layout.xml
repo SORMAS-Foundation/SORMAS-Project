@@ -38,6 +38,7 @@
                 android:layout_height="wrap_content"
                 android:paddingTop="@dimen/field_padding"
                 android:paddingBottom="@dimen/field_padding"
+                android:nextFocusForward="@+id/person_lastName"
                 android:value="@={person.firstName}"/>
 
             <de.symeda.sormas.app.component.TextField
@@ -46,6 +47,7 @@
                 android:layout_height="wrap_content"
                 android:paddingTop="@dimen/field_padding"
                 android:paddingBottom="@dimen/field_padding"
+                android:nextFocusForward="@+id/person_sex"
                 android:value="@={person.lastName}"/>
 
             <de.symeda.sormas.app.component.SpinnerField
@@ -55,6 +57,7 @@
                 android:layout_weight="0.5"
                 android:paddingTop="@dimen/field_padding"
                 android:paddingBottom="@dimen/field_padding"
+                android:nextFocusForward="@+id/person_birthdateDD"
                 android:value="@={person.sex}"/>
 
             <TextView
@@ -77,6 +80,7 @@
                     android:layout_weight="0.33"
                     android:paddingTop="@dimen/field_padding"
                     android:paddingBottom="@dimen/field_padding"
+                    android:nextFocusForward="@+id/person_birthdateMM"
                     android:value="@={person.birthdateDD}"/>
 
                 <de.symeda.sormas.app.component.SpinnerField
@@ -86,6 +90,7 @@
                     android:layout_weight="0.33"
                     android:paddingTop="@dimen/field_padding"
                     android:paddingBottom="@dimen/field_padding"
+                    android:nextFocusForward="@+id/person_birthdateYYYY"
                     android:value="@={person.birthdateMM}"/>
 
                 <de.symeda.sormas.app.component.SpinnerField
@@ -95,6 +100,7 @@
                     android:layout_weight="0.33"
                     android:paddingTop="@dimen/field_padding"
                     android:paddingBottom="@dimen/field_padding"
+                    android:nextFocusForward="@+id/person_approximate1Age"
                     android:value="@={person.birthdateYYYY}"/>
 
             </LinearLayout>
@@ -111,6 +117,7 @@
                     android:layout_weight="0.5"
                     android:paddingTop="@dimen/field_padding"
                     android:paddingBottom="@dimen/field_padding"
+                    android:nextFocusForward="@+id/person_approximateAgeType"
                     app:integer="@={person.approximateAge}"/>
 
                 <de.symeda.sormas.app.component.SpinnerField
@@ -120,6 +127,7 @@
                     android:layout_weight="0.5"
                     android:paddingTop="@dimen/field_padding"
                     android:paddingBottom="@dimen/field_padding"
+                    android:nextFocusForward="@+id/person_presentCondition"
                     android:value="@={person.approximateAgeType}"/>
 
             </LinearLayout>
@@ -136,6 +144,7 @@
                     android:layout_weight="0.5"
                     android:paddingTop="@dimen/field_padding"
                     android:paddingBottom="@dimen/field_padding"
+                    android:nextFocusForward="@+id/person_phone"
                     android:value="@={person.presentCondition}"/>
 
                 <LinearLayout
@@ -171,6 +180,7 @@
                     android:layout_weight="0.5"
                     android:paddingTop="@dimen/field_padding"
                     android:paddingBottom="@dimen/field_padding"
+                    android:nextFocusForward="@+id/person_phoneOwner"
                     android:value="@={person.phone}"/>
 
                 <de.symeda.sormas.app.component.TextField
@@ -180,6 +190,7 @@
                     android:layout_weight="0.5"
                     android:paddingTop="@dimen/field_padding"
                     android:paddingBottom="@dimen/field_padding"
+                    android:nextFocusForward="@+id/person_occupationType1"
                     android:value="@={person.phoneOwner}"/>
 
             </LinearLayout>
@@ -238,38 +249,25 @@
                 android:layout_height="wrap_content"
                 android:paddingTop="@dimen/field_padding"
                 android:paddingBottom="@dimen/field_padding"
+                android:nextFocusForward="@+id/person_occupationDetails"
                 android:value="@={person.occupationType}"/>
 
-            <LinearLayout android:orientation="vertical"
+            <de.symeda.sormas.app.component.TextField
+                android:id="@+id/person_occupationDetails"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingTop="@dimen/field_padding"
                 android:paddingBottom="@dimen/field_padding"
-                android:id="@+id/form_cp_occupation_details_view" >
+                android:nextFocusForward="@+id/person_occupationFacility"
+                android:value="@={person.occupationDetails}"/>
 
-                <de.symeda.sormas.app.component.TextField
-                    android:id="@+id/person_occupationDetails"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:value="@={person.occupationDetails}"/>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:orientation="horizontal"
+            <de.symeda.sormas.app.component.SpinnerField
+                android:id="@+id/person_occupationFacility"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingTop="@dimen/field_padding"
                 android:paddingBottom="@dimen/field_padding"
-                android:id="@+id/form_cp_occupation_facility_view">
-
-                <de.symeda.sormas.app.component.SpinnerField
-                    android:id="@+id/person_occupationFacility"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:value="@={person.occupationFacility}"/>
-
-            </LinearLayout>
+                android:value="@={person.occupationFacility}"/>
 
         </LinearLayout>
     </ScrollView>

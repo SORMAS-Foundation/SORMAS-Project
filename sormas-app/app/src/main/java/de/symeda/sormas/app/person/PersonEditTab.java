@@ -4,11 +4,14 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.InputType;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -131,20 +134,19 @@ public class PersonEditTab extends FormTab {
 
         // ================ Occupation ================
 
-        final LinearLayout occupationDetailsLayout = binding.formCpOccupationDetailsView;
         final TextField occupationDetails = binding.personOccupationDetails;
-        final LinearLayout occupationFacilityLayout = binding.formCpOccupationFacilityView;
+        final LinearLayout occupationFacility = binding.personOccupationFacility;
         FieldHelper.initSpinnerField(binding.personOccupationType1, OccupationType.class, new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 Item item = (Item)parent.getItemAtPosition(position);
-                updateVisibilityOccupationFields(item, occupationDetailsLayout, occupationFacilityLayout);
+                updateVisibilityOccupationFields(item, occupationDetails, occupationFacility);
                 updateHeadlineOccupationDetailsFields(item, occupationDetails);
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                deactivateField(occupationDetailsLayout);
+                deactivateField(occupationDetails);
             }
         });
 
@@ -184,28 +186,28 @@ public class PersonEditTab extends FormTab {
         }
     }
 
-    private void updateVisibilityOccupationFields(Item item, LinearLayout occupationDetailsLayout, LinearLayout occupationFacilityLayout) {
+    private void updateVisibilityOccupationFields(Item item, View occupationDetails, View occupationFacility) {
         if(item.getValue()!=null) {
             switch ((OccupationType) item.getValue()) {
                 case BUSINESSMAN_WOMAN:
                 case TRANSPORTER:
                 case OTHER:
-                    occupationDetailsLayout.setVisibility(View.VISIBLE);
-                    occupationFacilityLayout.setVisibility(View.INVISIBLE);
+                    occupationDetails.setVisibility(View.VISIBLE);
+                    occupationFacility.setVisibility(View.INVISIBLE);
                     break;
                 case HEALTHCARE_WORKER:
-                    occupationDetailsLayout.setVisibility(View.VISIBLE);
-                    occupationFacilityLayout.setVisibility(View.VISIBLE);
+                    occupationDetails.setVisibility(View.VISIBLE);
+                    occupationFacility.setVisibility(View.VISIBLE);
                     break;
                 default:
-                    occupationDetailsLayout.setVisibility(View.INVISIBLE);
-                    occupationFacilityLayout.setVisibility(View.INVISIBLE);
+                    occupationDetails.setVisibility(View.INVISIBLE);
+                    occupationFacility.setVisibility(View.INVISIBLE);
                     break;
             }
         }
         else {
-            occupationDetailsLayout.setVisibility(View.INVISIBLE);
-            occupationFacilityLayout.setVisibility(View.INVISIBLE);
+            occupationDetails.setVisibility(View.INVISIBLE);
+            occupationFacility.setVisibility(View.INVISIBLE);
         }
     }
 

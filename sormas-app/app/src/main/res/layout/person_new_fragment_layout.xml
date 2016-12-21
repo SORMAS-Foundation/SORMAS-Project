@@ -20,6 +20,7 @@
             android:layout_height="wrap_content"
             android:paddingTop="@dimen/field_padding"
             android:paddingBottom="@dimen/field_padding"
+            android:nextFocusForward="@+id/person_lastName"
             android:value="@={person.firstName}"/>
 
         <de.symeda.sormas.app.component.TextField

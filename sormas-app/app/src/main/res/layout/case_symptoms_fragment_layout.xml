@@ -204,6 +204,7 @@
                     android:id="@+id/symptoms_other1HemorrhagicSymptomsText"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:nextFocusForward="@+id/symptoms_skinRash"
                     android:value="@={symptoms.otherHemorrhagicSymptomsText}"/>
 
             </LinearLayout>
@@ -360,6 +361,7 @@
                     android:id="@+id/symptoms_other1NonHemorrhagicSymptomsText"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:nextFocusForward="@+id/symptoms_symptomsComments"
                     android:value="@={symptoms.otherNonHemorrhagicSymptomsText}"/>
 
             </LinearLayout>
@@ -372,7 +374,10 @@
                 <de.symeda.sormas.app.component.TextField
                     android:id="@+id/symptoms_symptomsComments"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="@dimen/field_padding"
+                    android:paddingBottom="@dimen/field_padding"
+                    android:nextFocusForward="@+id/symptoms_onsetDate"
                     android:value="@={symptoms.symptomsComments}"/>
 
                 <de.symeda.sormas.app.component.DateField
@@ -381,6 +386,7 @@
                     android:layout_height="wrap_content"
                     android:paddingTop="@dimen/field_padding"
                     android:paddingBottom="@dimen/field_padding"
+                    android:nextFocusForward="@+id/symptoms_onsetSymptom1"
                     android:value="@={symptoms.onsetDate}"/>
 
                 <de.symeda.sormas.app.component.TextField
