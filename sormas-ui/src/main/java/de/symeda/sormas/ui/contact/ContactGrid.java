@@ -16,7 +16,6 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactClassification;
-import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
@@ -60,7 +59,7 @@ public class ContactGrid extends Grid {
 			public String getValue(Item item, Object itemId, Object propertyId) {
 				ContactIndexDto contactIndexDto = (ContactIndexDto)itemId;
 				return String.format(I18nProperties.getPrefixFieldCaption(contactIndexDto.I18N_PREFIX, NUMBER_OF_PENDING_TASKS + "Format"), 
-						FacadeProvider.getTaskFacade().getAllPendingForContact(contactIndexDto).size());
+						FacadeProvider.getTaskFacade().getPendingTaskCountByContact(contactIndexDto));
 			}
 			@Override
 			public Class<String> getType() {

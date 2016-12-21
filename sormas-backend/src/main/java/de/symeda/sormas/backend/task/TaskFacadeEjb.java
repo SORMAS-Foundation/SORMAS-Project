@@ -159,7 +159,7 @@ public class TaskFacadeEjb implements TaskFacade {
 	}
 	
 	@Override
-	public List<TaskDto> getAllPendingForCase(CaseDataDto caseDataDto) {
+	public List<TaskDto> getAllPendingByCase(CaseDataDto caseDataDto) {
 		if(caseDataDto == null) {
 			return Collections.emptyList();
 		}
@@ -177,7 +177,7 @@ public class TaskFacadeEjb implements TaskFacade {
 	}
 	
 	@Override
-	public List<TaskDto> getAllPendingForContact(ContactIndexDto contactDto) {
+	public List<TaskDto> getAllPendingByContact(ContactIndexDto contactDto) {
 		if(contactDto == null) {
 			return Collections.emptyList();
 		}
@@ -192,6 +192,36 @@ public class TaskFacadeEjb implements TaskFacade {
 				.stream()
 				.map(c -> toDto(c))
 				.collect(Collectors.toList());
+	}
+	
+	@Override
+	public long getPendingTaskCountByCase(CaseDataDto caseDataDto) {
+		if(caseDataDto == null) {
+			return 0;
+		}
+		
+		Case caze = caseService.getByUuid(caseDataDto.getUuid());
+		
+		if(caze == null) {
+			return 0;
+		}
+		
+		return service.getCount(new TaskCriteria().cazeEquals(caze).taskStatusEquals(TaskStatus.PENDING));
+	}
+	
+	@Override
+	public long getPendingTaskCountByContact(ContactIndexDto contactDto) {
+		if(contactDto == null) {
+			return 0;
+		}
+		
+		Contact contact = contactService.getByUuid(contactDto.getUuid());
+		
+		if(contact == null) {
+			return 0;
+		}
+		
+		return service.getCount(new TaskCriteria().contactEquals(contact).taskStatusEquals(TaskStatus.PENDING));
 	}
 	
 	@Override

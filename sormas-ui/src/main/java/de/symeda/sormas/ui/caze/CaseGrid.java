@@ -18,7 +18,6 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
-import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -44,7 +43,7 @@ public class CaseGrid extends Grid {
 			public String getValue(Item item, Object itemId, Object propertyId) {
 				CaseDataDto caseDataDto = (CaseDataDto)itemId;
 				return String.format(I18nProperties.getPrefixFieldCaption(caseDataDto.I18N_PREFIX, NUMBER_OF_PENDING_TASKS + "Format"), 
-						FacadeProvider.getTaskFacade().getAllPendingForCase(caseDataDto).size());
+						FacadeProvider.getTaskFacade().getPendingTaskCountByCase(caseDataDto));
 			}
 			@Override
 			public Class<String> getType() {

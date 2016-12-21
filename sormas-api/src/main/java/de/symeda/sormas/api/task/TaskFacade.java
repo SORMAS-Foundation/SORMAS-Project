@@ -15,9 +15,13 @@ public interface TaskFacade {
 	
 	List<TaskDto> getAllAfter(Date date, String userUuid);
 	
-	List<TaskDto> getAllPendingForCase(CaseDataDto caseDataDto);
+	List<TaskDto> getAllPendingByCase(CaseDataDto caseDataDto);
 
-	List<TaskDto> getAllPendingForContact(ContactIndexDto contactDto);
+	List<TaskDto> getAllPendingByContact(ContactIndexDto contactDto);
+	
+	long getPendingTaskCountByCase(CaseDataDto caseDataDto);
+	
+	long getPendingTaskCountByContact(ContactIndexDto contactDto);
 	
 	long getPendingTaskCount(String userUuid);
 
