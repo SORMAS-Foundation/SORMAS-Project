@@ -1,5 +1,7 @@
 package de.symeda.sormas.app.backend.visit;
 
+import android.support.annotation.NonNull;
+
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.RuntimeExceptionDao;
 import com.j256.ormlite.logger.Log;
@@ -17,6 +19,7 @@ import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.task.Task;
+import de.symeda.sormas.app.util.DataUtils;
 //import kotlin.NotImplementedError;
 
 public class VisitDao extends AbstractAdoDao<Visit> {
@@ -73,6 +76,23 @@ public class VisitDao extends AbstractAdoDao<Visit> {
             logger.log(LOG_LEVEL, e, "getByContact threw exception");
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * new visit is assigned to the contact's person and has the same disease as the contact's case
+     * @param contactUuid
+     * @return
+     * @throws IllegalAccessException
+     * @throws InstantiationException
+     */
+    @NonNull
+    public Visit getNewVisitForContact(String contactUuid) throws IllegalAccessException, InstantiationException {
+        Contact contact = DatabaseHelper.getContactDao().queryUuid(contactUuid);
+
+        Visit visit = DataUtils.createNew(Visit.class);
+        visit.setPerson(contact.getPerson());
+        visit.setDisease(contact.getCaze().getDisease());
+        return visit;
     }
 
 }

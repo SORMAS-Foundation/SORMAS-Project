@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.visit.Visit;
 import de.symeda.sormas.app.caze.SymptomsEditTab;
@@ -23,10 +24,9 @@ public class VisitEditPagerAdapter extends FragmentStatePagerAdapter {
 
 
     // Build a Constructor and assign the passed Values to appropriate values in the class
-    public VisitEditPagerAdapter(FragmentManager fm, String visitUuid) {
+    public VisitEditPagerAdapter(FragmentManager fm, Bundle visitBundle) {
         super(fm);
-        visitEditBundle = new Bundle();
-        visitEditBundle.putString(Visit.UUID, visitUuid);
+        this.visitEditBundle = visitBundle;
     }
 
     //This method return the fragment for the every position in the View Pager
@@ -45,9 +45,20 @@ public class VisitEditPagerAdapter extends FragmentStatePagerAdapter {
                 symptomsEditTab = new SymptomsEditTab();
 
                 Bundle symptomsEditBundle = new Bundle();
-                Visit visit = DatabaseHelper.getVisitDao().queryUuid(visitEditBundle.getString(Visit.UUID));
-                symptomsEditBundle.putString(Symptoms.UUID, visit.getSymptoms().getUuid());
-                symptomsEditBundle.putSerializable(Visit.DISEASE, visit.getDisease());
+                // create new symptoms for new visit
+                if(visitEditBundle.getBoolean(VisitEditDataTab.NEW_VISIT)) {
+                    String keyContactUuid = visitEditBundle.getString(VisitEditDataTab.KEY_CONTACT_UUID);
+                    Contact contact = DatabaseHelper.getContactDao().queryUuid(keyContactUuid);
+                    symptomsEditBundle.putSerializable(Visit.DISEASE, contact.getCaze().getDisease());
+                    symptomsEditBundle.putBoolean(SymptomsEditTab.NEW_SYMPTOMS, true);
+                }
+                // edit symptoms for given visit
+                else {
+                    String visitUuid = visitEditBundle.getString(Visit.UUID);
+                    Visit visit = DatabaseHelper.getVisitDao().queryUuid(visitUuid);
+                    symptomsEditBundle.putString(Symptoms.UUID, visit.getSymptoms().getUuid());
+                    symptomsEditBundle.putSerializable(Visit.DISEASE, visit.getDisease());
+                }
 
                 symptomsEditTab.setArguments(symptomsEditBundle);
                 frag = symptomsEditTab;

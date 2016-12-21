@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.app.R;
@@ -16,6 +17,9 @@ import de.symeda.sormas.app.databinding.VisitDataFragmentLayoutBinding;
 import de.symeda.sormas.app.util.FormTab;
 
 public class VisitEditDataTab extends FormTab {
+
+    public static final String KEY_CONTACT_UUID = "contactUuid";
+    public static final String NEW_VISIT = "newVisit";
 
     private VisitDataFragmentLayoutBinding binding;
 
@@ -30,13 +34,28 @@ public class VisitEditDataTab extends FormTab {
     @Override
     public void onResume() {
         super.onResume();
+        try {
+            Visit visit;
 
-        final String visitUuid = getArguments().getString(Visit.UUID);
-        final Visit visit = DatabaseHelper.getVisitDao().queryUuid(visitUuid);
-        binding.setVisit(visit);
+            // create a new visit from contact data
+            if(getArguments().getBoolean(NEW_VISIT)) {
+                String keyContactUuid = getArguments().getString(KEY_CONTACT_UUID);
+                visit = DatabaseHelper.getVisitDao().getNewVisitForContact(keyContactUuid);
+            }
+            // open the given visit
+            else {
+                final String visitUuid = getArguments().getString(Visit.UUID);
+                visit = DatabaseHelper.getVisitDao().queryUuid(visitUuid);
+            }
 
-        binding.visitVisitDateTime.initialize(this);
-        binding.visitVisitStatus.initialize(VisitStatus.class);
+            binding.setVisit(visit);
+
+            binding.visitVisitDateTime.initialize(this);
+            binding.visitVisitStatus.initialize(VisitStatus.class);
+        } catch (Exception e) {
+            Toast.makeText(getContext(), "Error while creating the visit. " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+        }
     }
 
     @Override

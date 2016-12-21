@@ -1,6 +1,7 @@
 package de.symeda.sormas.app.visit;
 
 import android.os.Bundle;
+import android.support.v4.app.NavUtils;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.view.Menu;
@@ -22,13 +23,13 @@ import de.symeda.sormas.app.task.SyncVisitsTask;
 
 public class VisitEditActivity extends AbstractEditActivity {
 
-    public static final String KEY_CASE_UUID = "visitUuid";
+    public static final String VISIT_UUID = "visitUuid";
     public static final String KEY_CONTACT_UUID = "contactUuid";
     public static final String KEY_PAGE = "page";
     public static final String KEY_PARENT_TASK_UUID = "taskUuid";
 
     private VisitEditPagerAdapter adapter;
-    private String visitUuid;
+//    private String visitUuid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,8 +50,8 @@ public class VisitEditActivity extends AbstractEditActivity {
         super.onResume();
 
         Bundle params = getIntent().getExtras();
-        visitUuid = params.getString(Visit.UUID);
-        adapter = new VisitEditPagerAdapter(getSupportFragmentManager(), visitUuid);
+//        visitUuid = params.getString(Visit.UUID);
+        adapter = new VisitEditPagerAdapter(getSupportFragmentManager(), params);
         createTabViews(adapter);
 
         if (params.containsKey(KEY_PAGE)) {
@@ -113,34 +114,47 @@ public class VisitEditActivity extends AbstractEditActivity {
 
             // Save button
             case R.id.action_save:
+                Visit visit = (Visit) adapter.getData(VisitEditTabs.VISIT_DATA.ordinal());
+                Symptoms symptoms = (Symptoms)adapter.getData(VisitEditTabs.SYMPTOMS.ordinal());
 
-                switch(tab) {
-                    // contact data tab
-                    case VISIT_DATA:
-                        Visit visit = (Visit) adapter.getData(VisitEditTabs.VISIT_DATA.ordinal());
-
-                        DatabaseHelper.getVisitDao().save(visit);
-                        Toast.makeText(this, "visit "+ DataHelper.getShortUuid(visit.getUuid()) +" saved", Toast.LENGTH_SHORT).show();
-                        break;
-
-                    case SYMPTOMS:
-                        SymptomsDao symptomsDao = DatabaseHelper.getSymptomsDao();
-
-                        Symptoms symptoms = (Symptoms)adapter.getData(VisitEditTabs.SYMPTOMS.ordinal());
-
-                        if(symptoms!=null) {
-                            symptomsDao.save(symptoms);
-                        }
-
-                        Toast.makeText(this, "symptoms saved", Toast.LENGTH_SHORT).show();
-
-                        new SyncVisitsTask().execute();
-                        break;
-
+                if(symptoms!=null) {
+                    visit.setSymptoms(symptoms);
+                    DatabaseHelper.getSymptomsDao().save(symptoms);
                 }
 
-                onResume();
-                pager.setCurrentItem(currentTab);
+                DatabaseHelper.getVisitDao().save(visit);
+                Toast.makeText(this, "visit "+ DataHelper.getShortUuid(visit.getUuid()) +" saved", Toast.LENGTH_SHORT).show();
+
+
+//                switch(tab) {
+//                    // contact data tab
+//                    case VISIT_DATA:
+//                        Visit visit = (Visit) adapter.getData(VisitEditTabs.VISIT_DATA.ordinal());
+//
+//                        DatabaseHelper.getVisitDao().save(visit);
+//                        Toast.makeText(this, "visit "+ DataHelper.getShortUuid(visit.getUuid()) +" saved", Toast.LENGTH_SHORT).show();
+//                        break;
+//
+//                    case SYMPTOMS:
+//                        SymptomsDao symptomsDao = DatabaseHelper.getSymptomsDao();
+//
+//                        Symptoms symptoms = (Symptoms)adapter.getData(VisitEditTabs.SYMPTOMS.ordinal());
+//
+//                        if(symptoms!=null) {
+//                            symptomsDao.save(symptoms);
+//                        }
+//
+//                        Toast.makeText(this, "symptoms saved", Toast.LENGTH_SHORT).show();
+//
+//                        new SyncVisitsTask().execute();
+//                        break;
+//
+//                }
+
+//                onResume();
+//                pager.setCurrentItem(currentTab);
+
+                finish();
 
                 return true;
 

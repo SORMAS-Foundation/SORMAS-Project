@@ -2,15 +2,18 @@ package de.symeda.sormas.app.contact;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.contact.ContactDao;
 import de.symeda.sormas.app.backend.location.LocationDao;
@@ -19,7 +22,9 @@ import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.backend.visit.Visit;
 import de.symeda.sormas.app.caze.CaseEditActivity;
 import de.symeda.sormas.app.component.AbstractEditActivity;
+import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.visit.VisitEditActivity;
+import de.symeda.sormas.app.visit.VisitEditDataTab;
 
 
 public class ContactEditActivity extends AbstractEditActivity {
@@ -28,6 +33,8 @@ public class ContactEditActivity extends AbstractEditActivity {
     public static final String KEY_CONTACT_UUID = "contactUuid";
     public static final String KEY_PAGE = "page";
     public static final String KEY_PARENT_TASK_UUID = "taskUuid";
+
+
 
     private ContactEditPagerAdapter adapter;
     private String caseUuid;
@@ -159,16 +166,25 @@ public class ContactEditActivity extends AbstractEditActivity {
 
             // Add button
             case R.id.action_add:
-
-//                Bundle visitBundle = new Bundle();
-//                visitBundle.putString(Visit.UUID, caseUuid);
-//                Intent intentVisitEdit = new Intent(this, VisitEditActivity.class);
-//                intentVisitEdit.putExtras(visitBundle);
-//                startActivity(intentVisitEdit);
+                switch(tab) {
+                    case VISITS:
+                        // only contact officer is allowd to create visits
+//                        if(UserRole.CONTACT_OFFICER.equals(ConfigProvider.getUser().getUserRole())) {
+                            Bundle visitBundle = new Bundle();
+                            visitBundle.putString(KEY_CONTACT_UUID, contactUuid);
+                            visitBundle.putBoolean(VisitEditDataTab.NEW_VISIT, true);
+                            Intent intentVisitEdit = new Intent(this, VisitEditActivity.class);
+                            intentVisitEdit.putExtras(visitBundle);
+                            startActivity(intentVisitEdit);
+//                        }
+                        break;
+                }
 
                 return true;
 
         }
         return super.onOptionsItemSelected(item);
     }
+
+
 }

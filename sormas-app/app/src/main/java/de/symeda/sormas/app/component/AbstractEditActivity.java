@@ -101,7 +101,7 @@ public abstract class AbstractEditActivity extends AppCompatActivity {
                 symptoms.getOtitisMedia(), symptoms.getHearingloss(), symptoms.getDehydration(), symptoms.getAnorexiaAppetiteLoss(),
                 symptoms.getRefusalFeedorDrink(), symptoms.getJointPain(), symptoms.getShock(), symptoms.getHiccups());
 
-        boolean symptomSetToYes = !symptoms.getOtherNonHemorrhagicSymptomsText().isEmpty();
+        boolean symptomSetToYes = symptoms.getOtherNonHemorrhagicSymptomsText()!=null && !symptoms.getOtherNonHemorrhagicSymptomsText().isEmpty();
         for(SymptomState symptomState : symptomStates) {
             if(symptomState == SymptomState.YES) {
                 symptomSetToYes = true;

@@ -25,6 +25,7 @@ import de.symeda.sormas.app.component.FieldHelper;
 import de.symeda.sormas.app.component.PropertyField;
 import de.symeda.sormas.app.component.SymptomStateField;
 import de.symeda.sormas.app.databinding.CaseSymptomsFragmentLayoutBinding;
+import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.FormTab;
 import de.symeda.sormas.app.util.Item;
 
@@ -35,6 +36,9 @@ import de.symeda.sormas.app.util.Item;
  * disease as serialized enum
  */
 public class SymptomsEditTab extends FormTab {
+
+    public static final String NEW_SYMPTOMS = "newSymptoms";
+
 
     private CaseSymptomsFragmentLayoutBinding binding;
 
@@ -50,53 +54,66 @@ public class SymptomsEditTab extends FormTab {
     public void onResume() {
         super.onResume();
 
-        final String symptomsUuid = getArguments().getString(Symptoms.UUID);
-        final Disease disease = (Disease) getArguments().getSerializable(Case.DISEASE);
+        try {
+            final Disease disease = (Disease) getArguments().getSerializable(Case.DISEASE);
 
+            Symptoms symptoms;
+            // create a new visit from contact data
+            if(getArguments().getBoolean(NEW_SYMPTOMS)) {
+                symptoms = DataUtils.createNew(Symptoms.class);
+            }
+            // open the given visit
+            else {
+                String symptomsUuid = getArguments().getString(Symptoms.UUID);
+                symptoms = DatabaseHelper.getSymptomsDao().queryUuid(symptomsUuid);
+            }
 
-        Symptoms symptoms = DatabaseHelper.getSymptomsDao().queryUuid(symptomsUuid);
-        binding.setSymptoms(symptoms);
+            binding.setSymptoms(symptoms);
 
-        binding.symptomsOnsetDate.initialize(this);
+            binding.symptomsOnsetDate.initialize(this);
 
-        List<Item> temperature = new ArrayList<>();
-        temperature.add(new Item("",null));
-        for (Float temperatureValue : SymptomsHelper.getTemperatureValues()) {
-            temperature.add(new Item(SymptomsHelper.getTemperatureString(temperatureValue),temperatureValue));
+            List<Item> temperature = new ArrayList<>();
+            temperature.add(new Item("",null));
+            for (Float temperatureValue : SymptomsHelper.getTemperatureValues()) {
+                temperature.add(new Item(SymptomsHelper.getTemperatureString(temperatureValue),temperatureValue));
+            }
+
+            FieldHelper.initSpinnerField(binding.symptomsTemperature, temperature);
+
+            FieldHelper.initSpinnerField(binding.symptomsTemperatureSource, TemperatureSource.class);
+
+            binding.symptomsUnexplainedBleeding.addValueChangedListener(new PropertyField.ValueChangeListener() {
+                @Override
+                public void onChange(PropertyField field) {
+                    activationUnexplainedBleedingFields();
+                }
+            });
+            binding.symptomsOtherHemorrhagicSymptoms.addValueChangedListener(new PropertyField.ValueChangeListener() {
+                @Override
+                public void onChange(PropertyField field) {
+                    visibilityOtherHemorrhagicSymptoms();
+                }
+            });
+            binding.symptomsOtherNonHemorrhagicSymptoms.addValueChangedListener(new PropertyField.ValueChangeListener() {
+                @Override
+                public void onChange(PropertyField field) {
+                    visibilityOtherNonHemorrhagicSymptoms();
+                }
+            });
+
+            // set initial UI
+            visibilityOtherHemorrhagicSymptoms();
+            visibilityOtherNonHemorrhagicSymptoms();
+            activationUnexplainedBleedingFields();
+
+            visibilityDisease(disease);
+
+            // @TODO: Workaround, find a better solution. Remove autofocus on first field.
+            getView().requestFocus();
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
-        FieldHelper.initSpinnerField(binding.symptomsTemperature, temperature);
-
-        FieldHelper.initSpinnerField(binding.symptomsTemperatureSource, TemperatureSource.class);
-
-        binding.symptomsUnexplainedBleeding.addValueChangedListener(new PropertyField.ValueChangeListener() {
-            @Override
-            public void onChange(PropertyField field) {
-                activationUnexplainedBleedingFields();
-            }
-        });
-        binding.symptomsOtherHemorrhagicSymptoms.addValueChangedListener(new PropertyField.ValueChangeListener() {
-            @Override
-            public void onChange(PropertyField field) {
-                visibilityOtherHemorrhagicSymptoms();
-            }
-        });
-        binding.symptomsOtherNonHemorrhagicSymptoms.addValueChangedListener(new PropertyField.ValueChangeListener() {
-            @Override
-            public void onChange(PropertyField field) {
-                visibilityOtherNonHemorrhagicSymptoms();
-            }
-        });
-
-        // set initial UI
-        visibilityOtherHemorrhagicSymptoms();
-        visibilityOtherNonHemorrhagicSymptoms();
-        activationUnexplainedBleedingFields();
-
-        visibilityDisease(disease);
-
-        // @TODO: Workaround, find a better solution. Remove autofocus on first field.
-        getView().requestFocus();
     }
 
     private void visibilityDisease(Disease disease) {
