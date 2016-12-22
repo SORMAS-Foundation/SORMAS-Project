@@ -32,7 +32,6 @@ import de.symeda.sormas.app.backend.user.User;
 
 public class LabelField extends PropertyField<String> {
 
-    private TextView textCaption;
     private TextView textContent;
     private String appendedText;
 
@@ -92,15 +91,16 @@ public class LabelField extends PropertyField<String> {
     protected void onFinishInflate() {
         super.onFinishInflate();
         textContent = (TextView) this.findViewById(R.id.text_content);
-        textCaption = (TextView) this.findViewById(R.id.text_caption);
-        textCaption.setText(getCaption());
+        caption = (TextView) this.findViewById(R.id.text_caption);
+        caption.setText(getCaption());
+        addCaptionOnClickListener();
     }
 
     @Override
     public void setEnabled(boolean enabled) {
         super.setEnabled(enabled);
         textContent.setEnabled(enabled);
-        textCaption.setEnabled(enabled);
+        caption.setEnabled(enabled);
     }
 
     @BindingAdapter("app:enum")

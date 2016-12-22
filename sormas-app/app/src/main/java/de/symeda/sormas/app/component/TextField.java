@@ -32,7 +32,6 @@ import de.symeda.sormas.app.util.FormTab;
 public class TextField extends PropertyField<String> implements TextFieldInterface {
 
     protected EditText textContent;
-    protected TextView textCaption;
 
     protected InverseBindingListener inverseBindingListener;
 
@@ -86,7 +85,7 @@ public class TextField extends PropertyField<String> implements TextFieldInterfa
     }
 
     public void updateCaption(String newCaption) {
-        textCaption.setText(newCaption);
+        caption.setText(newCaption);
     }
 
     public void setInputType(int inputType) {
@@ -127,15 +126,16 @@ public class TextField extends PropertyField<String> implements TextFieldInterfa
             }
         });
         setOnEditorActionListener();
-        textCaption = (TextView) this.findViewById(R.id.text_caption);
-        textCaption.setText(getCaption());
+        caption = (TextView) this.findViewById(R.id.text_caption);
+        caption.setText(getCaption());
+        addCaptionOnClickListener();
     }
 
     @Override
     public void setEnabled(boolean enabled) {
         super.setEnabled(enabled);
         textContent.setEnabled(enabled);
-        textCaption.setEnabled(enabled);
+        caption.setEnabled(enabled);
     }
 
     @BindingAdapter("app:integer")

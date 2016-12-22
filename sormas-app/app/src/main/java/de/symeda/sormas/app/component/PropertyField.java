@@ -6,6 +6,7 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -15,6 +16,8 @@ import de.symeda.sormas.api.I18nProperties;
  * Created by Martin Wahnschaffe on 08.11.2016.
  */
 public abstract class PropertyField<T> extends LinearLayout {
+
+    protected TextView caption;
 
     private ArrayList<ValueChangeListener> valueChangedListeners;
 
@@ -49,6 +52,21 @@ public abstract class PropertyField<T> extends LinearLayout {
             valueChangedListeners = new ArrayList<ValueChangeListener>();
         }
         valueChangedListeners.add(listener);
+    }
+
+    public void addCaptionOnClickListener() {
+        if(caption != null) {
+            caption.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(getDescription() != null && !getDescription().isEmpty()) {
+                        HelpDialog helpDialog = new HelpDialog(getContext());
+                        helpDialog.setMessage(getDescription());
+                        helpDialog.show();
+                    }
+                }
+            });
+        }
     }
 
     public void hideKeyboard(View view) {
@@ -101,5 +119,6 @@ public abstract class PropertyField<T> extends LinearLayout {
     public interface ValueChangeListener {
         void onChange(PropertyField field);
     }
+
 }
 

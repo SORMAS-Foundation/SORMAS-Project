@@ -25,7 +25,6 @@ import de.symeda.sormas.app.R;
 public class SymptomStateField extends PropertyField<SymptomState> {
 
     private RadioGroup radioGroup;
-    private TextView radioCaption;
 
     private InverseBindingListener inverseBindingListener;
 
@@ -105,15 +104,16 @@ public class SymptomStateField extends PropertyField<SymptomState> {
             }
         });
 
-        radioCaption = (TextView) this.findViewById(R.id.radio_caption);
-        radioCaption.setText(getCaption());
+        caption = (TextView) this.findViewById(R.id.radio_caption);
+        caption.setText(getCaption());
+        addCaptionOnClickListener();
     }
 
 
     @Override
     public void setEnabled(boolean enabled) {
         super.setEnabled(enabled);
-        radioCaption.setEnabled(enabled);
+        caption.setEnabled(enabled);
         for (int i = 0; i < radioGroup.getChildCount(); i++) {
             radioGroup.getChildAt(i).setEnabled(enabled);
         }

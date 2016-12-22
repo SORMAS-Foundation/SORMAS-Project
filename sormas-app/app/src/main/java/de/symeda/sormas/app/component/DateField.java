@@ -30,7 +30,6 @@ import de.symeda.sormas.app.util.SelectDateFragment;
 
 public class DateField extends PropertyField<Date> implements DateFieldInterface {
 
-    private TextView dateCaption;
     private EditText dateContent;
     private Date date;
 
@@ -146,15 +145,16 @@ public class DateField extends PropertyField<Date> implements DateFieldInterface
                 onValueChanged();
             }
         });
-        dateCaption = (TextView) this.findViewById(R.id.date_caption);
-        dateCaption.setText(getCaption());
+        caption = (TextView) this.findViewById(R.id.date_caption);
+        caption.setText(getCaption());
+        addCaptionOnClickListener();
     }
 
     @Override
     public void setEnabled(boolean enabled) {
         super.setEnabled(enabled);
         dateContent.setEnabled(enabled);
-        dateCaption.setEnabled(enabled);
+        caption.setEnabled(enabled);
     }
 
 }

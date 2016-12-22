@@ -27,7 +27,6 @@ public class RadioGroupField extends PropertyField<Object>  {
 
     public static final String SHOW_CAPTION = "showCaption";
 
-    private TextView radioGroupCaption;
     private RadioGroup radioGroup;
     private List<Object> radioGroupElements = new ArrayList<>();
 
@@ -118,21 +117,22 @@ public class RadioGroupField extends PropertyField<Object>  {
             }
         });
 
-        radioGroupCaption = (TextView) this.findViewById(R.id.rg_caption);
+        caption = (TextView) this.findViewById(R.id.rg_caption);
         if(attributes.getBoolean(R.styleable.FieldAttrs_show_caption, true)) {
-            radioGroupCaption.setVisibility(View.VISIBLE);
-            radioGroupCaption.setText(getCaption());
+            caption.setVisibility(View.VISIBLE);
+            caption.setText(getCaption());
         }
         else {
-            radioGroupCaption.setVisibility(View.GONE);
+            caption.setVisibility(View.GONE);
         }
+        addCaptionOnClickListener();
     }
 
     @Override
     public void setEnabled(boolean enabled) {
         super.setEnabled(enabled);
         radioGroup.setEnabled(enabled);
-        radioGroupCaption.setEnabled(enabled);
+        caption.setEnabled(enabled);
     }
 
     public void addItem(Item item) {

@@ -32,7 +32,6 @@ import de.symeda.sormas.app.util.Item;
  */
 public class SpinnerField extends PropertyField<Object> implements SpinnerFieldInterface {
 
-    private TextView spinnerCaption;
     private Spinner spinnerElement;
 
     private InverseBindingListener inverseBindingListener;
@@ -175,15 +174,16 @@ public class SpinnerField extends PropertyField<Object> implements SpinnerFieldI
                 }
             }
         });
-        spinnerCaption = (TextView) this.findViewById(R.id.spinner_caption);
-        spinnerCaption.setText(getCaption());
+        caption = (TextView) this.findViewById(R.id.spinner_caption);
+        caption.setText(getCaption());
+        addCaptionOnClickListener();
     }
 
     @Override
     public void setEnabled(boolean enabled) {
         super.setEnabled(enabled);
         spinnerElement.setEnabled(enabled);
-        spinnerCaption.setEnabled(enabled);
+        caption.setEnabled(enabled);
     }
 
     private void setSelectedItem(Object selectedItem) {
