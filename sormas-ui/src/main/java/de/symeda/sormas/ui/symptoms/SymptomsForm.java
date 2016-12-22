@@ -132,7 +132,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		
 		FieldHelper.setRequiredWhen(getFieldGroup(), SymptomsDto.ONSET_DATE, symptomFieldIds, Arrays.asList(SymptomState.YES));
 		FieldHelper.setRequiredWhen(getFieldGroup(), SymptomsDto.ONSET_SYMPTOM, symptomFieldIds, Arrays.asList(SymptomState.YES));
-		
+		FieldHelper.setRequiredWhen(getFieldGroup(), SymptomsDto.OTHER_HEMORRHAGIC_SYMPTOMS_TEXT, Arrays.asList(SymptomsDto.OTHER_HEMORRHAGIC_SYMPTOMS), Arrays.asList(SymptomState.YES));
+		FieldHelper.setRequiredWhen(getFieldGroup(), SymptomsDto.OTHER_NON_HEMORRHAGIC_SYMPTOMS_TEXT, Arrays.asList(SymptomsDto.OTHER_NON_HEMORRHAGIC_SYMPTOMS), Arrays.asList(SymptomState.YES));
 		
 		// setReadOnly(true, );
 	}

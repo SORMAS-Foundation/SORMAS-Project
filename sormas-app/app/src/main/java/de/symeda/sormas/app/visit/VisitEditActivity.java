@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -118,9 +119,14 @@ public class VisitEditActivity extends AbstractEditActivity {
                 Symptoms symptoms = (Symptoms)adapter.getData(VisitEditTabs.SYMPTOMS.ordinal());
 
                 boolean anySymptomSetToYes = isAnySymptomSetToYes(symptoms);
+                boolean otherHemorrhagicSymTextReq = symptoms.getOtherHemorrhagicSymptoms() == SymptomState.YES &&
+                        (symptoms.getOtherHemorrhagicSymptomsText() == null || symptoms.getOtherHemorrhagicSymptomsText().isEmpty());
+                boolean otherNonHemorrhagicSymTextReq = symptoms.getOtherNonHemorrhagicSymptoms() == SymptomState.YES &&
+                        (symptoms.getOtherNonHemorrhagicSymptomsText() == null || symptoms.getOtherNonHemorrhagicSymptomsText().isEmpty());
 
-                boolean validData = !anySymptomSetToYes || ((symptoms.getOnsetDate() != null &&
-                        symptoms.getOnsetSymptom() != null && !symptoms.getOnsetSymptom().isEmpty()));
+                boolean validData = (!anySymptomSetToYes || ((symptoms.getOnsetDate() != null &&
+                        symptoms.getOnsetSymptom() != null && !symptoms.getOnsetSymptom().isEmpty()))) &&
+                        !otherHemorrhagicSymTextReq && !otherNonHemorrhagicSymTextReq;
                 if(validData) {
                     if (symptoms != null) {
                         visit.setSymptoms(symptoms);
@@ -163,7 +169,13 @@ public class VisitEditActivity extends AbstractEditActivity {
 
                     return true;
                 } else {
-                    Toast.makeText(this, "Please specify an onset date and an onset symptom.", Toast.LENGTH_LONG).show();
+                    if(otherHemorrhagicSymTextReq) {
+                        Toast.makeText(this, "Please specify the additional hemorrhagic symptoms.", Toast.LENGTH_LONG).show();
+                    } else if(otherNonHemorrhagicSymTextReq) {
+                        Toast.makeText(this, "Please specify the additional clinical symptoms.", Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(this, "Please specify an onset date and an onset symptom.", Toast.LENGTH_LONG).show();
+                    }
                     return true;
                 }
 
