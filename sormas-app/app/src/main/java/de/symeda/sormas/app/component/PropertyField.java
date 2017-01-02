@@ -55,17 +55,18 @@ public abstract class PropertyField<T> extends LinearLayout {
     }
 
     public void addCaptionOnClickListener() {
-        if(caption != null) {
-            caption.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if(getDescription() != null && !getDescription().isEmpty()) {
+        if(getDescription() != null && !getDescription().isEmpty()) {
+            if (caption != null) {
+                caption.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
                         HelpDialog helpDialog = new HelpDialog(getContext());
                         helpDialog.setMessage(getDescription());
                         helpDialog.show();
                     }
-                }
-            });
+                });
+            }
         }
     }
 
