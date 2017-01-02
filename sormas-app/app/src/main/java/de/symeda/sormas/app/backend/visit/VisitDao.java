@@ -56,7 +56,7 @@ public class VisitDao extends AbstractAdoDao<Visit> {
                     where.eq(Visit.PERSON+"_id", contact.getPerson()),
                     where.eq(Visit.DISEASE, contact.getCaze().getDisease())
             );
-
+            // see sormas-backend/VisitService.getAllByContact()
             Date lowerLimit = (contact.getLastContactDate() != null && contact.getLastContactDate().before(contact.getReportDateTime()))? contact.getLastContactDate() : contact.getReportDateTime();
             if(lowerLimit!=null) {
                 where.and();
