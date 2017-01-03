@@ -70,10 +70,10 @@ public abstract class PropertyField<T> extends LinearLayout {
     }
 
     public void addCaptionHintIfDescription() {
-        String description = getDescription();
-        if(description != null && !description.isEmpty()) {
-            caption.append(" \uFE56");
-        }
+//        String description = getDescription();
+//        if(description != null && !description.isEmpty()) {
+//            caption.append(" \uFE56");
+//        }
     }
 
     public void hideKeyboard(View view) {
