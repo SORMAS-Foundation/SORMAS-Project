@@ -106,6 +106,7 @@ public class SymptomStateField extends PropertyField<SymptomState> {
 
         caption = (TextView) this.findViewById(R.id.radio_caption);
         caption.setText(getCaption());
+        addCaptionHintIfDescription();
         addCaptionOnClickListener();
     }
 

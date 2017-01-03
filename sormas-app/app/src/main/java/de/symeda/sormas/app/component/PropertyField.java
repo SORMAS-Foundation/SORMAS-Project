@@ -60,13 +60,19 @@ public abstract class PropertyField<T> extends LinearLayout {
                 caption.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View v) {
-
                         HelpDialog helpDialog = new HelpDialog(getContext());
                         helpDialog.setMessage(getDescription());
                         helpDialog.show();
                     }
                 });
             }
+        }
+    }
+
+    public void addCaptionHintIfDescription() {
+        String description = getDescription();
+        if(description != null && !description.isEmpty()) {
+            caption.append(" \uFE56");
         }
     }
 

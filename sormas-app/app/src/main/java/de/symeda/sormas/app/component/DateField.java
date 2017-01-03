@@ -147,6 +147,7 @@ public class DateField extends PropertyField<Date> implements DateFieldInterface
         });
         caption = (TextView) this.findViewById(R.id.date_caption);
         caption.setText(getCaption());
+        addCaptionHintIfDescription();
         addCaptionOnClickListener();
     }
 

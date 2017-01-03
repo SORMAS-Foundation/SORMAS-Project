@@ -176,6 +176,7 @@ public class SpinnerField extends PropertyField<Object> implements SpinnerFieldI
         });
         caption = (TextView) this.findViewById(R.id.spinner_caption);
         caption.setText(getCaption());
+        addCaptionHintIfDescription();
         addCaptionOnClickListener();
     }
 

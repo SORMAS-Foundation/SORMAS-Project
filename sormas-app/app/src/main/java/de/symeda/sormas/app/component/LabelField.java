@@ -93,6 +93,7 @@ public class LabelField extends PropertyField<String> {
         textContent = (TextView) this.findViewById(R.id.text_content);
         caption = (TextView) this.findViewById(R.id.text_caption);
         caption.setText(getCaption());
+        addCaptionHintIfDescription();
         addCaptionOnClickListener();
     }
 
