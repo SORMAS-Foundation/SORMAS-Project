@@ -2,6 +2,7 @@ package de.symeda.sormas.app.util;
 
 import android.app.DatePickerDialog;
 import android.app.Activity;
+import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -13,10 +14,13 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.DatePicker;
 import android.widget.ImageButton;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import de.symeda.sormas.api.utils.DateHelper;
@@ -34,7 +38,9 @@ import de.symeda.sormas.app.backend.region.DistrictDao;
 import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.backend.region.RegionDao;
 import de.symeda.sormas.app.component.DateField;
+import de.symeda.sormas.app.component.DateTimeField;
 import de.symeda.sormas.app.component.FieldHelper;
+import de.symeda.sormas.app.component.PropertyField;
 import de.symeda.sormas.app.component.RadioGroupField;
 import de.symeda.sormas.app.component.SpinnerField;
 import de.symeda.sormas.app.component.TextField;
@@ -44,29 +50,53 @@ import de.symeda.sormas.app.component.TextField;
  */
 public abstract class FormTab extends DialogFragment implements FormFragment {
 
-    public void showDateFragment(final DateField dateField) {
-        SelectDateFragment newFragment = new SelectDateFragment();
-
-        newFragment.setOnDateSetListener(new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet (DatePicker view,int yy, int mm, int dd){
-                dateField.setValue(DateHelper.getDateZero(yy, mm, dd));
-            }
-        });
-
-        newFragment.setOnClearListener(new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dateField.setValue(null);
-                dateField.clearFocus();
-            }
-        });
-
-        Bundle dateBundle = new Bundle();
-        dateBundle.putSerializable(SelectDateFragment.DATE, dateField.getValue());
-        newFragment.setArguments(dateBundle);
-        newFragment.show(getFragmentManager(), getResources().getText(R.string.headline_date_picker).toString());
-    }
+//    public void showDateFragment(final PropertyField<Date> dateField) {
+//        SelectDateFragment newFragment = new SelectDateFragment();
+//
+//        newFragment.setOnDateSetListener(new DatePickerDialog.OnDateSetListener() {
+//            @Override
+//            public void onDateSet (DatePicker view,int yy, int mm, int dd){
+//                dateField.setValue(DateHelper.getDateZero(yy, mm, dd));
+//            }
+//        });
+//
+//        newFragment.setOnClearListener(new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialog, int which) {
+//                dateField.setValue(null);
+//                dateField.clearFocus();
+//            }
+//        });
+//
+//        Bundle dateBundle = new Bundle();
+//        dateBundle.putSerializable(SelectDateFragment.DATE, dateField.getValue());
+//        newFragment.setArguments(dateBundle);
+//        newFragment.show(getFragmentManager(), getResources().getText(R.string.headline_date_picker).toString());
+//    }
+//
+//    public void showTimeFragment(final DateTimeField timeField) {
+//        SelectTimeFragment newFragment = new SelectTimeFragment();
+//
+//        newFragment.setOnTimeSetListener(new TimePickerDialog.OnTimeSetListener() {
+//            @Override
+//            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+//                timeField.setValue(DateHelper.getTime(hourOfDay, minute));
+//            }
+//        });
+//
+//        newFragment.setOnClearListener(new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialog, int which) {
+//                timeField.setValue(null);
+//                timeField.clearFocus();
+//            }
+//        });
+//
+//        Bundle dateTimeBundle = new Bundle();
+//        dateTimeBundle.putSerializable(SelectTimeFragment.DATE, timeField.getValue());
+//        newFragment.setArguments(dateTimeBundle);
+//        newFragment.show(getFragmentManager(), getResources().getText(R.string.headline_date_picker).toString());
+//    }
 
     /**
      * Fill the location_fragment_layout.xml fragment and bind the given properties the a local model.

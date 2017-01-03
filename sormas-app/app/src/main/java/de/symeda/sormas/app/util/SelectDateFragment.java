@@ -11,6 +11,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.component.DateTimeField;
 
 /**
  * Created by Stefan Szczesny on 01.08.2016.
@@ -29,6 +30,7 @@ public class SelectDateFragment extends DialogFragment implements DatePickerDial
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Date date = (Date) getArguments().get(DATE);
+
         final Calendar calendar = Calendar.getInstance();
         if(date!=null) {
             calendar.setTime(date);

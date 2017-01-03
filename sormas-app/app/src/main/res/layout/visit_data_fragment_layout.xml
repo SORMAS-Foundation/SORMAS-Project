@@ -22,7 +22,7 @@
             android:focusableInTouchMode="true">
 
 
-            <de.symeda.sormas.app.component.DateField
+            <de.symeda.sormas.app.component.DateTimeField
                 android:id="@+id/visit_visitDateTime"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

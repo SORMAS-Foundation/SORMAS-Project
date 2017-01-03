@@ -32,14 +32,22 @@ public final class DateHelper {
 		}
 	}
 
-	/**
-	 * Formats to "HH:mm"
-	 * @return
-	 */
 	public static Date parseHourMinute(String date) {
 		if (date != null) {
 			try {
 				return clone(TIME_FORMAT).parse(date);
+			} catch (ParseException e) {
+				return null;
+			}
+		} else {
+			return null;
+		}
+	}
+	
+	public static Date parseDDMMYYYY(String date) {
+		if (date != null) {
+			try {
+				return clone(DATE_FORMAT).parse(date);
 			} catch (ParseException e) {
 				return null;
 			}
@@ -101,6 +109,18 @@ public final class DateHelper {
         Calendar calendar = new GregorianCalendar();
         calendar.set(year,month,day,0,0,0);
         return calendar.getTime();
+    }
+    
+    /**
+     * Returns the time with a dummy date
+     * @param hour
+     * @param minute
+     * @return
+     */
+    public static Date getTime(int hour, int minute) {
+    	Calendar calendar = new GregorianCalendar();
+    	calendar.set(1970, 01, 01, hour, minute);
+    	return calendar.getTime();
     }
     
     /**
