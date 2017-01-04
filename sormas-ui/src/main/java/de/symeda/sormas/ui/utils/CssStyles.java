@@ -80,6 +80,8 @@ public final class CssStyles {
 	public static final String STATUS_NOT = "status-not";
 	public static final String STATUS_DONE = "status-done";
 	public static final String STATUS_PENDING = "status-pending";
+	
+	public static final String HIGHLIGHT_ITEM = "highlight-item";
 
 
 

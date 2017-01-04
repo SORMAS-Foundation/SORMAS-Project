@@ -1,9 +1,12 @@
 package de.symeda.sormas.ui.caze;
 
+import com.vaadin.ui.Label;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.SubNavigationMenu;
 import de.symeda.sormas.ui.utils.AbstractSubNavigationView;
 
@@ -17,7 +20,7 @@ public abstract class AbstractCaseView extends AbstractSubNavigationView {
 	}
 
 	@Override
-	public void refreshMenu(SubNavigationMenu menu, String params) {
+	public void refreshMenu(SubNavigationMenu menu, Label itemName, Label itemUuid, String params) {
 		
 		caseRef = FacadeProvider.getCaseFacade().getReferenceByUuid(params);
 		
@@ -27,6 +30,12 @@ public abstract class AbstractCaseView extends AbstractSubNavigationView {
 		menu.addView(CasePersonView.VIEW_NAME, I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.PERSON), params);
 		menu.addView(CaseSymptomsView.VIEW_NAME, I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.SYMPTOMS), params);
 		menu.addView(CaseContactsView.VIEW_NAME, I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, "contacts"), params);
+		menu.addView("1", "Summary & Tasks", params);
+		menu.addView("2", "Hospitalization", params);
+		menu.addView("3", "Epidemiological Risk", params);
+		itemName.setValue(caseRef.getCaption());
+		itemUuid.setValue(DataHelper.getShortUuid(caseRef.getUuid()));
+		
     }
 
 	public CaseReferenceDto getCaseRef() {

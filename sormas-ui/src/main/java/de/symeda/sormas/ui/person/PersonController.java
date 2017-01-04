@@ -106,11 +106,7 @@ public class PersonController {
 	
 	public CommitDiscardWrapperComponent<PersonEditForm> getPersonEditComponent(String personUuid) {
     	    	
-    	VerticalLayout formLayout = new VerticalLayout();
     	PersonEditForm caseEditForm = new PersonEditForm();
-        formLayout.addComponent(caseEditForm);
-        formLayout.setSizeFull();
-        formLayout.setExpandRatio(caseEditForm, 1);
         
         PersonDto personDto = personFacade.getPersonByUuid(personUuid);
         caseEditForm.setValue(personDto);

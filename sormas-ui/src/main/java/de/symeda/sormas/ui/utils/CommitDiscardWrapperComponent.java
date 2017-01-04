@@ -119,8 +119,8 @@ public class CommitDiscardWrapperComponent<C extends Component> extends
 		}
 
 		setSpacing(false);
-		setWidth(100, Unit.PERCENTAGE);
-
+		setWidth(component.getWidth(), component.getWidthUnits());
+		
 		contentPanel = new Panel(component);
 		updateInternalWidth();
 		updateInternalHeight();

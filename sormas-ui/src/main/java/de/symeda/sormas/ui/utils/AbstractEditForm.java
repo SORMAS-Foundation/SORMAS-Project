@@ -31,9 +31,11 @@ public abstract class AbstractEditForm <DTO extends DataTransferObject> extends 
 	private Class<DTO> type;
 	
 	protected AbstractEditForm(Class<DTO> type, String propertyI18nPrefix) {
-		
+	
 		this.type = type;
 		this.propertyI18nPrefix = propertyI18nPrefix;
+		
+		setWidth(900, Unit.PIXELS);
 		
 		fieldGroup = new BeanFieldGroup<DTO>(type) {
 
