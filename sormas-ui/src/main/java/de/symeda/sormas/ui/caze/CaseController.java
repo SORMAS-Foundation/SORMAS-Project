@@ -8,7 +8,6 @@ import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
-import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
@@ -162,14 +161,8 @@ public class CaseController {
     	
         CaseDataDto caseDataDto = findCase(caseUuid);
 
-        VerticalLayout formLayout = new VerticalLayout();
     	SymptomsForm symptomsForm = new SymptomsForm(caseDataDto.getDisease());
-        formLayout.addComponent(symptomsForm);
-        formLayout.setSizeFull();
-        formLayout.setExpandRatio(symptomsForm, 1);
-        
         symptomsForm.setValue(caseDataDto.getSymptoms());
-        
         final CommitDiscardWrapperComponent<SymptomsForm> editView = new CommitDiscardWrapperComponent<SymptomsForm>(symptomsForm, symptomsForm.getFieldGroup());
         
         editView.addCommitListener(new CommitListener() {

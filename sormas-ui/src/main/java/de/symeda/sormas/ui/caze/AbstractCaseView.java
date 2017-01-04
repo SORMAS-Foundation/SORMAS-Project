@@ -26,13 +26,13 @@ public abstract class AbstractCaseView extends AbstractSubNavigationView {
 		
 		menu.removeAllViews();
 		menu.addView(CasesView.VIEW_NAME, "Cases list");
+		//menu.addView("1", "Summary & Tasks", params);
 		menu.addView(CaseDataView.VIEW_NAME, I18nProperties.getFieldCaption(CaseDataDto.I18N_PREFIX), params);
 		menu.addView(CasePersonView.VIEW_NAME, I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.PERSON), params);
 		menu.addView(CaseSymptomsView.VIEW_NAME, I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.SYMPTOMS), params);
 		menu.addView(CaseContactsView.VIEW_NAME, I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, "contacts"), params);
-		menu.addView("1", "Summary & Tasks", params);
-		menu.addView("2", "Hospitalization", params);
-		menu.addView("3", "Epidemiological Risk", params);
+		//menu.addView("2", "Hospitalization", params);
+		//menu.addView("3", "Epidemiological Risk", params);
 		itemName.setValue(caseRef.getCaption());
 		itemUuid.setValue(DataHelper.getShortUuid(caseRef.getUuid()));
 		

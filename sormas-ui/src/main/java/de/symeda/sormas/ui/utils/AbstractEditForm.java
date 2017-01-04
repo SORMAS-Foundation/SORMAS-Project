@@ -35,8 +35,6 @@ public abstract class AbstractEditForm <DTO extends DataTransferObject> extends 
 		this.type = type;
 		this.propertyI18nPrefix = propertyI18nPrefix;
 		
-		setWidth(900, Unit.PIXELS);
-		
 		fieldGroup = new BeanFieldGroup<DTO>(type) {
 
 			@Override
@@ -132,8 +130,11 @@ public abstract class AbstractEditForm <DTO extends DataTransferObject> extends 
 		String htmlLayout = createHtmlLayout();
 		CustomLayout layout = new CustomLayout();
 		layout.setTemplateContents(htmlLayout);
-		layout.setSizeFull();
-	    setSizeFull();
+		layout.setWidth(100, Unit.PERCENTAGE);
+		layout.setHeightUndefined();
+
+		setWidth(900, Unit.PIXELS);
+		setHeightUndefined();
 		
 		return layout;
 	}

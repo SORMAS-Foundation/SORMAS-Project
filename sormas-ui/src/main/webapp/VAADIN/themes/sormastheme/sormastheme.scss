@@ -42,6 +42,12 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
 @mixin sormastheme {
   @include valo;
 
+  .valo-menu {
+    font-size: 16px;
+  }
+  .valo-menu-item {
+    padding-top: 8px;
+  }
 
   // login screen - for small screens, see below
   .login-screen {
@@ -113,12 +119,11 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
     color: #C44;
   }
   
-  .highlight-item {
+  .callout {
 	text-align: center;
 	outline: none;
 	-webkit-tap-highlight-color: transparent;
 	-webkit-touch-callout: none;
-	height: 50px;
 	padding: 0 14px;
 	color: #191919;
 	font-weight: 500;

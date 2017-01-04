@@ -81,8 +81,7 @@ public final class CssStyles {
 	public static final String STATUS_DONE = "status-done";
 	public static final String STATUS_PENDING = "status-pending";
 	
-	public static final String HIGHLIGHT_ITEM = "highlight-item";
-
+	public static final String CALLOUT = "callout";
 
 
 	public static void style(Component component, String... styles) {

@@ -36,7 +36,7 @@ public abstract class AbstractSubNavigationView extends AbstractView {
         
         VerticalLayout vLayout = new VerticalLayout();
         vLayout.setSizeUndefined();
-        CssStyles.stylePrimary(vLayout, CssStyles.HIGHLIGHT_ITEM);
+        CssStyles.stylePrimary(vLayout, CssStyles.CALLOUT);
         
         itemName = new Label("");
         itemUuid = new Label("");
