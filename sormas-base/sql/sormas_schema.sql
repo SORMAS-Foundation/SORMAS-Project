@@ -859,7 +859,7 @@ INSERT INTO schema_version (version_number, comment) VALUES (11, 'visit, contact
 
 ALTER TABLE task ADD COLUMN contact_id bigint;
 ALTER TABLE task ADD CONSTRAINT fk_task_contact_id FOREIGN KEY (contact_id) REFERENCES contact (id);
-INSERT INTO schema_version (version_number, comment) VALUES (12, 'Contact added to task')
+INSERT INTO schema_version (version_number, comment) VALUES (12, 'Contact added to task');
 
 -- 2016-12-14 Split CaseStatus to CaseClassification and InvestigationStatus #40
 
