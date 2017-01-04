@@ -43,8 +43,8 @@ public class RequestResponseLogger implements Filter {
 	 */
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
-
-		if (logger.isDebugEnabled()) {
+// 		There is an issue, when both criteria are enabled
+//		if (logger.isDebugEnabled()) {
 
 			// request logging
 			HttpServletRequest httpRequest = (HttpServletRequest) request;
@@ -55,9 +55,10 @@ public class RequestResponseLogger implements Filter {
 				// logger.debug(" " + s + " = " + req.getParameter(s));
 				logger.debug("  {} = {}", s, httpRequest.getParameter(s));
 			}
-		}
+//		}
 
-		if (logger.isTraceEnabled()) {
+//	 	There is an issue, when both criteria are enabled
+//		if (logger.isTraceEnabled()) {
 			// response logging
 			if (response.getCharacterEncoding() == null) {
 				response.setCharacterEncoding("UTF-8");
@@ -73,7 +74,7 @@ public class RequestResponseLogger implements Filter {
 				byte[] copy = responseCopier.getCopy();
 				logger.trace(new String(copy, response.getCharacterEncoding()));
 			}
-		}
+//		}
 
 	}
 
