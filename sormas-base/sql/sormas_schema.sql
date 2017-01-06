@@ -898,3 +898,44 @@ ALTER TABLE symptoms ADD COLUMN shock character varying(255);
 ALTER TABLE symptoms ADD COLUMN symptomscomments character varying(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (14, 'Update symptoms');
+
+-- 2017-01-05 Event backend #63
+
+CREATE TABLE events (
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	eventtype varchar(255) not null,
+	eventstatus varchar(255) not null,
+	eventdesc varchar(512) not null,
+	eventdate timestamp,
+	reportdatetime timestamp not null,
+	reportinguser_id bigint not null,
+	location_id bigint,
+	typeofplace varchar(255) not null,
+	srcfirstname varchar(512) not null,
+	srclastname varchar(512) not null,
+	srctelno varchar(512) not null,
+	srcemail varchar(512),
+	primary key(id));
+ALTER TABLE events OWNER TO sormas_user;
+
+ALTER TABLE events ADD CONSTRAINT fk_events_reportinguser_id FOREIGN KEY (reportinguser_id) REFERENCES users (id);
+ALTER TABLE events ADD CONSTRAINT fk_events_location_id FOREIGN KEY (location_id) REFERENCES location (id);
+
+CREATE TABLE eventparticipant (
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	event_id bigint,
+	person_id bigint,
+	kindofinvolvement varchar(255),
+	primary key(id));
+ALTER TABLE eventparticipant OWNER TO sormas_user;
+
+ALTER TABLE eventparticipant ADD CONSTRAINT fk_eventparticipant_event_id FOREIGN KEY (event_id) REFERENCES events (id);
+ALTER TABLE eventparticipant ADD CONSTRAINT fk_eventparticipant_person_id FOREIGN KEY (person_id) REFERENCES person (id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (15, 'events, eventparticipant');
