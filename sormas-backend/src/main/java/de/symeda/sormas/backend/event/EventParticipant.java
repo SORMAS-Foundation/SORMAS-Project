@@ -11,7 +11,7 @@ import de.symeda.sormas.api.event.KindOfInvolvement;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.person.Person;
 
-@Entity(name="eventparticipants")
+@Entity
 public class EventParticipant extends AbstractDomainObject {
 
 	private static final long serialVersionUID = -9006001699517297107L;

@@ -939,3 +939,9 @@ ALTER TABLE eventparticipant ADD CONSTRAINT fk_eventparticipant_event_id FOREIGN
 ALTER TABLE eventparticipant ADD CONSTRAINT fk_eventparticipant_person_id FOREIGN KEY (person_id) REFERENCES person (id);
 
 INSERT INTO schema_version (version_number, comment) VALUES (15, 'events, eventparticipant');
+
+-- 2017-01-06 Renaming #63
+
+ALTER TABLE events RENAME location_id TO eventlocation_id;
+
+INSERT INTO schema_version (version_number, comment) VALUES (16, 'renamed eventlocation');

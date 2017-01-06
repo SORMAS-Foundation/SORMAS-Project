@@ -3,6 +3,8 @@ package de.symeda.sormas.backend.event;
 import java.util.Date;
 import java.util.List;
 
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
@@ -12,6 +14,8 @@ import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.user.User;
 
+@Stateless
+@LocalBean
 public class EventService extends AbstractAdoService<Event> {
 
 	public EventService() {

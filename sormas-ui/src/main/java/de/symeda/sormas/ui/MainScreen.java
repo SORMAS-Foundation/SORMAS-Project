@@ -8,6 +8,7 @@ import com.vaadin.ui.HorizontalLayout;
 
 import de.symeda.sormas.ui.caze.CasesView;
 import de.symeda.sormas.ui.contact.ContactsView;
+import de.symeda.sormas.ui.events.EventsView;
 import de.symeda.sormas.ui.task.TasksView;
 import de.symeda.sormas.ui.user.UsersView;
 
@@ -38,6 +39,7 @@ public class MainScreen extends HorizontalLayout {
         menu.addView(new CasesView(), CasesView.VIEW_NAME, "Cases", FontAwesome.EDIT);
         menu.addView(new TasksView(), TasksView.VIEW_NAME, "Tasks", FontAwesome.TASKS);
         menu.addView(new ContactsView(), ContactsView.VIEW_NAME, "Contacts", FontAwesome.HAND_PAPER_O);
+        menu.addView(new EventsView(), EventsView.VIEW_NAME, "Events", FontAwesome.PHONE);
         menu.addView(new UsersView(), UsersView.VIEW_NAME, "Officers", FontAwesome.USERS);
         menu.addView(new AboutView(), AboutView.VIEW_NAME, "About", FontAwesome.INFO_CIRCLE);
         

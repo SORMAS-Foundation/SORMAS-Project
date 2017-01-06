@@ -7,6 +7,7 @@ import javax.ejb.Remote;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
+import de.symeda.sormas.api.event.EventDto;
 
 @Remote
 public interface TaskFacade {
@@ -22,6 +23,8 @@ public interface TaskFacade {
 	long getPendingTaskCountByCase(CaseDataDto caseDataDto);
 	
 	long getPendingTaskCountByContact(ContactIndexDto contactDto);
+	
+	long getPendingTaskCountByEvent(EventDto eventDto);
 	
 	long getPendingTaskCount(String userUuid);
 

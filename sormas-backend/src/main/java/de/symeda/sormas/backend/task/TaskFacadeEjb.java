@@ -11,6 +11,7 @@ import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
+import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskFacade;
 import de.symeda.sormas.api.task.TaskStatus;
@@ -22,6 +23,8 @@ import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactService;
+import de.symeda.sormas.backend.event.Event;
+import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
@@ -38,6 +41,8 @@ public class TaskFacadeEjb implements TaskFacade {
 	private CaseService caseService;
 	@EJB
 	private ContactService contactService;
+	@EJB
+	private EventService eventService;
 	@EJB
 	private UserFacadeEjbLocal userFacade;
 	@EJB
@@ -222,6 +227,21 @@ public class TaskFacadeEjb implements TaskFacade {
 		}
 		
 		return service.getCount(new TaskCriteria().contactEquals(contact).taskStatusEquals(TaskStatus.PENDING));
+	}
+	
+	@Override
+	public long getPendingTaskCountByEvent(EventDto eventDto) {
+		if(eventDto == null) {
+			return 0;
+		}
+		
+		Event event = eventService.getByUuid(eventDto.getUuid());
+		
+		if(event == null) {
+			return 0;
+		}
+		
+		return service.getCount(new TaskCriteria().eventEquals(event).taskStatusEquals(TaskStatus.PENDING));
 	}
 	
 	@Override

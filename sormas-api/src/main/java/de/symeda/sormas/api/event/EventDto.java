@@ -1,10 +1,10 @@
 package de.symeda.sormas.api.event;
 
 import java.util.Date;
-import java.util.List;
 
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import de.symeda.sormas.api.location.LocationReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.PreciseDateAdapter;
 
@@ -21,6 +21,7 @@ public class EventDto extends EventReferenceDto {
 	public static final String EVENT_DATE = "eventDate";
 	public static final String REPORT_DATE_TIME = "reportDateTime";
 	public static final String REPORTING_USER = "reportingUser";
+	public static final String EVENT_LOCATION = "eventLocation";
 	public static final String TYPE_OF_PLACE = "typeOfPlace";
 	public static final String SRC_FIRST_NAME = "srcFirstName";
 	public static final String SRC_LAST_NAME = "srcLastName";
@@ -33,6 +34,7 @@ public class EventDto extends EventReferenceDto {
 	private Date eventDate;
 	private Date reportDateTime;
 	private UserReferenceDto reportingUser;
+	private LocationReferenceDto eventLocation;
 	private TypeOfPlace typeOfPlace;
 	private String srcFirstName;
 	private String srcLastName;
@@ -129,6 +131,14 @@ public class EventDto extends EventReferenceDto {
 	
 	public void setSrcEmail(String srcEmail) {
 		this.srcEmail = srcEmail;
+	}
+
+	public LocationReferenceDto getEventLocation() {
+		return eventLocation;
+	}
+
+	public void setEventLocation(LocationReferenceDto eventLocation) {
+		this.eventLocation = eventLocation;
 	}
 	
 }

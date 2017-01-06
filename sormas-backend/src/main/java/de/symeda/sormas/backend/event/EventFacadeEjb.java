@@ -13,6 +13,8 @@ import javax.validation.constraints.NotNull;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventFacade;
 import de.symeda.sormas.api.event.EventReferenceDto;
+import de.symeda.sormas.backend.event.EventService;
+import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
@@ -58,6 +60,7 @@ public class EventFacadeEjb implements EventFacade {
 		target.setEventDate(source.getEventDate());
 		target.setReportDateTime(source.getReportDateTime());
 		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
+		target.setEventLocation(locationService.getByReferenceDto(source.getEventLocation()));
 		target.setTypeOfPlace(source.getTypeOfPlace());
 		target.setSrcFirstName(source.getSrcFirstName());
 		target.setSrcLastName(source.getSrcLastName());
@@ -90,6 +93,7 @@ public class EventFacadeEjb implements EventFacade {
 		target.setEventDate(source.getEventDate());
 		target.setReportDateTime(source.getReportDateTime());
 		target.setReportingUser(UserFacadeEjb.toReferenceDto(source.getReportingUser()));
+		target.setEventLocation(LocationFacadeEjb.toReferenceDto(source.getEventLocation()));
 		target.setTypeOfPlace(source.getTypeOfPlace());
 		target.setSrcFirstName(source.getSrcFirstName());
 		target.setSrcLastName(source.getSrcLastName());
