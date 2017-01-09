@@ -15,11 +15,9 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
-import de.symeda.sormas.app.backend.symptoms.SymptomsDao;
 import de.symeda.sormas.app.backend.visit.Visit;
 import de.symeda.sormas.app.component.AbstractEditActivity;
 import de.symeda.sormas.app.component.HelpDialog;
-import de.symeda.sormas.app.task.SyncVisitsTask;
 
 
 public class VisitEditActivity extends AbstractEditActivity {
@@ -51,13 +49,13 @@ public class VisitEditActivity extends AbstractEditActivity {
         super.onResume();
 
         Bundle params = getIntent().getExtras();
-//        visitUuid = params.getString(Visit.UUID);
         adapter = new VisitEditPagerAdapter(getSupportFragmentManager(), params);
         createTabViews(adapter);
 
-        if (params.containsKey(KEY_PAGE)) {
-            pager.setCurrentItem(params.getInt(KEY_PAGE));
+        if (params != null && params.containsKey(KEY_PAGE)) {
+            currentTab = params.getInt(KEY_PAGE);
         }
+        pager.setCurrentItem(currentTab);
     }
 
     @Override
@@ -94,8 +92,6 @@ public class VisitEditActivity extends AbstractEditActivity {
             // Respond to the action bar's Up/Home button
             case android.R.id.home:
                 finish();
-
-                //Home/back button
                 return true;
 
             // Help button

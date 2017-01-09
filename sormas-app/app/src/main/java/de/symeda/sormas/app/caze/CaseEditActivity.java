@@ -1,11 +1,9 @@
 package de.symeda.sormas.app.caze;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.view.Menu;
@@ -25,13 +23,10 @@ import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.symptoms.SymptomsDao;
-import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.component.AbstractEditActivity;
 import de.symeda.sormas.app.component.HelpDialog;
-import de.symeda.sormas.app.component.PropertyField;
 import de.symeda.sormas.app.contact.ContactNewActivity;
 import de.symeda.sormas.app.person.SyncPersonsTask;
-import de.symeda.sormas.app.task.TaskEditActivity;
 
 
 /**
@@ -40,7 +35,6 @@ import de.symeda.sormas.app.task.TaskEditActivity;
 public class CaseEditActivity extends AbstractEditActivity {
 
     public static final String KEY_CASE_UUID = "caseUuid";
-    public static final String KEY_PAGE = "page";
     public static final String KEY_PARENT_TASK_UUID = "taskUuid";
 
     private CaseEditPagerAdapter adapter;
@@ -64,8 +58,6 @@ public class CaseEditActivity extends AbstractEditActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setTitle(getResources().getText(R.string.headline_case));
         }
-
-
     }
 
     @Override
@@ -73,13 +65,34 @@ public class CaseEditActivity extends AbstractEditActivity {
         super.onResume();
 
         Bundle params = getIntent().getExtras();
-        caseUuid = params.getString(KEY_CASE_UUID);
+        if(params!=null) {
+            if(params.containsKey(KEY_CASE_UUID)) {
+                caseUuid = params.getString(KEY_CASE_UUID);
+            }
+            if (params.containsKey(KEY_PAGE)) {
+                currentTab = params.getInt(KEY_PAGE);
+            }
+        }
         adapter = new CaseEditPagerAdapter(getSupportFragmentManager(), caseUuid);
         createTabViews(adapter);
 
-        if (params.containsKey(KEY_PAGE)) {
-            pager.setCurrentItem(params.getInt(KEY_PAGE));
+
+        pager.setCurrentItem(currentTab);
+    }
+
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        Bundle params = getIntent().getExtras();
+        if(params!=null) {
+            if(params.containsKey(KEY_CASE_UUID)) {
+                outState.putString(KEY_CASE_UUID, caseUuid);
+            }
+            if (params.containsKey(KEY_PAGE)) {
+                outState.putInt(KEY_PAGE, currentTab);
+            }
         }
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -120,7 +133,7 @@ public class CaseEditActivity extends AbstractEditActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        currentTab = pager.getCurrentItem();
+        setCurrentTab(pager.getCurrentItem());
         CaseEditTabs tab = CaseEditTabs.values()[currentTab];
         switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button

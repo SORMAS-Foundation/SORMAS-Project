@@ -40,9 +40,12 @@ import de.symeda.sormas.app.util.SlidingTabLayout;
  */
 public abstract class AbstractEditActivity extends AppCompatActivity {
 
+    public static final String KEY_PAGE = "page";
+
     protected ViewPager pager;
     protected SlidingTabLayout tabs;
-    protected int currentTab;
+    protected int currentTab = 0;
+
 
     // TODO #4 use android ID's for parameters
     protected void updateActionBarGroups(Menu menu, boolean help, boolean addNewEntry, boolean save) {
@@ -84,7 +87,7 @@ public abstract class AbstractEditActivity extends AppCompatActivity {
 
             @Override
             public void onPageSelected(int position) {
-                currentTab = position;
+                setCurrentTab(position);
                 invalidateOptionsMenu();
             }
         });
@@ -109,6 +112,10 @@ public abstract class AbstractEditActivity extends AppCompatActivity {
         }
 
         return false;
+    }
+
+    public void setCurrentTab(int currentTab) {
+        this.currentTab = currentTab;
     }
 
 }

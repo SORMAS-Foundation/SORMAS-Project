@@ -20,6 +20,7 @@ import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.task.TaskDao;
 import de.symeda.sormas.app.caze.CaseEditActivity;
 import de.symeda.sormas.app.contact.ContactEditActivity;
+import de.symeda.sormas.app.contact.ContactEditTabs;
 
 
 /**
@@ -51,11 +52,6 @@ public class TaskEditActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
-        Bundle params = getIntent().getExtras();
-
-        // pass activity arguments into tab
-
         taskTab.onResume();
     }
 
@@ -67,11 +63,20 @@ public class TaskEditActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        menu.setGroupVisible(R.id.group_action_help,false);
+        menu.setGroupVisible(R.id.group_action_add,false);
+        menu.setGroupVisible(R.id.group_action_save,true);
+
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button
             case android.R.id.home:
-                NavUtils.navigateUpFromSameTask(this);
+                finish();
 
                 return true;
             case R.id.action_save:

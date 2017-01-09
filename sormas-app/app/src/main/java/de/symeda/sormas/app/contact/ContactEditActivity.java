@@ -3,6 +3,7 @@ package de.symeda.sormas.app.contact;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.NavUtils;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -59,14 +60,40 @@ public class ContactEditActivity extends AbstractEditActivity {
         super.onResume();
 
         Bundle params = getIntent().getExtras();
-        caseUuid = params.getString(KEY_CASE_UUID);
-        contactUuid = params.getString(KEY_CONTACT_UUID);
+        if(params!=null) {
+            if (params.containsKey(KEY_CASE_UUID)) {
+                caseUuid = params.getString(KEY_CASE_UUID);
+            }
+            if (params.containsKey(KEY_CONTACT_UUID)) {
+                contactUuid = params.getString(KEY_CONTACT_UUID);
+            }
+            if (params.containsKey(KEY_PAGE)) {
+                currentTab = params.getInt(KEY_PAGE);
+            }
+        }
         adapter = new ContactEditPagerAdapter(getSupportFragmentManager(), contactUuid);
         createTabViews(adapter);
 
-        if (params.containsKey(KEY_PAGE)) {
-            pager.setCurrentItem(params.getInt(KEY_PAGE));
+
+        pager.setCurrentItem(currentTab);
+    }
+
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        Bundle params = getIntent().getExtras();
+        if(params!=null) {
+            if(params.containsKey(KEY_CASE_UUID)) {
+                outState.putString(KEY_CASE_UUID, caseUuid);
+            }
+            if (params.containsKey(KEY_CONTACT_UUID)) {
+                outState.putString(KEY_CONTACT_UUID,contactUuid);
+            }
+            if (params.containsKey(KEY_PAGE)) {
+                outState.putInt(KEY_PAGE, currentTab);
+            }
         }
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -114,16 +141,7 @@ public class ContactEditActivity extends AbstractEditActivity {
         switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button
             case android.R.id.home:
-                if(caseUuid != null) {
-                    Intent intentCaseContacts = new Intent(this, CaseEditActivity.class);
-                    intentCaseContacts.putExtra(CaseEditActivity.KEY_PAGE, 3);
-                    intentCaseContacts.putExtra(CaseEditActivity.KEY_CASE_UUID, caseUuid);
-                    startActivity(intentCaseContacts);
-                } else {
-                    finish();
-                }
-
-                //Home/back button
+                finish();
                 return true;
 
             // Help button

@@ -50,8 +50,12 @@
                 android:value=".task.TasksActivity" />
         </activity>
 
-        <activity android:name=".contact.ContactNewActivity"></activity>
-        <activity android:name=".contact.ContactEditActivity"></activity>
+        <activity
+            android:name=".contact.ContactNewActivity"
+            android:parentActivityName=".caze.CaseEditActivity"></activity>
+        <activity
+            android:name=".contact.ContactEditActivity"
+            android:parentActivityName=".caze.CaseEditActivity"></activity>
 
         <activity android:name=".visit.VisitEditActivity"
             android:parentActivityName=".contact.ContactEditActivity">
