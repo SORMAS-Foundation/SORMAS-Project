@@ -4,7 +4,8 @@ import java.util.Date;
 
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import de.symeda.sormas.api.location.LocationReferenceDto;
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.PreciseDateAdapter;
 
@@ -27,6 +28,8 @@ public class EventDto extends EventReferenceDto {
 	public static final String SRC_LAST_NAME = "srcLastName";
 	public static final String SRC_TEL_NO = "srcTelNo";
 	public static final String SRC_EMAIL = "srcEmail";
+	public static final String DISEASE = "disease";
+	public static final String SURVEILLANCE_OFFICER = "surveillanceOfficer";
 	
 	private EventType eventType;
 	private EventStatus eventStatus;
@@ -34,12 +37,14 @@ public class EventDto extends EventReferenceDto {
 	private Date eventDate;
 	private Date reportDateTime;
 	private UserReferenceDto reportingUser;
-	private LocationReferenceDto eventLocation;
+	private LocationDto eventLocation;
 	private TypeOfPlace typeOfPlace;
 	private String srcFirstName;
 	private String srcLastName;
 	private String srcTelNo;
 	private String srcEmail;
+	private Disease disease;
+	private UserReferenceDto surveillanceOfficer;
 	
 	public EventType getEventType() {
 		return eventType;
@@ -133,12 +138,28 @@ public class EventDto extends EventReferenceDto {
 		this.srcEmail = srcEmail;
 	}
 
-	public LocationReferenceDto getEventLocation() {
+	public LocationDto getEventLocation() {
 		return eventLocation;
 	}
 
-	public void setEventLocation(LocationReferenceDto eventLocation) {
+	public void setEventLocation(LocationDto eventLocation) {
 		this.eventLocation = eventLocation;
+	}
+	
+	public Disease getDisease() {
+		return disease;
+	}
+	
+	public void setDisease(Disease disease) {
+		this.disease = disease;
+	}
+	
+	public UserReferenceDto getSurveillanceOfficer() {
+		return surveillanceOfficer;
+	}
+	
+	public void setSurveillanceOfficer(UserReferenceDto surveillanceOfficer) {
+		this.surveillanceOfficer = surveillanceOfficer;
 	}
 	
 }

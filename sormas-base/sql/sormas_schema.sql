@@ -945,3 +945,10 @@ INSERT INTO schema_version (version_number, comment) VALUES (15, 'events, eventp
 ALTER TABLE events RENAME location_id TO eventlocation_id;
 
 INSERT INTO schema_version (version_number, comment) VALUES (16, 'renamed eventlocation');
+
+-- 2017-01-10 Update events #63
+
+ALTER TABLE events ADD COLUMN disease character varying(255);
+ALTER TABLE events ADD COLUMN surveillanceofficer_id bigint;
+
+INSERT INTO schema_version (version_number, comment) VALUES (17, 'update events');

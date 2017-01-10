@@ -9,5 +9,11 @@ import javax.ejb.Remote;
 public interface EventFacade {
 	
 	List<EventDto> getAllEventsAfter(Date date, String userUuid);
+	
+	EventDto getEventByUuid(String uuid);
+	
+	EventDto saveEvent(EventDto dto);
+	
+	EventReferenceDto getReferenceByUuid(String uuid);
 
 }

@@ -13,8 +13,8 @@ import javax.validation.constraints.NotNull;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventFacade;
 import de.symeda.sormas.api.event.EventReferenceDto;
-import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
+import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
 import de.symeda.sormas.backend.location.LocationService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
@@ -30,6 +30,8 @@ public class EventFacadeEjb implements EventFacade {
 	private EventService eventService;
 	@EJB
 	private LocationService locationService;
+	@EJB
+	private LocationFacadeEjbLocal locationFacade;
 	
 	@Override
 	public List<EventDto> getAllEventsAfter(Date date, String userUuid) {
@@ -42,6 +44,24 @@ public class EventFacadeEjb implements EventFacade {
 		return eventService.getAllAfter(date, user).stream()
 			.map(e -> toEventDto(e))
 			.collect(Collectors.toList());
+	}
+	
+	@Override
+	public EventDto getEventByUuid(String uuid) {
+		return toEventDto(eventService.getByUuid(uuid));
+	}
+	
+	@Override
+	public EventReferenceDto getReferenceByUuid(String uuid) {
+		return toReferenceDto(eventService.getByUuid(uuid));
+	}
+	
+	@Override
+	public EventDto saveEvent(EventDto dto) {
+		Event event = fromEventDto(dto);
+		eventService.ensurePersisted(event);
+		
+		return toEventDto(event);
 	}
 	
 	public Event fromEventDto(@NotNull EventDto source) {
@@ -60,12 +80,14 @@ public class EventFacadeEjb implements EventFacade {
 		target.setEventDate(source.getEventDate());
 		target.setReportDateTime(source.getReportDateTime());
 		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
-		target.setEventLocation(locationService.getByReferenceDto(source.getEventLocation()));
+		target.setEventLocation(locationFacade.fromLocationDto(source.getEventLocation()));
 		target.setTypeOfPlace(source.getTypeOfPlace());
 		target.setSrcFirstName(source.getSrcFirstName());
 		target.setSrcLastName(source.getSrcLastName());
 		target.setSrcTelNo(source.getSrcTelNo());
 		target.setSrcEmail(source.getSrcEmail());
+		target.setDisease(source.getDisease());
+		target.setSurveillanceOfficer(userService.getByReferenceDto(source.getSurveillanceOfficer()));
 		
 		return target;
 	}
@@ -93,12 +115,14 @@ public class EventFacadeEjb implements EventFacade {
 		target.setEventDate(source.getEventDate());
 		target.setReportDateTime(source.getReportDateTime());
 		target.setReportingUser(UserFacadeEjb.toReferenceDto(source.getReportingUser()));
-		target.setEventLocation(LocationFacadeEjb.toReferenceDto(source.getEventLocation()));
+		target.setEventLocation(LocationFacadeEjb.toLocationDto(source.getEventLocation()));
 		target.setTypeOfPlace(source.getTypeOfPlace());
 		target.setSrcFirstName(source.getSrcFirstName());
 		target.setSrcLastName(source.getSrcLastName());
 		target.setSrcTelNo(source.getSrcTelNo());
 		target.setSrcEmail(source.getSrcEmail());
+		target.setDisease(source.getDisease());
+		target.setSurveillanceOfficer(UserFacadeEjb.toReferenceDto(source.getSurveillanceOfficer()));
 		
 		return target;
 	}

@@ -34,6 +34,7 @@ public class MainScreen extends HorizontalLayout {
         
         ControllerProvider.getCaseController().registerViews(navigator);
         ControllerProvider.getContactController().registerViews(navigator);
+        ControllerProvider.getEventController().registerViews(navigator);
         
         menu = new Menu(navigator);
         menu.addView(new CasesView(), CasesView.VIEW_NAME, "Cases", FontAwesome.EDIT);

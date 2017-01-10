@@ -15,18 +15,20 @@ import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.EventType;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.location.Location;
-import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.user.User;
 
 @Entity(name="events")
 public class Event extends AbstractDomainObject {
 
 	private static final long serialVersionUID = 4964495716032049582L;
+	
+	private static final int DESC_MAX_LENGTH = 15;
 	
 	public static final String EVENT_TYPE = "eventType";
 	public static final String EVENT_STATUS = "eventStatus";
@@ -41,6 +43,8 @@ public class Event extends AbstractDomainObject {
 	public static final String SRC_LAST_NAME = "srcLastName";
 	public static final String SRC_TEL_NO = "srcTelNo";
 	public static final String SRC_EMAIL = "srcEmail";
+	public static final String DISEASE = "disease";
+	public static final String SURVEILLANCE_OFFICER = "surveillanceOfficer";
 	
 	private EventType eventType;
 	private EventStatus eventStatus;
@@ -55,6 +59,8 @@ public class Event extends AbstractDomainObject {
 	private String srcLastName;
 	private String srcTelNo;
 	private String srcEmail;
+	private Disease disease;
+	private User surveillanceOfficer;
 	
 	@Enumerated(EnumType.STRING)
 	@Column(nullable=false)
@@ -178,6 +184,33 @@ public class Event extends AbstractDomainObject {
 	
 	public void setSrcEmail(String srcEmail) {
 		this.srcEmail = srcEmail;
+	}
+	
+	@Enumerated(EnumType.STRING)
+	public Disease getDisease() {
+		return disease;
+	}
+	
+	public void setDisease(Disease disease) {
+		this.disease = disease;
+	}
+	
+	@ManyToOne(cascade = {})
+	public User getSurveillanceOfficer() {
+		return surveillanceOfficer;
+	}
+	
+	public void setSurveillanceOfficer(User surveillanceOfficer) {
+		this.surveillanceOfficer = surveillanceOfficer;
+	}
+	
+	@Override
+	public String toString() {
+		if(eventDesc.length() >= DESC_MAX_LENGTH) {
+			return eventDesc.substring(0, DESC_MAX_LENGTH);
+		} else {
+			return eventDesc;
+		}
 	}
 
 }
