@@ -135,6 +135,9 @@ public class TaskService extends AbstractAdoService<Task> {
 		if (taskCriteria.getContact() != null) {
 			filter = and(cb, filter, cb.equal(from.get(Task.CONTACT), taskCriteria.getContact()));
 		}
+		if(taskCriteria.getEvent() != null) {
+			filter = and(cb, filter, cb.equal(from.get(Task.EVENT), taskCriteria.getEvent()));
+		}
 		return filter;
 	}
 	
