@@ -105,9 +105,13 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		addField(EventDto.SRC_TEL_NO, TextField.class);
 		addField(EventDto.SRC_EMAIL, TextField.class);
 		addField(EventDto.EVENT_LOCATION, LocationForm.class).setCaption(null);
-
-		FieldHelper.setVisibleWhen(getFieldGroup(), EventDto.TYPE_OF_PLACE_TEXT, EventDto.TYPE_OF_PLACE, Arrays.asList(TypeOfPlace.OTHER), true, true);
+		
 		setReadOnly(true, EventDto.UUID, EventDto.REPORT_DATE_TIME, EventDto.REPORTING_USER);
+		
+		FieldHelper.setVisibleWhen(getFieldGroup(), EventDto.TYPE_OF_PLACE_TEXT, EventDto.TYPE_OF_PLACE, Arrays.asList(TypeOfPlace.OTHER), true, true);
+		setRequired(true, EventDto.EVENT_TYPE, EventDto.EVENT_STATUS, EventDto.UUID, EventDto.EVENT_DESC,
+				EventDto.REPORT_DATE_TIME, EventDto.REPORTING_USER, EventDto.TYPE_OF_PLACE, EventDto.SRC_FIRST_NAME,
+				EventDto.SRC_LAST_NAME, EventDto.SRC_TEL_NO);
 	}
 	
 	@Override
