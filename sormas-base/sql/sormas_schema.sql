@@ -952,3 +952,16 @@ ALTER TABLE events ADD COLUMN disease character varying(255);
 ALTER TABLE events ADD COLUMN surveillanceofficer_id bigint;
 
 INSERT INTO schema_version (version_number, comment) VALUES (17, 'update events');
+
+-- 2017-01-11 Update events with type of place text #63
+
+ALTER TABLE events ADD COLUMN typeofplacetext character varying(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (18, 'update events with type of place text');
+
+-- 2016-12-15; Assign tasks to an event #65
+
+ALTER TABLE task ADD COLUMN event_id bigint;
+ALTER TABLE task ADD CONSTRAINT fk_task_event_id FOREIGN KEY (event_id) REFERENCES events (id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (19, 'Event added to task');

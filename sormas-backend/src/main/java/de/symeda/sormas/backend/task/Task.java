@@ -17,6 +17,7 @@ import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.user.User;
 
 @Entity
@@ -43,6 +44,7 @@ public class Task extends AbstractDomainObject {
 	private TaskContext taskContext;
 	private Case caze;
 	private Contact contact;
+	private Event event;
 	
 	private TaskType taskType;
 	private TaskPriority priority;
@@ -79,6 +81,14 @@ public class Task extends AbstractDomainObject {
 	}
 	public void setContact(Contact contact) {
 		this.contact = contact;
+	}
+	
+	@ManyToOne(cascade = {})
+	public Event getEvent() {
+		return event;
+	}
+	public void setEvent(Event event) {
+		this.event = event;
 	}
 	
 	@Enumerated(EnumType.STRING)

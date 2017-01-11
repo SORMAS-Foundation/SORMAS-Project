@@ -30,6 +30,7 @@ public class EventDto extends EventReferenceDto {
 	public static final String SRC_EMAIL = "srcEmail";
 	public static final String DISEASE = "disease";
 	public static final String SURVEILLANCE_OFFICER = "surveillanceOfficer";
+	public static final String TYPE_OF_PLACE_TEXT = "typeOfPlaceText";
 	
 	private EventType eventType;
 	private EventStatus eventStatus;
@@ -45,6 +46,7 @@ public class EventDto extends EventReferenceDto {
 	private String srcEmail;
 	private Disease disease;
 	private UserReferenceDto surveillanceOfficer;
+	private String typeOfPlaceText;
 	
 	public EventType getEventType() {
 		return eventType;
@@ -160,6 +162,14 @@ public class EventDto extends EventReferenceDto {
 	
 	public void setSurveillanceOfficer(UserReferenceDto surveillanceOfficer) {
 		this.surveillanceOfficer = surveillanceOfficer;
+	}
+	
+	public String getTypeOfPlaceText() {
+		return typeOfPlaceText;
+	}
+	
+	public void setTypeOfPlaceText(String typeOfPlaceText) {
+		this.typeOfPlaceText = typeOfPlaceText;
 	}
 	
 }

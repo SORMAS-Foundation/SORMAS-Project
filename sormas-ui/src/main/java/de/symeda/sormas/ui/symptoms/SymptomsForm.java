@@ -104,14 +104,14 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 				Arrays.asList(null, SymptomState.NO, SymptomState.UNKNOWN), true);
 		
 		FieldHelper.setVisibleWhen(getFieldGroup(), 
-				Arrays.asList(SymptomsDto.OTHER_HEMORRHAGIC_SYMPTOMS_TEXT),
+				SymptomsDto.OTHER_HEMORRHAGIC_SYMPTOMS_TEXT,
 				SymptomsDto.OTHER_HEMORRHAGIC_SYMPTOMS, 
-				Arrays.asList(SymptomState.YES), true);
+				Arrays.asList(SymptomState.YES), true, false);
 
 		FieldHelper.setVisibleWhen(getFieldGroup(), 
-				Arrays.asList(SymptomsDto.OTHER_NON_HEMORRHAGIC_SYMPTOMS_TEXT),
+				SymptomsDto.OTHER_NON_HEMORRHAGIC_SYMPTOMS_TEXT,
 				SymptomsDto.OTHER_NON_HEMORRHAGIC_SYMPTOMS, 
-				Arrays.asList(SymptomState.YES), true);
+				Arrays.asList(SymptomState.YES), true, false);
 		
 		for (Object propertyId : getFieldGroup().getBoundPropertyIds()) {
 			boolean visible = DiseasesConfiguration.isDefinedOrMissing(SymptomsDto.class, (String)propertyId, disease);

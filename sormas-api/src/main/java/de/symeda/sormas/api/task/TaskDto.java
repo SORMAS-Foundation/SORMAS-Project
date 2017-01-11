@@ -8,6 +8,7 @@ import de.symeda.sormas.api.DataTransferObject;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.PreciseDateAdapter;
 
@@ -36,7 +37,7 @@ public class TaskDto extends DataTransferObject {
 
 	private TaskContext taskContext;
 	private CaseReferenceDto caze;
-	private ReferenceDto event;
+	private EventReferenceDto event;
 	private ContactReferenceDto contact;
 	
 	private TaskType taskType;
@@ -65,10 +66,10 @@ public class TaskDto extends DataTransferObject {
 	public void setCaze(CaseReferenceDto caze) {
 		this.caze = caze;
 	}
-	public ReferenceDto getEvent() {
+	public EventReferenceDto getEvent() {
 		return event;
 	}
-	public void setEvent(ReferenceDto event) {
+	public void setEvent(EventReferenceDto event) {
 		this.event = event;
 	}
 	public ContactReferenceDto getContact() {

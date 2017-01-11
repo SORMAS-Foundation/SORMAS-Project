@@ -13,6 +13,7 @@ import com.vaadin.ui.Grid;
 import com.vaadin.ui.renderers.DateRenderer;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventStatus;
@@ -25,7 +26,7 @@ import de.symeda.sormas.ui.utils.UuidRenderer;
 public class EventGrid extends Grid {
 	
 	public static final String INFORMATION_SOURCE = "informationSource";
-	public static final String PENDING_TASKS = "pendingTasks";
+	public static final String PENDING_EVENT_TASKS = "pendingEventTasks";
 
 	public EventGrid() {
 		setSizeFull();
@@ -48,12 +49,11 @@ public class EventGrid extends Grid {
 			
 		});
 		
-		/**
-		generatedContainer.addGeneratedProperty(PENDING_TASKS, new PropertyValueGenerator<String>() {
+		generatedContainer.addGeneratedProperty(PENDING_EVENT_TASKS, new PropertyValueGenerator<String>() {
 			@Override
 			public String getValue(Item item, Object itemId, Object propertyId) {
 				EventDto eventDto = (EventDto)itemId;
-				return String.format(I18nProperties.getPrefixFieldCaption(eventDto.I18N_PREFIX, PENDING_TASKS + "Format"),
+				return String.format(I18nProperties.getPrefixFieldCaption(eventDto.I18N_PREFIX, PENDING_EVENT_TASKS + "Format"),
 						FacadeProvider.getTaskFacade().getPendingTaskCountByEvent(eventDto));
 			}
 			@Override
@@ -61,14 +61,13 @@ public class EventGrid extends Grid {
 				return String.class;
 			}
 		});
-		*/
 		
 		setColumns(EventDto.UUID, EventDto.EVENT_TYPE, EventDto.DISEASE, EventDto.EVENT_STATUS,
-				EventDto.EVENT_DATE, EventDto.EVENT_DESC, EventDto.EVENT_LOCATION, INFORMATION_SOURCE, EventDto.REPORT_DATE_TIME);
+				EventDto.EVENT_DATE, EventDto.EVENT_DESC, EventDto.EVENT_LOCATION, INFORMATION_SOURCE, EventDto.REPORT_DATE_TIME, PENDING_EVENT_TASKS);
 		
 		getColumn(EventDto.UUID).setRenderer(new UuidRenderer());
 		getColumn(EventDto.EVENT_DATE).setRenderer(new DateRenderer(DateHelper.getShortDateFormat()));
-		
+		getColumn(EventDto.REPORT_DATE_TIME).setRenderer(new DateRenderer(DateHelper.getTimeDateFormat()));
 		
 		for(Column column : getColumns()) {
 			column.setHeaderCaption(I18nProperties.getPrefixFieldCaption(

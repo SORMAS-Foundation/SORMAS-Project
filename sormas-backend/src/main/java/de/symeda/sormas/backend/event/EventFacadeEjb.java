@@ -13,6 +13,7 @@ import javax.validation.constraints.NotNull;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventFacade;
 import de.symeda.sormas.api.event.EventReferenceDto;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
 import de.symeda.sormas.backend.location.LocationService;
@@ -64,6 +65,14 @@ public class EventFacadeEjb implements EventFacade {
 		return toEventDto(event);
 	}
 	
+	@Override
+	public List<EventReferenceDto> getSelectableEvents(UserReferenceDto userRef) {
+		User user = userService.getByReferenceDto(userRef);
+		return eventService.getAllAfter(null, user).stream()
+				.map(c -> toReferenceDto(c))
+				.collect(Collectors.toList());
+	}
+	
 	public Event fromEventDto(@NotNull EventDto source) {
 		Event target = eventService.getByUuid(source.getUuid());
 		if(target == null) {
@@ -88,6 +97,7 @@ public class EventFacadeEjb implements EventFacade {
 		target.setSrcEmail(source.getSrcEmail());
 		target.setDisease(source.getDisease());
 		target.setSurveillanceOfficer(userService.getByReferenceDto(source.getSurveillanceOfficer()));
+		target.setTypeOfPlaceText(source.getTypeOfPlaceText());
 		
 		return target;
 	}
@@ -123,6 +133,7 @@ public class EventFacadeEjb implements EventFacade {
 		target.setSrcEmail(source.getSrcEmail());
 		target.setDisease(source.getDisease());
 		target.setSurveillanceOfficer(UserFacadeEjb.toReferenceDto(source.getSurveillanceOfficer()));
+		target.setTypeOfPlaceText(source.getTypeOfPlaceText());
 		
 		return target;
 	}

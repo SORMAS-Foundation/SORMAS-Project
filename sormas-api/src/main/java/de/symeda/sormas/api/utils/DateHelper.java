@@ -168,6 +168,10 @@ public final class DateHelper {
 		return clone(SHORT_TIME_DATE_FORMAT);
 	}
 	
+	public static SimpleDateFormat getTimeDateFormat() {
+		return clone(TIME_DATE_FORMAT);
+	}
+	
 	/**
 	 * Calculate days between the two given dates.
 	 */

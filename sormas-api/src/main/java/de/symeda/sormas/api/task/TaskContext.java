@@ -5,8 +5,8 @@ import de.symeda.sormas.api.I18nProperties;
 public enum TaskContext {
 
 	CASE,
-	EVENT,
-	CONTACT
+	CONTACT,
+	EVENT
 	;
 	
 	public String toString() {

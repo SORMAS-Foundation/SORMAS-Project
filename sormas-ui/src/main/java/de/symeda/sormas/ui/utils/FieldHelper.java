@@ -61,12 +61,12 @@ public final class FieldHelper {
 	}
 
 	public static void setVisibleWhen(FieldGroup fieldGroup, Object targetPropertyId, 
-			Object sourcePropertyId, List<Object> sourceValues, boolean clearOnHidden) {
-		setVisibleWhen(fieldGroup, Arrays.asList(targetPropertyId), sourcePropertyId, sourceValues, clearOnHidden);
+			Object sourcePropertyId, List<Object> sourceValues, boolean clearOnHidden, boolean setRequired) {
+		setVisibleWhen(fieldGroup, Arrays.asList(targetPropertyId), sourcePropertyId, sourceValues, clearOnHidden, setRequired);
 	}
 
 	public static void setVisibleWhen(final FieldGroup fieldGroup, List<Object> targetPropertyIds, 
-			Object sourcePropertyId, final List<Object> sourceValues, final boolean clearOnHidden) {
+			Object sourcePropertyId, final List<Object> sourceValues, final boolean clearOnHidden, final boolean setRequired) {
 
 		Field sourceField = fieldGroup.getField(sourcePropertyId);
 		if (sourceField instanceof AbstractField<?>) {
@@ -79,6 +79,9 @@ public final class FieldHelper {
 			for (Object targetPropertyId : targetPropertyIds) {
 				Field targetField = fieldGroup.getField(targetPropertyId);
 				targetField.setVisible(visible);
+				if(setRequired) {
+					targetField.setRequired(visible);
+				}
 				if (!visible && clearOnHidden && targetField.getValue() != null) {
 					targetField.clear();
 				}
@@ -90,6 +93,9 @@ public final class FieldHelper {
 			for (Object targetPropertyId : targetPropertyIds) {
 				Field targetField = fieldGroup.getField(targetPropertyId);
 				targetField.setVisible(visible);
+				if(setRequired) {
+					targetField.setRequired(visible);
+				}
 				if (!visible && clearOnHidden && targetField.getValue() != null) {
 					targetField.clear();
 				}

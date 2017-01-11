@@ -19,16 +19,16 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.EventType;
 import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.location.Location;
+import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.user.User;
 
 @Entity(name="events")
 public class Event extends AbstractDomainObject {
 
 	private static final long serialVersionUID = 4964495716032049582L;
-	
-	private static final int DESC_MAX_LENGTH = 15;
 	
 	public static final String EVENT_TYPE = "eventType";
 	public static final String EVENT_STATUS = "eventStatus";
@@ -45,6 +45,8 @@ public class Event extends AbstractDomainObject {
 	public static final String SRC_EMAIL = "srcEmail";
 	public static final String DISEASE = "disease";
 	public static final String SURVEILLANCE_OFFICER = "surveillanceOfficer";
+	public static final String TYPE_OF_PLACE_TEXT = "typeOfPlaceText";
+	public static final String TASKS = "tasks";
 	
 	private EventType eventType;
 	private EventStatus eventStatus;
@@ -61,6 +63,9 @@ public class Event extends AbstractDomainObject {
 	private String srcEmail;
 	private Disease disease;
 	private User surveillanceOfficer;
+	private String typeOfPlaceText;
+
+	private List<Task> tasks;
 	
 	@Enumerated(EnumType.STRING)
 	@Column(nullable=false)
@@ -204,13 +209,29 @@ public class Event extends AbstractDomainObject {
 		this.surveillanceOfficer = surveillanceOfficer;
 	}
 	
+	@Column(length=512)
+	public String getTypeOfPlaceText() {
+		return typeOfPlaceText;
+	}
+	
+	public void setTypeOfPlaceText(String typeOfPlaceText) {
+		this.typeOfPlaceText = typeOfPlaceText;
+	}
+	
+	@OneToMany(cascade = {}, mappedBy = Task.EVENT)
+	public List<Task> getTasks() {
+		return tasks;
+	}
+	
+	public void setTasks(List<Task> tasks) {
+		this.tasks = tasks;
+	}
+	
 	@Override
 	public String toString() {
-		if(eventDesc.length() >= DESC_MAX_LENGTH) {
-			return eventDesc.substring(0, DESC_MAX_LENGTH);
-		} else {
-			return eventDesc;
-		}
+		String diseaseString = disease == null ? "" : disease.toString();
+		String eventTypeString = diseaseString.isEmpty() ? eventType.toString() : eventType.toString().toLowerCase();
+		return diseaseString + " " + eventTypeString + " on " + DateHelper.formatDDMMYYYY(eventDate);
 	}
 
 }
