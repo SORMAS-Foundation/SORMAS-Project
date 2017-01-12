@@ -1,7 +1,6 @@
 package de.symeda.sormas.app.visit;
 
 import android.os.Bundle;
-import android.support.v4.app.NavUtils;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.view.Menu;
@@ -12,8 +11,10 @@ import android.widget.Toast;
 
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.visit.Visit;
 import de.symeda.sormas.app.component.AbstractEditActivity;
@@ -120,57 +121,37 @@ public class VisitEditActivity extends AbstractEditActivity {
                 boolean otherNonHemorrhagicSymTextReq = symptoms.getOtherNonHemorrhagicSymptoms() == SymptomState.YES &&
                         (symptoms.getOtherNonHemorrhagicSymptomsText() == null || symptoms.getOtherNonHemorrhagicSymptomsText().isEmpty());
 
+                boolean onsetDateReq = visit.getVisitStatus() == VisitStatus.COOPERATIVE &&
+                        (symptoms.getOnsetDate() == null);
+
                 boolean validData = (!anySymptomSetToYes || ((symptoms.getOnsetDate() != null &&
                         symptoms.getOnsetSymptom() != null && !symptoms.getOnsetSymptom().isEmpty()))) &&
-                        !otherHemorrhagicSymTextReq && !otherNonHemorrhagicSymTextReq;
+                        !otherHemorrhagicSymTextReq && !otherNonHemorrhagicSymTextReq
+                        && !onsetDateReq;
                 if(validData) {
                     if (symptoms != null) {
                         visit.setSymptoms(symptoms);
                         DatabaseHelper.getSymptomsDao().save(symptoms);
                     }
 
+                    visit.setVisitUser(ConfigProvider.getUser());
+
                     DatabaseHelper.getVisitDao().save(visit);
                     Toast.makeText(this, "visit " + DataHelper.getShortUuid(visit.getUuid()) + " saved", Toast.LENGTH_SHORT).show();
-
-
-                    //                switch(tab) {
-                    //                    // contact data tab
-                    //                    case VISIT_DATA:
-                    //                        Visit visit = (Visit) adapter.getData(VisitEditTabs.VISIT_DATA.ordinal());
-                    //
-                    //                        DatabaseHelper.getVisitDao().save(visit);
-                    //                        Toast.makeText(this, "visit "+ DataHelper.getShortUuid(visit.getUuid()) +" saved", Toast.LENGTH_SHORT).show();
-                    //                        break;
-                    //
-                    //                    case SYMPTOMS:
-                    //                        SymptomsDao symptomsDao = DatabaseHelper.getSymptomsDao();
-                    //
-                    //                        Symptoms symptoms = (Symptoms)adapter.getData(VisitEditTabs.SYMPTOMS.ordinal());
-                    //
-                    //                        if(symptoms!=null) {
-                    //                            symptomsDao.save(symptoms);
-                    //                        }
-                    //
-                    //                        Toast.makeText(this, "symptoms saved", Toast.LENGTH_SHORT).show();
-                    //
-                    //                        new SyncVisitsTask().execute();
-                    //                        break;
-                    //
-                    //                }
-
-                    //                onResume();
-                    //                pager.setCurrentItem(currentTab);
 
                     finish();
 
                     return true;
                 } else {
                     if(otherHemorrhagicSymTextReq) {
-                        Toast.makeText(this, "Please specify the additional hemorrhagic symptoms.", Toast.LENGTH_LONG).show();
+                        Toast.makeText(this, "Not saved. Please specify the additional hemorrhagic symptoms.", Toast.LENGTH_LONG).show();
                     } else if(otherNonHemorrhagicSymTextReq) {
-                        Toast.makeText(this, "Please specify the additional clinical symptoms.", Toast.LENGTH_LONG).show();
-                    } else {
-                        Toast.makeText(this, "Please specify an onset date and an onset symptom.", Toast.LENGTH_LONG).show();
+                        Toast.makeText(this, "Not saved. Please specify the additional clinical symptoms.", Toast.LENGTH_LONG).show();
+                    } else if(onsetDateReq) {
+                        Toast.makeText(this, "Not saved. Please specify the date of initial symptom onset.", Toast.LENGTH_LONG).show();
+                    }
+                    else {
+                        Toast.makeText(this, "Not saved. Please specify an onset date and an onset symptom.", Toast.LENGTH_LONG).show();
                     }
                     return true;
                 }

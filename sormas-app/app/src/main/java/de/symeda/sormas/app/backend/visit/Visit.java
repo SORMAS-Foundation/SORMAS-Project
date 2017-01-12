@@ -38,10 +38,10 @@ public class Visit extends AbstractDomainObject {
 	@Enumerated(EnumType.STRING)
 	private Disease disease;
 
-	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
+	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = false)
 	private Date visitDateTime;
 
-	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 1)
+	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 1, canBeNull = false)
 	private User visitUser;
 
 	@Enumerated(EnumType.STRING)

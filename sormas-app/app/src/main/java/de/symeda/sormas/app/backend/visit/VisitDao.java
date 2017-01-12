@@ -92,6 +92,7 @@ public class VisitDao extends AbstractAdoDao<Visit> {
         Visit visit = DataUtils.createNew(Visit.class);
         visit.setPerson(contact.getPerson());
         visit.setDisease(contact.getCaze().getDisease());
+        visit.setVisitDateTime(new Date());
         return visit;
     }
 
