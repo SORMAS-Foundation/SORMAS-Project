@@ -12,10 +12,12 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskHelper;
 import de.symeda.sormas.api.task.TaskPriority;
@@ -130,6 +132,14 @@ public class CaseFacadeEjb implements CaseFacade {
 		caseService.ensurePersisted(caze);
 		
 		return toCaseDataDto(caze);
+	}
+	
+	@Override
+	public CaseDataDto getByPersonAndDisease(String personUuid, Disease disease, String userUuid) {
+		Person person = personService.getByUuid(personUuid);
+		User user = userService.getByUuid(userUuid);
+		
+		return toCaseDataDto(caseService.getByPersonAndDisease(disease, person, user));
 	}
 	
 	public Case fromCaseDataDto(@NotNull CaseDataDto source) {

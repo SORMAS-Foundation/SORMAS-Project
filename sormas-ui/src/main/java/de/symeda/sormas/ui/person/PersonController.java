@@ -2,16 +2,19 @@ package de.symeda.sormas.ui.person;
 
 import java.util.function.Consumer;
 
+import com.vaadin.navigator.View;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
-import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.ui.SormasUI;
+import de.symeda.sormas.ui.events.EventParticipantsView;
+import de.symeda.sormas.ui.task.TasksView;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -40,6 +43,11 @@ public class PersonController {
     		doneConsumer.accept(createComponent.isCommited() ? createComponent.getWrappedComponent().getValue() : null));
     	}
     	VaadinUiUtil.showModalPopupWindow(createComponent, "Create new person");    	
+    }
+    
+    public void openEditModal(String personUuid) {
+		CommitDiscardWrapperComponent<PersonEditForm> personEditComponent = getPersonEditComponent(personUuid);
+		VaadinUiUtil.showModalPopupWindow(personEditComponent, "Edit person");
     }
     
     public void selectOrCreatePerson(String firstName, String lastName, Consumer<PersonReferenceDto> resultConsumer) {
@@ -121,10 +129,20 @@ public class PersonController {
         			PersonDto dto = caseEditForm.getValue();
         			dto = personFacade.savePerson(dto);
         			Notification.show("Person data saved", Type.TRAY_NOTIFICATION);
+        			refreshView();
         		}
         	}
         });
         
         return editView;
     }
+	
+	private void refreshView() {
+		View currentView = SormasUI.get().getNavigator().getCurrentView();
+    	if (currentView instanceof EventParticipantsView) {
+    		// force refresh, because view didn't change
+    		((EventParticipantsView)currentView).enter(null);
+    	}
+	}
+	
 }

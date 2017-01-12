@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
@@ -12,6 +13,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -77,4 +79,31 @@ public class CaseService extends AbstractAdoService<Case> {
 		List<Case> resultList = em.createQuery(cq).getResultList();
 		return resultList;
 	}
+	
+	public Case getByPersonAndDisease(Disease disease, Person person, User user) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Case> cq = cb.createQuery(getElementClass());
+		Root<Case> from = cq.from(getElementClass());
+		
+		Predicate filter = cb.equal(from.get(Case.REPORTING_USER), user);
+		if (user.getUserRoles().contains(UserRole.SURVEILLANCE_OFFICER)) {
+			filter = cb.or(filter, cb.equal(from.get(Case.SURVEILLANCE_OFFICER), user));
+		}
+		
+		filter = cb.and(filter, cb.equal(from.get(Case.DISEASE), disease));
+		filter = cb.and(filter, cb.equal(from.get(Case.PERSON), person));
+		
+		if(filter != null) {
+			cq.where(filter);
+		}
+		cq.distinct(true);
+		
+		try {
+			Case result = em.createQuery(cq).getSingleResult();
+			return result;
+		} catch(NoResultException e) {
+			return null;
+		}
+	}
+	
 }

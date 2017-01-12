@@ -6,6 +6,7 @@ import javax.naming.NamingException;
 import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.event.EventFacade;
+import de.symeda.sormas.api.event.EventParticipantFacade;
 import de.symeda.sormas.api.facility.FacilityFacade;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.region.CommunityFacade;
@@ -49,6 +50,10 @@ public class FacadeProvider {
 	
 	public static EventFacade getEventFacade() {
 		return get().lookupEjbRemote(EventFacade.class);
+	}
+	
+	public static EventParticipantFacade getEventParticipantFacade() {
+		return get().lookupEjbRemote(EventParticipantFacade.class);
 	}
 	
 	public static VisitFacade getVisitFacade() {

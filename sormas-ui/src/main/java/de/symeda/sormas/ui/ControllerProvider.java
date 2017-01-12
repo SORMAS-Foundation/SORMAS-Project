@@ -3,6 +3,7 @@ package de.symeda.sormas.ui;
 import de.symeda.sormas.ui.caze.CaseController;
 import de.symeda.sormas.ui.contact.ContactController;
 import de.symeda.sormas.ui.events.EventController;
+import de.symeda.sormas.ui.events.EventParticipantsController;
 import de.symeda.sormas.ui.person.PersonController;
 import de.symeda.sormas.ui.task.TaskController;
 import de.symeda.sormas.ui.user.UserController;
@@ -17,6 +18,7 @@ public class ControllerProvider extends BaseControllerProvider {
 	private final CaseController caseController;
 	private final ContactController contactController;
 	private final EventController eventController;
+	private final EventParticipantsController eventParticipantController;
 	private final VisitController visitController;
 	private final PersonController personController;
 	private final UserController userController;
@@ -28,6 +30,7 @@ public class ControllerProvider extends BaseControllerProvider {
 		caseController = new CaseController();
 		contactController = new ContactController();
 		eventController = new EventController();
+		eventParticipantController = new EventParticipantsController();
 		visitController = new VisitController();
 		personController = new PersonController();
 		userController = new UserController();
@@ -48,6 +51,10 @@ public class ControllerProvider extends BaseControllerProvider {
 	
 	public static EventController getEventController() {
 		return get().eventController;
+	}
+	
+	public static EventParticipantsController getEventParticipantController() {
+		return get().eventParticipantController;
 	}
 	
 	public static VisitController getVisitController() {

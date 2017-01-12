@@ -12,6 +12,12 @@ public class EventParticipantDto extends EventParticipantReferenceDto {
 	public static final String PERSON = "person";
 	public static final String KIND_OF_INVOLVEMENT = "kindOfInvolvement";
 	
+	public static final String PERSON_UUID = "personUuid";
+	public static final String PERSON_NAME = "personName";
+	public static final String PERSON_SEX = "peronSex";
+	public static final String PERSON_AGE = "personAge";
+	public static final String CASE_ID = "caseId";
+	
 	private EventReferenceDto event;
 	private PersonReferenceDto person;
 	private KindOfInvolvement kindOfInvolvement;

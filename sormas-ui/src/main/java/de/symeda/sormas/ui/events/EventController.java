@@ -30,6 +30,7 @@ public class EventController {
 	public void registerViews(Navigator navigator) {
 		navigator.addView(EventsView.VIEW_NAME, EventsView.class);
 		navigator.addView(EventDataView.VIEW_NAME, EventDataView.class);
+		navigator.addView(EventParticipantsView.VIEW_NAME, EventParticipantsView.class);
 	}
 	
 	public void create() {

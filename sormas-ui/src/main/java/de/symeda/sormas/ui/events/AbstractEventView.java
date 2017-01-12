@@ -5,6 +5,7 @@ import com.vaadin.ui.Label;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.SubNavigationMenu;
@@ -26,6 +27,7 @@ public class AbstractEventView extends AbstractSubNavigationView {
 		menu.removeAllViews();
 		menu.addView(EventsView.VIEW_NAME, "Events list");
 		menu.addView(EventDataView.VIEW_NAME, I18nProperties.getFieldCaption(EventDto.I18N_PREFIX), params);
+		menu.addView(EventParticipantsView.VIEW_NAME, I18nProperties.getPrefixFieldCaption(EventDto.I18N_PREFIX, "eventParticipants"), params);
 		itemName.setValue(eventRef.getCaption());
 		itemUuid.setValue(DataHelper.getShortUuid(eventRef.getUuid()));
 	}

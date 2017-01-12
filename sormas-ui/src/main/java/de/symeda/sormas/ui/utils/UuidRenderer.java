@@ -10,7 +10,11 @@ public class UuidRenderer extends HtmlRenderer {
 
     @Override
     public JsonValue encode(String value) {
-    	value = "<a title='" + value + "'>" + DataHelper.getShortUuid(value) + "</a>";
-        return super.encode(value);
+    	if(value != null && !value.isEmpty()) {
+	    	value = "<a title='" + value + "'>" + DataHelper.getShortUuid(value) + "</a>";
+	        return super.encode(value);
+    	} else {
+    		return null;
+    	}
     }
 }
