@@ -49,6 +49,8 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 
     public UserEditForm() {
         super(UserDto.class, UserDto.I18N_PREFIX);
+
+        setWidth(540, Unit.PIXELS);
     }
 
     @Override

@@ -32,7 +32,6 @@ public class EventParticipantsController {
 		EventParticipantEditForm createForm = new EventParticipantEditForm(FacadeProvider.getEventFacade().getEventByUuid(eventRef.getUuid()));
 		createForm.setValue(eventParticipant);
 		final CommitDiscardWrapperComponent<EventParticipantEditForm> editView = new CommitDiscardWrapperComponent<EventParticipantEditForm>(createForm, createForm.getFieldGroup());
-		editView.setWidth(100, Unit.PERCENTAGE);
 		
 		editView.addCommitListener(new CommitListener() {
 			@Override
@@ -48,16 +47,14 @@ public class EventParticipantsController {
 		});
 		
 		Window window = VaadinUiUtil.showModalPopupWindow(editView, "Create new event person");
-		window.setWidth(800, Unit.PIXELS);
 	}
 	
 	public void editEventParticipant(String eventParticipantUuid) {
 		EventParticipantDto eventParticipantDto = eventParticipantFacade.getEventParticipantByUuid(eventParticipantUuid);
 		EventParticipantEditForm editForm = new EventParticipantEditForm(FacadeProvider.getEventFacade().getEventByUuid(eventParticipantDto.getEvent().getUuid()));
 		editForm.setValue(eventParticipantDto);
-		
 		final CommitDiscardWrapperComponent<EventParticipantEditForm> editView = new CommitDiscardWrapperComponent<EventParticipantEditForm>(editForm, editForm.getFieldGroup());
-		editView.setWidth(100, Unit.PERCENTAGE);
+
 		editView.addCommitListener(new CommitListener() {
 			@Override
 			public void onCommit() {
@@ -71,7 +68,6 @@ public class EventParticipantsController {
 		});
 		
 		Window window = VaadinUiUtil.showModalPopupWindow(editView, "Edit event person");
-		window.setWidth(800, Unit.PIXELS);
 	}
 	
 	public EventParticipantDto createNewEventParticipant(EventReferenceDto eventRef) {

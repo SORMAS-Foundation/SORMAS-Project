@@ -3,6 +3,7 @@ package de.symeda.sormas.ui.task;
 import java.util.List;
 
 import com.vaadin.data.Property;
+import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Field;
@@ -46,6 +47,8 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
     		updateByTaskContext();
     		updateByCreatingAndAssignee();
         });
+        
+        setWidth(540, Unit.PIXELS);
     }
     
 	@Override

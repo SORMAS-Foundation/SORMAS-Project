@@ -1,5 +1,6 @@
 package de.symeda.sormas.ui.person;
 
+import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.TextField;
 
 import de.symeda.sormas.api.person.PersonReferenceDto;
@@ -19,6 +20,8 @@ public class PersonCreateForm extends AbstractEditForm<PersonReferenceDto> {
 
     public PersonCreateForm() {
         super(PersonReferenceDto.class, PersonReferenceDto.I18N_PREFIX);
+
+        setWidth(540, Unit.PIXELS);
     }
 
     @Override

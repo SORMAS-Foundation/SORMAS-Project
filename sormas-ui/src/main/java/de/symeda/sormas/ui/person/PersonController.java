@@ -14,7 +14,6 @@ import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.events.EventParticipantsView;
-import de.symeda.sormas.ui.task.TasksView;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -55,14 +54,14 @@ public class PersonController {
     	PersonSelectField personSelect = new PersonSelectField();
     	personSelect.setFirstName(firstName);
     	personSelect.setLastName(lastName);
-    	
+    	personSelect.setWidth(640, Unit.PIXELS);
+
     	if (personSelect.hasMatches()) {
     		
     		personSelect.selectBestMatch();
     		
 	    	final CommitDiscardWrapperComponent<PersonSelectField> selectOrCreateComponent = 
 	    			new CommitDiscardWrapperComponent<PersonSelectField>(personSelect, null);
-	    	selectOrCreateComponent.setWidth(640, Unit.PIXELS);
 	    	
 	    	selectOrCreateComponent.addCommitListener(new CommitListener() {
 	        	@Override
@@ -96,7 +95,6 @@ public class PersonController {
     	PersonCreateForm createForm = new PersonCreateForm();
         createForm.setValue(person);
         final CommitDiscardWrapperComponent<PersonCreateForm> editComponent = new CommitDiscardWrapperComponent<PersonCreateForm>(createForm, createForm.getFieldGroup());
-        editComponent.setWidth(400, Unit.PIXELS);
         
         editComponent.addCommitListener(new CommitListener() {
         	@Override

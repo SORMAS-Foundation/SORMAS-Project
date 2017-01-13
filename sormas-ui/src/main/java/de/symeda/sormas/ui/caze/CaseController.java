@@ -131,7 +131,6 @@ public class CaseController {
     	CaseCreateForm caseCreateForm = new CaseCreateForm();
         caseCreateForm.setValue(createNewCase(person, disease));
         final CommitDiscardWrapperComponent<CaseCreateForm> editView = new CommitDiscardWrapperComponent<CaseCreateForm>(caseCreateForm, caseCreateForm.getFieldGroup());
-        editView.setWidth(520, Unit.PIXELS);
         
         editView.addCommitListener(new CommitListener() {
         	@Override

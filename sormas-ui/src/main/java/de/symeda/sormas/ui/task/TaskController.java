@@ -35,7 +35,6 @@ public class TaskController {
     	TaskEditForm createForm = new TaskEditForm();
         createForm.setValue(createNewTask());
         final CommitDiscardWrapperComponent<TaskEditForm> editView = new CommitDiscardWrapperComponent<TaskEditForm>(createForm, createForm.getFieldGroup());
-        editView.setWidth(560, Unit.PIXELS);
         
         editView.addCommitListener(new CommitListener() {
         	@Override
@@ -59,7 +58,6 @@ public class TaskController {
     	TaskEditForm form = new TaskEditForm();
         form.setValue(dto);
         final CommitDiscardWrapperComponent<TaskEditForm> editView = new CommitDiscardWrapperComponent<TaskEditForm>(form, form.getFieldGroup());
-        editView.setWidth(560, Unit.PIXELS);
         
         editView.addCommitListener(new CommitListener() {
         	@Override

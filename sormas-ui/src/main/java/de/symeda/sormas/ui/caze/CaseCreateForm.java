@@ -36,6 +36,8 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
     
     public CaseCreateForm() {
         super(CaseDataDto.class, CaseDataDto.I18N_PREFIX);
+
+        setWidth(540, Unit.PIXELS);
     }
 
     @Override

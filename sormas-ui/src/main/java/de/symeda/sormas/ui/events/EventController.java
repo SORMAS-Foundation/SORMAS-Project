@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
-import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 
@@ -68,7 +67,6 @@ public class EventController {
 		EventCreateForm eventCreateForm = new EventCreateForm();
 		eventCreateForm.setValue(createNewEvent());
 		final CommitDiscardWrapperComponent<EventCreateForm> editView = new CommitDiscardWrapperComponent<EventCreateForm>(eventCreateForm, eventCreateForm.getFieldGroup());
-		editView.setWidth(1040, Unit.PIXELS);
 		
 		editView.addCommitListener(new CommitListener() {
 			@Override

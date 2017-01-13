@@ -91,35 +91,10 @@ public abstract class AbstractEditForm <DTO extends DataTransferObject> extends 
 				textField.setNullRepresentation("");
 				return textField;
 			}
-			
-
-//			@SuppressWarnings("rawtypes")
-//			protected Field createEnumField(Class<?> type) {
-//				Object[] enumConstants = type.getEnumConstants();
-//
-//				if (SymptomState.class.isAssignableFrom(type)) {
-//					OptionGroup field = new OptionGroup(null, Arrays.asList(SymptomState.values()));
-//					CssStyles.style(field, CssStyles.INLINE_OPTIONGROUP);
-//					field.setImmediate(false);
-//					field.setNullSelectionAllowed(false);
-//					field.setMultiSelect(false);
-//					return field;
-//				} else {
-//					AbstractSelect cb;
-//					if (enumConstants.length <= 20) {
-//						cb = new NativeSelect();
-//					} else {
-//						ComboBox ccb = new ComboBox();
-//						ccb.setPageLength(enumConstants.length);
-//						cb = ccb;
-//					}
-//					for (Object o : enumConstants) {
-//						cb.addItem(o);
-//					}
-//					return cb;
-//				}
-//			}
 		});
+		
+		setWidth(900, Unit.PIXELS);
+		setHeightUndefined();
 		
 		addFields();
 	}
@@ -133,9 +108,6 @@ public abstract class AbstractEditForm <DTO extends DataTransferObject> extends 
 		layout.setWidth(100, Unit.PERCENTAGE);
 		layout.setHeightUndefined();
 
-		setWidth(900, Unit.PIXELS);
-		setHeightUndefined();
-		
 		return layout;
 	}
 	

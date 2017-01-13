@@ -37,6 +37,8 @@ public class EventParticipantEditForm extends AbstractEditForm<EventParticipantD
 			throw new IllegalArgumentException("event cannot be null");
 		}
 		addFields();
+		
+		setWidth(540, Unit.PIXELS);
 	}
 	
 	@Override

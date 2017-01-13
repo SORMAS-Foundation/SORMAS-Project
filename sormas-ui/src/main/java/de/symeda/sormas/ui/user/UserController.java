@@ -65,7 +65,6 @@ public class UserController {
     	UserDto userDto = FacadeProvider.getUserFacade().getByUuid(userUuid);
         userEditForm.setValue(userDto);
         final CommitDiscardWrapperComponent<UserEditForm> editView = new CommitDiscardWrapperComponent<UserEditForm>(userEditForm, userEditForm.getFieldGroup());
-        editView.setWidth(640, Unit.PIXELS);
         
         editView.addCommitListener(new CommitListener() {
         	@Override
@@ -97,7 +96,6 @@ public class UserController {
     	UserEditForm createForm = new UserEditForm();
         createForm.setValue(createNewUser());
         final CommitDiscardWrapperComponent<UserEditForm> editView = new CommitDiscardWrapperComponent<UserEditForm>(createForm, createForm.getFieldGroup());
-        editView.setWidth(400, Unit.PIXELS);
         
         editView.addCommitListener(new CommitListener() {
         	@Override
