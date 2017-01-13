@@ -95,13 +95,15 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		getFieldGroup().getField(SymptomsDto.OTHER_HEMORRHAGIC_SYMPTOMS_TEXT).setCaption(null);
 		getFieldGroup().getField(SymptomsDto.OTHER_NON_HEMORRHAGIC_SYMPTOMS_TEXT).setCaption(null);
 		
-		FieldHelper.setReadOnlyWhen(getFieldGroup(), 
-				Arrays.asList(SymptomsDto.GUMS_BLEEDING, SymptomsDto.INJECTION_SITE_BLEEDING, SymptomsDto.NOSE_BLEEDING, 
-						SymptomsDto.BLOODY_BLACK_STOOL, SymptomsDto.RED_BLOOD_VOMIT, SymptomsDto.DIGESTED_BLOOD_VOMIT, 
-						SymptomsDto.COUGHING_BLOOD, SymptomsDto.BLEEDING_VAGINA, SymptomsDto.SKIN_BRUISING, 
-						SymptomsDto.BLOOD_URINE, SymptomsDto.OTHER_HEMORRHAGIC_SYMPTOMS, SymptomsDto.OTHER_HEMORRHAGIC_SYMPTOMS_TEXT),
+		List<Object> unexplainedBleedingFields = Arrays.asList(SymptomsDto.GUMS_BLEEDING, SymptomsDto.INJECTION_SITE_BLEEDING, SymptomsDto.NOSE_BLEEDING, 
+				SymptomsDto.BLOODY_BLACK_STOOL, SymptomsDto.RED_BLOOD_VOMIT, SymptomsDto.DIGESTED_BLOOD_VOMIT, 
+				SymptomsDto.COUGHING_BLOOD, SymptomsDto.BLEEDING_VAGINA, SymptomsDto.SKIN_BRUISING, 
+				SymptomsDto.BLOOD_URINE, SymptomsDto.OTHER_HEMORRHAGIC_SYMPTOMS, SymptomsDto.OTHER_HEMORRHAGIC_SYMPTOMS_TEXT);
+		
+		FieldHelper.setVisibleWhen(getFieldGroup(), 
+				unexplainedBleedingFields,
 				SymptomsDto.UNEXPLAINED_BLEEDING, 
-				Arrays.asList(null, SymptomState.NO, SymptomState.UNKNOWN), true);
+				Arrays.asList(SymptomState.YES), true, false);
 		
 		FieldHelper.setVisibleWhen(getFieldGroup(), 
 				SymptomsDto.OTHER_HEMORRHAGIC_SYMPTOMS_TEXT,
@@ -120,6 +122,9 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		
 		getFieldGroup().getField(SymptomsDto.OTHER_HEMORRHAGIC_SYMPTOMS_TEXT).setVisible(false);
 		getFieldGroup().getField(SymptomsDto.OTHER_NON_HEMORRHAGIC_SYMPTOMS_TEXT).setVisible(false);
+		for (Object fieldId : unexplainedBleedingFields) {
+			getFieldGroup().getField(fieldId).setVisible(false);
+		}
 
 		List<String> symptomFieldIds = Arrays.asList(SymptomsDto.FEVER, SymptomsDto.VOMITING, 
 				SymptomsDto.DIARRHEA, SymptomsDto.BLOOD_IN_STOOL, SymptomsDto.NAUSEA, SymptomsDto.ABDOMINAL_PAIN, SymptomsDto.HEADACHE, 

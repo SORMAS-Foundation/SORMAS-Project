@@ -85,7 +85,7 @@ public class SymptomsEditTab extends FormTab {
             binding.symptomsUnexplainedBleeding.addValueChangedListener(new PropertyField.ValueChangeListener() {
                 @Override
                 public void onChange(PropertyField field) {
-                    activationUnexplainedBleedingFields();
+                    toggleUnexplainedBleedingFields();
                 }
             });
             binding.symptomsOtherHemorrhagicSymptoms.addValueChangedListener(new PropertyField.ValueChangeListener() {
@@ -104,7 +104,7 @@ public class SymptomsEditTab extends FormTab {
             // set initial UI
             visibilityOtherHemorrhagicSymptoms();
             visibilityOtherNonHemorrhagicSymptoms();
-            activationUnexplainedBleedingFields();
+            toggleUnexplainedBleedingFields();
 
             visibilityDisease(disease);
 
@@ -144,7 +144,7 @@ public class SymptomsEditTab extends FormTab {
     }
 
 
-    private void activationUnexplainedBleedingFields() {
+    private void toggleUnexplainedBleedingFields() {
 
         int[] fieldIds = {
                 R.id.symptoms_gumsBleeding1,
@@ -163,13 +163,13 @@ public class SymptomsEditTab extends FormTab {
         SymptomState symptomState = binding.symptomsUnexplainedBleeding.getValue();
         for (int fieldId:fieldIds) {
             if(symptomState == SymptomState.YES) {
-                activateField(getView().findViewById(fieldId));
+                setFieldVisible(getView().findViewById(fieldId), true);
             }
             else {
                 View view = getView().findViewById(fieldId);
                 // reset value
                 ((SymptomStateField)view).setValue(null);
-                deactivateField(view);
+                setFieldGone(view);
             }
         }
     }

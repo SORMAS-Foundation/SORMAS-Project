@@ -235,6 +235,11 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
         }
     }
 
+    protected void setFieldGone(View v) {
+        v.setVisibility(View.GONE);
+        v.clearFocus();
+    }
+
     protected void activateField(View v) {
         v.setEnabled(true);
     }
