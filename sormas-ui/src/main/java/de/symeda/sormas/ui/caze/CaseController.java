@@ -15,6 +15,7 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsFacade;
 import de.symeda.sormas.api.user.UserDto;
@@ -45,8 +46,13 @@ public class CaseController {
 	}
     
     public void create() {
-    	CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent();
+    	CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(null, null);
     	VaadinUiUtil.showModalPopupWindow(caseCreateComponent, "Create new case");    	
+    }
+    
+    public void create(PersonDto person, Disease disease) {
+    	CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(person, disease);
+    	VaadinUiUtil.showModalPopupWindow(caseCreateComponent, "Create new case"); 
     }
     
     public void navigateToData(String caseUuid) {
@@ -95,11 +101,18 @@ public class CaseController {
         return cf.getCaseDataByUuid(uuid);
     }
 
-    private CaseDataDto createNewCase() {
+    private CaseDataDto createNewCase(PersonDto person, Disease disease) {
     	CaseDataDto caze = new CaseDataDto();
     	caze.setUuid(DataHelper.createUuid());
     	
-    	caze.setDisease(Disease.EVD);
+    	if(person != null) {
+    		caze.setPerson(person);
+    	}
+    	if(disease == null) {
+    		caze.setDisease(Disease.EVD);
+    	} else {
+    		caze.setDisease(disease);
+    	}
     	caze.setInvestigationStatus(InvestigationStatus.PENDING);
     	caze.setCaseClassification(CaseClassification.POSSIBLE);
     	
@@ -113,10 +126,10 @@ public class CaseController {
     	return caze;
     }
     
-    public CommitDiscardWrapperComponent<CaseCreateForm> getCaseCreateComponent() {
+    public CommitDiscardWrapperComponent<CaseCreateForm> getCaseCreateComponent(PersonDto person, Disease disease) {
     	
     	CaseCreateForm caseCreateForm = new CaseCreateForm();
-        caseCreateForm.setValue(createNewCase());
+        caseCreateForm.setValue(createNewCase(person, disease));
         final CommitDiscardWrapperComponent<CaseCreateForm> editView = new CommitDiscardWrapperComponent<CaseCreateForm>(caseCreateForm, caseCreateForm.getFieldGroup());
         editView.setWidth(520, Unit.PIXELS);
         

@@ -1,5 +1,6 @@
 package de.symeda.sormas.ui.events;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.criteria.CriteriaBuilder.Case;
@@ -9,6 +10,8 @@ import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.GeneratedPropertyContainer;
 import com.vaadin.data.util.PropertyValueGenerator;
 import com.vaadin.ui.Grid;
+import com.vaadin.ui.Grid.CellReference;
+import com.vaadin.ui.Grid.CellStyleGenerator;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -19,9 +22,12 @@ import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.task.TaskDto;
+import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.login.LoginHelper;
+import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -61,7 +67,7 @@ public class EventParticipantsGrid extends Grid {
 			@Override
 			public String getValue(Item item, Object itemId, Object propertyId) {
 				EventParticipantDto eventParticipantDto = (EventParticipantDto)itemId;
-				return eventParticipantDto.getPerson().getFirstName() + " " + eventParticipantDto.getPerson().getLastName();
+				return eventParticipantDto.getPerson().getFirstName() + " " + eventParticipantDto.getPerson().getLastName().toUpperCase();
 			}
 			@Override
 			public Class<String> getType() {
@@ -119,7 +125,7 @@ public class EventParticipantsGrid extends Grid {
         getColumn(EDIT_BTN_ID).setRenderer(new HtmlRenderer());
         getColumn(EDIT_BTN_ID).setWidth(60);
 		getColumn(PERSON_UUID).setRenderer(new UuidRenderer());
-		getColumn(CASE_ID).setRenderer(new UuidRenderer());
+		getColumn(CASE_ID).setRenderer(new UuidRenderer(true));
 		
 		for(Column column : getColumns()) {
 			column.setHeaderCaption(I18nProperties.getPrefixFieldCaption(
@@ -134,6 +140,8 @@ public class EventParticipantsGrid extends Grid {
 				CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(findAssociatedCaseId(personDto, eventDto));
 				if(caseDto != null) {
 					ControllerProvider.getCaseController().navigateToData(findAssociatedCaseId(personDto, eventDto));
+				} else {
+					ControllerProvider.getCaseController().create(personDto, eventDto.getDisease());
 				}
 	       	} else if(PERSON_UUID.equals(e.getPropertyId())) {
 	       		ControllerProvider.getPersonController().openEditModal(eventParticipantDto.getPerson().getUuid());
