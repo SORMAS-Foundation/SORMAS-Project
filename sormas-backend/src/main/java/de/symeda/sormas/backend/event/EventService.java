@@ -7,11 +7,16 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.user.User;
 
 @Stateless
@@ -28,13 +33,18 @@ public class EventService extends AbstractAdoService<Event> {
 		Root<Event> from = cq.from(getElementClass());
 		
 		Predicate filter = cb.equal(from.get(Event.REPORTING_USER), user);
-		// TODO add event officer?
+		if (user.getUserRoles().contains(UserRole.SURVEILLANCE_OFFICER)) {
+			filter = cb.or(filter, cb.equal(from.get(Case.SURVEILLANCE_OFFICER), user));
+		}
 		
-		// TODO add filter by task
+		Join<Event, Task> tasksJoin = from.join(Event.TASKS, JoinType.LEFT);
+		filter = cb.or(filter, cb.equal(tasksJoin.get(Task.ASSIGNEE_USER), user));
 		
-		// TODO add filter by region
+		// TODO add Filter by Region...
 		
-		// TODO add event supervisor?
+		if (user.getUserRoles().contains(UserRole.SURVEILLANCE_SUPERVISOR)) {
+			filter = null;//cb.or(filter, cb.equal(from.get(Case.SURVEILLANCE_SUPERVISOR), user));
+		}
 		
 		if(date != null) {
 			Predicate dateFilter = cb.greaterThan(from.get(AbstractDomainObject.CHANGE_DATE), date);
