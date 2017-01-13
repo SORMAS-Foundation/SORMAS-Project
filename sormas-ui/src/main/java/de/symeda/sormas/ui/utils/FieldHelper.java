@@ -61,12 +61,12 @@ public final class FieldHelper {
 	}
 
 	public static void setVisibleWhen(FieldGroup fieldGroup, Object targetPropertyId, 
-			Object sourcePropertyId, List<Object> sourceValues, boolean clearOnHidden, boolean setRequired) {
-		setVisibleWhen(fieldGroup, Arrays.asList(targetPropertyId), sourcePropertyId, sourceValues, clearOnHidden, setRequired);
+			Object sourcePropertyId, List<Object> sourceValues, boolean clearOnHidden) {
+		setVisibleWhen(fieldGroup, Arrays.asList(targetPropertyId), sourcePropertyId, sourceValues, clearOnHidden);
 	}
 
 	public static void setVisibleWhen(final FieldGroup fieldGroup, List<Object> targetPropertyIds, 
-			Object sourcePropertyId, final List<Object> sourceValues, final boolean clearOnHidden, final boolean setRequired) {
+			Object sourcePropertyId, final List<Object> sourceValues, final boolean clearOnHidden) {
 
 		Field sourceField = fieldGroup.getField(sourcePropertyId);
 		if (sourceField instanceof AbstractField<?>) {
@@ -79,9 +79,6 @@ public final class FieldHelper {
 			for (Object targetPropertyId : targetPropertyIds) {
 				Field targetField = fieldGroup.getField(targetPropertyId);
 				targetField.setVisible(visible);
-				if(setRequired) {
-					targetField.setRequired(visible);
-				}
 				if (!visible && clearOnHidden && targetField.getValue() != null) {
 					targetField.clear();
 				}
@@ -93,9 +90,6 @@ public final class FieldHelper {
 			for (Object targetPropertyId : targetPropertyIds) {
 				Field targetField = fieldGroup.getField(targetPropertyId);
 				targetField.setVisible(visible);
-				if(setRequired) {
-					targetField.setRequired(visible);
-				}
 				if (!visible && clearOnHidden && targetField.getValue() != null) {
 					targetField.clear();
 				}
@@ -120,63 +114,6 @@ public final class FieldHelper {
 		for (Field<?> other : others) {
 			other.setRequired(false);
 		}
-	}
-	
-	/**
-	 * Sets the field with the targetPropertyId to required when at least one of the
-	 * fields associated with the sourcePropertyIds has its value set to "Yes" or the
-	 * field associated with textFieldPropertyId is not empty. This method is intended to be used
-	 * with the onsetDate and onsetSymptom fields.
-	 * 
-	 * @param fieldGroup
-	 * @param targetPropertyId
-	 * @param sourcePropertyIds
-	 * @param sourceValues
-	 */
-	public static void setRequiredWhen(FieldGroup fieldGroup, Object targetPropertyId,
-			List<String> sourcePropertyIds, List<Object> sourceValues) {
-				
-		for(Object sourcePropertyId : sourcePropertyIds) {
-			Field sourceField = fieldGroup.getField(sourcePropertyId);
-			if(sourceField instanceof AbstractField<?>) {
-				((AbstractField) sourceField).setImmediate(true);
-			}
-		}
-		
-		// Initialize
-		final Field targetField = fieldGroup.getField(targetPropertyId);
-		targetField.setRequired(isAnySymptomSetToYes(fieldGroup, sourcePropertyIds, sourceValues));
-		
-		// Add listeners
-		for(Object sourcePropertyId : sourcePropertyIds) {
-			Field sourceField = fieldGroup.getField(sourcePropertyId);
-			sourceField.addValueChangeListener(event -> {
-				targetField.setRequired(isAnySymptomSetToYes(fieldGroup, sourcePropertyIds, sourceValues));
-			});
-		}
-		
-	}
-	
-	/**
-	 * Returns true if if the value of any field associated with the sourcePropertyIds
-	 * is set to one of the values contained in sourceValues.
-	 * 
-	 * @param fieldGroup
-	 * @param sourcePropertyIds
-	 * @param sourceValues
-	 * @return
-	 */
-	private static boolean isAnySymptomSetToYes(FieldGroup fieldGroup, List<String> sourcePropertyIds, 
-			List<Object> sourceValues) {
-		
-		for(Object sourcePropertyId : sourcePropertyIds) {
-			Field sourceField = fieldGroup.getField(sourcePropertyId);
-			if(sourceValues.contains(sourceField.getValue())) {
-				return true;
-			}
-		}
-		
-		return false;
 	}
 
 	public static void updateItems(AbstractSelect select, List<?> items) {

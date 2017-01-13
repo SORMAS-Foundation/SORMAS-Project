@@ -3,7 +3,10 @@ package de.symeda.sormas.ui.symptoms;
 import java.util.Arrays;
 import java.util.List;
 
+import com.vaadin.data.fieldgroup.FieldGroup;
+import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.Field;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.I18nProperties;
@@ -103,17 +106,17 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		FieldHelper.setVisibleWhen(getFieldGroup(), 
 				unexplainedBleedingFields,
 				SymptomsDto.UNEXPLAINED_BLEEDING, 
-				Arrays.asList(SymptomState.YES), true, false);
+				Arrays.asList(SymptomState.YES), true);
 		
 		FieldHelper.setVisibleWhen(getFieldGroup(), 
 				SymptomsDto.OTHER_HEMORRHAGIC_SYMPTOMS_TEXT,
 				SymptomsDto.OTHER_HEMORRHAGIC_SYMPTOMS, 
-				Arrays.asList(SymptomState.YES), true, false);
+				Arrays.asList(SymptomState.YES), true);
 
 		FieldHelper.setVisibleWhen(getFieldGroup(), 
 				SymptomsDto.OTHER_NON_HEMORRHAGIC_SYMPTOMS_TEXT,
 				SymptomsDto.OTHER_NON_HEMORRHAGIC_SYMPTOMS, 
-				Arrays.asList(SymptomState.YES), true, false);
+				Arrays.asList(SymptomState.YES), true);
 		
 		for (Object propertyId : getFieldGroup().getBoundPropertyIds()) {
 			boolean visible = DiseasesConfiguration.isDefinedOrMissing(SymptomsDto.class, (String)propertyId, disease);
@@ -135,10 +138,10 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 				SymptomsDto.ANOREXIA_APPETITE_LOSS, SymptomsDto.REFUSAL_FEEDOR_DRINK, SymptomsDto.JOINT_PAIN, SymptomsDto.SHOCK, 
 				SymptomsDto.HICCUPS, SymptomsDto.UNEXPLAINED_BLEEDING, SymptomsDto.OTHER_NON_HEMORRHAGIC_SYMPTOMS);
 		
-		FieldHelper.setRequiredWhen(getFieldGroup(), SymptomsDto.ONSET_DATE, symptomFieldIds, Arrays.asList(SymptomState.YES));
-		FieldHelper.setRequiredWhen(getFieldGroup(), SymptomsDto.ONSET_SYMPTOM, symptomFieldIds, Arrays.asList(SymptomState.YES));
-		FieldHelper.setRequiredWhen(getFieldGroup(), SymptomsDto.OTHER_HEMORRHAGIC_SYMPTOMS_TEXT, Arrays.asList(SymptomsDto.OTHER_HEMORRHAGIC_SYMPTOMS), Arrays.asList(SymptomState.YES));
-		FieldHelper.setRequiredWhen(getFieldGroup(), SymptomsDto.OTHER_NON_HEMORRHAGIC_SYMPTOMS_TEXT, Arrays.asList(SymptomsDto.OTHER_NON_HEMORRHAGIC_SYMPTOMS), Arrays.asList(SymptomState.YES));
+		setRequiredWhenSymptomatic(getFieldGroup(), SymptomsDto.ONSET_DATE, symptomFieldIds, Arrays.asList(SymptomState.YES));
+		setRequiredWhenSymptomatic(getFieldGroup(), SymptomsDto.ONSET_SYMPTOM, symptomFieldIds, Arrays.asList(SymptomState.YES));
+		setRequiredWhenSymptomatic(getFieldGroup(), SymptomsDto.OTHER_HEMORRHAGIC_SYMPTOMS_TEXT, Arrays.asList(SymptomsDto.OTHER_HEMORRHAGIC_SYMPTOMS), Arrays.asList(SymptomState.YES));
+		setRequiredWhenSymptomatic(getFieldGroup(), SymptomsDto.OTHER_NON_HEMORRHAGIC_SYMPTOMS_TEXT, Arrays.asList(SymptomsDto.OTHER_NON_HEMORRHAGIC_SYMPTOMS), Arrays.asList(SymptomState.YES));
 		
 		// setReadOnly(true, );
 	}
@@ -146,5 +149,62 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 	@Override
 	protected String createHtmlLayout() {
 		return HTML_LAYOUT;
+	}
+	
+	/**
+	 * Sets the field with the targetPropertyId to required when at least one of the
+	 * fields associated with the sourcePropertyIds has its value set to "Yes" or the
+	 * field associated with textFieldPropertyId is not empty. This method is intended to be used
+	 * with the onsetDate and onsetSymptom fields.
+	 * 
+	 * @param fieldGroup
+	 * @param targetPropertyId
+	 * @param sourcePropertyIds
+	 * @param sourceValues
+	 */
+	public static void setRequiredWhenSymptomatic(FieldGroup fieldGroup, Object targetPropertyId,
+			List<String> sourcePropertyIds, List<Object> sourceValues) {
+				
+		for(Object sourcePropertyId : sourcePropertyIds) {
+			Field sourceField = fieldGroup.getField(sourcePropertyId);
+			if(sourceField instanceof AbstractField<?>) {
+				((AbstractField) sourceField).setImmediate(true);
+			}
+		}
+		
+		// Initialize
+		final Field targetField = fieldGroup.getField(targetPropertyId);
+		targetField.setRequired(isAnySymptomSetToYes(fieldGroup, sourcePropertyIds, sourceValues));
+		
+		// Add listeners
+		for(Object sourcePropertyId : sourcePropertyIds) {
+			Field sourceField = fieldGroup.getField(sourcePropertyId);
+			sourceField.addValueChangeListener(event -> {
+				targetField.setRequired(isAnySymptomSetToYes(fieldGroup, sourcePropertyIds, sourceValues));
+			});
+		}
+		
+	}
+	
+	/**
+	 * Returns true if if the value of any field associated with the sourcePropertyIds
+	 * is set to one of the values contained in sourceValues.
+	 * 
+	 * @param fieldGroup
+	 * @param sourcePropertyIds
+	 * @param sourceValues
+	 * @return
+	 */
+	private static boolean isAnySymptomSetToYes(FieldGroup fieldGroup, List<String> sourcePropertyIds, 
+			List<Object> sourceValues) {
+		
+		for(Object sourcePropertyId : sourcePropertyIds) {
+			Field sourceField = fieldGroup.getField(sourcePropertyId);
+			if(sourceValues.contains(sourceField.getValue())) {
+				return true;
+			}
+		}
+		
+		return false;
 	}
 }

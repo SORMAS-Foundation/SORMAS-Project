@@ -2,8 +2,11 @@ package de.symeda.sormas.ui.events;
 
 import java.util.Arrays;
 
+import com.vaadin.data.fieldgroup.FieldGroup;
+import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
+import com.vaadin.ui.Field;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
@@ -107,15 +110,33 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		
 		setReadOnly(true, EventDto.UUID, EventDto.REPORT_DATE_TIME, EventDto.REPORTING_USER);
 		
-		FieldHelper.setVisibleWhen(getFieldGroup(), EventDto.TYPE_OF_PLACE_TEXT, EventDto.TYPE_OF_PLACE, Arrays.asList(TypeOfPlace.OTHER), true, true);
+		FieldHelper.setVisibleWhen(getFieldGroup(), EventDto.TYPE_OF_PLACE_TEXT, EventDto.TYPE_OF_PLACE, Arrays.asList(TypeOfPlace.OTHER), true);
+		setTypeOfPlaceTextRequirement();
+		
 		setRequired(true, EventDto.EVENT_TYPE, EventDto.EVENT_DATE, EventDto.EVENT_STATUS, EventDto.UUID, EventDto.EVENT_DESC,
 				EventDto.REPORT_DATE_TIME, EventDto.REPORTING_USER, EventDto.TYPE_OF_PLACE, EventDto.SRC_FIRST_NAME,
-				EventDto.SRC_LAST_NAME, EventDto.SRC_TEL_NO);
+				EventDto.SRC_LAST_NAME, EventDto.SRC_TEL_NO, EventDto.TYPE_OF_PLACE_TEXT);
 	}
 	
 	@Override
 	protected String createHtmlLayout() {
 		return HTML_LAYOUT;
+	}
+	
+	public void setTypeOfPlaceTextRequirement() {
+		FieldGroup fieldGroup = getFieldGroup();
+		Field typeOfPlaceField = fieldGroup.getField(EventDto.TYPE_OF_PLACE);
+		Field typeOfPlaceTextField = fieldGroup.getField(EventDto.TYPE_OF_PLACE_TEXT);
+		((AbstractField) typeOfPlaceField).setImmediate(true);
+		
+		// initialize
+		{
+			typeOfPlaceTextField.setRequired(typeOfPlaceField.getValue() == TypeOfPlace.OTHER);
+		}
+		
+		typeOfPlaceField.addValueChangeListener(event -> {
+			typeOfPlaceTextField.setRequired(typeOfPlaceField.getValue() == TypeOfPlace.OTHER);
+		});
 	}
 	
 }
