@@ -92,8 +92,11 @@ public class TaskNotificationService extends Service {
             if(task.getCaze() != null) {
                 caze = caseDAO.queryForId(task.getCaze().getId());
             }
-            if(task.getContact() != null) {
+            else if(task.getContact() != null) {
                 contact = contactDAO.queryForId(task.getContact().getId());
+            }
+            else {
+                continue;
             }
 
             Person person = caze != null ? personDAO.queryForId(caze.getPerson().getId()) : personDAO.queryForId(contact.getPerson().getId());
