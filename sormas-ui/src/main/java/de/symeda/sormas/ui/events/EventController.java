@@ -33,12 +33,17 @@ public class EventController {
 	}
 	
 	public void create() {
-		CommitDiscardWrapperComponent<EventCreateForm> eventCreateComponent = getEventCreateComponent();
+		CommitDiscardWrapperComponent<EventDataForm> eventCreateComponent = getEventCreateComponent();
 		VaadinUiUtil.showModalPopupWindow(eventCreateComponent, "Create new event");
 	}
 	
 	public void navigateToData(String eventUuid) {
 		String navigationState = EventDataView.VIEW_NAME + "/" + eventUuid;
+		SormasUI.get().getNavigator().navigateTo(navigationState);
+	}
+	
+	public void navigateToParticipants(String eventUuid) {
+		String navigationState = EventParticipantsView.VIEW_NAME + "/" + eventUuid;
 		SormasUI.get().getNavigator().navigateTo(navigationState);
 	}
 	
@@ -63,10 +68,10 @@ public class EventController {
 		return ef.getEventByUuid(uuid);
 	}
 	
-	public CommitDiscardWrapperComponent<EventCreateForm> getEventCreateComponent() {
-		EventCreateForm eventCreateForm = new EventCreateForm();
+	public CommitDiscardWrapperComponent<EventDataForm> getEventCreateComponent() {
+		EventDataForm eventCreateForm = new EventDataForm();
 		eventCreateForm.setValue(createNewEvent());
-		final CommitDiscardWrapperComponent<EventCreateForm> editView = new CommitDiscardWrapperComponent<EventCreateForm>(eventCreateForm, eventCreateForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<EventDataForm> editView = new CommitDiscardWrapperComponent<EventDataForm>(eventCreateForm, eventCreateForm.getFieldGroup());
 		
 		editView.addCommitListener(new CommitListener() {
 			@Override
@@ -75,7 +80,7 @@ public class EventController {
 					EventDto dto = eventCreateForm.getValue();
 					ef.saveEvent(dto);
 					Notification.show("New event created", Type.TRAY_NOTIFICATION);
-					navigateToData(dto.getUuid());
+					navigateToParticipants(dto.getUuid());
 				}
 			}
 		});
@@ -109,10 +114,6 @@ public class EventController {
 		event.setUuid(DataHelper.createUuid());
 		
 		event.setEventStatus(EventStatus.POSSIBLE);
-		event.setSrcFirstName("Herr");
-		event.setSrcLastName("Testevent");
-		event.setSrcTelNo("01901234567");
-		
 		LocationDto location = new LocationDto();
 		location.setUuid(DataHelper.createUuid());
 		event.setEventLocation(location);

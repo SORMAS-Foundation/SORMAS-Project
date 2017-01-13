@@ -1,17 +1,12 @@
 package de.symeda.sormas.ui.events;
 
-import java.util.Date;
 import java.util.List;
-
-import javax.persistence.criteria.CriteriaBuilder.Case;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.GeneratedPropertyContainer;
 import com.vaadin.data.util.PropertyValueGenerator;
 import com.vaadin.ui.Grid;
-import com.vaadin.ui.Grid.CellReference;
-import com.vaadin.ui.Grid.CellStyleGenerator;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -22,12 +17,9 @@ import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.api.task.TaskDto;
-import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.login.LoginHelper;
-import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 

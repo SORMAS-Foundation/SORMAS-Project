@@ -41,11 +41,6 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 									LayoutUtil.fluidRowLocs(EventDto.EVENT_STATUS))
 					) +
 					LayoutUtil.fluidRowCss(CssStyles.VSPACE4,
-							LayoutUtil.fluidColumn(12, 0,
-									LayoutUtil.fluidRowLocs(EventDto.TYPE_OF_PLACE, EventDto.TYPE_OF_PLACE_TEXT)
-							)
-					) +
-					LayoutUtil.fluidRowCss(CssStyles.VSPACE4,
 							LayoutUtil.fluidColumn(12, 0, 
 									LayoutUtil.fluidRowLocs(EventDto.EVENT_DESC))
 					) +
@@ -68,8 +63,12 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			LayoutUtil.h3(CssStyles.VSPACE3, "Location") +
 			LayoutUtil.divCss(CssStyles.VSPACE2,
 					LayoutUtil.fluidRowCss(CssStyles.VSPACE4, 
-							LayoutUtil.fluidColumn(12, 0, 
+							LayoutUtil.fluidColumn(8, 0, 
 									LayoutUtil.fluidRowLocs(EventDto.EVENT_LOCATION)
+							),
+							LayoutUtil.fluidColumn(4, 0,
+									LayoutUtil.fluidRowLocs(EventDto.TYPE_OF_PLACE) +
+									LayoutUtil.fluidRowLocs(EventDto.TYPE_OF_PLACE_TEXT)
 							)
 					)
 			);
@@ -88,7 +87,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 	protected void addFields() {
 		addField(EventDto.UUID, TextField.class);
 		addField(EventDto.EVENT_TYPE, OptionGroup.class);
-		addField(EventDto.DISEASE, ComboBox.class);
+		addField(EventDto.DISEASE, ComboBox.class).setNullSelectionAllowed(true);
 		addField(EventDto.EVENT_DATE, DateField.class);
 		addField(EventDto.EVENT_STATUS, OptionGroup.class);
 		addField(EventDto.EVENT_DESC, TextArea.class).setRows(2);
@@ -109,7 +108,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		setReadOnly(true, EventDto.UUID, EventDto.REPORT_DATE_TIME, EventDto.REPORTING_USER);
 		
 		FieldHelper.setVisibleWhen(getFieldGroup(), EventDto.TYPE_OF_PLACE_TEXT, EventDto.TYPE_OF_PLACE, Arrays.asList(TypeOfPlace.OTHER), true, true);
-		setRequired(true, EventDto.EVENT_TYPE, EventDto.EVENT_STATUS, EventDto.UUID, EventDto.EVENT_DESC,
+		setRequired(true, EventDto.EVENT_TYPE, EventDto.EVENT_DATE, EventDto.EVENT_STATUS, EventDto.UUID, EventDto.EVENT_DESC,
 				EventDto.REPORT_DATE_TIME, EventDto.REPORTING_USER, EventDto.TYPE_OF_PLACE, EventDto.SRC_FIRST_NAME,
 				EventDto.SRC_LAST_NAME, EventDto.SRC_TEL_NO);
 	}
