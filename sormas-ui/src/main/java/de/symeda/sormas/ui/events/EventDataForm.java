@@ -3,6 +3,7 @@ package de.symeda.sormas.ui.events;
 import java.util.Arrays;
 
 import com.vaadin.data.fieldgroup.FieldGroup;
+import com.vaadin.shared.ui.datefield.Resolution;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
@@ -15,8 +16,10 @@ import com.vaadin.ui.VerticalLayout;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.location.LocationForm;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
@@ -46,11 +49,6 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 					LayoutUtil.fluidRowCss(CssStyles.VSPACE4,
 							LayoutUtil.fluidColumn(12, 0, 
 									LayoutUtil.fluidRowLocs(EventDto.EVENT_DESC))
-					) +
-					LayoutUtil.fluidRowCss(CssStyles.VSPACE4,
-							LayoutUtil.fluidColumn(12,  0,
-									LayoutUtil.fluidRowLocs(EventDto.SURVEILLANCE_OFFICER, EventDto.REPORT_DATE_TIME, EventDto.REPORTING_USER)
-							)
 					)
 			) +
 			LayoutUtil.h3(CssStyles.VSPACE3, "Source of information") +
@@ -73,6 +71,11 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 									LayoutUtil.fluidRowLocs(EventDto.TYPE_OF_PLACE) +
 									LayoutUtil.fluidRowLocs(EventDto.TYPE_OF_PLACE_TEXT)
 							)
+					)
+			) +
+			LayoutUtil.fluidRowCss(CssStyles.VSPACE4,
+					LayoutUtil.fluidColumn(12,  0,
+							LayoutUtil.fluidRowLocs(EventDto.SURVEILLANCE_OFFICER, EventDto.REPORT_DATE_TIME, EventDto.REPORTING_USER)
 					)
 			);
 	
@@ -108,6 +111,10 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		addField(EventDto.SRC_EMAIL, TextField.class);
 		addField(EventDto.EVENT_LOCATION, LocationForm.class).setCaption(null);
 		
+		DateField dateTimeField = (DateField) getField(EventDto.REPORT_DATE_TIME);
+		dateTimeField.setResolution(Resolution.MINUTE);
+		dateTimeField.setDateFormat(DateHelper.getTimeDateFormat().toPattern());
+		
 		setReadOnly(true, EventDto.UUID, EventDto.REPORT_DATE_TIME, EventDto.REPORTING_USER);
 		
 		FieldHelper.setVisibleWhen(getFieldGroup(), EventDto.TYPE_OF_PLACE_TEXT, EventDto.TYPE_OF_PLACE, Arrays.asList(TypeOfPlace.OTHER), true);
@@ -115,7 +122,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		
 		setRequired(true, EventDto.EVENT_TYPE, EventDto.EVENT_DATE, EventDto.EVENT_STATUS, EventDto.UUID, EventDto.EVENT_DESC,
 				EventDto.REPORT_DATE_TIME, EventDto.REPORTING_USER, EventDto.TYPE_OF_PLACE, EventDto.SRC_FIRST_NAME,
-				EventDto.SRC_LAST_NAME, EventDto.SRC_TEL_NO, EventDto.TYPE_OF_PLACE_TEXT);
+				EventDto.SRC_LAST_NAME, EventDto.SRC_TEL_NO, EventDto.TYPE_OF_PLACE_TEXT, EventDto.SURVEILLANCE_OFFICER);
 	}
 	
 	@Override

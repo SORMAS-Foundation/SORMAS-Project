@@ -116,6 +116,7 @@ public class EventController {
 		event.setEventStatus(EventStatus.POSSIBLE);
 		LocationDto location = new LocationDto();
 		location.setUuid(DataHelper.createUuid());
+		location.setRegion(LoginHelper.getCurrentUser().getRegion());
 		event.setEventLocation(location);
 		
 		event.setReportDateTime(new Date());

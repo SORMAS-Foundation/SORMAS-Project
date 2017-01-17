@@ -8,10 +8,13 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.event.EventParticipantDto;
+import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.events.EventParticipantsView;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -38,10 +41,11 @@ public class PersonController {
     	
     	final CommitDiscardWrapperComponent<PersonCreateForm> createComponent = getPersonCreateComponent(person);
     	if (doneConsumer != null) {
-    		createComponent.addDoneListener(() -> 
-    		doneConsumer.accept(createComponent.isCommited() ? createComponent.getWrappedComponent().getValue() : null));
-    	}
-    	VaadinUiUtil.showModalPopupWindow(createComponent, "Create new person");    	
+			createComponent.addDoneListener(() -> 
+		    doneConsumer.accept(createComponent.isCommited() ? createComponent.getWrappedComponent().getValue() : null));
+		}
+
+		VaadinUiUtil.showModalPopupWindow(createComponent, "Create new person");  
     }
     
     public void openEditModal(String personUuid) {
@@ -49,7 +53,7 @@ public class PersonController {
 		VaadinUiUtil.showModalPopupWindow(personEditComponent, "Edit person");
     }
     
-    public void selectOrCreatePerson(String firstName, String lastName, Consumer<PersonReferenceDto> resultConsumer) {
+    public void selectOrCreatePerson(EventParticipantDto eventParticipant, String firstName, String lastName, Consumer<PersonReferenceDto> resultConsumer) {
     	
     	PersonSelectField personSelect = new PersonSelectField();
     	personSelect.setFirstName(firstName);
@@ -70,9 +74,22 @@ public class PersonController {
 	        		if (person != null) {
 	        			if (resultConsumer != null) {
 	        				resultConsumer.accept(person);
+	        				eventParticipant.setPerson(personFacade.getPersonByUuid(person.getUuid()));
+	        				ControllerProvider.getEventParticipantController().editEventParticipant(eventParticipant);
 	        			}
-	        		} else {
-	        			create(personSelect.getFirstName(), personSelect.getLastName(), resultConsumer);
+	        		} else {	
+	        			if(eventParticipant == null) {
+	        				create(personSelect.getFirstName(), personSelect.getLastName(), resultConsumer);
+	        			} else {
+	        				PersonDto personDto = new PersonDto();
+	        				personDto.setUuid(DataHelper.createUuid());
+	        				personDto.setFirstName(personSelect.getFirstName());
+	        				personDto.setLastName(personSelect.getLastName());
+	        				// Workaround to avoid binding error
+	        				personDto.setAddress(new LocationDto());
+	        				eventParticipant.setPerson(personDto);
+	        				ControllerProvider.getEventParticipantController().editEventParticipant(eventParticipant);
+	        			}
 	        		}
 	        	}
 	        });
@@ -80,7 +97,18 @@ public class PersonController {
 	    	VaadinUiUtil.showModalPopupWindow(selectOrCreateComponent, "Pick or create person");
     	}
     	else {
-    		create(personSelect.getFirstName(), personSelect.getLastName(), resultConsumer);
+    		if(eventParticipant == null) {
+    			create(personSelect.getFirstName(), personSelect.getLastName(), resultConsumer);
+    		} else {
+				PersonDto personDto = new PersonDto();
+				personDto.setUuid(DataHelper.createUuid());
+				personDto.setFirstName(personSelect.getFirstName());
+				personDto.setLastName(personSelect.getLastName());
+				// Workaround to avoid binding error
+				personDto.setAddress(new LocationDto());
+				eventParticipant.setPerson(personDto);
+    			ControllerProvider.getEventParticipantController().editEventParticipant(eventParticipant);
+    		}
     	}
     }
     
@@ -112,19 +140,23 @@ public class PersonController {
 	
 	public CommitDiscardWrapperComponent<PersonEditForm> getPersonEditComponent(String personUuid) {
     	    	
-    	PersonEditForm caseEditForm = new PersonEditForm();
+    	PersonEditForm personEditForm = new PersonEditForm();
         
         PersonDto personDto = personFacade.getPersonByUuid(personUuid);
-        caseEditForm.setValue(personDto);
+        personEditForm.setValue(personDto);
         
-        final CommitDiscardWrapperComponent<PersonEditForm> editView = new CommitDiscardWrapperComponent<PersonEditForm>(caseEditForm, caseEditForm.getFieldGroup());
+        return getPersonEditView(personEditForm);
+    }
+	
+	private CommitDiscardWrapperComponent<PersonEditForm> getPersonEditView(PersonEditForm editForm) {
+		final CommitDiscardWrapperComponent<PersonEditForm> editView = new CommitDiscardWrapperComponent<PersonEditForm>(editForm, editForm.getFieldGroup());
         
         editView.addCommitListener(new CommitListener() {
         	
         	@Override
         	public void onCommit() {
-        		if (caseEditForm.getFieldGroup().isValid()) {
-        			PersonDto dto = caseEditForm.getValue();
+        		if (editForm.getFieldGroup().isValid()) {
+        			PersonDto dto = editForm.getValue();
         			dto = personFacade.savePerson(dto);
         			Notification.show("Person data saved", Type.TRAY_NOTIFICATION);
         			refreshView();
@@ -133,7 +165,7 @@ public class PersonController {
         });
         
         return editView;
-    }
+	}
 	
 	private void refreshView() {
 		View currentView = SormasUI.get().getNavigator().getCurrentView();

@@ -73,8 +73,8 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		}
 		
 		target.setEvent(eventService.getByReferenceDto(source.getEvent()));
-		target.setPerson(personService.getByReferenceDto(source.getPerson()));
-		target.setKindOfInvolvement(source.getKindOfInvolvement());
+		target.setPerson(personService.getByUuid(source.getPerson().getUuid()));
+		target.setInvolvementDescription(source.getInvolvementDescription());
 		
 		return target;
 	}
@@ -97,8 +97,8 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		DtoHelper.fillReferenceDto(target, source);
 		
 		target.setEvent(EventFacadeEjb.toReferenceDto(source.getEvent()));
-		target.setPerson(PersonFacadeEjb.toReferenceDto(source.getPerson()));
-		target.setKindOfInvolvement(source.getKindOfInvolvement());
+		target.setPerson(PersonFacadeEjb.toDto(source.getPerson()));
+		target.setInvolvementDescription(source.getInvolvementDescription());
 		
 		return target;
 	}

@@ -959,9 +959,16 @@ ALTER TABLE events ADD COLUMN typeofplacetext character varying(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (18, 'update events with type of place text');
 
--- 2016-12-15; Assign tasks to an event #65
+-- 2017-01-12 Assign tasks to an event #65
 
 ALTER TABLE task ADD COLUMN event_id bigint;
 ALTER TABLE task ADD CONSTRAINT fk_task_event_id FOREIGN KEY (event_id) REFERENCES events (id);
 
 INSERT INTO schema_version (version_number, comment) VALUES (19, 'Event added to task');
+
+-- 2016-01-17 Change kind of involvement to involvement description #66
+
+ALTER TABLE eventparticipant DROP COLUMN kindofinvolvement;
+ALTER TABLE eventparticipant ADD COLUMN involvementdescription varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (20, 'Involvement description instead of Kind of involvement');

@@ -20,6 +20,7 @@ import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.login.LoginHelper;
+import de.symeda.sormas.ui.utils.CaseUuidRenderer;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -112,12 +113,12 @@ public class EventParticipantsGrid extends Grid {
 			}
 		});
 		
-		setColumns(EDIT_BTN_ID, PERSON_UUID, PERSON_NAME, PERSON_SEX, PERSON_AGE, EventParticipantDto.KIND_OF_INVOLVEMENT, CASE_ID);
+		setColumns(EDIT_BTN_ID, PERSON_UUID, PERSON_NAME, PERSON_SEX, PERSON_AGE, EventParticipantDto.INVOLVEMENT_DESCRIPTION, CASE_ID);
 
         getColumn(EDIT_BTN_ID).setRenderer(new HtmlRenderer());
         getColumn(EDIT_BTN_ID).setWidth(60);
 		getColumn(PERSON_UUID).setRenderer(new UuidRenderer());
-		getColumn(CASE_ID).setRenderer(new UuidRenderer(true));
+		getColumn(CASE_ID).setRenderer(new CaseUuidRenderer(true));
 		
 		for(Column column : getColumns()) {
 			column.setHeaderCaption(I18nProperties.getPrefixFieldCaption(
@@ -138,7 +139,7 @@ public class EventParticipantsGrid extends Grid {
 	       	} else if(PERSON_UUID.equals(e.getPropertyId())) {
 	       		ControllerProvider.getPersonController().openEditModal(eventParticipantDto.getPerson().getUuid());
 	       	} else if(EDIT_BTN_ID.equals(e.getPropertyId())) {
-	       		ControllerProvider.getEventParticipantController().editEventParticipant(eventParticipantDto.getUuid());
+	       		ControllerProvider.getEventParticipantController().editEventParticipant(eventParticipantDto);
 	       	}
 		});	
 	}

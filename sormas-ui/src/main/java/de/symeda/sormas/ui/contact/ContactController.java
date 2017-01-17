@@ -107,7 +107,7 @@ public class ContactController {
         		if (createForm.getFieldGroup().isValid()) {
         			final ContactDto dto = createForm.getValue();
         			
-        			ControllerProvider.getPersonController().selectOrCreatePerson(
+        			ControllerProvider.getPersonController().selectOrCreatePerson(null,
         					createForm.getPersonFirstName(), createForm.getPersonLastName(), 
         					person -> {
         						dto.setPerson(person);

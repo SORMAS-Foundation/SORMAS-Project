@@ -1,6 +1,6 @@
 package de.symeda.sormas.api.event;
 
-import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.person.PersonDto;
 
 public class EventParticipantDto extends EventParticipantReferenceDto {
 
@@ -10,11 +10,11 @@ public class EventParticipantDto extends EventParticipantReferenceDto {
 	
 	public static final String EVENT = "event";
 	public static final String PERSON = "person";
-	public static final String KIND_OF_INVOLVEMENT = "kindOfInvolvement";
+	public static final String INVOLVEMENT_DESCRIPTION = "involvementDescription";
 	
 	private EventReferenceDto event;
-	private PersonReferenceDto person;
-	private KindOfInvolvement kindOfInvolvement;
+	private PersonDto person;
+	private String involvementDescription;
 	
 	public EventReferenceDto getEvent() {
 		return event;
@@ -24,20 +24,20 @@ public class EventParticipantDto extends EventParticipantReferenceDto {
 		this.event = event;
 	}
 	
-	public PersonReferenceDto getPerson() {
+	public PersonDto getPerson() {
 		return person;
 	}
 	
-	public void setPerson(PersonReferenceDto person) {
+	public void setPerson(PersonDto person) {
 		this.person = person;
 	}
 	
-	public KindOfInvolvement getKindOfInvolvement() {
-		return kindOfInvolvement;
+	public String getInvolvementDescription() {
+		return involvementDescription;
 	}
 	
-	public void setKindOfInvolvement(KindOfInvolvement kindOfInvolvement) {
-		this.kindOfInvolvement = kindOfInvolvement;
+	public void setInvolvementDescription(String involvementDescription) {
+		this.involvementDescription = involvementDescription;
 	}
 	
 }

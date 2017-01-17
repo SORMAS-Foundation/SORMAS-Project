@@ -2,12 +2,9 @@ package de.symeda.sormas.backend.event;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
-import de.symeda.sormas.api.event.KindOfInvolvement;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.person.Person;
 
@@ -18,11 +15,11 @@ public class EventParticipant extends AbstractDomainObject {
 
 	public static final String EVENT = "event";
 	public static final String PERSON = "person";
-	public static final String KIND_OF_INVOLVEMENT = "kindOfInvolvement";
+	public static final String INVOLVEMENT_DESCRIPTION = "involvementDescription";
 	
 	private Event event;
 	private Person person;
-	private KindOfInvolvement kindOfInvolvement;
+	private String involvementDescription;
 	
 	@ManyToOne(cascade = {})
 	public Event getEvent() {
@@ -42,15 +39,14 @@ public class EventParticipant extends AbstractDomainObject {
 	public void setPerson(Person person) {
 		this.person = person;
 	}
-	
-	@Enumerated(EnumType.STRING)
-	@Column(nullable=false)
-	public KindOfInvolvement getKindOfInvolvement() {
-		return kindOfInvolvement;
+
+	@Column(length=512, nullable=false)
+	public String getInvolvementDescription() {
+		return involvementDescription;
 	}
 	
-	public void setKindOfInvolvement(KindOfInvolvement kindOfInvolvement) {
-		this.kindOfInvolvement = kindOfInvolvement;
+	public void setInvolvementDescription(String involvementDescription) {
+		this.involvementDescription = involvementDescription;
 	}
 	
 	@Override
