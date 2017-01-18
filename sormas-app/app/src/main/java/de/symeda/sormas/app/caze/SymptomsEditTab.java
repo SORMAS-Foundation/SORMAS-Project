@@ -102,9 +102,9 @@ public class SymptomsEditTab extends FormTab {
             });
 
             // set initial UI
+            toggleUnexplainedBleedingFields();
             visibilityOtherHemorrhagicSymptoms();
             visibilityOtherNonHemorrhagicSymptoms();
-            toggleUnexplainedBleedingFields();
 
             visibilityDisease(disease);
 

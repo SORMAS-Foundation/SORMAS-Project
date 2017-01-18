@@ -115,19 +115,28 @@ public class VisitEditActivity extends AbstractEditActivity {
                 Visit visit = (Visit) adapter.getData(VisitEditTabs.VISIT_DATA.ordinal());
                 Symptoms symptoms = (Symptoms)adapter.getData(VisitEditTabs.SYMPTOMS.ordinal());
 
+                // symptomatic
                 boolean anySymptomSetToYes = isAnySymptomSetToYes(symptoms);
                 boolean otherHemorrhagicSymTextReq = symptoms.getOtherHemorrhagicSymptoms() == SymptomState.YES &&
                         (symptoms.getOtherHemorrhagicSymptomsText() == null || symptoms.getOtherHemorrhagicSymptomsText().isEmpty());
                 boolean otherNonHemorrhagicSymTextReq = symptoms.getOtherNonHemorrhagicSymptoms() == SymptomState.YES &&
                         (symptoms.getOtherNonHemorrhagicSymptomsText() == null || symptoms.getOtherNonHemorrhagicSymptomsText().isEmpty());
 
+                // date of onset only required when cooperative and symptomatic
                 boolean onsetDateReq = visit.getVisitStatus() == VisitStatus.COOPERATIVE &&
+                        anySymptomSetToYes &&
                         (symptoms.getOnsetDate() == null);
 
+                // validate: temperature of 38.0 or higher needs fever set to yes
+                boolean isFeverReq = symptoms.getTemperature().compareTo(38.0F) >= 0 && symptoms.getFever() == null;
+
                 boolean validData = (!anySymptomSetToYes || ((symptoms.getOnsetDate() != null &&
-                        symptoms.getOnsetSymptom() != null && !symptoms.getOnsetSymptom().isEmpty()))) &&
-                        !otherHemorrhagicSymTextReq && !otherNonHemorrhagicSymTextReq
-                        && !onsetDateReq;
+                        symptoms.getOnsetSymptom() != null
+                        && !symptoms.getOnsetSymptom().isEmpty())))
+                        && !otherHemorrhagicSymTextReq
+                        && !otherNonHemorrhagicSymTextReq
+                        && !onsetDateReq
+                        && !isFeverReq;
                 if(validData) {
                     if (symptoms != null) {
                         visit.setSymptoms(symptoms);
@@ -149,9 +158,16 @@ public class VisitEditActivity extends AbstractEditActivity {
                         Toast.makeText(this, "Not saved. Please specify the additional clinical symptoms.", Toast.LENGTH_LONG).show();
                     } else if(onsetDateReq) {
                         Toast.makeText(this, "Not saved. Please specify the date of initial symptom onset.", Toast.LENGTH_LONG).show();
+                    } else if(isFeverReq) {
+                        Toast.makeText(this, "Not saved. Temperature is in fever range. Please specify the fever field.", Toast.LENGTH_LONG).show();
                     }
                     else {
                         Toast.makeText(this, "Not saved. Please specify an onset date and an onset symptom.", Toast.LENGTH_LONG).show();
+                    }
+
+                    // if any symptomsfield is required, change pager to symptoms tab
+                    if(currentTab!=VisitEditTabs.SYMPTOMS.ordinal()) {
+                        pager.setCurrentItem(VisitEditTabs.SYMPTOMS.ordinal());
                     }
                     return true;
                 }
