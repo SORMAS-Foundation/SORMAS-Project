@@ -136,8 +136,6 @@ public class EventParticipantsGrid extends Grid {
 				} else {
 					ControllerProvider.getCaseController().create(personDto, eventDto.getDisease());
 				}
-	       	} else if(PERSON_UUID.equals(e.getPropertyId())) {
-	       		ControllerProvider.getPersonController().openEditModal(eventParticipantDto.getPerson().getUuid());
 	       	} else if(EDIT_BTN_ID.equals(e.getPropertyId())) {
 	       		ControllerProvider.getEventParticipantController().editEventParticipant(eventParticipantDto);
 	       	}
