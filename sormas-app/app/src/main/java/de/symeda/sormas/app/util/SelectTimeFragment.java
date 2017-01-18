@@ -29,7 +29,7 @@ public class SelectTimeFragment extends DialogFragment implements TimePickerDial
         if(date!=null) {
             calendar.setTime(date);
         }
-        int hour = calendar.get(Calendar.HOUR);
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
         int minute = calendar.get(Calendar.MINUTE);
         final TimePickerDialog timePickerClear = new TimePickerDialog(getActivity(), this, hour, minute, DateFormat.is24HourFormat(getActivity()));
         timePickerClear.setButton(
