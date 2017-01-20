@@ -18,6 +18,7 @@ import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.task.TaskStatus;
@@ -25,12 +26,15 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.HtmlReferenceDtoConverter;
+import de.symeda.sormas.ui.utils.ShortStringRenderer;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 @SuppressWarnings("serial")
 public class TaskGrid extends Grid implements ItemClickListener {
 
 	private static final String EDIT_BTN_ID = "edit";
+	private TaskContext taskContext;
+	private ReferenceDto entityReference;
 
 	private final class TaskGridRowStyleGenerator implements RowStyleGenerator {
 		@Override
@@ -103,6 +107,7 @@ public class TaskGrid extends Grid implements ItemClickListener {
         
         getColumn(TaskDto.DUE_DATE).setRenderer(new DateRenderer("%1$tH:%1$tM %1$td.%1$tm.%1$ty"));
         getColumn(TaskDto.SUGGESTED_START).setRenderer(new DateRenderer("%1$tH:%1$tM %1$td.%1$tm.%1$ty"));
+        getColumn(TaskDto.CREATOR_COMMENT).setRenderer(new ShortStringRenderer(50));
         
         getColumn(TaskDto.CONTEXT_REFERENCE).setRenderer(new HtmlRenderer(), new HtmlReferenceDtoConverter());
         
@@ -129,7 +134,16 @@ public class TaskGrid extends Grid implements ItemClickListener {
 
         reload();
 	}
-    
+	
+	public TaskGrid(TaskContext context, ReferenceDto entityRef) {
+		this();
+		removeColumn(TaskDto.CONTEXT_REFERENCE);
+		filterTaskStatus(TaskStatus.PENDING);
+		this.taskContext = context;
+		this.entityReference = entityRef;
+		reload();
+	}
+	
     public void filterAssignee(UserReferenceDto userDto) {
 		getContainer().removeContainerFilters(TaskDto.ASSIGNEE_USER);
 		if (userDto != null) {
@@ -164,7 +178,13 @@ public class TaskGrid extends Grid implements ItemClickListener {
     }
     
     public void reload() {
-    	List<TaskDto> tasks = ControllerProvider.getTaskController().getAllTasks();
+    	List<TaskDto> tasks;
+    	if(taskContext != null && entityReference != null) {
+	    	tasks = ControllerProvider.getTaskController().getTasksByEntity(taskContext, entityReference);
+    	} else {
+    		tasks = ControllerProvider.getTaskController().getAllTasks();
+    	}
+    	
     	tasks.sort(new Comparator<TaskDto>() {
 
 			@Override
@@ -188,7 +208,11 @@ public class TaskGrid extends Grid implements ItemClickListener {
 			}
 		});
         getContainer().removeAllItems();
-        getContainer().addAll(tasks);    	
+        getContainer().addAll(tasks); 
+        
+        if(entityReference != null) {
+        	this.setHeightByRows(getContainer().size() < 10 ? (getContainer().size() > 0 ? getContainer().size() : 1) : 10);
+        }
     }
 
 	@Override
@@ -210,9 +234,10 @@ public class TaskGrid extends Grid implements ItemClickListener {
 			}
 		} 
 		else if (EDIT_BTN_ID.equals(event.getPropertyId()) || event.isDoubleClick()) {
-			ControllerProvider.getTaskController().edit(task);
+			ControllerProvider.getTaskController().edit(task, this);
 		}
 	}
+	
 }
 
 

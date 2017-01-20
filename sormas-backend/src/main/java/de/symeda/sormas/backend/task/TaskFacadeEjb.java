@@ -10,8 +10,11 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskFacade;
 import de.symeda.sormas.api.task.TaskStatus;
@@ -169,6 +172,48 @@ public class TaskFacadeEjb implements TaskFacade {
 		return service.getAllAfter(date, user).stream()
 			.map(c -> toDto(c))
 			.collect(Collectors.toList());
+	}
+	
+	@Override
+	public List<TaskDto> getAllByCase(CaseReferenceDto caseRef) {
+		if(caseRef == null) {
+			return Collections.emptyList();
+		}
+
+		Case caze = caseService.getByUuid(caseRef.getUuid());
+		
+		return service.findBy(new TaskCriteria().cazeEquals(caze))
+				.stream()
+				.map(c -> toDto(c))
+				.collect(Collectors.toList());
+	}
+	
+	@Override
+	public List<TaskDto> getAllByContact(ContactReferenceDto contactRef) {
+		if(contactRef == null) {
+			return Collections.emptyList();
+		}
+
+		Contact contact = contactService.getByUuid(contactRef.getUuid());
+		
+		return service.findBy(new TaskCriteria().contactEquals(contact))
+				.stream()
+				.map(c -> toDto(c))
+				.collect(Collectors.toList());
+	}
+	
+	@Override
+	public List<TaskDto> getAllByEvent(EventReferenceDto eventRef) {
+		if(eventRef == null) {
+			return Collections.emptyList();
+		}
+
+		Event event = eventService.getByUuid(eventRef.getUuid());
+		
+		return service.findBy(new TaskCriteria().eventEquals(event))
+				.stream()
+				.map(c -> toDto(c))
+				.collect(Collectors.toList());
 	}
 	
 	@Override

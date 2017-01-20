@@ -5,7 +5,6 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
-import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 
 @Remote

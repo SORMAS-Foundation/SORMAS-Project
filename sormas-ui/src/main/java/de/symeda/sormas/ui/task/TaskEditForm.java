@@ -3,7 +3,6 @@ package de.symeda.sormas.ui.task;
 import java.util.List;
 
 import com.vaadin.data.Property;
-import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Field;
@@ -99,6 +98,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
     	addField(TaskDto.ASSIGNEE_REPLY, TextArea.class).setRows(2);
     	
     	setRequired(true, TaskDto.TASK_CONTEXT, TaskDto.TASK_TYPE, TaskDto.ASSIGNEE_USER, TaskDto.DUE_DATE);
+    	setReadOnly(true, TaskDto.TASK_CONTEXT, TaskDto.CAZE, TaskDto.CONTACT, TaskDto.EVENT);
     }
 
 	private void updateByCreatingAndAssignee() {
@@ -119,9 +119,8 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 			
 			setReadOnly(!(assignee || creator), TaskDto.TASK_STATUS);
 			setReadOnly(!assignee, TaskDto.ASSIGNEE_REPLY);
-			setReadOnly(!creator, TaskDto.CAZE, TaskDto.EVENT, TaskDto.CONTACT, 
-					TaskDto.TASK_CONTEXT, TaskDto.TASK_TYPE, 
-					TaskDto.PRIORITY, TaskDto.SUGGESTED_START, TaskDto.DUE_DATE,
+			setReadOnly(!creator, TaskDto.TASK_TYPE, TaskDto.PRIORITY, 
+					TaskDto.SUGGESTED_START, TaskDto.DUE_DATE,
 					TaskDto.ASSIGNEE_USER, TaskDto.CREATOR_COMMENT);
 			setReadOnly(!(creator || supervisor), 
 					TaskDto.PRIORITY, TaskDto.SUGGESTED_START, TaskDto.DUE_DATE,
