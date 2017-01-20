@@ -97,22 +97,21 @@ public class ContactNewActivity extends AppCompatActivity {
                     contact.setReportDateTime(new Date());
                     contact.setCaze(DatabaseHelper.getCaseDao().queryUuid(caseUuid));
 
-                    boolean validData = false;
+                    boolean validData = true;
 
-                    if(contact.getLastContactDate()!=null && contact.getLastContactDate().getTime() <= contact.getReportDateTime().getTime()) {
-                        validData = true;
-                    }
-                    else {
+                    if(contact.getLastContactDate()==null || contact.getLastContactDate().getTime() > contact.getReportDateTime().getTime()) {
                         validData = false;
                         Toast.makeText(this, "Please make sure contact date is set and not in the future.", Toast.LENGTH_SHORT).show();
                     }
 
-                    if(!contact.getPerson().getFirstName().isEmpty() && !contact.getPerson().getLastName().isEmpty() ) {
-                        validData = true;
-                    }
-                    else {
+                    if(contact.getPerson().getFirstName().isEmpty() || contact.getPerson().getLastName().isEmpty() ) {
                         validData = false;
                         Toast.makeText(this, "Please select a person.", Toast.LENGTH_SHORT).show();
+                    }
+
+                    if(contact.getRelationToCase() == null) {
+                        validData = false;
+                        Toast.makeText(this, "Please select a relationship with the case.", Toast.LENGTH_SHORT).show();
                     }
 
                     if(validData) {
