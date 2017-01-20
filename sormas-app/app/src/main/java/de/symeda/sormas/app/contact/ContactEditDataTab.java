@@ -8,11 +8,13 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import de.symeda.sormas.api.contact.ContactProximity;
+import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.contact.ContactDao;
+import de.symeda.sormas.app.component.FieldHelper;
 import de.symeda.sormas.app.databinding.ContactDataFragmentLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.FormTab;
@@ -43,6 +45,8 @@ public class ContactEditDataTab extends FormTab {
 
         binding.contactLastContactDate.initialize(this);
         binding.contactContactProximity.initialize(ContactProximity.class);
+
+        FieldHelper.initSpinnerField(binding.contactRelationToCase, ContactRelation.class);
     }
 
     @Override

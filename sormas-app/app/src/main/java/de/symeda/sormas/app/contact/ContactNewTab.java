@@ -18,6 +18,7 @@ import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.api.contact.ContactProximity;
+import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
@@ -25,6 +26,7 @@ import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.component.FieldHelper;
 import de.symeda.sormas.app.component.RadioGroupField;
 import de.symeda.sormas.app.databinding.ContactNewFragmentLayoutBinding;
 import de.symeda.sormas.app.databinding.PersonSelectOrCreateFragmentLayoutBinding;
@@ -72,6 +74,8 @@ public class ContactNewTab extends FormTab {
 
         binding.contactLastContactDate.initialize(this);
         binding.contactContactProximity.initialize(ContactProximity.class);
+
+        FieldHelper.initSpinnerField(binding.contactRelationToCase, ContactRelation.class);
     }
 
     /**

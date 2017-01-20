@@ -13,6 +13,7 @@ import javax.persistence.Enumerated;
 
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactProximity;
+import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
@@ -38,6 +39,7 @@ public class Contact extends AbstractDomainObject {
 	public static final String FOLLOW_UP_UNTIL = "followUpUntil";
 	public static final String CONTACT_OFFICER = "contactOfficer";
 	public static final String DESCRIPTION = "description";
+	public static final String RELATION_TO_CASE = "relationToCase";
 
 	@DatabaseField(foreign = true, foreignAutoRefresh=true, canBeNull = false)
 	private Person person;
@@ -71,6 +73,9 @@ public class Contact extends AbstractDomainObject {
 
 	@Column(length=512)
 	private String description;
+
+	@Enumerated(EnumType.STRING)
+	private ContactRelation relationToCase;
 	
 	public Person getPerson() {
 		return person;
@@ -147,5 +152,12 @@ public class Contact extends AbstractDomainObject {
 	}
 	public void setContactOfficer(User contactOfficer) {
 		this.contactOfficer = contactOfficer;
-	}	
+	}
+
+	public ContactRelation getRelationToCase() {
+		return relationToCase;
+	}
+	public void setRelationToCase(ContactRelation relationToCase) {
+		this.relationToCase = relationToCase;
+	}
 }

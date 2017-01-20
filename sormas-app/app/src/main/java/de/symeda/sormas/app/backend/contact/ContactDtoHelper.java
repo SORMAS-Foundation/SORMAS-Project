@@ -65,6 +65,7 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
         ado.setLastContactDate(dto.getLastContactDate());
         ado.setContactProximity(dto.getContactProximity());
         ado.setContactClassification(dto.getContactClassification());
+        ado.setRelationToCase(dto.getRelationToCase());
         ado.setFollowUpStatus(dto.getFollowUpStatus());
         ado.setFollowUpUntil(dto.getFollowUpUntil());
 
@@ -106,6 +107,7 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
         dto.setLastContactDate(ado.getLastContactDate());
         dto.setContactProximity(ado.getContactProximity());
         dto.setContactClassification(ado.getContactClassification());
+        dto.setRelationToCase(ado.getRelationToCase());
         dto.setFollowUpStatus(ado.getFollowUpStatus());
         dto.setFollowUpUntil(ado.getFollowUpUntil());
         if (ado.getContactOfficer() != null) {

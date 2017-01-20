@@ -48,6 +48,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		    						LayoutUtil.fluidRowLocs(ContactDto.LAST_CONTACT_DATE, ContactDto.UUID) +
 		    						LayoutUtil.fluidRowLocs(ContactDto.REPORTING_USER, ContactDto.REPORT_DATE_TIME) +
 		    						LayoutUtil.fluidRowLocs(ContactDto.CONTACT_PROXIMITY) +
+		    						LayoutUtil.fluidRowLocs(ContactDto.RELATION_TO_CASE) +
 				    				LayoutUtil.fluidRowLocs(ContactDto.DESCRIPTION) +
 				    				LayoutUtil.fluidRowLocs(ContactDto.FOLLOW_UP_STATUS, ContactDto.FOLLOW_UP_UNTIL) +
 				    				LayoutUtil.fluidRowLocs(ContactDto.CONTACT_OFFICER, "")
@@ -70,6 +71,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
     	addField(ContactDto.LAST_CONTACT_DATE, DateField.class);
     	addField(ContactDto.REPORT_DATE_TIME, DateField.class);
     	addField(ContactDto.CONTACT_PROXIMITY, OptionGroup.class);
+    	addField(ContactDto.RELATION_TO_CASE, ComboBox.class);
     	addField(ContactDto.DESCRIPTION, TextArea.class).setRows(3);
 
     	addField(ContactDto.FOLLOW_UP_STATUS, ComboBox.class);
@@ -81,7 +83,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
     	
     	setReadOnly(true, ContactDto.UUID, ContactDto.REPORTING_USER, ContactDto.REPORT_DATE_TIME, ContactDto.FOLLOW_UP_UNTIL);
     		
-    	setRequired(true, ContactDto.LAST_CONTACT_DATE, ContactDto.CONTACT_PROXIMITY);
+    	setRequired(true, ContactDto.LAST_CONTACT_DATE, ContactDto.CONTACT_PROXIMITY, ContactDto.RELATION_TO_CASE);
 
     	caseInfoLayout = new VerticalLayout();
     	caseInfoLayout.setSpacing(true);

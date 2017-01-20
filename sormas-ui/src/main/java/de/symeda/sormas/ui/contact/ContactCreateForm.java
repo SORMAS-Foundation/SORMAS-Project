@@ -30,6 +30,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 					LayoutUtil.fluidRowLocs(ContactDto.CAZE, ContactDto.LAST_CONTACT_DATE),
 					LayoutUtil.fluidRowLocs(FIRST_NAME, LAST_NAME),
 					LayoutUtil.fluidRowLocs(ContactDto.CONTACT_PROXIMITY),
+					LayoutUtil.fluidRowLocs(ContactDto.RELATION_TO_CASE),
 					LayoutUtil.fluidRowLocs(ContactDto.DESCRIPTION),
 					LayoutUtil.fluidRowLocs(ContactDto.CONTACT_OFFICER, "")
 					);
@@ -52,12 +53,13 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
     	addField(ContactDto.LAST_CONTACT_DATE);
     	addField(ContactDto.CONTACT_PROXIMITY, OptionGroup.class);
     	addField(ContactDto.DESCRIPTION, TextArea.class).setRows(2);
+    	addField(ContactDto.RELATION_TO_CASE, ComboBox.class);
 
 		UserReferenceDto currentUser = LoginHelper.getCurrentUserAsReference();
     	addField(ContactDto.CONTACT_OFFICER, ComboBox.class)    	
     		.addItems(FacadeProvider.getUserFacade().getAssignableUsers(currentUser, UserRole.CONTACT_OFFICER));
 
-    	setRequired(true, ContactDto.CAZE, FIRST_NAME, LAST_NAME, ContactDto.LAST_CONTACT_DATE, ContactDto.CONTACT_PROXIMITY);
+    	setRequired(true, ContactDto.CAZE, FIRST_NAME, LAST_NAME, ContactDto.LAST_CONTACT_DATE, ContactDto.CONTACT_PROXIMITY, ContactDto.RELATION_TO_CASE);
     	
     	addValueChangeListener(e -> {
     		updateLastContactDateValidator();

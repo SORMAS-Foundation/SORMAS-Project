@@ -972,3 +972,9 @@ ALTER TABLE eventparticipant DROP COLUMN kindofinvolvement;
 ALTER TABLE eventparticipant ADD COLUMN involvementdescription varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (20, 'Involvement description instead of Kind of involvement');
+
+-- 2016-01-20 Add relation to case to contact #75
+
+ALTER TABLE contact ADD COLUMN relationtocase varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (21, 'Add relation to case to contact');

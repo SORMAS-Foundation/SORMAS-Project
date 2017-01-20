@@ -13,9 +13,10 @@ import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import de.symeda.sormas.api.contact.ContactProximity;
-import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.ContactClassification;
+import de.symeda.sormas.api.contact.ContactProximity;
+import de.symeda.sormas.api.contact.ContactRelation;
+import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.person.Person;
@@ -39,6 +40,7 @@ public class Contact extends AbstractDomainObject {
 	public static final String CONTACT_OFFICER = "contactOfficer";
 	public static final String DESCRIPTION = "description";
 	public static final String TASKS = "tasks";
+	public static final String RELATION_TO_CASE = "relationToCase";
 	
 	private Person person;
 	private Case caze;
@@ -51,6 +53,7 @@ public class Contact extends AbstractDomainObject {
 	private Date followUpUntil;
 	private User contactOfficer;
 	private String description;
+	private ContactRelation relationToCase;
 	
 	private List<Task> tasks;
 	
@@ -152,6 +155,15 @@ public class Contact extends AbstractDomainObject {
 	public void setContactClassification(ContactClassification contactClassification) {
 		this.contactClassification = contactClassification;
 	}	
+	
+	@Enumerated(EnumType.STRING)
+	public ContactRelation getRelationToCase() {
+		return relationToCase;
+	}
+	
+	public void setRelationToCase(ContactRelation relationToCase) {
+		this.relationToCase = relationToCase;
+	}
 	
 	@Override
 	public String toString() {

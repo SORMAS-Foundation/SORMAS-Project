@@ -28,6 +28,7 @@ public class ContactDto extends ContactReferenceDto {
 	public static final String FOLLOW_UP_UNTIL = "followUpUntil";
 	public static final String CONTACT_OFFICER = "contactOfficer";
 	public static final String DESCRIPTION = "description";
+	public static final String RELATION_TO_CASE = "relationToCase";
 	
 	private PersonReferenceDto person;
 	private CaseReferenceDto caze;
@@ -42,6 +43,7 @@ public class ContactDto extends ContactReferenceDto {
 	private Date followUpUntil;
 	private UserReferenceDto contactOfficer;
 	private String description;
+	private ContactRelation relationToCase;
 	
 	public PersonReferenceDto getPerson() {
 		return person;
@@ -115,6 +117,12 @@ public class ContactDto extends ContactReferenceDto {
 	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public void setFollowUpUntil(Date followUpUntil) {
 		this.followUpUntil = followUpUntil;
+	}
+	public ContactRelation getRelationToCase() {
+		return relationToCase;
+	}
+	public void setRelationToCase(ContactRelation relationToCase) {
+		this.relationToCase = relationToCase;
 	}
 
 }

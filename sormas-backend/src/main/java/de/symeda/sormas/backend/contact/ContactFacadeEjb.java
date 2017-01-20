@@ -150,6 +150,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setFollowUpUntil(source.getFollowUpUntil());
 		target.setContactOfficer(userService.getByReferenceDto(source.getContactOfficer()));
 		target.setDescription(source.getDescription());
+		target.setRelationToCase(source.getRelationToCase());
 
 		return target;
 	}
@@ -183,6 +184,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setFollowUpUntil(source.getFollowUpUntil());
 		target.setContactOfficer(UserFacadeEjb.toReferenceDto(source.getContactOfficer()));
 		target.setDescription(source.getDescription());
+		target.setRelationToCase(source.getRelationToCase());
 		
 		return target;
 	}
