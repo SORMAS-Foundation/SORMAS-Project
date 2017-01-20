@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <group android:id="@+id/group_action_reload">
+        <item
+            android:id="@+id/action_reload"
+            android:icon="@drawable/ic_autorenew_black_24dp"
+            android:title="@string/action_reload"
+            app:showAsAction="always"/>
+    </group>
+
+    <!-- Settings, should always be in the overflow
+    <item android:id="@+id/action_user"
+        android:title="@string/action_user"
+        app:showAsAction="never"/>
+     -->
+
+</menu>

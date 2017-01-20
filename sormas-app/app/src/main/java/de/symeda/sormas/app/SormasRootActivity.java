@@ -15,6 +15,8 @@ import android.widget.ListView;
 
 import de.symeda.sormas.app.caze.CaseNewActivity;
 import de.symeda.sormas.app.caze.CasesActivity;
+import de.symeda.sormas.app.contact.ContactNewActivity;
+import de.symeda.sormas.app.contact.ContactsActivity;
 import de.symeda.sormas.app.task.TasksActivity;
 import de.symeda.sormas.app.user.UserActivity;
 
@@ -33,6 +35,7 @@ public abstract class SormasRootActivity extends AppCompatActivity {
 
         menuTitles = new String[]{
                 getResources().getString(R.string.main_menu_cases),
+                getResources().getString(R.string.main_menu_contacts),
                 getResources().getString(R.string.main_menu_tasks),
                 getResources().getString(R.string.main_menu_user)
                 };
@@ -121,6 +124,17 @@ public abstract class SormasRootActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    // go to contacts overview
+    public void showContactsView() {
+        Intent intent = new Intent(this, ContactsActivity.class);
+        startActivity(intent);
+    }
+
+    public void showContactNewView() {
+        Intent intent = new Intent(this, ContactNewActivity.class);
+
+    }
+
     // go to tasks overview
     public void showTasksView() {
         Intent intent = new Intent(this, TasksActivity.class);
@@ -143,12 +157,18 @@ public abstract class SormasRootActivity extends AppCompatActivity {
         if(position==0) {
             showCasesView();
         }
-        // Tasks
+
+        // Contacts
         else if(position==1) {
+            showContactsView();
+        }
+
+        // Tasks
+        else if(position==2) {
             showTasksView();
         }
         // Users
-        else if(position==2) {
+        else if(position==3) {
             showUserView();
         }
     }

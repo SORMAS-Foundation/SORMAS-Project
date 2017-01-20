@@ -14,6 +14,7 @@ import android.widget.ArrayAdapter;
 import java.sql.SQLException;
 import java.util.List;
 
+import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
@@ -25,6 +26,7 @@ import de.symeda.sormas.app.util.Callback;
 public class ContactsListFragment extends ListFragment {
 
     private String caseUuid;
+    public static final String ARG_FILTER_STATUS = "filterStatus";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -36,7 +38,11 @@ public class ContactsListFragment extends ListFragment {
     public void onResume() {
         super.onResume();
 
-        updateContacsArrayAdapter();
+        if(getArguments().containsKey(Case.UUID)) {
+            updateCaseContactsArrayAdapter();
+        } else {
+            updateContactsArrayAdapter();
+        }
 
         final SwipeRefreshLayout refreshLayout = (SwipeRefreshLayout)getView().findViewById(R.id.swiperefresh);
         if(refreshLayout != null) {
@@ -49,7 +55,29 @@ public class ContactsListFragment extends ListFragment {
         }
     }
 
-    public void updateContacsArrayAdapter() {
+    public void updateContactsArrayAdapter() {
+        new SyncPersonsTask().execute();
+
+        SyncContactsTask.syncContacts(new Callback() {
+            @Override
+            public void call() {
+                List<Contact> contacts = null;
+                Bundle arguments = getArguments();
+                if(arguments.containsKey(ARG_FILTER_STATUS)) {
+                    FollowUpStatus filterStatus = (FollowUpStatus) arguments.getSerializable(ARG_FILTER_STATUS);
+                    contacts = DatabaseHelper.getContactDao().queryForEq(Contact.FOLLOW_UP_STATUS, filterStatus);
+                } else {
+                    contacts = DatabaseHelper.getContactDao().queryForAll();
+                }
+
+                ArrayAdapter<Contact> listAdapter = (ArrayAdapter<Contact>)getListAdapter();
+                listAdapter.clear();
+                listAdapter.addAll(contacts);
+            }
+        });
+    }
+
+    public void updateCaseContactsArrayAdapter() {
         caseUuid = getArguments().getString(Case.UUID);
         final CaseDao caseDao = DatabaseHelper.getCaseDao();
         final Case caze = caseDao.queryUuid(caseUuid);

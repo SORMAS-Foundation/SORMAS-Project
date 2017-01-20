@@ -2,6 +2,7 @@
     <string name="app_name">SORMAS</string>
 
     <string name="main_menu_cases">Cases</string>
+    <string name="main_menu_contacts">Contacts</string>
     <string name="main_menu_tasks">Tasks</string>
     <string name="main_menu_user">User</string>
 
@@ -20,6 +21,7 @@
     <string name="action_user">User</string>
     <string name="action_new_case">New case</string>
     <string name="action_help">Help</string>
+    <string name="action_new_contact">New contact</string>
 
     <!-- field -->
     <string name="field_yes_no_yes">Yes</string>

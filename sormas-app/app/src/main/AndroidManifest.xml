@@ -38,6 +38,13 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".caze.CasesActivity" />
         </activity>
+        <activity android:name=".contact.ContactsActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity android:name=".user.UserActivity"></activity>
         <activity android:name=".task.TasksActivity"></activity>
         <activity
