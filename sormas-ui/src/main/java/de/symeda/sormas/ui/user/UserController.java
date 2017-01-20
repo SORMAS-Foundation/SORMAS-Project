@@ -1,7 +1,9 @@
 package de.symeda.sormas.ui.user;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.vaadin.server.Page;
-import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
@@ -9,8 +11,10 @@ import com.vaadin.ui.Window;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserFacade;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -148,6 +152,22 @@ public class UserController {
 		Window popupWindow = VaadinUiUtil.showPopupWindow(layout);
 		popupWindow.setCaption("Update password");
 		layout.setMargin(true);    	
+	}
+	
+	public List<UserReferenceDto> filterByDistrict(List<UserReferenceDto> users, DistrictReferenceDto district) {
+		List<UserDto> userDtos = new ArrayList<>();
+		for(UserReferenceDto userRef : users) {
+			userDtos.add(FacadeProvider.getUserFacade().getByUuid(userRef.getUuid()));
+		}
+		
+		userDtos.removeIf(user -> !user.getDistrict().equals(district));
+		
+		List<UserReferenceDto> userRefs = new ArrayList<>();
+		for(UserDto user : userDtos) {
+			userRefs.add(FacadeProvider.getUserFacade().getByUserNameAsReference(user.getUserName()));
+		}
+		
+		return userRefs;
 	}
 
 }

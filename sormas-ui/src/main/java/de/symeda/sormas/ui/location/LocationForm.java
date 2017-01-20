@@ -24,6 +24,10 @@ public class LocationForm extends AbstractEditForm<LocationDto> {
     public LocationForm() {
     	super(LocationDto.class, LocationDto.I18N_PREFIX);
     }
+    
+    public void setFieldsRequirement(boolean required, String... fieldIds) {
+    	setRequired(required, fieldIds);
+    }
 
     @Override
 	protected void addFields() {

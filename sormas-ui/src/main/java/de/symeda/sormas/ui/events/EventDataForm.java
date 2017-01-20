@@ -1,6 +1,7 @@
 package de.symeda.sormas.ui.events;
 
 import java.util.Arrays;
+import java.util.List;
 
 import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.shared.ui.datefield.Resolution;
@@ -17,9 +18,12 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.location.LocationForm;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
@@ -31,6 +35,8 @@ import de.symeda.sormas.ui.utils.LayoutUtil;
 public class EventDataForm extends AbstractEditForm<EventDto> {
 	
 	private static final String STATUS_CHANGE = "statusChange";
+	
+	private List<UserReferenceDto> assignableSurveillanceOfficers;
 	
 	private static final String HTML_LAYOUT = 
 			LayoutUtil.h3(CssStyles.VSPACE3, "Event data") +
@@ -97,9 +103,15 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		addField(EventDto.EVENT_DATE, DateField.class);
 		addField(EventDto.EVENT_STATUS, OptionGroup.class);
 		addField(EventDto.EVENT_DESC, TextArea.class).setRows(2);
+		addField(EventDto.EVENT_LOCATION, LocationForm.class).setCaption(null);
+
+		LocationForm locationForm = (LocationForm) getFieldGroup().getField(EventDto.EVENT_LOCATION);
+		Field districtField = locationForm.getFieldGroup().getField(LocationDto.DISTRICT);
 		
 		UserReferenceDto currentUser = LoginHelper.getCurrentUserAsReference();
-		addField(EventDto.SURVEILLANCE_OFFICER, ComboBox.class).addItems(FacadeProvider.getUserFacade().getAssignableUsers(currentUser, UserRole.SURVEILLANCE_OFFICER));
+		assignableSurveillanceOfficers = FacadeProvider.getUserFacade().getAssignableUsers(currentUser, UserRole.SURVEILLANCE_OFFICER);
+		addField(EventDto.SURVEILLANCE_OFFICER, ComboBox.class).addItems(
+				ControllerProvider.getUserController().filterByDistrict(assignableSurveillanceOfficers, (DistrictReferenceDto) districtField.getValue()));
 		
 		addField(EventDto.TYPE_OF_PLACE, ComboBox.class);
 		addField(EventDto.TYPE_OF_PLACE_TEXT, TextField.class);		
@@ -109,7 +121,6 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		addField(EventDto.SRC_LAST_NAME, TextField.class);
 		addField(EventDto.SRC_TEL_NO, TextField.class);
 		addField(EventDto.SRC_EMAIL, TextField.class);
-		addField(EventDto.EVENT_LOCATION, LocationForm.class).setCaption(null);
 		
 		DateField dateTimeField = (DateField) getField(EventDto.REPORT_DATE_TIME);
 		dateTimeField.setResolution(Resolution.MINUTE);
@@ -123,6 +134,9 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		setRequired(true, EventDto.EVENT_TYPE, EventDto.EVENT_DATE, EventDto.EVENT_STATUS, EventDto.UUID, EventDto.EVENT_DESC,
 				EventDto.REPORT_DATE_TIME, EventDto.REPORTING_USER, EventDto.TYPE_OF_PLACE, EventDto.SRC_FIRST_NAME,
 				EventDto.SRC_LAST_NAME, EventDto.SRC_TEL_NO, EventDto.TYPE_OF_PLACE_TEXT, EventDto.SURVEILLANCE_OFFICER);
+		locationForm.setFieldsRequirement(true, LocationDto.DISTRICT);
+		
+		setSurveillanceOfficerListener(locationForm);
 	}
 	
 	@Override
@@ -143,6 +157,19 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		
 		typeOfPlaceField.addValueChangeListener(event -> {
 			typeOfPlaceTextField.setRequired(typeOfPlaceField.getValue() == TypeOfPlace.OTHER);
+		});
+	}
+	
+	private void setSurveillanceOfficerListener(LocationForm locationForm) {
+		Field districtField = locationForm.getFieldGroup().getField(LocationDto.DISTRICT);
+		districtField.addValueChangeListener(new ValueChangeListener() {
+			@Override
+			public void valueChange(com.vaadin.data.Property.ValueChangeEvent event) {
+				ComboBox surveillanceOfficerField = (ComboBox) getFieldGroup().getField(EventDto.SURVEILLANCE_OFFICER);
+				surveillanceOfficerField.removeAllItems();
+				surveillanceOfficerField.addItems(ControllerProvider.getUserController().filterByDistrict(
+						assignableSurveillanceOfficers, (DistrictReferenceDto) districtField.getValue()));
+			}
 		});
 	}
 	
