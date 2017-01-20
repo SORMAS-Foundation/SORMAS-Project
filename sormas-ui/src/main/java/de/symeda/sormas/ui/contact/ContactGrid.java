@@ -17,6 +17,7 @@ import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactIndexDto;
+import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -126,6 +127,14 @@ public class ContactGrid extends Grid {
 	        getContainer().addContainerFilter(filter);
     	}
     }
+	
+	public void setFollowUpStatusFilter(FollowUpStatus status) {
+		getContainer().removeContainerFilters(ContactIndexDto.FOLLOW_UP_STATUS);
+		if(status != null) {
+			Equal filter = new Equal(ContactIndexDto.FOLLOW_UP_STATUS, status);
+			getContainer().addContainerFilter(filter);
+		}
+	}
 
     @SuppressWarnings("unchecked")
 	private BeanItemContainer<ContactIndexDto> getContainer() {

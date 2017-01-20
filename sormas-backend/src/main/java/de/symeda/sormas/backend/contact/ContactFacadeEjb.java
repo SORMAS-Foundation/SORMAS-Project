@@ -255,6 +255,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		} else {
 			LocalDate beginDate = new LocalDate(contact.getReportDateTime());
 			contact.setFollowUpUntil(beginDate.plusDays(followUpDuration).toDate());
+			contact.setFollowUpStatus(FollowUpStatus.FOLLOW_UP);
 		}
 	}
 	

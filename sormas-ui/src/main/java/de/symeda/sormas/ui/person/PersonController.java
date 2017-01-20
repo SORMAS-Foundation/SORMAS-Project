@@ -74,8 +74,10 @@ public class PersonController {
 	        		if (person != null) {
 	        			if (resultConsumer != null) {
 	        				resultConsumer.accept(person);
-	        				eventParticipant.setPerson(personFacade.getPersonByUuid(person.getUuid()));
-	        				ControllerProvider.getEventParticipantController().editEventParticipant(eventParticipant);
+	        				if(eventParticipant != null) {
+		        				eventParticipant.setPerson(personFacade.getPersonByUuid(person.getUuid()));
+		        				ControllerProvider.getEventParticipantController().editEventParticipant(eventParticipant);
+	        				}
 	        			}
 	        		} else {	
 	        			if(eventParticipant == null) {

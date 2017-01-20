@@ -15,6 +15,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactIndexDto;
+import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -121,6 +122,13 @@ public class ContactsView extends AbstractView {
         officerFilter.addItems(FacadeProvider.getUserFacade().getAssignableUsers(user, UserRole.CONTACT_OFFICER));
         officerFilter.addValueChangeListener(e->grid.setContactOfficerFilter(((UserReferenceDto)e.getProperty().getValue())));
         filterLayout.addComponent(officerFilter);
+        
+        ComboBox followUpStatusFilter = new ComboBox();
+        followUpStatusFilter.setWidth(240, Unit.PIXELS);
+        followUpStatusFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.FOLLOW_UP_STATUS));
+        followUpStatusFilter.addItems((Object[])FollowUpStatus.values());
+        followUpStatusFilter.addValueChangeListener(e->grid.setFollowUpStatusFilter(((FollowUpStatus)e.getProperty().getValue())));
+        filterLayout.addComponent(followUpStatusFilter);
 
         return filterLayout;
     }
