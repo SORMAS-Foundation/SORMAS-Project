@@ -26,6 +26,7 @@ public final class RetroProvider {
     private TaskFacadeRetro taskFacadeRetro;
     private ContactFacadeRetro contactFacadeRetro;
     private VisitFacadeRetro visitFacadeRetro;
+    private EventFacadeRetro eventFacadeRetro;
 
     private RetroProvider() {
 
@@ -161,5 +162,16 @@ public final class RetroProvider {
             }
         }
         return instance.visitFacadeRetro;
+    }
+
+    public static EventFacadeRetro getEventFacade() {
+        if (instance.eventFacadeRetro == null) {
+            synchronized ((RetroProvider.class)) {
+                if (instance.eventFacadeRetro == null) {
+                    instance.eventFacadeRetro = instance.retrofit.create(EventFacadeRetro.class);
+                }
+            }
+        }
+        return instance.eventFacadeRetro;
     }
 }

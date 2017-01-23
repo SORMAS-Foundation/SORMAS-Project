@@ -73,6 +73,8 @@
                 android:value=".contact.ContactEditActivity" />
         </activity>
 
+        <activity android:name=".event.EventsActivity"></activity>
+
 
         <receiver android:name=".SormasBootstrap"
             android:enabled="true">

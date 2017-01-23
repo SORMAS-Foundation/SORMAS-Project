@@ -1,4 +1,4 @@
-package de.symeda.sormas.app.caze;
+package de.symeda.sormas.app.event;
 
 
 import android.os.Bundle;
@@ -8,22 +8,24 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.SormasRootActivity;
+import de.symeda.sormas.app.caze.CasesListFilterAdapter;
+import de.symeda.sormas.app.caze.SyncCasesTask;
+import de.symeda.sormas.app.component.AbstractRootTabActivity;
 import de.symeda.sormas.app.util.SlidingTabLayout;
 
-public class CasesActivity extends SormasRootActivity {
+public class EventsActivity extends AbstractRootTabActivity {
 
     private ViewPager pager;
-    private CasesListFilterAdapter adapter;
+    private EventsListFilterAdapter adapter;
     private SlidingTabLayout tabs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setContentView(R.layout.cases_activity_layout);
         super.onCreate(savedInstanceState);
-        setTitle(getResources().getString(R.string.main_menu_cases));
+        setTitle(getResources().getString(R.string.main_menu_events));
 
-        SyncCasesTask.syncCases(getSupportFragmentManager());
+        SyncEventsTask.syncEvents(getSupportFragmentManager());
     }
 
     @Override
@@ -45,7 +47,7 @@ public class CasesActivity extends SormasRootActivity {
 
         switch(item.getItemId()) {
             case R.id.action_reload:
-                SyncCasesTask.syncCases(getSupportFragmentManager());
+                SyncEventsTask.syncEvents(getSupportFragmentManager());
                 return true;
 
             case R.id.action_new_case:
@@ -62,7 +64,7 @@ public class CasesActivity extends SormasRootActivity {
 
     private void createTabViews() {
         // Creating The ViewPagerAdapter and Passing Fragment Manager, Titles fot the Tabs and Number Of Tabs.
-        adapter = new CasesListFilterAdapter(getSupportFragmentManager());
+        adapter = new EventsListFilterAdapter(getSupportFragmentManager());
 
         // Assigning ViewPager View and setting the adapter
         pager = (ViewPager) findViewById(R.id.pager);

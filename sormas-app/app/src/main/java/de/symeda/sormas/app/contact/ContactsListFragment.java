@@ -30,7 +30,7 @@ public class ContactsListFragment extends ListFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.cases_list_layout, container, false);
+        View view = inflater.inflate(R.layout.list_layout, container, false);
         return view;
     }
 

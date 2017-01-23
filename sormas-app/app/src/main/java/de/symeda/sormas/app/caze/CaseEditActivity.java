@@ -28,10 +28,6 @@ import de.symeda.sormas.app.component.HelpDialog;
 import de.symeda.sormas.app.contact.ContactNewActivity;
 import de.symeda.sormas.app.person.SyncPersonsTask;
 
-
-/**
- * Created by Stefan Szczesny on 21.07.2016.
- */
 public class CaseEditActivity extends AbstractEditActivity {
 
     public static final String KEY_CASE_UUID = "caseUuid";

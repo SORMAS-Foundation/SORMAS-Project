@@ -1,11 +1,10 @@
-package de.symeda.sormas.app;
+package de.symeda.sormas.app.component;
 
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
@@ -13,15 +12,15 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.caze.CaseNewActivity;
 import de.symeda.sormas.app.caze.CasesActivity;
-import de.symeda.sormas.app.contact.ContactNewActivity;
+import de.symeda.sormas.app.component.AbstractTabActivity;
 import de.symeda.sormas.app.event.EventsActivity;
-import de.symeda.sormas.app.contact.ContactsActivity;
 import de.symeda.sormas.app.task.TasksActivity;
 import de.symeda.sormas.app.user.UserActivity;
 
-public abstract class SormasRootActivity extends AppCompatActivity {
+public abstract class AbstractRootTabActivity extends AbstractTabActivity {
 
     private ActionBarDrawerToggle menuDrawerToggle;
     private DrawerLayout menuDrawerLayout;
@@ -36,7 +35,6 @@ public abstract class SormasRootActivity extends AppCompatActivity {
 
         menuTitles = new String[]{
                 getResources().getString(R.string.main_menu_cases),
-                getResources().getString(R.string.main_menu_contacts),
                 getResources().getString(R.string.main_menu_tasks),
                 getResources().getString(R.string.main_menu_events),
                 getResources().getString(R.string.main_menu_user)
@@ -124,17 +122,6 @@ public abstract class SormasRootActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    // go to contacts overview
-    public void showContactsView() {
-        Intent intent = new Intent(this, ContactsActivity.class);
-        startActivity(intent);
-    }
-
-    public void showContactNewView() {
-        Intent intent = new Intent(this, ContactNewActivity.class);
-
-    }
-
     // go to tasks overview
     public void showTasksView() {
         Intent intent = new Intent(this, TasksActivity.class);
@@ -155,20 +142,15 @@ public abstract class SormasRootActivity extends AppCompatActivity {
 
 
 
+
     /** Swaps fragments in the main content view */
     private void selectItem(int position) {
         // Cases
         if(position==0) {
             showCasesView();
         }
-
-        // Contacts
-        else if(position==1) {
-            showContactsView();
-        }
-
         // Tasks
-        else if(position==2) {
+        else if(position==1) {
             showTasksView();
         }
         // Events

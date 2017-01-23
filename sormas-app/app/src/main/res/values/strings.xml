@@ -165,6 +165,7 @@
     <string name="action_search">Search</string>
     <string name="action_select_person">Select person</string>
     <string name="headline_visit">Follow-up visit</string>
+    <string name="main_menu_events">Events</string>
 
 
 </resources>

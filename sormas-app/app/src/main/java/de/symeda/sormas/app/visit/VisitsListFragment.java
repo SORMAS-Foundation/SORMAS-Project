@@ -16,8 +16,6 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.visit.Visit;
-import de.symeda.sormas.app.caze.SyncCasesTask;
-import de.symeda.sormas.app.contact.ContactsListArrayAdapter;
 import de.symeda.sormas.app.task.SyncVisitsTask;
 import de.symeda.sormas.app.util.Callback;
 
@@ -27,7 +25,7 @@ public class VisitsListFragment extends ListFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.cases_list_layout, container, false);
+        View view = inflater.inflate(R.layout.list_layout, container, false);
         return view;
     }
 

@@ -17,6 +17,8 @@ import de.symeda.sormas.app.backend.config.Config;
 import de.symeda.sormas.app.backend.config.ConfigDao;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.contact.ContactDao;
+import de.symeda.sormas.app.backend.event.Event;
+import de.symeda.sormas.app.backend.event.EventDao;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.facility.FacilityDao;
 import de.symeda.sormas.app.backend.location.Location;
@@ -48,7 +50,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// name of the database file for your application -- change to something appropriate for your app
 	private static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	private static final int DATABASE_VERSION = 44;
+	private static final int DATABASE_VERSION = 46;
 
 	private static DatabaseHelper instance = null;
 	public static void init(Context context) {
@@ -73,6 +75,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	private TaskDao taskDao = null;
 	private ContactDao contactDao = null;
 	private VisitDao visitDao;
+	private EventDao eventDao;
 
 	private DatabaseHelper(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);//, R.raw.ormlite_config);
@@ -95,6 +98,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.clearTable(connectionSource, Task.class);
 			TableUtils.clearTable(connectionSource, Contact.class);
 			TableUtils.clearTable(connectionSource, Visit.class);
+			TableUtils.clearTable(connectionSource, Event.class);
 			// keep config!
 			//TableUtils.clearTable(connectionSource, Config.class);
 		} catch (SQLException e) {
@@ -124,6 +128,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.createTable(connectionSource, Contact.class);
 			TableUtils.createTable(connectionSource, Visit.class);
 			TableUtils.createTable(connectionSource, Task.class);
+			TableUtils.createTable(connectionSource, Event.class);
 		} catch (SQLException e) {
 			Log.e(DatabaseHelper.class.getName(), "Can't create database", e);
 			throw new RuntimeException(e);
@@ -150,6 +155,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.dropTable(connectionSource, Task.class, true);
 			TableUtils.dropTable(connectionSource, Contact.class, true);
 			TableUtils.dropTable(connectionSource, Visit.class, true);
+			TableUtils.dropTable(connectionSource, Event.class, true);
 			if (oldVersion < 30) {
 				TableUtils.dropTable(connectionSource, Config.class, true);
 			}
@@ -369,6 +375,22 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		return instance.visitDao;
 	}
 
+	public static EventDao getEventDao() {
+		if (instance.eventDao == null) {
+			synchronized (DatabaseHelper.class) {
+				if (instance.eventDao == null) {
+					try {
+						instance.eventDao = new EventDao((Dao<Event, Long>) instance.getDao(Event.class));
+					} catch (SQLException e) {
+						Log.e(DatabaseHelper.class.getName(), "Can't create EventDao", e);
+						throw new RuntimeException(e);
+					}
+				}
+			}
+		}
+		return instance.eventDao;
+	}
+
 	/**
 	 * Close the database connections and clear any cached DAOs.
 	 */
@@ -386,5 +408,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		taskDao = null;
 		contactDao = null;
 		visitDao = null;
+		eventDao = null;
 	}
 }

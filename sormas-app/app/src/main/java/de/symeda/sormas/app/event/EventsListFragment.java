@@ -1,7 +1,6 @@
-package de.symeda.sormas.app.caze;
+package de.symeda.sormas.app.event;
 
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -13,15 +12,12 @@ import android.widget.ArrayAdapter;
 
 import java.util.List;
 
-import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.event.Event;
 
-/**
- * Created by Martin on 13.08.2016.
- */
-public class CasesListFragment extends ListFragment {
+public class EventsListFragment extends ListFragment {
 
     public static final String ARG_FILTER_STATUS = "filterStatus";
 
@@ -35,25 +31,25 @@ public class CasesListFragment extends ListFragment {
     public void onResume() {
         super.onResume();
 
-        List<Case> cases;
+        List<Event> events;
         Bundle arguments = getArguments();
         if (arguments.containsKey(ARG_FILTER_STATUS)) {
-            InvestigationStatus filterStatus = (InvestigationStatus)arguments.getSerializable(ARG_FILTER_STATUS);
-            cases = DatabaseHelper.getCaseDao().queryForEq(Case.INVESTIGATION_STATUS, filterStatus);
+            EventStatus filterStatus = (EventStatus)arguments.getSerializable(ARG_FILTER_STATUS);
+            events = DatabaseHelper.getEventDao().queryForEq(Event.EVENT_STATUS, filterStatus);
         } else {
-            cases = DatabaseHelper.getCaseDao().queryForAll();
+            events = DatabaseHelper.getEventDao().queryForAll();
         }
 
-        ArrayAdapter<Case> listAdapter = (ArrayAdapter<Case>)getListAdapter();
+        ArrayAdapter<Event> listAdapter = (ArrayAdapter<Event>)getListAdapter();
         listAdapter.clear();
-        listAdapter.addAll(cases);
+        listAdapter.addAll(events);
 
         final SwipeRefreshLayout refreshLayout = (SwipeRefreshLayout)getView().findViewById(R.id.swiperefresh);
         if(refreshLayout != null) {
             refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                 @Override
                 public void onRefresh() {
-                    SyncCasesTask.syncCases(getActivity().getSupportFragmentManager(), refreshLayout);
+                    SyncEventsTask.syncEvents(getActivity().getSupportFragmentManager(), refreshLayout);
                 }
             });
         }
@@ -63,9 +59,9 @@ public class CasesListFragment extends ListFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        CasesListArrayAdapter adapter = new CasesListArrayAdapter(
-                this.getActivity(),                       // Context for the activity.
-                R.layout.cases_list_item);    // Layout to use (create)
+        EventsListArrayAdapter adapter = new EventsListArrayAdapter(
+                this.getActivity(),
+                R.layout.events_list_item);
 
         setListAdapter(adapter);
         getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -74,15 +70,15 @@ public class CasesListFragment extends ListFragment {
                     AdapterView<?> parent,
                     View viewClicked,
                     int position, long id) {
-                Case caze = (Case)getListAdapter().getItem(position);
-                showCaseEditView(caze);
+                Event event = (Event)getListAdapter().getItem(position);
+                showEditView(event);
             }
         });
     }
 
-    public void showCaseEditView(Case caze) {
-        Intent intent = new Intent(getActivity(), CaseEditActivity.class);
-        intent.putExtra(CaseEditActivity.KEY_CASE_UUID, caze.getUuid());
-        startActivity(intent);
+    public void showEditView(Event event) {
+//        Intent intent = new Intent(getActivity(), EventEditActivity.class);
+//        intent.putExtra(EventEditActivity.KEY_CASE_UUID, event.getUuid());
+//        startActivity(intent);
     }
 }
