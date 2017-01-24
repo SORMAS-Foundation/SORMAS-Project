@@ -168,6 +168,9 @@ public class PersonFacadeEjb implements PersonFacade {
 		bo.setDeathDate(dto.getDeathDate());
 		bo.setDead(dto.getDeathDate()!=null);
 		
+		bo.setNickname(dto.getNickname());
+		bo.setMothersMaidenName(dto.getMothersMaidenName());
+		
 		bo.setPhone(dto.getPhone());
 		bo.setPhoneOwner(dto.getPhoneOwner());
 		bo.setAddress(locationFacade.fromLocationDto(dto.getAddress()));
@@ -245,6 +248,9 @@ public class PersonFacadeEjb implements PersonFacade {
 			dto.setApproximateAge(entity.getApproximateAge());
 			dto.setApproximateAgeType(entity.getApproximateAgeType());
 		}
+		
+		dto.setNickname(entity.getNickname());
+		dto.setMothersMaidenName(entity.getMothersMaidenName());
 		
 		dto.setPhone(entity.getPhone());
 		dto.setPhoneOwner(entity.getPhoneOwner());

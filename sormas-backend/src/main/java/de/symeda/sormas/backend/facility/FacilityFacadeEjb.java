@@ -49,6 +49,11 @@ public class FacilityFacadeEjb implements FacilityFacade {
 			.collect(Collectors.toList());
 	}
 	
+	@Override
+	public FacilityDto getByUuid(String uuid) {
+		return toDto(service.getByUuid(uuid));
+	}
+	
 	public static FacilityReferenceDto toReferenceDto(Facility entity) {
 		if (entity == null) {
 			return null;

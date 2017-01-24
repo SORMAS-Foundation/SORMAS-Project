@@ -41,11 +41,17 @@ public class Person extends AbstractDomainObject {
 	public static final String APPROXIMATE_AGE = "approximateAge";
 	public static final String ADDRESS = "address";
 	public static final String SEX = "sex";
+	public static final String NICKNAME = "nickname";
+	public static final String MOTHERS_MAIDEN_NAME = "mothersMaidenName";
 
 	@Column(nullable = false)
 	private String firstName;
 	@Column(nullable = false)
 	private String lastName;
+	@Column(length = 255)
+	private String nickname;
+	@Column(length = 255)
+	private String mothersMaidenName;
 	@Column
 	private Integer birthdateDD;
 	@Column
@@ -104,6 +110,20 @@ public class Person extends AbstractDomainObject {
 	}
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
+	}
+
+	public String getNickname() {
+		return nickname;
+	}
+	public void setNickname(String nickname) {
+		this.nickname = nickname;
+	}
+
+	public String getMothersMaidenName() {
+		return mothersMaidenName;
+	}
+	public void setMothersMaidenName(String mothersMaidenName) {
+		this.mothersMaidenName = mothersMaidenName;
 	}
 
 	public Integer getBirthdateDD() {

@@ -47,18 +47,26 @@
                 android:layout_height="wrap_content"
                 android:paddingTop="@dimen/field_padding"
                 android:paddingBottom="@dimen/field_padding"
-                android:nextFocusForward="@+id/person_sex"
+                android:nextFocusForward="@+id/person_nickname"
                 android:value="@={person.lastName}"/>
 
-            <de.symeda.sormas.app.component.SpinnerField
-                android:id="@+id/person_sex"
+            <de.symeda.sormas.app.component.TextField
+                android:id="@+id/person_nickname"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.5"
+                android:paddingTop="@dimen/field_padding"
+                android:paddingBottom="@dimen/field_padding"
+                android:nextFocusForward="@+id/person_mothersMaidenName"
+                android:value="@={person.nickname}"/>
+
+            <de.symeda.sormas.app.component.TextField
+                android:id="@+id/person_mothersMaidenName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:paddingTop="@dimen/field_padding"
                 android:paddingBottom="@dimen/field_padding"
                 android:nextFocusForward="@+id/person_birthdateDD"
-                android:value="@={person.sex}"/>
+                android:value="@={person.mothersMaidenName}"/>
 
             <TextView
                 android:layout_width="match_parent"
@@ -127,10 +135,20 @@
                     android:layout_weight="0.5"
                     android:paddingTop="@dimen/field_padding"
                     android:paddingBottom="@dimen/field_padding"
-                    android:nextFocusForward="@+id/person_presentCondition"
+                    android:nextFocusForward="@+id/person_sex"
                     android:value="@={person.approximateAgeType}"/>
 
             </LinearLayout>
+
+            <de.symeda.sormas.app.component.SpinnerField
+                android:id="@+id/person_sex"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:paddingTop="@dimen/field_padding"
+                android:paddingBottom="@dimen/field_padding"
+                android:nextFocusForward="@+id/person_presentCondition"
+                android:value="@={person.sex}"/>
 
             <LinearLayout
                 android:orientation="horizontal"
@@ -258,16 +276,48 @@
                 android:layout_height="wrap_content"
                 android:paddingTop="@dimen/field_padding"
                 android:paddingBottom="@dimen/field_padding"
-                android:nextFocusForward="@+id/person_occupationFacility"
+                android:nextFocusForward="@+id/person_facilityRegion"
                 android:value="@={person.occupationDetails}"/>
 
-            <de.symeda.sormas.app.component.SpinnerField
-                android:id="@+id/person_occupationFacility"
+            <LinearLayout
+                android:id="@+id/person_facility_layout"
+                android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="@dimen/field_padding"
-                android:paddingBottom="@dimen/field_padding"
-                android:value="@={person.occupationFacility}"/>
+                android:layout_height="wrap_content">
+
+                <de.symeda.sormas.app.component.SpinnerField
+                    android:id="@+id/person_facilityRegion"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="@dimen/field_padding"
+                    android:nextFocusForward="@+id/person_facilityDistrict"
+                    android:paddingBottom="@dimen/field_padding"/>
+
+                <de.symeda.sormas.app.component.SpinnerField
+                    android:id="@+id/person_facilityDistrict"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="@dimen/field_padding"
+                    android:nextFocusForward="@+id/person_facilityCommunity"
+                    android:paddingBottom="@dimen/field_padding"/>
+
+                <de.symeda.sormas.app.component.SpinnerField
+                    android:id="@+id/person_facilityCommunity"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="@dimen/field_padding"
+                    android:nextFocusForward="@+id/person_occupationFacility"
+                    android:paddingBottom="@dimen/field_padding"/>
+
+                <de.symeda.sormas.app.component.SpinnerField
+                    android:id="@+id/person_occupationFacility"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="@dimen/field_padding"
+                    android:paddingBottom="@dimen/field_padding"
+                    android:value="@={person.occupationFacility}"/>
+
+            </LinearLayout>
 
         </LinearLayout>
     </ScrollView>

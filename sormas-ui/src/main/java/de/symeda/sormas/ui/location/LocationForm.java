@@ -31,8 +31,8 @@ public class LocationForm extends AbstractEditForm<LocationDto> {
 
     @Override
 	protected void addFields() {
-    	addField(LocationDto.ADDRESS, TextArea.class).setRows(2);;
-    	addField(LocationDto.DETAILS, TextArea.class).setRows(2);
+    	addField(LocationDto.ADDRESS, TextArea.class).setRows(2);
+    	addField(LocationDto.DETAILS, TextField.class);
     	addField(LocationDto.CITY, TextField.class);
 //    	addField(LocationDto.LATITUDE, TextField.class);
 //    	addField(LocationDto.LONGITUDE, TextField.class);

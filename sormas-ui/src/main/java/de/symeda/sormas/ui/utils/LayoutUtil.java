@@ -251,6 +251,17 @@ public class LayoutUtil {
 		return fluidColumnCss(cssClasses, 6, 0, content);
 	}
 
+	/**
+	 * Erstellt eine "Viertel"-Spalte (span3).
+	 */
+	public static FluidColumn oneOfFourCol(String content) {
+		return fluidColumnCss(null, 3, 0, content);
+	}
+	
+	public static FluidColumn threeOfFourCol(String content) {
+		return fluidColumnCss(null, 9, 0, content);
+	}
+	
 	public static final class FluidColumn {
 
 		private final String str;

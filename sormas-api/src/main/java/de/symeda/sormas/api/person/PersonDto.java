@@ -4,8 +4,12 @@ import java.util.Date;
 
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.region.CommunityReferenceDto;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.PreciseDateAdapter;
 
 public class PersonDto extends PersonReferenceDto {
@@ -24,6 +28,9 @@ public class PersonDto extends PersonReferenceDto {
 	public static final String APPROXIMATE_AGE = "approximateAge";
 	public static final String APPROXIMATE_AGE_TYPE = "approximateAgeType";
 	
+	public static final String NICKNAME = "nickname";
+	public static final String MOTHERS_MAIDEN_NAME = "mothersMaidenName";
+	
 	public static final String PHONE = "phone";
 	public static final String PHONE_OWNER = "phoneOwner";
 	public static final String ADDRESS = "address";
@@ -31,7 +38,6 @@ public class PersonDto extends PersonReferenceDto {
 	public static final String OCCUPATION_TYPE = "occupationType";
 	public static final String OCCUPATION_DETAILS = "occupationDetails";
 	public static final String OCCUPATION_FACILITY = "occupationFacility";
-	
 	
 	private Sex sex;
 		
@@ -43,6 +49,9 @@ public class PersonDto extends PersonReferenceDto {
 	private Integer approximateAge;
 	private ApproximateAgeType approximateAgeType;
 		
+	private String nickname;
+	private String mothersMaidenName;
+	
 	private String phone;
 	private String phoneOwner;
 	private LocationDto address;
@@ -163,5 +172,21 @@ public class PersonDto extends PersonReferenceDto {
 
 	public void setOccupationFacility(FacilityReferenceDto occupationFacility) {
 		this.occupationFacility = occupationFacility;
+	}
+	
+	public String getNickname() {
+		return nickname;
+	}
+	
+	public void setNickname(String nickname) {
+		this.nickname = nickname;
+	}
+	
+	public String getMothersMaidenName() {
+		return mothersMaidenName;
+	}
+	
+	public void setMothersMaidenName(String mothersMaidenName) {
+		this.mothersMaidenName = mothersMaidenName;
 	}
 }

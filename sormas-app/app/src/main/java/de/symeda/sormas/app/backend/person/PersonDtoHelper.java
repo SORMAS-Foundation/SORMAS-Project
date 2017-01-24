@@ -33,6 +33,8 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
 
         ado.setFirstName(dto.getFirstName());
         ado.setLastName(dto.getLastName());
+        ado.setNickname(dto.getNickname());
+        ado.setMothersMaidenName(dto.getMothersMaidenName());
         ado.setSex(dto.getSex());
         ado.setBirthdateDD(dto.getBirthdateDD());
         ado.setBirthdateMM(dto.getBirthdateMM());
@@ -60,6 +62,8 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
 
         dto.setFirstName(ado.getFirstName());
         dto.setLastName(ado.getLastName());
+        dto.setNickname(ado.getNickname());
+        dto.setMothersMaidenName(ado.getMothersMaidenName());
         dto.setSex(ado.getSex());
         dto.setBirthdateDD(ado.getBirthdateDD());
         dto.setBirthdateMM(ado.getBirthdateMM());

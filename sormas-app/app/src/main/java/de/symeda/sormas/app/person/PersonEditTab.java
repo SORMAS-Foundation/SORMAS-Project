@@ -13,9 +13,11 @@ import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
@@ -29,8 +31,12 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDao;
+import de.symeda.sormas.app.backend.region.Community;
+import de.symeda.sormas.app.backend.region.District;
+import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.component.DateField;
 import de.symeda.sormas.app.component.FieldHelper;
 import de.symeda.sormas.app.component.PropertyField;
@@ -48,6 +54,7 @@ import de.symeda.sormas.app.util.Item;
 public class PersonEditTab extends FormTab {
 
     PersonEditFragmentLayoutBinding binding;
+    private boolean facilityFieldsInitialized = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -135,12 +142,11 @@ public class PersonEditTab extends FormTab {
         // ================ Occupation ================
 
         final TextField occupationDetails = binding.personOccupationDetails;
-        final LinearLayout occupationFacility = binding.personOccupationFacility;
         FieldHelper.initSpinnerField(binding.personOccupationType1, OccupationType.class, new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 Item item = (Item)parent.getItemAtPosition(position);
-                updateVisibilityOccupationFields(item, occupationDetails, occupationFacility);
+                updateVisibilityOccupationFields(item, occupationDetails);
                 updateHeadlineOccupationDetailsFields(item, occupationDetails);
             }
 
@@ -151,6 +157,14 @@ public class PersonEditTab extends FormTab {
         });
 
         FieldHelper.initFacilitySpinnerField(binding.personOccupationFacility);
+        binding.personOccupationFacility.addValueChangedListener(new PropertyField.ValueChangeListener() {
+            @Override
+            public void onChange(PropertyField field) {
+                if(!facilityFieldsInitialized) {
+                    fillFacilityFields();
+                }
+            }
+        });
 
         // ================ Additional settings ================
 
@@ -186,29 +200,107 @@ public class PersonEditTab extends FormTab {
         }
     }
 
-    private void updateVisibilityOccupationFields(Item item, View occupationDetails, View occupationFacility) {
+    private void updateVisibilityOccupationFields(Item item, View occupationDetails) {
         if(item.getValue()!=null) {
             switch ((OccupationType) item.getValue()) {
                 case BUSINESSMAN_WOMAN:
                 case TRANSPORTER:
                 case OTHER:
                     occupationDetails.setVisibility(View.VISIBLE);
-                    occupationFacility.setVisibility(View.INVISIBLE);
+                    getActivity().findViewById(R.id.person_facility_layout).setVisibility(View.GONE);
                     break;
                 case HEALTHCARE_WORKER:
                     occupationDetails.setVisibility(View.VISIBLE);
-                    occupationFacility.setVisibility(View.VISIBLE);
+                    getActivity().findViewById(R.id.person_facility_layout).setVisibility(View.VISIBLE);
                     break;
                 default:
-                    occupationDetails.setVisibility(View.INVISIBLE);
-                    occupationFacility.setVisibility(View.INVISIBLE);
+                    occupationDetails.setVisibility(View.GONE);
+                    getActivity().findViewById(R.id.person_facility_layout).setVisibility(View.GONE);
                     break;
             }
         }
         else {
-            occupationDetails.setVisibility(View.INVISIBLE);
-            occupationFacility.setVisibility(View.INVISIBLE);
+            occupationDetails.setVisibility(View.GONE);
+            getActivity().findViewById(R.id.person_facility_layout).setVisibility(View.GONE);
         }
+    }
+
+    private void fillFacilityFields() {
+        Facility facility = (Facility) binding.personOccupationFacility.getValue();
+
+        final List emptyList = new ArrayList<>();
+        List districtList = new ArrayList<>();
+        List communityList = new ArrayList<>();
+
+        FieldHelper.initRegionSpinnerField(binding.personFacilityRegion, new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Object selectedValue = binding.personFacilityRegion.getValue();
+                if(binding.personFacilityDistrict != null) {
+                    List<District> districtList = emptyList;
+                    if(selectedValue != null) {
+                        districtList = DatabaseHelper.getDistrictDao().getByRegion((Region)selectedValue);
+                    }
+                    binding.personFacilityDistrict.setAdapterAndValue(binding.personFacilityDistrict.getValue(), DataUtils.toItems(districtList));
+                }
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+
+        if(facility != null) {
+            binding.personFacilityRegion.setValue(facility.getLocation().getRegion());
+            districtList = DataUtils.toItems(DatabaseHelper.getDistrictDao().getByRegion(facility.getLocation().getRegion()));
+        }
+
+        FieldHelper.initSpinnerField(binding.personFacilityDistrict, districtList, new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Object selectedValue = binding.personFacilityDistrict.getValue();
+                if(binding.personFacilityCommunity != null) {
+                    List<Community> communityList = emptyList;
+                    if(selectedValue != null) {
+                        communityList = DatabaseHelper.getCommunityDao().getByDistrict((District)selectedValue);
+                    }
+                    binding.personFacilityCommunity.setAdapterAndValue(binding.personFacilityCommunity.getValue(), DataUtils.toItems(communityList));
+                }
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+
+        if(facility != null) {
+            binding.personFacilityDistrict.setValue(facility.getLocation().getDistrict());
+            communityList = DataUtils.toItems(DatabaseHelper.getCommunityDao().getByDistrict(facility.getLocation().getDistrict()));
+        }
+
+        FieldHelper.initSpinnerField(binding.personFacilityCommunity, communityList, new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if(facilityFieldsInitialized) {
+                    SpinnerField spinnerField = binding.personOccupationFacility;
+                    Object selectedValue = binding.personFacilityCommunity.getValue();
+                    if (spinnerField != null) {
+                        List<Facility> facilityList = emptyList;
+                        if (selectedValue != null) {
+                            facilityList = DatabaseHelper.getFacilityDao().getByCommunity((Community) selectedValue);
+                        }
+                        spinnerField.setAdapterAndValue(binding.personOccupationFacility.getValue(), DataUtils.toItems(facilityList));
+                    }
+                }
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+
+        if(facility != null) {
+            binding.personFacilityCommunity.setValue(facility.getLocation().getCommunity());
+        }
+
+        facilityFieldsInitialized = true;
     }
 
     private void updateDateOfDeathField() {

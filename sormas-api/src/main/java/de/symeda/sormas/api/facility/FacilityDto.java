@@ -1,12 +1,18 @@
 package de.symeda.sormas.api.facility;
 
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.region.CommunityReferenceDto;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 
 public class FacilityDto extends FacilityReferenceDto {
 
 	private static final long serialVersionUID = -7987228795475507196L;
 
 	public static final String I18N_PREFIX = "Facility";
+	public static final String FACILITY_REGION = "facilityRegion";
+	public static final String FACILITY_DISTRICT = "facilityDistrict";
+	public static final String FACILITY_COMMUNITY = "facilityCommunity";
 
 	private String name;
 	private LocationDto location;
@@ -41,6 +47,18 @@ public class FacilityDto extends FacilityReferenceDto {
 		this.publicOwnership = publicOwnership;
 	}
 
+	public RegionReferenceDto getFacilityRegion() {
+		return location.getRegion();
+	}
+	
+	public DistrictReferenceDto getFacilityDistrict() {
+		return location.getDistrict();
+	}
+	
+	public CommunityReferenceDto getFacilityCommunity() {
+		return location.getCommunity();
+	}
+	
 	@Override
 	public String toString() {
 		StringBuilder caption = new StringBuilder();

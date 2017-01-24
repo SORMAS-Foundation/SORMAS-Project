@@ -978,3 +978,10 @@ INSERT INTO schema_version (version_number, comment) VALUES (20, 'Involvement de
 ALTER TABLE contact ADD COLUMN relationtocase varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (21, 'Add relation to case to contact');
+
+-- 2016-01-23 Add nickname and mother's maiden name to person #19
+
+ALTER TABLE person ADD COLUMN nickname varchar(255);
+ALTER TABLE person ADD COLUMN mothersmaidenname varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (22, 'Add nickname and mothers maiden name to person');
