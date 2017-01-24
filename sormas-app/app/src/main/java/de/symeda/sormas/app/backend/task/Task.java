@@ -10,8 +10,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskPriority;
@@ -20,6 +18,7 @@ import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.contact.Contact;
+import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.util.DataUtils;
 
@@ -55,6 +54,9 @@ public class Task extends AbstractDomainObject {
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private Contact contact;
+
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	private Event event;
 
 	@Enumerated(EnumType.STRING)
 	private TaskType taskType;
@@ -105,8 +107,7 @@ public class Task extends AbstractDomainObject {
 			case CONTACT:
 				return getContact();
 			case EVENT:
-				// TODO return event
-				return null;
+				return getEvent();
 			default:
 				throw new IndexOutOfBoundsException(DataUtils.toString(getTaskContext()));
 		}
@@ -124,6 +125,13 @@ public class Task extends AbstractDomainObject {
 	}
 	public void setContact(Contact contact) {
 		this.contact = contact;
+	}
+
+	public Event getEvent() {
+		return event;
+	}
+	public void setEvent(Event event) {
+		this.event = event;
 	}
 
 	public TaskType getTaskType() {

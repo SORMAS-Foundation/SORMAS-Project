@@ -1,6 +1,7 @@
 package de.symeda.sormas.app.backend.event;
 
 import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.location.Location;
@@ -104,5 +105,15 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
         }
 
         dto.setTypeOfPlaceText(ado.getTypeOfPlaceText());
+    }
+
+    public static EventReferenceDto toReferenceDto(Event ado) {
+        if (ado == null) {
+            return null;
+        }
+        EventReferenceDto dto = new EventReferenceDto();
+        fillReferenceDto(dto, ado);
+
+        return dto;
     }
 }

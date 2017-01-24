@@ -22,6 +22,8 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.contact.ContactDao;
+import de.symeda.sormas.app.backend.event.Event;
+import de.symeda.sormas.app.backend.event.EventDao;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.task.TaskDao;
 import de.symeda.sormas.app.caze.CaseEditActivity;
@@ -116,6 +118,14 @@ public class TaskTab extends FormTab {
                 showContactEditView(contact);
             }
         });
+        binding.taskEvent.makeLink(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final EventDao eventDao = DatabaseHelper.getEventDao();
+                final Event event = eventDao.queryUuid(binding.getTask().getEvent().getUuid());
+                showEventEditView(event);
+            }
+        });
     }
 
     public void showCaseEditView(Case caze) {
@@ -130,6 +140,13 @@ public class TaskTab extends FormTab {
         intent.putExtra(ContactEditActivity.KEY_CONTACT_UUID, contact.getUuid());
         intent.putExtra(ContactEditActivity.KEY_PARENT_TASK_UUID, binding.getTask().getUuid());
         startActivity(intent);
+    }
+
+    public void showEventEditView(Event event) {
+//        Intent intent = new Intent(getActivity(), EventEditActivity.class);
+//        intent.putExtra(EventEditActivity.KEY_CONTACT_UUID, event.getUuid());
+//        intent.putExtra(EventEditActivity.KEY_PARENT_TASK_UUID, binding.getTask().getUuid());
+//        startActivity(intent);
     }
 
     @Override

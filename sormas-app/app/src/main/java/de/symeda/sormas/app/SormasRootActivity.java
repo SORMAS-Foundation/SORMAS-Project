@@ -172,11 +172,11 @@ public abstract class SormasRootActivity extends AppCompatActivity {
             showTasksView();
         }
         // Events
-        else if(position==2) {
+        else if(position==3) {
             showEventsView();
         }
         // Users
-        else if(position==3) {
+        else if(position==4) {
             showUserView();
         }
     }

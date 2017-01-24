@@ -23,6 +23,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.contact.Contact;
+import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.user.User;
 
@@ -158,6 +159,11 @@ public class LabelField extends PropertyField<String> {
     @BindingAdapter("app:contact")
     public static void setContactForLabel(LabelField labelField, Contact contact) {
         labelField.setValue(contact!=null?DataHelper.getShortUuid(contact.getUuid()) + (contact.getPerson()!=null?" " + contact.getPerson().toString():null):null);
+    }
+
+    @BindingAdapter("app:event")
+    public static void setEventForLabel(LabelField labelField, Event event) {
+        labelField.setValue(event!=null?DataHelper.getShortUuid(event.getUuid()):null);
     }
 
 }

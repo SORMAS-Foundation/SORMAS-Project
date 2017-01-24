@@ -7,6 +7,8 @@ import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.contact.ContactDtoHelper;
+import de.symeda.sormas.app.backend.event.Event;
+import de.symeda.sormas.app.backend.event.EventDtoHelper;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.backend.user.UserDtoHelper;
 
@@ -38,6 +40,11 @@ public class TaskDtoHelper extends AdoDtoHelper<Task, TaskDto> {
             ado.setContact(DatabaseHelper.getContactDao().queryUuid(dto.getContact().getUuid()));
         } else {
             ado.setContact(null);
+        }
+        if (dto.getEvent() != null) {
+            ado.setEvent(DatabaseHelper.getEventDao().queryUuid(dto.getEvent().getUuid()));
+        } else {
+            ado.setEvent(null);
         }
         ado.setTaskType(dto.getTaskType());
         ado.setTaskStatus(dto.getTaskStatus());
@@ -87,6 +94,12 @@ public class TaskDtoHelper extends AdoDtoHelper<Task, TaskDto> {
             dto.setContact(ContactDtoHelper.toReferenceDto(contact));
         } else {
             dto.setContact(null);
+        }
+        if (ado.getEvent() != null) {
+            Event event = DatabaseHelper.getEventDao().queryForId(ado.getEvent().getId());
+            dto.setEvent(EventDtoHelper.toReferenceDto(event));
+        } else {
+            dto.setEvent(null);
         }
         dto.setTaskType(ado.getTaskType());
         dto.setTaskStatus(ado.getTaskStatus());
