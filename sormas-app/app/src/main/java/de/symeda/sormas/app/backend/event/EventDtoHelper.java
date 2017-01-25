@@ -43,12 +43,12 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
             ado.setReportingUser(null);
         }
 
-        if(dto.getEventLocation()!=null) {
-            ado.setEventLocation(DatabaseHelper.getLocationDao().queryUuid(dto.getEventLocation().getUuid()));
-        }
-        else {
-            ado.setEventLocation(null);
-        }
+//        if(dto.getEventLocation()!=null) {
+//            ado.setEventLocation(DatabaseHelper.getLocationDao().queryUuid(dto.getEventLocation().getUuid()));
+//        }
+//        else {
+//            ado.setEventLocation(null);
+//        }
 
         ado.setTypeOfPlace(dto.getTypeOfPlace());
         ado.setSrcFirstName(dto.getSrcFirstName());
@@ -83,12 +83,12 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
             dto.setReportingUser(null);
         }
 
-        if (ado.getEventLocation() != null) {
-            Location location = DatabaseHelper.getLocationDao().queryForId(ado.getEventLocation().getId());
-            dto.setEventLocation(locationHelper.adoToDto(location));
-        } else {
-            dto.setEventLocation(null);
-        }
+//        if (ado.getEventLocation() != null) {
+//            Location location = DatabaseHelper.getLocationDao().queryForId(ado.getEventLocation().getId());
+//            dto.setEventLocation(locationHelper.adoToDto(location));
+//        } else {
+//            dto.setEventLocation(null);
+//        }
 
         dto.setTypeOfPlace(ado.getTypeOfPlace());
         dto.setSrcFirstName(ado.getSrcFirstName());

@@ -160,7 +160,7 @@ public class UserController {
 			userDtos.add(FacadeProvider.getUserFacade().getByUuid(userRef.getUuid()));
 		}
 		
-		userDtos.removeIf(user -> !user.getDistrict().equals(district));
+		userDtos.removeIf(user -> user.getDistrict() == null || !user.getDistrict().equals(district));
 		
 		List<UserReferenceDto> userRefs = new ArrayList<>();
 		for(UserDto user : userDtos) {

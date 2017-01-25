@@ -166,6 +166,11 @@
     <string name="action_select_person">Select person</string>
     <string name="headline_visit">Follow-up visit</string>
     <string name="main_menu_events">Events</string>
+    <string name="headline_event">Event</string>
+    <string name="headline_eventLocation">Event location</string>
+    <string name="headline_event_information">Event information</string>
+    <string name="headline_event_sourceOfInformation">Source of information</string>
+    <string name="headline_new_event">New event</string>
 
 
 </resources>

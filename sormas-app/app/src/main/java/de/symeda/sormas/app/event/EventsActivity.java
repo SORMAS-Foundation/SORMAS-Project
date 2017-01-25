@@ -1,6 +1,7 @@
 package de.symeda.sormas.app.event;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
@@ -8,6 +9,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.caze.CasesListFilterAdapter;
 import de.symeda.sormas.app.caze.SyncCasesTask;
 import de.symeda.sormas.app.component.AbstractRootTabActivity;
@@ -51,7 +53,7 @@ public class EventsActivity extends AbstractRootTabActivity {
                 return true;
 
             case R.id.action_new_case:
-                showCaseNewView();
+                showNewEventView();
                 return true;
 
             default:
@@ -84,5 +86,12 @@ public class EventsActivity extends AbstractRootTabActivity {
 
         // Setting the ViewPager For the SlidingTabsLayout
         tabs.setViewPager(pager);
+    }
+
+
+    public void showNewEventView() {
+        Intent intent = new Intent(this, EventEditActivity.class);
+        intent.putExtra(EventEditActivity.NEW_EVENT, true);
+        startActivity(intent);
     }
 }

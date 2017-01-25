@@ -56,7 +56,7 @@ public class Event extends AbstractDomainObject {
 	@Column(length=512, nullable=false)
 	private String eventDesc;
 
-	@DatabaseField(dataType = DataType.DATE_LONG)
+	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = false)
 	private Date eventDate;
 
 	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = false)

@@ -1,6 +1,7 @@
 package de.symeda.sormas.app.event;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -77,8 +78,8 @@ public class EventsListFragment extends ListFragment {
     }
 
     public void showEditView(Event event) {
-//        Intent intent = new Intent(getActivity(), EventEditActivity.class);
-//        intent.putExtra(EventEditActivity.KEY_CASE_UUID, event.getUuid());
-//        startActivity(intent);
+        Intent intent = new Intent(getActivity(), EventEditActivity.class);
+        intent.putExtra(EventEditActivity.KEY_EVENT_UUID, event.getUuid());
+        startActivity(intent);
     }
 }

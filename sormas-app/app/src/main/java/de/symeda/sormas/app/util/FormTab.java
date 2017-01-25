@@ -1,47 +1,25 @@
 package de.symeda.sormas.app.util;
 
-import android.app.DatePickerDialog;
-import android.app.Activity;
-import android.app.TimePickerDialog;
 import android.content.DialogInterface;
-import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
-import android.text.InputType;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
-import android.widget.DatePicker;
 import android.widget.ImageButton;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.facility.FacilityDao;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.person.Person;
-import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.backend.region.Community;
-import de.symeda.sormas.app.backend.region.CommunityDao;
 import de.symeda.sormas.app.backend.region.District;
-import de.symeda.sormas.app.backend.region.DistrictDao;
 import de.symeda.sormas.app.backend.region.Region;
-import de.symeda.sormas.app.backend.region.RegionDao;
-import de.symeda.sormas.app.component.DateField;
-import de.symeda.sormas.app.component.DateTimeField;
 import de.symeda.sormas.app.component.FieldHelper;
-import de.symeda.sormas.app.component.PropertyField;
-import de.symeda.sormas.app.component.RadioGroupField;
 import de.symeda.sormas.app.component.SpinnerField;
 import de.symeda.sormas.app.component.TextField;
 
