@@ -32,8 +32,8 @@ public class ContactController {
     public void registerViews(Navigator navigator) {
     	navigator.addView(ContactsView.VIEW_NAME, ContactsView.class);
     	navigator.addView(ContactDataView.VIEW_NAME, ContactDataView.class);
-    	navigator.addView(ContactVisitsView.VIEW_NAME, ContactVisitsView.class);
     	navigator.addView(ContactPersonView.VIEW_NAME, ContactPersonView.class);
+    	navigator.addView(ContactVisitsView.VIEW_NAME, ContactVisitsView.class);
 	}
 
     public void create() {
@@ -110,10 +110,12 @@ public class ContactController {
         			ControllerProvider.getPersonController().selectOrCreatePerson(null,
         					createForm.getPersonFirstName(), createForm.getPersonLastName(), 
         					person -> {
-        						dto.setPerson(person);
-        						cof.saveContact(dto);
-        	        			Notification.show("New contact created", Type.TRAY_NOTIFICATION);
-        	        			editData(dto.getUuid());
+        						if (person != null) {
+	        						dto.setPerson(person);
+	        						cof.saveContact(dto);
+	        	        			Notification.show("New contact created", Type.TRAY_NOTIFICATION);
+	        	        			editData(dto.getUuid());
+        						}
         					});
         		}
         	}
