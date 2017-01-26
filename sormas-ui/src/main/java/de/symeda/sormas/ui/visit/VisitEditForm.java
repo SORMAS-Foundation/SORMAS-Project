@@ -1,10 +1,12 @@
 package de.symeda.sormas.ui.visit;
 
+import com.vaadin.ui.Field;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.visit.VisitDto;
+import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.ui.symptoms.SymptomsForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateTimeField;
@@ -55,6 +57,7 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
 		getContent().addComponent(symptomsForm, VisitDto.SYMPTOMS);
     	
     	setRequired(true, VisitDto.VISIT_DATE_TIME, VisitDto.VISIT_STATUS);
+    	symptomsForm.initializeSymptomRequirementsForVisit(getFieldGroup().getField(VisitDto.VISIT_STATUS));
     }
 	
 	@Override

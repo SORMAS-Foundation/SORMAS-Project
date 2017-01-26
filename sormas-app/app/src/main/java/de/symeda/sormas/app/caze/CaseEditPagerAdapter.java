@@ -13,6 +13,7 @@ import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.contact.ContactsListFragment;
 import de.symeda.sormas.app.person.PersonEditTab;
 import de.symeda.sormas.app.task.TasksListFragment;
+import de.symeda.sormas.app.util.FormTab;
 
 /**
  * Created by Stefan Szczesny on 27.07.2016.
@@ -110,5 +111,18 @@ public class CaseEditPagerAdapter extends FragmentStatePagerAdapter {
                 break;
         }
         return ado;
+    }
+
+    public FormTab getTabByPosition(int position) {
+        CaseEditTabs tab = CaseEditTabs.values()[position];
+        switch(tab) {
+            case CASE_DATA:
+                return caseEditDataTab;
+            case PATIENT:
+                return personEditTab;
+            case SYMPTOMS:
+                return symptomsEditTab;
+        }
+        return null;
     }
 }

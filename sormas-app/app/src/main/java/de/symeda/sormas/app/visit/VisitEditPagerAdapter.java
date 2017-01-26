@@ -11,6 +11,7 @@ import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.visit.Visit;
 import de.symeda.sormas.app.caze.SymptomsEditTab;
+import de.symeda.sormas.app.util.FormTab;
 
 /**
  * @see <a href="http://www.android4devs.com/2015/01/how-to-make-material-design-sliding-tabs.html">www.android4devs.com/2015/01/how-to-make-material-design-sliding-tabs.html</a>
@@ -91,5 +92,16 @@ public class VisitEditPagerAdapter extends FragmentStatePagerAdapter {
                 break;
         }
         return ado;
+    }
+
+    public FormTab getTabByPosition(int position) {
+        VisitEditTabs tab = VisitEditTabs.values()[position];
+        switch(tab) {
+            case VISIT_DATA:
+                return visitEditDataTab;
+            case SYMPTOMS:
+                return symptomsEditTab;
+        }
+        return null;
     }
 }

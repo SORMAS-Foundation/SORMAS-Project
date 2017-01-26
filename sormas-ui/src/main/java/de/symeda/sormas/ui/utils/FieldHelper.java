@@ -7,7 +7,10 @@ import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Field;
-import com.vaadin.ui.TextField;
+
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.symptoms.SymptomsDto;
+import de.symeda.sormas.api.utils.Diseases;
 
 public final class FieldHelper {
 
@@ -95,6 +98,41 @@ public final class FieldHelper {
 				}
 			}
 		});
+	}
+	
+	/**
+	 * Sets the target fields to required when the sourceField has a value that's contained
+	 * in the sourceValues list; the disease is needed to make sure that no fields are set
+	 * to required that are not visible and therefore cannot be edited by the user.
+	 */
+	public static void setRequiredWhen(FieldGroup fieldGroup, Field sourceField, 
+			List<Object> targetPropertyIds, final List<Object> sourceValues, Disease disease) {
+		
+		if(sourceField instanceof AbstractField<?>) {
+			((AbstractField) sourceField).setImmediate(true);
+		}
+		
+		// initialize
+		{
+			boolean required = sourceValues.contains(sourceField.getValue());
+			for(Object targetPropertyId : targetPropertyIds) {
+				Field targetField = fieldGroup.getField(targetPropertyId);
+				if(Diseases.DiseasesConfiguration.isDefined(SymptomsDto.class, (String) targetPropertyId, disease)) {
+					targetField.setRequired(required);
+				}
+			}
+		}
+		
+		sourceField.addValueChangeListener(event -> {
+			boolean required = sourceValues.contains(event.getProperty().getValue());
+			for(Object targetPropertyId : targetPropertyIds) {
+				Field targetField = fieldGroup.getField(targetPropertyId);
+				if(Diseases.DiseasesConfiguration.isDefined(SymptomsDto.class, (String) targetPropertyId, disease)) {
+					targetField.setRequired(required);
+				}
+			}
+		});
+		
 	}
 
 	public static void setFirstVisibleClearOthers(Field<?> first, Field<?> ...others) {

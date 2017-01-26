@@ -17,6 +17,7 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.visit.Visit;
+import de.symeda.sormas.app.caze.SymptomsEditTab;
 import de.symeda.sormas.app.component.AbstractEditActivity;
 import de.symeda.sormas.app.component.HelpDialog;
 
@@ -115,29 +116,12 @@ public class VisitEditActivity extends AbstractEditActivity {
                 Visit visit = (Visit) adapter.getData(VisitEditTabs.VISIT_DATA.ordinal());
                 Symptoms symptoms = (Symptoms)adapter.getData(VisitEditTabs.SYMPTOMS.ordinal());
 
-                // symptomatic
-                boolean anySymptomSetToYes = isAnySymptomSetToYes(symptoms);
-                boolean otherHemorrhagicSymTextReq = symptoms.getOtherHemorrhagicSymptoms() == SymptomState.YES &&
-                        (symptoms.getOtherHemorrhagicSymptomsText() == null || symptoms.getOtherHemorrhagicSymptomsText().isEmpty());
-                boolean otherNonHemorrhagicSymTextReq = symptoms.getOtherNonHemorrhagicSymptoms() == SymptomState.YES &&
-                        (symptoms.getOtherNonHemorrhagicSymptomsText() == null || symptoms.getOtherNonHemorrhagicSymptomsText().isEmpty());
+                SymptomsEditTab symptomsEditTab = (SymptomsEditTab) adapter.getTabByPosition(VisitEditTabs.SYMPTOMS.ordinal());
 
-                // date of onset only required when cooperative and symptomatic
-                boolean onsetDateReq = visit.getVisitStatus() == VisitStatus.COOPERATIVE &&
-                        anySymptomSetToYes &&
-                        (symptoms.getOnsetDate() == null);
-
-                // validate: temperature of 38.0 or higher needs fever set to yes
-                boolean isFeverReq = symptoms.getTemperature().compareTo(38.0F) >= 0 && symptoms.getFever() == null;
-
-                boolean validData = (!anySymptomSetToYes || ((symptoms.getOnsetDate() != null &&
-                        symptoms.getOnsetSymptom() != null
-                        && !symptoms.getOnsetSymptom().isEmpty())))
-                        && !otherHemorrhagicSymTextReq
-                        && !otherNonHemorrhagicSymTextReq
-                        && !onsetDateReq
-                        && !isFeverReq;
-                if(validData) {
+                // method returns a String, null means that there is no error message and thus
+                // the data is valid
+                String errorMessage = symptomsEditTab.validateVisitData(symptoms, visit.getVisitStatus() == VisitStatus.COOPERATIVE);
+                if(errorMessage == null) {
                     if (symptoms != null) {
                         visit.setSymptoms(symptoms);
                         DatabaseHelper.getSymptomsDao().save(symptoms);
@@ -152,18 +136,7 @@ public class VisitEditActivity extends AbstractEditActivity {
 
                     return true;
                 } else {
-                    if(otherHemorrhagicSymTextReq) {
-                        Toast.makeText(this, "Not saved. Please specify the additional hemorrhagic symptoms.", Toast.LENGTH_LONG).show();
-                    } else if(otherNonHemorrhagicSymTextReq) {
-                        Toast.makeText(this, "Not saved. Please specify the additional clinical symptoms.", Toast.LENGTH_LONG).show();
-                    } else if(onsetDateReq) {
-                        Toast.makeText(this, "Not saved. Please specify the date of initial symptom onset.", Toast.LENGTH_LONG).show();
-                    } else if(isFeverReq) {
-                        Toast.makeText(this, "Not saved. Temperature is in fever range. Please specify the fever field.", Toast.LENGTH_LONG).show();
-                    }
-                    else {
-                        Toast.makeText(this, "Not saved. Please specify an onset date and an onset symptom.", Toast.LENGTH_LONG).show();
-                    }
+                    Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show();
 
                     // if any symptomsfield is required, change pager to symptoms tab
                     if(currentTab!=VisitEditTabs.SYMPTOMS.ordinal()) {

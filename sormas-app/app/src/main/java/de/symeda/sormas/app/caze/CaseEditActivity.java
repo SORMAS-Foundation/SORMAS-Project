@@ -187,21 +187,12 @@ public class CaseEditActivity extends AbstractEditActivity {
 
                     case SYMPTOMS:
                         SymptomsDao symptomsDao = DatabaseHelper.getSymptomsDao();
-
                         Symptoms symptoms = (Symptoms) adapter.getData(CaseEditTabs.SYMPTOMS.ordinal());
 
-                        boolean anySymptomSetToYes = isAnySymptomSetToYes(symptoms);
-                        boolean otherHemorrhagicSymTextReq = symptoms.getOtherHemorrhagicSymptoms() == SymptomState.YES &&
-                                (symptoms.getOtherHemorrhagicSymptomsText() == null || symptoms.getOtherHemorrhagicSymptomsText().isEmpty());
-                        boolean otherNonHemorrhagicSymTextReq = symptoms.getOtherNonHemorrhagicSymptoms() == SymptomState.YES &&
-                                (symptoms.getOtherNonHemorrhagicSymptomsText() == null || symptoms.getOtherNonHemorrhagicSymptomsText().isEmpty());
+                        SymptomsEditTab symptomsEditTab = (SymptomsEditTab) adapter.getTabByPosition(CaseEditTabs.SYMPTOMS.ordinal());
 
-                        // data is valid if at least one symptom is set to yes AND the onset date
-                        // and onset symptom string have been set or no symptom is set to YES
-                        boolean validData = (!anySymptomSetToYes || ((symptoms.getOnsetDate() != null &&
-                                symptoms.getOnsetSymptom() != null && !symptoms.getOnsetSymptom().isEmpty()))) &&
-                                !otherHemorrhagicSymTextReq && !otherNonHemorrhagicSymTextReq;
-                        if(validData) {
+                        String errorMessage = symptomsEditTab.validateCaseData(symptoms);
+                        if(errorMessage == null) {
                             if (symptoms != null) {
                                 symptomsDao.save(symptoms);
                             }
@@ -213,13 +204,7 @@ public class CaseEditActivity extends AbstractEditActivity {
                             SyncCasesTask.syncCases(getSupportFragmentManager());
                             break;
                         } else {
-                            if(otherHemorrhagicSymTextReq) {
-                                Toast.makeText(this, "Please specify the additional hemorrhagic symptoms.", Toast.LENGTH_LONG).show();
-                            } else if(otherNonHemorrhagicSymTextReq) {
-                                Toast.makeText(this, "Please specify the additional clinical symptoms.", Toast.LENGTH_LONG).show();
-                            } else {
-                                Toast.makeText(this, "Please specify an onset date and an onset symptom.", Toast.LENGTH_LONG).show();
-                            }
+                            Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show();
                             return true;
                         }
                 }

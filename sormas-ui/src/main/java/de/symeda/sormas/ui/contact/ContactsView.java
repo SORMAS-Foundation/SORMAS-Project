@@ -74,23 +74,20 @@ public class ContactsView extends AbstractView {
     	CssStyles.style(header, CssStyles.H2, CssStyles.NO_MARGIN);
     	topLayout.addComponent(header);
     	
-    	Button statusAll = new Button("all", e -> grid.setClassificationFilter(null));
-        statusAll.setStyleName(ValoTheme.BUTTON_LINK);
-        topLayout.addComponent(statusAll);
-        
-        for (ContactClassification status : ContactClassification.values()) {
-	    	Button statusButton = new Button(status.toString(), e -> grid.setClassificationFilter(status));
-	    	statusButton.setStyleName(ValoTheme.BUTTON_LINK);
-	        topLayout.addComponent(statusButton);
-        }
-        
-        createButton = new Button("New contact");
-        createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-        createButton.setIcon(FontAwesome.PLUS_CIRCLE);
-        createButton.addClickListener(e -> ControllerProvider.getContactController().create());
-        topLayout.addComponent(createButton);
-        topLayout.setComponentAlignment(createButton, Alignment.MIDDLE_RIGHT);
-        topLayout.setExpandRatio(createButton, 1);
+    	HorizontalLayout buttonFilterLayout = new HorizontalLayout();
+    	{
+	    	Button statusAll = new Button("all", e -> grid.setClassificationFilter(null));
+	        statusAll.setStyleName(ValoTheme.BUTTON_LINK);
+	        buttonFilterLayout.addComponent(statusAll);
+	        
+	        for (ContactClassification status : ContactClassification.values()) {
+		    	Button statusButton = new Button(status.toString(), e -> grid.setClassificationFilter(status));
+		    	statusButton.setStyleName(ValoTheme.BUTTON_LINK);
+		        buttonFilterLayout.addComponent(statusButton);
+	        }
+    	}
+    	topLayout.addComponent(buttonFilterLayout);
+    	topLayout.setExpandRatio(buttonFilterLayout, 1);
         
         return topLayout;
     }

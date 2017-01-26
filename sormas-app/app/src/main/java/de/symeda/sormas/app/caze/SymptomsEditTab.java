@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import de.symeda.sormas.api.Disease;
@@ -38,9 +39,9 @@ import de.symeda.sormas.app.util.Item;
 public class SymptomsEditTab extends FormTab {
 
     public static final String NEW_SYMPTOMS = "newSymptoms";
-
-
     private CaseSymptomsFragmentLayoutBinding binding;
+    private List<SymptomStateField> nonConditionalSymptoms;
+    private List<SymptomStateField> conditionalBleedingSymptoms;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -108,12 +109,125 @@ public class SymptomsEditTab extends FormTab {
 
             visibilityDisease(disease);
 
+            nonConditionalSymptoms = Arrays.asList(binding.symptomsFever, binding.symptomsVomiting,
+                    binding.symptomsDiarrhea, binding.symptomsBloodInStool1, binding.symptomsNausea, binding.symptomsAbdominalPain,
+                    binding.symptomsHeadache, binding.symptomsMusclePain, binding.symptomsFatigueWeakness, binding.symptomsUnexplainedBleeding,
+                    binding.symptomsSkinRash, binding.symptomsNeckStiffness, binding.symptomsSoreThroat, binding.symptomsCough,
+                    binding.symptomsRunnyNose, binding.symptomsDifficultyBreathing, binding.symptomsChestPain, binding.symptomsConfusedDisoriented,
+                    binding.symptomsSeizures, binding.symptomsAlteredConsciousness, binding.symptomsConjunctivitis,
+                    binding.symptomsEyePainLightSensitive, binding.symptomsKopliksSpots1, binding.symptomsThrobocytopenia,
+                    binding.symptomsOtitisMedia, binding.symptomsHearingloss, binding.symptomsDehydration, binding.symptomsAnorexiaAppetiteLoss,
+                    binding.symptomsRefusalFeedorDrink, binding.symptomsJointPain, binding.symptomsShock,
+                    binding.symptomsHiccups, binding.symptomsOtherNonHemorrhagicSymptoms);
+
+            conditionalBleedingSymptoms = Arrays.asList(binding.symptomsGumsBleeding1, binding.symptomsInjectionSiteBleeding,
+                    binding.symptomsNoseBleeding1, binding.symptomsBloodyBlackStool, binding.symptomsRedBloodVomit,
+                    binding.symptomsDigestedBloodVomit, binding.symptomsCoughingBlood, binding.symptomsBleedingVagina,
+                    binding.symptomsSkinBruising1, binding.symptomsBloodUrine, binding.symptomsOtherHemorrhagicSymptoms);
+
             // @TODO: Workaround, find a better solution. Remove autofocus on first field.
             getView().requestFocus();
 
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Validates the entered information with respect to the visit status. Returns a String
+     * with the most important error message (because returning a simple boolean would mean
+     * that the respective Activity does not know what caused the validation error.
+     */
+    public String validateVisitData(Symptoms symptoms, boolean isCooperative) {
+        if(isCooperative) {
+            if(isAnyNonConditionalSymptomSetTo(null)) {
+                return "Not saved. Please specify the symptom states for all symptoms.";
+            }
+            if(symptoms.getTemperature() == null || symptoms.getTemperatureSource() == null) {
+                return "Not saved. Please specify a temperature and a temperature source.";
+            }
+            if(isAnyNonConditionalSymptomSetTo(SymptomState.YES)) {
+                if(symptoms.getOnsetDate() == null) {
+                    return "Not saved. Please specify the date of initial symptom onset.";
+                }
+                if(symptoms.getOnsetSymptom() == null) {
+                    return "Not saved. Please specify the initial onset symptom.";
+                }
+            }
+        }
+        if(symptoms.getTemperature() != null && symptoms.getTemperature().compareTo(38.0F) >= 0 &&
+                symptoms.getFever() != SymptomState.YES) {
+            return "Not saved. Temperature is in fever range. Please make sure that the fever field is set to 'Yes'.";
+        }
+
+        return validateGeneralData(symptoms);
+    }
+
+    /**
+     * Validates the entered information. Returns a String with the most important error message
+     * (because returning a simple boolean would mean that the respective Activity does not know
+     * what caused the validation error.
+     */
+    public String validateCaseData(Symptoms symptoms) {
+        if(isAnyNonConditionalSymptomSetTo(SymptomState.YES)) {
+            if(symptoms.getOnsetDate() == null) {
+                return "Not saved. Please specify the date of initial symptom onset.";
+            }
+            if(symptoms.getOnsetSymptom() == null) {
+                return "Not saved. Please specify the initial onset symptom.";
+            }
+        }
+
+        return validateGeneralData(symptoms);
+    }
+
+    /**
+     * Handles all validations that are not specific to a visit or case.
+     */
+    private String validateGeneralData(Symptoms symptoms) {
+        if(symptoms.getUnexplainedBleeding() == SymptomState.YES) {
+            if(isAnyConditionalBleedingSymptomSetTo(null)) {
+                return "Not saved. Please specify the states for all conditional bleeding symptoms.";
+            }
+        }
+        if(symptoms.getOtherHemorrhagicSymptoms() == SymptomState.YES &&
+                (symptoms.getOtherHemorrhagicSymptomsText() == null || symptoms.getOtherHemorrhagicSymptomsText().isEmpty())) {
+            return "Not saved. Please specify the additional hemorrhagic symptoms.";
+        }
+        if(symptoms.getOtherNonHemorrhagicSymptoms() == SymptomState.YES &&
+                (symptoms.getOtherNonHemorrhagicSymptomsText() == null || symptoms.getOtherNonHemorrhagicSymptomsText().isEmpty())) {
+            return "Not saved. Please specify the additional clinical symptoms.";
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns true if there is any visible non-conditional symptom set to the given symptom state
+     * or null, in which case true is returned if any symptom state is not set
+     */
+    private boolean isAnyNonConditionalSymptomSetTo(SymptomState reqSymptomState) {
+        for(SymptomStateField field : nonConditionalSymptoms) {
+            if(field.getVisibility() == View.VISIBLE && field.getValue() == reqSymptomState) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Returns true if there is any visible conditional bleeding symptom set to the given symptom state
+     * or null, in which case true is returned if any symptom state is not set
+     */
+    private boolean isAnyConditionalBleedingSymptomSetTo(SymptomState reqSymptomState) {
+        for(SymptomStateField field : conditionalBleedingSymptoms) {
+            if(field.getVisibility() == View.VISIBLE && field.getValue() == reqSymptomState) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private void visibilityDisease(Disease disease) {
@@ -142,7 +256,6 @@ public class SymptomsEditTab extends FormTab {
             binding.symptomsOther1NonHemorrhagicSymptomsText.setValue("");
         }
     }
-
 
     private void toggleUnexplainedBleedingFields() {
 
