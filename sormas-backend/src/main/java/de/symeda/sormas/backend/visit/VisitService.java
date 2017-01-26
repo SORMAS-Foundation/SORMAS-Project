@@ -3,22 +3,29 @@ package de.symeda.sormas.backend.visit;
 import java.util.Date;
 import java.util.List;
 
+import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.user.User;
 
 @Stateless
 @LocalBean
 public class VisitService extends AbstractAdoService<Visit> {
+	
+	@EJB
+	ContactService contactService;
 	
 	public VisitService() {
 		super(Visit.class);
@@ -29,28 +36,36 @@ public class VisitService extends AbstractAdoService<Visit> {
 		// TODO get user from session?
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Visit> cq = cb.createQuery(getElementClass());
-		Root<Visit> from = cq.from(getElementClass());
+		CriteriaQuery<Visit> visitsQuery = cb.createQuery(getElementClass());
+		Root<Visit> visitRoot = visitsQuery.from(Visit.class);
 
-		// TODO add Filter for User
-		Predicate filter = null;
+		// get all visits of the user's contact's persons
+		Subquery<Integer> contactPersonSubquery = visitsQuery.subquery(Integer.class);
+		Root<Contact> contactRoot = contactPersonSubquery.from(Contact.class);
+		contactPersonSubquery.where(contactService.createUserFilter(cb, contactRoot, user));
+		contactPersonSubquery.select(contactRoot.get(Contact.PERSON).get(Person.ID));
 		
+		Predicate filter = cb.in(visitRoot.get(Visit.PERSON).get(Person.ID)).value(contactPersonSubquery);
+		// date range
 		if (date != null) {
-			Predicate dateFilter = cb.greaterThan(from.get(AbstractDomainObject.CHANGE_DATE), date);
-			if (filter != null) {
-				filter = cb.and(filter, dateFilter);
-			} else {
-				filter = dateFilter;
-			}
+			Predicate dateFilter = cb.greaterThan(visitRoot.get(AbstractDomainObject.CHANGE_DATE), date);
+			filter = cb.and(filter, dateFilter);
 		}
-
-		if (filter != null) {
-			cq.where(filter);
-		}
-		cq.orderBy(cb.asc(from.get(AbstractDomainObject.ID)));
-
-		List<Visit> resultList = em.createQuery(cq).getResultList();
+		visitsQuery.where(filter);
+		visitsQuery.distinct(true);
+		visitsQuery.orderBy(cb.asc(visitRoot.get(AbstractDomainObject.ID)));
+		
+		List<Visit> resultList = em.createQuery(visitsQuery).getResultList();
 		return resultList;
+	}
+	
+	public Predicate createUserFilter(CriteriaBuilder cb, Path<Visit> visitPath, User user) {
+		// whoever created it or is assigned to it is allowed to access it
+		Predicate filter = cb.equal(visitPath.get(Visit.VISIT_USER), user);
+		
+//		Predicate userFilter = personService.createUserFilter(cb, visitPath.get(Visit.PERSON), user);
+//		filter = cb.or(filter, userFilter);
+		return filter;
 	}
 
 	/**

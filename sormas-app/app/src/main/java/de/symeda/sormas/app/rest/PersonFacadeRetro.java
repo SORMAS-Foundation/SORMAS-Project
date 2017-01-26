@@ -14,8 +14,8 @@ import retrofit2.http.Path;
  */
 public interface PersonFacadeRetro {
 
-    @GET("persons/all/{since}")
-    Call<List<PersonDto>> getAll(@Path("since") long since);
+    @GET("persons/all/{user}/{since}")
+    Call<List<PersonDto>> getAll(@Path("user") String userUuid, @Path("since") long since);
 
     @POST("persons/push")
     Call<Integer> postAll(@Body List<PersonDto> dtos);

@@ -79,17 +79,11 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 	
 	@Override
-	public List<ContactIndexDto> getIndexListByCase(String userUuid, CaseReferenceDto caseRef) {
-		
-		User user = userService.getByUuid(userUuid);
-		
-		if (user == null) {
-			return Collections.emptyList();
-		}
+	public List<ContactIndexDto> getIndexListByCase(CaseReferenceDto caseRef) {
 		
 		Case caze = caseService.getByReferenceDto(caseRef);
 		
-		return service.getAllByCase(caze, user).stream()
+		return service.getAllByCase(caze).stream()
 			.map(c -> toIndexDto(c))
 			.collect(Collectors.toList());
 	}

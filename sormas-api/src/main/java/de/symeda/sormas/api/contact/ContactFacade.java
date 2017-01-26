@@ -15,7 +15,7 @@ public interface ContactFacade {
 
 	List<ContactIndexDto> getIndexList(String userUuid);
 
-	List<ContactIndexDto> getIndexListByCase(String userUuid, CaseReferenceDto caseRef);
+	List<ContactIndexDto> getIndexListByCase(CaseReferenceDto caseRef);
 
 	ContactDto getContactByUuid(String uuid);
     

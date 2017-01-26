@@ -985,3 +985,10 @@ ALTER TABLE person ADD COLUMN nickname varchar(255);
 ALTER TABLE person ADD COLUMN mothersmaidenname varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (22, 'Add nickname and mothers maiden name to person');
+
+-- 2016-01-26 add health facility to user (informant) #49
+
+ALTER TABLE users ADD COLUMN healthfacility_id bigint;
+ALTER TABLE users ADD CONSTRAINT fk_users_healthfacility_id FOREIGN KEY (healthfacility_id) REFERENCES facility(id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (23, 'Add health facility to users (informant)');

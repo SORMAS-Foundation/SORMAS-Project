@@ -26,8 +26,6 @@ public class EventsActivity extends AbstractRootTabActivity {
         setContentView(R.layout.cases_activity_layout);
         super.onCreate(savedInstanceState);
         setTitle(getResources().getString(R.string.main_menu_events));
-
-        SyncEventsTask.syncEvents(getSupportFragmentManager());
     }
 
     @Override
@@ -35,6 +33,8 @@ public class EventsActivity extends AbstractRootTabActivity {
         super.onResume();
 
         createTabViews();
+
+        SyncEventsTask.syncEvents(getSupportFragmentManager());
     }
 
     @Override

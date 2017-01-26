@@ -19,11 +19,9 @@ import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.HtmlReferenceDtoConverter;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 
@@ -59,7 +57,7 @@ public class ContactGrid extends Grid {
 			@Override
 			public String getValue(Item item, Object itemId, Object propertyId) {
 				ContactIndexDto contactIndexDto = (ContactIndexDto)itemId;
-				return String.format(I18nProperties.getPrefixFieldCaption(contactIndexDto.I18N_PREFIX, NUMBER_OF_PENDING_TASKS + "Format"), 
+				return String.format(I18nProperties.getPrefixFieldCaption(ContactIndexDto.I18N_PREFIX, NUMBER_OF_PENDING_TASKS + "Format"), 
 						FacadeProvider.getTaskFacade().getPendingTaskCountByContact(contactIndexDto));
 			}
 			@Override
@@ -143,8 +141,7 @@ public class ContactGrid extends Grid {
     }
     
     public void reload(CaseReferenceDto caseRef) {
-    	UserDto user = LoginHelper.getCurrentUser();
-    	List<ContactIndexDto> entries = FacadeProvider.getContactFacade().getIndexListByCase(user.getUuid(), caseRef);
+    	List<ContactIndexDto> entries = FacadeProvider.getContactFacade().getIndexListByCase(caseRef);
 
     	getContainer().removeAllItems();
         getContainer().addAll(entries);    	

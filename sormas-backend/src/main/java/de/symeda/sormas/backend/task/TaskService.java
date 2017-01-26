@@ -3,41 +3,36 @@ package de.symeda.sormas.backend.task;
 import java.util.Date;
 import java.util.List;
 
+import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.task.TaskStatus;
+import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.contact.ContactService;
+import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.user.User;
 
 @Stateless
 @LocalBean
 public class TaskService extends AbstractAdoService<Task> {
 	
+	@EJB
+	CaseService caseService;
+	@EJB
+	ContactService contactService;
+	@EJB
+	EventService eventService;
+
 	public TaskService() {
 		super(Task.class);
-	}
-	
-	/**
-	 * @return ordered by priority, suggested start
-	 */
-	@Override
-	public List<Task> getAll() {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Task> cq = cb.createQuery(getElementClass());
-		Root<Task> from = cq.from(getElementClass());
-		cq.orderBy(cb.asc(from.get(Task.PRIORITY)), cb.asc(from.get(Task.SUGGESTED_START)), cb.asc(from.get(AbstractDomainObject.ID)));
-
-		return em.createQuery(cq).getResultList();
 	}
 	
 	/**
@@ -51,30 +46,27 @@ public class TaskService extends AbstractAdoService<Task> {
 		CriteriaQuery<Task> cq = cb.createQuery(getElementClass());
 		Root<Task> from = cq.from(getElementClass());
 
-		Predicate filter;
-		if (user.isSupervisor()) {
-			// supervisor: all tasks in the relevant region
-			// TODO only context tasks (surveillance, case management, contact tracing)
-			Region region = user.getRegion();
-			Join<Task, User> assigneeJoin = from.join(Task.ASSIGNEE_USER, JoinType.LEFT);
-			filter = cb.equal(assigneeJoin.get(User.REGION), region);
-			Join<Task, User> creatorJoin = from.join(Task.CREATOR_USER, JoinType.LEFT);
-			filter = cb.or(filter, cb.equal(creatorJoin.get(User.REGION), region));
-		} else {
-			// officer: only assigned or created tasks
-			filter = cb.equal(from.get(Task.ASSIGNEE_USER), user);
-			filter = cb.or(filter, cb.equal(from.get(Task.CREATOR_USER), user));
-		}
-		
+		Predicate filter = createUserFilter(cb, from, user);
 		if (date != null) {
 			filter = cb.and(filter, cb.greaterThan(from.get(AbstractDomainObject.CHANGE_DATE), date));
 		}
-		
 		cq.where(filter);
 		cq.orderBy(cb.asc(from.get(Task.PRIORITY)), cb.asc(from.get(Task.SUGGESTED_START)), cb.asc(from.get(AbstractDomainObject.ID)));
 
 		List<Task> resultList = em.createQuery(cq).getResultList();
 		return resultList;
+	}
+	
+	public Predicate createUserFilter(CriteriaBuilder cb, Root<Task> taskPath, User user) {
+		// whoever created the case or is assigned to it is allowed to access it
+		Predicate filter = cb.equal(taskPath.get(Task.CREATOR_USER), user);
+		filter = cb.or(filter, cb.equal(taskPath.get(Task.ASSIGNEE_USER), user));
+		
+		filter = cb.or(filter, caseService.createUserFilter(cb, taskPath.join(Task.CAZE, JoinType.LEFT), user));
+		filter = cb.or(filter, contactService.createUserFilter(cb, taskPath.join(Task.CONTACT, JoinType.LEFT), user));
+		filter = cb.or(filter, eventService.createUserFilter(cb, taskPath.join(Task.EVENT, JoinType.LEFT), user));
+		
+		return filter;
 	}
 	
 	public long getCount(TaskCriteria taskCriteria) {

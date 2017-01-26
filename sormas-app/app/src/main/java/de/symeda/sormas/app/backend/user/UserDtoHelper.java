@@ -51,43 +51,46 @@ public class UserDtoHelper extends AdoDtoHelper<User, UserDto> {
     }
 
     @Override
-    protected void fillInnerFromDto(User ado, UserDto dto) {
+    protected void fillInnerFromDto(User target, UserDto source) {
 
-        ado.setAktiv(dto.isActive());
-        ado.setUserName(dto.getUserName());
-        ado.setFirstName(dto.getFirstName());
-        ado.setLastName(dto.getLastName());
-        ado.setUserEmail(dto.getUserEmail());
+        target.setAktiv(source.isActive());
+        target.setUserName(source.getUserName());
+        target.setFirstName(source.getFirstName());
+        target.setLastName(source.getLastName());
+        target.setUserEmail(source.getUserEmail());
 
-        if (dto.getUserRoles().size() > 0) {
-            ado.setUserRole(dto.getUserRoles().iterator().next());
-            if (dto.getUserRoles().size() > 1) {
-                Log.e(UserDtoHelper.class.getName(), "User should not have more than one role: " + dto.toString());
+        if (source.getUserRoles().size() > 0) {
+            target.setUserRole(source.getUserRoles().iterator().next());
+            if (source.getUserRoles().size() > 1) {
+                Log.e(UserDtoHelper.class.getName(), "User should not have more than one role: " + source.toString());
             }
         }
 
-
-        if (dto.getRegion() != null) {
-            ado.setRegion(DatabaseHelper.getRegionDao().queryUuid(dto.getRegion().getUuid()));
+        if (source.getRegion() != null) {
+            target.setRegion(DatabaseHelper.getRegionDao().queryUuid(source.getRegion().getUuid()));
         } else {
-            ado.setRegion(null);
+            target.setRegion(null);
         }
 
-        if (dto.getDistrict() != null) {
-            ado.setDistrict(DatabaseHelper.getDistrictDao().queryUuid(dto.getDistrict().getUuid()));
+        if (source.getDistrict() != null) {
+            target.setDistrict(DatabaseHelper.getDistrictDao().queryUuid(source.getDistrict().getUuid()));
         } else {
-            ado.setDistrict(null);
+            target.setDistrict(null);
+        }
+        if (source.getHealthFacility() != null) {
+            target.setHealthFacility(DatabaseHelper.getFacilityDao().queryUuid(source.getHealthFacility().getUuid()));
+        } else {
+            target.setHealthFacility(null);
         }
 
-
-        if (dto.getAssociatedOfficer() != null) {
-            ado.setAssociatedOfficer(DatabaseHelper.getUserDao().queryUuid(dto.getAssociatedOfficer().getUuid()));
+        if (source.getAssociatedOfficer() != null) {
+            target.setAssociatedOfficer(DatabaseHelper.getUserDao().queryUuid(source.getAssociatedOfficer().getUuid()));
         } else {
-            ado.setAssociatedOfficer(null);
+            target.setAssociatedOfficer(null);
         }
 
-        ado.setAddress(locationHelper.fillOrCreateFromDto(ado.getAddress(), dto.getAddress()));
-        ado.setPhone(dto.getPhone());
+        target.setAddress(locationHelper.fillOrCreateFromDto(target.getAddress(), source.getAddress()));
+        target.setPhone(source.getPhone());
     }
 
     @Override

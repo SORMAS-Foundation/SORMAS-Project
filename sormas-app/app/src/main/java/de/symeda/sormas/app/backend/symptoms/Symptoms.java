@@ -24,7 +24,7 @@ public class Symptoms extends AbstractDomainObject {
 
 	public static final String TABLE_NAME = "symptoms";
 
-	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
+	@DatabaseField(dataType = DataType.DATE_LONG)
 	private Date onsetDate;
 	@Column(length = 255)
 	private String onsetSymptom;
@@ -36,7 +36,6 @@ public class Symptoms extends AbstractDomainObject {
 	private Float temperature;
 	@Enumerated(EnumType.STRING)
 	private TemperatureSource temperatureSource;
-	@Column(length = 255)
 	@Enumerated(EnumType.STRING)
 	private SymptomState fever;
 	@Enumerated(EnumType.STRING)

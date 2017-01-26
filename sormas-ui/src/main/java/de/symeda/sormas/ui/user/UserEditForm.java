@@ -12,6 +12,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserHelper;
@@ -43,7 +44,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 					LayoutUtil.fluidRowLocs(UserDto.ACTIVE),
 					LayoutUtil.fluidRowLocs(UserDto.USER_NAME, UserDto.USER_ROLES),
 					LayoutUtil.fluidRowLocs(UserDto.REGION, UserDto.DISTRICT),
-					LayoutUtil.fluidRowLocs("", UserDto.ASSOCIATED_OFFICER),
+					LayoutUtil.fluidRowLocs(UserDto.HEALTH_FACILITY, UserDto.ASSOCIATED_OFFICER),
 					LayoutUtil.fluidRowLocs(NEW_PASSWORD)
 					);
 
@@ -77,6 +78,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
     	getContent().addComponent(newPasswordButton, NEW_PASSWORD);
 
     	ComboBox region = addField(UserDto.REGION, ComboBox.class);
+
     	ComboBox district = addField(UserDto.DISTRICT, ComboBox.class);
     	region.addValueChangeListener(e -> {
     		district.removeAllItems();
@@ -85,13 +87,22 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
     			district.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(regionDto.getUuid()));
     		}
     	});
+
+    	ComboBox healthFacility = addField(UserDto.HEALTH_FACILITY, ComboBox.class);
+    	district.addValueChangeListener(e -> {
+    		healthFacility.removeAllItems();
+    		DistrictReferenceDto districtDto = (DistrictReferenceDto)e.getProperty().getValue();
+    		if (districtDto != null) {
+    			healthFacility.addItems(FacadeProvider.getFacilityFacade().getAllByDistrict(districtDto));
+    		}
+    	});
+
 		region.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
 
     	// for informant
     	ComboBox associatedOfficer = addField(UserDto.ASSOCIATED_OFFICER, ComboBox.class);
     	associatedOfficer.addItems(FacadeProvider.getUserFacade().getAssignableUsers(
     			LoginHelper.getCurrentUserAsReference(), UserRole.SURVEILLANCE_OFFICER));
-    	updateAssociatedOfficerField();
     	
     	setRequired(true, UserDto.FIRST_NAME, UserDto.LAST_NAME, UserDto.USER_NAME, UserDto.USER_ROLES,
     			UserDto.REGION, UserDto.DISTRICT);
@@ -99,16 +110,29 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
     	
     	addFieldListeners(UserDto.FIRST_NAME, e -> suggestUserName());
     	addFieldListeners(UserDto.LAST_NAME, e -> suggestUserName());
-    	addFieldListeners(UserDto.USER_ROLES, e -> updateAssociatedOfficerField());
+    	addFieldListeners(UserDto.USER_ROLES, e -> updateFieldsByUserRole());
+    	updateFieldsByUserRole();
     }
 
-    private void updateAssociatedOfficerField() {
+    private void updateFieldsByUserRole() {
+    	OptionGroup userRolesField = (OptionGroup)getFieldGroup().getField(UserDto.USER_ROLES);
+    	Set<UserRole> userRoles = (Set<UserRole>)userRolesField.getValue();
+    	boolean isInformant = userRoles.contains(UserRole.INFORMANT);
+    	
+    	// associated officer
     	ComboBox associatedOfficer = (ComboBox)getFieldGroup().getField(UserDto.ASSOCIATED_OFFICER);
-    	OptionGroup userRoles = (OptionGroup)getFieldGroup().getField(UserDto.USER_ROLES);
-    	Set<UserRole> value = (Set<UserRole>)userRoles.getValue();
-    	associatedOfficer.setVisible(value.contains(UserRole.INFORMANT));
-    	if (!associatedOfficer.isVisible()) {
+    	associatedOfficer.setVisible(isInformant);
+    	associatedOfficer.setRequired(isInformant);
+    	if (!isInformant) {
     		associatedOfficer.clear();
+    	}
+
+    	// health facility
+    	ComboBox healthFacility = (ComboBox)getFieldGroup().getField(UserDto.HEALTH_FACILITY);
+    	healthFacility.setVisible(isInformant);
+    	healthFacility.setRequired(isInformant);
+    	if (!isInformant) {
+    		healthFacility.clear();
     	}
     }
     

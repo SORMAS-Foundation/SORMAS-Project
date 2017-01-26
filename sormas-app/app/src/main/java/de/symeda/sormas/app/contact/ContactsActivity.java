@@ -28,8 +28,6 @@ public class ContactsActivity extends SormasRootActivity {
         setContentView(R.layout.contacts_activity_layout);
         super.onCreate(savedInstanceState);
         setTitle(getResources().getString(R.string.main_menu_contacts));
-
-        SyncContactsTask.syncContacts(getSupportFragmentManager());
     }
 
     @Override
@@ -45,6 +43,8 @@ public class ContactsActivity extends SormasRootActivity {
 
         createTabViews();
         pager.setCurrentItem(currentTab);
+
+        SyncContactsTask.syncContacts(getSupportFragmentManager());
     }
 
     @Override

@@ -8,7 +8,9 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper.DtoGetInterface;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper.DtoPostInterface;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.person.PersonDtoHelper;
+import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.util.Callback;
 import retrofit2.Call;
@@ -27,7 +29,11 @@ public class SyncPersonsTask extends AsyncTask<Void, Void, Void> {
         new PersonDtoHelper().pullEntities(new DtoGetInterface<PersonDto>() {
             @Override
             public Call<List<PersonDto>> getAll(long since) {
-                return RetroProvider.getPersonFacade().getAll(since);
+                User user = ConfigProvider.getUser();
+                if (user != null) {
+                    return RetroProvider.getPersonFacade().getAll(user.getUuid(), since);
+                }
+                return null;
             }
         }, DatabaseHelper.getPersonDao());
 

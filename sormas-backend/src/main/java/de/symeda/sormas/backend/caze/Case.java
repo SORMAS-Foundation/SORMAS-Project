@@ -47,7 +47,10 @@ public class Case extends AbstractDomainObject {
 	public static final String CONTACT_OFFICER = "contactOfficer";
 	public static final String SYMPTOMS = "symptoms";
 	public static final String TASKS = "tasks";
-	
+	public static final String REGION = "region";
+	public static final String DISTRICT = "district";
+	public static final String COMMUNITY = "community";
+
 	private Person person;
 	private String description;
 	private Disease disease;

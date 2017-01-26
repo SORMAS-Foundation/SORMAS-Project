@@ -22,8 +22,6 @@ public class CasesActivity extends SormasRootActivity {
         setContentView(R.layout.cases_activity_layout);
         super.onCreate(savedInstanceState);
         setTitle(getResources().getString(R.string.main_menu_cases));
-
-        SyncCasesTask.syncCases(getSupportFragmentManager());
     }
 
     @Override
@@ -31,6 +29,8 @@ public class CasesActivity extends SormasRootActivity {
         super.onResume();
 
         createTabViews();
+
+        SyncCasesTask.syncCases(getSupportFragmentManager());
     }
 
     @Override

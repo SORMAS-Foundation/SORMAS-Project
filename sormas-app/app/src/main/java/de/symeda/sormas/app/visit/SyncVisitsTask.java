@@ -1,4 +1,4 @@
-package de.symeda.sormas.app.task;
+package de.symeda.sormas.app.visit;
 
 import android.os.AsyncTask;
 import android.support.v4.widget.SwipeRefreshLayout;

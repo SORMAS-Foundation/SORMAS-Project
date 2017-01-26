@@ -155,13 +155,10 @@ public class ContactEditActivity extends AbstractEditActivity {
                         Toast.makeText(this, "contact "+ DataHelper.getShortUuid(contact.getUuid()) +" saved", Toast.LENGTH_SHORT).show();
                         break;
                     case PERSON:
-                        LocationDao locLocationDao = DatabaseHelper.getLocationDao();
-                        PersonDao personDao = DatabaseHelper.getPersonDao();
-
                         Person person = (Person)adapter.getData(1);
 
                         if(person.getAddress()!=null) {
-                            locLocationDao.save(person.getAddress());
+                            DatabaseHelper.getLocationDao().save(person.getAddress());
                         }
 
                         DatabaseHelper.getPersonDao().save(person);

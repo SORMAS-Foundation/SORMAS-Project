@@ -2,6 +2,7 @@ package de.symeda.sormas.api.user;
 
 import java.util.Set;
 
+import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -23,6 +24,7 @@ public class UserDto extends UserReferenceDto {
 	public static final String USER_ROLES = "userRoles";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
+	public static final String HEALTH_FACILITY = "healthFacility";
 	public static final String ASSOCIATED_OFFICER = "associatedOfficer";
 
 	private boolean active = true;
@@ -35,9 +37,12 @@ public class UserDto extends UserReferenceDto {
 	private String phone;
 	private LocationDto address;	
 	
+	private Set<UserRole> userRoles;
+
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
-	private Set<UserRole> userRoles;
+	private FacilityReferenceDto healthFacility;
+
 	private UserReferenceDto associatedOfficer;
 	
 	public boolean isActive() {
@@ -138,4 +143,11 @@ public class UserDto extends UserReferenceDto {
 		this.district = district;
 	}
 
+	public FacilityReferenceDto getHealthFacility() {
+		return healthFacility;
+	}
+
+	public void setHealthFacility(FacilityReferenceDto healthFacility) {
+		this.healthFacility = healthFacility;
+	}
 }

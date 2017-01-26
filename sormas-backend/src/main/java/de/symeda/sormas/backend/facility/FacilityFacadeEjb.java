@@ -10,9 +10,13 @@ import javax.ejb.Stateless;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityFacade;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.region.CommunityReferenceDto;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.CommunityService;
+import de.symeda.sormas.backend.region.District;
+import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.util.DtoHelper;
 
 @Stateless(name = "FacilityFacade")
@@ -22,18 +26,31 @@ public class FacilityFacadeEjb implements FacilityFacade {
 	private FacilityService service;
 	@EJB
 	private CommunityService communityService;
+	@EJB
+	private DistrictService districtService;
 
 	
 	@Override
-	public List<FacilityReferenceDto> getAllByCommunity(String communityUuid) {
+	public List<FacilityReferenceDto> getAllByCommunity(CommunityReferenceDto communityRef) {
 		
-		Community community = communityService.getByUuid(communityUuid);
+		Community community = communityService.getByUuid(communityRef.getUuid());
 		List<Facility> facilities = service.getAllByCommunity(community);
 		
 		return facilities.stream()
 				.map(f -> toReferenceDto(f))
 				.collect(Collectors.toList());
 	}
+	
+	@Override
+	public List<FacilityReferenceDto> getAllByDistrict(DistrictReferenceDto districtRef) {
+    	District district = districtService.getByUuid(districtRef.getUuid());
+		List<Facility> facilities = service.getAllByDistrict(district);
+		
+		return facilities.stream()
+				.map(f -> toReferenceDto(f))
+				.collect(Collectors.toList());
+	}
+
 	
 	@Override
 	public List<FacilityReferenceDto> getAll() {

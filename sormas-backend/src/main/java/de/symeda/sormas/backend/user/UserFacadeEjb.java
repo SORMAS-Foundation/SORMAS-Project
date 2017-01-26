@@ -9,14 +9,14 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
-import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserFacade;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
+import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
-import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb;
 import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.RegionFacadeEjb;
@@ -34,6 +34,8 @@ public class UserFacadeEjb implements UserFacade {
 	private RegionService regionService;
 	@EJB
 	private DistrictService districtService;
+	@EJB
+	private FacilityService facilityService;
 
 	@Override
 	public List<UserReferenceDto> getAssignableUsers(UserReferenceDto assigningUser, UserRole ...assignableRoles) {
@@ -110,6 +112,7 @@ public class UserFacadeEjb implements UserFacade {
 		
 		dto.setRegion(RegionFacadeEjb.toReferenceDto(entity.getRegion()));
 		dto.setDistrict(DistrictFacadeEjb.toReferenceDto(entity.getDistrict()));
+		dto.setHealthFacility(FacilityFacadeEjb.toReferenceDto(entity.getHealthFacility()));
 		dto.setAssociatedOfficer(toReferenceDto(entity.getAssociatedOfficer()));
 		
 		entity.getUserRoles().size();
@@ -144,6 +147,7 @@ public class UserFacadeEjb implements UserFacade {
 		
 		entity.setRegion(regionService.getByReferenceDto(dto.getRegion()));
 		entity.setDistrict(districtService.getByReferenceDto(dto.getDistrict()));
+		entity.setHealthFacility(facilityService.getByReferenceDto(dto.getHealthFacility()));
 		entity.setAssociatedOfficer(service.getByReferenceDto(dto.getAssociatedOfficer()));
 
 		entity.setUserRoles(dto.getUserRoles());

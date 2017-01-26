@@ -16,7 +16,6 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.visit.Visit;
-import de.symeda.sormas.app.task.SyncVisitsTask;
 import de.symeda.sormas.app.util.Callback;
 
 public class VisitsListFragment extends ListFragment {

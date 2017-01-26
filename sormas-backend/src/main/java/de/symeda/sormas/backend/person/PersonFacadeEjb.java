@@ -19,14 +19,12 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.person.PersonIndexDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
-import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
@@ -48,9 +46,14 @@ public class PersonFacadeEjb implements PersonFacade {
 
 	
 	@Override
-	public List<PersonReferenceDto> getAllPersons() {
+	public List<PersonReferenceDto> getAllPersons(UserReferenceDto userRef) {
 
-		return service.getAll().stream()
+		User user = userService.getByReferenceDto(userRef);
+		if (user == null) {
+			return Collections.emptyList();
+		}
+
+		return service.getAllAfter(null, user).stream()
 			.map(c -> toReferenceDto(c))
 			.collect(Collectors.toList());
 	}
@@ -59,40 +62,40 @@ public class PersonFacadeEjb implements PersonFacade {
 	public List<PersonIndexDto> getIndexList(UserReferenceDto userRef) {
 		
 		User user = userService.getByReferenceDto(userRef);
-		
 		if (user == null) {
 			return Collections.emptyList();
 		}
 
-		// TODO match User
-		
-		return service.getAllAfter(null).stream()
+		return service.getAllAfter(null, user).stream()
 			.map(c -> toIndexDto(c))
 			.collect(Collectors.toList());
 	}
 	
 	@Override
-	public List<PersonReferenceDto> getPersonReferencesAfter(Date date) {
-		return service.getAllAfter(date).stream()
+	public List<PersonReferenceDto> getPersonReferencesAfter(Date date, UserReferenceDto userRef) {
+		
+		User user = userService.getByReferenceDto(userRef);
+		if (user == null) {
+			return Collections.emptyList();
+		}
+		
+		return service.getAllAfter(date, user).stream()
 			.map(c -> toReferenceDto(c))
 			.collect(Collectors.toList());
 	}
 	
 	@Override
-	public List<PersonDto> getPersonsAfter(Date date) {
-		List<PersonDto> result = service.getAllAfter(date).stream()
+	public List<PersonDto> getPersonsAfter(Date date, String uuid) {
+		
+		User user = userService.getByUuid(uuid);
+		if (user == null) {
+			return Collections.emptyList();
+		}
+		
+		List<PersonDto> result = service.getAllAfter(date, user).stream()
 			.map(c -> toDto(c))
 			.collect(Collectors.toList());
 		return result;
-	}
-
-	@Override
-	public List<PersonReferenceDto> getPersonsByRegion(RegionReferenceDto regionDto) {
-
-		Region region = regionService.getByReferenceDto(regionDto);
-		return service.getPersonsByRegion(region).stream()
-				.map(c -> toReferenceDto(c))
-				.collect(Collectors.toList());
 	}
 
 	@Override

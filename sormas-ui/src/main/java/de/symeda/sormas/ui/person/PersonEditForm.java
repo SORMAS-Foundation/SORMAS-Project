@@ -206,7 +206,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	    		occupationFacility.removeAllItems();
 	    		CommunityReferenceDto communityDto = (CommunityReferenceDto)e.getProperty().getValue();
 	    		if(communityDto != null) {
-	    			occupationFacility.addItems(FacadeProvider.getFacilityFacade().getAllByCommunity(communityDto.getUuid()));
+	    			occupationFacility.addItems(FacadeProvider.getFacilityFacade().getAllByCommunity(communityDto));
 	    		}
     		}
     	});

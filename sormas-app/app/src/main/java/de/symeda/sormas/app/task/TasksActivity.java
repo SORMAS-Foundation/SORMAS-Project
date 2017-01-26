@@ -24,8 +24,6 @@ public class TasksActivity extends SormasRootActivity {
         setContentView(R.layout.tasks_activity_layout);
         super.onCreate(savedInstanceState);
         setTitle(getResources().getString(R.string.main_menu_tasks));
-
-        SyncTasksTask.syncTasks(getSupportFragmentManager(), this);
     }
 
     @Override
@@ -33,6 +31,8 @@ public class TasksActivity extends SormasRootActivity {
         super.onResume();
 
         createTabViews();
+
+        SyncTasksTask.syncTasks(getSupportFragmentManager(), this);
     }
 
 

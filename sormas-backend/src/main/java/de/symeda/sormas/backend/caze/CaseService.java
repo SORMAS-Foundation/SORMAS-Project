@@ -9,7 +9,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
@@ -19,7 +19,6 @@ import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.symptoms.Symptoms;
-import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.user.User;
 
 @Stateless
@@ -45,19 +44,7 @@ public class CaseService extends AbstractAdoService<Case> {
 		CriteriaQuery<Case> cq = cb.createQuery(getElementClass());
 		Root<Case> from = cq.from(getElementClass());
 
-		Predicate filter = cb.equal(from.get(Case.REPORTING_USER), user);
-		if (user.getUserRoles().contains(UserRole.SURVEILLANCE_OFFICER)) {
-			filter = cb.or(filter, cb.equal(from.get(Case.SURVEILLANCE_OFFICER), user));
-		}
-		
-		// add cases for assigned tasks of the user
-		Join<Case, Task> tasksJoin = from.join(Case.TASKS, JoinType.LEFT);
-		filter = cb.or(filter, cb.equal(tasksJoin.get(Task.ASSIGNEE_USER), user));
-		
-		// TODO add Filter by Region...
-		if (user.getUserRoles().contains(UserRole.SURVEILLANCE_SUPERVISOR)) {
-			filter = null;//cb.or(filter, cb.equal(from.get(Case.SURVEILLANCE_SUPERVISOR), user));
-		}
+		Predicate filter = createUserFilter(cb, from, user);
 		
 		if (date != null) {
 			Predicate dateFilter = cb.greaterThan(from.get(AbstractDomainObject.CHANGE_DATE), date);
@@ -78,6 +65,50 @@ public class CaseService extends AbstractAdoService<Case> {
 
 		List<Case> resultList = em.createQuery(cq).getResultList();
 		return resultList;
+	}
+
+	public Predicate createUserFilter(CriteriaBuilder cb, Path<Case> casePath, User user) {
+		// whoever created the case or is assigned to it is allowed to access it
+		Predicate filter = cb.equal(casePath.get(Case.REPORTING_USER), user);
+		filter = cb.or(filter, cb.equal(casePath.get(Case.SURVEILLANCE_OFFICER), user));
+		filter = cb.or(filter, cb.equal(casePath.get(Case.CONTACT_OFFICER), user));
+		filter = cb.or(filter, cb.equal(casePath.get(Case.CASE_OFFICER), user));
+		
+		// allow case access based on user role
+		for (UserRole userRole : user.getUserRoles()) {
+			switch (userRole) {
+			case SURVEILLANCE_SUPERVISOR:
+			case CONTACT_SUPERVISOR:
+			case CASE_SUPERVISOR:
+				// supervisors see all cases of their region
+				if (user.getRegion() != null) {
+					filter = cb.or(filter, cb.equal(casePath.get(Case.REGION), user.getRegion()));
+				}
+				break;
+			case SURVEILLANCE_OFFICER:
+			case CONTACT_OFFICER:
+			case CASE_OFFICER:
+				// officers see all cases of their district
+				if (user.getDistrict() != null) {
+					filter = cb.or(filter, cb.equal(casePath.get(Case.DISTRICT), user.getDistrict()));
+				}
+				break;
+			case INFORMANT:
+				// informants see all cases of their facility
+				if (user.getHealthFacility() != null) {
+					filter = cb.or(filter, cb.equal(casePath.get(Case.HEALTH_FACILITY), user.getHealthFacility()));
+				}
+				break;
+			default:
+				break;
+			}
+		}
+		
+//		// add cases for assigned tasks of the user
+//		Join<Case, Task> tasksJoin = from.join(Case.TASKS, JoinType.LEFT);
+//		filter = cb.or(filter, cb.equal(tasksJoin.get(Task.ASSIGNEE_USER), user));
+
+		return filter;
 	}
 	
 	public Case getByPersonAndDisease(Disease disease, Person person, User user) {
@@ -104,6 +135,5 @@ public class CaseService extends AbstractAdoService<Case> {
 		} catch(NoResultException e) {
 			return null;
 		}
-	}
-	
+	}	
 }

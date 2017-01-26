@@ -12,7 +12,9 @@ import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.LayoutUtil;
@@ -78,7 +80,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
     		facility.removeAllItems();
     		CommunityReferenceDto communityDto = (CommunityReferenceDto)e.getProperty().getValue();
     		if (communityDto != null) {
-    			facility.addItems(FacadeProvider.getFacilityFacade().getAllByCommunity(communityDto.getUuid()));
+    			facility.addItems(FacadeProvider.getFacilityFacade().getAllByCommunity(communityDto));
     		}
     	});
 		region.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
@@ -108,9 +110,11 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
     }
     
     private void updatePersonsSelect() {
+    	UserDto user = LoginHelper.getCurrentUser();
+
     	Object value = persons.getValue();
     	persons.removeAllItems();
-    	persons.addItems(FacadeProvider.getPersonFacade().getAllPersons());
+    	persons.addItems(FacadeProvider.getPersonFacade().getAllPersons(user));
     	persons.setValue(value);
     }
     

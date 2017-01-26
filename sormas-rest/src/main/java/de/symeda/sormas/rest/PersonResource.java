@@ -25,9 +25,10 @@ import de.symeda.sormas.api.person.PersonFacade;
 	})
 public class PersonResource {
 
-	@GET @Path("/all/{since}")
-	public List<PersonDto> getAllPersons(@PathParam("since") long since) {
-		List<PersonDto> result = FacadeProvider.getPersonFacade().getPersonsAfter(new Date(since));
+	@GET 
+	@Path("/all/{user}/{since}")
+	public List<PersonDto> getAllPersons(@PathParam("user") String userUuid, @PathParam("since") long since) {
+		List<PersonDto> result = FacadeProvider.getPersonFacade().getPersonsAfter(new Date(since), userUuid);
 		return result;
 	}
 	

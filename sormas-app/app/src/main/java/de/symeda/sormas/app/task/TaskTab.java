@@ -61,6 +61,9 @@ public class TaskTab extends FormTab {
         if(binding.getTask().getContact() == null) {
             binding.taskContact.setVisibility(View.GONE);
         }
+        if(binding.getTask().getEvent() == null) {
+            binding.taskEvent.setVisibility(View.GONE);
+        }
 
         List<TaskStatus> possibleStatusChanges = TaskHelper.getPossibleStatusChanges(task.getTaskStatus(), ConfigProvider.getUser().getUserRole());
 
@@ -105,25 +108,31 @@ public class TaskTab extends FormTab {
         binding.taskCaze.makeLink(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final CaseDao caseDao = DatabaseHelper.getCaseDao();
-                final Case caze = caseDao.queryUuid(binding.getTask().getCaze().getUuid());
-                showCaseEditView(caze);
+                if (binding.getTask().getCaze() != null) {
+                    final CaseDao caseDao = DatabaseHelper.getCaseDao();
+                    final Case caze = caseDao.queryUuid(binding.getTask().getCaze().getUuid());
+                    showCaseEditView(caze);
+                }
             }
         });
         binding.taskContact.makeLink(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final ContactDao contactDao = DatabaseHelper.getContactDao();
-                final Contact contact = contactDao.queryUuid(binding.getTask().getContact().getUuid());
-                showContactEditView(contact);
+                if (binding.getTask().getContact() != null) {
+                    final ContactDao contactDao = DatabaseHelper.getContactDao();
+                    final Contact contact = contactDao.queryUuid(binding.getTask().getContact().getUuid());
+                    showContactEditView(contact);
+                }
             }
         });
         binding.taskEvent.makeLink(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final EventDao eventDao = DatabaseHelper.getEventDao();
-                final Event event = eventDao.queryUuid(binding.getTask().getEvent().getUuid());
-                showEventEditView(event);
+                if (binding.getTask().getEvent() != null) {
+                    final EventDao eventDao = DatabaseHelper.getEventDao();
+                    final Event event = eventDao.queryUuid(binding.getTask().getEvent().getUuid());
+                    showEventEditView(event);
+                }
             }
         });
     }

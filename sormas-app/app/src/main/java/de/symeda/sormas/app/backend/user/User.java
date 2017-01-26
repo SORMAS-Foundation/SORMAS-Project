@@ -11,6 +11,7 @@ import javax.persistence.ManyToOne;
 
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
@@ -48,10 +49,13 @@ public class User extends AbstractDomainObject {
 	private String phone;
 	@DatabaseField(foreign = true, foreignAutoCreate = true, foreignAutoRefresh = true)
 	private Location address;
-	@DatabaseField(foreign = true, foreignAutoCreate = true, foreignAutoRefresh = true)
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private Region region;
-	@DatabaseField(foreign = true, foreignAutoCreate = true, foreignAutoRefresh = true)
+	@DatabaseField(foreign = true,  foreignAutoRefresh = true)
 	private District district;
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	private Facility healthFacility;
+
 	@Enumerated(EnumType.STRING)
 	private UserRole userRole;
 	@ManyToOne(cascade = {})
@@ -119,7 +123,14 @@ public class User extends AbstractDomainObject {
 	public void setDistrict(District district) {
 		this.district = district;
 	}
-	
+
+	public Facility getHealthFacility() {
+		return healthFacility;
+	}
+	public void setHealthFacility(Facility healthFacility) {
+		this.healthFacility = healthFacility;
+	}
+
 	@Override
 	public String toString() {
 
