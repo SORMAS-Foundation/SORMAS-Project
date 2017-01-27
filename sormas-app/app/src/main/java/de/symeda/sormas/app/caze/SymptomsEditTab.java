@@ -29,6 +29,7 @@ import de.symeda.sormas.app.databinding.CaseSymptomsFragmentLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.FormTab;
 import de.symeda.sormas.app.util.Item;
+import de.symeda.sormas.app.util.ValidationFailedException;
 
 
 /**
@@ -138,26 +139,27 @@ public class SymptomsEditTab extends FormTab {
      * with the most important error message (because returning a simple boolean would mean
      * that the respective Activity does not know what caused the validation error.
      */
-    public String validateVisitData(Symptoms symptoms, boolean isCooperative) {
+    public boolean validateVisitData(Symptoms symptoms, boolean isCooperative) throws ValidationFailedException {
         if(isCooperative) {
             if(isAnyNonConditionalSymptomSetTo(null)) {
-                return "Not saved. Please specify the symptom states for all symptoms.";
+                throw new ValidationFailedException("Not saved. Please specify the symptom states for all symptoms.");
             }
             if(symptoms.getTemperature() == null || symptoms.getTemperatureSource() == null) {
-                return "Not saved. Please specify a temperature and a temperature source.";
+                throw new ValidationFailedException("Not saved. Please specify a temperature and a temperature source.");
             }
             if(isAnyNonConditionalSymptomSetTo(SymptomState.YES)) {
                 if(symptoms.getOnsetDate() == null) {
-                    return "Not saved. Please specify the date of initial symptom onset.";
+                    throw new ValidationFailedException("Not saved. Please specify the date of initial symptom onset.");
                 }
                 if(symptoms.getOnsetSymptom() == null) {
-                    return "Not saved. Please specify the initial onset symptom.";
+                    throw new ValidationFailedException("Not saved. Please specify the initial onset symptom.");
                 }
             }
         }
         if(symptoms.getTemperature() != null && symptoms.getTemperature().compareTo(38.0F) >= 0 &&
                 symptoms.getFever() != SymptomState.YES) {
-            return "Not saved. Temperature is in fever range. Please make sure that the fever field is set to 'Yes'.";
+            throw new ValidationFailedException(
+                    "Not saved. Temperature is in fever range. Please make sure that the fever field is set to 'Yes'.");
         }
 
         return validateGeneralData(symptoms);
@@ -168,13 +170,13 @@ public class SymptomsEditTab extends FormTab {
      * (because returning a simple boolean would mean that the respective Activity does not know
      * what caused the validation error.
      */
-    public String validateCaseData(Symptoms symptoms) {
+    public boolean validateCaseData(Symptoms symptoms) throws ValidationFailedException {
         if(isAnyNonConditionalSymptomSetTo(SymptomState.YES)) {
             if(symptoms.getOnsetDate() == null) {
-                return "Not saved. Please specify the date of initial symptom onset.";
+                throw new ValidationFailedException("Not saved. Please specify the date of initial symptom onset.");
             }
             if(symptoms.getOnsetSymptom() == null) {
-                return "Not saved. Please specify the initial onset symptom.";
+                throw new ValidationFailedException("Not saved. Please specify the initial onset symptom.");
             }
         }
 
@@ -184,22 +186,22 @@ public class SymptomsEditTab extends FormTab {
     /**
      * Handles all validations that are not specific to a visit or case.
      */
-    private String validateGeneralData(Symptoms symptoms) {
+    private boolean validateGeneralData(Symptoms symptoms) throws ValidationFailedException {
         if(symptoms.getUnexplainedBleeding() == SymptomState.YES) {
             if(isAnyConditionalBleedingSymptomSetTo(null)) {
-                return "Not saved. Please specify the states for all conditional bleeding symptoms.";
+                throw new ValidationFailedException("Not saved. Please specify the states for all conditional bleeding symptoms.");
             }
         }
         if(symptoms.getOtherHemorrhagicSymptoms() == SymptomState.YES &&
                 (symptoms.getOtherHemorrhagicSymptomsText() == null || symptoms.getOtherHemorrhagicSymptomsText().isEmpty())) {
-            return "Not saved. Please specify the additional hemorrhagic symptoms.";
+            throw new ValidationFailedException("Not saved. Please specify the additional hemorrhagic symptoms.");
         }
         if(symptoms.getOtherNonHemorrhagicSymptoms() == SymptomState.YES &&
                 (symptoms.getOtherNonHemorrhagicSymptomsText() == null || symptoms.getOtherNonHemorrhagicSymptomsText().isEmpty())) {
-            return "Not saved. Please specify the additional clinical symptoms.";
+            throw new ValidationFailedException("Not saved. Please specify the additional clinical symptoms.");
         }
 
-        return null;
+        return true;
     }
 
     /**

@@ -8,6 +8,7 @@ import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Field;
+import com.vaadin.ui.OptionGroup;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.I18nProperties;
@@ -155,7 +156,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		return HTML_LAYOUT;
 	}
 	
-	public void initializeSymptomRequirementsForVisit(Field visitStatus) {
+	public void initializeSymptomRequirementsForVisit(OptionGroup visitStatus) {
 		FieldHelper.setRequiredWhen(getFieldGroup(), visitStatus, unconditionalSymptomFieldIds, Arrays.asList(VisitStatus.COOPERATIVE), disease);
 		FieldHelper.setRequiredWhen(getFieldGroup(), visitStatus, Arrays.asList(SymptomsDto.TEMPERATURE, SymptomsDto.TEMPERATURE_SOURCE), Arrays.asList(VisitStatus.COOPERATIVE), disease);
 		setRequiredWhenSymptomaticAndCooperative(getFieldGroup(), SymptomsDto.ONSET_DATE, unconditionalSymptomFieldIds, Arrays.asList(SymptomState.YES), visitStatus);

@@ -202,7 +202,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
     		}
     	});
     	facilityCommunity.addValueChangeListener(e -> {
-    		if(facilityFieldsInitialized) {
+    		if(facilityFieldsInitialized || occupationFacility.getValue() == null) {
 	    		occupationFacility.removeAllItems();
 	    		CommunityReferenceDto communityDto = (CommunityReferenceDto)e.getProperty().getValue();
 	    		if(communityDto != null) {
@@ -313,11 +313,13 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		ComboBox facilityRegion = (ComboBox) getField(FACILITY_REGION);
 	    ComboBox facilityDistrict = (ComboBox) getField(FACILITY_DISTRICT);
 	    ComboBox facilityCommunity = (ComboBox) getField(FACILITY_COMMUNITY);
+	    ComboBox occupationFacility = (ComboBox) getField(PersonDto.OCCUPATION_FACILITY);
 	    facilityRegion.select(facility.getLocation().getRegion());
 	    facilityDistrict.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(facility.getLocation().getRegion().getUuid()));
 	   	facilityDistrict.select(facility.getLocation().getDistrict());
 	   	facilityCommunity.addItems(FacadeProvider.getCommunityFacade().getAllByDistrict(facility.getLocation().getDistrict().getUuid()));
 	   	facilityCommunity.select(facility.getLocation().getCommunity());
+	   	occupationFacility.addItems(FacadeProvider.getFacilityFacade().getAllByCommunity(facility.getLocation().getCommunity()));
 	   	
 	   	facilityFieldsInitialized = true;
 	}

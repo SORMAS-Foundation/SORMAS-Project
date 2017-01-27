@@ -12,7 +12,6 @@ import android.view.MenuItem;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
@@ -27,6 +26,7 @@ import de.symeda.sormas.app.component.AbstractEditActivity;
 import de.symeda.sormas.app.component.HelpDialog;
 import de.symeda.sormas.app.contact.ContactNewActivity;
 import de.symeda.sormas.app.person.SyncPersonsTask;
+import de.symeda.sormas.app.util.ValidationFailedException;
 
 public class CaseEditActivity extends AbstractEditActivity {
 
@@ -190,8 +190,9 @@ public class CaseEditActivity extends AbstractEditActivity {
 
                         SymptomsEditTab symptomsEditTab = (SymptomsEditTab) adapter.getTabByPosition(CaseEditTabs.SYMPTOMS.ordinal());
 
-                        String errorMessage = symptomsEditTab.validateCaseData(symptoms);
-                        if(errorMessage == null) {
+                        try {
+                            symptomsEditTab.validateCaseData(symptoms);
+
                             if (symptoms != null) {
                                 symptomsDao.save(symptoms);
                             }
@@ -202,8 +203,8 @@ public class CaseEditActivity extends AbstractEditActivity {
 
                             SyncCasesTask.syncCases(getSupportFragmentManager());
                             break;
-                        } else {
-                            Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show();
+                        } catch(ValidationFailedException e) {
+                            Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
                             return true;
                         }
                 }

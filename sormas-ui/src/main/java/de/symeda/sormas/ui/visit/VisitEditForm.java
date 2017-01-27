@@ -57,7 +57,7 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
 		getContent().addComponent(symptomsForm, VisitDto.SYMPTOMS);
     	
     	setRequired(true, VisitDto.VISIT_DATE_TIME, VisitDto.VISIT_STATUS);
-    	symptomsForm.initializeSymptomRequirementsForVisit(getFieldGroup().getField(VisitDto.VISIT_STATUS));
+    	symptomsForm.initializeSymptomRequirementsForVisit((OptionGroup) getFieldGroup().getField(VisitDto.VISIT_STATUS));
     }
 	
 	@Override

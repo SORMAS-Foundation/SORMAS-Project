@@ -20,6 +20,7 @@ import de.symeda.sormas.app.backend.visit.Visit;
 import de.symeda.sormas.app.caze.SymptomsEditTab;
 import de.symeda.sormas.app.component.AbstractEditActivity;
 import de.symeda.sormas.app.component.HelpDialog;
+import de.symeda.sormas.app.util.ValidationFailedException;
 
 
 public class VisitEditActivity extends AbstractEditActivity {
@@ -120,8 +121,9 @@ public class VisitEditActivity extends AbstractEditActivity {
 
                 // method returns a String, null means that there is no error message and thus
                 // the data is valid
-                String errorMessage = symptomsEditTab.validateVisitData(symptoms, visit.getVisitStatus() == VisitStatus.COOPERATIVE);
-                if(errorMessage == null) {
+                try {
+                    symptomsEditTab.validateVisitData(symptoms, visit.getVisitStatus() == VisitStatus.COOPERATIVE);
+
                     if (symptoms != null) {
                         visit.setSymptoms(symptoms);
                         DatabaseHelper.getSymptomsDao().save(symptoms);
@@ -135,8 +137,8 @@ public class VisitEditActivity extends AbstractEditActivity {
                     finish();
 
                     return true;
-                } else {
-                    Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show();
+                } catch(ValidationFailedException e) {
+                    Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
 
                     // if any symptomsfield is required, change pager to symptoms tab
                     if(currentTab!=VisitEditTabs.SYMPTOMS.ordinal()) {

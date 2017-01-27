@@ -53,17 +53,14 @@ public class PersonController {
 		VaadinUiUtil.showModalPopupWindow(personEditComponent, "Edit person");
     }
     
-    public void selectOrCreatePerson(EventParticipantDto eventParticipant, String firstName, String lastName, Consumer<PersonReferenceDto> resultConsumer) {
-    	
+    public void selectOrCreatePerson(String firstName, String lastName, Consumer<PersonReferenceDto> resultConsumer) {
     	PersonSelectField personSelect = new PersonSelectField();
     	personSelect.setFirstName(firstName);
     	personSelect.setLastName(lastName);
     	personSelect.setWidth(640, Unit.PIXELS);
 
     	if (personSelect.hasMatches()) {
-    		
     		personSelect.selectBestMatch();
-    		
 	    	final CommitDiscardWrapperComponent<PersonSelectField> selectOrCreateComponent = 
 	    			new CommitDiscardWrapperComponent<PersonSelectField>(personSelect, null);
 	    	
@@ -74,43 +71,16 @@ public class PersonController {
 	        		if (person != null) {
 	        			if (resultConsumer != null) {
 	        				resultConsumer.accept(person);
-	        				if(eventParticipant != null) {
-		        				eventParticipant.setPerson(personFacade.getPersonByUuid(person.getUuid()));
-		        				ControllerProvider.getEventParticipantController().editEventParticipant(eventParticipant);
-	        				}
 	        			}
 	        		} else {	
-	        			if(eventParticipant == null) {
-	        				create(personSelect.getFirstName(), personSelect.getLastName(), resultConsumer);
-	        			} else {
-	        				PersonDto personDto = new PersonDto();
-	        				personDto.setUuid(DataHelper.createUuid());
-	        				personDto.setFirstName(personSelect.getFirstName());
-	        				personDto.setLastName(personSelect.getLastName());
-	        				// Workaround to avoid binding error
-	        				personDto.setAddress(new LocationDto());
-	        				eventParticipant.setPerson(personDto);
-	        				ControllerProvider.getEventParticipantController().editEventParticipant(eventParticipant);
-	        			}
+	        			create(personSelect.getFirstName(), personSelect.getLastName(), resultConsumer);
 	        		}
 	        	}
 	        });
         
 	    	VaadinUiUtil.showModalPopupWindow(selectOrCreateComponent, "Pick or create person");
-    	}
-    	else {
-    		if(eventParticipant == null) {
-    			create(personSelect.getFirstName(), personSelect.getLastName(), resultConsumer);
-    		} else {
-				PersonDto personDto = new PersonDto();
-				personDto.setUuid(DataHelper.createUuid());
-				personDto.setFirstName(personSelect.getFirstName());
-				personDto.setLastName(personSelect.getLastName());
-				// Workaround to avoid binding error
-				personDto.setAddress(new LocationDto());
-				eventParticipant.setPerson(personDto);
-    			ControllerProvider.getEventParticipantController().editEventParticipant(eventParticipant);
-    		}
+    	} else {
+    		create(personSelect.getFirstName(), personSelect.getLastName(), resultConsumer);
     	}
     }
     
