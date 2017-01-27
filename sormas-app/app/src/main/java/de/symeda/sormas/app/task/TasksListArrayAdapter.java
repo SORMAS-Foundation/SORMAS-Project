@@ -67,6 +67,10 @@ public class TasksListArrayAdapter extends ArrayAdapter<Task> {
         }
         setFontStyle(dueDate, task.getTaskStatus(),dueDateColor);
 
+        TextView taskStatus = (TextView) convertView.findViewById(R.id.task_taskStatus_li);
+        taskStatus.setText(DataUtils.toString(task.getTaskStatus()));
+        setFontStyle(taskStatus, task.getTaskStatus());
+
         TextView taskType = (TextView) convertView.findViewById(R.id.task_taskType_li);
         taskType.setText(DataUtils.toString(task.getTaskType()));
         setFontStyle(taskType, task.getTaskStatus());

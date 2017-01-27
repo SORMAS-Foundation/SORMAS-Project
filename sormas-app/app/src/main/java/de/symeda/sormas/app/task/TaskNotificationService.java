@@ -128,7 +128,7 @@ public class TaskNotificationService extends Service {
                     .build();
 
             NotificationManager notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
-            int notificationId = 0;
+            int notificationId = task.getId().intValue();
             notificationManager.notify(notificationId, notification);
 
             break; // @TODO implement notification grouping

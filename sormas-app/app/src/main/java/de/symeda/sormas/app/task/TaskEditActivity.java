@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.task;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -22,6 +23,20 @@ import de.symeda.sormas.app.backend.task.TaskDao;
 public class TaskEditActivity extends AppCompatActivity {
 
     private TaskTab taskTab;
+
+    public TaskEditActivity() {
+
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+
+        Bundle extras = intent.getExtras();
+        if(extras != null) {
+
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

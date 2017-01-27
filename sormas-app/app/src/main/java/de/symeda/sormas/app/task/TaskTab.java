@@ -65,6 +65,10 @@ public class TaskTab extends FormTab {
             binding.taskEvent.setVisibility(View.GONE);
         }
 
+        if(binding.getTask().getCreatorUser() == null) {
+            binding.taskCreatorUser.setVisibility(View.GONE);
+        }
+
         List<TaskStatus> possibleStatusChanges = TaskHelper.getPossibleStatusChanges(task.getTaskStatus(), ConfigProvider.getUser().getUserRole());
 
         if (possibleStatusChanges.contains(TaskStatus.NOT_EXECUTABLE)) {
