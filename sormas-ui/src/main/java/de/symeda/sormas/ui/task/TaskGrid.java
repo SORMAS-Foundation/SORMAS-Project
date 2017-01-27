@@ -138,7 +138,7 @@ public class TaskGrid extends Grid implements ItemClickListener {
 	public TaskGrid(TaskContext context, ReferenceDto entityRef) {
 		this();
 		removeColumn(TaskDto.CONTEXT_REFERENCE);
-		filterTaskStatus(TaskStatus.PENDING);
+		filterTaskStatus(null);
 		this.taskContext = context;
 		this.entityReference = entityRef;
 		reload();

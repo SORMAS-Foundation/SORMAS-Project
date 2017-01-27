@@ -83,22 +83,26 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		this.getReadableDatabase();
 	}
 
-	public static void clearTables() {
+	public static void clearTables(boolean clearInfrastructure) {
 		ConnectionSource connectionSource = getCaseDao().getConnectionSource();
 		try {
 			TableUtils.clearTable(connectionSource, Case.class);
 			TableUtils.clearTable(connectionSource, Person.class);
 			TableUtils.clearTable(connectionSource, Location.class);
-			TableUtils.clearTable(connectionSource, Region.class);
-			TableUtils.clearTable(connectionSource, District.class);
-			TableUtils.clearTable(connectionSource, Community.class);
 			TableUtils.clearTable(connectionSource, Facility.class);
-			TableUtils.clearTable(connectionSource, User.class);
 			TableUtils.clearTable(connectionSource, Symptoms.class);
 			TableUtils.clearTable(connectionSource, Task.class);
 			TableUtils.clearTable(connectionSource, Contact.class);
 			TableUtils.clearTable(connectionSource, Visit.class);
 			TableUtils.clearTable(connectionSource, Event.class);
+
+			if (clearInfrastructure) {
+				TableUtils.clearTable(connectionSource, Region.class);
+				TableUtils.clearTable(connectionSource, District.class);
+				TableUtils.clearTable(connectionSource, Community.class);
+				TableUtils.clearTable(connectionSource, User.class);
+			}
+
 			// keep config!
 			//TableUtils.clearTable(connectionSource, Config.class);
 		} catch (SQLException e) {

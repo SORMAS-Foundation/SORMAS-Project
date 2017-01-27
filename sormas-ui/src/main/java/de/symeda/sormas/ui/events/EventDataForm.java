@@ -19,7 +19,6 @@ import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -134,7 +133,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		setRequired(true, EventDto.EVENT_TYPE, EventDto.EVENT_DATE, EventDto.EVENT_STATUS, EventDto.UUID, EventDto.EVENT_DESC,
 				EventDto.REPORT_DATE_TIME, EventDto.REPORTING_USER, EventDto.TYPE_OF_PLACE, EventDto.SRC_FIRST_NAME,
 				EventDto.SRC_LAST_NAME, EventDto.SRC_TEL_NO, EventDto.TYPE_OF_PLACE_TEXT, EventDto.SURVEILLANCE_OFFICER);
-		locationForm.setFieldsRequirement(true, LocationDto.DISTRICT);
+		locationForm.setFieldsRequirement(true, LocationDto.REGION, LocationDto.DISTRICT);
 		
 		setSurveillanceOfficerListener(locationForm);
 	}

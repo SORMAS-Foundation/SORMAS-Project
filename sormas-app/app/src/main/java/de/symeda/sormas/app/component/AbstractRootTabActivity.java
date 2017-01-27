@@ -16,6 +16,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.caze.CaseNewActivity;
 import de.symeda.sormas.app.caze.CasesActivity;
 import de.symeda.sormas.app.component.AbstractTabActivity;
+import de.symeda.sormas.app.contact.ContactsActivity;
 import de.symeda.sormas.app.event.EventsActivity;
 import de.symeda.sormas.app.task.TasksActivity;
 import de.symeda.sormas.app.user.UserActivity;
@@ -35,6 +36,7 @@ public abstract class AbstractRootTabActivity extends AbstractTabActivity {
 
         menuTitles = new String[]{
                 getResources().getString(R.string.main_menu_cases),
+                getResources().getString(R.string.main_menu_contacts),
                 getResources().getString(R.string.main_menu_tasks),
                 getResources().getString(R.string.main_menu_events),
                 getResources().getString(R.string.main_menu_user)
@@ -111,7 +113,6 @@ public abstract class AbstractRootTabActivity extends AbstractTabActivity {
 
     }
 
-    // go to cases overview
     public void showCasesView() {
         Intent intent = new Intent(this, CasesActivity.class);
         startActivity(intent);
@@ -122,19 +123,21 @@ public abstract class AbstractRootTabActivity extends AbstractTabActivity {
         startActivity(intent);
     }
 
-    // go to tasks overview
+    public void showContactsView() {
+        Intent intent = new Intent(this, ContactsActivity.class);
+        startActivity(intent);
+    }
+
     public void showTasksView() {
         Intent intent = new Intent(this, TasksActivity.class);
         startActivity(intent);
     }
 
-    // go to tasks overview
     public void showEventsView() {
         Intent intent = new Intent(this, EventsActivity.class);
         startActivity(intent);
     }
 
-    // go to user
     public void showUserView() {
         Intent intent = new Intent(this, UserActivity.class);
         startActivity(intent);
@@ -149,16 +152,20 @@ public abstract class AbstractRootTabActivity extends AbstractTabActivity {
         if(position==0) {
             showCasesView();
         }
-        // Tasks
+        // Contacts
         else if(position==1) {
+            showContactsView();
+        }
+        // Tasks
+        else if(position==2) {
             showTasksView();
         }
         // Events
-        else if(position==2) {
+        else if(position==3) {
             showEventsView();
         }
         // Users
-        else if(position==3) {
+        else if(position==4) {
             showUserView();
         }
     }

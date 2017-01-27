@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import com.vaadin.navigator.View;
+import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.Window;
@@ -61,6 +62,9 @@ public class EventParticipantsController {
 		});
 		
 		Window window = VaadinUiUtil.showModalPopupWindow(editView, "Edit event person");
+        // visit form is too big for typical screens
+		window.setWidth(editForm.getWidth() + 40, Unit.PIXELS); 
+		window.setHeight(80, Unit.PERCENTAGE); 
 	}
 	
 	public EventParticipantDto createNewEventParticipant(EventReferenceDto eventRef) {

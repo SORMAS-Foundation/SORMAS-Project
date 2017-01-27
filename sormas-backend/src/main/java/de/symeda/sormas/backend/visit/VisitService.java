@@ -58,15 +58,6 @@ public class VisitService extends AbstractAdoService<Visit> {
 		List<Visit> resultList = em.createQuery(visitsQuery).getResultList();
 		return resultList;
 	}
-	
-	public Predicate createUserFilter(CriteriaBuilder cb, Path<Visit> visitPath, User user) {
-		// whoever created it or is assigned to it is allowed to access it
-		Predicate filter = cb.equal(visitPath.get(Visit.VISIT_USER), user);
-		
-//		Predicate userFilter = personService.createUserFilter(cb, visitPath.get(Visit.PERSON), user);
-//		filter = cb.or(filter, userFilter);
-		return filter;
-	}
 
 	/**
 	 * All visits of the contact person with the same disease and within lastContactDate and followUpUntil

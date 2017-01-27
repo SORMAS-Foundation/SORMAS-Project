@@ -2,6 +2,7 @@ package de.symeda.sormas.app.backend.config;
 
 import android.util.Log;
 
+import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 
 import java.sql.SQLException;
@@ -84,13 +85,7 @@ public final class ConfigProvider {
         }
 
         if (!wasNull) {
-            try {
-                TableUtils.clearTable(DatabaseHelper.getCaseDao().getConnectionSource(), Case.class);
-                TableUtils.clearTable(DatabaseHelper.getSymptomsDao().getConnectionSource(), Symptoms.class);
-                TableUtils.clearTable(DatabaseHelper.getTaskDao().getConnectionSource(), Task.class);
-            } catch (SQLException e) {
-                Log.e(ConfigProvider.class.getName(), "User switch: Clearing tables failed");
-            }
+            DatabaseHelper.clearTables(false);
         }
     }
 
@@ -136,7 +131,7 @@ public final class ConfigProvider {
         if (!wasNull) {
             // reset everything
             RetroProvider.reset();
-            DatabaseHelper.clearTables();
+            DatabaseHelper.clearTables(true);
 
             SyncInfrastructureTask.syncInfrastructure(new Callback() {
                 @Override

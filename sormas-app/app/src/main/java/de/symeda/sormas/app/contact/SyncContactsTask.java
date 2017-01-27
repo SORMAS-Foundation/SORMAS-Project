@@ -14,6 +14,8 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.ContactDtoHelper;
 import de.symeda.sormas.app.backend.user.User;
+import de.symeda.sormas.app.caze.SyncCasesTask;
+import de.symeda.sormas.app.person.SyncPersonsTask;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.util.Callback;
 import retrofit2.Call;
@@ -78,6 +80,15 @@ public class SyncContactsTask extends AsyncTask<Void, Void, Void> {
     }
 
     public static void syncContacts(final Callback callback) {
+        SyncCasesTask.syncCases(new Callback() {
+            @Override
+            public void call() {
+                syncContactsWithoutDependencies(callback);
+            }
+        });
+    }
+
+    public static void syncContactsWithoutDependencies(final Callback callback) {
         new SyncContactsTask() {
             @Override
             protected void onPostExecute(Void aVoid) {

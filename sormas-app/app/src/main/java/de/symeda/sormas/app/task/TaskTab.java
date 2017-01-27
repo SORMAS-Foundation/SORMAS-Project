@@ -29,6 +29,7 @@ import de.symeda.sormas.app.backend.task.TaskDao;
 import de.symeda.sormas.app.caze.CaseEditActivity;
 import de.symeda.sormas.app.contact.ContactEditActivity;
 import de.symeda.sormas.app.databinding.TaskFragmentLayoutBinding;
+import de.symeda.sormas.app.event.EventEditActivity;
 import de.symeda.sormas.app.util.FormTab;
 
 /**
@@ -144,22 +145,19 @@ public class TaskTab extends FormTab {
     public void showCaseEditView(Case caze) {
         Intent intent = new Intent(getActivity(), CaseEditActivity.class);
         intent.putExtra(CaseEditActivity.KEY_CASE_UUID, caze.getUuid());
-        intent.putExtra(CaseEditActivity.KEY_PARENT_TASK_UUID, binding.getTask().getUuid());
         startActivity(intent);
     }
 
     public void showContactEditView(Contact contact) {
         Intent intent = new Intent(getActivity(), ContactEditActivity.class);
         intent.putExtra(ContactEditActivity.KEY_CONTACT_UUID, contact.getUuid());
-        intent.putExtra(ContactEditActivity.KEY_PARENT_TASK_UUID, binding.getTask().getUuid());
         startActivity(intent);
     }
 
     public void showEventEditView(Event event) {
-//        Intent intent = new Intent(getActivity(), EventEditActivity.class);
-//        intent.putExtra(EventEditActivity.KEY_CONTACT_UUID, event.getUuid());
-//        intent.putExtra(EventEditActivity.KEY_PARENT_TASK_UUID, binding.getTask().getUuid());
-//        startActivity(intent);
+        Intent intent = new Intent(getActivity(), EventEditActivity.class);
+        intent.putExtra(EventEditActivity.KEY_EVENT_UUID, event.getUuid());
+        startActivity(intent);
     }
 
     @Override

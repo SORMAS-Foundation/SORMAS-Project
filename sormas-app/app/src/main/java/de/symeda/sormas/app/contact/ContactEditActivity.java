@@ -26,9 +26,6 @@ public class ContactEditActivity extends AbstractEditActivity {
     public static final String KEY_CASE_UUID = "caseUuid";
     public static final String KEY_CONTACT_UUID = "contactUuid";
     public static final String KEY_PAGE = "page";
-    public static final String KEY_PARENT_TASK_UUID = "taskUuid";
-
-
 
     private ContactEditPagerAdapter adapter;
     private String caseUuid;

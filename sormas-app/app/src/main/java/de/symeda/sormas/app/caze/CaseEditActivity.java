@@ -31,7 +31,6 @@ import de.symeda.sormas.app.person.SyncPersonsTask;
 public class CaseEditActivity extends AbstractEditActivity {
 
     public static final String KEY_CASE_UUID = "caseUuid";
-    public static final String KEY_PARENT_TASK_UUID = "taskUuid";
 
     private CaseEditPagerAdapter adapter;
     private String caseUuid;
