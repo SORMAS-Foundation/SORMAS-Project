@@ -101,7 +101,10 @@ public class TaskNotificationService extends Service {
 
             Person person = caze != null ? personDAO.queryForId(caze.getPerson().getId()) : personDAO.queryForId(contact.getPerson().getId());
 
-            PendingIntent pi = PendingIntent.getActivity(context, 0, notificationIntent, 0);
+            // Just for your information: The issue here was that the second argument of the getActivity call
+            // was set to 0, which leads to previous intents to be recycled; passing the task's ID instead
+            // makes sure that a new intent with the right task behind it is created
+            PendingIntent pi = PendingIntent.getActivity(context, task.getId().intValue(), notificationIntent, 0);
             Resources r = context.getResources();
 
             StringBuilder content = new StringBuilder();
