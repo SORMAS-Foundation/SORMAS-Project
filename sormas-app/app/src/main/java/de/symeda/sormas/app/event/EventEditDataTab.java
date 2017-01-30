@@ -56,6 +56,7 @@ public class EventEditDataTab extends FormTab {
 
             binding.eventEventType.initialize(EventType.class);
             FieldHelper.initSpinnerField(binding.eventTypeOfPlace, TypeOfPlace.class);
+            binding.eventEventDate.initialize(this);
 
             binding.eventTypeOfPlace.addValueChangedListener(new PropertyField.ValueChangeListener() {
                 @Override
