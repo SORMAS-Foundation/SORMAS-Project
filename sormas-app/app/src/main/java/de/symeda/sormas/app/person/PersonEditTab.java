@@ -4,14 +4,11 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.InputType;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -27,17 +24,15 @@ import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.backend.caze.Case;
-import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.facility.Facility;
+import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
-import de.symeda.sormas.app.component.DateField;
 import de.symeda.sormas.app.component.FieldHelper;
 import de.symeda.sormas.app.component.PropertyField;
 import de.symeda.sormas.app.component.SpinnerField;
@@ -137,7 +132,13 @@ public class PersonEditTab extends FormTab {
         updateApproximateAgeField();
 
         // ================ Address ================
-        addLocationField(person, R.id.person_address, R.id.form_cp_btn_address);
+        try {
+            final Location location = person.getAddress() != null ? person.getAddress() : DataUtils.createNew(Location.class);
+            addLocationField(location, R.id.person_address, R.id.form_cp_btn_address);
+        } catch (Exception e) {
+            Toast.makeText(getContext(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+        }
 
         // ================ Occupation ================
 
@@ -173,6 +174,16 @@ public class PersonEditTab extends FormTab {
 
         // @TODO: Workaround, find a better solution. Remove autofocus on first field.
         getView().requestFocus();
+    }
+
+    /**
+     * This is called from the positive button within the LocationDialog used in the in the address section above.
+     * @param location
+     */
+    @Override
+    public void updateLocation(Location location) {
+        binding.personAddress.setValue(location.toString());
+        binding.getPerson().setAddress(location);
     }
 
     private void updateHeadlineOccupationDetailsFields(Item item, TextField occupationDetails) {

@@ -152,6 +152,11 @@ public class EventEditActivity extends AbstractEditActivity {
                                 && !eventSrcTelNoReq;
 
                         if(validData) {
+
+                            if(event.getEventLocation()!=null) {
+                                DatabaseHelper.getLocationDao().save(event.getEventLocation());
+                            }
+
                             DatabaseHelper.getEventDao().save(event);
                             Toast.makeText(this, "event "+ DataHelper.getShortUuid(event.getUuid()) +" saved", Toast.LENGTH_SHORT).show();
 

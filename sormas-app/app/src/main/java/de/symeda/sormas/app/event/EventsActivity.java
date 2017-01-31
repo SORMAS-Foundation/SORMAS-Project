@@ -62,8 +62,7 @@ public class EventsActivity extends AbstractRootTabActivity {
                 return true;
 
             case R.id.action_new_case:
-//                showNewEventView();
-                Toast.makeText(this, "Feature is temporary disabled.", Toast.LENGTH_SHORT).show();
+                showNewEventView();
                 return true;
 
             default:

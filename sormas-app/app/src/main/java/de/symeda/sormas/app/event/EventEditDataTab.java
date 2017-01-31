@@ -16,9 +16,11 @@ import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventDao;
+import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.component.FieldHelper;
 import de.symeda.sormas.app.component.PropertyField;
 import de.symeda.sormas.app.databinding.EventDataFragmentLayoutBinding;
+import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.FormTab;
 
 public class EventEditDataTab extends FormTab {
@@ -66,8 +68,15 @@ public class EventEditDataTab extends FormTab {
             });
 
             FieldHelper.initSpinnerField(binding.eventDisease, Disease.class);
-            // TODO create location customField
-            //        addLocationField(binding.eventEventLocation, R.id.event_eventLocation, R.id.event_eventLocation_btn);
+
+            try {
+                final Location location = event.getEventLocation() != null ? event.getEventLocation() : DataUtils.createNew(Location.class);
+                addLocationField(location, R.id.event_eventLocation, R.id.event_eventLocation_btn);
+            } catch (Exception e) {
+                Toast.makeText(getContext(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                e.printStackTrace();
+            }
+
 
 
 
@@ -84,6 +93,16 @@ public class EventEditDataTab extends FormTab {
     @Override
     public AbstractDomainObject getData() {
         return binding.getEvent();
+    }
+
+    /**
+     * This is called from the positive button within the LocationDialog used in the in the eventLocation section above.
+     * @param location
+     */
+    @Override
+    public void updateLocation(Location location) {
+        binding.eventEventLocation.setValue(location.toString());
+        binding.getEvent().setEventLocation(location);
     }
 
 
