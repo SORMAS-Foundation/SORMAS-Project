@@ -992,3 +992,48 @@ ALTER TABLE users ADD COLUMN healthfacility_id bigint;
 ALTER TABLE users ADD CONSTRAINT fk_users_healthfacility_id FOREIGN KEY (healthfacility_id) REFERENCES facility(id);
 
 INSERT INTO schema_version (version_number, comment) VALUES (23, 'Add health facility to users (informant)');
+
+-- 2016-01-30 Sample and SampleTest backend #106
+
+CREATE TABLE samples(
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	associatedcase_id bigint not null,
+	samplecode varchar(512),
+	sampledatetime timestamp not null,
+	reportdatetime timestamp not null,
+	reportinguser_id bigint not null,
+	samplematerial varchar(255) not null,
+	samplematerialtext varchar(512),
+	lab_id bigint not null,
+	otherlab_id bigint,
+	shipmentstatus varchar(255) not null,
+	shipmentdate timestamp not null,
+	shipmentdetails varchar(512),
+	receiveddate timestamp,
+	notestpossible boolean,
+	notestpossiblereason varchar(512),
+	primary key(id));
+
+CREATE TABLE sampletest(
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	sample_id bigint not null,
+	testtype varchar(255) not null,
+	testtypetext varchar(512),
+	testdatetime timestamp not null,
+	lab_id bigint not null,
+	labuser_id bigint not null,
+	testresult varchar(255) not null,
+	testresulttext varchar(512) not null,
+	testresultverified boolean not null,
+	primary key(id));
+	
+ALTER TABLE samples OWNER TO sormas_user;
+ALTER TABLE sampletest OWNER TO sormas_user;
+	
+INSERT INTO schema_version (version_number, comment) VALUES (24, 'Sample and SampleTest backend');
