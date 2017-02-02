@@ -100,6 +100,32 @@ public final class FieldHelper {
 		});
 	}
 	
+	public static void setRequiredWhen(FieldGroup fieldGroup, Object sourcePropertyId,
+			List<Object> targetPropertyIds, final List<Object> sourceValues) {
+		
+		Field sourceField = fieldGroup.getField(sourcePropertyId);
+		if(sourceField instanceof AbstractField<?>) {
+			((AbstractField) sourceField).setImmediate(true);
+		}
+		
+		// initialize
+		{
+			boolean required = sourceValues.contains(sourceField.getValue());
+			for(Object targetPropertyId : targetPropertyIds) {
+				Field targetField = fieldGroup.getField(targetPropertyId);
+				targetField.setRequired(required);
+			}
+		}
+		
+		sourceField.addValueChangeListener(event -> {
+			boolean required = sourceValues.contains(event.getProperty().getValue());
+			for(Object targetPropertyId : targetPropertyIds) {
+				Field targetField = fieldGroup.getField(targetPropertyId);
+				targetField.setRequired(required);
+			}
+		});
+	}
+	
 	/**
 	 * Sets the target fields to required when the sourceField has a value that's contained
 	 * in the sourceValues list; the disease is needed to make sure that no fields are set
@@ -132,7 +158,6 @@ public final class FieldHelper {
 				}
 			}
 		});
-		
 	}
 
 	public static void setFirstVisibleClearOthers(Field<?> first, Field<?> ...others) {

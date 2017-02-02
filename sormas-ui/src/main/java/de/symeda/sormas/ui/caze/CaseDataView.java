@@ -4,6 +4,7 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.samples.SampleListComponent;
 import de.symeda.sormas.ui.task.TaskListComponent;
 
 /**
@@ -30,5 +31,8 @@ public class CaseDataView extends AbstractCaseView {
     	
     	TaskListComponent taskListComponent = new TaskListComponent(TaskContext.CASE, getCaseRef());
     	addComponent(taskListComponent);
+    	
+    	SampleListComponent sampleListComponent = new SampleListComponent(getCaseRef());
+    	addComponent(sampleListComponent);
     }
 }
