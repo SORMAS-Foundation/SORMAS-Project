@@ -192,6 +192,9 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
   .no-margin, .h1.no-margin, .h2.no-margin, .h3.no-margin, .h4.no-margin, .h5.no-margin {
   	margin: 0;
   }
+  .sublist-padding {
+    padding-top: 7px;
+  }
   
   .v-readonly, .v-caption-v-readonly {
   	color: #aaa;

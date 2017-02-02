@@ -13146,6 +13146,10 @@ div.v-layout.v-horizontal.v-widget {
 	margin: 0;
 }
 
+.sormastheme .sublist-padding {
+	padding-top: 7px;
+}
+
 .sormastheme .v-readonly, .sormastheme .v-caption-v-readonly {
 	color: #aaa;
 }

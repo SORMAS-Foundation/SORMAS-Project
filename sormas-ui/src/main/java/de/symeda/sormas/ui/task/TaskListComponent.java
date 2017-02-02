@@ -118,7 +118,7 @@ public class TaskListComponent extends AbstractView {
     	}
     	
     	header.setSizeUndefined();
-    	CssStyles.style(header, CssStyles.H3, CssStyles.NO_MARGIN);
+    	CssStyles.style(header, CssStyles.H3, CssStyles.NO_MARGIN, CssStyles.SUBLIST_PADDING);
     	topLayout.addComponent(header);
     	
     	HorizontalLayout buttonFilterLayout = new HorizontalLayout();
