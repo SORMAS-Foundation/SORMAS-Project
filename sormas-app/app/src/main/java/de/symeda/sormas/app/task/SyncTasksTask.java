@@ -84,18 +84,14 @@ public class SyncTasksTask extends AsyncTask<Void, Void, Void> {
     }
 
     public static void syncTasks(final Callback callback, final Context notificationContext) {
-        SyncCasesTask.syncCases(new Callback() {
+        // syncing contacts also syncs cases
+        SyncContactsTask.syncContacts(new Callback() {
             @Override
             public void call() {
-                SyncContactsTask.syncContacts(new Callback() {
+                SyncEventsTask.syncEvents(new Callback() {
                     @Override
                     public void call() {
-                        SyncEventsTask.syncEvents(new Callback() {
-                            @Override
-                            public void call() {
-                                syncTasksWithoutDependencies(callback, notificationContext);
-                            }
-                        });
+                        syncTasksWithoutDependencies(callback, notificationContext);
                     }
                 });
             }

@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import java.util.Arrays;
@@ -19,9 +20,11 @@ import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.backend.user.UserDao;
 import de.symeda.sormas.app.databinding.UserFragmentLayoutBinding;
+import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.FormTab;
 import de.symeda.sormas.app.util.Item;
+import de.symeda.sormas.app.util.SyncInfrastructureTask;
 
 /**
  * Created by Stefan Szczesny on 27.07.2016.
@@ -63,6 +66,25 @@ public class UserTab extends FormTab {
         binding.configUser.setSpinnerAdapter(items);
         binding.configUser.setValue(user);
         binding.configServerUrl.setValue((String)ConfigProvider.getServerRestUrl());
+
+        binding.configDropData.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                dropData();
+            }
+        });
+    }
+
+    private void dropData() {
+        binding.configProgressBar.setVisibility(View.VISIBLE);
+
+        DatabaseHelper.clearTables(true);
+        SyncInfrastructureTask.syncAll(new Callback() {
+            @Override
+            public void call() {
+                UserTab.this.onResume();
+                binding.configProgressBar.setVisibility(View.GONE);
+            }
+        }, getContext());
     }
 
     public User getUser() {

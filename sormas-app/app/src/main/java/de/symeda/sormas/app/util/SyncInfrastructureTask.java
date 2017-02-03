@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.util;
 
+import android.content.Context;
 import android.os.AsyncTask;
 
 import com.j256.ormlite.logger.Logger;
@@ -20,6 +21,7 @@ import de.symeda.sormas.app.backend.region.DistrictDtoHelper;
 import de.symeda.sormas.app.backend.region.RegionDtoHelper;
 import de.symeda.sormas.app.backend.user.UserDtoHelper;
 import de.symeda.sormas.app.rest.RetroProvider;
+import de.symeda.sormas.app.task.SyncTasksTask;
 import retrofit2.Call;
 
 /**
@@ -83,5 +85,17 @@ public class SyncInfrastructureTask extends AsyncTask<Void, Void, Void> {
                 }
             }
         }.execute();
+    }
+
+    public static void syncAll(final Callback callback, final Context notificationContext) {
+        syncInfrastructure(new Callback() {
+            @Override
+            public void call() {
+            // this also syncs cases, contacts and events
+            SyncTasksTask.syncTasks(callback, notificationContext);
+            }
+        });
+
+        // TODO sync samples
     }
 }

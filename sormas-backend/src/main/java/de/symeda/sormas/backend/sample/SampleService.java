@@ -65,7 +65,7 @@ public class SampleService extends AbstractAdoService<Sample> {
 	}
 	
 	public Predicate createUserFilter(CriteriaBuilder cb, Path<Sample> samplePath, User user) {
-		// whoever created the event or is assigned to it is allowed to access it
+		// whoever created the sample or is assigned to it is allowed to access it
 		Predicate filter = cb.equal(samplePath.get(Sample.REPORTING_USER), user);
 				
 		// TODO: define which samples can be seen

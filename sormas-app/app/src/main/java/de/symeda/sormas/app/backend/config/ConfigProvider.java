@@ -132,14 +132,7 @@ public final class ConfigProvider {
             // reset everything
             RetroProvider.reset();
             DatabaseHelper.clearTables(true);
-
-            SyncInfrastructureTask.syncInfrastructure(new Callback() {
-                @Override
-                public void call() {
-                    // this also syncs cases which syncs persons
-                    SyncTasksTask.syncTasks((Callback)null, null);
-                }
-            });
+            SyncInfrastructureTask.syncAll(null, null);
         }
     }
 

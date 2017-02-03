@@ -2,7 +2,9 @@ package de.symeda.sormas.app.component;
 
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
@@ -12,14 +14,26 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.appindexing.Thing;
+import com.google.android.gms.common.api.GoogleApiClient;
+
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.caze.CaseNewActivity;
 import de.symeda.sormas.app.caze.CasesActivity;
+import de.symeda.sormas.app.caze.SyncCasesTask;
 import de.symeda.sormas.app.component.AbstractTabActivity;
 import de.symeda.sormas.app.contact.ContactsActivity;
+import de.symeda.sormas.app.contact.SyncContactsTask;
 import de.symeda.sormas.app.event.EventsActivity;
+import de.symeda.sormas.app.event.SyncEventsTask;
+import de.symeda.sormas.app.task.SyncTasksTask;
 import de.symeda.sormas.app.task.TasksActivity;
+import de.symeda.sormas.app.task.TasksListFragment;
 import de.symeda.sormas.app.user.UserActivity;
+import de.symeda.sormas.app.util.Callback;
+import de.symeda.sormas.app.util.SyncInfrastructureTask;
 
 public abstract class AbstractRootTabActivity extends AbstractTabActivity {
 
@@ -29,18 +43,24 @@ public abstract class AbstractRootTabActivity extends AbstractTabActivity {
     private ListView menuDrawerList;
 
     private CharSequence mainViewTitle;
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    private GoogleApiClient client;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         menuTitles = new String[]{
+                getResources().getString(R.string.main_menu_tasks),
                 getResources().getString(R.string.main_menu_cases),
                 getResources().getString(R.string.main_menu_contacts),
-                getResources().getString(R.string.main_menu_tasks),
                 getResources().getString(R.string.main_menu_events),
-                getResources().getString(R.string.main_menu_user)
-                };
+                getResources().getString(R.string.main_menu_user),
+                getResources().getString(R.string.main_menu_sync_all),
+        };
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);
         if (toolbar != null) {
@@ -65,6 +85,9 @@ public abstract class AbstractRootTabActivity extends AbstractTabActivity {
 
 
         setupDrawer();
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
 
@@ -109,8 +132,6 @@ public abstract class AbstractRootTabActivity extends AbstractTabActivity {
         menuDrawerToggle.setDrawerIndicatorEnabled(true);
         menuDrawerToggle.setHomeAsUpIndicator(R.drawable.ic_drawer);
         menuDrawerLayout.addDrawerListener(menuDrawerToggle);
-
-
     }
 
     public void showCasesView() {
@@ -143,31 +164,85 @@ public abstract class AbstractRootTabActivity extends AbstractTabActivity {
         startActivity(intent);
     }
 
+    public void syncAll() {
+        SyncInfrastructureTask.syncAll(new Callback() {
+                              @Override
+                              public void call() {
+                                  if (getSupportFragmentManager().getFragments() != null) {
+                                      for (Fragment fragement : getSupportFragmentManager().getFragments()) {
+                                          fragement.onResume();
+                                      }
+                                  }
+                              }
+                          }, AbstractRootTabActivity.this);
+    }
 
 
-
-    /** Swaps fragments in the main content view */
+    /**
+     * Swaps fragments in the main content view
+     */
     private void selectItem(int position) {
-        // Cases
-        if(position==0) {
-            showCasesView();
+        switch (position) {
+            case 0:
+                showTasksView();
+                break;
+            case 1:
+                showCasesView();
+                break;
+            case 2:
+                showContactsView();
+                break;
+            case 3:
+                showEventsView();
+                break;
+            case 4:
+                showUserView();
+                break;
+            case 5:
+                syncAll();
+                // don't keep this button selected
+                menuDrawerList.clearChoices();
+                menuDrawerLayout.closeDrawers();
+                break;
+            default:
+                throw new IndexOutOfBoundsException("No action defined for menu entry: " + position);
         }
-        // Contacts
-        else if(position==1) {
-            showContactsView();
-        }
-        // Tasks
-        else if(position==2) {
-            showTasksView();
-        }
-        // Events
-        else if(position==3) {
-            showEventsView();
-        }
-        // Users
-        else if(position==4) {
-            showUserView();
-        }
+    }
+
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    public Action getIndexApiAction() {
+        Thing object = new Thing.Builder()
+                .setName("AbstractRootTab Page") // TODO: Define a title for the content shown.
+                // TODO: Make sure this auto-generated URL is correct.
+                .setUrl(Uri.parse("http://[ENTER-YOUR-URL-HERE]"))
+                .build();
+        return new Action.Builder(Action.TYPE_VIEW)
+                .setObject(object)
+                .setActionStatus(Action.STATUS_TYPE_COMPLETED)
+                .build();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client.connect();
+        AppIndex.AppIndexApi.start(client, getIndexApiAction());
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        AppIndex.AppIndexApi.end(client, getIndexApiAction());
+        client.disconnect();
     }
 
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
