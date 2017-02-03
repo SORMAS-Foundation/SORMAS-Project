@@ -26,6 +26,7 @@ public class UserDto extends UserReferenceDto {
 	public static final String DISTRICT = "district";
 	public static final String HEALTH_FACILITY = "healthFacility";
 	public static final String ASSOCIATED_OFFICER = "associatedOfficer";
+	public static final String LABORATORY = "laboratory";
 
 	private boolean active = true;
 	
@@ -42,6 +43,7 @@ public class UserDto extends UserReferenceDto {
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	private FacilityReferenceDto healthFacility;
+	private FacilityReferenceDto laboratory;
 
 	private UserReferenceDto associatedOfficer;
 	
@@ -149,5 +151,13 @@ public class UserDto extends UserReferenceDto {
 
 	public void setHealthFacility(FacilityReferenceDto healthFacility) {
 		this.healthFacility = healthFacility;
+	}
+	
+	public FacilityReferenceDto getLaboratory() {
+		return laboratory;
+	}
+	
+	public void setLaboratory(FacilityReferenceDto laboratory) {
+		this.laboratory = laboratory;
 	}
 }

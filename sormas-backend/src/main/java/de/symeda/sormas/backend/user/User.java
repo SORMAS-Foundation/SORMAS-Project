@@ -40,6 +40,7 @@ public class User extends AbstractDomainObject {
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String USER_ROLES = "userRoles";
+	public static final String LABORATOR = "laboratory";
 
 	
 	private String userName;
@@ -59,6 +60,8 @@ public class User extends AbstractDomainObject {
 	private Region region;
 	private District district;
 	private Facility healthFacility;
+	
+	private Facility laboratory;
 	
 	private User associatedOfficer;
 	
@@ -195,5 +198,13 @@ public class User extends AbstractDomainObject {
 	}
 	public void setHealthFacility(Facility healthFacility) {
 		this.healthFacility = healthFacility;
+	}
+	
+	@ManyToOne(cascade = {})
+	public Facility getLaboratory() {
+		return laboratory;
+	}
+	public void setLaboratory(Facility laboratory) {
+		this.laboratory = laboratory;
 	}
 }

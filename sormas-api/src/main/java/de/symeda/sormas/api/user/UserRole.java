@@ -13,7 +13,8 @@ public enum UserRole {
 	CASE_SUPERVISOR(true),
 	CASE_OFFICER(false),
 	CONTACT_SUPERVISOR(true),
-	CONTACT_OFFICER(false)
+	CONTACT_OFFICER(false),
+	LAB_USER(false)
 	;
 	
 	private final boolean supervisor;

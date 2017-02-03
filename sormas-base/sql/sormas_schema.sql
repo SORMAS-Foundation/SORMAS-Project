@@ -1037,3 +1037,22 @@ ALTER TABLE samples OWNER TO sormas_user;
 ALTER TABLE sampletest OWNER TO sormas_user;
 	
 INSERT INTO schema_version (version_number, comment) VALUES (24, 'Sample and SampleTest backend');
+
+-- 2016-02-03 Foreign keys for samples and sampletests #106
+
+ALTER TABLE samples ADD CONSTRAINT fk_samples_associatedcase_id FOREIGN KEY (associatedcase_id) REFERENCES cases (id);
+ALTER TABLE samples ADD CONSTRAINT fk_samples_reportinguser_id FOREIGN KEY (reportinguser_id) REFERENCES users (id);
+ALTER TABLE samples ADD CONSTRAINT fk_samples_lab_id FOREIGN KEY (lab_id) REFERENCES facility (id);
+ALTER TABLE samples ADD CONSTRAINT fk_samples_otherlab_id FOREIGN KEY (otherlab_id) REFERENCES facility (id);
+ALTER TABLE sampletest ADD CONSTRAINT fk_sampletest_sample_id FOREIGN KEY (sample_id) REFERENCES samples (id);
+ALTER TABLE sampletest ADD CONSTRAINT fk_sampletest_lab_id FOREIGN KEY (lab_id) REFERENCES facility (id);
+ALTER TABLE sampletest ADD CONSTRAINT fk_sampletest_labuser_id FOREIGN KEY (labuser_id) REFERENCES users (id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (25, 'Foreign keys for samples and sampletest');
+
+-- 2016-02-03 Laboratory user role #111
+
+ALTER TABLE users ADD COLUMN laboratory_id bigint;
+ALTER TABLE users ADD CONSTRAINT fk_users_laboratory_id FOREIGN KEY (laboratory_id) REFERENCES facility (id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (26, 'Laboratory user role');
