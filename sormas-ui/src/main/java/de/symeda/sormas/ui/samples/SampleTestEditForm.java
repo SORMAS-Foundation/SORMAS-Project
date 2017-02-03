@@ -13,6 +13,7 @@ import de.symeda.sormas.api.sample.SampleTestDto;
 import de.symeda.sormas.api.sample.SampleTestType;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
+import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
@@ -38,7 +39,7 @@ public class SampleTestEditForm extends AbstractEditForm<SampleTestDto> {
 		testDateTime.setDateFormat(DateHelper.getTimeDateFormat().toPattern());
 		addField(SampleTestDto.LAB, ComboBox.class);
 		addField(SampleTestDto.TEST_RESULT, ComboBox.class);
-		addField(SampleTestDto.TEST_RESULT_VERIFIED, CheckBox.class);
+		addField(SampleTestDto.TEST_RESULT_VERIFIED, CheckBox.class).addStyleName(CssStyles.FORCE_CAPTION);
 		addField(SampleTestDto.TEST_RESULT_TEXT, TextArea.class).setRows(3);
 		
 		setReadOnly(true, SampleTestDto.LAB);
@@ -47,7 +48,7 @@ public class SampleTestEditForm extends AbstractEditForm<SampleTestDto> {
 		FieldHelper.setRequiredWhen(getFieldGroup(), SampleTestDto.TEST_TYPE, Arrays.asList(SampleTestDto.TEST_TYPE_TEXT), Arrays.asList(SampleTestType.OTHER));
 		
 		setRequired(true, SampleTestDto.TEST_TYPE, SampleTestDto.TEST_DATE_TIME, SampleTestDto.LAB,
-				SampleTestDto.TEST_RESULT, SampleTestDto.TEST_RESULT_TEXT, SampleTestDto.TEST_RESULT_VERIFIED);
+				SampleTestDto.TEST_RESULT, SampleTestDto.TEST_RESULT_TEXT);
 	}
 	
 	@Override

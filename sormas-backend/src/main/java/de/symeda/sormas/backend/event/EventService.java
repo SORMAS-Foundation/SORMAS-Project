@@ -46,7 +46,7 @@ public class EventService extends AbstractAdoService<Event> {
 			cq.where(filter);
 		}
 		
-		cq.orderBy(cb.asc(from.get(AbstractDomainObject.ID)));
+		cq.orderBy(cb.desc(from.get(AbstractDomainObject.CREATION_DATE)));
 		
 		List<Event> resultList = em.createQuery(cq).getResultList();
 		return resultList;
