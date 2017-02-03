@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.vaadin.server.Page;
+import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
@@ -31,13 +32,19 @@ public class UserController {
     }
     
     public void create() {
-    	CommitDiscardWrapperComponent<UserEditForm> caseCreateComponent = getUserCreateComponent();
-    	VaadinUiUtil.showModalPopupWindow(caseCreateComponent, "Create new user");
+    	CommitDiscardWrapperComponent<UserEditForm> userCreateComponent = getUserCreateComponent();
+    	Window window = VaadinUiUtil.showModalPopupWindow(userCreateComponent, "Create new user");
+        // user form is too big for typical screens
+		window.setWidth(userCreateComponent.getWrappedComponent().getWidth() + 40, Unit.PIXELS); 
+		window.setHeight(80, Unit.PERCENTAGE); 
     }
     
     public void edit(UserDto user) {
     	CommitDiscardWrapperComponent<UserEditForm> userComponent = getUserEditComponent(user.getUuid());
-    	VaadinUiUtil.showModalPopupWindow(userComponent, "Edit a user");
+    	Window window = VaadinUiUtil.showModalPopupWindow(userComponent, "Edit a user");
+        // user form is too big for typical screens
+		window.setWidth(userComponent.getWrappedComponent().getWidth() + 40, Unit.PIXELS); 
+		window.setHeight(80, Unit.PERCENTAGE); 
     }
 
 

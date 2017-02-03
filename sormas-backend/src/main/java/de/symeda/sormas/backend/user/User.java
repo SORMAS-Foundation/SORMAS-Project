@@ -59,8 +59,9 @@ public class User extends AbstractDomainObject {
 
 	private Region region;
 	private District district;
+	// facility of informant
 	private Facility healthFacility;
-	
+	// laboratory of lab user
 	private Facility laboratory;
 	
 	private User associatedOfficer;

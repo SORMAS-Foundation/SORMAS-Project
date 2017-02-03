@@ -7,20 +7,23 @@ import de.symeda.sormas.api.I18nProperties;
 
 public enum UserRole {
 
-	SURVEILLANCE_SUPERVISOR(true),
-	SURVEILLANCE_OFFICER(false),
-	INFORMANT(false),
-	CASE_SUPERVISOR(true),
-	CASE_OFFICER(false),
-	CONTACT_SUPERVISOR(true),
-	CONTACT_OFFICER(false),
-	LAB_USER(false)
+	ADMIN(false, false),
+	SURVEILLANCE_SUPERVISOR(true, false),
+	SURVEILLANCE_OFFICER(false, true),
+	INFORMANT(false, false),
+	CASE_SUPERVISOR(true, false),
+	CASE_OFFICER(false, true),
+	CONTACT_SUPERVISOR(true, false),
+	CONTACT_OFFICER(false, true),
+	LAB_USER(false, false),
 	;
 	
 	private final boolean supervisor;
+	private final boolean officer;
 	
-	private UserRole(boolean supervisor) {
+	private UserRole(boolean supervisor, boolean officer) {
 		this.supervisor = supervisor;
+		this.officer = officer;
 	}
 	
 	public String toString() {
@@ -31,8 +34,19 @@ public enum UserRole {
 		return supervisor;
 	}
 	
+	public boolean isOfficer() {
+		return officer;
+	}
+	
 	public void addAssignableRoles(Collection<UserRole> collection) {
 		switch (this) {
+		case ADMIN:
+			for(UserRole role : UserRole.values()) {
+				if(role != UserRole.ADMIN) {
+					collection.add(role);
+				}
+			}
+			break;
 		case SURVEILLANCE_SUPERVISOR:
 			collection.add(SURVEILLANCE_OFFICER);
 			collection.add(INFORMANT);
@@ -63,5 +77,18 @@ public enum UserRole {
 			}
 		}
 		return false;
+	}
+	
+	public static boolean isOfficer(Collection<UserRole> roles) {
+		for (UserRole role : roles) {
+			if (role.isOfficer()) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public static boolean isInformant(Collection<UserRole> roles) {
+		return roles.contains(UserRole.INFORMANT);
 	}
 }

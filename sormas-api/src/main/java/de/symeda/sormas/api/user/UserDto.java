@@ -42,7 +42,9 @@ public class UserDto extends UserReferenceDto {
 
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
+	// facility of informant
 	private FacilityReferenceDto healthFacility;
+	// laboratory of lab user
 	private FacilityReferenceDto laboratory;
 
 	private UserReferenceDto associatedOfficer;

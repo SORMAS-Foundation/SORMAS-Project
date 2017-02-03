@@ -63,7 +63,7 @@ public class StartupShutdownService {
 			
 			Region region = regionService.getAll().get(0);
 
-			User admin = MockDataGenerator.createUser(null, "ad", "min", "");
+			User admin = MockDataGenerator.createUser(UserRole.ADMIN, "ad", "min", "sadmin");
 			userService.persist(admin);
 
 			User surveillanceSupervisor = MockDataGenerator.createUser(UserRole.SURVEILLANCE_SUPERVISOR, "Sunkanmi", "Sesay", "Sunkanmi");

@@ -141,14 +141,16 @@ public class SampleListComponent extends AbstractView {
 		filterLayout.setSpacing(true);
 		filterLayout.setSizeUndefined();
 		filterLayout.addStyleName(CssStyles.VSPACE3);
-		
-		ComboBox districtFilter = new ComboBox();
-		districtFilter.setWidth(200, Unit.PIXELS);
-		districtFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(SampleIndexDto.I18N_PREFIX, LGA));
-		UserDto user = LoginHelper.getCurrentUser();
-		districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(user.getRegion().getUuid()));
-		districtFilter.addValueChangeListener(e->grid.setDistrictFilter(((DistrictReferenceDto)e.getProperty().getValue())));
-		filterLayout.addComponent(districtFilter);
+
+        UserDto user = LoginHelper.getCurrentUser();
+        if(user.getRegion() != null) {
+			ComboBox districtFilter = new ComboBox();
+			districtFilter.setWidth(200, Unit.PIXELS);
+			districtFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(SampleIndexDto.I18N_PREFIX, LGA));
+			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(user.getRegion().getUuid()));
+			districtFilter.addValueChangeListener(e->grid.setDistrictFilter(((DistrictReferenceDto)e.getProperty().getValue())));
+			filterLayout.addComponent(districtFilter);
+        }
 		
 		ComboBox labFilter = new ComboBox();
 		labFilter.setWidth(200, Unit.PIXELS);

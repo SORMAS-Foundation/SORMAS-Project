@@ -106,13 +106,15 @@ public class CasesView extends AbstractView {
         diseaseFilter.addValueChangeListener(e->grid.setDiseaseFilter(((Disease)e.getProperty().getValue())));
         filterLayout.addComponent(diseaseFilter);
 
-        ComboBox districtFilter = new ComboBox();
-        districtFilter.setWidth(200, Unit.PIXELS);
-        districtFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISTRICT));
         UserDto user = LoginHelper.getCurrentUser();
-        districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(user.getRegion().getUuid()));
-        districtFilter.addValueChangeListener(e->grid.setDistrictFilter(((DistrictReferenceDto)e.getProperty().getValue())));
-        filterLayout.addComponent(districtFilter);
+        if(user.getRegion() != null) {
+	        ComboBox districtFilter = new ComboBox();
+	        districtFilter.setWidth(200, Unit.PIXELS);
+	        districtFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISTRICT));
+	        districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(user.getRegion().getUuid()));
+	        districtFilter.addValueChangeListener(e->grid.setDistrictFilter(((DistrictReferenceDto)e.getProperty().getValue())));
+	        filterLayout.addComponent(districtFilter);
+        }
 
         ComboBox officerFilter = new ComboBox();
         officerFilter.setWidth(240, Unit.PIXELS);

@@ -1056,3 +1056,9 @@ ALTER TABLE users ADD COLUMN laboratory_id bigint;
 ALTER TABLE users ADD CONSTRAINT fk_users_laboratory_id FOREIGN KEY (laboratory_id) REFERENCES facility (id);
 
 INSERT INTO schema_version (version_number, comment) VALUES (26, 'Laboratory user role');
+
+-- 2016-02-03 Add admin role to user 'admin'
+
+INSERT INTO userroles (user_id, userrole) VALUES ((SELECT id FROM users WHERE username = 'admin'), 'ADMIN');
+
+INSERT INTO schema_version (version_number, comment) VALUES (27, 'Add admin role to user admin');

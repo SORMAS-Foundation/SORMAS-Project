@@ -51,7 +51,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
     public UserEditForm() {
         super(UserDto.class, UserDto.I18N_PREFIX);
 
-        setWidth(540, Unit.PIXELS);
+        setWidth(640, Unit.PIXELS);
     }
 
     @Override
@@ -104,8 +104,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
     	associatedOfficer.addItems(FacadeProvider.getUserFacade().getAssignableUsers(
     			LoginHelper.getCurrentUserAsReference(), UserRole.SURVEILLANCE_OFFICER));
     	
-    	setRequired(true, UserDto.FIRST_NAME, UserDto.LAST_NAME, UserDto.USER_NAME, UserDto.USER_ROLES,
-    			UserDto.REGION, UserDto.DISTRICT);
+    	setRequired(true, UserDto.FIRST_NAME, UserDto.LAST_NAME, UserDto.USER_NAME, UserDto.USER_ROLES);
     	addValidators(UserDto.USER_NAME, new UserNameValidator());
     	
     	addFieldListeners(UserDto.FIRST_NAME, e -> suggestUserName());
@@ -117,7 +116,9 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
     private void updateFieldsByUserRole() {
     	OptionGroup userRolesField = (OptionGroup)getFieldGroup().getField(UserDto.USER_ROLES);
     	Set<UserRole> userRoles = (Set<UserRole>)userRolesField.getValue();
-    	boolean isInformant = userRoles.contains(UserRole.INFORMANT);
+    	boolean isInformant = UserRole.isInformant(userRoles);
+    	boolean isOfficer = UserRole.isOfficer(userRoles);
+    	boolean isSupervisor = UserRole.isSupervisor(userRoles);
     	
     	// associated officer
     	ComboBox associatedOfficer = (ComboBox)getFieldGroup().getField(UserDto.ASSOCIATED_OFFICER);
@@ -133,6 +134,22 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
     	healthFacility.setRequired(isInformant);
     	if (!isInformant) {
     		healthFacility.clear();
+    	}
+    	
+    	ComboBox region = (ComboBox)getFieldGroup().getField(UserDto.REGION);
+    	boolean useRegion = isSupervisor || isInformant || isOfficer;
+    	region.setVisible(useRegion);
+    	region.setRequired(useRegion);
+    	if (!useRegion) {
+    		region.clear();
+    	}
+    	
+    	ComboBox district = (ComboBox)getFieldGroup().getField(UserDto.DISTRICT);
+    	boolean useDistrict = isInformant || isOfficer;
+    	district.setVisible(useDistrict);
+    	district.setRequired(useDistrict);
+    	if (!useDistrict) {
+    		district.clear();
     	}
     }
     
