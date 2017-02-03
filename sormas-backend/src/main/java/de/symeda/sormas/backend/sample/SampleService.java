@@ -64,6 +64,9 @@ public class SampleService extends AbstractAdoService<Sample> {
 		return resultList;
 	}
 	
+	/**
+	 * @see /sormas-backend/doc/UserDataAccess.md
+	 */
 	public Predicate createUserFilter(CriteriaBuilder cb, Path<Sample> samplePath, User user) {
 		// whoever created the sample or is assigned to it is allowed to access it
 		Predicate filter = cb.equal(samplePath.get(Sample.REPORTING_USER), user);

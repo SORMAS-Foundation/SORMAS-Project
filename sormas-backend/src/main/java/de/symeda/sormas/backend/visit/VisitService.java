@@ -8,7 +8,6 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
@@ -31,6 +30,9 @@ public class VisitService extends AbstractAdoService<Visit> {
 		super(Visit.class);
 	}
 	
+	/**
+	 * @see /sormas-backend/doc/UserDataAccess.md
+	 */
 	public List<Visit> getAllAfter(Date date, User user) {
 
 		// TODO get user from session?

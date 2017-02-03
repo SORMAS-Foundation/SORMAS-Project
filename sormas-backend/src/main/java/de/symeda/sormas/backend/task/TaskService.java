@@ -57,6 +57,9 @@ public class TaskService extends AbstractAdoService<Task> {
 		return resultList;
 	}
 	
+	/**
+	 * @see /sormas-backend/doc/UserDataAccess.md
+	 */
 	public Predicate createUserFilter(CriteriaBuilder cb, Root<Task> taskPath, User user) {
 		// whoever created the task or is assigned to it is allowed to access it
 		Predicate filter = cb.equal(taskPath.get(Task.CREATOR_USER), user);

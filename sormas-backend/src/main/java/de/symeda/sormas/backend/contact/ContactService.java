@@ -75,6 +75,9 @@ public class ContactService extends AbstractAdoService<Contact> {
 		return resultList;
 	}
 
+	/**
+	 * @see /sormas-backend/doc/UserDataAccess.md
+	 */
 	public Predicate createUserFilter(CriteriaBuilder cb, From<Contact, Contact> contactPath, User user) {
 		// whoever created it or is assigned to it is allowed to access it
 		Predicate filter = cb.equal(contactPath.get(Contact.REPORTING_USER), user);

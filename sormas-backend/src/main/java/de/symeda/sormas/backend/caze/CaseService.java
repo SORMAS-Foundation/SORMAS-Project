@@ -67,6 +67,9 @@ public class CaseService extends AbstractAdoService<Case> {
 		return resultList;
 	}
 
+	/**
+	 * @see /sormas-backend/doc/UserDataAccess.md
+	 */
 	public Predicate createUserFilter(CriteriaBuilder cb, Path<Case> casePath, User user) {
 		// whoever created the case or is assigned to it is allowed to access it
 		Predicate filter = cb.equal(casePath.get(Case.REPORTING_USER), user);
