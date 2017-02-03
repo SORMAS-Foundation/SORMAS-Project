@@ -10,11 +10,13 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleFacade;
 import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
+import de.symeda.sormas.api.sample.SampleTestDto;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
@@ -181,8 +183,27 @@ public class SampleFacadeEjb implements SampleFacade {
 		target.setSampleMaterial(source.getSampleMaterial());
 		target.setShipmentStatus(source.getShipmentStatus());
 		target.setLab(FacilityFacadeEjb.toReferenceDto(source.getLab()));
+		target.setNoTestPossible(source.isNoTestPossible());
+		target.setNoTestPossibleReason(source.getNoTestPossibleReason());
 		target.setLga(DistrictFacadeEjb.toReferenceDto(source.getAssociatedCase().getDistrict()));
 		
+		List<SampleTestDto> sampleTests = FacadeProvider.getSampleTestFacade().getAllBySample(SampleFacadeEjb.toReferenceDto(source));
+		SampleTestDto latestSampleTest = null;
+		for(SampleTestDto stDto : sampleTests) {
+			if(latestSampleTest == null) {
+				latestSampleTest = stDto;
+			} else {
+				if(stDto.getTestDateTime().after(latestSampleTest.getTestDateTime())) {
+					latestSampleTest = stDto;
+				}
+			}
+		}
+		
+		if(latestSampleTest != null) {
+			target.setLabUser(latestSampleTest.getLabUser());
+			target.setTestType(latestSampleTest.getTestType());
+			target.setTestResult(latestSampleTest.getTestResult());
+		}
 		
 		return target;
 	}

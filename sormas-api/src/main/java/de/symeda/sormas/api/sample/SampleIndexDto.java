@@ -23,6 +23,8 @@ public class SampleIndexDto extends SampleReferenceDto {
 	public static final String LAB_USER = "labUser";
 	public static final String TEST_TYPE = "testType";
 	public static final String TEST_RESULT = "testResult";
+	public static final String NO_TEST_POSSIBLE = "noTestPossible";
+	public static final String NO_TEST_POSSIBLE_REASON = "noTestPossibleReason";
 	
 	private CaseReferenceDto associatedCase;
 	private String sampleCode;
@@ -34,6 +36,8 @@ public class SampleIndexDto extends SampleReferenceDto {
 	private UserReferenceDto labUser;
 	private SampleTestType testType;
 	private SampleTestResultType testResult;
+	private boolean noTestPossible;
+	private String noTestPossibleReason;
 	
 	public CaseReferenceDto getAssociatedCase() {
 		return associatedCase;
@@ -94,6 +98,18 @@ public class SampleIndexDto extends SampleReferenceDto {
 	}
 	public void setTestResult(SampleTestResultType testResult) {
 		this.testResult = testResult;
+	}
+	public boolean isNoTestPossible() {
+		return noTestPossible;
+	}
+	public void setNoTestPossible(boolean noTestPossible) {
+		this.noTestPossible = noTestPossible;
+	}
+	public String getNoTestPossibleReason() {
+		return noTestPossibleReason;
+	}
+	public void setNoTestPossibleReason(String noTestPossibleReason) {
+		this.noTestPossibleReason = noTestPossibleReason;
 	}
 	
 }

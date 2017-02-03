@@ -2,10 +2,12 @@ package de.symeda.sormas.ui.samples;
 
 import java.util.List;
 
+import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.GeneratedPropertyContainer;
 import com.vaadin.data.util.MethodProperty;
+import com.vaadin.data.util.PropertyValueGenerator;
 import com.vaadin.data.util.filter.Compare.Equal;
 import com.vaadin.data.util.filter.Or;
 import com.vaadin.data.util.filter.SimpleStringFilter;
@@ -25,6 +27,8 @@ import de.symeda.sormas.ui.utils.UuidRenderer;
 @SuppressWarnings("serial")
 public class SampleGrid extends Grid {
 	
+	private static final String TEST_RESULT_GEN = "testResultGen";
+	
 	private CaseReferenceDto caseRef;
 	
 	public SampleGrid() {
@@ -35,22 +39,27 @@ public class SampleGrid extends Grid {
 		GeneratedPropertyContainer generatedContainer = new GeneratedPropertyContainer(container);
 		setContainerDataSource(generatedContainer);
 		
-//		generatedContainer.addGeneratedProperty(LGA, new PropertyValueGenerator<DistrictReferenceDto>() {
-//			@Override
-//			public DistrictReferenceDto getValue(Item item, Object itemId, Object propertyId) {
-//				SampleDto sampleDto = (SampleDto)itemId;
-//				CaseReferenceDto associatedCaseRef = sampleDto.getAssociatedCase();
-//				CaseDataDto associatedCaseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(associatedCaseRef.getUuid());
-//				return associatedCaseDto.getDistrict();
-//			}
-//			@Override
-//			public Class<DistrictReferenceDto> getType() {
-//				return DistrictReferenceDto.class;
-//			}
-//		});
+		generatedContainer.addGeneratedProperty(TEST_RESULT_GEN, new PropertyValueGenerator<String>() {
+			@Override
+			public String getValue(Item item, Object itemId, Object propertyId) {
+				SampleIndexDto sampleIndexDto = (SampleIndexDto)itemId;
+				if(sampleIndexDto.isNoTestPossible()) {
+					return "No test possible: " + sampleIndexDto.getNoTestPossibleReason();
+				} else if(sampleIndexDto.getTestResult() != null) {
+					return sampleIndexDto.getTestResult().toString();
+				} else {
+					return "";
+				}
+			}
+			@Override
+			public Class<String> getType() {
+				return String.class;
+			}
+		});
 		
 		setColumns(SampleIndexDto.UUID, SampleIndexDto.SAMPLE_CODE, SampleIndexDto.SHIPMENT_STATUS, SampleIndexDto.ASSOCIATED_CASE,
-				SampleIndexDto.LGA, SampleIndexDto.SHIPMENT_DATE, SampleIndexDto.LAB, SampleIndexDto.SAMPLE_MATERIAL);
+				SampleIndexDto.LGA, SampleIndexDto.SHIPMENT_DATE, SampleIndexDto.LAB, SampleIndexDto.SAMPLE_MATERIAL,
+				SampleIndexDto.LAB_USER, SampleIndexDto.TEST_TYPE, TEST_RESULT_GEN);
 		
 		getColumn(SampleIndexDto.UUID).setRenderer(new UuidRenderer());
 		getColumn(SampleIndexDto.SHIPMENT_DATE).setRenderer(new DateRenderer(DateHelper.getShortDateFormat()));
