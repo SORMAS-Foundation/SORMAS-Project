@@ -17,6 +17,7 @@ public class Facility extends AbstractDomainObject {
 
 	public static final String NAME = "name";
 	public static final String LOCATION = "location";
+	public static final String TYPE = "type";
 	
 	private String name;
 	private Location location;

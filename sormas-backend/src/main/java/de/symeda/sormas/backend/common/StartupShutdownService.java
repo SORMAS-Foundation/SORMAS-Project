@@ -2,7 +2,6 @@ package de.symeda.sormas.backend.common;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -13,13 +12,12 @@ import javax.ejb.Startup;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 
+import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.user.UserHelper;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.facility.FacilityService;
-import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.CommunityService;
@@ -56,8 +54,8 @@ public class StartupShutdownService {
 	@PostConstruct
 	public void startup() {
 		initRegionMockData();
+		initLaboratoriesMockData();
 		initUserMockData();
-		//initCaseAndPersonMockData();
 	}
 
 	private void initUserMockData() {
@@ -80,18 +78,6 @@ public class StartupShutdownService {
 			informant.setRegion(region);
 			informant.setAssociatedOfficer(surveillanceOfficer);
 			userService.persist(informant);
-
-			
-//			userService.persist(MockDataGenerator.createUser(UserRole.SURVEILLANCE_OFFICER));
-//			userService.persist(MockDataGenerator.createUser(UserRole.SURVEILLANCE_OFFICER));
-//			userService.persist(MockDataGenerator.createUser(UserRole.SURVEILLANCE_OFFICER));
-//			userService.persist(MockDataGenerator.createUser(UserRole.SURVEILLANCE_OFFICER));
-//			userService.persist(MockDataGenerator.createUser(UserRole.SURVEILLANCE_OFFICER));
-//			userService.persist(MockDataGenerator.createUser(UserRole.INFORMANT));
-//			userService.persist(MockDataGenerator.createUser(UserRole.INFORMANT));
-//			userService.persist(MockDataGenerator.createUser(UserRole.INFORMANT));
-//			userService.persist(MockDataGenerator.createUser(UserRole.INFORMANT));
-//			userService.persist(MockDataGenerator.createUser(UserRole.INFORMANT));
 		}
 		
 		User supervisor = userService.getByUserName(UserHelper.getSuggestedUsername("Sunkanmi", "Sesay"));
@@ -99,42 +85,6 @@ public class StartupShutdownService {
 				|| !supervisor.getUserRoles().contains(UserRole.CASE_SUPERVISOR)) {
 			supervisor.getUserRoles().add(UserRole.CONTACT_SUPERVISOR);
 			supervisor.getUserRoles().add(UserRole.CASE_SUPERVISOR);
-		}
-	}
-
-	private void initCaseAndPersonMockData() {
-		
-		Region region = regionService.getAll().get(0);
-		
-		if (caseService.getAll().isEmpty()) {
-			Random random = new Random();
-			List<User> informants = userService.getAllByRegionAndUserRoles(null, UserRole.INFORMANT);
-			List<User> survOffs = userService.getAllByRegionAndUserRoles(null, UserRole.SURVEILLANCE_OFFICER);
-			List<User> survSups = userService.getAllByRegionAndUserRoles(null, UserRole.SURVEILLANCE_SUPERVISOR);
-			List<Facility> facilities = facilityService.getAll();
-			
-			List<Case> cases = MockDataGenerator.createCases();
-	    	
-			for (Case caze : cases) {
-				
-				caze.setReportingUser(informants.get(random.nextInt(informants.size())));
-				
-				caze.setRegion(region);
-				caze.setSurveillanceOfficer(survOffs.get(random.nextInt(survOffs.size())));
-				caze.setHealthFacility(facilities.get(random.nextInt(facilities.size())));
-
-				Person person = MockDataGenerator.createPerson();
-				personService.persist(person);
-
-				caze.setPerson(person);
-				caseService.persist(caze);
-			}
-			
-			for (int i=0; i<5; i++) {
-				// some dummy persons
-				Person person = MockDataGenerator.createPerson();
-				personService.persist(person);
-			}
 		}
 	}
 
@@ -169,6 +119,17 @@ public class StartupShutdownService {
 						facilityService.persist(facility);
 					}
 				}
+			}
+		}
+	}
+	
+	private void initLaboratoriesMockData() {
+		
+		if (facilityService.getAllByFacilityType(FacilityType.LABORATORY).isEmpty()) {
+			List<Region> regions = regionService.getAll();
+			List<Facility> labs = MockDataGenerator.importLaboratories(regions);
+			for (Facility lab : labs) {
+				facilityService.persist(lab);
 			}
 		}
 	}

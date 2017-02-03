@@ -8,6 +8,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.region.Community;
@@ -41,6 +42,19 @@ public class FacilityService extends AbstractAdoService<Facility> {
 		Root<Facility> from = cq.from(getElementClass());
 		
 		cq.where(cb.equal(from.get(Facility.LOCATION).get(Location.DISTRICT), district));
+		
+		cq.orderBy(cb.asc(from.get(Facility.NAME)));
+
+		return em.createQuery(cq).getResultList();
+	}
+	
+	public List<Facility> getAllByFacilityType(FacilityType type) {
+		
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Facility> cq = cb.createQuery(getElementClass());
+		Root<Facility> from = cq.from(getElementClass());
+		
+		cq.where(cb.equal(from.get(Facility.TYPE), type));
 		
 		cq.orderBy(cb.asc(from.get(Facility.NAME)));
 

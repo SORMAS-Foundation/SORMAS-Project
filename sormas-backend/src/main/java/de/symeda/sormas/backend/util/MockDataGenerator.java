@@ -210,5 +210,48 @@ public class MockDataGenerator {
 		
 		return result;
 	}
+	
+	public static List<Facility> importLaboratories(List<Region> regions) {
+		
+		List<Facility> result = new ArrayList<Facility>();
+		
+		InputStream stream = MockDataGenerator.class.getResourceAsStream("/facilities/Laboratories.csv");
+		BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+		
+		Region region = null;
+		try {
+			while (reader.ready()) {
+				String line = reader.readLine();
+				String[] columns = line.split(";");
+				
+				// region
+				if(columns[0].length() > 0) {
+					region = null;
+					for(Region r : regions) {
+						if(columns[0].equalsIgnoreCase(r.getName())) {
+							region = r;
+							break;
+						}
+					}
+				}
+				
+				Facility facility = new Facility();
+				String facilityName = columns[2];
+				facility.setName(facilityName);
+				facility.setType(FacilityType.LABORATORY);
+				facility.setPublicOwnership("PUBLIC".equalsIgnoreCase(columns[3]));
+				Location location = new Location();
+				location.setRegion(region);
+				String cityName = columns[1];
+				location.setCity(cityName);
+				facility.setLocation(location);
+				result.add(facility);				
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return result;
+	}
 }
 
