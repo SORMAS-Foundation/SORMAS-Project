@@ -68,8 +68,7 @@ public class SampleTestController {
 		SampleTestDto sampleTest = new SampleTestDto();
 		sampleTest.setUuid(DataHelper.createUuid());
 		sampleTest.setSample(sampleRef);
-		SampleDto sampleDto = FacadeProvider.getSampleFacade().getSampleByUuid(sampleRef.getUuid());
-		sampleTest.setLab(sampleDto.getLab());
+		sampleTest.setLab(LoginHelper.getCurrentUser().getLaboratory());
 		sampleTest.setLabUser(LoginHelper.getCurrentUserAsReference());
 		return sampleTest;
 	}

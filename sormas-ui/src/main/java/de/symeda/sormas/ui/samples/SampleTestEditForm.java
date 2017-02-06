@@ -9,9 +9,12 @@ import com.vaadin.ui.DateField;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.sample.SampleTestDto;
 import de.symeda.sormas.api.sample.SampleTestType;
+import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -37,12 +40,12 @@ public class SampleTestEditForm extends AbstractEditForm<SampleTestDto> {
 		DateField testDateTime = addField(SampleTestDto.TEST_DATE_TIME, DateField.class);
 		testDateTime.setResolution(Resolution.MINUTE);
 		testDateTime.setDateFormat(DateHelper.getTimeDateFormat().toPattern());
-		addField(SampleTestDto.LAB, ComboBox.class);
+		ComboBox lab = addField(SampleTestDto.LAB, ComboBox.class);
+		lab.addItems(FacadeProvider.getFacilityFacade().getAllLaboratories());
+		
 		addField(SampleTestDto.TEST_RESULT, ComboBox.class);
 		addField(SampleTestDto.TEST_RESULT_VERIFIED, CheckBox.class).addStyleName(CssStyles.FORCE_CAPTION);
 		addField(SampleTestDto.TEST_RESULT_TEXT, TextArea.class).setRows(3);
-		
-		setReadOnly(true, SampleTestDto.LAB);
 
 		FieldHelper.setVisibleWhen(getFieldGroup(), SampleTestDto.TEST_TYPE_TEXT, SampleTestDto.TEST_TYPE, Arrays.asList(SampleTestType.OTHER), true);
 		FieldHelper.setRequiredWhen(getFieldGroup(), SampleTestDto.TEST_TYPE, Arrays.asList(SampleTestDto.TEST_TYPE_TEXT), Arrays.asList(SampleTestType.OTHER));
