@@ -55,6 +55,8 @@ public enum UserRole {
 		case CONTACT_SUPERVISOR:
 			collection.add(CONTACT_OFFICER);
 			break;
+		case LAB_USER:
+			collection.add(LAB_USER);
 		default:
 			break;
 		}

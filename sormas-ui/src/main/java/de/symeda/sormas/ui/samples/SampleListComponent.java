@@ -155,7 +155,7 @@ public class SampleListComponent extends AbstractView {
 		ComboBox labFilter = new ComboBox();
 		labFilter.setWidth(200, Unit.PIXELS);
 		labFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(SampleIndexDto.I18N_PREFIX, SampleIndexDto.LAB));
-		labFilter.addItems(FacadeProvider.getFacilityFacade().getAll());
+		labFilter.addItems(FacadeProvider.getFacilityFacade().getAllLaboratories());
 		labFilter.addValueChangeListener(e->grid.setLabFilter(((FacilityReferenceDto)e.getProperty().getValue())));
 		filterLayout.addComponent(labFilter);
 		

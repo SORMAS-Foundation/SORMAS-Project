@@ -22,6 +22,7 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.HtmlReferenceDtoConverter;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 
@@ -140,12 +141,20 @@ public class ContactGrid extends Grid {
         return (BeanItemContainer<ContactIndexDto>) container.getWrappedContainer();
     }
     
+    public void reload() {
+    	List<ContactIndexDto> entries = FacadeProvider.getContactFacade().getIndexList(LoginHelper.getCurrentUserAsReference().getUuid());
+   
+    	getContainer().removeAllItems();
+        getContainer().addAll(entries);  
+    }
+    
     public void reload(CaseReferenceDto caseRef) {
     	List<ContactIndexDto> entries = FacadeProvider.getContactFacade().getIndexListByCase(caseRef);
 
     	getContainer().removeAllItems();
         getContainer().addAll(entries);    	
     }
+    
 }
 
 

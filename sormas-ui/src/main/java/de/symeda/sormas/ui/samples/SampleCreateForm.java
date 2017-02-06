@@ -90,8 +90,8 @@ public class SampleCreateForm extends AbstractEditForm<SampleDto> {
 		addField(SampleDto.NO_TEST_POSSIBLE, CheckBox.class).addStyleName(CssStyles.FORCE_CAPTION);
 		addField(SampleDto.NO_TEST_POSSIBLE_REASON, TextField.class);
 		
-		lab.addItems(FacadeProvider.getFacilityFacade().getAll());
-		otherLab.addItems(FacadeProvider.getFacilityFacade().getAll());
+		lab.addItems(FacadeProvider.getFacilityFacade().getAllLaboratories());
+		otherLab.addItems(FacadeProvider.getFacilityFacade().getAllLaboratories());
 		
 		setReadOnly(true, SampleDto.UUID, SampleDto.REPORT_DATE_TIME, SampleDto.REPORTING_USER);
 		

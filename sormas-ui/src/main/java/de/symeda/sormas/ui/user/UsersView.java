@@ -126,6 +126,7 @@ public class UsersView extends AbstractView {
 
     @Override
     public void enter(ViewChangeEvent event) {
+    	// TODO what if a user has no assignable roles?
     	List<UserDto> users = FacadeProvider.getUserFacade().getAll(
     			UserRole.getAssignableRoles(LoginHelper.getCurrentUserRoles()).stream().toArray(UserRole[]::new));
         grid.setUsers(users);

@@ -38,9 +38,7 @@ public class ContactService extends AbstractAdoService<Contact> {
 		CriteriaQuery<Contact> cq = cb.createQuery(getElementClass());
 		Root<Contact> from = cq.from(getElementClass());
 
-		if (caze != null) {
-			cq.where(cb.equal(from.get(Contact.CAZE), caze));
-		}
+		cq.where(cb.equal(from.get(Contact.CAZE), caze));
 		cq.orderBy(cb.asc(from.get(AbstractDomainObject.ID)));
 
 		List<Contact> resultList = em.createQuery(cq).getResultList();
