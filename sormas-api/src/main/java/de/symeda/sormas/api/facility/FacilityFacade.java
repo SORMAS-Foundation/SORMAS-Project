@@ -15,6 +15,7 @@ public interface FacilityFacade {
 	
     List<FacilityReferenceDto> getAllByCommunity(CommunityReferenceDto community);
     List<FacilityReferenceDto> getAllByDistrict(DistrictReferenceDto district);
+    List<FacilityReferenceDto> getAllLaboratories();
 
 	List<FacilityDto> getAllAfter(Date date);
 	

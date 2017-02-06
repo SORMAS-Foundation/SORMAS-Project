@@ -42,9 +42,7 @@ public enum UserRole {
 		switch (this) {
 		case ADMIN:
 			for(UserRole role : UserRole.values()) {
-				if(role != UserRole.ADMIN) {
-					collection.add(role);
-				}
+				collection.add(role);
 			}
 			break;
 		case SURVEILLANCE_SUPERVISOR:
@@ -90,5 +88,9 @@ public enum UserRole {
 	
 	public static boolean isInformant(Collection<UserRole> roles) {
 		return roles.contains(UserRole.INFORMANT);
+	}
+	
+	public static boolean isLabUser(Collection<UserRole> roles) {
+		return roles.contains(UserRole.LAB_USER);
 	}
 }

@@ -10,6 +10,7 @@ import javax.ejb.Stateless;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityFacade;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
@@ -51,6 +52,14 @@ public class FacilityFacadeEjb implements FacilityFacade {
 				.collect(Collectors.toList());
 	}
 
+	@Override
+	public List<FacilityReferenceDto> getAllLaboratories() {
+		List<Facility> laboratories = service.getAllByFacilityType(FacilityType.LABORATORY);
+		
+		return laboratories.stream()
+				.map(l -> toReferenceDto(l))
+				.collect(Collectors.toList());
+	}
 	
 	@Override
 	public List<FacilityReferenceDto> getAll() {

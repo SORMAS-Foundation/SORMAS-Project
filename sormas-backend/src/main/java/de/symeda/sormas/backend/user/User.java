@@ -40,7 +40,7 @@ public class User extends AbstractDomainObject {
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String USER_ROLES = "userRoles";
-	public static final String LABORATOR = "laboratory";
+	public static final String LABORATORY = "laboratory";
 
 	
 	private String userName;

@@ -114,6 +114,7 @@ public class UserFacadeEjb implements UserFacade {
 		dto.setDistrict(DistrictFacadeEjb.toReferenceDto(entity.getDistrict()));
 		dto.setHealthFacility(FacilityFacadeEjb.toReferenceDto(entity.getHealthFacility()));
 		dto.setAssociatedOfficer(toReferenceDto(entity.getAssociatedOfficer()));
+		dto.setLaboratory(FacilityFacadeEjb.toReferenceDto(entity.getLaboratory()));
 		
 		entity.getUserRoles().size();
 		dto.setUserRoles(entity.getUserRoles());
@@ -149,6 +150,7 @@ public class UserFacadeEjb implements UserFacade {
 		entity.setDistrict(districtService.getByReferenceDto(dto.getDistrict()));
 		entity.setHealthFacility(facilityService.getByReferenceDto(dto.getHealthFacility()));
 		entity.setAssociatedOfficer(service.getByReferenceDto(dto.getAssociatedOfficer()));
+		entity.setLaboratory(facilityService.getByReferenceDto(dto.getLaboratory()));
 
 		entity.setUserRoles(dto.getUserRoles());
 

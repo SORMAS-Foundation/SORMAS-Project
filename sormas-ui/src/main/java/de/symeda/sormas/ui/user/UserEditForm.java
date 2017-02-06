@@ -44,7 +44,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 					LayoutUtil.fluidRowLocs(UserDto.ACTIVE),
 					LayoutUtil.fluidRowLocs(UserDto.USER_NAME, UserDto.USER_ROLES),
 					LayoutUtil.fluidRowLocs(UserDto.REGION, UserDto.DISTRICT),
-					LayoutUtil.fluidRowLocs(UserDto.HEALTH_FACILITY, UserDto.ASSOCIATED_OFFICER),
+					LayoutUtil.fluidRowLocs(UserDto.HEALTH_FACILITY, UserDto.ASSOCIATED_OFFICER, UserDto.LABORATORY),
 					LayoutUtil.fluidRowLocs(NEW_PASSWORD)
 					);
 
@@ -97,6 +97,9 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
     		}
     	});
 
+    	ComboBox laboratory = addField(UserDto.LABORATORY, ComboBox.class);
+    	laboratory.addItems(FacadeProvider.getFacilityFacade().getAllLaboratories());
+    	
 		region.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
 
     	// for informant
@@ -119,6 +122,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
     	boolean isInformant = UserRole.isInformant(userRoles);
     	boolean isOfficer = UserRole.isOfficer(userRoles);
     	boolean isSupervisor = UserRole.isSupervisor(userRoles);
+    	boolean isLabUser = UserRole.isLabUser(userRoles);
     	
     	// associated officer
     	ComboBox associatedOfficer = (ComboBox)getFieldGroup().getField(UserDto.ASSOCIATED_OFFICER);
@@ -134,6 +138,14 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
     	healthFacility.setRequired(isInformant);
     	if (!isInformant) {
     		healthFacility.clear();
+    	}
+    	
+    	// laboratory
+    	ComboBox laboratory = (ComboBox)getFieldGroup().getField(UserDto.LABORATORY);
+    	laboratory.setVisible(isLabUser);
+    	laboratory.setRequired(isLabUser);
+    	if (!isLabUser) {
+    		laboratory.clear();
     	}
     	
     	ComboBox region = (ComboBox)getFieldGroup().getField(UserDto.REGION);
