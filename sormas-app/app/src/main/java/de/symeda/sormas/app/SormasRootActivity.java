@@ -18,6 +18,7 @@ import de.symeda.sormas.app.caze.CasesActivity;
 import de.symeda.sormas.app.contact.ContactNewActivity;
 import de.symeda.sormas.app.event.EventsActivity;
 import de.symeda.sormas.app.contact.ContactsActivity;
+import de.symeda.sormas.app.sample.SamplesActivity;
 import de.symeda.sormas.app.task.TasksActivity;
 import de.symeda.sormas.app.user.UserActivity;
 
@@ -39,6 +40,7 @@ public abstract class SormasRootActivity extends AppCompatActivity {
                 getResources().getString(R.string.main_menu_contacts),
                 getResources().getString(R.string.main_menu_tasks),
                 getResources().getString(R.string.main_menu_events),
+                getResources().getString(R.string.main_menu_samples),
                 getResources().getString(R.string.main_menu_user)
                 };
 
@@ -147,6 +149,12 @@ public abstract class SormasRootActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    // go to samples overview
+    public void showSamplesView() {
+        Intent intent = new Intent(this, SamplesActivity.class);
+        startActivity(intent);
+    }
+
     // go to user
     public void showUserView() {
         Intent intent = new Intent(this, UserActivity.class);
@@ -175,8 +183,12 @@ public abstract class SormasRootActivity extends AppCompatActivity {
         else if(position==3) {
             showEventsView();
         }
-        // Users
+        // Samples
         else if(position==4) {
+            showSamplesView();
+        }
+        // Users
+        else if(position==5) {
             showUserView();
         }
     }

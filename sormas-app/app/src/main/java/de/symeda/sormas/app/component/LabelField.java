@@ -25,6 +25,7 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.backend.user.User;
 
 /**

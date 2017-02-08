@@ -121,6 +121,10 @@ public class CaseEditActivity extends AbstractEditActivity {
             case TASKS:
                 updateActionBarGroups(menu, false, false, false);
                 break;
+
+            case SAMPLES:
+                updateActionBarGroups(menu, false, true, false);
+                break;
         }
 
         return true;

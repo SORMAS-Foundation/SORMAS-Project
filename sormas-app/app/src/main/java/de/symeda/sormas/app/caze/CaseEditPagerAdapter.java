@@ -12,6 +12,7 @@ import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.contact.ContactsListFragment;
 import de.symeda.sormas.app.person.PersonEditTab;
+import de.symeda.sormas.app.sample.SamplesListFragment;
 import de.symeda.sormas.app.task.TasksListFragment;
 import de.symeda.sormas.app.util.FormTab;
 
@@ -80,6 +81,14 @@ public class CaseEditPagerAdapter extends FragmentStatePagerAdapter {
                 tasksListBundle.putString(TasksListFragment.KEY_CASE_UUID, (String)caseEditBundle.get(Case.UUID));
                 tasksListTab.setArguments(tasksListBundle);
                 frag = tasksListTab;
+                break;
+            case SAMPLES:
+                SamplesListFragment samplesListTab = new SamplesListFragment();
+                Bundle samplesListBundle = new Bundle();
+                samplesListBundle.putString(SamplesListFragment.KEY_CASE_UUID, (String) caseEditBundle.get(Case.UUID));
+                samplesListTab.setArguments(samplesListBundle);
+                frag = samplesListTab;
+                break;
         }
         return frag;
     }

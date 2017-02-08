@@ -31,6 +31,8 @@ import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.DistrictDao;
 import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.backend.region.RegionDao;
+import de.symeda.sormas.app.backend.sample.Sample;
+import de.symeda.sormas.app.backend.sample.SampleDao;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.symptoms.SymptomsDao;
 import de.symeda.sormas.app.backend.task.Task;
@@ -50,7 +52,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// name of the database file for your application -- change to something appropriate for your app
 	private static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	private static final int DATABASE_VERSION = 51;
+	private static final int DATABASE_VERSION = 54;
 
 	private static DatabaseHelper instance = null;
 	public static void init(Context context) {
@@ -76,6 +78,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	private ContactDao contactDao = null;
 	private VisitDao visitDao;
 	private EventDao eventDao;
+	private SampleDao sampleDao;
 
 	private DatabaseHelper(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);//, R.raw.ormlite_config);
@@ -95,6 +98,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.clearTable(connectionSource, Contact.class);
 			TableUtils.clearTable(connectionSource, Visit.class);
 			TableUtils.clearTable(connectionSource, Event.class);
+			TableUtils.clearTable(connectionSource, Sample.class);
 
 			if (clearInfrastructure) {
 				TableUtils.clearTable(connectionSource, Region.class);
@@ -133,6 +137,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.createTable(connectionSource, Visit.class);
 			TableUtils.createTable(connectionSource, Task.class);
 			TableUtils.createTable(connectionSource, Event.class);
+			TableUtils.createTable(connectionSource, Sample.class);
 		} catch (SQLException e) {
 			Log.e(DatabaseHelper.class.getName(), "Can't create database", e);
 			throw new RuntimeException(e);
@@ -160,6 +165,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.dropTable(connectionSource, Contact.class, true);
 			TableUtils.dropTable(connectionSource, Visit.class, true);
 			TableUtils.dropTable(connectionSource, Event.class, true);
+			TableUtils.dropTable(connectionSource, Sample.class, true);
 			if (oldVersion < 30) {
 				TableUtils.dropTable(connectionSource, Config.class, true);
 			}
@@ -395,6 +401,22 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		return instance.eventDao;
 	}
 
+	public static SampleDao getSampleDao() {
+		if (instance.sampleDao == null) {
+			synchronized (DatabaseHelper.class) {
+				if (instance.sampleDao == null) {
+					try {
+						instance.sampleDao = new SampleDao((Dao<Sample, Long>) instance.getDao(Sample.class));
+					} catch (SQLException e) {
+						Log.e(DatabaseHelper.class.getName(), "Can't create SampleDao", e);
+						throw new RuntimeException(e);
+					}
+				}
+			}
+		}
+		return instance.sampleDao;
+	}
+
 	/**
 	 * Close the database connections and clear any cached DAOs.
 	 */
@@ -413,5 +435,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		contactDao = null;
 		visitDao = null;
 		eventDao = null;
+		sampleDao = null;
 	}
 }

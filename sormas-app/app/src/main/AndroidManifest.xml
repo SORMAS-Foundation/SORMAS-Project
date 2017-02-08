@@ -83,7 +83,14 @@
                 android:value=".event.EventsActivity" />
         </activity>
 
+        <activity android:name=".sample.SamplesActivity"></activity>
+        <activity android:name=".sample.SampleEditActivity"
+            android:parentActivityName=".sample.SamplesActivity">
 
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".sample.SamplesActivity" />
+        </activity>
 
         <receiver android:name=".SormasBootstrap"
             android:enabled="true">

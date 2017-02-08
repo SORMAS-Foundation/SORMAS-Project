@@ -28,6 +28,7 @@ import de.symeda.sormas.app.contact.ContactsActivity;
 import de.symeda.sormas.app.contact.SyncContactsTask;
 import de.symeda.sormas.app.event.EventsActivity;
 import de.symeda.sormas.app.event.SyncEventsTask;
+import de.symeda.sormas.app.sample.SamplesActivity;
 import de.symeda.sormas.app.task.SyncTasksTask;
 import de.symeda.sormas.app.task.TasksActivity;
 import de.symeda.sormas.app.task.TasksListFragment;
@@ -58,6 +59,7 @@ public abstract class AbstractRootTabActivity extends AbstractTabActivity {
                 getResources().getString(R.string.main_menu_cases),
                 getResources().getString(R.string.main_menu_contacts),
                 getResources().getString(R.string.main_menu_events),
+                getResources().getString(R.string.main_menu_samples),
                 getResources().getString(R.string.main_menu_user),
                 getResources().getString(R.string.main_menu_sync_all),
         };
@@ -159,6 +161,11 @@ public abstract class AbstractRootTabActivity extends AbstractTabActivity {
         startActivity(intent);
     }
 
+    public void showSamplesView() {
+        Intent intent = new Intent(this, SamplesActivity.class);
+        startActivity(intent);
+    }
+
     public void showUserView() {
         Intent intent = new Intent(this, UserActivity.class);
         startActivity(intent);
@@ -196,9 +203,12 @@ public abstract class AbstractRootTabActivity extends AbstractTabActivity {
                 showEventsView();
                 break;
             case 4:
-                showUserView();
+                showSamplesView();
                 break;
             case 5:
+                showUserView();
+                break;
+            case 6:
                 syncAll();
                 // don't keep this button selected
                 menuDrawerList.clearChoices();

@@ -5,6 +5,7 @@
     <string name="main_menu_cases">Cases</string>
     <string name="main_menu_contacts">Contacts</string>
     <string name="main_menu_events">Events</string>
+    <string name="main_menu_samples">Samples</string>
     <string name="main_menu_user">User</string>
     <string name="main_menu_sync_all">Synchronize</string>
 
@@ -60,6 +61,8 @@
     <string name="headline_new_person">Add new person</string>
     <string name="headline_symptoms">Symptoms</string>
     <string name="headline_help">Help</string>
+    <string name="headline_sample">Sample</string>
+    <string name="headline_sample_data">Sample data</string>
 
     <!-- forms -->
     <string name="form_p_first_name">First name</string>
@@ -174,6 +177,8 @@
     <string name="headline_event_information">Event information</string>
     <string name="headline_event_sourceOfInformation">Source of information</string>
     <string name="headline_new_event">New event</string>
+    <string name="sample_shipmentStatus">Shipment status</string>
+    <string name="sample_shipped">Shipped</string>
 
 
 </resources>

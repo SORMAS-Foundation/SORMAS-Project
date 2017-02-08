@@ -6,6 +6,7 @@ import com.j256.ormlite.stmt.QueryBuilder;
 import java.sql.SQLException;
 import java.util.List;
 
+import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.location.Location;
@@ -36,6 +37,19 @@ public class FacilityDao extends AbstractAdoDao<Facility> {
         try {
             locationQb.where().eq("community_id", community );
             return queryBuilder().join(locationQb).query();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public List<Facility> getByType(FacilityType type) {
+        QueryBuilder<Facility, Long> facilityQb = this.queryBuilder();
+
+        try {
+            facilityQb.where().eq("type", type);
+            return facilityQb.query();
         } catch (SQLException e) {
             e.printStackTrace();
         }
