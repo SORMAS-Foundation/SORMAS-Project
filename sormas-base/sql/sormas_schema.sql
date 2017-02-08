@@ -1062,3 +1062,9 @@ INSERT INTO schema_version (version_number, comment) VALUES (26, 'Laboratory use
 INSERT INTO userroles (user_id, userrole) VALUES ((SELECT id FROM users WHERE username = 'admin'), 'ADMIN');
 
 INSERT INTO schema_version (version_number, comment) VALUES (27, 'Add admin role to user admin');
+
+-- 2016-02-08 Removed null constraint from shipment date
+
+ALTER TABLE samples ALTER COLUMN shipmentdate DROP NOT NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (28, 'Removed null constraint from shipment date');

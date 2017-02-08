@@ -144,7 +144,6 @@ public class Sample extends AbstractDomainObject {
 	}
 	
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(nullable=false)
 	public Date getShipmentDate() {
 		return shipmentDate;
 	}
