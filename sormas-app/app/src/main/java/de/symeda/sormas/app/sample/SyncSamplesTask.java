@@ -8,10 +8,12 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import java.util.List;
 
 import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.sample.SampleTestDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.sample.SampleDtoHelper;
+import de.symeda.sormas.app.backend.sample.SampleTestDtoHelper;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.util.Callback;
@@ -42,6 +44,19 @@ public class SyncSamplesTask extends AsyncTask<Void, Void, Void> {
                 return null;
             }
         }, DatabaseHelper.getSampleDao());
+
+        new SampleTestDtoHelper().pullEntities(new AdoDtoHelper.DtoGetInterface<SampleTestDto>() {
+            @Override
+            public Call<List<SampleTestDto>> getAll(long since) {
+
+                User user = ConfigProvider.getUser();
+                if (user != null) {
+                    Call<List<SampleTestDto>> all = RetroProvider.getSampleTestFacade().getAll(user.getUuid(), since);
+                    return all;
+                }
+                return null;
+            }
+        }, DatabaseHelper.getSampleTestDao());
 
         new SampleDtoHelper().pushEntities(new AdoDtoHelper.DtoPostInterface<SampleDto>() {
             @Override

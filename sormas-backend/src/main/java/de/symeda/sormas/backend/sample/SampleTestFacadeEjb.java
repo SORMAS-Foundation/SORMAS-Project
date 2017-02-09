@@ -2,6 +2,7 @@ package de.symeda.sormas.backend.sample;
 
 import java.sql.Timestamp;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -14,6 +15,7 @@ import de.symeda.sormas.api.sample.SampleTestDto;
 import de.symeda.sormas.api.sample.SampleTestFacade;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
+import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -29,6 +31,19 @@ public class SampleTestFacadeEjb implements SampleTestFacade {
 	private FacilityService facilityService;
 	@EJB
 	private UserService userService;
+	
+	@Override
+	public List<SampleTestDto> getAllSampleTestsAfter(Date date, String userUuid) {
+		User user = userService.getByUuid(userUuid);
+		
+		if(user == null) {
+			return Collections.emptyList();
+		}
+		
+		return sampleTestService.getAllAfter(date, user).stream()
+				.map(e -> toSampleTestDto(e))
+				.collect(Collectors.toList());
+	}
 	
 	@Override
 	public List<SampleTestDto> getAllBySample(SampleReferenceDto sampleRef) {
