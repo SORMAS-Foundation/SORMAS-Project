@@ -22,6 +22,7 @@ import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.backend.sample.SampleDao;
+import de.symeda.sormas.app.backend.sample.SampleTest;
 import de.symeda.sormas.app.component.FieldHelper;
 import de.symeda.sormas.app.databinding.SampleDataFragmentLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
@@ -116,6 +117,23 @@ public class SampleEditTab extends FormTab {
             FieldHelper.initSpinnerField(binding.sampleLab, laboratories);
             binding.sampleReceivedDate.initialize(this);
             binding.sampleReceivedDate.setEnabled(false);
+
+            if (sample.getNoTestPossible()) {
+                binding.sampleTypeOfTest.setVisibility(View.GONE);
+                binding.sampleTestResult.setVisibility(View.GONE);
+                binding.sampleNoRecentTestText.setVisibility(View.GONE);
+            } else {
+                SampleTest mostRecentTest = DatabaseHelper.getSampleTestDao().getMostRecentForSample(sample);
+                binding.sampleNoTestPossibleText.setVisibility(View.GONE);
+                binding.sampleNoTestPossibleReason.setVisibility(View.GONE);
+                if (mostRecentTest != null) {
+                    binding.sampleNoRecentTestText.setVisibility(View.GONE);
+                } else{
+                    binding.sampleTypeOfTest.setVisibility(View.GONE);
+                    binding.sampleTestResult.setVisibility(View.GONE);
+                }
+            }
+
         } catch (Exception e) {
             Toast.makeText(getContext(), "Error while creating the sample. " + e.getMessage(), Toast.LENGTH_SHORT).show();
             e.printStackTrace();

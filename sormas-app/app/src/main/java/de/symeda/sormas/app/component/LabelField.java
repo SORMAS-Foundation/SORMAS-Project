@@ -2,6 +2,7 @@ package de.symeda.sormas.app.component;
 
 import android.content.Context;
 import android.databinding.BindingAdapter;
+import android.databinding.BindingBuildInfo;
 import android.databinding.InverseBindingAdapter;
 import android.databinding.InverseBindingListener;
 import android.graphics.Color;
@@ -22,10 +23,12 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.sample.Sample;
+import de.symeda.sormas.app.backend.sample.SampleTest;
 import de.symeda.sormas.app.backend.user.User;
 
 /**
@@ -36,6 +39,7 @@ public class LabelField extends PropertyField<String> {
 
     private TextView textContent;
     private String appendedText;
+    protected InverseBindingListener inverseBindingListener;
 
     public LabelField(Context context) {
         super(context);
@@ -77,6 +81,16 @@ public class LabelField extends PropertyField<String> {
         view.setValue(text);
     }
 
+    @InverseBindingAdapter(attribute = "android:value", event = "android:valueAttrChanged" /*default - can also be removed*/)
+    public static String getValue(LabelField view) {
+        return view.getValue();
+    }
+
+    @BindingAdapter("android:valueAttrChanged")
+    public static void setListener(LabelField view, InverseBindingListener listener) {
+        view.inverseBindingListener = listener;
+    }
+
     /**
      * Inflates the views in the layout.
      *
@@ -93,6 +107,19 @@ public class LabelField extends PropertyField<String> {
     protected void onFinishInflate() {
         super.onFinishInflate();
         textContent = (TextView) this.findViewById(R.id.text_content);
+        textContent.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (inverseBindingListener != null) {
+                    inverseBindingListener.onChange();
+                }
+                onValueChanged();
+            }
+        });
         caption = (TextView) this.findViewById(R.id.text_caption);
         caption.setText(getCaption());
         addCaptionHintIfDescription();
@@ -165,6 +192,20 @@ public class LabelField extends PropertyField<String> {
     @BindingAdapter("app:event")
     public static void setEventForLabel(LabelField labelField, Event event) {
         labelField.setValue(event!=null?DataHelper.getShortUuid(event.getUuid()):null);
+    }
+
+    @BindingAdapter("app:sampleTypeOfTest")
+    public static void setSampleTypeOfTest(LabelField labelField, String sampleUuid) {
+        Sample sample = DatabaseHelper.getSampleDao().queryUuid(sampleUuid);
+        SampleTest mostRecentTest = DatabaseHelper.getSampleTestDao().getMostRecentForSample(sample);
+        labelField.setValue(mostRecentTest!=null?mostRecentTest.getTestType().toString():"");
+    }
+
+    @BindingAdapter("app:sampleTestResult")
+    public static void setSampleTestResult(LabelField labelField, String sampleUuid) {
+        Sample sample = DatabaseHelper.getSampleDao().queryUuid(sampleUuid);
+        SampleTest mostRecentTest = DatabaseHelper.getSampleTestDao().getMostRecentForSample(sample);
+        labelField.setValue(mostRecentTest!=null?mostRecentTest.getTestResult().toString():"");
     }
 
 }

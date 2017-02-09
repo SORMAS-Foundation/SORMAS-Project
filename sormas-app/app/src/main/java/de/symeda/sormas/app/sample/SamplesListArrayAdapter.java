@@ -10,7 +10,9 @@ import android.widget.TextView;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.sample.Sample;
+import de.symeda.sormas.app.backend.sample.SampleTest;
 
 /**
  * Created by Mate Strysewske on 06.02.2017.
@@ -56,8 +58,17 @@ public class SamplesListArrayAdapter extends ArrayAdapter<Sample> {
         description.setText(sb.toString());
 
         TextView testResult = (TextView) convertView.findViewById(R.id.sample_test_result_li);
-        testResult.setText("");
-        // TODO get most recent test result
+        SampleTest mostRecentTest = DatabaseHelper.getSampleTestDao().getMostRecentForSample(sample);
+
+        if (sample.getNoTestPossible()) {
+            testResult.setText(getContext().getResources().getText(R.string.no_test_possible));
+        } else {
+            if (mostRecentTest != null) {
+                testResult.setText(mostRecentTest.getTestResult().toString());
+            } else {
+                testResult.setText(getContext().getResources().getText(R.string.no_recent_test));
+            }
+        }
 
         return convertView;
     }

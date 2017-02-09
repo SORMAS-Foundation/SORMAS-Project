@@ -75,6 +75,7 @@ public class Sample extends AbstractDomainObject {
     @DatabaseField(dataType = DataType.DATE_LONG)
     private Date receivedDate;
 
+    @Column
     private Boolean noTestPossible;
 
     @Column(length = 512)
