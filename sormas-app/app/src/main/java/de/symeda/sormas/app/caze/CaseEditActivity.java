@@ -26,6 +26,7 @@ import de.symeda.sormas.app.component.AbstractEditActivity;
 import de.symeda.sormas.app.component.HelpDialog;
 import de.symeda.sormas.app.contact.ContactNewActivity;
 import de.symeda.sormas.app.person.SyncPersonsTask;
+import de.symeda.sormas.app.sample.SampleEditActivity;
 import de.symeda.sormas.app.util.ValidationFailedException;
 
 public class CaseEditActivity extends AbstractEditActivity {
@@ -220,12 +221,23 @@ public class CaseEditActivity extends AbstractEditActivity {
 
             // Add button
             case R.id.action_add:
-
-                Bundle contactCreateBundle = new Bundle();
-                contactCreateBundle.putString(KEY_CASE_UUID, caseUuid);
-                Intent intentContactNew = new Intent(this, ContactNewActivity.class);
-                intentContactNew.putExtras(contactCreateBundle);
-                startActivity(intentContactNew);
+                switch(tab) {
+                    case CONTACTS:
+                        Bundle contactCreateBundle = new Bundle();
+                        contactCreateBundle.putString(KEY_CASE_UUID, caseUuid);
+                        Intent intentContactNew = new Intent(this, ContactNewActivity.class);
+                        intentContactNew.putExtras(contactCreateBundle);
+                        startActivity(intentContactNew);
+                        break;
+                    case SAMPLES:
+                        Bundle sampleCreateBundle = new Bundle();
+                        sampleCreateBundle.putString(KEY_CASE_UUID, caseUuid);
+                        sampleCreateBundle.putBoolean(SampleEditActivity.NEW_SAMPLE, true);
+                        Intent intentSampleNew = new Intent(this, SampleEditActivity.class);
+                        intentSampleNew.putExtras(sampleCreateBundle);
+                        startActivity(intentSampleNew);
+                        break;
+                }
 
                 return true;
 

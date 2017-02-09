@@ -20,6 +20,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.backend.sample.SampleDao;
+import de.symeda.sormas.app.caze.CaseEditActivity;
 import de.symeda.sormas.app.component.AbstractEditActivity;
 import de.symeda.sormas.app.component.HelpDialog;
 
@@ -29,10 +30,12 @@ import de.symeda.sormas.app.component.HelpDialog;
 
 public class SampleEditActivity extends AbstractEditActivity {
 
+    public static final String NEW_SAMPLE = "newSample";
     public static final String KEY_SAMPLE_UUID = "sampleUuid";
 
     private SampleEditPagerAdapter adapter;
     private String sampleUuid;
+    private String caseUuid;
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -62,6 +65,13 @@ public class SampleEditActivity extends AbstractEditActivity {
 
         Bundle params = getIntent().getExtras();
         if (params != null) {
+            if (params.containsKey(NEW_SAMPLE)) {
+                getSupportActionBar().setTitle(getResources().getText(R.string.headline_new_sample));
+                caseUuid = getIntent().getExtras().getString(CaseEditActivity.KEY_CASE_UUID);
+            } else {
+                getSupportActionBar().setTitle(getResources().getText(R.string.headline_sample));
+            }
+
             if (params.containsKey(KEY_SAMPLE_UUID)) {
                 sampleUuid = params.getString(KEY_SAMPLE_UUID);
             }
@@ -69,7 +79,12 @@ public class SampleEditActivity extends AbstractEditActivity {
                 currentTab = params.getInt(KEY_PAGE);
             }
         }
-        adapter = new SampleEditPagerAdapter(getSupportFragmentManager(), sampleUuid);
+
+        if (params != null && params.containsKey(NEW_SAMPLE)) {
+            adapter = new SampleEditPagerAdapter(getSupportFragmentManager(), sampleUuid, caseUuid);
+        } else {
+            adapter = new SampleEditPagerAdapter(getSupportFragmentManager(), sampleUuid);
+        }
         createTabViews(adapter);
 
         pager.setCurrentItem(currentTab);

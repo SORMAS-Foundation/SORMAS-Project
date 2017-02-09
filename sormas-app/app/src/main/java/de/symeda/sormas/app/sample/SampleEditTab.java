@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -16,6 +17,7 @@ import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.ShipmentStatus;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.sample.Sample;
@@ -44,63 +46,80 @@ public class SampleEditTab extends FormTab {
     public void onResume() {
         super.onResume();
 
-        final String sampleUuid = getArguments().getString(Sample.UUID);
-        final SampleDao sampleDao = DatabaseHelper.getSampleDao();
-        final Sample sample = sampleDao.queryUuid(sampleUuid);
-        binding.setSample(sample);
+        try {
+            final String sampleUuid = getArguments().getString(Sample.UUID);
+            final SampleDao sampleDao = DatabaseHelper.getSampleDao();
+            Sample sample = null;
 
-        ShipmentStatus shipmentStatus = sample.getShipmentStatus();
-        if(shipmentStatus == ShipmentStatus.NOT_SHIPPED) {
-            binding.sampleShipmentStatus.setChecked(false);
-            binding.sampleShipmentDate.setVisibility(View.INVISIBLE);
-        } else if(shipmentStatus == ShipmentStatus.SHIPPED) {
-            binding.sampleShipmentStatus.setChecked(true);
-        } else {
-            binding.sampleShipmentStatus.setChecked(true);
-            binding.sampleShipmentStatus.setEnabled(false);
-            binding.sampleShipmentDate.setEnabled(false);
-        }
+            if (sampleUuid == null) {
+                final String caseUuid = getArguments().getString(SampleEditPagerAdapter.CASE_UUID);
+                final Case associatedCase = DatabaseHelper.getCaseDao().queryUuid(caseUuid);
+                sample = DatabaseHelper.getSampleDao().getNewSample(associatedCase);
+            } else {
+                sample = sampleDao.queryUuid(sampleUuid);
+            }
 
-        binding.sampleShipmentDate.initialize(this);
+            binding.setSample(sample);
 
-        binding.sampleShipmentStatus.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    binding.sampleShipmentDate.setVisibility(View.VISIBLE);
-                } else {
-                    binding.sampleShipmentDate.setVisibility(View.INVISIBLE);
+            ShipmentStatus shipmentStatus = sample.getShipmentStatus();
+            if (shipmentStatus == ShipmentStatus.NOT_SHIPPED) {
+                binding.sampleShipmentStatus.setChecked(false);
+                binding.sampleShipmentDate.setVisibility(View.INVISIBLE);
+                binding.sampleShipmentDetails.setVisibility(View.GONE);
+            } else if (shipmentStatus == ShipmentStatus.SHIPPED) {
+                binding.sampleShipmentStatus.setChecked(true);
+            } else {
+                binding.sampleShipmentStatus.setChecked(true);
+                binding.sampleShipmentStatus.setEnabled(false);
+                binding.sampleShipmentDate.setEnabled(false);
+            }
+
+            binding.sampleShipmentDate.initialize(this);
+
+            binding.sampleShipmentStatus.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if (isChecked) {
+                        binding.sampleShipmentDate.setVisibility(View.VISIBLE);
+                        binding.sampleShipmentDetails.setVisibility(View.VISIBLE);
+                    } else {
+                        binding.sampleShipmentDate.setVisibility(View.INVISIBLE);
+                        binding.sampleShipmentDetails.setVisibility(View.GONE);
+                    }
                 }
-            }
-        });
+            });
 
-        if(binding.sampleMaterial.getValue() == SampleMaterial.OTHER) {
-            binding.sampleMaterialText.setVisibility(View.INVISIBLE);
-        }
-        binding.sampleMaterial.registerListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if(((Item)parent.getItemAtPosition(position)).getValue() == SampleMaterial.OTHER) {
-                    binding.sampleMaterialText.setVisibility(View.VISIBLE);
-                } else {
-                    binding.sampleMaterialText.setVisibility(View.INVISIBLE);
-                    binding.sampleMaterialText.setValue(null);
+            if (binding.sampleMaterial.getValue() == SampleMaterial.OTHER) {
+                binding.sampleMaterialText.setVisibility(View.INVISIBLE);
+            }
+            binding.sampleMaterial.registerListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    if (((Item) parent.getItemAtPosition(position)).getValue() == SampleMaterial.OTHER) {
+                        binding.sampleMaterialText.setVisibility(View.VISIBLE);
+                    } else {
+                        binding.sampleMaterialText.setVisibility(View.INVISIBLE);
+                        binding.sampleMaterialText.setValue(null);
+                    }
                 }
-            }
 
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
 
-            }
-        });
+                }
+            });
 
-        binding.sampleDateTime.initialize(this);
-        FieldHelper.initSpinnerField(binding.sampleMaterial, SampleMaterial.class);
+            binding.sampleDateTime.initialize(this);
+            FieldHelper.initSpinnerField(binding.sampleMaterial, SampleMaterial.class);
 
-        final List laboratories = DataUtils.toItems(DatabaseHelper.getFacilityDao().getByType(FacilityType.LABORATORY));
-        FieldHelper.initSpinnerField(binding.sampleLab, laboratories);
-        binding.sampleReceivedDate.initialize(this);
-        binding.sampleReceivedDate.setEnabled(false);
+            final List laboratories = DataUtils.toItems(DatabaseHelper.getFacilityDao().getByType(FacilityType.LABORATORY));
+            FieldHelper.initSpinnerField(binding.sampleLab, laboratories);
+            binding.sampleReceivedDate.initialize(this);
+            binding.sampleReceivedDate.setEnabled(false);
+        } catch (Exception e) {
+            Toast.makeText(getContext(), "Error while creating the sample. " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+        }
 
     }
 

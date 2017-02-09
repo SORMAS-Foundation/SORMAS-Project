@@ -5,6 +5,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
+import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.util.FormTab;
@@ -15,6 +16,8 @@ import de.symeda.sormas.app.util.FormTab;
 
 public class SampleEditPagerAdapter extends FragmentStatePagerAdapter {
 
+    public static final String CASE_UUID = "caseUuid";
+
     private SampleEditTab sampleEditTab;
     private Bundle sampleEditBundle;
 
@@ -22,6 +25,13 @@ public class SampleEditPagerAdapter extends FragmentStatePagerAdapter {
         super(fm);
         sampleEditBundle = new Bundle();
         sampleEditBundle.putString(Sample.UUID, sampleUuid);
+    }
+
+    public SampleEditPagerAdapter(FragmentManager fm, String sampleUuid, String caseUuid) {
+        super(fm);
+        sampleEditBundle = new Bundle();
+        sampleEditBundle.putString(Sample.UUID, sampleUuid);
+        sampleEditBundle.putString(CASE_UUID, caseUuid);
     }
 
     @Override

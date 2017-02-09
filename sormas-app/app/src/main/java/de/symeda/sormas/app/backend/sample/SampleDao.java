@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
+import de.symeda.sormas.api.sample.ShipmentStatus;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
@@ -26,6 +27,16 @@ public class SampleDao extends AbstractAdoDao<Sample> {
 
     public SampleDao(Dao<Sample, Long> innerDao) throws SQLException {
         super(innerDao);
+    }
+
+    public Sample getNewSample(Case associatedCase) throws IllegalAccessException, InstantiationException {
+        Sample sample = DataUtils.createNew(Sample.class);
+        sample.setAssociatedCase(associatedCase);
+        sample.setReportDateTime(new Date());
+        sample.setReportingUser(ConfigProvider.getUser());
+        sample.setShipmentStatus(ShipmentStatus.NOT_SHIPPED);
+
+        return sample;
     }
 
     public List<Sample> queryForCase(Case caze) {

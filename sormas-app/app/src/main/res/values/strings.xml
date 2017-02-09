@@ -27,6 +27,7 @@
     <string name="action_new_case">New case</string>
     <string name="action_help">Help</string>
     <string name="action_new_contact">New contact</string>
+    <string name="action_new_sample">New sample</string>
 
     <!-- field -->
     <string name="field_yes_no_yes">Yes</string>
@@ -63,6 +64,7 @@
     <string name="headline_help">Help</string>
     <string name="headline_sample">Sample</string>
     <string name="headline_sample_data">Sample data</string>
+    <string name="headline_new_sample">Create new sample</string>
 
     <!-- forms -->
     <string name="form_p_first_name">First name</string>
