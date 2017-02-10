@@ -48,27 +48,7 @@
 			<scope>provided</scope>
 		</dependency>
 
-		<dependency>
-			<groupId>com.vaadin</groupId>
-			<artifactId>vaadin-shared</artifactId>
-		</dependency>
 
-		<dependency>
-			<groupId>com.vaadin</groupId>
-			<artifactId>vaadin-server</artifactId>
-			<exclusions>
-				<exclusion>
-					<!-- weil org.w3c.css.sac kein OSGi-Bundle ist -->
-					<artifactId>sac</artifactId>
-					<groupId>org.w3c.css</groupId>
-				</exclusion>
-				<exclusion>
-					<!-- Brauchen wir nicht und hat eine Dependency auf yui-compiler, das kein OSGi-Bundle ist -->
-					<groupId>com.vaadin</groupId>
-					<artifactId>vaadin-sass-compiler</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
 
 		<dependency>
 			<groupId>com.vaadin</groupId>

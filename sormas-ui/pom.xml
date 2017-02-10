@@ -24,16 +24,6 @@
 			<groupId>javax</groupId>
 			<artifactId>javaee-web-api</artifactId>
 		</dependency>        
-        <dependency>
-            <groupId>com.vaadin</groupId>
-            <artifactId>vaadin-server</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.vaadin</groupId>
-            <artifactId>vaadin-themes</artifactId>
-            <scope>provided</scope>
-        </dependency>
 
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -41,11 +31,22 @@
             <version>${project.version}</version>
         </dependency>
 
-        <!-- Custom components -->
 		<dependency>
-		   <groupId>com.vaadin.tapio</groupId>
-		   <artifactId>googlemaps</artifactId>
-		</dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-server</artifactId>
+        </dependency>
+
+		<dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-themes</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>sormas-widgetset</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <!-- Bean validation implementation -->
         <dependency>

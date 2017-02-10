@@ -71,12 +71,12 @@ public class SormasUI extends UI {
     @VaadinServletConfiguration(ui = SormasUI.class, productionMode = false)
     public static class SormasUIServlet extends VaadinServlet {
 
-    	private static final String VAADIN_RESOURCES = "/sormas-widgetset";
+    	//private static final String VAADIN_RESOURCES = "/sormas-widgetset";
 
     	@Override
     	protected DeploymentConfiguration createDeploymentConfiguration(Properties initParameters) {
 
-    		initParameters.setProperty(Constants.PARAMETER_VAADIN_RESOURCES, VAADIN_RESOURCES);
+    		//initParameters.setProperty(Constants.PARAMETER_VAADIN_RESOURCES, VAADIN_RESOURCES);
     		
     		return super.createDeploymentConfiguration(initParameters);
     	}

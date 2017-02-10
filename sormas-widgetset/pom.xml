@@ -10,11 +10,10 @@
 
     <artifactId>sormas-widgetset</artifactId>
     <name>sormas-widgetset</name>
-    <packaging>war</packaging>
 
     <dependencies>
         <!-- Versions for these are configured in the parent POM -->
-        <dependency>
+        <!-- <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
             <scope>provided</scope>
@@ -22,7 +21,7 @@
         <dependency>
 			<groupId>javax</groupId>
 			<artifactId>javaee-web-api</artifactId>
-		</dependency>  
+		</dependency> -->
 		<dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-client</artifactId>
@@ -75,14 +74,14 @@
                     </execution>
                 </executions>
             </plugin>
-			<plugin>
+			<!-- <plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
 				<configuration>
 					<warSourceExcludes>VAADIN/gwt-unitCache/**,VAADIN/widgetsets/WEB-INF/**</warSourceExcludes>
 				</configuration>
-			</plugin>            
-            <!-- <plugin>
+			</plugin> -->            
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <configuration>
@@ -98,7 +97,6 @@
                     </excludes>
                 </configuration>
             </plugin>
-             -->
         </plugins>
     </build>
 
