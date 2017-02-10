@@ -14,7 +14,6 @@ import javax.persistence.Enumerated;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.TemperatureSource;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
-import de.symeda.sormas.app.component.SymptomStateField;
 
 @Entity(name= Symptoms.TABLE_NAME)
 @DatabaseTable(tableName = Symptoms.TABLE_NAME)
@@ -107,7 +106,7 @@ public class Symptoms extends AbstractDomainObject {
 	@Enumerated(EnumType.STRING)
 	private SymptomState otitisMedia;
 	@Enumerated(EnumType.STRING)
-	private SymptomState hearingLoss;
+	private SymptomState hearingloss;
 	@Enumerated(EnumType.STRING)
 	private SymptomState dehydration;
 	@Enumerated(EnumType.STRING)
@@ -474,11 +473,11 @@ public class Symptoms extends AbstractDomainObject {
 	}
 
 	public SymptomState getHearingloss() {
-		return hearingLoss;
+		return hearingloss;
 	}
 
-	public void setHearingloss(SymptomState hearingLoss) {
-		this.hearingLoss = hearingLoss;
+	public void setHearingloss(SymptomState hearingloss) {
+		this.hearingloss = hearingloss;
 	}
 
 	public SymptomState getShock() {
