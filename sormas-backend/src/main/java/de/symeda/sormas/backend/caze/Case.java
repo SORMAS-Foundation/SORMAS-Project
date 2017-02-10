@@ -18,6 +18,7 @@ import javax.persistence.TemporalType;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.location.Location;
@@ -271,7 +272,7 @@ public class Case extends AbstractDomainObject {
 	
 	@Override
 	public String toString() {
-		return getPerson().toString();
+		return getPerson().toString() + " (" + DataHelper.getShortUuid(getUuid()) + ")";
 	}
 	
 	@OneToMany(cascade = {}, mappedBy = Task.CAZE)
