@@ -42,11 +42,10 @@
         </dependency>
 
         <!-- Custom components -->
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>sormas-widgetset</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+		<dependency>
+		   <groupId>com.vaadin.tapio</groupId>
+		   <artifactId>googlemaps</artifactId>
+		</dependency>
 
         <!-- Bean validation implementation -->
         <dependency>

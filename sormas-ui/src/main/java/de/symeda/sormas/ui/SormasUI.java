@@ -8,6 +8,7 @@ import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.annotations.Viewport;
 import com.vaadin.annotations.Widgetset;
+import com.vaadin.server.Constants;
 import com.vaadin.server.DeploymentConfiguration;
 import com.vaadin.server.Responsive;
 import com.vaadin.server.VaadinRequest;
@@ -70,12 +71,12 @@ public class SormasUI extends UI {
     @VaadinServletConfiguration(ui = SormasUI.class, productionMode = false)
     public static class SormasUIServlet extends VaadinServlet {
 
-    	//private static final String VAADIN_RESOURCES = "/sormas-widgetset";
+    	private static final String VAADIN_RESOURCES = "/sormas-widgetset";
 
     	@Override
     	protected DeploymentConfiguration createDeploymentConfiguration(Properties initParameters) {
 
-    		//initParameters.setProperty(Constants.PARAMETER_VAADIN_RESOURCES, VAADIN_RESOURCES);
+    		initParameters.setProperty(Constants.PARAMETER_VAADIN_RESOURCES, VAADIN_RESOURCES);
     		
     		return super.createDeploymentConfiguration(initParameters);
     	}

@@ -6,7 +6,5 @@
     
     <stylesheet src="resetbuttonfortextfield/styles.css"/>
 
-    
-
-    
+    <inherits name="com.vaadin.tapio.googlemaps.Widgetset" />
 </module>
