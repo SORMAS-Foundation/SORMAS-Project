@@ -184,6 +184,7 @@
     <string name="sample_shipped">Shipped</string>
     <string name="no_test_possible">No test possible</string>
     <string name="no_recent_test">No recent test</string>
+    <string name="headline_eventParticipant">Event person</string>
 
 
 </resources>

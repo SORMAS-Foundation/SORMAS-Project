@@ -19,6 +19,8 @@ import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.contact.ContactDao;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventDao;
+import de.symeda.sormas.app.backend.event.EventParticipant;
+import de.symeda.sormas.app.backend.event.EventParticipantDao;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.facility.FacilityDao;
 import de.symeda.sormas.app.backend.location.Location;
@@ -82,6 +84,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	private EventDao eventDao;
 	private SampleDao sampleDao;
 	private SampleTestDao sampleTestDao;
+	private EventParticipantDao eventParticipantDao;
 
 	private DatabaseHelper(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);//, R.raw.ormlite_config);
@@ -103,6 +106,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.clearTable(connectionSource, Event.class);
 			TableUtils.clearTable(connectionSource, Sample.class);
 			TableUtils.clearTable(connectionSource, SampleTest.class);
+			TableUtils.clearTable(connectionSource, EventParticipant.class);
 
 			if (clearInfrastructure) {
 				TableUtils.clearTable(connectionSource, Region.class);
@@ -143,6 +147,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.createTable(connectionSource, Event.class);
 			TableUtils.createTable(connectionSource, Sample.class);
 			TableUtils.createTable(connectionSource, SampleTest.class);
+			TableUtils.createTable(connectionSource, EventParticipant.class);
 		} catch (SQLException e) {
 			Log.e(DatabaseHelper.class.getName(), "Can't create database", e);
 			throw new RuntimeException(e);
@@ -172,6 +177,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.dropTable(connectionSource, Event.class, true);
 			TableUtils.dropTable(connectionSource, Sample.class, true);
 			TableUtils.dropTable(connectionSource, SampleTest.class, true);
+			TableUtils.dropTable(connectionSource, EventParticipant.class, true);
 			if (oldVersion < 30) {
 				TableUtils.dropTable(connectionSource, Config.class, true);
 			}
@@ -422,6 +428,21 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		}
 		return instance.sampleDao;
 	}
+	public static EventParticipantDao getEventParticipantDao() {
+		if (instance.eventParticipantDao == null) {
+			synchronized (DatabaseHelper.class) {
+				if (instance.eventParticipantDao == null) {
+					try {
+						instance.eventParticipantDao = new EventParticipantDao((Dao<EventParticipant, Long>) instance.getDao(EventParticipant.class));
+					} catch (SQLException e) {
+						Log.e(DatabaseHelper.class.getName(), "Can't create EventParticipantDao", e);
+						throw new RuntimeException(e);
+					}
+				}
+			}
+		}
+		return instance.eventParticipantDao;
+	}
 
 	public static SampleTestDao getSampleTestDao() {
 		if (instance.sampleTestDao == null) {
@@ -459,5 +480,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		eventDao = null;
 		sampleDao = null;
 		sampleTestDao = null;
+		eventParticipantDao = null;
 	}
 }

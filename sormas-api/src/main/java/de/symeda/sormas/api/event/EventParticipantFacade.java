@@ -5,13 +5,18 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
+import de.symeda.sormas.api.visit.VisitDto;
+
 @Remote
 public interface EventParticipantFacade {
 	
-	List<EventParticipantDto> getAllEventParticipantsByEventAfter(Date date, EventReferenceDto eventRef, String userUuid);
+	List<EventParticipantDto> getAllEventParticipantsByEventAfter(Date date, String eventUuid, String userUuid);
+
+	List<EventParticipantDto> getAllEventParticipantsAfter(Date date, String userUuid);
 
 	EventParticipantDto getEventParticipantByUuid(String uuid);
 	
 	EventParticipantDto saveEventParticipant(EventParticipantDto dto);
+
 	
 }

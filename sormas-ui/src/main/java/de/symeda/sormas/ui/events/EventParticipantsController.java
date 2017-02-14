@@ -81,7 +81,7 @@ public class EventParticipantsController {
 	
 	public List<EventParticipantDto> getEventParticipantIndexListByEvent(EventReferenceDto eventRef) {
 		UserDto user = LoginHelper.getCurrentUser();
-		return FacadeProvider.getEventParticipantFacade().getAllEventParticipantsByEventAfter(null, eventRef, user.getUuid());
+		return FacadeProvider.getEventParticipantFacade().getAllEventParticipantsByEventAfter(null, eventRef.getUuid(), user.getUuid());
 	}
 	
 	private void refreshView() {

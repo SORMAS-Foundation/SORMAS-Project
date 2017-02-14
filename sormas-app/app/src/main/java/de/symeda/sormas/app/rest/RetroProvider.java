@@ -30,6 +30,7 @@ public final class RetroProvider {
     private EventFacadeRetro eventFacadeRetro;
     private SampleFacadeRetro sampleFacadeRetro;
     private SampleTestFacadeRetro sampleTestFacadeRetro;
+    private EventParticipantFacadeRetro eventParticipantFacadeRetro;
 
     private RetroProvider() {
 
@@ -198,5 +199,16 @@ public final class RetroProvider {
             }
         }
         return instance.sampleTestFacadeRetro;
+    }
+
+    public static EventParticipantFacadeRetro getEventParticipantFacade() {
+        if (instance.eventParticipantFacadeRetro == null) {
+            synchronized ((RetroProvider.class)) {
+                if (instance.eventParticipantFacadeRetro == null) {
+                    instance.eventParticipantFacadeRetro = instance.retrofit.create(EventParticipantFacadeRetro.class);
+                }
+            }
+        }
+        return instance.eventParticipantFacadeRetro;
     }
 }

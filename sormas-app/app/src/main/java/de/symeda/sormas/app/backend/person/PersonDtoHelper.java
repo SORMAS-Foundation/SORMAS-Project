@@ -2,18 +2,13 @@ package de.symeda.sormas.app.backend.person;
 
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
-import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.facility.FacilityDtoHelper;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.location.LocationDtoHelper;
-import de.symeda.sormas.app.backend.user.User;
 
-/**
- * Created by Martin Wahnschaffe on 27.07.2016.
- */
 public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
 
     private LocationDtoHelper locationHelper = new LocationDtoHelper();
@@ -54,7 +49,6 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
             ado.setOccupationFacility(null);
         }
 
-        // TODO
     }
 
     @Override
@@ -89,7 +83,6 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
             dto.setOccupationFacility(null);
         }
 
-        // TODO
     }
 
     public static PersonReferenceDto toReferenceDto(Person ado) {

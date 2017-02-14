@@ -8,6 +8,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.person.PersonEditTab;
+import de.symeda.sormas.app.visit.VisitsListFragment;
 
 /**
  * Created by Stefan Szczesny on 02.11.2016.
@@ -40,16 +41,11 @@ public class EventEditPagerAdapter extends FragmentStatePagerAdapter {
                 frag = eventEditDataTab;
                 break;
 
-//            case EVENT_PERSONS:
-//                personEditTab = new PersonEditTab();
-//
-//                Bundle personEditBundle = new Bundle();
-//                Contact contact = DatabaseHelper.getContactDao().queryUuid(eventEditBundle.getString(Contact.UUID));
-//                personEditBundle.putString(Person.UUID, contact.getPerson().getUuid());
-//
-//                personEditTab.setArguments(personEditBundle);
-//                frag = personEditTab;
-//                break;
+            case EVENT_PERSONS:
+                EventParticipantsListFragment eventParticipantsListTab = new EventParticipantsListFragment();
+                eventParticipantsListTab.setArguments(eventEditBundle);
+                frag = eventParticipantsListTab;
+                break;
         }
         return frag;
     }

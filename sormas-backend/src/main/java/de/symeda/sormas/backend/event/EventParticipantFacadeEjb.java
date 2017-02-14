@@ -13,7 +13,6 @@ import javax.validation.constraints.NotNull;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantFacade;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
-import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.user.User;
@@ -33,9 +32,9 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 	private UserService userService;
 	
 	@Override
-	public List<EventParticipantDto> getAllEventParticipantsByEventAfter(Date date, EventReferenceDto eventRef, String userUuid) {
+	public List<EventParticipantDto> getAllEventParticipantsByEventAfter(Date date, String eventUuid, String userUuid) {
 		User user = userService.getByUuid(userUuid);
-		Event event = eventService.getByUuid(eventRef.getUuid());
+		Event event = eventService.getByUuid(eventUuid);
 		
 		if(user == null) {
 			return Collections.emptyList();
@@ -49,6 +48,21 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 				.map(e -> toEventParticipantDto(e))
 				.collect(Collectors.toList());
 	}
+	
+	@Override
+	public List<EventParticipantDto> getAllEventParticipantsAfter(Date date, String userUuid) {
+		
+		User user = userService.getByUuid(userUuid);
+		
+		if (user == null) {
+			return Collections.emptyList();
+		}
+		
+		return eventParticipantService.getAllAfter(date, user).stream()
+			.map(c -> toEventParticipantDto(c))
+			.collect(Collectors.toList());
+	}
+	
 	
 	@Override
 	public EventParticipantDto getEventParticipantByUuid(String uuid) {

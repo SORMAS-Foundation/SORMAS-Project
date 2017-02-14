@@ -100,9 +100,9 @@ public class EventEditActivity extends AbstractEditActivity {
                 break;
 
             // person tab
-//            case EVENT_PERSONS:
-//                updateActionBarGroups(menu, true, false, true);
-//                break;
+            case EVENT_PERSONS:
+                updateActionBarGroups(menu, false, false, false);
+                break;
         }
 
         return true;
