@@ -3,10 +3,11 @@ package de.symeda.sormas.ui.utils;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.NativeButton;
+import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DoneListener;
 
@@ -20,8 +21,8 @@ public abstract class ConfirmationComponent extends HorizontalLayout {
 	
 	private List<DoneListener> doneListeners = new ArrayList<DoneListener>();
 
-	private NativeButton confirmButton;
-	private NativeButton cancelButton;
+	private Button confirmButton;
+	private Button cancelButton;
 	
 	public ConfirmationComponent() {
 		this(false);
@@ -32,21 +33,21 @@ public abstract class ConfirmationComponent extends HorizontalLayout {
 		setSpacing(true);
 		setSizeUndefined();
 		
-		NativeButton discardButton = getCancelButton();
+		Button discardButton = getCancelButton();
 		if (!inverseOrder)
 			addComponent(discardButton);
 		
-		NativeButton commitButton = getConfirmButton();
+		Button commitButton = getConfirmButton();
 		addComponent(commitButton);
 
 		if (inverseOrder)
 			addComponent(discardButton);
 	}
 	
-	public NativeButton getConfirmButton() {
+	public Button getConfirmButton() {
 		if (confirmButton == null) {
-			confirmButton = new NativeButton("Übernehmen");
-			//CssStyles.addStyles(confirmButton, CssStyles.BUTTON, CssStyles.BUTTON_PRIMARY);
+			confirmButton = new Button("Übernehmen");
+			cancelButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 
 			confirmButton.addClickListener(new ClickListener() {
 				public void buttonClick(ClickEvent event) {
@@ -58,9 +59,10 @@ public abstract class ConfirmationComponent extends HorizontalLayout {
 		return confirmButton;
 	}
 	
-	public NativeButton getCancelButton() {
+	public Button getCancelButton() {
 		if (cancelButton == null) {
-			cancelButton = new NativeButton("Abbrechen");
+			cancelButton = new Button("Abbrechen");
+			cancelButton.addStyleName(ValoTheme.BUTTON_LINK);
 
 			cancelButton.addClickListener(new ClickListener() {
 				@Override

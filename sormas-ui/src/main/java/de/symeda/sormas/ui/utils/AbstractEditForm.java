@@ -19,6 +19,7 @@ import com.vaadin.ui.OptionGroup;
 import de.symeda.sormas.api.DataTransferObject;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.symptoms.SymptomState;
+import de.symeda.sormas.ui.fields.PreviousHospitalizationsField;
 import de.symeda.sormas.ui.location.LocationForm;
 
 @SuppressWarnings("serial")
@@ -80,6 +81,9 @@ public abstract class AbstractEditForm <DTO extends DataTransferObject> extends 
 				} 
 				else if (DateTimeField.class.isAssignableFrom(fieldType)) {
 					return (T) new DateTimeField();
+				} 
+				else if (PreviousHospitalizationsField.class.isAssignableFrom(fieldType)) {
+					return (T) new PreviousHospitalizationsField();
 				} 
 				
 				return super.createField(type, fieldType);

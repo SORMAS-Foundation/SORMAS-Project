@@ -13138,6 +13138,10 @@ div.v-layout.v-horizontal.v-widget {
 	display: block;
 }
 
+.sormastheme .v-caption.v-caption-caption-hidden {
+	display: none;
+}
+
 .sormastheme .force-caption {
 	margin-top: 1.5em;
 }

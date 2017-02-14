@@ -14,6 +14,7 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.ui.fields.PreviousHospitalizationsField;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -42,7 +43,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
     		LayoutUtil.h3(CssStyles.VSPACE3, "Responsible users")+
     		LayoutUtil.divCss(CssStyles.VSPACE2, 
     				LayoutUtil.fluidRowLocs(CaseDataDto.SURVEILLANCE_OFFICER, CaseDataDto.CONTACT_OFFICER, "")
-			);
+			)+
+    		LayoutUtil.fluidRowLocs(CaseDataDto.PREVIOUS_HOSPITALIZATIONS);
+    	
 
     private final VerticalLayout statusChangeLayout;
 
@@ -62,6 +65,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
     	addField(CaseDataDto.REPORTING_USER, ComboBox.class);
     	addField(CaseDataDto.REPORT_DATE, DateField.class);
     	addField(CaseDataDto.DISEASE, NativeSelect.class);
+    	
+    	addField(CaseDataDto.PREVIOUS_HOSPITALIZATIONS, PreviousHospitalizationsField.class);
+
     	
     	ComboBox region = addField(CaseDataDto.REGION, ComboBox.class);
     	ComboBox district = addField(CaseDataDto.DISTRICT, ComboBox.class);

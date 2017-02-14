@@ -185,6 +185,9 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
   .v-caption {
 	display: block;
   }
+  .v-caption.v-caption-caption-hidden {
+    display: none;
+  }
   
   .force-caption {
 	margin-top: 1.5em;
