@@ -68,9 +68,7 @@ public class EventParticipantsListFragment extends ListFragment {
                     View viewClicked,
                     int position, long id) {
                 EventParticipant eventParticipant = (EventParticipant) getListAdapter().getItem(position);
-                // disabled for sprint 13 release
-                //showEventParticipantEditView(eventParticipant);
-                Toast.makeText(getContext(), "This feature is currently disabled.", Toast.LENGTH_SHORT).show();
+                showEventParticipantEditView(eventParticipant);
             }
         });
     }

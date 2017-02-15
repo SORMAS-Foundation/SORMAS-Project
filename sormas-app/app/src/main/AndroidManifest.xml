@@ -77,7 +77,16 @@
                 android:value=".event.EventsActivity" />
         </activity>
         <activity android:name=".event.EventParticipantEditActivity"
-            android:parentActivityName=".event.EventParticipantEditActivity">
+            android:parentActivityName=".event.EventsActivity">
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".event.EventsActivity" />
+        </activity>
+        <activity android:name=".event.EventParticipantNewActivity"
+            android:noHistory="true"
+            android:parentActivityName=".event.EventsActivity">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data

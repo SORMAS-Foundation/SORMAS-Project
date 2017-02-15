@@ -7,7 +7,9 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.Toast;
 
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.event.EventParticipant;
@@ -17,7 +19,7 @@ import de.symeda.sormas.app.person.PersonEditTab;
 
 public class EventParticipantEditActivity extends AppCompatActivity {
 
-    private EventParticipantPersonTab eventParticipantTab;
+    private EventParticipantDataTab eventParticipantTab;
     private PersonEditTab personEditTab;
 
     private String eventParticipantUuid;
@@ -48,7 +50,7 @@ public class EventParticipantEditActivity extends AppCompatActivity {
             }
         }
 
-        eventParticipantTab = new EventParticipantPersonTab();
+        eventParticipantTab = new EventParticipantDataTab();
         eventParticipantTab.setArguments(params);
         ft.add(R.id.eventParticipant_fragment, eventParticipantTab);
 
@@ -112,40 +114,19 @@ public class EventParticipantEditActivity extends AppCompatActivity {
                 EventParticipant eventParticipant = (EventParticipant) eventParticipantTab.getData();
                 Person person = (Person) personEditTab.getData();
 
-                eventParticipant.setPerson(person);
+                if(person!=null) {
+                    DatabaseHelper.getPersonDao().save(person);
+                }
 
-//                Visit visit = (Visit) adapter.getData(VisitEditTabs.VISIT_DATA.ordinal());
-//                Symptoms symptoms = (Symptoms)adapter.getData(VisitEditTabs.SYMPTOMS.ordinal());
-//
-//                SymptomsEditTab symptomsEditTab = (SymptomsEditTab) adapter.getTabByPosition(VisitEditTabs.SYMPTOMS.ordinal());
-//
-//                // method returns a String, null means that there is no error message and thus
-//                // the data is valid
-//                try {
-//                    symptomsEditTab.validateVisitData(symptoms, visit.getVisitStatus() == VisitStatus.COOPERATIVE);
-//
-//                    if (symptoms != null) {
-//                        visit.setSymptoms(symptoms);
-//                        DatabaseHelper.getSymptomsDao().save(symptoms);
-//                    }
-//
-//                    visit.setVisitUser(ConfigProvider.getUser());
-//
-//                    DatabaseHelper.getVisitDao().save(visit);
-//                    Toast.makeText(this, "visit " + DataHelper.getShortUuid(visit.getUuid()) + " saved", Toast.LENGTH_SHORT).show();
-//
-//                    finish();
-//
-//                    return true;
-//                } catch(ValidationFailedException e) {
-//                    Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
-//
-//                    // if any symptomsfield is required, change pager to symptoms tab
-//                    if(currentTab!=VisitEditTabs.SYMPTOMS.ordinal()) {
-//                        pager.setCurrentItem(VisitEditTabs.SYMPTOMS.ordinal());
-//                    }
-//                    return true;
-//                }
+                if (eventParticipant != null) {
+                    eventParticipant.setPerson(person);
+                    DatabaseHelper.getEventParticipantDao().save(eventParticipant);
+                }
+
+                Toast.makeText(this, "event person " + DataHelper.getShortUuid(eventParticipant.getUuid()) + " saved", Toast.LENGTH_SHORT).show();
+
+                finish();
+
                 return true;
 
         }

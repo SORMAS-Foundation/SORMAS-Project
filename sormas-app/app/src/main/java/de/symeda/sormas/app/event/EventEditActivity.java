@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.event;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -13,6 +14,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.component.AbstractEditActivity;
+import de.symeda.sormas.app.contact.ContactNewActivity;
 
 
 public class EventEditActivity extends AbstractEditActivity {
@@ -101,7 +103,7 @@ public class EventEditActivity extends AbstractEditActivity {
 
             // person tab
             case EVENT_PERSONS:
-                updateActionBarGroups(menu, false, false, false);
+                updateActionBarGroups(menu, false, true, false);
                 break;
         }
 
@@ -211,6 +213,20 @@ public class EventEditActivity extends AbstractEditActivity {
 
 //                onResume();
 //                pager.setCurrentItem(currentTab);
+
+                return true;
+
+            // Add button
+            case R.id.action_add:
+                switch(tab) {
+                    case EVENT_PERSONS:
+                        Bundle eventParticipantCreateBundle = new Bundle();
+                        eventParticipantCreateBundle.putString(KEY_EVENT_UUID,eventUuid);
+                        Intent intentEventParticipantCreateBundleNew = new Intent(this, EventParticipantNewActivity.class);
+                        intentEventParticipantCreateBundleNew.putExtras(eventParticipantCreateBundle);
+                        startActivity(intentEventParticipantCreateBundleNew);
+                        break;
+                }
 
                 return true;
 

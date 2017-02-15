@@ -1,5 +1,7 @@
 package de.symeda.sormas.app.backend.event;
 
+import android.provider.ContactsContract;
+
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.RuntimeExceptionDao;
 import com.j256.ormlite.logger.Log;
@@ -14,7 +16,9 @@ import java.util.List;
 
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.contact.Contact;
+import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.visit.Visit;
+import de.symeda.sormas.app.util.DataUtils;
 
 public class EventParticipantDao extends AbstractAdoDao<EventParticipant> {
 
@@ -45,22 +49,14 @@ public class EventParticipantDao extends AbstractAdoDao<EventParticipant> {
         }
     }
 
-    public Event getNewEventParticipant() throws IllegalAccessException, InstantiationException {
+    public EventParticipant getNewEventParticipant() throws IllegalAccessException, InstantiationException {
 
-//        Event event = DataUtils.createNew(Event.class);
-//        event.setReportDateTime(new Date());
-//        event.setReportingUser(ConfigProvider.getUser());
-//
-//        Location location = DataUtils.createNew(Location.class);
-//        location.setRegion(ConfigProvider.getUser().getRegion());
-//        event.setEventLocation(location);
-//
-//        event.setEventStatus(EventStatus.POSSIBLE);
+        EventParticipant eventParticipant = DataUtils.createNew(EventParticipant.class);
 
-//        return event;
+        //Person person = DataUtils.createNew(Person.class);
+        //eventParticipant.setPerson(person);
 
-
-        return null;
+        return eventParticipant;
     }
 
 

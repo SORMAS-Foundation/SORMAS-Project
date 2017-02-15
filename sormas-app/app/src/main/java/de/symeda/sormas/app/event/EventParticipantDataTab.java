@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
@@ -16,7 +17,7 @@ import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.databinding.EventParticipantFragmentLayoutBinding;
 import de.symeda.sormas.app.util.FormTab;
 
-public class EventParticipantPersonTab extends FormTab {
+public class EventParticipantDataTab extends FormTab {
 
     private EventParticipantFragmentLayoutBinding binding;
 
@@ -30,10 +31,16 @@ public class EventParticipantPersonTab extends FormTab {
     public void onResume() {
         super.onResume();
 
-        final String personUuid = getArguments().getString(Person.UUID);
-        EventParticipantDao personDao = DatabaseHelper.getEventParticipantDao();
-        EventParticipant eventParticipant = personDao.queryUuid(personUuid);
-        binding.setEventParticipant(eventParticipant);
+
+        try {
+            final String personUuid = getArguments().getString(Person.UUID);
+            EventParticipantDao eventParticipantDao = DatabaseHelper.getEventParticipantDao();
+            EventParticipant eventParticipant = eventParticipantDao.queryUuid(personUuid);
+            binding.setEventParticipant(eventParticipant!=null?eventParticipant:eventParticipantDao.getNewEventParticipant());
+        } catch (Exception e) {
+            Toast.makeText(getContext(), "Error while creating empty event person.", Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+        }
     }
 
     @Override
