@@ -10,6 +10,8 @@ import android.widget.TextView;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 
@@ -39,8 +41,9 @@ public class EventParticipantsListArrayAdapter extends ArrayAdapter<EventPartici
         TextView uuid = (TextView) convertView.findViewById(R.id.eventParticipant_uuid_li);
         uuid.setText(DataHelper.getShortUuid(eventParticipant.getUuid()));
 
-        TextView caseId = (TextView) convertView.findViewById(R.id.eventParticipant_case_li);
-        caseId.setText("TODO: case");
+        TextView caseStatus = (TextView) convertView.findViewById(R.id.eventParticipant_case_li);
+        Case caze = DatabaseHelper.getCaseDao().getByPersonAndDisease(eventParticipant.getPerson(), eventParticipant.getEvent().getDisease());
+        caseStatus.setText(caze!=null?caze.getInvestigationStatus().toString():"");
 
         TextView summary = (TextView) convertView.findViewById(R.id.eventParticipant_person_li);
         summary.setText(eventParticipant.getPerson()!=null?eventParticipant.getPerson().toString()+ " ":"");
@@ -54,4 +57,5 @@ public class EventParticipantsListArrayAdapter extends ArrayAdapter<EventPartici
 
         return convertView;
     }
+
 }

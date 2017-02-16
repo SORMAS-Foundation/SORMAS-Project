@@ -114,6 +114,8 @@ public class CaseService extends AbstractAdoService<Case> {
 		return filter;
 	}
 	
+	 
+	// TODO #69 create some date filter for finding the right case (this is implemented in CaseDao.java too)
 	public Case getByPersonAndDisease(Disease disease, Person person, User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Case> cq = cb.createQuery(getElementClass());

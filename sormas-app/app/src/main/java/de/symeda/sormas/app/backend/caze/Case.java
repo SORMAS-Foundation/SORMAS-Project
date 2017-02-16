@@ -32,6 +32,7 @@ public class Case extends AbstractDomainObject {
 
 	public static final String INVESTIGATION_STATUS = "investigationStatus";
 	public static final String DISEASE = "disease";
+	public static final String PERSON = "person";
 
 	public static final String TABLE_NAME = "cases";
 
