@@ -51,7 +51,9 @@ public class EventParticipantsListArrayAdapter extends ArrayAdapter<EventPartici
         TextView description = (TextView) convertView.findViewById(R.id.eventParticipant_info_li);
         StringBuilder sb = new StringBuilder();
         sb.append(eventParticipant.getInvolvementDescription()!=null? eventParticipant.getInvolvementDescription() + ", ":"");
-        sb.append(eventParticipant.getPerson().getApproximateAge()!=null?eventParticipant.getPerson().getApproximateAge().toString()+ " " + eventParticipant.getPerson().getApproximateAgeType().toString() + ", " :"");
+        String age = eventParticipant.getPerson().getApproximateAge()!=null?eventParticipant.getPerson().getApproximateAge().toString() + " ":"";
+        String ageType = eventParticipant.getPerson().getApproximateAgeType()!=null?eventParticipant.getPerson().getApproximateAgeType().toString() + ", ":", ";
+        sb.append(age + ageType);
         sb.append(eventParticipant.getPerson().getSex()!=null?eventParticipant.getPerson().getSex().toString():"");
         description.setText(sb.toString());
 

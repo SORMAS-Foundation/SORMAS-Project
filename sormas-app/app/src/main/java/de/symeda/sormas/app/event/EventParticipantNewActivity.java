@@ -3,6 +3,7 @@ package de.symeda.sormas.app.event;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -17,8 +18,10 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.component.SelectOrCreatePersonDialog;
 import de.symeda.sormas.app.person.SyncPersonsTask;
 import de.symeda.sormas.app.util.Callback;
+import de.symeda.sormas.app.util.ParamCallback;
 
 public class EventParticipantNewActivity extends AppCompatActivity {
 
@@ -93,14 +96,20 @@ public class EventParticipantNewActivity extends AppCompatActivity {
 
                         List<Person> existingPersons = DatabaseHelper.getPersonDao().getAllByName(eventParticipant.getPerson().getFirstName(), eventParticipant.getPerson().getLastName());
                         if (existingPersons.size() > 0) {
-                            eventParticipantNewPersonTab.selectOrCreatePersonDialog(eventParticipant.getPerson(), existingPersons, new Callback() {
+
+                            AlertDialog.Builder dialogBuilder = new SelectOrCreatePersonDialog(this, eventParticipant.getPerson(), existingPersons, new ParamCallback() {
                                 @Override
-                                public void call() {
-                                    eventParticipant.setPerson(eventParticipantNewPersonTab.getSelectedPersonFromDialog());
-                                    savePersonAndEventParticipant(eventParticipant);
-                                    showEventParticipantEditView(eventParticipant);
+                                public void call(Object parameter) {
+                                    if(parameter instanceof Person) {
+                                        eventParticipant.setPerson((Person) parameter);
+                                        savePersonAndEventParticipant(eventParticipant);
+                                        showEventParticipantEditView(eventParticipant);
+                                    }
                                 }
                             });
+                            AlertDialog newPersonDialog = dialogBuilder.create();
+                            newPersonDialog.show();
+
                         } else {
                             savePersonAndEventParticipant(eventParticipant);
                             showEventParticipantEditView(eventParticipant);
