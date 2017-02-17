@@ -2,21 +2,17 @@ package de.symeda.sormas.ui.samples;
 
 import java.util.Arrays;
 
-import com.vaadin.shared.ui.datefield.Resolution;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.DateField;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.sample.SampleTestDto;
 import de.symeda.sormas.api.sample.SampleTestType;
-import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
@@ -37,9 +33,7 @@ public class SampleTestEditForm extends AbstractEditForm<SampleTestDto> {
 	protected void addFields() {
 		addField(SampleTestDto.TEST_TYPE, ComboBox.class);
 		addField(SampleTestDto.TEST_TYPE_TEXT, TextField.class);
-		DateField testDateTime = addField(SampleTestDto.TEST_DATE_TIME, DateField.class);
-		testDateTime.setResolution(Resolution.MINUTE);
-		testDateTime.setDateFormat(DateHelper.getTimeDateFormat().toPattern());
+		addField(SampleTestDto.TEST_DATE_TIME, DateTimeField.class);
 		ComboBox lab = addField(SampleTestDto.LAB, ComboBox.class);
 		lab.addItems(FacadeProvider.getFacilityFacade().getAllLaboratories());
 		
@@ -51,7 +45,7 @@ public class SampleTestEditForm extends AbstractEditForm<SampleTestDto> {
 		FieldHelper.setRequiredWhen(getFieldGroup(), SampleTestDto.TEST_TYPE, Arrays.asList(SampleTestDto.TEST_TYPE_TEXT), Arrays.asList(SampleTestType.OTHER));
 		
 		setRequired(true, SampleTestDto.TEST_TYPE, SampleTestDto.TEST_DATE_TIME, SampleTestDto.LAB,
-				SampleTestDto.TEST_RESULT, SampleTestDto.TEST_RESULT_TEXT);
+				SampleTestDto.TEST_RESULT);
 	}
 	
 	@Override

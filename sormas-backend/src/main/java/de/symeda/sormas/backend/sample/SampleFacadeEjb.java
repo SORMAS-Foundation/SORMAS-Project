@@ -187,22 +187,22 @@ public class SampleFacadeEjb implements SampleFacade {
 		target.setNoTestPossibleReason(source.getNoTestPossibleReason());
 		target.setLga(DistrictFacadeEjb.toReferenceDto(source.getAssociatedCase().getDistrict()));
 		
-		List<SampleTestDto> sampleTests = FacadeProvider.getSampleTestFacade().getAllBySample(SampleFacadeEjb.toReferenceDto(source));
-		SampleTestDto latestSampleTest = null;
-		for(SampleTestDto stDto : sampleTests) {
+		SampleTest latestSampleTest = null;
+		for(SampleTest sampleTest : source.getSampleTests()) {
 			if(latestSampleTest == null) {
-				latestSampleTest = stDto;
+				latestSampleTest = sampleTest;
 			} else {
-				if(stDto.getTestDateTime().after(latestSampleTest.getTestDateTime())) {
-					latestSampleTest = stDto;
+				if(sampleTest.getTestDateTime().after(latestSampleTest.getTestDateTime())) {
+					latestSampleTest = sampleTest;
 				}
 			}
 		}
 		
 		if(latestSampleTest != null) {
-			target.setLabUser(latestSampleTest.getLabUser());
-			target.setTestType(latestSampleTest.getTestType());
-			target.setTestResult(latestSampleTest.getTestResult());
+			SampleTestDto latestSampleTestDto = FacadeProvider.getSampleTestFacade().getByUuid(latestSampleTest.getUuid());
+			target.setLabUser(latestSampleTestDto.getLabUser());
+			target.setTestType(latestSampleTestDto.getTestType());
+			target.setTestResult(latestSampleTestDto.getTestResult());
 		}
 		
 		return target;

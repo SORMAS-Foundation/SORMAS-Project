@@ -46,7 +46,7 @@ public class Sample extends AbstractDomainObject {
     @DatabaseField(dataType = DataType.DATE_LONG, canBeNull = false)
     private Date reportDateTime;
 
-    @DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 1, canBeNull = false)
+    @DatabaseField(foreign = true, foreignAutoRefresh = true)
     private User reportingUser;
 
     @Enumerated(EnumType.STRING)

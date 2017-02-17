@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.vaadin.navigator.Navigator;
+import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 
@@ -66,6 +67,7 @@ public class SampleController {
 	
 	public CommitDiscardWrapperComponent<SampleEditForm> getSampleEditComponent(final String sampleUuid) {
 		SampleEditForm form = new SampleEditForm();
+		form.setWidth(1024, Unit.PIXELS);
 		SampleDto dto = sf.getSampleByUuid(sampleUuid);
 		form.setValue(dto);
 		final CommitDiscardWrapperComponent<SampleEditForm> editView = new CommitDiscardWrapperComponent<SampleEditForm>(form, form.getFieldGroup());

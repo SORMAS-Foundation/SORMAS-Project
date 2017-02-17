@@ -48,12 +48,12 @@ public class SampleEditTab extends FormTab {
         super.onResume();
 
         try {
-            final String sampleUuid = getArguments().getString(Sample.UUID);
+            final String sampleUuid = getArguments().getString(SampleEditActivity.KEY_SAMPLE_UUID);
             final SampleDao sampleDao = DatabaseHelper.getSampleDao();
             Sample sample = null;
 
             if (sampleUuid == null) {
-                final String caseUuid = getArguments().getString(SampleEditPagerAdapter.CASE_UUID);
+                final String caseUuid = getArguments().getString(SampleEditActivity.KEY_CASE_UUID);
                 final Case associatedCase = DatabaseHelper.getCaseDao().queryUuid(caseUuid);
                 sample = DatabaseHelper.getSampleDao().getNewSample(associatedCase);
             } else {
@@ -62,7 +62,7 @@ public class SampleEditTab extends FormTab {
 
             binding.setSample(sample);
 
-            ShipmentStatus shipmentStatus = sample.getShipmentStatus();
+            ShipmentStatus shipmentStatus = binding.getSample().getShipmentStatus();
             if (shipmentStatus == ShipmentStatus.NOT_SHIPPED) {
                 binding.sampleShipmentStatus.setChecked(false);
                 binding.sampleShipmentDate.setVisibility(View.INVISIBLE);
@@ -71,6 +71,7 @@ public class SampleEditTab extends FormTab {
                 binding.sampleShipmentStatus.setChecked(true);
             } else {
                 binding.sampleShipmentStatus.setChecked(true);
+                binding.sampleShipmentStatus.setText(binding.getSample().getShipmentStatus().toString());
                 binding.sampleShipmentStatus.setEnabled(false);
                 binding.sampleShipmentDate.setEnabled(false);
             }
@@ -118,20 +119,26 @@ public class SampleEditTab extends FormTab {
             binding.sampleReceivedDate.initialize(this);
             binding.sampleReceivedDate.setEnabled(false);
 
-            if (sample.getNoTestPossible()) {
-                binding.sampleTypeOfTest.setVisibility(View.GONE);
-                binding.sampleTestResult.setVisibility(View.GONE);
-                binding.sampleNoRecentTestText.setVisibility(View.GONE);
-            } else {
-                SampleTest mostRecentTest = DatabaseHelper.getSampleTestDao().getMostRecentForSample(sample);
-                binding.sampleNoTestPossibleText.setVisibility(View.GONE);
-                binding.sampleNoTestPossibleReason.setVisibility(View.GONE);
-                if (mostRecentTest != null) {
-                    binding.sampleNoRecentTestText.setVisibility(View.GONE);
-                } else{
+            // recent test should only be displayed when an existing sample is viewed, not
+            // when a new one is created
+            if (sampleUuid != null) {
+                if (binding.getSample().getNoTestPossible()) {
                     binding.sampleTypeOfTest.setVisibility(View.GONE);
                     binding.sampleTestResult.setVisibility(View.GONE);
+                    binding.sampleNoRecentTestText.setVisibility(View.GONE);
+                } else {
+                    SampleTest mostRecentTest = DatabaseHelper.getSampleTestDao().getMostRecentForSample(binding.getSample());
+                    binding.sampleNoTestPossibleText.setVisibility(View.GONE);
+                    binding.sampleNoTestPossibleReason.setVisibility(View.GONE);
+                    if (mostRecentTest != null) {
+                        binding.sampleNoRecentTestText.setVisibility(View.GONE);
+                    } else {
+                        binding.sampleTypeOfTest.setVisibility(View.GONE);
+                        binding.sampleTestResult.setVisibility(View.GONE);
+                    }
                 }
+            } else {
+                binding.recentTestLayout.setVisibility(View.GONE);
             }
 
         } catch (Exception e) {

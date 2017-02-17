@@ -25,6 +25,7 @@ public class SampleTestDao extends AbstractAdoDao<SampleTest> {
     }
 
     public SampleTest getMostRecentForSample(Sample sample) {
+        if(sample == null) return null;
         try {
             List<SampleTest> tests = queryBuilder().orderBy(SampleTest.TEST_DATE_TIME, false).where().eq(SampleTest.SAMPLE + "_id", sample).query();
             if (!tests.isEmpty()) {

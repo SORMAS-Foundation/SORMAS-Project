@@ -109,8 +109,8 @@ public class SampleDtoHelper extends AdoDtoHelper<Sample, SampleDto> {
         dto.setShipmentDate(ado.getShipmentDate());
         dto.setShipmentDetails(ado.getShipmentDetails());
         dto.setReceivedDate(ado.getReceivedDate());
-//        dto.setNoTestPossible(ado.getNoTestPossible());
-//        dto.setNoTestPossibleReason(ado.getNoTestPossibleReason());
+        dto.setNoTestPossible(ado.getNoTestPossible());
+        dto.setNoTestPossibleReason(ado.getNoTestPossibleReason());
     }
 
     public static SampleReferenceDto toReferenceDto(Sample ado) {

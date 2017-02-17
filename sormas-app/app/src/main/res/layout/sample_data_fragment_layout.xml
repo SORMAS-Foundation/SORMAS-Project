@@ -182,68 +182,76 @@
 
             </LinearLayout>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="@string/headline_sample_test"
-                android:id="@+id/sample_test_headline"
-                android:textColor="@android:color/tab_indicator_text"
-                android:textSize="@dimen/abc_text_size_body_1_material"
-                android:textStyle="bold"
-                android:paddingTop="30dp"
-                android:paddingBottom="10dp" />
-
-            <!-- If noTestPossible is set to yes -->
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/no_test_possible"
-                android:id="@+id/sample_no_test_possible_text"
-                android:textColor="@android:color/tab_indicator_text"
-                android:textSize="@dimen/field_caption_size"
-                android:paddingBottom="10dp" />
-
-            <de.symeda.sormas.app.component.LabelField
-                android:id="@+id/sample_noTestPossibleReason"
+            <LinearLayout
+                android:id="@+id/recent_test_layout"
+                android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.5"
-                android:paddingTop="@dimen/field_padding"
-                android:paddingBottom="@dimen/field_padding"
-                android:value="@={sample.noTestPossibleReason}"/>
+                android:layout_height="wrap_content">
 
-            <!-- If a recent test exists -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:text="@string/headline_sample_test"
+                    android:id="@+id/sample_test_headline"
+                    android:textColor="@android:color/tab_indicator_text"
+                    android:textSize="@dimen/abc_text_size_body_1_material"
+                    android:textStyle="bold"
+                    android:paddingTop="30dp"
+                    android:paddingBottom="10dp" />
 
-            <de.symeda.sormas.app.component.LabelField
-                android:id="@+id/sample_typeOfTest"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.5"
-                android:paddingTop="@dimen/field_padding"
-                android:paddingBottom="@dimen/field_padding"
-                app:sampleTypeOfTest="@{sample.uuid}"/>
+                <!-- If noTestPossible is set to yes -->
 
-            <de.symeda.sormas.app.component.LabelField
-                android:id="@+id/sample_testResult"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.5"
-                android:paddingTop="@dimen/field_padding"
-                android:paddingBottom="@dimen/field_padding"
-                app:sampleTestResult="@{sample.uuid}"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/no_test_possible"
+                    android:id="@+id/sample_no_test_possible_text"
+                    android:textColor="@android:color/tab_indicator_text"
+                    android:textSize="@dimen/field_caption_size"
+                    android:paddingBottom="10dp" />
 
-            <!-- If there is no recent test -->
+                <de.symeda.sormas.app.component.LabelField
+                    android:id="@+id/sample_noTestPossibleReason"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:paddingTop="@dimen/field_padding"
+                    android:paddingBottom="@dimen/field_padding"
+                    android:value="@={sample.noTestPossibleReason}"/>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/no_recent_test"
-                android:id="@+id/sample_no_recent_test_text"
-                android:textColor="@android:color/tab_indicator_text"
-                android:textSize="@dimen/field_caption_size"
-                android:paddingBottom="10dp" />
+                <!-- If a recent test exists -->
+
+                <de.symeda.sormas.app.component.LabelField
+                    android:id="@+id/sample_typeOfTest"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:paddingTop="@dimen/field_padding"
+                    android:paddingBottom="@dimen/field_padding"
+                    app:sampleTypeOfTest="@{sample.uuid}"/>
+
+                <de.symeda.sormas.app.component.LabelField
+                    android:id="@+id/sample_testResult"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:paddingTop="@dimen/field_padding"
+                    android:paddingBottom="@dimen/field_padding"
+                    app:sampleTestResult="@{sample.uuid}"/>
+
+                <!-- If there is no recent test -->
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/no_recent_test"
+                    android:id="@+id/sample_no_recent_test_text"
+                    android:textColor="@android:color/tab_indicator_text"
+                    android:textSize="@dimen/field_caption_size"
+                    android:paddingBottom="10dp" />
+
+            </LinearLayout>
 
         </LinearLayout>
 

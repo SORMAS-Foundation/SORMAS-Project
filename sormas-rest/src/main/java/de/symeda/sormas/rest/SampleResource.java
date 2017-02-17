@@ -32,8 +32,6 @@ public class SampleResource {
 	public Integer postSamples(List<SampleDto> dtos) {
 		SampleFacade sampleFacade = FacadeProvider.getSampleFacade();
 		for (SampleDto dto : dtos) {
-			System.out.println("## DTO: " + dto.getAssociatedCase().toString());
-			System.out.println("## CODE: " + dto.getSampleCode());
 			sampleFacade.saveSample(dto);
 		}
 		
