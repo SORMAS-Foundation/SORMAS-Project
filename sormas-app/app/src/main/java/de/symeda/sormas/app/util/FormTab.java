@@ -19,9 +19,8 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
 
     /**
      * Create the {@see LocationDialog} for given location.
-     * Triggers the updateLocation method.
      */
-    protected void addLocationField(final Location location, final int locationFieldId, int locationBtnId) {
+    protected void addLocationField(final Location location, final int locationFieldId, int locationBtnId, final ParamCallback positiveCallback ) {
         DatabaseHelper.getLocationDao().initializeLocation(location);
 
         // set the TextField for the location
@@ -33,25 +32,12 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
-                final LocationDialog dialogBuilder = new LocationDialog(getActivity(), location);
-                dialogBuilder.setPositiveCallback(new Callback() {
-                    @Override
-                    public void call() {
-                        updateLocation(dialogBuilder.getLocation());
-                    }
-                });
-
+                final LocationDialog dialogBuilder = new LocationDialog(getActivity(), location, positiveCallback, null);
                 AlertDialog newPersonDialog = dialogBuilder.create();
                 newPersonDialog.show();
             }
         });
     }
-
-    /**
-     * Called from positiveButton inside the LocationDialog. Have to be overwritten for manual reverse databinding.
-     * @param location
-     */
-    protected void updateLocation(Location location) {};
 
     protected void deactivateField(View v) {
         v.setEnabled(false);

@@ -41,6 +41,7 @@ import de.symeda.sormas.app.databinding.PersonEditFragmentLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.FormTab;
 import de.symeda.sormas.app.util.Item;
+import de.symeda.sormas.app.util.ParamCallback;
 
 
 /**
@@ -134,7 +135,15 @@ public class PersonEditTab extends FormTab {
         // ================ Address ================
         try {
             final Location location = person.getAddress() != null ? person.getAddress() : DataUtils.createNew(Location.class);
-            addLocationField(location, R.id.person_address, R.id.form_cp_btn_address);
+            addLocationField(location, R.id.person_address, R.id.form_cp_btn_address, new ParamCallback() {
+                @Override
+                public void call(Object parameter) {
+                    if(parameter instanceof Location) {
+                        binding.personAddress.setValue(parameter.toString());
+                        binding.getPerson().setAddress(((Location)parameter));
+                    }
+                }
+            });
         } catch (Exception e) {
             Toast.makeText(getContext(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             e.printStackTrace();
@@ -176,15 +185,6 @@ public class PersonEditTab extends FormTab {
         getView().requestFocus();
     }
 
-    /**
-     * This is called from the positive button within the LocationDialog used in the in the address section above.
-     * @param location
-     */
-    @Override
-    public void updateLocation(Location location) {
-        binding.personAddress.setValue(location.toString());
-        binding.getPerson().setAddress(location);
-    }
 
     private void updateHeadlineOccupationDetailsFields(Item item, TextField occupationDetails) {
         if(item.getValue()!=null) {

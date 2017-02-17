@@ -22,12 +22,11 @@ import de.symeda.sormas.app.component.PropertyField;
 import de.symeda.sormas.app.databinding.EventDataFragmentLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.FormTab;
+import de.symeda.sormas.app.util.ParamCallback;
 
 public class EventEditDataTab extends FormTab {
 
     private EventDataFragmentLayoutBinding binding;
-
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -71,14 +70,19 @@ public class EventEditDataTab extends FormTab {
 
             try {
                 final Location location = event.getEventLocation() != null ? event.getEventLocation() : DataUtils.createNew(Location.class);
-                addLocationField(location, R.id.event_eventLocation, R.id.event_eventLocation_btn);
+                addLocationField(location, R.id.event_eventLocation, R.id.event_eventLocation_btn, new ParamCallback() {
+                    @Override
+                    public void call(Object parameter) {
+                        if(parameter instanceof Location) {
+                            binding.eventEventLocation.setValue(parameter.toString());
+                            binding.getEvent().setEventLocation(((Location)parameter));
+                        }
+                    }
+                });
             } catch (Exception e) {
                 Toast.makeText(getContext(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 e.printStackTrace();
             }
-
-
-
 
             // init fields
             toggleTypeOfPlaceTextField();
@@ -93,16 +97,6 @@ public class EventEditDataTab extends FormTab {
     @Override
     public AbstractDomainObject getData() {
         return binding.getEvent();
-    }
-
-    /**
-     * This is called from the positive button within the LocationDialog used in the in the eventLocation section above.
-     * @param location
-     */
-    @Override
-    public void updateLocation(Location location) {
-        binding.eventEventLocation.setValue(location.toString());
-        binding.getEvent().setEventLocation(location);
     }
 
 
