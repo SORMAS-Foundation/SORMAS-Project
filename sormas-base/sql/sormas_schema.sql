@@ -1068,3 +1068,11 @@ INSERT INTO schema_version (version_number, comment) VALUES (27, 'Add admin role
 ALTER TABLE samples ALTER COLUMN shipmentdate DROP NOT NULL;
 
 INSERT INTO schema_version (version_number, comment) VALUES (28, 'Removed null constraint from shipment date');
+
+-- 2016-02-17 Update samples entity #117
+
+ALTER TABLE samples ADD COLUMN comment varchar(512);
+ALTER TABLE samples DROP COLUMN notestpossible;
+ALTER TABLE samples ADD COLUMN specimencondition varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (29, 'Update samples entity');

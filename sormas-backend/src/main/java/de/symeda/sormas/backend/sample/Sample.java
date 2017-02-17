@@ -15,6 +15,7 @@ import javax.persistence.TemporalType;
 
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.ShipmentStatus;
+import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -39,8 +40,8 @@ public class Sample extends AbstractDomainObject {
 	public static final String SHIPMENT_DATE = "shipmentDate";
 	public static final String SHIPMENT_DETAILS = "shipmentDetails";
 	public static final String RECEIVED_DATE = "receivedDate";
-	public static final String NO_TEST_POSSIBLE = "noTestPossible";
 	public static final String NO_TEST_POSSIBLE_REASON = "noTestPossibleReason";
+	public static final String COMMENT = "comment";
 	
 	private Case associatedCase;
 	private String sampleCode;
@@ -55,8 +56,9 @@ public class Sample extends AbstractDomainObject {
 	private Date shipmentDate;
 	private String shipmentDetails;
 	private Date receivedDate;
-	private boolean noTestPossible;
+	private SpecimenCondition specimenCondition;
 	private String noTestPossibleReason;
+	private String comment;
 	
 	private List<SampleTest> sampleTests;
 	
@@ -171,11 +173,12 @@ public class Sample extends AbstractDomainObject {
 		this.receivedDate = receivedDate;
 	}
 	
-	public boolean isNoTestPossible() {
-		return noTestPossible;
+	@Enumerated(EnumType.STRING)
+	public SpecimenCondition getSpecimenCondition() {
+		return specimenCondition;
 	}
-	public void setNoTestPossible(boolean noTestPossible) {
-		this.noTestPossible = noTestPossible;
+	public void setSpecimenCondition(SpecimenCondition specimenCondition) {
+		this.specimenCondition = specimenCondition;
 	}
 	
 	@Column(length=512)
@@ -192,6 +195,14 @@ public class Sample extends AbstractDomainObject {
 	}
 	public void setSampleTests(List<SampleTest> sampleTests) {
 		this.sampleTests = sampleTests;
+	}
+	
+	@Column(length=512)
+	public String getComment() {
+		return comment;
+	}
+	public void setComment(String comment) {
+		this.comment = comment;
 	}
 	
 	@Override

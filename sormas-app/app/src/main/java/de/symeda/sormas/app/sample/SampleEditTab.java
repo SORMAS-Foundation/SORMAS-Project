@@ -11,11 +11,13 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.Toast;
 
+import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.ShipmentStatus;
+import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
@@ -84,6 +86,7 @@ public class SampleEditTab extends FormTab {
                     if (isChecked) {
                         binding.sampleShipmentDate.setVisibility(View.VISIBLE);
                         binding.sampleShipmentDetails.setVisibility(View.VISIBLE);
+                        binding.sampleShipmentDate.setValue(new Date());
                     } else {
                         binding.sampleShipmentDate.setVisibility(View.INVISIBLE);
                         binding.sampleShipmentDetails.setVisibility(View.GONE);
@@ -118,11 +121,14 @@ public class SampleEditTab extends FormTab {
             FieldHelper.initSpinnerField(binding.sampleLab, laboratories);
             binding.sampleReceivedDate.initialize(this);
             binding.sampleReceivedDate.setEnabled(false);
+            if (binding.getSample().getShipmentStatus() != ShipmentStatus.RECEIVED) {
+                binding.sampleReceivedDate.setVisibility(View.GONE);
+            }
 
             // recent test should only be displayed when an existing sample is viewed, not
             // when a new one is created
             if (sampleUuid != null) {
-                if (binding.getSample().getNoTestPossible()) {
+                if (binding.getSample().getSpecimenCondition() == SpecimenCondition.NOT_ADEQUATE) {
                     binding.sampleTypeOfTest.setVisibility(View.GONE);
                     binding.sampleTestResult.setVisibility(View.GONE);
                     binding.sampleNoRecentTestText.setVisibility(View.GONE);

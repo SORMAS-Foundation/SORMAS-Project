@@ -182,7 +182,7 @@
     <string name="headline_new_event">New event</string>
     <string name="sample_shipmentStatus">Shipment status</string>
     <string name="sample_shipped">Shipped</string>
-    <string name="no_test_possible">No test possible</string>
+    <string name="inadequate_specimen_cond">Specimen condition not adequate</string>
     <string name="no_recent_test">No test yet</string>
     <string name="headline_eventParticipant">Event person</string>
     <string name="headline_new_eventParticipant">New event person</string>

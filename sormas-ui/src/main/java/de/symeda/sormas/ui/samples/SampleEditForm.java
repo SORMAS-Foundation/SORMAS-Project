@@ -1,14 +1,15 @@
 package de.symeda.sormas.ui.samples;
 
 import java.util.Arrays;
+import java.util.Date;
 
 import com.vaadin.ui.AbstractLayout;
-import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.OptionGroup;
+import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
@@ -20,6 +21,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.ShipmentStatus;
+import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -62,12 +64,16 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 										),
 										LayoutUtil.fluidRow(
 												LayoutUtil.oneOfThreeCol(LayoutUtil.loc(SampleDto.LAB)), 
-												LayoutUtil.oneOfThreeCol(LayoutUtil.loc(SampleDto.NO_TEST_POSSIBLE)),
+												LayoutUtil.oneOfThreeCol(LayoutUtil.loc(SampleDto.SPECIMEN_CONDITION)),
 												LayoutUtil.oneOfThreeCol(LayoutUtil.loc(SampleDto.NO_TEST_POSSIBLE_REASON))
 										),
 										LayoutUtil.fluidRow(
 												LayoutUtil.oneOfThreeCol(LayoutUtil.loc(SampleDto.RECEIVED_DATE)),
 												LayoutUtil.oneOfThreeCol(LayoutUtil.loc(SampleDto.OTHER_LAB))
+										),
+										LayoutUtil.fluidRowCss(
+												CssStyles.VSPACE4, 
+												LayoutUtil.loc(SampleDto.COMMENT)
 										)
 									)
 							),
@@ -92,14 +98,16 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 		addField(SampleDto.REPORTING_USER, ComboBox.class);
 		addField(SampleDto.SAMPLE_MATERIAL, ComboBox.class);
 		addField(SampleDto.SAMPLE_MATERIAL_TEXT, TextField.class);
-		addField(SampleDto.SHIPMENT_DATE, DateField.class).setDateFormat(DateHelper.getShortDateFormat().toPattern());
+		DateField shipmentDate = addField(SampleDto.SHIPMENT_DATE, DateField.class);
+		shipmentDate.setDateFormat(DateHelper.getShortDateFormat().toPattern());
 		addField(SampleDto.SHIPMENT_DETAILS, TextField.class);
-		addField(SampleDto.SHIPMENT_STATUS, OptionGroup.class);
+		OptionGroup shipmentStatus = addField(SampleDto.SHIPMENT_STATUS, OptionGroup.class);
 		addField(SampleDto.RECEIVED_DATE, DateField.class).setDateFormat(DateHelper.getShortDateFormat().toPattern());
 		ComboBox lab = addField(SampleDto.LAB, ComboBox.class);
 		ComboBox otherLab = addField(SampleDto.OTHER_LAB, ComboBox.class);
-		addField(SampleDto.NO_TEST_POSSIBLE, CheckBox.class).addStyleName(CssStyles.FORCE_CAPTION);
+		addField(SampleDto.SPECIMEN_CONDITION, ComboBox.class);
 		addField(SampleDto.NO_TEST_POSSIBLE_REASON, TextField.class);
+		addField(SampleDto.COMMENT, TextArea.class).setRows(2);
 		
 		lab.addItems(FacadeProvider.getFacilityFacade().getAllLaboratories());
 		otherLab.addItems(FacadeProvider.getFacilityFacade().getAllLaboratories());
@@ -107,17 +115,18 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 		setReadOnly(true, SampleDto.UUID, SampleDto.REPORT_DATE_TIME, SampleDto.REPORTING_USER);
 		
 		FieldHelper.setVisibleWhen(getFieldGroup(), SampleDto.SAMPLE_MATERIAL_TEXT, SampleDto.SAMPLE_MATERIAL, Arrays.asList(SampleMaterial.OTHER), true);
-		FieldHelper.setVisibleWhen(getFieldGroup(), SampleDto.RECEIVED_DATE, SampleDto.SHIPMENT_STATUS, Arrays.asList(ShipmentStatus.RECEIVED, ShipmentStatus.REFERRED_OTHER_LAB), true);
+		FieldHelper.setVisibleWhen(getFieldGroup(), SampleDto.RECEIVED_DATE, SampleDto.SHIPMENT_STATUS, Arrays.asList(ShipmentStatus.RECEIVED), true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), SampleDto.OTHER_LAB, SampleDto.SHIPMENT_STATUS, Arrays.asList(ShipmentStatus.REFERRED_OTHER_LAB), true);
-		FieldHelper.setVisibleWhen(getFieldGroup(), SampleDto.NO_TEST_POSSIBLE_REASON, SampleDto.NO_TEST_POSSIBLE, Arrays.asList(true), true);
+		FieldHelper.setVisibleWhen(getFieldGroup(), SampleDto.NO_TEST_POSSIBLE_REASON, SampleDto.SPECIMEN_CONDITION, Arrays.asList(SpecimenCondition.NOT_ADEQUATE), true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(SampleDto.SHIPMENT_DATE, SampleDto.SHIPMENT_DETAILS), SampleDto.SHIPMENT_STATUS, 
 				Arrays.asList(ShipmentStatus.SHIPPED, ShipmentStatus.RECEIVED, ShipmentStatus.REFERRED_OTHER_LAB), true);
 		FieldHelper.setRequiredWhen(getFieldGroup(), SampleDto.SAMPLE_MATERIAL, Arrays.asList(SampleDto.SAMPLE_MATERIAL_TEXT), Arrays.asList(SampleMaterial.OTHER));
-		FieldHelper.setRequiredWhen(getFieldGroup(), SampleDto.SHIPMENT_STATUS, Arrays.asList(SampleDto.RECEIVED_DATE), Arrays.asList(ShipmentStatus.RECEIVED, ShipmentStatus.REFERRED_OTHER_LAB));
+		FieldHelper.setRequiredWhen(getFieldGroup(), SampleDto.SHIPMENT_STATUS, Arrays.asList(SampleDto.RECEIVED_DATE), Arrays.asList(ShipmentStatus.RECEIVED));
 		FieldHelper.setRequiredWhen(getFieldGroup(), SampleDto.SHIPMENT_STATUS, Arrays.asList(SampleDto.OTHER_LAB), Arrays.asList(ShipmentStatus.REFERRED_OTHER_LAB));
-		FieldHelper.setRequiredWhen(getFieldGroup(), SampleDto.NO_TEST_POSSIBLE, Arrays.asList(SampleDto.NO_TEST_POSSIBLE_REASON), Arrays.asList(true));
+		FieldHelper.setRequiredWhen(getFieldGroup(), SampleDto.SPECIMEN_CONDITION, Arrays.asList(SampleDto.NO_TEST_POSSIBLE_REASON), Arrays.asList(SpecimenCondition.NOT_ADEQUATE));
 		FieldHelper.setRequiredWhen(getFieldGroup(), SampleDto.SHIPMENT_STATUS, Arrays.asList(SampleDto.SHIPMENT_DATE), 
 				Arrays.asList(ShipmentStatus.SHIPPED, ShipmentStatus.RECEIVED, ShipmentStatus.REFERRED_OTHER_LAB));
+		FieldHelper.setRequiredWhen(getFieldGroup(), SampleDto.SHIPMENT_STATUS, Arrays.asList(SampleDto.SPECIMEN_CONDITION), Arrays.asList(ShipmentStatus.RECEIVED));
 		
 		setRequired(true, SampleDto.UUID, SampleDto.SAMPLE_DATE_TIME, SampleDto.REPORT_DATE_TIME,
 				SampleDto.REPORTING_USER, SampleDto.SAMPLE_MATERIAL, SampleDto.LAB, SampleDto.SHIPMENT_STATUS,
@@ -128,6 +137,14 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 		getContent().addComponent(caseInfoLayout, CASE_INFO);
 		addValueChangeListener(e -> {
 			updateCaseInfo();
+		});
+		
+		shipmentStatus.addValueChangeListener(event -> {
+			if(event.getProperty().getValue() == ShipmentStatus.SHIPPED) {
+				if(shipmentDate.getValue() == null) {
+					shipmentDate.setValue(new Date());
+				}
+			}
 		});
 	}
 	

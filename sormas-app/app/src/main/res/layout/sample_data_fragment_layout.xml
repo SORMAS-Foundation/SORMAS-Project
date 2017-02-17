@@ -96,10 +96,19 @@
                     android:layout_weight="0.5"
                     android:paddingTop="@dimen/field_padding"
                     android:paddingBottom="@dimen/field_padding"
-                    android:nextFocusForward="@+id/sample_lab"
+                    android:nextFocusForward="@+id/sample_comment"
                     android:value="@={sample.sampleMaterialText}"/>
 
             </LinearLayout>
+
+            <de.symeda.sormas.app.component.TextField
+                android:id="@+id/sample_comment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/field_padding"
+                android:paddingBottom="@dimen/field_padding"
+                android:nextFocusForward="@+id/sample_lab"
+                android:value="@={sample.comment}"/>
 
             <de.symeda.sormas.app.component.SpinnerField
                 android:id="@+id/sample_lab"
@@ -205,7 +214,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/no_test_possible"
+                    android:text="@string/inadequate_specimen_cond"
                     android:id="@+id/sample_no_test_possible_text"
                     android:textColor="@android:color/tab_indicator_text"
                     android:textSize="@dimen/field_caption_size"

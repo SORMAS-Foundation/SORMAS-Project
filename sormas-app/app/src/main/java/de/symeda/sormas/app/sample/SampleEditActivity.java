@@ -140,9 +140,6 @@ public class SampleEditActivity extends AppCompatActivity {
                     }
                 }
 
-                if (sample.getNoTestPossible() == null) {
-                    sample.setNoTestPossible(false);
-                }
                 if (sample.getReportingUser() == null) {
                     sample.setReportingUser(ConfigProvider.getUser());
                 }

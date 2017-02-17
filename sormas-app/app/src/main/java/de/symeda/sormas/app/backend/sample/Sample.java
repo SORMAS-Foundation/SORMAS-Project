@@ -13,6 +13,7 @@ import javax.persistence.Enumerated;
 
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.ShipmentStatus;
+import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.facility.Facility;
@@ -75,11 +76,14 @@ public class Sample extends AbstractDomainObject {
     @DatabaseField(dataType = DataType.DATE_LONG)
     private Date receivedDate;
 
-    @Column
-    private Boolean noTestPossible;
+    @Enumerated(EnumType.STRING)
+    private SpecimenCondition specimenCondition;
 
     @Column(length = 512)
     private String noTestPossibleReason;
+
+    @Column(length = 512)
+    private String comment;
 
     public Case getAssociatedCase() {
         return associatedCase;
@@ -185,19 +189,27 @@ public class Sample extends AbstractDomainObject {
         this.receivedDate = receivedDate;
     }
 
-    public Boolean getNoTestPossible() {
-        return noTestPossible;
-    }
-
-    public void setNoTestPossible(Boolean noTestPossible) {
-        this.noTestPossible = noTestPossible;
-    }
-
     public String getNoTestPossibleReason() {
         return noTestPossibleReason;
     }
 
     public void setNoTestPossibleReason(String noTestPossibleReason) {
         this.noTestPossibleReason = noTestPossibleReason;
+    }
+
+    public SpecimenCondition getSpecimenCondition() {
+        return specimenCondition;
+    }
+
+    public void setSpecimenCondition(SpecimenCondition specimenCondition) {
+        this.specimenCondition = specimenCondition;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 }

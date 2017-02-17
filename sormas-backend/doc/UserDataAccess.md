@@ -26,6 +26,9 @@ In general synchronization is based on the following rules:
 * officers see all events of their district
 * informants dont see events
 
+# EventParticipant
+* users see all participants of all events they can access
+
 # Tasks
 * whoever created the task or is assigned to it is allowed to access it
 * all tasks for the user's cases
@@ -36,4 +39,3 @@ In general synchronization is based on the following rules:
 * whoever created the sample or is assigned to it is allowed to access it
 * users see all samples of their cases
 * lab users see all samples of their laboratory
-

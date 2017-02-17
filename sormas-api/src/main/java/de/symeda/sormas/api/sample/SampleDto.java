@@ -28,8 +28,9 @@ public class SampleDto extends SampleReferenceDto {
 	public static final String SHIPMENT_DATE = "shipmentDate";
 	public static final String SHIPMENT_DETAILS = "shipmentDetails";
 	public static final String RECEIVED_DATE = "receivedDate";
-	public static final String NO_TEST_POSSIBLE = "noTestPossible";
+	public static final String SPECIMEN_CONDITION = "specimenCondition";
 	public static final String NO_TEST_POSSIBLE_REASON = "noTestPossibleReason";
+	public static final String COMMENT = "comment";
 	
 	private CaseReferenceDto associatedCase;
 	private String sampleCode;
@@ -44,8 +45,9 @@ public class SampleDto extends SampleReferenceDto {
 	private Date shipmentDate;
 	private String shipmentDetails;
 	private Date receivedDate;
-	private boolean noTestPossible;
+	private SpecimenCondition specimenCondition;
 	private String noTestPossibleReason;
+	private String comment;
 	
 	public CaseReferenceDto getAssociatedCase() {
 		return associatedCase;
@@ -133,17 +135,23 @@ public class SampleDto extends SampleReferenceDto {
 	public void setReceivedDate(Date receivedDate) {
 		this.receivedDate = receivedDate;
 	}
-	public boolean isNoTestPossible() {
-		return noTestPossible;
+	public SpecimenCondition getSpecimenCondition() {
+		return specimenCondition;
 	}
-	public void setNoTestPossible(boolean noTestPossible) {
-		this.noTestPossible = noTestPossible;
+	public void setSpecimenCondition(SpecimenCondition specimenCondition) {
+		this.specimenCondition = specimenCondition;
 	}
 	public String getNoTestPossibleReason() {
 		return noTestPossibleReason;
 	}
 	public void setNoTestPossibleReason(String noTestPossibleReason) {
 		this.noTestPossibleReason = noTestPossibleReason;
+	}
+	public String getComment() {
+		return comment;
+	}
+	public void setComment(String comment) {
+		this.comment = comment;
 	}
 	
 }

@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
@@ -60,8 +61,8 @@ public class SamplesListArrayAdapter extends ArrayAdapter<Sample> {
         TextView testResult = (TextView) convertView.findViewById(R.id.sample_test_result_li);
         SampleTest mostRecentTest = DatabaseHelper.getSampleTestDao().getMostRecentForSample(sample);
 
-        if (sample.getNoTestPossible()) {
-            testResult.setText(getContext().getResources().getText(R.string.no_test_possible));
+        if (sample.getSpecimenCondition() == SpecimenCondition.NOT_ADEQUATE) {
+            testResult.setText(getContext().getResources().getText(R.string.inadequate_specimen_cond));
         } else {
             if (mostRecentTest != null) {
                 testResult.setText(mostRecentTest.getTestResult().toString());

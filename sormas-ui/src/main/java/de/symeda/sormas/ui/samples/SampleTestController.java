@@ -3,7 +3,6 @@ package de.symeda.sormas.ui.samples;
 import java.util.List;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SampleTestDto;
 import de.symeda.sormas.api.sample.SampleTestFacade;

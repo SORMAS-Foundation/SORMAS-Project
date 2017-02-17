@@ -18,12 +18,13 @@ public class SampleIndexDto extends SampleReferenceDto {
 	public static final String SHIPMENT_STATUS = "shipmentStatus";
 	public static final String LGA = "lga";
 	public static final String SHIPMENT_DATE = "shipmentDate";
+	public static final String RECEIVED_DATE = "receivedDate";
 	public static final String LAB = "lab";
 	public static final String SAMPLE_MATERIAL = "sampleMaterial";
 	public static final String LAB_USER = "labUser";
 	public static final String TEST_TYPE = "testType";
 	public static final String TEST_RESULT = "testResult";
-	public static final String NO_TEST_POSSIBLE = "noTestPossible";
+	public static final String SPECIMEN_CONDITION = "specimenCondition";
 	public static final String NO_TEST_POSSIBLE_REASON = "noTestPossibleReason";
 	
 	private CaseReferenceDto associatedCase;
@@ -31,12 +32,13 @@ public class SampleIndexDto extends SampleReferenceDto {
 	private ShipmentStatus shipmentStatus;
 	private DistrictReferenceDto lga;
 	private Date shipmentDate;
+	private Date receivedDate;
 	private FacilityReferenceDto lab;
 	private SampleMaterial sampleMaterial;
 	private UserReferenceDto labUser;
 	private SampleTestType testType;
 	private SampleTestResultType testResult;
-	private boolean noTestPossible;
+	private SpecimenCondition specimenCondition;
 	private String noTestPossibleReason;
 	
 	public CaseReferenceDto getAssociatedCase() {
@@ -69,6 +71,12 @@ public class SampleIndexDto extends SampleReferenceDto {
 	public void setShipmentDate(Date shipmentDate) {
 		this.shipmentDate = shipmentDate;
 	}
+	public Date getReceivedDate() {
+		return receivedDate;
+	}
+	public void setReceivedDate(Date receivedDate) {
+		this.receivedDate = receivedDate;
+	}
 	public FacilityReferenceDto getLab() {
 		return lab;
 	}
@@ -99,11 +107,11 @@ public class SampleIndexDto extends SampleReferenceDto {
 	public void setTestResult(SampleTestResultType testResult) {
 		this.testResult = testResult;
 	}
-	public boolean isNoTestPossible() {
-		return noTestPossible;
+	public SpecimenCondition getSpecimenCondition() {
+		return specimenCondition;
 	}
-	public void setNoTestPossible(boolean noTestPossible) {
-		this.noTestPossible = noTestPossible;
+	public void setSpecimenCondition(SpecimenCondition specimenCondition) {
+		this.specimenCondition = specimenCondition;
 	}
 	public String getNoTestPossibleReason() {
 		return noTestPossibleReason;

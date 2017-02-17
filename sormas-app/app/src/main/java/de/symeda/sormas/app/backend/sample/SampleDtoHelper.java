@@ -66,8 +66,9 @@ public class SampleDtoHelper extends AdoDtoHelper<Sample, SampleDto> {
         ado.setShipmentDate(dto.getShipmentDate());
         ado.setShipmentDetails(dto.getShipmentDetails());
         ado.setReceivedDate(dto.getReceivedDate());
-        ado.setNoTestPossible(dto.isNoTestPossible());
+        ado.setSpecimenCondition(dto.getSpecimenCondition());
         ado.setNoTestPossibleReason(dto.getNoTestPossibleReason());
+        ado.setComment(dto.getComment());
     }
 
     @Override
@@ -109,8 +110,9 @@ public class SampleDtoHelper extends AdoDtoHelper<Sample, SampleDto> {
         dto.setShipmentDate(ado.getShipmentDate());
         dto.setShipmentDetails(ado.getShipmentDetails());
         dto.setReceivedDate(ado.getReceivedDate());
-        dto.setNoTestPossible(ado.getNoTestPossible());
+        dto.setSpecimenCondition(ado.getSpecimenCondition());
         dto.setNoTestPossibleReason(ado.getNoTestPossibleReason());
+        dto.setComment(ado.getComment());
     }
 
     public static SampleReferenceDto toReferenceDto(Sample ado) {

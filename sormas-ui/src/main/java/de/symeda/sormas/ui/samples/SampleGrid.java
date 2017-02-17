@@ -20,8 +20,11 @@ import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.ShipmentStatus;
+import de.symeda.sormas.api.sample.SpecimenCondition;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 
 @SuppressWarnings("serial")
@@ -43,8 +46,8 @@ public class SampleGrid extends Grid {
 			@Override
 			public String getValue(Item item, Object itemId, Object propertyId) {
 				SampleIndexDto sampleIndexDto = (SampleIndexDto)itemId;
-				if(sampleIndexDto.isNoTestPossible()) {
-					return "No test possible: " + sampleIndexDto.getNoTestPossibleReason();
+				if(sampleIndexDto.getSpecimenCondition() == SpecimenCondition.NOT_ADEQUATE) {
+					return "Specimen condition not adequate";
 				} else if(sampleIndexDto.getTestResult() != null) {
 					return sampleIndexDto.getTestResult().toString();
 				} else {
@@ -58,11 +61,12 @@ public class SampleGrid extends Grid {
 		});
 		
 		setColumns(SampleIndexDto.UUID, SampleIndexDto.SAMPLE_CODE, SampleIndexDto.SHIPMENT_STATUS, SampleIndexDto.ASSOCIATED_CASE,
-				SampleIndexDto.LGA, SampleIndexDto.SHIPMENT_DATE, SampleIndexDto.LAB, SampleIndexDto.SAMPLE_MATERIAL,
+				SampleIndexDto.LGA, SampleIndexDto.SHIPMENT_DATE, SampleIndexDto.RECEIVED_DATE, SampleIndexDto.LAB, SampleIndexDto.SAMPLE_MATERIAL,
 				SampleIndexDto.LAB_USER, SampleIndexDto.TEST_TYPE, TEST_RESULT_GEN);
 		
 		getColumn(SampleIndexDto.UUID).setRenderer(new UuidRenderer());
 		getColumn(SampleIndexDto.SHIPMENT_DATE).setRenderer(new DateRenderer(DateHelper.getShortDateFormat()));
+		getColumn(SampleIndexDto.RECEIVED_DATE).setRenderer(new DateRenderer(DateHelper.getShortDateFormat()));
 		
 		for(Column column : getColumns()) {
 			column.setHeaderCaption(I18nProperties.getPrefixFieldCaption(
@@ -71,6 +75,12 @@ public class SampleGrid extends Grid {
 		
 		addItemClickListener(e -> ControllerProvider.getSampleController().navigateToData(
 				((SampleIndexDto)e.getItemId()).getUuid()));
+		
+		if(LoginHelper.getCurrentUser().getUserRoles().contains(UserRole.LAB_USER)) {
+			removeColumn(SampleIndexDto.SHIPMENT_DATE);
+		} else {
+			removeColumn(SampleIndexDto.RECEIVED_DATE);
+		}
 		
 		reload();
 	}

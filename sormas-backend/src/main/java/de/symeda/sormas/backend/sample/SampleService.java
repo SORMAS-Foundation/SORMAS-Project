@@ -85,6 +85,7 @@ public class SampleService extends AbstractAdoService<Sample> {
 		if(user.getUserRoles().contains(UserRole.LAB_USER)) {
 			if(user.getLaboratory() != null) {
 				filter = cb.or(filter, cb.equal(samplePath.get(Sample.LAB), user.getLaboratory()));
+				filter = cb.or(filter, cb.equal(samplePath.get(Sample.OTHER_LAB), user.getLaboratory()));
 			}
 		}	
 	

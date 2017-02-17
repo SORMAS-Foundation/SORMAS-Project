@@ -129,8 +129,9 @@ public class SampleFacadeEjb implements SampleFacade {
 		target.setShipmentDate(source.getShipmentDate());
 		target.setShipmentDetails(source.getShipmentDetails());
 		target.setReceivedDate(source.getReceivedDate());
-		target.setNoTestPossible(source.isNoTestPossible());
+		target.setSpecimenCondition(source.getSpecimenCondition());
 		target.setNoTestPossibleReason(source.getNoTestPossibleReason());
+		target.setComment(source.getComment());
 		
 		return target;
 	}
@@ -155,8 +156,9 @@ public class SampleFacadeEjb implements SampleFacade {
 		target.setShipmentDate(source.getShipmentDate());
 		target.setShipmentDetails(source.getShipmentDetails());
 		target.setReceivedDate(source.getReceivedDate());
-		target.setNoTestPossible(source.isNoTestPossible());
+		target.setSpecimenCondition(source.getSpecimenCondition());
 		target.setNoTestPossibleReason(source.getNoTestPossibleReason());
+		target.setComment(source.getComment());
 		
 		return target;
 	}
@@ -180,10 +182,11 @@ public class SampleFacadeEjb implements SampleFacade {
 		target.setAssociatedCase(CaseFacadeEjb.toReferenceDto(source.getAssociatedCase()));
 		target.setSampleCode(source.getSampleCode());
 		target.setShipmentDate(source.getShipmentDate());
+		target.setReceivedDate(source.getReceivedDate());
 		target.setSampleMaterial(source.getSampleMaterial());
 		target.setShipmentStatus(source.getShipmentStatus());
 		target.setLab(FacilityFacadeEjb.toReferenceDto(source.getLab()));
-		target.setNoTestPossible(source.isNoTestPossible());
+		target.setSpecimenCondition(source.getSpecimenCondition());
 		target.setNoTestPossibleReason(source.getNoTestPossibleReason());
 		target.setLga(DistrictFacadeEjb.toReferenceDto(source.getAssociatedCase().getDistrict()));
 		
