@@ -105,6 +105,12 @@ public class TaskTab extends FormTab {
         else {
             binding.taskDoneBtn.setVisibility(View.GONE);
         }
+
+        if (!binding.getTask().getAssigneeUser().equals(ConfigProvider.getUser())) {
+            binding.taskAssigneeReply.setVisibility(View.GONE);
+            binding.taskDoneBtn.setVisibility(View.GONE);
+            binding.taskNotExecutableBtn.setVisibility(View.GONE);
+        }
     }
 
     @Override
