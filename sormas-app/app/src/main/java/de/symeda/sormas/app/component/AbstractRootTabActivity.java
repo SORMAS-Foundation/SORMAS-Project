@@ -92,6 +92,22 @@ public abstract class AbstractRootTabActivity extends AbstractTabActivity {
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Bundle params = getIntent().getExtras();
+        if(params!=null) {
+            if (params.containsKey(KEY_PAGE)) {
+                currentTab = params.getInt(KEY_PAGE);
+            }
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putInt(KEY_PAGE, currentTab);
+        super.onSaveInstanceState(outState);
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

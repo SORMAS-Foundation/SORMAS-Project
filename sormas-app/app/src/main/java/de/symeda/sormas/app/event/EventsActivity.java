@@ -1,12 +1,10 @@
 package de.symeda.sormas.app.event;
 
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.component.AbstractRootTabActivity;
@@ -26,7 +24,6 @@ public class EventsActivity extends AbstractRootTabActivity {
     protected void onResume() {
         super.onResume();
 
-        // Creating The ViewPagerAdapter and Passing Fragment Manager, Titles fot the Tabs and Number Of Tabs.
         adapter = new EventsListFilterAdapter(getSupportFragmentManager());
         createTabViews(adapter);
         pager.setCurrentItem(currentTab);
@@ -34,17 +31,6 @@ public class EventsActivity extends AbstractRootTabActivity {
         SyncEventsTask.syncEvents(getSupportFragmentManager());
     }
 
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        Bundle params = getIntent().getExtras();
-        if(params!=null) {
-            if (params.containsKey(KEY_PAGE)) {
-                outState.putInt(KEY_PAGE, currentTab);
-            }
-        }
-        super.onSaveInstanceState(outState);
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

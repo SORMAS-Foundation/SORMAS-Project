@@ -1,6 +1,5 @@
 package de.symeda.sormas.app.sample;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -8,10 +7,6 @@ import android.view.MenuItem;
 
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.component.AbstractRootTabActivity;
-
-/**
- * Created by Mate Strysewske on 06.02.2017.
- */
 
 public class SamplesActivity extends AbstractRootTabActivity {
 
@@ -33,17 +28,6 @@ public class SamplesActivity extends AbstractRootTabActivity {
         pager.setCurrentItem(currentTab);
 
         SyncSamplesTask.syncSamples(getSupportFragmentManager());
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        Bundle params = getIntent().getExtras();
-        if (params != null) {
-            if (params.containsKey(KEY_PAGE)) {
-                outState.putInt(KEY_PAGE, currentTab);
-            }
-        }
-        super.onSaveInstanceState(outState);
     }
 
     @Override

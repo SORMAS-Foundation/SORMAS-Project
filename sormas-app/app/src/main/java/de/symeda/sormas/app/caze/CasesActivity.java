@@ -1,21 +1,16 @@
 package de.symeda.sormas.app.caze;
 
-
 import android.os.Bundle;
-import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.SormasRootActivity;
-import de.symeda.sormas.app.util.SlidingTabLayout;
+import de.symeda.sormas.app.component.AbstractRootTabActivity;
 
-public class CasesActivity extends SormasRootActivity {
+public class CasesActivity extends AbstractRootTabActivity {
 
-    private ViewPager pager;
     private CasesListFilterAdapter adapter;
-    private SlidingTabLayout tabs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,7 +23,9 @@ public class CasesActivity extends SormasRootActivity {
     protected void onResume() {
         super.onResume();
 
-        createTabViews();
+        adapter = new CasesListFilterAdapter(getSupportFragmentManager());
+        createTabViews(adapter);
+        pager.setCurrentItem(currentTab);
 
         SyncCasesTask.syncCases(getSupportFragmentManager());
     }
@@ -57,30 +54,5 @@ public class CasesActivity extends SormasRootActivity {
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-
-    private void createTabViews() {
-        // Creating The ViewPagerAdapter and Passing Fragment Manager, Titles fot the Tabs and Number Of Tabs.
-        adapter = new CasesListFilterAdapter(getSupportFragmentManager());
-
-        // Assigning ViewPager View and setting the adapter
-        pager = (ViewPager) findViewById(R.id.pager);
-        pager.setAdapter(adapter);
-
-        // Assigning the Sliding Tab Layout View
-        tabs = (SlidingTabLayout) findViewById(R.id.tabs);
-        tabs.setDistributeEvenly(true); // To make the Tabs Fixed set this true, This makes the tabs Space Evenly in Available width
-
-        // Setting Custom Color for the Scroll bar indicator of the Tab View
-        tabs.setCustomTabColorizer(new SlidingTabLayout.TabColorizer() {
-            @Override
-            public int getIndicatorColor(int position) {
-                return getResources().getColor(R.color.tabsScrollColor);
-            }
-        });
-
-        // Setting the ViewPager For the SlidingTabsLayout
-        tabs.setViewPager(pager);
     }
 }
