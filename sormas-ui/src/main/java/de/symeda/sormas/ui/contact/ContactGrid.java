@@ -12,8 +12,10 @@ import com.vaadin.ui.renderers.DateRenderer;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.DiseaseShort;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactIndexDto;
@@ -31,6 +33,7 @@ public class ContactGrid extends Grid {
 
 	public static final String NUMBER_OF_VISITS = "numberOfVisits";
 	public static final String NUMBER_OF_PENDING_TASKS = "numberOfPendingTasks";
+	public static final String DISEASE_SHORT = "diseaseShort";
 	
 	public ContactGrid() {
 		setSizeFull();
@@ -66,11 +69,24 @@ public class ContactGrid extends Grid {
 				return String.class;
 			}
 		});
+        
+        generatedContainer.addGeneratedProperty(DISEASE_SHORT, new PropertyValueGenerator<String>() {
+			@Override
+			public String getValue(Item item, Object itemId, Object propertyId) {
+				ContactIndexDto contactIndexDto = (ContactIndexDto) itemId;
+				String diseaseName = contactIndexDto.getCazeDisease().getName();
+				return DiseaseShort.valueOf(diseaseName).toString();
+			}
+			@Override
+			public Class<String> getType() {
+				return String.class;
+			}
+        });
 
         setColumns(ContactIndexDto.UUID, ContactIndexDto.PERSON, ContactIndexDto.CONTACT_PROXIMITY,
         		ContactIndexDto.LAST_CONTACT_DATE, ContactIndexDto.CONTACT_CLASSIFICATION, 
         		ContactIndexDto.FOLLOW_UP_STATUS, ContactIndexDto.FOLLOW_UP_UNTIL, NUMBER_OF_VISITS,
-        		ContactIndexDto.CAZE_DISEASE, ContactIndexDto.CAZE,
+        		DISEASE_SHORT, ContactIndexDto.CAZE,
         		ContactIndexDto.CONTACT_OFFICER, NUMBER_OF_PENDING_TASKS
         		);
         getColumn(ContactIndexDto.CONTACT_PROXIMITY).setWidth(200);

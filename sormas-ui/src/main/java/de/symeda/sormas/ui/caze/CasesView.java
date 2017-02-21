@@ -7,6 +7,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -35,6 +36,8 @@ public class CasesView extends AbstractView {
 	private static final long serialVersionUID = -3533557348144005469L;
 	
 	public static final String VIEW_NAME = "cases";
+	
+	public static final String SEARCH_FIELD = "searchField";
 
 	private CaseGrid grid;    
     private Button createButton;
@@ -122,6 +125,12 @@ public class CasesView extends AbstractView {
         officerFilter.addItems(FacadeProvider.getUserFacade().getAssignableUsers(user, UserRole.SURVEILLANCE_OFFICER));
         officerFilter.addValueChangeListener(e->grid.setSurveillanceOfficerFilter(((UserReferenceDto)e.getProperty().getValue())));
         filterLayout.addComponent(officerFilter);
+        
+        TextField searchField = new TextField();
+		searchField.setWidth(200, Unit.PIXELS);
+		searchField.setInputPrompt(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, SEARCH_FIELD));
+		searchField.addTextChangeListener(e->grid.filterByText(e.getText()));
+		filterLayout.addComponent(searchField);
 
         return filterLayout;
     }

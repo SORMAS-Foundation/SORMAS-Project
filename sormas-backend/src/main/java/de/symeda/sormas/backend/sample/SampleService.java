@@ -50,7 +50,7 @@ public class SampleService extends AbstractAdoService<Sample> {
 			cq.where(filter);
 		}
 		
-		cq.orderBy(cb.desc(from.get(AbstractDomainObject.CREATION_DATE)));
+		cq.orderBy(cb.desc(from.get(Sample.REPORT_DATE_TIME)));
 		
 		List<Sample> resultList = em.createQuery(cq).getResultList();
 		return resultList;
@@ -64,7 +64,7 @@ public class SampleService extends AbstractAdoService<Sample> {
 		if(caze != null) {
 			cq.where(cb.equal(from.get(Sample.ASSOCIATED_CASE), caze));
 		}
-		cq.orderBy(cb.desc(from.get(AbstractDomainObject.CREATION_DATE)));
+		cq.orderBy(cb.desc(from.get(Sample.REPORT_DATE_TIME)));
 		
 		List<Sample> resultList = em.createQuery(cq).getResultList();
 		return resultList;

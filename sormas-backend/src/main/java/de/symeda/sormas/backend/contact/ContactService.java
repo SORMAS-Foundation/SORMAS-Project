@@ -39,7 +39,7 @@ public class ContactService extends AbstractAdoService<Contact> {
 		Root<Contact> from = cq.from(getElementClass());
 
 		cq.where(cb.equal(from.get(Contact.CAZE), caze));
-		cq.orderBy(cb.asc(from.get(AbstractDomainObject.ID)));
+		cq.orderBy(cb.desc(from.get(Contact.REPORT_DATE_TIME)));
 
 		List<Contact> resultList = em.createQuery(cq).getResultList();
 		return resultList;
@@ -67,7 +67,7 @@ public class ContactService extends AbstractAdoService<Contact> {
 		if (filter != null) {
 			cq.where(filter);
 		}
-		cq.orderBy(cb.asc(from.get(AbstractDomainObject.ID)));
+		cq.orderBy(cb.desc(from.get(Contact.REPORT_DATE_TIME)));
 
 		List<Contact> resultList = em.createQuery(cq).getResultList();
 		return resultList;

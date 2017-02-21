@@ -47,7 +47,7 @@ public class EventParticipantService extends AbstractAdoService<EventParticipant
 			cq.where(filter);
 		}
 		
-		cq.orderBy(cb.asc(from.get(AbstractDomainObject.ID)));
+		cq.orderBy(cb.desc(from.get(EventParticipant.CREATION_DATE)));
 		
 		List<EventParticipant> resultList = em.createQuery(cq).getResultList();
 		return resultList;
@@ -73,7 +73,7 @@ public class EventParticipantService extends AbstractAdoService<EventParticipant
 			cq.where(filter);
 		}
 		
-		cq.orderBy(cb.asc(from.get(AbstractDomainObject.ID)));
+		cq.orderBy(cb.desc(from.get(EventParticipant.CREATION_DATE)));
 		
 		List<EventParticipant> resultList = em.createQuery(cq).getResultList();
 		return resultList;

@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import de.symeda.sormas.api.DiseaseShort;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
@@ -39,8 +40,12 @@ public class EventsListArrayAdapter extends ArrayAdapter<Event> {
         uuid.setText(DataHelper.getShortUuid(event.getUuid()));
 
         TextView disease = (TextView) convertView.findViewById(R.id.eli_disease);
-        disease.setText(event.getDisease()!=null?event.getDisease().toString():null);
-
+        if(event.getDisease() != null) {
+            String diseaseName = event.getDisease().getName();
+            disease.setText(DiseaseShort.valueOf(diseaseName).toString());
+        } else {
+            disease.setText(null);
+        }
 //        TextView eventStatus = (TextView) convertView.findViewById(R.id.eli_eventStatus);
 //        eventStatus.setText(event.getEventStatus()!=null?event.getEventStatus().toString():null);
 

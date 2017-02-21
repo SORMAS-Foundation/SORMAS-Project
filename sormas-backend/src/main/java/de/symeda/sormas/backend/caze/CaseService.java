@@ -60,7 +60,7 @@ public class CaseService extends AbstractAdoService<Case> {
 		if (filter != null) {
 			cq.where(filter);
 		}
-		cq.orderBy(cb.asc(from.get(AbstractDomainObject.ID)));
+		cq.orderBy(cb.desc(from.get(Case.REPORT_DATE)));
 		cq.distinct(true);
 
 		List<Case> resultList = em.createQuery(cq).getResultList();

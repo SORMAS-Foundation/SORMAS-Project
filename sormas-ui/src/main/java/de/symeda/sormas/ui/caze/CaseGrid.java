@@ -14,11 +14,12 @@ import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.ui.Grid;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.DiseaseShort;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
-import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -28,7 +29,10 @@ import de.symeda.sormas.ui.utils.UuidRenderer;
 public class CaseGrid extends Grid {
 	
 	public static final String NUMBER_OF_PENDING_TASKS = "numberOfPendingTasks";
-
+	public static final String DISEASE_SHORT = "diseaseShort";
+	public static final String FIRST_NAME = "firstName";
+	public static final String LAST_NAME = "lastName";
+	
 	public CaseGrid() {
         setSizeFull();
 
@@ -51,12 +55,49 @@ public class CaseGrid extends Grid {
 			}
 		});
         
-        setColumns(CaseDataDto.UUID, CaseDataDto.DISEASE, 
-        		CaseDataDto.CASE_CLASSIFICATION, CaseDataDto.INVESTIGATION_STATUS, CaseDataDto.PERSON, 
+        generatedContainer.addGeneratedProperty(DISEASE_SHORT, new PropertyValueGenerator<String>() {
+			@Override
+			public String getValue(Item item, Object itemId, Object propertyId) {
+				CaseDataDto caseDataDto = (CaseDataDto) itemId;
+				String diseaseName = caseDataDto.getDisease().getName();
+				return DiseaseShort.valueOf(diseaseName).toString();
+			}
+			@Override
+			public Class<String> getType() {
+				return String.class;
+			}
+        });
+        
+        generatedContainer.addGeneratedProperty(FIRST_NAME, new PropertyValueGenerator<String>() {
+			@Override
+			public String getValue(Item item, Object itemId, Object propertyId) {
+				CaseDataDto caseDataDto = (CaseDataDto) itemId;
+				return caseDataDto.getPerson().getFirstName();
+			}
+			@Override
+			public Class<String> getType() {
+				return String.class;
+			}
+        });
+        
+        generatedContainer.addGeneratedProperty(LAST_NAME, new PropertyValueGenerator<String>() {
+			@Override
+			public String getValue(Item item, Object itemId, Object propertyId) {
+				CaseDataDto caseDataDto = (CaseDataDto) itemId;
+				return caseDataDto.getPerson().getLastName();
+			}
+			@Override
+			public Class<String> getType() {
+				return String.class;
+			}
+        });
+        
+        setColumns(CaseDataDto.UUID, DISEASE_SHORT, 
+        		CaseDataDto.CASE_CLASSIFICATION, CaseDataDto.INVESTIGATION_STATUS, FIRST_NAME, LAST_NAME, 
         		CaseDataDto.DISTRICT, CaseDataDto.REPORT_DATE, NUMBER_OF_PENDING_TASKS);
 
         getColumn(CaseDataDto.UUID).setRenderer(new UuidRenderer());
-        
+ 
         for (Column column : getColumns()) {
         	column.setHeaderCaption(I18nProperties.getPrefixFieldCaption(
         			CaseDataDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
@@ -125,6 +166,15 @@ public class CaseGrid extends Grid {
 	        getContainer().addContainerFilter(filter);
     	}
     }
+	
+	public void filterByText(String text) {
+		getContainer().removeContainerFilters(CaseDataDto.UUID);
+		getContainer().removeContainerFilters(CaseDataDto.PERSON);
+		if(text != null && !text.isEmpty()) {
+			Or textFilter = new Or(new SimpleStringFilter(CaseDataDto.UUID, text, true, false), new SimpleStringFilter(CaseDataDto.PERSON, text, true, false));
+			getContainer().addContainerFilter(textFilter);
+		}
+	}
 	
     @SuppressWarnings("unchecked")
 	private BeanItemContainer<CaseDataDto> getContainer() {

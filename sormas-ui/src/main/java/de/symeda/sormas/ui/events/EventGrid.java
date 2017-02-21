@@ -13,8 +13,10 @@ import com.vaadin.ui.Grid;
 import com.vaadin.ui.renderers.DateRenderer;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.DiseaseShort;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.EventType;
@@ -27,6 +29,7 @@ public class EventGrid extends Grid {
 	
 	public static final String INFORMATION_SOURCE = "informationSource";
 	public static final String PENDING_EVENT_TASKS = "pendingEventTasks";
+	public static final String DISEASE_SHORT = "diseaseShort";
 
 	public EventGrid() {
 		setSizeFull();
@@ -62,7 +65,24 @@ public class EventGrid extends Grid {
 			}
 		});
 		
-		setColumns(EventDto.UUID, EventDto.EVENT_TYPE, EventDto.DISEASE, EventDto.EVENT_STATUS,
+		generatedContainer.addGeneratedProperty(DISEASE_SHORT, new PropertyValueGenerator<String>() {
+			@Override
+			public String getValue(Item item, Object itemId, Object propertyId) {
+				EventDto eventDto = (EventDto) itemId;
+				if(eventDto.getDisease() != null) {
+					String diseaseName = eventDto.getDisease().getName();
+					return DiseaseShort.valueOf(diseaseName).toString();
+				} else {
+					return null;
+				}
+			}
+			@Override
+			public Class<String> getType() {
+				return String.class;
+			}
+        });
+		
+		setColumns(EventDto.UUID, EventDto.EVENT_TYPE, DISEASE_SHORT, EventDto.EVENT_STATUS,
 				EventDto.EVENT_DATE, EventDto.EVENT_DESC, EventDto.EVENT_LOCATION, INFORMATION_SOURCE, EventDto.REPORT_DATE_TIME, PENDING_EVENT_TASKS);
 		
 		getColumn(EventDto.UUID).setRenderer(new UuidRenderer());
