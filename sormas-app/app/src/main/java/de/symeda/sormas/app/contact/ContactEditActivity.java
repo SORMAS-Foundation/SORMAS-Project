@@ -50,7 +50,7 @@ public class ContactEditActivity extends AbstractEditActivity {
         super.onResume();
 
         Bundle params = getIntent().getExtras();
-        if(params!=null) {
+        if (params != null) {
             if (params.containsKey(KEY_CASE_UUID)) {
                 caseUuid = params.getString(KEY_CASE_UUID);
             }
@@ -72,12 +72,12 @@ public class ContactEditActivity extends AbstractEditActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         Bundle params = getIntent().getExtras();
-        if(params!=null) {
-            if(params.containsKey(KEY_CASE_UUID)) {
+        if (params != null) {
+            if (params.containsKey(KEY_CASE_UUID)) {
                 outState.putString(KEY_CASE_UUID, caseUuid);
             }
             if (params.containsKey(KEY_CONTACT_UUID)) {
-                outState.putString(KEY_CONTACT_UUID,contactUuid);
+                outState.putString(KEY_CONTACT_UUID, contactUuid);
             }
             if (params.containsKey(KEY_PAGE)) {
                 outState.putInt(KEY_PAGE, currentTab);
@@ -97,7 +97,7 @@ public class ContactEditActivity extends AbstractEditActivity {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         ContactEditTabs tab = ContactEditTabs.values()[currentTab];
-        switch(tab) {
+        switch (tab) {
             // contact data tab
             case CONTACT_DATA:
                 updateActionBarGroups(menu, false, false, true);
@@ -142,27 +142,19 @@ public class ContactEditActivity extends AbstractEditActivity {
             // Save button
             case R.id.action_save:
 
-                switch(tab) {
-                    // contact data tab
-                    case CONTACT_DATA:
-                        ContactDao contactDao = DatabaseHelper.getContactDao();
-                        Contact contact = (Contact) adapter.getData(0);
+                // CONTACT_DATA
+                ContactDao contactDao = DatabaseHelper.getContactDao();
+                Contact contact = (Contact) adapter.getData(ContactEditTabs.CONTACT_DATA.ordinal());
+                contactDao.save(contact);
 
-                        contactDao.save(contact);
-                        Toast.makeText(this, "contact "+ DataHelper.getShortUuid(contact.getUuid()) +" saved", Toast.LENGTH_SHORT).show();
-                        break;
-                    case PERSON:
-                        Person person = (Person)adapter.getData(1);
-
-                        if(person.getAddress()!=null) {
-                            DatabaseHelper.getLocationDao().save(person.getAddress());
-                        }
-
-                        DatabaseHelper.getPersonDao().save(person);
-                        Toast.makeText(this, "person "+ DataHelper.getShortUuid(person.getUuid()) +" saved", Toast.LENGTH_SHORT).show();
-                        break;
-
+                // PERSON
+                Person person = (Person) adapter.getData(ContactEditTabs.PERSON.ordinal());
+                if (person.getAddress() != null) {
+                    DatabaseHelper.getLocationDao().save(person.getAddress());
                 }
+                DatabaseHelper.getPersonDao().save(person);
+
+                Toast.makeText(this, "contact " + DataHelper.getShortUuid(contact.getUuid()) + " saved", Toast.LENGTH_SHORT).show();
 
                 onResume();
                 pager.setCurrentItem(currentTab);
@@ -171,16 +163,16 @@ public class ContactEditActivity extends AbstractEditActivity {
 
             // Add button
             case R.id.action_add:
-                switch(tab) {
+                switch (tab) {
                     case VISITS:
                         // only contact officer is allowd to create visits
 //                        if(UserRole.CONTACT_OFFICER.equals(ConfigProvider.getUser().getUserRole())) {
-                            Bundle visitBundle = new Bundle();
-                            visitBundle.putString(KEY_CONTACT_UUID, contactUuid);
-                            visitBundle.putBoolean(VisitEditDataTab.NEW_VISIT, true);
-                            Intent intentVisitEdit = new Intent(this, VisitEditActivity.class);
-                            intentVisitEdit.putExtras(visitBundle);
-                            startActivity(intentVisitEdit);
+                        Bundle visitBundle = new Bundle();
+                        visitBundle.putString(KEY_CONTACT_UUID, contactUuid);
+                        visitBundle.putBoolean(VisitEditDataTab.NEW_VISIT, true);
+                        Intent intentVisitEdit = new Intent(this, VisitEditActivity.class);
+                        intentVisitEdit.putExtras(visitBundle);
+                        startActivity(intentVisitEdit);
 //                        }
                         break;
                 }

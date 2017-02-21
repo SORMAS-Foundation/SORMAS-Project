@@ -61,8 +61,8 @@ public class CaseEditActivity extends AbstractEditActivity {
         super.onResume();
 
         Bundle params = getIntent().getExtras();
-        if(params!=null) {
-            if(params.containsKey(KEY_CASE_UUID)) {
+        if (params != null) {
+            if (params.containsKey(KEY_CASE_UUID)) {
                 caseUuid = params.getString(KEY_CASE_UUID);
             }
             if (params.containsKey(KEY_PAGE)) {
@@ -80,8 +80,8 @@ public class CaseEditActivity extends AbstractEditActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         Bundle params = getIntent().getExtras();
-        if(params!=null) {
-            if(params.containsKey(KEY_CASE_UUID)) {
+        if (params != null) {
+            if (params.containsKey(KEY_CASE_UUID)) {
                 outState.putString(KEY_CASE_UUID, caseUuid);
             }
             if (params.containsKey(KEY_PAGE)) {
@@ -102,7 +102,7 @@ public class CaseEditActivity extends AbstractEditActivity {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         CaseEditTabs tab = CaseEditTabs.values()[currentTab];
-        switch(tab) {
+        switch (tab) {
             case CASE_DATA:
                 updateActionBarGroups(menu, false, false, true);
                 break;
@@ -116,7 +116,7 @@ public class CaseEditActivity extends AbstractEditActivity {
                 break;
 
             case CONTACTS:
-                updateActionBarGroups(menu,false, true, false);
+                updateActionBarGroups(menu, false, true, false);
                 break;
 
             case TASKS:
@@ -147,7 +147,7 @@ public class CaseEditActivity extends AbstractEditActivity {
             case R.id.action_help:
                 HelpDialog helpDialog = new HelpDialog(this);
 
-                switch(tab) {
+                switch (tab) {
                     case SYMPTOMS:
                         String helpText = HelpDialog.getHelpForForm((LinearLayout) this.findViewById(R.id.case_symptoms_form));
                         helpDialog.setMessage(Html.fromHtml(helpText).toString());
@@ -162,57 +162,49 @@ public class CaseEditActivity extends AbstractEditActivity {
             case R.id.action_save:
                 CaseDao caseDao = DatabaseHelper.getCaseDao();
 
+                //Toast.makeText(this, "case " + DataHelper.getShortUuid(caze.getUuid()) + " saved", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(this, "person " + person.toString() + " saved", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(this, "symptoms saved", Toast.LENGTH_SHORT).show();
 
-                switch (tab) {
-                    case CASE_DATA:
 
-                        Case caze = (Case) adapter.getData(0);
+                // PATIENT
+                LocationDao locLocationDao = DatabaseHelper.getLocationDao();
+                PersonDao personDao = DatabaseHelper.getPersonDao();
 
-                        caseDao.save(caze);
-                        Toast.makeText(this, "case " + DataHelper.getShortUuid(caze.getUuid()) + " saved", Toast.LENGTH_SHORT).show();
+                Person person = (Person) adapter.getData(CaseEditTabs.PATIENT.ordinal());
 
-                        SyncCasesTask.syncCases(getSupportFragmentManager());
-                        break;
-
-                    case PATIENT:
-                        LocationDao locLocationDao = DatabaseHelper.getLocationDao();
-                        PersonDao personDao = DatabaseHelper.getPersonDao();
-
-                        Person person = (Person) adapter.getData(1);
-
-                        if (person.getAddress() != null) {
-                            locLocationDao.save(person.getAddress());
-                        }
-                        personDao.save(person);
-                        Toast.makeText(this, "person " + person.toString() + " saved", Toast.LENGTH_SHORT).show();
-
-                        new SyncPersonsTask().execute();
-                        break;
-
-                    case SYMPTOMS:
-                        SymptomsDao symptomsDao = DatabaseHelper.getSymptomsDao();
-                        Symptoms symptoms = (Symptoms) adapter.getData(CaseEditTabs.SYMPTOMS.ordinal());
-
-                        SymptomsEditTab symptomsEditTab = (SymptomsEditTab) adapter.getTabByPosition(CaseEditTabs.SYMPTOMS.ordinal());
-
-                        try {
-                            symptomsEditTab.validateCaseData(symptoms);
-
-                            if (symptoms != null) {
-                                symptomsDao.save(symptoms);
-                            }
-
-                            caseDao.markAsModified(caseUuid);
-
-                            Toast.makeText(this, "symptoms saved", Toast.LENGTH_SHORT).show();
-
-                            SyncCasesTask.syncCases(getSupportFragmentManager());
-                            break;
-                        } catch(ValidationFailedException e) {
-                            Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
-                            return true;
-                        }
+                if (person.getAddress() != null) {
+                    locLocationDao.save(person.getAddress());
                 }
+                personDao.save(person);
+
+                new SyncPersonsTask().execute();
+
+                // SYMPTOMS
+                SymptomsDao symptomsDao = DatabaseHelper.getSymptomsDao();
+                Symptoms symptoms = (Symptoms) adapter.getData(CaseEditTabs.SYMPTOMS.ordinal());
+
+                SymptomsEditTab symptomsEditTab = (SymptomsEditTab) adapter.getTabByPosition(CaseEditTabs.SYMPTOMS.ordinal());
+
+                try {
+                    symptomsEditTab.validateCaseData(symptoms);
+
+                    if (symptoms != null) {
+                        symptomsDao.save(symptoms);
+                    }
+
+                } catch (ValidationFailedException e) {
+                    Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
+                }
+
+
+                // CASE_DATA
+                Case caze = (Case) adapter.getData(CaseEditTabs.CASE_DATA.ordinal());
+                caseDao.save(caze);
+
+                SyncCasesTask.syncCases(getSupportFragmentManager());
+
+                Toast.makeText(this, "case saved", Toast.LENGTH_SHORT).show();
 
                 onResume();
                 pager.setCurrentItem(currentTab);
@@ -221,7 +213,7 @@ public class CaseEditActivity extends AbstractEditActivity {
 
             // Add button
             case R.id.action_add:
-                switch(tab) {
+                switch (tab) {
                     case CONTACTS:
                         Bundle contactCreateBundle = new Bundle();
                         contactCreateBundle.putString(KEY_CASE_UUID, caseUuid);
@@ -246,7 +238,10 @@ public class CaseEditActivity extends AbstractEditActivity {
 
 
         }
-        return super.onOptionsItemSelected(item);
+
+        return super.
+
+                onOptionsItemSelected(item);
     }
 
 }
