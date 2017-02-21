@@ -10,13 +10,10 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasRootActivity;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.user.User;
+import de.symeda.sormas.app.component.AbstractRootTabActivity;
 
 
-/**
- * Created by Stefan Szczesny on 21.07.2016.
- */
-public class UserActivity extends SormasRootActivity {
-
+public class UserActivity extends AbstractRootTabActivity {
 
     private UserTab userTab;
 
