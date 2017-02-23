@@ -966,34 +966,34 @@ ALTER TABLE task ADD CONSTRAINT fk_task_event_id FOREIGN KEY (event_id) REFERENC
 
 INSERT INTO schema_version (version_number, comment) VALUES (19, 'Event added to task');
 
--- 2016-01-17 Change kind of involvement to involvement description #66
+-- 2017-01-17 Change kind of involvement to involvement description #66
 
 ALTER TABLE eventparticipant DROP COLUMN kindofinvolvement;
 ALTER TABLE eventparticipant ADD COLUMN involvementdescription varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (20, 'Involvement description instead of Kind of involvement');
 
--- 2016-01-20 Add relation to case to contact #75
+-- 2017-01-20 Add relation to case to contact #75
 
 ALTER TABLE contact ADD COLUMN relationtocase varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (21, 'Add relation to case to contact');
 
--- 2016-01-23 Add nickname and mother's maiden name to person #19
+-- 2017-01-23 Add nickname and mother's maiden name to person #19
 
 ALTER TABLE person ADD COLUMN nickname varchar(255);
 ALTER TABLE person ADD COLUMN mothersmaidenname varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (22, 'Add nickname and mothers maiden name to person');
 
--- 2016-01-26 add health facility to user (informant) #49
+-- 2017-01-26 add health facility to user (informant) #49
 
 ALTER TABLE users ADD COLUMN healthfacility_id bigint;
 ALTER TABLE users ADD CONSTRAINT fk_users_healthfacility_id FOREIGN KEY (healthfacility_id) REFERENCES facility(id);
 
 INSERT INTO schema_version (version_number, comment) VALUES (23, 'Add health facility to users (informant)');
 
--- 2016-01-30 Sample and SampleTest backend #106
+-- 2017-01-30 Sample and SampleTest backend #106
 
 CREATE TABLE samples(
 	id bigint not null,
@@ -1038,7 +1038,7 @@ ALTER TABLE sampletest OWNER TO sormas_user;
 	
 INSERT INTO schema_version (version_number, comment) VALUES (24, 'Sample and SampleTest backend');
 
--- 2016-02-03 Foreign keys for samples and sampletests #106
+-- 2017-02-03 Foreign keys for samples and sampletests #106
 
 ALTER TABLE samples ADD CONSTRAINT fk_samples_associatedcase_id FOREIGN KEY (associatedcase_id) REFERENCES cases (id);
 ALTER TABLE samples ADD CONSTRAINT fk_samples_reportinguser_id FOREIGN KEY (reportinguser_id) REFERENCES users (id);
@@ -1050,26 +1050,26 @@ ALTER TABLE sampletest ADD CONSTRAINT fk_sampletest_labuser_id FOREIGN KEY (labu
 
 INSERT INTO schema_version (version_number, comment) VALUES (25, 'Foreign keys for samples and sampletest');
 
--- 2016-02-03 Laboratory user role #111
+-- 2017-02-03 Laboratory user role #111
 
 ALTER TABLE users ADD COLUMN laboratory_id bigint;
 ALTER TABLE users ADD CONSTRAINT fk_users_laboratory_id FOREIGN KEY (laboratory_id) REFERENCES facility (id);
 
 INSERT INTO schema_version (version_number, comment) VALUES (26, 'Laboratory user role');
 
--- 2016-02-03 Add admin role to user 'admin'
+-- 2017-02-03 Add admin role to user 'admin'
 
 INSERT INTO userroles (user_id, userrole) VALUES ((SELECT id FROM users WHERE username = 'admin'), 'ADMIN');
 
 INSERT INTO schema_version (version_number, comment) VALUES (27, 'Add admin role to user admin');
 
--- 2016-02-08 Removed null constraint from shipment date
+-- 2017-02-08 Removed null constraint from shipment date
 
 ALTER TABLE samples ALTER COLUMN shipmentdate DROP NOT NULL;
 
 INSERT INTO schema_version (version_number, comment) VALUES (28, 'Removed null constraint from shipment date');
 
--- 2016-02-17 Update samples entity #117
+-- 2017-02-17 Update samples entity #117
 
 ALTER TABLE samples ADD COLUMN comment varchar(512);
 ALTER TABLE samples DROP COLUMN notestpossible;
@@ -1077,7 +1077,7 @@ ALTER TABLE samples ADD COLUMN specimencondition varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (29, 'Update samples entity');
 
--- 2016-02-21 Hospitalization and PreviousHospitalization entities #89
+-- 2017-02-21 Hospitalization and PreviousHospitalization entities #89
 
 CREATE TABLE hospitalization(
 	id bigint not null,
@@ -1113,3 +1113,25 @@ ALTER TABLE cases ADD COLUMN hospitalization_id bigint;
 ALTER TABLE cases ADD CONSTRAINT fk_cases_hospitalization_id FOREIGN KEY (hospitalization_id) REFERENCES hospitalization (id);
 
 INSERT INTO schema_version (version_number, comment) VALUES (30, 'Hospitalization and PreviousHospitalization entities');
+
+-- 2017-02-21 Drop Abia state #28 (Kano)
+
+DELETE FROM task;
+DELETE FROM sampletest;
+DELETE FROM samples;
+DELETE FROM visit;
+DELETE FROM contact;
+DELETE FROM eventparticipant;
+DELETE FROM events;
+DELETE FROM cases;
+DELETE FROM symptoms;
+DELETE FROM person;
+DELETE FROM userroles;
+DELETE FROM users;
+DELETE FROM facility;
+DELETE FROM location;
+DELETE FROM community;
+DELETE FROM district;
+DELETE FROM region;
+
+INSERT INTO schema_version (version_number, comment) VALUES (31, 'Removed Abia state demo data');

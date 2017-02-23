@@ -28,6 +28,7 @@ import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.user.Permission;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
+import de.symeda.sormas.backend.util.InfrastructureDataImporter;
 import de.symeda.sormas.backend.util.MockDataGenerator;
 
 @Singleton(name = "StartupShutdownService")
@@ -53,7 +54,7 @@ public class StartupShutdownService {
 	
 	@PostConstruct
 	public void startup() {
-		initRegionMockData();
+		importRegionAndFacilityData();
 		initLaboratoriesMockData();
 		initUserMockData();
 	}
@@ -88,18 +89,14 @@ public class StartupShutdownService {
 		}
 	}
 
-	private void initRegionMockData() {
+	private void importRegionAndFacilityData() {
 		List<Region> regions = regionService.getAll();
 		if (regions.isEmpty()) {
 	    	regions = Arrays.asList(
-	    			MockDataGenerator.importRegion("Abia")
+	    			InfrastructureDataImporter.importRegion("Kano")
 	    			);
 	    	
 			for (Region region : regions) {
-				// limit the test data to 5 districts
-				while (region.getDistricts().size() > 5) {
-					region.getDistricts().remove(5);
-				}
 				for (District district : region.getDistricts()) {
 					for (Community community : district.getCommunities()) {
 						communityService.persist(community);
@@ -112,12 +109,12 @@ public class StartupShutdownService {
 		
 		if (facilityService.getAll().isEmpty()) {
 			for (Region region : regions) {
-				List<Facility> facilities = MockDataGenerator.importFacilities(region);
+				List<Facility> facilities = InfrastructureDataImporter.importFacilities(region);
 				for (Facility facility : facilities) {
-					// only save facilities whose districts exist
-					if (facility.getLocation().getDistrict() != null) {
-						facilityService.persist(facility);
+					if (facility.getLocation().getDistrict() == null) {
+						throw new NullPointerException("Facility should have a district defined: " + facility.getName());
 					}
+					facilityService.persist(facility);
 				}
 			}
 		}
@@ -127,7 +124,7 @@ public class StartupShutdownService {
 		
 		if (facilityService.getAllByFacilityType(FacilityType.LABORATORY).isEmpty()) {
 			List<Region> regions = regionService.getAll();
-			List<Facility> labs = MockDataGenerator.importLaboratories(regions);
+			List<Facility> labs = InfrastructureDataImporter.importLaboratories(regions);
 			for (Facility lab : labs) {
 				facilityService.persist(lab);
 			}

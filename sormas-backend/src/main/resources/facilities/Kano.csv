@@ -1,0 +1,1067 @@
+LGA,C,254;Ward,C,254;Settlement,C,254;HF_Name,C,254;HF_Type,C,254;Ownership;Address,C,254;Longitude,N,16,6;Latitude,N,16,6
+Ajingi;Ajingi;Sakalawa;Sakalawa Health Post;Health Post;;Sakalawa Along Balare Road;9,03451;11,93277
+Ajingi;Balare;Tsebarawa;Tsebarawa Health Post;Health Post;;Tsebarawa Cikin Gari;8,94522;12,02396
+Ajingi;Balare;Balare;Balare Dispensery;Health Post;;Balare Town Behind Primary School;8,92815;11,98621
+Ajingi;Balare;Fultan;Fultan Health Post;Health Post;;Fulatan Village Near Over Head Tank;8,91687;11,96603
+Ajingi;Chula;Kawari;Kawari Health Post;Health Post;;Along Gurdiba Road Kawari Village;9,00604;12,00762
+Ajingi;Chula;Chula;Chula Dispensery;Health Clinic;;Chula Opposite Jss Chula;8,97061;11,98974
+Ajingi;Dabi;Fagawa;Fagawa Health Post;Health Post;;Fagawa Near Primary School;8,88317;11,96553
+Ajingi;Dabi;Dabi;Dabi Health Post;Health Post;;Dabi Opposite Primary School;8,9093;11,93444
+Ajingi;Dabi;Marita;Marita Health Post;Health Post;;Marita Village;8,937;11,944
+Ajingi;Dundun;Maigana;Maigana Health Post;Health Post;;Maigana Opposite Central Mosque;9,00093;11,94266
+Ajingi;Dundun;Usman Abdulhamid;Dundun Health Post;Health Post;;Dundun Hear Madaki House Along Main Raod;9,03448;11,93272
+Ajingi;Gafasa;Gafasan;Gafasa;Health Post;;Gafasa Ajingi L.G Kano State;9,13308;11,98464
+Ajingi;Gafasa;Danmalan;Danmalan;Health Post;;Danmalan Cikin Gari;9,19;11,93935
+Ajingi;Gafasa;Jiyayya;Jiyayya Health Post;Health Post;;Jiyayya;9,09435;11,9813
+Ajingi;Gurdiba;Gurdiba;Gurdiba Dispensery;Health Clinic;;Gurdiba;9,00136;12,022
+Ajingi;Gurdiba;Kullimi;Kullimi Health Post;Health Post;;Kullimi Near Primary School;9,03049;12,03145
+Ajingi;Gurdiba;Z/Guly A;Zango Guly Health Post;Health Post;;Zango Gulya Opposite Primary School;8,95273;12,04374
+Ajingi;Kunkurawa;Kiroro;Kiroro Health Post;Health Post;;Kiroro Village;9,11812;11,96169
+Ajingi;Kunkurawa;Kunkurawa;Kunkurawa Health Post;Health Post;;Kunkurawa;9,06384;11,9748
+Ajingi;Kunkurawa;Karan Makama;Kara Makama Dispensery;Health Clinic;;Karan Makama;9,07405;11,95695
+Ajingi;Kunkurawa;Makarya;Makarya;Primary Health Care Centre;;Makarya Kudu Da Gari;9,11207;11,93614
+Ajingi;Ajingi;Ajingi;Ajingi Basic Health Clinic;Primary Health Care Centre;;Ajingi Town, Near By Special Primary;9,04193;11,96978
+Ajingi;Toranke;Kara Dagaji;Kara Dagaji;Health Clinic;;Kara Dagaji Kudu Dagari;9,15497;11,92997
+Ajingi;Toranke;Toranke;Toranke;Health Clinic;;Toranke Gabas Ajingi Local Govt.;9,17179;11,99333
+Ajingi;Toranke;Biyamusu;Biyamusu Health Post;Health Post;;Opp WH House-Rimgim Road Biyamusu;9,1917;12,08042
+Ajingi;Toranke;Kawoni;Kawoni Health Post;Health Post;;Oppositeosit Kawoni Primary School, Kawoni Village;9,20595;11,99666
+Ajingi;U/Bai;Kadiri;Kadiri Dispensery;Health Clinic;;Kadiri;9,03471;12,06419
+Ajingi;Ung. Bai;Unguwar Bai;Unguwar Bai Dispensery;Health Post;;Ung. Bai Near Market;8,98044;12,04677
+Ajingi;Unguwar Bai;Gagarawa;Gagarawa;Health Post;;Gagarawa;9,00338;12,05025
+Albasu;Albasu;Albasu;Albasu Primary Health Centre;Primary Health Care Centre;;Albasu Cikin Gari Albasu;9,12789;11,3378
+Albasu;Albasu;Jigar;Jigar Health Postosr;Health Post;;Jigar Sabon Gari;9,06927;11,66425
+Albasu;Albasu;Ggass Albasu;Ggass Abs;Health Post;;Ggass Albasu;9,15083;11,67435
+Albasu;Bataiya;Mangari;Mangri;Health Post;;Mangari Tasha Bataiya;9,00923;11,64478
+Albasu;Bataiya;Beleke/Baura;Health Post Baleke;Health Post;;Baleke C/Gari Bataiya;9,05032;11,65341
+Albasu;Bataiya;Bataiya;Health Cliniclinc Bataiya;Health Clinic;;Kofar Yamma Faragai Road;9,02867;11,68363
+Albasu;Daho;Farantama;Farantama Health Post;Health Post;;Farantama By Village Head House;9,21312;11,6832
+Albasu;Daho;Daho;Daho Health Post;Health Post;;Daho By Market Site;9,20715;11,66455
+Albasu;Daho;Zuwan Hawa;Zuwan Hawa Health Post;Health Post;;Zuwan Hawa Town;9,22356;11,72946
+Albasu;Daho;Biskin;Biskin Health Post;;;;9,24182;11,68469
+Albasu;Duja;Chamalana Ganuwa;Chamalana Health Post;Health Post;;Chamarana Ganuwa;9,10682;11,63115
+Albasu;Duja;Duja;Health Post Duja;Health Post;;Albasu Road Duja;9,09061;11,65413
+Albasu;Faragai;Faragai;Faragai Dispenseryensary;Primary Health Care Centre;;Gwangwaran Dan Road Faragai;8,9869;11,66682
+Albasu;Faragai;Sabon Gari Naira;S/G Naira Health Post;Health Post;;Sabon Gari Naira;8,96414;11,66437
+Albasu;Faragai;Gwangwarandan;Gwangwarandan Health Post;Health Post;;Gwangwaran Dan Faragai Road;8,95667;11,52927
+Albasu;Faragai;Gwagi;Gwagi Health Post;;;;8,95657;11,64643
+Albasu;Gagarami;Gagarami;Gagarami Health Post;Health Post;;Sabuwar Kasuwa Gagarami;9,19063;11,55394
+Albasu;Gagarami;Jirago;Jirago  Health Post;Health Post;;Jirago Town;9,27887;11,57577
+Albasu;Gagarami;Jirago Makera;Jirago Makera Health Post;;;;9,27992;11,57678
+Albasu;Gagarami;Zananne;Zananne;;;;9,25591;11,63631
+Albasu;Hungu;Hungu;Hungu Healthealth Clinic;Primary Health Care Centre;;Wudil To Takai Road Hungu;9,04773;11,60395
+Albasu;Hungu;Sittika;Sittika Health Post;Health Post;;Sittika;8,95516;11,53
+Albasu;Hungu;Yauwra;Yauwra Health Post;;;;8,96859;11,61035
+Albasu;Panda;Hamdullahi;Hamdullahi Dispenseryensary;Health Post;;Hamdullahi Kofar Fada Albasu Road;8,6044;11,9527
+Albasu;Panda;Panda;Panda Dispenseryensary;Health Post;;Maidiguri Road Panda Albasu;9,04806;11,60417
+Albasu;Panda;Umbara;Umbara Health Post;Health Post;;Umbara Cikin Gari;9,05792;11,55764
+Albasu;Panda;Rubun;Rubun Health Post;;;;9,18934;11,5532
+Albasu;Saya-Saya;Saya-Saya;Saya-Saya Dispenseryensary;Health Post;;Saya-Saya Ckin Gari;8,96691;11,71649
+Albasu;Saya-Saya;Burburwa;Burburwa Health Post;Health Post;;Burburwa Kofar Gari;8,93264;11,72364
+Albasu;Saya-Saya;Kalahandi;Health Post Kalahandi;Health Post;;Kalahandi Bakin Gari;9,01119;11,71762
+Albasu;Tsangaya;Tsangaya;Tsangaya Primary Health Centre;Primary Health Care Centre;;Tsangaya Town Along Daho Road;9,21476;11,61883
+Albasu;Tsangaya;Yawurma;Yawurma Health Post;Health Post;;Yawurma Town;9,16829;11,64809
+Bagwai;Bagwai;Bagwai;Abbas Health Clinic;Primary Health Care Centre;;Abbas Health Center Bagwai Town;8,13694;12,15327
+Bagwai;Bagwai;Daddauda;Daddauda Health Post;Health Post;;Daddauda Health Post,Daddauda Town Bagwai L.G.A.;8,173707;12,1951
+Bagwai;Dangada;Kariya Maikambu;Kariyarm Health Post;Health Post;;Kariya Maikambu Health Post;8,20146;12,04335
+Bagwai;Dangada;Kafin Maiko;Kafin Maiko Health Post;Health Post;;Kafin Maiko C/G H/Post;8,16734;12,03877
+Bagwai;Dangada;Dangada C/Gari;Dangada Mph;Primary Health Care Centre;;Dangana C/Gari;8,13183;12,01051
+Bagwai;Gadanya;Surfan;Surfan Health Post;Health Post;;Surfan Health Post Sare Sare Ward Bagwai L.G.A.;8,00532;12,13533
+Bagwai;Gadanya;Alajawa;Alajawa Health Post;Health Post;;Alajawa Health Post Sare-Sare Ward;7,99399;12,10249
+Bagwai;Gadanya;Gadanya;Gadanya Health Clinic;Health Clinic;;Gadanya Health Clinic;8,03874;12,09042
+Bagwai;Gadanya;Jauben Yamma;J/Yamma Health Post;Health Post;;Jauben Yamma Health Post Gadanya Ward;8,05647;12,06682
+Bagwai;Gadanya;Tudara;Tudara Health Post;Health Post;;Tudara Health Post Tudara C/Gari Gadanyaward;8,06531;12,10534
+Bagwai;Gogori;Gogori;Gogori Health Clinic;Health Clinic;;Gogori Health Clinic Gogori Ward Bagwai L.G.A.;8,0711;12,14778
+Bagwai;Gogori;Gajal;Gajal Health Post;Health Post;;Gajal Health Post Gogori Ward Bagwai L.G.A.;8,10594;12,08376
+Bagwai;Kiyawa;K/Adam;K/Adam Health Post;Health Post;;Kauyen Adam H/P Kiyawa Ward;8,20199;12,13061
+Bagwai;Kiyawa;Dan'Korau;Kiyawa Health Clinic;Health Clinic;;Kiyawa H/C Dankorau Settlement;8,18826;12,12256
+Bagwai;Kwajale;Rimin-Bai;Rimin Bai Health Post;Health Post;;Rimin -Bai Health Post,Kwajale Ward.;8,202;12,1306
+Bagwai;Kwajale;Tuga;Tuga Health Post;Health Post;;Tuga C/Gari H/Post;8,06716;12,24317
+Bagwai;Kwajale;Kwajale;Kwajale Dispensery;Health Post;;Kwajale C/Gari Disp;8,22144;12,0351
+Bagwai;R/Dako;Badodo C/Gari;Baddo Health Post;Health Clinic;;Badodo C/Gari H/P;8,21405;12,08934
+Bagwai;R/Dako;Baure;Baure Health Post;Health Post;;Baure Zangore H/Post Along Romo Ward;8,18983;12,18981
+Bagwai;Rimin Dako;R/Dakon C/Gari;Rimin Dako Health Post;Health Post;;Rimin Dako H/Post;8,25355;12,08476
+Bagwai;Romo;K/Kudu;Romo Health Clinic;Health Clinic;;Kofa Kudu Romo H/Clinic;8,17036;12,07346
+Bagwai;Romo;Jarumawa;Jarumawa Health Post;Health Post;;Jarumawa H/Post Romo Ward;8,15511;12,10791
+Bagwai;Romo;Yar-Tofa C/Gari;Yar-Tofa Health Post;Health Post;;Yar-Tofa C/Gari H/Post;8,13642;12,07851
+Bagwai;Sare-Sare;Sare-Sare;Sare-Sare Health Post;Health Post;;Sare-Sare Health Post  Sare-Sare Ward;8,04889;12,12235
+Bagwai;W/Bagga;Ginzo;Ginzo Health Post;Health Post;;Ginzo Health Post Wuro-Bagga Ward;8,07751;12,12431
+Bagwai;Wuro- Bagga;Wuro-Bagga;Wuro Bagga Model Primary Health Centre;Primary Health Care Centre;;W/Bagga Model Primary Health Centre W/Bagga Ward;8,09768;12,15014
+Bagwai;Wuro- Bagga;Tsattawa;Tsattawa Health Post;Health Post;;Tsattawa Health Post,Wuro Bagga Ward,Bagwai L.G.A.;8,13774;12,12888
+Bagwai;Wuro- Bagga;Badau;Badau Health Post;Health Post;;Badau Health Post Badau Town Wuro-Bagga Ward;8,1327;12,19333
+Bebeji;Anadariya;Anadariya;Anadariya;Health Post;;Anadariya Health Post;8,31732;11,45302
+Bebeji;Baguda;Baguda;Baguda Health Post;Health Post;;Baguda Health Post;8,31352;11,64472
+Bebeji;Bebeji;Jibga;Jibga Health Post;Health Post;;Jibga Health Post;8,35456;11,45639
+Bebeji;Damau;Damau;Damau;Health Post;;Damau Health Post;8,30328;11,68192
+Bebeji;Durmawa;Danbubu;Danbubu;Health Post;;Danbubu Health Post;8,35567;11,45749
+Bebeji;Durmawa;Durmawa;Health Post;Health Post;;Durmawa Health Post;8,25789;11,60676
+Bebeji;Gargai;Gargai;Gargai;Health Post;;Gargai Health Post;8,381;11,54475
+Bebeji;Gwarmai;Gwarmai;Gwarmai Primary Health Centre;Primary Health Care Centre;;Gwarmai Health Facility;8,25476;11,53333
+Bebeji;Gwarmai;Hayin Gwarmai;Hayin Gwarmai;Health Post;;Hayin Gwarmai Health Post;8,25318;11,53463
+Bebeji;Kofa;Kofa;Kofa Dispensery;Health Post;;Kofa Health Post;8,26378;11,55497
+Bebeji;Kuki;Nasarawa Kuki;Nasarawa Kuki;Health Post;;Nassarawa Kuki Health Post;8,27779;11,41436
+Bebeji;Kuki;Kuki;Kuki Dispensery;Health Post;;Kuki Dispensary;8,33427;11,44963
+Bebeji;Rahama;Rahama;Rahama Basic Health Clinic;Primary Health Care Centre;;Rahama Basic Health Centre;8,27221;11,40878
+Bebeji;Rahama;Cutar Biki;Cutar Biki Rahama;Health Post;;Cutar Biki Health Post;8,31057;11,42705
+Bebeji;Ranka;Ranka;Ranka;Health Post;;Ranka Health Post;8,32882;11,57264
+Bebeji;Rantan;Rantan;Rantar Health Post;Health Post;;Rantan Health Post;8,37123;11,51817
+Bebeji;Tariwa;Tariwa;Tariwa;Health Post;;Tariwa Health Post;8,3077;11,60422
+Bebeji;Wak;Wak;Wak Primary Health Centre;Primary Health Care Centre;;Wak Primary Health Centre;8,35787;11,59174
+Bichi;Badume;Gulbi;Gulbi;Health Post;;Along Badume Sankure Road Gulbi;8,28878;12,1816
+Bichi;Badume;Tsaure;Tsaure Health Cliniclinic;Health Clinic;;Tsaure;8,3197;12,20666
+Bichi;Badume;Kawaji;Kawaji Health Post;Health Post;;Ung. Arewa Kawaji;8,33284;12,23186
+Bichi;Badume;Unguwar Galadima;Badume Dispenseryensary;Others;;Unguwar Galadima Badume;8,31323;12,18935
+Bichi;Badume;Sanakur;Pelele Health Post;Health Post;;Along Pelele Road To Badume;8,2649;12,16547
+Bichi;Badume;Kyauta;Kyauta Health Post;Health Post;;Along Dorawar Shehu Road Kyauta;8,33939;12,19395
+Bichi;Badume;Yakasai;Yakasai Health Post;Health Post;;Along Katsina Kano Road Yakasai;8,29189;12,20201
+Bichi;Badume;Yola;Yola;Health Post;;Along Sabo Road Yola;8,28757;12,2443
+Bichi;Badume;Yan Bindu;Yanbundu;Health Post;;Near Primary School Yanbundu;8,29311;12,2691
+Bichi;Badume;Baki T/Sha;Badume Model Primary Health Centre;Primary Health Care Centre;;Along Katsina To Kano Road;8,31066;12,18826
+Bichi;Bichi;Bichi;F.C.E.T. Bichi;Primary Health Care Centre;;F.C.E.T. Staff Clinic Bichi;8,22526;12,21549
+Bichi;Bichi;Karari;Karari;Health Post;;Along Bichi To Karari Road;8,17444;12,24285
+Bichi;Bichi;Dutsen Karya;D/Karya;Health Post;;Along Kadari To Dutsen Karya Road;8,13304;12,21109
+Bichi;Damargu;Damargu;Damargu Primary Health Centrec;Primary Health Care Centre;;Along Damargu-Bichi Road, Damargu;8,32159;12,26573
+Bichi;Danzabawa;Lamba;Lamba;Primary Health Care Centre;;Lamba To Kazaure Road;8,15039;12,34693
+Bichi;Danzabuwa;Malikawa Garu;Malikawa Garu;Primary Health Care Centre;;Kazaure To Lamba Road;8,15287;12,39832
+Bichi;Danzabuwa;Dabzabuwa;Danzabuwa;Primary Health Care Centre;;Kano To Katsina Road;8,11029;12,34574
+Bichi;Danzubawa;Malikawa Garu;Malikawa Garu;Primary Health Care Centre;;Lamba To Kazaure Road;8,15336;12,39959
+Bichi;Dawzubuwa;Malikawa Sarari;Malikawa Sarari;Health Post;;Lamba To Kazaure Road;8,14753;12,3051
+Bichi;Fagolo;Yatsi;Yatsi;Health Post;;Near Village Head House Yatsi;8,44437;12,24786
+Bichi;Fagolo;Tukubi;Tukubi;Health Post;;Along Damargu To Tukubi Road;8,64167;12,26749
+Bichi;Fagolo;Gyauro;J/Gyauro Health Post;Health Post;;Off Kunku To Jigawar Gyauro Road;8,47059;12,25469
+Bichi;Fagolo;Fagolo;Fagolo;Health Post;;Off Saye To Fagolo Road;8,44328;12,30095
+Bichi;Fagolo;Kungu;Kungu;Health Post;;Along Kungu Fagolo Road;8,44524;12,2706
+Bichi;Kau Kau;Damisa;Damusa;Health Post;;Along Waire Damusa Road Damusa;8,21646;12,30893
+Bichi;Kau Kau;Y/Dutse;Y/Dutse;Health Post;;Behind Primary School Yan Dutse;8,24493;12,25993
+Bichi;Kwamarawa;Bankaura;Bankaura;Health Post;;Along Damargu Road Bankaura;8,38441;12,27072
+Bichi;Kwamarawa;Tinki;Tinki;Dispensary;;Along Saye To Tinki Road;8,39258;12,30313
+Bichi;Kwamarawa;Marga Dari;Marga Dari;Health Post;;Behind Marga Dari Primary School Marga Dari;8,36803;12,28882
+Bichi;Kwamarawa;Kwamarawa;Kwamarawa;Health Post;;Adjecent To Primary School Kwamarawa;8,38975;12,33017
+Bichi;Kwamarawa;Jama'Dibe;Galaji;Health Post;;Along Danbatta Saye Road Galaji;8,41189;12,29884
+Bichi;Kyali;Yangwarzo;Y/Gwarzo Health Post;Health Post;;Behind Jumaﬂ Mosque, Yan Gwarzo;8,15583;12,27444
+Bichi;Kyalli;Tsidau;Tsidau Health Post;Health Post;;Along Yangwarzo-Tsidau Road;8,14925;12,30035
+Bichi;Kyalli;Hagawa;Hagawa;Health Post;;Off D/ Karaya Road;8,16926;12,25559
+Bichi;Kyarli;Chiromawa;Chiromawa;Primary Health Care Centre;;Along Katsina-Kano Road;8,15963;12,32164
+Bichi;Kyarli;Lamba;Lamba Health Post136;Health Post;;Katsina To Kano Road;8,19804;12,33999
+Bichi;Muntsira;Sani Aw'Awa;Sani Aw'Awa Health Post;Health Post;;Along Sani A. Awa Road;8,19127;12,18979
+Bichi;Muntsira;Margar Fulani;Marga Health Post;Health Post;;Along Sabo Road Adarawa Town;8,2735;12,19778
+Bichi;Muntsira;Muntsira;Muntsira Health Post;Health Post;;Along Gwarzo - Bichi Road, Muntsira;8,22451;12,1908
+Bichi;Muntsira;Tsaraka;Tsaraka Health Post;Health Post;;Along Daddauda Road, Tsaraka;8,18265;12,21336
+Bichi;Muntsira;Iyawa;R/Dawa;Health Post;;Opposite Primary School, Rugardawa;8,23613;12,17684
+Bichi;Saye;Saye;Model Primary Health Centre Saye;Primary Health Care Centre;;Unguwar Salihai, Saye;8,3961;12,27569
+Bichi;Saye;Bum-Bum;Bum-Bum;Health Post;;Along Kwanawa Road Bum-Bum;8,39703;12,24866
+Bichi;Saye;G/Bature;G/Bature;Health Post;;Along Saye Yatsi Road Garun Bature;8,41889;12,263
+Bichi;Waire;Belli;Belli;Health Post;;Along Belli Bichi Road;8,28492;12,31186
+Bichi;Waire;Jinjimawa;Jinjimawa;Health Post;;Near Kuku Jinjimawa Road;8,27379;12,33116
+Bichi;Waire;D/ Dorowa;D/Dorowa;Health Post;;Adjecent To Primary School. Dutsen Dorawa;8,24955;12,31239
+Bichi;Waire;Waire;Waire;Health Post;;Opposite Gjds School Waire;8,22094;12,3455
+Bichi;Yallami;Daddo;Daddo Health Post;Health Post;;Near Primary School Daddo;8,3353;12,29982
+Bichi;Yallami;Yallami;Yallami;Health Post;;Along Kwamanawa To Saye;8,33806;12,31998
+Bichi;Kaukau;Rimayen Ralle;Rimaye;Health Post;;Katsina To Kano Road;8,201;12,267
+Bunkure;Barkum;Barkum;Barkum Health Clinic;Health Clinic;;Barkum H/Centre;8,65139;11,64309
+Bunkure;Bono;Ungwa Baki;Bono Health Centre;Health Clinic;;Bono Ungwa Baki;8,63211;11,7046
+Bunkure;Bono;Bugaje;Jaroji Helth Center;Health Clinic;;Jariji Baguaje Bono Ward;8,59587;11,71976
+Bunkure;Bono;Dandagana;D/Gagana Health Clinic;Health Clinic;;Dandagana Along Rano Road Bunkure;8,53908;11,72083
+Bunkure;Bunkure;Sabon Ruwa;Sabon/ Ruwa Health Center;Health Clinic;;Sabon Ruwa;8,49651;11,69743
+Bunkure;Bunkure;Bunkure;Bunkure Basic Primary Health Centre;Basic Primary Health Care Centre;;P.H.C Bunkure Along Kano Road;8,54453;11,6942
+Bunkure;Chirin;Barnawa;Barnawa Health Clinic;Health Clinic;;Barnawa Town;8,4746;11,59331
+Bunkure;Chirin;Chirin;Chirin Health Clinic;Health Clinic;;Chrin Town Bunkure L.G.A..;8,52138;11,6311
+Bunkure;Gafan;Gafan;Gafan Health Clinic;Health Clinic;;Gafan Town Bunkure;8,44943;11,67545
+Bunkure;Gafan;Makunturi;Makun Turi Health Clinic;Health Clinic;;Makun Turi Near Gafan Bunkure;8,46599;11,70807
+Bunkure;Gafan;Shiye;Shiye Health Clinic;Health Clinic;;Shiye Town Gafan Ward;8,49675;11,63394
+Bunkure;Gurjiya;Gurjiya;Gurjiya Health Clinic;Health Clinic;;Gurjiya Village Bunkure L.G.A..;8,55835;11,75259
+Bunkure;Gwamma;Gwaneri Cikin Gari;Gwaner Health Clinic;Health Clinic;;Gwaneri Cikin Gari Gwamma;8,62914;11,67688
+Bunkure;Gwamma;Gwamma;Gwamma Health Clinic;Health Clinic;;Inside Gwamma Prim. Sec. School;8,52142;11,63108
+Bunkure;Gwamma;Tsambaki;Tsambaki Health Clinic;Health Clinic;;Tsambaki H/P Tsambaki Town;8,58581;11,6868
+Bunkure;Kulluwa;Kulluwa;Kulluwa Health Facility;Health Clinic;;Kulluwa Along Kano Road;8,55638;11,63363
+Bunkure;Kumurya;Dususu;Dususu Health Clinic;Health Clinic;;Dususu Town Sanda Ward.;8,72507;11,72413
+Bunkure;Kumurya;Kumurya;Kumurya Basic Health Centre;Basic Primary Health Care Centre;;Kumurya Health Center Along Garko Road;8,70282;11,68976
+Bunkure;Kullawa;Jalabi;Jalabi Health Clinic;Health Clinic;;Zangon Jalabi;8,61014;11,64655
+Bunkure;Sanda;Sanda;Sanda Health Clinic;Health Clinic;;Sanda Cikin Gari H/Post;8,753;11,681
+Bunkure;Sanda;Jarnawa;Jarnawa Health Clinic;Health Clinic;;Jarnawa Cikin Gari H/Post;8,64116;11,74686
+Bunkure;Sanda;Dundu;Dundu Health Clinic;Health Clinic;;Jagawar Dundu H/P;8,71215;11,66629
+Dala;Adakawa;Gangamau;Adakawa Health Post;Health Post;;Gangamau Adakawa H/Post;8,51388;12,0075
+Dala;Bakin Ruwa;B/Ruwa;Yawa Bakin Ruwa;Comprehensive Health Centre;;B/Ruwa Filin Birji;8,50339;11,99909
+Dala;Dala;Dala;Mai Unguwa Garba Health Clinic;Health Clinic;;Dala, Layin Bala D.P.O.;8,51366;12,00746
+Dala;Dala;Kangiwa;F/Arewa Health Post;Health Clinic;;Kangiwa, Near Makwalla;8,51366;12,00746
+Dala;Gobirawa;Layin Durimi;Hajia U-Zaria Clinic;Health Clinic;;Hajia U-Zaria Clinic Layin Durumi;8,48665;12,03489
+Dala;Gobirawa;Yanmata Cikin Gari;Kurna Health Cliniclinic;Health Clinic;;Yammata Cikin Gari;8,4814;12,04489
+Dala;Gobirawa;Gobirawa Cikin Gari;Gobirawa Health Post;Health Post;;Gobirawa Cikin Gari Layin Awaisu;8,48344;12,02842
+Dala;Gwammaja;Layin Ubagaya;Gwammaja Mch;Comprehensive Health Centre;;Layin Uba Gaya Gwammaja Mch;8,50747;12,02027
+Dala;Kabuwaya;Madafin Dala;Dala Mch Clinic;Comprehensive Health Centre;;Makafin Dala;8,50582;12,01402
+Dala;Kantudu;Kantudu;Kantudu Health Clinic;Health Clinic;;Kantudu -Lungun Alh. Ali Mai Katifa;8,50612;12,0133
+Dala;Kofar Mazugal;K/Mazugal;Kofar Mazugal Health Post;Health Post;;K/Mazugal;8,51637;12,01519
+Dala;Kofar Ruwa;Kofar Ruwa;Kofar Ruwa Health Post;Health Clinic;;Layin Marabarta;8,50337;11,99904
+Dala;Yalwa;Yalwa;Madakin Gini Health Clinic;Comprehensive Health Centre;;Yalwa Behind Sani Madakin Gini House;8,50591;12,01346
+Danbatta;Ajumawa;Yammawa Wazamai;Y.Wanzamai Health Post;Health Post;;Yammawa Wanzamai Ajimuwa,Dbt Local Government;8,47604;12,48819
+Danbatta;Ajumawa;Yammawa Gamji;Yammawa Gamji;Health Post;;Yammawa,Ajumawa Ward Dbt L.G;8,46928;12,50741
+Danbatta;Ajumawa;Marke Danya;Marke Danya Health Post;Health Clinic;;Marken Danya,Ajumawa Ward Dbt L.G;8,51536;12,42858
+Danbatta;Ajumawa;Ajumawa;Ajumawa Health Post;Health Post;;Ajumawa Health Post Along Daura Road;8,5063;12,4772
+Danbatta;Ajumawa;Masallachi;Masallachi Health Post;Health Post;;Masallachi;8,53786;12,47306
+Danbatta;Danbatta East;Danbatta East;Women Cent Clinic;Health Clinic;;Women Centre Clinic Dbt East;8,52252;12,438
+Danbatta;Danbatta West;Ggass;Ggass Clinic;Health Post;;G.G.A.S.S Danbatta Clinic;8,51156;12,429
+Danbatta;Danbatta West;Gss Danbatta;Gss Dbt Clinic;Health Clinic;;Gss Danbatta;8,5173;12,42511
+Danbatta;Danbatta West;Fagwalo;Fagwalo Health Post;Health Post;;Fagwalo;8,46519;12,36389
+Danbatta;Fagwalawa;Fagwalawa;Fagwalawa Cottage Hospital;Cottage Hospital;;Fagwalawa Dbt Lg;8,68468;12,31626
+Danbatta;Fagwalawa;Tona;Tona Health Post;Health Post;;Tona Fagwalawa Ward;8,72909;12,31486
+Danbatta;Goranmaje;Goranmaje;Goron Maje Basic Health Clinic;Basic Health Clinic;;Tsohon Gari Goran Maje;8,68739;12,53389
+Danbatta;Gwanda;Gwanda;Gwanda Health Post;Health Post;;Gwanda Gabas Gwanda Danbatta;8,5674;12,57865
+Danbatta;Gwanda;Diggol;Diggol Health Post;Health Post;;Diggol Health Post Gwanda Ward;8,55901;12,52471
+Danbatta;Gwanda;Chasko;Chasko Health Post;Health Post;;Chasko Gari From Gwanda Village;8,59134;12,55402
+Danbatta;Gwanda;Dukawa;Dukawa Health Post;Health Post;;Dukawa Along Marini Road;8,61687;12,58468
+Danbatta;Gwarabjawa;Baushe;Baushe Health Post;Health Post;;Baushe Health Post Along Marini Road;8,63282;12,51729
+Danbatta;Gwarabjawa;Gwarabjawa;Gwarabjawa Health Post;Health Post;;Gwarabjawa;8,56681;12,37495
+Danbatta;Gwarabjawa;Maiganji;Maiganji Health Post;Health Post;;Maiganji Health Centre Along Danbatta Road;8,57417;12,43542
+Danbatta;Gwarabjawa;Gwalaida;Gwalaida Health Post;Health Post;;Gwalaida;8,57427;12,46507
+Danbatta;Gwarabjawa;Gwarabjawa;Gwarabjawa Health Post;Health Post;;Unguwar Yusufa Gwarabjawa Along Danbatta Road;8,54189;12,44804
+Danbatta;Kore;Laraiba Takuya;L/Takuya Health Post;Health Post;;Laraba Takuya Kore Ward;8,68687;12,36732
+Danbatta;Kore;Kore Village;Kore Basic Health Clinic;Basic Health Clinic;;Kore Danbatta L.G;8,749;12,358
+Danbatta;Kore;Ruwantsa;Ruwantsa Health Post;Health Post;;Ruwantsa Kore Ward;8,73865;12,40805
+Danbatta;Kore;Dunna;Dumma Health Post;Health Post;;Dumma Kore Ward;8,77137;12,37918
+Danbatta;Saidawa;Saidawa;Saidawa Health Post;Health Post;;Saidawa Hp Danbatta L.G.;8,63092;12,2744
+Danbatta;Saidawa;Koya Village;Koya Health Post;Health Post;;Koya Saidawa Ward;8,61998;12,26417
+Danbatta;Saidawa;Marken Mahuta;Marken Mahuta Health Post;Health Post;;Marken Mahuta;8,6288;12,38874
+Danbatta;Saidawa;Takai;Takai Health Post;Health Post;;Takai Fulani Health Post;8,59397;12,36773
+Danbatta;Saidawa;Mahuta;Mahuta Health Clinic;;;;8,60674;12,32125
+Danbatta;Sansan;Sansan;San-San Health Clinic;Health Clinic;;San-San Ward;8,62965;12,45227
+Danbatta;Sansan;Tsaraka;Tsaraka Dispenseryensary;Health Post;;Along Sansan Road;8,60403;12,44017
+Danbatta;Sansan;Kwasauri;Kwasauri;Health Post;;Kwasauri Health Post;8,67748;12,43102
+Dawakin Kudu;Daba;Fan Ido;Fan Ido Health Post;Health Post;;Fan Ido H/P Bahind Central Mosque Fan Ido;8,67752;11,67033
+Dawakin Kudu;Daba;Daba;Basic Health Clinic;Others;;B.H.C. Baradai Daba Town D/Kudu Lg;8,68482;11,7174
+Dawakin Kudu;Dawakiji;Dawakiji;Basic Health Clinic;Others;;Lahadin Makole Opposite Central Primary School;8,70374;11,86397
+Dawakin Kudu;Dosan;Dosan;Dosan Health Post;Health Post;;Dosan H/P Danfara;8,67413;11,77503
+Dawakin Kudu;Dosan;Fanchan;Fanchan Health Post;Health Post;;Fanchan Kwari Health Post Near Primary School Fanchan;8,72183;11,77959
+Dawakin Kudu;Gano;Kunkurawa;Kunkurawa Health Post;Health Post;;Kunkurawa H/P Gano Ward D/Kudu Lg;8,69654;11,81752
+Dawakin Kudu;Gano;Gano;Gano Basic Health Clinic;Others;;Opposite New Police Station Gano;8,7079;11,83633
+Dawakin Kudu;Dan/Bagina;Runa;Runa Health Post;Health Post;;Maiduguri Rd Danbagina Ward Runa Town Opposite P.S.;8,72128;11,34451
+Dawakin Kudu;Gurjiya;Gurjiya;Health Clinic;Health Clinic;;Gurjiya Health Clinc Near Gurjiya Primary School Gurjiya Town;8,55294;11,88163
+Dawakin Kudu;Jido;Jido;Jidi Health Post;Health Post;;Jido Health Post Maiduguri Road;8,64898;11,91278
+Dawakin Kudu;Tamburawa;Tamburawa;Tamburawa Health Post;Health Post;;Tamburawa H/P Zaria Road Off Ariguma Company;8,53682;11,53682
+Dawakin Kudu;Tamburawa;Matage;Gada Health Clinic;Health Clinic;;Gada H/C Zaria Road;8,85403;11,83048
+Dawakin Kudu;Tamburawa;Gada;Gada Health Clinic;Health Clinic;;Gadar Tamburawa Health Clinic Matage;8,53028;11,84732
+Dawakin Kudu;Tsakuwa;Tsakuwa;Primary Health Centre;Primary Health Care Centre;;Pbcentre Kofar Arewa Tsakuwa Town D/Kudu;8,6421;11,75178
+Dawakin Kudu;U/Duniya;U/Duniya;U/Duniya Health Post;Health Post;;U/Duniya H/P  U/Duniya Ward D/Kudu L.G.;8,62834;11,87789
+Dawakin Kudu;Yakasare;Yankatsare;Yankasare Dispenseryensary;Others;;Yankatsare Dispensary Opp PS;8,61667;11,90925
+Dawakin Kudu;Yanbarau;Sarai;Sarai Health Post;Health Post;;Sarai Haelth Post Along Tsakuwa Road;8,60204;11,8059
+Dawakin Kudu;Yargaya;Yargaya;Yargaya Health Post;Health Post;;Yargaya H/P Near Maiduguri Road Kano;8,66308;11,89892
+Dawakin Kudu;Zogarawa;Zogarawa;Zogarawa Health Post;Health Clinic;;Zogarawa H/Post Along Maiduguri Rd. D/Kudu;8,68184;11,87905
+Dawakin Tofa;Danguguwa;Danguguwa;Danguguwa Health Post;Health Post;;Danguguwa H Post Danguguwa Ward D Tofa L.G.A..;8,39465;12,05838
+Dawakin Tofa;Danguguwa;Sarauniya;Sarauniya;Health Post;;Sarauniya H Post Danguwa Ward Along Dawaki Road;8,37271;12,07231
+Dawakin Tofa;Danguguwa;Danguguwa;Kadawa;Health Post;;Kadawa H Post Danguguwa D Tofa L.G.A..;8,37271;12,17231
+Dawakin Tofa;Danguguwa;Gabari;Gabari H Post;Health Post;;Gabari Health In Dangugu Ward;8,39481;12,04661
+Dawakin Tofa;Danguguwa;D Tofa East;Sarkakiya Health Post;Primary Health Care Centre;;Sarkakiya Health Post;8,33026;12,10742
+Dawakin Tofa;Dawaki East;Dawaki;Cottoge;Others;;D Tofa Gen Hospital Dawaki Tofa Town;8,334;12,107
+Dawakin Tofa;Dawaki West;G G S S;G G S S Dawakin Tofa;Health Clinic;;Opposite L.G.A.. Secretariate D Tofa;8,42778;12,09294
+Dawakin Tofa;Dawanu;Dawanau;Dawanau Basic Health Clinic;Comprehensive Health Centre;;Dawanau Bhc Near G G S S Dawanau;8,42778;12,09294
+Dawakin Tofa;Dawanu;Dawanau;Zangon;Health Post;;Zango Dawanau Phc Along D Tofa Road;8,39985;12,0913
+Dawakin Tofa;Dawanu;Bagadawa;Bagadawa Health Post;Health Post;;Bagadawa Health Post;8,38414;12,12382
+Dawakin Tofa;Dawanu;Bagadawa;N Bagadawa Health Post;Health Post;;Nassarawar Bagadawa Health Post;8,38426;12,12376
+Dawakin Tofa;Dawanu;Fagen Kawo;F Kawo Health Post;Health Post;;Fagen Kawo Dawanau Ward Along Danguguwa Road;8,416;12,08
+Dawakin Tofa;Ganduje;Ganduje;Ganduje Primary Health Centre;Primary Health Care Centre;;Ganduje D Tofa;8,44946;12,22157
+Dawakin Tofa;Ganduje;Roba;Roba Health Post;Health Post;;Roba Health Post;8,49715;12,20809
+Dawakin Tofa;Ganduje;Dafamin Tofa;Dafamin Tofa Health Post;Health Post;;Dafamin Tofa Hp Ganduje Ward;8,42838;12,22261
+Dawakin Tofa;Ganduje;Jemomi;Jemomi Health Post;Health Post;;Jemomi H Post Ganduje Ward D Tofa L.G.A..;8,49972;12,24524
+Dawakin Tofa;Gargari;Zaura;Gudau Health Post;Health Post;;Gudau C Gari Health Post;8,35758;12,16292
+Dawakin Tofa;Gargari;Gargari;Gargari;Health Post;;Gargari Health Post;8,30162;12,17844
+Dawakin Tofa;Gargari;Gwamai;Gwamai;Health Post;; Gwamai C Gari Health Post;8,33027;12,10746
+Dawakin Tofa;Gargari;Dungurawa;Dungurawa Health Post;Health Post;;Dungurawa Health Post;8,33327;12,1747
+Dawakin Tofa;Gargari;Kunnawa;Kannawa Health Post;Health Post;;Kunnawa Cikin Gari;8,30177;12,17837
+Dawakin Tofa;Jalli;Danitace;Makerawa;Health Post;;Makerawa Dan Ttache Near P S;8,20811;12,41718
+Dawakin Tofa;Jalli;Danitace;Danitace Health Post;Health Post;;Makerawa Hp Jalli Ward D Tofa L.G.A..;8,49713;12,20809
+Dawakin Tofa;Jalli;Madaci;Madaci Health Post;Health Post;;Madaci Hp Jalli Ward D Tofa L.G.A..;8,38768;12,17678
+Dawakin Tofa;Jalli;Kuidawa;Kuidawa Health Post;Health Post;;Kuidawa Hp Along Danbatta Road;8,47505;12,16434
+Dawakin Tofa;Jalli;Jalli;Jalli Health Post;Health Post;;Jalli Health Post Injalli Ward D Tofa L.G.A..;8,46242;12,18424
+Dawakin Tofa;Kwa;Kaw;Kwa Dispensery;Health Post;;Kwa Health Disp;8,35686;12,17986
+Dawakin Tofa;Kwa;Chedi Babbarruga;Chedi Babbarruga;Health Post;;Chidi Babar Ruga Health Post;8,39307;12,13934
+Dawakin Tofa;Kwa;Buruntumau;Buruntumau Health Post;Health Post;;Buruntumau Health Post;8,40256;12,12067
+Dawakin Tofa;Kwa;Kwa;Kwa Health Post;Health Clinic;;G G S S Kwa;8,373;12,149
+Dawakin Tofa;Kwa;Romi;Romi Health Post;Health Clinic;;Romi Health Clinic;8,36323;12,09494
+Dawakin Tofa;Marke;Marke;Marke Health Post;Health Post;;Marke Health Post;8,11723;12,29588
+Dawakin Tofa;Marke;Yarutu;Yarutu Health Post;Health Post;;Yarutu Health Post;8,13764;12,13764
+Dawakin Tofa;Marke;Kaleku;Kaleku Health Post;Health Post;;Kaleku Health Post;8,33773;12,12778
+Dawakin Tofa;Marke;Joben Marke;Jobe Health Post;Health Post;;Joben Marke Health Post;8,27147;12,12875
+Dawakin Tofa;Tattarawa;Tattarawa;Tattarawa Primary Health Centre;Health Post;;Tattarawa Along Kt  Rd Link;8,38117;12,17682
+Dawakin Tofa;Tattarawa;Zaura;Kirya Health Post;Health Post;;Kirya Hp D Tofa;8,41327;12,23363
+Dawakin Tofa;Tattarawa;Fango;Fango Health Post;Health Post;;Fango In Tattarawa Ward Along  Dbt Road;8,44644;12,17579
+Dawakin Tofa;Tattarawa;Zangon Mata;Zangon Mata Health Post;Health Post;;Zangon Mat D Tofa L.G.A..;8,44939;12,22168
+Dawakin Tofa;Tuffafi;Chedin Gawa;C E Dala Health Post;Health Post;;C Edi Mai Dala Health Post;8,42219;12,13534
+Dawakin Tofa;Tuffafi;Dambazau;Dambazau Health Post;Health Post;;Dambazau Hp Tuffafi Ward;8,49083;12,13542
+Dawakin Tofa;Tuffafi;Tunfafi;Tumfafi Health Post;Health Post;;Tumfafi Hp Along Daura Road;8,44615;12,100609
+Dawakin Tofa;Tuffafi;Dandalama;Dandalama;Health Post;;Dandalama Along Daura Road;8,46569;12,14468
+Dawakin Tofa;Tuffafi;Dandalama;Yakasai Health Post;Health Post;;Yakasai Hp In Tumfafi Ward D Tofa L.G.A..;8,48267;12,15648
+Doguwa;Dariya Shere;Dariya Shere;D/Shere Health Post;Health Post;;Dariya Shere Health Post Along Maganda Road;8,741;10,67053
+Doguwa;Dogon Kawo;Burji;Burji Primary Health Centre;Comprehensive Health Centre;;Burji Comprehensive Health Centre;8,54662;11,16654
+Doguwa;Dogon Kawo;Dogon Kawo;Dogon Kawo Health Post;Health Post;;Near D/Kawo Primary School Along Beguwa Road;8,55743;11,17531
+Doguwa;Falgore;Falgore Bakolo;Falgore Dispenseryensary;Health Post;;Falgore Dispensary Tashar Bakolo Near Falgore Primary School;8,57596;11,12095
+Doguwa;Falgore;Fanyabo;Fanyabo Health Post;Health Post;;Fanyabo Health Post Near Fanyabo Primary School;8,54622;11,11457
+Doguwa;Falgore;Gada Biyu;Gada Biyu Health Post;Health Post;;Gada Biyu Health Post Behind Fangore Game Reserve;8,58949;11,08791
+Doguwa;Riruwa;Kwando;Kwando Health Post;Health Post;;Dutun Dorayi H/Post Kwando;8,68273;10,70811
+Doguwa;Tagwaye;Makaranta;Dispenseryensary;Health Clinic;;Tagwaye Along Kano To Jos Road;8,59338;10,78086
+Doguwa;Doguwa;Doguwa Gangare;Doguwa B.T;Health Clinic;;Doguwa Bamako Initiative Clinic Gangare;8,58273;10,73223
+Doguwa;Marku;Marku;Marku Health Post;Health Post;;Maraku Dispensary Near By Maraku Juma'At Mosque;8,68683;10,64908
+Doguwa;Marku;Bahawa;Bahawa Health Post;Health Post;;Bahawa Health Post Doguwa Post Doguwa L.G.A.;8,72042;10,60439
+Doguwa;Marku;Yalwan Danmusa;Y/Danmusa Health Post;Health Post;; Near Yalwa Primary School;8,71671;10,57705
+Doguwa;Ragada;Dadinkowa;D/Kowa Dispensery;Health Post;;Dadinkowa Dispensary Near Juma'At Mosque At Fada Street;8,63021;10,70169
+Doguwa;Ragada;Rufa'I;Rufai Health Post;Health Post;;Rufa'I Health Post Along Maraku Road Doguwa L.G.A. Kano State;8,64704;10,63872
+Doguwa;Riruwa;Riruwa;Rbhmc;Comprehensive Health Centre;;Riruwai Basic Health And Maternity Center Doguwa L.G.A.;8,72756;10,75008
+Doguwa;Tagwaye;Maikwanbura;Dispenseryensery;Health Clinic;;Maikwadira;8,6302;10,80898
+Doguwa;U/Natsohuwa;Ung. Natsohuwa;U/Natsohuwa Health Post;Health Post;;Unguwa Natsohuwa H/Post Near PrimarySchool;8,57592;10,68672
+Doguwa;U/Natsohuwa;Asada;Asada Health Post;Health Post;;Asada Health Post Ung. Magajin Lere Near Jss Asada;8,5456;10,67112
+Doguwa;Zainabi;Zainabi;Zainabi Dispensery;Health Post;;Zainabi Dispensary Near Mahauta;8,7711;10,78895
+Doguwa;Zainabi;Karasa;Karasa Health Post;Health Post;;Karasa Health Post Along Zainabi Road;8,68641;10,81635
+Doguwa;Zainabi;Dokar Goma;Dokar Health Post;Health Post;;Dokar Goma H/Post Near Doka Primary School;8,62449;10,76006
+Fagge;Fagge B;Fagge;Galadiman Fagge;Health Clinic;;Galadima Fagge Office;8,52818;12,00811
+Fagge;Fagge A;Fagge Bayin Plaza;Sabo Garba Mat;Primary Health Care Centre;;Fagge Layan Plazaa;8,52853;12,00441
+Fagge;Kwachiri;Yammata;Yammata Hospital;Health Post;;Yammata Gabas Darerawa;8,47244;12,06409
+Fagge;Kwachiri;Kwaciri Dikko;Kwaciri Primary Health Centre;Health Clinic;;Kwaciri;8,50082;12,06573
+Fagge;Kwachiri;Danrimi;Dan Rimi Hospital;Health Post;;Dan Rimi Hospital;8,4861;12,0547
+Fagge;Kwachiri;Kwaciri;Tudun Bajuwa Primary Health Centre;Health Clinic;;Tudun Bojuwa;8,48733;12,04957
+Fagge;Rijiyar Lemo;R/Lemo;Rijiyar Lemo Primary Health Centre;Primary Health Care Centre;;Katsina Road Tudun Bojuwa;8,48096;12,04717
+Fagge;Rijiyar Lemo West;R/Lemo;Rijiyar Lemo Mch;Health Clinic;;R/Lemo Layin Yan Kawanika Masallachi Kandahar;8,47744;12,05471
+Fagge;S/Gari East;Naf Base Clinic;Nigeria Airforce Clinic;Health Clinic;;349 Naf Hospital Kano;8,53149;12,04541
+Fagge;Sabon Gari East;Jaba;Jaba Model Primary Health Centre;Health Clinic;;Tashar Ladan;8,54628;12,05942
+Fagge;Sabon Gari West;Sabon Gari West;S/G Middle Rd Model Primary Health Centre;Health Clinic;;No. 9A Middle Road S/Gari;8,53419;12,01948
+Fagge;Kwaciri;Kwaciri;Bukavo;Health Clinic;;Kwaciri;8,501;12,066
+Fagge;Kwaciri;Kwaciri;A.F.S.H.;Health Clinic;;Kwaciri;8,499;12,066
+Gabassawa;G/Danga;Gambawa;Gambawa Health Post;Health Post;;Gambawa;8,8262;12,24494
+Gabassawa;Gabassawa;Dadin Duniya;Gabassawa Model Primary Health Centre;Others;;Gabsawa Town;8,9065;12,17596
+Gabassawa;Gabassawa;Mazan Gudu;Mazan Gudu Health Post;Health Post;;Mazan Gudu Health Post;8,90718;12,1954
+Gabassawa;Gabassawa;Chikawa;Chikawa;Health Post;;Chikawa Tv Centre;8,85945;12,15257
+Gabassawa;Gabassawa;Waga;Kawo Dispensery;Health Post;;Waga Town;8,85442;12,1622
+Gabassawa;Gabassawa 01;Dadin Duniya;Dadin Duniya Health Post;Health Post;;Dadin Duniya Tashar Mota No 1 Primary School Road;8,88876;12,16485
+Gabassawa;Garun Danga;Fangan;Fangan Health Post;Health Post;;Fangan Cikin Gari;8,80491;12,19331
+Gabassawa;Garun Danga;Garun Danga;Garun Danga Model Primary Health Centre;Others;;Garun Danga Model Primary Health Centre;8,84249;12,20705
+Gabassawa;Garun Danka;Doga;Doga Health Post;Health Post;;Doga Nasarawa;8,80969;12,22306
+Gabassawa;Joda;Santsi;Santsi Health Post;Health Clinic;;Santsi Village;8,81164;12,27092
+Gabassawa;Joda;Joda;Joda Dispensery;Health Post;;Joda Health Clinic;8,87606;11,99959
+Gabassawa;Joda;Wasarde;Wasarde Health Post;Health Post;;Wasarde Health Post;8,86217;12,13884
+Gabassawa;Karmami;Karmami;Karmami Mch;MCH;;Karmami Town;8,82489;12,10624
+Gabassawa;Karmami;Gumawa;Gumawa Health Post;Health Post;;Gumawa Health Post;8,86195;12,14077
+Gabassawa;Mekiya;Kumbo;Kumbo Health Post;Health Post;;Kumbo Gabas;8,88426;12,20432
+Gabassawa;Mekiya;Badawa;Badawa Health Post;Health Clinic;;Badawa Health Clinic;8,88781;12,25644
+Gabassawa;Mekiya;Mekiya;Mekiya Dispensery;Health Clinic;;Mekiya Town;8,87565;12,23398
+Gabassawa;Tarauni;Tarauni;Tarauni Health Post;Health Clinic;;Tarauni H/Clinic;8,85667;12,06426
+Gabassawa;Yautar Arewa;Shana;Shana Health Post;Health Post;;Shana C Gari;8,74243;12,26113
+Gabassawa;Yautar Arewa;Dandake;Dandake Health Post;Health Post;;Dandake Health Post;8,85128;12,05735
+Gabassawa;Yautar Kudu;Yautar Kudu;Yautar Kudu Health Post;Health Post;;Yautar Kudu;8,7593;12,19654
+Gabassawa;Yautar Kudu;Guruma;Guruma Health Post;Health Clinic;;Gurumawa Health Clinic;8,78004;12,11448
+Gabassawa;Yautar Kudu;Yar Zabaina;Yar Zabaina;Health Post;;Yarzabaina C/Gari;8,79842;12,15501
+Gabassawa;Yautar Kudu;Yaranchi;Yaranchi Health Clinic;Health Post;;Yaranchi;8,75446;12,16601
+Gabassawa;Yautar Kudu;Kwadage;Kwadage Health Post;Health Post;;Kwadage Village;8,78337;12,14233
+Gabassawa;Yumbu;Yumar Kanawa;Yamakanawa Health Post;Health Post;;Yamakanawa Health Clinic;8,81162;12,27096
+Gabassawa;Yumbu;Yumbu;Yumbu Dispensery;Health Dispensary;;Yumbu Health Clinic;8,78121;12,23687
+Gabassawa;Zakirai;Tankarau;Tankarau Health Post;Health Clinic;;Tankarau Village;8,90695;12,08321
+Gabassawa;Zakirai;Zakirai;Zakirai Health Clinic;Comprehensive Health Centre;;Zakirai Town;8,88501;12,10475
+Gabassawa;Zugachi;Zugachi;Zugachi Health Cliniclinic;Health Clinic;;Zugachi H/Clinic;8,85654;12,06432
+Garko;Dalili;Tsakuwar Dal;Tsakuwar Dal;Health Post;;Tsakur Dal Health Post Garko Local Government;8,79033;11,53028
+Garko;Dalili;Dal;Dal Model;Model Primary Health Centre;;Dal Town Opposite Special Primary School Dal;8,82496;11,47635
+Garko;Garin Ali;Garin Ali;Garin Ali;Health Clinic;;Garin Ali Town Opposite To Police Station;8,86159;11,56936
+Garko;Garko;Garko;Garko Model Primary Health Centre;Model Primary Health Centre;;Garko Town Close To Alh Mansir Musa Garko Ex-L.G.A.. Chairman;8,80071;11,64227
+Garko;Garko;Garko;Garko Primary Health Centre;Primary Health Care Centre;;Garko Kofar Arewa Garko L.G.A..;8,80304;11,65617
+Garko;Gujiya;Gurjiya;Gurjiya Dispensery;Health Clinic;;Gurjiya Town Opposite Central Mosque;8,84361;11,64264
+Garko;Gurjiya;Maida;Maida Health Post;Health Post;;Maida Health Post Close To Football  Field;8,88504;11,63913
+Garko;Kafin Malamai;Lamire;Lamire Health Post;Health Post;;Lamire Health Post Opposite Primary School;8,82949;11,71007
+Garko;Kafin Malamai;Kafin Malamai;Kafin Malamai;Health Clinic;;Kafin Malamai Town Opposite To Taratu Residence;8,88076;11,66422
+Garko;Katumari;Sanni;Sanni Dispensary;Health Post;;Sanni Dispensary Opposite Primary School;9,019;11,5307
+Garko;Kwas;Kwas;Kwas Health Post;Health Post;;Kwas Town Opposite Primary School;8,82235;11,50055
+Garko;Kwas;Buda;Buda Basic Health Clinic;Health Clinic;;Buda Town Opposite Alh Garba Councillor;8,78019;11,60141
+Garko;Raba;Garwaji;Garwaji Health Post;Health Post;;Garwaji Town Opposite Central Primary School;8,80884;11,56904
+Garko;Raba;Kawo;Kawo Health Post;Health Post;;Kawo Health Post Kawo Maidutse Kawo;8,77203;11,682
+Garko;Raba;Makadi;Makadi Health Post;Health Post;;Makadi Hp Unguwauwarfa Makadi;8,76693;11,72296
+Garko;Sarina;Sarina;Sarina;Health Clinic;;Sarina Kofar Gabas Close To Central Primary School;8,92489;11,58652
+Garko;Zakarawa;Kafin-Chiri; K/ Chiri Basic Health Clinic;Health Clinic;;Kafin-Chiri Town Oppositesite To Centra Primary School;8,86232;11,60095
+Garko;Zakarawa;Zakarawa;Zakarawa Dispensery;Health Post;;Zakarawa Town Garko Local Government;8,81334;11,55388
+Garum Mallam;Dakasoye;Unguwar Kudu;Unguwar Kudu;Health Post;;Unguwar Kududmiasoye Ward;8,43766;11,6957
+Garum Mallam;Dorawar Sallau;Dorawar Sallau;Dorawar Sallau;Health Post;;Dorawar Sallau Health Post;8,41555;11,6688
+Garum Mallam;G/Babba;Garum Malam;Primary Health Centre;Primary Health Care Centre;;Fankurun garun mallam L.G.A.;8,36621;11,68339
+Garum Mallam;G/Babba;Garum Babba;Primary Health Centre;Primary Health Care Centre;;G/Babba Town G/Mallam;8,43399;11,60558
+Garum Mallam;Kadawa;Kadawa Gate;Primary Health Centre;Primary Health Care Centre;;47 Km Kadawa Gate, Kadawa garun mallam;8,41143;11,64447
+Garum Mallam;Makwaro;Kwiwa;Kwiwa;Health Post;;Kwiwa Health Post Makwaro Ward;8,36817;11,72175
+Garum Mallam;Makwaro;Makwaro;Makwaro;Health Post;;Makwaro Health Post Makuwa No Ward;8,41401;11,73693
+Garum Mallam;Makwaro;Agalawa;Agalawa;Health Post;;Agalawa, Makwaro Ward, Garum Mallam;8,37204;11,68128
+Garum Mallam;Yadakwari;Yadakwari;Yadakwari;Primary Health Care Centre;;Yadakwari Along Yadakwari Road;8,41733;11,70069
+Garum Mallam;Yadakwari;Danmaura;Danmaura;Health Post;;Dan Maura Health Post;8,40015;11,71358
+Garun Mallam;Chiromawa;Chiromawa Kwari;Chiromawa Kwari Health Post;Health Post;;Chiromawa Kwari G Malam L.G.A..;8,38078;11,61552
+Garun Mallam;Dakasoye;Mudawa;Mudawa Health Post;Health Post;;Mudawa Health Post;8,45292;11,73342
+Garun Mallam;Dakasoye;Dakasoye;Dakasoye Health Post;Health Post;;Dakasoye Health Post;8,42417;11,71352
+Garun Mallam;Jobawa;Jobawa;Jobawa;Health Post;;Maja Jobawaward Along Zango Road;8,41678;11,66568
+Garun Mallam;Kadawa;Kadawa Qtrs;Kadawa Qtrs Health Post;Health Post;;Kadawa Qtrs Kadawa G Malam L.G.A..;8,4194;11,6441
+Garun Mallam;Kadawa;Kadawa Ciki;Health Post;Health Post;;Kadawa Ciki Kadawa G Malam L.G.A..;8,44407;11,64591
+Gaya;Balan;Balan;Balan Health Post;Health Post;;Nima Road;9,023;11,81009
+Gaya;Balan;Jibawa;Jibawa Health Post;Health Post;;Jibawai H/F;8,97868;11,78244
+Gaya;Gamarya;Gamarya;Gamarya Health Cliniclinc;Health Clinic;;Gamarya H/C;8,92315;11,8969
+Gaya;Gamoji;Gamoji;Gamoji Health Post;Health Post;;Gamoji C/Gari Near Secondary School;9,17826;11,84399
+Gaya;Gaya North;Bangashe;Kwawarin Bangashe Health Post;Health Post;;Kawarin Bangashe Gaya L.G.;9,06422;11,8988
+Gaya;Gaya South;Gaya South;Gaya South Health Clinic;Health Clinic;;Old Hospital By Old Market Near Mosque Gaya Town;9,00476;11,85783
+Gaya;Kademi;Kademi;Kademi Primary Health Centre;Primary Health Care Centre;;Kademi Phc By Gss Kademi;8,93167;11,779
+Gaya;Kademi;Kera;Kera Health Post;Health Post;;Kera Health Post;8,9141;11,73805
+Gaya;Kademi;Agundawa;Agundawa Health Post;Health Post;;Agundawa Health Post;8,90665;11,76667
+Gaya;Kademi;Yansoro;Yansoro Health Post;Health Post;;Yansoro Health Post;8,91415;11,73793
+Gaya;Kazurawa;Kazurawa;Kazurawa Health Post;Health Post;;Kazurawa H/Post;9,01709;11,77187
+Gaya;Kazurawa;Kallhadi;Kallhadi Health Post;Health Post;;Kallhadi H/P;9,02427;11,7205
+Gaya;Kazurawa;Yankau;Yankau Clinic;Health Clinic;;Layan Makart;8,97856;11,75963
+Gaya;Maimakawa;Maimakawa;Maimakawa Health Post;Health Post;;Maimakawa By F/Dau Road;9,13151;11,79647
+Gaya;Maimakawa;G/Sarkin Noma;G/S Noma Model PHC;Primary Health Care Centre;;Gidan Sarkin Noma By Dutse Road Gaya;9,00117;11,8608
+Gaya;Maimakawa;Fanidau;F/Idau Hf;Health Post;;Fanidu H/F Near Primary School F/Idau Town;9,11575;11,80339
+Gaya;Maimakawa;Hausawa;Hausawa Health Post;Primary Health Care Centre;;Hausawa Fanidau Ward Gaya L.G.A..;9,093;11,737
+Gaya;Shagogo;Yan Audu;Yan Audu Health Post;Health Post;;Yan Audu H/P;8,91588;11,83524
+Gaya;Shagogo;Jobe;Jobe Health Post;Health Post;;Jobe Health Post;8,94754;11,82276
+Gaya;Wudilawa;Gungara;Gungara Health Post;Health Post;;Gungara Near Primary School;8,90193;11,80051
+Gaya;Wudilawa;Amarawa;Amarawa Health Post;Health Post;;Amarawa H/P Near Primary School Amarawa Town;8,90128;11,81779
+Gezawa;Babawa;Kwasangwami;Kwasangwami Health Post;Health Post;;Kwasangwami Town Gezawa L.G.A.;8,66154;12,03307
+Gezawa;Babawa;Babawa;Babawa Mdhealth Clinic;Primary Health Care Centre;;Babawa Town Gezawa L.G.A.21000;8,66018;12,058
+Gezawa;Babawa;Gunduwawa;Gunduwawa Health Post;Health Post;;Gunduwawa Kan Kwana Gunduwawa Town;8,6285;12,01653
+Gezawa;Babawa;Kwasangwami;Kwasangwami Health Post;Health Post;;Kwasangwami Town Gezawa L.G.A.;8,66154;12,03307
+Gezawa;Gano;Tofa;Tofa Dispenseryensary;Health Post;;Tofa Town Gezawa L.G;8,74951;12,01274
+Gezawa;Gano;Yafata;Yafata;Health Post;;Yafata Yamma Yafata Town Gezawa;8,73482;11,9852
+Gezawa;Gawo;Gofaro;Gofaro Model Primary Health Centre;Primary Health Care Centre;;Gofaro Town Gezawa L.G.A.;8,74811;12,01989
+Gezawa;Gezawa;Sabon Fuloti;Gezawa Dispensery;Health Post;;Opposite Alh. Shehu Revenue House;8,75106;12,10053
+Gezawa;Jogana;Danzaki;Danzaki Health Post;Health Post;;Danzaki Town Bakin Titi Opposite Friday Mosque;8,67324;12,02596
+Gezawa;Jogana;Gass Jogana;Ggss Jogana;Health Clinic;;Government Girls Secondary School Jogana;8,71236;12,01964
+Gezawa;Jogawa;Jogawa Yanko;Yaroko;Health Post;;Jogawa Yaroko Beside Alh Mustapha Jogawa House;8,6987;12,02625
+Gezawa;Ketawa;Gandu S.S;Gandu Clinic;Health Clinic;;Gandu Secondary School Gandu Kuila Gezawa;8,74132;12,09137
+Gezawa;Mesar Tudu;Mesar Burmi;Mesar Burmi;Health Post;;Mesar Burmi Mesar Tudu Ward  Gezawa;8,74174;12,14528
+Gezawa;Mesar Tudu;Baita;Bata Health Post;Health Post;;Baita Town Mesar Tudu Gezawa Lg;8,64962;12,13274
+Gezawa;Mesar Tudu;Mesar Tudu;Mesar Tudu;Health Post;;Mesar Tudu Town Gezawa;8,72177;12,12343
+Gezawa;Mesar Tudu;Mesar Tudu;Imam Wali;Health Clinic;;Imam Wali Health Clinic Mesar-Tudu Gezawa;8,73074;12,11617
+Gezawa;Tsamiya-Babba;Abasawa;Abasawa Basic Health Clinic;Primary Health Care Centre;;Larabar Abasawa Town Gezawa L.G.A.;8,66201;11,99363
+Gezawa;Tsamiya-Babba;Tsamiya-Babba;T/Babba Health Post;Health Post;;Tsamiya Babba Town Gezawa L.G.A.;8,62127;11,98354
+Gezawa;Tumbau;Musku;Musku Health Post;Health Post;;Musku Town Gezawa L.G.A.;8,76432;11,99156
+Gezawa;Tumbau;Tumbau;Tumbau Health Post;Health Post;;Tumbau Town Gezawa L.G.A.;8,81166;11,99282
+Gezawa;Wangara;Wangara;Wangara Model Primary Health Centre;Primary Health Care Centre;;Wangara Bakia Titi Wangara Gezawa L.G.A.;8,76355;12,03715
+Gezawa;Zango;Zango;Zango Dispensery;Health Post;;Zango Town Zango Gezawa L.G.A.;8,68512;12,09337
+Gezawa;Zango;Tsalleh;Isalle Dispensery;Health Post;;Tsale Town Gezawa L.G;8,715;12,084
+Gezawa;Zango;Daraudau;Daraudau Health Post;Health Post;;Daraudau Health Post Darau Dau Town Gezawa;8,70131;12,05275
+Gezawa;Zango;Tsalleh;Tsalleh Model Primary Health Centre;Model Primary Health Centre;;Tsalleh;8,71316;12,0743
+Gwale;Dandago;Garangamawa;Gidauniyar Alheri;Comprehensive Health Centre;;Garangamawa Aisami Road;8,50535;11,99701
+Gwale;Dorayi;Rinji;Dalal;Health Clinic;;Rinji Bayan Nana Petroleum;8,50184;11,96615
+Gwale;Dorayi;O/C Tambulo;Dorayi Basic Health Clinic;Health Clinic;;O/C Jambulo Basic Health Clinic Police Station;8,39443;11,86581
+Gwale;Dorayi;Sabuwar Madina;Sabuwar Madina Health Post;Health Post;;Sabuwar Madina Unguwar Lalle Near Nura Mai Kare House;8,48876;11,95402
+Gwale;Dorayi;Dorayi Karama;Doreyi Karama;Health Clinic;;Dorayi Karama Layin Gobirawa;8,47455;11,98379
+Gwale;Dorayi;Jaen;Jaen Maternal And Child Health Clinic;Health Clinic;;Jaen Near Jumaat Mosque;8,45635;11,95997
+Gwale;Dorayi;Dorayi Babba;Dorayi Babba Primary Health Centre;Primary Health Care Centre;;Dorayi Babba Near Al Ansar College;8,46176;11,97618
+Gwale;Dorayi;Buk Old Campus;Buk Staff Clinic;Primary Health Care Centre;;B.Uk Old Campus;8,48084;11,97622
+Gwale;Dorayi;Unguwar Jakada;Unguwar Jakada;Health Clinic;;Unguwar Jakada;8,45633;11,95998
+Gwale;Galadanchi;F/Yamma;F/Yamma;Health Clinic;;Galadanchi Fuskar Yamma;8,51261;11,99025
+Gwale;Goron Dutse;Dausayi;Dausayi Clinic;Health Clinic;;Dausayi Near 'Yar Ai;8,50536;11,99698
+Gwale;Gwale;Gwale;Gwale Maternal  And Child Health Clinic;Health Clinic;;Filin Mushe Gwale;8,50422;11,98634
+Gwale;Gwale;Kafar Naisa;K/Naisa Clinic;Health Clinic;;Kofar Naisa;8,51291;11,98288
+Gwale;Kabuga;Unguwar Dabai;Unguwar Dabai Phe;Primary Health Care Centre;;Titin Unguwar Dabai;8,48885;11,95402
+Gwale;Kabuga;Kabuga;Kabuga Primary Health Centre;Primary Health Care Centre;;Along Gwarzo Road Near Andal Science;8,50198;11,96614
+Gwale;Kabuga;F.C.E;F.C.E;Health Clinic;;F.C.E Kano;8,48761;11,98755
+Gwale;Kabuga;Turba;Waika Waje Health Post;Health Post;;Turba Layin Gidan Mai Unguwa;8,47488;12,02013
+Gwale;Kabuga;Aisami;Aisami Clinic;Health Clinic;;Aisami Tudu;8,49943;11,99505
+Gwale;Mandawari;Sabon Sara;Sabon Sara;Health Clinic;;Sahara Sabon-Sara;8,50995;11,99534
+Gwale;S/Mainagge;Gadon Kaya;Gadon Kaya;Health Clinic;;Gadon Kaya Behind Mai Gadon Kaya Primary School;8,49535;11,98145
+Gwale;S/Mainagge;S/Mainagge;Makota;Health Clinic;;Tal Udu Behind Kaura Merchant;8,49706;11,98741
+Gwarzo;Getso;Getso;Getso Mchealth Clinic;Primary Health Care Centre;;Getso M.C.H Clinic, Gwarzo L.G.A..;7,97588;11,86782
+Gwarzo;Gwarzo;Tsohon Garu;Yar Kasuwa;Health Clinic;;Yar Kasuwa Disp. Tsohon Garu, Along District Head Palace;7,93486;11,91746
+Gwarzo;Jamaﬂ;Badari;Badari Health Post;Health Post;;Badari H/Post, Jamaﬂ Ward, Gwarzo L.G.A..;7,89369;11,80313
+Gwarzo;Jamaﬂ;Malamawa;Malamawa;Health Clinic;;Malamawa Disp. Jamaﬂ Ward, Gwarzo L.G.A..;7,85966;11,83523
+Gwarzo;Jamaﬂ;Jamaa;Jamaa Clinic;Primary Health Care Centre;;Jamaﬂ Clinic, Jamaﬂ Ward, Gwarzo L.G.A..;7,8658;11,81509
+Gwarzo;Kara;Koya;Koya Health Post;Health Post;;Koya H/Post, Koya Kara Ward, Gwarzo L.G.A..;7,95404;11,88259
+Gwarzo;Kara;Dalangashi;Dalangashi;Health Post;;Dalangashi H/Post, Kara Ward, Gwarzo L.G.A..;7,95073;11,82025
+Gwarzo;Kara;S/ Layin Kara;S/ Layi Health Post;Health Post;;S/ Layin Kara H/Post, Kara Ward, Gwarzo;7,9328;11,82489
+Gwarzo;Kara;Kara;Kara Dispensery.;Health Clinic;;Kara Disp. Kara, Along S/ Layi Way;7,95907;11,84331
+Gwarzo;Kutama;Dakwara;Dakwara;Health Post;;Dakwara, Gidan Magaji Along Kutama Road;7,90639;11,89213
+Gwarzo;Kutama;Kutama;Kutama Health Clinicc;Primary Health Care Centre;;Sabon Gari Kutama;7,87301;11,86768
+Gwarzo;Lakwaya;Rugoji;Rugoji Health Post;Health Post;;Rugoji;7,87786;12,00543
+Gwarzo;Lakwaya;Lakwaya;Lakwaya Dispensery.;Health Post;;Bakin Kasuwa Lakwaya;7,86488;11,98417
+Gwarzo;Madadi;Marori;Marori Health Post;Health Post;;Marori Kanhanyar Madadi;8,03782;11,93638
+Gwarzo;Madadi;Madadi;Madadi Basic Health Clinic;Others;;Madadi Town, Madadi;8,0554;11,88259
+Gwarzo;Mainika;Dankyandadi;Dan Kyandadi Health Post;Health Post;;Dan Kyandi Town;7,84232;11,931
+Gwarzo;Mainika;Mainika;Mainika Health Post;Health Post;;Yar Maradi Mainika;7,87331;11,92807
+Gwarzo;S/Birni;Tumfafi;Tumfafi;Health Post;;Tumfafi H/Post, S/Birni Ward, Gwarzo L.G.A..;8,02232;11,83776
+Gwarzo;S/Birni;S/Birni;S/ Birni;Health Clinic;;S/ Birni Disp. S/Birni Ward, Gwarzo L.G.A..;8,03128;11,85619
+Gwarzo;U/ Tudu;Dannafada;D/ Fada;Health Clinic;;Dannafada Disp. Unguwar Tudu Ward, Gwarzo;8,00782;11,89479
+Gwarzo;Unguwar Tudu;Dorogo;Dorogo Health Post;Health Post;;Dorogo Town;7,98817;11,98182
+Gwarzo;Madadi;Makanwaya;Makanwaya Dispensary;Health Clinic;;Makanwaya Village;8,105;11,913
+Kabo;Dugabau;Unguwar Turaki;Unguwar Turaki Health Post;Health Post;;Unguwar Turaki Village;8,21623;11,80933
+Kabo;Dugabau;Dugabau;Dugabau Dispensery.;Health Clinic;;Dugaban Cikin Gari;8,20719;11,82722
+Kabo;Dugarau;Walawa;Health Post;Health Post;;Walawa U/Kure;8,228;11,996
+Kabo;Durum;Sharifai;Health Post;Health Post;;Sharifi;8,17405;11,87333
+Kabo;Durum;Sadau Cikin Gari;Shadau  Health Post;Health Post;;Shadau Cikin Gari;8,87459;11,87459
+Kabo;Durum;Durum Kasuwa;Durum Mch;Health Post;;Durum Bakin Kasuwa;8,231;11,905
+Kabo;Gammo;Falgore Model Primary Health Centre;Falgore Health Post;Health Post;;Falgore Health Post;8,091;11,88091
+Kabo;Gammo;Gammo Bujawa;Gammo Health Clinic;Health Clinic;;Gammo Bujawa;8,17198;11,89256
+Kabo;Gammo;Dan Maliki;Rinji Health Post;Health Post;;Rinji Yadi Danmaliki;8,1631;11,88019
+Kabo;Garo;Sari Girin;Sari Girin Health Post;Health Post;;Sari Girin H/P;8,15278;11,96088
+Kabo;Garo;Kanye;Kanye Health Post;Health Post;;Kanye H/Post Along Gwarzo;8,14686;11,95999
+Kabo;Garo;Garo Twn;Garo Chealth Clinic;Comprehensive Health Centre;;Sabuwar, Unguwa Garo Town;8,09822;11,95566
+Kabo;Gidiya;Balaci;Health Post;Health Clinic;;Balan Cikin Gari;8,16563;11,91391
+Kabo;Godiya;Godiya;Gidiya Health Clinic;Health Clinic;;Godiya Cikin Gari;8,14997;11,94986
+Kabo;Gude;Hayin Amale;Dan Amale Health Post;Health Post;;Dan Amale H/P;8,044;11,982
+Kabo;Gude;Husure;Husure Health Post;Health Post;;Husure Cikin Gari;8,09562;11,98275
+Kabo;Gude;Gude Cikin Gari;Gude Health Cliniclinic;Health Clinic;;Gude Cikin Gari;8,067;11,954
+Kabo;H/Galabana;H/Bango;Health Post;Health Clinic;;Gayanwa H. Bango;8,25266;11,89093
+Kabo;H/Galabana;Galadaci;Health Post;Health Post;;Galadaci Health Post;8,23596;11,86568
+Kabo;Kabo;Kabo;Kabo Cottage;Others;;Kabo Town;8,16771;11,85138
+Kabo;Kabo;Mallam;Health Post;Health Post;;Mallam Gajere Health Post;8,191921;11,86037
+Kabo;Kabo;Kimahauta;K/Mahauta;Health Post;;K/Mahauta H/P Kabo Ward;8,15391;11,86627
+Kabo;Kanwa;Baskore;Baskore Health Post;Health Post;;Baskore H/Post, Kanwa Ward;8,14284;11,84266
+Kabo;Kanwa;Kanwa;Kanwa Health Post;Health Post;;Kanwa;8,15058;11,82651
+Kabo;Masanawa;Masanawa;Health Post;Health Post;;Masananwa;8,24257;11,84257
+Kabo;Masanawa;Masanawa;Health Post;Health Post;;Kazode Kasawa;8,25293;11,85107
+Kabo;Godiya;Wari;Health Post;Health Post;;Wari Cikin Gari;8,157;11,93
+Kabo;Garo;K/Waja;Health Post;Health Post;;K/Waja;8,144;11,98
+Kabo;Durun Gabasawa;Gabasawa;Health Post;Health Post;;Gabasawa Village;8,215;11,895
+Kano Municipal;Gandu;Gandu Albasa;Model Model Primary Health Centre;Primary Health Care Centre;;Gandu Albasa Behind Kerd Kano;8,52798;11,99394
+Kano Municipal;Gandu;Tukuntawa;Health Clinic;Health Clinic;;Tukuntawa Health Clinic Zoo Road;8,52502;94,36911
+Kano Municipal;Kankarofi;Unguwa Gini;Unguwa Gini Primary Health Centre;Primary Health Care Centre;;Unguwar Gini Phc Along Gwalli Police Station;8,52307;11,98674
+Kano Municipal;Kankarofi;Certral Prison;Prison Clinic;Health Clinic;;Kano Central Prison Kurmawa Road;8,5212;11,9904
+Kano Municipal;Shahuchi;Fuskar Gabas;Primary Health Centrec;Primary Health Care Centre;;Fuskar Gabas Offishin Wakilin Gabas;8,51825;12,00521
+Kano Municipal;Shahuci;Madatai;Health Clinic;Health Clinic;;Madatai Opposite Ado Yola Primary School Shahuci;8,53658;12,000466
+Kano Municipal;Sharada;Sharada Phc;Model Primary Health Centre;Primary Health Care Centre;;Sharada Phase 1 Kwanar Kasuwa By Sharada Batta;8,51381;11,97062
+Kano Municipal;Sheshe;Marmara;Marmara Mch;Health Clinic;;Marmara Nagode Road Kano City;8,51246;11,99702
+Kano Municipal;Tudun Wuzirchi;Emir Palace;Health Clinic;Health Clinic;;Emir Palace Kano;8,51867;11,59494
+Kano Municipal;Yakasai;Yakasai Zumunta;Y Zumunta;Health Clinic;;Yakasai Zumunta Opposite Shakara;8,51245;11,99707
+Kano Municipal;Zaitawa;Yan Awaki;Model Primary Health Centrec;Primary Health Care Centre;;Yan Awaki Police Back Ibb Way;8,52286;12,00939
+Kano Municipal;Zaitawa;Mayanka;Primary Health Centrec;Primary Health Care Centre;;Mayanka Gidan Taambo;8,51737;12,00705
+Karaye;Kafi;Zungurau;Kafi Health Clinic;Health Post;;Zangurau Kafi Ward Karaye L.G.A..;8,12306;11,83196
+Karaye;Kau Kau;Kaukau;Model Primary Health Centre Kwan Yawa;Primary Health Care Centre;;Kwanyawa Village;8,00841;11,7747
+Karaye;Kurugu;Zangon Majema;Zzangon Majema Health Post;Health Post;;Zangon Majama Health Post Kurugu Ward, Karaye L.G.A..;8,00205;11,81621
+Karaye;Kurugu;Dabbazau;Dambazau Health Post;Health Post;;Dambazau H/P Kkumbugawa Ward, Karaye L.G.A..;8,02932;11,81151
+Karaye;Kurugu;Dutsen Amare;Dutsen Amare Health Post;Health Post;;Dutsen Amare H/P Kurugu Ward, Karayr L.G.A..;7,99094;11,8272
+Karaye;Kurugu;Kungu;Kurugu Health Post;Health Post;;Kurugu H/Post Kurugu Ward, Karaye L.G.A..;8,03971;11,83275
+Karaye;Kwan Yawa;Gurawa;Gurawa Health Post;Health Post;;Gurawa Village;7,88819;11,76757
+Karaye;Magajin Gari;Magajin Gari;Karaye Comprehensive Health Clinic;Comprehensive Health Centre;;Mission Road, Torankawa, Karaye;8,01469;11,78093
+Karaye;Tudun Kaya;Dangayaki;Health Post D/Yaki;Health Post;;Dangayaki Village;7,90312;11,72522
+Karaye;Tudun Kaya;Tudun Kaya;Health Post Tudun Kaya;Health Clinic;;Tudun Kaya Cikin Gari;7,93114;11,73335
+Karaye;Turawa;Ung. Mani;Ung. Mani Health Post;Health Post;;Unguwar Mani, Karaye L.G.A..;8,05465;11,75207
+Karaye;Turawa;Turawa;Turawa Health Post;Health Post;;Turawa Cikin Gari Turawa Ward, Karaye L.G.A..;8,04785;11,69774
+Karaye;Yammedi;Usama;Usama Health Post;Health Post;;Usama Village Yammedi Ward, Karaye L.G.A..;8,11326;11,78036
+Karaye;Yammedi;Sabon Fegi;Sabon Fegi Health Post;Health Post;;Sabon Fegi Yammedi Ward Karaye L.G.A..;8,06396;11,80635
+Karaye;Yammedi;Makera;Dederi Clinic;Health Post;;Dederi H/P Yammedi Ward, Karaye L.G.A..;8,05736;11,84374
+Karaye;Yammedi;Yammedi;Yammedi Model Primary Health Centre;Others;;Yammedi Model Phc, Karaye L.G.A..;8,09248;11,82371
+Karaye;Yola;Yola;Yola Health Post;Health Post;;Kwandai Bakin Titi Yola;7,94394;11,71084
+Karaye;Daura;Daura Gari;Daura Health Post;Health Post;;Daura Karaye L.G.;7,983;11,726
+Karaye;Yola;Usama;Usama Health Post;Health Post;;Usama Yola Village;7,944;11,711
+Karaye;Daura 2;U/Tofa;Unguwar Tofa Health Post;Health Post;;Unguwar Tofa Karaye L.G.;7,96;11,786
+Karaye;Kwanyawa;Kadafi;Kadafa Health Post;Health Post;;Kadafi Village Karaye L.G.;7,867;11,772
+Kibiya;Durba;Bakin Kasuwa Durba;Durba Basic Health Clinic;Health Clinic;;Bakin Kasuwa Durba;8,54325;11,69976
+Kibiya;Durba;Unguwa Sarari;Sarari Health Post;Health Post;;Unguwar Sarari Durba Ward Kibiya;8,68568;11,61161
+Kibiya;Fammar;Fammar;Fammar Health Post;Health Clinic;;Fammar Cikin Gari;8,54737;11,72062
+Kibiya;Fammar;Kure;Kure;Primary Health Care Centre;;Sabon Garin Kure Along Natya Road;8,51084;11,51084
+Kibiya;Fassi;Kalambu;Kalambu Health Post;Health Clinic;;Makaranta Tamaru,Bayan Gidan Sarki Tamaru;8,65019;11,39655
+Kibiya;Fassi;Saya Saya;Saya Saya;Health Clinic;;Bakin Kasuwa Saya Saya Kibiya L.G.A..;8,66837;11,39486
+Kibiya;Kadigawa;Kadigawa;Kadigawa Health Post;Health Post;;Kadigawa Primary School;8,73742;11,58166
+Kibiya;Kadigawa;Kuluki;Kuluki Health Post;Health Post;;Saban Garin Kuluki;8,75235;11,57523
+Kibiya;Kahu;Kahu Cikingari;Kahu Health Post;Health Clinic;;Kofar Fada Cikin Garin Kahu, Kahu Ward;8,65912;11,48328
+Kibiya;Kahu;Shike Community;Shike Health Post;Health Post;;Kofar Gidan Sarkin Shike Cikin Gari;8,63252;11,51143
+Kibiya;Kibiya;Kibiya;Kibiya Health Post;Primary Health Care Centre;;Bakin Kofargari K/Arewa Kibiya Along Durba Raod;8,661;11,53263
+Kibiya;Kibiya;Gunda Cikin Gari;Gunda Health Post;Health Post;;Gunda Cikin Gari, Mazabar Kibiya 2;8,71296;11,50591
+Kibiya;Nariya;Chalbo;Chalbo Health Post;Health Post;;Chalbo Cikin Gari Kibiya L.G;8,67448;11,50283
+Kibiya;Nariya;Gangaren Mahauta;Nariya Health Post;Health Post;;Gangaren Mahauta Nariya;8,54896;11,66172
+Kibiya;Nariya;Nariya;Bacha Health Post;Health Post;;Primary Bacha Cikin Gari;8,64817;11,56704
+Kibiya;Tarai;Fancha;Fancha Health Post;Health Clinic;;Bayan Makanta, Fancha Cikin Gari;8,67021;11,45174
+Kibiya;Tarai;Faram;Faran Health Post;Health Post;;Bakin Dam Faram;8,62507;11,53916
+Kibiya;Tarai;Tarai Community;Tarai;Primary Health Care Centre;;Bakin Hanya Tarai Tarai Ward;8,67184;11,50018
+Kibiya;Unguwar Gai;Unguwar Liman;Unguwar Liman;Health Post;;Bakin Makaranta Cikin Gari Unguwar Liman;8,6624;11,61159
+Kibiya;Unguwar Gai;Dunkuran Durba;Dunkuran  Durba;Health Post;;Bakin Titi Dunkuran Durba Unguwar Gai Ward;8,66231;11,52722
+Kibiya;Unguwar Gai;Unguwar Gai;Unguwar  Gai Health Post;Health Post;;Bakin Kasuwa Unguwar Gai;8,73029;11,59317
+Kiru;Baawa;Maska;Health Post;Health Clinic;;Maska Cikin  Gari;8,16772;11,65701
+Kiru;Baawa;Baawa;Baawa Health Clinic;Health Clinic;;Baawa Cikin Gari;8,16766;11,65696
+Kiru;Baawa;Sakarma;Health Post;Health Post;;Sakarma Cikin Gari;8,13433;11,70642
+Kiru;Badafi;Yar Ganji;Yar Ganji Health Post;Health Post;;Yar Ganji Cikin Gari;8,20309;11,45792
+Kiru;Badafi;Gajale;Health Post;Health Post;;Gajale Kofar Fada;8,19638;11,46202
+Kiru;Badafi;Bargi;Bargi Health Post;Health Post;;Bargi Cikin Gari Badafi Ward;8,2498;11,35391
+Kiru;Badafi;Badafi;Badafi Health Post;Health Post;;Badafi Cikin Gari;8,20304;11,45795
+Kiru;Bargoni;Bargoni;Dispenseryensary;Health Post;;Bargoni Jajirawa;8,13433;11,7014
+Kiru;Bargoni;Acilafiya;Health Post;Health Post;;Aglafiya Kadan Garu;8,13439;11,70139
+Kiru;Bargoni;Kailani;Health Post;Health Post;;Kailani;8,18208;11,73011
+Kiru;Bauda;Bauda;Health Post;Health Post;;Bauda Cikin Gari;8,16766;11,65696
+Kiru;Dangora;Makatuwo;Makatuno Health Post;Health Post;;Makatuno Cikin Gari;8,14509;11,57988
+Kiru;Dangora;Kyarana;Kyarana Health Post;Health Post;;Kyarana Cikin Gari;8,14504;11,57995
+Kiru;Dangora;Dangora;Dangora Health Post;Primary Health Care Centre;;Dangora Town;8,15717;11,53611
+Kiru;Dansoshiya;Gabari;Gabari Health Post;Health Post;;Gabari Cikin Gari;8,14501;11,57998
+Kiru;Dansoshiya;Dansoshiya;Dansoshiya Dis;Health Post;;Dansoshiya Cikin Gari;8,15728;11,53628
+Kiru;Dashi;Dashi;Health Post;Health Post;;Dashi Cikin Gari;8,16761;11,65704
+Kiru;Kiru;Kiru;Kiru Chealth Clinic;Comprehensive Health Centre;;Kiru Kofar Arewa;8,13496;11,70697
+Kiru;Kiru;Alhazawa;Health Post;Health Post;;Alhazawa Cikin Gari;8,16765;11,65701
+Kiru;Kogo;Daurawa;Daurawa Health Post;Health Post;;Daurawa Health Post Cikin Gari;8,1677;11,65701
+Kiru;Kogo;Kogo;Kogo Health Post;Health Post;;Kogo Cikin Gari;8,13;11,7004
+Kiru;Maraku;Maraku;Health Post;Health Post;;Maraku Cikin Gari;8,13444;11,7066
+Kiru;Tsaudawa;Tsaudawa;Health Post;Health Post;;Tsaudawa Bakin Titi;8,16771;11,65696
+Kiru;Yako;Yako;Yako Basic Health Clinic;Primary Health Care Centre;;Yako Kofar Gabas;8,65694;11,59694
+Kiru;Yalwa;Yalwa C/Gari;Yalwa Health Post;Health Post;;Yalwa Kofar Gabas;8,20324;11,4579
+Kiru;Yalwa;K/Maiyaki;K/Maiyaki Basic Health Clinic;Health Clinic;;Kafi Mai Yaki Kano Zaria Old Road;8,2031;11,45791
+Kiru;Zuwo;Zuwo;Health Post;Health Post;;Zuwo Cikin Gari;8,18209;11,73007
+Kumbotso;Unguwar Rimi;Unguwar Rimi;Dispensary;Health Post;;Unguwar Rimi Near Primary School;8,56739;11,91022
+Kumbotso;Chalawa;Chalawa;Chalawa Primary Health Centre;Primary Health Care Centre;;Chalawa Bhc Along Madobi Road;8,42495;11,91766
+Kumbotso;Chiranchi;Chiranchi;Chiranchi Dispensery;Health Post;;Chiranchi Near Chiranchi Prim School;8,47594;11,95197
+Kumbotso;Danbare;Danbare;Danbare Health Post;Health Post;;Danbare Hawan Dawaki;8,42491;11,95547
+Kumbotso;Danmaki;Sheka;Danmaliki Primary Health Centre;Primary Health Care Centre;;Sheka Bus Stop Sheka Quarters;8,52877;11,95123
+Kumbotso;Danmaliki;S/Gandu;S/Gandu Primary Health Centre;Primary Health Care Centre;;S/Gandu;8,5149;11,301
+Kumbotso;Danmaliki;Medile;G/Gawa Health Post;Health Post;;Gawa H/P Medile Quarters;8,50995;11,94838
+Kumbotso;Chalawa;Runkusawa;Runkusawa Health Post;Health Post;;Runkusawa Quarters;8,50995;11,94838
+Kumbotso;Danmaliki;Danmaliki;Dispensary;Dispensary;;Danmaliki Quarters;8,5094;11,92804
+Kumbotso;Danmarki;Sheka;Sheka Basic Health Clinic;Primary Health Care Centre;;Sheka Bhc Sheka Barde Bus Stop;8,53135;11,95422
+Kumbotso;Garungawa;Jaoji;Health Post;Health Post;;Jaoji Sabuwar Mandawari Near Police Station;8,51372;11,90293
+Kumbotso;Garungawa;Bechi;Garun Gawa;Health Post;;Bechi Opposite Main Road (Ring Road);8,49194;11,9265
+Kumbotso;K Sani;Yanshana A;Ahmad Ado Bayero;Primary Health Care Centre;;Yanshana Cikin Gari;8,58023;11,92681
+Kumbotso;Kumbotso;Rugafada;Health Post;Health Post;;Ruga Fada Cikin Gari Opposite Primary School;8,50063;11,89221
+Kumbotso;Kumbotso;Kumbotso;Kumbotso Chealth Clinic;Comprehensive Health Centre;;Kumbotso Town;8,55583;11,95429
+Kumbotso;Mariri;Mariri;Halima Med Center;Health Clinic;;Mariri Yangoro;8,61757;11,94586
+Kumbotso;Mariri;Farawa;Maryam Nursing And Maternity;Health Clinic;;Mariri Farawa Babban Layi;8,5999;11,96323
+Kumbotso;Mariri;Mariri;Mariri Primary Health Centre;Primary Health Care Centre;;Mariri Along Maiduguri Road;8,60923;11,94992
+Kumbotso;Naibawa;Naibawa;Dispenseryensary;Health Post;;Naibawa Tsohon Gari;8,56685;11,97628
+Kumbotso;Naibawa;Wailari;Health Post;Health Post;;Wailari Cikingari Near Primary School;8,54373;11,94838
+Kumbotso;Naibawa;Maikalwa;Dispenseryensary;Others;;Maikalwa Behind Layin Chairman;8,55372;11,93068
+Kumbotso;Naibawa;Dangwauro;Dispenseryensary;Others;;Dangwauro Tsohon Gari;8,55319;11,90919
+Kumbotso;Panshekara;Panshekara;Panshekara Basic Health Clinic;Primary Health Care Centre;;Panshekara Labi Along Kayi Road In Panshekara Town;8,45724;11,89894
+Kumbotso;Panshekara;Zawaciki;Zawaciki Health Post;Health Post;;Zawaciki Gabas Opposite Panshekara Road;8,46587;11,91979
+Kumbotso;Unguwar Rim;Limawa;Health Post;Health Post;;Limawa Cikingari Near Primary School;8;11,89981
+Kunchi;Bumai;Danjaka;Danjaka Health Post;Health Post;;Danjaka, Bumai Ward, Near Jumaﬂt Mosque, Kunchi, Kunchi L.G.A..;8,22226;12,40754
+Kunchi;Bumai;Bumai;Bumai Health Post;Health Post;;Bumai Cikin Gari, Kunchi L.G.A..;8,25725;12,54912
+Kunchi;Bumai;Unguwar Gyartai;U/Gyartai Health Post;Health Post;;Unguwar Gyartai, Bumai Ward, Kunchi L.G.A..;8,3057;12,37211
+Kunchi;Bumai;Jangefe;Jangefe Health Post;Health Post;;Jangefe Near Primary School Bumai Ward;8,20517;12,44695
+Kunchi;G/ Sheme;Rigana;Rigawa Health Post;Health Post;;Rigawa Cikin Gari, Garin Sheme , Kunchi L.G.A..;8,21013;12,37803
+Kunchi;G/ Sheme;Rigana;Rigana Health Post;Primary Health Care Centre;;Rigana Cikin Gari, Garun Sheme Ward;8,19293;12,35801
+Kunchi;Galadimawa;Galadimawa;Galadimawa Primary Health Centre;Health Post;;Galadimawa Cikin Gari;8,22142;12,48924
+Kunchi;Gwamai;Kuku;H/ Post Kuku;Health Post;;Bajen Mahuta, Kuku I;8,28191;12,3729
+Kunchi;Gwarmai;Gwarmai;Model Primary Health Centre Gwarmai;Primary Health Care Centre;;Gwarmai Cikin Gari, Bakin Kasuwar Gwarmai;8,31347;12,40169
+Kunchi;K/Kuka;Jodade;Jodade Health Post;Health Post;;Jodade Cikin Gari, Kasuwar Kuka Ward Near Juaﬂ Mosque;8,30576;12,3721
+Kunchi;K/Kuka;Donkwai;Donkwai Health Post;Health Post;;Donkai Cikin Gari;8,35591;12,41093
+Kunchi;K/Kuka;Tabani;Tabani Health Post;Health Post;;Tabani Cikin Gari;8,32984;12,41376
+Kunchi;Kasuwar- Kuka;Tofawa Dal Bejiya;Tofawa Health Post;Health Post;;Tofawa Dalbejiya Kasuwa Kuka Ward, Kunchi L.G.A..;8,32868;12,34672
+Kunchi;Kasuwar- Kuka;Kargon- Kunchi;Kargon-Kunchi;Health Post;;Kangon Kunchi, Kasuwa-Kuka Ward;8,31349;12,40166
+Kunchi;Kasuwar- Kuka;Kasuwa Kuka;Model Primary Health Centre Kasuwa;Primary Health Care Centre;;Sabuwar Unguwa Kasuwa- Kuka, Kunchi L.G.A..;8,34661;12,45537
+Kunchi;Kunchi;Kunchi;Primary Health Centre Kunchi;Primary Health Care Centre;;Kunchi Local Govt. Head Quater, Kunchi Town.;8,2747;12,50216
+Kunchi;Kunchi;Sodawa;Sodawa;Health Post;;Sodawa, Cikin Gari, Along Kazaure Road, Kunchi L.G.A..;8,30301;12,50404
+Kunchi;M/Fada;Gadaba;Gadaba Health Post;Health Post;;Gadaba, M/Fada Ward, Kunchi La;8,24029;12,45342
+Kunchi;M/Fada;Kaya;Kaya Health Post;Health Post;;Kaya Baraha Cikin Gari;8,26769;12,55031
+Kunchi;M/Fada;Falle;Falle Health Post;Health Post;;Falle Near, Primary School;8,27158;12,58394
+Kunchi;Matan Fada;Matan Fada;Matan Fada Dispensery.;Health Clinic;;Matan Fada Cikin Gari, Kunchi Local Govt. Kano;8,24368;12,57755
+Kunchi;Ridawa;Ridawa;Ridawa Health Post;Health Post;;U/Malamawa Ridawa, Kunchi L.G.A..;8,27459;12,45542
+Kunchi;Shamakawa;Baje;Baje Health Post;Health Post;;Baje Naer Primary School;8,25737;12,36534
+Kunchi;Shamakawa;Shamakawa;Shamakawa Health Post;Health Post;;Shamakawa Kunyawa;8,31027;12,43331
+Kunchi;Shamakawa;Fgwadama;Gwadama;Primary Health Care Centre;;Gwadama U/ Makera;8,26884;12,38727
+Kunchi;Shunaki;Hugungumai;Hugungumai;Health Post;;Hugungumai Cikin Gari;8,22236;12,43584
+Kunchi;Shuwaki;Dumbule;Dumbule Health Post;Health Post;;Dumbule, Along Kazaure Road, Kunchi L.G.A..;8,24537;12,50568
+Kunchi;Shuwaki;Shuwaki;Model Primary Health Centre Shuwaki;Primary Health Care Centre;;Shuwaki Cikin Gari Near Mtn;8,17308;12,42453
+Kunchi;Yandadi;Yandadi;Yandadi Model Primary Health Centre;Primary Health Care Centre;;Yandadi Cikin Gari;8,2351;12,45317
+Kunchi;Yandadi;Karofawa;Karofawa Health Post;Health Post;;Karofawa, Along Kazaure Road, Near Kunchi Bridge;8,23819;12,48621
+Kunchi;Yandadi;Yankifi;Yankifi Health Post;Health Post;;Yankifi Village, Yandadi Ward, Kunchi L.G.A..;8,26977;12,47347
+Kunchi;Yandadi;Magawata;Magawata Health Post;Health Post;;Magawata Naer Primary School B.;8,27687;12,42356
+Kura;Dalili;Azore;Azore;Health Clinic;;Kura Azore;8,42558;11,77862
+Kura;Dalili;Hadeja Jamaare;H Jaare Health Clinic;Health Clinic;;Hadeja Jamaare Along Zaria Road Opposite Kura Gh;8,42006;11,77762
+Kura;Dan Hassan;Dan Hassan;Dan Hassan Primary Health Centre;Primary Health Care Centre;;Dan Hassan Phc Along Rano Road;8,51687;11,79436
+Kura;Dukawa;Dukawa;Dukawa Health Clinic;Health Clinic;;Kura Dukawa;8,42588;11,77854
+Kura;Dukawa;Kunshama A;Kunshama A;Health Clinic;;Dukawa Kunshama A;8,49931;11,82405
+Kura;Dukawa;Kunshama B;Kunshama B;Health Clinic;;Kunshama Kwaridukawa Kura Lg;8,42578;11,77856
+Kura;Dukawa;Gamadan;Gamadan;Health Clinic;;Gamadan Dukawa Kura L.G.A..;8,47732;11,74109
+Kura;Gundutse;Gainawa A;Gainawa A;Health Clinic;;Gainawa A Gundutse Town;8,49858;11,82462
+Kura;Gundutse;Gundutse;Gundutse Health Clinic;Health Clinic;;Behind Police Station Gundutse;8,49869;11,82464
+Kura;Karfi;Zango;Karfi Health Clinic;Health Clinic;;Karfi Health Clinic Close To Primary School Karfi;8,49279;11,82198
+Kura;Kosawa;Kadani;Kadani Health Clinic;Health Clinic;;Kadani Village Kura L.G.A.;8,45564;11,74067
+Kura;Kosawa;Imawa;Imawa Health Clinic;Health Clinic;;Imawa Kura;8,46043;11,7983
+Kura;Kosawa;Guraza;Guraza Health Clinic;Health Clinic;;Guraza Kura Kura L.G.A..;8,43189;11,77484
+Kura;Kurun Sumau;Harbatse;Kura H/F;Health Clinic;;K/Samau Mmh Along Police Station Road;8,4262;11,77017
+Kura;Riga Rukar;Kirya;Kirya Health Clinic;Health Clinic;;Kirya Kura L.G;8,45209;11,81754
+Kura;Rigar Duka;Godar Ali;Godar Ali Health Post;Health Clinic;;Kura Godar Ali;8,42592;11,77868
+Kura;Rugar Doka;Rimin Kwarya;Rimin Kwarya Health Clinic;Health Clinic;;Rimin Kwarya Health Clinic Close To Primary School;8,42623;11,77867
+Kura;Kosawa;Kadani;Kadani Health Clinic;Health Clinic;;Along Kura By-Pass To Dan Hassan;8,456;11,741
+Kura;Kosawa;Gajin Gari;Gajin Gari Health Clinic;Health Clinic;;Along Kura By-Pass To Dan Hassan;8,491;11,741
+Kura;Dan Hassan;Dan Hassan;Dan Hassan Dispensary;Dispensary;;Along Karfi To Rano Road;8,517;11,794
+Kura;Kosawa;Guraza;Guraza Health Clinic;Health Clinic;;Close To Kura Kofar Gabas;8,46;11,767
+Madobi;Burji;Burji;Primary Health Centre.;Primary Health Care Centre;;Burji Ward;8,36276;11,86242
+Madobi;Burji;Maraya;Maraya Health Post;Health Post;;Maraya Doguwa;8,41092;11,89194
+Madobi;Chinkoso;Sabon Gari;Health Post;Health Post;;Sabon Gari Chinkoso;8,28745;11,28287
+Madobi;Galinja;Galinja;Galinja Health Post;Health Post;;Galinja Health Post;8,49032;11,86134
+Madobi;Gora;Gora;Gora Alspen;Health Post;;Gora Sako Kofar Kudu;8,32682;11,81788
+Madobi;Gora;Danmurina;Danmurina Health Post;Health Post;;Gora;8,30221;11,83095
+Madobi;K/Mata;K/Mata;B.H.Clinic;Health Clinic;;K/Mata Tudun Koya;8,47705;11,86638
+Madobi;Kafin Agur;Kafin Agur;K/Agur Basic Health Clinic;Health Clinic;;Kafin Agur Opposite Kafi Moddel Primary School;8,36388;11,85809
+Madobi;Kanwa;Kanwa;Kanwa Dispenseryensary;Health Post;;Kanwa;8,4234;11,85867
+Madobi;Kanwa;Hausawa;Hausawa Health Post;Health Post;;Kanwa Hausaawa;8,45101;11,87149
+Madobi;Kubarachi;Kundurun;Kundrun Health Post;Health Post;;Kundurun;8,3787;11,78969
+Madobi;Kubarachi;Kubarachi;Health Clinic;Health Clinic;;Kubarachi Kan-Tudu Kubarachi;8,28823;11,77094
+Madobi;Kwankwaso;Kwankwaso;Kwankwaso Health Post;Health Clinic;;Kwankwaso Kofar Fada;8,39341;11,85155
+Madobi;Kwankwaso;Ningawa;Ningawa Health Post;Health Post;;Kwankwaso Ningawa;8,40057;11,82191
+Madobi;Kwankwaso;Daburau;Daburau Health Post;Health Post;;Kwankwaso Daburau Opposite Kwanwa Road;8,3722;11,82149
+Madobi;Madobi;Gara;Gara Health Post;Health Post;;Gara;8,28689;11,77458
+Madobi;Madobi;;Akilu Mmhealth Post;Others;;Akilu Mm Hospital Madobi Local Govt;8,28836;11,77007
+Madobi;Rikadawa;Jirgwai;Health Post;Health Post;;Jirgwai Health Post;8,28332;11,77394
+Madobi;Rikadawa;Rikadawa;Rikadawa Health Post;Health Post;;Rikadawa Health Post;8,30897;11,73364
+Madobi;Yakun;Yakun;Health Post;Health Post;;Yakin Danbaure.Madobi L.G.A..;8,28463;11,74023
+Makoda;Babarruga;Shantake;Shantake Health Post;Health Post;;Shantake H/P;8,5177;12,3458
+Makoda;Babarruga;Dammrke;Dammarke Basic Health Clinic;Primary Health Care Centre;;Dammarke Bhc;8,52258;12,32638
+Makoda;Durma;Walawa;Walawa Health Post;Health Post;;Walawa H/P;8,48501;12,34293
+Makoda;Duruma;Tasharbasa;Tasharbasa Health Post;Health Post;;Tashar Basa;8,54081;12,30198
+Makoda;Duruma;Duruma;Walawa Health Post;Health Post;;Duruma Ward;8,47743;12,34358
+Makoda;Jibga;Jibga;Jibga Health Post;Health Post;;Jiba H/Post;8,47927;12,42311
+Makoda;Jibga;Jibga Fulani;Jibga Fulani Health Post;Health Post;;Jibga Fulani H/P;8,4289;12,43003
+Makoda;Jibga;Barebari;Barebari Health Post;Health Post;;Bababari H/P;8,50285;12,49357
+Makoda;Jibga;Yabbawa;Yambawa Health Post;Health Post;;Yambawa H/P;8,49672;12,53403
+Makoda;Kadandani;Fauriya;Jamaahazo Health Post;Health Post;;Jamaahazo H/P;8,50288;12,55709
+Makoda;Kadandani;Gowon Bature;K/Tudu Health Post;Health Post;;K/Tudu H/P Gawo;8,46971;12,57257
+Makoda;Kadandani;Dammadaki;Dammadaki Health Post;Health Post;;Dammadaki H/P;8,49909;12,58096
+Makoda;Kadandani;Kurna;Kurna Health Post;Health Post;;Kurna H/P;8,48049;12,54372
+Makoda;Koguna;Sabon Ruwa;Sabon Ruwa Health Post;Health Post;;Sabon Ruwa H/P;8,4355;12,37232
+Makoda;Koguna;Koguna;Koguna Basic Health Clinic;Basic Health Clinic;;Korguna Bhc;8,45834;12,38205
+Makoda;Korantabo;Dunawa;Dunawa Health Post;Health Post;;Dunawa H/P;8,41934;12,44698
+Makoda;Korantabo;Kore;Kore Health Post;Health Post;;Kore H/P;8,43537;12,49749
+Makoda;Maitsidau;Maitsidau;Maitsidau Basic Health Clinic;Health Clinic;;Maitsidau H/P Maitsidau Ward;8,51764;12,34924
+Makoda;Makoda;Ganji;Ganji Health Post;Health Post;;Ganzi H/P;8,39528;12,42199
+Makoda;Makoda;Makoda;Makoda Basic Health Clinic;Primary Health Care Centre;;Makoda Phc;8,41936;12,44699
+Makoda;Satame;Jigawa;Jigawa Health Post;Health Post;;Jigawa Satame Gabas;8,56047;12,31697
+Makoda;Satame;Satame;Satame Clinic;Health Post;;Satame By Road Side;8,53023;12,29024
+Makoda;Satame;Yallada;Yallada Health Post;Health Post;;Yallada Health Post Makoda L.G.A.;8,57057;12,27523
+Makoda;Tangaji;Tangaji;Tangaji Health Post;Health Post;;Tangaji Ward;8,48749;12,30525
+Makoda;Tangaji;Tangajiyo;Tangajiyo Health Post;Health Post;;Tangajiyi Ward;8,46268;12,32332
+Makoda;Tangaji;Bakarari;Bakarari Health Post;Health Clinic;;Bakarari Road;8,49024;12,28151
+Makoda;Wailare;Wailare;Wailare  Health Post;Health Post;;Wailare Health Post Makoda L.G.A.;8,52981;12,26775
+Minjibir;Azore;Koya;Koya Basic Health Clinic;Health Clinic;;Koya Cikin Gari;8,627;12,11782
+Minjibir;Azore;Sambauna;Sabauna Basic Health Clinic;Health Clinic;;Sambauna Health Clinic Along Azore Road;8,59843;12,12464
+Minjibir;Gandirwawa;Gandirwawa;Gandirwawa Basic Health Clinic;Health Clinic;;Gandirwawa Cikin Gari Along Ungogo Road;8,61677;12,15509
+Minjibir;Kantama;Kantamababba;Kantama Babba Health Post;Health Post;;Kantama Babba Cikin Gari Opposite Kantama Secondary School;8,59427;12,18175
+Minjibir;Kantama;Geranya;Geranya Dispensery;Others;;Geranya Town Opposite Geranya Market;8,65787;12,17558
+Minjibir;Kantama;Garji;Garji Dispensery;Health Post;;Gaeji Health Post Wajan Masaka Garji;8,62639;12,19643
+Minjibir;Kantama;Garke;Garke Health Post;Health Post;;Garke Health Post Opposite Garke Primary Schhol;8,58896;12,21139
+Minjibir;Kunya;Kunya;Kunya Primary Health Centre;Primary Health Care Centre;;Kunya Phc Kunya Town;8,53546;12,22108
+Minjibir;Kunya;Dambawa;Dambawa Health Post;Health Post;;Dambawa Health Post Opposite Primary Scool Dambawa;8,54574;12,25594
+Minjibir;Kuru;Zabanuawa Dansudu;Zabainawa Dansudu Health Post;Health Post;;Zabainawa Dansudu Kusa Da Ramin Kasa Z Dansudu;8,51047;12,15957
+Minjibir;Kuru;Geza;Geza;Health Post;;Geza Health Post;8,5084;12,18771
+Minjibir;Kuru;Kuru;Kuru Dispensery;Others;;Kuru Dispensary West Site Off The Town Dutse;8,52964;12,16959
+Minjibir;Kuru;Jirgabawa;Jirgabawa;Health Post;;Jirgabawa Cikin Gari;8,62639;12,19643
+Minjibir;Kwarkiya;Kwarkiya;Kwarkiya Health Post;Health Post;;Kwarkiya Hp Babura Road Opposite Primary School;8,59634;12,24754
+Minjibir;Kwarkiya;Gasgainu;Gasgainu Dispensery;Health Post;;Sabon Gari Gasgainu;8,65762;12,17774
+Minjibir;Sarbi;Zango;Zango Health Post;Health Post;;Zango Cikni Gari;8,69994;12,25106
+Minjibir;Sarbi;Sarbi;Sarbi Health Post;Health Post;;Sarbi Cikin Gari;8,67342;12,29727
+Minjibir;Sarbi;Gurjiya;Gurjiya Dispensery;Health Post;;Gurjiya Disp Opposite Motor Pack;8,70724;12,22272
+Minjibir;Tsakiya;Kwamna;Tsakiya Dispensery;Health Post;;Tsakiya Kwamna Cikin Gari;8,55146;12,13806
+Minjibir;Tsakuwa;Tunkunawa;Tunkunawa;Health Post;;Kwadarma Town;8,66394;12,21711
+Minjibir;Tsakuwa;Kankarawa;Kankarawa Dispensery;Health Post;;Kankarawa Cikin Gari;8,69994;12,25106
+Minjibir;Wasai;Abudakaya;Abudakaya Health Post;Health Post;;Abudakaya Town Opposite Juma At Mosque;8,655;12,17427
+Minjibir;Wasai;Wasai;Wasai Health Post;Health Post;;Wasai Bakin Titi Opposite Wasai Special Primary School;8,67469;12,15391
+Nassarawa;Dakata;D/Dakata;Primary Health Centre;Primary Health Care Centre;;Dawakin Dakata By Police Out Post Dakaka;8,58174;12,03072
+Nassarawa;Gama;Gama;Gama;Health Post;;Gama B H/Post;8,55235;12,03374
+Nassarawa;Giginyu;Badawa;Badawa Health Post;Health Post;;Primary School Badwa;8,57349;11,99983
+Nassarawa;Giginyu;Kawo;Kawo Health Post;Health Clinic;;Kawo Mai Gari By Primary School;8,57253;11,98143
+Nassarawa;Giginyu;Giginyu Dankabo;Primary Health Centre;Primary Health Care Centre;;Giginu Dan Kabo Street;8,56447;11,98845
+Nassarawa;Gwagwarwa;Gwagwarwa;Gwagwarwa;Comprehensive Health Centre;;Com. Hc. Opposite Gwagwarwa Police Station;8,55063;12,02748
+Nassarawa;Hotoro - N;Haye;Haye Health Post;Health Clinic;;Haye C/Gari Health Post;8,59;12,00085
+Nassarawa;Hotoro North;Ladanai;Ladanai Health Post;Health Post;;Ladanai Hp, Laraba Road;8,59638;11,98599
+Nassarawa;Hotoro North;Hotoro North;Hotoro Health Clinic;Health Clinic;;Hotoro North Tsamiyar Boka;8,58227;11,97443
+Nassarawa;Hotoro South;Hotoro Kudu;Hotoro S.H.F;Primary Health Care Centre;;Hotoro Kudu Masalachi Juma Hotoro;8,58236;11,97018
+Nassarawa;Kawaji;Kawaji;Kawaji Health Post;Health Post;;Kawaji Hp Along Hadijia Road;8,57779;12,01043
+Nassarawa;Kawaji;Tokarawa;Tokarawa Ph;Primary Health Care Centre;;Tokarawa Chikin Gari By Sanibaban Kowa;8,60579;12,00795
+Nassarawa;Kawaji;Sauna;Sauna;Health Post;;Sauna By Hisbz Tansion Cikin Gari;8,59897;12,02039
+Nassarawa;Kaura Goje;Kaura Goje;Health Post;Health Post;;Gidan Ruwa Kaura Goje;8,54263;12,03878
+Nassarawa;Kaura Goje;Kaura Goje;Primary Health Centre;Primary Health Care Centre;;P.R.P. Road Kaura Goje;8,54602;12,04376
+Nassarawa;T/Murtala;T/Murtala;Health Post;Health Post;;Health Post T/Murtala;8,56423;12,02718
+Nassarawa;T/Wada;T/Wada;Sch Clinic;Health Clinic;;School Hc T/Wada Ward;8,55462;12,02337
+Nassarawa;T/Wada;Bompai;Bompai Pc;;;Bompai;8,55651;12,01298
+Rano;Lausu;Lausu;Lausu Health Post;Health Post;;Lausu H/Post Along Kibiye Road;8,61595;11,56071
+Rano;Madachi;Madachi;Madachi Health Post;Health Post;;Madachi Health Post;8,61111;11,87483
+Rano;Rano T/Gari;Rano Dawaki;Rano Dawaki;Health Post;;Rano Dawaki Along Saji Road Rano;8,63178;11,59147
+Rano;Rurum Sabon Gari;Munture;Munture;Health Clinic;;Munture H/Clinic Munturu Rano L.G.A..;8,45371;11,52466
+Rano;Rurum Tsohongari;Rurum Tsohon Gari;S/Kaura Health Post;Health Clinic;; Rurum Tsohon Gari Health Clinic Rurum;8,48188;11,41774
+Rano;Rurum Tsohongari;Sabuwar Kaura;Sabuwa Kaura;Health Post;;Sabuwa Kau Health Post S/Kaura Rurum To Tiga Road;8,46236;11,43833
+Rano;Sabon Gari;Rano;Sch Clinic;Health Clinic;;Govt.Sec.School Rano;8,58556;11,5628
+Rano;Saji;Yama;Yama;Health Post;;Yama Health Post;8,55364;11,4319
+Rano;Saji;Saji;Saji Health Post;Health Post;;Saji Ward Rano Lg;8,58722;11,46199
+Rano;Yalwa;Kazanurawa;Kazaurawa Health Post;Health Post;;Kazaurawa Health Post Rurum Road;8,53883;11,39347
+Rano;Yalwa;Bul;Bul Health Post;Health Post;;Bul Health Post;8,59126;11,36777
+Rano;Yalwa;Yalwa;Yalwa Health Post;Health Post;;Yalwa Health Post;8,52687;11,43285
+Rano;Zambur;Tabobi;Health Post;Health Post;;Tabobi Health Post Kundu Road;8,54854;11,97679
+Rano;Zanyau;Tai-Tai;Taitai Health Clinic;Health Clinic;;Taitai Health Clinic (Zinyau Ward);8,57526;11,5014
+Rimi Gado;Butu- Butu;Butu Butu;Health Post;Health Post;;Butu-Butu Health Post Along Gwarzo Road Opposite Jummia;8,20863;11,96589
+Rimi Gado;Butu- Butu;Dan Isah;Health Post;Health Post;;Dan Isah Cikin Agri Opposite Primary School;8,22615;11,93934
+Rimi Gado;Danshayi;Ungwa Kudu;Helath Post;Health Post;;Near PS Along Dasyo Karofin Yashi Road;8,37574;11,89477
+Rimi Gado;Doka- Dam;Cikin Gari;Health Post;Health Post;;Doka Adwa Health Post;8,16346;11,97983
+Rimi Gado;Doka Dawa;Kaza Dawa;Health Post;Health Post;;Kazar Dawa Along Gwarzo Road;8,19538;11,96725
+Rimi Gado;Doka Dawa;Indbo;Health [Post;Health Post;;Ino Villgw;8,27846;11,99917
+Rimi Gado;Dugurawa;Dugurawa;Heailth Post;Health Post;;Dugurawa;8,30892;11,94663
+Rimi Gado;Gulu;Gulu Town;Health Post;Health Post;;Gulu Town Opposite;8,29579;11,86772
+Rimi Gado;Gulu;Health Post;Dawakin Kulu;Health Post;;Dawakin Gulu;8,299;11,8744
+Rimi Gado;Jili;Cikin Gari;Health Post;Health Post;;Jili Hwealth Post Along Rimim Gado Gulu Road;8,27447;11,89922
+Rimi Gado;Jilin;Juji Helath Post;Helath Post;Health Post;;Juji Cikin Gari Along Rimi Primary School;8,31004;11,94514
+Rimi Gado;Korofin Yashi;Karofin Yashi;Health Post;Health Post;;Kofin Yashi Town Alomg Tamawa Linkn Road;8,35045;11,88386
+Rimi Gado;Maigado;Ingula;Health Post;Health Post;;Maigarin Ingila Near Bore Of Ingila Opposite School.;8,30191;11,92146
+Rimi Gado;R/Gado;R/Gado;Chealth Clinic;Comprehensive Health Centre;;Comprehensive Health Centre Along Kano Gwazo Road, Kano.;8,24766;11,97183
+Rimi Gado;Sakartsa;Sakaratsa;Dispenseryensry;Health Post;;Sakarasa Village;8,24488;11,96751
+Rimi Gado;Tamawa;Makamri;Health Post;Health Post;;Maigari Village Oppositesite Village Head'S House;8,332;11,91917
+Rimi Gado;Tamawa;Tamawa;Tamawa Health Post;Health Post;;Tamawa Cikin Gari;8,34281;11,89805
+Rimi Gado;Yalwa;Yalwa;Basic Health Clinic;Comprehensive Health Centre;;Yalwan Danzial Town Along Dogoto Yalwa;8,30993;11,95256
+Rimi Gado;Zango;Yango;Yango;Health Post;;Yango Opposite Primary School;8,23118;12,01163
+Rimi Gado;Zango I;Zangon I;Health Post;Health Post;;Zango I, Along Gwarzo Road, By Right Hand Side;8,30193;11,92153
+Rimi Gado;Zango Il;Zangon Il;Health Post;Health Post;;Zango Health Post, Zangi Il Along Tofa To Doka Road;8,27883;12,02042
+Rogo;Beli;Hago;Health Post;Health Post;;Sobon Layin Hago Along Makarfj Road;7,83121;11,47992
+Rogo;Beli;Beli;Beli;Primary Health Care Centre;;Barbaji Along Makafird Rogo L.G.A..;7,83828;11,43782
+Rogo;Falgore;Falgore Model PrimaryHealth Centre;Model Primary Health Centre;Primary Health Care Centre;;Kiru Kofar Gabas;7,695;11,512
+Rogo;Felgore;Tsara;Health Post;Health Post;;Tsara Cikin Gari;7,85237;11,59531
+Rogo;Fulatan;Yanoko;Health Post;Health Post;;Yanoko Dispensary;7,91809;11,45583
+Rogo;Fulatan;Fulatan;Bch;Primary Health Care Centre;;Fulatan Basic Health Facility Along Yanoko Road;7,85898;11,40053
+Rogo;Gwangwan;Dayaso;Health Post;Health Post;;Dayaso Cikin Gari;7,73533;11,516
+Rogo;Gwangwan;Bari;Primary Health Centre;Primary Health Care Centre;;Baji Sabon Gari;7,75111;11,56822
+Rogo;Gwangwan;Gwangwan;Bch;Health Post;;Gwanr-Gwan Kofar Fada;7,74719;11,48705
+Rogo;Jajaye;Barbaji;Health Post;Health Post;;Barbaji H/ Post;7,97726;11,52179
+Rogo;Jajaye;Sagon Dare;Health Post;Health Post;;Sangodare Along Barbaji Road Rogo L.G.A..;7,95463;11,483
+Rogo;Jajaye;Jajaye;Health Post;Health Post;;Tsamiya Kwankwan;7,93574;11,55682
+Rogo;R/ Bogo;R Bago;Health Post;Health Post;;Ruwan Bago Sundu Road Kofar Fada;7,75742;11,40709
+Rogo;R/Bago;Ungwa Malllam Amadu;Health Post;Health Post;;Ingwa Mallam Amadu;7,82881;11,54838
+Rogo;R/Bago;Sundu;Health Post;Health Post;;Sunday Along Ruwari Bago;7,7614;11,38061
+Rogo;Rogo/ Sabo Gari;Rogo Sabo Gari;Comprehensive Health Centre;Comprehensive Health Centre;;Rogo Sabo Gari;7,83055;11,55223
+Rogo;Rogo/ Sabo Gari;Rogo Sabo Gari;Health Post;;;K/Liman;7,82063;11,54267
+Rogo;Zarewa;Zarewa;Zarewa;Health Clinic;;Zarewa Sabogari Road Dangurziri Road Rogo L.G.A..;7,81189;11,39709
+Rogo;Zoza;Zoza;Health Post;Health Post;;Zozo Cokin Gari;7,82931;11,54941
+Rogo;Zoza;Karshi;Karshi;Health Post;;Karshiscikin Gari Sarki Yamma Rogo L.G.A..;7,82556;11,55146
+Rogo;Zoza;Kaleku;Health Post;Health Clinic;;Kaleku Along Rogo Road;7,8834;11,62501
+Rogo;R/Bago;T/Magaji;Health post;Health post;;T/Magaji;7,782;11,454
+Shanono;Alajawa;Koya;Koya Health Post;Health Post;;Along Tsaure Road Koya Town;7,94818;12,07934
+Shanono;Alajawa;Alajawa;Alajawa Dispensery;Health Post;;Alajawa Cikin Gari;7,9659;12,11475
+Shanono;D/Bakoshi;Dorogo;Dorogo Health Post;Health Post;;Dorogo Kan Hanyar Shanono Zuwa Gwarzo;7,97304;12,00228
+Shanono;D/Bakoshi;Gasawa;Gasawa Health Post;Health Post;;Hanyar Gasawa Cikin Gari;7,943885;12,00285
+Shanono;Dutsen Bakoshi;Dutsen Bakoshi;Dutsen Bakoshi;Health Post;;Dutsen Cikin Gari Bakin Kasuwa Street;7,94581;12,02678
+Shanono;Faruruwa;Faruruwa;Faruruwa Primary Health Centre;Primary Health Care Centre;;At Faruruwa Town Along Kadamu Ward;7,93762;12,18338
+Shanono;Faruruwa;Yankwada;Faruruwa Primary Health Centre;Primary Health Care Centre;;Opposite Primary School Yankwada;7,87626;12,20338
+Shanono;Goran Dutse;Bakaji;Bakaji Health Post;Health Post;;Hanyar Gwashatsa Gwarzo Zuwa Bunbulun;7,87539;12,1254
+Shanono;Goron Dutse;Bankamawa;Bakanawa Health Post;Health Post;;Bankanawa Cikin Gari Along Shanono Road;7,93521;12,12668
+Shanono;Goron Dutse;Kuraku;Kuraku Health Post;Health Post;;At Kuraku Town Behind G/Dutse Main Street;7,91705;12,17047
+Shanono;Goron Dutse;Goron Dutse;Goron Dutse Health Post;Health Post;;Goron Dutse Cikin Gari Along Faruruwa Road;7,87241;12,15819
+Shanono;Kadamu;Kundila;Kundila Health Post;Health Post;;Kundila Cikin Gari;7,98472;12,12979
+Shanono;Kadamu;Kadamu;Kadamu Mp.Health Clinic;Primary Health Care Centre;;Kadamu Cikin Gari;7,98448;12,1782
+Shanono;Kokiya;Gidan Tuwo;Gidan Tuwo Health Post;Health Post;;At Gudan Tuwo Town Behind G.T. Pri,Sch;8,06649;11,99777
+Shanono;Kokiya;Kokiya;Kokiya Dispensery;Health Post;;Kokiya Cikin Gari;8,05433;12,00611
+Shanono;Leni;Leni;Leni Health Clinic;Health Clinic;;Leni Cikin Gari Hanyar Garo;8,09699;12,00271
+Shanono;Leni;Bakwami;Bakwami Health Post;Health Post;;Bakwami Along Leni To Godarawa Road;8,11375;12,03347
+Shanono;Shakogi;Shakogi;Shakogi;Health Post;;Shakogi Sabon Gari;8,01794;12,02688
+Shanono;Shakogi;Godarawa;Godarawa Health Post;Health Post;;Along Shanono To Godarawa Feeder Road;8,07613;12,05171
+Shanono;Shanono;Shanono; Shanono C.H.C;Comprehensive Health Centre;;Along Gwarzo Rd Bichi Main Road Shanono Town;7,98664;12,05263
+Shanono;Tsaure;Dan Shado;Tsaure Health Post;Health Post;;Along Gwarzo Rd Tsaure Road;7,88934;12,04329
+Shanono;Tsaure;Janbirji;Janbirji Health Post;Health Post;;Dugumawa Janjibirji Cikin Gari;7,9045;11,97104
+Shanono;Tsaure;Tsaure;Health Cliniclinic;Health Clinic;;Tsaure Along Goron-Duste Gwarzo Street;7,87982;12,09449
+Sumaila;Gala;Baji;Baji Health Post;Health Post;;Baji Health Post Gala Ward;8,99337;11,44223
+Sumaila;Gala;Bingi;Bingi Health Post;Health Post;;Bingi Health Post Gala Ward;9,01282;11,47671
+Sumaila;Gala;Gala;Gala Dispensery;Others;;Gala Dispensary Gala Ward;8,94868;11,45512
+Sumaila;Gani;Bagagare;Bagagare;Health Post;;Bagagare Health Post Gani Ward;8,90143;11,41194
+Sumaila;Gani;Gani;Gani Primary Health Centre;Primary Health Care Centre;;Gani Primary Health Certre Gani Ward;8,8329;11,36904
+Sumaila;Gani;Dambazau;Dambazau;Health Post;;Dambauzau Health Post Gani Ward;8,79363;11,33606
+Sumaila;Gani;Dagora;Dagora;Health Post;;Dagora Dispensary Massu Ward;8,85878;11,27953
+Sumaila;Gani;Gani;Gani Health Post;Non Functional;;;8,84377;11,37362
+Sumaila;Garfa;Garfa;Garfa Dispenseryensery;Health Post;;Garfa Kofar-Kudu;8,92223;11,55031
+Sumaila;Garfa;Alfindi;Alfindi Health Post;Health Post;;Alfindi Health Post Garfa;8,99881;11,52372
+Sumaila;Gediya;Bakin Lahadi;Bikin Lahadi Health Post;Health Post;;Bakin Lahadi;8,94897;11,35838
+Sumaila;Gediya;Dando;Dando Dispensery;Health Post;;Dando Town Kofar Gabas;8,96079;11,336
+Sumaila;Gediya;Gediya;Gediya Basic Health Clinic;Primary Health Care Centre;;Gediya Basic Health Clinic Gediya Ward;8,91229;11,35045
+Sumaila;Gediya;Kula Community;Kula Dispensery;Health Post;;Kula Kofar Gabas;8,94193;11,39515
+Sumaila;Kanawa;Yan Bawa;Yan Bawa Health Post;Health Post;;Yan Bawa Gabas;9,05938;11,37148
+Sumaila;Kanawa;Kawo;Kawo Health Post;Health Post;;Kawo Kofar Yamma;9,07419;11,37171
+Sumaila;Kanawa;Dingamu;Dingamu Dispenseryensary;Health Post;;Dingamu Health Post Kanawa Ward Sumaila;9,04589;11,39194
+Sumaila;Kanawa;Kanawa;Kanawa Dispensery;Others;;Kanawa Gabas Along Takai To Magami Road;9,0256;11,43047
+Sumaila;Kanawa;Bango;Bango Health Post;Others;;Bango Yamma Bakin Titi;9,03353;11,4443
+Sumaila;Magami;Beta;Beta Health Post;Health Post;;Beta Kofar Gabas;8,90141;11,27505
+Sumaila;Magami;Yaka Duna;Yaka Duna Health Post;Health Post;;Yaka Duna Kofar Fada;9,06021;11,29924
+Sumaila;Magami;Magami;Sansani Dispensery;Others;;Sansani Kofar Gabas;9,00559;11,25113
+Sumaila;Magami;Magami;Magami Basic Health Clinic;Others;;Magam Bakin Kasuwa;9,0158;11,29289
+Sumaila;Magami;Kwajale;Kwajale;Health Post;;Kwajale Kofat Gabas;8,98923;11,22984
+Sumaila;Massu;Gwanda;Gwanda Health Post;Health Post;;Gwanda Gomo Village Head;8,8843;11,88436
+Sumaila;Massu;Gajiki;Gajiki Health Post;Health Post;;Gajiki Cikin Gari;8,85663;11,24212
+Sumaila;Massu;Mamiso;Mamiso Health Post;Health Post;;Mamiso Gidin Dutse;8,83941;11,0752
+Sumaila;Massu;Massu;Massu Basic Health Clinic;Others;;Massu Bakin Kasuwa;8,80584;11,20187
+Sumaila;Massu;Gomo;Gomo Basic Health Clinic;Others;;Gomo Bakin Kasuwa;8,84633;11,12334
+Sumaila;Rimi;Rimi;Rimi Basic Health Clinic;Others;;Rimi Arewa Along Takai Magami Road;9,00494;11,3895
+Sumaila;Rimi;Farin Dutse;Farin Dutse Health Post;Health Post;;Farin Dutse Kofar Gabas;8,99486;11,3559
+Sumaila;Rimi;Dakum Bal;Dakumbal Dispensery;Health Post;;Dakumbul Yamma;9,02298;11,30031
+Sumaila;Rimi;Tukuda;Tukuda Dispensery;Others;;Tukuda Kofar Yamma;9,11614;11,32973
+Sumaila;Rumo;Rumo;Rumo Dispensery;Health Post;;Rumo Disp Sumaila L.G.A..;8,86695;11,46172
+Sumaila;Rumo;Jisai;Jisai Health Post;Health Post;;Jisai Health Post Rumo Ward;8,94657;11,47339
+Sumaila;Rumo;Hayan Gada;Hayin Gada;Health Post;;Hayin Gada Health Post Rumo Ward;8,87437;11,50198
+Sumaila;Rumo;Rumo;Rumo Dispensery;Health Post;;Rumo Kofar Gabas;8,86685;11,46177
+Sumaila;Samaila;Karofi;Karofi Sumaila Dispenseryensary;Health Post;;Karofi Dispensary;8,95595;11,52996
+Sumaila;Sitti;Satti;Sitti Primary Health Centre;Primary Health Care Centre;;Sitti Phc Nasarawa Sitti Ward;8,7877;11,28717
+Sumaila;Sitti;Yuu;Yuu Health Post;Health Post;;Yuu Gwanar Giginya Biya;8,79299;11,24995
+Sumaila;Sitti;Matugwai;Matugwai Dispenseryensary;Health Post;;Matugwai Health Post Sitti Ward;8,76142;11,26294
+Sumaila;Sitti;Raya Masaka;Raya Masaka;Health Post;;Rayya Masaka Health Post;8,73049;11,2679
+Sumaila;Sumaila;Patricia;Patricia Mch;;;Patricia Mch Sumaila;8,9576;11,52448
+Sumaila;Sumaila;Kargo;Kargo;Health Post;;Kargo Town;8,97465;11,49599
+Takai;Bagwaro;Shukutu;Shukutu;Health Post;;Shukutu H/Post;9,20177;11,37196
+Takai;Bagwaro;Bango;Bango Health Post;Health Post;;Bango H/Post;9,14261;11,32285
+Takai;Bagwaro;Kayarda;Kayarda Health Post;Health Post;;Kayarda H/Post;9,12111;11,37543
+Takai;Bagwaro;Birnin Bako;Birnin Bako;Health Post;;Birnin Bako Dispensary;9,12869;11,34102
+Takai;Bagwaro;Bagwaro;Bagwaro Dispensery;Dispensery;;Bagwaro H/Clinic;9,17963;11,37522
+Takai;Durbunde;Kafin Lafiya;Kafin Lafiya Health Post;Health Post;;Kafin Lafiya Health Post;9,1929;11,4863
+Takai;Durbunde;Sakwaya;Sakwaya Health Post;Health Post;;Sakwaya H/Post;9,17583;11,53522
+Takai;Durbunde;Durbunde;Durbunde Primary Health Centre;Health Clinic;;Durbunde H/Clinic;9,2317;11,53994
+Takai;Fajewa;Fajewa;Fajewa Dispensery;Health Post;;Fajewa Dispensary;9,08809;11,44593
+Takai;Fajewa;Hatsai;Hatsai;Health Post;;Hatsai H/Post;9,09255;11,39149
+Takai;Fajewa;Salmande;Salmande Health Post;Health Post;;Salmande H/Post;9,16179;11,48107
+Takai;Falali;Falali;Falali Dispensery;Health Post;;Falali H/Post;9,03867;11,46511
+Takai;Falali;Kyansha;Kyansha;Health Post;;Kyansha H/Post;9,1065;11,4875
+Takai;Faruruwa;Faruruwa;Faruruwa Dispensery;Health Post;;Faruruwa H/F;9,19686;11,41096
+Takai;Faruruwa;Jigawa Gara;Jigawa Health Post;Health Post;;Along Faruruwa Road Jigawa;9,21479;11,42271
+Takai;Faruruwa;Yada;Yada Health Post;Health Post;;Yada Health Post;9,12965;11,33909
+Takai;Faruruwa;Danbazau;Danbazau Clinic;Health Clinic;;Danbazau Clinic;9,21516;11,45039
+Takai;Kachako;K/Huguma;K/Huguma;Health Post;;Kwanar Huguma H/Post;9,3181;11,5442
+Takai;Kachako;Huguma;Huguma Health Post;Health Post;;Huguma H/Post;9,31949;11,56165
+Takai;Kachako;Kachako;Kachako;Health Clinic;;Kofar Yamma Along Faduruwa Road Kachko H/Clinic;9,24925;11,53805
+Takai;Kachako;Awazara;Awazara;Health Post;;Awazara Gari H/Post;9,32428;11,521
+Takai;Kachako;Langwami;Langwamin Health Post;Health Post;;Zango, Langwami H/Post;9,3195;11,56164
+Takai;Karfi;Karfi;Karfi Health Post;Health Post;;Karfi H/Post;9,1551;11,45674
+Takai;Karfi;Kurido;Kurido Health Post;Health Post;;Kurido, H/Post;9,15398;11,41232
+Takai;Karfi;Diribo;Dirobo Dispensery;Health Post;;Diribo H/Post;9,18075;11,46975
+Takai;Karfi;Shawu;Shawu Dispensery;Health Post;;Shawu H/Post;9,13703;11,43709
+Takai;Kuka;Gamawa;Gamawa Health Post;Health Post;;Gamawa H/Post;9,11782;11,54135
+Takai;Kuka;Kuka;Kafinsidda;Health Post;;Kafinsidda H/Post;9,26013;11,54175
+Takai;Takai;Takai;Takai;Primary Health Care Centre;;Takai Community/Nysc Health Centre, Takai L.G.A..;9,10833;11,56569
+Takai;Takai;Kan›yaka;Kan›yaka;Health Post;;Kan›yaka H/P;9,08603;11,61156
+Takai;Takai;Garandiya;Garangiya;Health Post;;Garandiya Gabas Garandiya H/P Takai L.G.A..;9,15378;11,63439
+Takai;Zuga;Zuga;Zuga Dispensery;Health Post;;Zuga H/Post K/Yamma;9,14421;11,51288
+Takai;Zuga;Kogo;Kogo Health Post;Health Post;;Kogo H/Post;9,10808;11,57531
+Tarauni;B/Giji;Yar Akwa;Y/Akwa Health Post;Health Post;;Yar Akwa Health Post Opposite Sani Bro. Office Zaria Road;8,55887;11,93814
+Tarauni;B/Giji;Hausawa;Hausawa Health Cliniclinic;Health Clinic;;Back Of Murtala Mohd Secondary School;8,53544;11,96311
+Tarauni;B/Giji;Babban Giji;Darmanawa Clinic;Health Clinic;;Darmanawa Clinic Opposite Sallari Primary School;8,54076;11,95525
+Tarauni;Daurawa/Kundila;Kundila H/P;Kundila Health Post;Health Post;;Kundila Opposite Primary School;8,55627;11,96422
+Tarauni;Gyadi - Gyadi Arewa;Gyadi - Gyadi Arewa;Jaoji Clinic;Health Clinic;;Jaoji Quarters;8,54171;11,97663
+Tarauni;Gyadi - Gyadi Kudu;Gyadi - Gyadi Kudu;Gyadi - Gyadi Health Clinic;Health Clinic;;Gyadi - Gyadi Kudu Health Clinic;8,54434;11,96868
+Tarauni;Hotoro;Hotoro;Hotoro Clinic;Health Clinic;;Danmarke Opposite Danmarke;8,58089;11,96208
+Tarauni;K/Alu;U/Asibiti K/alu;Shargalle Clinic;Health Clinic;;Asibitin Shargalle K/Alu;8,5722;11,96047
+Tarauni;Tarauni;Govt. House Clinic`;Govt. House;Health Clinic;;Govt. House;8,55197;11,98225
+Tarauni;Tarauni;Tarauni;Tarauni Clinic;Health Clinic;;Tarauni Junction Opposite Lamido Cresent;8,56132;11,97937
+Tarauni;Tarauni;Farm Center;N.U.J. Clinic;Health Post;;Farm Center Opposite Marhaba Cinema;8,54939;11,97621
+Tarauni;Tarauni;Tarauni;Head Of Service;Health Post;;Audu Bako Sec. Head Of Service Office;8,53858;11,98421
+Tarauni;U/Uku;U/Uku;U/Uku Health Post;Health Clinic;;Along Zaria Road Kano;8,56014;11,95788
+Tofa;Dindere;Dindere;Dindere Health Post;Health Post;;Yalwa Dindere Health Post;8,26451;12,09075
+Tofa;Doka;Doka A;Doka Health Post;Health Post;;Doka Along Gwarzo Road Tofa Juction;8,30401;11,99007
+Tofa;Gajida;Gajida;Gajida Dispensery;Health Post;;Gajida Cikin Gari Health Post;8,28225;12,0811
+Tofa;Ginsawa;Ginsawa;Ginsawa Health Post;Health Post;;Ginsawa Disp Ginsawa Cikin Gari;8,25896;12,02872
+Tofa;Janguza;Janguza Cikin Gari;Janguza Dispensery;Health Post;;Located At Janguza Township Near Jumaat Mosque;8,37891;11,95934
+Tofa;Janguza;Janguza Barrack;Mrs 73-Bn;Health Post;;73Bn Mrs Janguza Barracks Kano State;8,39148;11,95355
+Tofa;Joben Kudu;Joben Kudu;Joben Kudu Dispensery;Health Post;;Joben Kudu Disp;8,31693;12,02586
+Tofa;Kwami;Kwami;Kwami Health Post;Health Post;;Kwami Health Post;8,30911;12,02228
+Tofa;Lambu;Kahotara;Lambu Model Primary Health Centre;Primary Health Care Centre;;Lambu Kahotara Along Kano Gwarzo Road;8,3598;11,99292
+Tofa;Lambu;Dansudu;Dansudu Health Post;Health Post;;Dansudu Along Kano Gwarzo Road;8,32686;11,9958
+Tofa;Lambu;Fanshata Gangare;Lambu Health Clinic;Health Clinic;;Located At Fanshata Gangare;8,21178;12,00465
+Tofa;Langel;Langel;Langel Health Post;Health Post;;Located At Langel Cikin Gari;8,39513;11,99042
+Tofa;Tofa;Tofa;Tofa Chealth Clinic;Comprehensive Health Centre;;Tofa Chc Tofa Town L.G.A. Kano State;8,3169;12,02869
+Tofa;U Rimi;Jigawa;Jigawa Dispensery;Health Post;;Located At Jigawa U Rim Ward;8,33243;11,97275
+Tofa;Wangara;Tabanni;Wangara Health Post;Health Post;;Wangara Hp Wangara Ward Tofa L.G.A..;8,3856;11,97254
+Tofa;Yalwa Karama;Yalwa Karama;Yalwa Karama Health Post;Health Post;;Yalwa Karama Health Post;8,25798;12,02871
+Tofa;Yarimawa;Hayewa;Yarimawa Health Post;Health Post;;Located At Gidan Talle Hayewa;8,36863;12,02765
+Tofa;Yanoko;Yanoko;Yanoko Health Post;Health Post;;Yawoko Health Post;8,27097;12,06178
+Tofa;Yanoko;Jagaja;Jagaja Health Post;Health Post;;Jagaja Health Post;8,28855;12,03423
+Tsanyawa;Daddarawa;Yammamman;Yammamman Health Post;Health Post;;Yammamman H/P;8,04169;12,26258
+Tsanyawa;Daddarawa;Daddarawa;Daddarawa Basic Health Clinic;Basic Health Centre;;Daddarawa Bhc;8,04178;12,26256
+Tsanyawa;Daddarawa;U/Bakke;U/Bakke Health Post;Health Clinic;;Unguwar Bakke Health Clinic;8,04101;12,1952
+Tsanyawa;Dumbulum;Dumbulum;Dumbulum Basic Health Clinic;Basic Health Centre;;Dumbulum C/Gari;8,01614;12,19209
+Tsanyawa;Dumbulum;Kokai;Kokai Health Post;Health Post;;Kokai Health Post;8,01686;12,191
+Tsanyawa;Gozarki;Dorayi;Rafin Tsamina Health Post;Health Clinic;;Dorayi H/Clinic Rafin Tsamiya;8,04102;12,19516
+Tsanyawa;Gozarki;Tafashiya;Tafashiya Basic Health Clinic;Others;;Tafashiya Bhc Gozarki Ward;8,07788;12,2175
+Tsanyawa;Gozarki;Saida;Jigilawa Health Post;Health Post;;Saida Jigilawa H/Post;8,06376;12,19411
+Tsanyawa;Gurun;Nassarawa;Nassarwa;Health Post;;Nassarawa;7,99196;12,36961
+Tsanyawa;Gurun;Yan Awaki;Yan Awaki;Health Post;;Yan Awaki;8,01795;12,36602
+Tsanyawa;Gurun;Gurun;Primary Health Care Centre;Primary Health Care Centre;;Tudun Muritsira Phcc;8,0621;12,06216
+Tsanyawa;Kabagiwa;Koski;Koski Health Post;Health Post;;Koski Katsina Road;8,02253;12,31094
+Tsanyawa;Kabagiwa;Harbau;Harbau Health Post;Comprehensive Health Centre;;Harbau Town;8,05744;12,38479
+Tsanyawa;Sarogi;Yankanawa;Yankanawa Health Post;Health Post;;Yakanawa Health Post;7,98409;12,19397
+Tsanyawa;Tatsan;Farsa;Farsa Health Post;Health Post;;Farsa Dadinzam;8,10125;12,3815
+Tsanyawa;Tatsan;Yan Amar; Yar Amar Health Post;Health Post;;Yar Amar;8,08008;12,4127
+Tsanyawa;Tatsan;Dorayi;Dorayi Health Post;Health Post;;Dorayi;8,07685;12,37117
+Tsanyawa;Tatsan;Yargwanda;Yargwanda Health Post;Health Clinic;;Yar Gwanda Health Clinic;8,07309;12,32841
+Tsanyawa;Tatsan;Tatsan Gabas;Tatsan Gabas Health Post;Health Post;;Tatsan Gabas;8,09275;12,28861
+Tsanyawa;Tsanyawa;Tsanyawa;Comm. Mustapha Aliyu Tyw Health Clinic;Primary Health Care Centre;;Tsanyawn Chc Tsanyawa;7,97958;12,29893
+Tsanyawa;Yanganau;Yanganau;Yanganau Health Post;Health Clinic;;Yanganau Health Clinic Along Faruruwa Road;7,95804;12,25442
+Tsanyawa;Yanganau;Yancibi;Yancibi;Health Post;;Yancibi Tsohon Gari;7,88438;12,28692
+Tsanyawa;Yankamaye;Yanikamaye;Yankamaye Basic Health Clinic;Comprehensive Health Centre;;Sabon Gari Yankamaye;7,92823;12,32892
+Tsanyawa;Yankamaye;Gezawa;Gezawa Health Post;Health Post;;Gezawa H/P;7,94123;12,28003
+Tsanyawa;Yankamaye;Zakawa;Zakawa Health Post;Health Post;;Zakawa Sako;7,88342;12,28751
+Tsanyawa;Yankamaye;Yanikamaye C/Gari;Yankamaye Basic Health Clinic;Health Post;;Tsohon Gari Yankamaye;7,89719;12,31442
+Tsanyawa;Zarogi;Zarogi U/Gabas;Zarogi Health Post;Health Post;;Zarogi U/Gabas Along Dumbulum Road;7,96704;12,26522
+Tudun Wada;Baburi;Tukuda;Tukuda Health Clinic;Health Clinic;;Tukuda Cikin Gari;8,76838;11,21578
+Tudun Wada;Baburi;Baburi;Baburi Health Post;Health Post;;Baburi Health Clinic;8,73938;11,32793
+Tudun Wada;Baburi;Dariya;Dariya Health Post;Health Post;;Dariya Cikin Gari;8,68529;11,3229
+Tudun Wada;Borum Borum;Burum Burum;B/B Health Clinic;Health Clinic;;Burum Burum H/C Along Rano - Sumaila;8,72729;11,38553
+Tudun Wada;Burum-Burum;Fala;Fala Health Post;Health Post;;Fala Kafi H/P Fala Burum-Burum;8,77188;11,40772
+Tudun Wada;Bururi;Rufan;Rufan;Health Clinic;;Rufan Health Clinic;8,71832;11,31791
+Tudun Wada;Dalawa;Gazobi;Gazobi Health Post;Health Post;;Gazobi Heath Post Cikin Ggarin Gazobi;8,63986;11,34818
+Tudun Wada;Dalawa;Dalawa;Dalawa Health Clinic;Health Clinic;;Central Primary School, Dalawa;8,67045;11,3702
+Tudun Wada;Jandutse;Jandutse;Jandutse;Health Clinic;;Jandutse Cikin Gari;8,44965;11,24889
+Tudun Wada;Jandutse;Hayin Yawa;T/W Cottage Health Post;Others;;General Hopital;8,41774;11,2491
+Tudun Wada;Jandutse;Faskar Maaji;Faskar Maaji;Health Clinic;;Faskar Maaji;8,3716;11,30063
+Tudun Wada;Jandutse;Ruwan Tabo;R/Tabo Health Clinic;Health Clinic;;Ruwan Tabo Health Clinic;8,35234;11,32204
+Tudun Wada;Jita;Yarfulani;Yar Fulani Health Post;Health Post;;Yarfulani Cikin Gari;8,47021;11,18506
+Tudun Wada;Jita;Kurkujawa;Kurkujawa Health Post;Health Post;;Kurkujawa Bakin Titi;8,52195;11,18723
+Tudun Wada;Karefa;Yalwa;Yalwa;Health Clinic;;Yalwan Rugu Rugu H/C;8,41024;11,33356
+Tudun Wada;Karefa;Karefa;Karefa Health Clinic;Primary Health Care Centre;;Cikin Gari Karefa;8,43638;11,32638
+Tudun Wada;Nata Ala;Wuna;Wuna;Health Clinic;;Wuna Health Clinic;8,48521;11,28959
+Tudun Wada;Nata Ala;Nata Ala;Nata Ala Health Clinic;Health Clinic;;Nata Ala H/C;8,565;11,263
+Tudun Wada;Nata Ala;Farin Ruwa;Farun Ruwa;Health Clinic;;Fariruwa H/Clinic;8,56422;11,21984
+Tudun Wada;Shuwaki;Shuwaki NYSC;Shuwaki NYSC Health Clinic;Health Clinic;;Shuwaki Gidan Sarki;8,41058;11,29341
+Tudun Wada;Shuwaki;Kwarin Goshi;Shuwak Health Post;Health Post;;Kwarin Goshi;8,40653;11,30505
+Tudun Wada;T/Wada;Buga Duniya Clinic;Bugaduniya Clinic;Health Clinic;;Unguwar Buga Duniya Tudun Wada Tsohon Gari;8,40456;11,24843
+Tudun Wada;T/Wada S/Gari;Jammaje;Jammaje;Health Clinic;;Jammaje;8,35674;11,24958
+Tudun Wada;Yaryasa;Jeli H/C;Jeli Health Clinic;Health Clinic;;Jeli Cikin Gari;8,26605;11,27978
+Tudun Wada;Yaryasa;Yarmaraya;Yarmaraya Health Clinic;Health Clinic;;Yarmaraya Cikin Gari Along Jos Road;8,34564;11,26783
+Tudun Wada;Yaryasa;Sumana;Sumana Health Post;Health Post;;Sumana Cikin Gari;8,31869;11,27489
+Tudun Wada;Yaryasa;Yaryasa;Yaryasa Health Clinic;Health Clinic;;Yaryasa;8,30841;11,33678
+Tudun Wada;Shuwaki;Faskar Wambai;Faskar Wambai Health Clinic;Health Clinic;;Faskar Wambai;8,371;11,301
+Tudun Wada;Shuwaki;Ruga-Ruga;Ruga-Ruga;Health Clinic;;Ruga-Ruga;8,395;11,333
+Ungogo;Bachirawa;Katsinawa;Katsinawa Health Post;Health Post;;Katsinawa Health Post Phc Dept Ungogo L.G.A.. Kano;8,44887;12,0618
+Ungogo;Bachirawa;Bachirawa Tafasa;Bachirawa Health Clinic;Health Clinic;;Bachirawa Tafasa Health Clinic Phc Dept Ungogo L.G.A.. Kano;8,46338;12,05789
+Ungogo;Gayawa;Dankunkuru;Dankunkuru Health Post;Health Post;;Dankunkuru C/Gari Health Post Phc Dept Ungogo L.G.A.. Kano;8,57089;12,0646
+Ungogo;Gayawa;Gayawa;Gayawa Basic Health Clinic;Primary Health Care Centre;;Gayawa Bhc Phc Dept Ungogo L.G.A.. Kano;8,562;12,05514
+Ungogo;Kadawa;Zango Bare Bari;Zango Bari Bari Health Clinic;Health Clinic;;Zangon Bare Bari Health Clinic Phc Dept Ungogo L.G.A.. Kano;8,48655;12,07015
+Ungogo;Kadawa;Kadawa;Kadawa Health Clinic;Health Clinic;;Kadawa Health Clinic Phc Dept Ungogo L.G.A.. Kano;8,45661;12,07554
+Ungogo;Kadawa;Danrimi;Danrimi Health Clinic;Health Clinic;;Danrimi  Health Clinic Phc Dept Ungogo L.G.A.. Kano;8,48891;12,05824
+Ungogo;Karo;Tarda;Tarda Health Post;Health Post;;Tarda Community Health Post Phc Dept Ungogo L.G.A.. Kano;8,51872;12,11508
+Ungogo;Karo;Bagujan; Bagujan Health Clinic;Health Clinic;;Bagujan Health Clinic Phc Dept Ungogo L.G.A.. Kano;8,52122;12,10105
+Ungogo;Panisau;Yola;Yola Health Post;Health Post;;Yola Health Post Phc Dept Ungogo L.G.A..;8,53372;12,06403
+Ungogo;Panisau;Gera;Gera Health Post;Health Post;;Gera Health Post Phc Dept Ungogo L.G.A.. Kano;8,55223;12,0887
+Ungogo;Panisau;Panisau;Panisau Health Clinic;Health Clinic;;Panisau Health Clinic Phc Dept Ungogo L.G.A..;8,53517;12,07882
+Ungogo;Rangaza;Shauni;Shauni Health Post;Health Post;;Shauni Health Post Phc Dept Ungogo L.G.A.. Kano;8,60933;12,04775
+Ungogo;Rangaza;Zaura Danbaba;Zaura Danbaba Health Post;Health Post;;Zaure Danbaba Health Post Phc Dept;8,615;12,067
+Ungogo;Rangaza;S/Rangaza;Sabon Gari Rangaza Health Post;Health Post;;S/Rangaza Health Post Phc Dept Ungogo L.G.A.. Kano;8,60873;12,05603
+Ungogo;Rangaza;Zaura Babba;Zaura Babba Health Clinic;Health Clinic;;Zaura Babba Health Clinic Phc Dept Ungogo L.G.A.. Kano;8,61982;12,05955
+Ungogo;Rijiyar Zaki;Rijiyar Zaki;Rijiyar Zaki Primary Health Centre;Primary Health Care Centre;;R/Zaki Phc Dept Ungogo L.G.A..;8,45862;11,97876
+Ungogo;Rijiyar Zaki;Rimin Auzinawa;Gadan Health Post;Health Post;;Gadan Health Post Phc Dept Ungogo L.G.A.. Kano;8,45573;12,00337
+Ungogo;Rijiyar Zaki;Dausayi;Dausayi Health Clinic;Health Clinic;;Dausayi Health Clinic Phc Dept Ungogo L.G.A..;8,4441;12,01306
+Ungogo;Tudun Fulani;Jajira;Jajira Health Post;Health Post;;Jajira Health Post Phc Dept Ungogo L.G.A.. Kano;8,42475;12,033
+Ungogo;Tudun Fulani;Barado Chiromawa;Chiromawa Primary Health Centre;Primary Health Care Centre;;Chiromawa Barado Phc Dept Ungogo L.G.A.. Kano;8,41188;12,03674
+Ungogo;Tudun Fulani;Tudun Fulani;Tudun Fulani Primary Health Centre;Primary Health Care Centre;;T/Fulani Phc Dept Ungogo L.G.A.. Kano;8,47749;12,03567
+Ungogo;Ungogo;Ungogo;Ungogo Primary Health Centre;Primary Health Care Centre;;Ungogo Phc Phc Dept Ungogo L.G.A.. Kano;8,49047;12,09204
+Ungogo;Ungogo;Sabon Garin Doka;Sabon Gari Doka Health Post;Health Post;;S/Doka Health Post Phc Dept Ungogo L.G.A.. Kano;8,4485;12,08748
+Ungogo;Ungogo;Doka;Doka Health Clinic;Health Clinic;;Doka Health Clinic Phc Dept Ungogo L.G.A.. Kano;8,46894;12,09584
+Ungogo;Yadakunya;Dausara;Dausara Health Clinic;Health Clinic;;Dausara Health Clinic Yadakunya Ward Phc Dept Ungogo L.G.A.. Kano;8,58122;12,07287
+Ungogo;Yadakunya;Yadakunya;Yadakunya Lep Hosp;Primary Health Care Centre;;Yadakunya Leprosy Hospital Ungogo L.G.A.. Kano;8,63348;12,08491
+Ungogo;Yadakunya;Inusawa;Inusawa Health Clinic;Health Clinic;;Inusawa Health Clinic Phc Dept Ungogo L.G.A.. Kano;8,59661;12,06906
+Ungogo;Zango;Rimin Kebe;Dalal Health Clinic;Health Clinic;;Dalal Health Clinic Rimin Kebe Phc Dept Ungogo L.G.A.. Kano;8,56705;12,04593
+Ungogo;Zango;Rimin Kebe;Rimin Kebe Health Clinic;Health Clinic;;Rimin Kebe Health Clinic Phc Dept Ungogo Kano;8,57362;12,04253
+Warawa;Amarawa;Amarawa;Amarawa Health Post;Health Post;;Amarawa Hp Along Chinkilawa Road;8,7708;11,89882
+Warawa;Garin Dau;Wambanto;Wambanto Health Post;Health Post;;Wambanto Town Of Garindau Ward Warawa L.G.A..;8,73092;11,87264
+Warawa;Gogel;Gogel;Gogel Basic Health Clinic;Primary Health Care Centre;;Gogel Bhc Along Zagarawa Road;8,76286;11,92526
+Warawa;Imawa;Imawa;Imawa Dispensary;Health Post;;Imawa Dispensary Along Laraba Road;8,83192;11,96862
+Warawa;Jemagu;Jemagu;Jemagu Hf;Primary Health Care Centre;;Jemagu Hf Jemagu Town Warawa L.G.A..;8,81459;11,82147
+Warawa;Jigawa;Jigawa;Jigawa Dispensary;Health Post;;Jigawa Dispensary Along Market Road Near Market;8,82905;11,96387
+Warawa;Tamburawa Gabas;Yandadi;Yandadi Dispensary;Primary Health Care Centre;;Along  Yandadi Town;8,64372;11,95102
+Warawa;Tamburawa Gabas;Jumar Gabas;T/Gabas Primary Health Centre;Primary Health Care Centre;;Along Dorawar Na Aba Road;8,65921;11,944
+Warawa;Jumar Galadima;Yartofa;Yartofa Health Post;Health Clinic;;Near Yartofa Prmary School;8,6888;11,9378
+Warawa;Jumar Galadima;Jumar Galadima;Jumar Galadima Dispensary;Dispensary;;Near J Galadima Primary School;8,64272;11,95001
+Warawa;Katarkawa;Katarkawa;Katarkawa Health Post;Health Post;;Katarkawa;8,83192;11,96862
+Warawa;Madarin Mata;Ganakakun;Ganakakun Health Post;Health Post;;Ganakakun H/P Along Asari Garo Town Near Primary School;8,72812;11,93916
+Warawa;Tanagar;Marke;Danfari Health Post;Health Clinic;;Marke Town Of Danfani Village Warawa L.G.A..;8,68307;11,98378
+Warawa;Tanagar;Tanagar;Tanagar Health Post;Primary Health Care Centre;;Tanagar Town Warawa L.G.A..;8,58549;11,55819
+Warawa;Tanagar;Yandalla;Yandalla Dispensery;Primary Health Care Centre;;Yandalla Town Of Yandalla Ward Warawa L.G.A..;8,73081;11,87309
+Warawa;Danlasan;Danlasan;Danlasan Primary Health Centre;Primary Health Care Centre;;Danlasan Town Opposite Town Gate;8,68946;11,95268
+Warawa;Warawa;Warawa;Warawa Primary Health Centre;Primary Health Care Centre;;Warawa Bhc Along Laraba Dandasam Road Warawa L.G.A..;8,74684;11,87654
+Warawa;Yandalla;Police Academy;Police Dispensary;Comprehensive Health Centre;;Nigeria Police Med Services Polac Kano Along Maiduguri Road;8,81466;11,82143
+Warawa;Yangizo;Alitini;Alitini Dispensery;Health Post;; Along Yangizo Road Opposite Primary;8,7831;11,95769
+Wudil;Achika;Achika;Achika Health Clinic;Health Clinic;;From Darki Junction To Achika Ward Achika Village;8,92997;11,69067
+Wudil;Dagumawa;Yar Lahadi;Yar Lahadi;Health Post;;Yan Lahadi Hp Right Hand Street Maiduguri Road;8,84072;11,74197
+Wudil;Dagumawa;Dangumawa;Danguwama;Health Clinic;;Dagumawa Health Clinic Off Central Primary School;8,82475;11,75804
+Wudil;Dagumawa;Jumatudu;Juma Tudu;Health Clinic;;Jumar Tudu;8,79076;11,76505
+Wudil;Dan Kaza;Gindabe;Gindabe Health Post;Health Post;;Gindabe Hp;8,85557;11,74368
+Wudil;Dan Kaza;Tudun Gunsau;Tudun Gunsau Health Clinic;Health Clinic;;Tudun Gunsau Maiduguri Road;8,8516;11,76022
+Wudil;Dan Kaza;Makanwaci;Makanwaci Health Clinic;Health Clinic;;Makanwaci Along Dagumawa Road;8,81588;11,72466
+Wudil;Darki;Jigaware;Jigaware Health Clinic;Health Clinic;;Jigaware Village By Market;8,91552;11,64428
+Wudil;Darki;Darki;Darki Model Primary Health Centre;Primary Health Care Centre;;Darki Town;8,91809;11,65999
+Wudil;Indabo;Indabo;Indabo Primary Health Centre;Primary Health Care Centre;;Indabo Basic H/Facility;8,79124;11,7418
+Wudil;Indabo;Katai Faudan;Katai Faudan Health Clinic;Health Clinic;;Katai Faudan Village Wudil L.G.A.;8,76753;11,75044
+Wudil;Kausani;Kausani;Kausani Health Clinic;Health Clinic;;Along Gaya By Kounar Kausani Kausani Village;8,89917;11,84013
+Wudil;Kausani;Tsibiri;Tsibiri Health Post;Health Post;;Tsibiri Village;8,84089;11,82223
+Wudil;Kausani;Fadi Sonka;Kausani Health Post;Health Post;;Fadi Sonka Village;8,8759;11,78488
+Wudil;Kausani;Gaci Kadi;Kausani Health Post;Health Post;;Along Gaya road off Wudil Gaci Village;8,8688;11,80243
+Wudil;Lajawa;Lajawa;Lajawa Primary Health Centre;Primary Health Care Centre;;Lajawa Town;8,92229;11,87004
+Wudil;Utai;Utai;Utai Health Clinic;Primary Health Care Centre;;Utai Town;8,88196;11,7443
+Wudil;Wudil;Wudil;Wudil Health Post;Health Post;;Wudil Town By Tv;8,84329;11,80933
+Karaye;Kafi;Mah;Mah Health Post;Health Post;;Mah Village Karaye L.G.;8,123;11,832
+Kura;Kosawa;Bugau;Bugau Health Clinic;Health Clinic;; Bugau Town;8,495;11,752
