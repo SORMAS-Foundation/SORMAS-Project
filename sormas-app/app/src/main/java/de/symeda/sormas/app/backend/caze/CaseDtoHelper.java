@@ -26,9 +26,11 @@ import de.symeda.sormas.app.backend.user.UserDtoHelper;
 public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 
     private SymptomsDtoHelper symptomsDtoHelper;
+    private HospitalizationDtoHelper hospitalizationDtoHelper;
 
     public CaseDtoHelper() {
         symptomsDtoHelper = new SymptomsDtoHelper();
+        hospitalizationDtoHelper = new HospitalizationDtoHelper();
     }
 
     @Override
@@ -83,6 +85,12 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
             target.setCommunity(DatabaseHelper.getCommunityDao().queryUuid(source.getCommunity().getUuid()));
         } else {
             target.setCommunity(null);
+        }
+
+        if (source.getHospitalization() != null) {
+            target.setHospitalization(DatabaseHelper.getHospitalizationDao().queryUuid(source.getHospitalization().getUuid()));
+        } else {
+            target.setHospitalization(null);
         }
 
         target.setSurveillanceOfficer(DatabaseHelper.getUserDao().getByReferenceDto(source.getSurveillanceOfficer()));
@@ -154,6 +162,13 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
             target.setSurveillanceOfficer(UserDtoHelper.toReferenceDto(user));
         } else {
             target.setSurveillanceOfficer(null);
+        }
+
+        if (source.getHospitalization() != null) {
+            Hospitalization hospitalization = DatabaseHelper.getHospitalizationDao().queryForId(source.getHospitalization().getId());
+            target.setHospitalization(hospitalizationDtoHelper.adoToDto(hospitalization));
+        } else {
+            target.setHospitalization(null);
         }
         // TODO user
     }

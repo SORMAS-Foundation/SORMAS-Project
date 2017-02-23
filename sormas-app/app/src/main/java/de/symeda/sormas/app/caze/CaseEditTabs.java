@@ -9,7 +9,8 @@ public enum CaseEditTabs {
 	SYMPTOMS,
 	CONTACTS,
 	TASKS,
-	SAMPLES
+	SAMPLES,
+	HOSPITALIZATION
 	;
 
 	public String toString() {

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:descendantFocusability="beforeDescendants"
+    android:focusableInTouchMode="true">
+
+    <data>
+        <variable name="hospitalization" type="de.symeda.sormas.app.backend.caze.Hospitalization"/>
+    </data>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:theme="@style/AppTheme"
+            android:id="@+id/case_hospitalization_form"
+            android:focusable="true"
+            android:focusableInTouchMode="true">
+
+            <de.symeda.sormas.app.component.YesNoUnknownField
+                android:id="@+id/hospitalization_1hospitalized"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:value="@={hospitalization.hospitalized}"/>
+
+            <de.symeda.sormas.app.component.DateField
+                android:id="@+id/hospitalization_admissionDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:paddingTop="@dimen/field_padding"
+                android:paddingBottom="@dimen/field_padding"
+                android:value="@={hospitalization.admissionDate}"/>
+
+            <de.symeda.sormas.app.component.SpinnerField
+                android:id="@+id/hospitalization_healthFacility"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingTop="@dimen/field_padding"
+                android:paddingBottom="@dimen/field_padding"
+                android:value="@={hospitalization.healthFacility}"/>
+
+            <de.symeda.sormas.app.component.YesNoUnknownField
+                android:id="@+id/hospitalization_isolated"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:value="@={hospitalization.isolated}"/>
+
+            <de.symeda.sormas.app.component.DateField
+                android:id="@+id/hospitalization_1isolationDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:paddingTop="@dimen/field_padding"
+                android:paddingBottom="@dimen/field_padding"
+                android:value="@={hospitalization.isolationDate}"/>
+
+            <de.symeda.sormas.app.component.YesNoUnknownField
+                android:id="@+id/hospitalization_hospitalizedPreviously"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:value="@={hospitalization.hospitalizedPreviously}"/>
+
+        </LinearLayout>
+    </ScrollView>
+</layout>

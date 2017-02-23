@@ -6,6 +6,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
 import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.caze.Hospitalization;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.person.Person;
@@ -28,6 +29,7 @@ public class CaseEditPagerAdapter extends FragmentStatePagerAdapter {
     private CaseEditDataTab caseEditDataTab;
     private PersonEditTab personEditTab;
     private SymptomsEditTab symptomsEditTab;
+    private CaseHospitalizationTab caseHospitalizationTab;
 
 
     // Build a Constructor and assign the passed Values to appropriate values in the class
@@ -89,6 +91,18 @@ public class CaseEditPagerAdapter extends FragmentStatePagerAdapter {
                 samplesListTab.setArguments(samplesListBundle);
                 frag = samplesListTab;
                 break;
+            case HOSPITALIZATION:
+                caseHospitalizationTab = new CaseHospitalizationTab();
+
+                Bundle hospitalizationBundle = new Bundle();
+                caze = DatabaseHelper.getCaseDao().queryUuid(caseEditBundle.getString(Case.UUID));
+                if(caze.getHospitalization() != null) {
+                    hospitalizationBundle.putString(Hospitalization.UUID, caze.getHospitalization().getUuid());
+                }
+
+                caseHospitalizationTab.setArguments(hospitalizationBundle);
+                frag = caseHospitalizationTab;
+                break;
         }
         return frag;
     }
@@ -118,6 +132,9 @@ public class CaseEditPagerAdapter extends FragmentStatePagerAdapter {
             case 2:
                 ado = symptomsEditTab.getData();
                 break;
+            case 6:
+                ado = caseHospitalizationTab.getData();
+                break;
         }
         return ado;
     }
@@ -131,6 +148,8 @@ public class CaseEditPagerAdapter extends FragmentStatePagerAdapter {
                 return personEditTab;
             case SYMPTOMS:
                 return symptomsEditTab;
+            case HOSPITALIZATION:
+                return caseHospitalizationTab;
         }
         return null;
     }

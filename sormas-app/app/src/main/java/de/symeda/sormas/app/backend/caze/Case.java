@@ -85,6 +85,9 @@ public class Case extends AbstractDomainObject {
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 1)
 	private User contactOfficer;
 
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	private Hospitalization hospitalization;
+
 	public Person getPerson() {
 		return person;
 	}
@@ -202,5 +205,13 @@ public class Case extends AbstractDomainObject {
 
 	public void setInvestigationStatus(InvestigationStatus investigationStatus) {
 		this.investigationStatus = investigationStatus;
+	}
+
+	public Hospitalization getHospitalization() {
+		return hospitalization;
+	}
+
+	public void setHospitalization(Hospitalization hospitalization) {
+		this.hospitalization = hospitalization;
 	}
 }
