@@ -5,7 +5,6 @@ import java.sql.Timestamp;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.caze.HospitalizationDto;
 import de.symeda.sormas.api.caze.HospitalizationFacade;
@@ -35,7 +34,7 @@ public class HospitalizationFacadeEjb implements HospitalizationFacade {
 		return toDto(service.getByUuid(uuid));
 	}
 	
-	public Hospitalization fromDto(@NotNull HospitalizationDto dto) {
+	public Hospitalization fromDto(HospitalizationDto dto) {
 		if (dto == null) {
 			return null;
 		}

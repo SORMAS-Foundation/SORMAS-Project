@@ -20,6 +20,7 @@ import de.symeda.sormas.api.symptoms.SymptomsFacade;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.symptoms.SymptomsForm;
@@ -64,7 +65,7 @@ public class CaseController {
    		SormasUI.get().getNavigator().navigateTo(navigationState);	
     }
 
-    public void nativagateToPerson(String caseUuid) {
+    public void navigateToPerson(String caseUuid) {
    		String navigationState = CasePersonView.VIEW_NAME + "/" + caseUuid;
    		SormasUI.get().getNavigator().navigateTo(navigationState);	
     }
@@ -127,18 +128,26 @@ public class CaseController {
     
     public CommitDiscardWrapperComponent<CaseCreateForm> getCaseCreateComponent(PersonDto person, Disease disease) {
     	
-    	CaseCreateForm caseCreateForm = new CaseCreateForm();
-        caseCreateForm.setValue(createNewCase(person, disease));
-        final CommitDiscardWrapperComponent<CaseCreateForm> editView = new CommitDiscardWrapperComponent<CaseCreateForm>(caseCreateForm, caseCreateForm.getFieldGroup());
-        
+    	CaseCreateForm createForm = new CaseCreateForm();
+        createForm.setValue(createNewCase(person, disease));
+        final CommitDiscardWrapperComponent<CaseCreateForm> editView = new CommitDiscardWrapperComponent<CaseCreateForm>(createForm, createForm.getFieldGroup());
+       
         editView.addCommitListener(new CommitListener() {
         	@Override
         	public void onCommit() {
-        		if (caseCreateForm.getFieldGroup().isValid()) {
-        			CaseDataDto dto = caseCreateForm.getValue();
-        			cf.saveCase(dto);
-        			Notification.show("New case created", Type.TRAY_NOTIFICATION);
-        			navigateToData(dto.getUuid());
+        		if (createForm.getFieldGroup().isValid()) {
+        			final CaseDataDto dto = createForm.getValue();
+        			
+        			ControllerProvider.getPersonController().selectOrCreatePerson(
+        					createForm.getPersonFirstName(), createForm.getPersonLastName(), 
+        					person -> {
+        						if (person != null) {
+	        						dto.setPerson(person);
+	        						cf.saveCase(dto);
+	        	        			Notification.show("New case created", Type.TRAY_NOTIFICATION);
+	        	        			navigateToPerson(dto.getUuid());
+        						}
+        					});
         		}
         	}
         });

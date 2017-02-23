@@ -23,7 +23,7 @@ import de.symeda.sormas.ui.utils.LayoutUtil;
 public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 	
 	private static final String FIRST_NAME = "firstName";
-	public static final String LAST_NAME = "lastName";
+	private static final String LAST_NAME = "lastName";
 	
     private static final String HTML_LAYOUT = 
 			LayoutUtil.divCss(CssStyles.VSPACE2,

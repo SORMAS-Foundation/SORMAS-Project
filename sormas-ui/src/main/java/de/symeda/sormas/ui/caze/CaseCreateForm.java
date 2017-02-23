@@ -1,20 +1,14 @@
 package de.symeda.sormas.ui.caze;
 
-import com.vaadin.server.FontAwesome;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.NativeSelect;
-import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.LayoutUtil;
@@ -22,20 +16,17 @@ import de.symeda.sormas.ui.utils.LayoutUtil;
 @SuppressWarnings("serial")
 public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 	
-	private static final String PERSON_CREATE = "PersonCreate";
+	private static final String FIRST_NAME = "firstName";
+	private static final String LAST_NAME = "lastName";
 
     private static final String HTML_LAYOUT = 
 			LayoutUtil.divCss(CssStyles.VSPACE2,
 					LayoutUtil.fluidRowLocs(CaseDataDto.DISEASE, ""),
+					LayoutUtil.fluidRowLocs(FIRST_NAME, LAST_NAME),
 					LayoutUtil.fluidRowLocs(CaseDataDto.REGION, CaseDataDto.DISTRICT),
-					LayoutUtil.fluidRowLocs(CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY),
-					LayoutUtil.fluidRow(
-							LayoutUtil.fluidColumnLoc(10, 0, CaseDataDto.PERSON),
-							LayoutUtil.fluidColumnLoc(2, 0, PERSON_CREATE))
+					LayoutUtil.fluidRowLocs(CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY)
 					);
 
-    private ComboBox persons;
-    
     public CaseCreateForm() {
         super(CaseDataDto.class, CaseDataDto.I18N_PREFIX);
 
@@ -47,16 +38,9 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 
     	addField(CaseDataDto.DISEASE, NativeSelect.class);
     	
-    	persons = addField(CaseDataDto.PERSON, ComboBox.class);    	
-		updatePersonsSelect();
+    	addCustomField(FIRST_NAME, String.class, TextField.class);
+    	addCustomField(LAST_NAME, String.class, TextField.class);
 
-    	Button personCreateButton = new Button(null, FontAwesome.PLUS_SQUARE);
-    	personCreateButton.setDescription("Create new person");
-    	personCreateButton.addStyleName(ValoTheme.BUTTON_LINK);
-    	personCreateButton.addStyleName(CssStyles.FORCE_CAPTION);
-    	personCreateButton.addClickListener(e -> createPersonClicked());
-    	getContent().addComponent(personCreateButton, PERSON_CREATE);    
-    	
     	ComboBox region = addField(CaseDataDto.REGION, ComboBox.class);
     	ComboBox district = addField(CaseDataDto.DISTRICT, ComboBox.class);
     	ComboBox community = addField(CaseDataDto.COMMUNITY, ComboBox.class);
@@ -85,37 +69,16 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
     	});
 		region.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
 
-    	setRequired(true, CaseDataDto.DISEASE, CaseDataDto.PERSON, 
+    	setRequired(true, FIRST_NAME, LAST_NAME, CaseDataDto.DISEASE, 
     			CaseDataDto.REGION, CaseDataDto.DISTRICT, CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY);
     }
     
-    private void createPersonClicked() {
-    	
-    	// TODO replace with firstname and lastname of person as done in contact creation
-    	
-    	ControllerProvider.getPersonController().create(
-    			person ->  {
-    				if (person != null) {
-    					updatePersonsSelect();
-    					// try to select new person
-    					for (Object itemId : persons.getItemIds()) {
-    						PersonReferenceDto dto = (PersonReferenceDto)itemId;
-    						if (dto.getUuid().equals(person.getUuid())) {
-    							persons.setValue(dto);
-    							break;
-    						}
-						}
-    				}
-    			});
+    public String getPersonFirstName() {
+    	return (String)getField(FIRST_NAME).getValue();
     }
-    
-    private void updatePersonsSelect() {
-    	UserDto user = LoginHelper.getCurrentUser();
 
-    	Object value = persons.getValue();
-    	persons.removeAllItems();
-    	persons.addItems(FacadeProvider.getPersonFacade().getAllPersons(user));
-    	persons.setValue(value);
+    public String getPersonLastName() {
+    	return (String)getField(LAST_NAME).getValue();
     }
     
 	@Override

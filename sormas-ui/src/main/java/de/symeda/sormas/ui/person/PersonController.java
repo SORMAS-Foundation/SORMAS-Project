@@ -8,13 +8,10 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.event.EventParticipantDto;
-import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.events.EventParticipantsView;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -39,13 +36,16 @@ public class PersonController {
     	person.setFirstName(firstName);
     	person.setLastName(lastName);
     	
-    	final CommitDiscardWrapperComponent<PersonCreateForm> createComponent = getPersonCreateComponent(person);
-    	if (doneConsumer != null) {
-			createComponent.addDoneListener(() -> 
-		    doneConsumer.accept(createComponent.isCommited() ? createComponent.getWrappedComponent().getValue() : null));
-		}
-
-		VaadinUiUtil.showModalPopupWindow(createComponent, "Create new person");  
+    	person = personFacade.savePerson(person);
+    	doneConsumer.accept(person);
+    	
+//    	final CommitDiscardWrapperComponent<PersonCreateForm> createComponent = getPersonCreateComponent(person);
+//    	if (doneConsumer != null) {
+//			createComponent.addDoneListener(() -> 
+//		    doneConsumer.accept(createComponent.isCommited() ? createComponent.getWrappedComponent().getValue() : null));
+//		}
+//
+//		VaadinUiUtil.showModalPopupWindow(createComponent, "Create new person");  
     }
     
     public void openEditModal(String personUuid) {
