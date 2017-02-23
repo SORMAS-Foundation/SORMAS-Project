@@ -8,6 +8,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -51,12 +52,14 @@ public class Case extends AbstractDomainObject {
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
+	public static final String HOSPITALIZATION = "hospitalization";
 
 	private Person person;
 	private String description;
 	private Disease disease;
 	private CaseClassification caseClassification;
 	private InvestigationStatus investigationStatus;
+	private Hospitalization hospitalization;
 	
 	private Region region;
 	private District district;
@@ -234,7 +237,6 @@ public class Case extends AbstractDomainObject {
 		this.contactOfficer = contactOfficer;
 	}
 
-	
 	@OneToOne(cascade = CascadeType.ALL)
 	public Symptoms getSymptoms() {
 		if (symptoms == null) {
@@ -268,6 +270,19 @@ public class Case extends AbstractDomainObject {
 	}
 	public void setCommunity(Community community) {
 		this.community = community;
+	}
+	
+	// It's necessary to do a lazy fetch here because having three eager fetching one to one relations
+	// produces an error where two non-xa connections are opened
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	public Hospitalization getHospitalization() {
+		if (hospitalization == null) {
+			hospitalization = new Hospitalization();
+		}
+		return hospitalization;
+	}
+	public void setHospitalization(Hospitalization hospitalization) {
+		this.hospitalization = hospitalization;
 	}
 	
 	@Override

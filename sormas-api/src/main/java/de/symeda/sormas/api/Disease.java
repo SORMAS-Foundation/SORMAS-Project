@@ -12,4 +12,8 @@ public enum Disease {
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	};
+	
+	public String getName() {
+		return this.name();
+	}
 }

@@ -1076,3 +1076,40 @@ ALTER TABLE samples DROP COLUMN notestpossible;
 ALTER TABLE samples ADD COLUMN specimencondition varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (29, 'Update samples entity');
+
+-- 2016-02-21 Hospitalization and PreviousHospitalization entities #89
+
+CREATE TABLE hospitalization(
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	hospitalized varchar(255),
+	admissiondate timestamp,
+	healthfacility_id bigint,
+	isolated varchar(255),
+	isolationdate timestamp,
+	hospitalizedpreviously varchar(255),
+	primary key(id));
+ALTER TABLE hospitalization OWNER TO sormas_user;
+ALTER TABLE hospitalization ADD CONSTRAINT fk_hospitalization_healthfacility_id FOREIGN KEY (healthfacility_id) REFERENCES facility (id);
+
+CREATE TABLE previoushospitalization(
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	admissiondate timestamp,
+	dischargedate timestamp,
+	healthfacility_id bigint,
+	isolated varchar(255),
+	hospitalization_id bigint not null,
+	primary key(id));
+ALTER TABLE previoushospitalization OWNER TO sormas_user;
+ALTER TABLE previoushospitalization ADD CONSTRAINT fk_previoushospitalization_healthfacility_id FOREIGN KEY (healthfacility_id) REFERENCES facility (id);
+ALTER TABLE previoushospitalization ADD CONSTRAINT fk_previoushospitalization_hospitalization_id FOREIGN KEY (hospitalization_id) REFERENCES hospitalization (id);
+
+ALTER TABLE cases ADD COLUMN hospitalization_id bigint;
+ALTER TABLE cases ADD CONSTRAINT fk_cases_hospitalization_id FOREIGN KEY (hospitalization_id) REFERENCES hospitalization (id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (30, 'Hospitalization and PreviousHospitalization entities');

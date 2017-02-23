@@ -24,7 +24,8 @@
 		<class>de.symeda.sormas.backend.event.EventParticipant</class>
 		<class>de.symeda.sormas.backend.sample.Sample</class>
 		<class>de.symeda.sormas.backend.sample.SampleTest</class>
-
+		<class>de.symeda.sormas.backend.caze.Hospitalization</class>
+		<class>de.symeda.sormas.backend.caze.PreviousHospitalization</class>
 
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 

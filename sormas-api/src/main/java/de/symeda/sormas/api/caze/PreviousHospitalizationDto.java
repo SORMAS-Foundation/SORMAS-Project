@@ -2,8 +2,11 @@ package de.symeda.sormas.api.caze;
 
 import java.util.Date;
 
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
 import de.symeda.sormas.api.DataTransferObject;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.utils.PreciseDateAdapter;
 
 public class PreviousHospitalizationDto extends DataTransferObject {
 
@@ -14,44 +17,52 @@ public class PreviousHospitalizationDto extends DataTransferObject {
 	public static final String ADMISSION_DATE = "admissionDate";
 	public static final String DISCHARGE_DATE = "dischargeDate";
 	public static final String HEALTH_FACILITY = "healthFacility";
-	public static final String ISOLATION = "isolation";
-	public static final String DESCRIPTION = "description";
+	public static final String ISOLATED = "isolated";
+	public static final String HOSPITALIZATION = "hospitalization";
 	
 	private Date admissionDate;
 	private Date dischargeDate;
 	private FacilityReferenceDto healthFacility;
-	private Boolean isolation;
-	private String description;
+	private YesNoUnknown isolated;
+	private HospitalizationDto hospitalization;
 	
+	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public Date getAdmissionDate() {
 		return admissionDate;
 	}
+	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public void setAdmissionDate(Date admissionDate) {
 		this.admissionDate = admissionDate;
 	}
+	
+	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public Date getDischargeDate() {
 		return dischargeDate;
 	}
+	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public void setDischargeDate(Date dischargeDate) {
 		this.dischargeDate = dischargeDate;
 	}
+	
 	public FacilityReferenceDto getHealthFacility() {
 		return healthFacility;
 	}
 	public void setHealthFacility(FacilityReferenceDto healthFacility) {
 		this.healthFacility = healthFacility;
 	}
-	public Boolean getIsolation() {
-		return isolation;
+	
+	public YesNoUnknown getIsolated() {
+		return isolated;
 	}
-	public void setIsolation(Boolean isolation) {
-		this.isolation = isolation;
+	public void setIsolated(YesNoUnknown isolated) {
+		this.isolated = isolated;
 	}
-	public String getDescription() {
-		return description;
+	
+	public HospitalizationDto getHospitalization() {
+		return hospitalization;
 	}
-	public void setDescription(String description) {
-		this.description = description;
+	public void setHospitalization(HospitalizationDto hospitalization) {
+		this.hospitalization = hospitalization;
 	}
 
 }

@@ -24,6 +24,7 @@ import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.backend.caze.HospitalizationFacadeEjb.HospitalizationFacadeEjbLocal;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.person.Person;
@@ -66,6 +67,10 @@ public class CaseFacadeEjb implements CaseFacade {
 	private CommunityService communityService;
 	@EJB
 	private TaskService taskService;
+	@EJB
+	private HospitalizationService hospitalizationService;
+	@EJB
+	private HospitalizationFacadeEjbLocal hospitalizationFacade;
 	
 	@Override
 	public List<CaseDataDto> getAllCasesAfter(Date date, String userUuid) {
@@ -158,6 +163,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setPerson(personService.getByReferenceDto(source.getPerson()));
 		target.setCaseClassification(source.getCaseClassification());
 		target.setInvestigationStatus(source.getInvestigationStatus());
+		target.setHospitalization(hospitalizationFacade.fromDto(source.getHospitalization()));
 
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
@@ -193,6 +199,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setCaseClassification(source.getCaseClassification());
 		target.setInvestigationStatus(source.getInvestigationStatus());
 		target.setPerson(PersonFacadeEjb.toReferenceDto(source.getPerson()));
+		target.setHospitalization(HospitalizationFacadeEjb.toDto(source.getHospitalization()));
 		
 		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));
 		target.setDistrict(DistrictFacadeEjb.toReferenceDto(source.getDistrict()));

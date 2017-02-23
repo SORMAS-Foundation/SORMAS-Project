@@ -1,8 +1,6 @@
 package de.symeda.sormas.api.caze;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
@@ -37,9 +35,7 @@ public class CaseDataDto extends CaseReferenceDto {
 	public static final String CASE_OFFICER = "caseOfficer";
 	public static final String CONTACT_OFFICER = "contactOfficer";
 	public static final String SYMPTOMS = "symptoms";
-	
-	// TODO move to HospitalizationDataDto
-	public static final String PREVIOUS_HOSPITALIZATIONS = "previousHospitalizations";
+	public static final String HOSPITALIZATION = "hospitalization";
 	
 	private PersonReferenceDto person;
 	private CaseClassification caseClassification;
@@ -48,7 +44,8 @@ public class CaseDataDto extends CaseReferenceDto {
 	private UserReferenceDto reportingUser;
 	private Date reportDate;
 	private Date investigatedDate;
-
+	private HospitalizationDto hospitalization;
+	
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	private CommunityReferenceDto community;
@@ -59,9 +56,6 @@ public class CaseDataDto extends CaseReferenceDto {
 	private UserReferenceDto surveillanceOfficer;
 	private UserReferenceDto caseOfficer;
 	private UserReferenceDto contactOfficer;
-	
-	// TODO move to HospitalizationDataDto
-	private List<PreviousHospitalizationDto> previousHospitalizations = new ArrayList<PreviousHospitalizationDto>();
 	
 	public CaseClassification getCaseClassification() {
 		return caseClassification;
@@ -187,11 +181,12 @@ public class CaseDataDto extends CaseReferenceDto {
 		this.investigationStatus = investigationStatus;
 	}
 
-	public List<PreviousHospitalizationDto> getPreviousHospitalizations() {
-		return previousHospitalizations;
+	public HospitalizationDto getHospitalization() {
+		return hospitalization;
 	}
 
-	public void setPreviousHospitalizations(List<PreviousHospitalizationDto> previousHospitalizations) {
-		this.previousHospitalizations = previousHospitalizations;
+	public void setHospitalization(HospitalizationDto hospitalization) {
+		this.hospitalization = hospitalization;
 	}
+
 }
