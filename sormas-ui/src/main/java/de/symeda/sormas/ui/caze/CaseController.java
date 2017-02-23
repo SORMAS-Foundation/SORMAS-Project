@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
-import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 
@@ -21,7 +20,6 @@ import de.symeda.sormas.api.symptoms.SymptomsFacade;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.symptoms.SymptomsForm;

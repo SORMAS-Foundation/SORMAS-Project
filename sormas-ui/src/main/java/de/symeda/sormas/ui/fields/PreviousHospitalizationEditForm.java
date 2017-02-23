@@ -26,8 +26,7 @@ public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHo
 			LayoutUtil.fluidRowLocs(PreviousHospitalizationDto.ADMISSION_DATE, PreviousHospitalizationDto.DISCHARGE_DATE)+
 			LayoutUtil.fluidRowLocs(FACILITY_REGION, FACILITY_DISTRICT)+
 			LayoutUtil.fluidRowLocs(FACILITY_COMMUNITY, PreviousHospitalizationDto.HEALTH_FACILITY)+
-			LayoutUtil.fluidRowLocs(PreviousHospitalizationDto.ISOLATION)+
-			LayoutUtil.fluidRowLocs(PreviousHospitalizationDto.DESCRIPTION)
+			LayoutUtil.fluidRowLocs(PreviousHospitalizationDto.ISOLATED)
 			;
 
     public PreviousHospitalizationEditForm() {
@@ -40,9 +39,8 @@ public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHo
 	protected void addFields() {
 
     	addFields(PreviousHospitalizationDto.ADMISSION_DATE,
-    			PreviousHospitalizationDto.DISCHARGE_DATE,
-    			PreviousHospitalizationDto.DESCRIPTION);
-    	addField(PreviousHospitalizationDto.ISOLATION, OptionGroup.class);
+    			PreviousHospitalizationDto.DISCHARGE_DATE);
+    	addField(PreviousHospitalizationDto.ISOLATED, OptionGroup.class);
 
     	ComboBox facilityRegion = new ComboBox();
     	facilityRegion.setCaption(I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, FACILITY_REGION));

@@ -26,14 +26,13 @@ public class PreviousHospitalizationsField extends AbstractTableField<PreviousHo
 		table.setVisibleColumns(
 				PreviousHospitalizationDto.ADMISSION_DATE, PreviousHospitalizationDto.DISCHARGE_DATE,
 				PreviousHospitalizationDto.HEALTH_FACILITY,
-				PreviousHospitalizationDto.ISOLATION, PreviousHospitalizationDto.DESCRIPTION,
+				PreviousHospitalizationDto.ISOLATED,
 				 EDIT_COLUMN_ID);
 	
 		table.setColumnExpandRatio(PreviousHospitalizationDto.ADMISSION_DATE, 0);
 		table.setColumnExpandRatio(PreviousHospitalizationDto.DISCHARGE_DATE, 0);
 		table.setColumnExpandRatio(PreviousHospitalizationDto.HEALTH_FACILITY, 0);
-		table.setColumnExpandRatio(PreviousHospitalizationDto.ISOLATION, 0);
-		table.setColumnExpandRatio(PreviousHospitalizationDto.DESCRIPTION, 0);
+		table.setColumnExpandRatio(PreviousHospitalizationDto.ISOLATED, 0);
 	}
 
 	@Override
@@ -52,9 +51,7 @@ public class PreviousHospitalizationsField extends AbstractTableField<PreviousHo
 			return true;
 		if (isModifiedObject(oldEntry.getHealthFacility(), newEntry.getHealthFacility()))
 			return true;
-		if (isModifiedObject(oldEntry.getIsolation(), newEntry.getIsolation()))
-			return true;
-		if (isModifiedObject(oldEntry.getDescription(), newEntry.getDescription()))
+		if (isModifiedObject(oldEntry.getIsolated(), newEntry.getIsolated()))
 			return true;
 		
 		return false;
