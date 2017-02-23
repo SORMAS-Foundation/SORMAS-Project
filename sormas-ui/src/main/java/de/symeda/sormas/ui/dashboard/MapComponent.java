@@ -2,7 +2,6 @@ package de.symeda.sormas.ui.dashboard;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
 
 import com.vaadin.tapio.googlemaps.GoogleMap;
 import com.vaadin.tapio.googlemaps.client.LatLon;
@@ -10,9 +9,11 @@ import com.vaadin.tapio.googlemaps.client.events.MarkerClickListener;
 import com.vaadin.tapio.googlemaps.client.overlays.GoogleMapMarker;
 import com.vaadin.ui.VerticalLayout;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.ui.ControllerProvider;
 
 @SuppressWarnings("serial")
@@ -56,17 +57,22 @@ public class MapComponent extends VerticalLayout {
 		}
     	caseMarkers.clear();
     	
-    	Random random = new Random();
+    	double latSum = 0, lonSum = 0;
+    	int counter = 0;
     	
     	for (CaseDataDto caze : cases) {
 
     		CaseClassification classification = caze.getCaseClassification();
     		if (classification == null || classification == CaseClassification.NO_CASE)
     			continue;
+    		if (caze.getHealthFacility() == null)
+    			continue;
 
-    		// TODO #115 - health facilities currently don't have latLon -> use random
-    		LatLon latLon = new LatLon(center.getLat() + random.nextDouble() - 0.5, 
-    				center.getLon() + random.nextDouble() - 0.5);
+    		FacilityDto facility = FacadeProvider.getFacilityFacade().getByUuid(caze.getHealthFacility().getUuid());
+    		LatLon latLon = new LatLon(facility.getLocation().getLatitude(), facility.getLocation().getLongitude());
+    		latSum += latLon.getLat();
+    		lonSum += latLon.getLon();
+    		counter++;
     		
     		MapIcon icon;
     		switch (classification) {
@@ -88,7 +94,11 @@ public class MapComponent extends VerticalLayout {
     		marker.setId(caze.getUuid().hashCode());
     		caseMarkers.put(marker, caze);
     		map.addMarker(marker);
-		}    	
+		}
+    	
+    	if (counter > 0) {
+    		map.setCenter(new LatLon(latSum/counter, lonSum/counter));
+    	}
     }
     
     public enum MapIcon {
