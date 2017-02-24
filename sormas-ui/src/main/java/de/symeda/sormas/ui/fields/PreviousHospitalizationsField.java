@@ -5,6 +5,7 @@ import java.util.function.Consumer;
 import com.vaadin.ui.Table;
 
 import de.symeda.sormas.api.caze.PreviousHospitalizationDto;
+import de.symeda.sormas.ui.caze.PreviousHospitalizationEditForm;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DeleteListener;

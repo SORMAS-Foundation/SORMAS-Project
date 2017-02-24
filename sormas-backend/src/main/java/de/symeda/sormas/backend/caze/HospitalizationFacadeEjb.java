@@ -52,8 +52,8 @@ public class HospitalizationFacadeEjb implements HospitalizationFacade {
 		HospitalizationDto source = dto;
 		
 		target.setAdmissionDate(source.getAdmissionDate());
+		target.setDischargeDate(source.getDischargeDate());
 		target.setHealthFacility(facilityService.getByReferenceDto(source.getHealthFacility()));
-		target.setHospitalized(source.getHospitalized());
 		target.setHospitalizedPreviously(source.getHospitalizedPreviously());
 		target.setIsolated(source.getIsolated());
 		target.setIsolationDate(source.getIsolationDate());
@@ -74,8 +74,8 @@ public class HospitalizationFacadeEjb implements HospitalizationFacade {
 		target.setUuid(source.getUuid());
 		
 		target.setAdmissionDate(source.getAdmissionDate());
+		target.setDischargeDate(source.getDischargeDate());
 		target.setHealthFacility(FacilityFacadeEjb.toReferenceDto(source.getHealthFacility()));
-		target.setHospitalized(source.getHospitalized());
 		target.setHospitalizedPreviously(source.getHospitalizedPreviously());
 		target.setIsolated(source.getIsolated());
 		target.setIsolationDate(source.getIsolationDate());

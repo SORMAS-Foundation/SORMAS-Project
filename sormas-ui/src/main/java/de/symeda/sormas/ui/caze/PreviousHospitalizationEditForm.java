@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.fields;
+package de.symeda.sormas.ui.caze;
 
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.OptionGroup;
@@ -26,7 +26,8 @@ public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHo
 			LayoutUtil.fluidRowLocs(PreviousHospitalizationDto.ADMISSION_DATE, PreviousHospitalizationDto.DISCHARGE_DATE)+
 			LayoutUtil.fluidRowLocs(FACILITY_REGION, FACILITY_DISTRICT)+
 			LayoutUtil.fluidRowLocs(FACILITY_COMMUNITY, PreviousHospitalizationDto.HEALTH_FACILITY)+
-			LayoutUtil.fluidRowLocs(PreviousHospitalizationDto.ISOLATED)
+			LayoutUtil.fluidRowLocs(PreviousHospitalizationDto.ISOLATED)+
+			LayoutUtil.fluidRowLocs(PreviousHospitalizationDto.DESCRIPTION)
 			;
 
     public PreviousHospitalizationEditForm() {

@@ -8,7 +8,8 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Path;
+import javax.persistence.criteria.From;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
@@ -82,12 +83,11 @@ public class EventParticipantService extends AbstractAdoService<EventParticipant
 	/**
 	 * @see /sormas-backend/doc/UserDataAccess.md
 	 */
-	public Predicate createUserFilter(CriteriaBuilder cb, Path<EventParticipant> eventParticipantPath, User user) {
-//		// can see the participants of all accessable events
-//		Predicate filter = eventService.createUserFilter(cb, eventParticipantPath.get(EventParticipant.EVENT), user);
-//	
-//		return filter;
-		return null;
+	public Predicate createUserFilter(CriteriaBuilder cb, From<EventParticipant, EventParticipant> eventParticipantPath, User user) {
+		// can see the participants of all accessable events
+		Predicate filter = eventService.createUserFilter(cb, eventParticipantPath.join(EventParticipant.EVENT, JoinType.LEFT), user);
+	
+		return filter;
 	}
 	
 }

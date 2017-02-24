@@ -237,7 +237,7 @@ public class Case extends AbstractDomainObject {
 		this.contactOfficer = contactOfficer;
 	}
 
-	@OneToOne(cascade = CascadeType.ALL)
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	public Symptoms getSymptoms() {
 		if (symptoms == null) {
 			symptoms = new Symptoms();
@@ -278,6 +278,7 @@ public class Case extends AbstractDomainObject {
 	public Hospitalization getHospitalization() {
 		if (hospitalization == null) {
 			hospitalization = new Hospitalization();
+			hospitalization.setHealthFacility(this.healthFacility);
 		}
 		return hospitalization;
 	}

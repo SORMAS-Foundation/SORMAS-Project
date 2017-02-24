@@ -1,6 +1,8 @@
 package de.symeda.sormas.api.caze;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
@@ -14,26 +16,22 @@ public class HospitalizationDto extends DataTransferObject {
 	
 	public static final String I18N_PREFIX = "CaseHospitalization";
 	
-	public static final String HOSPITALIZED = "hospitalized";
 	public static final String HEALTH_FACILIY = "healthFacility";
 	public static final String ADMISSION_DATE = "admissionDate";
+	public static final String DISCHARGE_DATE = "dischargeDate";
 	public static final String ISOLATED = "isolated";
 	public static final String ISOLATION_DATE = "isolationDate";
 	public static final String HOSPITALIZED_PREVIOUSLY = "hospitalizedPreviously";
+	public static final String PREVIOUS_HOSPITALIZATIONS = "previousHospitalizations";
 	
-	private YesNoUnknown hospitalized;
 	private FacilityReferenceDto healthFacility;
 	private Date admissionDate;
+	private Date dischargeDate;
 	private YesNoUnknown isolated;
 	private Date isolationDate;
 	private YesNoUnknown hospitalizedPreviously;
 	
-	public YesNoUnknown getHospitalized() {
-		return hospitalized;
-	}
-	public void setHospitalized(YesNoUnknown hospitalized) {
-		this.hospitalized = hospitalized;
-	}
+	private List<PreviousHospitalizationDto> previousHospitalizations = new ArrayList<>();
 	
 	public FacilityReferenceDto getHealthFacility() {
 		return healthFacility;
@@ -49,6 +47,15 @@ public class HospitalizationDto extends DataTransferObject {
 	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public void setAdmissionDate(Date admissionDate) {
 		this.admissionDate = admissionDate;
+	}
+	
+	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
+	public Date getDischargeDate() {
+		return dischargeDate;
+	}
+	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
+	public void setDischargeDate(Date dischargeDate) {
+		this.dischargeDate = dischargeDate;
 	}
 	
 	public YesNoUnknown getIsolated() {
@@ -73,5 +80,11 @@ public class HospitalizationDto extends DataTransferObject {
 	public void setHospitalizedPreviously(YesNoUnknown hospitalizedPreviously) {
 		this.hospitalizedPreviously = hospitalizedPreviously;
 	}
-
+	
+	public List<PreviousHospitalizationDto> getPreviousHospitalizations() {
+		return previousHospitalizations;
+	}
+	public void setPreviousHospitalizations(List<PreviousHospitalizationDto> previousHospitalizations) {
+		this.previousHospitalizations = previousHospitalizations;
+	}
 }

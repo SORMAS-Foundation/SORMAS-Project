@@ -1135,3 +1135,11 @@ DELETE FROM district;
 DELETE FROM region;
 
 INSERT INTO schema_version (version_number, comment) VALUES (31, 'Removed Abia state demo data');
+
+-- 2017-02-24 Update hospitalization and previoushospitalization entities
+
+ALTER TABLE hospitalization DROP COLUMN hospitalized;
+ALTER TABLE hospitalization ADD COLUMN dischargedate timestamp;
+ALTER TABLE previoushospitalization ADD COLUMN description varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (32, 'Update hospitalization and previoushospitalization entities');

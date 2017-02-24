@@ -13,6 +13,8 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
+import de.symeda.sormas.api.caze.HospitalizationDto;
+import de.symeda.sormas.api.caze.HospitalizationFacade;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
@@ -32,6 +34,7 @@ public class CaseController {
 
 	private CaseFacade cf = FacadeProvider.getCaseFacade();
 	private SymptomsFacade sf = FacadeProvider.getSymptomsFacade();
+	private HospitalizationFacade hf = FacadeProvider.getHospitalizationFacade();
 	
     public CaseController() {
     	
@@ -43,6 +46,7 @@ public class CaseController {
     	navigator.addView(CasePersonView.VIEW_NAME, CasePersonView.class);
     	navigator.addView(CaseSymptomsView.VIEW_NAME, CaseSymptomsView.class);
     	navigator.addView(CaseContactsView.VIEW_NAME, CaseContactsView.class);
+    	navigator.addView(CaseHospitalizationView.VIEW_NAME, CaseHospitalizationView.class);
 	}
     
     public void create() {
@@ -68,6 +72,11 @@ public class CaseController {
     public void navigateToPerson(String caseUuid) {
    		String navigationState = CasePersonView.VIEW_NAME + "/" + caseUuid;
    		SormasUI.get().getNavigator().navigateTo(navigationState);	
+    }
+
+    public void navigateToHospitalization(String caseUuid) {
+    	String navigationState = CaseHospitalizationView.VIEW_NAME + "/" + caseUuid;
+    	SormasUI.get().getNavigator().navigateTo(navigationState);
     }
     
     public void navigateToIndex() {
@@ -201,4 +210,27 @@ public class CaseController {
         
         return editView;
     }    
+	
+	public CommitDiscardWrapperComponent<CaseHospitalizationForm> getCaseHospitalizationComponent(final String caseUuid) {
+		CaseDataDto caze = findCase(caseUuid);
+		CaseHospitalizationForm hospitalizationForm = new CaseHospitalizationForm(caze);
+		hospitalizationForm.setValue(caze.getHospitalization());
+	
+		final CommitDiscardWrapperComponent<CaseHospitalizationForm> editView = new CommitDiscardWrapperComponent<CaseHospitalizationForm>(hospitalizationForm, hospitalizationForm.getFieldGroup());
+		
+		editView.addCommitListener(new CommitListener() {
+			@Override
+			public void onCommit() {
+				if (hospitalizationForm.getFieldGroup().isValid()) {
+					HospitalizationDto dto = hospitalizationForm.getValue();
+					dto = hf.saveHospitalization(dto);
+					Notification.show("Case hospitalization saved", Type.TRAY_NOTIFICATION);
+					navigateToHospitalization(caseUuid);
+				}
+			}
+		});
+		
+		return editView;
+	}
+	
 }

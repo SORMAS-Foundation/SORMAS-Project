@@ -21,31 +21,22 @@ public class Hospitalization extends AbstractDomainObject {
 
 	private static final long serialVersionUID = -8576270649634034244L;
 
-	public static final String HOSPITALIZED = "hospitalized";
 	public static final String HEALTH_FACILIY = "healthFacility";
 	public static final String ADMISSION_DATE = "admissionDate";
+	public static final String DISCHARGE_DATE = "dischargeDate";
 	public static final String ISOLATED = "isolated";
 	public static final String ISOLATION_DATE = "isolationDate";
 	public static final String HOSPITALIZED_PREVIOUSLY = "hospitalizedPreviously";
 	public static final String PREVIOUS_HOSPITALIZATIONS = "previousHospitalizations";
 	
-	private YesNoUnknown hospitalized;
 	private Facility healthFacility;
 	private Date admissionDate;
+	private Date dischargeDate;
 	private YesNoUnknown isolated;
 	private Date isolationDate;
 	private YesNoUnknown hospitalizedPreviously;
 	
 	private List<PreviousHospitalization> previousHospitalizations = new ArrayList<PreviousHospitalization>();
-	
-	
-	@Enumerated(EnumType.STRING)
-	public YesNoUnknown getHospitalized() {
-		return hospitalized;
-	}
-	public void setHospitalized(YesNoUnknown hospitalized) {
-		this.hospitalized = hospitalized;
-	}
 	
 	@ManyToOne(cascade = {})
 	public Facility getHealthFacility() {
@@ -61,6 +52,14 @@ public class Hospitalization extends AbstractDomainObject {
 	}
 	public void setAdmissionDate(Date admissionDate) {
 		this.admissionDate = admissionDate;
+	}
+	
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getDischargeDate() {
+		return dischargeDate;
+	}
+	public void setDischargeDate(Date dischargeDate) {
+		this.dischargeDate = dischargeDate;
 	}
 	
 	@Enumerated(EnumType.STRING)

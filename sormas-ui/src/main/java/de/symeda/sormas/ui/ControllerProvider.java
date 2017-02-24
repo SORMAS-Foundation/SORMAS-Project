@@ -86,4 +86,5 @@ public class ControllerProvider extends BaseControllerProvider {
 	public static SampleTestController getSampleTestController() {
 		return get().sampleTestController;
 	}
+
 }

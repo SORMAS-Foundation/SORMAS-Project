@@ -18,12 +18,14 @@ public class PreviousHospitalizationDto extends DataTransferObject {
 	public static final String DISCHARGE_DATE = "dischargeDate";
 	public static final String HEALTH_FACILITY = "healthFacility";
 	public static final String ISOLATED = "isolated";
+	public static final String DESCRIPTION = "description";
 	public static final String HOSPITALIZATION = "hospitalization";
 	
 	private Date admissionDate;
 	private Date dischargeDate;
 	private FacilityReferenceDto healthFacility;
 	private YesNoUnknown isolated;
+	private String description;
 	private HospitalizationDto hospitalization;
 	
 	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
@@ -56,6 +58,13 @@ public class PreviousHospitalizationDto extends DataTransferObject {
 	}
 	public void setIsolated(YesNoUnknown isolated) {
 		this.isolated = isolated;
+	}
+	
+	public String getDescription() {
+		return description;
+	}
+	public void setDescription(String description) {
+		this.description = description;
 	}
 	
 	public HospitalizationDto getHospitalization() {
