@@ -222,15 +222,12 @@ public class CaseEditActivity extends AbstractEditActivity {
                         startActivity(intentContactNew);
                         break;
                     case SAMPLES:
-                        /*Bundle sampleCreateBundle = new Bundle();
+                        Bundle sampleCreateBundle = new Bundle();
                         sampleCreateBundle.putString(KEY_CASE_UUID, caseUuid);
                         sampleCreateBundle.putBoolean(SampleEditActivity.NEW_SAMPLE, true);
                         Intent intentSampleNew = new Intent(this, SampleEditActivity.class);
                         intentSampleNew.putExtras(sampleCreateBundle);
-                        startActivity(intentSampleNew);*/
-
-                        // disabled for sprint 13 release
-                        Toast.makeText(this, "This feature is currently disabled.", Toast.LENGTH_SHORT).show();
+                        startActivity(intentSampleNew);
                         break;
                 }
 

@@ -26,14 +26,14 @@ public class Hospitalization extends AbstractDomainObject {
 
     public static final String TABLE_NAME = "hospitalization";
 
-    @Enumerated(EnumType.STRING)
-    private YesNoUnknown hospitalized;
-
     @DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
     private Facility healthFacility;
 
     @DatabaseField(dataType = DataType.DATE_LONG)
     private Date admissionDate;
+
+    @DatabaseField(dataType = DataType.DATE_LONG)
+    private Date dischargeDate;
 
     @Enumerated(EnumType.STRING)
     private YesNoUnknown isolated;
@@ -43,14 +43,6 @@ public class Hospitalization extends AbstractDomainObject {
 
     @Enumerated(EnumType.STRING)
     private YesNoUnknown hospitalizedPreviously;
-
-    public YesNoUnknown getHospitalized() {
-        return hospitalized;
-    }
-
-    public void setHospitalized(YesNoUnknown hospitalized) {
-        this.hospitalized = hospitalized;
-    }
 
     public Facility getHealthFacility() {
         return healthFacility;
@@ -66,6 +58,14 @@ public class Hospitalization extends AbstractDomainObject {
 
     public void setAdmissionDate(Date admissionDate) {
         this.admissionDate = admissionDate;
+    }
+
+    public Date getDischargeDate() {
+        return dischargeDate;
+    }
+
+    public void setDischargeDate(Date dischargeDate) {
+        this.dischargeDate = dischargeDate;
     }
 
     public YesNoUnknown getIsolated() {

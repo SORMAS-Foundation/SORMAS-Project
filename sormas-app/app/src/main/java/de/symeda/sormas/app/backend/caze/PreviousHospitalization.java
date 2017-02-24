@@ -6,6 +6,7 @@ import com.j256.ormlite.table.DatabaseTable;
 
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -37,6 +38,9 @@ public class PreviousHospitalization extends AbstractDomainObject {
 
     @Enumerated(EnumType.STRING)
     private YesNoUnknown isolated;
+
+    @Column(length=512)
+    private String description;
 
     @DatabaseField(foreign = true, foreignAutoRefresh = true)
     private Hospitalization hospitalization;
@@ -71,6 +75,14 @@ public class PreviousHospitalization extends AbstractDomainObject {
 
     public void setIsolated(YesNoUnknown isolated) {
         this.isolated = isolated;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public Hospitalization getHospitalization() {

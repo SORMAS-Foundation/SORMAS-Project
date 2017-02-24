@@ -31,7 +31,7 @@ public class HospitalizationDtoHelper extends AdoDtoHelper<Hospitalization, Hosp
         }
 
         a.setAdmissionDate(b.getAdmissionDate());
-        a.setHospitalized(b.getHospitalized());
+        a.setDischargeDate(b.getDischargeDate());
         a.setHospitalizedPreviously(b.getHospitalizedPreviously());
         a.setIsolated(b.getIsolated());
         a.setIsolationDate(b.getIsolationDate());
@@ -47,7 +47,7 @@ public class HospitalizationDtoHelper extends AdoDtoHelper<Hospitalization, Hosp
         }
 
         a.setAdmissionDate(b.getAdmissionDate());
-        a.setHospitalized(b.getHospitalized());
+        a.setDischargeDate(b.getDischargeDate());
         a.setHospitalizedPreviously(b.getHospitalizedPreviously());
         a.setIsolated(b.getIsolated());
         a.setIsolationDate(b.getIsolationDate());
