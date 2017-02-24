@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -86,7 +87,7 @@ public class Hospitalization extends AbstractDomainObject {
 		this.hospitalizedPreviously = hospitalizedPreviously;
 	}
 	
-	@OneToMany(cascade = {}, mappedBy = PreviousHospitalization.HOSPITALIZATION)
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = PreviousHospitalization.HOSPITALIZATION)
 	public List<PreviousHospitalization> getPreviousHospitalizations() {
 		return previousHospitalizations;
 	}
