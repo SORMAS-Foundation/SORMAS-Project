@@ -1143,3 +1143,6 @@ ALTER TABLE hospitalization ADD COLUMN dischargedate timestamp;
 ALTER TABLE previoushospitalization ADD COLUMN description varchar(512);
 
 INSERT INTO schema_version (version_number, comment) VALUES (32, 'Update hospitalization and previoushospitalization entities');
+
+ALTER TABLE public.hospitalization DROP COLUMN healthfacility_id;
+INSERT INTO schema_version (version_number, comment) VALUES (33, 'Removed health facility from hospitalization');

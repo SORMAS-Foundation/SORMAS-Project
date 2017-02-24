@@ -41,7 +41,7 @@ import de.symeda.sormas.app.databinding.PersonEditFragmentLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.FormTab;
 import de.symeda.sormas.app.util.Item;
-import de.symeda.sormas.app.util.ParamCallback;
+import de.symeda.sormas.app.util.Consumer;
 
 
 /**
@@ -135,9 +135,9 @@ public class PersonEditTab extends FormTab {
         // ================ Address ================
         try {
             final Location location = person.getAddress() != null ? person.getAddress() : DataUtils.createNew(Location.class);
-            addLocationField(location, R.id.person_address, R.id.form_cp_btn_address, new ParamCallback() {
+            addLocationField(location, R.id.person_address, R.id.form_cp_btn_address, new Consumer() {
                 @Override
-                public void call(Object parameter) {
+                public void accept(Object parameter) {
                     if(parameter instanceof Location) {
                         binding.personAddress.setValue(parameter.toString());
                         binding.getPerson().setAddress(((Location)parameter));

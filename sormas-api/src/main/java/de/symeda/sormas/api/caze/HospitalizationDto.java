@@ -7,7 +7,6 @@ import java.util.List;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import de.symeda.sormas.api.DataTransferObject;
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.utils.PreciseDateAdapter;
 
 public class HospitalizationDto extends DataTransferObject {
@@ -16,7 +15,6 @@ public class HospitalizationDto extends DataTransferObject {
 	
 	public static final String I18N_PREFIX = "CaseHospitalization";
 	
-	public static final String HEALTH_FACILIY = "healthFacility";
 	public static final String ADMISSION_DATE = "admissionDate";
 	public static final String DISCHARGE_DATE = "dischargeDate";
 	public static final String ISOLATED = "isolated";
@@ -24,7 +22,6 @@ public class HospitalizationDto extends DataTransferObject {
 	public static final String HOSPITALIZED_PREVIOUSLY = "hospitalizedPreviously";
 	public static final String PREVIOUS_HOSPITALIZATIONS = "previousHospitalizations";
 	
-	private FacilityReferenceDto healthFacility;
 	private Date admissionDate;
 	private Date dischargeDate;
 	private YesNoUnknown isolated;
@@ -32,13 +29,6 @@ public class HospitalizationDto extends DataTransferObject {
 	private YesNoUnknown hospitalizedPreviously;
 	
 	private List<PreviousHospitalizationDto> previousHospitalizations = new ArrayList<>();
-	
-	public FacilityReferenceDto getHealthFacility() {
-		return healthFacility;
-	}
-	public void setHealthFacility(FacilityReferenceDto healthFacility) {
-		this.healthFacility = healthFacility;
-	}
 	
 	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public Date getAdmissionDate() {

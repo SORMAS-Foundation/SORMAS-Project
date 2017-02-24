@@ -91,18 +91,18 @@ public class CaseEditPagerAdapter extends FragmentStatePagerAdapter {
                 samplesListTab.setArguments(samplesListBundle);
                 frag = samplesListTab;
                 break;
-            case HOSPITALIZATION:
-                caseHospitalizationTab = new CaseHospitalizationTab();
-
-                Bundle hospitalizationBundle = new Bundle();
-                caze = DatabaseHelper.getCaseDao().queryUuid(caseEditBundle.getString(Case.UUID));
-                if(caze.getHospitalization() != null) {
-                    hospitalizationBundle.putString(Hospitalization.UUID, caze.getHospitalization().getUuid());
-                }
-
-                caseHospitalizationTab.setArguments(hospitalizationBundle);
-                frag = caseHospitalizationTab;
-                break;
+//            case HOSPITALIZATION:
+//                caseHospitalizationTab = new CaseHospitalizationTab();
+//
+//                Bundle hospitalizationBundle = new Bundle();
+//                caze = DatabaseHelper.getCaseDao().queryUuid(caseEditBundle.getString(Case.UUID));
+//                if(caze.getHospitalization() != null) {
+//                    hospitalizationBundle.putString(Hospitalization.UUID, caze.getHospitalization().getUuid());
+//                }
+//
+//                caseHospitalizationTab.setArguments(hospitalizationBundle);
+//                frag = caseHospitalizationTab;
+//                break;
         }
         return frag;
     }
@@ -148,8 +148,8 @@ public class CaseEditPagerAdapter extends FragmentStatePagerAdapter {
                 return personEditTab;
             case SYMPTOMS:
                 return symptomsEditTab;
-            case HOSPITALIZATION:
-                return caseHospitalizationTab;
+//            case HOSPITALIZATION:
+//                return caseHospitalizationTab;
         }
         return null;
     }

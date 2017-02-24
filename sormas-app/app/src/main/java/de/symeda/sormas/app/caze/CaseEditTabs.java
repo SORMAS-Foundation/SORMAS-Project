@@ -10,7 +10,7 @@ public enum CaseEditTabs {
 	CONTACTS,
 	TASKS,
 	SAMPLES,
-	HOSPITALIZATION
+	//HOSPITALIZATION,
 	;
 
 	public String toString() {

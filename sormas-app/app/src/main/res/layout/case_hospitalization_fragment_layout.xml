@@ -21,14 +21,6 @@
             android:focusable="true"
             android:focusableInTouchMode="true">
 
-            <de.symeda.sormas.app.component.SpinnerField
-                android:id="@+id/hospitalization_healthFacility"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:paddingTop="@dimen/field_padding"
-                android:paddingBottom="@dimen/field_padding"
-                android:value="@={hospitalization.healthFacility}"/>
-
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"

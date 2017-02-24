@@ -178,8 +178,6 @@ public class CaseEditActivity extends AbstractEditActivity {
                 }
                 personDao.save(person);
 
-                new SyncPersonsTask().execute();
-
                 // SYMPTOMS
                 SymptomsDao symptomsDao = DatabaseHelper.getSymptomsDao();
                 Symptoms symptoms = (Symptoms) adapter.getData(CaseEditTabs.SYMPTOMS.ordinal());

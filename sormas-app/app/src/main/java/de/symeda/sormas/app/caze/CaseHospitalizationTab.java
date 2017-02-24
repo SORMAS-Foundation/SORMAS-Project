@@ -42,7 +42,6 @@ public class CaseHospitalizationTab extends FormTab {
             binding.setHospitalization(new Hospitalization());
         }
 
-        FieldHelper.initFacilitySpinnerField(binding.hospitalizationHealthFacility);
         binding.hospitalizationAdmissionDate.initialize(this);
         binding.hospitalizationDischargeDate.initialize(this);
         binding.hospitalization1isolationDate.initialize(this);

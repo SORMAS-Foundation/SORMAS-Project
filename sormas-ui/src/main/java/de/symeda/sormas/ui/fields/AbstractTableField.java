@@ -507,9 +507,14 @@ public abstract class AbstractTableField<E> extends CustomField<Collection> {
 
 	@Override
 	public Collection<E> getValue() {
+		
+		BeanItemContainer<E> container = getContainer();
+		if (container == null) {
+			return null;
+		}
 
 		// return all entries from the container
-		Collection<E> entries = getContainer().getItemIds();
+		Collection<E> entries = container.getItemIds();
 
 		return entries;
 	}
@@ -529,6 +534,10 @@ public abstract class AbstractTableField<E> extends CustomField<Collection> {
 	public void setValue(Collection value) {
 
 		BeanItemContainer<E> container = getContainer();
+		if (container == null) {
+			return;
+		}
+
 		container.removeAllItems();
 		container.addAll(value);
 		table.refreshRowCache();

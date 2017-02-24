@@ -26,9 +26,6 @@ public class Hospitalization extends AbstractDomainObject {
 
     public static final String TABLE_NAME = "hospitalization";
 
-    @DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
-    private Facility healthFacility;
-
     @DatabaseField(dataType = DataType.DATE_LONG)
     private Date admissionDate;
 
@@ -43,14 +40,6 @@ public class Hospitalization extends AbstractDomainObject {
 
     @Enumerated(EnumType.STRING)
     private YesNoUnknown hospitalizedPreviously;
-
-    public Facility getHealthFacility() {
-        return healthFacility;
-    }
-
-    public void setHealthFacility(Facility healthFacility) {
-        this.healthFacility = healthFacility;
-    }
 
     public Date getAdmissionDate() {
         return admissionDate;

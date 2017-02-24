@@ -278,7 +278,6 @@ public class Case extends AbstractDomainObject {
 	public Hospitalization getHospitalization() {
 		if (hospitalization == null) {
 			hospitalization = new Hospitalization();
-			hospitalization.setHealthFacility(this.healthFacility);
 		}
 		return hospitalization;
 	}

@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import de.symeda.sormas.api.utils.PreciseDateAdapter;
 
-public abstract class DataTransferObject implements Serializable {
+public abstract class DataTransferObject implements Serializable, Cloneable {
 
 	private static final long serialVersionUID = -1L;
 
@@ -72,6 +72,14 @@ public abstract class DataTransferObject implements Serializable {
 			return getUuid().hashCode();
 		}
 		return 0;
+	}
+	
+	@Override
+	public DataTransferObject clone() throws CloneNotSupportedException {
+		if (getUuid() == null) {
+			throw new CloneNotSupportedException("DataTransferObject must have uuid in order to be cloneable");
+		}
+		return (DataTransferObject) super.clone();
 	}
 }
 

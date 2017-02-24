@@ -20,8 +20,7 @@ import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.component.SelectOrCreatePersonDialog;
 import de.symeda.sormas.app.person.SyncPersonsTask;
-import de.symeda.sormas.app.util.Callback;
-import de.symeda.sormas.app.util.ParamCallback;
+import de.symeda.sormas.app.util.Consumer;
 
 public class EventParticipantNewActivity extends AppCompatActivity {
 
@@ -97,9 +96,9 @@ public class EventParticipantNewActivity extends AppCompatActivity {
                         List<Person> existingPersons = DatabaseHelper.getPersonDao().getAllByName(eventParticipant.getPerson().getFirstName(), eventParticipant.getPerson().getLastName());
                         if (existingPersons.size() > 0) {
 
-                            AlertDialog.Builder dialogBuilder = new SelectOrCreatePersonDialog(this, eventParticipant.getPerson(), existingPersons, new ParamCallback() {
+                            AlertDialog.Builder dialogBuilder = new SelectOrCreatePersonDialog(this, eventParticipant.getPerson(), existingPersons, new Consumer() {
                                 @Override
-                                public void call(Object parameter) {
+                                public void accept(Object parameter) {
                                     if(parameter instanceof Person) {
                                         eventParticipant.setPerson((Person) parameter);
                                         savePersonAndEventParticipant(eventParticipant);

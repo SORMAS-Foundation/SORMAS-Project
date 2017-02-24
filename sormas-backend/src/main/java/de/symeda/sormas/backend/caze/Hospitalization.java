@@ -8,21 +8,18 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import de.symeda.sormas.api.caze.YesNoUnknown;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.facility.Facility;
 
 @Entity
 public class Hospitalization extends AbstractDomainObject {
 
 	private static final long serialVersionUID = -8576270649634034244L;
 
-	public static final String HEALTH_FACILIY = "healthFacility";
 	public static final String ADMISSION_DATE = "admissionDate";
 	public static final String DISCHARGE_DATE = "dischargeDate";
 	public static final String ISOLATED = "isolated";
@@ -30,7 +27,6 @@ public class Hospitalization extends AbstractDomainObject {
 	public static final String HOSPITALIZED_PREVIOUSLY = "hospitalizedPreviously";
 	public static final String PREVIOUS_HOSPITALIZATIONS = "previousHospitalizations";
 	
-	private Facility healthFacility;
 	private Date admissionDate;
 	private Date dischargeDate;
 	private YesNoUnknown isolated;
@@ -38,14 +34,6 @@ public class Hospitalization extends AbstractDomainObject {
 	private YesNoUnknown hospitalizedPreviously;
 	
 	private List<PreviousHospitalization> previousHospitalizations = new ArrayList<PreviousHospitalization>();
-	
-	@ManyToOne(cascade = {})
-	public Facility getHealthFacility() {
-		return healthFacility;
-	}
-	public void setHealthFacility(Facility healthFacility) {
-		this.healthFacility = healthFacility;
-	}
 	
 	@Temporal(TemporalType.TIMESTAMP)
 	public Date getAdmissionDate() {

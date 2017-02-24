@@ -19,9 +19,8 @@ import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.databinding.EventParticipantNewFragmentLayoutBinding;
 import de.symeda.sormas.app.databinding.PersonSelectOrCreateFragmentLayoutBinding;
 import de.symeda.sormas.app.person.PersonSelectVO;
-import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.Item;
-import de.symeda.sormas.app.util.ParamCallback;
+import de.symeda.sormas.app.util.Consumer;
 
 
 public class SelectOrCreatePersonDialog extends AlertDialog.Builder {
@@ -29,7 +28,7 @@ public class SelectOrCreatePersonDialog extends AlertDialog.Builder {
     private EventParticipantNewFragmentLayoutBinding binding;
     private Person selectedPersonFromDialog;
 
-    public SelectOrCreatePersonDialog(final FragmentActivity activity, final Person person, final List<Person> existingPersons, final ParamCallback positiveCallback ) {
+    public SelectOrCreatePersonDialog(final FragmentActivity activity, final Person person, final List<Person> existingPersons, final Consumer positiveCallback ) {
         super(activity);
 
         final PersonSelectVO personSelectVO = new PersonSelectVO(person);
@@ -67,7 +66,7 @@ public class SelectOrCreatePersonDialog extends AlertDialog.Builder {
         this.setPositiveButton(activity.getResources().getString(R.string.action_select_person), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int id) {
-                positiveCallback.call(bindingPersonSelect.personSelectSelectedPerson.getValue());
+                positiveCallback.accept(bindingPersonSelect.personSelectSelectedPerson.getValue());
             }
         });
 

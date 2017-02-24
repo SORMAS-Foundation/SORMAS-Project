@@ -17,11 +17,11 @@ import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.DataUtils;
-import de.symeda.sormas.app.util.ParamCallback;
+import de.symeda.sormas.app.util.Consumer;
 
 public class LocationDialog extends AlertDialog.Builder {
 
-    public LocationDialog(FragmentActivity activity, final Location location, final ParamCallback positiveCallback , final Callback negativeCallback) {
+    public LocationDialog(FragmentActivity activity, final Location location, final Consumer positiveCallback , final Callback negativeCallback) {
         super(activity);
 
         this.setTitle(activity.getResources().getString(R.string.headline_location));
@@ -107,7 +107,7 @@ public class LocationDialog extends AlertDialog.Builder {
                 location.setCommunity((Community)((SpinnerField) dialogView.findViewById(R.id.location_community)).getValue());
 
                 if(positiveCallback!=null) {
-                    positiveCallback.call(location);
+                    positiveCallback.accept(location);
                 }
             }
         });

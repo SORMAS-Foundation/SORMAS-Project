@@ -20,7 +20,7 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
     /**
      * Create the {@see LocationDialog} for given location.
      */
-    protected void addLocationField(final Location location, final int locationFieldId, int locationBtnId, final ParamCallback positiveCallback ) {
+    protected void addLocationField(final Location location, final int locationFieldId, int locationBtnId, final Consumer positiveCallback ) {
         DatabaseHelper.getLocationDao().initializeLocation(location);
 
         // set the TextField for the location

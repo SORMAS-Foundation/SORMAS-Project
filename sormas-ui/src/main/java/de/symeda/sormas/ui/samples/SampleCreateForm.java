@@ -18,6 +18,7 @@ import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
@@ -77,12 +78,8 @@ public class SampleCreateForm extends AbstractEditForm<SampleDto> {
 		addField(SampleDto.UUID, TextField.class);
 		addField(SampleDto.SAMPLE_CODE, TextField.class);
 		
-		DateField sampleDateTime = addField(SampleDto.SAMPLE_DATE_TIME, DateField.class);
-		DateField reportDateTime = addField(SampleDto.REPORT_DATE_TIME, DateField.class);
-		sampleDateTime.setResolution(Resolution.MINUTE);
-		sampleDateTime.setDateFormat(DateHelper.getTimeDateFormat().toPattern());
-		reportDateTime.setResolution(Resolution.MINUTE);
-		reportDateTime.setDateFormat(DateHelper.getTimeDateFormat().toPattern());
+		addField(SampleDto.SAMPLE_DATE_TIME, DateTimeField.class);
+		addField(SampleDto.REPORT_DATE_TIME, DateTimeField.class);
 		
 		addField(SampleDto.REPORTING_USER, ComboBox.class);
 		addField(SampleDto.SAMPLE_MATERIAL, ComboBox.class);

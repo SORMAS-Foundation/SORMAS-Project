@@ -22,7 +22,7 @@ import de.symeda.sormas.app.component.PropertyField;
 import de.symeda.sormas.app.databinding.EventDataFragmentLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.FormTab;
-import de.symeda.sormas.app.util.ParamCallback;
+import de.symeda.sormas.app.util.Consumer;
 
 public class EventEditDataTab extends FormTab {
 
@@ -70,9 +70,9 @@ public class EventEditDataTab extends FormTab {
 
             try {
                 final Location location = event.getEventLocation() != null ? event.getEventLocation() : DataUtils.createNew(Location.class);
-                addLocationField(location, R.id.event_eventLocation, R.id.event_eventLocation_btn, new ParamCallback() {
+                addLocationField(location, R.id.event_eventLocation, R.id.event_eventLocation_btn, new Consumer() {
                     @Override
-                    public void call(Object parameter) {
+                    public void accept(Object parameter) {
                         if(parameter instanceof Location) {
                             binding.eventEventLocation.setValue(parameter.toString());
                             binding.getEvent().setEventLocation(((Location)parameter));

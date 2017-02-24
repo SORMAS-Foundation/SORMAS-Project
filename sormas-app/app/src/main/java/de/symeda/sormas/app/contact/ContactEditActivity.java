@@ -156,6 +156,8 @@ public class ContactEditActivity extends AbstractEditActivity {
 
                 Toast.makeText(this, "contact " + DataHelper.getShortUuid(contact.getUuid()) + " saved", Toast.LENGTH_SHORT).show();
 
+                SyncContactsTask.syncContacts(getSupportFragmentManager());
+
                 onResume();
                 pager.setCurrentItem(currentTab);
 
