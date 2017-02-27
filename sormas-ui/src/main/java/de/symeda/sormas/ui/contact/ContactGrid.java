@@ -12,10 +12,8 @@ import com.vaadin.ui.renderers.DateRenderer;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.DiseaseShort;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
-import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactIndexDto;
@@ -75,7 +73,7 @@ public class ContactGrid extends Grid {
 			public String getValue(Item item, Object itemId, Object propertyId) {
 				ContactIndexDto contactIndexDto = (ContactIndexDto) itemId;
 				String diseaseName = contactIndexDto.getCazeDisease().getName();
-				return DiseaseShort.valueOf(diseaseName).toString();
+				return Disease.valueOf(diseaseName).toShortString();
 			}
 			@Override
 			public Class<String> getType() {

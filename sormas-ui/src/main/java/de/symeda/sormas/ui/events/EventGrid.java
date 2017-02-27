@@ -13,10 +13,8 @@ import com.vaadin.ui.Grid;
 import com.vaadin.ui.renderers.DateRenderer;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.DiseaseShort;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
-import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.EventType;
@@ -71,7 +69,7 @@ public class EventGrid extends Grid {
 				EventDto eventDto = (EventDto) itemId;
 				if(eventDto.getDisease() != null) {
 					String diseaseName = eventDto.getDisease().getName();
-					return DiseaseShort.valueOf(diseaseName).toString();
+					return Disease.valueOf(diseaseName).toShortString();
 				} else {
 					return null;
 				}

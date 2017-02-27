@@ -2,6 +2,7 @@ package de.symeda.sormas.ui.caze;
 
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.OptionGroup;
+import com.vaadin.ui.TextArea;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
@@ -42,6 +43,7 @@ public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHo
     	addFields(PreviousHospitalizationDto.ADMISSION_DATE,
     			PreviousHospitalizationDto.DISCHARGE_DATE);
     	addField(PreviousHospitalizationDto.ISOLATED, OptionGroup.class);
+    	addField(PreviousHospitalizationDto.DESCRIPTION, TextArea.class).setRows(2);
 
     	ComboBox facilityRegion = new ComboBox();
     	facilityRegion.setCaption(I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, FACILITY_REGION));

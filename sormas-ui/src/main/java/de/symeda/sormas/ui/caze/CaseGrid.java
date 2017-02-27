@@ -14,7 +14,6 @@ import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.ui.Grid;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.DiseaseShort;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -60,7 +59,7 @@ public class CaseGrid extends Grid {
 			public String getValue(Item item, Object itemId, Object propertyId) {
 				CaseDataDto caseDataDto = (CaseDataDto) itemId;
 				String diseaseName = caseDataDto.getDisease().getName();
-				return DiseaseShort.valueOf(diseaseName).toString();
+				return Disease.valueOf(diseaseName).toShortString();
 			}
 			@Override
 			public Class<String> getType() {

@@ -29,6 +29,18 @@ public class I18nProperties {
 		}
 	}
 	
+	// Retrieves the property by adding an additional string in between the class name and the property name,
+	// e.g. Disease.Short.EVD
+	@SuppressWarnings("rawtypes")
+	public static String getEnumCaption(Enum value, String addition) {
+		String caption = getInstance().enumProperties.getProperty(value.getClass().getSimpleName() + "." + addition + "." + value.name());
+		if (caption != null) {
+			return caption;
+		} else {
+			return value.name();
+		}
+	}
+	
 	/**
 	 * Uses <param>key</param> as default value
 	 */

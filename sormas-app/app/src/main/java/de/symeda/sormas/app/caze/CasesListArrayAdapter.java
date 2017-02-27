@@ -7,8 +7,9 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import de.symeda.sormas.api.DiseaseShort;
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 
@@ -44,10 +45,13 @@ public class CasesListArrayAdapter extends ArrayAdapter<Case> {
         TextView disease = (TextView) convertView.findViewById(R.id.cli_disease);
         if(caze.getDisease() != null) {
             String diseaseName = caze.getDisease().getName();
-            disease.setText(DiseaseShort.valueOf(diseaseName).toString());
+            disease.setText(Disease.valueOf(diseaseName).toShortString());
         } else {
             disease.setText(null);
         }
+
+        TextView reportDate = (TextView) convertView.findViewById(R.id.cli_report_date);
+        reportDate.setText(DateHelper.formatDDMMYYYY(caze.getReportDate()));
 
         TextView caseStatus = (TextView) convertView.findViewById(R.id.cli_case_satus);
         caseStatus.setText(caze.getCaseClassification()!=null?caze.getCaseClassification().toString():null);

@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import de.symeda.sormas.api.DiseaseShort;
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
@@ -42,7 +42,7 @@ public class EventsListArrayAdapter extends ArrayAdapter<Event> {
         TextView disease = (TextView) convertView.findViewById(R.id.eli_disease);
         if(event.getDisease() != null) {
             String diseaseName = event.getDisease().getName();
-            disease.setText(DiseaseShort.valueOf(diseaseName).toString());
+            disease.setText(Disease.valueOf(diseaseName).toShortString());
         } else {
             disease.setText(null);
         }
