@@ -4,6 +4,7 @@ import java.util.function.Consumer;
 
 import com.vaadin.ui.Table;
 
+import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.PreviousHospitalizationDto;
 import de.symeda.sormas.ui.caze.PreviousHospitalizationEditForm;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -34,6 +35,12 @@ public class PreviousHospitalizationsField extends AbstractTableField<PreviousHo
 		table.setColumnExpandRatio(PreviousHospitalizationDto.DISCHARGE_DATE, 0);
 		table.setColumnExpandRatio(PreviousHospitalizationDto.HEALTH_FACILITY, 0);
 		table.setColumnExpandRatio(PreviousHospitalizationDto.ISOLATED, 0);
+		
+		for (Object columnId : table.getVisibleColumns()) {
+			if (!EDIT_COLUMN_ID.equals(columnId)) {
+				table.setColumnHeader(columnId, I18nProperties.getPrefixFieldCaption(PreviousHospitalizationDto.I18N_PREFIX, (String)columnId));
+			}
+		}
 	}
 
 	@Override

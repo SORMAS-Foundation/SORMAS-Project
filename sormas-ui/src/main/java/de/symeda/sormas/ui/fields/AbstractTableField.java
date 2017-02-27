@@ -183,6 +183,7 @@ public abstract class AbstractTableField<E> extends CustomField<Collection> {
 		};
 		table.addGeneratedColumn(EDIT_COLUMN_ID, editColumnGenerator);
 		table.setColumnWidth(EDIT_COLUMN_ID, 30);
+		table.setColumnHeader(EDIT_COLUMN_ID, "");
 
 		table.addItemClickListener(new ItemClickListener() {
 
