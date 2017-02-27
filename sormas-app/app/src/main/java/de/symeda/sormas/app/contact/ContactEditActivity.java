@@ -13,13 +13,10 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.contact.ContactDao;
-import de.symeda.sormas.app.backend.location.LocationDao;
 import de.symeda.sormas.app.backend.person.Person;
-import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.component.AbstractEditActivity;
 import de.symeda.sormas.app.visit.VisitEditActivity;
 import de.symeda.sormas.app.visit.VisitEditDataTab;
-
 
 public class ContactEditActivity extends AbstractEditActivity {
 
@@ -184,6 +181,5 @@ public class ContactEditActivity extends AbstractEditActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-
 
 }
