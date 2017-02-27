@@ -1,11 +1,14 @@
 package de.symeda.sormas.ui.fields;
 
+import java.util.Date;
 import java.util.function.Consumer;
 
+import com.vaadin.data.Property;
 import com.vaadin.ui.Table;
 
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.PreviousHospitalizationDto;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.caze.PreviousHospitalizationEditForm;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
@@ -20,6 +23,32 @@ public class PreviousHospitalizationsField extends AbstractTableField<PreviousHo
 		return PreviousHospitalizationDto.class;
 	}
 
+	@Override
+	protected Table createTable() {
+
+		final Table table = new Table() {
+			@Override
+			protected String formatPropertyValue(Object rowId, Object colId, Property<?> property) {
+				Object value = property.getValue();
+				switch((String)colId) {
+				case PreviousHospitalizationDto.ADMISSION_DATE:
+				case PreviousHospitalizationDto.DISCHARGE_DATE:
+					return DateHelper.formatDMY((Date)value);
+				default:
+					return super.formatPropertyValue(rowId, colId, property);
+				}
+			}
+		};
+
+		table.setEditable(false);
+		table.setSelectable(false);
+		table.setSizeFull();
+
+		createEditColumn(table);
+
+		return table;
+	}
+	
 	@Override
 	protected void updateColumns() {
 		
