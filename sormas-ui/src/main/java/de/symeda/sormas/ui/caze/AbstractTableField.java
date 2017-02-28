@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.fields;
+package de.symeda.sormas.ui.caze;
 
 import java.util.ArrayList;
 import java.util.Arrays;

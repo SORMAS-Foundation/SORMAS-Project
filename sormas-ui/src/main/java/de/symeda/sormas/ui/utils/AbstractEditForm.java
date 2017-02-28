@@ -19,7 +19,7 @@ import com.vaadin.ui.OptionGroup;
 import de.symeda.sormas.api.DataTransferObject;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.symptoms.SymptomState;
-import de.symeda.sormas.ui.fields.PreviousHospitalizationsField;
+import de.symeda.sormas.ui.caze.PreviousHospitalizationsField;
 import de.symeda.sormas.ui.location.LocationForm;
 
 @SuppressWarnings("serial")

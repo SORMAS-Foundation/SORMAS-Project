@@ -2,15 +2,14 @@ package de.symeda.sormas.ui.caze;
 
 import java.util.Arrays;
 
-import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.OptionGroup;
+import com.vaadin.ui.TextField;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.HospitalizationDto;
 import de.symeda.sormas.api.caze.YesNoUnknown;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
-import de.symeda.sormas.ui.fields.PreviousHospitalizationsField;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -43,9 +42,8 @@ public class CaseHospitalizationForm extends AbstractEditForm<HospitalizationDto
 			return;
 		}
 		
-		ComboBox facilityField = addCustomField(HEALTH_FACILITY, FacilityReferenceDto.class, ComboBox.class);
-		facilityField.addItem(caze.getHealthFacility());
-		facilityField.setValue(caze.getHealthFacility());
+		TextField facilityField = addCustomField(HEALTH_FACILITY, FacilityReferenceDto.class, TextField.class);
+		facilityField.setValue(caze.getHealthFacility().toString());
 		facilityField.setReadOnly(true);
 		
 		addField(HospitalizationDto.ADMISSION_DATE, DateField.class);

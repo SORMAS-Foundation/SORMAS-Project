@@ -46,17 +46,17 @@ public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHo
     	addField(PreviousHospitalizationDto.DESCRIPTION, TextArea.class).setRows(2);
 
     	ComboBox facilityRegion = new ComboBox();
-    	facilityRegion.setCaption(I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, FACILITY_REGION));
+    	facilityRegion.setCaption(I18nProperties.getPrefixFieldCaption(PreviousHospitalizationDto.I18N_PREFIX, FACILITY_REGION));
     	facilityRegion.setImmediate(true);
     	facilityRegion.setWidth(100, Unit.PERCENTAGE);
     	getContent().addComponent(facilityRegion, FACILITY_REGION);
     	ComboBox facilityDistrict = new ComboBox();
-    	facilityDistrict.setCaption(I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, FACILITY_DISTRICT));
+    	facilityDistrict.setCaption(I18nProperties.getPrefixFieldCaption(PreviousHospitalizationDto.I18N_PREFIX, FACILITY_DISTRICT));
     	facilityDistrict.setImmediate(true);
     	facilityDistrict.setWidth(100, Unit.PERCENTAGE);
     	getContent().addComponent(facilityDistrict, FACILITY_DISTRICT);
     	ComboBox facilityCommunity = new ComboBox();
-    	facilityCommunity.setCaption(I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, FACILITY_COMMUNITY));
+    	facilityCommunity.setCaption(I18nProperties.getPrefixFieldCaption(PreviousHospitalizationDto.I18N_PREFIX, FACILITY_COMMUNITY));
     	facilityCommunity.setImmediate(true);
     	facilityCommunity.setWidth(100, Unit.PERCENTAGE);
     	getContent().addComponent(facilityCommunity, FACILITY_COMMUNITY);
