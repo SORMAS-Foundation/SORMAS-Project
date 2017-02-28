@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NavUtils;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -12,6 +13,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import java.util.Date;
+import java.util.List;
 
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.InvestigationStatus;
@@ -21,9 +23,12 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.symptoms.SymptomsDao;
 import de.symeda.sormas.app.backend.user.User;
+import de.symeda.sormas.app.component.SelectOrCreatePersonDialog;
+import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.DataUtils;
 
 
@@ -81,40 +86,36 @@ public class CaseNewActivity extends AppCompatActivity {
 
             case R.id.action_save:
                 try {
-                    Case caze = caseNewTab.getData();
+                    final Case caze = caseNewTab.getData();
 
-                    caze.setCaseClassification(CaseClassification.POSSIBLE);
-                    caze.setInvestigationStatus(InvestigationStatus.PENDING);
 
-                    User user = ConfigProvider.getUser();
-                    caze.setReportingUser(user);
-                    if (user.getUserRole() == UserRole.SURVEILLANCE_OFFICER) {
-                        caze.setSurveillanceOfficer(user);
-                    } else if (user.getUserRole() == UserRole.INFORMANT) {
-                        caze.setSurveillanceOfficer(user.getAssociatedOfficer());
+                    List<Person> existingPersons = DatabaseHelper.getPersonDao().getAllByName(caze.getPerson().getFirstName(), caze.getPerson().getLastName());
+                    if (existingPersons.size() > 0) {
+
+                        AlertDialog.Builder dialogBuilder = new SelectOrCreatePersonDialog(this, caze.getPerson(), existingPersons, new Consumer() {
+                            @Override
+                            public void accept(Object parameter) {
+                                if(parameter instanceof Person) {
+                                    try {
+                                        caze.setPerson((Person) parameter);
+                                        savePersonAndCase(caze);
+                                        showCaseEditView(caze);
+                                    } catch (Exception e) {
+                                        Toast.makeText(getApplicationContext(), "Error while saving the case. " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }
+                        });
+                        AlertDialog newPersonDialog = dialogBuilder.create();
+                        newPersonDialog.show();
+
+                    } else {
+                        savePersonAndCase(caze);
+                        showCaseEditView(caze);
                     }
-                    caze.setReportDate(new Date());
 
-                    SymptomsDao symptomsDao = DatabaseHelper.getSymptomsDao();
-                    Symptoms symptoms = DataUtils.createNew(Symptoms.class);
-                    symptomsDao.save(symptoms);
-
-                    caze.setSymptoms(symptoms);
-
-                    CaseDao caseDao = DatabaseHelper.getCaseDao();
-                    caseDao.save(caze);
-
-                    SyncCasesTask.syncCases(getSupportFragmentManager());
-
-                    Toast.makeText(this, caze.getPerson().toString() + " saved", Toast.LENGTH_SHORT).show();
-
-                    NavUtils.navigateUpFromSameTask(this);
-
-                    // open case edit view
-                    Intent intent = new Intent(this, CaseEditActivity.class);
-                    intent.putExtra(CaseEditActivity.KEY_CASE_UUID, caze.getUuid());
-                    intent.putExtra(CaseEditActivity.KEY_PAGE, 1);
-                    startActivity(intent);
+//                    NavUtils.navigateUpFromSameTask(this);
 
                     return true;
                 } catch (Exception e) {
@@ -126,6 +127,43 @@ public class CaseNewActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    private void showCaseEditView(Case caze) {
+        // open case edit view
+        Intent intent = new Intent(this, CaseEditActivity.class);
+        intent.putExtra(CaseEditActivity.KEY_CASE_UUID, caze.getUuid());
+        intent.putExtra(CaseEditActivity.KEY_PAGE, 1);
+        startActivity(intent);
+    }
+
+    private void savePersonAndCase(Case caze) throws IllegalAccessException, InstantiationException {
+
+        // save the person
+        DatabaseHelper.getPersonDao().save(caze.getPerson());
+
+        caze.setCaseClassification(CaseClassification.POSSIBLE);
+        caze.setInvestigationStatus(InvestigationStatus.PENDING);
+
+        User user = ConfigProvider.getUser();
+        caze.setReportingUser(user);
+        if (user.getUserRole() == UserRole.SURVEILLANCE_OFFICER) {
+            caze.setSurveillanceOfficer(user);
+        } else if (user.getUserRole() == UserRole.INFORMANT) {
+            caze.setSurveillanceOfficer(user.getAssociatedOfficer());
+        }
+        caze.setReportDate(new Date());
+
+        SymptomsDao symptomsDao = DatabaseHelper.getSymptomsDao();
+        Symptoms symptoms = DataUtils.createNew(Symptoms.class);
+        symptomsDao.save(symptoms);
+
+        caze.setSymptoms(symptoms);
+
+        CaseDao caseDao = DatabaseHelper.getCaseDao();
+        caseDao.save(caze);
+
+        SyncCasesTask.syncCases(getSupportFragmentManager());
+        Toast.makeText(this, caze.getPerson().toString() + " saved", Toast.LENGTH_SHORT).show();
+    }
 
 
 }

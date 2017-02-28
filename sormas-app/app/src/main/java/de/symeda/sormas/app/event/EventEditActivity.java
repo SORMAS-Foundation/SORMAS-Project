@@ -14,7 +14,6 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.component.AbstractEditActivity;
-import de.symeda.sormas.app.contact.ContactNewActivity;
 
 
 public class EventEditActivity extends AbstractEditActivity {

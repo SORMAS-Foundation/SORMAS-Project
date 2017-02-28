@@ -12,7 +12,6 @@ import android.view.MenuItem;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
@@ -25,7 +24,6 @@ import de.symeda.sormas.app.backend.symptoms.SymptomsDao;
 import de.symeda.sormas.app.component.AbstractEditActivity;
 import de.symeda.sormas.app.component.HelpDialog;
 import de.symeda.sormas.app.contact.ContactNewActivity;
-import de.symeda.sormas.app.person.SyncPersonsTask;
 import de.symeda.sormas.app.sample.SampleEditActivity;
 import de.symeda.sormas.app.util.ValidationFailedException;
 
@@ -145,6 +143,7 @@ public class CaseEditActivity extends AbstractEditActivity {
 
             // Help button
             case R.id.action_help:
+                boolean showSaved = false;
                 HelpDialog helpDialog = new HelpDialog(this);
 
                 switch (tab) {
@@ -162,47 +161,44 @@ public class CaseEditActivity extends AbstractEditActivity {
             case R.id.action_save:
                 CaseDao caseDao = DatabaseHelper.getCaseDao();
 
-                //Toast.makeText(this, "case " + DataHelper.getShortUuid(caze.getUuid()) + " saved", Toast.LENGTH_SHORT).show();
-                //Toast.makeText(this, "person " + person.toString() + " saved", Toast.LENGTH_SHORT).show();
-                //Toast.makeText(this, "symptoms saved", Toast.LENGTH_SHORT).show();
-
-
                 // PATIENT
                 LocationDao locLocationDao = DatabaseHelper.getLocationDao();
                 PersonDao personDao = DatabaseHelper.getPersonDao();
-
                 Person person = (Person) adapter.getData(CaseEditTabs.PATIENT.ordinal());
-
-                if (person.getAddress() != null) {
-                    locLocationDao.save(person.getAddress());
-                }
-                personDao.save(person);
 
                 // SYMPTOMS
                 SymptomsDao symptomsDao = DatabaseHelper.getSymptomsDao();
                 Symptoms symptoms = (Symptoms) adapter.getData(CaseEditTabs.SYMPTOMS.ordinal());
-
                 SymptomsEditTab symptomsEditTab = (SymptomsEditTab) adapter.getTabByPosition(CaseEditTabs.SYMPTOMS.ordinal());
 
-                try {
-                    symptomsEditTab.validateCaseData(symptoms);
+                // CASE_DATA
+                Case caze = (Case) adapter.getData(CaseEditTabs.CASE_DATA.ordinal());
 
+                try {
+
+                    if (person.getAddress() != null) {
+                        locLocationDao.save(person.getAddress());
+                    }
+                    personDao.save(person);
+
+                    symptomsEditTab.validateCaseData(symptoms);
                     if (symptoms != null) {
                         symptomsDao.save(symptoms);
                     }
 
+                    caseDao.save(caze);
+                    showSaved = true;
+
                 } catch (ValidationFailedException e) {
                     Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
+                    showSaved = true;
                 }
-
-
-                // CASE_DATA
-                Case caze = (Case) adapter.getData(CaseEditTabs.CASE_DATA.ordinal());
-                caseDao.save(caze);
 
                 SyncCasesTask.syncCases(getSupportFragmentManager());
 
-                Toast.makeText(this, "case saved", Toast.LENGTH_SHORT).show();
+                if(showSaved) {
+                    Toast.makeText(this, "case saved", Toast.LENGTH_SHORT).show();
+                }
 
                 onResume();
                 pager.setCurrentItem(currentTab);

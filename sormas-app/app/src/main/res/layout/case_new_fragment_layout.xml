@@ -69,29 +69,22 @@
                 android:paddingBottom="@dimen/field_padding"
                 android:value="@={caze.healthFacility}"/>
 
-            <LinearLayout
-                android:orientation="horizontal"
+            <de.symeda.sormas.app.component.TextField
+                android:id="@+id/caseData_firstName"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="match_parent"
+                android:paddingTop="@dimen/field_padding"
+                android:paddingBottom="@dimen/field_padding"
+                android:nextFocusForward="@+id/eventParticipant_lastName"
+                android:value="@={caze.person.firstName}"/>
 
-                <ImageButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/case_addPerson_btn"
-                    android:src="@drawable/ic_person_add_black_24dp"
-                    android:layout_gravity="center"
-                    android:background="@android:color/transparent"
-                    android:layout_marginRight="5dp" />
-
-                <de.symeda.sormas.app.component.SpinnerField
-                    android:id="@+id/caseData_person"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingTop="@dimen/field_padding"
-                    android:paddingBottom="@dimen/field_padding"
-                    android:value="@={caze.person}"/>
-
-            </LinearLayout>
+            <de.symeda.sormas.app.component.TextField
+                android:id="@+id/caseData_lastName"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingTop="@dimen/field_padding"
+                android:paddingBottom="@dimen/field_padding"
+                android:value="@={caze.person.lastName}"/>
 
         </LinearLayout>
 
