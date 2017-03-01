@@ -1148,3 +1148,8 @@ INSERT INTO schema_version (version_number, comment) VALUES (32, 'Update hospita
 
 ALTER TABLE public.hospitalization DROP COLUMN healthfacility_id;
 INSERT INTO schema_version (version_number, comment) VALUES (33, 'Removed health facility from hospitalization');
+
+-- 2017-02-28 Laboratories update
+
+DELETE FROM facility WHERE type = 'Laboratory';
+INSERT INTO schema_version (version_number, comment) VALUES (34, 'Laboratories update');

@@ -50,7 +50,7 @@ public class MainScreen extends HorizontalLayout {
 	        menu.addView(new EventsView(), EventsView.VIEW_NAME, "Events", FontAwesome.PHONE);
         }
         menu.addView(new SamplesView(), SamplesView.VIEW_NAME, "Samples", FontAwesome.DATABASE);
-        menu.addView(new UsersView(), UsersView.VIEW_NAME, "Officers", FontAwesome.USERS);
+        menu.addView(new UsersView(), UsersView.VIEW_NAME, "Users", FontAwesome.USERS);
         menu.addView(new AboutView(), AboutView.VIEW_NAME, "About", FontAwesome.INFO_CIRCLE);
         
         navigator.addViewChangeListener(viewChangeListener);        

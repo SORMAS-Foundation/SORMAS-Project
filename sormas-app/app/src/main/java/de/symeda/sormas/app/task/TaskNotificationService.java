@@ -110,6 +110,8 @@ public class TaskNotificationService extends Service {
             StringBuilder content = new StringBuilder();
             if (!TextUtils.isEmpty(task.getCreatorComment())) {
                 content.append(task.getCreatorComment()).append("<br><br>");
+            } else {
+                content.append("<br><br>");
             }
 
             if(caze != null) {

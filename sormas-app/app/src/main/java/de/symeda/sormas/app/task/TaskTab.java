@@ -111,6 +111,10 @@ public class TaskTab extends FormTab {
             binding.taskDoneBtn.setVisibility(View.GONE);
             binding.taskNotExecutableBtn.setVisibility(View.GONE);
         }
+
+        if (binding.getTask().getCreatorComment() == null || binding.getTask().getCreatorComment().isEmpty()) {
+            binding.taskCreatorComment.setVisibility(View.GONE);
+        }
     }
 
     @Override

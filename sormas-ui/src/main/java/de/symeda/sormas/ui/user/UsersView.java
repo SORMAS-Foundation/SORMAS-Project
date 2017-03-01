@@ -67,7 +67,7 @@ public class UsersView extends AbstractView {
     	topLayout.setWidth(100, Unit.PERCENTAGE);
     	topLayout.addStyleName(CssStyles.VSPACE3);
     	
-    	Label header = new Label("Officers");
+    	Label header = new Label("Users");
     	header.setSizeUndefined();
     	CssStyles.style(header, CssStyles.H2, CssStyles.NO_MARGIN);
     	topLayout.addComponent(header);

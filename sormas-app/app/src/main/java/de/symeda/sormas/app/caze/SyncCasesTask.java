@@ -16,11 +16,13 @@ import com.j256.ormlite.logger.LoggerFactory;
 import java.util.List;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.app.backend.caze.CaseDtoHelper;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper.DtoGetInterface;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.sample.SampleDtoHelper;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.person.SyncPersonsTask;
 import de.symeda.sormas.app.rest.RetroProvider;
@@ -52,6 +54,17 @@ public class SyncCasesTask extends AsyncTask<Void, Void, Void> {
                 return null;
             }
         }, DatabaseHelper.getCaseDao());
+
+        new SampleDtoHelper().pullEntities(new DtoGetInterface<SampleDto>() {
+            @Override
+            public Call<List<SampleDto>> getAll(long since) {
+                User user = ConfigProvider.getUser();
+                if (user != null) {
+                    return RetroProvider.getSampleFacade().getAll(user.getUuid(), since);
+                }
+                return null;
+            }
+        }, DatabaseHelper.getSampleDao());
 
         new CaseDtoHelper().pushEntities(new AdoDtoHelper.DtoPostInterface<CaseDataDto>() {
             @Override
