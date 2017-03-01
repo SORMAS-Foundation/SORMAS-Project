@@ -94,6 +94,10 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
         }
 
         target.setSurveillanceOfficer(DatabaseHelper.getUserDao().getByReferenceDto(source.getSurveillanceOfficer()));
+        target.setPregnant(source.getPregnant());
+        target.setMeaslesVaccination(source.getMeaslesVaccination());
+        target.setMeaslesDoses(source.getMeaslesDoses());
+        target.setMeaslesVaccinationInfoSource(source.getMeaslesVaccinationInfoSource());
 
         // TODO user
     }
@@ -170,6 +174,12 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
         } else {
             target.setHospitalization(null);
         }
+
+        target.setPregnant(source.getPregnant());
+        target.setMeaslesVaccination(source.getMeaslesVaccination());
+        target.setMeaslesDoses(source.getMeaslesDoses());
+        target.setMeaslesVaccinationInfoSource(source.getMeaslesVaccinationInfoSource());
+
         // TODO user
     }
 

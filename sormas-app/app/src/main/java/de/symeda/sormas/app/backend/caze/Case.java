@@ -14,6 +14,9 @@ import javax.persistence.Enumerated;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.caze.Vaccination;
+import de.symeda.sormas.api.caze.VaccinationInfoSource;
+import de.symeda.sormas.api.caze.YesNoUnknown;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.location.Location;
@@ -84,6 +87,18 @@ public class Case extends AbstractDomainObject {
 	private User caseOfficer;
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 1)
 	private User contactOfficer;
+
+	@Enumerated(EnumType.STRING)
+	private YesNoUnknown pregnant;
+
+	@Enumerated(EnumType.STRING)
+	private Vaccination measlesVaccination;
+
+	@Column(length=512)
+	private String measlesDoses;
+
+	@Enumerated(EnumType.STRING)
+	private VaccinationInfoSource measlesVaccinationInfoSource;
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private Hospitalization hospitalization;
@@ -205,6 +220,38 @@ public class Case extends AbstractDomainObject {
 
 	public void setInvestigationStatus(InvestigationStatus investigationStatus) {
 		this.investigationStatus = investigationStatus;
+	}
+
+	public YesNoUnknown getPregnant() {
+		return pregnant;
+	}
+
+	public void setPregnant(YesNoUnknown pregnant) {
+		this.pregnant = pregnant;
+	}
+
+	public Vaccination getMeaslesVaccination() {
+		return measlesVaccination;
+	}
+
+	public void setMeaslesVaccination(Vaccination measlesVaccination) {
+		this.measlesVaccination = measlesVaccination;
+	}
+
+	public String getMeaslesDoses() {
+		return measlesDoses;
+	}
+
+	public void setMeaslesDoses(String measlesDoses) {
+		this.measlesDoses = measlesDoses;
+	}
+
+	public VaccinationInfoSource getMeaslesVaccinationInfoSource() {
+		return measlesVaccinationInfoSource;
+	}
+
+	public void setMeaslesVaccinationInfoSource(VaccinationInfoSource measlesVaccinationInfoSource) {
+		this.measlesVaccinationInfoSource = measlesVaccinationInfoSource;
 	}
 
 	public Hospitalization getHospitalization() {

@@ -175,6 +175,11 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setContactOfficer(userService.getByReferenceDto(source.getContactOfficer()));
 
 		target.setSymptoms(symptomsFacade.fromDto(source.getSymptoms()));
+		
+		target.setPregnant(source.getPregnant());
+		target.setMeaslesVaccination(source.getMeaslesVaccination());
+		target.setMeaslesDoses(source.getMeaslesDoses());
+		target.setMeaslesVaccinationInfoSource(source.getMeaslesVaccinationInfoSource());
 
 		return target;
 	}
@@ -215,6 +220,11 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setContactOfficer(UserFacadeEjb.toReferenceDto(source.getContactOfficer()));
 		
 		target.setSymptoms(SymptomsFacadeEjb.toDto(source.getSymptoms()));
+		
+		target.setPregnant(source.getPregnant());
+		target.setMeaslesVaccination(source.getMeaslesVaccination());
+		target.setMeaslesDoses(source.getMeaslesDoses());
+		target.setMeaslesVaccinationInfoSource(source.getMeaslesVaccinationInfoSource());
 		
 		return target;
 	}

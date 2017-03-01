@@ -39,6 +39,7 @@
     <string name="headline_case">Case</string>
     <string name="headline_cases">Cases</string>
     <string name="headline_case_data">Case data</string>
+    <string name="headline_case_medical_information">Additional medical information</string>
     <string name="headline_patient">Patient</string>
     <string name="headline_symptoms_data">Symptoms</string>
     <string name="headline_person_information">Person</string>

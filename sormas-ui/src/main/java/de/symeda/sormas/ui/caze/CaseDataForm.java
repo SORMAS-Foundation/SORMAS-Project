@@ -1,5 +1,7 @@
 package de.symeda.sormas.ui.caze;
 
+import java.util.Arrays;
+
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.NativeSelect;
@@ -7,16 +9,24 @@ import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.Vaccination;
+import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.Diseases.DiseasesConfiguration;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
 @SuppressWarnings("serial")
@@ -39,6 +49,14 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		    				LayoutUtil.fluidColumnLoc(4, 0,  STATUS_CHANGE)
 		    		)
 		    )+
+			LayoutUtil.h3(CssStyles.VSPACE3, "Additional medical information")+
+			LayoutUtil.fluidRowCss(CssStyles.VSPACE2,
+					LayoutUtil.fluidColumn(8, 0, 
+						LayoutUtil.fluidRowLocs(CaseDataDto.PREGNANT, "") +
+						LayoutUtil.fluidRowLocs(CaseDataDto.MEASLES_VACCINATION, CaseDataDto.MEASLES_DOSES) +
+						LayoutUtil.fluidRowLocs(CaseDataDto.MEASLES_VACCINATION_INFO_SOURCE, "")
+					)
+			)+
     		LayoutUtil.h3(CssStyles.VSPACE3, "Responsible users")+
     		LayoutUtil.divCss(CssStyles.VSPACE2, 
     				LayoutUtil.fluidRowLocs(CaseDataDto.SURVEILLANCE_OFFICER, CaseDataDto.CONTACT_OFFICER, "")
@@ -46,17 +64,26 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
     	
 
     private final VerticalLayout statusChangeLayout;
+    private final PersonDto person;
+    private final Disease disease;
 
-    public CaseDataForm() {
+    public CaseDataForm(PersonDto person, Disease disease) {
         super(CaseDataDto.class, CaseDataDto.I18N_PREFIX);
+        this.person = person;
+        this.disease = disease;
         statusChangeLayout = new VerticalLayout();
         statusChangeLayout.setSpacing(false);
         statusChangeLayout.setMargin(false);
         getContent().addComponent(statusChangeLayout, STATUS_CHANGE);
+        addFields();
     }
 
     @Override
 	protected void addFields() {
+    	if (person == null || disease == null) {
+    		return;
+    	}
+    	
     	addField(CaseDataDto.UUID, TextField.class);
     	addField(CaseDataDto.CASE_CLASSIFICATION, OptionGroup.class);
     	addField(CaseDataDto.INVESTIGATION_STATUS, OptionGroup.class);
@@ -99,12 +126,28 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		ComboBox contactOfficerField = addField(CaseDataDto.CONTACT_OFFICER, ComboBox.class);
 		contactOfficerField.addItems(FacadeProvider.getUserFacade().getAssignableUsers(currentUser, UserRole.CONTACT_OFFICER));
 		contactOfficerField.setNullSelectionAllowed(true);
+		
+		addField(CaseDataDto.PREGNANT, OptionGroup.class);
+		addField(CaseDataDto.MEASLES_VACCINATION, ComboBox.class);
+		addField(CaseDataDto.MEASLES_DOSES, TextField.class);
+		addField(CaseDataDto.MEASLES_VACCINATION_INFO_SOURCE, ComboBox.class);
     	
     	setRequired(true, CaseDataDto.CASE_CLASSIFICATION, CaseDataDto.INVESTIGATION_STATUS,
     			CaseDataDto.REGION, CaseDataDto.DISTRICT, CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY);
 
     	setReadOnly(true, CaseDataDto.UUID, CaseDataDto.DISEASE, CaseDataDto.INVESTIGATION_STATUS,
     			CaseDataDto.REPORTING_USER, CaseDataDto.REPORT_DATE);
+    	
+    	Sex personSex = person.getSex();
+    	if (personSex != Sex.FEMALE) {
+    		setReadOnly(true, CaseDataDto.PREGNANT);
+    	}
+    	
+    	boolean visible = DiseasesConfiguration.isDefinedOrMissing(CaseDataDto.class, CaseDataDto.MEASLES_VACCINATION, disease);
+		setVisible(visible, CaseDataDto.MEASLES_VACCINATION);
+		
+		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.MEASLES_DOSES, CaseDataDto.MEASLES_VACCINATION_INFO_SOURCE), 
+				CaseDataDto.MEASLES_VACCINATION, Arrays.asList(Vaccination.VACCINATED), true);
 	}
     
 	@Override 

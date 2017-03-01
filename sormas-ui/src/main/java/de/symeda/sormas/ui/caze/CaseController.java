@@ -165,9 +165,8 @@ public class CaseController {
     }
 
     public CommitDiscardWrapperComponent<CaseDataForm> getCaseDataEditComponent(final String caseUuid) {
-    	
-    	CaseDataForm caseEditForm = new CaseDataForm();
     	CaseDataDto caze = findCase(caseUuid);
+    	CaseDataForm caseEditForm = new CaseDataForm(FacadeProvider.getPersonFacade().getPersonByUuid(caze.getPerson().getUuid()), caze.getDisease());
         caseEditForm.setValue(caze);
         final CommitDiscardWrapperComponent<CaseDataForm> editView = new CommitDiscardWrapperComponent<CaseDataForm>(caseEditForm, caseEditForm.getFieldGroup());
         

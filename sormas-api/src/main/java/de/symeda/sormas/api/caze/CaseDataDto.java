@@ -12,6 +12,7 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.PreciseDateAdapter;
 
 public class CaseDataDto extends CaseReferenceDto {
@@ -36,6 +37,10 @@ public class CaseDataDto extends CaseReferenceDto {
 	public static final String CONTACT_OFFICER = "contactOfficer";
 	public static final String SYMPTOMS = "symptoms";
 	public static final String HOSPITALIZATION = "hospitalization";
+	public static final String PREGNANT = "pregnant";
+	public static final String MEASLES_VACCINATION = "measlesVaccination";
+	public static final String MEASLES_DOSES = "measlesDoses";
+	public static final String MEASLES_VACCINATION_INFO_SOURCE = "measlesVaccinationInfoSource";
 	
 	private PersonReferenceDto person;
 	private CaseClassification caseClassification;
@@ -52,6 +57,14 @@ public class CaseDataDto extends CaseReferenceDto {
 	private FacilityReferenceDto healthFacility;
 
 	private SymptomsDto symptoms;
+	
+	private YesNoUnknown pregnant;
+	@Diseases({Disease.MEASLES})
+	private Vaccination measlesVaccination;
+	@Diseases({Disease.MEASLES})
+	private String measlesDoses;
+	@Diseases({Disease.MEASLES})
+	private VaccinationInfoSource measlesVaccinationInfoSource;
 
 	private UserReferenceDto surveillanceOfficer;
 	private UserReferenceDto caseOfficer;
@@ -187,6 +200,38 @@ public class CaseDataDto extends CaseReferenceDto {
 
 	public void setHospitalization(HospitalizationDto hospitalization) {
 		this.hospitalization = hospitalization;
+	}
+
+	public YesNoUnknown getPregnant() {
+		return pregnant;
+	}
+
+	public void setPregnant(YesNoUnknown pregnant) {
+		this.pregnant = pregnant;
+	}
+
+	public Vaccination getMeaslesVaccination() {
+		return measlesVaccination;
+	}
+
+	public void setMeaslesVaccination(Vaccination measlesVaccination) {
+		this.measlesVaccination = measlesVaccination;
+	}
+
+	public String getMeaslesDoses() {
+		return measlesDoses;
+	}
+
+	public void setMeaslesDoses(String measlesDoses) {
+		this.measlesDoses = measlesDoses;
+	}
+
+	public VaccinationInfoSource getMeaslesVaccinationInfoSource() {
+		return measlesVaccinationInfoSource;
+	}
+
+	public void setMeaslesVaccinationInfoSource(VaccinationInfoSource measlesVaccinationInfoSource) {
+		this.measlesVaccinationInfoSource = measlesVaccinationInfoSource;
 	}
 
 }

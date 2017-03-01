@@ -1153,3 +1153,12 @@ INSERT INTO schema_version (version_number, comment) VALUES (33, 'Removed health
 
 DELETE FROM facility WHERE type = 'Laboratory';
 INSERT INTO schema_version (version_number, comment) VALUES (34, 'Laboratories update');
+
+-- 2017-03-01 Case measles additions
+
+ALTER TABLE cases ADD COLUMN pregnant varchar(255);
+ALTER TABLE cases ADD COLUMN measlesVaccination varchar(255);
+ALTER TABLE cases ADD COLUMN measlesDoses varchar(512);
+ALTER TABLE cases ADD COLUMN measlesVaccinationInfoSource varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (35, 'Case measles addition');

@@ -19,6 +19,9 @@ import javax.persistence.TemporalType;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.caze.Vaccination;
+import de.symeda.sormas.api.caze.VaccinationInfoSource;
+import de.symeda.sormas.api.caze.YesNoUnknown;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.facility.Facility;
@@ -53,6 +56,10 @@ public class Case extends AbstractDomainObject {
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
 	public static final String HOSPITALIZATION = "hospitalization";
+	public static final String PREGNANT = "pregnant";
+	public static final String MEASLES_VACCINATION = "measlesVaccination";
+	public static final String MEASLES_DOSES = "measlesDoses";
+	public static final String MEASLES_VACCINATION_INFO_SOURCE = "measlesVaccinationInfoSource";
 
 	private Person person;
 	private String description;
@@ -83,6 +90,11 @@ public class Case extends AbstractDomainObject {
 	private User contactOfficer;
 	
 	private Symptoms symptoms;
+	
+	private YesNoUnknown pregnant;
+	private Vaccination measlesVaccination;
+	private String measlesDoses;
+	private VaccinationInfoSource measlesVaccinationInfoSource;
 	
 	private List<Task> tasks;
 	
@@ -283,6 +295,38 @@ public class Case extends AbstractDomainObject {
 	}
 	public void setHospitalization(Hospitalization hospitalization) {
 		this.hospitalization = hospitalization;
+	}
+	
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getPregnant() {
+		return pregnant;
+	}
+	public void setPregnant(YesNoUnknown pregnant) {
+		this.pregnant = pregnant;
+	}
+	
+	@Enumerated(EnumType.STRING)
+	public Vaccination getMeaslesVaccination() {
+		return measlesVaccination;
+	}
+	public void setMeaslesVaccination(Vaccination measlesVaccination) {
+		this.measlesVaccination = measlesVaccination;
+	}
+	
+	@Column(length = 512)
+	public String getMeaslesDoses() {
+		return measlesDoses;
+	}
+	public void setMeaslesDoses(String measlesDoses) {
+		this.measlesDoses = measlesDoses;
+	}
+	
+	@Enumerated(EnumType.STRING)
+	public VaccinationInfoSource getMeaslesVaccinationInfoSource() {
+		return measlesVaccinationInfoSource;
+	}
+	public void setMeaslesVaccinationInfoSource(VaccinationInfoSource measlesVaccinationInfoSource) {
+		this.measlesVaccinationInfoSource = measlesVaccinationInfoSource;
 	}
 	
 	@Override

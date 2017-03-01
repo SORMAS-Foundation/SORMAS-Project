@@ -11,6 +11,11 @@ import android.widget.AdapterView;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.Vaccination;
+import de.symeda.sormas.api.caze.VaccinationInfoSource;
+import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
@@ -21,6 +26,7 @@ import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.component.FieldHelper;
+import de.symeda.sormas.app.component.PropertyField;
 import de.symeda.sormas.app.component.SpinnerField;
 import de.symeda.sormas.app.databinding.CaseDataFragmentLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
@@ -135,11 +141,39 @@ public class CaseEditDataTab extends FormTab {
 //            btnCaseAdministration.setVisibility(View.INVISIBLE);
 //        }
 
+        FieldHelper.initSpinnerField(binding.caseDataMeaslesVaccination, Vaccination.class);
+        FieldHelper.initSpinnerField(binding.caseDataVaccinationInfoSource, VaccinationInfoSource.class);
+
+        boolean definedOrMissing = Diseases.DiseasesConfiguration.isDefinedOrMissing(CaseDataDto.class, binding.caseDataMeaslesVaccination.getPropertyId(), binding.getCaze().getDisease());
+        binding.caseDataMeaslesVaccination.setVisibility(definedOrMissing ? View.VISIBLE : View.GONE);
+
+        if (binding.getCaze().getPerson().getSex() != Sex.FEMALE) {
+            binding.caseDataPregnant.setEnabled(false);
+        }
+
+        toggleMeaslesFields();
+
+        binding.caseDataMeaslesVaccination.addValueChangedListener(new PropertyField.ValueChangeListener() {
+            @Override
+            public void onChange(PropertyField field) {
+                toggleMeaslesFields();
+            }
+        });
     }
 
     @Override
     public AbstractDomainObject getData() {
         return binding.getCaze();
+    }
+
+    private void toggleMeaslesFields() {
+        if (binding.caseDataMeaslesVaccination.getVisibility() != View.VISIBLE || binding.caseDataMeaslesVaccination.getValue() != Vaccination.VACCINATED) {
+            binding.caseDataDoses.setVisibility(View.GONE);
+            binding.caseDataVaccinationInfoSource.setVisibility(View.GONE);
+        } else {
+            binding.caseDataDoses.setVisibility(View.VISIBLE);
+            binding.caseDataVaccinationInfoSource.setVisibility(View.VISIBLE);
+        }
     }
 
 }

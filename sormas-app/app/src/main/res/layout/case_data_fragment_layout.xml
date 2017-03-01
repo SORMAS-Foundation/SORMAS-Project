@@ -167,6 +167,50 @@
                 android:id="@+id/form_cd_btn_case_administration"/>
             -->
 
+            <!-- ============= ADDITIONAL MEDICAL INFORMATION ============= -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="@string/headline_case_medical_information"
+                android:id="@+id/case_medical_information_headline"
+                android:textColor="@android:color/tab_indicator_text"
+                android:textSize="@dimen/abc_text_size_body_1_material"
+                android:textStyle="bold"
+                android:paddingTop="30dp"
+                android:paddingBottom="10dp" />
+
+            <de.symeda.sormas.app.component.YesNoUnknownField
+                android:id="@+id/caseData_pregnant"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:value="@={caze.pregnant}"/>
+
+            <de.symeda.sormas.app.component.SpinnerField
+                android:id="@+id/caseData_measlesVaccination"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/field_padding"
+                android:paddingBottom="@dimen/field_padding"
+                android:value="@={caze.measlesVaccination}"/>
+
+            <de.symeda.sormas.app.component.TextField
+                android:id="@+id/caseData_doses"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/field_padding"
+                android:paddingBottom="@dimen/field_padding"
+                android:nextFocusForward="@+id/caseData_vaccinationInfoSource"
+                android:value="@={caze.measlesDoses}"/>
+
+            <de.symeda.sormas.app.component.SpinnerField
+                android:id="@+id/caseData_vaccinationInfoSource"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/field_padding"
+                android:paddingBottom="@dimen/field_padding"
+                android:value="@={caze.measlesVaccinationInfoSource}"/>
+
             <!-- ============= RESPONSIBLE ============= -->
             <TextView
                 android:layout_width="wrap_content"
