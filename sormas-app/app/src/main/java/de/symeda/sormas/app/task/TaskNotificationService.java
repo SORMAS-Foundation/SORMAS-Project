@@ -153,7 +153,7 @@ public class TaskNotificationService extends Service {
         alarmMgr.setInexactRepeating(
                 AlarmManager.RTC_WAKEUP,
                 now.getTime(), // TODO start at full XX:X5 minute
-                1000 * 60 * 5,
+                1000 * 30,
                 alarmIntent);
     }
 }
