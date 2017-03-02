@@ -16,6 +16,8 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.hospitalization.Hospitalization;
+import de.symeda.sormas.app.backend.hospitalization.HospitalizationDao;
 import de.symeda.sormas.app.backend.location.LocationDao;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDao;
@@ -124,6 +126,10 @@ public class CaseEditActivity extends AbstractEditActivity {
             case SAMPLES:
                 updateActionBarGroups(menu, false, true, false);
                 break;
+
+            case HOSPITALIZATION:
+                updateActionBarGroups(menu, false, false, true);
+                break;
         }
 
         return true;
@@ -171,6 +177,10 @@ public class CaseEditActivity extends AbstractEditActivity {
                 Symptoms symptoms = (Symptoms) adapter.getData(CaseEditTabs.SYMPTOMS.ordinal());
                 SymptomsEditTab symptomsEditTab = (SymptomsEditTab) adapter.getTabByPosition(CaseEditTabs.SYMPTOMS.ordinal());
 
+                // HOSPITALIZATION
+                HospitalizationDao hospitalizationDao = DatabaseHelper.getHospitalizationDao();
+                Hospitalization hospitalization = (Hospitalization) adapter.getData(CaseEditTabs.HOSPITALIZATION.ordinal());
+
                 // CASE_DATA
                 Case caze = (Case) adapter.getData(CaseEditTabs.CASE_DATA.ordinal());
 
@@ -184,6 +194,11 @@ public class CaseEditActivity extends AbstractEditActivity {
                     symptomsEditTab.validateCaseData(symptoms);
                     if (symptoms != null) {
                         symptomsDao.save(symptoms);
+                    }
+
+                    if(hospitalization !=null ) {
+                        hospitalizationDao.save(hospitalization);
+                        caze.setHospitalization(hospitalization);
                     }
 
                     caseDao.save(caze);

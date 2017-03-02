@@ -1,10 +1,6 @@
-package de.symeda.sormas.app.backend.caze;
+package de.symeda.sormas.app.backend.hospitalization;
 
 import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.dao.RuntimeExceptionDao;
-import com.j256.ormlite.logger.Log;
-import com.j256.ormlite.logger.Logger;
-import com.j256.ormlite.logger.LoggerFactory;
 
 import java.sql.SQLException;
 

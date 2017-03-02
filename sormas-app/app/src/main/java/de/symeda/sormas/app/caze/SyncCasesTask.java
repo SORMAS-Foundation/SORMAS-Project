@@ -1,14 +1,9 @@
 package de.symeda.sormas.app.caze;
 
-/**
- * Created by Stefan Szczesny on 21.07.2016.
- */
-
 import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.annotation.Nullable;
 
 import com.j256.ormlite.logger.Logger;
 import com.j256.ormlite.logger.LoggerFactory;

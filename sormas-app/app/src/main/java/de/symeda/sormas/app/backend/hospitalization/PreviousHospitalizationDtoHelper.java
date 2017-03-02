@@ -1,4 +1,4 @@
-package de.symeda.sormas.app.backend.caze;
+package de.symeda.sormas.app.backend.hospitalization;
 
 import de.symeda.sormas.api.caze.PreviousHospitalizationDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;

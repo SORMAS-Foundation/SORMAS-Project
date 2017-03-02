@@ -4,7 +4,10 @@
     android:focusableInTouchMode="true">
 
     <data>
-        <variable name="hospitalization" type="de.symeda.sormas.app.backend.caze.Hospitalization"/>
+
+        <variable
+            name="hospitalization"
+            type="de.symeda.sormas.app.backend.hospitalization.Hospitalization" />
     </data>
 
     <ScrollView
@@ -12,61 +15,105 @@
         android:layout_height="match_parent">
 
         <LinearLayout
-            android:orientation="vertical"
+            android:id="@+id/case_hospitalization_form"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="10dp"
-            android:theme="@style/AppTheme"
-            android:id="@+id/case_hospitalization_form"
             android:focusable="true"
-            android:focusableInTouchMode="true">
+            android:focusableInTouchMode="true"
+            android:orientation="vertical"
+            android:padding="10dp"
+            android:theme="@style/AppTheme">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingBottom="10dp"
+                android:text="@string/headline_hospitalization_recent"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="@android:color/tab_indicator_text"
+                android:textSize="@dimen/abc_text_size_body_1_material"
+                android:textStyle="bold" />
+
+            <de.symeda.sormas.app.component.LabelField
+                android:id="@+id/hospitalization_healthFacility"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:paddingBottom="@dimen/field_padding"
+                android:paddingTop="@dimen/field_padding" />
 
             <LinearLayout
-                android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
                 <de.symeda.sormas.app.component.DateField
                     android:id="@+id/hospitalization_admissionDate"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.5"
-                    android:paddingTop="@dimen/field_padding"
                     android:paddingBottom="@dimen/field_padding"
-                    android:value="@={hospitalization.admissionDate}"/>
+                    android:paddingTop="@dimen/field_padding"
+                    android:value="@={hospitalization.admissionDate}" />
 
                 <de.symeda.sormas.app.component.DateField
                     android:id="@+id/hospitalization_dischargeDate"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.5"
-                    android:paddingTop="@dimen/field_padding"
                     android:paddingBottom="@dimen/field_padding"
-                    android:value="@={hospitalization.dischargeDate}"/>
+                    android:paddingTop="@dimen/field_padding"
+                    android:value="@={hospitalization.dischargeDate}" />
 
             </LinearLayout>
 
-            <de.symeda.sormas.app.component.YesNoUnknownField
-                android:id="@+id/hospitalization_isolated"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:value="@={hospitalization.isolated}"/>
-
-            <de.symeda.sormas.app.component.DateField
-                android:id="@+id/hospitalization_1isolationDate"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.5"
-                android:paddingTop="@dimen/field_padding"
-                android:paddingBottom="@dimen/field_padding"
-                android:value="@={hospitalization.isolationDate}"/>
+                android:orientation="horizontal">
 
-            <de.symeda.sormas.app.component.YesNoUnknownField
+                <de.symeda.sormas.app.component.YesNoUnknownVerticalField
+                    android:id="@+id/hospitalization_isolated"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.5"
+                    android:value="@={hospitalization.isolated}" />
+
+                <de.symeda.sormas.app.component.DateField
+                    android:id="@+id/hospitalization_1isolationDate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:paddingBottom="@dimen/field_padding"
+                    android:paddingTop="@dimen/field_padding"
+                    android:value="@={hospitalization.isolationDate}" />
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingBottom="10dp"
+                android:paddingTop="10dp"
+                android:text="@string/headline_hospitalization_previous"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="@android:color/tab_indicator_text"
+                android:textSize="@dimen/abc_text_size_body_1_material"
+                android:textStyle="bold" />
+
+            <de.symeda.sormas.app.component.YesNoUnknownVerticalField
                 android:id="@+id/hospitalization_hospitalizedPreviously"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:value="@={hospitalization.hospitalizedPreviously}"/>
+                android:value="@={hospitalization.hospitalizedPreviously}" />
 
+
+            <Button
+                android:id="@+id/hospitalization_prevHospitalizations_btn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="2dp"
+                android:background="@color/colorPrimary" />
         </LinearLayout>
     </ScrollView>
 </layout>

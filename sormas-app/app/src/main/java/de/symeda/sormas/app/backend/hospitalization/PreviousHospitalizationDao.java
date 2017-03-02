@@ -1,4 +1,4 @@
-package de.symeda.sormas.app.backend.caze;
+package de.symeda.sormas.app.backend.hospitalization;
 
 import com.j256.ormlite.dao.Dao;
 

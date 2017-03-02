@@ -1,4 +1,4 @@
-package de.symeda.sormas.app.backend.caze;
+package de.symeda.sormas.app.backend.hospitalization;
 
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
@@ -6,26 +6,24 @@ import com.j256.ormlite.table.DatabaseTable;
 
 import java.util.Date;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
 import de.symeda.sormas.api.caze.YesNoUnknown;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
-import de.symeda.sormas.app.backend.facility.Facility;
 
 /**
  * Created by Mate Strysewske on 22.02.2017.
  */
 
-@Entity(name = PreviousHospitalization.TABLE_NAME)
+@Entity(name = Hospitalization.TABLE_NAME)
 @DatabaseTable(tableName = Hospitalization.TABLE_NAME)
-public class PreviousHospitalization extends AbstractDomainObject {
+public class Hospitalization extends AbstractDomainObject {
 
-    private static final long serialVersionUID = 768263094433806267L;
+    private static final long serialVersionUID = -8576270649634034244L;
 
-    public static final String TABLE_NAME = "previoushospitalization";
+    public static final String TABLE_NAME = "hospitalization";
 
     @DatabaseField(dataType = DataType.DATE_LONG)
     private Date admissionDate;
@@ -33,17 +31,14 @@ public class PreviousHospitalization extends AbstractDomainObject {
     @DatabaseField(dataType = DataType.DATE_LONG)
     private Date dischargeDate;
 
-    @DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
-    private Facility healthFacility;
-
     @Enumerated(EnumType.STRING)
     private YesNoUnknown isolated;
 
-    @Column(length=512)
-    private String description;
+    @DatabaseField(dataType = DataType.DATE_LONG)
+    private Date isolationDate;
 
-    @DatabaseField(foreign = true, foreignAutoRefresh = true)
-    private Hospitalization hospitalization;
+    @Enumerated(EnumType.STRING)
+    private YesNoUnknown hospitalizedPreviously;
 
     public Date getAdmissionDate() {
         return admissionDate;
@@ -61,14 +56,6 @@ public class PreviousHospitalization extends AbstractDomainObject {
         this.dischargeDate = dischargeDate;
     }
 
-    public Facility getHealthFacility() {
-        return healthFacility;
-    }
-
-    public void setHealthFacility(Facility healthFacility) {
-        this.healthFacility = healthFacility;
-    }
-
     public YesNoUnknown getIsolated() {
         return isolated;
     }
@@ -77,19 +64,19 @@ public class PreviousHospitalization extends AbstractDomainObject {
         this.isolated = isolated;
     }
 
-    public String getDescription() {
-        return description;
+    public Date getIsolationDate() {
+        return isolationDate;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setIsolationDate(Date isolationDate) {
+        this.isolationDate = isolationDate;
     }
 
-    public Hospitalization getHospitalization() {
-        return hospitalization;
+    public YesNoUnknown getHospitalizedPreviously() {
+        return hospitalizedPreviously;
     }
 
-    public void setHospitalization(Hospitalization hospitalization) {
-        this.hospitalization = hospitalization;
+    public void setHospitalizedPreviously(YesNoUnknown hospitalizedPreviously) {
+        this.hospitalizedPreviously = hospitalizedPreviously;
     }
 }

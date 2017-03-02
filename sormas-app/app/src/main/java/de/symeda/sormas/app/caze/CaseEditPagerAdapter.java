@@ -6,7 +6,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
 import de.symeda.sormas.app.backend.caze.Case;
-import de.symeda.sormas.app.backend.caze.Hospitalization;
+import de.symeda.sormas.app.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.person.Person;
@@ -91,18 +91,20 @@ public class CaseEditPagerAdapter extends FragmentStatePagerAdapter {
                 samplesListTab.setArguments(samplesListBundle);
                 frag = samplesListTab;
                 break;
-//            case HOSPITALIZATION:
-//                caseHospitalizationTab = new CaseHospitalizationTab();
-//
-//                Bundle hospitalizationBundle = new Bundle();
-//                caze = DatabaseHelper.getCaseDao().queryUuid(caseEditBundle.getString(Case.UUID));
-//                if(caze.getHospitalization() != null) {
-//                    hospitalizationBundle.putString(Hospitalization.UUID, caze.getHospitalization().getUuid());
-//                }
-//
-//                caseHospitalizationTab.setArguments(hospitalizationBundle);
-//                frag = caseHospitalizationTab;
-//                break;
+            case HOSPITALIZATION:
+                caseHospitalizationTab = new CaseHospitalizationTab();
+
+                Bundle hospitalizationBundle = new Bundle();
+                caze = DatabaseHelper.getCaseDao().queryUuid(caseEditBundle.getString(Case.UUID));
+                hospitalizationBundle.putString(CaseHospitalizationTab.KEY_CASE_UUID, caze.getUuid());
+
+                if(caze.getHospitalization() != null) {
+                    hospitalizationBundle.putString(Hospitalization.UUID, caze.getHospitalization().getUuid());
+                }
+
+                caseHospitalizationTab.setArguments(hospitalizationBundle);
+                frag = caseHospitalizationTab;
+                break;
         }
         return frag;
     }

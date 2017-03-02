@@ -14,11 +14,11 @@ import java.util.Date;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.backend.symptoms.Symptoms;
+import de.symeda.sormas.app.util.DataUtils;
 
-/**
- * Created by Martin Wahnschaffe on 22.07.2016.
- */
 public class CaseDao extends AbstractAdoDao<Case> {
 
     private static final Log.Level LOG_LEVEL = Log.Level.DEBUG;
@@ -42,6 +42,10 @@ public class CaseDao extends AbstractAdoDao<Case> {
         if (caze.getSymptoms() != null) {
             DatabaseHelper.getSymptomsDao().saveUnmodified(caze.getSymptoms());
         }
+        if (caze.getHospitalization() != null) {
+            DatabaseHelper.getHospitalizationDao().saveUnmodified(caze.getHospitalization());
+        }
+
 
         return super.saveUnmodified(caze);
     }
@@ -82,5 +86,18 @@ public class CaseDao extends AbstractAdoDao<Case> {
             logger.log(LOG_LEVEL, e, "query getByPersonAndDisease threw exception");
             throw new RuntimeException(e);
         }
+    }
+
+    public static Case createCase(Person person) throws InstantiationException, IllegalAccessException {
+        Case caze = DataUtils.createNew(Case.class);
+        caze.setPerson(person);
+
+        // Symptoms
+        caze.setSymptoms(DataUtils.createNew(Symptoms.class));
+
+        // Hospitalization
+        caze.setHospitalization(DataUtils.createNew(Hospitalization.class));
+
+        return caze;
     }
 }

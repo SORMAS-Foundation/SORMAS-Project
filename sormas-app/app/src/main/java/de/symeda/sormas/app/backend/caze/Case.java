@@ -19,6 +19,7 @@ import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.caze.YesNoUnknown;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.facility.Facility;
+import de.symeda.sormas.app.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.region.Community;

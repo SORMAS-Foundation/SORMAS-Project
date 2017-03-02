@@ -13,8 +13,8 @@ import java.sql.SQLException;
 
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
-import de.symeda.sormas.app.backend.caze.Hospitalization;
-import de.symeda.sormas.app.backend.caze.HospitalizationDao;
+import de.symeda.sormas.app.backend.hospitalization.Hospitalization;
+import de.symeda.sormas.app.backend.hospitalization.HospitalizationDao;
 import de.symeda.sormas.app.backend.config.Config;
 import de.symeda.sormas.app.backend.config.ConfigDao;
 import de.symeda.sormas.app.backend.contact.Contact;

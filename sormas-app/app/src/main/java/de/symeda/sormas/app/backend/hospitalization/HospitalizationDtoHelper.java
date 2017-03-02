@@ -1,10 +1,7 @@
-package de.symeda.sormas.app.backend.caze;
+package de.symeda.sormas.app.backend.hospitalization;
 
 import de.symeda.sormas.api.caze.HospitalizationDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
-import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.facility.Facility;
-import de.symeda.sormas.app.backend.facility.FacilityDtoHelper;
 
 /**
  * Created by Mate Strysewske on 22.02.2017.

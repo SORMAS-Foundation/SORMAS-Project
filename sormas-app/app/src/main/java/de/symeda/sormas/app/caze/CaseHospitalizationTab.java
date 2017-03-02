@@ -8,18 +8,17 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.backend.caze.Hospitalization;
+import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.component.FieldHelper;
+import de.symeda.sormas.app.component.LabelField;
 import de.symeda.sormas.app.databinding.CaseHospitalizationFragmentLayoutBinding;
 import de.symeda.sormas.app.util.FormTab;
 
-/**
- * Created by Mate Strysewske on 22.02.2017.
- */
-
 public class CaseHospitalizationTab extends FormTab {
+
+    public static final String KEY_CASE_UUID = "caseUuid";
 
     private CaseHospitalizationFragmentLayoutBinding binding;
 
@@ -33,6 +32,15 @@ public class CaseHospitalizationTab extends FormTab {
     @Override
     public void onResume() {
         super.onResume();
+
+        final String caseUuid = getArguments().getString(CaseHospitalizationTab.KEY_CASE_UUID);
+        final Case caze = DatabaseHelper.getCaseDao().queryUuid(caseUuid);
+        if(caze.getHealthFacility()!=null){
+            ((LabelField) getView().findViewById(R.id.hospitalization_healthFacility)).setValue(caze.getHealthFacility().toString());
+        }
+
+
+
 
         final String hospitalizationUuid = getArguments().getString(Hospitalization.UUID);
         if(hospitalizationUuid != null) {

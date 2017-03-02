@@ -188,6 +188,8 @@
     <string name="headline_eventParticipant">Event person</string>
     <string name="headline_new_eventParticipant">New event person</string>
     <string name="headline_previously_hospitalized">Was the patient hospitalized or did he/she visit a health clinic previously for this illness?</string>
+    <string name="headline_hospitalization_recent">Most recent hospitalization</string>
+    <string name="headline_hospitalization_previous">Previous hospitalizations</string>
 
 
 </resources>

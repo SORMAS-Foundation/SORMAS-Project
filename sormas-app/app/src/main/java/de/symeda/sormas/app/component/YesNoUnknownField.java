@@ -79,7 +79,7 @@ public class YesNoUnknownField extends PropertyField<YesNoUnknown> {
      * @param context
      *           the current context for the view.
      */
-    private void initializeViews(Context context) {
+    protected void initializeViews(Context context) {
         LayoutInflater inflater = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         inflater.inflate(R.layout.field_yes_no, this);

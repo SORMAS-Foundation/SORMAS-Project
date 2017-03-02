@@ -16,13 +16,11 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
-import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.FieldHelper;
 import de.symeda.sormas.app.component.SpinnerField;
 import de.symeda.sormas.app.databinding.CaseNewFragmentLayoutBinding;
@@ -33,19 +31,13 @@ public class CaseNewTab extends FormTab {
 
     private Case caze;
     private Person person;
-    private User user;
-    private Region region;
     private CaseNewFragmentLayoutBinding binding;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         try {
-            caze = DataUtils.createNew(Case.class);
-            user = ConfigProvider.getUser();
-            region = DatabaseHelper.getRegionDao().queryUuid(user.getRegion().getUuid());
-
             person = DataUtils.createNew(Person.class);
-            caze.setPerson(person);
+            caze = DatabaseHelper.getCaseDao().createCase(person);
 
         } catch (Exception e) {
             Toast.makeText(getContext(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();

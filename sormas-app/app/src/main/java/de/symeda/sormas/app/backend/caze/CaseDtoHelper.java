@@ -7,6 +7,8 @@ import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.facility.FacilityDtoHelper;
+import de.symeda.sormas.app.backend.hospitalization.Hospitalization;
+import de.symeda.sormas.app.backend.hospitalization.HospitalizationDtoHelper;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDtoHelper;
 import de.symeda.sormas.app.backend.region.Community;
@@ -87,11 +89,7 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
             target.setCommunity(null);
         }
 
-        if (source.getHospitalization() != null) {
-            target.setHospitalization(DatabaseHelper.getHospitalizationDao().queryUuid(source.getHospitalization().getUuid()));
-        } else {
-            target.setHospitalization(null);
-        }
+        target.setHospitalization(hospitalizationDtoHelper.fillOrCreateFromDto(target.getHospitalization(), source.getHospitalization()));
 
         target.setSurveillanceOfficer(DatabaseHelper.getUserDao().getByReferenceDto(source.getSurveillanceOfficer()));
         target.setPregnant(source.getPregnant());
