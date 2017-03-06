@@ -11,12 +11,14 @@ import com.j256.ormlite.logger.LoggerFactory;
 import java.util.List;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.PreviousHospitalizationDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.app.backend.caze.CaseDtoHelper;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper.DtoGetInterface;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.hospitalization.PreviousHospitalizationDtoHelper;
 import de.symeda.sormas.app.backend.sample.SampleDtoHelper;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.person.SyncPersonsTask;
@@ -60,13 +62,6 @@ public class SyncCasesTask extends AsyncTask<Void, Void, Void> {
                 return null;
             }
         }, DatabaseHelper.getSampleDao());
-
-        new CaseDtoHelper().pushEntities(new AdoDtoHelper.DtoPostInterface<CaseDataDto>() {
-            @Override
-            public Call<Integer> postAll(List<CaseDataDto> dtos) {
-                return RetroProvider.getCaseFacade().postAll(dtos);
-            }
-        }, DatabaseHelper.getCaseDao());
 
         return null;
     }

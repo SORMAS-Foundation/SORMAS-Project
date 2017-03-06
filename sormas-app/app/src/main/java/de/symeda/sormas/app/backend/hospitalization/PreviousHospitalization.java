@@ -20,12 +20,13 @@ import de.symeda.sormas.app.backend.facility.Facility;
  */
 
 @Entity(name = PreviousHospitalization.TABLE_NAME)
-@DatabaseTable(tableName = Hospitalization.TABLE_NAME)
+@DatabaseTable(tableName = PreviousHospitalization.TABLE_NAME)
 public class PreviousHospitalization extends AbstractDomainObject {
 
     private static final long serialVersionUID = 768263094433806267L;
 
-    public static final String TABLE_NAME = "previoushospitalization";
+    public static final String TABLE_NAME = "previoushospitalizations";
+    public static final String HOSPITALIZATION = "hospitalization";
 
     @DatabaseField(dataType = DataType.DATE_LONG)
     private Date admissionDate;

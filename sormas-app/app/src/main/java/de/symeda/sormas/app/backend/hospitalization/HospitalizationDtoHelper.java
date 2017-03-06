@@ -1,6 +1,10 @@
 package de.symeda.sormas.app.backend.hospitalization;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import de.symeda.sormas.api.caze.HospitalizationDto;
+import de.symeda.sormas.api.caze.PreviousHospitalizationDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 
 /**
@@ -8,6 +12,12 @@ import de.symeda.sormas.app.backend.common.AdoDtoHelper;
  */
 
 public class HospitalizationDtoHelper extends AdoDtoHelper<Hospitalization, HospitalizationDto> {
+
+    private PreviousHospitalizationDtoHelper previousHospitalizationDtoHelper;
+
+    public  HospitalizationDtoHelper() {
+        previousHospitalizationDtoHelper = new PreviousHospitalizationDtoHelper();
+    }
 
     @Override
     public Hospitalization create() {
@@ -27,6 +37,17 @@ public class HospitalizationDtoHelper extends AdoDtoHelper<Hospitalization, Hosp
         a.setHospitalizedPreviously(b.getHospitalizedPreviously());
         a.setIsolated(b.getIsolated());
         a.setIsolationDate(b.getIsolationDate());
+
+        // It would be better to merge with the existing hospitalizations
+        List<PreviousHospitalization> previousHospitalizations = new ArrayList<>();
+        if (!b.getPreviousHospitalizations().isEmpty()) {
+            for (PreviousHospitalizationDto prevHospDto : b.getPreviousHospitalizations()) {
+                PreviousHospitalization prevHosp = previousHospitalizationDtoHelper.fillOrCreateFromDto(null, prevHospDto);
+                prevHosp.setHospitalization(a);
+                previousHospitalizations.add(prevHosp);
+            }
+        }
+        a.setPreviousHospitalizations(previousHospitalizations);
     }
 
     @Override
@@ -37,5 +58,16 @@ public class HospitalizationDtoHelper extends AdoDtoHelper<Hospitalization, Hosp
         a.setHospitalizedPreviously(b.getHospitalizedPreviously());
         a.setIsolated(b.getIsolated());
         a.setIsolationDate(b.getIsolationDate());
+
+        List<PreviousHospitalizationDto> previousHospitalizationDtos = new ArrayList<>();
+        if (!b.getPreviousHospitalizations().isEmpty()) {
+            for (PreviousHospitalization prevHosp : b.getPreviousHospitalizations()) {
+                PreviousHospitalizationDto prevHospDto = previousHospitalizationDtoHelper.createDto();
+                previousHospitalizationDtoHelper.fillInnerFromAdo(prevHospDto, prevHosp);
+                prevHospDto.setHospitalization(a);
+                previousHospitalizationDtos.add(prevHospDto);
+            }
+        }
+        a.setPreviousHospitalizations(previousHospitalizationDtos);
     }
 }

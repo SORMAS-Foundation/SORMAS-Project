@@ -4,7 +4,9 @@ import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -23,7 +25,7 @@ public class Hospitalization extends AbstractDomainObject {
 
     private static final long serialVersionUID = -8576270649634034244L;
 
-    public static final String TABLE_NAME = "hospitalization";
+    public static final String TABLE_NAME = "hospitalizations";
 
     @DatabaseField(dataType = DataType.DATE_LONG)
     private Date admissionDate;
@@ -39,6 +41,9 @@ public class Hospitalization extends AbstractDomainObject {
 
     @Enumerated(EnumType.STRING)
     private YesNoUnknown hospitalizedPreviously;
+
+    // just for reference, not persisted in DB
+    private List<PreviousHospitalization> previousHospitalizations = new ArrayList<PreviousHospitalization>();
 
     public Date getAdmissionDate() {
         return admissionDate;
@@ -78,5 +83,13 @@ public class Hospitalization extends AbstractDomainObject {
 
     public void setHospitalizedPreviously(YesNoUnknown hospitalizedPreviously) {
         this.hospitalizedPreviously = hospitalizedPreviously;
+    }
+
+    public List<PreviousHospitalization> getPreviousHospitalizations() {
+        return previousHospitalizations;
+    }
+
+    public void setPreviousHospitalizations(List<PreviousHospitalization> previousHospitalizations) {
+        this.previousHospitalizations = previousHospitalizations;
     }
 }

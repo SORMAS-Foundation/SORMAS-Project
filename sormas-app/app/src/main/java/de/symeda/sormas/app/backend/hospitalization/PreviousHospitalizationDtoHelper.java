@@ -12,11 +12,11 @@ import de.symeda.sormas.app.backend.facility.FacilityDtoHelper;
 
 public class PreviousHospitalizationDtoHelper extends AdoDtoHelper<PreviousHospitalization, PreviousHospitalizationDto> {
 
-    private HospitalizationDtoHelper hospitalizationDtoHelper;
-
-    public  PreviousHospitalizationDtoHelper() {
-        hospitalizationDtoHelper = new HospitalizationDtoHelper();
-    }
+//    private HospitalizationDtoHelper hospitalizationDtoHelper;
+//
+//    public  PreviousHospitalizationDtoHelper() {
+//        hospitalizationDtoHelper = new HospitalizationDtoHelper();
+//    }
 
     @Override
     public PreviousHospitalization create() {
@@ -49,12 +49,12 @@ public class PreviousHospitalizationDtoHelper extends AdoDtoHelper<PreviousHospi
 
     @Override
     public void fillInnerFromAdo(PreviousHospitalizationDto a, PreviousHospitalization b) {
-        if (b.getHospitalization() != null) {
-            Hospitalization hospitalization = DatabaseHelper.getHospitalizationDao().queryForId(b.getHospitalization().getId());
-            a.setHospitalization(hospitalizationDtoHelper.adoToDto(hospitalization));
-        } else {
-            a.setHospitalization(null);
-        }
+//        if (b.getHospitalization() != null) {
+//            Hospitalization hospitalization = DatabaseHelper.getHospitalizationDao().queryForId(b.getHospitalization().getId());
+//            a.setHospitalization(hospitalizationDtoHelper.adoToDto(hospitalization));
+//        } else {
+//            a.setHospitalization(null);
+//        }
         if (b.getHealthFacility() != null) {
             Facility facility = DatabaseHelper.getFacilityDao().queryForId(b.getHealthFacility().getId());
             a.setHealthFacility(FacilityDtoHelper.toReferenceDto(facility));

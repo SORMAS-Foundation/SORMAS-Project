@@ -3,7 +3,6 @@ package de.symeda.sormas.app.rest;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import de.symeda.sormas.api.sample.SampleFacade;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -211,4 +210,5 @@ public final class RetroProvider {
         }
         return instance.eventParticipantFacadeRetro;
     }
+
 }

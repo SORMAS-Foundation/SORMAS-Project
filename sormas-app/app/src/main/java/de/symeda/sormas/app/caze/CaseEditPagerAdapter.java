@@ -12,6 +12,7 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.contact.ContactsListFragment;
+import de.symeda.sormas.app.hospitalization.HospitalizationTab;
 import de.symeda.sormas.app.person.PersonEditTab;
 import de.symeda.sormas.app.sample.SamplesListFragment;
 import de.symeda.sormas.app.task.TasksListFragment;
@@ -29,7 +30,7 @@ public class CaseEditPagerAdapter extends FragmentStatePagerAdapter {
     private CaseEditDataTab caseEditDataTab;
     private PersonEditTab personEditTab;
     private SymptomsEditTab symptomsEditTab;
-    private CaseHospitalizationTab caseHospitalizationTab;
+    private HospitalizationTab hospitalizationTab;
 
 
     // Build a Constructor and assign the passed Values to appropriate values in the class
@@ -92,18 +93,18 @@ public class CaseEditPagerAdapter extends FragmentStatePagerAdapter {
                 frag = samplesListTab;
                 break;
             case HOSPITALIZATION:
-                caseHospitalizationTab = new CaseHospitalizationTab();
+                hospitalizationTab = new HospitalizationTab();
 
                 Bundle hospitalizationBundle = new Bundle();
                 caze = DatabaseHelper.getCaseDao().queryUuid(caseEditBundle.getString(Case.UUID));
-                hospitalizationBundle.putString(CaseHospitalizationTab.KEY_CASE_UUID, caze.getUuid());
+                hospitalizationBundle.putString(HospitalizationTab.KEY_CASE_UUID, caze.getUuid());
 
                 if(caze.getHospitalization() != null) {
                     hospitalizationBundle.putString(Hospitalization.UUID, caze.getHospitalization().getUuid());
                 }
 
-                caseHospitalizationTab.setArguments(hospitalizationBundle);
-                frag = caseHospitalizationTab;
+                hospitalizationTab.setArguments(hospitalizationBundle);
+                frag = hospitalizationTab;
                 break;
         }
         return frag;
@@ -135,7 +136,7 @@ public class CaseEditPagerAdapter extends FragmentStatePagerAdapter {
                 ado = symptomsEditTab.getData();
                 break;
             case 6:
-                ado = caseHospitalizationTab.getData();
+                ado = hospitalizationTab.getData();
                 break;
         }
         return ado;
@@ -151,7 +152,7 @@ public class CaseEditPagerAdapter extends FragmentStatePagerAdapter {
             case SYMPTOMS:
                 return symptomsEditTab;
 //            case HOSPITALIZATION:
-//                return caseHospitalizationTab;
+//                return hospitalizationTab;
         }
         return null;
     }

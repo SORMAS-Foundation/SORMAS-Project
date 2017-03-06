@@ -107,13 +107,9 @@
                 android:layout_height="match_parent"
                 android:value="@={hospitalization.hospitalizedPreviously}" />
 
-
-            <Button
-                android:id="@+id/hospitalization_prevHospitalizations_btn"
+            <ListView android:id="@+id/hospitalization_prevHospitalizations_list"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="2dp"
-                android:background="@color/colorPrimary" />
+                android:layout_height="wrap_content"/>
         </LinearLayout>
     </ScrollView>
 </layout>

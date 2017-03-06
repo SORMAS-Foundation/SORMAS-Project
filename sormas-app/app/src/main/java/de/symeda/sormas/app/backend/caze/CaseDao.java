@@ -15,6 +15,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.hospitalization.Hospitalization;
+import de.symeda.sormas.app.backend.hospitalization.PreviousHospitalization;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.util.DataUtils;
@@ -35,17 +36,27 @@ public class CaseDao extends AbstractAdoDao<Case> {
 
     @Override
     public boolean saveUnmodified(Case caze) {
+        try {
 
-        if (caze.getIllLocation() != null) {
-            DatabaseHelper.getLocationDao().saveUnmodified(caze.getIllLocation());
+            if (caze.getIllLocation() != null) {
+                DatabaseHelper.getLocationDao().saveUnmodified(caze.getIllLocation());
+            }
+            if (caze.getSymptoms() != null) {
+                DatabaseHelper.getSymptomsDao().saveUnmodified(caze.getSymptoms());
+            }
+            if (caze.getHospitalization() != null) {
+                DatabaseHelper.getHospitalizationDao().saveUnmodified(caze.getHospitalization());
+                if (caze.getHospitalization().getPreviousHospitalizations() != null && !caze.getHospitalization().getPreviousHospitalizations().isEmpty()) {
+                    DatabaseHelper.getPreviousHospitalizationDao().deleteByHospitalization(caze.getHospitalization());
+                    for (PreviousHospitalization previousHospitalization : caze.getHospitalization().getPreviousHospitalizations()) {
+                        DatabaseHelper.getPreviousHospitalizationDao().saveUnmodified(previousHospitalization);
+                    }
+                }
+            }
         }
-        if (caze.getSymptoms() != null) {
-            DatabaseHelper.getSymptomsDao().saveUnmodified(caze.getSymptoms());
+        catch (Exception e) {
+            logger.error(e, "saveUnmodified(Case caze) threw exception on: " + e.getCause());
         }
-        if (caze.getHospitalization() != null) {
-            DatabaseHelper.getHospitalizationDao().saveUnmodified(caze.getHospitalization());
-        }
-
 
         return super.saveUnmodified(caze);
     }
