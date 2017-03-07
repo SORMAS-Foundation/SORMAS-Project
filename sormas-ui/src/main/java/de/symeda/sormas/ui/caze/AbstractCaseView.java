@@ -8,6 +8,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.SubNavigationMenu;
+import de.symeda.sormas.ui.epidata.EpiDataView;
 import de.symeda.sormas.ui.utils.AbstractSubNavigationView;
 
 @SuppressWarnings("serial")
@@ -31,6 +32,7 @@ public abstract class AbstractCaseView extends AbstractSubNavigationView {
 		menu.addView(CaseSymptomsView.VIEW_NAME, I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.SYMPTOMS), params);
 		menu.addView(CaseContactsView.VIEW_NAME, I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, "contacts"), params);
 		menu.addView(CaseHospitalizationView.VIEW_NAME, I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, "hospitalization"), params);
+		menu.addView(EpiDataView.VIEW_NAME, I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, "epiData"), params);
 		itemName.setValue(caseRef.getCaption());
 		itemUuid.setValue(DataHelper.getShortUuid(caseRef.getUuid()));
 		

@@ -251,7 +251,7 @@ public abstract class AbstractTableField<E> extends CustomField<Collection> {
 	protected abstract void updateColumns();
 
 	protected E createEntry() {
-		// TODO gute Idee das so zu machen?
+		// TODO good way to do it like this?
 		try {
 			return getEntryType().newInstance();
 		} catch (InstantiationException | IllegalAccessException e) {

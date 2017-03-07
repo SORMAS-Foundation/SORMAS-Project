@@ -1162,3 +1162,95 @@ ALTER TABLE cases ADD COLUMN measlesDoses varchar(512);
 ALTER TABLE cases ADD COLUMN measlesVaccinationInfoSource varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (35, 'Case measles addition');
+
+-- 2017-03-02 Epidemiological data
+
+CREATE TABLE epidata(
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	rodents varchar(255),
+	bats varchar(255),
+	primates varchar(255),
+	swine varchar(255),
+	birds varchar(255),
+	poultryeat varchar(255),
+	poultry varchar(255),
+	poultrydetails varchar(512),
+	poultrysick varchar(255),
+	poultrysickdetails varchar(512),
+	poultrydate timestamp,
+	poultrylocation varchar(512),
+	wildbirds varchar(255),
+	wildbirdsdetails varchar(512),
+	wildbirdsdate timestamp,
+	wildbirdslocation varchar(512),
+	cattle varchar(255),
+	otheranimals varchar(255),
+	otheranimalsdetails varchar(512),
+	watersource varchar(255),
+	watersourceother varchar(512),
+	waterbody varchar(255),
+	waterbodydetails varchar(512),
+	tickbite varchar(255),
+	burialattended varchar(255),
+	gatheringattended varchar(255),
+	traveled varchar(255),
+	primary key(id)
+);
+ALTER TABLE epidata OWNER TO sormas_user;
+
+CREATE TABLE epidataburial(
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	epidata_id bigint not null,
+	burialpersonname varchar(512),
+	burialrelation varchar(512),
+	burialdatefrom timestamp,
+	burialdateto timestamp,
+	burialaddress_id bigint,
+	burialill varchar(255),
+	burialtouching varchar(255),
+	primary key(id)
+);
+ALTER TABLE epidataburial OWNER TO sormas_user;
+ALTER TABLE epidataburial ADD CONSTRAINT fk_epidataburial_epidata_id FOREIGN KEY (epidata_id) REFERENCES epidata(id);
+ALTER TABLE epidataburial ADD CONSTRAINT fk_epidataburial_burialaddress_id FOREIGN KEY (burialaddress_id) REFERENCES location(id);
+
+CREATE TABLE epidatagathering(
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	epidata_id bigint not null,
+	description varchar(512),
+	gatheringdate timestamp,
+	gatheringaddress_id bigint,
+	primary key(id)
+);
+ALTER TABLE epidatagathering OWNER TO sormas_user;
+ALTER TABLE epidatagathering ADD CONSTRAINT fk_epidatagathering_epidata_id FOREIGN KEY (epidata_id) REFERENCES epidata(id);
+ALTER TABLE epidatagathering ADD CONSTRAINT fk_epidatagathering_gatheringaddress_id FOREIGN KEY (gatheringaddress_id) REFERENCES location(id);
+
+CREATE TABLE epidatatravel(
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	epidata_id bigint not null,
+	traveltype varchar(255),
+	traveldestination varchar(512),
+	traveldatefrom timestamp,
+	traveldateto timestamp,
+	primary key(id)
+);
+ALTER TABLE epidatatravel OWNER TO sormas_user;
+ALTER TABLE epidatatravel ADD CONSTRAINT fk_epidatatravel_epidata_id FOREIGN KEY (epidata_id) REFERENCES epidata(id);
+
+ALTER TABLE cases ADD COLUMN epidata_id bigint;
+ALTER TABLE cases ADD CONSTRAINT fk_cases_epidata_id FOREIGN KEY (epidata_id) REFERENCES epidata(id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (36, 'Epidemiological data');

@@ -24,6 +24,7 @@ import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.caze.YesNoUnknown;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
@@ -56,6 +57,7 @@ public class Case extends AbstractDomainObject {
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
 	public static final String HOSPITALIZATION = "hospitalization";
+	public static final String EPI_DATA = "epiData";
 	public static final String PREGNANT = "pregnant";
 	public static final String MEASLES_VACCINATION = "measlesVaccination";
 	public static final String MEASLES_DOSES = "measlesDoses";
@@ -67,6 +69,7 @@ public class Case extends AbstractDomainObject {
 	private CaseClassification caseClassification;
 	private InvestigationStatus investigationStatus;
 	private Hospitalization hospitalization;
+	private EpiData epiData;
 	
 	private Region region;
 	private District district;
@@ -295,6 +298,19 @@ public class Case extends AbstractDomainObject {
 	}
 	public void setHospitalization(Hospitalization hospitalization) {
 		this.hospitalization = hospitalization;
+	}
+	
+	// It's necessary to do a lazy fetch here because having three eager fetching one to one relations
+	// produces an error where two non-xa connections are opened
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	public EpiData getEpiData() {
+		if(epiData == null) {
+			epiData = new EpiData();
+		}
+		return epiData;
+	}
+	public void setEpiData(EpiData epiData) {
+		this.epiData = epiData;
 	}
 	
 	@Enumerated(EnumType.STRING)

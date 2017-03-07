@@ -1,14 +1,11 @@
 package de.symeda.sormas.ui.caze;
 
-import java.util.Iterator;
 import java.util.function.Consumer;
 
-import com.vaadin.ui.Grid.Column;
 import com.vaadin.ui.Table;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
-import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.PreviousHospitalizationDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
@@ -83,15 +80,13 @@ public class PreviousHospitalizationsField extends AbstractTableField<PreviousHo
 		table.setColumnExpandRatio(EDIT_COLUMN_ID, 0);
 		
 		for (Object columnId : table.getVisibleColumns()) {
-			table.setColumnHeader(columnId, I18nProperties.getPrefixFieldCaption(PreviousHospitalizationDto.I18N_PREFIX, (String)columnId));
+			table.setColumnHeader(columnId, I18nProperties.getPrefixFieldCaption(PreviousHospitalizationDto.I18N_PREFIX, (String) columnId));
 		}
 	}
 
 	@Override
 	protected boolean isEmpty(PreviousHospitalizationDto entry) {
-		return entry.getAdmissionDate() == null 
-				&& entry.getDischargeDate() == null
-				&& entry.getHealthFacility() == null;
+		return false;		// has required fields, no empty objects possible
 	}
 
 	@Override
@@ -104,6 +99,8 @@ public class PreviousHospitalizationsField extends AbstractTableField<PreviousHo
 		if (isModifiedObject(oldEntry.getHealthFacility(), newEntry.getHealthFacility()))
 			return true;
 		if (isModifiedObject(oldEntry.getIsolated(), newEntry.getIsolated()))
+			return true;
+		if (isModifiedObject(oldEntry.getDescription(), newEntry.getDescription()))
 			return true;
 		
 		return false;

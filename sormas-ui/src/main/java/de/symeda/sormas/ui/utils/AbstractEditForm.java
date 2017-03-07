@@ -18,8 +18,12 @@ import com.vaadin.ui.OptionGroup;
 
 import de.symeda.sormas.api.DataTransferObject;
 import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.caze.YesNoUnknownHoriz;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.ui.caze.PreviousHospitalizationsField;
+import de.symeda.sormas.ui.epidata.EpiDataBurialsField;
+import de.symeda.sormas.ui.epidata.EpiDataGatheringsField;
+import de.symeda.sormas.ui.epidata.EpiDataTravelsField;
 import de.symeda.sormas.ui.location.LocationForm;
 
 @SuppressWarnings("serial")
@@ -62,6 +66,10 @@ public abstract class AbstractEditForm <DTO extends DataTransferObject> extends 
 						OptionGroup field = super.createField(type, OptionGroup.class);
 						CssStyles.style(field, CssStyles.ROW_OPTIONGROUP);
 						return (T) field;
+					} else if (YesNoUnknownHoriz.class.isAssignableFrom(type)) {
+						OptionGroup field = super.createField(type, OptionGroup.class);
+						CssStyles.style(field, CssStyles.ROW_OPTIONGROUP);
+						return (T) field;
 					} else {
 						if (!AbstractSelect.class.isAssignableFrom(fieldType)) {
 							fieldType = (Class<T>) NativeSelect.class;
@@ -85,6 +93,15 @@ public abstract class AbstractEditForm <DTO extends DataTransferObject> extends 
 				else if (PreviousHospitalizationsField.class.isAssignableFrom(fieldType)) {
 					return (T) new PreviousHospitalizationsField();
 				} 
+				else if (EpiDataBurialsField.class.isAssignableFrom(fieldType)) {
+					return (T) new EpiDataBurialsField();
+				}
+				else if (EpiDataGatheringsField.class.isAssignableFrom(fieldType)) {
+					return (T) new EpiDataGatheringsField();
+				}
+				else if (EpiDataTravelsField.class.isAssignableFrom(fieldType)) {
+					return (T) new EpiDataTravelsField();
+				}
 				
 				return super.createField(type, fieldType);
 			}

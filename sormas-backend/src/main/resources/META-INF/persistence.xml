@@ -26,6 +26,10 @@
 		<class>de.symeda.sormas.backend.sample.SampleTest</class>
 		<class>de.symeda.sormas.backend.caze.Hospitalization</class>
 		<class>de.symeda.sormas.backend.caze.PreviousHospitalization</class>
+		<class>de.symeda.sormas.backend.epidata.EpiData</class>
+		<class>de.symeda.sormas.backend.epidata.EpiDataBurial</class>
+		<class>de.symeda.sormas.backend.epidata.EpiDataGathering</class>
+		<class>de.symeda.sormas.backend.epidata.EpiDataTravel</class>
 
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 

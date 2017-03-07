@@ -5,6 +5,7 @@ import java.util.Date;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
@@ -37,6 +38,7 @@ public class CaseDataDto extends CaseReferenceDto {
 	public static final String CONTACT_OFFICER = "contactOfficer";
 	public static final String SYMPTOMS = "symptoms";
 	public static final String HOSPITALIZATION = "hospitalization";
+	public static final String EPI_DATA = "epiData";
 	public static final String PREGNANT = "pregnant";
 	public static final String MEASLES_VACCINATION = "measlesVaccination";
 	public static final String MEASLES_DOSES = "measlesDoses";
@@ -50,6 +52,7 @@ public class CaseDataDto extends CaseReferenceDto {
 	private Date reportDate;
 	private Date investigatedDate;
 	private HospitalizationDto hospitalization;
+	private EpiDataDto epiData;
 	
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
@@ -200,6 +203,14 @@ public class CaseDataDto extends CaseReferenceDto {
 
 	public void setHospitalization(HospitalizationDto hospitalization) {
 		this.hospitalization = hospitalization;
+	}
+	
+	public EpiDataDto getEpiData() {
+		return epiData;
+	}
+	
+	public void setEpiData(EpiDataDto epiData) {
+		this.epiData = epiData;
 	}
 
 	public YesNoUnknown getPregnant() {

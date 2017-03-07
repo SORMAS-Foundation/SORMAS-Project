@@ -16,6 +16,8 @@ import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.HospitalizationDto;
 import de.symeda.sormas.api.caze.HospitalizationFacade;
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.epidata.EpiDataDto;
+import de.symeda.sormas.api.epidata.EpiDataFacade;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsFacade;
@@ -24,6 +26,8 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
+import de.symeda.sormas.ui.epidata.EpiDataForm;
+import de.symeda.sormas.ui.epidata.EpiDataView;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.symptoms.SymptomsForm;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -35,6 +39,7 @@ public class CaseController {
 	private CaseFacade cf = FacadeProvider.getCaseFacade();
 	private SymptomsFacade sf = FacadeProvider.getSymptomsFacade();
 	private HospitalizationFacade hf = FacadeProvider.getHospitalizationFacade();
+	private EpiDataFacade edf = FacadeProvider.getEpiDataFacade();
 	
     public CaseController() {
     	
@@ -47,7 +52,8 @@ public class CaseController {
     	navigator.addView(CaseSymptomsView.VIEW_NAME, CaseSymptomsView.class);
     	navigator.addView(CaseContactsView.VIEW_NAME, CaseContactsView.class);
     	navigator.addView(CaseHospitalizationView.VIEW_NAME, CaseHospitalizationView.class);
-	}
+    	navigator.addView(EpiDataView.VIEW_NAME, EpiDataView.class);
+    }
     
     public void create() {
     	CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(null, null);
@@ -79,6 +85,11 @@ public class CaseController {
     	SormasUI.get().getNavigator().navigateTo(navigationState);
     }
     
+    public void navigateToEpiData(String caseUuid) {
+    	String navigationState = EpiDataView.VIEW_NAME + "/" + caseUuid;
+    	SormasUI.get().getNavigator().navigateTo(navigationState);
+    }
+    
     public void navigateToIndex() {
     	String navigationState = CasesView.VIEW_NAME;
     	SormasUI.get().getNavigator().navigateTo(navigationState);
@@ -99,7 +110,6 @@ public class CaseController {
         page.setUriFragment("!" + CasesView.VIEW_NAME + "/"
                 + fragmentParameter, false);
     }
-    
 
     public List<CaseDataDto> getCaseIndexList() {
     	UserDto user = LoginHelper.getCurrentUser();
@@ -225,6 +235,28 @@ public class CaseController {
 					dto = hf.saveHospitalization(dto);
 					Notification.show("Case hospitalization saved", Type.TRAY_NOTIFICATION);
 					navigateToHospitalization(caseUuid);
+				}
+			}
+		});
+		
+		return editView;
+	}
+	
+	public CommitDiscardWrapperComponent<EpiDataForm> getEpiDataComponent(final String caseUuid) {
+		CaseDataDto caze = findCase(caseUuid);
+		EpiDataForm epiDataForm = new EpiDataForm(caze.getDisease());
+		epiDataForm.setValue(caze.getEpiData());
+		
+		final CommitDiscardWrapperComponent<EpiDataForm> editView = new CommitDiscardWrapperComponent<EpiDataForm>(epiDataForm, epiDataForm.getFieldGroup());
+		
+		editView.addCommitListener(new CommitListener() {
+			@Override
+			public void onCommit() {
+				if (epiDataForm.getFieldGroup().isValid()) {
+					EpiDataDto dto = epiDataForm.getValue();
+					dto = edf.saveEpiData(dto);
+					Notification.show("Case epidemiological data saved", Type.TRAY_NOTIFICATION);
+					navigateToEpiData(caseUuid);
 				}
 			}
 		});
