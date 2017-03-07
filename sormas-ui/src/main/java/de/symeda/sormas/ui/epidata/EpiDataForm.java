@@ -41,28 +41,16 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 					LayoutUtil.fluidColumn(6, 0,
 							LayoutUtil.locsCss(CssStyles.VSPACE3,
 									EpiDataDto.RODENTS, EpiDataDto.BATS, EpiDataDto.PRIMATES,
-									EpiDataDto.SWINE
-							)
-					),
-					LayoutUtil.fluidColumn(6, 0,
-							LayoutUtil.locsCss(CssStyles.VSPACE3,
-									EpiDataDto.CATTLE, EpiDataDto.OTHER_ANIMALS,
-									EpiDataDto.OTHER_ANIMALS_DETAILS
-							)
-					)
-			) +
-			LayoutUtil.fluidRow(
-					LayoutUtil.fluidColumn(6, 0, 
-							LayoutUtil.locsCss(CssStyles.VSPACE3, 
-									EpiDataDto.BIRDS, EpiDataDto.POULTRY_EAT,
+									EpiDataDto.SWINE, EpiDataDto.BIRDS, EpiDataDto.POULTRY_EAT,
 									EpiDataDto.POULTRY, EpiDataDto.POULTRY_DETAILS,
 									EpiDataDto.POULTRY_SICK, EpiDataDto.POULTRY_SICK_DETAILS,
 									EpiDataDto.POULTRY_DATE, EpiDataDto.POULTRY_LOCATION
 							)
 					),
-					LayoutUtil.fluidColumn(6, 0, 
-							LayoutUtil.locsCss(CssStyles.VSPACE3, 
-									EpiDataDto.WILDBIRDS, EpiDataDto.WILDBIRDS_DETAILS,
+					LayoutUtil.fluidColumn(6, 0,
+							LayoutUtil.locsCss(CssStyles.VSPACE3,
+									EpiDataDto.CATTLE, EpiDataDto.OTHER_ANIMALS,
+									EpiDataDto.OTHER_ANIMALS_DETAILS, EpiDataDto.WILDBIRDS, EpiDataDto.WILDBIRDS_DETAILS,
 									EpiDataDto.WILDBIRDS_DATE, EpiDataDto.WILDBIRDS_LOCATION
 							)
 					)

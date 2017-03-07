@@ -66,7 +66,7 @@ public class EpiDataDto extends DataTransferObject {
 	private YesNoUnknownHoriz swine;
 	@Diseases({Disease.EVD,Disease.LASSA})
 	private YesNoUnknownHoriz birds;
-	@Diseases({})
+	@Diseases({Disease.AVIAN_INFLUENCA})
 	private YesNoUnknownHoriz poultryEat;
 	@Diseases({Disease.AVIAN_INFLUENCA})
 	private YesNoUnknown poultry;
