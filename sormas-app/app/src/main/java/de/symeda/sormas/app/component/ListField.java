@@ -6,14 +6,13 @@ import android.databinding.InverseBindingAdapter;
 import android.databinding.InverseBindingListener;
 import android.databinding.InverseBindingMethod;
 import android.databinding.InverseBindingMethods;
-import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -24,6 +23,7 @@ import java.util.List;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.util.Consumer;
+import de.symeda.sormas.app.util.DataUtils;
 
 @InverseBindingMethods({
         @InverseBindingMethod(type = ListField.class, attribute = "List")
@@ -32,11 +32,13 @@ public class ListField<FieldClass extends AbstractDomainObject> extends Property
 
     public static String ITEM_UUID = "itemUuid";
 
+    protected Button addBtn;
     protected ListView listView;
     protected ArrayAdapter adapter;
 
     protected InverseBindingListener inverseBindingListener;
-    protected Consumer itemAction;
+    protected Consumer itemEditAction;
+    protected Consumer itemAddAction;
 
     public ListField(Context context) {
         super(context);
@@ -88,7 +90,8 @@ public class ListField<FieldClass extends AbstractDomainObject> extends Property
 
     public void initialize(final ArrayAdapter<FieldClass> adapter, Consumer itemAction) {
         this.adapter = adapter;
-        this.itemAction = itemAction;
+        this.itemEditAction = itemAction;
+        this.itemAddAction = itemAction;
     }
 
     public void updateCaption(String newCaption) {
@@ -110,20 +113,30 @@ public class ListField<FieldClass extends AbstractDomainObject> extends Property
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        listView = (ListView) this.findViewById(R.id.list);
+
         caption = (TextView) this.findViewById(R.id.text_caption);
         caption.setText(getCaption());
         addCaptionHintIfDescription();
         addCaptionOnClickListener();
 
+        addBtn = (Button) this.findViewById(R.id.add_btn);
+        addBtn.setText(getResources().getString(R.string.action_add));
+        addBtn.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                itemEditAction.accept(null);
+            }
 
+        });
+
+        listView = (ListView) this.findViewById(R.id.list);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(
                     AdapterView<?> parent,
                     View viewClicked,
                     int position, long id) {
-                itemAction.accept((FieldClass)getListAdapter().getItem(position));
+                itemEditAction.accept((FieldClass)getListAdapter().getItem(position));
             }
         });
     }
@@ -139,6 +152,10 @@ public class ListField<FieldClass extends AbstractDomainObject> extends Property
         return adapter;
     }
 
+    /**
+     * reset the height of the ListView from given values in the array adapter
+     * @param listView
+     */
     private void setListViewHeightBasedOnChildren(ListView listView) {
         ListAdapter listAdapter = listView.getAdapter();
         if (listAdapter == null) {
@@ -159,6 +176,50 @@ public class ListField<FieldClass extends AbstractDomainObject> extends Property
         listView.requestLayout();
     }
 
+    /**
+     * Replace or add the given ado to the given list.
+     * Replaced when the uuids are equal.
+     * @param values
+     * @param insertValue
+     * @return
+     */
+    public static List<AbstractDomainObject> updateList(List<AbstractDomainObject> values, AbstractDomainObject insertValue) {
+        if(values!=null && !values.isEmpty() && insertValue != null) {
+            boolean insertNewValue = false;
+            int i = 0;
+            for (AbstractDomainObject value: values) {
+                if(value.getUuid().equals(insertValue.getUuid())) {
+                    values.set(i,insertValue);
+                }
+                else {
+                    insertNewValue = true;
+                }
+                i++;
+            }
 
+            if(insertNewValue) {
+                values.add(insertValue);
+            }
+        }
+        return values;
+    }
+
+    public static List<AbstractDomainObject> removeFromList(List<AbstractDomainObject> values, AbstractDomainObject deleteValue) {
+        if(values!=null && !values.isEmpty() && deleteValue != null) {
+            Integer markedDeleteValue = null;
+            int i = 0;
+            for (AbstractDomainObject value: values) {
+                if(value.getUuid().equals(deleteValue.getUuid())) {
+                    markedDeleteValue = i;
+                }
+                i++;
+            }
+
+            if(markedDeleteValue!=null) {
+                values.remove(markedDeleteValue.intValue());
+            }
+        }
+        return values;
+    }
 
 }

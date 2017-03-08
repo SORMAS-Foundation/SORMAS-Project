@@ -28,6 +28,10 @@
     <string name="action_help">Help</string>
     <string name="action_new_contact">New contact</string>
     <string name="action_new_sample">New sample</string>
+    <string name="action_add">Add new entry</string>
+    <string name="action_search">Search</string>
+    <string name="action_select_person">Select person</string>
+    <string name="action_delete">Delete</string>
 
     <!-- field -->
     <string name="field_yes_no_yes">Yes</string>
@@ -67,6 +71,25 @@
     <string name="headline_sample_data">Sample data</string>
     <string name="headline_new_sample">Create new sample</string>
     <string name="headline_sample_test">Recent test</string>
+    <string name="headline_task_notification">check sormas task</string>
+    <string name="headline_contacts">Contacts</string>
+    <string name="headline_new_contact">Create new contact</string>
+    <string name="headline_contact_data">Contact data</string>
+    <string name="headline_visits">Follow-up visits</string>
+    <string name="headline_contact">Contact</string>
+    <string name="headline_source_case">Source case</string>
+    <string name="headline_pick_person">Pick or create a person</string>
+    <string name="headline_visit">Follow-up visit</string>
+    <string name="headline_event">Event</string>
+    <string name="headline_eventLocation">Event location</string>
+    <string name="headline_event_information">Event information</string>
+    <string name="headline_event_sourceOfInformation">Source of information</string>
+    <string name="headline_new_event">New event</string>
+    <string name="headline_eventParticipant">Event person</string>
+    <string name="headline_new_eventParticipant">New event person</string>
+    <string name="headline_previously_hospitalized">Was the patient hospitalized or did he/she visit a health clinic previously for this illness?</string>
+    <string name="headline_hospitalization_recent">Most recent hospitalization</string>
+    <string name="headline_hospitalization_previous">Previous hospitalizations</string>
 
     <!-- forms -->
     <string name="form_p_first_name">First name</string>
@@ -162,34 +185,16 @@
     <string name="task_creatorUser">Created by</string>
     <string name="task_assigneeReply">Your comment</string>
     <string name="title_activity_task_notification">TaskNotificationActivity</string>
-    <string name="headline_task_notification">check sormas task</string>
-    <string name="headline_contacts">Contacts</string>
-    <string name="action_add">Add new entry</string>
+
+
     <string name="label_days">days</string>
     <string name="label_today">today</string>
-    <string name="headline_new_contact">Create new contact</string>
-    <string name="headline_contact_data">Contact data</string>
-    <string name="headline_visits">Follow-up visits</string>
-    <string name="headline_contact">Contact</string>
-    <string name="headline_source_case">Source case</string>
-    <string name="headline_pick_person">Pick or create a person</string>
-    <string name="action_search">Search</string>
-    <string name="action_select_person">Select person</string>
-    <string name="headline_visit">Follow-up visit</string>
-    <string name="headline_event">Event</string>
-    <string name="headline_eventLocation">Event location</string>
-    <string name="headline_event_information">Event information</string>
-    <string name="headline_event_sourceOfInformation">Source of information</string>
-    <string name="headline_new_event">New event</string>
+
     <string name="sample_shipmentStatus">Shipment status</string>
     <string name="sample_shipped">Shipped</string>
+
     <string name="inadequate_specimen_cond">Specimen condition not adequate</string>
     <string name="no_recent_test">No test yet</string>
-    <string name="headline_eventParticipant">Event person</string>
-    <string name="headline_new_eventParticipant">New event person</string>
-    <string name="headline_previously_hospitalized">Was the patient hospitalized or did he/she visit a health clinic previously for this illness?</string>
-    <string name="headline_hospitalization_recent">Most recent hospitalization</string>
-    <string name="headline_hospitalization_previous">Previous hospitalizations</string>
 
 
 </resources>
