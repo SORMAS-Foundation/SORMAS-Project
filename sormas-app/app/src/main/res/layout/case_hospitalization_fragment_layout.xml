@@ -107,9 +107,27 @@
                 android:layout_height="match_parent"
                 android:value="@={hospitalization.hospitalizedPreviously}" />
 
-            <ListView android:id="@+id/hospitalization_prevHospitalizations_list"
+            <de.symeda.sormas.app.component.ListField
+                android:id="@+id/hospitalization_previousHospitalizations"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:value="@={hospitalization.previousHospitalizations}" />
+
+            <!--<LinearLayout-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:orientation="horizontal">-->
+                <!--<Button-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_weight="0.5"-->
+                    <!--android:layout_margin="2dp"-->
+                    <!--android:background="@color/colorPrimary"-->
+                    <!--android:id="@+id/task_not_executable_btn"/>-->
+                <!--<ListView android:id="@+id/hospitalization_prevHospitalizations_list"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content"/>-->
+            <!--</LinearLayout>-->
         </LinearLayout>
     </ScrollView>
 </layout>

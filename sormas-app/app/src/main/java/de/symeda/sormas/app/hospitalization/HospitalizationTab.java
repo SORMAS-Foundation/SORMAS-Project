@@ -3,36 +3,28 @@ package de.symeda.sormas.app.hospitalization;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.ListAdapter;
-import android.widget.ListView;
-
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
-import de.symeda.sormas.app.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.app.backend.hospitalization.PreviousHospitalization;
-import de.symeda.sormas.app.caze.CasesListArrayAdapter;
-import de.symeda.sormas.app.caze.SyncCasesTask;
+import de.symeda.sormas.app.component.AddEditDialog;
+import de.symeda.sormas.app.component.Argumentable;
 import de.symeda.sormas.app.component.LabelField;
 import de.symeda.sormas.app.databinding.CaseHospitalizationFragmentLayoutBinding;
+import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.FormTab;
 
 public class HospitalizationTab extends FormTab {
 
     public static final String KEY_CASE_UUID = "caseUuid";
-    private ArrayAdapter adapter;
 
     private CaseHospitalizationFragmentLayoutBinding binding;
 
@@ -47,20 +39,17 @@ public class HospitalizationTab extends FormTab {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        adapter = new PreviousHospitalizationsListArrayAdapter(
-                this.getActivity(),
-                R.layout.previous_hospitalizations_list_item);
 
-        getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(
-                    AdapterView<?> parent,
-                    View viewClicked,
-                    int position, long id) {
-                PreviousHospitalization previousHospitalization = (PreviousHospitalization)getListAdapter().getItem(position);
-                //showCaseEditView(caze);
-            }
-        });
+//        getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(
+//                    AdapterView<?> parent,
+//                    View viewClicked,
+//                    int position, long id) {
+//                PreviousHospitalization previousHospitalization = (PreviousHospitalization)getListAdapter().getItem(position);
+//                //showCaseEditView(caze);
+//            }
+//        });
     }
 
     @Override
@@ -71,70 +60,59 @@ public class HospitalizationTab extends FormTab {
 
             final String caseUuid = getArguments().getString(HospitalizationTab.KEY_CASE_UUID);
             final Case caze = DatabaseHelper.getCaseDao().queryUuid(caseUuid);
-            if(caze.getHealthFacility()!=null){
+            if (caze.getHealthFacility() != null) {
                 ((LabelField) getView().findViewById(R.id.hospitalization_healthFacility)).setValue(caze.getHealthFacility().toString());
             }
 
-
+            // lazy loading hospitalization and inner previousHospitalization
             final String hospitalizationUuid = getArguments().getString(Hospitalization.UUID);
-            if(hospitalizationUuid != null) {
+            if (hospitalizationUuid != null) {
                 final Hospitalization hospitalization = DatabaseHelper.getHospitalizationDao().queryUuid(hospitalizationUuid);
+                // TODO: this should be done by lazy loading the parent hospitalization
+                hospitalization.setPreviousHospitalizations(DatabaseHelper.getPreviousHospitalizationDao().getByHospitalization(hospitalization));
                 binding.setHospitalization(hospitalization);
-
-                List<PreviousHospitalization> previousHospitalizations = DatabaseHelper.getPreviousHospitalizationDao().getByHospitalization(hospitalization);
-                ArrayAdapter<PreviousHospitalization> listAdapter = (ArrayAdapter<PreviousHospitalization>)getListAdapter();
-                listAdapter.clear();
-                listAdapter.addAll(previousHospitalizations);
-
 
             } else {
                 // TODO: check if it ok this way
                 binding.setHospitalization(new Hospitalization());
             }
 
-            getListView().setAdapter(getListAdapter());
-            setListViewHeightBasedOnChildren(getListView());
+            binding.hospitalizationPreviousHospitalizations.initialize(
+                    new PreviousHospitalizationsListArrayAdapter(
+                            this.getActivity(),
+                            R.layout.previous_hospitalizations_list_item),
+                    new Consumer() {
+                        @Override
+                        public void accept(Object parameter) {
+                            if(parameter instanceof PreviousHospitalization) {
+//                                PreviousHospitalizationTab editTab = new PreviousHospitalizationTab();
+//                                editTab.setData((PreviousHospitalization) parameter);
+//                                AddEditDialog dialogBuilder = new AddEditDialog(getActivity(), null, null, null, editTab);
+//                                AlertDialog newPersonDialog = dialogBuilder.create();
+//                                newPersonDialog.show();
 
+                                FragmentManager fm = getFragmentManager();
+                                PreviousHospitalizationTab previousHospitalizationTab = new PreviousHospitalizationTab();
+                                previousHospitalizationTab.setData((PreviousHospitalization) parameter);
+                                previousHospitalizationTab.show(fm, "previous_hospitalization_edit_fragment");
+                            }
+                        }
+                    }
+            );
 
             binding.hospitalizationAdmissionDate.initialize(this);
             binding.hospitalizationDischargeDate.initialize(this);
             binding.hospitalization1isolationDate.initialize(this);
 
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public static void setListViewHeightBasedOnChildren(ListView listView) {
-        ListAdapter listAdapter = listView.getAdapter();
-        if (listAdapter == null) {
-            // pre-condition
-            return;
-        }
-
-        int totalHeight = 0;
-        for (int i = 0; i < listView.getCount(); i++) {
-            View childView = listView.getAdapter().getView(i, null, listView);
-            childView.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED), View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
-            totalHeight+= childView.getMeasuredHeight();
-        }
-
-        ViewGroup.LayoutParams params = listView.getLayoutParams();
-        params.height = totalHeight + (listView.getDividerHeight() * listAdapter.getCount());
-        listView.setLayoutParams(params);
-        listView.requestLayout();
-    }
 
     @Override
     public AbstractDomainObject getData() {
         return binding.getHospitalization();
     }
 
-    private ListView getListView() {
-        return (ListView)getView().findViewById(R.id.hospitalization_prevHospitalizations_list);
-    }
-
-    public ArrayAdapter getListAdapter() {
-        return adapter;
-    }
 }

@@ -6,7 +6,9 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/field_padding"
+        android:paddingTop="@dimen/field_padding">
 
 
         <LinearLayout
@@ -26,7 +28,6 @@
                     android:id="@+id/previousHospitalization_period_li"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingLeft="10dp"
                     android:paddingRight="10dp"
                     android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -55,7 +56,6 @@
             android:id="@+id/previousHospitalization_healthFacility_li"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingLeft="10dp"
             android:paddingRight="10dp"
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
