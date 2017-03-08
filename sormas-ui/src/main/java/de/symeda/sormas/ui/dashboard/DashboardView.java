@@ -63,7 +63,7 @@ public class DashboardView extends AbstractView {
     		.collect(Collectors.toList());
 		}
 		
-    	mapComponent.showCases(cases);
+    	mapComponent.showFacilities(cases);
 		
 	}
 }
