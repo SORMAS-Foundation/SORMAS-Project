@@ -27,6 +27,7 @@ abstract public class AbstractFormDialogFragment<FormClass> extends DialogFragme
 
     private Consumer positiveCallback;
     private Consumer deleteCallback;
+    private String title;
 
     abstract public View onCreateDialogView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState);
 
@@ -39,7 +40,7 @@ abstract public class AbstractFormDialogFragment<FormClass> extends DialogFragme
         onViewCreated(view, null);
         alertDialogBuilder.setView(view);
 
-        alertDialogBuilder.setTitle(getActivity().getResources().getString(R.string.headline_location));
+        alertDialogBuilder.setTitle(title);
         alertDialogBuilder.setPositiveButton(getActivity().getResources().getString(R.string.action_done), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int id) {
@@ -70,10 +71,11 @@ abstract public class AbstractFormDialogFragment<FormClass> extends DialogFragme
 
 
     // gives all needed config params
-    public void initialize(FormClass formItem, final Consumer positiveCallback, final Consumer deleteCallback) {
+    public void initialize(FormClass formItem, final Consumer positiveCallback, final Consumer deleteCallback, String title) {
         this.formItem = formItem;
         this.positiveCallback = positiveCallback;
         this.deleteCallback = deleteCallback;
+        this.title = title;
     }
 
     protected FormClass getFormItem() {

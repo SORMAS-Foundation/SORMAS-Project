@@ -17,16 +17,24 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/field_caption_margin_bottom"
                 android:layout_marginLeft="@dimen/field_caption_margin_left"
-                android:textSize="@dimen/field_caption_size"
-                android:layout_weight="0.3" />
+                android:layout_weight="0.3"
+                android:textSize="@dimen/field_caption_size" />
 
-            <Button
-                android:id="@+id/add_btn"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:orientation="horizontal"
                 android:layout_weight="0.7"
-                android:textSize="@dimen/field_radio_font_size"
-                android:background="@color/colorPrimary" />
+                android:gravity="right">
+
+                <ImageButton
+                    android:id="@+id/add_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_add_black_24dp"
+                    android:background="@color/colorPrimary"
+                    />
+            </LinearLayout>
         </LinearLayout>
 
         <ListView

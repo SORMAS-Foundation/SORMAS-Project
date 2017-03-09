@@ -195,6 +195,7 @@
 
     <string name="inadequate_specimen_cond">Specimen condition not adequate</string>
     <string name="no_recent_test">No test yet</string>
+    <string name="headline_previousHospitalization">Previous hospitalization</string>
 
 
 </resources>

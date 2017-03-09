@@ -46,12 +46,6 @@ public class CaseDao extends AbstractAdoDao<Case> {
             }
             if (caze.getHospitalization() != null) {
                 DatabaseHelper.getHospitalizationDao().saveUnmodified(caze.getHospitalization());
-                if (caze.getHospitalization().getPreviousHospitalizations() != null && !caze.getHospitalization().getPreviousHospitalizations().isEmpty()) {
-                    DatabaseHelper.getPreviousHospitalizationDao().deleteByHospitalization(caze.getHospitalization());
-                    for (PreviousHospitalization previousHospitalization : caze.getHospitalization().getPreviousHospitalizations()) {
-                        DatabaseHelper.getPreviousHospitalizationDao().saveUnmodified(previousHospitalization);
-                    }
-                }
             }
         }
         catch (Exception e) {

@@ -199,6 +199,7 @@ public class CaseEditActivity extends AbstractEditActivity {
                     if(hospitalization !=null ) {
                         hospitalizationDao.save(hospitalization);
                         caze.setHospitalization(hospitalization);
+                        caze.setModified(true);
                     }
 
                     caseDao.save(caze);

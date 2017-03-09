@@ -97,7 +97,9 @@ public class HospitalizationTab extends FormTab {
                                             );
 
                                         }
-                                    });
+                                    },
+                                    getActivity().getResources().getString(R.string.headline_previousHospitalization)
+                            );
                             previousHospitalizationTab.show(getFragmentManager(), "previous_hospitalization_edit_fragment");
                         }
                     }
