@@ -206,16 +206,12 @@ public class CaseEditActivity extends AbstractEditActivity {
                         symptomsDao.save(symptoms);
                     }
 
-                    if(hospitalization !=null ) {
+                    if (hospitalization !=null ) {
                         hospitalizationDao.save(hospitalization);
-                        caze.setHospitalization(hospitalization);
-                        caze.setModified(true);
                     }
 
                     if (epiData != null) {
                         epiDataDao.save(epiData);
-                        caze.setEpiData(epiData);
-                        caze.setModified(true);
                     }
 
                     caseDao.save(caze);

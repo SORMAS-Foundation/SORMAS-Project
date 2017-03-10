@@ -5,6 +5,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ImageButton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -120,6 +121,23 @@ public class LocationDialog extends AlertDialog.Builder {
             }
         });
 
+    }
+
+    public static void addLocationField(final FragmentActivity activity, final Location location, final TextField locationText, ImageButton btn, final Consumer positiveCallback) {
+        DatabaseHelper.getLocationDao().initializeLocation(location);
+
+        // set the TextField for the location
+        locationText.setEnabled(false);
+        locationText.setValue(location.toString());
+
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                final LocationDialog dialogBuilder = new LocationDialog(activity, location, positiveCallback, null);
+                AlertDialog newPersonDialog = dialogBuilder.create();
+                newPersonDialog.show();
+            }
+        });
     }
 
 }

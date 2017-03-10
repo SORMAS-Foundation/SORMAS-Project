@@ -84,22 +84,4 @@ abstract public class AbstractFormDialogFragment<FormClass> extends DialogFragme
     protected FormClass getFormItem() {
         return this.formItem;
     }
-
-    protected void addLocationField(final Location location, final TextField locationText, ImageButton btn, final Consumer positiveCallback) {
-        DatabaseHelper.getLocationDao().initializeLocation(location);
-
-        // set the TextField for the location
-        locationText.setEnabled(false);
-        locationText.setValue(location.toString());
-
-        btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View arg0) {
-                final LocationDialog dialogBuilder = new LocationDialog(getActivity(), location, positiveCallback, null);
-                AlertDialog newPersonDialog = dialogBuilder.create();
-                newPersonDialog.show();
-            }
-        });
-    }
-
 }

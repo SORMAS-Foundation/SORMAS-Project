@@ -1254,3 +1254,12 @@ ALTER TABLE cases ADD COLUMN epidata_id bigint;
 ALTER TABLE cases ADD CONSTRAINT fk_cases_epidata_id FOREIGN KEY (epidata_id) REFERENCES epidata(id);
 
 INSERT INTO schema_version (version_number, comment) VALUES (36, 'Epidemiological data');
+
+
+CREATE TEMP TABLE tmp_caseids AS SELECT cases.id AS caseid, nextval('entity_seq') AS epiid FROM cases WHERE cases.epidata_id IS NULL;
+INSERT INTO epidata (id, changedate, creationdate, uuid) 
+	SELECT epiid, now(), now(), uuid_in(md5(random()::text || clock_timestamp()::text)::cstring) FROM tmp_caseids;
+UPDATE cases SET epidata_id = epiid FROM tmp_caseids t where cases.id = t.caseid;
+DROP TABLE tmp_caseids;
+
+INSERT INTO schema_version (version_number, comment) VALUES (37, 'Epidemiological data: added empty entites');

@@ -17,6 +17,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
@@ -50,6 +51,11 @@ public class CaseService extends AbstractAdoService<Case> {
 			Predicate dateFilter = cb.greaterThan(from.get(AbstractDomainObject.CHANGE_DATE), date);
 			Join<Case, Symptoms> symptoms = from.join(Case.SYMPTOMS);
 			dateFilter = cb.or(dateFilter, cb.greaterThan(symptoms.get(AbstractDomainObject.CHANGE_DATE), date));
+			Join<Case, Hospitalization> hospitalization = from.join(Case.HOSPITALIZATION);
+			dateFilter = cb.or(dateFilter, cb.greaterThan(hospitalization.get(AbstractDomainObject.CHANGE_DATE), date));
+			Join<Case, EpiData> epiData = from.join(Case.EPI_DATA);
+			dateFilter = cb.or(dateFilter, cb.greaterThan(epiData.get(AbstractDomainObject.CHANGE_DATE), date));
+
 			if (filter != null) {
 				filter = cb.and(filter, dateFilter);
 			} else {

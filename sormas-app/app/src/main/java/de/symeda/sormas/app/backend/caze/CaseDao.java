@@ -51,7 +51,6 @@ public class CaseDao extends AbstractAdoDao<Case> {
             if (caze.getHospitalization() != null) {
                 DatabaseHelper.getHospitalizationDao().saveUnmodified(caze.getHospitalization());
             }
-
             if (caze.getEpiData() != null) {
                 DatabaseHelper.getEpiDataDao().saveUnmodified(caze.getEpiData());
             }
@@ -74,6 +73,15 @@ public class CaseDao extends AbstractAdoDao<Case> {
         if (symptomsDate != null && symptomsDate.after(cazeDate)) {
             cazeDate = symptomsDate;
         }
+        Date hospitalizationDate = DatabaseHelper.getHospitalizationDao().getLatestChangeDate();
+        if (hospitalizationDate != null && hospitalizationDate.after(cazeDate)) {
+            cazeDate = hospitalizationDate;
+        }
+        Date epiDataDate = DatabaseHelper.getEpiDataDao().getLatestChangeDate();
+        if (epiDataDate != null && epiDataDate.after(cazeDate)) {
+            cazeDate = epiDataDate;
+        }
+
         return cazeDate;
     }
     public void markAsModified(String uuid) {

@@ -190,20 +190,19 @@ public class ListField<FieldClass extends AbstractDomainObject> extends Property
      * @return
      */
     public static List<AbstractDomainObject> updateList(List<AbstractDomainObject> values, AbstractDomainObject insertValue) {
-        boolean insertNewValue = false;
-        if(values!=null && !values.isEmpty() && insertValue != null) {
+        boolean insertNewValue = true;
+        if(!values.isEmpty()) {
             int i = 0;
             for (AbstractDomainObject value: values) {
                 if(value.getUuid().equals(insertValue.getUuid())) {
                     values.set(i,insertValue);
-                }
-                else {
-                    insertNewValue = true;
+                    insertNewValue = false;
+                    break;
                 }
                 i++;
             }
         }
-        else if(values.isEmpty()) {
+        if(insertNewValue) {
             values.add(insertValue);
         }
         return values;
@@ -211,17 +210,13 @@ public class ListField<FieldClass extends AbstractDomainObject> extends Property
 
     public static List<AbstractDomainObject> removeFromList(List<AbstractDomainObject> values, AbstractDomainObject deleteValue) {
         if(values!=null && !values.isEmpty() && deleteValue != null) {
-            Integer markedDeleteValue = null;
             int i = 0;
             for (AbstractDomainObject value: values) {
                 if(value.getUuid().equals(deleteValue.getUuid())) {
-                    markedDeleteValue = i;
+                    values.remove(i);
+                    break;
                 }
                 i++;
-            }
-
-            if(markedDeleteValue!=null) {
-                values.remove(markedDeleteValue.intValue());
             }
         }
         return values;

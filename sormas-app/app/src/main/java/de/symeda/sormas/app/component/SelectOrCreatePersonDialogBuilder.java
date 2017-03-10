@@ -23,12 +23,12 @@ import de.symeda.sormas.app.util.Item;
 import de.symeda.sormas.app.util.Consumer;
 
 
-public class SelectOrCreatePersonDialog extends AlertDialog.Builder {
+public class SelectOrCreatePersonDialogBuilder extends AlertDialog.Builder {
 
     private EventParticipantNewFragmentLayoutBinding binding;
     private Person selectedPersonFromDialog;
 
-    public SelectOrCreatePersonDialog(final FragmentActivity activity, final Person person, final List<Person> existingPersons, final Consumer positiveCallback ) {
+    public SelectOrCreatePersonDialogBuilder(final FragmentActivity activity, final Person person, final List<Person> existingPersons, final Consumer positiveCallback ) {
         super(activity);
 
         final PersonSelectVO personSelectVO = new PersonSelectVO(person);

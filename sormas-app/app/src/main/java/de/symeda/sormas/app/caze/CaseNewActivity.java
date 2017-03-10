@@ -27,7 +27,7 @@ import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.symptoms.SymptomsDao;
 import de.symeda.sormas.app.backend.user.User;
-import de.symeda.sormas.app.component.SelectOrCreatePersonDialog;
+import de.symeda.sormas.app.component.SelectOrCreatePersonDialogBuilder;
 import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.DataUtils;
 
@@ -92,7 +92,7 @@ public class CaseNewActivity extends AppCompatActivity {
                     List<Person> existingPersons = DatabaseHelper.getPersonDao().getAllByName(caze.getPerson().getFirstName(), caze.getPerson().getLastName());
                     if (existingPersons.size() > 0) {
 
-                        AlertDialog.Builder dialogBuilder = new SelectOrCreatePersonDialog(this, caze.getPerson(), existingPersons, new Consumer() {
+                        AlertDialog.Builder dialogBuilder = new SelectOrCreatePersonDialogBuilder(this, caze.getPerson(), existingPersons, new Consumer() {
                             @Override
                             public void accept(Object parameter) {
                                 if(parameter instanceof Person) {

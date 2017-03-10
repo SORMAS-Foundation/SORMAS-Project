@@ -14,6 +14,7 @@ import de.symeda.sormas.app.backend.epidata.EpiDataBurial;
 import de.symeda.sormas.app.backend.epidata.EpiDataGathering;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.component.AbstractFormDialogFragment;
+import de.symeda.sormas.app.component.LocationDialog;
 import de.symeda.sormas.app.databinding.EpidataBurialEditFragmentLayoutBinding;
 import de.symeda.sormas.app.databinding.EpidataGatheringEditFragmentLayoutBinding;
 import de.symeda.sormas.app.util.Consumer;
@@ -44,7 +45,7 @@ public class EpiDataGatheringTab extends AbstractFormDialogFragment<EpiDataGathe
         EpiDataGathering gathering = binding.getEpiDataGathering();
         try {
             final Location location = gathering.getGatheringAddress() != null ? gathering.getGatheringAddress() : DataUtils.createNew(Location.class);
-            addLocationField(location, binding.gatherAddress, binding.formCpBtnAddress, new Consumer() {
+            LocationDialog.addLocationField(getActivity(), location, binding.gatherAddress, binding.formCpBtnAddress, new Consumer() {
                 @Override
                 public void accept(Object parameter) {
                     if (parameter instanceof Location) {

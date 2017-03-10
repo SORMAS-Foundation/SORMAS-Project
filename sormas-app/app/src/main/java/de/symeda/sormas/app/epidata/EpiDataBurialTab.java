@@ -48,7 +48,7 @@ public class EpiDataBurialTab extends AbstractFormDialogFragment<EpiDataBurial> 
         EpiDataBurial burial = binding.getEpiDataBurial();
         try {
             final Location location = burial.getBurialAddress() != null ? burial.getBurialAddress() : DataUtils.createNew(Location.class);
-            addLocationField(location, binding.burialAddress, binding.formCpBtnAddress, new Consumer() {
+            LocationDialog.addLocationField(getActivity(), location, binding.burialAddress, binding.formCpBtnAddress, new Consumer() {
                 @Override
                 public void accept(Object parameter) {
                     if (parameter instanceof Location) {

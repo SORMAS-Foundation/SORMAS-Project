@@ -23,6 +23,7 @@ import de.symeda.sormas.app.backend.sample.SampleDtoHelper;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.person.SyncPersonsTask;
 import de.symeda.sormas.app.rest.RetroProvider;
+import de.symeda.sormas.app.sample.SyncSamplesTask;
 import de.symeda.sormas.app.util.Callback;
 import retrofit2.Call;
 
@@ -52,16 +53,12 @@ public class SyncCasesTask extends AsyncTask<Void, Void, Void> {
             }
         }, DatabaseHelper.getCaseDao());
 
-        new SampleDtoHelper().pullEntities(new DtoGetInterface<SampleDto>() {
+        new CaseDtoHelper().pushEntities(new AdoDtoHelper.DtoPostInterface<CaseDataDto>() {
             @Override
-            public Call<List<SampleDto>> getAll(long since) {
-                User user = ConfigProvider.getUser();
-                if (user != null) {
-                    return RetroProvider.getSampleFacade().getAll(user.getUuid(), since);
-                }
-                return null;
+            public Call<Integer> postAll(List<CaseDataDto> dtos) {
+                return RetroProvider.getCaseFacade().postAll(dtos);
             }
-        }, DatabaseHelper.getSampleDao());
+        }, DatabaseHelper.getCaseDao());
 
         return null;
     }
@@ -103,9 +100,7 @@ public class SyncCasesTask extends AsyncTask<Void, Void, Void> {
         return new SyncCasesTask() {
             @Override
             protected void onPostExecute(Void aVoid) {
-                if (callback != null) {
-                    callback.call();
-                }
+                SyncSamplesTask.syncSamples(callback);
             }
         }.execute();
     }
