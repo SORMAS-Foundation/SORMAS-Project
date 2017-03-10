@@ -6,12 +6,14 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
 import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.epidata.EpiData;
 import de.symeda.sormas.app.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.contact.ContactsListFragment;
+import de.symeda.sormas.app.epidata.EpiDataTab;
 import de.symeda.sormas.app.hospitalization.HospitalizationTab;
 import de.symeda.sormas.app.person.PersonEditTab;
 import de.symeda.sormas.app.sample.SamplesListFragment;
@@ -31,6 +33,7 @@ public class CaseEditPagerAdapter extends FragmentStatePagerAdapter {
     private PersonEditTab personEditTab;
     private SymptomsEditTab symptomsEditTab;
     private HospitalizationTab hospitalizationTab;
+    private EpiDataTab epiDataTab;
 
 
     // Build a Constructor and assign the passed Values to appropriate values in the class
@@ -106,6 +109,20 @@ public class CaseEditPagerAdapter extends FragmentStatePagerAdapter {
                 hospitalizationTab.setArguments(hospitalizationBundle);
                 frag = hospitalizationTab;
                 break;
+            case EPIDATA:
+                epiDataTab = new EpiDataTab();
+
+                Bundle epiDataBundle = new Bundle();
+                caze = DatabaseHelper.getCaseDao().queryUuid(caseEditBundle.getString(Case.UUID));
+                epiDataBundle.putString(EpiDataTab.KEY_CASE_UUID, caze.getUuid());
+
+                if (caze.getEpiData() != null) {
+                    epiDataBundle.putString(EpiData.UUID, caze.getEpiData().getUuid());
+                }
+
+                epiDataTab.setArguments(epiDataBundle);
+                frag = epiDataTab;
+                break;
         }
         return frag;
     }
@@ -137,6 +154,9 @@ public class CaseEditPagerAdapter extends FragmentStatePagerAdapter {
                 break;
             case 6:
                 ado = hospitalizationTab.getData();
+                break;
+            case 7:
+                ado = epiDataTab.getData();
                 break;
         }
         return ado;

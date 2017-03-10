@@ -14,6 +14,10 @@ import java.util.Date;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.epidata.EpiData;
+import de.symeda.sormas.app.backend.epidata.EpiDataBurial;
+import de.symeda.sormas.app.backend.epidata.EpiDataGathering;
+import de.symeda.sormas.app.backend.epidata.EpiDataTravel;
 import de.symeda.sormas.app.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.app.backend.hospitalization.PreviousHospitalization;
 import de.symeda.sormas.app.backend.person.Person;
@@ -46,6 +50,10 @@ public class CaseDao extends AbstractAdoDao<Case> {
             }
             if (caze.getHospitalization() != null) {
                 DatabaseHelper.getHospitalizationDao().saveUnmodified(caze.getHospitalization());
+            }
+
+            if (caze.getEpiData() != null) {
+                DatabaseHelper.getEpiDataDao().saveUnmodified(caze.getEpiData());
             }
         }
         catch (Exception e) {
@@ -102,6 +110,9 @@ public class CaseDao extends AbstractAdoDao<Case> {
 
         // Hospitalization
         caze.setHospitalization(DataUtils.createNew(Hospitalization.class));
+
+        // Epi Data
+        caze.setEpiData(DataUtils.createNew(EpiData.class));
 
         return caze;
     }

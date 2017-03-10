@@ -4,7 +4,6 @@
     android:focusableInTouchMode="true">
 
     <data>
-
         <variable
             name="hospitalization"
             type="de.symeda.sormas.app.backend.hospitalization.Hospitalization" />

@@ -190,8 +190,8 @@ public class ListField<FieldClass extends AbstractDomainObject> extends Property
      * @return
      */
     public static List<AbstractDomainObject> updateList(List<AbstractDomainObject> values, AbstractDomainObject insertValue) {
+        boolean insertNewValue = false;
         if(values!=null && !values.isEmpty() && insertValue != null) {
-            boolean insertNewValue = false;
             int i = 0;
             for (AbstractDomainObject value: values) {
                 if(value.getUuid().equals(insertValue.getUuid())) {
@@ -201,9 +201,6 @@ public class ListField<FieldClass extends AbstractDomainObject> extends Property
                     insertNewValue = true;
                 }
                 i++;
-            }
-            if(insertNewValue) {
-                values.add(insertValue);
             }
         }
         else if(values.isEmpty()) {

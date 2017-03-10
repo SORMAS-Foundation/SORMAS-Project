@@ -16,6 +16,8 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.epidata.EpiData;
+import de.symeda.sormas.app.backend.epidata.EpiDataDao;
 import de.symeda.sormas.app.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.app.backend.hospitalization.HospitalizationDao;
 import de.symeda.sormas.app.backend.location.LocationDao;
@@ -130,6 +132,10 @@ public class CaseEditActivity extends AbstractEditActivity {
             case HOSPITALIZATION:
                 updateActionBarGroups(menu, false, false, true);
                 break;
+
+            case EPIDATA:
+                updateActionBarGroups(menu, false, false, true);
+                break;
         }
 
         return true;
@@ -181,6 +187,10 @@ public class CaseEditActivity extends AbstractEditActivity {
                 HospitalizationDao hospitalizationDao = DatabaseHelper.getHospitalizationDao();
                 Hospitalization hospitalization = (Hospitalization) adapter.getData(CaseEditTabs.HOSPITALIZATION.ordinal());
 
+                // EPI DATA
+                EpiDataDao epiDataDao = DatabaseHelper.getEpiDataDao();
+                EpiData epiData = (EpiData) adapter.getData(CaseEditTabs.EPIDATA.ordinal());
+
                 // CASE_DATA
                 Case caze = (Case) adapter.getData(CaseEditTabs.CASE_DATA.ordinal());
 
@@ -199,6 +209,12 @@ public class CaseEditActivity extends AbstractEditActivity {
                     if(hospitalization !=null ) {
                         hospitalizationDao.save(hospitalization);
                         caze.setHospitalization(hospitalization);
+                        caze.setModified(true);
+                    }
+
+                    if (epiData != null) {
+                        epiDataDao.save(epiData);
+                        caze.setEpiData(epiData);
                         caze.setModified(true);
                     }
 

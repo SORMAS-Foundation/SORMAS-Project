@@ -5,6 +5,8 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.epidata.EpiData;
+import de.symeda.sormas.app.backend.epidata.EpiDataDtoHelper;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.facility.FacilityDtoHelper;
 import de.symeda.sormas.app.backend.hospitalization.Hospitalization;
@@ -29,10 +31,12 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 
     private SymptomsDtoHelper symptomsDtoHelper;
     private HospitalizationDtoHelper hospitalizationDtoHelper;
+    private EpiDataDtoHelper epiDataDtoHelper;
 
     public CaseDtoHelper() {
         symptomsDtoHelper = new SymptomsDtoHelper();
         hospitalizationDtoHelper = new HospitalizationDtoHelper();
+        epiDataDtoHelper = new EpiDataDtoHelper();
     }
 
     @Override
@@ -90,6 +94,7 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
         }
 
         target.setHospitalization(hospitalizationDtoHelper.fillOrCreateFromDto(target.getHospitalization(), source.getHospitalization()));
+        target.setEpiData(epiDataDtoHelper.fillOrCreateFromDto(target.getEpiData(), source.getEpiData()));
 
         target.setSurveillanceOfficer(DatabaseHelper.getUserDao().getByReferenceDto(source.getSurveillanceOfficer()));
         target.setPregnant(source.getPregnant());
@@ -171,6 +176,13 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
             target.setHospitalization(hospitalizationDtoHelper.adoToDto(hospitalization));
         } else {
             target.setHospitalization(null);
+        }
+
+        if (source.getEpiData() != null) {
+            EpiData epiData = DatabaseHelper.getEpiDataDao().queryForId(source.getEpiData().getId());
+            target.setEpiData(epiDataDtoHelper.adoToDto(epiData));
+        } else {
+            target.setEpiData(null);
         }
 
         target.setPregnant(source.getPregnant());

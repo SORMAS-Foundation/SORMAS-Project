@@ -90,6 +90,15 @@
     <string name="headline_previously_hospitalized">Was the patient hospitalized or did he/she visit a health clinic previously for this illness?</string>
     <string name="headline_hospitalization_recent">Most recent hospitalization</string>
     <string name="headline_hospitalization_previous">Previous hospitalizations</string>
+    <string name="headline_epidata">Epidemiological data</string>
+    <string name="headline_epidata_animalcontacts">Animal contacts</string>
+    <string name="headline_epidata_environmentalexposure">Environmental exposure</string>
+    <string name="headline_burial_address">Burial address</string>
+    <string name="headline_gathering_address">Gathering address</string>
+    <string name="headline_previousHospitalization">Previous hospitalization</string>
+    <string name="headline_burial">Burial</string>
+    <string name="headline_gathering">Gathering</string>
+    <string name="headline_travel">Travel</string>
 
     <!-- forms -->
     <string name="form_p_first_name">First name</string>
@@ -195,7 +204,5 @@
 
     <string name="inadequate_specimen_cond">Specimen condition not adequate</string>
     <string name="no_recent_test">No test yet</string>
-    <string name="headline_previousHospitalization">Previous hospitalization</string>
-
 
 </resources>

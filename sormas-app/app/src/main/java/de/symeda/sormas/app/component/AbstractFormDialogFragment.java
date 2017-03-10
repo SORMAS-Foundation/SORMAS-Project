@@ -9,12 +9,15 @@ import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 
 import com.android.annotations.Nullable;
 
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.hospitalization.PreviousHospitalization;
+import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.databinding.PreviousHospitalizationEditFragmentLayoutBinding;
 import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.Consumer;
@@ -80,6 +83,23 @@ abstract public class AbstractFormDialogFragment<FormClass> extends DialogFragme
 
     protected FormClass getFormItem() {
         return this.formItem;
+    }
+
+    protected void addLocationField(final Location location, final TextField locationText, ImageButton btn, final Consumer positiveCallback) {
+        DatabaseHelper.getLocationDao().initializeLocation(location);
+
+        // set the TextField for the location
+        locationText.setEnabled(false);
+        locationText.setValue(location.toString());
+
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                final LocationDialog dialogBuilder = new LocationDialog(getActivity(), location, positiveCallback, null);
+                AlertDialog newPersonDialog = dialogBuilder.create();
+                newPersonDialog.show();
+            }
+        });
     }
 
 }

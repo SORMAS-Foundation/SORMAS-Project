@@ -13,6 +13,14 @@ import java.sql.SQLException;
 
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
+import de.symeda.sormas.app.backend.epidata.EpiData;
+import de.symeda.sormas.app.backend.epidata.EpiDataBurial;
+import de.symeda.sormas.app.backend.epidata.EpiDataBurialDao;
+import de.symeda.sormas.app.backend.epidata.EpiDataDao;
+import de.symeda.sormas.app.backend.epidata.EpiDataGathering;
+import de.symeda.sormas.app.backend.epidata.EpiDataGatheringDao;
+import de.symeda.sormas.app.backend.epidata.EpiDataTravel;
+import de.symeda.sormas.app.backend.epidata.EpiDataTravelDao;
 import de.symeda.sormas.app.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.app.backend.hospitalization.HospitalizationDao;
 import de.symeda.sormas.app.backend.config.Config;
@@ -60,7 +68,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// name of the database file for your application -- change to something appropriate for your app
 	private static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	private static final int DATABASE_VERSION = 67;
+	private static final int DATABASE_VERSION = 70;
 
 	private static DatabaseHelper instance = null;
 	public static void init(Context context) {
@@ -91,6 +99,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	private EventParticipantDao eventParticipantDao;
 	private HospitalizationDao hospitalizationDao;
 	private PreviousHospitalizationDao previousHospitalizationDao;
+	private EpiDataDao epiDataDao;
+	private EpiDataBurialDao epiDataBurialDao;
+	private EpiDataGatheringDao epiDataGatheringDao;
+	private EpiDataTravelDao epiDataTravelDao;
 
 	private DatabaseHelper(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);//, R.raw.ormlite_config);
@@ -115,6 +127,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.clearTable(connectionSource, EventParticipant.class);
 			TableUtils.clearTable(connectionSource, Hospitalization.class);
 			TableUtils.clearTable(connectionSource, PreviousHospitalization.class);
+			TableUtils.clearTable(connectionSource, EpiData.class);
+			TableUtils.clearTable(connectionSource, EpiDataBurial.class);
+			TableUtils.clearTable(connectionSource, EpiDataGathering.class);
+			TableUtils.clearTable(connectionSource, EpiDataTravel.class);
 
 			if (clearInfrastructure) {
 				TableUtils.clearTable(connectionSource, Region.class);
@@ -158,6 +174,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.createTable(connectionSource, EventParticipant.class);
 			TableUtils.createTable(connectionSource, Hospitalization.class);
 			TableUtils.createTable(connectionSource, PreviousHospitalization.class);
+			TableUtils.createTable(connectionSource, EpiData.class);
+			TableUtils.createTable(connectionSource, EpiDataBurial.class);
+			TableUtils.createTable(connectionSource, EpiDataGathering.class);
+			TableUtils.createTable(connectionSource, EpiDataTravel.class);
 		} catch (SQLException e) {
 			Log.e(DatabaseHelper.class.getName(), "Can't create database", e);
 			throw new RuntimeException(e);
@@ -190,6 +210,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.dropTable(connectionSource, EventParticipant.class, true);
 			TableUtils.dropTable(connectionSource, Hospitalization.class, true);
 			TableUtils.dropTable(connectionSource, PreviousHospitalization.class, true);
+			TableUtils.dropTable(connectionSource, EpiData.class, true);
+			TableUtils.dropTable(connectionSource, EpiDataBurial.class, true);
+			TableUtils.dropTable(connectionSource, EpiDataGathering.class, true);
+			TableUtils.dropTable(connectionSource, EpiDataTravel.class, true);
 			if (oldVersion < 30) {
 				TableUtils.dropTable(connectionSource, Config.class, true);
 			}
@@ -504,6 +528,70 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		return instance.previousHospitalizationDao;
 	}
 
+	public static EpiDataDao getEpiDataDao() {
+		if (instance.epiDataDao == null) {
+			synchronized (DatabaseHelper.class) {
+				if (instance.epiDataDao == null) {
+					try {
+						instance.epiDataDao = new EpiDataDao((Dao<EpiData, Long>) instance.getDao(EpiData.class));
+					} catch (SQLException e) {
+						Log.e(DatabaseHelper.class.getName(), "Can't create EpiDataDao", e);
+						throw new RuntimeException(e);
+					}
+				}
+			}
+		}
+		return instance.epiDataDao;
+	}
+
+	public static EpiDataBurialDao getEpiDataBurialDao() {
+		if (instance.epiDataBurialDao == null) {
+			synchronized (DatabaseHelper.class) {
+				if (instance.epiDataBurialDao == null) {
+					try {
+						instance.epiDataBurialDao = new EpiDataBurialDao((Dao<EpiDataBurial, Long>) instance.getDao(EpiDataBurial.class));
+					} catch (SQLException e) {
+						Log.e(DatabaseHelper.class.getName(), "Can't create EpiDataBurialDao", e);
+						throw new RuntimeException(e);
+					}
+				}
+			}
+		}
+		return instance.epiDataBurialDao;
+	}
+
+	public static EpiDataGatheringDao getEpiDataGatheringDao() {
+		if (instance.epiDataGatheringDao == null) {
+			synchronized (DatabaseHelper.class) {
+				if (instance.epiDataGatheringDao == null) {
+					try {
+						instance.epiDataGatheringDao = new EpiDataGatheringDao((Dao<EpiDataGathering, Long>) instance.getDao(EpiDataGathering.class));
+					} catch (SQLException e) {
+						Log.e(DatabaseHelper.class.getName(), "Can't create EpiDataGatheringDao", e);
+						throw new RuntimeException(e);
+					}
+				}
+			}
+		}
+		return instance.epiDataGatheringDao;
+	}
+
+	public static EpiDataTravelDao getEpiDataTravelDao() {
+		if (instance.epiDataTravelDao == null) {
+			synchronized (DatabaseHelper.class) {
+				if (instance.epiDataTravelDao == null) {
+					try {
+						instance.epiDataTravelDao = new EpiDataTravelDao((Dao<EpiDataTravel, Long>) instance.getDao(EpiDataTravel.class));
+					} catch (SQLException e) {
+						Log.e(DatabaseHelper.class.getName(), "Can't create EpiDataTravelDao", e);
+						throw new RuntimeException(e);
+					}
+				}
+			}
+		}
+		return instance.epiDataTravelDao;
+	}
+
 	/**
 	 * Close the database connections and clear any cached DAOs.
 	 */
@@ -527,5 +615,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		eventParticipantDao = null;
 		hospitalizationDao = null;
 		previousHospitalizationDao= null;
+		epiDataDao = null;
+		epiDataBurialDao = null;
+		epiDataGatheringDao = null;
+		epiDataTravelDao = null;
 	}
 }

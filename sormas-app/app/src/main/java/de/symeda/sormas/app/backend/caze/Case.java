@@ -18,6 +18,7 @@ import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.caze.YesNoUnknown;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.epidata.EpiData;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.app.backend.location.Location;
@@ -103,6 +104,9 @@ public class Case extends AbstractDomainObject {
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private Hospitalization hospitalization;
+
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	private EpiData epiData;
 
 	public Person getPerson() {
 		return person;
@@ -261,5 +265,13 @@ public class Case extends AbstractDomainObject {
 
 	public void setHospitalization(Hospitalization hospitalization) {
 		this.hospitalization = hospitalization;
+	}
+
+	public EpiData getEpiData() {
+		return epiData;
+	}
+
+	public void setEpiData(EpiData epiData) {
+		this.epiData = epiData;
 	}
 }
