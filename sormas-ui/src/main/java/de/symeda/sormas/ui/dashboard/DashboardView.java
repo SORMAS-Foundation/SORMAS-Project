@@ -48,7 +48,6 @@ public class DashboardView extends AbstractView {
 	
 	@Override
 	public void enter(ViewChangeEvent event) {
-		
 		refreshVisibleCases();
 	}
 	
@@ -64,6 +63,5 @@ public class DashboardView extends AbstractView {
 		}
 		
     	mapComponent.showFacilities(cases);
-		
 	}
 }

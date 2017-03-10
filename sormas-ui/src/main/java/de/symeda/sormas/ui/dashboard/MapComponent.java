@@ -68,6 +68,7 @@ public class MapComponent extends VerticalLayout {
 			map.removeMarker(caseMarker);
 		}
     	facilityMarkers.clear();
+    	facilities.clear();
     	
     	// collect cases for health facilities
     	for (CaseDataDto caze : cases) {
