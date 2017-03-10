@@ -101,10 +101,7 @@ public class CaseEditPagerAdapter extends FragmentStatePagerAdapter {
                 Bundle hospitalizationBundle = new Bundle();
                 caze = DatabaseHelper.getCaseDao().queryUuid(caseEditBundle.getString(Case.UUID));
                 hospitalizationBundle.putString(HospitalizationTab.KEY_CASE_UUID, caze.getUuid());
-
-                if(caze.getHospitalization() != null) {
-                    hospitalizationBundle.putString(Hospitalization.UUID, caze.getHospitalization().getUuid());
-                }
+                hospitalizationBundle.putString(Hospitalization.UUID, caze.getHospitalization().getUuid());
 
                 hospitalizationTab.setArguments(hospitalizationBundle);
                 frag = hospitalizationTab;
@@ -114,11 +111,8 @@ public class CaseEditPagerAdapter extends FragmentStatePagerAdapter {
 
                 Bundle epiDataBundle = new Bundle();
                 caze = DatabaseHelper.getCaseDao().queryUuid(caseEditBundle.getString(Case.UUID));
-                epiDataBundle.putString(EpiDataTab.KEY_CASE_UUID, caze.getUuid());
-
-                if (caze.getEpiData() != null) {
-                    epiDataBundle.putString(EpiData.UUID, caze.getEpiData().getUuid());
-                }
+                epiDataBundle.putSerializable(Case.DISEASE, caze.getDisease());
+                epiDataBundle.putString(EpiData.UUID, caze.getEpiData().getUuid());
 
                 epiDataTab.setArguments(epiDataBundle);
                 frag = epiDataTab;

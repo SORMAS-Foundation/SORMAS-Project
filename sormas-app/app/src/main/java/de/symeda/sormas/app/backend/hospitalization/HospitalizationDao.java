@@ -27,6 +27,19 @@ public class HospitalizationDao extends AbstractAdoDao<Hospitalization> {
     }
 
     @Override
+    public Hospitalization queryUuid(String uuid) {
+        Hospitalization hospitalization = super.queryUuid(uuid);
+
+        try {
+            hospitalization.setPreviousHospitalizations(DatabaseHelper.getPreviousHospitalizationDao().getByHospitalization(hospitalization));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return hospitalization;
+    }
+
+    @Override
     public boolean save(Hospitalization hospitalization) {
         try {
             super.save(hospitalization);

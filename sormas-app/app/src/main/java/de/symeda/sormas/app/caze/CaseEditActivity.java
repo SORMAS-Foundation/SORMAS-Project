@@ -200,18 +200,22 @@ public class CaseEditActivity extends AbstractEditActivity {
                         locLocationDao.save(person.getAddress());
                     }
                     personDao.save(person);
+                    caze.setPerson(person); // we aren't sure why, but this is needed, otherwise the person will be overriden when first saved
 
                     symptomsEditTab.validateCaseData(symptoms);
                     if (symptoms != null) {
                         symptomsDao.save(symptoms);
+                        caze.setSymptoms(symptoms);
                     }
 
                     if (hospitalization !=null ) {
                         hospitalizationDao.save(hospitalization);
+                        caze.setHospitalization(hospitalization);
                     }
 
                     if (epiData != null) {
                         epiDataDao.save(epiData);
+                        caze.setEpiData(epiData);
                     }
 
                     caseDao.save(caze);

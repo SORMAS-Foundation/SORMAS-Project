@@ -23,6 +23,10 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.epidata.EpiData;
+import de.symeda.sormas.app.backend.epidata.EpiDataDao;
+import de.symeda.sormas.app.backend.hospitalization.Hospitalization;
+import de.symeda.sormas.app.backend.hospitalization.HospitalizationDao;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.symptoms.SymptomsDao;
@@ -152,11 +156,9 @@ public class CaseNewActivity extends AppCompatActivity {
         }
         caze.setReportDate(new Date());
 
-        SymptomsDao symptomsDao = DatabaseHelper.getSymptomsDao();
-        Symptoms symptoms = DataUtils.createNew(Symptoms.class);
-        symptomsDao.save(symptoms);
-
-        caze.setSymptoms(symptoms);
+        DatabaseHelper.getSymptomsDao().save(caze.getSymptoms());
+        DatabaseHelper.getHospitalizationDao().save(caze.getHospitalization());
+        DatabaseHelper.getEpiDataDao().save(caze.getEpiData());
 
         CaseDao caseDao = DatabaseHelper.getCaseDao();
         caseDao.save(caze);

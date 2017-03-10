@@ -115,8 +115,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		try {
 			TableUtils.clearTable(connectionSource, Case.class);
 			TableUtils.clearTable(connectionSource, Person.class);
-			TableUtils.clearTable(connectionSource, Location.class);
-			TableUtils.clearTable(connectionSource, Facility.class);
 			TableUtils.clearTable(connectionSource, Symptoms.class);
 			TableUtils.clearTable(connectionSource, Task.class);
 			TableUtils.clearTable(connectionSource, Contact.class);
@@ -136,6 +134,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				TableUtils.clearTable(connectionSource, Region.class);
 				TableUtils.clearTable(connectionSource, District.class);
 				TableUtils.clearTable(connectionSource, Community.class);
+				TableUtils.clearTable(connectionSource, Facility.class);
+				// FIXME: 10.03.2017 move this to the block above as soon as issue #138 is solved
+				TableUtils.clearTable(connectionSource, Location.class);
 				TableUtils.clearTable(connectionSource, User.class);
 			}
 

@@ -51,15 +51,11 @@ public class EpiDataTab extends FormTab {
 
         try {
 
-            final String caseUuid = getArguments().getString(EpiDataTab.KEY_CASE_UUID);
-            final Case caze = DatabaseHelper.getCaseDao().queryUuid(caseUuid);
+            final Disease disease = (Disease) getArguments().getSerializable(Case.DISEASE);
 
             final String epiDataUuid = getArguments().getString(EpiData.UUID);
             if (epiDataUuid != null) {
                 final EpiData epiData = DatabaseHelper.getEpiDataDao().queryUuid(epiDataUuid);
-                epiData.setBurials(DatabaseHelper.getEpiDataBurialDao().getByEpiData(epiData));
-                epiData.setGatherings(DatabaseHelper.getEpiDataGatheringDao().getByEpiData(epiData));
-                epiData.setTravels(DatabaseHelper.getEpiDataTravelDao().getByEpiData(epiData));
                 binding.setEpiData(epiData);
             } else {
                 binding.setEpiData(new EpiData());
@@ -271,7 +267,7 @@ public class EpiDataTab extends FormTab {
                 }
             });
 
-            visibilityDisease(caze.getDisease());
+            visibilityDisease(disease);
 
         } catch(Exception e) {
             e.printStackTrace();;

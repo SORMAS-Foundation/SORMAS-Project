@@ -3,8 +3,10 @@ package de.symeda.sormas.app.backend.epidata;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.logger.Logger;
 import com.j256.ormlite.logger.LoggerFactory;
+import com.j256.ormlite.stmt.PreparedQuery;
 
 import java.sql.SQLException;
+import java.util.List;
 
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -25,6 +27,21 @@ public class EpiDataDao extends AbstractAdoDao<EpiData> {
     @Override
     public String getTableName() {
         return EpiData.TABLE_NAME;
+    }
+
+    @Override
+    public EpiData queryUuid(String uuid) {
+        EpiData epiData = super.queryUuid(uuid);
+
+        try {
+            epiData.setBurials(DatabaseHelper.getEpiDataBurialDao().getByEpiData(epiData));
+            epiData.setGatherings(DatabaseHelper.getEpiDataGatheringDao().getByEpiData(epiData));
+            epiData.setTravels(DatabaseHelper.getEpiDataTravelDao().getByEpiData(epiData));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return epiData;
     }
 
     @Override
