@@ -8,13 +8,16 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:paddingBottom="@dimen/field_padding"
-        android:paddingTop="@dimen/field_padding">
+        android:paddingTop="@dimen/field_padding"
+        android:layout_marginTop="@dimen/field_padding"
+        android:background="@color/colorLightGrey">
 
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
+            android:paddingLeft="@dimen/field_padding_4"
             android:paddingBottom="@dimen/field_padding"
             android:paddingTop="@dimen/field_padding">
 
@@ -58,6 +61,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
+            android:paddingLeft="@dimen/field_padding_4"
             android:paddingBottom="@dimen/field_padding"
             android:paddingTop="@dimen/field_padding">
 
