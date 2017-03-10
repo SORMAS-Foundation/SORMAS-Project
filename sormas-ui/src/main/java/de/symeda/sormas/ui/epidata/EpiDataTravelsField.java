@@ -80,7 +80,8 @@ public class EpiDataTravelsField extends AbstractTableField<EpiDataTravelDto> {
 		editForm.setValue(entry);
 		
 		final CommitDiscardWrapperComponent<EpiDataTravelEditForm> editView = new CommitDiscardWrapperComponent<EpiDataTravelEditForm>(editForm, editForm.getFieldGroup());
-		
+		editView.getCommitButton().setCaption("Done");
+
 		editView.addCommitListener(new CommitListener() {
 			@Override
 			public void onCommit() {

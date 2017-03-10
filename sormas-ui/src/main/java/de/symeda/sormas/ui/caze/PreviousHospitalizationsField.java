@@ -113,6 +113,7 @@ public class PreviousHospitalizationsField extends AbstractTableField<PreviousHo
 		editForm.setValue(entry);
 		
 		final CommitDiscardWrapperComponent<PreviousHospitalizationEditForm> editView = new CommitDiscardWrapperComponent<PreviousHospitalizationEditForm>(editForm, editForm.getFieldGroup());
+		editView.getCommitButton().setCaption("Done");
 		
         editView.addCommitListener(new CommitListener() {
         	

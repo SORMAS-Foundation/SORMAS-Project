@@ -117,7 +117,8 @@ public class EpiDataBurialsField extends AbstractTableField<EpiDataBurialDto> {
 		editForm.setValue(entry);
 		
 		final CommitDiscardWrapperComponent<EpiDataBurialEditForm> editView = new CommitDiscardWrapperComponent<EpiDataBurialEditForm>(editForm, editForm.getFieldGroup());
-		
+		editView.getCommitButton().setCaption("Done");
+
 		editView.addCommitListener(new CommitListener() {
 			@Override
 			public void onCommit() {

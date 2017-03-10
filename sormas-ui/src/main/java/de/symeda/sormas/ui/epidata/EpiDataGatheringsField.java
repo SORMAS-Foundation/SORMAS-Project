@@ -89,7 +89,8 @@ public class EpiDataGatheringsField extends AbstractTableField<EpiDataGatheringD
 		editForm.setValue(entry);
 		
 		final CommitDiscardWrapperComponent<EpiDataGatheringEditForm> editView = new CommitDiscardWrapperComponent<EpiDataGatheringEditForm>(editForm, editForm.getFieldGroup());
-		
+		editView.getCommitButton().setCaption("Done");
+
 		editView.addCommitListener(new CommitListener() {
 			@Override
 			public void onCommit() {
