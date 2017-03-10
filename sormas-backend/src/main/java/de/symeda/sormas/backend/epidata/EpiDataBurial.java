@@ -83,6 +83,9 @@ public class EpiDataBurial extends AbstractDomainObject {
 
 	@OneToOne(cascade = CascadeType.ALL)
 	public Location getBurialAddress() {
+		if (burialAddress == null) {
+			burialAddress = new Location();
+		}
 		return burialAddress;
 	}
 	public void setBurialAddress(Location burialAddress) {

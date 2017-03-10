@@ -56,6 +56,9 @@ public class EpiDataGathering extends AbstractDomainObject {
 
 	@OneToOne(cascade = CascadeType.ALL)
 	public Location getGatheringAddress() {
+		if (gatheringAddress == null) {
+			gatheringAddress = new Location();
+		}
 		return gatheringAddress;
 	}
 	public void setGatheringAddress(Location gatheringAddress) {
