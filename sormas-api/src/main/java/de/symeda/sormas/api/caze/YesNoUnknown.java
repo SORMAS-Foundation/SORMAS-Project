@@ -8,7 +8,6 @@ public enum YesNoUnknown {
 	NO,
 	UNKNOWN;
 	
-
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	};

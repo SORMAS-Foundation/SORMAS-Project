@@ -9,7 +9,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import de.symeda.sormas.api.DataTransferObject;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.YesNoUnknown;
-import de.symeda.sormas.api.caze.YesNoUnknownHoriz;
+import de.symeda.sormas.api.caze.YesNoUnknown;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.PreciseDateAdapter;
 
@@ -57,17 +57,17 @@ public class EpiDataDto extends DataTransferObject {
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES})
 	private YesNoUnknown traveled;
 	@Diseases({Disease.EVD,Disease.LASSA})
-	private YesNoUnknownHoriz rodents;
+	private YesNoUnknown rodents;
 	@Diseases({Disease.EVD,Disease.LASSA})
-	private YesNoUnknownHoriz bats;
+	private YesNoUnknown bats;
 	@Diseases({Disease.EVD,Disease.LASSA})
-	private YesNoUnknownHoriz primates;
+	private YesNoUnknown primates;
 	@Diseases({Disease.EVD,Disease.LASSA})
-	private YesNoUnknownHoriz swine;
+	private YesNoUnknown swine;
 	@Diseases({Disease.EVD,Disease.LASSA})
-	private YesNoUnknownHoriz birds;
+	private YesNoUnknown birds;
 	@Diseases({Disease.AVIAN_INFLUENCA})
-	private YesNoUnknownHoriz poultryEat;
+	private YesNoUnknown poultryEat;
 	@Diseases({Disease.AVIAN_INFLUENCA})
 	private YesNoUnknown poultry;
 	@Diseases({Disease.AVIAN_INFLUENCA})
@@ -81,7 +81,7 @@ public class EpiDataDto extends DataTransferObject {
 	@Diseases({Disease.AVIAN_INFLUENCA})
 	private String poultryLocation;
 	@Diseases({Disease.AVIAN_INFLUENCA})
-	private YesNoUnknownHoriz wildbirds;
+	private YesNoUnknown wildbirds;
 	@Diseases({Disease.AVIAN_INFLUENCA})
 	private String wildbirdsDetails;
 	@Diseases({Disease.AVIAN_INFLUENCA})
@@ -89,9 +89,9 @@ public class EpiDataDto extends DataTransferObject {
 	@Diseases({Disease.AVIAN_INFLUENCA})
 	private String wildbirdsLocation;
 	@Diseases({Disease.EVD,Disease.LASSA})
-	private YesNoUnknownHoriz cattle;
+	private YesNoUnknown cattle;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA})
-	private YesNoUnknownHoriz otherAnimals;
+	private YesNoUnknown otherAnimals;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA})
 	private String otherAnimalsDetails;
 	@Diseases({Disease.CHOLERA})
@@ -130,45 +130,45 @@ public class EpiDataDto extends DataTransferObject {
 		this.traveled = traveled;
 	}
 	
-	public YesNoUnknownHoriz getRodents() {
+	public YesNoUnknown getRodents() {
 		return rodents;
 	}
-	public void setRodents(YesNoUnknownHoriz rodents) {
+	public void setRodents(YesNoUnknown rodents) {
 		this.rodents = rodents;
 	}
 	
-	public YesNoUnknownHoriz getBats() {
+	public YesNoUnknown getBats() {
 		return bats;
 	}
-	public void setBats(YesNoUnknownHoriz bats) {
+	public void setBats(YesNoUnknown bats) {
 		this.bats = bats;
 	}
 	
-	public YesNoUnknownHoriz getPrimates() {
+	public YesNoUnknown getPrimates() {
 		return primates;
 	}
-	public void setPrimates(YesNoUnknownHoriz primates) {
+	public void setPrimates(YesNoUnknown primates) {
 		this.primates = primates;
 	}
 	
-	public YesNoUnknownHoriz getSwine() {
+	public YesNoUnknown getSwine() {
 		return swine;
 	}
-	public void setSwine(YesNoUnknownHoriz swine) {
+	public void setSwine(YesNoUnknown swine) {
 		this.swine = swine;
 	}
 	
-	public YesNoUnknownHoriz getBirds() {
+	public YesNoUnknown getBirds() {
 		return birds;
 	}
-	public void setBirds(YesNoUnknownHoriz birds) {
+	public void setBirds(YesNoUnknown birds) {
 		this.birds = birds;
 	}
 	
-	public YesNoUnknownHoriz getPoultryEat() {
+	public YesNoUnknown getPoultryEat() {
 		return poultryEat;
 	}
-	public void setPoultryEat(YesNoUnknownHoriz poultryEat) {
+	public void setPoultryEat(YesNoUnknown poultryEat) {
 		this.poultryEat = poultryEat;
 	}
 	
@@ -216,10 +216,10 @@ public class EpiDataDto extends DataTransferObject {
 		this.poultryLocation = poultryLocation;
 	}
 	
-	public YesNoUnknownHoriz getWildbirds() {
+	public YesNoUnknown getWildbirds() {
 		return wildbirds;
 	}
-	public void setWildbirds(YesNoUnknownHoriz wildbirds) {
+	public void setWildbirds(YesNoUnknown wildbirds) {
 		this.wildbirds = wildbirds;
 	}
 	
@@ -246,17 +246,17 @@ public class EpiDataDto extends DataTransferObject {
 		this.wildbirdsLocation = wildbirdsLocation;
 	}
 	
-	public YesNoUnknownHoriz getCattle() {
+	public YesNoUnknown getCattle() {
 		return cattle;
 	}
-	public void setCattle(YesNoUnknownHoriz cattle) {
+	public void setCattle(YesNoUnknown cattle) {
 		this.cattle = cattle;
 	}
 	
-	public YesNoUnknownHoriz getOtherAnimals() {
+	public YesNoUnknown getOtherAnimals() {
 		return otherAnimals;
 	}
-	public void setOtherAnimals(YesNoUnknownHoriz otherAnimals) {
+	public void setOtherAnimals(YesNoUnknown otherAnimals) {
 		this.otherAnimals = otherAnimals;
 	}
 	

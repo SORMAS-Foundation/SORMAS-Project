@@ -1,5 +1,7 @@
 package de.symeda.sormas.ui.utils;
 
+import java.util.List;
+
 import com.vaadin.data.Validator;
 import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
@@ -18,7 +20,6 @@ import com.vaadin.ui.OptionGroup;
 
 import de.symeda.sormas.api.DataTransferObject;
 import de.symeda.sormas.api.I18nProperties;
-import de.symeda.sormas.api.caze.YesNoUnknownHoriz;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.ui.caze.PreviousHospitalizationsField;
 import de.symeda.sormas.ui.epidata.EpiDataBurialsField;
@@ -63,10 +64,6 @@ public abstract class AbstractEditForm <DTO extends DataTransferObject> extends 
 				
 				if (type.isEnum()) {
 					if (SymptomState.class.isAssignableFrom(type)) {
-						OptionGroup field = super.createField(type, OptionGroup.class);
-						CssStyles.style(field, CssStyles.ROW_OPTIONGROUP);
-						return (T) field;
-					} else if (YesNoUnknownHoriz.class.isAssignableFrom(type)) {
 						OptionGroup field = super.createField(type, OptionGroup.class);
 						CssStyles.style(field, CssStyles.ROW_OPTIONGROUP);
 						return (T) field;
@@ -239,6 +236,12 @@ public abstract class AbstractEditForm <DTO extends DataTransferObject> extends 
 			}
 		}
 		return field;
+	}
+	
+	protected void styleAsRow(List<String> fields) {
+		for(String field : fields) {
+			CssStyles.style(getFieldGroup().getField(field), CssStyles.ROW_OPTIONGROUP);
+		}
 	}
 	
 	protected void setReadOnly(boolean readOnly, String ...fieldOrPropertyIds) {

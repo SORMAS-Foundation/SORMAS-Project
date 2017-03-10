@@ -41,7 +41,7 @@ public class EpiDataGatheringDtoHelper extends AdoDtoHelper<EpiDataGathering, Ep
         if (b.getGatheringAddress() != null) {
             a.setGatheringAddress(DatabaseHelper.getLocationDao().queryUuid(b.getGatheringAddress().getUuid()));
         } else {
-            a.setGatheringAddress(null);
+            a.setGatheringAddress(locationHelper.create());
         }
 
         a.setDescription(b.getDescription());
@@ -61,7 +61,7 @@ public class EpiDataGatheringDtoHelper extends AdoDtoHelper<EpiDataGathering, Ep
             Location location = DatabaseHelper.getLocationDao().queryForId(b.getGatheringAddress().getId());
             a.setGatheringAddress(locationHelper.adoToDto(location));
         } else {
-            a.setGatheringAddress(null);
+            a.setGatheringAddress(locationHelper.createDto());
         }
 
         a.setDescription(b.getDescription());

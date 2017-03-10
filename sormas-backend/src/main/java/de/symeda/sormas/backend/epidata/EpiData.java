@@ -14,7 +14,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import de.symeda.sormas.api.caze.YesNoUnknown;
-import de.symeda.sormas.api.caze.YesNoUnknownHoriz;
+import de.symeda.sormas.api.caze.YesNoUnknown;
 import de.symeda.sormas.api.epidata.WaterSource;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 
@@ -54,24 +54,24 @@ public class EpiData extends AbstractDomainObject {
 	private YesNoUnknown burialAttended;
 	private YesNoUnknown gatheringAttended;
 	private YesNoUnknown traveled;
-	private YesNoUnknownHoriz rodents;
-	private YesNoUnknownHoriz bats;
-	private YesNoUnknownHoriz primates;
-	private YesNoUnknownHoriz swine;
-	private YesNoUnknownHoriz birds;
-	private YesNoUnknownHoriz poultryEat;
+	private YesNoUnknown rodents;
+	private YesNoUnknown bats;
+	private YesNoUnknown primates;
+	private YesNoUnknown swine;
+	private YesNoUnknown birds;
+	private YesNoUnknown poultryEat;
 	private YesNoUnknown poultry;
 	private String poultryDetails;
 	private YesNoUnknown poultrySick;
 	private String poultrySickDetails;
 	private Date poultryDate;
 	private String poultryLocation;
-	private YesNoUnknownHoriz wildbirds;
+	private YesNoUnknown wildbirds;
 	private String wildbirdsDetails;
 	private Date wildbirdsDate;
 	private String wildbirdsLocation;
-	private YesNoUnknownHoriz cattle;
-	private YesNoUnknownHoriz otherAnimals;
+	private YesNoUnknown cattle;
+	private YesNoUnknown otherAnimals;
 	private String otherAnimalsDetails;
 	private WaterSource waterSource;
 	private String waterSourceOther;
@@ -108,50 +108,50 @@ public class EpiData extends AbstractDomainObject {
 	}
 
 	@Enumerated(EnumType.STRING)
-	public YesNoUnknownHoriz getRodents() {
+	public YesNoUnknown getRodents() {
 		return rodents;
 	}
-	public void setRodents(YesNoUnknownHoriz rodents) {
+	public void setRodents(YesNoUnknown rodents) {
 		this.rodents = rodents;
 	}
 
 	@Enumerated(EnumType.STRING)
-	public YesNoUnknownHoriz getBats() {
+	public YesNoUnknown getBats() {
 		return bats;
 	}
-	public void setBats(YesNoUnknownHoriz bats) {
+	public void setBats(YesNoUnknown bats) {
 		this.bats = bats;
 	}
 
 	@Enumerated(EnumType.STRING)
-	public YesNoUnknownHoriz getPrimates() {
+	public YesNoUnknown getPrimates() {
 		return primates;
 	}
-	public void setPrimates(YesNoUnknownHoriz primates) {
+	public void setPrimates(YesNoUnknown primates) {
 		this.primates = primates;
 	}
 
 	@Enumerated(EnumType.STRING)
-	public YesNoUnknownHoriz getSwine() {
+	public YesNoUnknown getSwine() {
 		return swine;
 	}
-	public void setSwine(YesNoUnknownHoriz swine) {
+	public void setSwine(YesNoUnknown swine) {
 		this.swine = swine;
 	}
 
 	@Enumerated(EnumType.STRING)
-	public YesNoUnknownHoriz getBirds() {
+	public YesNoUnknown getBirds() {
 		return birds;
 	}
-	public void setBirds(YesNoUnknownHoriz birds) {
+	public void setBirds(YesNoUnknown birds) {
 		this.birds = birds;
 	}
 
 	@Enumerated(EnumType.STRING)
-	public YesNoUnknownHoriz getPoultryEat() {
+	public YesNoUnknown getPoultryEat() {
 		return poultryEat;
 	}
-	public void setPoultryEat(YesNoUnknownHoriz poultryEat) {
+	public void setPoultryEat(YesNoUnknown poultryEat) {
 		this.poultryEat = poultryEat;
 	}
 
@@ -204,10 +204,10 @@ public class EpiData extends AbstractDomainObject {
 	}
 
 	@Enumerated(EnumType.STRING)
-	public YesNoUnknownHoriz getWildbirds() {
+	public YesNoUnknown getWildbirds() {
 		return wildbirds;
 	}
-	public void setWildbirds(YesNoUnknownHoriz wildbirds) {
+	public void setWildbirds(YesNoUnknown wildbirds) {
 		this.wildbirds = wildbirds;
 	}
 
@@ -236,18 +236,18 @@ public class EpiData extends AbstractDomainObject {
 	}
 
 	@Enumerated(EnumType.STRING)
-	public YesNoUnknownHoriz getCattle() {
+	public YesNoUnknown getCattle() {
 		return cattle;
 	}
-	public void setCattle(YesNoUnknownHoriz cattle) {
+	public void setCattle(YesNoUnknown cattle) {
 		this.cattle = cattle;
 	}
 
 	@Enumerated(EnumType.STRING)
-	public YesNoUnknownHoriz getOtherAnimals() {
+	public YesNoUnknown getOtherAnimals() {
 		return otherAnimals;
 	}
-	public void setOtherAnimals(YesNoUnknownHoriz otherAnimals) {
+	public void setOtherAnimals(YesNoUnknown otherAnimals) {
 		this.otherAnimals = otherAnimals;
 	}
 

@@ -13,7 +13,7 @@ import com.vaadin.ui.TextField;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.YesNoUnknown;
-import de.symeda.sormas.api.caze.YesNoUnknownHoriz;
+import de.symeda.sormas.api.caze.YesNoUnknown;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.WaterSource;
 import de.symeda.sormas.api.utils.Diseases.DiseasesConfiguration;
@@ -81,9 +81,15 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		addField(EpiDataDto.GATHERINGS, EpiDataGatheringsField.class);
 		addField(EpiDataDto.TRAVELED, OptionGroup.class);
 		addField(EpiDataDto.TRAVELS, EpiDataTravelsField.class);
-		addFields(EpiDataDto.RODENTS, EpiDataDto.BATS, EpiDataDto.PRIMATES, EpiDataDto.SWINE,
-				EpiDataDto.CATTLE, EpiDataDto.OTHER_ANIMALS, EpiDataDto.BIRDS, EpiDataDto.POULTRY_EAT,
-				EpiDataDto.WILDBIRDS);
+		addField(EpiDataDto.RODENTS, OptionGroup.class);
+		addField(EpiDataDto.BATS, OptionGroup.class);
+		addField(EpiDataDto.PRIMATES, OptionGroup.class);
+		addField(EpiDataDto.SWINE, OptionGroup.class);
+		addField(EpiDataDto.CATTLE, OptionGroup.class);
+		addField(EpiDataDto.OTHER_ANIMALS, OptionGroup.class);
+		addField(EpiDataDto.BIRDS, OptionGroup.class);
+		addField(EpiDataDto.POULTRY_EAT, OptionGroup.class);			
+		addField(EpiDataDto.WILDBIRDS, OptionGroup.class);
 		addField(EpiDataDto.POULTRY, OptionGroup.class);
 		addField(EpiDataDto.POULTRY_SICK, OptionGroup.class);
 		addField(EpiDataDto.WATER_BODY, OptionGroup.class);
@@ -105,10 +111,13 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			getFieldGroup().getField(propertyId).setVisible(visible);
 		}
 		
+		styleAsRow(Arrays.asList(EpiDataDto.RODENTS, EpiDataDto.BATS, EpiDataDto.PRIMATES, EpiDataDto.SWINE, EpiDataDto.CATTLE,
+				EpiDataDto.OTHER_ANIMALS, EpiDataDto.BIRDS, EpiDataDto.POULTRY_EAT, EpiDataDto.WILDBIRDS));
+		
 		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(EpiDataDto.POULTRY_DETAILS), EpiDataDto.POULTRY, Arrays.asList(YesNoUnknown.YES), true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(EpiDataDto.POULTRY_SICK_DETAILS, EpiDataDto.POULTRY_DATE, EpiDataDto.POULTRY_LOCATION), EpiDataDto.POULTRY_SICK, Arrays.asList(YesNoUnknown.YES), true);
-		FieldHelper.setVisibleWhen(getFieldGroup(), EpiDataDto.OTHER_ANIMALS_DETAILS, EpiDataDto.OTHER_ANIMALS, Arrays.asList(YesNoUnknownHoriz.YES), true);
-		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(EpiDataDto.WILDBIRDS_DETAILS, EpiDataDto.WILDBIRDS_DATE, EpiDataDto.WILDBIRDS_LOCATION), EpiDataDto.WILDBIRDS, Arrays.asList(YesNoUnknownHoriz.YES), true);
+		FieldHelper.setVisibleWhen(getFieldGroup(), EpiDataDto.OTHER_ANIMALS_DETAILS, EpiDataDto.OTHER_ANIMALS, Arrays.asList(YesNoUnknown.YES), true);
+		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(EpiDataDto.WILDBIRDS_DETAILS, EpiDataDto.WILDBIRDS_DATE, EpiDataDto.WILDBIRDS_LOCATION), EpiDataDto.WILDBIRDS, Arrays.asList(YesNoUnknown.YES), true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), EpiDataDto.WATER_SOURCE_OTHER, EpiDataDto.WATER_SOURCE, Arrays.asList(WaterSource.OTHER), true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), EpiDataDto.WATER_BODY_DETAILS, EpiDataDto.WATER_BODY, Arrays.asList(YesNoUnknown.YES), true);
 		
