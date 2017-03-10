@@ -89,17 +89,6 @@
 
             </LinearLayout>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingBottom="10dp"
-                android:paddingTop="10dp"
-                android:text="@string/headline_hospitalization_previous"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textColor="@android:color/tab_indicator_text"
-                android:textSize="@dimen/abc_text_size_body_1_material"
-                android:textStyle="bold" />
-
             <de.symeda.sormas.app.component.YesNoUnknownVerticalField
                 android:id="@+id/hospitalization_hospitalizedPreviously"
                 android:layout_width="match_parent"
@@ -112,21 +101,6 @@
                 android:layout_height="wrap_content"
                 android:value="@={hospitalization.previousHospitalizations}" />
 
-            <!--<LinearLayout-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:orientation="horizontal">-->
-                <!--<Button-->
-                    <!--android:layout_width="match_parent"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:layout_weight="0.5"-->
-                    <!--android:layout_margin="2dp"-->
-                    <!--android:background="@color/colorPrimary"-->
-                    <!--android:id="@+id/task_not_executable_btn"/>-->
-                <!--<ListView android:id="@+id/hospitalization_prevHospitalizations_list"-->
-                    <!--android:layout_width="match_parent"-->
-                    <!--android:layout_height="wrap_content"/>-->
-            <!--</LinearLayout>-->
         </LinearLayout>
     </ScrollView>
 </layout>
