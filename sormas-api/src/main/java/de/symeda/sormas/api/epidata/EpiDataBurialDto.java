@@ -25,7 +25,6 @@ public class EpiDataBurialDto extends DataTransferObject {
 	public static final String BURIAL_ILL = "burialIll";
 	public static final String BURIAL_TOUCHING = "burialTouching";
 	
-	private EpiDataDto epiData;
 	@Diseases({Disease.EVD,Disease.LASSA})
 	private String burialPersonName;
 	@Diseases({Disease.EVD,Disease.LASSA})
@@ -40,13 +39,6 @@ public class EpiDataBurialDto extends DataTransferObject {
 	private YesNoUnknown burialIll;
 	@Diseases({Disease.EVD,Disease.LASSA})
 	private YesNoUnknown burialTouching;
-	
-	public EpiDataDto getEpiData() {
-		return epiData;
-	}
-	public void setEpiData(EpiDataDto epiData) {
-		this.epiData = epiData;
-	}
 	
 	public String getBurialPersonName() {
 		return burialPersonName;

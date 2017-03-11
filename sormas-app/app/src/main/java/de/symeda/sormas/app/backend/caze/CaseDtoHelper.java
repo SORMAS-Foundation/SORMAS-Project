@@ -173,6 +173,7 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 
         if (source.getHospitalization() != null) {
             Hospitalization hospitalization = DatabaseHelper.getHospitalizationDao().queryForId(source.getHospitalization().getId());
+            DatabaseHelper.getHospitalizationDao().initLazyData(hospitalization);
             target.setHospitalization(hospitalizationDtoHelper.adoToDto(hospitalization));
         } else {
             target.setHospitalization(null);
@@ -180,6 +181,7 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 
         if (source.getEpiData() != null) {
             EpiData epiData = DatabaseHelper.getEpiDataDao().queryForId(source.getEpiData().getId());
+            DatabaseHelper.getEpiDataDao().initLazyData(epiData);
             target.setEpiData(epiDataDtoHelper.adoToDto(epiData));
         } else {
             target.setEpiData(null);

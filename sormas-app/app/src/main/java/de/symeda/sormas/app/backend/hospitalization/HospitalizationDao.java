@@ -26,9 +26,7 @@ public class HospitalizationDao extends AbstractAdoDao<Hospitalization> {
         return Hospitalization.TABLE_NAME;
     }
 
-    @Override
-    public Hospitalization queryUuid(String uuid) {
-        Hospitalization hospitalization = super.queryUuid(uuid);
+    public Hospitalization initLazyData(Hospitalization hospitalization) {
 
         try {
             hospitalization.setPreviousHospitalizations(DatabaseHelper.getPreviousHospitalizationDao().getByHospitalization(hospitalization));

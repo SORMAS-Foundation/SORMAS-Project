@@ -20,7 +20,6 @@ public class EpiDataGatheringDto extends DataTransferObject {
 	public static final String GATHERING_DATE = "gatheringDate";
 	public static final String GATHERING_ADDRESS = "gatheringAddress";
 	
-	private EpiDataDto epiData;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES})
 	private String description;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES})
@@ -28,12 +27,6 @@ public class EpiDataGatheringDto extends DataTransferObject {
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES})
 	private LocationDto gatheringAddress;
 	
-	public EpiDataDto getEpiData() {
-		return epiData;
-	}
-	public void setEpiData(EpiDataDto epiData) {
-		this.epiData = epiData;
-	}
 	
 	public String getDescription() {
 		return description;

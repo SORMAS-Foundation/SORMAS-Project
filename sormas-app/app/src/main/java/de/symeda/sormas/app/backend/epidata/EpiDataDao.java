@@ -10,6 +10,7 @@ import java.util.List;
 
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.app.backend.location.LocationDao;
 
 /**
@@ -29,9 +30,7 @@ public class EpiDataDao extends AbstractAdoDao<EpiData> {
         return EpiData.TABLE_NAME;
     }
 
-    @Override
-    public EpiData queryUuid(String uuid) {
-        EpiData epiData = super.queryUuid(uuid);
+    public EpiData initLazyData(EpiData epiData) {
 
         try {
             epiData.setBurials(DatabaseHelper.getEpiDataBurialDao().getByEpiData(epiData));

@@ -30,11 +30,9 @@ public class PreviousHospitalizationDtoHelper extends AdoDtoHelper<PreviousHospi
 
     @Override
     public void fillInnerFromDto(PreviousHospitalization a, PreviousHospitalizationDto b) {
-        if (b.getHospitalization() != null) {
-            a.setHospitalization(DatabaseHelper.getHospitalizationDao().queryUuid(b.getHospitalization().getUuid()));
-        } else {
-            a.setHospitalization(null);
-        }
+
+        // hospitalization is set by calling method
+
         if (b.getHealthFacility() != null) {
             a.setHealthFacility(DatabaseHelper.getFacilityDao().queryUuid(b.getHealthFacility().getUuid()));
         } else {
@@ -49,12 +47,7 @@ public class PreviousHospitalizationDtoHelper extends AdoDtoHelper<PreviousHospi
 
     @Override
     public void fillInnerFromAdo(PreviousHospitalizationDto a, PreviousHospitalization b) {
-//        if (b.getHospitalization() != null) {
-//            Hospitalization hospitalization = DatabaseHelper.getHospitalizationDao().queryForId(b.getHospitalization().getId());
-//            a.setHospitalization(hospitalizationDtoHelper.adoToDto(hospitalization));
-//        } else {
-//            a.setHospitalization(null);
-//        }
+
         if (b.getHealthFacility() != null) {
             Facility facility = DatabaseHelper.getFacilityDao().queryForId(b.getHealthFacility().getId());
             a.setHealthFacility(FacilityDtoHelper.toReferenceDto(facility));

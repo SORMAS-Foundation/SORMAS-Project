@@ -84,10 +84,6 @@ public class CaseDao extends AbstractAdoDao<Case> {
 
         return cazeDate;
     }
-    public void markAsModified(String uuid) {
-        Case caze = queryUuid(uuid);
-        save(caze);
-    }
 
     // TODO #69 create some date filter for finding the right case (this is implemented in CaseService.java too)
     public Case getByPersonAndDisease(Person person, Disease disease) {

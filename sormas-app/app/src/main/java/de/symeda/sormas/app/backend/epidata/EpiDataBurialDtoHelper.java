@@ -32,11 +32,8 @@ public class EpiDataBurialDtoHelper extends AdoDtoHelper<EpiDataBurial, EpiDataB
 
     @Override
     public void fillInnerFromDto(EpiDataBurial a, EpiDataBurialDto b) {
-        if (b.getEpiData() != null) {
-            a.setEpiData(DatabaseHelper.getEpiDataDao().queryUuid(b.getEpiData().getUuid()));
-        } else {
-            a.setEpiData(null);
-        }
+
+        // epi data is set by calling method
 
         if (b.getBurialAddress() != null) {
             a.setBurialAddress(DatabaseHelper.getLocationDao().queryUuid(b.getBurialAddress().getUuid()));
@@ -54,12 +51,6 @@ public class EpiDataBurialDtoHelper extends AdoDtoHelper<EpiDataBurial, EpiDataB
 
     @Override
     public void fillInnerFromAdo(EpiDataBurialDto a, EpiDataBurial b) {
-        if (b.getEpiData() != null) {
-            EpiData epiData = DatabaseHelper.getEpiDataDao().queryForId(b.getEpiData().getId());
-            a.setEpiData(epiDataHelper.adoToDto(epiData));
-        } else {
-            a.setEpiData(null);
-        }
 
         if (b.getBurialAddress() != null) {
             Location location = DatabaseHelper.getLocationDao().queryForId(b.getBurialAddress().getId());

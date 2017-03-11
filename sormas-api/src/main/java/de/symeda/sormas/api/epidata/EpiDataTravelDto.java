@@ -20,7 +20,6 @@ public class EpiDataTravelDto extends DataTransferObject {
 	public static final String TRAVEL_DATE_FROM = "travelDateFrom";
 	public static final String TRAVEL_DATE_TO = "travelDateTo";
 	
-	private EpiDataDto epiData;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES})
 	private TravelType travelType;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES})
@@ -29,13 +28,7 @@ public class EpiDataTravelDto extends DataTransferObject {
 	private Date travelDateFrom;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES})
 	private Date travelDateTo;
-	
-	public EpiDataDto getEpiData() {
-		return epiData;
-	}
-	public void setEpiData(EpiDataDto epiData) {
-		this.epiData = epiData;
-	}
+
 	
 	public TravelType getTravelType() {
 		return travelType;

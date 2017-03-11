@@ -21,7 +21,7 @@ public class PreviousHospitalizationsField extends AbstractTableField<PreviousHo
 	private static final String PERIOD = "period";
 	private static final String WARD = "ward";
 	private static final String LGA = "lga";
-	
+
 	@Override
 	public Class<PreviousHospitalizationDto> getEntryType() {
 		return PreviousHospitalizationDto.class;
@@ -29,9 +29,9 @@ public class PreviousHospitalizationsField extends AbstractTableField<PreviousHo
 
 	@Override
 	protected void updateColumns() {
-		
+
 		Table table = getTable();
-		
+
 		table.addGeneratedColumn(PERIOD, new Table.ColumnGenerator() {
 			@Override
 			public Object generateCell(Table source, Object itemId, Object columnId) {
@@ -43,55 +43,57 @@ public class PreviousHospitalizationsField extends AbstractTableField<PreviousHo
 				return periodBuilder.toString();
 			}
 		});
-		
+
 		table.addGeneratedColumn(WARD, new Table.ColumnGenerator() {
 			@Override
 			public Object generateCell(Table source, Object itemId, Object columnId) {
 				PreviousHospitalizationDto prevHospitalization = (PreviousHospitalizationDto) itemId;
 				FacilityReferenceDto facilityRef = prevHospitalization.getHealthFacility();
-				FacilityDto facilityDto = FacadeProvider.getFacilityFacade().getByUuid(facilityRef.getUuid());
-				return facilityDto.getFacilityCommunity();
+				if (facilityRef != null) {
+					FacilityDto facilityDto = FacadeProvider.getFacilityFacade().getByUuid(facilityRef.getUuid());
+					return facilityDto.getFacilityCommunity();
+				}
+				return null;
 			}
 		});
-		
+
 		table.addGeneratedColumn(LGA, new Table.ColumnGenerator() {
 			@Override
 			public Object generateCell(Table source, Object itemId, Object columnId) {
 				PreviousHospitalizationDto prevHospitalization = (PreviousHospitalizationDto) itemId;
 				FacilityReferenceDto facilityRef = prevHospitalization.getHealthFacility();
-				FacilityDto facilityDto = FacadeProvider.getFacilityFacade().getByUuid(facilityRef.getUuid());
-				return facilityDto.getFacilityDistrict();
+				if (facilityRef != null) {
+					FacilityDto facilityDto = FacadeProvider.getFacilityFacade().getByUuid(facilityRef.getUuid());
+					return facilityDto.getFacilityDistrict();
+				}
+				return null;
 			}
 		});
-		
-		table.setVisibleColumns(
-				PERIOD,
-				PreviousHospitalizationDto.HEALTH_FACILITY,
-				WARD,
-				LGA,
-				PreviousHospitalizationDto.ISOLATED,
-				EDIT_COLUMN_ID);
-	
+
+		table.setVisibleColumns(PERIOD, PreviousHospitalizationDto.HEALTH_FACILITY, WARD, LGA,
+				PreviousHospitalizationDto.ISOLATED, EDIT_COLUMN_ID);
+
 		table.setColumnExpandRatio(PERIOD, 0);
 		table.setColumnExpandRatio(PreviousHospitalizationDto.HEALTH_FACILITY, 0);
 		table.setColumnExpandRatio(WARD, 0);
 		table.setColumnExpandRatio(LGA, 0);
 		table.setColumnExpandRatio(PreviousHospitalizationDto.ISOLATED, 0);
 		table.setColumnExpandRatio(EDIT_COLUMN_ID, 0);
-		
+
 		for (Object columnId : table.getVisibleColumns()) {
-			table.setColumnHeader(columnId, I18nProperties.getPrefixFieldCaption(PreviousHospitalizationDto.I18N_PREFIX, (String) columnId));
+			table.setColumnHeader(columnId,
+					I18nProperties.getPrefixFieldCaption(PreviousHospitalizationDto.I18N_PREFIX, (String) columnId));
 		}
 	}
 
 	@Override
 	protected boolean isEmpty(PreviousHospitalizationDto entry) {
-		return false;		// has required fields, no empty objects possible
+		return false; // has required fields, no empty objects possible
 	}
 
 	@Override
 	protected boolean isModified(PreviousHospitalizationDto oldEntry, PreviousHospitalizationDto newEntry) {
-		
+
 		if (isModifiedObject(oldEntry.getAdmissionDate(), newEntry.getAdmissionDate()))
 			return true;
 		if (isModifiedObject(oldEntry.getDischargeDate(), newEntry.getDischargeDate()))
@@ -102,7 +104,7 @@ public class PreviousHospitalizationsField extends AbstractTableField<PreviousHo
 			return true;
 		if (isModifiedObject(oldEntry.getDescription(), newEntry.getDescription()))
 			return true;
-		
+
 		return false;
 	}
 
@@ -111,30 +113,31 @@ public class PreviousHospitalizationsField extends AbstractTableField<PreviousHo
 
 		PreviousHospitalizationEditForm editForm = new PreviousHospitalizationEditForm();
 		editForm.setValue(entry);
-		
-		final CommitDiscardWrapperComponent<PreviousHospitalizationEditForm> editView = new CommitDiscardWrapperComponent<PreviousHospitalizationEditForm>(editForm, editForm.getFieldGroup());
+
+		final CommitDiscardWrapperComponent<PreviousHospitalizationEditForm> editView = new CommitDiscardWrapperComponent<PreviousHospitalizationEditForm>(
+				editForm, editForm.getFieldGroup());
 		editView.getCommitButton().setCaption("Done");
-		
-        editView.addCommitListener(new CommitListener() {
-        	
-        	@Override
-        	public void onCommit() {
-        		if (editForm.getFieldGroup().isValid()) {
-        			commitCallback.accept(editForm.getValue());
-        		}
-        	}
-        });
-        
-        if (!isEmpty(entry)) {
-	        editView.addDeleteListener(new DeleteListener() {
+
+		editView.addCommitListener(new CommitListener() {
+
+			@Override
+			public void onCommit() {
+				if (editForm.getFieldGroup().isValid()) {
+					commitCallback.accept(editForm.getValue());
+				}
+			}
+		});
+
+		if (!isEmpty(entry)) {
+			editView.addDeleteListener(new DeleteListener() {
 				@Override
 				public void onDelete() {
 					PreviousHospitalizationsField.this.removeEntry(entry);
 				}
 			});
-        }
-        
+		}
+
 		VaadinUiUtil.showModalPopupWindow(editView, "Edit previous hospitalization");
-		
+
 	}
 }

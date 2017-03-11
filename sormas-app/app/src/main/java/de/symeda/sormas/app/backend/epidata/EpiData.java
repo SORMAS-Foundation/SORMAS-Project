@@ -111,6 +111,7 @@ public class EpiData extends AbstractDomainObject {
     @Enumerated(EnumType.STRING)
     private YesNoUnknown tickBite;
 
+    // just for reference, not persisted in DB
     private List<EpiDataBurial> burials = new ArrayList<>();
     private List<EpiDataGathering> gatherings = new ArrayList<>();
     private List<EpiDataTravel> travels = new ArrayList<>();

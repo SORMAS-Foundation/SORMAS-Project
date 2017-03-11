@@ -8,6 +8,7 @@ import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.EpiDataGatheringDto;
 import de.symeda.sormas.api.epidata.EpiDataTravelDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 
 /**
  * Created by Mate Strysewske on 08.03.2017.
@@ -97,6 +98,9 @@ public class EpiDataDtoHelper extends AdoDtoHelper<EpiData, EpiDataDto> {
 
     @Override
     public void fillInnerFromAdo(EpiDataDto a, EpiData b) {
+
+        DatabaseHelper.getEpiDataDao().initLazyData(b);
+
         a.setBurialAttended(b.getBurialAttended());
         a.setGatheringAttended(b.getGatheringAttended());
         a.setTraveled(b.getTraveled());
@@ -129,7 +133,6 @@ public class EpiDataDtoHelper extends AdoDtoHelper<EpiData, EpiDataDto> {
             for (EpiDataBurial burial : b.getBurials()) {
                 EpiDataBurialDto burialDto = burialDtoHelper.createDto();
                 burialDtoHelper.fillInnerFromAdo(burialDto, burial);
-                burialDto.setEpiData(a);
                 burialDtos.add(burialDto);
             }
         }
@@ -140,7 +143,6 @@ public class EpiDataDtoHelper extends AdoDtoHelper<EpiData, EpiDataDto> {
             for (EpiDataGathering gathering : b.getGatherings()) {
                 EpiDataGatheringDto gatheringDto = gatheringDtoHelper.createDto();
                 gatheringDtoHelper.fillInnerFromAdo(gatheringDto, gathering);
-                gatheringDto.setEpiData(a);
                 gatheringDtos.add(gatheringDto);
             }
         }
@@ -151,7 +153,6 @@ public class EpiDataDtoHelper extends AdoDtoHelper<EpiData, EpiDataDto> {
             for (EpiDataTravel travel : b.getTravels()) {
                 EpiDataTravelDto travelDto = travelDtoHelper.createDto();
                 travelDtoHelper.fillInnerFromAdo(travelDto, travel);
-                travelDto.setEpiData(a);
                 travelDtos.add(travelDto);
             }
         }
