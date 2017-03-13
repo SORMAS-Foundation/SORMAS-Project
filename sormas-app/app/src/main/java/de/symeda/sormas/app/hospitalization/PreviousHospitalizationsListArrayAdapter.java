@@ -55,6 +55,9 @@ public class PreviousHospitalizationsListArrayAdapter extends ArrayAdapter<Previ
         TextView facility = (TextView) convertView.findViewById(R.id.previousHospitalization_healthFacility_li);
         facility.setText(previousHospitalization.getHealthFacility()!=null?previousHospitalization.getHealthFacility().toString():null);
 
+        TextView description = (TextView) convertView.findViewById(R.id.previousHospitalization_description_li);
+        description.setText(previousHospitalization.getDescription()!=null?previousHospitalization.getDescription().toString():null);
+
         return convertView;
     }
 }

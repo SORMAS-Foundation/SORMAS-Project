@@ -61,6 +61,14 @@
             android:layout_height="wrap_content"
             android:paddingRight="@dimen/field_padding_4"
             android:paddingLeft="@dimen/field_padding_4"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+
+        <TextView
+            android:id="@+id/previousHospitalization_description_li"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingRight="@dimen/field_padding_4"
+            android:paddingLeft="@dimen/field_padding_4"
             android:paddingBottom="@dimen/field_padding"
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
