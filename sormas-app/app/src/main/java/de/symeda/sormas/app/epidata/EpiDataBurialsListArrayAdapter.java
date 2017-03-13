@@ -64,7 +64,7 @@ public class EpiDataBurialsListArrayAdapter extends ArrayAdapter<EpiDataBurial> 
 
         TextView illTouched = (TextView) convertView.findViewById(R.id.burial_ill_touched_li);
         StringBuilder illTouchedString = new StringBuilder();
-        illTouchedString.append(YesNoUnknown.YES.equals(burial.getBurialIll())?"Person ill /":"");
+        illTouchedString.append(YesNoUnknown.YES.equals(burial.getBurialIll())?"Person ill / ":"");
         illTouchedString.append(YesNoUnknown.YES.equals(burial.getBurialTouching())?"Body touched":"Body not touched");
         illTouched.setText(illTouchedString.toString());
 
