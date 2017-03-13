@@ -50,7 +50,7 @@ public class PreviousHospitalizationsListArrayAdapter extends ArrayAdapter<Previ
         period.setText(sb.toString());
 
         TextView isolated = (TextView) convertView.findViewById(R.id.previousHospitalization_isolated_li);
-        isolated.setText(YesNoUnknown.YES.equals(previousHospitalization.getIsolated())?"was isolated":null);
+        isolated.setText(YesNoUnknown.YES.equals(previousHospitalization.getIsolated())?context.getResources().getString(R.string.isolated):null);
 
         TextView facility = (TextView) convertView.findViewById(R.id.previousHospitalization_healthFacility_li);
         facility.setText(previousHospitalization.getHealthFacility()!=null?previousHospitalization.getHealthFacility().toString():null);

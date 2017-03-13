@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import de.symeda.sormas.api.caze.YesNoUnknown;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
@@ -15,6 +16,7 @@ import de.symeda.sormas.app.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.app.backend.hospitalization.PreviousHospitalization;
 import de.symeda.sormas.app.component.LabelField;
 import de.symeda.sormas.app.component.ListField;
+import de.symeda.sormas.app.component.PropertyField;
 import de.symeda.sormas.app.databinding.CaseHospitalizationFragmentLayoutBinding;
 import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.DataUtils;
@@ -107,6 +109,13 @@ public class HospitalizationTab extends FormTab {
             binding.hospitalizationAdmissionDate.initialize(this);
             binding.hospitalizationDischargeDate.initialize(this);
             binding.hospitalization1isolationDate.initialize(this);
+
+            binding.hospitalizationHospitalizedPreviously.addValueChangedListener(new PropertyField.ValueChangeListener() {
+                @Override
+                public void onChange(PropertyField field) {
+                    binding.hospitalizationPreviousHospitalizations.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
+                }
+            });
 
         } catch (Exception e) {
             e.printStackTrace();
