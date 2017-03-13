@@ -69,17 +69,6 @@
 
         </LinearLayout>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="@string/headline_burial_address"
-            android:textColor="@android:color/tab_indicator_text"
-            android:textSize="@dimen/abc_text_size_body_1_material"
-            android:textStyle="bold"
-            android:paddingTop="30dp"
-            android:paddingBottom="10dp" />
-
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"

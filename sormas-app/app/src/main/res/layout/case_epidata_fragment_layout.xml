@@ -44,6 +44,7 @@
                 android:id="@+id/epiData_burials"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="30dp"
                 android:value="@={epiData.burials}" />
 
             <de.symeda.sormas.app.component.YesNoUnknownVerticalField
@@ -57,6 +58,7 @@
                 android:id="@+id/epiData_gatherings"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
                 android:value="@={epiData.gatherings}" />
 
             <de.symeda.sormas.app.component.YesNoUnknownVerticalField
@@ -70,6 +72,7 @@
                 android:id="@+id/epiData_travels"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
                 android:value="@={epiData.travels}" />
 
             <TextView
