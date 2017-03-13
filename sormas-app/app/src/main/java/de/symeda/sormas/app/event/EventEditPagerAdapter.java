@@ -59,7 +59,11 @@ public class EventEditPagerAdapter extends FragmentStatePagerAdapter {
     // This method return the Number of tabs for the tabs Strip
     @Override
     public int getCount() {
-        return EventEditTabs.values().length;
+        if (eventEditBundle != null && eventEditBundle.get(Event.UUID) != null) {
+            return EventEditTabs.values().length;
+        } else {
+            return 1; // this is a hotfix to make sure that the event persons tab is not displayed when creating a new event and should be replaced asap
+        }
     }
 
     public AbstractDomainObject getData(int position) {

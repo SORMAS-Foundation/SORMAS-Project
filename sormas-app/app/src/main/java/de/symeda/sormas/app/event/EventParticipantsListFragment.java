@@ -38,17 +38,19 @@ public class EventParticipantsListFragment extends ListFragment {
 
     public void updateArrayAdapter() {
         eventUuid = getArguments().getString(Event.UUID);
-        final Event event = DatabaseHelper.getEventDao().queryUuid(eventUuid);
-        syncEventParticipants(event, null);
+        if (eventUuid != null) {
+            final Event event = DatabaseHelper.getEventDao().queryUuid(eventUuid);
+            syncEventParticipants(event, null);
 
-        final SwipeRefreshLayout refreshLayout = (SwipeRefreshLayout)getView().findViewById(R.id.swiperefresh);
-        if(refreshLayout != null) {
-            refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-                @Override
-                public void onRefresh() {
-                    syncEventParticipants(event, refreshLayout);
-                }
-            });
+            final SwipeRefreshLayout refreshLayout = (SwipeRefreshLayout) getView().findViewById(R.id.swiperefresh);
+            if (refreshLayout != null) {
+                refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                    @Override
+                    public void onRefresh() {
+                        syncEventParticipants(event, refreshLayout);
+                    }
+                });
+            }
         }
     }
 
