@@ -6,6 +6,7 @@ import android.content.Context;
 import android.databinding.BindingAdapter;
 import android.databinding.InverseBindingAdapter;
 import android.databinding.InverseBindingListener;
+import android.graphics.Color;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
@@ -13,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.*;
@@ -74,7 +76,7 @@ public class SpinnerField extends PropertyField<Object> implements SpinnerFieldI
 
     @Override
     public Object getValue() {
-        return spinnerElement.getSelectedItem() != null ?
+        return (spinnerElement.getSelectedItem() != null) ?
                 ((Item)spinnerElement.getSelectedItem()).getValue() : null;
     }
 
@@ -103,12 +105,32 @@ public class SpinnerField extends PropertyField<Object> implements SpinnerFieldI
 //    }
 
     public void setSpinnerAdapter(List<Item> items) {
-        ArrayAdapter<Item> adapter = new ArrayAdapter<>(
+        ArrayAdapter<Item> adapter = new ArrayAdapter<Item>(
                 getContext(),
                 android.R.layout.simple_spinner_item,
-                items);
+                items) {
+
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                View v = super.getView(position, convertView, parent);
+                if (position == getCount()) {
+                    ((TextView) v.findViewById(android.R.id.text1)).setText("");
+                    ((TextView) v.findViewById(android.R.id.text1)).setHint(getItem(getCount()).getKey());
+                    ((TextView) v.findViewById(android.R.id.text1)).setHintTextColor(Color.LTGRAY);
+                }
+
+                return v;
+            }
+
+            @Override
+            public int getCount() {
+                return super.getCount() - 1;
+            }
+        };
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        adapter.add(new Item("Select entry", null));
         spinnerElement.setAdapter(adapter);
+        spinnerElement.setSelection(adapter.getCount());
     }
 
     public void initialize(List<Item> items, final AdapterView.OnItemSelectedListener[] moreListeners) {
@@ -195,8 +217,6 @@ public class SpinnerField extends PropertyField<Object> implements SpinnerFieldI
                         spinnerElement.setSelection(i);
                     }
                 }
-            } else {
-                spinnerElement.setSelection(0);
             }
         }
     }

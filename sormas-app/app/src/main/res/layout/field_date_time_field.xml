@@ -22,11 +22,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/field_height"
                 android:layout_weight="0.5"
+                android:hint="Pick date"
                 android:id="@+id/date_content"/>
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/field_height"
                 android:layout_weight="0.5"
+                android:hint="Pick time"
                 android:id="@+id/time_content"/>
 
         </LinearLayout>

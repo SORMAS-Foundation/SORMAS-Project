@@ -15,6 +15,7 @@
         <EditText
             android:layout_width="match_parent"
             android:layout_height="@dimen/field_height"
+            android:hint="Pick date"
             android:id="@+id/date_content"/>
 
     </LinearLayout>

@@ -74,11 +74,4 @@ public class FieldHelper {
         return spinnerField;
     }
 
-    public static SpinnerField initPersonSpinnerField(SpinnerField spinnerField, final AdapterView.OnItemSelectedListener ...moreListeners) {
-        PersonDao personDao = DatabaseHelper.getPersonDao();
-        List<Item> items = DataUtils.toItems(personDao.queryForAll());
-        spinnerField.initialize(items, moreListeners);
-        return spinnerField;
-    }
-
 }
