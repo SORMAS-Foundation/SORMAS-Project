@@ -51,7 +51,7 @@ public class PreviousHospitalizationsField extends AbstractTableField<PreviousHo
 				FacilityReferenceDto facilityRef = prevHospitalization.getHealthFacility();
 				if (facilityRef != null) {
 					FacilityDto facilityDto = FacadeProvider.getFacilityFacade().getByUuid(facilityRef.getUuid());
-					return facilityDto.getFacilityCommunity();
+					return facilityDto.getCommunity();
 				}
 				return null;
 			}
@@ -64,7 +64,7 @@ public class PreviousHospitalizationsField extends AbstractTableField<PreviousHo
 				FacilityReferenceDto facilityRef = prevHospitalization.getHealthFacility();
 				if (facilityRef != null) {
 					FacilityDto facilityDto = FacadeProvider.getFacilityFacade().getByUuid(facilityRef.getUuid());
-					return facilityDto.getFacilityDistrict();
+					return facilityDto.getDistrict();
 				}
 				return null;
 			}

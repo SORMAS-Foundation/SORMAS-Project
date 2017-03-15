@@ -1,6 +1,6 @@
 package de.symeda.sormas.backend.facility;
 
-import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -8,7 +8,9 @@ import javax.persistence.ManyToOne;
 
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.location.Location;
+import de.symeda.sormas.backend.region.Community;
+import de.symeda.sormas.backend.region.District;
+import de.symeda.sormas.backend.region.Region;
 
 @Entity
 public class Facility extends AbstractDomainObject {
@@ -16,11 +18,19 @@ public class Facility extends AbstractDomainObject {
 	private static final long serialVersionUID = 8572137127616417072L;
 
 	public static final String NAME = "name";
-	public static final String LOCATION = "location";
+	public static final String REGION = "region";
+	public static final String DISTRICT = "district";
+	public static final String COMMUNITY = "community";
+	public static final String CITY = "city";
 	public static final String TYPE = "type";
 	
 	private String name;
-	private Location location;
+	private Region region;
+	private District district;
+	private Community community;
+	private String city;
+	private Float latitude;
+	private Float longitude;
 	private FacilityType type;
 	private boolean publicOwnership;
 	
@@ -30,16 +40,53 @@ public class Facility extends AbstractDomainObject {
 	public void setName(String name) {
 		this.name = name;
 	}
-
-	@ManyToOne(cascade = CascadeType.ALL)
-	public Location getLocation() {
-		if (location == null) {
-			location = new Location();
-		}
-		return location;
+	
+	@ManyToOne(cascade = {})
+	public Region getRegion() {
+		return region;
 	}
-	public void setLocation(Location location) {
-		this.location = location;
+	public void setRegion(Region region) {
+		this.region = region;
+	}
+
+	@ManyToOne(cascade = {})
+	public District getDistrict() {
+		return district;
+	}
+	public void setDistrict(District district) {
+		this.district = district;
+	}
+
+	@ManyToOne(cascade = {})
+	public Community getCommunity() {
+		return community;
+	}
+	public void setCommunity(Community community) {
+		this.community = community;
+	}
+	
+	@Column(length = 512)
+	public String getCity() {
+		return city;
+	}
+	public void setCity(String city) {
+		this.city = city;
+	}
+	
+	@Column(columnDefinition = "float8")
+	public Float getLatitude() {
+		return latitude;
+	}
+	public void setLatitude(Float latitude) {
+		this.latitude = latitude;
+	}
+	
+	@Column(columnDefinition = "float8")
+	public Float getLongitude() {
+		return longitude;
+	}
+	public void setLongitude(Float longitude) {
+		this.longitude = longitude;
 	}
 	
 	@Enumerated(EnumType.STRING)
@@ -61,10 +108,8 @@ public class Facility extends AbstractDomainObject {
 	public String toString() {
 		StringBuilder caption = new StringBuilder();
 		caption.append(name);
-		if (location != null) {
-			if (location.getCommunity() != null) {
-				caption.append(" (").append(location.getCommunity().getName()).append(")");
-			}
+		if (community != null) {
+			caption.append(" (").append(community.getName()).append(")");
 		}
 		return caption.toString();
 	}

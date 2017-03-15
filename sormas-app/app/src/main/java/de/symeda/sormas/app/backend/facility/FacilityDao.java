@@ -31,12 +31,11 @@ public class FacilityDao extends AbstractAdoDao<Facility> {
 
     public List<Facility> getByCommunity(Community community) {
 
-        LocationDao locationDao = DatabaseHelper.getLocationDao();
-        QueryBuilder<Location, Long> locationQb = locationDao.queryBuilder();
+        QueryBuilder<Facility, Long> facilityQb = this.queryBuilder();
 
         try {
-            locationQb.where().eq("community_id", community );
-            return queryBuilder().join(locationQb).query();
+            facilityQb.where().eq("community_id", community);
+            return facilityQb.query();
         } catch (SQLException e) {
             e.printStackTrace();
         }

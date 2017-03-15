@@ -87,7 +87,7 @@ public class MapComponent extends VerticalLayout {
     	
     	// create markers for all facilities with cases
     	for (FacilityDto facility : facilities.keySet()) {
-    		LatLon latLon = new LatLon(facility.getLocation().getLatitude(), facility.getLocation().getLongitude());
+    		LatLon latLon = new LatLon(facility.getLatitude(), facility.getLongitude());
     		MapIcon icon;
     		
     		// colorize the icon by the "strongest" classification type (order as in enum) and set its size depending

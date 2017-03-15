@@ -27,7 +27,6 @@ public class LocationDao extends AbstractAdoDao<Location> {
         if(location.getDistrict() != null) location.setDistrict(districtDao.queryForId(location.getDistrict().getId()));
         CommunityDao communityDao = DatabaseHelper.getCommunityDao();
         if(location.getCommunity() != null) location.setCommunity(communityDao.queryForId(location.getCommunity().getId()));
-
     }
 
     @Override

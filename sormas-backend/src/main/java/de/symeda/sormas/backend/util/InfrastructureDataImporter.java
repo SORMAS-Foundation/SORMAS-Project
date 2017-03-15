@@ -12,7 +12,6 @@ import java.util.List;
 
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.backend.facility.Facility;
-import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
@@ -125,7 +124,7 @@ public final class InfrastructureDataImporter {
 				String facilityName = columns[3];
 				String facilityTypeString = columns[4];
 				String ownershipString = columns[5];
-				String address = columns[6];
+				// String address = columns[6];
 				String longitudeString = columns[7];
 				String latitudeString = columns[8];
 				
@@ -167,20 +166,16 @@ public final class InfrastructureDataImporter {
 					// that's ok
 				}
 				facility.setPublicOwnership("PUBLIC".equalsIgnoreCase(ownershipString));
-
-				Location location = new Location();
-				location.setRegion(region);
-				location.setDistrict(district);
-				location.setCommunity(community);
-				location.setCity(cityName);
-				location.setAddress(address);
+				facility.setRegion(region);
+				facility.setDistrict(district);
+				facility.setCommunity(community);
+				facility.setCity(cityName);
 				try {
-					location.setLongitude(geoCoordFormat.parse(longitudeString).floatValue());
-					location.setLatitude(geoCoordFormat.parse(latitudeString).floatValue());
+					facility.setLongitude(geoCoordFormat.parse(longitudeString).floatValue());
+					facility.setLatitude(geoCoordFormat.parse(latitudeString).floatValue());
 				} catch (ParseException e) {
 					throw new IllegalArgumentException("Error parsing geo coordinates for facility '" + facilityName + "' in " + resourceFileName, e);
 				}
-				facility.setLocation(location);
 				
 				result.add(facility);				
 			}
@@ -220,11 +215,9 @@ public final class InfrastructureDataImporter {
 				facility.setName(facilityName);
 				facility.setType(FacilityType.LABORATORY);
 				facility.setPublicOwnership("PUBLIC".equalsIgnoreCase(columns[3]));
-				Location location = new Location();
-				location.setRegion(region);
+				facility.setRegion(region);
 				String cityName = columns[1];
-				location.setCity(cityName);
-				facility.setLocation(location);
+				facility.setCity(cityName);
 				result.add(facility);				
 			}
 		} catch (IOException e) {

@@ -314,12 +314,12 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	    ComboBox facilityDistrict = (ComboBox) getField(FACILITY_DISTRICT);
 	    ComboBox facilityCommunity = (ComboBox) getField(FACILITY_COMMUNITY);
 	    ComboBox occupationFacility = (ComboBox) getField(PersonDto.OCCUPATION_FACILITY);
-	    facilityRegion.select(facility.getLocation().getRegion());
-	    facilityDistrict.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(facility.getLocation().getRegion().getUuid()));
-	   	facilityDistrict.select(facility.getLocation().getDistrict());
-	   	facilityCommunity.addItems(FacadeProvider.getCommunityFacade().getAllByDistrict(facility.getLocation().getDistrict().getUuid()));
-	   	facilityCommunity.select(facility.getLocation().getCommunity());
-	   	occupationFacility.addItems(FacadeProvider.getFacilityFacade().getAllByCommunity(facility.getLocation().getCommunity()));
+	    facilityRegion.select(facility.getRegion());
+	    facilityDistrict.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(facility.getRegion().getUuid()));
+	   	facilityDistrict.select(facility.getDistrict());
+	   	facilityCommunity.addItems(FacadeProvider.getCommunityFacade().getAllByDistrict(facility.getDistrict().getUuid()));
+	   	facilityCommunity.select(facility.getCommunity());
+	   	occupationFacility.addItems(FacadeProvider.getFacilityFacade().getAllByCommunity(facility.getCommunity()));
 	   	
 	   	facilityFieldsInitialized = true;
 	}

@@ -85,8 +85,8 @@ public class PreviousHospitalizationTab extends AbstractFormDialogFragment<Previ
         });
 
         if(facility != null) {
-            binding.prevHospFacilityRegion.setValue(facility.getLocation().getRegion());
-            districtList = DataUtils.toItems(DatabaseHelper.getDistrictDao().getByRegion(facility.getLocation().getRegion()));
+            binding.prevHospFacilityRegion.setValue(facility.getRegion());
+            districtList = DataUtils.toItems(DatabaseHelper.getDistrictDao().getByRegion(facility.getRegion()));
         }
 
         FieldHelper.initSpinnerField(binding.prevHospFacilityDistrict, districtList, new AdapterView.OnItemSelectedListener() {
@@ -107,8 +107,8 @@ public class PreviousHospitalizationTab extends AbstractFormDialogFragment<Previ
         });
 
         if(facility != null) {
-            binding.prevHospFacilityDistrict.setValue(facility.getLocation().getDistrict());
-            communityList = DataUtils.toItems(DatabaseHelper.getCommunityDao().getByDistrict(facility.getLocation().getDistrict()));
+            binding.prevHospFacilityDistrict.setValue(facility.getDistrict());
+            communityList = DataUtils.toItems(DatabaseHelper.getCommunityDao().getByDistrict(facility.getDistrict()));
         }
 
         FieldHelper.initSpinnerField(binding.prevHospFacilityCommunity, communityList, new AdapterView.OnItemSelectedListener() {
@@ -132,7 +132,7 @@ public class PreviousHospitalizationTab extends AbstractFormDialogFragment<Previ
         });
 
         if(facility != null) {
-            binding.prevHospFacilityCommunity.setValue(facility.getLocation().getCommunity());
+            binding.prevHospFacilityCommunity.setValue(facility.getCommunity());
         }
 
         facilityFieldsInitialized = true;

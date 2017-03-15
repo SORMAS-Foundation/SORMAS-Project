@@ -111,7 +111,7 @@ public class StartupShutdownService {
 			for (Region region : regions) {
 				List<Facility> facilities = InfrastructureDataImporter.importFacilities(region);
 				for (Facility facility : facilities) {
-					if (facility.getLocation().getDistrict() == null) {
+					if (facility.getDistrict() == null) {
 						throw new NullPointerException("Facility should have a district defined: " + facility.getName());
 					}
 					facilityService.persist(facility);

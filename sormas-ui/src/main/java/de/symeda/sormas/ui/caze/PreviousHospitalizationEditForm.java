@@ -9,7 +9,6 @@ import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.PreviousHospitalizationDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -116,12 +115,12 @@ public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHo
 		ComboBox facilityRegion = (ComboBox) getField(FACILITY_REGION);
 	    ComboBox facilityDistrict = (ComboBox) getField(FACILITY_DISTRICT);
 	    ComboBox facilityCommunity = (ComboBox) getField(FACILITY_COMMUNITY);
-	    facilityRegion.select(facility.getLocation().getRegion());
-	    facilityDistrict.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(facility.getLocation().getRegion().getUuid()));
-	   	facilityDistrict.select(facility.getLocation().getDistrict());
-	   	facilityCommunity.addItems(FacadeProvider.getCommunityFacade().getAllByDistrict(facility.getLocation().getDistrict().getUuid()));
-	   	facilityCommunity.select(facility.getLocation().getCommunity());
-	   	healthFacility.addItems(FacadeProvider.getFacilityFacade().getAllByCommunity(facility.getLocation().getCommunity()));
+	    facilityRegion.select(facility.getRegion());
+	    facilityDistrict.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(facility.getRegion().getUuid()));
+	   	facilityDistrict.select(facility.getDistrict());
+	   	facilityCommunity.addItems(FacadeProvider.getCommunityFacade().getAllByDistrict(facility.getDistrict().getUuid()));
+	   	facilityCommunity.select(facility.getCommunity());
+	   	healthFacility.addItems(FacadeProvider.getFacilityFacade().getAllByCommunity(facility.getCommunity()));
 	   	
 	   	facilityFieldsInitialized = true;
 	}

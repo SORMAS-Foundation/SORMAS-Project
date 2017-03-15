@@ -13,11 +13,13 @@ import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.region.Community;
+import de.symeda.sormas.backend.region.CommunityFacadeEjb;
 import de.symeda.sormas.backend.region.CommunityService;
 import de.symeda.sormas.backend.region.District;
+import de.symeda.sormas.backend.region.DistrictFacadeEjb;
 import de.symeda.sormas.backend.region.DistrictService;
+import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.util.DtoHelper;
 
 @Stateless(name = "FacilityFacade")
@@ -99,7 +101,12 @@ public class FacilityFacadeEjb implements FacilityFacade {
 		dto.setName(entity.getName());
 		dto.setType(entity.getType());
 		dto.setPublicOwnership(entity.isPublicOwnership());
-		dto.setLocation(LocationFacadeEjb.toLocationDto(entity.getLocation()));
+		dto.setRegion(RegionFacadeEjb.toReferenceDto(entity.getRegion()));
+		dto.setDistrict(DistrictFacadeEjb.toReferenceDto(entity.getDistrict()));
+		dto.setCommunity(CommunityFacadeEjb.toReferenceDto(entity.getCommunity()));
+		dto.setCity(entity.getCity());
+		dto.setLatitude(entity.getLatitude());
+		dto.setLongitude(entity.getLongitude());
 
 		return dto;
 	}

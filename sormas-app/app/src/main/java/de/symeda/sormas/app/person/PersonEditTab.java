@@ -261,8 +261,8 @@ public class PersonEditTab extends FormTab {
         });
 
         if(facility != null) {
-            binding.personFacilityRegion.setValue(facility.getLocation().getRegion());
-            districtList = DataUtils.toItems(DatabaseHelper.getDistrictDao().getByRegion(facility.getLocation().getRegion()));
+            binding.personFacilityRegion.setValue(facility.getRegion());
+            districtList = DataUtils.toItems(DatabaseHelper.getDistrictDao().getByRegion(facility.getRegion()));
         }
 
         FieldHelper.initSpinnerField(binding.personFacilityDistrict, districtList, new AdapterView.OnItemSelectedListener() {
@@ -283,8 +283,8 @@ public class PersonEditTab extends FormTab {
         });
 
         if(facility != null) {
-            binding.personFacilityDistrict.setValue(facility.getLocation().getDistrict());
-            communityList = DataUtils.toItems(DatabaseHelper.getCommunityDao().getByDistrict(facility.getLocation().getDistrict()));
+            binding.personFacilityDistrict.setValue(facility.getDistrict());
+            communityList = DataUtils.toItems(DatabaseHelper.getCommunityDao().getByDistrict(facility.getDistrict()));
         }
 
         FieldHelper.initSpinnerField(binding.personFacilityCommunity, communityList, new AdapterView.OnItemSelectedListener() {
@@ -308,7 +308,7 @@ public class PersonEditTab extends FormTab {
         });
 
         if(facility != null) {
-            binding.personFacilityCommunity.setValue(facility.getLocation().getCommunity());
+            binding.personFacilityCommunity.setValue(facility.getCommunity());
         }
 
         facilityFieldsInitialized = true;

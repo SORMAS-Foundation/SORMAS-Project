@@ -45,7 +45,7 @@ public class CaseGrid extends Grid {
 			@Override
 			public String getValue(Item item, Object itemId, Object propertyId) {
 				CaseDataDto caseDataDto = (CaseDataDto)itemId;
-				return String.format(I18nProperties.getPrefixFieldCaption(caseDataDto.I18N_PREFIX, NUMBER_OF_PENDING_TASKS + "Format"), 
+				return String.format(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, NUMBER_OF_PENDING_TASKS + "Format"), 
 						FacadeProvider.getTaskFacade().getPendingTaskCountByCase(caseDataDto));
 			}
 			@Override

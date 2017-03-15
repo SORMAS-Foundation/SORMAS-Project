@@ -1263,3 +1263,43 @@ UPDATE cases SET epidata_id = epiid FROM tmp_caseids t where cases.id = t.caseid
 DROP TABLE tmp_caseids;
 
 INSERT INTO schema_version (version_number, comment) VALUES (37, 'Epidemiological data: added empty entites');
+
+-- 2017-03-02 Don't use location entity for facilities #138
+
+ALTER TABLE facility DROP COLUMN location_id;
+ALTER TABLE facility ADD COLUMN region_id bigint;
+ALTER TABLE facility ADD COLUMN district_id bigint;
+ALTER TABLE facility ADD COLUMN community_id bigint;
+ALTER TABLE facility ADD COLUMN city varchar(512);
+ALTER TABLE facility ADD COLUMN latitude double precision;
+ALTER TABLE facility ADD COLUMN longitude double precision;
+
+ALTER TABLE facility ADD CONSTRAINT fk_facility_region_id FOREIGN KEY (region_id) REFERENCES region(id);
+ALTER TABLE facility ADD CONSTRAINT fk_facility_district_id FOREIGN KEY (district_id) REFERENCES district(id);
+ALTER TABLE facility ADD CONSTRAINT fk_facility_community_id FOREIGN KEY (community_id) REFERENCES community(id);
+
+DELETE FROM task;
+DELETE FROM sampletest;
+DELETE FROM samples;
+DELETE FROM visit;
+DELETE FROM contact;
+DELETE FROM eventparticipant;
+DELETE FROM events;
+DELETE FROM cases;
+DELETE FROM symptoms;
+DELETE FROM person;
+DELETE FROM userroles;
+DELETE FROM users;
+DELETE FROM previoushospitalization;
+DELETE FROM hospitalization;
+DELETE FROM facility;
+DELETE FROM epidataburial;
+DELETE FROM epidatagathering;
+DELETE FROM epidatatravel;
+DELETE FROM epidata;
+DELETE FROM location;
+DELETE FROM community;
+DELETE FROM district;
+DELETE FROM region;
+
+INSERT INTO schema_version (version_number, comment) VALUES (38, 'Dont use location entity for facilities');
