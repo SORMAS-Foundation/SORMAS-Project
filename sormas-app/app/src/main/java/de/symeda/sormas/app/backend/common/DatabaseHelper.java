@@ -69,7 +69,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// name of the database file for your application -- change to something appropriate for your app
 	private static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	private static final int DATABASE_VERSION = 71;
+	private static final int DATABASE_VERSION = 72;
 
 	private static DatabaseHelper instance = null;
 	public static void init(Context context) {
@@ -133,6 +133,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.clearTable(connectionSource, EventParticipant.class);
 			TableUtils.clearTable(connectionSource, Hospitalization.class);
 			TableUtils.clearTable(connectionSource, PreviousHospitalization.class);
+			TableUtils.clearTable(connectionSource, Location.class);
 			TableUtils.clearTable(connectionSource, EpiData.class);
 			TableUtils.clearTable(connectionSource, EpiDataBurial.class);
 			TableUtils.clearTable(connectionSource, EpiDataGathering.class);
@@ -143,8 +144,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				TableUtils.clearTable(connectionSource, District.class);
 				TableUtils.clearTable(connectionSource, Community.class);
 				TableUtils.clearTable(connectionSource, Facility.class);
-				// FIXME: 10.03.2017 move this to the block above as soon as issue #138 is solved
-				TableUtils.clearTable(connectionSource, Location.class);
 				TableUtils.clearTable(connectionSource, User.class);
 				ConfigProvider.setUser(null); // important - otherwise the old instance is further used
 			}
