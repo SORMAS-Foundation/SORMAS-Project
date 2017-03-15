@@ -92,33 +92,58 @@ public class CaseNewActivity extends AppCompatActivity {
                 try {
                     final Case caze = caseNewTab.getData();
 
-                    List<Person> existingPersons = DatabaseHelper.getPersonDao().getAllByName(caze.getPerson().getFirstName(), caze.getPerson().getLastName());
-                    if (existingPersons.size() > 0) {
+                    boolean validData = true;
 
-                        AlertDialog.Builder dialogBuilder = new SelectOrCreatePersonDialogBuilder(this, caze.getPerson(), existingPersons, new Consumer() {
-                            @Override
-                            public void accept(Object parameter) {
-                                if(parameter instanceof Person) {
-                                    try {
-                                        caze.setPerson((Person) parameter);
-                                        savePersonAndCase(caze);
-                                        showCaseEditView(caze);
-                                    } catch (Exception e) {
-                                        Toast.makeText(getApplicationContext(), "Error while saving the case. " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                                        e.printStackTrace();
-                                    }
-                                }
-                            }
-                        });
-                        AlertDialog newPersonDialog = dialogBuilder.create();
-                        newPersonDialog.show();
-
-                    } else {
-                        savePersonAndCase(caze);
-                        showCaseEditView(caze);
+                    if (caze.getPerson().getFirstName() == null || caze.getPerson().getFirstName().isEmpty()) {
+                        validData = false;
+                        Toast.makeText(this, "Please enter a first name for the case person.", Toast.LENGTH_SHORT).show();
                     }
 
-//                    NavUtils.navigateUpFromSameTask(this);
+                    if (caze.getPerson().getLastName() == null || caze.getPerson().getLastName().isEmpty()) {
+                        validData = false;
+                        Toast.makeText(this, "Please enter a last name for the case person.", Toast.LENGTH_SHORT).show();
+                    }
+
+                    if (caze.getDisease() == null) {
+                        validData = false;
+                        Toast.makeText(this, "Please select a disease.", Toast.LENGTH_SHORT).show();
+                    }
+
+                    if (caze.getHealthFacility() == null) {
+                        validData = false;
+                        Toast.makeText(this, "Please select a health facility.", Toast.LENGTH_SHORT).show();
+                    }
+
+                    if (validData) {
+
+                        List<Person> existingPersons = DatabaseHelper.getPersonDao().getAllByName(caze.getPerson().getFirstName(), caze.getPerson().getLastName());
+                        if (existingPersons.size() > 0) {
+
+                            AlertDialog.Builder dialogBuilder = new SelectOrCreatePersonDialogBuilder(this, caze.getPerson(), existingPersons, new Consumer() {
+                                @Override
+                                public void accept(Object parameter) {
+                                    if (parameter instanceof Person) {
+                                        try {
+                                            caze.setPerson((Person) parameter);
+                                            savePersonAndCase(caze);
+                                            showCaseEditView(caze);
+                                        } catch (Exception e) {
+                                            Toast.makeText(getApplicationContext(), "Error while saving the case. " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                }
+                            });
+                            AlertDialog newPersonDialog = dialogBuilder.create();
+                            newPersonDialog.show();
+
+                        } else {
+                            savePersonAndCase(caze);
+                            showCaseEditView(caze);
+                        }
+
+//                      NavUtils.navigateUpFromSameTask(this);
+                    }
 
                     return true;
                 } catch (Exception e) {

@@ -138,26 +138,47 @@ public class ContactEditActivity extends AbstractEditActivity {
 
             // Save button
             case R.id.action_save:
-
-                // CONTACT_DATA
                 ContactDao contactDao = DatabaseHelper.getContactDao();
                 Contact contact = (Contact) adapter.getData(ContactEditTabs.CONTACT_DATA.ordinal());
-                contactDao.save(contact);
 
-                // PERSON
-                Person person = (Person) adapter.getData(ContactEditTabs.PERSON.ordinal());
-                if (person.getAddress() != null) {
-                    DatabaseHelper.getLocationDao().save(person.getAddress());
+                boolean validData = true;
+
+                if (contact.getLastContactDate()==null || contact.getLastContactDate().getTime() > contact.getReportDateTime().getTime()) {
+                    validData = false;
+                    Toast.makeText(this, "Please make sure contact date is set and not in the future.", Toast.LENGTH_SHORT).show();
                 }
-                DatabaseHelper.getPersonDao().save(person);
 
-                Toast.makeText(this, "contact " + DataHelper.getShortUuid(contact.getUuid()) + " saved", Toast.LENGTH_SHORT).show();
+                if (contact.getContactProximity()==null) {
+                    validData = false;
+                    Toast.makeText(this, "Please set a contact type.", Toast.LENGTH_SHORT).show();
+                }
 
-                SyncContactsTask.syncContacts(getSupportFragmentManager());
+                if (contact.getPerson().getFirstName().isEmpty() || contact.getPerson().getLastName().isEmpty() ) {
+                    validData = false;
+                    Toast.makeText(this, "Please select a person.", Toast.LENGTH_SHORT).show();
+                }
 
-                onResume();
-                pager.setCurrentItem(currentTab);
+                if (contact.getRelationToCase() == null) {
+                    validData = false;
+                    Toast.makeText(this, "Please select a relationship with the case.", Toast.LENGTH_SHORT).show();
+                }
 
+                if (validData) {
+                    contactDao.save(contact);
+
+                    Person person = (Person) adapter.getData(ContactEditTabs.PERSON.ordinal());
+                    if (person.getAddress() != null) {
+                        DatabaseHelper.getLocationDao().save(person.getAddress());
+                    }
+                    DatabaseHelper.getPersonDao().save(person);
+
+                    Toast.makeText(this, "contact " + DataHelper.getShortUuid(contact.getUuid()) + " saved", Toast.LENGTH_SHORT).show();
+
+                    SyncContactsTask.syncContacts(getSupportFragmentManager());
+
+                    onResume();
+                    pager.setCurrentItem(currentTab);
+                }
                 return true;
 
             // Add button

@@ -194,46 +194,71 @@ public class CaseEditActivity extends AbstractEditActivity {
                 // CASE_DATA
                 Case caze = (Case) adapter.getData(CaseEditTabs.CASE_DATA.ordinal());
 
-                try {
+                boolean validData = true;
 
-                    if (person.getAddress() != null) {
-                        locLocationDao.save(person.getAddress());
-                    }
-                    personDao.save(person);
-                    caze.setPerson(person); // we aren't sure why, but this is needed, otherwise the person will be overriden when first saved
-
-                    symptomsEditTab.validateCaseData(symptoms);
-                    if (symptoms != null) {
-                        symptomsDao.save(symptoms);
-                        caze.setSymptoms(symptoms);
-                    }
-
-                    if (hospitalization !=null ) {
-                        hospitalizationDao.save(hospitalization);
-                        caze.setHospitalization(hospitalization);
-                    }
-
-                    if (epiData != null) {
-                        epiDataDao.save(epiData);
-                        caze.setEpiData(epiData);
-                    }
-
-                    caseDao.save(caze);
-                    showSaved = true;
-
-                } catch (ValidationFailedException e) {
-                    Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
-                    showSaved = true;
+                if (caze.getDisease() == null) {
+                    validData = false;
+                    Toast.makeText(this, "Please select a disease.", Toast.LENGTH_SHORT).show();
                 }
 
-                SyncCasesTask.syncCases(getSupportFragmentManager());
-
-                if(showSaved) {
-                    Toast.makeText(this, "case saved", Toast.LENGTH_SHORT).show();
+                if (person.getFirstName() == null || person.getFirstName().isEmpty()) {
+                    validData = false;
+                    Toast.makeText(this, "Please enter a first name for the case person.", Toast.LENGTH_SHORT).show();
                 }
 
-                onResume();
-                pager.setCurrentItem(currentTab);
+                if (person.getLastName() == null || person.getLastName().isEmpty()) {
+                    validData = false;
+                    Toast.makeText(this, "Please enter a last name for the case person.", Toast.LENGTH_SHORT).show();
+                }
+
+                if (caze.getHealthFacility() == null) {
+                    validData = false;
+                    Toast.makeText(this, "Please select a health facility.", Toast.LENGTH_SHORT).show();
+                }
+
+                if (validData) {
+
+                    try {
+                        if (person.getAddress() != null) {
+                            locLocationDao.save(person.getAddress());
+                        }
+                        personDao.save(person);
+                        caze.setPerson(person); // we aren't sure why, but this is needed, otherwise the person will be overriden when first saved
+
+                        symptomsEditTab.validateCaseData(symptoms);
+                        if (symptoms != null) {
+                            symptomsDao.save(symptoms);
+                            caze.setSymptoms(symptoms);
+                        }
+
+                        if (hospitalization != null) {
+                            hospitalizationDao.save(hospitalization);
+                            caze.setHospitalization(hospitalization);
+                        }
+
+                        if (epiData != null) {
+                            epiDataDao.save(epiData);
+                            caze.setEpiData(epiData);
+                        }
+
+                        caseDao.save(caze);
+                        showSaved = true;
+
+                    } catch (ValidationFailedException e) {
+                        Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
+                        showSaved = true;
+                    }
+
+                    SyncCasesTask.syncCases(getSupportFragmentManager());
+
+                    if (showSaved) {
+                        Toast.makeText(this, "case saved", Toast.LENGTH_SHORT).show();
+                    }
+
+                    onResume();
+                    pager.setCurrentItem(currentTab);
+
+                }
 
                 return true;
 

@@ -99,22 +99,27 @@ public class ContactNewActivity extends AppCompatActivity {
 
                     boolean validData = true;
 
-                    if(contact.getLastContactDate()==null || contact.getLastContactDate().getTime() > contact.getReportDateTime().getTime()) {
+                    if (contact.getLastContactDate()==null || contact.getLastContactDate().getTime() > contact.getReportDateTime().getTime()) {
                         validData = false;
                         Toast.makeText(this, "Please make sure contact date is set and not in the future.", Toast.LENGTH_SHORT).show();
                     }
 
-                    if(contact.getPerson().getFirstName().isEmpty() || contact.getPerson().getLastName().isEmpty() ) {
+                    if (contact.getContactProximity()==null) {
+                        validData = false;
+                        Toast.makeText(this, "Please set a contact type.", Toast.LENGTH_SHORT).show();
+                    }
+
+                    if (contact.getPerson().getFirstName().isEmpty() || contact.getPerson().getLastName().isEmpty() ) {
                         validData = false;
                         Toast.makeText(this, "Please select a person.", Toast.LENGTH_SHORT).show();
                     }
 
-                    if(contact.getRelationToCase() == null) {
+                    if (contact.getRelationToCase() == null) {
                         validData = false;
                         Toast.makeText(this, "Please select a relationship with the case.", Toast.LENGTH_SHORT).show();
                     }
 
-                    if(validData) {
+                    if (validData) {
                         List<Person> existingPersons = DatabaseHelper.getPersonDao().getAllByName(contact.getPerson().getFirstName(), contact.getPerson().getLastName());
                         if(existingPersons.size()>0) {
                             contactNewTab.selectOrCreatePersonDialog(contact.getPerson(), existingPersons, new Callback() {
