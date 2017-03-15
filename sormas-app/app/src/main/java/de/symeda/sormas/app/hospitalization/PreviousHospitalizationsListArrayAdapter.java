@@ -7,12 +7,9 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.YesNoUnknown;
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.hospitalization.PreviousHospitalization;
 
 public class PreviousHospitalizationsListArrayAdapter extends ArrayAdapter<PreviousHospitalization> {

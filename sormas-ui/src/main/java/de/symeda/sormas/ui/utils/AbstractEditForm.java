@@ -1,5 +1,6 @@
 package de.symeda.sormas.ui.utils;
 
+import java.util.Date;
 import java.util.List;
 
 import com.vaadin.data.Validator;
@@ -14,6 +15,7 @@ import com.vaadin.ui.AbstractTextField;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
 import com.vaadin.ui.CustomLayout;
+import com.vaadin.ui.DateField;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.OptionGroup;
@@ -21,6 +23,7 @@ import com.vaadin.ui.OptionGroup;
 import de.symeda.sormas.api.DataTransferObject;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.symptoms.SymptomState;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.caze.PreviousHospitalizationsField;
 import de.symeda.sormas.ui.epidata.EpiDataBurialsField;
 import de.symeda.sormas.ui.epidata.EpiDataGatheringsField;
@@ -98,6 +101,11 @@ public abstract class AbstractEditForm <DTO extends DataTransferObject> extends 
 				}
 				else if (EpiDataTravelsField.class.isAssignableFrom(fieldType)) {
 					return (T) new EpiDataTravelsField();
+				}
+				else if (Date.class.isAssignableFrom(type)) {
+					DateField field = super.createField(type, DateField.class);
+					field.setDateFormat(DateHelper.getDateFormat().toPattern());
+					return (T) field;
 				}
 				
 				return super.createField(type, fieldType);

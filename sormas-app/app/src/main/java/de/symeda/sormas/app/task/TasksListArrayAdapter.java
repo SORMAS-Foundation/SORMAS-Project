@@ -1,7 +1,6 @@
 package de.symeda.sormas.app.task;
 
 import android.content.Context;
-import android.databinding.tool.util.StringUtils;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;

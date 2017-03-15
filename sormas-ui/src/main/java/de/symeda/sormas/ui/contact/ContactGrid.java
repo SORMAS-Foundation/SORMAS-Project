@@ -90,8 +90,8 @@ public class ContactGrid extends Grid {
         getColumn(ContactIndexDto.CONTACT_PROXIMITY).setWidth(200);
         getColumn(ContactIndexDto.UUID).setRenderer(new UuidRenderer());
         getColumn(ContactIndexDto.CAZE).setRenderer(new HtmlRenderer(), new HtmlReferenceDtoConverter());
-        getColumn(ContactIndexDto.LAST_CONTACT_DATE).setRenderer(new DateRenderer(DateHelper.getShortDateFormat()));
-        getColumn(ContactIndexDto.FOLLOW_UP_UNTIL).setRenderer(new DateRenderer(DateHelper.getShortDateFormat()));
+        getColumn(ContactIndexDto.LAST_CONTACT_DATE).setRenderer(new DateRenderer(DateHelper.getDateFormat()));
+        getColumn(ContactIndexDto.FOLLOW_UP_UNTIL).setRenderer(new DateRenderer(DateHelper.getDateFormat()));
         
         for (Column column : getColumns()) {
         	column.setHeaderCaption(I18nProperties.getPrefixFieldCaption(

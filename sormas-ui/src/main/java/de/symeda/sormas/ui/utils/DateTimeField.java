@@ -32,6 +32,7 @@ public class DateTimeField extends CustomField<Date> {
 		
 		dateField = new DateField();
 		dateField.setWidth(100, Unit.PERCENTAGE);
+		dateField.setDateFormat(DateHelper.getShortDateFormat().toPattern());
 		layout.addComponent(dateField);
 		layout.setExpandRatio(dateField, 0.5f);
 		
@@ -59,8 +60,15 @@ public class DateTimeField extends CustomField<Date> {
 		layout.addComponent(timeField);
 		layout.setExpandRatio(timeField, 0.5f);
 		
+		// value cn't be set on readOnly fields
+		dateField.setReadOnly(false);
+		timeField.setReadOnly(false);
+		
 		// set field values based on internal value
 		setInternalValue(super.getInternalValue());
+		
+		dateField.setReadOnly(isReadOnly());
+		timeField.setReadOnly(isReadOnly());
 		
 		return layout;
 	}

@@ -2,24 +2,16 @@ package de.symeda.sormas.app.component;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 
-import com.android.annotations.Nullable;
 
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.backend.common.AbstractDomainObject;
-import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.hospitalization.PreviousHospitalization;
-import de.symeda.sormas.app.backend.location.Location;
-import de.symeda.sormas.app.databinding.PreviousHospitalizationEditFragmentLayoutBinding;
-import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.FormFragment;
 

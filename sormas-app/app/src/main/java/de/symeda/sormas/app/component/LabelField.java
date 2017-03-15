@@ -150,7 +150,7 @@ public class LabelField extends PropertyField<String> {
 
     @BindingAdapter("app:dateTime")
     public static void setDateTimeForLabel(LabelField labelField, Date date) {
-        labelField.setValue(DateHelper.formatHmDDMMYYYY(date));
+        labelField.setValue(DateHelper.formatDDMMYYYYHm(date));
     }
 
     @BindingAdapter("app:user")

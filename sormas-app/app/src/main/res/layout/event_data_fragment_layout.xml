@@ -67,7 +67,7 @@
                     android:layout_weight="0.5"
                     android:paddingTop="@dimen/field_padding"
                     android:paddingBottom="@dimen/field_padding"
-                    app:date="@{event.reportDateTime}"/>
+                    app:dateTime="@{event.reportDateTime}"/>
 
                 <de.symeda.sormas.app.component.LabelField
                     android:id="@+id/event_reportingUser"

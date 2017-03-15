@@ -95,7 +95,7 @@
                     android:layout_weight="0.5"
                     android:paddingTop="@dimen/field_padding"
                     android:paddingBottom="@dimen/field_padding"
-                    app:date="@{caze.reportDate}"/>
+                    app:dateTime="@{caze.reportDate}"/>
 
                 <de.symeda.sormas.app.component.LabelField
                     android:id="@+id/caseData_reportingUser"

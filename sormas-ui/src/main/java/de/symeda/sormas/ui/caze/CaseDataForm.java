@@ -24,6 +24,7 @@ import de.symeda.sormas.api.utils.Diseases.DiseasesConfiguration;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
@@ -86,7 +87,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
     	addField(CaseDataDto.CASE_CLASSIFICATION, OptionGroup.class);
     	addField(CaseDataDto.INVESTIGATION_STATUS, OptionGroup.class);
     	addField(CaseDataDto.REPORTING_USER, ComboBox.class);
-    	addField(CaseDataDto.REPORT_DATE, DateField.class);
+    	addField(CaseDataDto.REPORT_DATE, DateTimeField.class);
     	addField(CaseDataDto.DISEASE, NativeSelect.class);
     	
     	ComboBox region = addField(CaseDataDto.REGION, ComboBox.class);

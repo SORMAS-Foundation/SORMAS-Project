@@ -15,9 +15,8 @@ public final class DateHelper {
 
 	private static final SimpleDateFormat SHORT_DATE_FORMAT = new SimpleDateFormat("dd/MM/yy");
 	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
-	private static final SimpleDateFormat TIME_DATE_FORMAT = new SimpleDateFormat("HH:mm dd/MM/yyyy");
-	private static final SimpleDateFormat SHORT_TIME_DATE_FORMAT = new SimpleDateFormat("HH:mm dd/MM/yy");
 	private static final SimpleDateFormat DATE_TIME_FORMAT = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+	private static final SimpleDateFormat SHORT_DATE_TIME_FORMAT = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 	private static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm");
 
 	
@@ -82,24 +81,24 @@ public final class DateHelper {
     }
 	
 	/**
-	 * Formats to "HH:mm dd/MM/yy"
-	 * @return
-	 */
-	public static String formatHmDDMMYYYY(Date date) {
-        if (date != null) {
-            return clone(TIME_DATE_FORMAT).format(date);
-        } else {
-            return "";
-        }
-    }
-	
-	/**
 	 * Formats to "dd/MM/yyyy HH:mm "
 	 * @return
 	 */
 	public static String formatDDMMYYYYHm(Date date) {
 		if (date != null) {
 			return clone(DATE_TIME_FORMAT).format(date);
+		} else {
+			return "";
+		}
+	}
+	
+	/**
+	 * Formats to "dd/MM/yy HH:mm "
+	 * @return
+	 */
+	public static String formatDDMMYYHm(Date date) {
+		if (date != null) {
+			return clone(SHORT_DATE_TIME_FORMAT).format(date);
 		} else {
 			return "";
 		}
@@ -173,16 +172,20 @@ public final class DateHelper {
 		return x;
 	}
 	
+	public static SimpleDateFormat getDateFormat() {
+		return clone(DATE_FORMAT);
+	}
+	
 	public static SimpleDateFormat getShortDateFormat() {
 		return clone(SHORT_DATE_FORMAT);
 	}
 	
-	public static SimpleDateFormat getShortTimeDateFormat() {
-		return clone(SHORT_TIME_DATE_FORMAT);
+	public static SimpleDateFormat getShortDateTimeFormat() {
+		return clone(SHORT_DATE_TIME_FORMAT);
 	}
 	
-	public static SimpleDateFormat getTimeDateFormat() {
-		return clone(TIME_DATE_FORMAT);
+	public static SimpleDateFormat getDateTimeFormat() {
+		return clone(DATE_TIME_FORMAT);
 	}
 	
 	/**

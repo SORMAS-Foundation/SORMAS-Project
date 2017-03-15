@@ -18,11 +18,13 @@ import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.HtmlReferenceDtoConverter;
@@ -105,8 +107,8 @@ public class TaskGrid extends Grid implements ItemClickListener {
         getColumn(EDIT_BTN_ID).setRenderer(new HtmlRenderer());
         getColumn(EDIT_BTN_ID).setWidth(60);
         
-        getColumn(TaskDto.DUE_DATE).setRenderer(new DateRenderer("%1$tH:%1$tM %1$td.%1$tm.%1$ty"));
-        getColumn(TaskDto.SUGGESTED_START).setRenderer(new DateRenderer("%1$tH:%1$tM %1$td.%1$tm.%1$ty"));
+        getColumn(TaskDto.DUE_DATE).setRenderer(new DateRenderer(DateHelper.getDateTimeFormat()));
+        getColumn(TaskDto.SUGGESTED_START).setRenderer(new DateRenderer(DateHelper.getDateTimeFormat()));
         getColumn(TaskDto.CREATOR_COMMENT).setRenderer(new ShortStringRenderer(50));
         
         getColumn(TaskDto.CONTEXT_REFERENCE).setRenderer(new HtmlRenderer(), new HtmlReferenceDtoConverter());

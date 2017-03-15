@@ -27,6 +27,7 @@ import de.symeda.sormas.ui.location.LocationForm;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
@@ -114,16 +115,12 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		
 		addField(EventDto.TYPE_OF_PLACE, ComboBox.class);
 		addField(EventDto.TYPE_OF_PLACE_TEXT, TextField.class);		
-		addField(EventDto.REPORT_DATE_TIME, DateField.class);
+		addField(EventDto.REPORT_DATE_TIME, DateTimeField.class);
 		addField(EventDto.REPORTING_USER, ComboBox.class);
 		addField(EventDto.SRC_FIRST_NAME, TextField.class);
 		addField(EventDto.SRC_LAST_NAME, TextField.class);
 		addField(EventDto.SRC_TEL_NO, TextField.class);
 		addField(EventDto.SRC_EMAIL, TextField.class);
-		
-		DateField dateTimeField = (DateField) getField(EventDto.REPORT_DATE_TIME);
-		dateTimeField.setResolution(Resolution.MINUTE);
-		dateTimeField.setDateFormat(DateHelper.getTimeDateFormat().toPattern());
 		
 		setReadOnly(true, EventDto.UUID, EventDto.REPORT_DATE_TIME, EventDto.REPORTING_USER);
 		
