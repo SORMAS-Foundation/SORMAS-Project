@@ -6,6 +6,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.component.AbstractRootTabActivity;
 
 public class TasksActivity extends AbstractRootTabActivity {
@@ -16,7 +17,7 @@ public class TasksActivity extends AbstractRootTabActivity {
     protected void onCreate(Bundle savedInstanceState) {
         setContentView(R.layout.tasks_activity_layout);
         super.onCreate(savedInstanceState);
-        setTitle(getResources().getString(R.string.main_menu_tasks));
+        setTitle(getResources().getString(R.string.main_menu_tasks) + " - " + ConfigProvider.getUser().getUserRole());
     }
 
     @Override

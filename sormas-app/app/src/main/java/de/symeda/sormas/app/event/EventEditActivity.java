@@ -12,6 +12,7 @@ import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.component.AbstractEditActivity;
 
@@ -35,7 +36,7 @@ public class EventEditActivity extends AbstractEditActivity {
         if (toolbar != null) {
             setSupportActionBar(toolbar);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setTitle(getResources().getText(R.string.headline_event));
+            getSupportActionBar().setTitle(getResources().getText(R.string.headline_event) + " - " + ConfigProvider.getUser().getUserRole());
         }
     }
 
@@ -48,10 +49,10 @@ public class EventEditActivity extends AbstractEditActivity {
 
             // setting title
             if (params.containsKey(NEW_EVENT)) {
-                getSupportActionBar().setTitle(getResources().getText(R.string.headline_new_event));
+                getSupportActionBar().setTitle(getResources().getText(R.string.headline_new_event) + " - " + ConfigProvider.getUser().getUserRole());
             }
             else {
-                getSupportActionBar().setTitle(getResources().getText(R.string.headline_event));
+                getSupportActionBar().setTitle(getResources().getText(R.string.headline_event) + " - " + ConfigProvider.getUser().getUserRole());
             }
 
             if (params.containsKey(KEY_EVENT_UUID)) {

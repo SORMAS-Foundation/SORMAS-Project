@@ -16,6 +16,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.epidata.EpiData;
 import de.symeda.sormas.app.backend.epidata.EpiDataDao;
 import de.symeda.sormas.app.backend.hospitalization.Hospitalization;
@@ -34,9 +35,11 @@ import de.symeda.sormas.app.util.ValidationFailedException;
 public class CaseEditActivity extends AbstractEditActivity {
 
     public static final String KEY_CASE_UUID = "caseUuid";
+    public static final String CASE_SUBTITLE = "caseSubtitle";
 
     private CaseEditPagerAdapter adapter;
     private String caseUuid;
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,11 +53,12 @@ public class CaseEditActivity extends AbstractEditActivity {
         ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
         viewPager.setOffscreenPageLimit(10);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        toolbar = (Toolbar) findViewById(R.id.my_toolbar);
         if (toolbar != null) {
             setSupportActionBar(toolbar);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setTitle(getResources().getText(R.string.headline_case));
+
+            getSupportActionBar().setTitle(getResources().getText(R.string.headline_case) + " - " + ConfigProvider.getUser().getUserRole());
         }
     }
 
@@ -70,9 +74,14 @@ public class CaseEditActivity extends AbstractEditActivity {
             if (params.containsKey(KEY_PAGE)) {
                 currentTab = params.getInt(KEY_PAGE);
             }
+            if (params.containsKey(CASE_SUBTITLE) && toolbar != null) {
+                getSupportActionBar().setSubtitle(params.getString(CASE_SUBTITLE));
+            }
         }
         adapter = new CaseEditPagerAdapter(getSupportFragmentManager(), caseUuid);
         createTabViews(adapter);
+
+
 
 
         pager.setCurrentItem(currentTab);

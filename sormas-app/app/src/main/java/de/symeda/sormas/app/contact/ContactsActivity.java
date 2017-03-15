@@ -6,6 +6,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.component.AbstractRootTabActivity;
 
 public class ContactsActivity extends AbstractRootTabActivity {
@@ -16,7 +17,7 @@ public class ContactsActivity extends AbstractRootTabActivity {
     protected void onCreate(Bundle savedInstanceState) {
         setContentView(R.layout.contacts_activity_layout);
         super.onCreate(savedInstanceState);
-        setTitle(getResources().getString(R.string.main_menu_contacts));
+        setTitle(getResources().getString(R.string.main_menu_contacts) + " - " + ConfigProvider.getUser().getUserRole());
     }
 
     @Override

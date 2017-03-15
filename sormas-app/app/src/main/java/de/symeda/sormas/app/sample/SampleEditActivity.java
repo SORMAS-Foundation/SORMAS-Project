@@ -64,7 +64,7 @@ public class SampleEditActivity extends AppCompatActivity {
         if (toolbar != null) {
             setSupportActionBar(toolbar);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setTitle(getResources().getText(R.string.headline_sample));
+            getSupportActionBar().setTitle(getResources().getText(R.string.headline_sample) + " - " + ConfigProvider.getUser().getUserRole());
         }
 
         // setting the fragment_frame

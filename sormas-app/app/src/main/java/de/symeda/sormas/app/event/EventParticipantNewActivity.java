@@ -15,6 +15,7 @@ import java.util.List;
 
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.person.Person;
@@ -41,7 +42,7 @@ public class EventParticipantNewActivity extends AppCompatActivity {
         if (toolbar != null) {
             setSupportActionBar(toolbar);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setTitle(getResources().getText(R.string.headline_new_eventParticipant));
+            getSupportActionBar().setTitle(getResources().getText(R.string.headline_new_eventParticipant) + " - " + ConfigProvider.getUser().getUserRole());
         }
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
