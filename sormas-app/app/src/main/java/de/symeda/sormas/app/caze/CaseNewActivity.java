@@ -92,7 +92,6 @@ public class CaseNewActivity extends AppCompatActivity {
                 try {
                     final Case caze = caseNewTab.getData();
 
-
                     List<Person> existingPersons = DatabaseHelper.getPersonDao().getAllByName(caze.getPerson().getFirstName(), caze.getPerson().getLastName());
                     if (existingPersons.size() > 0) {
 

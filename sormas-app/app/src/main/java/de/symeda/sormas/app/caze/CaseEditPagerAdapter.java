@@ -165,8 +165,10 @@ public class CaseEditPagerAdapter extends FragmentStatePagerAdapter {
                 return personEditTab;
             case SYMPTOMS:
                 return symptomsEditTab;
-//            case HOSPITALIZATION:
-//                return hospitalizationTab;
+            case HOSPITALIZATION:
+                return hospitalizationTab;
+            case EPIDATA:
+                return epiDataTab;
         }
         return null;
     }

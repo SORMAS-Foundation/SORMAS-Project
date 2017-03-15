@@ -13,6 +13,7 @@ import java.sql.SQLException;
 
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.epidata.EpiData;
 import de.symeda.sormas.app.backend.epidata.EpiDataBurial;
 import de.symeda.sormas.app.backend.epidata.EpiDataBurialDao;
@@ -78,6 +79,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		instance = new DatabaseHelper(context);
 	}
 
+	private boolean clearingTables = false;
+
 	private ConfigDao configDao = null;
 
 	private PersonDao personDao = null;
@@ -111,6 +114,11 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	}
 
 	public static void clearTables(boolean clearInfrastructure) {
+		if (instance.clearingTables) {
+			return;
+		}
+		instance.clearingTables = true;
+
 		ConnectionSource connectionSource = getCaseDao().getConnectionSource();
 		try {
 			TableUtils.clearTable(connectionSource, Case.class);
@@ -138,6 +146,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				// FIXME: 10.03.2017 move this to the block above as soon as issue #138 is solved
 				TableUtils.clearTable(connectionSource, Location.class);
 				TableUtils.clearTable(connectionSource, User.class);
+				ConfigProvider.setUser(null); // important - otherwise the old instance is further used
 			}
 
 			// keep config!
@@ -145,6 +154,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		} catch (SQLException e) {
 			Log.e(DatabaseHelper.class.getName(), "Can't clear database", e);
 			throw new RuntimeException(e);
+		} finally {
+			instance.clearingTables = false;
 		}
 	}
 
