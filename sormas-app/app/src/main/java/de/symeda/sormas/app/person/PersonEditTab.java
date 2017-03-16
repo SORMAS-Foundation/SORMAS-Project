@@ -97,6 +97,7 @@ public class PersonEditTab extends FormTab {
             public void onNothingSelected(AdapterView<?> parent) {
             }
         });
+        binding.personBirthdateYYYY.setSelectionOnOpen(2000);
 
         // age type
         FieldHelper.initSpinnerField(binding.personApproximateAgeType, ApproximateAgeType.class);

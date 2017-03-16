@@ -35,9 +35,10 @@ import de.symeda.sormas.app.util.Item;
 public class SpinnerField extends PropertyField<Object> implements SpinnerFieldInterface {
 
     private Spinner spinnerElement;
-
     private InverseBindingListener inverseBindingListener;
     private SpinnerFieldListener spinnerFieldListener = new SpinnerFieldListener();
+
+    private int indexOnOpen;
 
     public SpinnerField(Context context) {
         super(context);
@@ -130,8 +131,7 @@ public class SpinnerField extends PropertyField<Object> implements SpinnerFieldI
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         adapter.add(new Item("Select entry", null));
         spinnerElement.setAdapter(adapter);
-        // FIXME 145 find another way to do this
-        //spinnerElement.setSelection(adapter.getCount());
+        spinnerElement.setSelection(adapter.getCount());
     }
 
     public void initialize(List<Item> items, final AdapterView.OnItemSelectedListener[] moreListeners) {
@@ -191,9 +191,16 @@ public class SpinnerField extends PropertyField<Object> implements SpinnerFieldI
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if(hasFocus) {
+                    if (spinnerElement.getSelectedItemPosition() == spinnerElement.getAdapter().getCount()) {
+                        spinnerElement.setSelection(indexOnOpen);
+                    }
                     InputMethodManager inputMethodManager = (InputMethodManager) getContext().getSystemService(Activity.INPUT_METHOD_SERVICE);
                     inputMethodManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
                     spinnerElement.performClick();
+                } else {
+                    if (spinnerElement.getSelectedItemPosition() == 0) {
+                        spinnerElement.setSelection(spinnerElement.getAdapter().getCount());
+                    }
                 }
             }
         });
@@ -210,13 +217,23 @@ public class SpinnerField extends PropertyField<Object> implements SpinnerFieldI
         caption.setEnabled(enabled);
     }
 
+    public void setSelectionOnOpen(Object object) {
+        for(int i = 0; i < spinnerElement.getAdapter().getCount(); i++) {
+            if(object.equals(((Item)spinnerElement.getAdapter().getItem(i)).getValue())) {
+                indexOnOpen = i;
+                break;
+            }
+        }
+    }
+
     private void setSelectedItem(Object selectedItem) {
-        if(spinnerElement.getAdapter() != null) {
-            if(selectedItem != null) {
-                for(int i = 0; i < spinnerElement.getAdapter().getCount(); i++) {
-                    if(selectedItem.equals(((Item)spinnerElement.getAdapter().getItem(i)).getValue())) {
-                        spinnerElement.setSelection(i);
-                    }
+        if (selectedItem == null) {
+            spinnerElement.setSelection(spinnerElement.getAdapter().getCount());
+        } else {
+            for (int i = 0; i < spinnerElement.getAdapter().getCount(); i++) {
+                if (selectedItem.equals(((Item) spinnerElement.getAdapter().getItem(i)).getValue())) {
+                    spinnerElement.setSelection(i);
+                    break;
                 }
             }
         }

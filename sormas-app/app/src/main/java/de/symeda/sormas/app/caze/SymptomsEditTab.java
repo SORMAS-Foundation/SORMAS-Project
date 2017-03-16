@@ -81,6 +81,7 @@ public class SymptomsEditTab extends FormTab {
             }
 
             FieldHelper.initSpinnerField(binding.symptomsTemperature, temperature);
+            binding.symptomsTemperature.setSelectionOnOpen(37.0f);
 
             FieldHelper.initSpinnerField(binding.symptomsTemperatureSource, TemperatureSource.class);
 
