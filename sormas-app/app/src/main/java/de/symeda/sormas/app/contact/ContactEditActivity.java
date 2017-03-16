@@ -187,7 +187,7 @@ public class ContactEditActivity extends AbstractEditActivity {
                 switch (tab) {
                     case VISITS:
                         // only contact officer is allowd to create visits
-//                        if(UserRole.CONTACT_OFFICER.equals(ConfigProvider.getUser().getUserRole())) {
+//                        if(UserRole.CONTACT_OFFICER.equals(ConfigProvider.getUser().getUserRoleName())) {
                         Bundle visitBundle = new Bundle();
                         visitBundle.putString(KEY_CONTACT_UUID, contactUuid);
                         visitBundle.putBoolean(VisitEditDataTab.NEW_VISIT, true);

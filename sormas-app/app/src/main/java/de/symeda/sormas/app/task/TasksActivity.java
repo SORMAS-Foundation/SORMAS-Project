@@ -17,7 +17,7 @@ public class TasksActivity extends AbstractRootTabActivity {
     protected void onCreate(Bundle savedInstanceState) {
         setContentView(R.layout.tasks_activity_layout);
         super.onCreate(savedInstanceState);
-        setTitle(getResources().getString(R.string.main_menu_tasks) + " - " + ConfigProvider.getUser().getUserRole());
+        setTitle(getResources().getString(R.string.main_menu_tasks));
     }
 
     @Override

@@ -20,18 +20,13 @@ import com.google.android.gms.appindexing.Thing;
 import com.google.android.gms.common.api.GoogleApiClient;
 
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.caze.CaseNewActivity;
 import de.symeda.sormas.app.caze.CasesActivity;
-import de.symeda.sormas.app.caze.SyncCasesTask;
-import de.symeda.sormas.app.component.AbstractTabActivity;
 import de.symeda.sormas.app.contact.ContactsActivity;
-import de.symeda.sormas.app.contact.SyncContactsTask;
 import de.symeda.sormas.app.event.EventsActivity;
-import de.symeda.sormas.app.event.SyncEventsTask;
 import de.symeda.sormas.app.sample.SamplesActivity;
-import de.symeda.sormas.app.task.SyncTasksTask;
 import de.symeda.sormas.app.task.TasksActivity;
-import de.symeda.sormas.app.task.TasksListFragment;
 import de.symeda.sormas.app.user.UserActivity;
 import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.SyncInfrastructureTask;
@@ -121,8 +116,14 @@ public abstract class AbstractRootTabActivity extends AbstractTabActivity {
     @Override
     public void setTitle(CharSequence title) {
         mainViewTitle = title;
-        getSupportActionBar().setTitle(mainViewTitle);
+        String userRole = "";
+        if (ConfigProvider.getUser()!=null && ConfigProvider.getUser().getUserRole() !=null) {
+            userRole = " - " + ConfigProvider.getUser().getUserRole().toString();
+        }
+        getSupportActionBar().setTitle(mainViewTitle + userRole);
     }
+
+
 
     private void setupDrawer() {
 

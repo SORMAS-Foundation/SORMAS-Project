@@ -17,7 +17,7 @@ public class ContactsActivity extends AbstractRootTabActivity {
     protected void onCreate(Bundle savedInstanceState) {
         setContentView(R.layout.contacts_activity_layout);
         super.onCreate(savedInstanceState);
-        setTitle(getResources().getString(R.string.main_menu_contacts) + " - " + ConfigProvider.getUser().getUserRole());
+        setTitle(getResources().getString(R.string.main_menu_contacts));
     }
 
     @Override
