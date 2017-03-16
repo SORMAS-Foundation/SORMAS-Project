@@ -15,6 +15,6 @@ public interface EventParticipantFacadeRetro {
     Call<List<EventParticipantDto>> getAll(@Path("user") String userUuid, @Path("since") long since);
 
     @POST("eventparticipants/push")
-    Call<Integer> postAll(@Body List<EventParticipantDto> dtos);
+    Call<Long> postAll(@Body List<EventParticipantDto> dtos);
 
 }

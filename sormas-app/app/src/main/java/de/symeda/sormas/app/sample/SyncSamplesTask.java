@@ -60,7 +60,7 @@ public class SyncSamplesTask extends AsyncTask<Void, Void, Void> {
 
         new SampleDtoHelper().pushEntities(new AdoDtoHelper.DtoPostInterface<SampleDto>() {
             @Override
-            public Call<Integer> postAll(List<SampleDto> dtos) {
+            public Call<Long> postAll(List<SampleDto> dtos) {
                 return RetroProvider.getSampleFacade().postAll(dtos);
             }
         }, DatabaseHelper.getSampleDao());

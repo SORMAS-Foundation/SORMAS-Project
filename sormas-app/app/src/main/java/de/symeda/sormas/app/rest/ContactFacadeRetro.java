@@ -18,5 +18,5 @@ public interface ContactFacadeRetro {
     Call<List<ContactDto>> getAll(@Path("user") String userUuid, @Path("since") long since);
 
     @POST("contacts/push")
-    Call<Integer> postAll(@Body List<ContactDto> dtos);
+    Call<Long> postAll(@Body List<ContactDto> dtos);
 }

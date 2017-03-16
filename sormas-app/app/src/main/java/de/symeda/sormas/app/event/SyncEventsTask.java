@@ -7,16 +7,13 @@ import android.support.v4.widget.SwipeRefreshLayout;
 
 import java.util.List;
 
-import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper.DtoGetInterface;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper.DtoPostInterface;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
-import de.symeda.sormas.app.backend.contact.ContactDtoHelper;
 import de.symeda.sormas.app.backend.event.EventDtoHelper;
 import de.symeda.sormas.app.backend.user.User;
-import de.symeda.sormas.app.contact.ContactsListFragment;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.util.Callback;
 import retrofit2.Call;
@@ -47,8 +44,7 @@ public class SyncEventsTask extends AsyncTask<Void, Void, Void> {
 
         new EventDtoHelper().pushEntities(new DtoPostInterface<EventDto>() {
             @Override
-            public Call<Integer> postAll(List<EventDto> dtos) {
-                // TODO postAll should return the date&time the server used as modifiedDate
+            public Call<Long> postAll(List<EventDto> dtos) {
                 return RetroProvider.getEventFacade().postAll(dtos);
             }
         }, DatabaseHelper.getEventDao());

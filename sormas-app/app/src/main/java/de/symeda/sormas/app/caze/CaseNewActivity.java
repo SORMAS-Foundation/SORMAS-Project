@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.caze;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
@@ -32,6 +33,7 @@ import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.symptoms.SymptomsDao;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.SelectOrCreatePersonDialogBuilder;
+import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.DataUtils;
 
@@ -126,7 +128,6 @@ public class CaseNewActivity extends AppCompatActivity {
                                         try {
                                             caze.setPerson((Person) parameter);
                                             savePersonAndCase(caze);
-                                            showCaseEditView(caze);
                                         } catch (Exception e) {
                                             Toast.makeText(getApplicationContext(), "Error while saving the case. " + e.getMessage(), Toast.LENGTH_SHORT).show();
                                             e.printStackTrace();
@@ -139,7 +140,6 @@ public class CaseNewActivity extends AppCompatActivity {
 
                         } else {
                             savePersonAndCase(caze);
-                            showCaseEditView(caze);
                         }
 
 //                      NavUtils.navigateUpFromSameTask(this);
@@ -163,7 +163,7 @@ public class CaseNewActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    private void savePersonAndCase(Case caze) throws IllegalAccessException, InstantiationException {
+    private void savePersonAndCase(final Case caze) throws IllegalAccessException, InstantiationException {
 
         // save the person
         DatabaseHelper.getPersonDao().save(caze.getPerson());
@@ -187,8 +187,18 @@ public class CaseNewActivity extends AppCompatActivity {
         CaseDao caseDao = DatabaseHelper.getCaseDao();
         caseDao.save(caze);
 
-        SyncCasesTask.syncCases(getSupportFragmentManager());
-        Toast.makeText(this, caze.getPerson().toString() + " saved", Toast.LENGTH_SHORT).show();
+        final ProgressDialog progressDialog = ProgressDialog.show(this, "Saving case",
+                "Cases are being synchronized...", true);
+
+        SyncCasesTask.syncCases(new Callback() {
+                                    @Override
+                                    public void call() {
+                                        Toast.makeText(CaseNewActivity.this, caze.getPerson().toString() + " saved", Toast.LENGTH_SHORT).show();
+                                        progressDialog.dismiss();
+                                        showCaseEditView(caze);
+                                    }
+                                });
+
     }
 
 

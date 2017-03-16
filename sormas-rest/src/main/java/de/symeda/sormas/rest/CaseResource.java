@@ -35,13 +35,13 @@ public class CaseResource {
 	
 	@POST 
 	@Path("/push")
-	public Integer postCases(List<CaseDataDto> dtos) {
+	public Long postCases(List<CaseDataDto> dtos) {
 		
 		CaseFacade caseFacade = FacadeProvider.getCaseFacade();
 		for (CaseDataDto dto : dtos) {
-			caseFacade.saveCase(dto);
+			dto = caseFacade.saveCase(dto);
 		}
 		
-		return dtos.size();
+		return new Date().getTime();
 	}
 }

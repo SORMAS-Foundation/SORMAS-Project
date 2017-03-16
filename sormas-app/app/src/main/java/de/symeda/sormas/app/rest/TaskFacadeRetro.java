@@ -19,5 +19,5 @@ public interface TaskFacadeRetro {
     Call<List<TaskDto>> getAll(@Path("user") String userUuid, @Path("since") long since);
 
     @POST("tasks/push")
-    Call<Integer> postAll(@Body List<TaskDto> dtos);
+    Call<Long> postAll(@Body List<TaskDto> dtos);
 }

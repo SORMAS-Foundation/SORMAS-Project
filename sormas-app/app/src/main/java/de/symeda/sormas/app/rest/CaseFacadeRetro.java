@@ -18,5 +18,5 @@ public interface CaseFacadeRetro {
     Call<List<CaseDataDto>> getAll(@Path("user") String userUuid, @Path("since") long since);
 
     @POST("cases/push")
-    Call<Integer> postAll(@Body List<CaseDataDto> dtos);
+    Call<Long> postAll(@Body List<CaseDataDto> dtos);
 }

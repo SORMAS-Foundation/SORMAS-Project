@@ -84,7 +84,7 @@ public class ContactsListFragment extends ListFragment {
 
         new SyncPersonsTask().execute();
 
-        SyncContactsTask.syncContacts(new Callback() {
+        SyncContactsTask.syncContactsWithoutDependencies(new Callback() {
             @Override
             public void call() {
                 List<Contact> contacts = null;

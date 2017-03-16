@@ -42,7 +42,7 @@ public class SyncVisitsTask extends AsyncTask<Void, Void, Void> {
 
         new VisitDtoHelper().pushEntities(new DtoPostInterface<VisitDto>() {
             @Override
-            public Call<Integer> postAll(List<VisitDto> dtos) {
+            public Call<Long> postAll(List<VisitDto> dtos) {
                 // TODO postAll should return the date&time the server used as modifiedDate
                 return RetroProvider.getVisitFacade().postAll(dtos);
             }

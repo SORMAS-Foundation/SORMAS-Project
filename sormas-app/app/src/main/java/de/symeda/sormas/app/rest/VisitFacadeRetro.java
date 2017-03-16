@@ -15,5 +15,5 @@ public interface VisitFacadeRetro {
     Call<List<VisitDto>> getAll(@Path("user") String userUuid, @Path("since") long since);
 
     @POST("visits/push")
-    Call<Integer> postAll(@Body List<VisitDto> dtos);
+    Call<Long> postAll(@Body List<VisitDto> dtos);
 }

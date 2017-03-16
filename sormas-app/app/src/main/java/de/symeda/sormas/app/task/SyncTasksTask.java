@@ -15,11 +15,8 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.task.TaskDtoHelper;
 import de.symeda.sormas.app.backend.user.User;
-import de.symeda.sormas.app.caze.CasesListFragment;
-import de.symeda.sormas.app.caze.SyncCasesTask;
 import de.symeda.sormas.app.contact.SyncContactsTask;
 import de.symeda.sormas.app.event.SyncEventsTask;
-import de.symeda.sormas.app.person.SyncPersonsTask;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.util.Callback;
 import retrofit2.Call;
@@ -50,7 +47,7 @@ public class SyncTasksTask extends AsyncTask<Void, Void, Void> {
 
         new TaskDtoHelper().pushEntities(new DtoPostInterface<TaskDto>() {
             @Override
-            public Call<Integer> postAll(List<TaskDto> dtos) {
+            public Call<Long> postAll(List<TaskDto> dtos) {
                 // TODO postAll should return the date&time the server used as modifiedDate
                 return RetroProvider.getTaskFacade().postAll(dtos);
             }

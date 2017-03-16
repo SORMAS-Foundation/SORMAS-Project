@@ -19,6 +19,6 @@ public interface SampleFacadeRetro {
     Call<List<SampleDto>> getAll(@Path("user") String userUuid, @Path("since") long since);
 
     @POST("samples/push")
-    Call<Integer> postAll(@Body List<SampleDto> dtos);
+    Call<Long> postAll(@Body List<SampleDto> dtos);
 
 }

@@ -6,7 +6,6 @@ import com.j256.ormlite.logger.Logger;
 import com.j256.ormlite.logger.LoggerFactory;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
@@ -15,8 +14,6 @@ import java.util.concurrent.Callable;
 
 import de.symeda.sormas.api.DataTransferObject;
 import de.symeda.sormas.api.ReferenceDto;
-import de.symeda.sormas.api.user.UserReferenceDto;
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -50,7 +47,7 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 
         DTO dto = createDto();
         dto.setUuid(ado.getUuid());
-        dto.setChangeDate(new Timestamp(ado.getLocalChangeDate().getTime()));
+        dto.setChangeDate(new Timestamp(ado.getChangeDate().getTime()));
         dto.setCreationDate(new Timestamp(ado.getCreationDate().getTime()));
 
         fillInnerFromAdo(dto, ado);
@@ -124,20 +121,19 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
             return;
         }
 
-        Call<Integer> call = postInterface.postAll(modifiedDtos);
+        Call<Long> call = postInterface.postAll(modifiedDtos);
 
         try {
-            final Integer result = call.execute().body();
-            if (result == null || result != modifiedAdos.size()) {
-                Log.e(dao.getTableName(), "PostAll result '" + result + "' does not match expected '" + modifiedAdos.size() + "'");
+            final Long resultChangeDate = call.execute().body();
+            if (resultChangeDate == null) {
+                Log.e(dao.getTableName(), "PostAll did not work");
             } else {
 
                 dao.callBatchTasks(new Callable<Void>() {
                     public Void call() throws Exception {
                         for (ADO ado : modifiedAdos) {
                             ado.setModified(false);
-                            // TODO set change date to timestamp returned by server
-                            //ado.setChangeDate(ado.getLocalChangeDate());
+                            ado.setChangeDate(new Date(resultChangeDate));
                             dao.update(ado);
                         }
                         return null;
@@ -158,7 +154,7 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 
     public interface DtoPostInterface<DTO extends DataTransferObject> {
 
-        Call<Integer> postAll(List<DTO> dtos);
+        Call<Long> postAll(List<DTO> dtos);
     }
 
     public static void fillDto(DataTransferObject dto, AbstractDomainObject ado) {
