@@ -57,8 +57,7 @@ public class CaseEditDataTab extends FormTab {
         final List emptyList = new ArrayList<>();
         final List districtsByRegion = DataUtils.toItems(caze.getRegion() != null ? DatabaseHelper.getDistrictDao().getByRegion(caze.getRegion()) : DataUtils.toItems(emptyList), true);
         final List communitiesByDistrict = DataUtils.toItems(caze.getDistrict() != null ? DatabaseHelper.getCommunityDao().getByDistrict(caze.getDistrict()) : DataUtils.toItems(emptyList), true);
-
-        FieldHelper.initFacilitySpinnerField(binding.caseDataHealthFacility);
+        final List facilitiesByCommunity = DataUtils.toItems(caze.getCommunity() != null ? DatabaseHelper.getFacilityDao().getByCommunity(caze.getCommunity()) : DataUtils.toItems(emptyList), true);
 
         FieldHelper.initRegionSpinnerField(binding.caseDataRegion, new AdapterView.OnItemSelectedListener() {
             @Override
@@ -100,7 +99,6 @@ public class CaseEditDataTab extends FormTab {
             }
         });
 
-
         FieldHelper.initSpinnerField(binding.caseDataCommunity, communitiesByDistrict, new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -121,25 +119,7 @@ public class CaseEditDataTab extends FormTab {
             }
         });
 
-        // this can later be used to manipulate the case investigation task from within the case
-//        Button btnCaseAdministration = binding.formCdBtnCaseAdministration;
-//        Iterable<CaseStatus> possibleStatus = CaseHelper.getPossibleStatusChanges(caze.getCaseClassification(), ConfigProvider.getUser().getUserRole());
-//        if(possibleStatus.iterator().hasNext()) {
-//            btnCaseAdministration.setVisibility(View.VISIBLE);
-//            final CaseStatus caseStatus = possibleStatus.iterator().next();
-//            btnCaseAdministration.setText(caseStatus.getChangeString());
-//            btnCaseAdministration.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    caseDao.changeCaseStatus(caze, caseStatus);
-//                    reloadFragment();
-//                }
-//            });
-//        }
-//        else
-//        {
-//            btnCaseAdministration.setVisibility(View.INVISIBLE);
-//        }
+        FieldHelper.initSpinnerField(binding.caseDataHealthFacility, facilitiesByCommunity);
 
         FieldHelper.initSpinnerField(binding.caseDataMeaslesVaccination, Vaccination.class);
         FieldHelper.initSpinnerField(binding.caseDataVaccinationInfoSource, VaccinationInfoSource.class);

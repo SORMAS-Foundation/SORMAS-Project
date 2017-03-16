@@ -130,7 +130,8 @@ public class SpinnerField extends PropertyField<Object> implements SpinnerFieldI
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         adapter.add(new Item("Select entry", null));
         spinnerElement.setAdapter(adapter);
-        spinnerElement.setSelection(adapter.getCount());
+        // FIXME 145 find another way to do this
+        //spinnerElement.setSelection(adapter.getCount());
     }
 
     public void initialize(List<Item> items, final AdapterView.OnItemSelectedListener[] moreListeners) {

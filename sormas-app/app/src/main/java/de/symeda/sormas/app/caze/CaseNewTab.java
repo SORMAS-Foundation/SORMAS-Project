@@ -54,9 +54,11 @@ public class CaseNewTab extends FormTab {
         binding.setCaze(caze);
 
         FieldHelper.initSpinnerField(binding.caseDataDisease, Disease.class);
-        FieldHelper.initFacilitySpinnerField(binding.caseDataHealthFacility);
 
         final List emptyList = new ArrayList<>();
+        final List districtsByRegion = DataUtils.toItems(caze.getRegion() != null ? DatabaseHelper.getDistrictDao().getByRegion(caze.getRegion()) : DataUtils.toItems(emptyList), true);
+        final List communitiesByDistrict = DataUtils.toItems(caze.getDistrict() != null ? DatabaseHelper.getCommunityDao().getByDistrict(caze.getDistrict()) : DataUtils.toItems(emptyList), true);
+        final List facilitiesByCommunity = DataUtils.toItems(caze.getCommunity() != null ? DatabaseHelper.getFacilityDao().getByCommunity(caze.getCommunity()) : DataUtils.toItems(emptyList), true);
 
         FieldHelper.initRegionSpinnerField(binding.caseDataRegion, new AdapterView.OnItemSelectedListener() {
             @Override
@@ -80,7 +82,7 @@ public class CaseNewTab extends FormTab {
 
 
 
-        FieldHelper.initSpinnerField(binding.caseDataDistrict, DataUtils.toItems(emptyList), new AdapterView.OnItemSelectedListener() {
+        FieldHelper.initSpinnerField(binding.caseDataDistrict, districtsByRegion, new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 SpinnerField spinnerField = binding.caseDataCommunity;
@@ -100,8 +102,7 @@ public class CaseNewTab extends FormTab {
             }
         });
 
-
-        FieldHelper.initSpinnerField(binding.caseDataCommunity, DataUtils.toItems(emptyList), new AdapterView.OnItemSelectedListener() {
+        FieldHelper.initSpinnerField(binding.caseDataCommunity, communitiesByDistrict, new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 SpinnerField spinnerField = binding.caseDataHealthFacility;
@@ -120,6 +121,8 @@ public class CaseNewTab extends FormTab {
 
             }
         });
+
+        FieldHelper.initSpinnerField(binding.caseDataHealthFacility, facilitiesByCommunity);
 
     }
 

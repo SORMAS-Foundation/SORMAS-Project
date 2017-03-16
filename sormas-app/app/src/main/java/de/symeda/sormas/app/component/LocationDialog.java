@@ -12,6 +12,7 @@ import java.util.List;
 
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
@@ -31,8 +32,8 @@ public class LocationDialog extends AlertDialog.Builder {
         this.setView(dialogView);
 
         final List emptyList = new ArrayList<>();
-
-        FieldHelper.initCommunitySpinnerField((SpinnerField)dialogView.findViewById(R.id.location_community));
+        final List districtsByRegion = DataUtils.toItems(location.getRegion() != null ? DatabaseHelper.getDistrictDao().getByRegion(location.getRegion()) : DataUtils.toItems(emptyList), true);
+        final List communitiesByDistrict = DataUtils.toItems(location.getDistrict() != null ? DatabaseHelper.getCommunityDao().getByDistrict(location.getDistrict()) : DataUtils.toItems(emptyList), true);
 
         FieldHelper.initRegionSpinnerField((SpinnerField)dialogView.findViewById(R.id.location_region), new AdapterView.OnItemSelectedListener() {
             @Override
@@ -54,17 +55,17 @@ public class LocationDialog extends AlertDialog.Builder {
             }
         });
 
-        FieldHelper.initDistrictSpinnerField((SpinnerField)dialogView.findViewById(R.id.location_district), new AdapterView.OnItemSelectedListener() {
+        FieldHelper.initSpinnerField((SpinnerField)dialogView.findViewById(R.id.location_district), districtsByRegion, new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                SpinnerField communitySpinner = (SpinnerField) dialogView.findViewById(R.id.location_community);
-                Object selectedValue = ((SpinnerField) dialogView.findViewById(R.id.location_district)).getValue();
-                if(communitySpinner != null) {
+                SpinnerField spinnerField = (SpinnerField)dialogView.findViewById(R.id.location_community);
+                Object selectedValue = ((SpinnerField)dialogView.findViewById(R.id.location_district)).getValue();
+                if(spinnerField != null) {
                     List<Community> communityList = emptyList;
                     if(selectedValue != null) {
                         communityList = DatabaseHelper.getCommunityDao().getByDistrict((District)selectedValue);
                     }
-                    communitySpinner.setAdapterAndValue(communitySpinner.getValue(), DataUtils.toItems(communityList));
+                    spinnerField.setAdapterAndValue(spinnerField.getValue(), DataUtils.toItems(communityList));
                 }
             }
 
@@ -73,6 +74,8 @@ public class LocationDialog extends AlertDialog.Builder {
 
             }
         });
+
+        FieldHelper.initSpinnerField((SpinnerField)dialogView.findViewById(R.id.location_community), communitiesByDistrict);
 
         if(location.getRegion() != null) {
             ((SpinnerField) dialogView.findViewById(R.id.location_region)).setValue(location.getRegion());

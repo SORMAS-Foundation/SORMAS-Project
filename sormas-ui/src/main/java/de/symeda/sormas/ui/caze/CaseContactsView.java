@@ -98,7 +98,9 @@ public class CaseContactsView extends AbstractCaseView {
     	
         ComboBox districtFilter = new ComboBox();
         UserDto user = LoginHelper.getCurrentUser();
-        districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(user.getRegion().getUuid()));
+        if (user.getRegion() != null) {
+        	districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(user.getRegion().getUuid()));
+        }
         districtFilter.addValueChangeListener(e->grid.setDistrictFilter(((DistrictReferenceDto)e.getProperty().getValue())));
         topLayout.addComponent(districtFilter);
 

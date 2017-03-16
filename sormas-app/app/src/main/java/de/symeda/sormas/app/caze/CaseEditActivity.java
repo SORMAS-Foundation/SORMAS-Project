@@ -83,7 +83,6 @@ public class CaseEditActivity extends AbstractEditActivity {
 
 
 
-
         pager.setCurrentItem(currentTab);
     }
 

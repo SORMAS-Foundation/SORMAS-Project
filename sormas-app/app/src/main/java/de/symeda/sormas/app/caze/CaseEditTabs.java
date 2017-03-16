@@ -6,13 +6,17 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 public enum CaseEditTabs {
 	CASE_DATA,
 	PATIENT,
-	SYMPTOMS,
-	CONTACTS,
-	TASKS,
-	SAMPLES,
 	HOSPITALIZATION,
-	EPIDATA
+	SYMPTOMS,
+	EPIDATA,
+	CONTACTS,
+	SAMPLES,
+	TASKS,
 	;
+
+	public static CaseEditTabs fromInt(int x) {
+		return CaseEditTabs.values()[x];
+	}
 
 	public String toString() {
 		return I18nProperties.getFieldCaption(CaseDataDto.I18N_PREFIX+"."+this.name());

@@ -47,8 +47,8 @@ public class PreviousHospitalizationTab extends AbstractFormDialogFragment<Previ
         binding.prevHospAdmissionDate.initialize(this);
         binding.prevHospDischargeDate.initialize(this);
 
+        FieldHelper.initSpinnerField(binding.prevHospHealthFacility, DataUtils.toItems(new ArrayList<>()));
 
-        FieldHelper.initFacilitySpinnerField(binding.prevHospHealthFacility);
         binding.prevHospHealthFacility.addValueChangedListener(new PropertyField.ValueChangeListener() {
             @Override
             public void onChange(PropertyField field) {

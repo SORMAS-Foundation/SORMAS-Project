@@ -50,7 +50,6 @@ import de.symeda.sormas.app.util.Consumer;
 public class PersonEditTab extends FormTab {
 
     PersonEditFragmentLayoutBinding binding;
-    private boolean facilityFieldsInitialized = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -166,15 +165,7 @@ public class PersonEditTab extends FormTab {
             }
         });
 
-        FieldHelper.initFacilitySpinnerField(binding.personOccupationFacility);
-        binding.personOccupationFacility.addValueChangedListener(new PropertyField.ValueChangeListener() {
-            @Override
-            public void onChange(PropertyField field) {
-                if(!facilityFieldsInitialized) {
-                    fillFacilityFields();
-                }
-            }
-        });
+        initFacilityFields(person.getOccupationFacility());
 
         // ================ Additional settings ================
 
@@ -236,12 +227,9 @@ public class PersonEditTab extends FormTab {
         }
     }
 
-    private void fillFacilityFields() {
-        Facility facility = (Facility) binding.personOccupationFacility.getValue();
+    private void initFacilityFields(Facility facility) {
 
         final List emptyList = new ArrayList<>();
-        List districtList = new ArrayList<>();
-        List communityList = new ArrayList<>();
 
         FieldHelper.initRegionSpinnerField(binding.personFacilityRegion, new AdapterView.OnItemSelectedListener() {
             @Override
@@ -260,7 +248,8 @@ public class PersonEditTab extends FormTab {
             }
         });
 
-        if(facility != null) {
+        List districtList = new ArrayList<>();
+        if (facility != null) {
             binding.personFacilityRegion.setValue(facility.getRegion());
             districtList = DataUtils.toItems(DatabaseHelper.getDistrictDao().getByRegion(facility.getRegion()));
         }
@@ -282,6 +271,7 @@ public class PersonEditTab extends FormTab {
             }
         });
 
+        List communityList = new ArrayList<>();
         if(facility != null) {
             binding.personFacilityDistrict.setValue(facility.getDistrict());
             communityList = DataUtils.toItems(DatabaseHelper.getCommunityDao().getByDistrict(facility.getDistrict()));
@@ -290,16 +280,15 @@ public class PersonEditTab extends FormTab {
         FieldHelper.initSpinnerField(binding.personFacilityCommunity, communityList, new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if(facilityFieldsInitialized) {
-                    SpinnerField spinnerField = binding.personOccupationFacility;
-                    Object selectedValue = binding.personFacilityCommunity.getValue();
-                    if (spinnerField != null) {
-                        List<Facility> facilityList = emptyList;
-                        if (selectedValue != null) {
-                            facilityList = DatabaseHelper.getFacilityDao().getByCommunity((Community) selectedValue);
-                        }
-                        spinnerField.setAdapterAndValue(binding.personOccupationFacility.getValue(), DataUtils.toItems(facilityList));
+
+                SpinnerField spinnerField = binding.personOccupationFacility;
+                Object selectedValue = binding.personFacilityCommunity.getValue();
+                if (spinnerField != null) {
+                    List<Facility> facilityList = emptyList;
+                    if (selectedValue != null) {
+                        facilityList = DatabaseHelper.getFacilityDao().getByCommunity((Community) selectedValue);
                     }
+                    spinnerField.setAdapterAndValue(binding.personOccupationFacility.getValue(), DataUtils.toItems(facilityList));
                 }
             }
             @Override
@@ -307,11 +296,17 @@ public class PersonEditTab extends FormTab {
             }
         });
 
-        if(facility != null) {
+        List facilityList = new ArrayList<>();
+        if (facility != null) {
             binding.personFacilityCommunity.setValue(facility.getCommunity());
+            facilityList = DataUtils.toItems(DatabaseHelper.getFacilityDao().getByCommunity(facility.getCommunity()));
         }
 
-        facilityFieldsInitialized = true;
+        FieldHelper.initSpinnerField(binding.personOccupationFacility, facilityList);
+
+        if (facility != null) {
+            binding.personOccupationFacility.setValue(facility);
+        }
     }
 
     private void updateDateOfDeathField() {

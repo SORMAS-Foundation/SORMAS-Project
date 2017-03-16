@@ -134,39 +134,33 @@ public class CaseEditPagerAdapter extends FragmentStatePagerAdapter {
     }
 
     public AbstractDomainObject getData(int position) {
-        AbstractDomainObject ado = null;
-        switch (position) {
-            case 0:
-                System.out.println(caseEditDataTab != null);
-                ado= caseEditDataTab.getData();
-                break;
-            case 1:
-                ado = personEditTab.getData();
-                break;
-            case 2:
-                ado = symptomsEditTab.getData();
-                break;
-            case 6:
-                ado = hospitalizationTab.getData();
-                break;
-            case 7:
-                ado = epiDataTab.getData();
-                break;
+        CaseEditTabs tab = CaseEditTabs.fromInt(position);
+        switch (tab) {
+            case CASE_DATA:
+                return caseEditDataTab.getData();
+            case PATIENT:
+                return personEditTab.getData();
+            case HOSPITALIZATION:
+                return hospitalizationTab.getData();
+            case SYMPTOMS:
+                return symptomsEditTab.getData();
+            case EPIDATA:
+                return epiDataTab.getData();
         }
-        return ado;
+        return null;
     }
 
     public FormTab getTabByPosition(int position) {
-        CaseEditTabs tab = CaseEditTabs.values()[position];
+        CaseEditTabs tab = CaseEditTabs.fromInt(position);
         switch(tab) {
             case CASE_DATA:
                 return caseEditDataTab;
             case PATIENT:
                 return personEditTab;
-            case SYMPTOMS:
-                return symptomsEditTab;
             case HOSPITALIZATION:
                 return hospitalizationTab;
+            case SYMPTOMS:
+                return symptomsEditTab;
             case EPIDATA:
                 return epiDataTab;
         }

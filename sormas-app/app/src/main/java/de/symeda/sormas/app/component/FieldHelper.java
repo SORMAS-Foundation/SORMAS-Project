@@ -41,37 +41,10 @@ public class FieldHelper {
         return spinnerField;
     }
 
-    /**
-     * Fill the spinner for facility selection.
-     * See {@see addSpinnerField()}
-     * @param moreListeners
-     */
-    public static SpinnerField initFacilitySpinnerField(SpinnerField spinnerField, final AdapterView.OnItemSelectedListener ...moreListeners) {
-        FacilityDao facilityDao = DatabaseHelper.getFacilityDao();
-        List<Item> items = DataUtils.toItems(facilityDao.queryForAll());
-        spinnerField.initialize(items, moreListeners);
-        return spinnerField;
-    }
-
     public static SpinnerField initRegionSpinnerField(SpinnerField spinnerField, final AdapterView.OnItemSelectedListener ...moreListeners) {
         RegionDao regionDao = DatabaseHelper.getRegionDao();
         List<Item> items = DataUtils.toItems(regionDao.queryForAll());
         spinnerField.initialize(items, moreListeners);
         return spinnerField;
     }
-
-    public static SpinnerField initDistrictSpinnerField(SpinnerField spinnerField, final AdapterView.OnItemSelectedListener ...moreListeners) {
-        DistrictDao districtDao = DatabaseHelper.getDistrictDao();
-        List<Item> items = DataUtils.toItems(districtDao.queryForAll());
-        spinnerField.initialize(items, moreListeners);
-        return spinnerField;
-    }
-
-    public static SpinnerField initCommunitySpinnerField(SpinnerField spinnerField, final AdapterView.OnItemSelectedListener ...moreListeners) {
-        CommunityDao communityDao = DatabaseHelper.getCommunityDao();
-        List<Item> items = DataUtils.toItems(communityDao.queryForAll());
-        spinnerField.initialize(items, moreListeners);
-        return spinnerField;
-    }
-
 }
