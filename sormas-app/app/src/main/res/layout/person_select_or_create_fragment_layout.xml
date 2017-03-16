@@ -29,8 +29,11 @@
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/colorPrimary"
+            android:minHeight="0dp"
+            android:height="30dp"
+            android:background="@color/colorLightGrey"
             android:text="@string/action_search"
+            android:textAppearance="?android:attr/textAppearanceSmall"
             android:id="@+id/personSelect_search"/>
 
         <de.symeda.sormas.app.component.RadioGroupField
