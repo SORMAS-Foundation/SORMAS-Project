@@ -1,14 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
-    signingConfigs {
-        config {
-            keyAlias 'SORMAS'
-            keyPassword 'SunkSesa'
-            storeFile file('D:/workspaces/SORMAS/sormas-app/keystore.jks')
-            storePassword 'SunkSesa'
-        }
-    }
+//    signingConfigs {
+//        config {
+//            keyAlias 'SORMAS'
+//            keyPassword 'SunkSesa'
+//            storeFile file('D:/workspaces/SORMAS/sormas-app/keystore.jks')
+//            storePassword 'SunkSesa'
+//        }
+//    }
     compileSdkVersion 23
     buildToolsVersion '25.0.0'
     defaultConfig {
@@ -17,7 +17,7 @@ android {
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
-        signingConfig signingConfigs.config
+//        signingConfig signingConfigs.config
     }
     buildTypes {
         release {
