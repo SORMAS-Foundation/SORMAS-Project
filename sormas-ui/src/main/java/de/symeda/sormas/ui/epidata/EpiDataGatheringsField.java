@@ -8,6 +8,7 @@ import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.epidata.EpiDataGatheringDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.caze.AbstractTableField;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -20,6 +21,7 @@ public class EpiDataGatheringsField extends AbstractTableField<EpiDataGatheringD
 	
 	private static final String CITY = "city";
 	private static final String LGA = "lga";
+	private static final String GATHERING_DAY = "gatheringDay";
 	
 	@Override
 	public Class<EpiDataGatheringDto> getEntryType() {
@@ -48,15 +50,23 @@ public class EpiDataGatheringsField extends AbstractTableField<EpiDataGatheringD
 			}
 		});
 		
+		table.addGeneratedColumn(GATHERING_DAY, new Table.ColumnGenerator() {
+			@Override
+			public Object generateCell(Table source, Object itemId, Object columnId) {
+				EpiDataGatheringDto gathering = (EpiDataGatheringDto) itemId;
+				return DateHelper.formatDDMMYYYY(gathering.getGatheringDate());
+			}
+		});
+		
 		table.setVisibleColumns(
 				EpiDataGatheringDto.DESCRIPTION,
-				EpiDataGatheringDto.GATHERING_DATE,
+				GATHERING_DAY,
 				CITY,
 				LGA,
 				EDIT_COLUMN_ID);
 		
 		table.setColumnExpandRatio(EpiDataGatheringDto.DESCRIPTION, 0);
-		table.setColumnExpandRatio(EpiDataGatheringDto.GATHERING_DATE, 0);
+		table.setColumnExpandRatio(GATHERING_DAY, 0);
 		table.setColumnExpandRatio(CITY, 0);
 		table.setColumnExpandRatio(LGA, 0);
 		table.setColumnExpandRatio(EDIT_COLUMN_ID, 0);
@@ -89,7 +99,7 @@ public class EpiDataGatheringsField extends AbstractTableField<EpiDataGatheringD
 		editForm.setValue(entry);
 		
 		final CommitDiscardWrapperComponent<EpiDataGatheringEditForm> editView = new CommitDiscardWrapperComponent<EpiDataGatheringEditForm>(editForm, editForm.getFieldGroup());
-		editView.getCommitButton().setCaption("Done");
+		editView.getCommitButton().setCaption("done");
 
 		editView.addCommitListener(new CommitListener() {
 			@Override
@@ -109,7 +119,7 @@ public class EpiDataGatheringsField extends AbstractTableField<EpiDataGatheringD
 			});
 		}
 		
-		VaadinUiUtil.showModalPopupWindow(editView, "Edit gathering");
+		VaadinUiUtil.showModalPopupWindow(editView, "Gathering information");
 	}
 	
 	@Override

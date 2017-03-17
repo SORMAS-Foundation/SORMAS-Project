@@ -80,7 +80,7 @@ public class EpiDataTravelsField extends AbstractTableField<EpiDataTravelDto> {
 		editForm.setValue(entry);
 		
 		final CommitDiscardWrapperComponent<EpiDataTravelEditForm> editView = new CommitDiscardWrapperComponent<EpiDataTravelEditForm>(editForm, editForm.getFieldGroup());
-		editView.getCommitButton().setCaption("Done");
+		editView.getCommitButton().setCaption("done");
 
 		editView.addCommitListener(new CommitListener() {
 			@Override
@@ -100,7 +100,7 @@ public class EpiDataTravelsField extends AbstractTableField<EpiDataTravelDto> {
 			});
 		}
 		
-		VaadinUiUtil.showModalPopupWindow(editView, "Edit travel");
+		VaadinUiUtil.showModalPopupWindow(editView, "Travel information");
 	}
 	
 }

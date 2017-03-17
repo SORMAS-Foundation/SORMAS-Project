@@ -117,7 +117,7 @@ public class EpiDataBurialsField extends AbstractTableField<EpiDataBurialDto> {
 		editForm.setValue(entry);
 		
 		final CommitDiscardWrapperComponent<EpiDataBurialEditForm> editView = new CommitDiscardWrapperComponent<EpiDataBurialEditForm>(editForm, editForm.getFieldGroup());
-		editView.getCommitButton().setCaption("Done");
+		editView.getCommitButton().setCaption("done");
 
 		editView.addCommitListener(new CommitListener() {
 			@Override
@@ -137,7 +137,7 @@ public class EpiDataBurialsField extends AbstractTableField<EpiDataBurialDto> {
 			});
 		}
 		
-		VaadinUiUtil.showModalPopupWindow(editView, "Edit burial");
+		VaadinUiUtil.showModalPopupWindow(editView, "Burial information");
 	}
 	
 	@Override
