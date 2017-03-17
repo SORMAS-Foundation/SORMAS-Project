@@ -24,18 +24,11 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
-import de.symeda.sormas.app.backend.epidata.EpiData;
-import de.symeda.sormas.app.backend.epidata.EpiDataDao;
-import de.symeda.sormas.app.backend.hospitalization.Hospitalization;
-import de.symeda.sormas.app.backend.hospitalization.HospitalizationDao;
 import de.symeda.sormas.app.backend.person.Person;
-import de.symeda.sormas.app.backend.symptoms.Symptoms;
-import de.symeda.sormas.app.backend.symptoms.SymptomsDao;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.SelectOrCreatePersonDialogBuilder;
 import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.Consumer;
-import de.symeda.sormas.app.util.DataUtils;
 
 
 /**
@@ -137,6 +130,7 @@ public class CaseNewActivity extends AppCompatActivity {
                             });
                             AlertDialog newPersonDialog = dialogBuilder.create();
                             newPersonDialog.show();
+                            ((SelectOrCreatePersonDialogBuilder)dialogBuilder).setButtonListeners(newPersonDialog, this);
 
                         } else {
                             savePersonAndCase(caze);

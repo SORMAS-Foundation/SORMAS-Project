@@ -109,6 +109,7 @@ public class EventParticipantNewActivity extends AppCompatActivity {
                             });
                             AlertDialog newPersonDialog = dialogBuilder.create();
                             newPersonDialog.show();
+                            ((SelectOrCreatePersonDialogBuilder)dialogBuilder).setButtonListeners(newPersonDialog, this);
 
                         } else {
                             savePersonAndEventParticipant(eventParticipant);

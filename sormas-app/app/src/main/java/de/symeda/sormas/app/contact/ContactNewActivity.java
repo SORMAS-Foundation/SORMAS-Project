@@ -3,6 +3,7 @@ package de.symeda.sormas.app.contact;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -20,8 +21,9 @@ import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.caze.CaseEditActivity;
+import de.symeda.sormas.app.component.SelectOrCreatePersonDialogBuilder;
 import de.symeda.sormas.app.person.SyncPersonsTask;
-import de.symeda.sormas.app.util.Callback;
+import de.symeda.sormas.app.util.Consumer;
 
 
 /**
@@ -120,16 +122,25 @@ public class ContactNewActivity extends AppCompatActivity {
                     if (validData) {
                         List<Person> existingPersons = DatabaseHelper.getPersonDao().getAllByName(contact.getPerson().getFirstName(), contact.getPerson().getLastName());
                         if(existingPersons.size()>0) {
-                            contactNewTab.selectOrCreatePersonDialog(contact.getPerson(), existingPersons, new Callback() {
+                            AlertDialog.Builder dialogBuilder = new SelectOrCreatePersonDialogBuilder(this, contact.getPerson(), existingPersons, new Consumer() {
                                 @Override
-                                public void call() {
-                                    contact.setPerson(contactNewTab.getSelectedPersonFromDialog());
-                                    savePersonAndContact(contact);
-                                    navBackToCaseContacts();
+                                public void accept(Object parameter) {
+                                    if (parameter instanceof Person) {
+                                        try {
+                                            contact.setPerson((Person) parameter);
+                                            savePersonAndContact(contact);
+                                            navBackToCaseContacts();
+                                        } catch (Exception e) {
+                                            Toast.makeText(getApplicationContext(), "Error while saving the contact. " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                            e.printStackTrace();
+                                        }
+                                    }
                                 }
                             });
-                        }
-                        else {
+                            AlertDialog newPersonDialog = dialogBuilder.create();
+                            newPersonDialog.show();
+                            ((SelectOrCreatePersonDialogBuilder)dialogBuilder).setButtonListeners(newPersonDialog, this);
+                        } else {
                             savePersonAndContact(contact);
                             navBackToCaseContacts();
                         }
@@ -147,7 +158,7 @@ public class ContactNewActivity extends AppCompatActivity {
 
     private void navBackToCaseContacts() {
         Intent intentCaseContacts = new Intent(this, CaseEditActivity.class);
-        intentCaseContacts.putExtra(CaseEditActivity.KEY_PAGE, 3);
+        intentCaseContacts.putExtra(CaseEditActivity.KEY_PAGE, 5);
         intentCaseContacts.putExtra(CaseEditActivity.KEY_CASE_UUID, caseUuid);
         startActivity(intentCaseContacts);
     }
