@@ -146,13 +146,6 @@ public class TextField extends PropertyField<String> implements TextFieldInterfa
         }
     }
 
-    @BindingAdapter("app:location")
-    public static void setLocationForTextField(TextField textField, Location location) {
-        if(location != null) {
-            textField.setValue(location.toString());
-        }
-    }
-
     /**
      * Handles hiding of the soft keyboard when custom fields are selected and management of
      * the next button

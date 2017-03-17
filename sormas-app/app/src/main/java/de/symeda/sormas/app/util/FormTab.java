@@ -11,6 +11,7 @@ import android.widget.ImageButton;
 import de.symeda.sormas.api.sample.ShipmentStatus;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.location.Location;
+import de.symeda.sormas.app.component.LabelField;
 import de.symeda.sormas.app.component.LocationDialog;
 import de.symeda.sormas.app.component.TextField;
 
@@ -24,8 +25,7 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
         DatabaseHelper.getLocationDao().initializeLocation(location);
 
         // set the TextField for the location
-        final TextField locationText = (TextField) getView().findViewById(locationFieldId);
-        locationText.setEnabled(false);
+        final LabelField locationText = (LabelField) getView().findViewById(locationFieldId);
         locationText.setValue(location.toString());
 
         ImageButton btn = (ImageButton) getView().findViewById(locationBtnId);
@@ -33,8 +33,18 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
             @Override
             public void onClick(View arg0) {
                 final LocationDialog dialogBuilder = new LocationDialog(getActivity(), location, positiveCallback, null);
-                AlertDialog newPersonDialog = dialogBuilder.create();
-                newPersonDialog.show();
+                AlertDialog locationDialog = dialogBuilder.create();
+                locationDialog.show();
+            }
+        });
+
+        View locationField = getView().findViewById(locationFieldId);
+        locationField.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View arg0) {
+                final LocationDialog dialogBuilder = new LocationDialog(getActivity(), location, positiveCallback, null);
+                AlertDialog locationDialog = dialogBuilder.create();
+                locationDialog.show();
             }
         });
     }

@@ -10,7 +10,9 @@ import android.graphics.Paint;
 import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.text.style.TextAppearanceSpan;
 import android.util.AttributeSet;
+import android.util.Size;
 import android.view.LayoutInflater;
 import android.widget.TextView;
 
@@ -26,6 +28,7 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.event.Event;
+import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.backend.sample.SampleTest;
@@ -206,6 +209,13 @@ public class LabelField extends PropertyField<String> {
         Sample sample = DatabaseHelper.getSampleDao().queryUuid(sampleUuid);
         SampleTest mostRecentTest = DatabaseHelper.getSampleTestDao().getMostRecentForSample(sample);
         labelField.setValue(mostRecentTest!=null?mostRecentTest.getTestResult().toString():"");
+    }
+
+    @BindingAdapter("app:location")
+    public static void setLocationForLabel(LabelField labelField, Location location) {
+        if(location != null) {
+            labelField.setValue(location.toString());
+        }
     }
 
 }

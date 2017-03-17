@@ -158,8 +158,7 @@
                 android:textColor="@android:color/tab_indicator_text"
                 android:textSize="@dimen/abc_text_size_body_1_material"
                 android:textStyle="bold"
-                android:paddingTop="30dp"
-                android:paddingBottom="10dp" />
+                android:paddingTop="30dp"/>
 
             <LinearLayout
                 android:orientation="horizontal"
@@ -175,7 +174,7 @@
                     android:background="@android:color/transparent"
                     android:layout_marginRight="5dp" />
 
-                <de.symeda.sormas.app.component.TextField
+                <de.symeda.sormas.app.component.LabelField
                     android:id="@+id/event_eventLocation"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

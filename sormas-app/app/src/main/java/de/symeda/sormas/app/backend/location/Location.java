@@ -104,17 +104,32 @@ public class Location extends AbstractDomainObject {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		if (getAddress() != null) {
+		if (getAddress() != null && !getAddress().isEmpty()) {
 			sb.append(getAddress());
 		}
-		if (getDetails() != null) {
-			sb.append(" ").append(getDetails());
+		if ((getCity() != null && !getCity().isEmpty()) || getCommunity() != null || getDistrict() != null) {
+			if (getAddress() != null && !getAddress().isEmpty()) {
+				sb.append("\n");
+			}
+			if (getCity() != null && !getCity().isEmpty()) {
+				sb.append(getCity());
+			} else if (getCommunity() != null) {
+				sb.append(getCommunity());
+			}
+			if (getDistrict() != null) {
+				if ((getCity() != null && !getCity().isEmpty()) || getCommunity() != null) {
+					sb.append(", ");
+				}
+				sb.append(getDistrict());
+			}
 		}
-		if (getCity() != null) {
-			sb.append(" ").append(getCity());
-		} else if (getCommunity() != null) {
-			sb.append(" ").append(getCommunity());
+		if (getDetails() != null && !getDetails().isEmpty()) {
+			if ((getAddress() != null && !getAddress().isEmpty()) || (getCity() != null || !getCity().isEmpty()) ||
+					getCommunity() != null || getDistrict() != null) {
+				sb.append("\n");
+			}
+			sb.append(getDetails());
 		}
-		return sb.toString().trim();
+		return sb.toString();
 	}
 }

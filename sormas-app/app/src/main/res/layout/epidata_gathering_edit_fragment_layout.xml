@@ -50,7 +50,7 @@
                 android:background="@android:color/transparent"
                 android:layout_marginRight="5dp" />
 
-            <de.symeda.sormas.app.component.TextField
+            <de.symeda.sormas.app.component.LabelField
                 android:id="@+id/gather_address"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
