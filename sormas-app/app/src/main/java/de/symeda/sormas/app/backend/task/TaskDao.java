@@ -17,6 +17,7 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
 
 /**
@@ -81,6 +82,7 @@ public class TaskDao extends AbstractAdoDao<Task> {
 
             Where where = builder.where();
             where.and(
+                where.eq(Task.ASSIGNEE_USER + "_id", ConfigProvider.getUser()),
                 where.eq(Task.TASK_STATUS, TaskStatus.PENDING),
                 where.or(
                     where.between(Task.SUGGESTED_START, rangeStart, rangeEnd),

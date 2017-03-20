@@ -19,6 +19,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.util.DataUtils;
 
@@ -48,15 +49,6 @@ public class TasksListArrayAdapter extends ArrayAdapter<Task> {
 
         Task task = (Task) getItem(position);
 
-
-
-        TextView uuid = (TextView) convertView.findViewById(R.id.task_uuid_li);
-        AbstractDomainObject associatedLink = task.getAssociatedLink();
-        if (associatedLink != null) {
-            uuid.setText(DataHelper.getShortUuid(associatedLink.getUuid()));
-        }
-        setFontStyle(uuid, task.getTaskStatus());
-
         TextView dueDate = (TextView) convertView.findViewById(R.id.task_dueDate_li);
         dueDate.setText(DateHelper.formatDDMMYYYY(task.getDueDate()));
 
@@ -66,6 +58,17 @@ public class TasksListArrayAdapter extends ArrayAdapter<Task> {
         }
         setFontStyle(dueDate, task.getTaskStatus(),dueDateColor);
 
+        TextView disease = (TextView) convertView.findViewById(R.id.task_disease_li);
+        if (task.getCaze() != null) {
+            disease.setText(task.getCaze().getDisease().toShortString());
+        } else if (task.getContact() != null) {
+            disease.setText(task.getContact().getCaze().getDisease().toShortString());
+        } else if (task.getEvent() != null && task.getEvent().getDisease() != null){
+            disease.setText(task.getEvent().getDisease().toShortString());
+        } else {
+            disease.setText("");
+        }
+
         TextView taskStatus = (TextView) convertView.findViewById(R.id.task_taskStatus_li);
         taskStatus.setText(DataUtils.toString(task.getTaskStatus()));
         setFontStyle(taskStatus, task.getTaskStatus());
@@ -73,6 +76,25 @@ public class TasksListArrayAdapter extends ArrayAdapter<Task> {
         TextView taskType = (TextView) convertView.findViewById(R.id.task_taskType_li);
         taskType.setText(DataUtils.toString(task.getTaskType()));
         setFontStyle(taskType, task.getTaskStatus());
+
+        TextView taskInfo = (TextView) convertView.findViewById(R.id.task_name_or_information_li);
+        if (task.getCaze() != null) {
+            taskInfo.setText(task.getCaze().getPerson().getFirstName() + " " + task.getCaze().getPerson().getLastName().toUpperCase() +
+                    " (" + DataHelper.getShortUuid(task.getCaze().getUuid()) + ")");
+        } else if (task.getContact() != null) {
+            taskInfo.setText(task.getContact().getPerson().getFirstName() + " " + task.getContact().getPerson().getLastName().toUpperCase() +
+                    " (" + DataHelper.getShortUuid(task.getContact().getUuid()) + ")");
+        } else if (task.getEvent() != null) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(task.getEvent().getEventType());
+            sb.append(", " + DateHelper.formatDDMMYYYY(task.getEvent().getEventDate()));
+            if (task.getEvent().getEventLocation().getCity() != null && !task.getEvent().getEventLocation().getCity().isEmpty()) {
+                sb.append(", " + task.getEvent().getEventLocation().getCity());
+            }
+            sb.append(" (" + DataHelper.getShortUuid(task.getEvent().getUuid()) + ")");
+            sb.append(", " + task.getEvent().getEventDesc().substring(0, 15) + (task.getEvent().getEventDesc().length() > 15 ? "..." : ""));
+            taskInfo.setText(sb.toString());
+        }
 
         TextView creatorComment = (TextView) convertView.findViewById(R.id.task_creatorComment_li);
         creatorComment.setText(task.getCreatorComment());

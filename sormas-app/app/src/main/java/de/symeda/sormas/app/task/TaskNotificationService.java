@@ -99,7 +99,7 @@ public class TaskNotificationService extends Service {
                 continue;
             }
 
-            Person person = caze != null ? personDAO.queryForId(caze.getPerson().getId()) : personDAO.queryForId(contact.getPerson().getId());
+            Person person = caze != null ? personDAO.queryForId(caze.getPerson().getId()) : contact != null ? personDAO.queryForId(contact.getPerson().getId()) : null;
 
             // Just for your information: The issue here was that the second argument of the getActivity call
             // was set to 0, which leads to previous intents to be recycled; passing the task's ID instead
@@ -108,25 +108,23 @@ public class TaskNotificationService extends Service {
             Resources r = context.getResources();
 
             StringBuilder content = new StringBuilder();
-            if (!TextUtils.isEmpty(task.getCreatorComment())) {
-                content.append(task.getCreatorComment()).append("<br><br>");
-            } else {
-                content.append("<br><br>");
-            }
-
             if(caze != null) {
                 content.append("<b>").append(person.toString())
-                        .append(" (").append(DataHelper.getShortUuid(caze.getUuid())).append(")</b>");
+                        .append(" (").append(DataHelper.getShortUuid(caze.getUuid())).append(")</b><br/>");
             }
             if(contact != null) {
                 content.append("<b>").append(person.toString())
-                        .append(" (").append(DataHelper.getShortUuid(contact.getUuid())).append(")</b>");
+                        .append(" (").append(DataHelper.getShortUuid(contact.getUuid())).append(")</b><br/>");
+            }
+
+            if (!TextUtils.isEmpty(task.getCreatorComment())) {
+                content.append(task.getCreatorComment());
             }
 
             Notification notification = new NotificationCompat.Builder(context)
                     .setTicker(r.getString(R.string.headline_task_notification))
                     .setSmallIcon(R.mipmap.ic_launcher)
-                    .setContentTitle(task.getTaskType().toString())
+                    .setContentTitle(task.getTaskType().toString() + " (" + (caze != null ? caze.getDisease().toShortString() : contact != null ? contact.getCaze().getDisease().toShortString() : "") + ")")
                     .setStyle(new NotificationCompat.BigTextStyle().bigText(Html.fromHtml(content.toString())))
                     .setContentIntent(pi)
                     .setAutoCancel(true)
