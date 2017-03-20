@@ -224,48 +224,43 @@ public class CaseEditActivity extends AbstractEditActivity {
                     Toast.makeText(this, "Please select a health facility.", Toast.LENGTH_SHORT).show();
                 }
 
+                try {
+                    symptomsEditTab.validateCaseData(symptoms);
+                } catch(ValidationFailedException e) {
+                    Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
+                    validData = false;
+                }
+
                 if (validData) {
 
-                    try {
-                        if (person.getAddress() != null) {
-                            locLocationDao.save(person.getAddress());
-                        }
-                        personDao.save(person);
-                        caze.setPerson(person); // we aren't sure why, but this is needed, otherwise the person will be overriden when first saved
-
-                        symptomsEditTab.validateCaseData(symptoms);
-                        if (symptoms != null) {
-                            symptomsDao.save(symptoms);
-                            caze.setSymptoms(symptoms);
-                        }
-
-                        if (hospitalization != null) {
-                            hospitalizationDao.save(hospitalization);
-                            caze.setHospitalization(hospitalization);
-                        }
-
-                        if (epiData != null) {
-                            epiDataDao.save(epiData);
-                            caze.setEpiData(epiData);
-                        }
-
-                        caseDao.save(caze);
-                        showSaved = true;
-
-                    } catch (ValidationFailedException e) {
-                        Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
-                        showSaved = true;
+                    if (person.getAddress() != null) {
+                        locLocationDao.save(person.getAddress());
                     }
+                    personDao.save(person);
+                    caze.setPerson(person); // we aren't sure why, but this is needed, otherwise the person will be overriden when first saved
+
+                    if (symptoms != null) {
+                        symptomsDao.save(symptoms);
+                        caze.setSymptoms(symptoms);
+                    }
+
+                    if (hospitalization != null) {
+                        hospitalizationDao.save(hospitalization);
+                        caze.setHospitalization(hospitalization);
+                    }
+
+                    if (epiData != null) {
+                        epiDataDao.save(epiData);
+                        caze.setEpiData(epiData);
+                    }
+
+                    caseDao.save(caze);
 
                     SyncCasesTask.syncCases(getSupportFragmentManager());
-
-                    if (showSaved) {
-                        Toast.makeText(this, "case saved", Toast.LENGTH_SHORT).show();
-                    }
+                    Toast.makeText(this, "case saved", Toast.LENGTH_SHORT).show();
 
                     onResume();
                     pager.setCurrentItem(currentTab);
-
                 }
 
                 return true;
