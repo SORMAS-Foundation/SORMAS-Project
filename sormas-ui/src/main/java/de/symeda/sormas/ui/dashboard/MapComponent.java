@@ -6,11 +6,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.grid.HeightMode;
 import com.vaadin.tapio.googlemaps.GoogleMap;
 import com.vaadin.tapio.googlemaps.client.LatLon;
 import com.vaadin.tapio.googlemaps.client.events.MarkerClickListener;
 import com.vaadin.tapio.googlemaps.client.overlays.GoogleMapMarker;
+import com.vaadin.ui.Image;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
@@ -34,9 +37,7 @@ public class MapComponent extends VerticalLayout {
 	private final HashMap<GoogleMapMarker, FacilityDto> facilityMarkers = new HashMap<GoogleMapMarker, FacilityDto>();
 	private final HashMap<FacilityDto, List<CaseDataDto>> facilities = new HashMap<>();
     
-    public MapComponent() {
-    	setSizeFull();
-    	
+    public MapComponent() {    	
 		map = new GoogleMap("AIzaSyAaJpN8a_NhEU-02-t5uVi02cAaZtKafkw", null, null);
         map.setCenter(center);
         map.setZoom(9);

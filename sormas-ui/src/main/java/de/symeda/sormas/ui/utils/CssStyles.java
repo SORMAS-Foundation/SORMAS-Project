@@ -85,6 +85,7 @@ public final class CssStyles {
 	public static final String STATUS_PENDING = "status-pending";
 	
 	public static final String CALLOUT = "callout";
+	public static final String DASHBOARD_KEY = "dashboard-key";
 
 
 	public static void style(Component component, String... styles) {

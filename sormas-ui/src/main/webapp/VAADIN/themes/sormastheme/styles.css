@@ -13091,6 +13091,21 @@ div.v-layout.v-horizontal.v-widget {
 	background-color: #fafafa;
 }
 
+.sormastheme .dashboard-key {
+	text-align: center;
+	outline: none;
+	-webkit-tap-highlight-color: transparent;
+	-webkit-touch-callout: none;
+	padding: 7px;
+	color: #191919;
+	font-weight: 500;
+	border-radius: 4px;
+	border: 1px solid #c5c5c5;
+	border-top-color: #c5c5c5;
+	border-bottom-color: #bcbcbc;
+	background-color: #fafafa;
+}
+
 .sormastheme .valo-content {
 	overflow: auto;
 }
