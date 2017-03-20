@@ -86,6 +86,14 @@ public class VisitsListFragment extends ListFragment {
                 ArrayAdapter<Visit> listAdapter = (ArrayAdapter<Visit>)getListAdapter();
                 listAdapter.clear();
                 listAdapter.addAll(visits);
+
+                if (listAdapter.getCount() == 0) {
+                    getView().findViewById(R.id.empty_list_hint).setVisibility(View.VISIBLE);
+                    getView().findViewById(android.R.id.list).setVisibility(View.GONE);
+                } else {
+                    getView().findViewById(R.id.empty_list_hint).setVisibility(View.GONE);
+                    getView().findViewById(android.R.id.list).setVisibility(View.VISIBLE);
+                }
             }
         }, refreshLayout);
     }

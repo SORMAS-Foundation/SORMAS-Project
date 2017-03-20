@@ -8,6 +8,8 @@ import com.j256.ormlite.dao.RuntimeExceptionDao;
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.logger.Logger;
 import com.j256.ormlite.logger.LoggerFactory;
+import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.Where;
 
 import java.sql.SQLException;
 import java.util.Date;
@@ -36,6 +38,28 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> extends R
             return results.get(0);
         } else {
             throw new NonUniqueResultException("Found multiple results for uuid: " + uuid);
+        }
+    }
+
+    public List<ADO> queryEqual(String fieldName, Object value, String orderBy, boolean ascending) {
+        try {
+            QueryBuilder builder = queryBuilder();
+            Where where = builder.where();
+            where.eq(fieldName, value);
+            return builder.orderBy(orderBy, ascending).query();
+        } catch (SQLException e) {
+            Log.e(getTableName(), "Could not perform queryEqual");
+            throw new RuntimeException(e);
+        }
+    }
+
+    public List<ADO> queryAll(String orderBy, boolean ascending) {
+        try {
+            QueryBuilder builder = queryBuilder();
+            return builder.orderBy(orderBy, ascending).query();
+        } catch (SQLException e) {
+            Log.e(getTableName(), "Could not perform queryAll");
+            throw new RuntimeException(e);
         }
     }
 

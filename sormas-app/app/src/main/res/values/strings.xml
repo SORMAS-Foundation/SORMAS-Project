@@ -207,4 +207,6 @@
     <string name="no_recent_test">No test yet</string>
     <string name="isolated">isolated</string>
 
+    <string name="empty_list_hint">Add a new entry by pressing the "+" symbol in the top right.</string>
+
 </resources>

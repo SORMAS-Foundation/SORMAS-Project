@@ -39,14 +39,22 @@ public class CasesListFragment extends ListFragment {
         Bundle arguments = getArguments();
         if (arguments.containsKey(ARG_FILTER_STATUS)) {
             InvestigationStatus filterStatus = (InvestigationStatus)arguments.getSerializable(ARG_FILTER_STATUS);
-            cases = DatabaseHelper.getCaseDao().queryForEq(Case.INVESTIGATION_STATUS, filterStatus);
+            cases = DatabaseHelper.getCaseDao().queryEqual(Case.INVESTIGATION_STATUS, filterStatus, Case.REPORT_DATE, false);
         } else {
-            cases = DatabaseHelper.getCaseDao().queryForAll();
+            cases = DatabaseHelper.getCaseDao().queryAll(Case.REPORT_DATE, false);
         }
 
         ArrayAdapter<Case> listAdapter = (ArrayAdapter<Case>)getListAdapter();
         listAdapter.clear();
         listAdapter.addAll(cases);
+
+        if (listAdapter.getCount() == 0) {
+            this.getView().findViewById(R.id.empty_list_hint).setVisibility(View.VISIBLE);
+            this.getView().findViewById(android.R.id.list).setVisibility(View.GONE);
+        } else {
+            this.getView().findViewById(R.id.empty_list_hint).setVisibility(View.GONE);
+            this.getView().findViewById(android.R.id.list).setVisibility(View.VISIBLE);
+        }
 
         final SwipeRefreshLayout refreshLayout = (SwipeRefreshLayout)getView().findViewById(R.id.swiperefresh);
         if(refreshLayout != null) {

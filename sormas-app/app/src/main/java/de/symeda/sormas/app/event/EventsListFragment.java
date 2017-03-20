@@ -36,14 +36,22 @@ public class EventsListFragment extends ListFragment {
         Bundle arguments = getArguments();
         if (arguments.containsKey(ARG_FILTER_STATUS)) {
             EventStatus filterStatus = (EventStatus)arguments.getSerializable(ARG_FILTER_STATUS);
-            events = DatabaseHelper.getEventDao().queryForEq(Event.EVENT_STATUS, filterStatus);
+            events = DatabaseHelper.getEventDao().queryEqual(Event.EVENT_STATUS, filterStatus, Event.EVENT_DATE, false);
         } else {
-            events = DatabaseHelper.getEventDao().queryForAll();
+            events = DatabaseHelper.getEventDao().queryAll(Event.EVENT_DATE, false);
         }
 
         ArrayAdapter<Event> listAdapter = (ArrayAdapter<Event>)getListAdapter();
         listAdapter.clear();
         listAdapter.addAll(events);
+
+        if (listAdapter.getCount() == 0) {
+            this.getView().findViewById(R.id.empty_list_hint).setVisibility(View.VISIBLE);
+            this.getView().findViewById(android.R.id.list).setVisibility(View.GONE);
+        } else {
+            this.getView().findViewById(R.id.empty_list_hint).setVisibility(View.GONE);
+            this.getView().findViewById(android.R.id.list).setVisibility(View.VISIBLE);
+        }
 
         final SwipeRefreshLayout refreshLayout = (SwipeRefreshLayout)getView().findViewById(R.id.swiperefresh);
         if(refreshLayout != null) {

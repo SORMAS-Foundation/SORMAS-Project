@@ -89,6 +89,14 @@ public class EventParticipantsListFragment extends ListFragment {
                 ArrayAdapter<EventParticipant> listAdapter = (ArrayAdapter<EventParticipant>)getListAdapter();
                 listAdapter.clear();
                 listAdapter.addAll(eventParticipants);
+
+                if (listAdapter.getCount() == 0) {
+                    getView().findViewById(R.id.empty_list_hint).setVisibility(View.VISIBLE);
+                    getView().findViewById(android.R.id.list).setVisibility(View.GONE);
+                } else {
+                    getView().findViewById(R.id.empty_list_hint).setVisibility(View.GONE);
+                    getView().findViewById(android.R.id.list).setVisibility(View.VISIBLE);
+                }
             }
         }, refreshLayout);
     }

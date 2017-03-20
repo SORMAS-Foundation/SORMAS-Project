@@ -65,14 +65,22 @@ public class ContactsListFragment extends ListFragment {
                 Bundle arguments = getArguments();
                 if(arguments.containsKey(ARG_FILTER_STATUS)) {
                     FollowUpStatus filterStatus = (FollowUpStatus) arguments.getSerializable(ARG_FILTER_STATUS);
-                    contacts = DatabaseHelper.getContactDao().queryForEq(Contact.FOLLOW_UP_STATUS, filterStatus);
+                    contacts = DatabaseHelper.getContactDao().queryEqual(Contact.FOLLOW_UP_STATUS, filterStatus, Contact.REPORT_DATE_TIME, false);
                 } else {
-                    contacts = DatabaseHelper.getContactDao().queryForAll();
+                    contacts = DatabaseHelper.getContactDao().queryAll(Contact.REPORT_DATE_TIME, false);
                 }
 
                 ArrayAdapter<Contact> listAdapter = (ArrayAdapter<Contact>)getListAdapter();
                 listAdapter.clear();
                 listAdapter.addAll(contacts);
+
+                if (listAdapter.getCount() == 0) {
+                    getView().findViewById(R.id.empty_list_hint).setVisibility(View.VISIBLE);
+                    getView().findViewById(android.R.id.list).setVisibility(View.GONE);
+                } else {
+                    getView().findViewById(R.id.empty_list_hint).setVisibility(View.GONE);
+                    getView().findViewById(android.R.id.list).setVisibility(View.VISIBLE);
+                }
             }
         });
     }
@@ -96,6 +104,14 @@ public class ContactsListFragment extends ListFragment {
                 ArrayAdapter<Contact> listAdapter = (ArrayAdapter<Contact>)getListAdapter();
                 listAdapter.clear();
                 listAdapter.addAll(contacts);
+
+                if (listAdapter.getCount() == 0) {
+                    getView().findViewById(R.id.empty_list_hint).setVisibility(View.VISIBLE);
+                    getView().findViewById(android.R.id.list).setVisibility(View.GONE);
+                } else {
+                    getView().findViewById(R.id.empty_list_hint).setVisibility(View.GONE);
+                    getView().findViewById(android.R.id.list).setVisibility(View.VISIBLE);
+                }
             }
         });
     }
