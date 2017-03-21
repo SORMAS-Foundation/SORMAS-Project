@@ -52,7 +52,7 @@ public class EventsListArrayAdapter extends ArrayAdapter<Event> {
         TextView summary = (TextView) convertView.findViewById(R.id.eli_summary);
         StringBuilder sb = new StringBuilder();
         sb.append(event.getEventType()!=null?event.getEventType().toString()+ " ":"");
-        sb.append(event.getReportDateTime()!=null? DateHelper.formatDDMMYYYYHm(event.getReportDateTime()):"");
+        sb.append(event.getEventDate()!=null?"(" + DateHelper.formatDDMMYYYY(event.getEventDate()) + ")":"");
         summary.setText(sb.toString());
 
         TextView description = (TextView) convertView.findViewById(R.id.eli_description);

@@ -14,6 +14,7 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.event.EventParticipantDtoHelper;
 import de.symeda.sormas.app.backend.user.User;
+import de.symeda.sormas.app.person.SyncPersonsTask;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.util.Callback;
 import retrofit2.Call;
@@ -78,27 +79,25 @@ public class SyncEventParticipantsTask extends AsyncTask<Void, Void, Void> {
     }
 
     public static void syncEventParticipants(final Callback callback, final SwipeRefreshLayout refreshLayout) {
-        new SyncEventParticipantsTask() {
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                if (callback != null) {
-                    callback.call();
-                }
-                if(refreshLayout != null) {
-                    refreshLayout.setRefreshing(false);
-                }
-            }
-        }.execute();
+        syncEventParticipants(callback);
+        if (refreshLayout != null) {
+            refreshLayout.setRefreshing(false);
+        }
     }
 
     public static void syncEventParticipants(final Callback callback) {
-        new SyncEventParticipantsTask() {
+        SyncPersonsTask.syncPersons(new Callback(){
             @Override
-            protected void onPostExecute(Void aVoid) {
-                if (callback != null) {
-                    callback.call();
-                }
-            }
-        }.execute();
+            public void call(){
+                new SyncEventParticipantsTask(){
+                    @Override
+                    protected void onPostExecute(Void aVoid){
+                        if(callback!=null){
+                            callback.call();
+                        }
+                    }
+                }.execute();
+             }
+        });
     }
 }

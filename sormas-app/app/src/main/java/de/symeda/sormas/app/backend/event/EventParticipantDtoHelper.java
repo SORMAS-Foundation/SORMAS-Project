@@ -39,7 +39,7 @@ public class EventParticipantDtoHelper extends AdoDtoHelper<EventParticipant, Ev
             ado.setPerson(DatabaseHelper.getPersonDao().queryUuid(dto.getPerson().getUuid()));
         }
         else {
-            ado.setEvent(null);
+            ado.setPerson(null);
         }
 
         ado.setInvolvementDescription(dto.getInvolvementDescription());
@@ -60,7 +60,7 @@ public class EventParticipantDtoHelper extends AdoDtoHelper<EventParticipant, Ev
             Person person = DatabaseHelper.getPersonDao().queryForId(ado.getPerson().getId());
             dto.setPerson(personHelper.adoToDto(person));
         } else {
-            dto.setEvent(null);
+            dto.setPerson(null);
         }
 
         dto.setInvolvementDescription(ado.getInvolvementDescription());

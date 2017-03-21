@@ -21,6 +21,8 @@ import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
+import de.symeda.sormas.backend.event.EventParticipant;
+import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.user.User;
 
 @Stateless
@@ -31,6 +33,8 @@ public class PersonService extends AbstractAdoService<Person> {
 	CaseService caseService;
 	@EJB
 	ContactService contactService;
+	@EJB
+	EventParticipantService eventParticipantService;
 
 	public PersonService() {
 		super(Person.class);
@@ -86,7 +90,26 @@ public class PersonService extends AbstractAdoService<Person> {
 		contactPersonsQuery.distinct(true);
 		List<Person> contactPersonsResultList = em.createQuery(contactPersonsQuery).getResultList();
 
-		return Stream.of(casePersonsResultList, contactPersonsResultList)
+		// persons by event participant
+		CriteriaQuery<Person> eventPersonsQuery = cb.createQuery(Person.class);
+		Root<EventParticipant> eventPersonsRoot = eventPersonsQuery.from(EventParticipant.class);
+		Path<Person> eventPersonsSelect = eventPersonsRoot.get(EventParticipant.PERSON);
+		eventPersonsQuery.select(eventPersonsSelect);
+		Predicate eventPersonsFilter = eventParticipantService.createUserFilter(cb, eventPersonsRoot, user);
+		// date range
+		if (date != null) {
+			Predicate dateFilter = cb.greaterThan(eventPersonsSelect.get(AbstractDomainObject.CHANGE_DATE), date);
+			if (eventPersonsFilter != null) {
+				eventPersonsFilter = cb.and(eventPersonsFilter, dateFilter);
+			} else {
+				eventPersonsFilter = dateFilter;
+			}
+		}
+		eventPersonsQuery.where(eventPersonsFilter);
+		eventPersonsQuery.distinct(true);
+		List<Person> eventPersonsResultList = em.createQuery(eventPersonsQuery).getResultList();
+		
+		return Stream.of(casePersonsResultList, contactPersonsResultList, eventPersonsResultList)
 				.flatMap(List<Person>::stream)
 				.distinct()
 				.sorted(Comparator.comparing(Person::getId))

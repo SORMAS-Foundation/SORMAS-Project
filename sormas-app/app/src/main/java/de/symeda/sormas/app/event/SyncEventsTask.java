@@ -76,15 +76,19 @@ public class SyncEventsTask extends AsyncTask<Void, Void, Void> {
         refreshLayout.setRefreshing(false);
     }
 
-
     public static void syncEvents(final Callback callback) {
-        new SyncEventsTask() {
+        SyncEventParticipantsTask.syncEventParticipants(new Callback() {
             @Override
-            protected void onPostExecute(Void aVoid) {
-                if (callback != null) {
-                    callback.call();
-                }
+            public void call() {
+                new SyncEventsTask() {
+                    @Override
+                    protected void onPostExecute(Void aVoid) {
+                        if (callback != null) {
+                            callback.call();
+                        }
+                    }
+                }.execute();
             }
-        }.execute();
+        });
     }
 }
