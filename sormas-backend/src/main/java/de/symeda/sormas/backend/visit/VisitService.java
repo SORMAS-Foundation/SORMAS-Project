@@ -12,6 +12,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.contact.Contact;
@@ -79,8 +80,8 @@ public class VisitService extends AbstractAdoService<Visit> {
 		// list all visits between contact date ...
 		// IMPORTANT: This is different than the calculation of "follow-up until", where the date of report is used as reference
 		// We also want to have visits that took place before.
-		if (contact.getLastContactDate() != null && contact.getLastContactDate().before(contact.getReportDateTime())) {
-			Predicate dateStartFilter = cb.greaterThan(from.get(Visit.VISIT_DATE_TIME), contact.getLastContactDate());
+		if (contact.getLastContactDate() != null) {
+			Predicate dateStartFilter = cb.greaterThan(from.get(Visit.VISIT_DATE_TIME), DateHelper.subtractDays(contact.getLastContactDate(), 10));
 			filter = cb.and(filter, dateStartFilter);
 		} else {
 			// use date of report as fallback
@@ -90,7 +91,7 @@ public class VisitService extends AbstractAdoService<Visit> {
 
 		// .. and follow-up until
 		if (contact.getFollowUpUntil() != null) {
-			Predicate dateFilter = cb.lessThan(from.get(Visit.VISIT_DATE_TIME), contact.getFollowUpUntil());
+			Predicate dateFilter = cb.lessThan(from.get(Visit.VISIT_DATE_TIME), DateHelper.addDays(contact.getFollowUpUntil(), 10));
 			filter = cb.and(filter, dateFilter);
 		}
 

@@ -14,6 +14,7 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -57,13 +58,13 @@ public class VisitDao extends AbstractAdoDao<Visit> {
                     where.eq(Visit.DISEASE, contact.getCaze().getDisease())
             );
             // see sormas-backend/VisitService.getAllByContact()
-            Date lowerLimit = (contact.getLastContactDate() != null && contact.getLastContactDate().before(contact.getReportDateTime()))? contact.getLastContactDate() : contact.getReportDateTime();
+            Date lowerLimit = contact.getLastContactDate() != null ? DateHelper.subtractDays(contact.getLastContactDate(), 10) : contact.getReportDateTime();
             if(lowerLimit!=null) {
                 where.and();
                 where.gt(Visit.VISIT_DATE_TIME, lowerLimit);
             }
 
-            Date upperLimit = contact.getFollowUpUntil();
+            Date upperLimit = DateHelper.addDays(contact.getFollowUpUntil(), 10);
             if(upperLimit!=null) {
                 where.and();
                 where.lt(Visit.VISIT_DATE_TIME, upperLimit);

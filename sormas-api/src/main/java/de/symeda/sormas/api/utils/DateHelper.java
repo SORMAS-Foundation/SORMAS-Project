@@ -196,4 +196,12 @@ public final class DateHelper {
 				new LocalDate(start.getTime()), 
                 new LocalDate(end.getTime())).getDays();
 	}
+	
+	public static Date addDays(Date date, int amountOfDays) {
+		return new LocalDate(date).plusDays(amountOfDays).toDate();
+	}
+	
+	public static Date subtractDays(Date date, int amountOfDays) {
+		return new LocalDate(date).minusDays(amountOfDays).toDate();
+	}
 }

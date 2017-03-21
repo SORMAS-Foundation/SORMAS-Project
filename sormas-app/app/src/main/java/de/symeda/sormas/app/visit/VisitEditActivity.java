@@ -11,10 +11,12 @@ import android.widget.Toast;
 
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.visit.Visit;
 import de.symeda.sormas.app.caze.SymptomsEditTab;
@@ -31,6 +33,7 @@ public class VisitEditActivity extends AbstractEditActivity {
     public static final String KEY_PARENT_TASK_UUID = "taskUuid";
 
     private VisitEditPagerAdapter adapter;
+    private String contactUuid;
 //    private String visitUuid;
 
     @Override
@@ -57,6 +60,9 @@ public class VisitEditActivity extends AbstractEditActivity {
 
         if (params != null && params.containsKey(KEY_PAGE)) {
             currentTab = params.getInt(KEY_PAGE);
+        }
+        if (params != null && params.containsKey(KEY_CONTACT_UUID)) {
+            this.contactUuid = (String) params.get(KEY_CONTACT_UUID);
         }
         pager.setCurrentItem(currentTab);
     }
@@ -118,6 +124,19 @@ public class VisitEditActivity extends AbstractEditActivity {
                 Symptoms symptoms = (Symptoms)adapter.getData(VisitEditTabs.SYMPTOMS.ordinal());
 
                 SymptomsEditTab symptomsEditTab = (SymptomsEditTab) adapter.getTabByPosition(VisitEditTabs.SYMPTOMS.ordinal());
+
+                Contact contact = (Contact) DatabaseHelper.getContactDao().queryUuid(contactUuid);
+                if (visit.getVisitDateTime().before(contact.getLastContactDate()) &&
+                        DateHelper.getDaysBetween(visit.getVisitDateTime(), contact.getLastContactDate()) > 10) {
+                    Toast.makeText(this, "The visit cannot be more than 10 days before the last contact date.", Toast.LENGTH_LONG).show();
+                    return true;
+                }
+
+                if (visit.getVisitDateTime().after(contact.getFollowUpUntil()) &&
+                        DateHelper.getDaysBetween(contact.getFollowUpUntil(), visit.getVisitDateTime()) > 10) {
+                    Toast.makeText(this, "The entered date is invalid. Please choose an earlier date.", Toast.LENGTH_LONG).show();
+                    return true;
+                }
 
                 // method returns a String, null means that there is no error message and thus
                 // the data is valid

@@ -20,6 +20,8 @@ import de.symeda.sormas.app.util.Callback;
 
 public class VisitsListFragment extends ListFragment {
 
+    public static final String KEY_CONTACT_UUID = "contactUuid";
+
     private String contactUuid;
 
     @Override
@@ -75,6 +77,7 @@ public class VisitsListFragment extends ListFragment {
     public void showVisitEditView(Visit visit) {
         Intent intent = new Intent(getActivity(), VisitEditActivity.class);
         intent.putExtra(Visit.UUID, visit.getUuid());
+        intent.putExtra(KEY_CONTACT_UUID, contactUuid);
         startActivity(intent);
     }
 
