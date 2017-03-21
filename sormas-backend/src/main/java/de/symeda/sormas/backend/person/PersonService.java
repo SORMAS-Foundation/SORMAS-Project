@@ -11,6 +11,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -21,8 +22,10 @@ import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
+import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantService;
+import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.user.User;
 
 @Stateless
@@ -51,6 +54,24 @@ public class PersonService extends AbstractAdoService<Person> {
 		// TODO get user from session?
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
+		
+		// persons by LGA
+		CriteriaQuery<Person> lgaQuery = cb.createQuery(Person.class);
+		Root<Person> lgaRoot = lgaQuery.from(Person.class);
+		Join<Person, Location> address = lgaRoot.join(Person.ADDRESS);
+		Predicate lgaFilter = cb.equal(address.get(Location.DISTRICT), user.getDistrict());
+		// date range
+		if (date != null) {
+			Predicate dateFilter = cb.greaterThan(lgaRoot.get(AbstractDomainObject.CHANGE_DATE), date);
+			if (lgaFilter != null) {
+				lgaFilter = cb.and(lgaFilter, dateFilter);
+			} else {
+				lgaFilter = dateFilter;
+			}
+		}
+		lgaQuery.where(lgaFilter);
+		lgaQuery.distinct(true);
+		List<Person> lgaResultList = em.createQuery(lgaQuery).getResultList();
 		
 		// persons by case
 		CriteriaQuery<Person> casePersonsQuery = cb.createQuery(Person.class);
@@ -109,7 +130,7 @@ public class PersonService extends AbstractAdoService<Person> {
 		eventPersonsQuery.distinct(true);
 		List<Person> eventPersonsResultList = em.createQuery(eventPersonsQuery).getResultList();
 		
-		return Stream.of(casePersonsResultList, contactPersonsResultList, eventPersonsResultList)
+		return Stream.of(lgaResultList, casePersonsResultList, contactPersonsResultList, eventPersonsResultList)
 				.flatMap(List<Person>::stream)
 				.distinct()
 				.sorted(Comparator.comparing(Person::getId))

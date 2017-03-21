@@ -39,3 +39,9 @@ In general synchronization is based on the following rules:
 * whoever created the sample or is assigned to it is allowed to access it
 * users see all samples of their cases
 * lab users see all samples of their laboratory
+
+# Persons
+* all persons resident in the user's LGA
+* all persons of the cases the user can access
+* all persons of the contacts the user can access
+* all persons of the events the user can access
