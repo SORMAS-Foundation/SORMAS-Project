@@ -11,4 +11,5 @@ public interface DistrictFacade {
     List<DistrictReferenceDto> getAllByRegion(String regionUuid);
 
 	List<DistrictDto> getAllAfter(Date date);
+
 }

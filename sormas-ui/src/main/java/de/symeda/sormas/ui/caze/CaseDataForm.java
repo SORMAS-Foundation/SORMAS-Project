@@ -1,9 +1,9 @@
 package de.symeda.sormas.ui.caze;
 
 import java.util.Arrays;
+import java.util.List;
 
 import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.DateField;
 import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TextField;
@@ -21,6 +21,7 @@ import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.Diseases.DiseasesConfiguration;
+import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -118,14 +119,24 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
     	});
 		region.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
 
-		UserReferenceDto currentUser = LoginHelper.getCurrentUserAsReference();
-    	ComboBox surveillanceOfficerField = addField(CaseDataDto.SURVEILLANCE_OFFICER, ComboBox.class);
-		surveillanceOfficerField.addItems(FacadeProvider.getUserFacade().getAssignableUsers(currentUser, UserRole.SURVEILLANCE_OFFICER));
+		ComboBox surveillanceOfficerField = addField(CaseDataDto.SURVEILLANCE_OFFICER, ComboBox.class);
 		surveillanceOfficerField.setNullSelectionAllowed(true);
 		ComboBox contactOfficerField = addField(CaseDataDto.CONTACT_OFFICER, ComboBox.class);
-		contactOfficerField.addItems(FacadeProvider.getUserFacade().getAssignableUsers(currentUser, UserRole.CONTACT_OFFICER));
 		contactOfficerField.setNullSelectionAllowed(true);
 		
+		district.addValueChangeListener(e -> {
+			UserReferenceDto currentUser = LoginHelper.getCurrentUserAsReference();
+			List<UserReferenceDto> assignableSurveillanceOfficers = FacadeProvider.getUserFacade().getAssignableUsers(currentUser, UserRole.SURVEILLANCE_OFFICER);
+			List<UserReferenceDto> assignableContactOfficers = FacadeProvider.getUserFacade().getAssignableUsers(currentUser, UserRole.CONTACT_OFFICER);
+			
+			surveillanceOfficerField.removeAllItems();
+			surveillanceOfficerField.select(0);
+			surveillanceOfficerField.addItems(ControllerProvider.getUserController().filterByDistrict(assignableSurveillanceOfficers, (DistrictReferenceDto) district.getValue()));
+			contactOfficerField.removeAllItems();
+			surveillanceOfficerField.select(0);
+			contactOfficerField.addItems(ControllerProvider.getUserController().filterByDistrict(assignableContactOfficers, (DistrictReferenceDto) district.getValue()));
+		});
+    	
 		addField(CaseDataDto.PREGNANT, OptionGroup.class);
 		addField(CaseDataDto.MEASLES_VACCINATION, ComboBox.class);
 		addField(CaseDataDto.MEASLES_DOSES, TextField.class);

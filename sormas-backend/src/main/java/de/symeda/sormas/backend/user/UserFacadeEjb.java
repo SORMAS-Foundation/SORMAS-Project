@@ -9,10 +9,16 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
+import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserFacade;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.contact.ContactService;
+import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
@@ -36,6 +42,12 @@ public class UserFacadeEjb implements UserFacade {
 	private DistrictService districtService;
 	@EJB
 	private FacilityService facilityService;
+	@EJB
+	private CaseService caseService;
+	@EJB
+	private ContactService contactService;
+	@EJB
+	private EventService eventService;
 
 	@Override
 	public List<UserReferenceDto> getAssignableUsers(UserReferenceDto assigningUser, UserRole ...assignableRoles) {
@@ -48,6 +60,27 @@ public class UserFacadeEjb implements UserFacade {
 		}
 		
 		return Collections.emptyList();
+	}
+	
+	@Override
+	public List<UserReferenceDto> getAssignableUsersByCase(CaseReferenceDto caze, UserRole ...assignableRoles) {
+		return service.getAssignableByCase(caseService.getByReferenceDto(caze), assignableRoles).stream()
+				.map(f -> toReferenceDto(f))
+				.collect(Collectors.toList());
+	}
+	
+	@Override
+	public List<UserReferenceDto> getAssignableUsersByContact(ContactReferenceDto contact, UserRole ...assignableRoles) {
+		return service.getAssignableByContact(contactService.getByReferenceDto(contact), assignableRoles).stream()
+				.map(f -> toReferenceDto(f))
+				.collect(Collectors.toList());
+	}
+	
+	@Override
+	public List<UserReferenceDto> getAssignableUsersByEvent(EventReferenceDto event, UserRole ...assignableRoles) {
+		return service.getAssignableByEvent(eventService.getByReferenceDto(event), assignableRoles).stream()
+				.map(f -> toReferenceDto(f))
+				.collect(Collectors.toList());
 	}
 
 	@Override

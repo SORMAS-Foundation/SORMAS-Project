@@ -15,9 +15,11 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.region.District;
+import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.util.PasswordHelper;
 
@@ -83,6 +85,21 @@ public class UserService extends AbstractAdoService<User> {
 		cq.orderBy(cb.asc(from.get(AbstractDomainObject.ID)));
 		return em.createQuery(cq).getResultList();
 	}
+	
+	public List<User> getAssignableByCase(Case caze, UserRole... userRoles) {
+		// TODO implement
+		return null;
+	}
+	
+	public List<User> getAssignableByContact(Contact contact, UserRole... userRoles) {
+		// TODO implement
+		return null;
+	}
+	
+	public List<User> getAssignableByEvent(Event event, UserRole... userRoles) {
+		// TODO implement
+		return null;
+	}
 
 	public boolean isLoginUnique(String uuid, String userName) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -115,4 +132,5 @@ public class UserService extends AbstractAdoService<User> {
 
 		return password;
 	}
+	
 }

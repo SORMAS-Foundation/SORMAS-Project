@@ -1,5 +1,7 @@
 package de.symeda.sormas.ui.contact;
 
+import java.util.List;
+
 import org.joda.time.LocalDate;
 
 import com.vaadin.data.validator.DateRangeValidator;
@@ -11,9 +13,12 @@ import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -55,14 +60,22 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
     	addField(ContactDto.DESCRIPTION, TextArea.class).setRows(2);
     	addField(ContactDto.RELATION_TO_CASE, ComboBox.class);
 
-		UserReferenceDto currentUser = LoginHelper.getCurrentUserAsReference();
-    	addField(ContactDto.CONTACT_OFFICER, ComboBox.class)    	
-    		.addItems(FacadeProvider.getUserFacade().getAssignableUsers(currentUser, UserRole.CONTACT_OFFICER));
-
+    	ComboBox contactOfficerField = addField(ContactDto.CONTACT_OFFICER, ComboBox.class);
+    	contactOfficerField.setNullSelectionAllowed(true);
+    	
     	setRequired(true, ContactDto.CAZE, FIRST_NAME, LAST_NAME, ContactDto.LAST_CONTACT_DATE, ContactDto.CONTACT_PROXIMITY, ContactDto.RELATION_TO_CASE);
     	
     	addValueChangeListener(e -> {
     		updateLastContactDateValidator();
+    		
+    		// set assignable officers
+    		UserReferenceDto currentUser = LoginHelper.getCurrentUserAsReference();
+    		List<UserReferenceDto> assignableContactOfficers = FacadeProvider.getUserFacade().getAssignableUsers(currentUser, UserRole.CONTACT_OFFICER);
+    		ContactDto contactDto = getValue();
+        	if (contactDto != null) {
+    	    	CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(contactDto.getCaze().getUuid());
+    	    	contactOfficerField.addItems(ControllerProvider.getUserController().filterByDistrict(assignableContactOfficers, (DistrictReferenceDto) caseDto.getDistrict()));
+        	}
     	});
     }
     

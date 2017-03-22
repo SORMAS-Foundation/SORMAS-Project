@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.vaadin.data.fieldgroup.FieldGroup;
-import com.vaadin.shared.ui.datefield.Resolution;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
@@ -21,7 +20,6 @@ import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.location.LocationForm;
 import de.symeda.sormas.ui.login.LoginHelper;
