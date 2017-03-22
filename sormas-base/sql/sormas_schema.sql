@@ -1315,3 +1315,4 @@ INSERT INTO schema_version (version_number, comment) VALUES (39, 'Split sample c
 ALTER TABLE sampletest ALTER COLUMN testresulttext DROP NOT NULL;
 
 INSERT INTO schema_version (version_number, comment) VALUES (40, 'Drop not null constraint from sample test result text');
+
