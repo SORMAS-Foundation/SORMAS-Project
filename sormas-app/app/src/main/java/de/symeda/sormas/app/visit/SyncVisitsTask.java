@@ -1,5 +1,7 @@
 package de.symeda.sormas.app.visit;
 
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.support.v4.widget.SwipeRefreshLayout;
 
@@ -49,6 +51,20 @@ public class SyncVisitsTask extends AsyncTask<Void, Void, Void> {
         }, DatabaseHelper.getVisitDao());
 
         return null;
+    }
+
+    public static void syncVisitsWithProgressDialog(Context context, final Callback callback) {
+
+        final ProgressDialog progressDialog = ProgressDialog.show(context, "Visit synchronization",
+                "Visits are being synchronized...", true);
+
+        syncVisits(new Callback() {
+            @Override
+            public void call() {
+                progressDialog.dismiss();
+                callback.call();
+            }
+        }, null);
     }
 
     public static void syncVisits(final Callback callback, final SwipeRefreshLayout refreshLayout) {

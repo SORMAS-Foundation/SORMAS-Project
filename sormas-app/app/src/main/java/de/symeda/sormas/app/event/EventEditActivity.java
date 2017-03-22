@@ -16,6 +16,8 @@ import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.component.AbstractEditActivity;
+import de.symeda.sormas.app.contact.SyncContactsTask;
+import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.task.TaskEditActivity;
 import de.symeda.sormas.app.task.TaskTab;
 
@@ -179,8 +181,14 @@ public class EventEditActivity extends AbstractEditActivity {
                             DatabaseHelper.getEventDao().save(event);
                             Toast.makeText(this, "event "+ DataHelper.getShortUuid(event.getUuid()) +" saved", Toast.LENGTH_SHORT).show();
 
-                            // go back to the list
-                            finish();
+                            SyncEventsTask.syncEventsWithProgressDialog(this, new Callback() {
+                                @Override
+                                public void call() {
+                                    // go back to the list
+                                    finish();
+                                }
+                            });
+
                         }
                         else {
                             if(eventTypeReq) {

@@ -1,5 +1,7 @@
 package de.symeda.sormas.app.contact;
 
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -43,14 +45,43 @@ public class SyncContactsTask extends AsyncTask<Void, Void, Void> {
             }
         }, DatabaseHelper.getContactDao());
 
-        new ContactDtoHelper().pushEntities(new DtoPostInterface<ContactDto>() {
+        boolean anotherPullNeeded = new ContactDtoHelper().pushEntities(new DtoPostInterface<ContactDto>() {
             @Override
             public Call<Long> postAll(List<ContactDto> dtos) {
                 return RetroProvider.getContactFacade().postAll(dtos);
             }
         }, DatabaseHelper.getContactDao());
 
+        if (anotherPullNeeded) {
+            new ContactDtoHelper().pullEntities(new DtoGetInterface<ContactDto>() {
+                @Override
+                public Call<List<ContactDto>> getAll(long since) {
+
+                    User user = ConfigProvider.getUser();
+                    if (user != null) {
+                        Call<List<ContactDto>> all = RetroProvider.getContactFacade().getAll(user.getUuid(), since);
+                        return all;
+                    }
+                    return null;
+                }
+            }, DatabaseHelper.getContactDao());
+        }
+
         return null;
+    }
+
+    public static void syncContactsWithProgressDialog(Context context, final Callback callback) {
+
+        final ProgressDialog progressDialog = ProgressDialog.show(context, "Contact synchronization",
+                "Contacts are being synchronized...", true);
+
+        syncContacts(new Callback() {
+            @Override
+            public void call() {
+                progressDialog.dismiss();
+                callback.call();
+            }
+        });
     }
 
     public static void syncContacts(final FragmentManager fragmentManager) {

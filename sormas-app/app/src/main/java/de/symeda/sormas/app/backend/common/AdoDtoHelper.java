@@ -107,7 +107,10 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
         }
     }
 
-    public void pushEntities(DtoPostInterface<DTO> postInterface, final AbstractAdoDao<ADO> dao) {
+    /**
+     * @return true: another pull is needed, because data has been changed on the server
+     */
+    public boolean pushEntities(DtoPostInterface<DTO> postInterface, final AbstractAdoDao<ADO> dao) {
 
         final List<ADO> modifiedAdos = dao.queryForEq(ADO.MODIFIED, true);
 
@@ -118,7 +121,7 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
         }
 
         if (modifiedDtos.isEmpty()) {
-            return;
+            return false;
         }
 
         Call<Long> call = postInterface.postAll(modifiedDtos);
@@ -133,7 +136,9 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
                     public Void call() throws Exception {
                         for (ADO ado : modifiedAdos) {
                             ado.setModified(false);
-                            ado.setChangeDate(new Date(resultChangeDate));
+                            if (resultChangeDate >= 0) {
+                                ado.setChangeDate(new Date(resultChangeDate));
+                            }
                             dao.update(ado);
                         }
                         return null;
@@ -142,9 +147,14 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 
                 Log.d(dao.getTableName(), "Pushed: " + modifiedAdos.size());
             }
+
+            // do we need to pull again
+            return resultChangeDate == -1;
+
         } catch (IOException e) {
             Log.e(dao.getTableName(), e.toString(), e);
         }
+        return false;
     }
 
     public interface DtoGetInterface<DTO extends DataTransferObject> {

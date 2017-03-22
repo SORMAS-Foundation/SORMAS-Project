@@ -1,9 +1,12 @@
 package de.symeda.sormas.app.caze;
 
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.widget.Toast;
 
 import com.j256.ormlite.logger.Logger;
 import com.j256.ormlite.logger.LoggerFactory;
@@ -65,9 +68,9 @@ public class SyncCasesTask extends AsyncTask<Void, Void, Void> {
                 @Override
                 public void call() {
                     if (fragmentManager.getFragments() != null) {
-                        for (Fragment fragement : fragmentManager.getFragments()) {
-                            if (fragement instanceof CasesListFragment) {
-                                fragement.onResume();
+                        for (Fragment fragment : fragmentManager.getFragments()) {
+                            if (fragment instanceof CasesListFragment) {
+                                fragment.onResume();
                             }
                         }
                     }
@@ -81,6 +84,20 @@ public class SyncCasesTask extends AsyncTask<Void, Void, Void> {
     public static void syncCases(final FragmentManager fragmentManager, SwipeRefreshLayout refreshLayout) {
         syncCases(fragmentManager);
         refreshLayout.setRefreshing(false);
+    }
+
+    public static void syncCasesWithProgressDialog(Context context, final Callback callback) {
+
+        final ProgressDialog progressDialog = ProgressDialog.show(context, "Case synchronization",
+                "Cases are being synchronized...", true);
+
+        syncCases(new Callback() {
+            @Override
+            public void call() {
+                progressDialog.dismiss();
+                callback.call();
+            }
+        });
     }
 
     public static void syncCases(final Callback callback) {

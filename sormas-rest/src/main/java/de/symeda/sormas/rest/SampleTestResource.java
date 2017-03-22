@@ -29,13 +29,13 @@ public class SampleTestResource {
 	
 	@POST
 	@Path("/push")
-	public Integer postSampleTests(List<SampleTestDto> dtos) {
+	public Long postSampleTests(List<SampleTestDto> dtos) {
 		SampleTestFacade sampleTestFacade = FacadeProvider.getSampleTestFacade();
 		for (SampleTestDto dto : dtos) {
 			sampleTestFacade.saveSampleTest(dto);
 		}
 		
-		return dtos.size();
+		return new Date().getTime();
 	}
 
 }

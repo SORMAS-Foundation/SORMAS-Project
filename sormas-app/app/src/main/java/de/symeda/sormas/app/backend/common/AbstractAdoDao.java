@@ -101,8 +101,14 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> extends R
             result = update(ado);
         }
         if (result != 1) {
-            Log.e(getTableName(), "Could not create or update entity: " + ado);
-            return false;
+
+            // #139 check if we couldn't save because the server sent a new version in between
+            // TODO replace with a proper merge mechanism
+            ADO existing = queryForId(ado.getId());
+            if (existing.getLocalChangeDate().after(ado.getLocalChangeDate())) {
+                return false;
+            }
+            throw new RuntimeException(getTableName() +  ": Could not create or update entity - see log for additional details: " + ado);
         }
         return true;
     }

@@ -17,6 +17,7 @@ import de.symeda.sormas.app.backend.contact.ContactDao;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.component.AbstractEditActivity;
+import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.task.TaskEditActivity;
 import de.symeda.sormas.app.task.TaskTab;
 import de.symeda.sormas.app.visit.VisitEditActivity;
@@ -192,10 +193,13 @@ public class ContactEditActivity extends AbstractEditActivity {
 
                     Toast.makeText(this, "contact " + DataHelper.getShortUuid(contact.getUuid()) + " saved", Toast.LENGTH_SHORT).show();
 
-                    SyncContactsTask.syncContacts(getSupportFragmentManager());
-
-                    onResume();
-                    pager.setCurrentItem(currentTab);
+                    SyncContactsTask.syncContactsWithProgressDialog(this, new Callback() {
+                        @Override
+                        public void call() {
+                            onResume();
+                            pager.setCurrentItem(currentTab);
+                        }
+                    });
                 }
                 return true;
 

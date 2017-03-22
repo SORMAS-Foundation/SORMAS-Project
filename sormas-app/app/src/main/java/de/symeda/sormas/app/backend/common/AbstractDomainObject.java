@@ -35,6 +35,11 @@ public abstract class AbstractDomainObject extends BaseObservable implements Ser
 	@GeneratedValue
 	private Long id;
 
+	/**
+	 * uniqueCombo is used, because we plan to keep a second copy to be able to merge this
+	 * TODO really use this
+	 * for now this is only used to determine which data needs to be send to the server
+	 */
 	@DatabaseField(uniqueCombo=true)
 	private boolean modified;
 

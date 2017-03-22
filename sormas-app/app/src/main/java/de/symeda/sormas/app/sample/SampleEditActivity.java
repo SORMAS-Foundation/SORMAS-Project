@@ -29,6 +29,8 @@ import de.symeda.sormas.app.backend.sample.SampleDao;
 import de.symeda.sormas.app.caze.CaseEditActivity;
 import de.symeda.sormas.app.component.AbstractEditActivity;
 import de.symeda.sormas.app.component.HelpDialog;
+import de.symeda.sormas.app.event.SyncEventsTask;
+import de.symeda.sormas.app.util.Callback;
 
 /**
  * Created by Mate Strysewske on 07.02.2017.
@@ -165,8 +167,15 @@ public class SampleEditActivity extends AppCompatActivity {
                 if (validData) {
                     sampleDao.save(sample);
                     Toast.makeText(this, "sample " + DataHelper.getShortUuid(sample.getUuid()) + " saved", Toast.LENGTH_SHORT).show();
-                    SyncSamplesTask.syncSamples(getSupportFragmentManager());
-                    finish();
+
+                    SyncSamplesTask.syncSamplesWithProgressDialog(this, new Callback() {
+                        @Override
+                        public void call() {
+                            // go back to the list
+                            finish();
+                        }
+                    });
+
                 } else {
                     if (sampleDateTimeReq) {
                         Toast.makeText(this, "Not saved. Please specify the date and time of sampling.", Toast.LENGTH_LONG).show();

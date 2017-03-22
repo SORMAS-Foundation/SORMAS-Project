@@ -35,13 +35,20 @@ public class ContactResource {
 	
 	@POST 
 	@Path("/push")
-	public Integer postContacts(List<ContactDto> dtos) {
+	public Long postContacts(List<ContactDto> dtos) {
+		
+		// special case: contact's "follow-up until" date might be modified
+		boolean contactModified = false;
 		
 		ContactFacade contactFacade = FacadeProvider.getContactFacade();
 		for (ContactDto dto : dtos) {
-			contactFacade.saveContact(dto);
+			ContactDto resultDto = contactFacade.saveContact(dto);
+			if (resultDto.getFollowUpUntil() != dto.getFollowUpUntil()) {
+				contactModified = true;
+			}
 		}
 		
-		return dtos.size();
+		// -1 tells the device to pull again
+		return contactModified ? -1L : new Date().getTime();
 	}
 }

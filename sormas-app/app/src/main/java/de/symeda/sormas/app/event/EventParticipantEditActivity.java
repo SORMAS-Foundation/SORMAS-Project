@@ -16,6 +16,7 @@ import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.person.PersonEditTab;
+import de.symeda.sormas.app.util.Callback;
 
 
 public class EventParticipantEditActivity extends AppCompatActivity {
@@ -126,7 +127,13 @@ public class EventParticipantEditActivity extends AppCompatActivity {
 
                 Toast.makeText(this, "event person " + DataHelper.getShortUuid(eventParticipant.getUuid()) + " saved", Toast.LENGTH_SHORT).show();
 
-                finish();
+                SyncEventsTask.syncEventsWithProgressDialog(this, new Callback() {
+                    @Override
+                    public void call() {
+                        // go back to the list
+                        finish();
+                    }
+                });
 
                 return true;
 

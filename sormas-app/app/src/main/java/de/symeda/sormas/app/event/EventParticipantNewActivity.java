@@ -21,6 +21,7 @@ import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.component.SelectOrCreatePersonDialogBuilder;
 import de.symeda.sormas.app.person.SyncPersonsTask;
+import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.Consumer;
 
 public class EventParticipantNewActivity extends AppCompatActivity {
@@ -103,7 +104,6 @@ public class EventParticipantNewActivity extends AppCompatActivity {
                                     if(parameter instanceof Person) {
                                         eventParticipant.setPerson((Person) parameter);
                                         savePersonAndEventParticipant(eventParticipant);
-                                        showEventParticipantEditView(eventParticipant);
                                     }
                                 }
                             });
@@ -113,7 +113,6 @@ public class EventParticipantNewActivity extends AppCompatActivity {
 
                         } else {
                             savePersonAndEventParticipant(eventParticipant);
-                            showEventParticipantEditView(eventParticipant);
                         }
                     }
                     else {
@@ -139,7 +138,7 @@ public class EventParticipantNewActivity extends AppCompatActivity {
     }
 
 
-    private void savePersonAndEventParticipant(EventParticipant eventParticipant) {
+    private void savePersonAndEventParticipant(final EventParticipant eventParticipant) {
         // save the person
         DatabaseHelper.getPersonDao().save(eventParticipant.getPerson());
         // set the given event
@@ -148,10 +147,14 @@ public class EventParticipantNewActivity extends AppCompatActivity {
         // save the contact
         DatabaseHelper.getEventParticipantDao().save(eventParticipant);
 
-        new SyncPersonsTask().execute();
-        new SyncEventParticipantsTask().execute();
+        Toast.makeText(this, "Event person saved", Toast.LENGTH_SHORT).show();
 
-        Toast.makeText(this, "Event person  saved", Toast.LENGTH_SHORT).show();
+        SyncEventsTask.syncEventsWithProgressDialog(this, new Callback() {
+            @Override
+            public void call() {
+                showEventParticipantEditView(eventParticipant);
+            }
+        });
 
 
     }

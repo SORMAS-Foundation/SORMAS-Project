@@ -42,11 +42,6 @@ public class TaskDao extends AbstractAdoDao<Task> {
         return super.saveUnmodified(task);
     }
 
-    public void markAsModified(String uuid) {
-        Task task = queryUuid(uuid);
-        save(task);
-    }
-
     public void changeTaskStatus(Task task, TaskStatus targetStatus) {
         task.setTaskStatus(targetStatus);
         task.setStatusChangeDate(new Date());

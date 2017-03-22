@@ -46,7 +46,9 @@ public class EpiDataDao extends AbstractAdoDao<EpiData> {
     @Override
     public boolean save(EpiData epiData) {
         try {
-            super.save(epiData);
+            if (!super.save(epiData)) {
+                return false;
+            }
             DatabaseHelper.getEpiDataBurialDao().deleteOrphansOfEpiData(epiData);
             if (epiData.getBurials() != null && !epiData.getBurials().isEmpty()) {
                 for (EpiDataBurial burial : epiData.getBurials()) {

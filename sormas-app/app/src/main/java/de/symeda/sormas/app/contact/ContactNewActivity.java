@@ -15,6 +15,7 @@ import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.api.contact.ContactClassification;
+import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
@@ -23,6 +24,7 @@ import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.caze.CaseEditActivity;
 import de.symeda.sormas.app.component.SelectOrCreatePersonDialogBuilder;
 import de.symeda.sormas.app.person.SyncPersonsTask;
+import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.Consumer;
 
 
@@ -55,9 +57,6 @@ public class ContactNewActivity extends AppCompatActivity {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         contactNewTab = new ContactNewTab();
         ft.add(R.id.fragment_frame, contactNewTab).commit();
-
-
-
     }
 
     @Override
@@ -93,6 +92,7 @@ public class ContactNewActivity extends AppCompatActivity {
                 try {
                     final Contact contact = contactNewTab.getData();
                     contact.setContactClassification(ContactClassification.POSSIBLE);
+                    contact.setFollowUpStatus(FollowUpStatus.FOLLOW_UP);
                     contact.setReportingUser(ConfigProvider.getUser());
                     contact.setReportDateTime(new Date());
                     contact.setCaze(DatabaseHelper.getCaseDao().queryUuid(caseUuid));
@@ -129,7 +129,6 @@ public class ContactNewActivity extends AppCompatActivity {
                                         try {
                                             contact.setPerson((Person) parameter);
                                             savePersonAndContact(contact);
-                                            navBackToCaseContacts();
                                         } catch (Exception e) {
                                             Toast.makeText(getApplicationContext(), "Error while saving the contact. " + e.getMessage(), Toast.LENGTH_SHORT).show();
                                             e.printStackTrace();
@@ -142,7 +141,6 @@ public class ContactNewActivity extends AppCompatActivity {
                             ((SelectOrCreatePersonDialogBuilder)dialogBuilder).setButtonListeners(newPersonDialog, this);
                         } else {
                             savePersonAndContact(contact);
-                            navBackToCaseContacts();
                         }
                     }
 
@@ -170,9 +168,15 @@ public class ContactNewActivity extends AppCompatActivity {
 
         // save the contact
         DatabaseHelper.getContactDao().save(contact);
-        new SyncContactsTask().execute();
 
         Toast.makeText(this, "Contact to " + contact.getPerson().toString() + " saved", Toast.LENGTH_SHORT).show();
+
+        SyncContactsTask.syncContactsWithProgressDialog(this, new Callback() {
+            @Override
+            public void call() {
+                navBackToCaseContacts();
+            }
+        });
     }
 
 

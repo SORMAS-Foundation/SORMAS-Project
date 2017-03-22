@@ -1,5 +1,7 @@
 package de.symeda.sormas.app.event;
 
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -74,6 +76,20 @@ public class SyncEventsTask extends AsyncTask<Void, Void, Void> {
     public static void syncEvents(final FragmentManager fragmentManager, SwipeRefreshLayout refreshLayout) {
         syncEvents(fragmentManager);
         refreshLayout.setRefreshing(false);
+    }
+
+    public static void syncEventsWithProgressDialog(Context context, final Callback callback) {
+
+        final ProgressDialog progressDialog = ProgressDialog.show(context, "Event synchronization",
+                "Events are being synchronized...", true);
+
+        syncEvents(new Callback() {
+            @Override
+            public void call() {
+                progressDialog.dismiss();
+                callback.call();
+            }
+        });
     }
 
     public static void syncEvents(final Callback callback) {

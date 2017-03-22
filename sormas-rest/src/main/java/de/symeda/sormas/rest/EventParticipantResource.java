@@ -33,13 +33,13 @@ public class EventParticipantResource {
 	}
 	
 	@POST @Path("/push")
-	public Integer postEventParticipants(List<EventParticipantDto> dtos) {
+	public Long postEventParticipants(List<EventParticipantDto> dtos) {
 		
 		EventParticipantFacade eventParticipantFacade = FacadeProvider.getEventParticipantFacade();
 		for (EventParticipantDto dto : dtos) {
 			eventParticipantFacade.saveEventParticipant(dto);
 		}
 		
-		return dtos.size();
+		return new Date().getTime();
 	}
 }

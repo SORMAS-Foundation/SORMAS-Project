@@ -1,5 +1,7 @@
 package de.symeda.sormas.app.sample;
 
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -88,6 +90,20 @@ public class SyncSamplesTask extends AsyncTask<Void, Void, Void> {
     public static void syncSamples(final FragmentManager fragmentManager, SwipeRefreshLayout refreshLayout) {
         syncSamples(fragmentManager);
         refreshLayout.setRefreshing(false);
+    }
+
+    public static void syncSamplesWithProgressDialog(Context context, final Callback callback) {
+
+        final ProgressDialog progressDialog = ProgressDialog.show(context, "Sample synchronization",
+                "Samples are being synchronized...", true);
+
+        syncSamples(new Callback() {
+            @Override
+            public void call() {
+                progressDialog.dismiss();
+                callback.call();
+            }
+        });
     }
 
     public static void syncSamples(final Callback callback) {

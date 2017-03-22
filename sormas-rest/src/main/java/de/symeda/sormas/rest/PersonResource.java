@@ -33,13 +33,13 @@ public class PersonResource {
 	}
 	
 	@POST @Path("/push")
-	public Integer postPersons(List<PersonDto> dtos) {
+	public Long postPersons(List<PersonDto> dtos) {
 		
 		PersonFacade personFacade = FacadeProvider.getPersonFacade();
 		for (PersonDto dto : dtos) {
 			personFacade.savePerson(dto);
 		}
 		
-		return dtos.size();
+		return new Date().getTime();
 	}
 }

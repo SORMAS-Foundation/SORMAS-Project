@@ -40,7 +40,10 @@ public class HospitalizationDao extends AbstractAdoDao<Hospitalization> {
     @Override
     public boolean save(Hospitalization hospitalization) {
         try {
-            super.save(hospitalization);
+            if (!super.save(hospitalization)) {
+                return false;
+            }
+
             DatabaseHelper.getPreviousHospitalizationDao().deleteOrphansOfHospitalization(hospitalization);
             if (hospitalization.getPreviousHospitalizations() != null && !hospitalization.getPreviousHospitalizations().isEmpty()) {
                 for (PreviousHospitalization previousHospitalization : hospitalization.getPreviousHospitalizations()) {

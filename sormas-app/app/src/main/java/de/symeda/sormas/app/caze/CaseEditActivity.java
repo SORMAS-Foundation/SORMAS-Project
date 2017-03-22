@@ -31,6 +31,7 @@ import de.symeda.sormas.app.component.AbstractEditActivity;
 import de.symeda.sormas.app.component.HelpDialog;
 import de.symeda.sormas.app.contact.ContactNewActivity;
 import de.symeda.sormas.app.sample.SampleEditActivity;
+import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.task.TaskEditActivity;
 import de.symeda.sormas.app.task.TaskTab;
 import de.symeda.sormas.app.util.ValidationFailedException;
@@ -87,8 +88,6 @@ public class CaseEditActivity extends AbstractEditActivity {
         }
         adapter = new CaseEditPagerAdapter(getSupportFragmentManager(), caseUuid);
         createTabViews(adapter);
-
-
 
         pager.setCurrentItem(currentTab);
     }
@@ -252,36 +251,49 @@ public class CaseEditActivity extends AbstractEditActivity {
                     if (person.getAddress() != null) {
                         locLocationDao.save(person.getAddress());
                     }
-                    personDao.save(person);
+                    if (!personDao.save(person)) {
+                        Toast.makeText(this, "person not saved", Toast.LENGTH_SHORT).show();
+                    }
                     caze.setPerson(person); // we aren't sure why, but this is needed, otherwise the person will be overriden when first saved
 
                     if (symptoms != null) {
-                        symptomsDao.save(symptoms);
+                        if (!symptomsDao.save(symptoms)) {
+                            Toast.makeText(this, "symptoms not saved", Toast.LENGTH_SHORT).show();
+                        }
                         caze.setSymptoms(symptoms);
                     }
 
                     if (hospitalization != null) {
-                        hospitalizationDao.save(hospitalization);
+                        if (!hospitalizationDao.save(hospitalization)) {
+                            Toast.makeText(this, "hospitalization not saved", Toast.LENGTH_SHORT).show();
+                        }
                         caze.setHospitalization(hospitalization);
                     }
 
                     if (epiData != null) {
-                        epiDataDao.save(epiData);
+                        if (!epiDataDao.save(epiData)) {
+                            Toast.makeText(this, "epi data not saved", Toast.LENGTH_SHORT).show();
+                        }
                         caze.setEpiData(epiData);
                     }
 
-                    caseDao.save(caze);
-
-                    SyncCasesTask.syncCases(getSupportFragmentManager());
-                    Toast.makeText(this, "case saved", Toast.LENGTH_SHORT).show();
-
-                    onResume();
-
-                    try {
-                        pager.setCurrentItem(currentTab + 1);
-                    } catch (NullPointerException e) {
-                        pager.setCurrentItem(currentTab);
+                    if (!caseDao.save(caze)) {
+                        Toast.makeText(this, "case not saved", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(this, "case saved", Toast.LENGTH_LONG).show();
                     }
+
+                    SyncCasesTask.syncCasesWithProgressDialog(this, new Callback() {
+                        @Override
+                        public void call() {
+                            onResume();
+		                    try {
+		                        pager.setCurrentItem(currentTab + 1);
+		                    } catch (NullPointerException e) {
+		                        pager.setCurrentItem(currentTab);
+		                    }
+                        }
+                    });
                 }
 
                 return true;

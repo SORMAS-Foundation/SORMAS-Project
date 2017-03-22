@@ -1,6 +1,5 @@
 package de.symeda.sormas.app.caze;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
@@ -181,14 +180,11 @@ public class CaseNewActivity extends AppCompatActivity {
         CaseDao caseDao = DatabaseHelper.getCaseDao();
         caseDao.save(caze);
 
-        final ProgressDialog progressDialog = ProgressDialog.show(this, "Saving case",
-                "Cases are being synchronized...", true);
+        Toast.makeText(CaseNewActivity.this, caze.getPerson().toString() + " saved", Toast.LENGTH_SHORT).show();
 
-        SyncCasesTask.syncCases(new Callback() {
+        SyncCasesTask.syncCasesWithProgressDialog(this, new Callback() {
                                     @Override
                                     public void call() {
-                                        Toast.makeText(CaseNewActivity.this, caze.getPerson().toString() + " saved", Toast.LENGTH_SHORT).show();
-                                        progressDialog.dismiss();
                                         showCaseEditView(caze);
                                     }
                                 });

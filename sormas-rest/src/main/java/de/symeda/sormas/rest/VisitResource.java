@@ -35,13 +35,13 @@ public class VisitResource {
 	
 	@POST 
 	@Path("/push")
-	public Integer postVisits(List<VisitDto> dtos) {
+	public Long postVisits(List<VisitDto> dtos) {
 		
 		VisitFacade visitFacade = FacadeProvider.getVisitFacade();
 		for (VisitDto dto : dtos) {
 			visitFacade.saveVisit(dto);
 		}
 		
-		return dtos.size();
+		return new Date().getTime();
 	}
 }

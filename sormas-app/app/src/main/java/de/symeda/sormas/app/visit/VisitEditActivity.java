@@ -22,6 +22,8 @@ import de.symeda.sormas.app.backend.visit.Visit;
 import de.symeda.sormas.app.caze.SymptomsEditTab;
 import de.symeda.sormas.app.component.AbstractEditActivity;
 import de.symeda.sormas.app.component.HelpDialog;
+import de.symeda.sormas.app.sample.SyncSamplesTask;
+import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.ValidationFailedException;
 
 
@@ -132,7 +134,7 @@ public class VisitEditActivity extends AbstractEditActivity {
                     return true;
                 }
 
-                if (visit.getVisitDateTime().after(contact.getFollowUpUntil()) &&
+                if (contact.getFollowUpUntil() != null && visit.getVisitDateTime().after(contact.getFollowUpUntil()) &&
                         DateHelper.getDaysBetween(contact.getFollowUpUntil(), visit.getVisitDateTime()) > 10) {
                     Toast.makeText(this, "The entered date is invalid. Please choose an earlier date.", Toast.LENGTH_LONG).show();
                     return true;
@@ -153,7 +155,13 @@ public class VisitEditActivity extends AbstractEditActivity {
                     DatabaseHelper.getVisitDao().save(visit);
                     Toast.makeText(this, "visit " + DataHelper.getShortUuid(visit.getUuid()) + " saved", Toast.LENGTH_SHORT).show();
 
-                    finish();
+                    SyncVisitsTask.syncVisitsWithProgressDialog(this, new Callback() {
+                        @Override
+                        public void call() {
+                            // go back to the list
+                            finish();
+                        }
+                    });
 
                     return true;
                 } catch(ValidationFailedException e) {
