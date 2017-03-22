@@ -8,17 +8,18 @@ import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.annotations.Viewport;
 import com.vaadin.annotations.Widgetset;
-import com.vaadin.server.Constants;
 import com.vaadin.server.DeploymentConfiguration;
 import com.vaadin.server.Responsive;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.login.LoginScreen;
 import de.symeda.sormas.ui.login.LoginScreen.LoginListener;
+import de.symeda.sormas.ui.utils.SormasDefaultConverterFactory;
 
 /**
  * Main UI class of the application that shows either the login screen or the
@@ -38,6 +39,9 @@ public class SormasUI extends UI {
     protected void init(VaadinRequest vaadinRequest) {
         Responsive.makeResponsive(this);
         setLocale(vaadinRequest.getLocale());
+        
+        VaadinSession.getCurrent().setConverterFactory(new SormasDefaultConverterFactory());
+        
         getPage().setTitle("SORMAS");
         
         // XXX
