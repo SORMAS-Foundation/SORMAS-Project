@@ -20,6 +20,7 @@ import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.Event;
+import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.util.PasswordHelper;
 
@@ -86,19 +87,30 @@ public class UserService extends AbstractAdoService<User> {
 		return em.createQuery(cq).getResultList();
 	}
 	
-	public List<User> getAssignableByCase(Case caze, UserRole... userRoles) {
-		// TODO implement
-		return null;
-	}
-	
-	public List<User> getAssignableByContact(Contact contact, UserRole... userRoles) {
-		// TODO implement
-		return null;
-	}
-	
-	public List<User> getAssignableByEvent(Event event, UserRole... userRoles) {
-		// TODO implement
-		return null;
+	public List<User> getAllByDistrict(District district, UserRole... userRoles) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<User> cq = cb.createQuery(getElementClass());
+		Root<User> from = cq.from(getElementClass());
+		
+		Predicate filter = null;
+		filter = cb.equal(from.get(User.DISTRICT), district);
+		
+		if (userRoles.length > 0) {
+			Join<User, UserRole> joinRoles = from.join(User.USER_ROLES, JoinType.LEFT);
+			Predicate rolesFilter = joinRoles.in(Arrays.asList(userRoles));
+			if (filter != null) {
+				filter = cb.and(filter, rolesFilter);
+			} else {
+				filter = rolesFilter;
+			}
+		}
+		
+		if (filter != null) {
+			cq.where(filter);
+		}
+		
+		cq.orderBy(cb.asc(from.get(AbstractDomainObject.ID)));
+		return em.createQuery(cq).getResultList();
 	}
 
 	public boolean isLoginUnique(String uuid, String userName) {

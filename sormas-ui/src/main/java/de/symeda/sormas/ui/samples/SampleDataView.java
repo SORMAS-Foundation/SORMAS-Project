@@ -2,6 +2,9 @@ package de.symeda.sormas.ui.samples;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 
+import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.sample.ShipmentStatus;
 import de.symeda.sormas.ui.ControllerProvider;
 
 public class SampleDataView extends AbstractSampleView {
@@ -18,10 +21,14 @@ public class SampleDataView extends AbstractSampleView {
 	public void enter(ViewChangeEvent event) {
 		super.enter(event);
 		setHeightUndefined();
-		setSubComponent(ControllerProvider.getSampleController().getSampleEditComponent(getSampleRef().getUuid()));
 		
-		SampleTestsComponent sampleTestsComponent = new SampleTestsComponent(getSampleRef());
-		addComponent(sampleTestsComponent);
+		SampleDto sampleDto = FacadeProvider.getSampleFacade().getSampleByUuid(getSampleRef().getUuid());
+		setSubComponent(ControllerProvider.getSampleController().getSampleEditComponent(sampleDto.getUuid()));
+		
+		if (sampleDto.getShipmentStatus() != ShipmentStatus.NOT_SHIPPED && sampleDto.getShipmentStatus() != ShipmentStatus.SHIPPED) {
+			SampleTestsComponent sampleTestsComponent = new SampleTestsComponent(getSampleRef());
+			addComponent(sampleTestsComponent);
+		}
 	}
 
 }

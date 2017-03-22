@@ -18,7 +18,6 @@ import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.ReferenceDto;
-import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskPriority;

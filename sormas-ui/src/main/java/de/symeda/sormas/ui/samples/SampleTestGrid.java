@@ -17,6 +17,7 @@ import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SampleTestDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.utils.BooleanRenderer;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 @SuppressWarnings("serial")
@@ -38,6 +39,7 @@ public class SampleTestGrid extends Grid implements ItemClickListener {
 		
 		getColumn(EDIT_BTN_ID).setRenderer(new HtmlRenderer());
         getColumn(EDIT_BTN_ID).setWidth(60);
+        getColumn(SampleTestDto.TEST_RESULT_VERIFIED).setRenderer(new BooleanRenderer());
         
 		getColumn(SampleTestDto.TEST_DATE_TIME).setRenderer(new DateRenderer(DateHelper.getShortDateFormat()));
 	

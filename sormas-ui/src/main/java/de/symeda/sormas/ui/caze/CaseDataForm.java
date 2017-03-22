@@ -21,8 +21,6 @@ import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.Diseases.DiseasesConfiguration;
-import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateTimeField;
@@ -125,16 +123,15 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		contactOfficerField.setNullSelectionAllowed(true);
 		
 		district.addValueChangeListener(e -> {
-			UserReferenceDto currentUser = LoginHelper.getCurrentUserAsReference();
-			List<UserReferenceDto> assignableSurveillanceOfficers = FacadeProvider.getUserFacade().getAssignableUsers(currentUser, UserRole.SURVEILLANCE_OFFICER);
-			List<UserReferenceDto> assignableContactOfficers = FacadeProvider.getUserFacade().getAssignableUsers(currentUser, UserRole.CONTACT_OFFICER);
+			List<UserReferenceDto> assignableSurveillanceOfficers = FacadeProvider.getUserFacade().getAssignableUsersByDistrict((DistrictReferenceDto) district.getValue(), UserRole.SURVEILLANCE_OFFICER);
+			List<UserReferenceDto> assignableContactOfficers = FacadeProvider.getUserFacade().getAssignableUsersByDistrict((DistrictReferenceDto) district.getValue(), UserRole.CONTACT_OFFICER);
 			
 			surveillanceOfficerField.removeAllItems();
 			surveillanceOfficerField.select(0);
-			surveillanceOfficerField.addItems(ControllerProvider.getUserController().filterByDistrict(assignableSurveillanceOfficers, (DistrictReferenceDto) district.getValue()));
+			surveillanceOfficerField.addItems(assignableSurveillanceOfficers);
 			contactOfficerField.removeAllItems();
 			surveillanceOfficerField.select(0);
-			contactOfficerField.addItems(ControllerProvider.getUserController().filterByDistrict(assignableContactOfficers, (DistrictReferenceDto) district.getValue()));
+			contactOfficerField.addItems(assignableContactOfficers);
 		});
     	
 		addField(CaseDataDto.PREGNANT, OptionGroup.class);

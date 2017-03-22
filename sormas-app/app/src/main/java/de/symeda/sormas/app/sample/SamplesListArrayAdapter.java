@@ -39,11 +39,11 @@ public class SamplesListArrayAdapter extends ArrayAdapter<Sample> {
 
         Sample sample = (Sample) getItem(position);
 
-        TextView uuid = (TextView) convertView.findViewById(R.id.sample_uuid_li);
-        uuid.setText(DataHelper.getShortUuid(sample.getUuid()));
-
         TextView dateTime = (TextView) convertView.findViewById(R.id.sample_date_time_li);
         dateTime.setText(DateHelper.formatDDMMYYYY(sample.getSampleDateTime()));
+
+        TextView disease = (TextView) convertView.findViewById(R.id.sample_disease_li);
+        disease.setText(sample.getAssociatedCase().getDisease().toShortString());
 
         TextView shipmentStatus = (TextView) convertView.findViewById(R.id.sample_shipment_status_li);
         shipmentStatus.setText(sample.getShipmentStatus().toString());
@@ -53,7 +53,6 @@ public class SamplesListArrayAdapter extends ArrayAdapter<Sample> {
 
         TextView description = (TextView) convertView.findViewById(R.id.sample_description_li);
         StringBuilder sb = new StringBuilder();
-        sb.append(sample.getAssociatedCase().getDisease()!=null?sample.getAssociatedCase().getDisease().toString() + ", ":"");
         sb.append(sample.getSampleMaterial() + "\n");
         sb.append(sample.getLab().toString());
         description.setText(sb.toString());

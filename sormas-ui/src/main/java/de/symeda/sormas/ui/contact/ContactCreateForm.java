@@ -69,12 +69,10 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
     		updateLastContactDateValidator();
     		
     		// set assignable officers
-    		UserReferenceDto currentUser = LoginHelper.getCurrentUserAsReference();
-    		List<UserReferenceDto> assignableContactOfficers = FacadeProvider.getUserFacade().getAssignableUsers(currentUser, UserRole.CONTACT_OFFICER);
     		ContactDto contactDto = getValue();
         	if (contactDto != null) {
     	    	CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(contactDto.getCaze().getUuid());
-    	    	contactOfficerField.addItems(ControllerProvider.getUserController().filterByDistrict(assignableContactOfficers, (DistrictReferenceDto) caseDto.getDistrict()));
+    	    	contactOfficerField.addItems(FacadeProvider.getUserFacade().getAssignableUsersByDistrict(caseDto.getDistrict(), UserRole.CONTACT_OFFICER));
         	}
     	});
     }

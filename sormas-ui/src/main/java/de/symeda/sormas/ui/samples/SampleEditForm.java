@@ -3,6 +3,7 @@ package de.symeda.sormas.ui.samples;
 import java.util.Arrays;
 import java.util.Date;
 
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.AbstractLayout;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
@@ -35,6 +36,7 @@ import de.symeda.sormas.ui.utils.LayoutUtil;
 public class SampleEditForm extends AbstractEditForm<SampleDto> {
 
 	private static final String CASE_INFO = "caseInfo";
+	private static final String REPORT_INFO = "reportInfo";
 	
 	private static final String HTML_LAYOUT = 
 			LayoutUtil.h3(CssStyles.VSPACE3, "Laboratory sample") +
@@ -43,12 +45,9 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 							LayoutUtil.fluidColumn(9, 0,
 									LayoutUtil.div(
 										LayoutUtil.fluidRow(
-												LayoutUtil.oneOfThreeCol(LayoutUtil.loc(SampleDto.UUID)),
-												LayoutUtil.oneOfThreeCol(LayoutUtil.loc(SampleDto.SAMPLE_CODE))
-										),
-										LayoutUtil.fluidRow(
-												LayoutUtil.oneOfThreeCol(LayoutUtil.loc(SampleDto.REPORT_DATE_TIME)),
-												LayoutUtil.oneOfThreeCol(LayoutUtil.loc(SampleDto.REPORTING_USER))
+												LayoutUtil.oneOfThreeCol(LayoutUtil.loc(SampleDto.SAMPLE_CODE)),
+												LayoutUtil.oneOfThreeCol(LayoutUtil.loc(SampleDto.LAB_SAMPLE_ID)),
+												LayoutUtil.oneOfThreeCol(LayoutUtil.loc(REPORT_INFO))
 										),
 										LayoutUtil.fluidRow(
 												LayoutUtil.oneOfThreeCol(LayoutUtil.loc(SampleDto.SAMPLE_DATE_TIME)),
@@ -82,6 +81,7 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 			);
 	
 	private VerticalLayout caseInfoLayout;
+	private Label reportInfoLabel;
 	
 	public SampleEditForm() {
 		super(SampleDto.class, SampleDto.I18N_PREFIX);
@@ -89,8 +89,8 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 	
 	@Override
 	protected void addFields() {
-		addField(SampleDto.UUID, TextField.class);
 		addField(SampleDto.SAMPLE_CODE, TextField.class);
+		addField(SampleDto.LAB_SAMPLE_ID, TextField.class);
 		
 		addField(SampleDto.SAMPLE_DATE_TIME, DateTimeField.class);
 		addField(SampleDto.REPORT_DATE_TIME, DateTimeField.class);
@@ -112,7 +112,7 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 		lab.addItems(FacadeProvider.getFacilityFacade().getAllLaboratories());
 		otherLab.addItems(FacadeProvider.getFacilityFacade().getAllLaboratories());
 		
-		setReadOnly(true, SampleDto.UUID, SampleDto.REPORT_DATE_TIME, SampleDto.REPORTING_USER);
+		setReadOnly(true, SampleDto.REPORT_DATE_TIME, SampleDto.REPORTING_USER);
 		
 		FieldHelper.setVisibleWhen(getFieldGroup(), SampleDto.SAMPLE_MATERIAL_TEXT, SampleDto.SAMPLE_MATERIAL, Arrays.asList(SampleMaterial.OTHER), true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), SampleDto.RECEIVED_DATE, SampleDto.SHIPMENT_STATUS, Arrays.asList(ShipmentStatus.RECEIVED), true);
@@ -128,15 +128,21 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 				Arrays.asList(ShipmentStatus.SHIPPED, ShipmentStatus.RECEIVED, ShipmentStatus.REFERRED_OTHER_LAB));
 		FieldHelper.setRequiredWhen(getFieldGroup(), SampleDto.SHIPMENT_STATUS, Arrays.asList(SampleDto.SPECIMEN_CONDITION), Arrays.asList(ShipmentStatus.RECEIVED));
 		
-		setRequired(true, SampleDto.UUID, SampleDto.SAMPLE_DATE_TIME, SampleDto.REPORT_DATE_TIME,
+		setRequired(true, SampleDto.SAMPLE_DATE_TIME, SampleDto.REPORT_DATE_TIME,
 				SampleDto.REPORTING_USER, SampleDto.SAMPLE_MATERIAL, SampleDto.LAB, SampleDto.SHIPMENT_STATUS,
 				SampleDto.SHIPMENT_DATE);
+		
 		
 		caseInfoLayout = new VerticalLayout();
 		caseInfoLayout.setSpacing(true);
 		getContent().addComponent(caseInfoLayout, CASE_INFO);
+		reportInfoLabel = new Label();
+		reportInfoLabel.setContentMode(ContentMode.HTML);
+		reportInfoLabel.setCaption(I18nProperties.getPrefixFieldCaption(SampleDto.I18N_PREFIX, REPORT_INFO));
+		getContent().addComponent(reportInfoLabel, REPORT_INFO);
 		addValueChangeListener(e -> {
 			updateCaseInfo();
+			updateReportInfo();
 		});
 		
 		shipmentStatus.addValueChangeListener(event -> {
@@ -146,6 +152,14 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 				}
 			}
 		});
+	}
+	
+	private void updateReportInfo() {
+		SampleDto sampleDto = getValue();
+		StringBuilder sb = new StringBuilder();
+		sb.append(DateHelper.formatDDMMYYHm(sampleDto.getReportDateTime()) + "<br/>");
+		sb.append(sampleDto.getReportingUser().toString());
+		reportInfoLabel.setValue(sb.toString());
 	}
 	
 	private void updateCaseInfo() {

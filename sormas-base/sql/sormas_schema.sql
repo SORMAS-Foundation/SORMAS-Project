@@ -1303,3 +1303,15 @@ DELETE FROM district;
 DELETE FROM region;
 
 INSERT INTO schema_version (version_number, comment) VALUES (38, 'Dont use location entity for facilities');
+
+-- 2017-03-22 Split sample code and lab sample ID #155
+
+ALTER TABLE samples ADD COLUMN labsampleid varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (39, 'Split sample code and lab sample ID');
+
+-- 2017-03-22 Drop not null constraint from sample test result text
+
+ALTER TABLE sampletest ALTER COLUMN testresulttext DROP NOT NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (40, 'Drop not null constraint from sample test result text');

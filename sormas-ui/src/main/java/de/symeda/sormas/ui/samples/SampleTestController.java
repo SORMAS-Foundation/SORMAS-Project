@@ -38,7 +38,7 @@ public class SampleTestController {
 			}
 		});
 		
-		VaadinUiUtil.showModalPopupWindow(editView, "Create new sample test result");   
+		VaadinUiUtil.showModalPopupWindow(editView, "Create new sample test result"); 
 	}
 	
 	public void edit(SampleTestDto dto, SampleTestGrid grid) {

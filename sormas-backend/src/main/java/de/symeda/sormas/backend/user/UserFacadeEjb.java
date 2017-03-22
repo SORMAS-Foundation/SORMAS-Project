@@ -9,9 +9,7 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
-import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.contact.ContactReferenceDto;
-import de.symeda.sormas.api.event.EventReferenceDto;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserFacade;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -23,6 +21,7 @@ import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
+import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb;
 import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.RegionFacadeEjb;
@@ -63,22 +62,10 @@ public class UserFacadeEjb implements UserFacade {
 	}
 	
 	@Override
-	public List<UserReferenceDto> getAssignableUsersByCase(CaseReferenceDto caze, UserRole ...assignableRoles) {
-		return service.getAssignableByCase(caseService.getByReferenceDto(caze), assignableRoles).stream()
-				.map(f -> toReferenceDto(f))
-				.collect(Collectors.toList());
-	}
-	
-	@Override
-	public List<UserReferenceDto> getAssignableUsersByContact(ContactReferenceDto contact, UserRole ...assignableRoles) {
-		return service.getAssignableByContact(contactService.getByReferenceDto(contact), assignableRoles).stream()
-				.map(f -> toReferenceDto(f))
-				.collect(Collectors.toList());
-	}
-	
-	@Override
-	public List<UserReferenceDto> getAssignableUsersByEvent(EventReferenceDto event, UserRole ...assignableRoles) {
-		return service.getAssignableByEvent(eventService.getByReferenceDto(event), assignableRoles).stream()
+	public List<UserReferenceDto> getAssignableUsersByDistrict(DistrictReferenceDto districtRef, UserRole ...assignableRoles) {
+		District district = districtService.getByReferenceDto(districtRef);
+		
+		return service.getAllByDistrict(district, assignableRoles).stream()
 				.map(f -> toReferenceDto(f))
 				.collect(Collectors.toList());
 	}

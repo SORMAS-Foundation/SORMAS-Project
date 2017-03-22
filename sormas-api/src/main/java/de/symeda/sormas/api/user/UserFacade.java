@@ -5,9 +5,7 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
-import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.contact.ContactReferenceDto;
-import de.symeda.sormas.api.event.EventReferenceDto;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
 
 @Remote
 public interface UserFacade {
@@ -31,10 +29,6 @@ public interface UserFacade {
 	List<UserReferenceDto> getAllAfterAsReference(Date date);
 
 	List<UserReferenceDto> getAssignableUsers(UserReferenceDto assigningUser, UserRole... assignableRoles);
-
-	List<UserReferenceDto> getAssignableUsersByCase(CaseReferenceDto caze, UserRole... assignableRoles);
 	
-	List<UserReferenceDto> getAssignableUsersByContact(ContactReferenceDto contact, UserRole... assignableRoles);
-	
-	List<UserReferenceDto> getAssignableUsersByEvent(EventReferenceDto event, UserRole... assignableRoles);
+	List<UserReferenceDto> getAssignableUsersByDistrict(DistrictReferenceDto district, UserRole... assignableRoles);
 }

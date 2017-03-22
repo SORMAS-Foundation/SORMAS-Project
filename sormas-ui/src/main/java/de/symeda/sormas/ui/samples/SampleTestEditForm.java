@@ -27,6 +27,8 @@ public class SampleTestEditForm extends AbstractEditForm<SampleTestDto> {
 	
 	public SampleTestEditForm() {
 		super(SampleTestDto.class, SampleTestDto.I18N_PREFIX);
+		
+        setWidth(600, Unit.PIXELS);
 	}
 	
 	@Override

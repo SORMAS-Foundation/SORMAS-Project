@@ -2,6 +2,7 @@ package de.symeda.sormas.api.sample;
 
 import java.util.Date;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -14,7 +15,9 @@ public class SampleIndexDto extends SampleReferenceDto {
 	public static final String I18N_PREFIX = "Sample";
 	
 	public static final String ASSOCIATED_CASE = "associatedCase";
+	public static final String DISEASE = "disease";
 	public static final String SAMPLE_CODE = "sampleCode";
+	public static final String LAB_SAMPLE_ID = "labSampleID";
 	public static final String SHIPMENT_STATUS = "shipmentStatus";
 	public static final String LGA = "lga";
 	public static final String SHIPMENT_DATE = "shipmentDate";
@@ -28,7 +31,9 @@ public class SampleIndexDto extends SampleReferenceDto {
 	public static final String NO_TEST_POSSIBLE_REASON = "noTestPossibleReason";
 	
 	private CaseReferenceDto associatedCase;
+	private Disease disease;
 	private String sampleCode;
+	private String labSampleID;
 	private ShipmentStatus shipmentStatus;
 	private DistrictReferenceDto lga;
 	private Date shipmentDate;
@@ -47,11 +52,23 @@ public class SampleIndexDto extends SampleReferenceDto {
 	public void setAssociatedCase(CaseReferenceDto associatedCase) {
 		this.associatedCase = associatedCase;
 	}
+	public Disease getDisease() {
+		return disease;
+	}
+	public void setDisease(Disease disease) {
+		this.disease = disease;
+	}
 	public String getSampleCode() {
 		return sampleCode;
 	}
 	public void setSampleCode(String sampleCode) {
 		this.sampleCode = sampleCode;
+	}
+	public String getLabSampleID() {
+		return labSampleID;
+	}
+	public void setLabSampleID(String labSampleID) {
+		this.labSampleID = labSampleID;
 	}
 	public ShipmentStatus getShipmentStatus() {
 		return shipmentStatus;

@@ -17,6 +17,7 @@ public class SampleDto extends SampleReferenceDto {
 	
 	public static final String ASSOCIATED_CASE = "associatedCase";
 	public static final String SAMPLE_CODE = "sampleCode";
+	public static final String LAB_SAMPLE_ID = "labSampleID";
 	public static final String SAMPLE_DATE_TIME = "sampleDateTime";
 	public static final String REPORT_DATE_TIME = "reportDateTime";
 	public static final String REPORTING_USER = "reportingUser";
@@ -34,6 +35,7 @@ public class SampleDto extends SampleReferenceDto {
 	
 	private CaseReferenceDto associatedCase;
 	private String sampleCode;
+	private String labSampleID;
 	private Date sampleDateTime;
 	private Date reportDateTime;
 	private UserReferenceDto reportingUser;
@@ -60,6 +62,12 @@ public class SampleDto extends SampleReferenceDto {
 	}
 	public void setSampleCode(String sampleCode) {
 		this.sampleCode = sampleCode;
+	}
+	public String getLabSampleID() {
+		return labSampleID;
+	}
+	public void setLabSampleID(String labSampleID) {
+		this.labSampleID = labSampleID;
 	}
 	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public Date getSampleDateTime() {

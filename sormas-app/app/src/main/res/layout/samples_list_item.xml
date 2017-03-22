@@ -19,20 +19,19 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:id="@+id/sample_uuid_li"
-                android:paddingLeft="10dp"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:id="@+id/sample_date_time_li"
                 android:paddingTop="10dp"
-                android:paddingRight="10dp" />
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"/>
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                android:id="@+id/sample_date_time_li"
+                android:id="@+id/sample_disease_li"
                 android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                android:paddingBottom="10dp"/>
+                android:paddingRight="10dp" />
 
             <TextView
                 android:layout_width="match_parent"

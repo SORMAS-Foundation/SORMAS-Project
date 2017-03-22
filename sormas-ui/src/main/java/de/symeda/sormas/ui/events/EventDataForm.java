@@ -20,9 +20,7 @@ import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.location.LocationForm;
-import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateTimeField;
@@ -105,11 +103,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 
 		LocationForm locationForm = (LocationForm) getFieldGroup().getField(EventDto.EVENT_LOCATION);
 		Field districtField = locationForm.getFieldGroup().getField(LocationDto.DISTRICT);
-		
-		UserReferenceDto currentUser = LoginHelper.getCurrentUserAsReference();
-		assignableSurveillanceOfficers = FacadeProvider.getUserFacade().getAssignableUsers(currentUser, UserRole.SURVEILLANCE_OFFICER);
-		addField(EventDto.SURVEILLANCE_OFFICER, ComboBox.class).addItems(
-				ControllerProvider.getUserController().filterByDistrict(assignableSurveillanceOfficers, (DistrictReferenceDto) districtField.getValue()));
+		ComboBox surveillanceOfficerField = addField(EventDto.SURVEILLANCE_OFFICER, ComboBox.class);
 		
 		addField(EventDto.TYPE_OF_PLACE, ComboBox.class);
 		addField(EventDto.TYPE_OF_PLACE_TEXT, TextField.class);		
@@ -130,7 +124,12 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 				EventDto.SRC_LAST_NAME, EventDto.SRC_TEL_NO, EventDto.TYPE_OF_PLACE_TEXT, EventDto.SURVEILLANCE_OFFICER);
 		locationForm.setFieldsRequirement(true, LocationDto.REGION, LocationDto.DISTRICT);
 		
-		setSurveillanceOfficerListener(locationForm);
+		districtField.addValueChangeListener(e -> {
+			List<UserReferenceDto> assignableSurveillanceOfficers = FacadeProvider.getUserFacade().getAssignableUsersByDistrict((DistrictReferenceDto) districtField.getValue(), UserRole.SURVEILLANCE_OFFICER);
+			surveillanceOfficerField.removeAllItems();
+			surveillanceOfficerField.select(0);
+			surveillanceOfficerField.addItems(assignableSurveillanceOfficers);
+		});
 	}
 	
 	@Override
@@ -151,19 +150,6 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		
 		typeOfPlaceField.addValueChangeListener(event -> {
 			typeOfPlaceTextField.setRequired(typeOfPlaceField.getValue() == TypeOfPlace.OTHER);
-		});
-	}
-	
-	private void setSurveillanceOfficerListener(LocationForm locationForm) {
-		Field districtField = locationForm.getFieldGroup().getField(LocationDto.DISTRICT);
-		districtField.addValueChangeListener(new ValueChangeListener() {
-			@Override
-			public void valueChange(com.vaadin.data.Property.ValueChangeEvent event) {
-				ComboBox surveillanceOfficerField = (ComboBox) getFieldGroup().getField(EventDto.SURVEILLANCE_OFFICER);
-				surveillanceOfficerField.removeAllItems();
-				surveillanceOfficerField.addItems(ControllerProvider.getUserController().filterByDistrict(
-						assignableSurveillanceOfficers, (DistrictReferenceDto) districtField.getValue()));
-			}
 		});
 	}
 	

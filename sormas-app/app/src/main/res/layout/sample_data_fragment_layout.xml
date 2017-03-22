@@ -32,39 +32,40 @@
                 android:textStyle="bold"
                 android:paddingBottom="10dp" />
 
+            <de.symeda.sormas.app.component.LabelField
+                android:id="@+id/sample_casePersonName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/field_padding"
+                android:paddingBottom="@dimen/field_padding"
+                app:personLabel="@{sample.associatedCase.person}"/>
+
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <de.symeda.sormas.app.component.LabelField
-                    android:id="@+id/sample_uuid"
+                <de.symeda.sormas.app.component.TextField
+                    android:id="@+id/sample_sampleCode"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.5"
                     android:paddingTop="@dimen/field_padding"
                     android:paddingBottom="@dimen/field_padding"
-                    app:short_uuid="@{sample.uuid}"/>
+                    android:layout_weight="0.5"
+                    android:nextFocusForward="@+id/sample_labSampleID"
+                    android:value="@={sample.sampleCode}"/>
 
-                <de.symeda.sormas.app.component.LabelField
-                    android:id="@+id/sample_casePersonName"
+                <de.symeda.sormas.app.component.TextField
+                    android:id="@+id/sample_labSampleID"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.5"
                     android:paddingTop="@dimen/field_padding"
                     android:paddingBottom="@dimen/field_padding"
-                    app:personLabel="@{sample.associatedCase.person}"/>
+                    android:layout_weight="0.5"
+                    android:nextFocusForward="@+id/sample_dateTime"
+                    android:value="@={sample.labSampleID}"/>
 
             </LinearLayout>
-
-            <de.symeda.sormas.app.component.TextField
-                android:id="@+id/sample_sampleCode"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="@dimen/field_padding"
-                android:paddingBottom="@dimen/field_padding"
-                android:nextFocusForward="@+id/sample_dateTime"
-                android:value="@={sample.sampleCode}"/>
 
             <de.symeda.sormas.app.component.DateTimeField
                 android:id="@+id/sample_dateTime"

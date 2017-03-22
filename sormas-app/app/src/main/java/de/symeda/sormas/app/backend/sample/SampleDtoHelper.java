@@ -58,6 +58,7 @@ public class SampleDtoHelper extends AdoDtoHelper<Sample, SampleDto> {
         }
 
         ado.setSampleCode(dto.getSampleCode());
+        ado.setLabSampleID(dto.getLabSampleID());
         ado.setSampleDateTime(dto.getSampleDateTime());
         ado.setReportDateTime(dto.getReportDateTime());
         ado.setSampleMaterial(dto.getSampleMaterial());
@@ -102,6 +103,7 @@ public class SampleDtoHelper extends AdoDtoHelper<Sample, SampleDto> {
         }
 
         dto.setSampleCode(ado.getSampleCode());
+        dto.setLabSampleID(ado.getLabSampleID());
         dto.setSampleDateTime(ado.getSampleDateTime());
         dto.setReportDateTime(ado.getReportDateTime());
         dto.setSampleMaterial(ado.getSampleMaterial());

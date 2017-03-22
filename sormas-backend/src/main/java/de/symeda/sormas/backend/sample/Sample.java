@@ -29,6 +29,7 @@ public class Sample extends AbstractDomainObject {
 	
 	public static final String ASSOCIATED_CASE = "associatedCase";
 	public static final String SAMPLE_CODE = "sampleCode";
+	public static final String LAB_SAMPLE_ID = "labSampleID";
 	public static final String SAMPLE_DATE_TIME = "sampleDateTime";
 	public static final String REPORT_DATE_TIME = "reportDateTime";
 	public static final String REPORTING_USER = "reportingUser";
@@ -45,6 +46,7 @@ public class Sample extends AbstractDomainObject {
 	
 	private Case associatedCase;
 	private String sampleCode;
+	private String labSampleID;
 	private Date sampleDateTime;
 	private Date reportDateTime;
 	private User reportingUser;
@@ -77,6 +79,14 @@ public class Sample extends AbstractDomainObject {
 	}
 	public void setSampleCode(String sampleCode) {
 		this.sampleCode = sampleCode;
+	}
+	
+	@Column(length=512)
+	public String getLabSampleID() {
+		return labSampleID;
+	}
+	public void setLabSampleID(String labSampleID) {
+		this.labSampleID = labSampleID;
 	}
 	
 	@Temporal(TemporalType.TIMESTAMP)

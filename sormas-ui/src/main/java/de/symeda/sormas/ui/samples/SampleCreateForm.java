@@ -3,7 +3,6 @@ package de.symeda.sormas.ui.samples;
 import java.util.Arrays;
 import java.util.Date;
 
-import com.vaadin.shared.ui.datefield.Resolution;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.OptionGroup;
@@ -29,13 +28,8 @@ public class SampleCreateForm extends AbstractEditForm<SampleDto> {
 			LayoutUtil.div(
 					LayoutUtil.fluidRowCss(
 							CssStyles.VSPACE4,
-							LayoutUtil.oneOfThreeCol(LayoutUtil.loc(SampleDto.UUID)),
-							LayoutUtil.oneOfThreeCol(LayoutUtil.loc(SampleDto.SAMPLE_CODE))
-					),
-					LayoutUtil.fluidRowCss(
-							CssStyles.VSPACE4,
-							LayoutUtil.oneOfThreeCol(LayoutUtil.loc(SampleDto.REPORT_DATE_TIME)),
-							LayoutUtil.oneOfThreeCol(LayoutUtil.loc(SampleDto.REPORTING_USER))
+							LayoutUtil.oneOfThreeCol(LayoutUtil.loc(SampleDto.SAMPLE_CODE)),
+							LayoutUtil.oneOfThreeCol(LayoutUtil.loc(SampleDto.LAB_SAMPLE_ID))
 					),
 					LayoutUtil.fluidRowCss(
 							CssStyles.VSPACE4, 
@@ -75,8 +69,8 @@ public class SampleCreateForm extends AbstractEditForm<SampleDto> {
 	
 	@Override
 	protected void addFields() {
-		addField(SampleDto.UUID, TextField.class);
 		addField(SampleDto.SAMPLE_CODE, TextField.class);
+		addField(SampleDto.LAB_SAMPLE_ID, TextField.class);
 		
 		addField(SampleDto.SAMPLE_DATE_TIME, DateTimeField.class);
 		addField(SampleDto.REPORT_DATE_TIME, DateTimeField.class);
@@ -98,7 +92,7 @@ public class SampleCreateForm extends AbstractEditForm<SampleDto> {
 		lab.addItems(FacadeProvider.getFacilityFacade().getAllLaboratories());
 		otherLab.addItems(FacadeProvider.getFacilityFacade().getAllLaboratories());
 		
-		setReadOnly(true, SampleDto.UUID, SampleDto.REPORT_DATE_TIME, SampleDto.REPORTING_USER);
+		setReadOnly(true, SampleDto.REPORT_DATE_TIME, SampleDto.REPORTING_USER);
 		
 		FieldHelper.setVisibleWhen(getFieldGroup(), SampleDto.SAMPLE_MATERIAL_TEXT, SampleDto.SAMPLE_MATERIAL, Arrays.asList(SampleMaterial.OTHER), true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), SampleDto.RECEIVED_DATE, SampleDto.SHIPMENT_STATUS, Arrays.asList(ShipmentStatus.RECEIVED), true);
@@ -114,7 +108,7 @@ public class SampleCreateForm extends AbstractEditForm<SampleDto> {
 				Arrays.asList(ShipmentStatus.SHIPPED, ShipmentStatus.RECEIVED, ShipmentStatus.REFERRED_OTHER_LAB));
 		FieldHelper.setRequiredWhen(getFieldGroup(), SampleDto.SHIPMENT_STATUS, Arrays.asList(SampleDto.SPECIMEN_CONDITION), Arrays.asList(ShipmentStatus.RECEIVED));
 		
-		setRequired(true, SampleDto.UUID, SampleDto.SAMPLE_DATE_TIME, SampleDto.REPORT_DATE_TIME,
+		setRequired(true, SampleDto.SAMPLE_DATE_TIME, SampleDto.REPORT_DATE_TIME,
 				SampleDto.REPORTING_USER, SampleDto.SAMPLE_MATERIAL, SampleDto.LAB, SampleDto.SHIPMENT_STATUS,
 				SampleDto.SHIPMENT_DATE);
 		

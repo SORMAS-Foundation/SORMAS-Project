@@ -14,6 +14,7 @@ import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.renderers.DateRenderer;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
@@ -25,12 +26,12 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.login.LoginHelper;
-import de.symeda.sormas.ui.utils.UuidRenderer;
 
 @SuppressWarnings("serial")
 public class SampleGrid extends Grid {
 	
 	private static final String TEST_RESULT_GEN = "testResultGen";
+	private static final String DISEASE_SHORT = "diseaseShort";
 	
 	private CaseReferenceDto caseRef;
 	
@@ -60,11 +61,23 @@ public class SampleGrid extends Grid {
 			}
 		});
 		
-		setColumns(SampleIndexDto.UUID, SampleIndexDto.SAMPLE_CODE, SampleIndexDto.SHIPMENT_STATUS, SampleIndexDto.ASSOCIATED_CASE,
+		generatedContainer.addGeneratedProperty(DISEASE_SHORT, new PropertyValueGenerator<String>() {
+			@Override
+			public String getValue(Item item, Object itemId, Object propertyId) {
+				SampleIndexDto indexDto = (SampleIndexDto) itemId;
+				String diseaseName = indexDto.getDisease().getName();
+				return Disease.valueOf(diseaseName).toShortString();
+			}
+			@Override
+			public Class<String> getType() {
+				return String.class;
+			}
+        });
+		
+		setColumns(SampleIndexDto.SAMPLE_CODE, SampleIndexDto.LAB_SAMPLE_ID, SampleIndexDto.SHIPMENT_STATUS, SampleIndexDto.ASSOCIATED_CASE, DISEASE_SHORT,
 				SampleIndexDto.LGA, SampleIndexDto.SHIPMENT_DATE, SampleIndexDto.RECEIVED_DATE, SampleIndexDto.LAB, SampleIndexDto.SAMPLE_MATERIAL,
 				SampleIndexDto.LAB_USER, SampleIndexDto.TEST_TYPE, TEST_RESULT_GEN);
 		
-		getColumn(SampleIndexDto.UUID).setRenderer(new UuidRenderer());
 		getColumn(SampleIndexDto.SHIPMENT_DATE).setRenderer(new DateRenderer(DateHelper.getDateFormat()));
 		getColumn(SampleIndexDto.RECEIVED_DATE).setRenderer(new DateRenderer(DateHelper.getDateFormat()));
 		
@@ -88,6 +101,8 @@ public class SampleGrid extends Grid {
 	public SampleGrid(CaseReferenceDto caseRef) {
 		this();
 		removeColumn(SampleIndexDto.ASSOCIATED_CASE);
+		removeColumn(DISEASE_SHORT);
+		removeColumn(SampleIndexDto.LGA);
 		setShipmentStatusFilter(null);
 		this.caseRef = caseRef;
 		reload();

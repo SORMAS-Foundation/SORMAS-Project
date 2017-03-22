@@ -77,18 +77,18 @@ public class SyncEventsTask extends AsyncTask<Void, Void, Void> {
     }
 
     public static void syncEvents(final Callback callback) {
-        SyncEventParticipantsTask.syncEventParticipants(new Callback() {
+        new SyncEventsTask() {
             @Override
-            public void call() {
-                new SyncEventsTask() {
+            protected void onPostExecute(Void aVoid) {
+                SyncEventParticipantsTask.syncEventParticipants(new Callback() {
                     @Override
-                    protected void onPostExecute(Void aVoid) {
+                    public void call() {
                         if (callback != null) {
                             callback.call();
                         }
                     }
-                }.execute();
+                });
             }
-        });
+        }.execute();
     }
 }

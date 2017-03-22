@@ -41,6 +41,9 @@ public class Sample extends AbstractDomainObject {
     @Column(length = 512)
     private String sampleCode;
 
+    @Column(length = 512)
+    private String labSampleID;
+
     @DatabaseField(dataType = DataType.DATE_LONG, canBeNull = false)
     private Date sampleDateTime;
 
@@ -99,6 +102,14 @@ public class Sample extends AbstractDomainObject {
 
     public void setSampleCode(String sampleCode) {
         this.sampleCode = sampleCode;
+    }
+
+    public String getLabSampleID() {
+        return labSampleID;
+    }
+
+    public void setLabSampleID(String labSampleID) {
+        this.labSampleID = labSampleID;
     }
 
     public Date getSampleDateTime() {
