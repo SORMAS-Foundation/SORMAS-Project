@@ -77,7 +77,7 @@ public class LoginScreen extends CssLayout {
         } else {
             showNotification(new Notification("Login failed",
                     "Please check your username and password and try again.",
-                    Notification.Type.HUMANIZED_MESSAGE));
+                    Notification.Type.WARNING_MESSAGE));
             //username.focus();
         }
     }

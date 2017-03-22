@@ -130,7 +130,7 @@ public class PersonController {
         		if (editForm.getFieldGroup().isValid()) {
         			PersonDto dto = editForm.getValue();
         			dto = personFacade.savePerson(dto);
-        			Notification.show("Person data saved", Type.TRAY_NOTIFICATION);
+        			Notification.show("Person data saved", Type.WARNING_MESSAGE);
         			refreshView();
         		}
         	}

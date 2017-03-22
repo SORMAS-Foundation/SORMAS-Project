@@ -41,7 +41,7 @@ public class EventParticipantsController {
 					eventParticipant.setPerson(FacadeProvider.getPersonFacade().getPersonByUuid(person.getUuid()));
 					
 					eventParticipantFacade.saveEventParticipant(eventParticipant);
-					Notification.show("New event person created", Type.TRAY_NOTIFICATION);
+					Notification.show("New event person created", Type.WARNING_MESSAGE);
 					refreshView();
 				}
 		);
@@ -59,7 +59,7 @@ public class EventParticipantsController {
 					EventParticipantDto dto = editForm.getValue();
 					personFacade.savePerson(dto.getPerson());
 					dto = eventParticipantFacade.saveEventParticipant(dto);
-					Notification.show("Event person data saved", Type.TRAY_NOTIFICATION);
+					Notification.show("Event person data saved", Type.WARNING_MESSAGE);
 					refreshView();
 				}
 			}

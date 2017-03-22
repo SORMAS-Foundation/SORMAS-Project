@@ -78,7 +78,7 @@ public class SampleController {
 				if(form.getFieldGroup().isValid()) {
 					SampleDto dto = form.getValue();
 					dto = sf.saveSample(dto);
-					Notification.show("Sample data saved", Type.TRAY_NOTIFICATION);
+					Notification.show("Sample data saved", Type.WARNING_MESSAGE);
 					navigateToData(dto.getUuid());
 				}
 			}

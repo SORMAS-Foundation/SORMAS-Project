@@ -113,7 +113,7 @@ public class ContactController {
         						if (person != null) {
 	        						dto.setPerson(person);
 	        						cof.saveContact(dto);
-	        	        			Notification.show("New contact created", Type.TRAY_NOTIFICATION);
+	        	        			Notification.show("New contact created", Type.WARNING_MESSAGE);
 	        	        			editData(dto.getUuid());
         						}
         					});
@@ -137,7 +137,7 @@ public class ContactController {
         		if (editForm.getFieldGroup().isValid()) {
         			ContactDto dto = editForm.getValue();
         			dto = cof.saveContact(dto);
-        			Notification.show("Contact data saved", Type.TRAY_NOTIFICATION);
+        			Notification.show("Contact data saved", Type.WARNING_MESSAGE);
         			editData(dto.getUuid());
         		}
         	}

@@ -79,7 +79,7 @@ public class EventController {
 				if(eventCreateForm.getFieldGroup().isValid()) {
 					EventDto dto = eventCreateForm.getValue();
 					ef.saveEvent(dto);
-					Notification.show("New event created", Type.TRAY_NOTIFICATION);
+					Notification.show("New event created", Type.WARNING_MESSAGE);
 					navigateToParticipants(dto.getUuid());
 				}
 			}
@@ -100,7 +100,7 @@ public class EventController {
 				if(eventEditForm.getFieldGroup().isValid()) {
 					EventDto eventDto = eventEditForm.getValue();
 					eventDto = ef.saveEvent(eventDto);
-					Notification.show("Event data saved", Type.TRAY_NOTIFICATION);
+					Notification.show("Event data saved", Type.WARNING_MESSAGE);
 					navigateToData(eventDto.getUuid());
 				}
 			}

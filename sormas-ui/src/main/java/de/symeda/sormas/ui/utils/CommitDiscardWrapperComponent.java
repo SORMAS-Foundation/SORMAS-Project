@@ -17,6 +17,7 @@ import com.vaadin.event.FieldEvents;
 import com.vaadin.event.FieldEvents.FocusListener;
 import com.vaadin.event.FieldEvents.FocusNotifier;
 import com.vaadin.event.ShortcutAction.KeyCode;
+import com.vaadin.server.Page;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -25,6 +26,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.RichTextArea;
 import com.vaadin.ui.TextArea;
@@ -497,12 +499,8 @@ public class CommitDiscardWrapperComponent<C extends Component> extends
 	                
 	            }
             }
-			if (htmlMsg.length() == 0) {
-				VaadinUiUtil.showWarning("Please check the input data", "");
-			} else {
-				Notification warning = VaadinUiUtil.showWarning("Please check the input data", htmlMsg.toString());
-				warning.setHtmlContentAllowed(true);
-			}
+				
+            new Notification("Please check the input data", htmlMsg.toString(), Type.ERROR_MESSAGE, true).show(Page.getCurrent());
 		} 
 	}
 

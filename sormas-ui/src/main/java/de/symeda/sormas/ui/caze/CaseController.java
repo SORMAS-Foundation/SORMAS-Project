@@ -163,7 +163,7 @@ public class CaseController {
         						if (person != null) {
 	        						dto.setPerson(person);
 	        						cf.saveCase(dto);
-	        	        			Notification.show("New case created", Type.TRAY_NOTIFICATION);
+	        	        			Notification.show("New case created", Type.ASSISTIVE_NOTIFICATION);
 	        	        			navigateToPerson(dto.getUuid());
         						}
         					});
@@ -186,7 +186,7 @@ public class CaseController {
         		if (caseEditForm.getFieldGroup().isValid()) {
         			CaseDataDto cazeDto = caseEditForm.getValue();
         			cazeDto = cf.saveCase(cazeDto);
-        			Notification.show("Case data saved", Type.TRAY_NOTIFICATION);
+        			Notification.show("Case data saved", Type.WARNING_MESSAGE);
         			navigateToData(cazeDto.getUuid());
         		}
         	}
@@ -211,7 +211,7 @@ public class CaseController {
         		if (symptomsForm.getFieldGroup().isValid()) {
         			SymptomsDto dto = symptomsForm.getValue();
         			dto = sf.saveSymptoms(dto);
-        			Notification.show("Case symptoms saved", Type.TRAY_NOTIFICATION);
+        			Notification.show("Case symptoms saved", Type.WARNING_MESSAGE);
         			navigateToSymptoms(caseUuid);
         		}
         	}
@@ -233,7 +233,7 @@ public class CaseController {
 				if (hospitalizationForm.getFieldGroup().isValid()) {
 					HospitalizationDto dto = hospitalizationForm.getValue();
 					dto = hf.saveHospitalization(dto);
-					Notification.show("Case hospitalization saved", Type.TRAY_NOTIFICATION);
+					Notification.show("Case hospitalization saved", Type.WARNING_MESSAGE);
 					navigateToHospitalization(caseUuid);
 				}
 			}
@@ -255,7 +255,7 @@ public class CaseController {
 				if (epiDataForm.getFieldGroup().isValid()) {
 					EpiDataDto dto = epiDataForm.getValue();
 					dto = edf.saveEpiData(dto);
-					Notification.show("Case epidemiological data saved", Type.TRAY_NOTIFICATION);
+					Notification.show("Case epidemiological data saved", Type.WARNING_MESSAGE);
 					navigateToEpiData(caseUuid);
 				}
 			}

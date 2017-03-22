@@ -2,6 +2,7 @@ package de.symeda.sormas.ui.utils;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.vaadin.data.Validator;
 import com.vaadin.data.Validator.InvalidValueException;
@@ -177,10 +178,17 @@ public abstract class AbstractEditForm <DTO extends DataTransferObject> extends 
 	
 	@Override
 	public void commit() throws SourceException, InvalidValueException {
+		
 		try {
 			getFieldGroup().commit();
 		} catch (CommitException e) {
-			throw new SourceException(this, e);
+			if (e.getInvalidFields().size() > 0) {
+				throw new InvalidValueException(
+						e.getInvalidFields().keySet().stream().map(f -> f.getCaption()).collect(Collectors.joining(", ")), 
+						e.getInvalidFields().values().stream().toArray(InvalidValueException[]::new));
+			} else {
+				throw new SourceException(this, e);
+			}
 		}
 		super.commit();
 	}
