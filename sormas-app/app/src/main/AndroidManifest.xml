@@ -53,7 +53,8 @@
 
         <activity
             android:name=".task.TaskEditActivity"
-            android:parentActivityName=".task.TasksActivity">
+            android:parentActivityName=".task.TasksActivity"
+            android:launchMode="singleTop">
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

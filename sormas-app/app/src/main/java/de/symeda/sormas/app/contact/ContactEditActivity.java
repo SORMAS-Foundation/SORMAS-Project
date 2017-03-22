@@ -15,7 +15,10 @@ import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.contact.ContactDao;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.component.AbstractEditActivity;
+import de.symeda.sormas.app.task.TaskEditActivity;
+import de.symeda.sormas.app.task.TaskTab;
 import de.symeda.sormas.app.visit.VisitEditActivity;
 import de.symeda.sormas.app.visit.VisitEditDataTab;
 
@@ -28,6 +31,7 @@ public class ContactEditActivity extends AbstractEditActivity {
     private ContactEditPagerAdapter adapter;
     private String caseUuid;
     private String contactUuid;
+    private String taskUuid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +59,9 @@ public class ContactEditActivity extends AbstractEditActivity {
             if (params.containsKey(KEY_CONTACT_UUID)) {
                 contactUuid = params.getString(KEY_CONTACT_UUID);
             }
+            if (params.containsKey(TaskTab.KEY_TASK_UUID)) {
+                taskUuid = params.getString(TaskTab.KEY_TASK_UUID);
+            }
             if (params.containsKey(KEY_PAGE)) {
                 currentTab = params.getInt(KEY_PAGE);
             }
@@ -76,6 +83,9 @@ public class ContactEditActivity extends AbstractEditActivity {
             }
             if (params.containsKey(KEY_CONTACT_UUID)) {
                 outState.putString(KEY_CONTACT_UUID, contactUuid);
+            }
+            if (params.containsKey(TaskTab.KEY_TASK_UUID)) {
+                outState.putString(TaskTab.KEY_TASK_UUID, taskUuid);
             }
             if (params.containsKey(KEY_PAGE)) {
                 outState.putInt(KEY_PAGE, currentTab);
@@ -129,7 +139,14 @@ public class ContactEditActivity extends AbstractEditActivity {
         switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button
             case android.R.id.home:
-                finish();
+                if (taskUuid != null) {
+                    Intent intent = new Intent(this, TaskEditActivity.class);
+                    intent.putExtra(Task.UUID, taskUuid);
+                    startActivity(intent);
+                } else {
+                    finish();
+                }
+
                 return true;
 
             // Help button

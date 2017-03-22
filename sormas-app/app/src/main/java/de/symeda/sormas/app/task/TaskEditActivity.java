@@ -3,6 +3,7 @@ package de.symeda.sormas.app.task;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -85,7 +86,7 @@ public class TaskEditActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button
             case android.R.id.home:
-                finish();
+                NavUtils.navigateUpFromSameTask(this);
 
                 return true;
             case R.id.action_save:

@@ -38,6 +38,8 @@ import de.symeda.sormas.app.util.FormTab;
  */
 public class TaskTab extends FormTab {
 
+    public static final String KEY_TASK_UUID = "taskUuid";
+
     private TaskFragmentLayoutBinding binding;
 
     @Override
@@ -155,18 +157,21 @@ public class TaskTab extends FormTab {
     public void showCaseEditView(Case caze) {
         Intent intent = new Intent(getActivity(), CaseEditActivity.class);
         intent.putExtra(CaseEditActivity.KEY_CASE_UUID, caze.getUuid());
+        intent.putExtra(TaskTab.KEY_TASK_UUID, binding.getTask().getUuid());
         startActivity(intent);
     }
 
     public void showContactEditView(Contact contact) {
         Intent intent = new Intent(getActivity(), ContactEditActivity.class);
         intent.putExtra(ContactEditActivity.KEY_CONTACT_UUID, contact.getUuid());
+        intent.putExtra(TaskTab.KEY_TASK_UUID, binding.getTask().getUuid());
         startActivity(intent);
     }
 
     public void showEventEditView(Event event) {
         Intent intent = new Intent(getActivity(), EventEditActivity.class);
         intent.putExtra(EventEditActivity.KEY_EVENT_UUID, event.getUuid());
+        intent.putExtra(TaskTab.KEY_TASK_UUID, binding.getTask().getUuid());
         startActivity(intent);
     }
 
