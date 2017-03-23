@@ -125,7 +125,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		locationForm.setFieldsRequirement(true, LocationDto.REGION, LocationDto.DISTRICT);
 		
 		districtField.addValueChangeListener(e -> {
-			List<UserReferenceDto> assignableSurveillanceOfficers = FacadeProvider.getUserFacade().getAssignableUsersByDistrict((DistrictReferenceDto) districtField.getValue(), UserRole.SURVEILLANCE_OFFICER);
+			List<UserReferenceDto> assignableSurveillanceOfficers = FacadeProvider.getUserFacade().getAssignableUsersByDistrict((DistrictReferenceDto) districtField.getValue(), false, UserRole.SURVEILLANCE_OFFICER);
 			surveillanceOfficerField.removeAllItems();
 			surveillanceOfficerField.select(0);
 			surveillanceOfficerField.addItems(assignableSurveillanceOfficers);

@@ -10,9 +10,13 @@ import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TextArea;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskType;
@@ -87,18 +91,36 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
     	ComboBox assigneeUser = addField(TaskDto.ASSIGNEE_USER, ComboBox.class);
     	assigneeUser.addValueChangeListener(e -> updateByCreatingAndAssignee());
     	assigneeUser.setImmediate(true);
-    	List<UserReferenceDto> users = FacadeProvider.getUserFacade().getAssignableUsers(LoginHelper.getCurrentUserAsReference());
-    	TaskController taskController = ControllerProvider.getTaskController();
-    	for (UserReferenceDto user : users) {
-        	assigneeUser.addItem(user);
-    		assigneeUser.setItemCaption(user, taskController.getUserCaptionWithPendingTaskCount(user));
-    	}
 
     	addField(TaskDto.CREATOR_COMMENT, TextArea.class).setRows(2);
     	addField(TaskDto.ASSIGNEE_REPLY, TextArea.class).setRows(2);
     	
     	setRequired(true, TaskDto.TASK_CONTEXT, TaskDto.TASK_TYPE, TaskDto.ASSIGNEE_USER, TaskDto.DUE_DATE);
     	setReadOnly(true, TaskDto.TASK_CONTEXT, TaskDto.CAZE, TaskDto.CONTACT, TaskDto.EVENT);
+    	
+    	addValueChangeListener(e -> {
+	    	TaskDto taskDto = getValue();
+	    	DistrictReferenceDto district = null;
+	    	if (taskDto.getCaze() != null) {
+	    		CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(taskDto.getCaze().getUuid());
+	    		district = caseDto.getDistrict();
+	    	} else if (taskDto.getContact() != null) {
+	    		ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(taskDto.getContact().getUuid());
+	    		district = FacadeProvider.getCaseFacade().getCaseDataByUuid(contactDto.getCaze().getUuid()).getDistrict();
+	    	} else {
+	    		EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(taskDto.getEvent().getUuid());
+	    		district = eventDto.getEventLocation().getDistrict();
+	    	}
+	    	
+	    	if (district != null) {
+	    		List<UserReferenceDto> users = FacadeProvider.getUserFacade().getAssignableUsersByDistrict(district, true);
+	    		TaskController taskController = ControllerProvider.getTaskController();
+	    		for (UserReferenceDto user : users) {
+	    			assigneeUser.addItem(user);
+	    			assigneeUser.setItemCaption(user, taskController.getUserCaptionWithPendingTaskCount(user));
+	    		}
+	    	}
+    	});
     }
 
 	private void updateByCreatingAndAssignee() {

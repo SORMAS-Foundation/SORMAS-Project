@@ -72,7 +72,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
     		ContactDto contactDto = getValue();
         	if (contactDto != null) {
     	    	CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(contactDto.getCaze().getUuid());
-    	    	contactOfficerField.addItems(FacadeProvider.getUserFacade().getAssignableUsersByDistrict(caseDto.getDistrict(), UserRole.CONTACT_OFFICER));
+    	    	contactOfficerField.addItems(FacadeProvider.getUserFacade().getAssignableUsersByDistrict(caseDto.getDistrict(), false, UserRole.CONTACT_OFFICER));
         	}
     	});
     }

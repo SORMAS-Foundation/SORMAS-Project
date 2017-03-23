@@ -87,7 +87,7 @@ public class UserService extends AbstractAdoService<User> {
 		return em.createQuery(cq).getResultList();
 	}
 	
-	public List<User> getAllByDistrict(District district, UserRole... userRoles) {
+	public List<User> getAllByDistrict(District district, boolean includeSupervisors, UserRole... userRoles) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<User> cq = cb.createQuery(getElementClass());
 		Root<User> from = cq.from(getElementClass());
@@ -102,6 +102,16 @@ public class UserService extends AbstractAdoService<User> {
 				filter = cb.and(filter, rolesFilter);
 			} else {
 				filter = rolesFilter;
+			}
+		}
+
+		if (includeSupervisors) {
+			Join<User, UserRole> joinRoles = from.join(User.USER_ROLES, JoinType.LEFT);
+			Predicate supervisorFilter = joinRoles.in(Arrays.asList(UserRole.CASE_SUPERVISOR, UserRole.CONTACT_SUPERVISOR, UserRole.SURVEILLANCE_SUPERVISOR));
+			if (filter != null) {
+				filter = cb.or(filter, supervisorFilter);
+			} else {
+				filter = supervisorFilter;
 			}
 		}
 		

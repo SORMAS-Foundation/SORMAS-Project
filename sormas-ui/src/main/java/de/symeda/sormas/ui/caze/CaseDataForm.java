@@ -123,8 +123,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		contactOfficerField.setNullSelectionAllowed(true);
 		
 		district.addValueChangeListener(e -> {
-			List<UserReferenceDto> assignableSurveillanceOfficers = FacadeProvider.getUserFacade().getAssignableUsersByDistrict((DistrictReferenceDto) district.getValue(), UserRole.SURVEILLANCE_OFFICER);
-			List<UserReferenceDto> assignableContactOfficers = FacadeProvider.getUserFacade().getAssignableUsersByDistrict((DistrictReferenceDto) district.getValue(), UserRole.CONTACT_OFFICER);
+			List<UserReferenceDto> assignableSurveillanceOfficers = FacadeProvider.getUserFacade().getAssignableUsersByDistrict((DistrictReferenceDto) district.getValue(), false, UserRole.SURVEILLANCE_OFFICER);
+			List<UserReferenceDto> assignableContactOfficers = FacadeProvider.getUserFacade().getAssignableUsersByDistrict((DistrictReferenceDto) district.getValue(), false, UserRole.CONTACT_OFFICER);
 			
 			surveillanceOfficerField.removeAllItems();
 			surveillanceOfficerField.select(0);

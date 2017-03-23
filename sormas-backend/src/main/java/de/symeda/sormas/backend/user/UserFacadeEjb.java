@@ -62,10 +62,10 @@ public class UserFacadeEjb implements UserFacade {
 	}
 	
 	@Override
-	public List<UserReferenceDto> getAssignableUsersByDistrict(DistrictReferenceDto districtRef, UserRole ...assignableRoles) {
+	public List<UserReferenceDto> getAssignableUsersByDistrict(DistrictReferenceDto districtRef, boolean includeSupervisors, UserRole ...assignableRoles) {
 		District district = districtService.getByReferenceDto(districtRef);
 		
-		return service.getAllByDistrict(district, assignableRoles).stream()
+		return service.getAllByDistrict(district, includeSupervisors, assignableRoles).stream()
 				.map(f -> toReferenceDto(f))
 				.collect(Collectors.toList());
 	}
