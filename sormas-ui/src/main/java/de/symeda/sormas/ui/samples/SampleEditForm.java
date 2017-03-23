@@ -35,14 +35,12 @@ import de.symeda.sormas.ui.utils.LayoutUtil;
 @SuppressWarnings("serial")
 public class SampleEditForm extends AbstractEditForm<SampleDto> {
 
-	private static final String CASE_INFO = "caseInfo";
 	private static final String REPORT_INFO = "reportInfo";
 	
 	private static final String HTML_LAYOUT = 
 			LayoutUtil.h3(CssStyles.VSPACE3, "Laboratory sample") +
 			LayoutUtil.div(
 					LayoutUtil.fluidRowCss(CssStyles.VSPACE4,
-							LayoutUtil.fluidColumn(9, 0,
 									LayoutUtil.div(
 										LayoutUtil.fluidRow(
 												LayoutUtil.oneOfThreeCol(LayoutUtil.loc(SampleDto.SAMPLE_CODE)),
@@ -75,12 +73,9 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 												LayoutUtil.loc(SampleDto.COMMENT)
 										)
 									)
-							),
-							LayoutUtil.fluidColumnLoc(3, 0, CASE_INFO)
 						)
 			);
 	
-	private VerticalLayout caseInfoLayout;
 	private Label reportInfoLabel;
 	
 	public SampleEditForm() {
@@ -132,16 +127,11 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 				SampleDto.REPORTING_USER, SampleDto.SAMPLE_MATERIAL, SampleDto.LAB, SampleDto.SHIPMENT_STATUS,
 				SampleDto.SHIPMENT_DATE);
 		
-		
-		caseInfoLayout = new VerticalLayout();
-		caseInfoLayout.setSpacing(true);
-		getContent().addComponent(caseInfoLayout, CASE_INFO);
 		reportInfoLabel = new Label();
 		reportInfoLabel.setContentMode(ContentMode.HTML);
 		reportInfoLabel.setCaption(I18nProperties.getPrefixFieldCaption(SampleDto.I18N_PREFIX, REPORT_INFO));
 		getContent().addComponent(reportInfoLabel, REPORT_INFO);
 		addValueChangeListener(e -> {
-			updateCaseInfo();
 			updateReportInfo();
 		});
 		
@@ -160,46 +150,6 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 		sb.append(DateHelper.formatDDMMYYHm(sampleDto.getReportDateTime()) + "<br/>");
 		sb.append(sampleDto.getReportingUser().toString());
 		reportInfoLabel.setValue(sb.toString());
-	}
-	
-	private void updateCaseInfo() {
-		caseInfoLayout.removeAllComponents();
-		
-		SampleDto sampleDto = getValue();
-		if(sampleDto != null) {
-			CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(sampleDto.getAssociatedCase().getUuid());
-			PersonDto personDto = FacadeProvider.getPersonFacade().getPersonByUuid(caseDto.getPerson().getUuid());
-		
-			addDescLabel(caseInfoLayout, DataHelper.getShortUuid(caseDto.getUuid()),
-					I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.UUID))
-				.setDescription(caseDto.getUuid());
-			addDescLabel(caseInfoLayout, caseDto.getPerson(),
-					I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.PERSON));
-			
-	    	HorizontalLayout ageSexLayout = new HorizontalLayout();
-	    	ageSexLayout.setSpacing(true);
-			addDescLabel(ageSexLayout, ApproximateAgeHelper.formatApproximateAge(
-						personDto.getApproximateAge(),personDto.getApproximateAgeType()),
-					I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, PersonDto.APPROXIMATE_AGE));
-			addDescLabel(ageSexLayout, personDto.getSex(),
-					I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, PersonDto.SEX));
-	    	caseInfoLayout.addComponent(ageSexLayout);
-	    	
-			addDescLabel(caseInfoLayout, caseDto.getDisease(),
-					I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISEASE));
-			addDescLabel(caseInfoLayout, caseDto.getCaseClassification(),
-					I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.CASE_CLASSIFICATION));
-			addDescLabel(caseInfoLayout, DateHelper.formatDMY(caseDto.getSymptoms().getOnsetDate()),
-					I18nProperties.getPrefixFieldCaption(SymptomsDto.I18N_PREFIX, SymptomsDto.ONSET_DATE));
-		}
-	}
-	
-	private static Label addDescLabel(AbstractLayout layout, Object content, String caption) {
-		String contentString = content != null ? content.toString() : "";
-		Label label = new Label(contentString);
-		label.setCaption(caption);
-		layout.addComponent(label);
-		return label;
 	}
 	
 	@Override

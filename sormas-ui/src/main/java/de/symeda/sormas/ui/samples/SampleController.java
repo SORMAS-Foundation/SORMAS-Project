@@ -67,7 +67,7 @@ public class SampleController {
 	
 	public CommitDiscardWrapperComponent<SampleEditForm> getSampleEditComponent(final String sampleUuid) {
 		SampleEditForm form = new SampleEditForm();
-		form.setWidth(1024, Unit.PIXELS);
+		form.setWidth(form.getWidth() * 10/12, Unit.PIXELS);
 		SampleDto dto = sf.getSampleByUuid(sampleUuid);
 		form.setValue(dto);
 		final CommitDiscardWrapperComponent<SampleEditForm> editView = new CommitDiscardWrapperComponent<SampleEditForm>(form, form.getFieldGroup());

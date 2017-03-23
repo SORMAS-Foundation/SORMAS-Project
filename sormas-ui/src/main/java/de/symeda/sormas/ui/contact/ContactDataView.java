@@ -1,10 +1,16 @@
 package de.symeda.sormas.ui.contact;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.shared.ui.MarginInfo;
+import com.vaadin.ui.HorizontalLayout;
 
+import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.caze.CaseDataForm;
+import de.symeda.sormas.ui.caze.CaseInfoLayout;
 import de.symeda.sormas.ui.task.TaskListComponent;
 
 /**
@@ -27,7 +33,17 @@ public class ContactDataView extends AbstractContactView {
     public void enter(ViewChangeEvent event) {
     	super.enter(event);
     	setHeightUndefined();
-    	setSubComponent(ControllerProvider.getContactController().getContactDataEditComponent(getContactRef().getUuid()));
+    	
+    	ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(getContactRef().getUuid());
+    	CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(contactDto.getCaze().getUuid());
+    	
+    	HorizontalLayout layout = new HorizontalLayout();
+    	layout.setSpacing(true);
+    	layout.addComponent(ControllerProvider.getContactController().getContactDataEditComponent(getContactRef().getUuid()));
+    	CaseInfoLayout caseInfoLayout = new CaseInfoLayout(caseDto);
+    	caseInfoLayout.setMargin(new MarginInfo(true, false, false, false));
+    	layout.addComponent(caseInfoLayout);
+    	addComponent(layout);
     	
     	TaskListComponent taskListComponent = new TaskListComponent(TaskContext.CONTACT, getContactRef());
     	addComponent(taskListComponent);

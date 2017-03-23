@@ -4,6 +4,7 @@ import java.util.Date;
 
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
+import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 
@@ -127,6 +128,7 @@ public class ContactController {
     public CommitDiscardWrapperComponent<ContactDataForm> getContactDataEditComponent(String contactUuid) {
     	
     	ContactDataForm editForm = new ContactDataForm();
+		editForm.setWidth(editForm.getWidth() * 8/12, Unit.PIXELS);
     	ContactDto contact = cof.getContactByUuid(contactUuid);
         editForm.setValue(contact);
         final CommitDiscardWrapperComponent<ContactDataForm> editComponent = new CommitDiscardWrapperComponent<ContactDataForm>(editForm, editForm.getFieldGroup());
