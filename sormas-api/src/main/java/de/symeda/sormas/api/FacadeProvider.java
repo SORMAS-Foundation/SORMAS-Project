@@ -4,12 +4,12 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
 import de.symeda.sormas.api.caze.CaseFacade;
-import de.symeda.sormas.api.caze.HospitalizationFacade;
 import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.epidata.EpiDataFacade;
 import de.symeda.sormas.api.event.EventFacade;
 import de.symeda.sormas.api.event.EventParticipantFacade;
 import de.symeda.sormas.api.facility.FacilityFacade;
+import de.symeda.sormas.api.hospitalization.HospitalizationFacade;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.region.CommunityFacade;
 import de.symeda.sormas.api.region.DistrictFacade;

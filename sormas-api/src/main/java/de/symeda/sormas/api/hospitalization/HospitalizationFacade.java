@@ -1,4 +1,4 @@
-package de.symeda.sormas.api.caze;
+package de.symeda.sormas.api.hospitalization;
 
 import javax.ejb.Remote;
 

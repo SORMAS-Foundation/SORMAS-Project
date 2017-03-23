@@ -9,6 +9,7 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.SubNavigationMenu;
 import de.symeda.sormas.ui.epidata.EpiDataView;
+import de.symeda.sormas.ui.hospitalization.CaseHospitalizationView;
 import de.symeda.sormas.ui.utils.AbstractSubNavigationView;
 
 @SuppressWarnings("serial")

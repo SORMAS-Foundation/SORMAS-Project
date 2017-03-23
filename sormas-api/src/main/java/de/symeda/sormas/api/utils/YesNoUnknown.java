@@ -1,4 +1,4 @@
-package de.symeda.sormas.api.caze;
+package de.symeda.sormas.api.utils;
 
 import de.symeda.sormas.api.I18nProperties;
 

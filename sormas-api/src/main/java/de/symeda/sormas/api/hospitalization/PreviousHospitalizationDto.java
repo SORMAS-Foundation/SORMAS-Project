@@ -1,4 +1,4 @@
-package de.symeda.sormas.api.caze;
+package de.symeda.sormas.api.hospitalization;
 
 import java.util.Date;
 
@@ -7,6 +7,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import de.symeda.sormas.api.DataTransferObject;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.utils.PreciseDateAdapter;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 
 public class PreviousHospitalizationDto extends DataTransferObject {
 

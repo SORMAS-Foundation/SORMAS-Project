@@ -3,7 +3,9 @@ package de.symeda.sormas.ui.caze;
 import java.util.Arrays;
 import java.util.List;
 
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TextField;
@@ -13,6 +15,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.Vaccination;
+import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
@@ -31,11 +34,12 @@ import de.symeda.sormas.ui.utils.LayoutUtil;
 public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	
 	private static final String STATUS_CHANGE = "statusChange";
-
+	private static final String MEDICAL_INFORMATION_LOC = "medicalInformationLoc";
+	
     private static final String HTML_LAYOUT = 
     		LayoutUtil.h3(CssStyles.VSPACE3, "Case data")+
 			
-			LayoutUtil.divCss(CssStyles.VSPACE2, 
+			LayoutUtil.div( 
 					LayoutUtil.fluidRowLocs(CaseDataDto.CASE_CLASSIFICATION) +
 					LayoutUtil.fluidRowLocs(CaseDataDto.INVESTIGATION_STATUS) +
 		    		LayoutUtil.fluidRowCss(CssStyles.VSPACE4,
@@ -47,8 +51,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		    				LayoutUtil.fluidColumnLoc(4, 0,  STATUS_CHANGE)
 		    		)
 		    )+
-			LayoutUtil.h3(CssStyles.VSPACE3, "Additional medical information")+
-			LayoutUtil.fluidRowCss(CssStyles.VSPACE2,
+			LayoutUtil.loc(MEDICAL_INFORMATION_LOC) +
+			LayoutUtil.fluidRow(
 					LayoutUtil.fluidColumn(8, 0, 
 						LayoutUtil.fluidRowLocs(CaseDataDto.PREGNANT, "") +
 						LayoutUtil.fluidRowLocs(CaseDataDto.MEASLES_VACCINATION, CaseDataDto.MEASLES_DOSES) +
@@ -147,7 +151,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
     	
     	Sex personSex = person.getSex();
     	if (personSex != Sex.FEMALE) {
-    		setReadOnly(true, CaseDataDto.PREGNANT);
+    		setVisible(false, CaseDataDto.PREGNANT);
     	}
     	
     	boolean visible = DiseasesConfiguration.isDefinedOrMissing(CaseDataDto.class, CaseDataDto.MEASLES_VACCINATION, disease);
@@ -155,6 +159,18 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		
 		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.MEASLES_DOSES, CaseDataDto.MEASLES_VACCINATION_INFO_SOURCE), 
 				CaseDataDto.MEASLES_VACCINATION, Arrays.asList(Vaccination.VACCINATED), true);
+		
+		List<String> medicalInformationFields = Arrays.asList(CaseDataDto.PREGNANT, CaseDataDto.MEASLES_VACCINATION);
+		
+		for (String medicalInformationField : medicalInformationFields) {
+			if (getFieldGroup().getField(medicalInformationField).isVisible()) {
+				String medicalInformationCaptionLayout = LayoutUtil.h3(CssStyles.VSPACE3, "Additional medical information");
+				Label medicalInformationCaptionLabel = new Label(medicalInformationCaptionLayout);
+				medicalInformationCaptionLabel.setContentMode(ContentMode.HTML);
+				getContent().addComponent(medicalInformationCaptionLabel, MEDICAL_INFORMATION_LOC);
+				break;
+			}
+		}
 	}
     
 	@Override 

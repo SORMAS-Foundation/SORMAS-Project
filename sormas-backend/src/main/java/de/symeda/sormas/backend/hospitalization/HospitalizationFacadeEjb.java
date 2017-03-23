@@ -1,4 +1,4 @@
-package de.symeda.sormas.backend.caze;
+package de.symeda.sormas.backend.hospitalization;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -8,9 +8,10 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
-import de.symeda.sormas.api.caze.HospitalizationDto;
-import de.symeda.sormas.api.caze.HospitalizationFacade;
-import de.symeda.sormas.api.caze.PreviousHospitalizationDto;
+import de.symeda.sormas.api.hospitalization.HospitalizationDto;
+import de.symeda.sormas.api.hospitalization.HospitalizationFacade;
+import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
+import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
 

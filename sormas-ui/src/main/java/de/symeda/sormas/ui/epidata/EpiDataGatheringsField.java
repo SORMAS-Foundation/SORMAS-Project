@@ -59,17 +59,17 @@ public class EpiDataGatheringsField extends AbstractTableField<EpiDataGatheringD
 		});
 		
 		table.setVisibleColumns(
+				EDIT_COLUMN_ID,
 				EpiDataGatheringDto.DESCRIPTION,
 				GATHERING_DAY,
 				CITY,
-				LGA,
-				EDIT_COLUMN_ID);
-		
+				LGA);
+
+		table.setColumnExpandRatio(EDIT_COLUMN_ID, 0);
 		table.setColumnExpandRatio(EpiDataGatheringDto.DESCRIPTION, 0);
 		table.setColumnExpandRatio(GATHERING_DAY, 0);
 		table.setColumnExpandRatio(CITY, 0);
 		table.setColumnExpandRatio(LGA, 0);
-		table.setColumnExpandRatio(EDIT_COLUMN_ID, 0);
 		
 		for (Object columnId : table.getVisibleColumns()) {
 			table.setColumnHeader(columnId, I18nProperties.getPrefixFieldCaption(EpiDataGatheringDto.I18N_PREFIX, (String) columnId));

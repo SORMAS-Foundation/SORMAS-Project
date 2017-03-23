@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.caze;
+package de.symeda.sormas.ui.hospitalization;
 
 import java.util.Arrays;
 
@@ -7,9 +7,9 @@ import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TextField;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.caze.HospitalizationDto;
-import de.symeda.sormas.api.caze.YesNoUnknown;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.hospitalization.HospitalizationDto;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;

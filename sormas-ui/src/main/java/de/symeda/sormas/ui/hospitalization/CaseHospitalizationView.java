@@ -1,8 +1,9 @@
-package de.symeda.sormas.ui.caze;
+package de.symeda.sormas.ui.hospitalization;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.caze.AbstractCaseView;
 
 @SuppressWarnings("serial")
 public class CaseHospitalizationView extends AbstractCaseView {

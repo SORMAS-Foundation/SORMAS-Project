@@ -19,6 +19,8 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 @SuppressWarnings("serial")
 public class EpiDataBurialsField extends AbstractTableField<EpiDataBurialDto> {
 	
+	private static final String EPI_DATA_BURIAL_TABLE_PREFIX = "EpiDataBurialTable";
+	
 	private static final String PERIOD = "period";
 	private static final String CITY = "city";
 	private static final String LGA = "lga";
@@ -63,15 +65,16 @@ public class EpiDataBurialsField extends AbstractTableField<EpiDataBurialDto> {
 		});
 		
 		table.setVisibleColumns(
+				EDIT_COLUMN_ID,
 				EpiDataBurialDto.BURIAL_PERSON_NAME,
 				EpiDataBurialDto.BURIAL_RELATION,
 				PERIOD,
 				CITY,
 				LGA,
 				EpiDataBurialDto.BURIAL_ILL,
-				EpiDataBurialDto.BURIAL_TOUCHING,
-				EDIT_COLUMN_ID);
-		
+				EpiDataBurialDto.BURIAL_TOUCHING);
+
+		table.setColumnExpandRatio(EDIT_COLUMN_ID, 0);
 		table.setColumnExpandRatio(EpiDataBurialDto.BURIAL_PERSON_NAME, 0);
 		table.setColumnExpandRatio(EpiDataBurialDto.BURIAL_RELATION, 0);
 		table.setColumnExpandRatio(PERIOD, 0);
@@ -79,10 +82,9 @@ public class EpiDataBurialsField extends AbstractTableField<EpiDataBurialDto> {
 		table.setColumnExpandRatio(LGA, 0);
 		table.setColumnExpandRatio(EpiDataBurialDto.BURIAL_ILL, 0);
 		table.setColumnExpandRatio(EpiDataBurialDto.BURIAL_TOUCHING, 0);
-		table.setColumnExpandRatio(EDIT_COLUMN_ID, 0);
 		
 		for (Object columnId : table.getVisibleColumns()) {
-			table.setColumnHeader(columnId, I18nProperties.getPrefixFieldCaption(EpiDataBurialDto.I18N_PREFIX, (String) columnId));
+			table.setColumnHeader(columnId, I18nProperties.getPrefixFieldCaption(EPI_DATA_BURIAL_TABLE_PREFIX, (String) columnId));
 		}
 	}
 	

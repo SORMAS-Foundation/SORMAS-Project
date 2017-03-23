@@ -6,10 +6,10 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import de.symeda.sormas.api.DataTransferObject;
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.caze.YesNoUnknown;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.PreciseDateAdapter;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 
 public class EpiDataBurialDto extends DataTransferObject {
 

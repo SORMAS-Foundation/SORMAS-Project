@@ -128,7 +128,7 @@ public class CaseEditDataTab extends FormTab {
         binding.caseDataMeaslesVaccination.setVisibility(definedOrMissing ? View.VISIBLE : View.GONE);
 
         if (binding.getCaze().getPerson().getSex() != Sex.FEMALE) {
-            binding.caseDataPregnant.setEnabled(false);
+            binding.caseDataPregnant.setVisibility(View.GONE);
         }
 
         toggleMeaslesFields();
@@ -139,6 +139,10 @@ public class CaseEditDataTab extends FormTab {
                 toggleMeaslesFields();
             }
         });
+
+        if (binding.caseDataPregnant.getVisibility() == View.GONE && binding.caseDataMeaslesVaccination.getVisibility() == View.GONE) {
+            binding.caseMedicalInformationHeadline.setVisibility(View.GONE);
+        }
     }
 
     @Override

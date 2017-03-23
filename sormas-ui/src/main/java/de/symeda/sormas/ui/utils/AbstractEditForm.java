@@ -25,10 +25,10 @@ import de.symeda.sormas.api.DataTransferObject;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.ui.caze.PreviousHospitalizationsField;
 import de.symeda.sormas.ui.epidata.EpiDataBurialsField;
 import de.symeda.sormas.ui.epidata.EpiDataGatheringsField;
 import de.symeda.sormas.ui.epidata.EpiDataTravelsField;
+import de.symeda.sormas.ui.hospitalization.PreviousHospitalizationsField;
 import de.symeda.sormas.ui.location.LocationForm;
 
 @SuppressWarnings("serial")

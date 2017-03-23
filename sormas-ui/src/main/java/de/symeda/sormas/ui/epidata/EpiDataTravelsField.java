@@ -40,15 +40,15 @@ public class EpiDataTravelsField extends AbstractTableField<EpiDataTravelDto> {
 		});
 		
 		table.setVisibleColumns(
+				EDIT_COLUMN_ID,
 				EpiDataTravelDto.TRAVEL_TYPE,
 				EpiDataTravelDto.TRAVEL_DESTINATION,
-				PERIOD,
-				EDIT_COLUMN_ID);
-		
+				PERIOD);
+
+		table.setColumnExpandRatio(EDIT_COLUMN_ID, 0);
 		table.setColumnExpandRatio(EpiDataTravelDto.TRAVEL_TYPE, 0);
 		table.setColumnExpandRatio(EpiDataTravelDto.TRAVEL_DESTINATION, 0);
 		table.setColumnExpandRatio(PERIOD, 0);
-		table.setColumnExpandRatio(EDIT_COLUMN_ID, 0);
 		
 		for (Object columnId : table.getVisibleColumns()) {
 			table.setColumnHeader(columnId, I18nProperties.getPrefixFieldCaption(EpiDataTravelDto.I18N_PREFIX, (String) columnId));

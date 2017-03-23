@@ -32,8 +32,6 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 	
 	private static final String STATUS_CHANGE = "statusChange";
 	
-	private List<UserReferenceDto> assignableSurveillanceOfficers;
-	
 	private static final String HTML_LAYOUT = 
 			LayoutUtil.h3(CssStyles.VSPACE3, "Event data") +
 			LayoutUtil.divCss(CssStyles.VSPACE2,

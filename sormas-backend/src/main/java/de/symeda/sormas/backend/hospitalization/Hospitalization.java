@@ -1,4 +1,4 @@
-package de.symeda.sormas.backend.caze;
+package de.symeda.sormas.backend.hospitalization;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -12,7 +12,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import de.symeda.sormas.api.caze.YesNoUnknown;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 
 @Entity

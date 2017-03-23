@@ -14,6 +14,7 @@ import java.util.Date;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.epidata.EpiData;
 import de.symeda.sormas.app.backend.epidata.EpiDataBurial;
 import de.symeda.sormas.app.backend.epidata.EpiDataGathering;
@@ -22,6 +23,7 @@ import de.symeda.sormas.app.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.app.backend.hospitalization.PreviousHospitalization;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
+import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.util.DataUtils;
 
 public class CaseDao extends AbstractAdoDao<Case> {
@@ -117,6 +119,14 @@ public class CaseDao extends AbstractAdoDao<Case> {
 
         // Epi Data
         caze.setEpiData(DataUtils.createNew(EpiData.class));
+
+        User currentUser = ConfigProvider.getUser();
+        caze.setRegion(currentUser.getRegion());
+        caze.setDistrict(currentUser.getDistrict());
+        caze.setHealthFacility(currentUser.getHealthFacility());
+        if (caze.getHealthFacility() != null) {
+            caze.setCommunity(caze.getHealthFacility().getCommunity());
+        }
 
         return caze;
     }

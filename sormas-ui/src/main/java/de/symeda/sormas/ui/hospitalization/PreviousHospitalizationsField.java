@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.caze;
+package de.symeda.sormas.ui.hospitalization;
 
 import java.util.function.Consumer;
 
@@ -6,10 +6,11 @@ import com.vaadin.ui.Table;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
-import de.symeda.sormas.api.caze.PreviousHospitalizationDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.ui.caze.AbstractTableField;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DeleteListener;
@@ -70,15 +71,16 @@ public class PreviousHospitalizationsField extends AbstractTableField<PreviousHo
 			}
 		});
 
-		table.setVisibleColumns(PERIOD, PreviousHospitalizationDto.HEALTH_FACILITY, WARD, LGA,
-				PreviousHospitalizationDto.ISOLATED, EDIT_COLUMN_ID);
+		table.setVisibleColumns(EDIT_COLUMN_ID, PERIOD, PreviousHospitalizationDto.HEALTH_FACILITY, WARD, LGA,
+				PreviousHospitalizationDto.ISOLATED, PreviousHospitalizationDto.DESCRIPTION);
 
+		table.setColumnExpandRatio(EDIT_COLUMN_ID, 0);
 		table.setColumnExpandRatio(PERIOD, 0);
 		table.setColumnExpandRatio(PreviousHospitalizationDto.HEALTH_FACILITY, 0);
 		table.setColumnExpandRatio(WARD, 0);
 		table.setColumnExpandRatio(LGA, 0);
 		table.setColumnExpandRatio(PreviousHospitalizationDto.ISOLATED, 0);
-		table.setColumnExpandRatio(EDIT_COLUMN_ID, 0);
+		table.setColumnExpandRatio(PreviousHospitalizationDto.DESCRIPTION, 0);
 
 		for (Object columnId : table.getVisibleColumns()) {
 			table.setColumnHeader(columnId,

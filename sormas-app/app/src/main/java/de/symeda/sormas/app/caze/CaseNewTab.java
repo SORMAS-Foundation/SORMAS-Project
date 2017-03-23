@@ -13,14 +13,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
+import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.FieldHelper;
 import de.symeda.sormas.app.component.SpinnerField;
 import de.symeda.sormas.app.databinding.CaseNewFragmentLayoutBinding;
@@ -68,9 +71,9 @@ public class CaseNewTab extends FormTab {
                 if(spinnerField != null) {
                     List<District> districtList = emptyList;
                     if(selectedValue != null) {
-                        districtList = DatabaseHelper.getDistrictDao().getByRegion((Region)selectedValue);
+                        districtList = DatabaseHelper.getDistrictDao().getByRegion((Region) selectedValue);
                     }
-                    spinnerField.setSpinnerAdapter(DataUtils.toItems(districtList));
+                    spinnerField.setAdapterAndValue(binding.caseDataDistrict.getValue(), DataUtils.toItems(districtList));
                 }
             }
 
@@ -92,7 +95,7 @@ public class CaseNewTab extends FormTab {
                     if(selectedValue != null) {
                         communityList = DatabaseHelper.getCommunityDao().getByDistrict((District)selectedValue);
                     }
-                    spinnerField.setSpinnerAdapter(DataUtils.toItems(communityList));
+                    spinnerField.setAdapterAndValue(binding.caseDataCommunity.getValue(), DataUtils.toItems(communityList));
                 }
             }
 
@@ -112,7 +115,7 @@ public class CaseNewTab extends FormTab {
                     if(selectedValue != null) {
                         facilityList = DatabaseHelper.getFacilityDao().getByCommunity((Community)selectedValue);
                     }
-                    spinnerField.setSpinnerAdapter(DataUtils.toItems(facilityList));
+                    spinnerField.setAdapterAndValue(binding.caseDataHealthFacility.getValue(), DataUtils.toItems(facilityList));
                 }
             }
 
@@ -123,7 +126,6 @@ public class CaseNewTab extends FormTab {
         });
 
         FieldHelper.initSpinnerField(binding.caseDataHealthFacility, facilitiesByCommunity);
-
     }
 
     @Override

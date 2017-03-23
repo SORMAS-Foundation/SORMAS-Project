@@ -12,9 +12,9 @@ import com.vaadin.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.I18nProperties;
-import de.symeda.sormas.api.caze.YesNoUnknown;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.WaterSource;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.Diseases.DiseasesConfiguration;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;

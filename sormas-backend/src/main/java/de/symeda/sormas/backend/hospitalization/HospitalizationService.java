@@ -1,4 +1,4 @@
-package de.symeda.sormas.backend.caze;
+package de.symeda.sormas.backend.hospitalization;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
