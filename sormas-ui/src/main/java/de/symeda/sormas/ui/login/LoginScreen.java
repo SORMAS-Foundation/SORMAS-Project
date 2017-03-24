@@ -61,13 +61,28 @@ public class LoginScreen extends CssLayout {
     }
 
     private CssLayout buildLoginInformation() {
-        CssLayout loginInformation = new CssLayout();
+    	CssLayout loginInformation = new CssLayout();
         loginInformation.setStyleName("login-information");
+        
+        VerticalLayout innerLayout = new VerticalLayout();
+        innerLayout.setSizeFull();
+        loginInformation.addComponent(innerLayout);
+                
         Label loginInfoText = new Label(
-                "<h1>Login Information</h1>"
-                        + "Log in as &quot;SunkSesa&quot; and password &quot;Sunkanmi&quot;",
+                "<h1>SORMAS</h1>"
+                + "<p>SORMAS stands for “Surveillance, Outbreak Response Management and Analysis System“</p>"
+                + "<ul>"
+                + "<li>To detect infection outbreaks without delay,</li>"
+                + "<li>To manage complex processes of infection control and containment and</li>"
+                + "<li>To ensure continuous analyses of the epidemiological situation.</li>"
+                + "</ul>",
                 ContentMode.HTML);
-        loginInformation.addComponent(loginInfoText);
+        innerLayout.addComponent(loginInfoText);
+        
+        Label loginInfoCopyright = new Label ("© 2017 SORMAS. All Rights Reserved.");
+        innerLayout.addComponent(loginInfoCopyright);
+        innerLayout.setComponentAlignment(loginInfoCopyright, Alignment.BOTTOM_LEFT);
+        
         return loginInformation;
     }
 

@@ -12999,9 +12999,10 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormastheme .login-screen {
-	background: #3b3f42;
-	background-image: url(img/login-bg.jpg);
-	background-size: cover;
+	background: #EFF5FC;
+	background-image: url(img/login-bg.png);
+	background-size: 960px;
+	background-repeat: no-repeat;
 	background-position: 50% 50%;
 	width: 100%;
 	height: 100%;
@@ -13019,6 +13020,8 @@ div.v-layout.v-horizontal.v-widget {
 	-webkit-animation: valo-animate-in-fade 1s backwards;
 	-moz-animation: valo-animate-in-fade 1s backwards;
 	animation: valo-animate-in-fade 1s backwards;
+	margin-right: 50%;
+	margin-bottom: 10%;
 }
 
 .sormastheme .login-screen .login-information {

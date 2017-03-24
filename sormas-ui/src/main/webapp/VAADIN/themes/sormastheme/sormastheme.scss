@@ -21,7 +21,7 @@ $login-info-width: 300px !default;
 $login-info-opacity: 0.7 !default;
 $login-background-color: $editor-background-color !default;
 // Get more background images from unsplash.com (remember to optimize the filesize)
-$login-background-image: "img/login-bg.jpg" !default;
+$login-background-image: "img/login-bg.png" !default;
 
 $editor-shadow: 0 0 10px 10px rgba(0,0,0,.1) !default;
 $editor-embed-background-color: darken($editor-background-color, 5%) !default;
@@ -51,11 +51,12 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
 
   // login screen - for small screens, see below
   .login-screen {
-    background: $editor-background-color;
+    background: #EFF5FC;
 
     @if $login-background-image {
       background-image: url(#{$login-background-image});
-      background-size: cover;
+	  background-size: 960px;
+	  background-repeat: no-repeat;
       background-position: 50% 50%;
     }
 
@@ -67,6 +68,8 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
       border: none;
       padding: $v-layout-margin;
       @include valo-animate-in-fade($duration: 1s);
+	  margin-right: 50%;
+	  margin-bottom: 10%;      
     }
 
     .login-information {
