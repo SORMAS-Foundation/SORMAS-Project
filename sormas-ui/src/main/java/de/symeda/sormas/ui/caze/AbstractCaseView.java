@@ -6,7 +6,6 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.SubNavigationMenu;
 import de.symeda.sormas.ui.epidata.EpiDataView;
 import de.symeda.sormas.ui.hospitalization.CaseHospitalizationView;
@@ -22,7 +21,7 @@ public abstract class AbstractCaseView extends AbstractSubNavigationView {
 	}
 
 	@Override
-	public void refreshMenu(SubNavigationMenu menu, Label itemName, Label itemUuid, String params) {
+	public void refreshMenu(SubNavigationMenu menu, Label infoLabel, Label infoLabelSub, String params) {
 		
 		caseRef = FacadeProvider.getCaseFacade().getReferenceByUuid(params);
 		
@@ -34,9 +33,10 @@ public abstract class AbstractCaseView extends AbstractSubNavigationView {
 		menu.addView(CaseSymptomsView.VIEW_NAME, I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.SYMPTOMS), params);
 		menu.addView(EpiDataView.VIEW_NAME, I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, "epiData"), params);
 		menu.addView(CaseContactsView.VIEW_NAME, I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, "contacts"), params);
-		itemName.setValue(caseRef.getCaption());
-		itemUuid.setValue(DataHelper.getShortUuid(caseRef.getUuid()));
+		infoLabel.setValue(caseRef.getCaption());
 		
+		CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(params);
+		infoLabelSub.setValue(caseDto.getDisease().toString());
     }
 
 	public CaseReferenceDto getCaseRef() {

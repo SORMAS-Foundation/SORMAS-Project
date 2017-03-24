@@ -21,7 +21,7 @@ public abstract class AbstractContactView extends AbstractSubNavigationView {
 	}
 
 	@Override
-	public void refreshMenu(SubNavigationMenu menu, Label itemName, Label itemUuid, String params) {
+	public void refreshMenu(SubNavigationMenu menu, Label infoLabel, Label infoLabelSub, String params) {
 		
 		ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(params);
 		contactRef = contact;		
@@ -32,8 +32,8 @@ public abstract class AbstractContactView extends AbstractSubNavigationView {
 		menu.addView(ContactDataView.VIEW_NAME, I18nProperties.getFieldCaption(ContactDto.I18N_PREFIX), params);
 		menu.addView(ContactPersonView.VIEW_NAME, I18nProperties.getPrefixFieldCaption(ContactDto.I18N_PREFIX, ContactDto.PERSON), params);
 		menu.addView(ContactVisitsView.VIEW_NAME, I18nProperties.getPrefixFieldCaption(ContactDto.I18N_PREFIX, "visits"), params);
-		itemName.setValue(contact.getPerson().getCaption());
-		itemUuid.setValue(DataHelper.getShortUuid(contactRef.getUuid()));
+		infoLabel.setValue(contact.getPerson().getCaption());
+		infoLabelSub.setValue(DataHelper.getShortUuid(contactRef.getUuid()));
     }
 
 	public ContactReferenceDto getContactRef() {

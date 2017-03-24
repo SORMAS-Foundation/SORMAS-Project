@@ -119,7 +119,12 @@ public class UserDto extends UserReferenceDto {
 	
 	@Override
 	public String toString() {
-		return firstName + " " + lastName.toUpperCase();
+		String result = firstName + " " + lastName.toUpperCase();
+		// TODO we need a main user role
+		if (userRoles.size() > 0) {
+			result += " - " + userRoles.iterator().next().toShortString();					
+		}
+		return result;
 	}
 
 	

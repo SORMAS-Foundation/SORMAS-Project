@@ -21,15 +21,15 @@ public class AbstractEventView extends AbstractSubNavigationView {
 	}
 	
 	@Override
-	public void refreshMenu(SubNavigationMenu menu, Label itemName, Label itemUuid, String params) {
+	public void refreshMenu(SubNavigationMenu menu, Label infoLabel, Label infoLabelSub, String params) {
 		eventRef = FacadeProvider.getEventFacade().getReferenceByUuid(params);
 		
 		menu.removeAllViews();
 		menu.addView(EventsView.VIEW_NAME, "Events list");
 		menu.addView(EventDataView.VIEW_NAME, I18nProperties.getFieldCaption(EventDto.I18N_PREFIX), params);
 		menu.addView(EventParticipantsView.VIEW_NAME, I18nProperties.getPrefixFieldCaption(EventDto.I18N_PREFIX, "eventParticipants"), params);
-		itemName.setValue(eventRef.getCaption());
-		itemUuid.setValue(DataHelper.getShortUuid(eventRef.getUuid()));
+		infoLabel.setValue(eventRef.getCaption());
+		infoLabelSub.setValue(DataHelper.getShortUuid(eventRef.getUuid()));
 	}
 	
 	public EventReferenceDto getEventRef() {

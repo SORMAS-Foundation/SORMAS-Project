@@ -22,7 +22,7 @@ public class AbstractSampleView extends AbstractSubNavigationView {
 	}
 	
 	@Override
-	public void refreshMenu(SubNavigationMenu menu, Label itemName, Label itemUuid, String params) {
+	public void refreshMenu(SubNavigationMenu menu, Label infoLabel, Label infoLabelSub, String params) {
 		sampleRef = FacadeProvider.getSampleFacade().getReferenceByUuid(params);
 		CaseReferenceDto caseRef = FacadeProvider.getSampleFacade().getSampleByUuid(params).getAssociatedCase();
 		
@@ -32,8 +32,8 @@ public class AbstractSampleView extends AbstractSubNavigationView {
 			menu.addView(CaseDataView.VIEW_NAME, "Case samples list", caseRef.getUuid(), true);
 		}
 		menu.addView(SampleDataView.VIEW_NAME, I18nProperties.getFieldCaption(SampleDto.I18N_PREFIX), params);
-		itemName.setValue(sampleRef.getCaption());
-		itemUuid.setValue(DataHelper.getShortUuid(sampleRef.getUuid()));
+		infoLabel.setValue(sampleRef.getCaption());
+		infoLabelSub.setValue(DataHelper.getShortUuid(sampleRef.getUuid()));
 	}
 	
 	public SampleReferenceDto getSampleRef() {

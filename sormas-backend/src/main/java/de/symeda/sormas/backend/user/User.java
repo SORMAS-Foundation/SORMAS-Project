@@ -148,6 +148,10 @@ public class User extends AbstractDomainObject {
 		this.region = region;
 	}
 	
+	/**
+	 * TODO we need a main user role
+	 * @return
+	 */
 	@ElementCollection(fetch=FetchType.LAZY)
 	@Enumerated(EnumType.STRING)
 	@CollectionTable(
@@ -172,7 +176,12 @@ public class User extends AbstractDomainObject {
 	}
 	@Override
 	public String toString() {
-		return getFirstName() + " " + getLastName().toUpperCase();
+		String result = firstName + " " + lastName.toUpperCase();
+		// TODO we need a main user role
+		if (userRoles.size() > 0) {
+			result += " - " + userRoles.iterator().next().toShortString();					
+		}
+		return result;
 	}
 	
 	@Transient

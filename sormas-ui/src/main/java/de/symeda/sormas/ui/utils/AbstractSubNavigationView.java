@@ -1,7 +1,6 @@
 package de.symeda.sormas.ui.utils;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
@@ -16,8 +15,8 @@ public abstract class AbstractSubNavigationView extends AbstractView {
     protected final String viewName;
 
     private SubNavigationMenu subNavigationMenu;
-    private Label itemName;
-    private Label itemUuid;
+    private Label infoLabel;
+    private Label infoLabelSub;
     private Component subComponent;
     private String params;
 
@@ -38,12 +37,12 @@ public abstract class AbstractSubNavigationView extends AbstractView {
         vLayout.setSizeUndefined();
         CssStyles.stylePrimary(vLayout, CssStyles.CALLOUT);
         
-        itemName = new Label("");
-        itemUuid = new Label("");
-        CssStyles.style(itemUuid, CssStyles.LABEL_SMALL);
+        infoLabel = new Label("");
+        infoLabelSub = new Label("");
+        CssStyles.style(infoLabelSub, CssStyles.LABEL_SMALL);
         
-        vLayout.addComponent(itemName);
-        vLayout.addComponent(itemUuid);
+        vLayout.addComponent(infoLabel);
+        vLayout.addComponent(infoLabelSub);
         layout.addComponent(vLayout);
         layout.setComponentAlignment(vLayout, Alignment.MIDDLE_RIGHT);
         
@@ -56,11 +55,11 @@ public abstract class AbstractSubNavigationView extends AbstractView {
     @Override
     public void enter(ViewChangeEvent event) {
     	params = event.getParameters();
-    	refreshMenu(subNavigationMenu, itemName, itemUuid, params);
+    	refreshMenu(subNavigationMenu, infoLabel, infoLabelSub, params);
 		selectInMenu();
     };
     
-    public abstract void refreshMenu(SubNavigationMenu menu, Label itemName, Label itemUuid, String params);
+    public abstract void refreshMenu(SubNavigationMenu menu, Label infoLabel, Label infoLabelSub, String params);
     
     protected void setSubComponent(Component newComponent) {
     	if (subComponent != null) {

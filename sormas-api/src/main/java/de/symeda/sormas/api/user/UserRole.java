@@ -30,6 +30,10 @@ public enum UserRole {
 		return I18nProperties.getEnumCaption(this);
 	};
 	
+	public String toShortString() {
+		return I18nProperties.getEnumCaption(this, "Short");
+	}
+	
 	public boolean isSupervisor() {
 		return supervisor;
 	}
