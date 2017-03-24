@@ -51,7 +51,7 @@ public class CasesListArrayAdapter extends ArrayAdapter<Case> {
         }
 
         TextView reportDate = (TextView) convertView.findViewById(R.id.cli_report_date);
-        reportDate.setText(DateHelper.formatDDMMYYYY(caze.getReportDate()));
+        reportDate.setText(DateHelper.formatDate(caze.getReportDate()));
 
         TextView caseStatus = (TextView) convertView.findViewById(R.id.cli_case_satus);
         caseStatus.setText(caze.getCaseClassification()!=null?caze.getCaseClassification().toString():null);

@@ -57,13 +57,13 @@ public class DateField extends PropertyField<Date> implements DateFieldInterface
     @Override
     public void setValue(Date value) {
         if(value != null) {
-            dateContent.setText(DateHelper.formatDDMMYYYY(value));
+            dateContent.setText(DateHelper.formatDate(value));
         }
     }
 
     @Override
     public Date getValue() {
-        return DateHelper.parseDDMMYYYY(dateContent.getText().toString());
+        return DateHelper.parseDate(dateContent.getText().toString());
     }
 
     @BindingAdapter("android:value")
@@ -91,7 +91,7 @@ public class DateField extends PropertyField<Date> implements DateFieldInterface
         newFragment.setOnDateSetListener(new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet (DatePicker view, int yy, int mm, int dd){
-                dateContent.setText(DateHelper.formatDDMMYYYY(DateHelper.getDateZero(yy, mm, dd)));
+                dateContent.setText(DateHelper.formatDate(DateHelper.getDateZero(yy, mm, dd)));
             }
         });
 

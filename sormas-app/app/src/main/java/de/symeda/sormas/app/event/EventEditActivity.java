@@ -42,7 +42,7 @@ public class EventEditActivity extends AbstractEditActivity {
         if (toolbar != null) {
             setSupportActionBar(toolbar);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setTitle(getResources().getText(R.string.headline_event) + " - " + ConfigProvider.getUser().getUserRole());
+            getSupportActionBar().setTitle(getResources().getText(R.string.headline_event) + " - " + ConfigProvider.getUser().getUserRole().toShortString());
         }
     }
 
@@ -55,10 +55,10 @@ public class EventEditActivity extends AbstractEditActivity {
 
             // setting title
             if (params.containsKey(NEW_EVENT)) {
-                getSupportActionBar().setTitle(getResources().getText(R.string.headline_new_event) + " - " + ConfigProvider.getUser().getUserRole());
+                getSupportActionBar().setTitle(getResources().getText(R.string.headline_new_event) + " - " + ConfigProvider.getUser().getUserRole().toShortString());
             }
             else {
-                getSupportActionBar().setTitle(getResources().getText(R.string.headline_event) + " - " + ConfigProvider.getUser().getUserRole());
+                getSupportActionBar().setTitle(getResources().getText(R.string.headline_event) + " - " + ConfigProvider.getUser().getUserRole().toShortString());
             }
 
             if (params.containsKey(KEY_EVENT_UUID)) {

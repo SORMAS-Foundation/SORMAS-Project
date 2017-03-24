@@ -148,12 +148,12 @@ public class LabelField extends PropertyField<String> {
 
     @BindingAdapter("app:date")
     public static void setDateForLabel(LabelField labelField, Date date) {
-        labelField.setValue(DateHelper.formatDDMMYYYY(date));
+        labelField.setValue(DateHelper.formatDate(date));
     }
 
     @BindingAdapter("app:dateTime")
     public static void setDateTimeForLabel(LabelField labelField, Date date) {
-        labelField.setValue(DateHelper.formatDDMMYYYYHm(date));
+        labelField.setValue(DateHelper.formatDateTime(date));
     }
 
     @BindingAdapter("app:user")

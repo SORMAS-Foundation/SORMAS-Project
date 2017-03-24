@@ -51,7 +51,7 @@ public class DateTimeField extends CustomField<Date> {
 		timeField.setNewItemHandler(new NewItemHandler() {
 			@Override
 			public void addNewItem(String newItemCaption) {
-				Date date = DateHelper.parseHourMinute(newItemCaption);
+				Date date = DateHelper.parseTime(newItemCaption);
 				timeField.setValue(ensureTimeEntry(date));
 			}
 		});

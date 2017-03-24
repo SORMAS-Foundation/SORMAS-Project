@@ -47,7 +47,7 @@ public class ContactsListArrayAdapter extends ArrayAdapter<Contact> {
         int days = DateHelper.getDaysBetween(contact.getLastContactDate(), new Date());
         String contactDateString = days+" "+ convertView.getResources().getText(R.string.label_days)+" ago";
         if(days>30) {
-            contactDateString = DateHelper.formatDDMMYYYY(contact.getLastContactDate());
+            contactDateString = DateHelper.formatDate(contact.getLastContactDate());
         }
         else if(days == 0) {
             contactDateString = convertView.getResources().getText(R.string.label_today).toString();

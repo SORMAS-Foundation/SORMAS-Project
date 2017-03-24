@@ -40,7 +40,7 @@ public class SamplesListArrayAdapter extends ArrayAdapter<Sample> {
         Sample sample = (Sample) getItem(position);
 
         TextView dateTime = (TextView) convertView.findViewById(R.id.sample_date_time_li);
-        dateTime.setText(DateHelper.formatDDMMYYYY(sample.getSampleDateTime()));
+        dateTime.setText(DateHelper.formatDate(sample.getSampleDateTime()));
 
         TextView disease = (TextView) convertView.findViewById(R.id.sample_disease_li);
         disease.setText(sample.getAssociatedCase().getDisease().toShortString());

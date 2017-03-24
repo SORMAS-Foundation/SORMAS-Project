@@ -41,12 +41,12 @@ public class EpiDataBurialsListArrayAdapter extends ArrayAdapter<EpiDataBurial> 
 
         StringBuilder periodString = new StringBuilder();
         if (burial.getBurialDateFrom() != null) {
-            periodString.append(DateHelper.formatDMY(burial.getBurialDateFrom()));
+            periodString.append(DateHelper.formatShortDate(burial.getBurialDateFrom()));
             periodString.append(" - ");
         }
 
         if (burial.getBurialDateTo() != null) {
-            periodString.append(DateHelper.formatDMY(burial.getBurialDateTo()));
+            periodString.append(DateHelper.formatShortDate(burial.getBurialDateTo()));
         }
 
         TextView period = (TextView) convertView.findViewById(R.id.burial_period_li);

@@ -41,9 +41,11 @@ public class EventParticipantsListArrayAdapter extends ArrayAdapter<EventPartici
         TextView uuid = (TextView) convertView.findViewById(R.id.eventParticipant_uuid_li);
         uuid.setText(DataHelper.getShortUuid(eventParticipant.getUuid()));
 
-        TextView caseStatus = (TextView) convertView.findViewById(R.id.eventParticipant_case_li);
-        Case caze = DatabaseHelper.getCaseDao().getByPersonAndDisease(eventParticipant.getPerson(), eventParticipant.getEvent().getDisease());
-        caseStatus.setText(caze!=null?caze.getInvestigationStatus().toString():"");
+        if (eventParticipant.getEvent().getDisease() != null) {
+            TextView caseStatus = (TextView) convertView.findViewById(R.id.eventParticipant_case_li);
+            Case caze = DatabaseHelper.getCaseDao().getByPersonAndDisease(eventParticipant.getPerson(), eventParticipant.getEvent().getDisease());
+            caseStatus.setText(caze != null ? caze.getInvestigationStatus().toString() : "");
+        }
 
         TextView summary = (TextView) convertView.findViewById(R.id.eventParticipant_person_li);
         summary.setText(eventParticipant.getPerson()!=null?eventParticipant.getPerson().toString()+ " ":"");

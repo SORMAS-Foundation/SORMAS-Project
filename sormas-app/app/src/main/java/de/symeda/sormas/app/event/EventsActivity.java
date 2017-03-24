@@ -18,7 +18,7 @@ public class EventsActivity extends AbstractRootTabActivity {
     protected void onCreate(Bundle savedInstanceState) {
         setContentView(R.layout.cases_activity_layout);
         super.onCreate(savedInstanceState);
-        setTitle(getResources().getString(R.string.main_menu_events) + " - " + ConfigProvider.getUser().getUserRole());
+        setTitle(getResources().getString(R.string.main_menu_events) + " - " + ConfigProvider.getUser().getUserRole().toShortString());
     }
 
     @Override

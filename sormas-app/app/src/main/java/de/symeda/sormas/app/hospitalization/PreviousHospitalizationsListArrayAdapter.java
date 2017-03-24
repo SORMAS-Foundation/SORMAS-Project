@@ -37,11 +37,11 @@ public class PreviousHospitalizationsListArrayAdapter extends ArrayAdapter<Previ
 
         StringBuilder sb = new StringBuilder();
         if(previousHospitalization.getAdmissionDate()!=null) {
-            sb.append(DateHelper.formatDMY(previousHospitalization.getAdmissionDate()));
+            sb.append(DateHelper.formatShortDate(previousHospitalization.getAdmissionDate()));
             sb.append(" - ");
         }
         if(previousHospitalization.getDischargeDate()!=null) {
-            sb.append(DateHelper.formatDMY(previousHospitalization.getDischargeDate()));
+            sb.append(DateHelper.formatShortDate(previousHospitalization.getDischargeDate()));
         }
         TextView period = (TextView) convertView.findViewById(R.id.previousHospitalization_period_li);
         period.setText(sb.toString());

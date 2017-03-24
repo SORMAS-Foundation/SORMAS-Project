@@ -50,7 +50,7 @@ public class TasksListArrayAdapter extends ArrayAdapter<Task> {
         Task task = (Task) getItem(position);
 
         TextView dueDate = (TextView) convertView.findViewById(R.id.task_dueDate_li);
-        dueDate.setText(DateHelper.formatDDMMYYYY(task.getDueDate()));
+        dueDate.setText(DateHelper.formatDate(task.getDueDate()));
 
         Integer dueDateColor = null;
         if(task.getDueDate().compareTo(new Date()) <= 0 && !TaskStatus.DONE.equals(task.getTaskStatus())) {
@@ -87,7 +87,7 @@ public class TasksListArrayAdapter extends ArrayAdapter<Task> {
         } else if (task.getEvent() != null) {
             StringBuilder sb = new StringBuilder();
             sb.append(task.getEvent().getEventType());
-            sb.append(", " + DateHelper.formatDDMMYYYY(task.getEvent().getEventDate()));
+            sb.append(", " + DateHelper.formatDate(task.getEvent().getEventDate()));
             if (task.getEvent().getEventLocation().getCity() != null && !task.getEvent().getEventLocation().getCity().isEmpty()) {
                 sb.append(", " + task.getEvent().getEventLocation().getCity());
             }

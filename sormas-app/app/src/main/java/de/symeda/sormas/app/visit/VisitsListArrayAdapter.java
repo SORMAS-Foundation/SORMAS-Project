@@ -35,10 +35,10 @@ public class VisitsListArrayAdapter extends ArrayAdapter<Visit> {
         Visit visit = getItem(position);
 
         TextView visitDate = (TextView) convertView.findViewById(R.id.visit_date_li);
-        visitDate.setText(DateHelper.formatDDMMYYYY(visit.getVisitDateTime()));
+        visitDate.setText(DateHelper.formatDate(visit.getVisitDateTime()));
 
         TextView visitTime = (TextView) convertView.findViewById(R.id.visit_time_li);
-        visitTime.setText(DateHelper.formatHourMinute(visit.getVisitDateTime()));
+        visitTime.setText(DateHelper.formatTime(visit.getVisitDateTime()));
 
         TextView visitStatus = (TextView) convertView.findViewById(R.id.visit_visitStatus_li);
         visitStatus.setText(visit.getVisitStatus()!=null?visit.getVisitStatus().toString():"");

@@ -87,6 +87,12 @@ public class UserService extends AbstractAdoService<User> {
 		return em.createQuery(cq).getResultList();
 	}
 	
+	/**
+	 * @param district
+	 * @param includeSupervisors If set to true, all supervisors are returned independent of the district
+	 * @param userRoles
+	 * @return
+	 */
 	public List<User> getAllByDistrict(District district, boolean includeSupervisors, UserRole... userRoles) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<User> cq = cb.createQuery(getElementClass());

@@ -32,9 +32,9 @@ public class EpiDataTravelsField extends AbstractTableField<EpiDataTravelDto> {
 			public Object generateCell(Table source, Object itemId, Object columnId) {
 				EpiDataTravelDto travel = (EpiDataTravelDto) itemId;
 				StringBuilder periodBuilder = new StringBuilder();
-				periodBuilder.append(DateHelper.formatDDMMYYYY(travel.getTravelDateFrom()));
+				periodBuilder.append(DateHelper.formatDate(travel.getTravelDateFrom()));
 				periodBuilder.append(" - ");
-				periodBuilder.append(DateHelper.formatDDMMYYYY(travel.getTravelDateTo()));
+				periodBuilder.append(DateHelper.formatDate(travel.getTravelDateTo()));
 				return periodBuilder.toString();
 			}
 		});

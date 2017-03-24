@@ -20,11 +20,7 @@ public final class DateHelper {
 	private static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm");
 
 	
-	/**
-	 * Formats to "HH:mm"
-	 * @return
-	 */
-	public static String formatHourMinute(Date date) {
+	public static String formatTime(Date date) {
 		if (date != null) {
 			return clone(TIME_FORMAT).format(date);
 		} else {
@@ -32,7 +28,7 @@ public final class DateHelper {
 		}
 	}
 
-	public static Date parseHourMinute(String date) {
+	public static Date parseTime(String date) {
 		if (date != null) {
 			try {
 				return clone(TIME_FORMAT).parse(date);
@@ -44,7 +40,7 @@ public final class DateHelper {
 		}
 	}
 	
-	public static Date parseDDMMYYYY(String date) {
+	public static Date parseDate(String date) {
 		if (date != null) {
 			try {
 				return clone(DATE_FORMAT).parse(date);
@@ -56,11 +52,7 @@ public final class DateHelper {
 		}
 	}
 
-	/**
-	 * Formats to "dd.MM.yy"
-	 * @return
-	 */
-	public static String formatDMY(Date date) {
+	public static String formatShortDate(Date date) {
 		if (date != null) {
 			return clone(SHORT_DATE_FORMAT).format(date);
 		} else {
@@ -68,11 +60,7 @@ public final class DateHelper {
 		}
 	}
 	
-	/**
-	 * Formats to "dd/MM/yy"
-	 * @return
-	 */
-	public static String formatDDMMYYYY(Date date) {
+	public static String formatDate(Date date) {
         if (date != null) {
             return clone(DATE_FORMAT).format(date);
         } else {
@@ -80,11 +68,7 @@ public final class DateHelper {
         }
     }
 	
-	/**
-	 * Formats to "dd/MM/yyyy HH:mm "
-	 * @return
-	 */
-	public static String formatDDMMYYYYHm(Date date) {
+	public static String formatDateTime(Date date) {
 		if (date != null) {
 			return clone(DATE_TIME_FORMAT).format(date);
 		} else {
@@ -92,11 +76,7 @@ public final class DateHelper {
 		}
 	}
 	
-	/**
-	 * Formats to "dd/MM/yy HH:mm "
-	 * @return
-	 */
-	public static String formatDDMMYYHm(Date date) {
+	public static String formatShortDateTime(Date date) {
 		if (date != null) {
 			return clone(SHORT_DATE_TIME_FORMAT).format(date);
 		} else {

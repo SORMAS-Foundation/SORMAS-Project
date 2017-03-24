@@ -51,7 +51,7 @@ public class ContactNewActivity extends AppCompatActivity {
         if (toolbar != null) {
             setSupportActionBar(toolbar);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setTitle(getResources().getText(R.string.headline_new_contact) + " - " + ConfigProvider.getUser().getUserRole());
+            getSupportActionBar().setTitle(getResources().getText(R.string.headline_new_contact) + " - " + ConfigProvider.getUser().getUserRole().toShortString());
         }
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();

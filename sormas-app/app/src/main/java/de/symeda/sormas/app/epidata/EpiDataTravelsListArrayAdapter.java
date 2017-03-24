@@ -42,12 +42,12 @@ public class EpiDataTravelsListArrayAdapter extends ArrayAdapter<EpiDataTravel> 
 
         StringBuilder periodString = new StringBuilder();
         if (travel.getTravelDateFrom() != null) {
-            periodString.append(DateHelper.formatDMY(travel.getTravelDateFrom()));
+            periodString.append(DateHelper.formatShortDate(travel.getTravelDateFrom()));
             periodString.append(" - ");
         }
 
         if (travel.getTravelDateTo() != null) {
-            periodString.append(DateHelper.formatDMY(travel.getTravelDateTo()));
+            periodString.append(DateHelper.formatShortDate(travel.getTravelDateTo()));
         }
 
         TextView period = (TextView) convertView.findViewById(R.id.travel_period_li);

@@ -49,7 +49,7 @@ public class CaseInfoLayout extends VerticalLayout {
 				I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISEASE));
 		addDescLabel(this, caseDto.getCaseClassification(),
 				I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.CASE_CLASSIFICATION));
-		addDescLabel(this, DateHelper.formatDMY(caseDto.getSymptoms().getOnsetDate()),
+		addDescLabel(this, DateHelper.formatShortDate(caseDto.getSymptoms().getOnsetDate()),
 				I18nProperties.getPrefixFieldCaption(SymptomsDto.I18N_PREFIX, SymptomsDto.ONSET_DATE));
 	}
 

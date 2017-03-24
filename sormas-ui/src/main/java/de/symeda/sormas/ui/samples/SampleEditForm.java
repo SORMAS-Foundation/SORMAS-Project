@@ -147,7 +147,7 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 	private void updateReportInfo() {
 		SampleDto sampleDto = getValue();
 		StringBuilder sb = new StringBuilder();
-		sb.append(DateHelper.formatDDMMYYHm(sampleDto.getReportDateTime()) + "<br/>");
+		sb.append(DateHelper.formatShortDateTime(sampleDto.getReportDateTime()) + "<br/>");
 		sb.append(sampleDto.getReportingUser().toString());
 		reportInfoLabel.setValue(sb.toString());
 	}

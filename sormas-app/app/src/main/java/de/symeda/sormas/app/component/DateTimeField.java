@@ -67,15 +67,15 @@ public class DateTimeField extends PropertyField<Date> implements DateFieldInter
     @Override
     public void setValue(Date value) {
         if(value != null) {
-            dateContent.setText(DateHelper.formatDDMMYYYY(value));
-            timeContent.setText(DateHelper.formatHourMinute(value));
+            dateContent.setText(DateHelper.formatDate(value));
+            timeContent.setText(DateHelper.formatTime(value));
         }
     }
 
     @Override
     public Date getValue() {
-        Date date = DateHelper.parseDDMMYYYY(dateContent.getText().toString());
-        Date time = DateHelper.parseHourMinute(timeContent.getText().toString());
+        Date date = DateHelper.parseDate(dateContent.getText().toString());
+        Date time = DateHelper.parseTime(timeContent.getText().toString());
 
         LocalDate localDate = new LocalDate(date);
         DateTime dateTime = localDate.toDateTime(new LocalTime(time));
@@ -108,7 +108,7 @@ public class DateTimeField extends PropertyField<Date> implements DateFieldInter
         newFragment.setOnDateSetListener(new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet (DatePicker view, int yy, int mm, int dd){
-                dateContent.setText(DateHelper.formatDDMMYYYY(DateHelper.getDateZero(yy, mm, dd)));
+                dateContent.setText(DateHelper.formatDate(DateHelper.getDateZero(yy, mm, dd)));
             }
         });
 
@@ -132,7 +132,7 @@ public class DateTimeField extends PropertyField<Date> implements DateFieldInter
         newFragment.setOnTimeSetListener(new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                timeContent.setText(DateHelper.formatHourMinute(DateHelper.getTime(hourOfDay, minute)));
+                timeContent.setText(DateHelper.formatTime(DateHelper.getTime(hourOfDay, minute)));
             }
         });
 

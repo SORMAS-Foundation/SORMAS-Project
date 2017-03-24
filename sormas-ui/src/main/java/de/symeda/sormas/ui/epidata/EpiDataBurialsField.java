@@ -39,9 +39,9 @@ public class EpiDataBurialsField extends AbstractTableField<EpiDataBurialDto> {
 			public Object generateCell(Table source, Object itemId, Object columnId) {
 				EpiDataBurialDto burial = (EpiDataBurialDto) itemId;
 				StringBuilder periodBuilder = new StringBuilder();
-				periodBuilder.append(DateHelper.formatDDMMYYYY(burial.getBurialDateFrom()));
+				periodBuilder.append(DateHelper.formatDate(burial.getBurialDateFrom()));
 				periodBuilder.append(" - ");
-				periodBuilder.append(DateHelper.formatDDMMYYYY(burial.getBurialDateTo()));
+				periodBuilder.append(DateHelper.formatDate(burial.getBurialDateTo()));
 				return periodBuilder.toString();
 			}
 		});

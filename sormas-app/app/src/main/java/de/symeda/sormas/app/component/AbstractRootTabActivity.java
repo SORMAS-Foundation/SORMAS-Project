@@ -118,7 +118,7 @@ public abstract class AbstractRootTabActivity extends AbstractTabActivity {
         mainViewTitle = title;
         String userRole = "";
         if (ConfigProvider.getUser()!=null && ConfigProvider.getUser().getUserRole() !=null) {
-            userRole = " - " + ConfigProvider.getUser().getUserRole().toString();
+            userRole = " - " + ConfigProvider.getUser().getUserRole().toShortString();
         }
         getSupportActionBar().setTitle(mainViewTitle + userRole);
     }

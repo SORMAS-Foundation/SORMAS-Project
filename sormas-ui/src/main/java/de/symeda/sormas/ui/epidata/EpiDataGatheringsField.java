@@ -54,7 +54,7 @@ public class EpiDataGatheringsField extends AbstractTableField<EpiDataGatheringD
 			@Override
 			public Object generateCell(Table source, Object itemId, Object columnId) {
 				EpiDataGatheringDto gathering = (EpiDataGatheringDto) itemId;
-				return DateHelper.formatDDMMYYYY(gathering.getGatheringDate());
+				return DateHelper.formatDate(gathering.getGatheringDate());
 			}
 		});
 		

@@ -231,7 +231,7 @@ public class Event extends AbstractDomainObject {
 	public String toString() {
 		String diseaseString = disease == null ? "" : disease.toString();
 		String eventTypeString = diseaseString.isEmpty() ? eventType.toString() : eventType.toString().toLowerCase();
-		return diseaseString + " " + eventTypeString + " on " + DateHelper.formatDDMMYYYY(eventDate);
+		return diseaseString + " " + eventTypeString + " on " + DateHelper.formatDate(eventDate);
 	}
 
 }
