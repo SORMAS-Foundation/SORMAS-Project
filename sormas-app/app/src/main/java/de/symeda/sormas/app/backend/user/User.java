@@ -136,7 +136,7 @@ public class User extends AbstractDomainObject {
 
 		String result = getFirstName() + " " + getLastName().toUpperCase();
 		if (getUserRole() != null) {
-			result += " (" + getUserRole() + ")";
+			result += " - " + getUserRole().toShortString();
 		}
 		return result;
 	}
