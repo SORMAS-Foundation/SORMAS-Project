@@ -10,7 +10,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
-import de.symeda.sormas.api.caze.YesNoUnknown;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.app.R;
 

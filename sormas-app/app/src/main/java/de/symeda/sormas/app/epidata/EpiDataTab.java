@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.caze.YesNoUnknown;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.WaterSource;
 import de.symeda.sormas.api.utils.Diseases;

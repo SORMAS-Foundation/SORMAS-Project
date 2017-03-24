@@ -13,8 +13,8 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
-import de.symeda.sormas.api.caze.YesNoUnknown;
-import de.symeda.sormas.api.caze.YesNoUnknown;
+import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.epidata.WaterSource;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 

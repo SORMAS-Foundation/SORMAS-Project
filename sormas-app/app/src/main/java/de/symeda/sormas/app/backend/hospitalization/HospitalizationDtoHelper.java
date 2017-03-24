@@ -3,8 +3,8 @@ package de.symeda.sormas.app.backend.hospitalization;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.symeda.sormas.api.caze.HospitalizationDto;
-import de.symeda.sormas.api.caze.PreviousHospitalizationDto;
+import de.symeda.sormas.api.hospitalization.HospitalizationDto;
+import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 
