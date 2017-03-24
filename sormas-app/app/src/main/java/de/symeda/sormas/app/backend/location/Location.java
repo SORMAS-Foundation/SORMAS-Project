@@ -128,7 +128,7 @@ public class Location extends AbstractDomainObject {
 					getCommunity() != null || getDistrict() != null) {
 				sb.append("\n");
 			}
-			sb.append(getDetails());
+			sb.append("Contact: " + getDetails());
 		}
 		return sb.toString();
 	}

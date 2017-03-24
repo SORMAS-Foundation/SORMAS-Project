@@ -80,6 +80,7 @@ public class SampleGrid extends Grid {
 		
 		getColumn(SampleIndexDto.SHIPMENT_DATE).setRenderer(new DateRenderer(DateHelper.getDateFormat()));
 		getColumn(SampleIndexDto.RECEIVED_DATE).setRenderer(new DateRenderer(DateHelper.getDateFormat()));
+		getColumn(SampleIndexDto.LAB).setMaximumWidth(200);
 		
 		for(Column column : getColumns()) {
 			column.setHeaderCaption(I18nProperties.getPrefixFieldCaption(

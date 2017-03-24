@@ -74,7 +74,7 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
 	    				throw new InvalidValueException("The visit cannot be more than 10 days before the last contact date.");
 	    			}
 	    			if (visitDateTime.after(contact.getFollowUpUntil()) && DateHelper.getDaysBetween(contact.getFollowUpUntil(), visitDateTime) > 10) {
-	    				throw new InvalidValueException("The entered date is invalid. Please choose an earlier date.");
+	    				throw new InvalidValueException("The visit cannot be more than 10 days after the end of the follow-up duration.");
 	    			}
 	    		}
 	    	});

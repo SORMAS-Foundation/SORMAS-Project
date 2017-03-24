@@ -31,7 +31,7 @@
             android:layout_height="wrap_content"
             android:minHeight="0dp"
             android:height="30dp"
-            android:background="@color/colorLightGrey"
+            android:background="@color/colorLightTeal"
             android:text="@string/action_search"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:id="@+id/personSelect_search"/>

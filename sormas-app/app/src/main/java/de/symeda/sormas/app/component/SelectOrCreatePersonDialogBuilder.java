@@ -83,10 +83,12 @@ public class SelectOrCreatePersonDialogBuilder extends AlertDialog.Builder {
                     existingPerson.getBirthdateDD() + "/" + existingPerson.getBirthdateMM() + "/" + existingPerson.getBirthdateYYYY() : "");
             sb.append(existingPerson.getApproximateAge()!=null ? " | " + existingPerson.getApproximateAge() + " " +existingPerson.getApproximateAgeType():"");
             sb.append(existingPerson.getPresentCondition()!=null ? " | " +  existingPerson.getPresentCondition():"");
-            sb.append(existingPerson.getAddress().getDistrict()!=null || existingPerson.getAddress().getCity()!=null ? "<br />":"");
-            sb.append(existingPerson.getAddress().getDistrict()!=null ? existingPerson.getAddress().getCity()!=null ? existingPerson.getAddress().getDistrict() + ", " +
-                    existingPerson.getAddress().getCity() : existingPerson.getAddress().getDistrict() :
-                    existingPerson.getAddress().getCity()!=null ? existingPerson.getAddress().getCity() : "");
+            if (existingPerson.getAddress() != null) {
+                sb.append(existingPerson.getAddress().getDistrict() != null || existingPerson.getAddress().getCity() != null ? "<br />" : "");
+                sb.append(existingPerson.getAddress().getDistrict() != null ? existingPerson.getAddress().getCity() != null ? existingPerson.getAddress().getDistrict() + ", " +
+                        existingPerson.getAddress().getCity() : existingPerson.getAddress().getDistrict() :
+                        existingPerson.getAddress().getCity() != null ? existingPerson.getAddress().getCity() : "");
+            }
             items.add(new Item<Person>(Html.fromHtml(sb.toString()).toString(),existingPerson));
         }
 
@@ -101,6 +103,7 @@ public class SelectOrCreatePersonDialogBuilder extends AlertDialog.Builder {
     }
 
     public void setButtonListeners(final AlertDialog dialog, final Activity activity) {
+        // use the selected person (displays an error if no person is selected)
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -113,6 +116,7 @@ public class SelectOrCreatePersonDialogBuilder extends AlertDialog.Builder {
             }
         });
 
+        // dismiss the dialog
         dialog.getButton(AlertDialog.BUTTON_NEUTRAL).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -121,6 +125,7 @@ public class SelectOrCreatePersonDialogBuilder extends AlertDialog.Builder {
             }
         });
 
+        // create a new person with the entered details (displays an error if the details are incomplete)
         dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -41,24 +41,24 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> extends R
         }
     }
 
-    public List<ADO> queryEqual(String fieldName, Object value, String orderBy, boolean ascending) {
+    public List<ADO> queryForEq(String fieldName, Object value, String orderBy, boolean ascending) {
         try {
             QueryBuilder builder = queryBuilder();
             Where where = builder.where();
             where.eq(fieldName, value);
             return builder.orderBy(orderBy, ascending).query();
         } catch (SQLException e) {
-            Log.e(getTableName(), "Could not perform queryEqual");
+            Log.e(getTableName(), "Could not perform queryForEq");
             throw new RuntimeException(e);
         }
     }
 
-    public List<ADO> queryAll(String orderBy, boolean ascending) {
+    public List<ADO> queryForAll(String orderBy, boolean ascending) {
         try {
             QueryBuilder builder = queryBuilder();
             return builder.orderBy(orderBy, ascending).query();
         } catch (SQLException e) {
-            Log.e(getTableName(), "Could not perform queryAll");
+            Log.e(getTableName(), "Could not perform queryForAll");
             throw new RuntimeException(e);
         }
     }

@@ -65,9 +65,9 @@ public class ContactsListFragment extends ListFragment {
                 Bundle arguments = getArguments();
                 if(arguments.containsKey(ARG_FILTER_STATUS)) {
                     FollowUpStatus filterStatus = (FollowUpStatus) arguments.getSerializable(ARG_FILTER_STATUS);
-                    contacts = DatabaseHelper.getContactDao().queryEqual(Contact.FOLLOW_UP_STATUS, filterStatus, Contact.REPORT_DATE_TIME, false);
+                    contacts = DatabaseHelper.getContactDao().queryForEq(Contact.FOLLOW_UP_STATUS, filterStatus, Contact.REPORT_DATE_TIME, false);
                 } else {
-                    contacts = DatabaseHelper.getContactDao().queryAll(Contact.REPORT_DATE_TIME, false);
+                    contacts = DatabaseHelper.getContactDao().queryForAll(Contact.REPORT_DATE_TIME, false);
                 }
 
                 ArrayAdapter<Contact> listAdapter = (ArrayAdapter<Contact>)getListAdapter();

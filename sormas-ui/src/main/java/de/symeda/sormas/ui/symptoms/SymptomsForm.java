@@ -25,9 +25,12 @@ import de.symeda.sormas.ui.utils.LayoutUtil;
 @SuppressWarnings("serial")
 public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 	
-	private static final String HTML_LAYOUT = LayoutUtil.h3(CssStyles.VSPACE3, "Recent symptoms")
+	private static final String HTML_LAYOUT = LayoutUtil.h3(CssStyles.VSPACE3, "Symptoms")
 			+ LayoutUtil.divCss(CssStyles.VSPACE3,
-				LayoutUtil.fluidRowLocs(SymptomsDto.ONSET_DATE, SymptomsDto.ONSET_SYMPTOM, SymptomsDto.TEMPERATURE, SymptomsDto.TEMPERATURE_SOURCE))
+				LayoutUtil.fluidRowLocs(SymptomsDto.ONSET_DATE, SymptomsDto.ONSET_SYMPTOM))
+			+ LayoutUtil.h3(CssStyles.VSPACE3, "Recent symptoms")
+			+ LayoutUtil.divCss(CssStyles.VSPACE3,
+					LayoutUtil.fluidRowLocs(SymptomsDto.TEMPERATURE, SymptomsDto.TEMPERATURE_SOURCE))
 			+ LayoutUtil.divCss(CssStyles.VSPACE3, I18nProperties.getFieldCaption("Symptoms.hint"))
 			+ LayoutUtil.fluidRow(
 					LayoutUtil.fluidColumn(6, 0,

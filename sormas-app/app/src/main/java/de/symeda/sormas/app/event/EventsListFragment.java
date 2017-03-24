@@ -36,9 +36,9 @@ public class EventsListFragment extends ListFragment {
         Bundle arguments = getArguments();
         if (arguments.containsKey(ARG_FILTER_STATUS)) {
             EventStatus filterStatus = (EventStatus)arguments.getSerializable(ARG_FILTER_STATUS);
-            events = DatabaseHelper.getEventDao().queryEqual(Event.EVENT_STATUS, filterStatus, Event.EVENT_DATE, false);
+            events = DatabaseHelper.getEventDao().queryForEq(Event.EVENT_STATUS, filterStatus, Event.EVENT_DATE, false);
         } else {
-            events = DatabaseHelper.getEventDao().queryAll(Event.EVENT_DATE, false);
+            events = DatabaseHelper.getEventDao().queryForAll(Event.EVENT_DATE, false);
         }
 
         ArrayAdapter<Event> listAdapter = (ArrayAdapter<Event>)getListAdapter();

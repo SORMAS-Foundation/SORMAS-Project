@@ -136,7 +136,7 @@ public class VisitEditActivity extends AbstractEditActivity {
 
                 if (contact.getFollowUpUntil() != null && visit.getVisitDateTime().after(contact.getFollowUpUntil()) &&
                         DateHelper.getDaysBetween(contact.getFollowUpUntil(), visit.getVisitDateTime()) > 10) {
-                    Toast.makeText(this, "The entered date is invalid. Please choose an earlier date.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, "The visit cannot be more than 10 days after the end of the follow-up duration.", Toast.LENGTH_LONG).show();
                     return true;
                 }
 
