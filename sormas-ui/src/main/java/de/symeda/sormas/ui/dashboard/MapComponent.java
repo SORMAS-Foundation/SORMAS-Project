@@ -6,14 +6,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.grid.HeightMode;
 import com.vaadin.tapio.googlemaps.GoogleMap;
 import com.vaadin.tapio.googlemaps.client.LatLon;
 import com.vaadin.tapio.googlemaps.client.events.MarkerClickListener;
 import com.vaadin.tapio.googlemaps.client.overlays.GoogleMapMarker;
-import com.vaadin.ui.Image;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
@@ -21,6 +18,8 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.facility.FacilityDto;
+import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 @SuppressWarnings("serial")
@@ -32,14 +31,18 @@ public class MapComponent extends VerticalLayout {
 	
 	private final GoogleMap map;
 	
-	private final LatLon center = new LatLon(11.5636503, 8.4596675);
+	private final LatLon centerKano = new LatLon(11.5636503, 8.4596675);
+	private final LatLon centerOyo = new LatLon(8.110803, 3.625342);
 	
 	private final HashMap<GoogleMapMarker, FacilityDto> facilityMarkers = new HashMap<GoogleMapMarker, FacilityDto>();
 	private final HashMap<FacilityDto, List<CaseDataDto>> facilities = new HashMap<>();
     
     public MapComponent() {    	
 		map = new GoogleMap("AIzaSyAaJpN8a_NhEU-02-t5uVi02cAaZtKafkw", null, null);
-        map.setCenter(center);
+		
+    	UserDto user = LoginHelper.getCurrentUser();
+        map.setCenter("Oyo".equals(user.getRegion().getCaption()) ? centerOyo : centerKano);
+        
         map.setZoom(9);
         map.setSizeFull();
         map.setMinZoom(4);
@@ -88,6 +91,11 @@ public class MapComponent extends VerticalLayout {
     	
     	// create markers for all facilities with cases
     	for (FacilityDto facility : facilities.keySet()) {
+    		
+    		if (facility.getLatitude() == null || facility.getLongitude() == null) {
+    			continue;
+    		}
+    		
     		LatLon latLon = new LatLon(facility.getLatitude(), facility.getLongitude());
     		MapIcon icon;
     		

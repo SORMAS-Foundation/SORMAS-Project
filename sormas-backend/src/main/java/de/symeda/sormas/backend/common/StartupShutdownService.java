@@ -1,6 +1,5 @@
 package de.symeda.sormas.backend.common;
 
-import java.util.Arrays;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -90,32 +89,46 @@ public class StartupShutdownService {
 	}
 
 	private void importRegionAndFacilityData() {
+
 		List<Region> regions = regionService.getAll();
-		if (regions.isEmpty()) {
-	    	regions = Arrays.asList(
-	    			InfrastructureDataImporter.importRegion("Kano")
-	    			);
+		
+		if (!regions.stream().anyMatch(r -> "Kano".equals(r.getName()))) {
+	    	Region region = InfrastructureDataImporter.importRegion("Kano");
 	    	
-			for (Region region : regions) {
-				for (District district : region.getDistricts()) {
-					for (Community community : district.getCommunities()) {
-						communityService.persist(community);
-					}
-					districtService.persist(district);
+			for (District district : region.getDistricts()) {
+				for (Community community : district.getCommunities()) {
+					communityService.persist(community);
 				}
-				regionService.persist(region);
+				districtService.persist(district);
+			}
+			regionService.persist(region);
+			
+			List<Facility> facilities = InfrastructureDataImporter.importFacilities(region);
+			for (Facility facility : facilities) {
+				if (facility.getDistrict() == null) {
+					throw new NullPointerException("Facility should have a district defined: " + facility.getName());
+				}
+				facilityService.persist(facility);
 			}
 		}
-		
-		if (facilityService.getAll().isEmpty()) {
-			for (Region region : regions) {
-				List<Facility> facilities = InfrastructureDataImporter.importFacilities(region);
-				for (Facility facility : facilities) {
-					if (facility.getDistrict() == null) {
-						throw new NullPointerException("Facility should have a district defined: " + facility.getName());
-					}
-					facilityService.persist(facility);
+
+		if (!regions.stream().anyMatch(r -> "Oyo".equals(r.getName()))) {
+	    	Region region = InfrastructureDataImporter.importRegion("Oyo");
+	    	
+			for (District district : region.getDistricts()) {
+				for (Community community : district.getCommunities()) {
+					communityService.persist(community);
 				}
+				districtService.persist(district);
+			}
+			regionService.persist(region);
+			
+			List<Facility> facilities = InfrastructureDataImporter.importFacilities(region);
+			for (Facility facility : facilities) {
+				if (facility.getDistrict() == null) {
+					throw new NullPointerException("Facility should have a district defined: " + facility.getName());
+				}
+				facilityService.persist(facility);
 			}
 		}
 	}

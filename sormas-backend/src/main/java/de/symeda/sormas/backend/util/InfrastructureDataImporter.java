@@ -122,11 +122,11 @@ public final class InfrastructureDataImporter {
 				String communityName = columns[1];
 				String cityName = columns[2];
 				String facilityName = columns[3];
-				String facilityTypeString = columns[4];
-				String ownershipString = columns[5];
-				// String address = columns[6];
-				String longitudeString = columns[7];
-				String latitudeString = columns[8];
+				String facilityTypeString = columns.length >= 4 ? columns[4] : "";
+				String ownershipString = columns.length >= 5 ? columns[5] : "";
+				// String address = columns.length >= 6 ? columns[6] : "";
+				String longitudeString = columns.length >= 7 ? columns[7] : "";
+				String latitudeString = columns.length >= 8 ? columns[8] : "";;
 				
 				if (district == null || !districtName.equals(district.getName())) {
 					district = null;
@@ -171,8 +171,12 @@ public final class InfrastructureDataImporter {
 				facility.setCommunity(community);
 				facility.setCity(cityName);
 				try {
-					facility.setLongitude(geoCoordFormat.parse(longitudeString).floatValue());
-					facility.setLatitude(geoCoordFormat.parse(latitudeString).floatValue());
+					if (!longitudeString.isEmpty()) {
+						facility.setLongitude(geoCoordFormat.parse(longitudeString).floatValue());
+					}
+					if (!latitudeString.isEmpty()) {
+						facility.setLatitude(geoCoordFormat.parse(latitudeString).floatValue());
+					}
 				} catch (ParseException e) {
 					throw new IllegalArgumentException("Error parsing geo coordinates for facility '" + facilityName + "' in " + resourceFileName, e);
 				}
