@@ -15,6 +15,7 @@ public enum UserRole {
 	CASE_OFFICER(false, true),
 	CONTACT_SUPERVISOR(true, false),
 	CONTACT_OFFICER(false, true),
+	RUMOR_MANAGER(true, false),
 	LAB_USER(false, false),
 	;
 	
@@ -59,6 +60,8 @@ public enum UserRole {
 		case CONTACT_SUPERVISOR:
 			collection.add(CONTACT_OFFICER);
 			break;
+		case RUMOR_MANAGER:
+			collection.add(RUMOR_MANAGER);
 		case LAB_USER:
 			collection.add(LAB_USER);
 		default:

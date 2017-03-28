@@ -41,7 +41,9 @@ public class MapComponent extends VerticalLayout {
 		map = new GoogleMap("AIzaSyAaJpN8a_NhEU-02-t5uVi02cAaZtKafkw", null, null);
 		
     	UserDto user = LoginHelper.getCurrentUser();
-        map.setCenter("Oyo".equals(user.getRegion().getCaption()) ? centerOyo : centerKano);
+    	if (user.getRegion() != null) {
+    		map.setCenter("Oyo".equals(user.getRegion().getCaption()) ? centerOyo : centerKano);
+    	}
         
         map.setZoom(9);
         map.setSizeFull();
