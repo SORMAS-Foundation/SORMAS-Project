@@ -9,7 +9,7 @@ import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.person.Person;
-import de.symeda.sormas.app.person.PersonEditTab;
+import de.symeda.sormas.app.person.PersonEditForm;
 import de.symeda.sormas.app.task.TasksListFragment;
 import de.symeda.sormas.app.visit.VisitsListFragment;
 
@@ -21,8 +21,8 @@ import de.symeda.sormas.app.visit.VisitsListFragment;
 public class ContactEditPagerAdapter extends FragmentStatePagerAdapter {
 
     private Bundle contactEditBundle; // this contactEditBundle contains the uuids
-    private ContactEditDataTab contactEditDataTab;
-    private PersonEditTab personEditTab;
+    private ContactEditDataForm contactEditDataForm;
+    private PersonEditForm personEditForm;
 
 
     // Build a Constructor and assign the passed Values to appropriate values in the class
@@ -39,20 +39,20 @@ public class ContactEditPagerAdapter extends FragmentStatePagerAdapter {
         ContactEditTabs tab = ContactEditTabs.values()[position];
         switch (tab) {
             case CONTACT_DATA:
-                contactEditDataTab = new ContactEditDataTab();
-                contactEditDataTab.setArguments(contactEditBundle);
-                frag = contactEditDataTab;
+                contactEditDataForm = new ContactEditDataForm();
+                contactEditDataForm.setArguments(contactEditBundle);
+                frag = contactEditDataForm;
                 break;
 
             case PERSON:
-                personEditTab = new PersonEditTab();
+                personEditForm = new PersonEditForm();
 
                 Bundle personEditBundle = new Bundle();
                 Contact contact = DatabaseHelper.getContactDao().queryUuid(contactEditBundle.getString(Contact.UUID));
                 personEditBundle.putString(Person.UUID, contact.getPerson().getUuid());
 
-                personEditTab.setArguments(personEditBundle);
-                frag = personEditTab;
+                personEditForm.setArguments(personEditBundle);
+                frag = personEditForm;
                 break;
 
             case VISITS:
@@ -88,10 +88,10 @@ public class ContactEditPagerAdapter extends FragmentStatePagerAdapter {
         AbstractDomainObject ado = null;
         switch (tab) {
             case CONTACT_DATA:
-                ado= contactEditDataTab.getData();
+                ado= contactEditDataForm.getData();
                 break;
             case PERSON:
-                ado = personEditTab.getData();
+                ado = personEditForm.getData();
                 break;
             case VISITS:
                 ado = null;

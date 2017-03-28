@@ -33,7 +33,7 @@ import de.symeda.sormas.app.contact.ContactNewActivity;
 import de.symeda.sormas.app.sample.SampleEditActivity;
 import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.task.TaskEditActivity;
-import de.symeda.sormas.app.task.TaskTab;
+import de.symeda.sormas.app.task.TaskForm;
 import de.symeda.sormas.app.util.ValidationFailedException;
 
 public class CaseEditActivity extends AbstractEditActivity {
@@ -76,8 +76,8 @@ public class CaseEditActivity extends AbstractEditActivity {
             if (params.containsKey(KEY_CASE_UUID)) {
                 caseUuid = params.getString(KEY_CASE_UUID);
             }
-            if (params.containsKey(TaskTab.KEY_TASK_UUID)) {
-                taskUuid = params.getString(TaskTab.KEY_TASK_UUID);
+            if (params.containsKey(TaskForm.KEY_TASK_UUID)) {
+                taskUuid = params.getString(TaskForm.KEY_TASK_UUID);
             }
             if (params.containsKey(KEY_PAGE)) {
                 currentTab = params.getInt(KEY_PAGE);
@@ -100,8 +100,8 @@ public class CaseEditActivity extends AbstractEditActivity {
             if (params.containsKey(KEY_CASE_UUID)) {
                 outState.putString(KEY_CASE_UUID, caseUuid);
             }
-            if (params.containsKey(TaskTab.KEY_TASK_UUID)) {
-                outState.putString(TaskTab.KEY_TASK_UUID, taskUuid);
+            if (params.containsKey(TaskForm.KEY_TASK_UUID)) {
+                outState.putString(TaskForm.KEY_TASK_UUID, taskUuid);
             }
             if (params.containsKey(KEY_PAGE)) {
                 outState.putInt(KEY_PAGE, currentTab);
@@ -204,7 +204,7 @@ public class CaseEditActivity extends AbstractEditActivity {
                 // SYMPTOMS
                 SymptomsDao symptomsDao = DatabaseHelper.getSymptomsDao();
                 Symptoms symptoms = (Symptoms) adapter.getData(CaseEditTabs.SYMPTOMS.ordinal());
-                SymptomsEditTab symptomsEditTab = (SymptomsEditTab) adapter.getTabByPosition(CaseEditTabs.SYMPTOMS.ordinal());
+                SymptomsEditForm symptomsEditForm = (SymptomsEditForm) adapter.getTabByPosition(CaseEditTabs.SYMPTOMS.ordinal());
 
                 // HOSPITALIZATION
                 HospitalizationDao hospitalizationDao = DatabaseHelper.getHospitalizationDao();
@@ -240,7 +240,7 @@ public class CaseEditActivity extends AbstractEditActivity {
                 }
 
                 try {
-                    symptomsEditTab.validateCaseData(symptoms);
+                    symptomsEditForm.validateCaseData(symptoms);
                 } catch(ValidationFailedException e) {
                     Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
                     validData = false;

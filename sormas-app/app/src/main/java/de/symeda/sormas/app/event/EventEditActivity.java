@@ -16,10 +16,9 @@ import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.component.AbstractEditActivity;
-import de.symeda.sormas.app.contact.SyncContactsTask;
 import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.task.TaskEditActivity;
-import de.symeda.sormas.app.task.TaskTab;
+import de.symeda.sormas.app.task.TaskForm;
 
 
 public class EventEditActivity extends AbstractEditActivity {
@@ -64,8 +63,8 @@ public class EventEditActivity extends AbstractEditActivity {
             if (params.containsKey(KEY_EVENT_UUID)) {
                 eventUuid = params.getString(KEY_EVENT_UUID);
             }
-            if (params.containsKey(TaskTab.KEY_TASK_UUID)) {
-                taskUuid = params.getString(TaskTab.KEY_TASK_UUID);
+            if (params.containsKey(TaskForm.KEY_TASK_UUID)) {
+                taskUuid = params.getString(TaskForm.KEY_TASK_UUID);
             }
             if (params.containsKey(KEY_PAGE)) {
                 currentTab = params.getInt(KEY_PAGE);
@@ -86,8 +85,8 @@ public class EventEditActivity extends AbstractEditActivity {
             if (params.containsKey(KEY_EVENT_UUID)) {
                 outState.putString(KEY_EVENT_UUID, eventUuid);
             }
-            if (params.containsKey(TaskTab.KEY_TASK_UUID)) {
-                outState.putString(TaskTab.KEY_TASK_UUID, taskUuid);
+            if (params.containsKey(TaskForm.KEY_TASK_UUID)) {
+                outState.putString(TaskForm.KEY_TASK_UUID, taskUuid);
             }
             if (params.containsKey(KEY_PAGE)) {
                 outState.putInt(KEY_PAGE, currentTab);

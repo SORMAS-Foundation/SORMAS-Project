@@ -13323,3 +13323,15 @@ div.v-layout.v-horizontal.v-widget {
 .sormastheme .font-size-xlarge {
 	font-size: 20px;
 }
+
+.sormastheme .sublist-margin {
+	margin-top: 50px;
+}
+
+.sormastheme .sublist-margin-small {
+	margin-top: 20px;
+}
+
+.sormastheme .info-column-margin {
+	margin-left: 25px;
+}

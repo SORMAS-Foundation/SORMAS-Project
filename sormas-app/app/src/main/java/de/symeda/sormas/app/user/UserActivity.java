@@ -7,7 +7,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.SormasRootActivity;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.AbstractRootTabActivity;
@@ -15,7 +14,7 @@ import de.symeda.sormas.app.component.AbstractRootTabActivity;
 
 public class UserActivity extends AbstractRootTabActivity {
 
-    private UserTab userTab;
+    private UserForm userForm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,8 +25,8 @@ public class UserActivity extends AbstractRootTabActivity {
 
         // setting the fragment_frame
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        userTab = new UserTab();
-        ft.add(R.id.fragment_frame, userTab).commit();
+        userForm = new UserForm();
+        ft.add(R.id.fragment_frame, userForm).commit();
 
     }
 
@@ -35,7 +34,7 @@ public class UserActivity extends AbstractRootTabActivity {
     protected void onResume() {
         super.onResume();
 
-        userTab.onResume();
+        userForm.onResume();
     }
 
     @Override
@@ -59,10 +58,10 @@ public class UserActivity extends AbstractRootTabActivity {
         switch (item.getItemId()) {
 
             case R.id.action_save:
-                User user = userTab.getUser();
+                User user = userForm.getUser();
                 ConfigProvider.setUser(user);
 
-                String serverUrl = userTab.getServerUrl();
+                String serverUrl = userForm.getServerUrl();
                 ConfigProvider.setServerUrl(serverUrl);
 
                 onResume();

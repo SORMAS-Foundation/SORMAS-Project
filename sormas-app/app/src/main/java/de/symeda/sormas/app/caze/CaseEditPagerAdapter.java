@@ -13,9 +13,9 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.contact.ContactsListFragment;
-import de.symeda.sormas.app.epidata.EpiDataTab;
-import de.symeda.sormas.app.hospitalization.HospitalizationTab;
-import de.symeda.sormas.app.person.PersonEditTab;
+import de.symeda.sormas.app.epidata.EpiDataForm;
+import de.symeda.sormas.app.hospitalization.HospitalizationForm;
+import de.symeda.sormas.app.person.PersonEditForm;
 import de.symeda.sormas.app.sample.SamplesListFragment;
 import de.symeda.sormas.app.task.TasksListFragment;
 import de.symeda.sormas.app.util.FormTab;
@@ -29,11 +29,11 @@ public class CaseEditPagerAdapter extends FragmentStatePagerAdapter {
 
     private CharSequence titles[]; // This will Store the titles of the Tabs which are Going to be passed when ViewPagerAdapter is created
     private Bundle caseEditBundle; // this bundle contains the uuids
-    private CaseEditDataTab caseEditDataTab;
-    private PersonEditTab personEditTab;
-    private SymptomsEditTab symptomsEditTab;
-    private HospitalizationTab hospitalizationTab;
-    private EpiDataTab epiDataTab;
+    private CaseEditDataForm caseEditDataForm;
+    private PersonEditForm personEditForm;
+    private SymptomsEditForm symptomsEditForm;
+    private HospitalizationForm hospitalizationForm;
+    private EpiDataForm epiDataForm;
 
 
     // Build a Constructor and assign the passed Values to appropriate values in the class
@@ -51,30 +51,30 @@ public class CaseEditPagerAdapter extends FragmentStatePagerAdapter {
         Case caze = null;
         switch (tab) {
             case CASE_DATA:
-                caseEditDataTab = new CaseEditDataTab();
-                caseEditDataTab.setArguments(caseEditBundle);
-                frag = caseEditDataTab;
+                caseEditDataForm = new CaseEditDataForm();
+                caseEditDataForm.setArguments(caseEditBundle);
+                frag = caseEditDataForm;
                 break;
             case PATIENT:
-                personEditTab = new PersonEditTab();
+                personEditForm = new PersonEditForm();
 
                 Bundle personEditBundle = new Bundle();
                 caze = DatabaseHelper.getCaseDao().queryUuid(caseEditBundle.getString(Case.UUID));
                 personEditBundle.putString(Person.UUID, caze.getPerson().getUuid());
 
-                personEditTab.setArguments(personEditBundle);
-                frag = personEditTab;
+                personEditForm.setArguments(personEditBundle);
+                frag = personEditForm;
                 break;
             case SYMPTOMS:
-                symptomsEditTab = new SymptomsEditTab();
+                symptomsEditForm = new SymptomsEditForm();
 
                 Bundle symptomsEditBundle = new Bundle();
                 caze = DatabaseHelper.getCaseDao().queryUuid(caseEditBundle.getString(Case.UUID));
                 symptomsEditBundle.putString(Symptoms.UUID, caze.getSymptoms().getUuid());
                 symptomsEditBundle.putSerializable(Case.DISEASE, caze.getDisease());
 
-                symptomsEditTab.setArguments(symptomsEditBundle);
-                frag = symptomsEditTab;
+                symptomsEditForm.setArguments(symptomsEditBundle);
+                frag = symptomsEditForm;
                 break;
             case CONTACTS:
                 ContactsListFragment contactsListTab = new ContactsListFragment();
@@ -96,26 +96,26 @@ public class CaseEditPagerAdapter extends FragmentStatePagerAdapter {
                 frag = samplesListTab;
                 break;
             case HOSPITALIZATION:
-                hospitalizationTab = new HospitalizationTab();
+                hospitalizationForm = new HospitalizationForm();
 
                 Bundle hospitalizationBundle = new Bundle();
                 caze = DatabaseHelper.getCaseDao().queryUuid(caseEditBundle.getString(Case.UUID));
-                hospitalizationBundle.putString(HospitalizationTab.KEY_CASE_UUID, caze.getUuid());
+                hospitalizationBundle.putString(HospitalizationForm.KEY_CASE_UUID, caze.getUuid());
                 hospitalizationBundle.putString(Hospitalization.UUID, caze.getHospitalization().getUuid());
 
-                hospitalizationTab.setArguments(hospitalizationBundle);
-                frag = hospitalizationTab;
+                hospitalizationForm.setArguments(hospitalizationBundle);
+                frag = hospitalizationForm;
                 break;
             case EPIDATA:
-                epiDataTab = new EpiDataTab();
+                epiDataForm = new EpiDataForm();
 
                 Bundle epiDataBundle = new Bundle();
                 caze = DatabaseHelper.getCaseDao().queryUuid(caseEditBundle.getString(Case.UUID));
                 epiDataBundle.putSerializable(Case.DISEASE, caze.getDisease());
                 epiDataBundle.putString(EpiData.UUID, caze.getEpiData().getUuid());
 
-                epiDataTab.setArguments(epiDataBundle);
-                frag = epiDataTab;
+                epiDataForm.setArguments(epiDataBundle);
+                frag = epiDataForm;
                 break;
         }
         return frag;
@@ -137,15 +137,15 @@ public class CaseEditPagerAdapter extends FragmentStatePagerAdapter {
         CaseEditTabs tab = CaseEditTabs.fromInt(position);
         switch (tab) {
             case CASE_DATA:
-                return caseEditDataTab.getData();
+                return caseEditDataForm.getData();
             case PATIENT:
-                return personEditTab.getData();
+                return personEditForm.getData();
             case HOSPITALIZATION:
-                return hospitalizationTab.getData();
+                return hospitalizationForm.getData();
             case SYMPTOMS:
-                return symptomsEditTab.getData();
+                return symptomsEditForm.getData();
             case EPIDATA:
-                return epiDataTab.getData();
+                return epiDataForm.getData();
         }
         return null;
     }
@@ -154,15 +154,15 @@ public class CaseEditPagerAdapter extends FragmentStatePagerAdapter {
         CaseEditTabs tab = CaseEditTabs.fromInt(position);
         switch(tab) {
             case CASE_DATA:
-                return caseEditDataTab;
+                return caseEditDataForm;
             case PATIENT:
-                return personEditTab;
+                return personEditForm;
             case HOSPITALIZATION:
-                return hospitalizationTab;
+                return hospitalizationForm;
             case SYMPTOMS:
-                return symptomsEditTab;
+                return symptomsEditForm;
             case EPIDATA:
-                return epiDataTab;
+                return epiDataForm;
         }
         return null;
     }

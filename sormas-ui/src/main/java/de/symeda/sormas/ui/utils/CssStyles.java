@@ -91,6 +91,10 @@ public final class CssStyles {
 	
 	public static final String FONT_SIZE_LARGE = "font-size-large";
 	public static final String FONT_SIZE_XLARGE = "font-size-xlarge";
+	
+	public static final String SUBLIST_MARGIN = "sublist-margin";
+	public static final String SUBLIST_MARGIN_SMALL = "sublist-margin-small";
+	public static final String INFO_COLUMN_MARGIN = "info-column-margin";
 
 
 	public static void style(Component component, String... styles) {

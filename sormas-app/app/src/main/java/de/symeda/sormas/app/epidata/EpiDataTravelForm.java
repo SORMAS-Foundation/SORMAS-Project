@@ -21,7 +21,7 @@ import de.symeda.sormas.app.databinding.EpidataTravelEditFragmentLayoutBinding;
  * Created by Mate Strysewske on 09.03.2017.
  */
 
-public class EpiDataTravelTab extends AbstractFormDialogFragment<EpiDataTravel> {
+public class EpiDataTravelForm extends AbstractFormDialogFragment<EpiDataTravel> {
 
     private EpidataTravelEditFragmentLayoutBinding binding;
 

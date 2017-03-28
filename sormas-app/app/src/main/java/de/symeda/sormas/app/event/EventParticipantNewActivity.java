@@ -20,7 +20,6 @@ import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.component.SelectOrCreatePersonDialogBuilder;
-import de.symeda.sormas.app.person.SyncPersonsTask;
 import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.Consumer;
 
@@ -28,7 +27,7 @@ public class EventParticipantNewActivity extends AppCompatActivity {
 
     private String eventUuid;
 
-    private EventParticipantNewPersonTab eventParticipantNewPersonTab;
+    private EventParticipantNewPersonForm eventParticipantNewPersonForm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,9 +48,9 @@ public class EventParticipantNewActivity extends AppCompatActivity {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
 
 
-        eventParticipantNewPersonTab = new EventParticipantNewPersonTab();
-        eventParticipantNewPersonTab.setArguments(params);
-        ft.add(R.id.fragment_frame, eventParticipantNewPersonTab).commit();
+        eventParticipantNewPersonForm = new EventParticipantNewPersonForm();
+        eventParticipantNewPersonForm.setArguments(params);
+        ft.add(R.id.fragment_frame, eventParticipantNewPersonForm).commit();
 
     }
 
@@ -83,7 +82,7 @@ public class EventParticipantNewActivity extends AppCompatActivity {
 
             case R.id.action_save:
                 try {
-                    final EventParticipant eventParticipant = eventParticipantNewPersonTab.getData();
+                    final EventParticipant eventParticipant = eventParticipantNewPersonForm.getData();
 
                     boolean eventParticipantDescReq =  eventParticipant.getInvolvementDescription()==null||eventParticipant.getInvolvementDescription().isEmpty();
                     boolean eventParticipantFirstNameReq =  eventParticipant.getPerson().getFirstName()==null||eventParticipant.getPerson().getFirstName().isEmpty();

@@ -22,7 +22,7 @@ import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.FormTab;
 
-public class HospitalizationTab extends FormTab {
+public class HospitalizationForm extends FormTab {
 
     public static final String KEY_CASE_UUID = "caseUuid";
 
@@ -41,7 +41,7 @@ public class HospitalizationTab extends FormTab {
 
         try {
 
-            final String caseUuid = getArguments().getString(HospitalizationTab.KEY_CASE_UUID);
+            final String caseUuid = getArguments().getString(HospitalizationForm.KEY_CASE_UUID);
             final Case caze = DatabaseHelper.getCaseDao().queryUuid(caseUuid);
             if (caze.getHealthFacility() != null) {
                 ((LabelField) getView().findViewById(R.id.hospitalization_healthFacility)).setValue(caze.getHealthFacility().toString());
@@ -73,8 +73,8 @@ public class HospitalizationTab extends FormTab {
                                     e.printStackTrace();
                                 }
                             }
-                            PreviousHospitalizationTab previousHospitalizationTab = new PreviousHospitalizationTab();
-                            previousHospitalizationTab.initialize(
+                            PreviousHospitalizationForm previousHospitalizationForm = new PreviousHospitalizationForm();
+                            previousHospitalizationForm.initialize(
                                     (PreviousHospitalization) prevHosp,
                                     new Consumer() {
                                         @Override
@@ -101,7 +101,7 @@ public class HospitalizationTab extends FormTab {
                                     },
                                     getActivity().getResources().getString(R.string.headline_previousHospitalization)
                             );
-                            previousHospitalizationTab.show(getFragmentManager(), "previous_hospitalization_edit_fragment");
+                            previousHospitalizationForm.show(getFragmentManager(), "previous_hospitalization_edit_fragment");
                         }
                     }
             );

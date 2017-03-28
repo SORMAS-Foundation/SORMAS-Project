@@ -1316,7 +1316,7 @@ ALTER TABLE sampletest ALTER COLUMN testresulttext DROP NOT NULL;
 
 INSERT INTO schema_version (version_number, comment) VALUES (40, 'Drop not null constraint from sample test result text');
 
--- 2017-03-28 Added EPID number to case
+-- 2017-03-28 Added EPID number to case #167
 
 ALTER TABLE cases ADD COLUMN epidnumber varchar(512);
 

@@ -36,7 +36,7 @@ import de.symeda.sormas.app.util.Consumer;
 public class CaseNewActivity extends AppCompatActivity {
 
 
-    private CaseNewTab caseNewTab;
+    private CaseNewForm caseNewForm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,8 +52,8 @@ public class CaseNewActivity extends AppCompatActivity {
         }
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        caseNewTab = new CaseNewTab();
-        ft.add(R.id.fragment_frame, caseNewTab).commit();
+        caseNewForm = new CaseNewForm();
+        ft.add(R.id.fragment_frame, caseNewForm).commit();
 
     }
 
@@ -84,7 +84,7 @@ public class CaseNewActivity extends AppCompatActivity {
 
             case R.id.action_save:
                 try {
-                    final Case caze = caseNewTab.getData();
+                    final Case caze = caseNewForm.getData();
 
                     boolean validData = true;
 

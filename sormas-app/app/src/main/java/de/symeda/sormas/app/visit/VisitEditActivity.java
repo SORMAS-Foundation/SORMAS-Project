@@ -9,7 +9,6 @@ import android.view.MenuItem;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.visit.VisitStatus;
@@ -19,10 +18,9 @@ import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.visit.Visit;
-import de.symeda.sormas.app.caze.SymptomsEditTab;
+import de.symeda.sormas.app.caze.SymptomsEditForm;
 import de.symeda.sormas.app.component.AbstractEditActivity;
 import de.symeda.sormas.app.component.HelpDialog;
-import de.symeda.sormas.app.sample.SyncSamplesTask;
 import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.ValidationFailedException;
 
@@ -125,7 +123,7 @@ public class VisitEditActivity extends AbstractEditActivity {
                 Visit visit = (Visit) adapter.getData(VisitEditTabs.VISIT_DATA.ordinal());
                 Symptoms symptoms = (Symptoms)adapter.getData(VisitEditTabs.SYMPTOMS.ordinal());
 
-                SymptomsEditTab symptomsEditTab = (SymptomsEditTab) adapter.getTabByPosition(VisitEditTabs.SYMPTOMS.ordinal());
+                SymptomsEditForm symptomsEditForm = (SymptomsEditForm) adapter.getTabByPosition(VisitEditTabs.SYMPTOMS.ordinal());
 
                 Contact contact = (Contact) DatabaseHelper.getContactDao().queryUuid(contactUuid);
                 if (visit.getVisitDateTime().before(contact.getLastContactDate()) &&
@@ -143,7 +141,7 @@ public class VisitEditActivity extends AbstractEditActivity {
                 // method returns a String, null means that there is no error message and thus
                 // the data is valid
                 try {
-                    symptomsEditTab.validateVisitData(symptoms, visit.getVisitStatus() == VisitStatus.COOPERATIVE);
+                    symptomsEditForm.validateVisitData(symptoms, visit.getVisitStatus() == VisitStatus.COOPERATIVE);
 
                     if (symptoms != null) {
                         visit.setSymptoms(symptoms);

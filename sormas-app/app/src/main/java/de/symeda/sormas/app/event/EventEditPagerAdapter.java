@@ -7,8 +7,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.event.Event;
-import de.symeda.sormas.app.person.PersonEditTab;
-import de.symeda.sormas.app.visit.VisitsListFragment;
+import de.symeda.sormas.app.person.PersonEditForm;
 
 /**
  * Created by Stefan Szczesny on 02.11.2016.
@@ -18,8 +17,8 @@ import de.symeda.sormas.app.visit.VisitsListFragment;
 public class EventEditPagerAdapter extends FragmentStatePagerAdapter {
 
     private Bundle eventEditBundle; // this bundle contains the uuids
-    private EventEditDataTab eventEditDataTab;
-    private PersonEditTab personEditTab;
+    private EventEditDataForm eventEditDataForm;
+    private PersonEditForm personEditForm;
 
 
     // Build a Constructor and assign the passed Values to appropriate values in the class
@@ -36,9 +35,9 @@ public class EventEditPagerAdapter extends FragmentStatePagerAdapter {
         EventEditTabs tab = EventEditTabs.values()[position];
         switch (tab) {
             case EVENT_DATA:
-                eventEditDataTab = new EventEditDataTab();
-                eventEditDataTab.setArguments(eventEditBundle);
-                frag = eventEditDataTab;
+                eventEditDataForm = new EventEditDataForm();
+                eventEditDataForm.setArguments(eventEditBundle);
+                frag = eventEditDataForm;
                 break;
 
             case EVENT_PERSONS:
@@ -71,10 +70,10 @@ public class EventEditPagerAdapter extends FragmentStatePagerAdapter {
         AbstractDomainObject ado = null;
         switch (tab) {
             case EVENT_DATA:
-                ado= eventEditDataTab.getData();
+                ado= eventEditDataForm.getData();
                 break;
 //            case EVENT_PERSONS:
-//                ado = personEditTab.getData();
+//                ado = personEditForm.getData();
 //                break;
         }
         return ado;

@@ -15,14 +15,14 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.person.Person;
-import de.symeda.sormas.app.person.PersonEditTab;
+import de.symeda.sormas.app.person.PersonEditForm;
 import de.symeda.sormas.app.util.Callback;
 
 
 public class EventParticipantEditActivity extends AppCompatActivity {
 
-    private EventParticipantDataTab eventParticipantTab;
-    private PersonEditTab personEditTab;
+    private EventParticipantDataForm eventParticipantTab;
+    private PersonEditForm personEditForm;
 
     private String eventParticipantUuid;
 
@@ -52,18 +52,18 @@ public class EventParticipantEditActivity extends AppCompatActivity {
             }
         }
 
-        eventParticipantTab = new EventParticipantDataTab();
+        eventParticipantTab = new EventParticipantDataForm();
         eventParticipantTab.setArguments(params);
         ft.add(R.id.eventParticipant_fragment, eventParticipantTab);
 
-        personEditTab = new PersonEditTab();
-        // load person from eventParticipant and give it to personEditTab
+        personEditForm = new PersonEditForm();
+        // load person from eventParticipant and give it to personEditForm
         Bundle personEditBundle = new Bundle();
         eventParticipant = DatabaseHelper.getEventParticipantDao().queryUuid(eventParticipantUuid);
         personEditBundle.putString(Person.UUID, eventParticipant.getPerson().getUuid());
 
-        personEditTab.setArguments(personEditBundle);
-        ft.add(R.id.eventParticipant_person_fragment, personEditTab);
+        personEditForm.setArguments(personEditBundle);
+        ft.add(R.id.eventParticipant_person_fragment, personEditForm);
 
         ft.commit();
     }
@@ -74,7 +74,7 @@ public class EventParticipantEditActivity extends AppCompatActivity {
         super.onResume();
 
         eventParticipantTab.onResume();
-        personEditTab.onResume();
+        personEditForm.onResume();
     }
 
 
@@ -114,7 +114,7 @@ public class EventParticipantEditActivity extends AppCompatActivity {
 
 
                 EventParticipant eventParticipant = (EventParticipant) eventParticipantTab.getData();
-                Person person = (Person) personEditTab.getData();
+                Person person = (Person) personEditForm.getData();
 
                 if(person!=null) {
                     DatabaseHelper.getPersonDao().save(person);

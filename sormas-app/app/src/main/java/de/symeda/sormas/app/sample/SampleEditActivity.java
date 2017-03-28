@@ -1,11 +1,8 @@
 package de.symeda.sormas.app.sample;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.NavUtils;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -13,9 +10,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.CheckBox;
 import android.widget.Toast;
-
-import com.google.android.gms.appindexing.AppIndex;
-import com.google.android.gms.common.api.GoogleApiClient;
 
 import java.util.Date;
 
@@ -26,10 +20,6 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.backend.sample.SampleDao;
-import de.symeda.sormas.app.caze.CaseEditActivity;
-import de.symeda.sormas.app.component.AbstractEditActivity;
-import de.symeda.sormas.app.component.HelpDialog;
-import de.symeda.sormas.app.event.SyncEventsTask;
 import de.symeda.sormas.app.util.Callback;
 
 /**
@@ -42,7 +32,7 @@ public class SampleEditActivity extends AppCompatActivity {
     public static final String KEY_SAMPLE_UUID = "sampleUuid";
     public static final String KEY_CASE_UUID = "caseUuid";
 
-    private SampleEditTab sampleTab;
+    private SampleEditForm sampleTab;
 
     private String sampleUuid;
 
@@ -71,7 +61,7 @@ public class SampleEditActivity extends AppCompatActivity {
 
         // setting the fragment_frame
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        sampleTab = new SampleEditTab();
+        sampleTab = new SampleEditForm();
         sampleTab.setArguments(getIntent().getExtras());
         ft.add(R.id.fragment_frame, sampleTab).commit();
     }

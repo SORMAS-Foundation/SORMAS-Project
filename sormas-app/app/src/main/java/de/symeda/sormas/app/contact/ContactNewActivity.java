@@ -36,7 +36,7 @@ public class ContactNewActivity extends AppCompatActivity {
     private String caseUuid;
 
 
-    private ContactNewTab contactNewTab;
+    private ContactNewForm contactNewForm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,8 +55,8 @@ public class ContactNewActivity extends AppCompatActivity {
         }
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        contactNewTab = new ContactNewTab();
-        ft.add(R.id.fragment_frame, contactNewTab).commit();
+        contactNewForm = new ContactNewForm();
+        ft.add(R.id.fragment_frame, contactNewForm).commit();
     }
 
     @Override
@@ -90,7 +90,7 @@ public class ContactNewActivity extends AppCompatActivity {
 
             case R.id.action_save:
                 try {
-                    final Contact contact = contactNewTab.getData();
+                    final Contact contact = contactNewForm.getData();
                     contact.setContactClassification(ContactClassification.POSSIBLE);
                     contact.setFollowUpStatus(FollowUpStatus.FOLLOW_UP);
                     contact.setReportingUser(ConfigProvider.getUser());

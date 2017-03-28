@@ -35,7 +35,7 @@ import de.symeda.sormas.app.util.Item;
  * Created by Mate Strysewske on 07.02.2017.
  */
 
-public class SampleEditTab extends FormTab {
+public class SampleEditForm extends FormTab {
 
     private SampleDataFragmentLayoutBinding binding;
 

@@ -7,6 +7,7 @@ import android.databinding.BindingAdapter;
 import android.databinding.InverseBindingAdapter;
 import android.databinding.InverseBindingListener;
 import android.graphics.Color;
+import android.support.annotation.NonNull;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
@@ -26,6 +27,8 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.Month;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.util.Item;
 
@@ -134,9 +137,59 @@ public class SpinnerField extends PropertyField<Object> implements SpinnerFieldI
         spinnerElement.setSelection(adapter.getCount());
     }
 
+    public void setMonthSpinnerAdapter(List<Item> items) {
+        ArrayAdapter<Item> adapter = new ArrayAdapter<Item>(
+                getContext(),
+                android.R.layout.simple_spinner_item,
+                items) {
+
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                View v = super.getView(position, convertView, parent);
+                if (position == getCount()) {
+                    ((TextView) v.findViewById(android.R.id.text1)).setText("");
+                    ((TextView) v.findViewById(android.R.id.text1)).setHint(getItem(getCount()).getKey());
+                    ((TextView) v.findViewById(android.R.id.text1)).setHintTextColor(Color.LTGRAY);
+                } else if (position > 0) {
+                    TextView tv = ((TextView) v);
+                    tv.setText(I18nProperties.getEnumCaption(Month.values()[position - 1]));
+                }
+
+                return v;
+            }
+
+            @Override
+            public View getDropDownView(int position, View convertView, ViewGroup parent) {
+                View v = super.getDropDownView(position, convertView, parent);
+                if (position > 0 && position < getCount()) {
+                    TextView tv = ((TextView) v);
+                    tv.setText(I18nProperties.getEnumCaption(Month.values()[position - 1]));
+                }
+
+                return v;
+            }
+
+            @Override
+            public int getCount() {
+                return super.getCount() - 1;
+            }
+        };
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        adapter.add(new Item("Select entry", null));
+        spinnerElement.setAdapter(adapter);
+        spinnerElement.setSelection(adapter.getCount());
+    }
+
     public void initialize(List<Item> items, final AdapterView.OnItemSelectedListener[] moreListeners) {
         this.setSpinnerAdapter(items);
-        for(AdapterView.OnItemSelectedListener listener : moreListeners) {
+        for (AdapterView.OnItemSelectedListener listener : moreListeners) {
+            this.registerListener(listener);
+        }
+    }
+
+    public void initializeForMonth(List<Item> items, final AdapterView.OnItemSelectedListener[] moreListeners) {
+        this.setMonthSpinnerAdapter(items);
+        for (AdapterView.OnItemSelectedListener listener : moreListeners) {
             this.registerListener(listener);
         }
     }

@@ -32,7 +32,7 @@ import de.symeda.sormas.app.util.FormTab;
  * Created by Mate Strysewske on 08.03.2017.
  */
 
-public class EpiDataTab extends FormTab {
+public class EpiDataForm extends FormTab {
 
     public static final String KEY_CASE_UUID = "caseUuid";
 
@@ -76,7 +76,7 @@ public class EpiDataTab extends FormTab {
                                     e.printStackTrace();
                                 }
                             }
-                            EpiDataBurialTab burialTab = new EpiDataBurialTab();
+                            EpiDataBurialForm burialTab = new EpiDataBurialForm();
                             burialTab.initialize(
                                     (EpiDataBurial) burial,
                                     new Consumer() {
@@ -121,7 +121,7 @@ public class EpiDataTab extends FormTab {
                                     e.printStackTrace();
                                 }
                             }
-                            EpiDataGatheringTab gatheringTab = new EpiDataGatheringTab();
+                            EpiDataGatheringForm gatheringTab = new EpiDataGatheringForm();
                             gatheringTab.initialize(
                                     (EpiDataGathering) gathering,
                                     new Consumer() {
@@ -166,7 +166,7 @@ public class EpiDataTab extends FormTab {
                                     e.printStackTrace();
                                 }
                             }
-                            EpiDataTravelTab travelTab = new EpiDataTravelTab();
+                            EpiDataTravelForm travelTab = new EpiDataTravelForm();
                             travelTab.initialize(
                                     (EpiDataTravel) travel,
                                     new Consumer() {

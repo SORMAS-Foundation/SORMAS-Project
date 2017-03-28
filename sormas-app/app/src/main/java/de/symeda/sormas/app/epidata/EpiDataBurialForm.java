@@ -22,7 +22,7 @@ import de.symeda.sormas.app.util.DataUtils;
  * Created by Mate Strysewske on 09.03.2017.
  */
 
-public class EpiDataBurialTab extends AbstractFormDialogFragment<EpiDataBurial> {
+public class EpiDataBurialForm extends AbstractFormDialogFragment<EpiDataBurial> {
 
     private EpidataBurialEditFragmentLayoutBinding binding;
 

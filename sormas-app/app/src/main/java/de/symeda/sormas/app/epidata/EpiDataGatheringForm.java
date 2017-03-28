@@ -24,7 +24,7 @@ import de.symeda.sormas.app.util.DataUtils;
  * Created by Mate Strysewske on 09.03.2017.
  */
 
-public class EpiDataGatheringTab extends AbstractFormDialogFragment<EpiDataGathering> {
+public class EpiDataGatheringForm extends AbstractFormDialogFragment<EpiDataGathering> {
 
     private EpidataGatheringEditFragmentLayoutBinding binding;
 

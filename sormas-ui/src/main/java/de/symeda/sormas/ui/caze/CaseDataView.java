@@ -6,6 +6,7 @@ import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.samples.SampleListComponent;
 import de.symeda.sormas.ui.task.TaskListComponent;
+import de.symeda.sormas.ui.utils.CssStyles;
 
 /**
  * CaseDataView for reading and editing the case data fields.
@@ -30,9 +31,11 @@ public class CaseDataView extends AbstractCaseView {
     	setSubComponent(ControllerProvider.getCaseController().getCaseDataEditComponent(getCaseRef().getUuid()));
     	
     	TaskListComponent taskListComponent = new TaskListComponent(TaskContext.CASE, getCaseRef());
+    	taskListComponent.addStyleName(CssStyles.SUBLIST_MARGIN);
     	addComponent(taskListComponent);
     	
     	SampleListComponent sampleListComponent = new SampleListComponent(getCaseRef());
+    	sampleListComponent.addStyleName(CssStyles.SUBLIST_MARGIN_SMALL);
     	addComponent(sampleListComponent);
     }
 }

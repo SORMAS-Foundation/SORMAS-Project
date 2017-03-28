@@ -10,7 +10,7 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.visit.Visit;
-import de.symeda.sormas.app.caze.SymptomsEditTab;
+import de.symeda.sormas.app.caze.SymptomsEditForm;
 import de.symeda.sormas.app.util.FormTab;
 
 /**
@@ -20,8 +20,8 @@ import de.symeda.sormas.app.util.FormTab;
 public class VisitEditPagerAdapter extends FragmentStatePagerAdapter {
 
     private Bundle visitEditBundle;
-    private VisitEditDataTab visitEditDataTab;
-    private SymptomsEditTab symptomsEditTab;
+    private VisitEditDataForm visitEditDataForm;
+    private SymptomsEditForm symptomsEditForm;
 
 
     // Build a Constructor and assign the passed Values to appropriate values in the class
@@ -37,21 +37,21 @@ public class VisitEditPagerAdapter extends FragmentStatePagerAdapter {
         VisitEditTabs tab = VisitEditTabs.values()[position];
         switch (tab) {
             case VISIT_DATA:
-                visitEditDataTab = new VisitEditDataTab();
-                visitEditDataTab.setArguments(visitEditBundle);
-                frag = visitEditDataTab;
+                visitEditDataForm = new VisitEditDataForm();
+                visitEditDataForm.setArguments(visitEditBundle);
+                frag = visitEditDataForm;
                 break;
 
             case SYMPTOMS:
-                symptomsEditTab = new SymptomsEditTab();
+                symptomsEditForm = new SymptomsEditForm();
 
                 Bundle symptomsEditBundle = new Bundle();
                 // create new symptoms for new visit
-                if(visitEditBundle.getBoolean(VisitEditDataTab.NEW_VISIT)) {
-                    String keyContactUuid = visitEditBundle.getString(VisitEditDataTab.KEY_CONTACT_UUID);
+                if(visitEditBundle.getBoolean(VisitEditDataForm.NEW_VISIT)) {
+                    String keyContactUuid = visitEditBundle.getString(VisitEditDataForm.KEY_CONTACT_UUID);
                     Contact contact = DatabaseHelper.getContactDao().queryUuid(keyContactUuid);
                     symptomsEditBundle.putSerializable(Visit.DISEASE, contact.getCaze().getDisease());
-                    symptomsEditBundle.putBoolean(SymptomsEditTab.NEW_SYMPTOMS, true);
+                    symptomsEditBundle.putBoolean(SymptomsEditForm.NEW_SYMPTOMS, true);
                 }
                 // edit symptoms for given visit
                 else {
@@ -61,8 +61,8 @@ public class VisitEditPagerAdapter extends FragmentStatePagerAdapter {
                     symptomsEditBundle.putSerializable(Visit.DISEASE, visit.getDisease());
                 }
 
-                symptomsEditTab.setArguments(symptomsEditBundle);
-                frag = symptomsEditTab;
+                symptomsEditForm.setArguments(symptomsEditBundle);
+                frag = symptomsEditForm;
                 break;
         }
         return frag;
@@ -85,10 +85,10 @@ public class VisitEditPagerAdapter extends FragmentStatePagerAdapter {
         AbstractDomainObject ado = null;
         switch (tab) {
             case VISIT_DATA:
-                ado= visitEditDataTab.getData();
+                ado= visitEditDataForm.getData();
                 break;
             case SYMPTOMS:
-                ado = symptomsEditTab.getData();
+                ado = symptomsEditForm.getData();
                 break;
         }
         return ado;
@@ -98,9 +98,9 @@ public class VisitEditPagerAdapter extends FragmentStatePagerAdapter {
         VisitEditTabs tab = VisitEditTabs.values()[position];
         switch(tab) {
             case VISIT_DATA:
-                return visitEditDataTab;
+                return visitEditDataForm;
             case SYMPTOMS:
-                return symptomsEditTab;
+                return symptomsEditForm;
         }
         return null;
     }

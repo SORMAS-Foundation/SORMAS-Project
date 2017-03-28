@@ -395,4 +395,16 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
   .font-size-xlarge {
   	font-size: 20px;
   }
+  
+  .sublist-margin {
+  	margin-top: 50px;
+  }
+  
+  .sublist-margin-small {
+  	margin-top: 20px;
+  }
+  
+  .info-column-margin {
+  	margin-left: 25px;
+  }
 }

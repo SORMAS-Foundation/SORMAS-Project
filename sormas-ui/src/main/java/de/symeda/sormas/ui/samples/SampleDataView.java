@@ -10,6 +10,7 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.ShipmentStatus;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.caze.CaseInfoLayout;
+import de.symeda.sormas.ui.utils.CssStyles;
 
 public class SampleDataView extends AbstractSampleView {
 	
@@ -33,12 +34,14 @@ public class SampleDataView extends AbstractSampleView {
     	layout.setSpacing(true);
     	layout.addComponent(ControllerProvider.getSampleController().getSampleEditComponent(sampleDto.getUuid()));
     	CaseInfoLayout caseInfoLayout = new CaseInfoLayout(caseDto);
-    	caseInfoLayout.setMargin(new MarginInfo(true, false, false, false));
+    	caseInfoLayout.setMargin(new MarginInfo(true, false, false, true));
+    	caseInfoLayout.addStyleName(CssStyles.INFO_COLUMN_MARGIN);
     	layout.addComponent(caseInfoLayout);
     	addComponent(layout);
     	
 		if (sampleDto.getShipmentStatus() != ShipmentStatus.NOT_SHIPPED && sampleDto.getShipmentStatus() != ShipmentStatus.SHIPPED) {
 			SampleTestsComponent sampleTestsComponent = new SampleTestsComponent(getSampleRef());
+			sampleTestsComponent.addStyleName(CssStyles.SUBLIST_MARGIN);
 			addComponent(sampleTestsComponent);
 		}
 	}

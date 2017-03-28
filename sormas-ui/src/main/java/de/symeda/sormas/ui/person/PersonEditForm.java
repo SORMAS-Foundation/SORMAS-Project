@@ -1,5 +1,6 @@
 package de.symeda.sormas.ui.person;
 
+import java.time.Month;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -120,6 +121,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
     	months.setNullSelectionAllowed(true);
     	months.setNullSelectionItemId("");
     	months.addItems(DateHelper.getMonthsInYear());
+    	setItemCaptionsForMonths(months);
     	NativeSelect years = addField(PersonDto.BIRTH_DATE_YYYY, NativeSelect.class);
     	// @TODO: Done for nullselection Bug, fixed in Vaadin 7.7.3
     	years.setNullSelectionAllowed(true);
@@ -345,5 +347,20 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 				break;
 		
 		}
+	}
+	
+	private void setItemCaptionsForMonths(NativeSelect months) {
+		months.setItemCaption(1, I18nProperties.getEnumCaption(Month.JANUARY));
+		months.setItemCaption(2, I18nProperties.getEnumCaption(Month.FEBRUARY));
+		months.setItemCaption(3, I18nProperties.getEnumCaption(Month.MARCH));
+		months.setItemCaption(4, I18nProperties.getEnumCaption(Month.APRIL));
+		months.setItemCaption(5, I18nProperties.getEnumCaption(Month.MAY));
+		months.setItemCaption(6, I18nProperties.getEnumCaption(Month.JUNE));
+		months.setItemCaption(7, I18nProperties.getEnumCaption(Month.JULY));
+		months.setItemCaption(8, I18nProperties.getEnumCaption(Month.AUGUST));
+		months.setItemCaption(9, I18nProperties.getEnumCaption(Month.SEPTEMBER));
+		months.setItemCaption(10, I18nProperties.getEnumCaption(Month.OCTOBER));
+		months.setItemCaption(11, I18nProperties.getEnumCaption(Month.NOVEMBER));
+		months.setItemCaption(12, I18nProperties.getEnumCaption(Month.DECEMBER));
 	}
 }

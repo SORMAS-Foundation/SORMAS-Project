@@ -24,7 +24,7 @@ import de.symeda.sormas.app.backend.task.TaskDao;
  */
 public class TaskEditActivity extends AppCompatActivity {
 
-    private TaskTab taskTab;
+    private TaskForm taskForm;
 
     public TaskEditActivity() {
 
@@ -54,15 +54,15 @@ public class TaskEditActivity extends AppCompatActivity {
 
         // setting the fragment_frame
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        taskTab = new TaskTab();
-        taskTab.setArguments(getIntent().getExtras());
-        ft.add(R.id.fragment_frame, taskTab).commit();
+        taskForm = new TaskForm();
+        taskForm.setArguments(getIntent().getExtras());
+        ft.add(R.id.fragment_frame, taskForm).commit();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        taskTab.onResume();
+        taskForm.onResume();
     }
 
     @Override
@@ -90,7 +90,7 @@ public class TaskEditActivity extends AppCompatActivity {
 
                 return true;
             case R.id.action_save:
-                Task task = (Task)taskTab.getData();
+                Task task = (Task) taskForm.getData();
 
                 TaskDao taskDao = DatabaseHelper.getTaskDao();
                 taskDao.save(task);
