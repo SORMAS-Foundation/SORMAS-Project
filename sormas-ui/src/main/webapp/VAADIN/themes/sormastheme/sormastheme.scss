@@ -389,11 +389,14 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
   }
   
   .font-size-large {
-  	font-size: 16px;
+  	font-size: 18px;
   }
   
   .font-size-xlarge {
-  	font-size: 20px;
+  	font-size: 22px;
+  	li, ol {
+      line-height: 32px;
+	}
   }
   
   .sublist-margin {

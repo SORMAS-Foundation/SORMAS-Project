@@ -13317,11 +13317,15 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormastheme .font-size-large {
-	font-size: 16px;
+	font-size: 18px;
 }
 
 .sormastheme .font-size-xlarge {
-	font-size: 20px;
+	font-size: 22px;
+}
+
+.sormastheme .font-size-xlarge li, .sormastheme .font-size-xlarge ol {
+	line-height: 32px;
 }
 
 .sormastheme .sublist-margin {

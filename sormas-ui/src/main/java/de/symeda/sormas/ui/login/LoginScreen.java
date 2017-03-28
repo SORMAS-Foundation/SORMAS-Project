@@ -71,10 +71,10 @@ public class LoginScreen extends CssLayout {
         Label loginInfoText = new Label(
                 "<h1>SORMAS</h1>"
                 + "<p class=\"font-size-xlarge\">SORMAS stands for “Surveillance, Outbreak Response Management and Analysis System“</p>"
-                + "<ul class=\"font-size-large\">"
-                + "<li>To detect infection outbreaks without delay,</li>"
-                + "<li>To manage complex processes of infection control and containment and</li>"
-                + "<li>To ensure continuous analyses of the epidemiological situation.</li>"
+                + "<ul class=\"font-size-xlarge\">"
+                + "<li>Disease Prevention</li>"
+                + "<li>Disease Detection</li>"
+                + "<li>Outbreak Response</li>"
                 + "</ul>",
                 ContentMode.HTML);
         innerLayout.addComponent(loginInfoText);
