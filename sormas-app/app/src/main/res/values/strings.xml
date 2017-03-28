@@ -96,10 +96,10 @@
     <string name="headline_epidata_animalcontacts">Animal contacts</string>
     <string name="headline_epidata_environmentalexposure">Environmental exposure</string>
     <string name="headline_burial_address">Burial address</string>
-    <string name="headline_gathering_address">Gathering address</string>
+    <string name="headline_gathering_address">Event address</string>
     <string name="headline_previousHospitalization">Previous hospitalization</string>
     <string name="headline_burial">Burial</string>
-    <string name="headline_gathering">Gathering</string>
+    <string name="headline_gathering">Social event</string>
     <string name="headline_travel">Travel</string>
 
     <!-- forms -->
