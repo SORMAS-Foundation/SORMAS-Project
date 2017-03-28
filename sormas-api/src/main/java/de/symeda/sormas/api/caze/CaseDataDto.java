@@ -45,6 +45,7 @@ public class CaseDataDto extends CaseReferenceDto {
 	public static final String MEASLES_VACCINATION = "measlesVaccination";
 	public static final String MEASLES_DOSES = "measlesDoses";
 	public static final String MEASLES_VACCINATION_INFO_SOURCE = "measlesVaccinationInfoSource";
+	public static final String EPID_NUMBER = "epidNumber";
 	
 	private PersonReferenceDto person;
 	private CaseClassification caseClassification;
@@ -70,6 +71,8 @@ public class CaseDataDto extends CaseReferenceDto {
 	private String measlesDoses;
 	@Diseases({Disease.MEASLES})
 	private VaccinationInfoSource measlesVaccinationInfoSource;
+	
+	private String epidNumber;
 
 	private UserReferenceDto surveillanceOfficer;
 	private UserReferenceDto caseOfficer;
@@ -245,6 +248,14 @@ public class CaseDataDto extends CaseReferenceDto {
 
 	public void setMeaslesVaccinationInfoSource(VaccinationInfoSource measlesVaccinationInfoSource) {
 		this.measlesVaccinationInfoSource = measlesVaccinationInfoSource;
+	}
+	
+	public String getEpidNumber() {
+		return epidNumber;
+	}
+	
+	public void setEpidNumber(String epidNumber) {
+		this.epidNumber = epidNumber;
 	}
 
 }

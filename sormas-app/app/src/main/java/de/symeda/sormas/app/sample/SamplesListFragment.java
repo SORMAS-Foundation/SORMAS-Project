@@ -66,12 +66,14 @@ public class SamplesListFragment extends ListFragment {
         listAdapter.clear();
         listAdapter.addAll(samples);
 
-        if (listAdapter.getCount() == 0) {
-            this.getView().findViewById(R.id.empty_list_hint).setVisibility(View.VISIBLE);
-            this.getView().findViewById(android.R.id.list).setVisibility(View.GONE);
-        } else {
-            this.getView().findViewById(R.id.empty_list_hint).setVisibility(View.GONE);
-            this.getView().findViewById(android.R.id.list).setVisibility(View.VISIBLE);
+        if (parentCaseUuid != null) {
+            if (listAdapter.getCount() == 0) {
+                this.getView().findViewById(R.id.empty_list_hint).setVisibility(View.VISIBLE);
+                this.getView().findViewById(android.R.id.list).setVisibility(View.GONE);
+            } else {
+                this.getView().findViewById(R.id.empty_list_hint).setVisibility(View.GONE);
+                this.getView().findViewById(android.R.id.list).setVisibility(View.VISIBLE);
+            }
         }
 
         final SwipeRefreshLayout refreshLayout = (SwipeRefreshLayout)getView().findViewById(R.id.swiperefresh);

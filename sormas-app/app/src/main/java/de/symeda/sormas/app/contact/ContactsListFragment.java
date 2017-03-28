@@ -73,14 +73,6 @@ public class ContactsListFragment extends ListFragment {
                 ArrayAdapter<Contact> listAdapter = (ArrayAdapter<Contact>)getListAdapter();
                 listAdapter.clear();
                 listAdapter.addAll(contacts);
-
-                if (listAdapter.getCount() == 0) {
-                    getView().findViewById(R.id.empty_list_hint).setVisibility(View.VISIBLE);
-                    getView().findViewById(android.R.id.list).setVisibility(View.GONE);
-                } else {
-                    getView().findViewById(R.id.empty_list_hint).setVisibility(View.GONE);
-                    getView().findViewById(android.R.id.list).setVisibility(View.VISIBLE);
-                }
             }
         });
     }

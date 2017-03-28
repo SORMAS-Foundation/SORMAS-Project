@@ -139,7 +139,7 @@ public class EpiDataBurialsField extends AbstractTableField<EpiDataBurialDto> {
 			});
 		}
 		
-		VaadinUiUtil.showModalPopupWindow(editView, "Burial information");
+		VaadinUiUtil.showModalPopupWindow(editView, "Burial");
 	}
 	
 	@Override

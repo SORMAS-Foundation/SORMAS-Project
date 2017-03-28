@@ -383,4 +383,16 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
   .v-Notification.error {
     background: #C31924;
   }
+  
+  .cursor-link {
+  	cursor: pointer;
+  }
+  
+  .font-size-large {
+  	font-size: 16px;
+  }
+  
+  .font-size-xlarge {
+  	font-size: 20px;
+  }
 }

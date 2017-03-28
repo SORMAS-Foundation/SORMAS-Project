@@ -9,13 +9,12 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TextField;
-import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.Vaccination;
-import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
@@ -23,18 +22,19 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.Diseases.DiseasesConfiguration;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
 @SuppressWarnings("serial")
 public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	
-	private static final String STATUS_CHANGE = "statusChange";
+//	private static final String STATUS_CHANGE = "statusChange";
 	private static final String MEDICAL_INFORMATION_LOC = "medicalInformationLoc";
+	private static final String REPORT_INFO_LOC = "reportInfoLoc";
 	
     private static final String HTML_LAYOUT = 
     		LayoutUtil.h3(CssStyles.VSPACE3, "Case data")+
@@ -43,40 +43,36 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					LayoutUtil.fluidRowLocs(CaseDataDto.CASE_CLASSIFICATION) +
 					LayoutUtil.fluidRowLocs(CaseDataDto.INVESTIGATION_STATUS) +
 		    		LayoutUtil.fluidRowCss(CssStyles.VSPACE4,
-		    				LayoutUtil.fluidColumn(8, 0, 
-		    						LayoutUtil.fluidRowLocs(CaseDataDto.UUID, CaseDataDto.DISEASE) +
-		    						LayoutUtil.fluidRowLocs(CaseDataDto.REPORTING_USER, CaseDataDto.REPORT_DATE) +
-		    						LayoutUtil.fluidRowLocs(CaseDataDto.REGION, CaseDataDto.DISTRICT) +
-				    				LayoutUtil.fluidRowLocs(CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY)),
-		    				LayoutUtil.fluidColumnLoc(4, 0,  STATUS_CHANGE)
-		    		)
+		    				LayoutUtil.fluidRowLocs(CaseDataDto.UUID, REPORT_INFO_LOC) +
+		    				LayoutUtil.fluidRowLocs(CaseDataDto.EPID_NUMBER, CaseDataDto.DISEASE) +
+		    				LayoutUtil.fluidRowLocs(CaseDataDto.REGION, CaseDataDto.DISTRICT) +
+				    		LayoutUtil.fluidRowLocs(CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY))
 		    )+
 			LayoutUtil.loc(MEDICAL_INFORMATION_LOC) +
 			LayoutUtil.fluidRow(
-					LayoutUtil.fluidColumn(8, 0, 
-						LayoutUtil.fluidRowLocs(CaseDataDto.PREGNANT, "") +
-						LayoutUtil.fluidRowLocs(CaseDataDto.MEASLES_VACCINATION, CaseDataDto.MEASLES_DOSES) +
-						LayoutUtil.fluidRowLocs(CaseDataDto.MEASLES_VACCINATION_INFO_SOURCE, "")
-					)
+					LayoutUtil.fluidRowLocs(CaseDataDto.PREGNANT, "") +
+					LayoutUtil.fluidRowLocs(CaseDataDto.MEASLES_VACCINATION, CaseDataDto.MEASLES_DOSES) +
+					LayoutUtil.fluidRowLocs(CaseDataDto.MEASLES_VACCINATION_INFO_SOURCE, "")
 			)+
     		LayoutUtil.h3(CssStyles.VSPACE3, "Responsible users")+
     		LayoutUtil.divCss(CssStyles.VSPACE2, 
-    				LayoutUtil.fluidRowLocs(CaseDataDto.SURVEILLANCE_OFFICER, CaseDataDto.CONTACT_OFFICER, "")
+    				LayoutUtil.fluidRowLocs(CaseDataDto.SURVEILLANCE_OFFICER, CaseDataDto.CONTACT_OFFICER)
 			);
     	
 
-    private final VerticalLayout statusChangeLayout;
+//    private final VerticalLayout statusChangeLayout;
     private final PersonDto person;
     private final Disease disease;
+	private Label reportInfoLabel;
 
     public CaseDataForm(PersonDto person, Disease disease) {
         super(CaseDataDto.class, CaseDataDto.I18N_PREFIX);
         this.person = person;
         this.disease = disease;
-        statusChangeLayout = new VerticalLayout();
-        statusChangeLayout.setSpacing(false);
-        statusChangeLayout.setMargin(false);
-        getContent().addComponent(statusChangeLayout, STATUS_CHANGE);
+//        statusChangeLayout = new VerticalLayout();
+//        statusChangeLayout.setSpacing(false);
+//        statusChangeLayout.setMargin(false);
+//        getContent().addComponent(statusChangeLayout, STATUS_CHANGE);
         addFields();
     }
 
@@ -87,10 +83,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
     	}
     	
     	addField(CaseDataDto.UUID, TextField.class);
+    	addField(CaseDataDto.EPID_NUMBER, TextField.class);
     	addField(CaseDataDto.CASE_CLASSIFICATION, OptionGroup.class);
     	addField(CaseDataDto.INVESTIGATION_STATUS, OptionGroup.class);
-    	addField(CaseDataDto.REPORTING_USER, ComboBox.class);
-    	addField(CaseDataDto.REPORT_DATE, DateTimeField.class);
     	addField(CaseDataDto.DISEASE, NativeSelect.class);
     	
     	ComboBox region = addField(CaseDataDto.REGION, ComboBox.class);
@@ -146,8 +141,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
     	setRequired(true, CaseDataDto.CASE_CLASSIFICATION, CaseDataDto.INVESTIGATION_STATUS,
     			CaseDataDto.REGION, CaseDataDto.DISTRICT, CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY);
 
-    	setReadOnly(true, CaseDataDto.UUID, CaseDataDto.DISEASE, CaseDataDto.INVESTIGATION_STATUS,
-    			CaseDataDto.REPORTING_USER, CaseDataDto.REPORT_DATE);
+    	setReadOnly(true, CaseDataDto.UUID, CaseDataDto.DISEASE, CaseDataDto.INVESTIGATION_STATUS);
     	
     	Sex personSex = person.getSex();
     	if (personSex != Sex.FEMALE) {
@@ -171,6 +165,22 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				break;
 			}
 		}
+		
+		reportInfoLabel = new Label();
+		reportInfoLabel.setContentMode(ContentMode.HTML);
+		reportInfoLabel.setCaption(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, REPORT_INFO_LOC));
+		getContent().addComponent(reportInfoLabel, REPORT_INFO_LOC);
+		addValueChangeListener(e -> {
+			updateReportInfo();
+		});
+	}
+    
+    private void updateReportInfo() {
+		CaseDataDto caseDto = getValue();
+		StringBuilder sb = new StringBuilder();
+		sb.append(DateHelper.formatShortDateTime(caseDto.getReportDate()) + "<br/>");
+		sb.append(caseDto.getReportingUser().toString());
+		reportInfoLabel.setValue(sb.toString());
 	}
     
 	@Override 

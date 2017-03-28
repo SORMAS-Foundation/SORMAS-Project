@@ -21,7 +21,9 @@ import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.ui.dashboard.DashboardView;
 import de.symeda.sormas.ui.login.LoginHelper;
+import de.symeda.sormas.ui.utils.CssStyles;
 
 /**
  * Responsive navigation menu presenting a list of available views to the user.
@@ -54,6 +56,13 @@ public class Menu extends CssLayout {
         title.setSizeUndefined();
         Image image = new Image(null, new ThemeResource("img/sormas-logo.png"));
         image.setStyleName("logo");
+        image.addStyleName(CssStyles.CURSOR_LINK);
+        image.addClickListener(new com.vaadin.event.MouseEvents.ClickListener() {
+			@Override
+			public void click(com.vaadin.event.MouseEvents.ClickEvent event) {
+	        	SormasUI.get().getNavigator().navigateTo(DashboardView.VIEW_NAME);
+			}
+        });
         top.addComponent(image);
         top.addComponent(title);
         menuPart.addComponent(top);

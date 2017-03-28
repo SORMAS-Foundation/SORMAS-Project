@@ -104,6 +104,9 @@ public class Case extends AbstractDomainObject {
 	@Enumerated(EnumType.STRING)
 	private VaccinationInfoSource measlesVaccinationInfoSource;
 
+	@Column(length=512)
+	private String epidNumber;
+
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private Hospitalization hospitalization;
 
@@ -259,6 +262,14 @@ public class Case extends AbstractDomainObject {
 
 	public void setMeaslesVaccinationInfoSource(VaccinationInfoSource measlesVaccinationInfoSource) {
 		this.measlesVaccinationInfoSource = measlesVaccinationInfoSource;
+	}
+
+	public String getEpidNumber() {
+		return epidNumber;
+	}
+
+	public void setEpidNumber(String epidNumber) {
+		this.epidNumber = epidNumber;
 	}
 
 	public Hospitalization getHospitalization() {

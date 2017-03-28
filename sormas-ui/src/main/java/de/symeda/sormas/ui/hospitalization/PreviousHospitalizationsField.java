@@ -72,15 +72,15 @@ public class PreviousHospitalizationsField extends AbstractTableField<PreviousHo
 		});
 
 		table.setVisibleColumns(EDIT_COLUMN_ID, PERIOD, PreviousHospitalizationDto.HEALTH_FACILITY, WARD, LGA,
-				PreviousHospitalizationDto.ISOLATED, PreviousHospitalizationDto.DESCRIPTION);
+				PreviousHospitalizationDto.DESCRIPTION, PreviousHospitalizationDto.ISOLATED);
 
 		table.setColumnExpandRatio(EDIT_COLUMN_ID, 0);
 		table.setColumnExpandRatio(PERIOD, 0);
 		table.setColumnExpandRatio(PreviousHospitalizationDto.HEALTH_FACILITY, 0);
 		table.setColumnExpandRatio(WARD, 0);
 		table.setColumnExpandRatio(LGA, 0);
-		table.setColumnExpandRatio(PreviousHospitalizationDto.ISOLATED, 0);
 		table.setColumnExpandRatio(PreviousHospitalizationDto.DESCRIPTION, 0);
+		table.setColumnExpandRatio(PreviousHospitalizationDto.ISOLATED, 0);
 
 		for (Object columnId : table.getVisibleColumns()) {
 			table.setColumnHeader(columnId,
@@ -139,7 +139,7 @@ public class PreviousHospitalizationsField extends AbstractTableField<PreviousHo
 			});
 		}
 
-		VaadinUiUtil.showModalPopupWindow(editView, "Previous hospitalization information");
+		VaadinUiUtil.showModalPopupWindow(editView, "Previous hospitalization");
 
 	}
 }

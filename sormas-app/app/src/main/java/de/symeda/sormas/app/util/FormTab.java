@@ -1,6 +1,7 @@
 package de.symeda.sormas.app.util;
 
 import android.databinding.BindingAdapter;
+import android.graphics.Color;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
@@ -9,6 +10,7 @@ import android.widget.CheckBox;
 import android.widget.ImageButton;
 
 import de.symeda.sormas.api.sample.ShipmentStatus;
+import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.component.LabelField;
@@ -27,6 +29,11 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
         // set the TextField for the location
         final LabelField locationText = (LabelField) getView().findViewById(locationFieldId);
         locationText.setValue(location.toString());
+
+        if (locationText.getValue() == null || locationText.getValue().isEmpty()) {
+            locationText.setValue("Enter location");
+            locationText.setTextColor(Color.LTGRAY);
+        }
 
         ImageButton btn = (ImageButton) getView().findViewById(locationBtnId);
         btn.setOnClickListener(new View.OnClickListener() {

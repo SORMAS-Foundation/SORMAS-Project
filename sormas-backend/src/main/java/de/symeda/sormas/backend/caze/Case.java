@@ -63,6 +63,7 @@ public class Case extends AbstractDomainObject {
 	public static final String MEASLES_VACCINATION = "measlesVaccination";
 	public static final String MEASLES_DOSES = "measlesDoses";
 	public static final String MEASLES_VACCINATION_INFO_SOURCE = "measlesVaccinationInfoSource";
+	public static final String EPID_NUMBER = "epidNumber";
 
 	private Person person;
 	private String description;
@@ -99,6 +100,8 @@ public class Case extends AbstractDomainObject {
 	private Vaccination measlesVaccination;
 	private String measlesDoses;
 	private VaccinationInfoSource measlesVaccinationInfoSource;
+	
+	private String epidNumber;
 	
 	private List<Task> tasks;
 	
@@ -344,6 +347,14 @@ public class Case extends AbstractDomainObject {
 	}
 	public void setMeaslesVaccinationInfoSource(VaccinationInfoSource measlesVaccinationInfoSource) {
 		this.measlesVaccinationInfoSource = measlesVaccinationInfoSource;
+	}
+
+	@Column(length = 512)
+	public String getEpidNumber() {
+		return epidNumber;
+	}
+	public void setEpidNumber(String epidNumber) {
+		this.epidNumber = epidNumber;
 	}
 	
 	@Override

@@ -32,6 +32,15 @@
                 android:textStyle="bold"
                 android:paddingBottom="10dp" />
 
+            <de.symeda.sormas.app.component.TextField
+                android:id="@+id/caseData_epidNumber"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/field_padding"
+                android:paddingBottom="@dimen/field_padding"
+                android:nextFocusForward="@+id/caseData_region"
+                android:value="@={caze.epidNumber}"/>
+
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"

@@ -1,6 +1,7 @@
 package de.symeda.sormas.app.component;
 
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
@@ -131,6 +132,11 @@ public class LocationDialog extends AlertDialog.Builder {
 
         // set the TextField for the location
         locationText.setValue(location.toString());
+
+        if (locationText.getValue() == null || locationText.getValue().isEmpty()) {
+            locationText.setValue("Enter location");
+            locationText.setTextColor(Color.LTGRAY);
+        }
 
         btn.setOnClickListener(new View.OnClickListener() {
             @Override

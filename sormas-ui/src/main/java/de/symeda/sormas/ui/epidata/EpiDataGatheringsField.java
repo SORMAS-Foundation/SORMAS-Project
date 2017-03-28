@@ -119,7 +119,7 @@ public class EpiDataGatheringsField extends AbstractTableField<EpiDataGatheringD
 			});
 		}
 		
-		VaadinUiUtil.showModalPopupWindow(editView, "Gathering information");
+		VaadinUiUtil.showModalPopupWindow(editView, "Gathering");
 	}
 	
 	@Override

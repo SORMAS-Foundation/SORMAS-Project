@@ -13311,3 +13311,15 @@ div.v-layout.v-horizontal.v-widget {
 .sormastheme .v-Notification.error {
 	background: #C31924;
 }
+
+.sormastheme .cursor-link {
+	cursor: pointer;
+}
+
+.sormastheme .font-size-large {
+	font-size: 16px;
+}
+
+.sormastheme .font-size-xlarge {
+	font-size: 20px;
+}

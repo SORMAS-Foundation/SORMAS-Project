@@ -94,6 +94,10 @@ public class LabelField extends PropertyField<String> {
         view.inverseBindingListener = listener;
     }
 
+    public void setTextColor(int textColor) {
+        textContent.setTextColor(textColor);
+    }
+
     /**
      * Inflates the views in the layout.
      *

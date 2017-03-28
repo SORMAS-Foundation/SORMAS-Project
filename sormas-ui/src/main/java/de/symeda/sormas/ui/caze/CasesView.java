@@ -14,6 +14,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -108,6 +109,13 @@ public class CasesView extends AbstractView {
         diseaseFilter.addItems((Object[])Disease.values());
         diseaseFilter.addValueChangeListener(e->grid.setDiseaseFilter(((Disease)e.getProperty().getValue())));
         filterLayout.addComponent(diseaseFilter);
+        
+        ComboBox classificationFilter = new ComboBox();
+        classificationFilter.setWidth(200, Unit.PIXELS);
+        classificationFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.CASE_CLASSIFICATION));
+        classificationFilter.addItems((Object[])CaseClassification.values());
+        classificationFilter.addValueChangeListener(e->grid.setClassificationFilter(((CaseClassification)e.getProperty().getValue())));
+        filterLayout.addComponent(classificationFilter);        
 
         UserDto user = LoginHelper.getCurrentUser();
         if(user.getRegion() != null) {

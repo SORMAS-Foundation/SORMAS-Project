@@ -93,7 +93,7 @@ public class CaseGrid extends Grid {
 			}
         });
         
-        setColumns(CaseDataDto.UUID, DISEASE_SHORT, 
+        setColumns(CaseDataDto.UUID, CaseDataDto.EPID_NUMBER, DISEASE_SHORT, 
         		CaseDataDto.CASE_CLASSIFICATION, CaseDataDto.INVESTIGATION_STATUS, FIRST_NAME, LAST_NAME, 
         		CaseDataDto.DISTRICT, CaseDataDto.REPORT_DATE, NUMBER_OF_PENDING_TASKS);
 

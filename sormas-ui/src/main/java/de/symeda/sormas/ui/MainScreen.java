@@ -71,7 +71,7 @@ public class MainScreen extends HorizontalLayout {
         public boolean beforeViewChange(ViewChangeEvent event) {
         	if (event.getViewName().isEmpty()) {
         		// redirect to default view
-        		SormasUI.get().getNavigator().navigateTo(CasesView.VIEW_NAME);
+        		SormasUI.get().getNavigator().navigateTo(DashboardView.VIEW_NAME);
         		return false;
         	}
             return true;

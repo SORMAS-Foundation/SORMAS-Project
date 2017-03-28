@@ -86,6 +86,11 @@ public final class CssStyles {
 	
 	public static final String CALLOUT = "callout";
 	public static final String DASHBOARD_KEY = "dashboard-key";
+	
+	public static final String CURSOR_LINK = "cursor-link";
+	
+	public static final String FONT_SIZE_LARGE = "font-size-large";
+	public static final String FONT_SIZE_XLARGE = "font-size-xlarge";
 
 
 	public static void style(Component component, String... styles) {

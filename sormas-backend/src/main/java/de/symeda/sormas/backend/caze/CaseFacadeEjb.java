@@ -187,6 +187,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setMeaslesVaccination(source.getMeaslesVaccination());
 		target.setMeaslesDoses(source.getMeaslesDoses());
 		target.setMeaslesVaccinationInfoSource(source.getMeaslesVaccinationInfoSource());
+		
+		target.setEpidNumber(source.getEpidNumber());
 
 		return target;
 	}
@@ -233,6 +235,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setMeaslesVaccination(source.getMeaslesVaccination());
 		target.setMeaslesDoses(source.getMeaslesDoses());
 		target.setMeaslesVaccinationInfoSource(source.getMeaslesVaccinationInfoSource());
+		
+		target.setEpidNumber(source.getEpidNumber());
 		
 		return target;
 	}

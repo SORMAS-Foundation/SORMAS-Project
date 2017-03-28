@@ -100,7 +100,7 @@ public class EpiDataTravelsField extends AbstractTableField<EpiDataTravelDto> {
 			});
 		}
 		
-		VaadinUiUtil.showModalPopupWindow(editView, "Travel information");
+		VaadinUiUtil.showModalPopupWindow(editView, "Travel");
 	}
 	
 }
