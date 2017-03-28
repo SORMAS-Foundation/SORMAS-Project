@@ -26,6 +26,9 @@ public class TaskEditActivity extends AppCompatActivity {
 
     private TaskForm taskForm;
 
+    private String parentCaseUuid;
+    private String parentContactUuid;
+
     public TaskEditActivity() {
 
     }
@@ -33,11 +36,6 @@ public class TaskEditActivity extends AppCompatActivity {
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-
-        Bundle extras = intent.getExtras();
-        if(extras != null) {
-
-        }
     }
 
     @Override
@@ -50,6 +48,16 @@ public class TaskEditActivity extends AppCompatActivity {
             setSupportActionBar(toolbar);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setTitle(getResources().getText(R.string.headline_task) + " - " + ConfigProvider.getUser().getUserRole().toShortString());
+        }
+
+        Bundle extras = getIntent().getExtras();
+        if(extras != null) {
+            if (extras.containsKey(TasksListFragment.KEY_CASE_UUID)) {
+                parentCaseUuid = (String) extras.get(TasksListFragment.KEY_CASE_UUID);
+            }
+            if (extras.containsKey(TasksListFragment.KEY_CONTACT_UUID)) {
+                parentContactUuid = (String) extras.get(TasksListFragment.KEY_CONTACT_UUID);
+            }
         }
 
         // setting the fragment_frame
@@ -86,7 +94,12 @@ public class TaskEditActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button
             case android.R.id.home:
-                NavUtils.navigateUpFromSameTask(this);
+                if (parentCaseUuid != null || parentContactUuid != null) {
+                    NavUtils.navigateUpFromSameTask(this);
+                } else {
+                    Intent intent = new Intent(this, TasksActivity.class);
+                    startActivity(intent);
+                }
 
                 return true;
             case R.id.action_save:
