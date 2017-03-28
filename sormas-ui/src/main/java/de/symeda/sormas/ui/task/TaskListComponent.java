@@ -110,7 +110,7 @@ public class TaskListComponent extends AbstractView {
     		header = new Label("Contact tasks");
     		break;
     	case EVENT:
-    		header = new Label("Event tasks");
+    		header = new Label("Alert tasks");
     		break;
     	default:
     		header = new Label("Tasks");

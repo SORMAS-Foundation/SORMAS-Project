@@ -25,7 +25,7 @@ public class AbstractEventView extends AbstractSubNavigationView {
 		eventRef = FacadeProvider.getEventFacade().getReferenceByUuid(params);
 		
 		menu.removeAllViews();
-		menu.addView(EventsView.VIEW_NAME, "Events list");
+		menu.addView(EventsView.VIEW_NAME, "Alerts list");
 		menu.addView(EventDataView.VIEW_NAME, I18nProperties.getFieldCaption(EventDto.I18N_PREFIX), params);
 		menu.addView(EventParticipantsView.VIEW_NAME, I18nProperties.getPrefixFieldCaption(EventDto.I18N_PREFIX, "eventParticipants"), params);
 		infoLabel.setValue(eventRef.getCaption());

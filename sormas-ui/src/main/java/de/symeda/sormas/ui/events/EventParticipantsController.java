@@ -41,7 +41,7 @@ public class EventParticipantsController {
 					eventParticipant.setPerson(FacadeProvider.getPersonFacade().getPersonByUuid(person.getUuid()));
 					
 					eventParticipantFacade.saveEventParticipant(eventParticipant);
-					Notification.show("New event person created", Type.WARNING_MESSAGE);
+					Notification.show("New alert person created", Type.WARNING_MESSAGE);
 					refreshView();
 				}
 		);
@@ -59,13 +59,13 @@ public class EventParticipantsController {
 					EventParticipantDto dto = editForm.getValue();
 					personFacade.savePerson(dto.getPerson());
 					dto = eventParticipantFacade.saveEventParticipant(dto);
-					Notification.show("Event person data saved", Type.WARNING_MESSAGE);
+					Notification.show("Alert person data saved", Type.WARNING_MESSAGE);
 					refreshView();
 				}
 			}
 		});
 		
-		Window window = VaadinUiUtil.showModalPopupWindow(editView, "Edit event person");
+		Window window = VaadinUiUtil.showModalPopupWindow(editView, "Edit alert person");
         // visit form is too big for typical screens
 		window.setWidth(editForm.getWidth() + 40, Unit.PIXELS); 
 		window.setHeight(80, Unit.PERCENTAGE); 

@@ -55,7 +55,7 @@ public class EventsView extends AbstractView {
 		topLayout.setWidth(100, Unit.PERCENTAGE);
 		topLayout.addStyleName(CssStyles.VSPACE3);
 		
-		Label header = new Label("Events");
+		Label header = new Label("Alerts");
 		header.setSizeUndefined();
 		CssStyles.style(header, CssStyles.H2, CssStyles.NO_MARGIN);
 		topLayout.addComponent(header);
@@ -70,7 +70,7 @@ public class EventsView extends AbstractView {
 			topLayout.addComponent(statusButton);
 		}
 		
-		createButton = new Button("New event");
+		createButton = new Button("New alert");
 		createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 		createButton.setIcon(FontAwesome.PLUS_CIRCLE);
 		createButton.addClickListener(e -> ControllerProvider.getEventController().create());

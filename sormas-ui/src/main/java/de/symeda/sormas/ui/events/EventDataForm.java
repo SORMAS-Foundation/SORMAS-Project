@@ -33,7 +33,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 	private static final String STATUS_CHANGE = "statusChange";
 	
 	private static final String HTML_LAYOUT = 
-			LayoutUtil.h3(CssStyles.VSPACE3, "Event data") +
+			LayoutUtil.h3(CssStyles.VSPACE3, "Alert data") +
 			LayoutUtil.divCss(CssStyles.VSPACE2,
 					LayoutUtil.fluidRowCss(CssStyles.VSPACE4,
 							LayoutUtil.fluidColumn(12, 0,

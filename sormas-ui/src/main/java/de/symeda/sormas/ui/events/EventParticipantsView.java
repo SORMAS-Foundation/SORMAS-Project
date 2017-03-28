@@ -48,7 +48,7 @@ public class EventParticipantsView extends AbstractEventView {
 		topLayout.setSpacing(true);
 		topLayout.setWidth("100%");
 		
-		Label header = new Label("Event persons");
+		Label header = new Label("Alert persons");
 		header.setSizeUndefined();
 		CssStyles.style(header, CssStyles.H2, CssStyles.NO_MARGIN);
 		topLayout.addComponent(header);
