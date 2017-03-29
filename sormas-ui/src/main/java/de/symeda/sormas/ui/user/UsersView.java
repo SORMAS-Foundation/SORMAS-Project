@@ -71,16 +71,6 @@ public class UsersView extends AbstractView {
     	header.setSizeUndefined();
     	CssStyles.style(header, CssStyles.H2, CssStyles.NO_MARGIN);
     	topLayout.addComponent(header);
-    	
-    	Button statusAll = new Button("all", e -> grid.setUserRoleFilter(null));
-        statusAll.setStyleName(ValoTheme.BUTTON_LINK);
-        topLayout.addComponent(statusAll);
-
-        for (UserRole role : UserRole.getAssignableRoles(LoginHelper.getCurrentUserRoles())) {
-	    	Button userRoleButton = new Button(role.toString(), e -> grid.setUserRoleFilter(role));
-	    	userRoleButton.setStyleName(ValoTheme.BUTTON_LINK);
-	        topLayout.addComponent(userRoleButton);
-        }
 
         createButton = new Button("New user");
         createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
@@ -109,6 +99,17 @@ public class UsersView extends AbstractView {
         });
         	
         filterLayout.addComponent(activeFilter);
+        
+        ComboBox roleFilter = new ComboBox();
+        roleFilter.setWidth(200, Unit.PIXELS);
+        roleFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(UserDto.I18N_PREFIX, UserDto.USER_ROLES));
+        roleFilter.addItems(UserRole.getAssignableRoles(LoginHelper.getCurrentUserRoles()));
+        roleFilter.addValueChangeListener(e -> {
+        	UserRole value = (UserRole) e.getProperty().getValue();
+        	grid.setUserRoleFilter(value);
+        });
+        
+        filterLayout.addComponent(roleFilter);
 
         TextField filter = new TextField();
         filter.setWidth(200, Unit.PIXELS);

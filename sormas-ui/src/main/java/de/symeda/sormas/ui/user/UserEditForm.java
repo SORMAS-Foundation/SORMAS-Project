@@ -87,13 +87,19 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
     			district.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(regionDto.getUuid()));
     		}
     	});
+    	
+    	// for informant
+    	ComboBox associatedOfficer = addField(UserDto.ASSOCIATED_OFFICER, ComboBox.class);
 
     	ComboBox healthFacility = addField(UserDto.HEALTH_FACILITY, ComboBox.class);
     	district.addValueChangeListener(e -> {
     		healthFacility.removeAllItems();
+    		associatedOfficer.removeAllItems();
     		DistrictReferenceDto districtDto = (DistrictReferenceDto)e.getProperty().getValue();
     		if (districtDto != null) {
     			healthFacility.addItems(FacadeProvider.getFacilityFacade().getAllByDistrict(districtDto));
+    	    	associatedOfficer.addItems(FacadeProvider.getUserFacade().getAssignableUsersByDistrict(
+    	    			districtDto, false, UserRole.SURVEILLANCE_OFFICER));
     		}
     	});
 
@@ -102,10 +108,6 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
     	
 		region.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
 
-    	// for informant
-    	ComboBox associatedOfficer = addField(UserDto.ASSOCIATED_OFFICER, ComboBox.class);
-    	associatedOfficer.addItems(FacadeProvider.getUserFacade().getAssignableUsers(
-    			LoginHelper.getCurrentUserAsReference(), UserRole.SURVEILLANCE_OFFICER));
     	
     	setRequired(true, UserDto.FIRST_NAME, UserDto.LAST_NAME, UserDto.USER_NAME, UserDto.USER_ROLES);
     	addValidators(UserDto.USER_NAME, new UserNameValidator());

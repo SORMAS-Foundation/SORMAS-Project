@@ -3,6 +3,7 @@ package de.symeda.sormas.ui.user;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.vaadin.navigator.View;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.shared.ui.label.ContentMode;
@@ -83,7 +84,7 @@ public class UserController {
         		if (userEditForm.getFieldGroup().isValid()) {
         			UserDto dto = userEditForm.getValue();
         			uf.saveUser(dto);
-        			overview();
+        			refreshView();
         		}
         	}
         });
@@ -114,7 +115,7 @@ public class UserController {
         		if (createForm.getFieldGroup().isValid()) {
         			UserDto dto = createForm.getValue();
         			uf.saveUser(dto);
-        			overview();
+        			refreshView();
         		}
         	}
         });
@@ -175,6 +176,14 @@ public class UserController {
 		}
 		
 		return userRefs;
+	}
+	
+	private void refreshView() {
+		View currentView = SormasUI.get().getNavigator().getCurrentView();
+		if (currentView instanceof UsersView) {
+			// force refresh, because view didn't change
+			((UsersView) currentView).enter(null);
+		}
 	}
 
 }
