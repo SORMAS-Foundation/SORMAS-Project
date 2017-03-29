@@ -48,7 +48,7 @@ public class EventParticipantsController {
 								if (person != null) {
 									dto.setPerson(FacadeProvider.getPersonFacade().getPersonByUuid(person.getUuid()));
 									eventParticipantFacade.saveEventParticipant(dto);
-									Notification.show("New alert person created", Type.ASSISTIVE_NOTIFICATION);
+									Notification.show("New person created", Type.ASSISTIVE_NOTIFICATION);
 				        			ControllerProvider.getEventParticipantController().editEventParticipant(eventParticipant);
 								}
 							});
@@ -56,7 +56,7 @@ public class EventParticipantsController {
 			}
 		});
 		
-		VaadinUiUtil.showModalPopupWindow(createComponent, "Create new alert person");
+		VaadinUiUtil.showModalPopupWindow(createComponent, "Create new person");
 	}
 	
 	public void editEventParticipant(EventParticipantDto eventParticipant) {
@@ -71,13 +71,13 @@ public class EventParticipantsController {
 					EventParticipantDto dto = editForm.getValue();
 					personFacade.savePerson(dto.getPerson());
 					dto = eventParticipantFacade.saveEventParticipant(dto);
-					Notification.show("Alert person data saved", Type.WARNING_MESSAGE);
+					Notification.show("Person data saved", Type.WARNING_MESSAGE);
 					refreshView();
 				}
 			}
 		});
 		
-		Window window = VaadinUiUtil.showModalPopupWindow(editView, "Edit alert person");
+		Window window = VaadinUiUtil.showModalPopupWindow(editView, "Edit person");
         // visit form is too big for typical screens
 		window.setWidth(editForm.getWidth() + 40, Unit.PIXELS); 
 		window.setHeight(80, Unit.PERCENTAGE); 

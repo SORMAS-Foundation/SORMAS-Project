@@ -87,8 +87,8 @@
     <string name="headline_event_information">Alert information</string>
     <string name="headline_event_sourceOfInformation">Source of information</string>
     <string name="headline_new_event">New alert</string>
-    <string name="headline_eventParticipant">Alert person</string>
-    <string name="headline_new_eventParticipant">New alert person</string>
+    <string name="headline_eventParticipant">Persons involved</string>
+    <string name="headline_new_eventParticipant">New person</string>
     <string name="headline_previously_hospitalized">Was the patient hospitalized or did he/she visit a health clinic previously for this illness?</string>
     <string name="headline_hospitalization_recent">Most recent hospitalization</string>
     <string name="headline_hospitalization_previous">Previous hospitalizations</string>
