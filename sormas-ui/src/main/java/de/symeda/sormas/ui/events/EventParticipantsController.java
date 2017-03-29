@@ -15,16 +15,12 @@ import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantFacade;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
-import de.symeda.sormas.api.location.LocationDto;
-import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
-import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.login.LoginHelper;
-import de.symeda.sormas.ui.person.PersonSelectField;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -36,15 +32,31 @@ public class EventParticipantsController {
 	
 	public void createEventParticipant(EventReferenceDto eventRef, Consumer<EventParticipantReferenceDto> doneConsumer) {
 		EventParticipantDto eventParticipant = createNewEventParticipant(eventRef);
-		selectOrCreateEventPerson(eventParticipant, "", "",
-				person -> {
-					eventParticipant.setPerson(FacadeProvider.getPersonFacade().getPersonByUuid(person.getUuid()));
+		EventParticipantCreateForm createForm = new EventParticipantCreateForm();
+		createForm.setValue(eventParticipant);
+		final CommitDiscardWrapperComponent<EventParticipantCreateForm> createComponent = new CommitDiscardWrapperComponent<EventParticipantCreateForm>(createForm, createForm.getFieldGroup());
+		
+		createComponent.addCommitListener(new CommitListener() {
+			@Override
+			public void onCommit() {
+				if (createForm.getFieldGroup().isValid()) {
+					final EventParticipantDto dto = createForm.getValue();
 					
-					eventParticipantFacade.saveEventParticipant(eventParticipant);
-					Notification.show("New alert person created", Type.WARNING_MESSAGE);
-					refreshView();
+					ControllerProvider.getPersonController().selectOrCreatePerson(
+							createForm.getPersonFirstName(), createForm.getPersonLastName(),
+							person -> {
+								if (person != null) {
+									dto.setPerson(FacadeProvider.getPersonFacade().getPersonByUuid(person.getUuid()));
+									eventParticipantFacade.saveEventParticipant(dto);
+									Notification.show("New alert person created", Type.ASSISTIVE_NOTIFICATION);
+				        			ControllerProvider.getEventParticipantController().editEventParticipant(eventParticipant);
+								}
+							});
 				}
-		);
+			}
+		});
+		
+		VaadinUiUtil.showModalPopupWindow(createComponent, "Create new alert person");
 	}
 	
 	public void editEventParticipant(EventParticipantDto eventParticipant) {
@@ -91,52 +103,5 @@ public class EventParticipantsController {
     		((EventParticipantsView)currentView).enter(null);
     	}
 	}
-	
-	private void selectOrCreateEventPerson(EventParticipantDto eventParticipant, String firstName, String lastName, Consumer<PersonReferenceDto> resultConsumer) {
-    	PersonSelectField personSelect = new PersonSelectField();
-    	personSelect.setFirstName(firstName);
-    	personSelect.setLastName(lastName);
-    	personSelect.setWidth(640, Unit.PIXELS);
-
-    	if (personSelect.hasMatches()) {
-    		personSelect.selectBestMatch();
-	    	final CommitDiscardWrapperComponent<PersonSelectField> selectOrCreateComponent = 
-	    			new CommitDiscardWrapperComponent<PersonSelectField>(personSelect, null);
-	    	
-	    	selectOrCreateComponent.addCommitListener(new CommitListener() {
-	        	@Override
-	        	public void onCommit() {
-	        		PersonReferenceDto person = personSelect.getValue();
-	        		if (person != null) {
-	        			if (resultConsumer != null) {
-	        				resultConsumer.accept(person);
-		        			eventParticipant.setPerson(personFacade.getPersonByUuid(person.getUuid()));
-		        			ControllerProvider.getEventParticipantController().editEventParticipant(eventParticipant);
-	        			}
-	        		} else {	
-	        			PersonDto personDto = new PersonDto();
-	        			personDto.setUuid(DataHelper.createUuid());
-	        			personDto.setFirstName(personSelect.getFirstName());
-	        			personDto.setLastName(personSelect.getLastName());
-	        			// Workaround to avoid binding error
-	        			personDto.setAddress(new LocationDto());
-	        			eventParticipant.setPerson(personDto);
-	        			ControllerProvider.getEventParticipantController().editEventParticipant(eventParticipant);
-	        		}
-	        	}
-	        });
-        
-	    	VaadinUiUtil.showModalPopupWindow(selectOrCreateComponent, "Pick or create person");
-    	} else {
-    		PersonDto personDto = new PersonDto();
-			personDto.setUuid(DataHelper.createUuid());
-			personDto.setFirstName(personSelect.getFirstName());
-			personDto.setLastName(personSelect.getLastName());
-			// Workaround to avoid binding error
-			personDto.setAddress(new LocationDto());
-			eventParticipant.setPerson(personDto);
-    		ControllerProvider.getEventParticipantController().editEventParticipant(eventParticipant);
-    	}
-    }
 
 }
