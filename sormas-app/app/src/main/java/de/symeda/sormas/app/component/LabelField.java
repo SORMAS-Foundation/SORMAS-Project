@@ -217,8 +217,12 @@ public class LabelField extends PropertyField<String> {
 
     @BindingAdapter("app:location")
     public static void setLocationForLabel(LabelField labelField, Location location) {
-        if(location != null) {
+        if(location == null || location.toString().isEmpty()) {
+            labelField.setValue("Enter location");
+            labelField.setTextColor(Color.LTGRAY);
+        } else {
             labelField.setValue(location.toString());
+            labelField.setTextColor(Color.BLACK);
         }
     }
 

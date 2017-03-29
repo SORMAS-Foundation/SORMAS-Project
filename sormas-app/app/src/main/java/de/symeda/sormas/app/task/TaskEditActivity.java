@@ -101,6 +101,7 @@ public class TaskEditActivity extends AppCompatActivity {
                 if (parentCaseUuid != null || parentContactUuid != null || parentEventUuid != null) {
                     NavUtils.navigateUpFromSameTask(this);
                 } else {
+                    // TODO check parent activity intent as soon as the minimum API level has been increased to 16
                     Intent intent = new Intent(this, TasksActivity.class);
                     startActivity(intent);
                 }

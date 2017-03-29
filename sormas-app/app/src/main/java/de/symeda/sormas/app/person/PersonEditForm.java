@@ -34,6 +34,7 @@ import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.component.FieldHelper;
+import de.symeda.sormas.app.component.LocationDialog;
 import de.symeda.sormas.app.component.PropertyField;
 import de.symeda.sormas.app.component.SpinnerField;
 import de.symeda.sormas.app.component.TextField;
@@ -135,7 +136,7 @@ public class PersonEditForm extends FormTab {
         // ================ Address ================
         try {
             final Location location = person.getAddress() != null ? person.getAddress() : DataUtils.createNew(Location.class);
-            addLocationField(location, R.id.person_address, R.id.form_cp_btn_address, new Consumer() {
+            LocationDialog.addLocationField(getActivity(), location, binding.personAddress, binding.formCpBtnAddress, new Consumer() {
                 @Override
                 public void accept(Object parameter) {
                     if(parameter instanceof Location) {

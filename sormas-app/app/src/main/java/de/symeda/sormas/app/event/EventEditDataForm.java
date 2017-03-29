@@ -18,6 +18,7 @@ import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventDao;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.component.FieldHelper;
+import de.symeda.sormas.app.component.LocationDialog;
 import de.symeda.sormas.app.component.PropertyField;
 import de.symeda.sormas.app.databinding.EventDataFragmentLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
@@ -70,7 +71,7 @@ public class EventEditDataForm extends FormTab {
 
             try {
                 final Location location = event.getEventLocation() != null ? event.getEventLocation() : DataUtils.createNew(Location.class);
-                addLocationField(location, R.id.event_eventLocation, R.id.event_eventLocation_btn, new Consumer() {
+                LocationDialog.addLocationField(getActivity(), location, binding.eventEventLocation, binding.eventEventLocationBtn, new Consumer() {
                     @Override
                     public void accept(Object parameter) {
                         if(parameter instanceof Location) {

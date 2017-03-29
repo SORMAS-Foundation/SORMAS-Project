@@ -2,6 +2,7 @@ package de.symeda.sormas.app.contact;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.NavUtils;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -141,11 +142,9 @@ public class ContactEditActivity extends AbstractEditActivity {
             // Respond to the action bar's Up/Home button
             case android.R.id.home:
                 if (taskUuid != null) {
-                    Intent intent = new Intent(this, TaskEditActivity.class);
-                    intent.putExtra(Task.UUID, taskUuid);
-                    startActivity(intent);
-                } else {
                     finish();
+                } else {
+                    NavUtils.navigateUpFromSameTask(this);
                 }
 
                 return true;

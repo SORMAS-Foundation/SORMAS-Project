@@ -19,43 +19,6 @@ import de.symeda.sormas.app.component.TextField;
 
 public abstract class FormTab extends DialogFragment implements FormFragment {
 
-
-    /**
-     * Create the {@see LocationDialog} for given location.
-     */
-    protected void addLocationField(final Location location, final int locationFieldId, int locationBtnId, final Consumer positiveCallback ) {
-        DatabaseHelper.getLocationDao().initializeLocation(location);
-
-        // set the TextField for the location
-        final LabelField locationText = (LabelField) getView().findViewById(locationFieldId);
-        locationText.setValue(location.toString());
-
-        if (locationText.getValue() == null || locationText.getValue().isEmpty()) {
-            locationText.setValue("Enter location");
-            locationText.setTextColor(Color.LTGRAY);
-        }
-
-        ImageButton btn = (ImageButton) getView().findViewById(locationBtnId);
-        btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View arg0) {
-                final LocationDialog dialogBuilder = new LocationDialog(getActivity(), location, positiveCallback, null);
-                AlertDialog locationDialog = dialogBuilder.create();
-                locationDialog.show();
-            }
-        });
-
-        View locationField = getView().findViewById(locationFieldId);
-        locationField.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View arg0) {
-                final LocationDialog dialogBuilder = new LocationDialog(getActivity(), location, positiveCallback, null);
-                AlertDialog locationDialog = dialogBuilder.create();
-                locationDialog.show();
-            }
-        });
-    }
-
     protected void deactivateField(View v) {
         v.setEnabled(false);
         v.clearFocus();

@@ -166,9 +166,7 @@ public class CaseEditActivity extends AbstractEditActivity {
             // Respond to the action bar's Up/Home button
             case android.R.id.home:
                 if (taskUuid != null) {
-                    Intent intent = new Intent(this, TaskEditActivity.class);
-                    intent.putExtra(Task.UUID, taskUuid);
-                    startActivity(intent);
+                    finish();
                 } else {
                     NavUtils.navigateUpFromSameTask(this);
                 }

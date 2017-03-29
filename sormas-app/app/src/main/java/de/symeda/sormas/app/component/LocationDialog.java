@@ -130,18 +130,18 @@ public class LocationDialog extends AlertDialog.Builder {
     public static void addLocationField(final FragmentActivity activity, final Location location, final LabelField locationText, ImageButton btn, final Consumer positiveCallback) {
         DatabaseHelper.getLocationDao().initializeLocation(location);
 
-        // set the TextField for the location
-        locationText.setValue(location.toString());
-
-        if (locationText.getValue() == null || locationText.getValue().isEmpty()) {
-            locationText.setValue("Enter location");
-            locationText.setTextColor(Color.LTGRAY);
-        }
+        final Consumer wrappedPositiveCallback = new Consumer() {
+            @Override
+            public void accept(Object parameter) {
+                LabelField.setLocationForLabel(locationText, (Location) parameter);
+                positiveCallback.accept(parameter);
+            }
+        };
 
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
-                final LocationDialog dialogBuilder = new LocationDialog(activity, location, positiveCallback, null);
+                final LocationDialog dialogBuilder = new LocationDialog(activity, location, wrappedPositiveCallback, null);
                 AlertDialog newPersonDialog = dialogBuilder.create();
                 newPersonDialog.show();
             }
@@ -150,7 +150,7 @@ public class LocationDialog extends AlertDialog.Builder {
         locationText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
-                final LocationDialog dialogBuilder = new LocationDialog(activity, location, positiveCallback, null);
+                final LocationDialog dialogBuilder = new LocationDialog(activity, location, wrappedPositiveCallback, null);
                 AlertDialog newPersonDialog = dialogBuilder.create();
                 newPersonDialog.show();
             }
