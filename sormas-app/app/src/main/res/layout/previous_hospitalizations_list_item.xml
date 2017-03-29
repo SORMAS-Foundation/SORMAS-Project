@@ -47,6 +47,8 @@
                     android:id="@+id/previousHospitalization_isolated_li"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textAlignment="viewEnd"
+                    android:layout_gravity="end"
                     android:paddingLeft="10dp"
                     android:paddingRight="10dp"
                     android:textAppearance="?android:attr/textAppearanceMedium" />
