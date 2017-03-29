@@ -108,6 +108,8 @@ public class Task extends AbstractDomainObject {
 				return getContact();
 			case EVENT:
 				return getEvent();
+			case GENERAL:
+				return null;
 			default:
 				throw new IndexOutOfBoundsException(DataUtils.toString(getTaskContext()));
 		}

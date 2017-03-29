@@ -162,6 +162,8 @@ public class TaskDto extends DataTransferObject {
 			return getContact();
 		case EVENT:
 			return getEvent();
+		case GENERAL:
+			return null;
 		default:
 			throw new IndexOutOfBoundsException(taskContext.toString());
 		}

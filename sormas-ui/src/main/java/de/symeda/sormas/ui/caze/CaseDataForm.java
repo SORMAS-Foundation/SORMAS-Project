@@ -178,7 +178,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
     private void updateReportInfo() {
 		CaseDataDto caseDto = getValue();
 		StringBuilder sb = new StringBuilder();
-		sb.append(DateHelper.formatShortDateTime(caseDto.getReportDate()) + "<br/>");
+		sb.append(DateHelper.formatShortDateTime(caseDto.getReportDate()) + ", ");
 		sb.append(caseDto.getReportingUser().toString());
 		reportInfoLabel.setValue(sb.toString());
 	}

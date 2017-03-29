@@ -32,7 +32,7 @@ public class TaskController {
     	return FacadeProvider.getTaskFacade().getAllAfter(null, user.getUuid());
     }
     
-    public List<TaskDto> getTasksByEntity(TaskContext context, ReferenceDto entityRef) {
+	public List<TaskDto> getTasksByEntity(TaskContext context, ReferenceDto entityRef) {
     	switch(context) {
     	case CASE:
     		return FacadeProvider.getTaskFacade().getAllByCase((CaseReferenceDto) entityRef);
@@ -40,6 +40,8 @@ public class TaskController {
     		return FacadeProvider.getTaskFacade().getAllByContact((ContactReferenceDto) entityRef);
     	case EVENT:
     		return FacadeProvider.getTaskFacade().getAllByEvent((EventReferenceDto) entityRef);
+    	case GENERAL:
+    		return getAllTasks();
     	}
     	return Collections.emptyList();
     }
@@ -104,6 +106,8 @@ public class TaskController {
     		break;
     	case EVENT:
     		task.setEvent((EventReferenceDto) entityRef);
+    		break;
+    	case GENERAL:
     		break;
     	}
     	return task;

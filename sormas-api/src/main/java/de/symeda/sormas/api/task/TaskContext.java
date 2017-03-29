@@ -6,7 +6,8 @@ public enum TaskContext {
 
 	CASE,
 	CONTACT,
-	EVENT
+	EVENT,
+	GENERAL
 	;
 	
 	public String toString() {

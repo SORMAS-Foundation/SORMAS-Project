@@ -90,7 +90,14 @@ public class TaskListComponent extends AbstractView {
 	        buttonFilterLayout.addComponent(statusInvestigated);
     	}
     	topLayout.addComponent(buttonFilterLayout);
-    	topLayout.setExpandRatio(buttonFilterLayout, 1);
+    	
+    	createButton = new Button("New task");
+        createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+        createButton.setIcon(FontAwesome.PLUS_CIRCLE);
+        createButton.addClickListener(e -> ControllerProvider.getTaskController().create(TaskContext.GENERAL, null, grid));
+        topLayout.addComponent(createButton);
+        topLayout.setComponentAlignment(createButton, Alignment.MIDDLE_RIGHT);
+        topLayout.setExpandRatio(createButton, 1);
 
         return topLayout;
     }

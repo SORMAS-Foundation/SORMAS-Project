@@ -230,6 +230,8 @@ public class TaskGrid extends Grid implements ItemClickListener {
 			case EVENT:
 				ControllerProvider.getEventController().navigateToData(task.getEvent().getUuid());
 				return;
+			case GENERAL:
+				return;
 			default:
 				throw new IndexOutOfBoundsException(task.getTaskContext().toString());
 			}

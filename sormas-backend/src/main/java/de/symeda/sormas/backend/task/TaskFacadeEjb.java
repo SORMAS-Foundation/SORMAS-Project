@@ -104,6 +104,11 @@ public class TaskFacadeEjb implements TaskFacade {
 				a.setContact(null);
 				a.setEvent(eventService.getByReferenceDto(b.getEvent()));
 				break;
+			case GENERAL:
+				a.setCaze(null);
+				a.setContact(null);
+				a.setEvent(null);
+				break;
 			default:
 				throw new UnsupportedOperationException(b.getTaskContext() + " is not implemented");
 			}

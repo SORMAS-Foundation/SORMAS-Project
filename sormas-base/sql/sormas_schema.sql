@@ -1321,3 +1321,9 @@ INSERT INTO schema_version (version_number, comment) VALUES (40, 'Drop not null 
 ALTER TABLE cases ADD COLUMN epidnumber varchar(512);
 
 INSERT INTO schema_version (version_number, comment) VALUES (41, 'Added EPID number to case');
+
+-- 2017-03-29 Task types update, drop all tasks #97
+
+DELETE FROM task;
+
+INSERT INTO schema_version (version_number, comment) VALUES (42, 'Task types update, drop all tasks');

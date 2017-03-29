@@ -9,31 +9,34 @@ import java.util.List;
 import de.symeda.sormas.api.I18nProperties;
 
 public enum TaskType {
-
-	CASE_BURIAL(TaskContext.CASE),
-	CASE_FINDING(TaskContext.CASE),
-	CASE_INVESTIGATION(TaskContext.CASE),
-	CASE_ISOLATION(TaskContext.CASE),
-	CASE_MANAGEMENT(TaskContext.CASE),
-	CASE_TRANSPORT(TaskContext.CASE),
-	PSYCHOLOGICAL_SUPPORT(TaskContext.CASE),
-	PSYCHOSOCIAL_SUPPORT(TaskContext.CASE),
-	CONTACT_MANAGEMENT(TaskContext.CONTACT),
-	CONTACT_TRACING(TaskContext.CONTACT),
-	CONTACT_VISIT(TaskContext.CONTACT),
-	INVESTIGATE_RUMOR(TaskContext.EVENT),
-	RUMOR_CREATOR(TaskContext.EVENT),
-	RUMOR_HANDLING(TaskContext.EVENT)
-	;
 	
-	private final TaskContext taskContext;
+	CASE_ISOLATION(Arrays.asList(TaskContext.CASE)),
+	CASE_INVESTIGATION(Arrays.asList(TaskContext.CASE)),
+	CASE_MANAGEMENT(Arrays.asList(TaskContext.CASE)),
+	CASE_BURIAL(Arrays.asList(TaskContext.CASE)),
+	CONTACT_INVESTIGATION(Arrays.asList(TaskContext.CONTACT)),
+	CONTACT_FOLLOW_UP(Arrays.asList(TaskContext.CONTACT)),
+	CONTACT_TRACING(Arrays.asList(TaskContext.CONTACT)),
+	ANIMAL_TESTING(Arrays.asList(TaskContext.EVENT)),
+	EVENT_INVESTIGATION(Arrays.asList(TaskContext.EVENT)),
+	TREATMENT_CENTER_ESTABLISHMENT(Arrays.asList(TaskContext.CASE, TaskContext.EVENT)),
+	ENVIRONMENTAL_HEALTH_ACTIVITIES(Arrays.asList(TaskContext.CASE, TaskContext.EVENT)),
+	DECONTAMINATION_DISINFECTION_ACTIVITIES(Arrays.asList(TaskContext.CASE, TaskContext.EVENT)),
+	QUARANTINE_PLACE(Arrays.asList(TaskContext.EVENT, TaskContext.CASE)),
+	VACCINATION_ACTIVITIES(Arrays.asList(TaskContext.EVENT, TaskContext.CASE)),
+	ANIMAL_DEPOPULATION(Arrays.asList(TaskContext.EVENT, TaskContext.CASE)),
+	OTHER(Arrays.asList(TaskContext.CASE, TaskContext.CONTACT, TaskContext.EVENT, TaskContext.GENERAL)),
+	DAILY_REPORT_GENERATION(Arrays.asList(TaskContext.GENERAL)),
+	SURVEILLANCE_REPORT_GENERATION(Arrays.asList(TaskContext.GENERAL));
+	
+	private final List<TaskContext> taskContexts;
 
-	private TaskType(TaskContext _taskContext) {
-		taskContext = _taskContext;
+	private TaskType(List<TaskContext> _taskContexts) {
+		taskContexts = _taskContexts;
 	}
 	
-	public TaskContext getTaskContext() {
-		return taskContext;
+	public List<TaskContext> getTaskContexts() {
+		return taskContexts;
 	}
 
 	public String toString() {
@@ -45,11 +48,13 @@ public enum TaskType {
 	static {
 		taskTypesByContext = new HashMap<TaskContext, List<TaskType>>();
 		for (TaskType taskType : TaskType.values()) {
-			TaskContext taskContext = taskType.getTaskContext();
-			if (!taskTypesByContext.containsKey(taskContext)) {
-				taskTypesByContext.put(taskContext, new ArrayList<TaskType>());
+			List<TaskContext> taskContexts = taskType.getTaskContexts();
+			for (TaskContext taskContext : taskContexts) {
+				if (!taskTypesByContext.containsKey(taskContext)) {
+					taskTypesByContext.put(taskContext, new ArrayList<TaskType>());
+				}
+				taskTypesByContext.get(taskContext).add(taskType);
 			}
-			taskTypesByContext.get(taskContext).add(taskType);
 		}
 		
 		// make lists in the map unmodifiable

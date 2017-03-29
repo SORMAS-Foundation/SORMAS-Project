@@ -1,11 +1,11 @@
 package de.symeda.sormas.ui.task;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.vaadin.data.Property;
 import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.Field;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TextArea;
 
@@ -51,7 +51,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
     		updateByCreatingAndAssignee();
         });
         
-        setWidth(540, Unit.PIXELS);
+        setWidth(680, Unit.PIXELS);
     }
     
 	@Override
@@ -77,16 +77,16 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
     	ComboBox taskType = addField(TaskDto.TASK_TYPE, ComboBox.class);
     	taskType.setItemCaptionMode(ItemCaptionMode.ID_TOSTRING);
     	taskType.setImmediate(true);
-    	taskType.addValueChangeListener(new Property.ValueChangeListener() {
-			@SuppressWarnings("unchecked")
-			@Override
-			public void valueChange(Property.ValueChangeEvent event) {
-				TaskType taskType = (TaskType)event.getProperty().getValue();
-				if (taskType != null) {
-					((Field<TaskContext>)getFieldGroup().getField(TaskDto.TASK_CONTEXT)).setValue(taskType.getTaskContext());
-				}
-			}
-		});
+//    	taskType.addValueChangeListener(new Property.ValueChangeListener() {
+//			@SuppressWarnings("unchecked")
+//			@Override
+//			public void valueChange(Property.ValueChangeEvent event) {
+//				TaskType taskType = (TaskType)event.getProperty().getValue();
+//				if (taskType != null) {
+//					((Field<TaskContext>)getFieldGroup().getField(TaskDto.TASK_CONTEXT)).setValue(taskType.getTaskContexts());
+//				}
+//			}
+//		});
     	
     	ComboBox assigneeUser = addField(TaskDto.ASSIGNEE_USER, ComboBox.class);
     	assigneeUser.addValueChangeListener(e -> updateByCreatingAndAssignee());
@@ -107,19 +107,23 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 	    	} else if (taskDto.getContact() != null) {
 	    		ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(taskDto.getContact().getUuid());
 	    		district = FacadeProvider.getCaseFacade().getCaseDataByUuid(contactDto.getCaze().getUuid()).getDistrict();
-	    	} else {
+	    	} else if (taskDto.getEvent() != null) {
 	    		EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(taskDto.getEvent().getUuid());
 	    		district = eventDto.getEventLocation().getDistrict();
 	    	}
 	    	
+	    	List<UserReferenceDto> users = new ArrayList<>();
 	    	if (district != null) {
-	    		List<UserReferenceDto> users = FacadeProvider.getUserFacade().getAssignableUsersByDistrict(district, true);
-	    		TaskController taskController = ControllerProvider.getTaskController();
-	    		for (UserReferenceDto user : users) {
-	    			assigneeUser.addItem(user);
-	    			assigneeUser.setItemCaption(user, taskController.getUserCaptionWithPendingTaskCount(user));
-	    		}
+	    		users = FacadeProvider.getUserFacade().getAssignableUsersByDistrict(district, true);
+	    	} else {
+	    		users = FacadeProvider.getUserFacade().getAssignableUsers(LoginHelper.getCurrentUser());
 	    	}
+	    	
+	    	TaskController taskController = ControllerProvider.getTaskController();
+    		for (UserReferenceDto user : users) {
+    			assigneeUser.addItem(user);
+    			assigneeUser.setItemCaption(user, taskController.getUserCaptionWithPendingTaskCount(user));
+    		}
     	});
     }
 
@@ -151,7 +155,6 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 	}
 
 	private void updateByTaskContext() {
-		
 		TaskContext taskContext = (TaskContext)getFieldGroup().getField(TaskDto.TASK_CONTEXT).getValue();
 		
 		// Task types depending on task context
@@ -181,6 +184,10 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 				FieldHelper.setFirstRequired(contactField, caseField, eventField);
 				List<ContactReferenceDto> contacts = FacadeProvider.getContactFacade().getSelectableContacts(LoginHelper.getCurrentUserAsReference());
 				FieldHelper.updateItems(contactField, contacts);
+				break;
+			case GENERAL:
+				FieldHelper.setFirstVisibleClearOthers(null, caseField, contactField, eventField);
+				FieldHelper.setFirstRequired(null, caseField, contactField, eventField);
 				break;
 			}
 		}
