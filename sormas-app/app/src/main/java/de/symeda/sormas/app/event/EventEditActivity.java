@@ -116,6 +116,11 @@ public class EventEditActivity extends AbstractEditActivity {
             case EVENT_PERSONS:
                 updateActionBarGroups(menu, false, true, false);
                 break;
+
+            // tasks tab
+            case EVENT_TASKS:
+                updateActionBarGroups(menu, false, false, false);
+                break;
         }
 
         return true;

@@ -7,7 +7,8 @@ import de.symeda.sormas.app.backend.event.Event;
 
 public enum EventEditTabs {
 	EVENT_DATA,
-	EVENT_PERSONS
+	EVENT_PERSONS,
+	EVENT_TASKS
 	;
 	
 	public String toString() {

@@ -19,6 +19,7 @@ import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
+import de.symeda.sormas.app.backend.event.Event;
 
 /**
  * Created by Stefan Szczesny on 24.10.2016.
@@ -143,6 +144,15 @@ public class TaskDao extends AbstractAdoDao<Task> {
             return queryBuilder().orderBy(Task.PRIORITY, true).orderBy(Task.DUE_DATE, true).where().eq(Task.CONTACT+"_id", contact).query();
         } catch(SQLException e) {
             logger.log(LOG_LEVEL, e, "queryForContact threw exception");
+            throw new RuntimeException(e);
+        }
+    }
+
+    public List<Task> queryForEvent(Event event) {
+        try {
+            return queryBuilder().orderBy(Task.PRIORITY, true).orderBy(Task.DUE_DATE, true).where().eq(Task.EVENT+"_id", event).query();
+        } catch(SQLException e) {
+            logger.log(LOG_LEVEL, e, "queryForEvent threw exception");
             throw new RuntimeException(e);
         }
     }

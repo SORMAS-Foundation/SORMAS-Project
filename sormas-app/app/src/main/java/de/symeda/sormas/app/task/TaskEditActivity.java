@@ -28,6 +28,7 @@ public class TaskEditActivity extends AppCompatActivity {
 
     private String parentCaseUuid;
     private String parentContactUuid;
+    private String parentEventUuid;
 
     public TaskEditActivity() {
 
@@ -57,6 +58,9 @@ public class TaskEditActivity extends AppCompatActivity {
             }
             if (extras.containsKey(TasksListFragment.KEY_CONTACT_UUID)) {
                 parentContactUuid = (String) extras.get(TasksListFragment.KEY_CONTACT_UUID);
+            }
+            if (extras.containsKey(TasksListFragment.KEY_EVENT_UUID)) {
+                parentEventUuid = (String) extras.get(TasksListFragment.KEY_EVENT_UUID);
             }
         }
 
@@ -94,7 +98,7 @@ public class TaskEditActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button
             case android.R.id.home:
-                if (parentCaseUuid != null || parentContactUuid != null) {
+                if (parentCaseUuid != null || parentContactUuid != null || parentEventUuid != null) {
                     NavUtils.navigateUpFromSameTask(this);
                 } else {
                     Intent intent = new Intent(this, TasksActivity.class);

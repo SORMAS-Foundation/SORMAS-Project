@@ -21,6 +21,8 @@ import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.contact.ContactDao;
+import de.symeda.sormas.app.backend.event.Event;
+import de.symeda.sormas.app.backend.event.EventDao;
 import de.symeda.sormas.app.backend.task.Task;
 
 /**
@@ -31,9 +33,11 @@ public class TasksListFragment extends ListFragment {
     public static final String ARG_FILTER_STATUS = "filterStatus";
     public static final String KEY_CASE_UUID = "caseUuid";
     public static final String KEY_CONTACT_UUID = "contactUuid";
+    public static final String KEY_EVENT_UUID = "eventUuid";
 
     private String parentCaseUuid;
     private String parentContactUuid;
+    private String parentEventUuid;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -62,11 +66,20 @@ public class TasksListFragment extends ListFragment {
                 tasks = new ArrayList<>();
             }
         } else if(arguments.containsKey(KEY_CONTACT_UUID)) {
-            parentContactUuid = (String)arguments.get(KEY_CONTACT_UUID);
+            parentContactUuid = (String) arguments.get(KEY_CONTACT_UUID);
             final ContactDao contactDao = DatabaseHelper.getContactDao();
             final Contact contact = contactDao.queryUuid(parentContactUuid);
-            if(contact != null) {
+            if (contact != null) {
                 tasks = DatabaseHelper.getTaskDao().queryForContact(contact);
+            } else {
+                tasks = new ArrayList<>();
+            }
+        } else if(arguments.containsKey(KEY_EVENT_UUID)) {
+            parentEventUuid = (String) arguments.get(KEY_EVENT_UUID);
+            final EventDao eventDao = DatabaseHelper.getEventDao();
+            final Event event = eventDao.queryUuid(parentEventUuid);
+            if (event != null) {
+                tasks = DatabaseHelper.getTaskDao().queryForEvent(event);
             } else {
                 tasks = new ArrayList<>();
             }
@@ -124,6 +137,9 @@ public class TasksListFragment extends ListFragment {
         }
         if(parentContactUuid != null) {
             intent.putExtra(KEY_CONTACT_UUID, parentContactUuid);
+        }
+        if(parentEventUuid != null) {
+            intent.putExtra(KEY_EVENT_UUID, parentEventUuid);
         }
         startActivity(intent);
     }
