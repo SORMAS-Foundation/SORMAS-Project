@@ -119,5 +119,53 @@ public class SampleTest extends AbstractDomainObject {
 	public void setTestResultVerified(boolean testResultVerified) {
 		this.testResultVerified = testResultVerified;
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		SampleTest other = (SampleTest) obj;
+		if (lab == null) {
+			if (other.lab != null)
+				return false;
+		} else if (!lab.equals(other.lab))
+			return false;
+		if (labUser == null) {
+			if (other.labUser != null)
+				return false;
+		} else if (!labUser.equals(other.labUser))
+			return false;
+		if (sample == null) {
+			if (other.sample != null)
+				return false;
+		} else if (!sample.equals(other.sample))
+			return false;
+		if (testDateTime == null) {
+			if (other.testDateTime != null)
+				return false;
+		} else if (!testDateTime.equals(other.testDateTime))
+			return false;
+		if (testResult != other.testResult)
+			return false;
+		if (testResultText == null) {
+			if (other.testResultText != null)
+				return false;
+		} else if (!testResultText.equals(other.testResultText))
+			return false;
+		if (testResultVerified != other.testResultVerified)
+			return false;
+		if (testType != other.testType)
+			return false;
+		if (testTypeText == null) {
+			if (other.testTypeText != null)
+				return false;
+		} else if (!testTypeText.equals(other.testTypeText))
+			return false;
+		return true;
+	}
 
 }

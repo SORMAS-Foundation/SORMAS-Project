@@ -12,6 +12,6 @@ public enum WaterSource {
 	
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
-	};
+	}
 	
 }

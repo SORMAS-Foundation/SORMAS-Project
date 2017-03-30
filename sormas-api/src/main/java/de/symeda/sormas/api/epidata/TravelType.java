@@ -9,6 +9,6 @@ public enum TravelType {
 	
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
-	};
+	}
 	
 }

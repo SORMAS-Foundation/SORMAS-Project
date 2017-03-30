@@ -43,7 +43,7 @@ public class ContactResource {
 		ContactFacade contactFacade = FacadeProvider.getContactFacade();
 		for (ContactDto dto : dtos) {
 			ContactDto resultDto = contactFacade.saveContact(dto);
-			if (resultDto.getFollowUpUntil() != dto.getFollowUpUntil()) {
+			if (!resultDto.getFollowUpUntil().equals(dto.getFollowUpUntil())) {
 				contactModified = true;
 			}
 		}

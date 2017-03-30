@@ -321,5 +321,116 @@ public class EpiData extends AbstractDomainObject {
 	public void setTravels(List<EpiDataTravel> travels) {
 		this.travels = travels;
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		EpiData other = (EpiData) obj;
+		if (bats != other.bats)
+			return false;
+		if (birds != other.birds)
+			return false;
+		if (burialAttended != other.burialAttended)
+			return false;
+		if (burials == null) {
+			if (other.burials != null)
+				return false;
+		} else if (!burials.equals(other.burials))
+			return false;
+		if (cattle != other.cattle)
+			return false;
+		if (gatheringAttended != other.gatheringAttended)
+			return false;
+		if (gatherings == null) {
+			if (other.gatherings != null)
+				return false;
+		} else if (!gatherings.equals(other.gatherings))
+			return false;
+		if (otherAnimals != other.otherAnimals)
+			return false;
+		if (otherAnimalsDetails == null) {
+			if (other.otherAnimalsDetails != null)
+				return false;
+		} else if (!otherAnimalsDetails.equals(other.otherAnimalsDetails))
+			return false;
+		if (poultry != other.poultry)
+			return false;
+		if (poultryDate == null) {
+			if (other.poultryDate != null)
+				return false;
+		} else if (!poultryDate.equals(other.poultryDate))
+			return false;
+		if (poultryDetails == null) {
+			if (other.poultryDetails != null)
+				return false;
+		} else if (!poultryDetails.equals(other.poultryDetails))
+			return false;
+		if (poultryEat != other.poultryEat)
+			return false;
+		if (poultryLocation == null) {
+			if (other.poultryLocation != null)
+				return false;
+		} else if (!poultryLocation.equals(other.poultryLocation))
+			return false;
+		if (poultrySick != other.poultrySick)
+			return false;
+		if (poultrySickDetails == null) {
+			if (other.poultrySickDetails != null)
+				return false;
+		} else if (!poultrySickDetails.equals(other.poultrySickDetails))
+			return false;
+		if (primates != other.primates)
+			return false;
+		if (rodents != other.rodents)
+			return false;
+		if (swine != other.swine)
+			return false;
+		if (tickBite != other.tickBite)
+			return false;
+		if (traveled != other.traveled)
+			return false;
+		if (travels == null) {
+			if (other.travels != null)
+				return false;
+		} else if (!travels.equals(other.travels))
+			return false;
+		if (waterBody != other.waterBody)
+			return false;
+		if (waterBodyDetails == null) {
+			if (other.waterBodyDetails != null)
+				return false;
+		} else if (!waterBodyDetails.equals(other.waterBodyDetails))
+			return false;
+		if (waterSource != other.waterSource)
+			return false;
+		if (waterSourceOther == null) {
+			if (other.waterSourceOther != null)
+				return false;
+		} else if (!waterSourceOther.equals(other.waterSourceOther))
+			return false;
+		if (wildbirds != other.wildbirds)
+			return false;
+		if (wildbirdsDate == null) {
+			if (other.wildbirdsDate != null)
+				return false;
+		} else if (!wildbirdsDate.equals(other.wildbirdsDate))
+			return false;
+		if (wildbirdsDetails == null) {
+			if (other.wildbirdsDetails != null)
+				return false;
+		} else if (!wildbirdsDetails.equals(other.wildbirdsDetails))
+			return false;
+		if (wildbirdsLocation == null) {
+			if (other.wildbirdsLocation != null)
+				return false;
+		} else if (!wildbirdsLocation.equals(other.wildbirdsLocation))
+			return false;
+		return true;
+	}
 
 }

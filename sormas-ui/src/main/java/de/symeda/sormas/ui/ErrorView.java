@@ -12,6 +12,7 @@ import com.vaadin.ui.themes.Reindeer;
  * 
  * 
  */
+@SuppressWarnings("serial")
 public class ErrorView extends VerticalLayout implements View {
 
     private Label explanation;

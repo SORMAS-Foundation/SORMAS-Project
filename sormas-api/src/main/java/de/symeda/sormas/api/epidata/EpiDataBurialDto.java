@@ -93,4 +93,45 @@ public class EpiDataBurialDto extends DataTransferObject {
 		this.burialTouching = burialTouching;
 	}
 	
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		EpiDataBurialDto other = (EpiDataBurialDto) obj;
+		if (burialAddress == null) {
+			if (other.burialAddress != null)
+				return false;
+		} else if (!burialAddress.equals(other.burialAddress))
+			return false;
+		if (burialDateFrom == null) {
+			if (other.burialDateFrom != null)
+				return false;
+		} else if (!burialDateFrom.equals(other.burialDateFrom))
+			return false;
+		if (burialDateTo == null) {
+			if (other.burialDateTo != null)
+				return false;
+		} else if (!burialDateTo.equals(other.burialDateTo))
+			return false;
+		if (burialIll != other.burialIll)
+			return false;
+		if (burialPersonName == null) {
+			if (other.burialPersonName != null)
+				return false;
+		} else if (!burialPersonName.equals(other.burialPersonName))
+			return false;
+		if (burialRelation == null) {
+			if (other.burialRelation != null)
+				return false;
+		} else if (!burialRelation.equals(other.burialRelation))
+			return false;
+		if (burialTouching != other.burialTouching)
+			return false;
+		return true;
+	}
+	
 }

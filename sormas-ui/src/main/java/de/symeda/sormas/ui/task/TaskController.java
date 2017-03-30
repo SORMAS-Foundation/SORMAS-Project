@@ -66,12 +66,11 @@ public class TaskController {
 	}
 
 	public void edit(TaskDto dto, TaskGrid grid) {
-		
 		// get fresh data
-		dto = FacadeProvider.getTaskFacade().getByUuid(dto.getUuid());
+		TaskDto newDto = FacadeProvider.getTaskFacade().getByUuid(dto.getUuid());
 		
     	TaskEditForm form = new TaskEditForm();
-        form.setValue(dto);
+        form.setValue(newDto);
         final CommitDiscardWrapperComponent<TaskEditForm> editView = new CommitDiscardWrapperComponent<TaskEditForm>(form, form.getFieldGroup());
         
         editView.addCommitListener(new CommitListener() {

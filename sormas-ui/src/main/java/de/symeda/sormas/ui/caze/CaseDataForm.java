@@ -32,7 +32,6 @@ import de.symeda.sormas.ui.utils.LayoutUtil;
 @SuppressWarnings("serial")
 public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	
-//	private static final String STATUS_CHANGE = "statusChange";
 	private static final String MEDICAL_INFORMATION_LOC = "medicalInformationLoc";
 	private static final String REPORT_INFO_LOC = "reportInfoLoc";
 	
@@ -60,7 +59,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			);
     	
 
-//    private final VerticalLayout statusChangeLayout;
     private final PersonDto person;
     private final Disease disease;
 	private Label reportInfoLabel;
@@ -69,10 +67,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
         super(CaseDataDto.class, CaseDataDto.I18N_PREFIX);
         this.person = person;
         this.disease = disease;
-//        statusChangeLayout = new VerticalLayout();
-//        statusChangeLayout.setSpacing(false);
-//        statusChangeLayout.setMargin(false);
-//        getContent().addComponent(statusChangeLayout, STATUS_CHANGE);
         addFields();
     }
 

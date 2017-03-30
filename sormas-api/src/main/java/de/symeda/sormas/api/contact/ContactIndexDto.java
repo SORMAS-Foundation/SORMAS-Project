@@ -120,5 +120,64 @@ public class ContactIndexDto extends ContactReferenceDto {
 	public void setNumberOfMissedVisits(int numberOfMissedVisits) {
 		this.numberOfMissedVisits = numberOfMissedVisits;
 	}
-
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ContactIndexDto other = (ContactIndexDto) obj;
+		if (caze == null) {
+			if (other.caze != null)
+				return false;
+		} else if (!caze.equals(other.caze))
+			return false;
+		if (cazeDisease != other.cazeDisease)
+			return false;
+		if (cazeDistrict == null) {
+			if (other.cazeDistrict != null)
+				return false;
+		} else if (!cazeDistrict.equals(other.cazeDistrict))
+			return false;
+		if (cazePerson == null) {
+			if (other.cazePerson != null)
+				return false;
+		} else if (!cazePerson.equals(other.cazePerson))
+			return false;
+		if (contactClassification != other.contactClassification)
+			return false;
+		if (contactOfficer == null) {
+			if (other.contactOfficer != null)
+				return false;
+		} else if (!contactOfficer.equals(other.contactOfficer))
+			return false;
+		if (contactProximity != other.contactProximity)
+			return false;
+		if (followUpStatus != other.followUpStatus)
+			return false;
+		if (followUpUntil == null) {
+			if (other.followUpUntil != null)
+				return false;
+		} else if (!followUpUntil.equals(other.followUpUntil))
+			return false;
+		if (lastContactDate == null) {
+			if (other.lastContactDate != null)
+				return false;
+		} else if (!lastContactDate.equals(other.lastContactDate))
+			return false;
+		if (numberOfCooperativeVisits != other.numberOfCooperativeVisits)
+			return false;
+		if (numberOfMissedVisits != other.numberOfMissedVisits)
+			return false;
+		if (person == null) {
+			if (other.person != null)
+				return false;
+		} else if (!person.equals(other.person))
+			return false;
+		return true;
+	}
+	
 }

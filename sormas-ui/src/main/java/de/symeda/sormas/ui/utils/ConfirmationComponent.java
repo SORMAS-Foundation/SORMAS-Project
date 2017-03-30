@@ -19,7 +19,7 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DoneListener;
 @SuppressWarnings("serial")
 public abstract class ConfirmationComponent extends HorizontalLayout {
 	
-	private List<DoneListener> doneListeners = new ArrayList<DoneListener>();
+	private transient List<DoneListener> doneListeners = new ArrayList<DoneListener>();
 
 	private Button confirmButton;
 	private Button cancelButton;

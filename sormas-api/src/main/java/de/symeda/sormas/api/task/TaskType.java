@@ -3,8 +3,9 @@ package de.symeda.sormas.api.task;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 
 import de.symeda.sormas.api.I18nProperties;
 
@@ -47,12 +48,12 @@ public enum TaskType {
 
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
-	};
+	}
 	
-	private static final HashMap<TaskContext, List<TaskType>> taskTypesByContext;
+	private static final EnumMap<TaskContext, List<TaskType>> taskTypesByContext;
 	
 	static {
-		taskTypesByContext = new HashMap<TaskContext, List<TaskType>>();
+		taskTypesByContext = new EnumMap<TaskContext, List<TaskType>> (TaskContext.class);
 		for (TaskType taskType : TaskType.values()) {
 			TaskContext[] taskContexts = taskType.getTaskContexts();
 			for (TaskContext taskContext : taskContexts) {
@@ -64,8 +65,8 @@ public enum TaskType {
 		}
 		
 		// make lists in the map unmodifiable
-		for (TaskContext taskcontext : taskTypesByContext.keySet()) {
-			taskTypesByContext.put(taskcontext, Collections.unmodifiableList(taskTypesByContext.get(taskcontext)));
+		for (Map.Entry<TaskContext, List<TaskType>> taskContext : taskTypesByContext.entrySet()) {
+			taskTypesByContext.put(taskContext.getKey(), Collections.unmodifiableList(taskContext.getValue())); // TODO @Martin please review if this is correct
 		}
 	}
 	

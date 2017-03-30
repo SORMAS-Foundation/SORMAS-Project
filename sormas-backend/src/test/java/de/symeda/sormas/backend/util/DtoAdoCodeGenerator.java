@@ -66,7 +66,7 @@ public class DtoAdoCodeGenerator {
 			}
 			
 			try {
-				Method toWriteMethod = dto.getMethod(property.getWriteMethod().getName(), property.getWriteMethod().getParameterTypes());
+				dto.getMethod(property.getWriteMethod().getName(), property.getWriteMethod().getParameterTypes());
 			} catch (NoSuchMethodException e) {
 				System.out.println(property.getWriteMethod().getName());
 			} catch (SecurityException e) {

@@ -16,6 +16,6 @@ public enum SampleMaterial {
 	
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
-	};
+	}
 	
 }

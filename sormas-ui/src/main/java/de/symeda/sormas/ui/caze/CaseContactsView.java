@@ -118,4 +118,5 @@ public class CaseContactsView extends AbstractCaseView {
     	super.enter(event);
     	grid.reload(getCaseRef());
     }
+
 }

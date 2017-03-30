@@ -12,6 +12,6 @@ public enum SampleTestResultType {
 	
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
-	};
+	}
 	
 }

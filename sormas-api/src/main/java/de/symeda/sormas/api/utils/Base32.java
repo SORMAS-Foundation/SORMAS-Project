@@ -162,6 +162,7 @@ public class Base32 {
         return result.toString();
     }
 
+    @SuppressWarnings("serial")
     public static class DecodingException extends Exception {
         public DecodingException(String message) {
             super(message);

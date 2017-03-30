@@ -118,7 +118,7 @@ public class UserGrid extends Grid {
     @SuppressWarnings("serial")
 	public class RoleFilter implements Filter {
     	
-    	private Object propertyId;
+    	private transient Object propertyId;
         private UserRole roleToFilter;
         
         public RoleFilter(Object propertyId, UserRole roleToFilter) {

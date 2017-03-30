@@ -8,5 +8,5 @@ public enum EventType {
 	
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
-	};
+	}
 }

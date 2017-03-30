@@ -83,4 +83,43 @@ public class PreviousHospitalization extends AbstractDomainObject {
 		this.hospitalization = hospitalization;
 	}
 	
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		PreviousHospitalization other = (PreviousHospitalization) obj;
+		if (admissionDate == null) {
+			if (other.admissionDate != null)
+				return false;
+		} else if (!admissionDate.equals(other.admissionDate))
+			return false;
+		if (description == null) {
+			if (other.description != null)
+				return false;
+		} else if (!description.equals(other.description))
+			return false;
+		if (dischargeDate == null) {
+			if (other.dischargeDate != null)
+				return false;
+		} else if (!dischargeDate.equals(other.dischargeDate))
+			return false;
+		if (healthFacility == null) {
+			if (other.healthFacility != null)
+				return false;
+		} else if (!healthFacility.equals(other.healthFacility))
+			return false;
+		if (hospitalization == null) {
+			if (other.hospitalization != null)
+				return false;
+		} else if (!hospitalization.equals(other.hospitalization))
+			return false;
+		if (isolated != other.isolated)
+			return false;
+		return true;
+	}
+	
 }

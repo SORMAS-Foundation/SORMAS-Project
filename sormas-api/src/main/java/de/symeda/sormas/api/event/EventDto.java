@@ -171,5 +171,80 @@ public class EventDto extends EventReferenceDto {
 	public void setTypeOfPlaceText(String typeOfPlaceText) {
 		this.typeOfPlaceText = typeOfPlaceText;
 	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		EventDto other = (EventDto) obj;
+		if (disease != other.disease)
+			return false;
+		if (eventDate == null) {
+			if (other.eventDate != null)
+				return false;
+		} else if (!eventDate.equals(other.eventDate))
+			return false;
+		if (eventDesc == null) {
+			if (other.eventDesc != null)
+				return false;
+		} else if (!eventDesc.equals(other.eventDesc))
+			return false;
+		if (eventLocation == null) {
+			if (other.eventLocation != null)
+				return false;
+		} else if (!eventLocation.equals(other.eventLocation))
+			return false;
+		if (eventStatus != other.eventStatus)
+			return false;
+		if (eventType != other.eventType)
+			return false;
+		if (reportDateTime == null) {
+			if (other.reportDateTime != null)
+				return false;
+		} else if (!reportDateTime.equals(other.reportDateTime))
+			return false;
+		if (reportingUser == null) {
+			if (other.reportingUser != null)
+				return false;
+		} else if (!reportingUser.equals(other.reportingUser))
+			return false;
+		if (srcEmail == null) {
+			if (other.srcEmail != null)
+				return false;
+		} else if (!srcEmail.equals(other.srcEmail))
+			return false;
+		if (srcFirstName == null) {
+			if (other.srcFirstName != null)
+				return false;
+		} else if (!srcFirstName.equals(other.srcFirstName))
+			return false;
+		if (srcLastName == null) {
+			if (other.srcLastName != null)
+				return false;
+		} else if (!srcLastName.equals(other.srcLastName))
+			return false;
+		if (srcTelNo == null) {
+			if (other.srcTelNo != null)
+				return false;
+		} else if (!srcTelNo.equals(other.srcTelNo))
+			return false;
+		if (surveillanceOfficer == null) {
+			if (other.surveillanceOfficer != null)
+				return false;
+		} else if (!surveillanceOfficer.equals(other.surveillanceOfficer))
+			return false;
+		if (typeOfPlace != other.typeOfPlace)
+			return false;
+		if (typeOfPlaceText == null) {
+			if (other.typeOfPlaceText != null)
+				return false;
+		} else if (!typeOfPlaceText.equals(other.typeOfPlaceText))
+			return false;
+		return true;
+	}
 	
 }

@@ -42,4 +42,5 @@ public abstract class AbstractCaseView extends AbstractSubNavigationView {
 	public CaseReferenceDto getCaseRef() {
 		return caseRef;
 	}
+
 }

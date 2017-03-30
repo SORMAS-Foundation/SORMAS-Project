@@ -19,6 +19,7 @@ public final class FieldHelper {
 		setReadOnlyWhen(fieldGroup, Arrays.asList(targetPropertyId), sourcePropertyId, sourceValues, clearOnReadOnly);
 	}
 
+	@SuppressWarnings("rawtypes")
 	public static void setReadOnlyWhen(final FieldGroup fieldGroup, List<Object> targetPropertyIds, 
 			Object sourcePropertyId, final List<Object> sourceValues, final boolean clearOnReadOnly) {
 
@@ -68,6 +69,7 @@ public final class FieldHelper {
 		setVisibleWhen(fieldGroup, Arrays.asList(targetPropertyId), sourcePropertyId, sourceValues, clearOnHidden);
 	}
 
+	@SuppressWarnings("rawtypes")
 	public static void setVisibleWhen(final FieldGroup fieldGroup, List<Object> targetPropertyIds, 
 			Object sourcePropertyId, final List<Object> sourceValues, final boolean clearOnHidden) {
 
@@ -100,6 +102,7 @@ public final class FieldHelper {
 		});
 	}
 	
+	@SuppressWarnings("rawtypes")
 	public static void setRequiredWhen(FieldGroup fieldGroup, Object sourcePropertyId,
 			List<Object> targetPropertyIds, final List<Object> sourceValues) {
 		
@@ -131,6 +134,7 @@ public final class FieldHelper {
 	 * in the sourceValues list; the disease is needed to make sure that no fields are set
 	 * to required that are not visible and therefore cannot be edited by the user.
 	 */
+	@SuppressWarnings("rawtypes")
 	public static void setRequiredWhen(FieldGroup fieldGroup, Field sourceField, 
 			List<Object> targetPropertyIds, final List<Object> sourceValues, Disease disease) {
 		

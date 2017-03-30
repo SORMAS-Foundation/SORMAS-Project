@@ -39,7 +39,7 @@ public class CaseResource {
 		
 		CaseFacade caseFacade = FacadeProvider.getCaseFacade();
 		for (CaseDataDto dto : dtos) {
-			dto = caseFacade.saveCase(dto);
+			caseFacade.saveCase(dto);
 		}
 		
 		return new Date().getTime();

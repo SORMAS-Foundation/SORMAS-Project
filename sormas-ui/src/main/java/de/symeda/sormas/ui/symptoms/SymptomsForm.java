@@ -74,7 +74,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 									SymptomsDto.SYMPTOMS_COMMENTS)));
 									
 	private final Disease disease;
-	private List<Object> unconditionalSymptomFieldIds;
+	private transient List<Object> unconditionalSymptomFieldIds;
 	private List<Object> conditionalBleedingSymptomFieldIds;
 
 	public SymptomsForm(Disease disease) {
@@ -253,8 +253,9 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 	 * and - if a visit is processed - cooperative. When this method is called from within a case, it needs to 
 	 * be called with visitStatusField set to null in order to ignore the visit status requirement.
 	 */
+	@SuppressWarnings("rawtypes")
 	private void setRequiredWhenSymptomaticAndCooperative(FieldGroup fieldGroup, Object targetPropertyId,
-			List<Object> sourcePropertyIds, List<Object> sourceValues, Field visitStatusField) {
+			List<Object> sourcePropertyIds, List<Object> sourceValues, OptionGroup visitStatusField) {
 				
 		for(Object sourcePropertyId : sourcePropertyIds) {
 			Field sourceField = fieldGroup.getField(sourcePropertyId);
@@ -305,6 +306,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 	 * @param sourceValues
 	 * @return
 	 */
+	@SuppressWarnings("rawtypes")
 	private boolean isAnySymptomSetToYes(FieldGroup fieldGroup, List<Object> sourcePropertyIds, 
 			List<Object> sourceValues) {
 		

@@ -17,6 +17,6 @@ public enum Month {
 	
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
-	};
+	}
 	
 }

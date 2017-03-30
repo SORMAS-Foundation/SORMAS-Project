@@ -10,6 +10,6 @@ public enum YesNoUnknown {
 	
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
-	};
+	}
 
 }

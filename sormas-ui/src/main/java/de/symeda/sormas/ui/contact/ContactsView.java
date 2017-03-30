@@ -1,8 +1,6 @@
 package de.symeda.sormas.ui.contact;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.server.FontAwesome;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
@@ -20,7 +18,6 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.caze.CaseController;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.AbstractView;
@@ -39,8 +36,6 @@ public class ContactsView extends AbstractView {
 	public static final String VIEW_NAME = "contacts";
 
 	private ContactGrid grid;    
-    private Button createButton;
-
 	private VerticalLayout gridLayout;
 
     public ContactsView() {

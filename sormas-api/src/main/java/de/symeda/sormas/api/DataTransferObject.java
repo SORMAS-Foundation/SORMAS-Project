@@ -56,7 +56,7 @@ public abstract class DataTransferObject implements Serializable, Cloneable {
 			return false;
 		}
 
-		if (getUuid() != null && o instanceof DataTransferObject 
+		if (getUuid() != null && o.getClass() == this.getClass()
 				&& ((DataTransferObject) o).getUuid() != null) {
 			// this works, because we are using UUIDs
 			DataTransferObject ado = (DataTransferObject) o;

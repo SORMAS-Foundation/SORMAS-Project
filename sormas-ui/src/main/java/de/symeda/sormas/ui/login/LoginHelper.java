@@ -71,7 +71,7 @@ public class LoginHelper {
     }
     
     public static Set<UserRole> getCurrentUserRoles() {
-    	return getCurrentUser().getUserRoles();
+    	return getCurrentUser() != null ? getCurrentUser().getUserRoles() : null;
     }
     
     public static UserReferenceDto getCurrentUserAsReference() {

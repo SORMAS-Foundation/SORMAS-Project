@@ -13,6 +13,8 @@ import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.common.AbstractAdoService;
@@ -26,6 +28,8 @@ import de.symeda.sormas.backend.user.User;
 @Stateless
 @LocalBean
 public class CaseService extends AbstractAdoService<Case> {
+	
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 	
 	public CaseService() {
 		super(Case.class);
@@ -144,7 +148,8 @@ public class CaseService extends AbstractAdoService<Case> {
 		try {
 			Case result = em.createQuery(cq).getSingleResult();
 			return result;
-		} catch(NoResultException e) {
+		} catch (NoResultException e) {
+			logger.info(e.getMessage(), e);
 			return null;
 		}
 	}	

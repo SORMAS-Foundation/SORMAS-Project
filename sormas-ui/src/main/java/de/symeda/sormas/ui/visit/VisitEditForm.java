@@ -8,8 +8,6 @@ import com.vaadin.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.contact.ContactDto;
-import de.symeda.sormas.api.symptoms.SymptomState;
-import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.ui.symptoms.SymptomsForm;

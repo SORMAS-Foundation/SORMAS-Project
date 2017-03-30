@@ -109,7 +109,7 @@ public abstract class AbstractDomainObject implements Serializable, Cloneable {
 			return false;
 		}
 
-		if (o instanceof AbstractDomainObject) {
+		if (o.getClass() == this.getClass()) {
 			// this works, because we are using UUIDs
 			AbstractDomainObject ado = (AbstractDomainObject) o;
 			return getUuid().equals(ado.getUuid());

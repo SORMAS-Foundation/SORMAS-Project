@@ -9,7 +9,7 @@ import com.vaadin.data.util.converter.Converter;
  * A converter that allows displaying a collection as a comma separated list of
  * strings.
  */
-@SuppressWarnings("serial")
+@SuppressWarnings({ "serial", "rawtypes" })
 public class CollectionToStringConverter implements
         Converter<String, Collection> {
 

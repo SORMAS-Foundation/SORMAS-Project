@@ -233,8 +233,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
     
 	private void updateApproximateAge() {
-		
-		if (getFieldGroup().getField(PersonDto.BIRTH_DATE_YYYY).getValue() != null && getFieldGroup().getField(PersonDto.BIRTH_DATE_YYYY).getValue() != "") {
+		if (getFieldGroup().getField(PersonDto.BIRTH_DATE_YYYY).getValue() != null) {
 			Calendar birthdate = new GregorianCalendar();
 			birthdate.set(
 					(Integer)getFieldGroup().getField(PersonDto.BIRTH_DATE_YYYY).getValue(), 

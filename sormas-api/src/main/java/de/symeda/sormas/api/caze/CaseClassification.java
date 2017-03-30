@@ -12,5 +12,5 @@ public enum CaseClassification {
 	
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
-	};
+	}
 }

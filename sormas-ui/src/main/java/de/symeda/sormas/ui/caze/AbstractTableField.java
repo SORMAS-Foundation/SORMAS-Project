@@ -234,7 +234,7 @@ public abstract class AbstractTableField<E> extends CustomField<Collection> {
 				table.addItem(result);
 			}
 		});
-	};
+	}
 
 	protected abstract void editEntry(E entry, Consumer<E> commitCallback);
 
@@ -426,7 +426,7 @@ public abstract class AbstractTableField<E> extends CustomField<Collection> {
 		if (oldObject == null || newObject == null) {
 			return true;
 		}
-		if (oldObject != null && !oldObject.equals(newObject)) {
+		if (!oldObject.equals(newObject)) {
 			return true;
 		}
 		return false;
@@ -455,7 +455,8 @@ public abstract class AbstractTableField<E> extends CustomField<Collection> {
 			}
 		}
 
-		assert (!oldIterator.hasNext()); // iteration should also be finished
+		boolean hasNext = !oldIterator.hasNext();
+		assert hasNext; // iteration should also be finished
 
 		return false;
 	}
@@ -531,6 +532,7 @@ public abstract class AbstractTableField<E> extends CustomField<Collection> {
 		return true;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void setValue(Collection value) {
 
@@ -583,4 +585,5 @@ public abstract class AbstractTableField<E> extends CustomField<Collection> {
 			getTable().removeContainerProperty(EDIT_COLUMN_ID);
 		}
 	}
+	
 }

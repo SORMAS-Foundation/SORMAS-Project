@@ -539,4 +539,141 @@ public class Symptoms extends AbstractDomainObject {
 		return symptomsComments;
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Symptoms other = (Symptoms) obj;
+		if (abdominalPain != other.abdominalPain)
+			return false;
+		if (alteredConsciousness != other.alteredConsciousness)
+			return false;
+		if (anorexiaAppetiteLoss != other.anorexiaAppetiteLoss)
+			return false;
+		if (bleedingVagina != other.bleedingVagina)
+			return false;
+		if (bloodInStool != other.bloodInStool)
+			return false;
+		if (bloodUrine != other.bloodUrine)
+			return false;
+		if (bloodyBlackStool != other.bloodyBlackStool)
+			return false;
+		if (chestPain != other.chestPain)
+			return false;
+		if (confusedDisoriented != other.confusedDisoriented)
+			return false;
+		if (conjunctivitis != other.conjunctivitis)
+			return false;
+		if (cough != other.cough)
+			return false;
+		if (coughingBlood != other.coughingBlood)
+			return false;
+		if (dehydration != other.dehydration)
+			return false;
+		if (diarrhea != other.diarrhea)
+			return false;
+		if (difficultyBreathing != other.difficultyBreathing)
+			return false;
+		if (digestedBloodVomit != other.digestedBloodVomit)
+			return false;
+		if (eyePainLightSensitive != other.eyePainLightSensitive)
+			return false;
+		if (fatigueWeakness != other.fatigueWeakness)
+			return false;
+		if (fever != other.fever)
+			return false;
+		if (gumsBleeding != other.gumsBleeding)
+			return false;
+		if (headache != other.headache)
+			return false;
+		if (hearingloss != other.hearingloss)
+			return false;
+		if (hiccups != other.hiccups)
+			return false;
+		if (injectionSiteBleeding != other.injectionSiteBleeding)
+			return false;
+		if (jointPain != other.jointPain)
+			return false;
+		if (kopliksSpots != other.kopliksSpots)
+			return false;
+		if (musclePain != other.musclePain)
+			return false;
+		if (nausea != other.nausea)
+			return false;
+		if (neckStiffness != other.neckStiffness)
+			return false;
+		if (noseBleeding != other.noseBleeding)
+			return false;
+		if (onsetDate == null) {
+			if (other.onsetDate != null)
+				return false;
+		} else if (!onsetDate.equals(other.onsetDate))
+			return false;
+		if (onsetSymptom == null) {
+			if (other.onsetSymptom != null)
+				return false;
+		} else if (!onsetSymptom.equals(other.onsetSymptom))
+			return false;
+		if (otherHemorrhagicSymptoms != other.otherHemorrhagicSymptoms)
+			return false;
+		if (otherHemorrhagicSymptomsText == null) {
+			if (other.otherHemorrhagicSymptomsText != null)
+				return false;
+		} else if (!otherHemorrhagicSymptomsText.equals(other.otherHemorrhagicSymptomsText))
+			return false;
+		if (otherNonHemorrhagicSymptoms != other.otherNonHemorrhagicSymptoms)
+			return false;
+		if (otherNonHemorrhagicSymptomsText == null) {
+			if (other.otherNonHemorrhagicSymptomsText != null)
+				return false;
+		} else if (!otherNonHemorrhagicSymptomsText.equals(other.otherNonHemorrhagicSymptomsText))
+			return false;
+		if (otitisMedia != other.otitisMedia)
+			return false;
+		if (redBloodVomit != other.redBloodVomit)
+			return false;
+		if (refusalFeedorDrink != other.refusalFeedorDrink)
+			return false;
+		if (runnyNose != other.runnyNose)
+			return false;
+		if (seizures != other.seizures)
+			return false;
+		if (shock != other.shock)
+			return false;
+		if (skinBruising != other.skinBruising)
+			return false;
+		if (skinRash != other.skinRash)
+			return false;
+		if (soreThroat != other.soreThroat)
+			return false;
+		if (symptomatic == null) {
+			if (other.symptomatic != null)
+				return false;
+		} else if (!symptomatic.equals(other.symptomatic))
+			return false;
+		if (symptomsComments == null) {
+			if (other.symptomsComments != null)
+				return false;
+		} else if (!symptomsComments.equals(other.symptomsComments))
+			return false;
+		if (temperature == null) {
+			if (other.temperature != null)
+				return false;
+		} else if (!temperature.equals(other.temperature))
+			return false;
+		if (temperatureSource != other.temperatureSource)
+			return false;
+		if (throbocytopenia != other.throbocytopenia)
+			return false;
+		if (unexplainedBleeding != other.unexplainedBleeding)
+			return false;
+		if (vomiting != other.vomiting)
+			return false;
+		return true;
+	}
+
 }

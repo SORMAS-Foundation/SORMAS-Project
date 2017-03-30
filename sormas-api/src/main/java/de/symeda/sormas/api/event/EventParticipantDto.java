@@ -39,5 +39,32 @@ public class EventParticipantDto extends EventParticipantReferenceDto {
 	public void setInvolvementDescription(String involvementDescription) {
 		this.involvementDescription = involvementDescription;
 	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		EventParticipantDto other = (EventParticipantDto) obj;
+		if (event == null) {
+			if (other.event != null)
+				return false;
+		} else if (!event.equals(other.event))
+			return false;
+		if (involvementDescription == null) {
+			if (other.involvementDescription != null)
+				return false;
+		} else if (!involvementDescription.equals(other.involvementDescription))
+			return false;
+		if (person == null) {
+			if (other.person != null)
+				return false;
+		} else if (!person.equals(other.person))
+			return false;
+		return true;
+	}
 	
 }

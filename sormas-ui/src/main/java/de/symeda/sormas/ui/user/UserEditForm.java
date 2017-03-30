@@ -118,7 +118,8 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
     	updateFieldsByUserRole();
     }
 
-    private void updateFieldsByUserRole() {
+    @SuppressWarnings("unchecked")
+	private void updateFieldsByUserRole() {
     	OptionGroup userRolesField = (OptionGroup)getFieldGroup().getField(UserDto.USER_ROLES);
     	Set<UserRole> userRoles = (Set<UserRole>)userRolesField.getValue();
     	boolean isInformant = UserRole.isInformant(userRoles);

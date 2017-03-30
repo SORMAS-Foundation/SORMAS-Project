@@ -10,6 +10,9 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.region.Community;
@@ -18,6 +21,8 @@ import de.symeda.sormas.backend.region.Region;
 
 public final class InfrastructureDataImporter {
 
+	private static final Logger logger = LoggerFactory.getLogger(InfrastructureDataImporter.class);
+	
 	public static Region importRegion(String name) {
 		
 		String resourceFileName = "/facilities/"+name+".csv";
@@ -126,7 +131,7 @@ public final class InfrastructureDataImporter {
 				String ownershipString = columns.length >= 5 ? columns[5] : "";
 				// String address = columns.length >= 6 ? columns[6] : "";
 				String longitudeString = columns.length >= 7 ? columns[7] : "";
-				String latitudeString = columns.length >= 8 ? columns[8] : "";;
+				String latitudeString = columns.length >= 8 ? columns[8] : "";
 				
 				if (district == null || !districtName.equals(district.getName())) {
 					district = null;
@@ -225,6 +230,7 @@ public final class InfrastructureDataImporter {
 				result.add(facility);				
 			}
 		} catch (IOException e) {
+			logger.info(e.getMessage(), e);
 			e.printStackTrace();
 		}
 		

@@ -31,21 +31,12 @@ public class PersonController {
     }
 
     public void create(String firstName, String lastName, Consumer<PersonReferenceDto> doneConsumer) {
-    	
     	PersonReferenceDto person = createNewPerson();
     	person.setFirstName(firstName);
     	person.setLastName(lastName);
     	
     	person = personFacade.savePerson(person);
-    	doneConsumer.accept(person);
-    	
-//    	final CommitDiscardWrapperComponent<PersonCreateForm> createComponent = getPersonCreateComponent(person);
-//    	if (doneConsumer != null) {
-//			createComponent.addDoneListener(() -> 
-//		    doneConsumer.accept(createComponent.isCommited() ? createComponent.getWrappedComponent().getValue() : null));
-//		}
-//
-//		VaadinUiUtil.showModalPopupWindow(createComponent, "Create new person");  
+    	doneConsumer.accept(person); 
     }
     
     public void openEditModal(String personUuid) {
@@ -129,7 +120,7 @@ public class PersonController {
         	public void onCommit() {
         		if (editForm.getFieldGroup().isValid()) {
         			PersonDto dto = editForm.getValue();
-        			dto = personFacade.savePerson(dto);
+        			personFacade.savePerson(dto);
         			Notification.show("Person data saved", Type.WARNING_MESSAGE);
         			refreshView();
         		}

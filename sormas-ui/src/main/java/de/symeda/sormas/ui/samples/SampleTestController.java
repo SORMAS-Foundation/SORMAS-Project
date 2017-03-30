@@ -43,10 +43,10 @@ public class SampleTestController {
 	
 	public void edit(SampleTestDto dto, SampleTestGrid grid) {
 		// get fresh data
-		dto = stf.getByUuid(dto.getUuid());
+		SampleTestDto newDto = stf.getByUuid(dto.getUuid());
 		
 		SampleTestEditForm form = new SampleTestEditForm();
-		form.setValue(dto);
+		form.setValue(newDto);
 		final CommitDiscardWrapperComponent<SampleTestEditForm> editView = new CommitDiscardWrapperComponent<SampleTestEditForm>(form, form.getFieldGroup());
 		
 		editView.addCommitListener(new CommitListener() {

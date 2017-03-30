@@ -7,7 +7,6 @@ import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
-import com.vaadin.ui.Field;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
@@ -100,7 +99,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		addField(EventDto.EVENT_LOCATION, LocationForm.class).setCaption(null);
 
 		LocationForm locationForm = (LocationForm) getFieldGroup().getField(EventDto.EVENT_LOCATION);
-		Field districtField = locationForm.getFieldGroup().getField(LocationDto.DISTRICT);
+		ComboBox districtField = (ComboBox) locationForm.getFieldGroup().getField(LocationDto.DISTRICT);
 		ComboBox surveillanceOfficerField = addField(EventDto.SURVEILLANCE_OFFICER, ComboBox.class);
 		
 		addField(EventDto.TYPE_OF_PLACE, ComboBox.class);
@@ -135,10 +134,11 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		return HTML_LAYOUT;
 	}
 	
+	@SuppressWarnings("rawtypes")
 	public void setTypeOfPlaceTextRequirement() {
 		FieldGroup fieldGroup = getFieldGroup();
-		Field typeOfPlaceField = fieldGroup.getField(EventDto.TYPE_OF_PLACE);
-		Field typeOfPlaceTextField = fieldGroup.getField(EventDto.TYPE_OF_PLACE_TEXT);
+		ComboBox typeOfPlaceField = (ComboBox) fieldGroup.getField(EventDto.TYPE_OF_PLACE);
+		TextField typeOfPlaceTextField = (TextField) fieldGroup.getField(EventDto.TYPE_OF_PLACE_TEXT);
 		((AbstractField) typeOfPlaceField).setImmediate(true);
 		
 		// initialize

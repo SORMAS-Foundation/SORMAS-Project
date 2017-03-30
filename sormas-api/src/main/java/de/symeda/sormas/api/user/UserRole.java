@@ -62,8 +62,10 @@ public enum UserRole {
 			break;
 		case RUMOR_MANAGER:
 			collection.add(RUMOR_MANAGER);
+			break;
 		case LAB_USER:
 			collection.add(LAB_USER);
+			break;
 		default:
 			break;
 		}

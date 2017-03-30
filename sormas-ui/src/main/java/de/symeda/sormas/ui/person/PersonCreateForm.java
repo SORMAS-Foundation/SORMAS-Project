@@ -1,6 +1,5 @@
 package de.symeda.sormas.ui.person;
 
-import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.TextField;
 
 import de.symeda.sormas.api.person.PersonReferenceDto;

@@ -55,12 +55,12 @@ public class CommitDiscardWrapperComponent<C extends Component> extends
 		void onDelete();
 	}
 
-	private List<CommitListener> commitListeners = new ArrayList<>();
-	private List<DiscardListener> discardListeners = new ArrayList<>();
-	private List<DoneListener> doneListeners = new ArrayList<>();
-	private List<DeleteListener> deleteListeners = new ArrayList<>();
+	private transient List<CommitListener> commitListeners = new ArrayList<>();
+	private transient List<DiscardListener> discardListeners = new ArrayList<>();
+	private transient List<DoneListener> doneListeners = new ArrayList<>();
+	private transient List<DeleteListener> deleteListeners = new ArrayList<>();
 	// only to check if it's set
-	private CommitListener primaryCommitListener;
+	private transient CommitListener primaryCommitListener;
 
 	private Panel contentPanel;
 
@@ -77,7 +77,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends
 	private boolean commited = false;
 
 	private boolean shortcutsEnabled = false;
-	protected List<ClickShortcut> actions;
+	protected transient List<ClickShortcut> actions;
 
 	private boolean autoFocusing = false;
 

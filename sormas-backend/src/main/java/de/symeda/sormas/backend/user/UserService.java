@@ -15,11 +15,8 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.contact.Contact;
-import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.util.PasswordHelper;
@@ -98,8 +95,7 @@ public class UserService extends AbstractAdoService<User> {
 		CriteriaQuery<User> cq = cb.createQuery(getElementClass());
 		Root<User> from = cq.from(getElementClass());
 		
-		Predicate filter = null;
-		filter = cb.equal(from.get(User.DISTRICT), district);
+		Predicate filter = cb.equal(from.get(User.DISTRICT), district);
 		
 		if (userRoles.length > 0) {
 			Join<User, UserRole> joinRoles = from.join(User.USER_ROLES, JoinType.LEFT);

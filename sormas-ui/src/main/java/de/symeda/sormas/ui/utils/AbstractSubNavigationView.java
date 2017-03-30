@@ -57,7 +57,7 @@ public abstract class AbstractSubNavigationView extends AbstractView {
     	params = event.getParameters();
     	refreshMenu(subNavigationMenu, infoLabel, infoLabelSub, params);
 		selectInMenu();
-    };
+    }
     
     public abstract void refreshMenu(SubNavigationMenu menu, Label infoLabel, Label infoLabelSub, String params);
     

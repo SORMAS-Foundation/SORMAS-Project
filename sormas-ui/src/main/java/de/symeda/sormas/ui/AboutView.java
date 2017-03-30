@@ -10,6 +10,7 @@ import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
+@SuppressWarnings("serial")
 public class AboutView extends VerticalLayout implements View {
 
     public static final String VIEW_NAME = "about";

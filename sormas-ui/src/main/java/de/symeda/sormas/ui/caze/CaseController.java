@@ -243,7 +243,7 @@ public class CaseController {
         	public void onCommit() {
         		if (symptomsForm.getFieldGroup().isValid()) {
         			SymptomsDto dto = symptomsForm.getValue();
-        			dto = sf.saveSymptoms(dto);
+        			sf.saveSymptoms(dto);
         			Notification.show("Case symptoms saved", Type.WARNING_MESSAGE);
         			navigateToSymptoms(caseUuid);
         		}
@@ -265,7 +265,7 @@ public class CaseController {
 			public void onCommit() {
 				if (hospitalizationForm.getFieldGroup().isValid()) {
 					HospitalizationDto dto = hospitalizationForm.getValue();
-					dto = hf.saveHospitalization(dto);
+					hf.saveHospitalization(dto);
 					Notification.show("Case hospitalization saved", Type.WARNING_MESSAGE);
 					navigateToHospitalization(caseUuid);
 				}
@@ -287,7 +287,7 @@ public class CaseController {
 			public void onCommit() {
 				if (epiDataForm.getFieldGroup().isValid()) {
 					EpiDataDto dto = epiDataForm.getValue();
-					dto = edf.saveEpiData(dto);
+					edf.saveEpiData(dto);
 					Notification.show("Case epidemiological data saved", Type.WARNING_MESSAGE);
 					navigateToEpiData(caseUuid);
 				}

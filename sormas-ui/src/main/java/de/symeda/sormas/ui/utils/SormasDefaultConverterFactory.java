@@ -13,7 +13,8 @@ public final class SormasDefaultConverterFactory extends DefaultConverterFactory
 		
 		if (Enum.class.isAssignableFrom(sourceType)) {
 	        return new StringToEnumConverter() {
-	            @Override
+	            @SuppressWarnings("rawtypes")
+				@Override
 	            public String convertToPresentation(Enum value,
 	                    Class<? extends String> targetType, Locale locale)
 	                    throws ConversionException {

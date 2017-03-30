@@ -54,7 +54,7 @@ public class EventGrid extends Grid {
 			@Override
 			public String getValue(Item item, Object itemId, Object propertyId) {
 				EventDto eventDto = (EventDto)itemId;
-				return String.format(I18nProperties.getPrefixFieldCaption(eventDto.I18N_PREFIX, PENDING_EVENT_TASKS + "Format"),
+				return String.format(I18nProperties.getPrefixFieldCaption(EventDto.I18N_PREFIX, PENDING_EVENT_TASKS + "Format"),
 						FacadeProvider.getTaskFacade().getPendingTaskCountByEvent(eventDto));
 			}
 			@Override
