@@ -51,31 +51,4 @@ public class EpiDataGatheringDto extends DataTransferObject {
 		this.gatheringAddress = gatheringAddress;
 	}
 	
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (!super.equals(obj))
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		EpiDataGatheringDto other = (EpiDataGatheringDto) obj;
-		if (description == null) {
-			if (other.description != null)
-				return false;
-		} else if (!description.equals(other.description))
-			return false;
-		if (gatheringAddress == null) {
-			if (other.gatheringAddress != null)
-				return false;
-		} else if (!gatheringAddress.equals(other.gatheringAddress))
-			return false;
-		if (gatheringDate == null) {
-			if (other.gatheringDate != null)
-				return false;
-		} else if (!gatheringDate.equals(other.gatheringDate))
-			return false;
-		return true;
-	}
-	
 }

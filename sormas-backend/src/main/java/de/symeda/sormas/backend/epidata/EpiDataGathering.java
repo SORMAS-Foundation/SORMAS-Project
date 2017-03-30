@@ -65,36 +65,4 @@ public class EpiDataGathering extends AbstractDomainObject {
 		this.gatheringAddress = gatheringAddress;
 	}
 	
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (!super.equals(obj))
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		EpiDataGathering other = (EpiDataGathering) obj;
-		if (description == null) {
-			if (other.description != null)
-				return false;
-		} else if (!description.equals(other.description))
-			return false;
-		if (epiData == null) {
-			if (other.epiData != null)
-				return false;
-		} else if (!epiData.equals(other.epiData))
-			return false;
-		if (gatheringAddress == null) {
-			if (other.gatheringAddress != null)
-				return false;
-		} else if (!gatheringAddress.equals(other.gatheringAddress))
-			return false;
-		if (gatheringDate == null) {
-			if (other.gatheringDate != null)
-				return false;
-		} else if (!gatheringDate.equals(other.gatheringDate))
-			return false;
-		return true;
-	}
-
 }

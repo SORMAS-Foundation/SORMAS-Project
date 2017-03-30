@@ -62,33 +62,4 @@ public class EpiDataTravelDto extends DataTransferObject {
 		this.travelDateTo = travelDateTo;
 	}
 	
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (!super.equals(obj))
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		EpiDataTravelDto other = (EpiDataTravelDto) obj;
-		if (travelDateFrom == null) {
-			if (other.travelDateFrom != null)
-				return false;
-		} else if (!travelDateFrom.equals(other.travelDateFrom))
-			return false;
-		if (travelDateTo == null) {
-			if (other.travelDateTo != null)
-				return false;
-		} else if (!travelDateTo.equals(other.travelDateTo))
-			return false;
-		if (travelDestination == null) {
-			if (other.travelDestination != null)
-				return false;
-		} else if (!travelDestination.equals(other.travelDestination))
-			return false;
-		if (travelType != other.travelType)
-			return false;
-		return true;
-	}
-	
 }

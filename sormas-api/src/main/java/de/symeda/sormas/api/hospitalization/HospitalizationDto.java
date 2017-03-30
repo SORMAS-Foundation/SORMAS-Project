@@ -79,40 +79,4 @@ public class HospitalizationDto extends DataTransferObject {
 		this.previousHospitalizations = previousHospitalizations;
 	}
 	
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (!super.equals(obj))
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		HospitalizationDto other = (HospitalizationDto) obj;
-		if (admissionDate == null) {
-			if (other.admissionDate != null)
-				return false;
-		} else if (!admissionDate.equals(other.admissionDate))
-			return false;
-		if (dischargeDate == null) {
-			if (other.dischargeDate != null)
-				return false;
-		} else if (!dischargeDate.equals(other.dischargeDate))
-			return false;
-		if (hospitalizedPreviously != other.hospitalizedPreviously)
-			return false;
-		if (isolated != other.isolated)
-			return false;
-		if (isolationDate == null) {
-			if (other.isolationDate != null)
-				return false;
-		} else if (!isolationDate.equals(other.isolationDate))
-			return false;
-		if (previousHospitalizations == null) {
-			if (other.previousHospitalizations != null)
-				return false;
-		} else if (!previousHospitalizations.equals(other.previousHospitalizations))
-			return false;
-		return true;
-	}
-	
 }

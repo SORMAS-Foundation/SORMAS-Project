@@ -375,12 +375,8 @@ public class CommitDiscardWrapperComponent<C extends Component> extends
 				private static final long serialVersionUID = 1L;
 				@Override
 				protected void onConfirm() {
-					try {
-						onDelete();
-						onDone();
-					} catch (SilentCommitException ex) {
-						// NOOP
-					}
+					onDelete();
+					onDone();
 					buttonsPanel.replaceComponent(this, getDeleteButton());
 				}
 
@@ -462,7 +458,6 @@ public class CommitDiscardWrapperComponent<C extends Component> extends
 		try {
 			commit();
 		} catch (InvalidValueException ex) {
-			
 			StringBuilder htmlMsg = new StringBuilder();
 			String message = ex.getMessage();
             if (message != null && !message.isEmpty()) {
@@ -673,30 +668,6 @@ public class CommitDiscardWrapperComponent<C extends Component> extends
 		}
 	}
 
-	/**
-	 * Wenn das Commit nicht erfolgreich war, aber keine Notification angezeigt werden soll
-	 * @deprecated Wird nicht mehr beachtet @see {@link CommitDiscardWrapperComponent#commit()}
-	 */
-	@Deprecated
-	public static class SilentCommitException extends RuntimeException {
-		private static final long serialVersionUID = 1L;
-
-		public SilentCommitException() {
-			super();
-		}
-
-		public SilentCommitException(String message) {
-			super(message);
-		}
-
-		public SilentCommitException(String message, Throwable cause) {
-			super(message, cause);
-		}
-
-		public SilentCommitException(Throwable cause) {
-			super(cause);
-		}
-	}
 	
 	public static class CommitRuntimeException extends RuntimeException {
 		private static final long serialVersionUID = 1L;

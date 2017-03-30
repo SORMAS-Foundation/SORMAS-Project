@@ -48,27 +48,4 @@ public class PersonIndexDto extends PersonReferenceDto {
 		this.presentCondition = presentCondition;
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (!super.equals(obj))
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		PersonIndexDto other = (PersonIndexDto) obj;
-		if (approximateAge == null) {
-			if (other.approximateAge != null)
-				return false;
-		} else if (!approximateAge.equals(other.approximateAge))
-			return false;
-		if (approximateAgeType != other.approximateAgeType)
-			return false;
-		if (presentCondition != other.presentCondition)
-			return false;
-		if (sex != other.sex)
-			return false;
-		return true;
-	}
-
 }

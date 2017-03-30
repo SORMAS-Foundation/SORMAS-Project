@@ -80,45 +80,4 @@ public class VisitDto extends VisitReferenceDto {
 		this.visitUser = visitUser;
 	}
 	
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (!super.equals(obj))
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		VisitDto other = (VisitDto) obj;
-		if (disease != other.disease)
-			return false;
-		if (person == null) {
-			if (other.person != null)
-				return false;
-		} else if (!person.equals(other.person))
-			return false;
-		if (symptoms == null) {
-			if (other.symptoms != null)
-				return false;
-		} else if (!symptoms.equals(other.symptoms))
-			return false;
-		if (visitDateTime == null) {
-			if (other.visitDateTime != null)
-				return false;
-		} else if (!visitDateTime.equals(other.visitDateTime))
-			return false;
-		if (visitRemarks == null) {
-			if (other.visitRemarks != null)
-				return false;
-		} else if (!visitRemarks.equals(other.visitRemarks))
-			return false;
-		if (visitStatus != other.visitStatus)
-			return false;
-		if (visitUser == null) {
-			if (other.visitUser != null)
-				return false;
-		} else if (!visitUser.equals(other.visitUser))
-			return false;
-		return true;
-	}
-	
 }
