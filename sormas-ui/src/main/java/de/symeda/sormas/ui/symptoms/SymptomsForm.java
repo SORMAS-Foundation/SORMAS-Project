@@ -41,11 +41,11 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			+ LayoutUtil.h3(CssStyles.VSPACE3, "Recent symptoms")
 			+ LayoutUtil.divCss(CssStyles.VSPACE3,
 					LayoutUtil.fluidRowLocs(SymptomsDto.ONSET_DATE, SymptomsDto.ONSET_SYMPTOM))
-			+ LayoutUtil.fluidRow(
-					LayoutUtil.fluidColumn(9, 0,
+			+ LayoutUtil.fluidRowCss(CssStyles.VSPACE3,
+					LayoutUtil.fluidColumn(8, 0,
 							LayoutUtil.div(I18nProperties.getFieldCaption("Symptoms.hint"))),
-					LayoutUtil.fluidColumn(3, 0,
-							LayoutUtil.locCss(CssStyles.VSPACE3, BUTTONS_LOC)))
+					LayoutUtil.fluidColumn(4, 0,
+							LayoutUtil.locCss(CssStyles.ALIGN_RIGHT, BUTTONS_LOC)))
 			+ LayoutUtil.fluidRow(
 					LayoutUtil.fluidColumn(6, 0,
 							LayoutUtil.locsCss(CssStyles.VSPACE3,
@@ -185,22 +185,22 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			}
 		});
 		
-		Button setAllToNoButton = new Button("Set all to No");
-		setAllToNoButton.addStyleName(ValoTheme.BUTTON_LINK);
+		Button setEmptyToNoButton = new Button("Set cleared to No");
+		setEmptyToNoButton.addStyleName(ValoTheme.BUTTON_LINK);
 		
-		setAllToNoButton.addClickListener(new ClickListener() {
+		setEmptyToNoButton.addClickListener(new ClickListener() {
 			@SuppressWarnings("unchecked")
 			@Override
 			public void buttonClick(ClickEvent event) {
 				for (Object symptomId : unconditionalSymptomFieldIds) {
 					Field<SymptomState> symptom = (Field<SymptomState>) getFieldGroup().getField(symptomId);
-					if (symptom.isVisible()) {
+					if (symptom.isVisible() && symptom.getValue() == null) {
 						symptom.setValue(SymptomState.NO);
 					}
 				}
 				for (Object symptomId : conditionalBleedingSymptomFieldIds) {
 					Field<SymptomState> symptom = (Field<SymptomState>) getFieldGroup().getField(symptomId);
-					if (symptom.isVisible()) {
+					if (symptom.isVisible() && symptom.getValue() == null) {
 						symptom.setValue(SymptomState.NO);
 					}
 				}
@@ -209,7 +209,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		
 		HorizontalLayout buttonsLayout = new HorizontalLayout();
 		buttonsLayout.addComponent(clearAllButton);
-		buttonsLayout.addComponent(setAllToNoButton);
+		buttonsLayout.addComponent(setEmptyToNoButton);
 		buttonsLayout.setDefaultComponentAlignment(Alignment.MIDDLE_RIGHT);
 		getContent().addComponent(buttonsLayout, BUTTONS_LOC);
 	}
