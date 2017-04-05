@@ -85,11 +85,11 @@ public class TasksListFragment extends ListFragment {
             }
         } else {
             if (taskStatus == TaskStatus.PENDING) {
-                tasks = DatabaseHelper.getTaskDao().queryPending();
+                tasks = DatabaseHelper.getTaskDao().queryMyPending();
             } else if (taskStatus == TaskStatus.NOT_EXECUTABLE) {
-                tasks = DatabaseHelper.getTaskDao().queryNotExecutable();
+                tasks = DatabaseHelper.getTaskDao().queryMyNotExecutable();
             } else {
-                tasks = DatabaseHelper.getTaskDao().queryDoneOrDiscarded();
+                tasks = DatabaseHelper.getTaskDao().queryMyDoneOrRemoved();
             }
         }
 

@@ -74,19 +74,15 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 			}
 		});
     	    	
-    	ComboBox taskType = addField(TaskDto.TASK_TYPE, ComboBox.class);
-    	taskType.setItemCaptionMode(ItemCaptionMode.ID_TOSTRING);
-    	taskType.setImmediate(true);
-//    	taskType.addValueChangeListener(new Property.ValueChangeListener() {
-//			@SuppressWarnings("unchecked")
-//			@Override
-//			public void valueChange(Property.ValueChangeEvent event) {
-//				TaskType taskType = (TaskType)event.getProperty().getValue();
-//				if (taskType != null) {
-//					((Field<TaskContext>)getFieldGroup().getField(TaskDto.TASK_CONTEXT)).setValue(taskType.getTaskContexts());
-//				}
-//			}
-//		});
+    	ComboBox taskTypeField = addField(TaskDto.TASK_TYPE, ComboBox.class);
+    	taskTypeField.setItemCaptionMode(ItemCaptionMode.ID_TOSTRING);
+    	taskTypeField.setImmediate(true);
+    	taskTypeField.addValueChangeListener(e -> {
+    		TaskType taskType = (TaskType)e.getProperty().getValue();
+    		if (taskType != null) {
+    			setRequired(taskType.isCreatorCommentRequired(), TaskDto.CREATOR_COMMENT);
+    		}
+    	});
     	
     	ComboBox assigneeUser = addField(TaskDto.ASSIGNEE_USER, ComboBox.class);
     	assigneeUser.addValueChangeListener(e -> updateByCreatingAndAssignee());

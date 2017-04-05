@@ -14,9 +14,9 @@ public enum TaskType {
 	CASE_INVESTIGATION(TaskContext.CASE),
 	CASE_MANAGEMENT(TaskContext.CASE),
 	CASE_BURIAL(TaskContext.CASE),
+	CONTACT_TRACING(TaskContext.CASE),
 	CONTACT_INVESTIGATION(TaskContext.CONTACT),
 	CONTACT_FOLLOW_UP(TaskContext.CONTACT),
-	CONTACT_TRACING(TaskContext.CONTACT),
 	ANIMAL_TESTING(TaskContext.EVENT),
 	EVENT_INVESTIGATION(TaskContext.EVENT),
 	TREATMENT_CENTER_ESTABLISHMENT(TaskContext.CASE, TaskContext.EVENT),
@@ -25,16 +25,22 @@ public enum TaskType {
 	QUARANTINE_PLACE(TaskContext.EVENT, TaskContext.CASE),
 	VACCINATION_ACTIVITIES(TaskContext.EVENT, TaskContext.CASE),
 	ANIMAL_DEPOPULATION(TaskContext.EVENT, TaskContext.CASE),
-	OTHER(TaskContext.CASE, TaskContext.CONTACT, TaskContext.EVENT, TaskContext.GENERAL),
+	OTHER(true, TaskContext.CASE, TaskContext.CONTACT, TaskContext.EVENT, TaskContext.GENERAL),
 	DAILY_REPORT_GENERATION(TaskContext.GENERAL),
 	SURVEILLANCE_REPORT_GENERATION(TaskContext.GENERAL);
 	
+	private final boolean creatorCommentRequired;
 	private final TaskContext[] taskContexts;
 
 	private TaskType(TaskContext... _taskContexts) {
+		this(false, _taskContexts);
+	}
+
+	private TaskType(boolean _creatoreCommentRequired, TaskContext... _taskContexts) {
+		creatorCommentRequired = _creatoreCommentRequired;
 		taskContexts = _taskContexts;
 	}
-	
+
 	public TaskContext[] getTaskContexts() {
 		return taskContexts;
 	}
@@ -68,5 +74,9 @@ public enum TaskType {
 			return Arrays.asList(TaskType.values());
 		}
 		return taskTypesByContext.get(taskContext);
+	}
+
+	public boolean isCreatorCommentRequired() {
+		return creatorCommentRequired;
 	}
 }

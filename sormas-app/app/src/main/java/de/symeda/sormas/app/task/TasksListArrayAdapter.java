@@ -134,11 +134,7 @@ public class TasksListArrayAdapter extends ArrayAdapter<Task> {
         int textColor = R.color.textColorPrimaryDark;
         textView.setPaintFlags(textView.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
 
-//        if(TaskStatus.DONE.equals(taskStatus)) {
-//            fontface = Typeface.ITALIC;
-//        }
-//        else
-        if(TaskStatus.DISCARDED.equals(taskStatus)) {
+        if(TaskStatus.REMOVED.equals(taskStatus)) {
             textView.setPaintFlags(textView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
             textColor = R.color.textColorPrimaryLight;
         }

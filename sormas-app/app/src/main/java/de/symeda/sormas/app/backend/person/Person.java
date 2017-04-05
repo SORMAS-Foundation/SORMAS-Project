@@ -63,7 +63,7 @@ public class Person extends AbstractDomainObject {
 	@Enumerated(EnumType.STRING)
 	private ApproximateAgeType approximateAgeType;
 
-	@DatabaseField(foreign = true, foreignAutoCreate = true, foreignAutoRefresh = true)
+	@DatabaseField(foreign = true, foreignAutoCreate = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 2)
 	private Location address;
 	@Column(length = 255)
 	private String phone;

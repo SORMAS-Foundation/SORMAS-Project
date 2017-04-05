@@ -130,17 +130,11 @@ public class TaskListComponent extends AbstractView {
     	
     	HorizontalLayout buttonFilterLayout = new HorizontalLayout();
     	{
-    		Button statusPending = new Button("pending", e -> grid.filterTaskStatus(TaskStatus.PENDING));
-    		statusPending.setStyleName(ValoTheme.BUTTON_LINK);
-    		buttonFilterLayout.addComponent(statusPending);
-    		
-    		Button statusDone = new Button("done", e -> grid.filterTaskStatus(TaskStatus.DONE));
-    		statusDone.setStyleName(ValoTheme.BUTTON_LINK);
-    		buttonFilterLayout.addComponent(statusDone);
-    		
-    		Button statusDiscarded = new Button("discarded", e -> grid.filterTaskStatus(TaskStatus.DISCARDED));
-    		statusDiscarded.setStyleName(ValoTheme.BUTTON_LINK);
-    		buttonFilterLayout.addComponent(statusDiscarded);
+            for (TaskStatus status : TaskStatus.values()) {
+    	    	Button statusButton = new Button(status.toString(), e -> grid.filterTaskStatus(status));
+    	    	statusButton.setStyleName(ValoTheme.BUTTON_LINK);
+    	    	buttonFilterLayout.addComponent(statusButton);
+            }
     		
     		Button statusAll = new Button("all", e -> grid.filterTaskStatus(null));
     		statusAll.setStyleName(ValoTheme.BUTTON_LINK);

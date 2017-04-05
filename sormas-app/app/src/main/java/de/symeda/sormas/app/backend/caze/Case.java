@@ -43,7 +43,7 @@ public class Case extends AbstractDomainObject {
 
 	public static final String TABLE_NAME = "cases";
 
-	@DatabaseField(foreign = true, foreignAutoRefresh=true, canBeNull = false)
+	@DatabaseField(foreign = true, foreignAutoRefresh=true, canBeNull = false, maxForeignAutoRefreshLevel = 3)
 	private Person person;
 
 	@Column(length=512)
@@ -290,6 +290,6 @@ public class Case extends AbstractDomainObject {
 
 	@Override
 	public String toString() {
-		return getPerson().toString() + " (" + DataHelper.getShortUuid(getUuid()) + ")";
+		return (getPerson() != null ? getPerson().toString() : "") + " (" + DataHelper.getShortUuid(getUuid()) + ")";
 	}
 }

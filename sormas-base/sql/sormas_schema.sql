@@ -1333,3 +1333,9 @@ INSERT INTO schema_version (version_number, comment) VALUES (42, 'Task types upd
 UPDATE cases SET caseclassification = 'NOT_CLASSIFIED' WHERE caseclassification = 'POSSIBLE';
 
 INSERT INTO schema_version (version_number, comment) VALUES (43, 'Rename POSSBILE case classification to NOT_CLASSIFIED');
+
+-- 2017-04-05 #176
+
+UPDATE task SET taskstatus = 'REMOVED' WHERE taskstatus = 'DISCARDED';
+
+INSERT INTO schema_version (version_number, comment) VALUES (44, 'Rename DISCARDED task status to REMOVED');

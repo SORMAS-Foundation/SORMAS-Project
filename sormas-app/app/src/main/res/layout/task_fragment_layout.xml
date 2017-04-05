@@ -46,7 +46,7 @@
                 android:layout_height="wrap_content"
                 android:paddingTop="@dimen/field_padding"
                 android:paddingBottom="@dimen/field_padding"
-                app:caze="@{task.caze}" />
+                app:cazeAndLocation="@{task.caze}" />
 
             <de.symeda.sormas.app.component.LabelField
                 android:id="@+id/task_contact"
@@ -54,7 +54,7 @@
                 android:layout_height="wrap_content"
                 android:paddingTop="@dimen/field_padding"
                 android:paddingBottom="@dimen/field_padding"
-                app:contact="@{task.contact}" />
+                app:contactAndLocation="@{task.contact}" />
 
             <de.symeda.sormas.app.component.LabelField
                 android:id="@+id/task_event"
@@ -62,7 +62,7 @@
                 android:layout_height="wrap_content"
                 android:paddingTop="@dimen/field_padding"
                 android:paddingBottom="@dimen/field_padding"
-                app:event="@{task.event}" />
+                app:eventAndLocation="@{task.event}" />
 
             <LinearLayout
                 android:orientation="horizontal"

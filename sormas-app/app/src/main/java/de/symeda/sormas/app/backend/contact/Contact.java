@@ -15,6 +15,7 @@ import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.person.Person;
@@ -41,7 +42,7 @@ public class Contact extends AbstractDomainObject {
 	public static final String DESCRIPTION = "description";
 	public static final String RELATION_TO_CASE = "relationToCase";
 
-	@DatabaseField(foreign = true, foreignAutoRefresh=true, canBeNull = false)
+	@DatabaseField(foreign = true, foreignAutoRefresh=true, canBeNull = false, maxForeignAutoRefreshLevel = 3)
 	private Person person;
 
 	@DatabaseField(foreign = true, foreignAutoRefresh=true, canBeNull = false)
@@ -159,5 +160,10 @@ public class Contact extends AbstractDomainObject {
 	}
 	public void setRelationToCase(ContactRelation relationToCase) {
 		this.relationToCase = relationToCase;
+	}
+
+	@Override
+	public String toString() {
+		return (getPerson() != null ? getPerson().toString() : "") + " (" + DataHelper.getShortUuid(getUuid()) + ")";
 	}
 }

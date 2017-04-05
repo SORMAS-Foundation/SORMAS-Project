@@ -285,7 +285,7 @@ public class CaseFacadeEjb implements CaseFacade {
 					caze.setInvestigationStatus(InvestigationStatus.DONE);
 					caze.setInvestigatedDate(youngestTask.getStatusChangeDate());
 					break;
-				case DISCARDED:
+				case REMOVED:
 					caze.setInvestigationStatus(InvestigationStatus.DISCARDED);
 					caze.setInvestigatedDate(youngestTask.getStatusChangeDate());
 					break;

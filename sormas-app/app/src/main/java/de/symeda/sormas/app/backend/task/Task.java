@@ -49,13 +49,13 @@ public class Task extends AbstractDomainObject {
 	@Enumerated(EnumType.STRING)
 	private TaskContext taskContext;
 
-	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 4)
 	private Case caze;
 
-	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 4)
 	private Contact contact;
 
-	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 4)
 	private Event event;
 
 	@Enumerated(EnumType.STRING)

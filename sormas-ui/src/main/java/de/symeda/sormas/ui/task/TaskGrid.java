@@ -43,7 +43,7 @@ public class TaskGrid extends Grid implements ItemClickListener {
 			TaskDto task = (TaskDto)row.getItemId();
 			if (task != null && task.getTaskStatus() != null) {
 				switch (task.getTaskStatus()) {
-				case DISCARDED:
+				case REMOVED:
 					return CssStyles.STATUS_DISCARDED;
 				case NOT_EXECUTABLE:
 					return CssStyles.STATUS_NOT;

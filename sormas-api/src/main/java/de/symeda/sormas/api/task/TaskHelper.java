@@ -18,7 +18,7 @@ public final class TaskHelper {
 			|| UserRole.CASE_SUPERVISOR.equals(userRole)) {
 			switch (currentStatus) {
 			case PENDING:
-				return Arrays.asList(TaskStatus.DONE, TaskStatus.NOT_EXECUTABLE, TaskStatus.DISCARDED);
+				return Arrays.asList(TaskStatus.DONE, TaskStatus.NOT_EXECUTABLE, TaskStatus.REMOVED);
 			default:
 				return Collections.emptyList();
 			}

@@ -5,7 +5,7 @@ import de.symeda.sormas.api.I18nProperties;
 public enum TaskStatus {
 	PENDING,
 	DONE,
-	DISCARDED,
+	REMOVED,
 	NOT_EXECUTABLE,
 	;
 	

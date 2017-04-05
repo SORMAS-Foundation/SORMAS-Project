@@ -9,11 +9,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.IBinder;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.NotificationCompat;
 import android.text.Html;
 import android.text.TextUtils;
-import android.widget.Toast;
 
 import org.joda.time.DateTime;
 
@@ -32,8 +30,6 @@ import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.task.TaskDao;
-import de.symeda.sormas.app.caze.CasesActivity;
-import de.symeda.sormas.app.caze.CasesListFragment;
 import de.symeda.sormas.app.util.Callback;
 
 /**
@@ -77,7 +73,7 @@ public class TaskNotificationService extends Service {
         Date notificationRangeEnd = new Date();
 
         TaskDao taskDao = DatabaseHelper.getTaskDao();
-        List<Task> taskList = taskDao.queryPendingForNotification(notificationRangeStart, notificationRangeEnd);
+        List<Task> taskList = taskDao.queryMyPendingForNotification(notificationRangeStart, notificationRangeEnd);
 
         CaseDao caseDAO = DatabaseHelper.getCaseDao();
         ContactDao contactDAO = DatabaseHelper.getContactDao();

@@ -50,20 +50,6 @@ public class TaskDao extends AbstractAdoDao<Task> {
     }
 
     /**
-     * Gets all pending tasks.
-     * Ordered by priority, then due date - oldest (most due) first
-     * @return
-     */
-    public List<Task> queryPending() {
-        try {
-            return queryBuilder().orderBy(Task.PRIORITY, true).orderBy(Task.DUE_DATE, true).where().eq(Task.TASK_STATUS, TaskStatus.PENDING).query();
-        } catch (SQLException e) {
-            logger.log(LOG_LEVEL, e, "queryPending threw exception");
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
      * query for the following PENDING tasks:
      * 1. suggested start within range
      * 2. due date within range
@@ -71,7 +57,7 @@ public class TaskDao extends AbstractAdoDao<Task> {
      * Ordered by priority, then due date - oldes (most due) first
      * @return
      */
-    public List<Task> queryPendingForNotification(Date rangeStart, Date rangeEnd) {
+    public List<Task> queryMyPendingForNotification(Date rangeStart, Date rangeEnd) {
         try {
 
             QueryBuilder builder = queryBuilder();
@@ -97,22 +83,54 @@ public class TaskDao extends AbstractAdoDao<Task> {
             return builder.query();
 
         } catch (SQLException e) {
-            logger.log(LOG_LEVEL, e, "queryPendingForNotification threw exception");
+            logger.log(LOG_LEVEL, e, "queryMyPendingForNotification threw exception");
             throw new RuntimeException(e);
         }
     }
 
+    /**
+     * Gets all pending tasks.
+     * Ordered by priority, then due date - oldest (most due) first
+     * @return
+     */
+    public List<Task> queryMyPending() {
+        try {
+
+            QueryBuilder builder = queryBuilder();
+
+            Where where = builder.where();
+            where.and(
+                    where.eq(Task.ASSIGNEE_USER + "_id", ConfigProvider.getUser()),
+                    where.eq(Task.TASK_STATUS, TaskStatus.PENDING));
+
+            return builder
+                    .orderBy(Task.PRIORITY, true).orderBy(Task.DUE_DATE, true)
+                    .query();
+        } catch (SQLException e) {
+            logger.log(LOG_LEVEL, e, "queryMyPending threw exception");
+            throw new RuntimeException(e);
+        }
+    }
 
     /**
      * Gets all not executable tasks.
      * Ordered by due date - newest first
      * @return
      */
-    public List<Task> queryNotExecutable() {
+    public List<Task> queryMyNotExecutable() {
         try {
-            return queryBuilder().orderBy(Task.DUE_DATE, false).where().eq(Task.TASK_STATUS, TaskStatus.NOT_EXECUTABLE).query();
+            QueryBuilder builder = queryBuilder();
+
+            Where where = builder.where();
+            where.and(
+                    where.eq(Task.ASSIGNEE_USER + "_id", ConfigProvider.getUser()),
+                    where.eq(Task.TASK_STATUS, TaskStatus.NOT_EXECUTABLE));
+
+            return builder
+                    .orderBy(Task.PRIORITY, true).orderBy(Task.DUE_DATE, true)
+                    .query();
         } catch (SQLException e) {
-            logger.log(LOG_LEVEL, e, "queryPending threw exception");
+            logger.log(LOG_LEVEL, e, "queryMyPending threw exception");
             throw new RuntimeException(e);
         }
     }
@@ -121,11 +139,20 @@ public class TaskDao extends AbstractAdoDao<Task> {
      * Ordered by due date - newest first
      * @return
      */
-    public List<Task> queryDoneOrDiscarded() {
+    public List<Task> queryMyDoneOrRemoved() {
         try {
-            return queryBuilder().orderBy(Task.DUE_DATE, false).where().eq(Task.TASK_STATUS, TaskStatus.DONE).or().eq(Task.TASK_STATUS, TaskStatus.DISCARDED).query();
+            QueryBuilder builder = queryBuilder();
+
+            Where where = builder.where();
+            where.and(
+                    where.eq(Task.ASSIGNEE_USER + "_id", ConfigProvider.getUser()),
+                    where.eq(Task.TASK_STATUS, TaskStatus.DONE).or().eq(Task.TASK_STATUS, TaskStatus.REMOVED));
+
+            return builder
+                    .orderBy(Task.PRIORITY, true).orderBy(Task.DUE_DATE, true)
+                    .query();
         } catch (SQLException e) {
-            logger.log(LOG_LEVEL, e, "queryDoneOrDiscarded threw exception");
+            logger.log(LOG_LEVEL, e, "queryMyDoneOrRemoved threw exception");
             throw new RuntimeException(e);
         }
     }

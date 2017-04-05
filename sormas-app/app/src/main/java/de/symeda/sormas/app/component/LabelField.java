@@ -188,17 +188,32 @@ public class LabelField extends PropertyField<String> {
 
     @BindingAdapter("app:caze")
     public static void setCazeForLabel(LabelField labelField, Case caze) {
-        labelField.setValue(caze!=null?DataHelper.getShortUuid(caze.getUuid()) + (caze.getPerson()!=null?" " + caze.getPerson().toString():null):null);
+        labelField.setValue(caze!=null?caze.toString():null);
     }
 
     @BindingAdapter("app:contact")
     public static void setContactForLabel(LabelField labelField, Contact contact) {
-        labelField.setValue(contact!=null?DataHelper.getShortUuid(contact.getUuid()) + (contact.getPerson()!=null?" " + contact.getPerson().toString():null):null);
+        labelField.setValue(contact!=null?contact.toString():null);
     }
 
     @BindingAdapter("app:event")
     public static void setEventForLabel(LabelField labelField, Event event) {
-        labelField.setValue(event!=null?DataHelper.getShortUuid(event.getUuid()):null);
+        labelField.setValue(event!=null?event.toString():null);
+    }
+
+    @BindingAdapter("app:cazeAndLocation")
+    public static void setCazeAndLocationForLabel(LabelField labelField, Case caze) {
+        labelField.setValue(caze!=null?caze.toString() + (caze.getPerson() != null && caze.getPerson().getAddress() != null ? "\n" + caze.getPerson().getAddress().toString() : ""):null);
+    }
+
+    @BindingAdapter("app:contactAndLocation")
+    public static void setContactAndLocationForLabel(LabelField labelField, Contact contact) {
+        labelField.setValue(contact!=null?contact.toString() + (contact.getPerson() != null && contact.getPerson().getAddress() != null ? "\n" + contact.getPerson().getAddress().toString() : ""):null);
+    }
+
+    @BindingAdapter("app:eventAndLocation")
+    public static void setEventAndLocationForLabel(LabelField labelField, Event event) {
+        labelField.setValue(event!=null?event.toString() + (event.getEventLocation() != null ? "\n" + event.getEventLocation().toString() : ""):null);
     }
 
     @BindingAdapter("app:sampleTypeOfTest")

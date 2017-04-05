@@ -65,7 +65,7 @@ public class Event extends AbstractDomainObject {
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, canBeNull = false)
 	private User reportingUser;
 
-	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 2)
 	private Location eventLocation;
 
 	@Enumerated(EnumType.STRING)
