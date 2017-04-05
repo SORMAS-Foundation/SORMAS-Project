@@ -85,22 +85,6 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
     public void setPerson(PersonDto person) {
     	((TextField) getField(FIRST_NAME)).setValue(person.getFirstName());
     	((TextField) getField(LAST_NAME)).setValue(person.getLastName());
-    	if (person.getAddress() != null) {
-    		ComboBox region = (ComboBox) getField(CaseDataDto.REGION);
-    		ComboBox district = (ComboBox) getField(CaseDataDto.DISTRICT);
-    		ComboBox community = (ComboBox) getField(CaseDataDto.COMMUNITY);
-    		region.setValue(person.getAddress().getRegion());
-    		if (region.getValue() != null) {
-	    		district.removeAllItems();
-	    		district.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(((RegionReferenceDto) region.getValue()).getUuid()));
-	    		district.setValue(person.getAddress().getDistrict());
-	    		if (district.getValue() != null) {
-		    		community.removeAllItems();
-		    		community.addItems(FacadeProvider.getCommunityFacade().getAllByDistrict(((DistrictReferenceDto) district.getValue()).getUuid()));
-		    		community.setValue(person.getAddress().getCommunity());
-	    		}
-    		}
-    	}
     }
     
     public void setNameReadOnly(boolean readOnly) {

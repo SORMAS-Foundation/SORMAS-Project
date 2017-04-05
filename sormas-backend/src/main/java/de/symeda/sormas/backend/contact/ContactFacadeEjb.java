@@ -225,6 +225,8 @@ public class ContactFacadeEjb implements ContactFacade {
 		case EVD:
 		case CHOLERA:
 			return 21;
+		case AVIAN_INFLUENCA:
+			return 17;
 		case LASSA:
 			return 6;
 		default:

@@ -4,9 +4,9 @@ import com.vaadin.ui.Label;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.SubNavigationMenu;
 import de.symeda.sormas.ui.caze.CaseContactsView;
 import de.symeda.sormas.ui.utils.AbstractSubNavigationView;
@@ -32,8 +32,10 @@ public abstract class AbstractContactView extends AbstractSubNavigationView {
 		menu.addView(ContactDataView.VIEW_NAME, I18nProperties.getFieldCaption(ContactDto.I18N_PREFIX), params);
 		menu.addView(ContactPersonView.VIEW_NAME, I18nProperties.getPrefixFieldCaption(ContactDto.I18N_PREFIX, ContactDto.PERSON), params);
 		menu.addView(ContactVisitsView.VIEW_NAME, I18nProperties.getPrefixFieldCaption(ContactDto.I18N_PREFIX, "visits"), params);
-		infoLabel.setValue(contact.getPerson().getCaption());
-		infoLabelSub.setValue(DataHelper.getShortUuid(contactRef.getUuid()));
+		
+		infoLabel.setValue(contact.toString());
+		CaseDataDto caseData = FacadeProvider.getCaseFacade().getCaseDataByUuid(contact.getCaze().getUuid());
+		infoLabelSub.setValue(caseData.getDisease().toString());
     }
 
 	public ContactReferenceDto getContactRef() {

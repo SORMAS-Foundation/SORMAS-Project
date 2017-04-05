@@ -21,6 +21,7 @@ import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.EpiDataFacade;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationFacade;
+import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsFacade;
@@ -153,18 +154,47 @@ public class CaseController {
     	caze.setRegion(user.getRegion());
     	caze.setDistrict(user.getDistrict());
     	
+    	if (person != null && person.getAddress() != null) {
+    		// use the address of the person, if existen
+    		LocationDto address = person.getAddress();
+        	if (caze.getRegion() == null)
+        		caze.setRegion(address.getRegion());
+        	if (caze.getDistrict() == null)
+        		caze.setDistrict(address.getDistrict());
+        	if (caze.getCommunity() == null)
+        		caze.setCommunity(address.getCommunity());
+    	}
+    	
     	return caze;
     }
     
     public CommitDiscardWrapperComponent<CaseCreateForm> getCaseCreateComponent(PersonDto person, Disease disease, ContactDto contact) {
     	
     	CaseCreateForm createForm = new CaseCreateForm();
-        createForm.setValue(createNewCase(person, disease));
+    	
+    	CaseDataDto caze = createNewCase(person, disease);
+    	    	
+    	if (contact != null) {
+    		// if the contact is available use it's regional data if we have no other
+    		CaseDataDto contactsCase = cf.getCaseDataByUuid(contact.getCaze().getUuid());
+    		// TODO what if the regions and districts dont match?
+        	if (caze.getRegion() == null)
+        		caze.setRegion(contactsCase.getRegion());
+        	if (caze.getDistrict() == null)
+        		caze.setDistrict(contactsCase.getDistrict());
+        	if (caze.getCommunity() == null)
+        		caze.setCommunity(contactsCase.getCommunity());
+        	if (caze.getHealthFacility() == null)
+        		caze.setHealthFacility(contactsCase.getHealthFacility());
+    	}
+    	
+        createForm.setValue(caze);
+        
         if (person != null) {
         	createForm.setPerson(person);
+        	createForm.setNameReadOnly(true);
         }
         if (contact != null) {
-        	createForm.setNameReadOnly(true);
         	createForm.setDiseaseReadOnly(true);
         }
         final CommitDiscardWrapperComponent<CaseCreateForm> editView = new CommitDiscardWrapperComponent<CaseCreateForm>(createForm, createForm.getFieldGroup());
@@ -175,7 +205,17 @@ public class CaseController {
         		if (createForm.getFieldGroup().isValid()) {
         			final CaseDataDto dto = createForm.getValue();
         			
-        			if (contact == null) {
+        			if (contact != null) {
+        				// automatically change the contact classification to "converted"
+						contact.setContactClassification(ContactClassification.CONVERTED);
+						conf.saveContact(contact);
+
+						// use the person of the contact we are creating a case for
+        				dto.setPerson(person);
+        				cf.saveCase(dto);        				
+	        			Notification.show("New case created", Type.ASSISTIVE_NOTIFICATION);
+	        			navigateToPerson(dto.getUuid());
+        			} else {
 	        			ControllerProvider.getPersonController().selectOrCreatePerson(
 	        					createForm.getPersonFirstName(), createForm.getPersonLastName(), 
 	        					person -> {
@@ -186,14 +226,6 @@ public class CaseController {
 		        	        			navigateToPerson(dto.getUuid());
 	        						}
 	        					});
-        			
-        			} else {
-        				dto.setPerson(person);
-        				cf.saveCase(dto);
-						contact.setContactClassification(ContactClassification.CONVERTED);
-						conf.saveContact(contact);
-	        			Notification.show("New case created", Type.ASSISTIVE_NOTIFICATION);
-	        			navigateToPerson(dto.getUuid());
 					}
         		}
         	}

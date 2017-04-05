@@ -41,7 +41,7 @@ public class CaseContactsView extends AbstractCaseView {
 
         grid = new ContactGrid();
         grid.setColumns(ContactIndexDto.UUID, ContactIndexDto.PERSON, ContactIndexDto.CONTACT_PROXIMITY, 
-        		ContactIndexDto.LAST_CONTACT_DATE, ContactIndexDto.CONTACT_OFFICER);
+        		ContactIndexDto.LAST_CONTACT_DATE, ContactIndexDto.CONTACT_OFFICER, ContactGrid.ASSOCIATED_CASE);
 
         gridLayout = new VerticalLayout();
         gridLayout.addComponent(createTopBar());
