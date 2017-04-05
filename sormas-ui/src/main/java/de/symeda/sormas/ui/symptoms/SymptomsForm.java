@@ -2,13 +2,21 @@ package de.symeda.sormas.ui.symptoms;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.vaadin.data.Validator;
 import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.ui.AbstractField;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Field;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.OptionGroup;
+import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.I18nProperties;
@@ -25,13 +33,19 @@ import de.symeda.sormas.ui.utils.LayoutUtil;
 @SuppressWarnings("serial")
 public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 	
+	private static final String BUTTONS_LOC = "buttonsLoc";
+	
 	private static final String HTML_LAYOUT = LayoutUtil.h3(CssStyles.VSPACE3, "Symptoms")
 			+ LayoutUtil.divCss(CssStyles.VSPACE3,
 					LayoutUtil.fluidRowLocs(SymptomsDto.TEMPERATURE, SymptomsDto.TEMPERATURE_SOURCE))
 			+ LayoutUtil.h3(CssStyles.VSPACE3, "Recent symptoms")
 			+ LayoutUtil.divCss(CssStyles.VSPACE3,
 					LayoutUtil.fluidRowLocs(SymptomsDto.ONSET_DATE, SymptomsDto.ONSET_SYMPTOM))
-			+ LayoutUtil.divCss(CssStyles.VSPACE3, I18nProperties.getFieldCaption("Symptoms.hint"))
+			+ LayoutUtil.fluidRow(
+					LayoutUtil.fluidColumn(9, 0,
+							LayoutUtil.div(I18nProperties.getFieldCaption("Symptoms.hint"))),
+					LayoutUtil.fluidColumn(3, 0,
+							LayoutUtil.locCss(CssStyles.VSPACE3, BUTTONS_LOC)))
 			+ LayoutUtil.fluidRow(
 					LayoutUtil.fluidColumn(6, 0,
 							LayoutUtil.locsCss(CssStyles.VSPACE3,
@@ -61,6 +75,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 									
 	private final Disease disease;
 	private List<Object> unconditionalSymptomFieldIds;
+	private List<Object> conditionalBleedingSymptomFieldIds;
 
 	public SymptomsForm(Disease disease) {
 		super(SymptomsDto.class, SymptomsDto.I18N_PREFIX);
@@ -80,7 +95,6 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		}
 
 		addField(SymptomsDto.ONSET_DATE);
-		addField(SymptomsDto.ONSET_SYMPTOM);
 		ComboBox temperature = addField(SymptomsDto.TEMPERATURE, ComboBox.class);
 		for (Float temperatureValue : SymptomsHelper.getTemperatureValues()) {
 			temperature.addItem(temperatureValue);
@@ -105,7 +119,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 //		getFieldGroup().getField(SymptomsDto.OTHER_HEMORRHAGIC_SYMPTOMS_TEXT).setCaption(null);
 //		getFieldGroup().getField(SymptomsDto.OTHER_NON_HEMORRHAGIC_SYMPTOMS_TEXT).setCaption(null);
 		
-		List<Object> conditionalBleedingSymptomFieldIds = Arrays.asList(SymptomsDto.GUMS_BLEEDING, SymptomsDto.INJECTION_SITE_BLEEDING, SymptomsDto.NOSE_BLEEDING, 
+		conditionalBleedingSymptomFieldIds = Arrays.asList(SymptomsDto.GUMS_BLEEDING, SymptomsDto.INJECTION_SITE_BLEEDING, SymptomsDto.NOSE_BLEEDING, 
 				SymptomsDto.BLOODY_BLACK_STOOL, SymptomsDto.RED_BLOOD_VOMIT, SymptomsDto.DIGESTED_BLOOD_VOMIT, 
 				SymptomsDto.COUGHING_BLOOD, SymptomsDto.BLEEDING_VAGINA, SymptomsDto.SKIN_BRUISING, 
 				SymptomsDto.BLOOD_URINE, SymptomsDto.OTHER_HEMORRHAGIC_SYMPTOMS);
@@ -152,6 +166,52 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		FieldHelper.setRequiredWhen(getFieldGroup(), getFieldGroup().getField(SymptomsDto.OTHER_NON_HEMORRHAGIC_SYMPTOMS), 
 				Arrays.asList(SymptomsDto.OTHER_NON_HEMORRHAGIC_SYMPTOMS_TEXT), Arrays.asList(SymptomState.YES), disease);
 		// setReadOnly(true, );
+		
+		ComboBox onsetSymptom = addField(SymptomsDto.ONSET_SYMPTOM, ComboBox.class);
+		addListenerForOnsetSymptom(onsetSymptom);
+		
+		Button clearAllButton = new Button("Clear all");
+		clearAllButton.addStyleName(ValoTheme.BUTTON_LINK);
+
+		clearAllButton.addClickListener(new ClickListener() {
+			@Override
+			public void buttonClick(ClickEvent event) {
+				for (Object symptomId : unconditionalSymptomFieldIds) {
+					getFieldGroup().getField(symptomId).setValue(null);
+				}
+				for (Object symptomId : conditionalBleedingSymptomFieldIds) {
+					getFieldGroup().getField(symptomId).setValue(null);
+				}
+			}
+		});
+		
+		Button setAllToNoButton = new Button("Set all to No");
+		setAllToNoButton.addStyleName(ValoTheme.BUTTON_LINK);
+		
+		setAllToNoButton.addClickListener(new ClickListener() {
+			@SuppressWarnings("unchecked")
+			@Override
+			public void buttonClick(ClickEvent event) {
+				for (Object symptomId : unconditionalSymptomFieldIds) {
+					Field<SymptomState> symptom = (Field<SymptomState>) getFieldGroup().getField(symptomId);
+					if (symptom.isVisible()) {
+						symptom.setValue(SymptomState.NO);
+					}
+				}
+				for (Object symptomId : conditionalBleedingSymptomFieldIds) {
+					Field<SymptomState> symptom = (Field<SymptomState>) getFieldGroup().getField(symptomId);
+					if (symptom.isVisible()) {
+						symptom.setValue(SymptomState.NO);
+					}
+				}
+			}
+		});
+		
+		HorizontalLayout buttonsLayout = new HorizontalLayout();
+		buttonsLayout.addComponent(clearAllButton);
+		buttonsLayout.addComponent(setAllToNoButton);
+		buttonsLayout.setDefaultComponentAlignment(Alignment.MIDDLE_RIGHT);
+		getContent().addComponent(buttonsLayout, BUTTONS_LOC);
 	}
 
 	@Override
@@ -256,5 +316,22 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		}
 		
 		return false;
+	}
+	
+	private void addListenerForOnsetSymptom(ComboBox onsetSymptom) {
+		List<Object> allPropertyIds = 
+				Stream.concat(unconditionalSymptomFieldIds.stream(), conditionalBleedingSymptomFieldIds.stream())
+				.collect(Collectors.toList());
+		
+		for (Object sourcePropertyId : allPropertyIds) {
+			Field sourceField = getFieldGroup().getField(sourcePropertyId);
+			sourceField.addValueChangeListener(event -> {
+				if (sourceField.getValue() == SymptomState.YES) {
+					onsetSymptom.addItem(sourceField.getCaption());
+				} else {
+					onsetSymptom.removeItem(sourceField.getCaption());
+				}
+			});
+		}
 	}
 }

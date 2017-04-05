@@ -7,6 +7,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.Arrays;
+import java.util.List;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.epidata.EpiDataDto;
@@ -226,6 +229,7 @@ public class EpiDataForm extends FormTab {
                 @Override
                 public void onChange(PropertyField field) {
                     binding.epiData1poultryDetails.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
+                    binding.epiData2poultrySick.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
                 }
             });
 
@@ -269,6 +273,7 @@ public class EpiDataForm extends FormTab {
             });
 
             visibilityDisease(disease);
+            showOrHideHeadlines();
 
         } catch(Exception e) {
             e.printStackTrace();;
@@ -283,6 +288,22 @@ public class EpiDataForm extends FormTab {
                 boolean definedOrMissing = Diseases.DiseasesConfiguration.isDefinedOrMissing(EpiDataDto.class, propertyId, disease);
                 child.setVisibility(definedOrMissing ? View.VISIBLE : View.GONE);
             }
+        }
+    }
+
+    private void showOrHideHeadlines() {
+        if (!(binding.epiDataRodents.getVisibility() == View.VISIBLE || binding.epiDataBats.getVisibility() == View.VISIBLE ||
+                binding.epiDataPrimates.getVisibility() == View.VISIBLE || binding.epiDataSwine.getVisibility() == View.VISIBLE ||
+                binding.epiDataCattle.getVisibility() == View.VISIBLE || binding.epiDataOtherAnimals.getVisibility() == View.VISIBLE ||
+                binding.epiDataWildbirds.getVisibility() == View.VISIBLE || binding.epiDataBirds.getVisibility() == View.VISIBLE ||
+                binding.epiDataPoultryEat.getVisibility() == View.VISIBLE || binding.epiDataPoultry.getVisibility() == View.VISIBLE ||
+                binding.epiData2poultrySick.getVisibility() == View.VISIBLE)) {
+            binding.epiDataAnimalContacts.setVisibility(View.GONE);
+        }
+
+        if (!(binding.epiDataWaterSource.getVisibility() == View.VISIBLE || binding.epiDataWaterBody.getVisibility() == View.VISIBLE ||
+                binding.epiDataTickBite.getVisibility() == View.VISIBLE)) {
+            binding.epiDataEnvironmentalExposure.setVisibility(View.GONE);
         }
     }
 

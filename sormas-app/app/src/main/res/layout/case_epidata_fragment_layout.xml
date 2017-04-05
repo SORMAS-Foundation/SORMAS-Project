@@ -76,6 +76,7 @@
                 android:value="@={epiData.travels}" />
 
             <TextView
+                android:id="@+id/epiData_animalContacts"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingBottom="10dp"
@@ -236,6 +237,7 @@
                 android:value="@={epiData.wildbirdsLocation}"/>
 
             <TextView
+                android:id="@+id/epiData_environmentalExposure"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingBottom="10dp"

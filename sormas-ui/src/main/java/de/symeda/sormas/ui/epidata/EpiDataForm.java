@@ -114,6 +114,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 				EpiDataDto.OTHER_ANIMALS, EpiDataDto.BIRDS, EpiDataDto.POULTRY_EAT, EpiDataDto.WILDBIRDS));
 		
 		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(EpiDataDto.POULTRY_DETAILS), EpiDataDto.POULTRY, Arrays.asList(YesNoUnknown.YES), true);
+		FieldHelper.setVisibleWhen(getFieldGroup(), EpiDataDto.POULTRY_SICK, EpiDataDto.POULTRY, Arrays.asList(YesNoUnknown.YES), true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(EpiDataDto.POULTRY_SICK_DETAILS, EpiDataDto.POULTRY_DATE, EpiDataDto.POULTRY_LOCATION), EpiDataDto.POULTRY_SICK, Arrays.asList(YesNoUnknown.YES), true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), EpiDataDto.OTHER_ANIMALS_DETAILS, EpiDataDto.OTHER_ANIMALS, Arrays.asList(YesNoUnknown.YES), true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(EpiDataDto.WILDBIRDS_DETAILS, EpiDataDto.WILDBIRDS_DATE, EpiDataDto.WILDBIRDS_LOCATION), EpiDataDto.WILDBIRDS, Arrays.asList(YesNoUnknown.YES), true);

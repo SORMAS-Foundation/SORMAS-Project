@@ -34,6 +34,8 @@
     <string name="action_cancel">Cancel</string>
     <string name="action_create">Create</string>
     <string name="action_delete">Delete</string>
+    <string name="action_clearAll">Clear all</string>
+    <string name="action_setAllToNo">Set all to No</string>
 
     <!-- field -->
     <string name="field_yes_no_yes">Yes</string>

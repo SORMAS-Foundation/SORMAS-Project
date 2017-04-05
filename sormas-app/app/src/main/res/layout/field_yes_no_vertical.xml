@@ -11,9 +11,10 @@
             android:id="@+id/radio_caption"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textSize="@dimen/field_caption_size"
+            android:textColor="?android:attr/editTextColor"
             android:layout_marginLeft="@dimen/field_caption_margin_left"
-            android:layout_marginTop="@dimen/field_yes_no_caption_margin_top"
-            android:textSize="@dimen/field_caption_size" />
+            android:layout_marginTop="@dimen/field_yes_no_caption_margin_top" />
 
         <RadioGroup
             android:id="@+id/radio_group"

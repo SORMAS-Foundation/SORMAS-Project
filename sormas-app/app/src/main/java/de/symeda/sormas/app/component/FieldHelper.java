@@ -41,6 +41,11 @@ public class FieldHelper {
         return spinnerField;
     }
 
+//    public static SpinnerField initOnsetSymptomSpinnerField(SpinnerField spinnerField, List<Item> items, final AdapterView.OnItemSelectedListener ...moreListeners) {
+//        spinnerField.initializeForOnsetSymptom();
+//        return spinnerField;
+//    }
+
     public static SpinnerField initMonthSpinnerField(SpinnerField spinnerField, List<Item> items, final AdapterView.OnItemSelectedListener ...moreListeners) {
         spinnerField.initializeForMonth(items, moreListeners);
         return spinnerField;

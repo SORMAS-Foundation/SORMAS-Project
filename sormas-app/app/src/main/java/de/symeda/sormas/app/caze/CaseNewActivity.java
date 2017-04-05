@@ -161,7 +161,7 @@ public class CaseNewActivity extends AppCompatActivity {
         // save the person
         DatabaseHelper.getPersonDao().save(caze.getPerson());
 
-        caze.setCaseClassification(CaseClassification.POSSIBLE);
+        caze.setCaseClassification(CaseClassification.NOT_CLASSIFIED);
         caze.setInvestigationStatus(InvestigationStatus.PENDING);
 
         User user = ConfigProvider.getUser();

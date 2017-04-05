@@ -11,20 +11,25 @@ import android.widget.AdapterView;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
+import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.FieldHelper;
 import de.symeda.sormas.app.component.PropertyField;
 import de.symeda.sormas.app.component.SpinnerField;
@@ -120,6 +125,19 @@ public class CaseEditDataForm extends FormTab {
         });
 
         FieldHelper.initSpinnerField(binding.caseDataHealthFacility, facilitiesByCommunity);
+
+        // case classification can only be edited by officers, not informants; additionally,
+        // the "Not yet classified" classification is hidden from informants
+        FieldHelper.initSpinnerField(binding.caseDataCaseOfficerClassification, CaseClassification.class);
+        User user = ConfigProvider.getUser();
+        if (user.getUserRole() == UserRole.INFORMANT) {
+            binding.caseDataCaseOfficerClassification.setVisibility(View.GONE);
+            if (binding.getCaze().getCaseClassification() == CaseClassification.NOT_CLASSIFIED) {
+                binding.caseDataCaseClassification.setVisibility(View.GONE);
+            }
+        } else {
+            binding.caseDataCaseClassification.setVisibility(View.GONE);
+        }
 
         FieldHelper.initSpinnerField(binding.caseDataMeaslesVaccination, Vaccination.class);
         FieldHelper.initSpinnerField(binding.caseDataVaccinationInfoSource, VaccinationInfoSource.class);

@@ -135,7 +135,7 @@ public class CaseController {
     		caze.setDisease(disease);
     	}
     	caze.setInvestigationStatus(InvestigationStatus.PENDING);
-    	caze.setCaseClassification(CaseClassification.POSSIBLE);
+    	caze.setCaseClassification(CaseClassification.NOT_CLASSIFIED);
     	
     	caze.setReportDate(new Date());
     	UserDto user = LoginHelper.getCurrentUser();

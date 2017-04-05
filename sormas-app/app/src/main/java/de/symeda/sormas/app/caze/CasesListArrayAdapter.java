@@ -8,10 +8,13 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 
 /**
  * Created by Stefan Szczesny on 21.07.2016.
@@ -54,7 +57,12 @@ public class CasesListArrayAdapter extends ArrayAdapter<Case> {
         reportDate.setText(DateHelper.formatDate(caze.getReportDate()));
 
         TextView caseStatus = (TextView) convertView.findViewById(R.id.cli_case_satus);
-        caseStatus.setText(caze.getCaseClassification()!=null?caze.getCaseClassification().toString():null);
+        if (!(ConfigProvider.getUser().getUserRole() == UserRole.INFORMANT && caze.getCaseClassification() == CaseClassification.NOT_CLASSIFIED)) {
+            caseStatus.setText(caze.getCaseClassification() != null ? caze.getCaseClassification().toString() : null);
+            caseStatus.setVisibility(View.VISIBLE);
+        } else {
+            caseStatus.setVisibility(View.GONE);
+        }
 
         TextView person = (TextView) convertView.findViewById(R.id.cli_person);
         person.setText(caze.getPerson().toString());

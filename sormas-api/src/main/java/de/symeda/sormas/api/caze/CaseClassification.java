@@ -3,7 +3,7 @@ package de.symeda.sormas.api.caze;
 import de.symeda.sormas.api.I18nProperties;
 
 public enum CaseClassification {
-	POSSIBLE, 
+	NOT_CLASSIFIED, 
 	SUSPECT, 
 	PROBABLE,
 	CONFIRMED, 

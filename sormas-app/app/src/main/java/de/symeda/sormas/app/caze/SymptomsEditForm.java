@@ -6,6 +6,8 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -126,6 +128,39 @@ public class SymptomsEditForm extends FormTab {
                     binding.symptomsNoseBleeding1, binding.symptomsBloodyBlackStool, binding.symptomsRedBloodVomit,
                     binding.symptomsDigestedBloodVomit, binding.symptomsCoughingBlood, binding.symptomsBleedingVagina,
                     binding.symptomsSkinBruising1, binding.symptomsBloodUrine, binding.symptomsOtherHemorrhagicSymptoms);
+
+//            FieldHelper.initOnsetSymptomSpinnerField(binding.symptomsOnsetSymptom1, new ArrayList<Item>());
+//            addListenerForOnsetSymptom();
+
+            Button clearAllBtn = binding.symptomsClearAll;
+            clearAllBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    for (SymptomStateField symptom : nonConditionalSymptoms) {
+                        symptom.setValue(null);
+                    }
+                    for (SymptomStateField symptom : conditionalBleedingSymptoms) {
+                        symptom.setValue(null);
+                    }
+                }
+            });
+
+            Button setAllToNoBtn = binding.symptomsSetAllToNo;
+            setAllToNoBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    for (SymptomStateField symptom : nonConditionalSymptoms) {
+                        if (symptom.getVisibility() == View.VISIBLE) {
+                            symptom.setValue(SymptomState.NO);
+                        }
+                    }
+                    for (SymptomStateField symptom : conditionalBleedingSymptoms) {
+                        if (symptom.getVisibility() == View.VISIBLE) {
+                            symptom.setValue(SymptomState.NO);
+                        }
+                    }
+                }
+            });
 
             // @TODO: Workaround, find a better solution. Remove autofocus on first field.
             getView().requestFocus();
@@ -290,6 +325,37 @@ public class SymptomsEditForm extends FormTab {
         }
     }
 
+//    private void addListenerForOnsetSymptom() {
+//        final ArrayAdapter<Item> adapter = (ArrayAdapter<Item>) binding.symptomsOnsetSymptom1.getAdapter();
+//
+//        for (SymptomStateField symptom : nonConditionalSymptoms) {
+//            symptom.addValueChangedListener(new PropertyField.ValueChangeListener() {
+//                @Override
+//                public void onChange(PropertyField field) {
+//                    if (field.getValue() == SymptomState.YES) {
+//                        adapter.add(new Item(field.getCaption(), field.getCaption()));
+//                    } else {
+//                        adapter.remove((Item) binding.symptomsOnsetSymptom1.getItemAtPosition(
+//                                binding.symptomsOnsetSymptom1.getPositionOf(new Item(field.getCaption(), field.getCaption()))));
+//                    }
+//                }
+//            });
+//        }
+//
+//        for (SymptomStateField symptom : conditionalBleedingSymptoms) {
+//            symptom.addValueChangedListener(new PropertyField.ValueChangeListener() {
+//                @Override
+//                public void onChange(PropertyField field) {
+//                    if (field.getValue() == SymptomState.YES) {
+//                        adapter.add(new Item(field.getCaption(), field.getCaption()));
+//                    } else {
+//                        adapter.remove((Item) binding.symptomsOnsetSymptom1.getItemAtPosition(
+//                                binding.symptomsOnsetSymptom1.getPositionOf(new Item(field.getCaption(), field.getCaption()))));
+//                    }
+//                }
+//            });
+//        }
+//    }
 
     @Override
     public AbstractDomainObject getData() {

@@ -64,6 +64,38 @@
                 android:text="@string/symptoms_infoText"
                 android:paddingBottom="10dp"/>
 
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="10dp">
+
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="0dp"
+                    android:height="30dp"
+                    android:layout_weight="0.5"
+                    android:background="@color/colorLightTeal"
+                    android:text="@string/action_clearAll"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:layout_marginRight="5dp"
+                    android:id="@+id/symptoms_clearAll"/>
+
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="0dp"
+                    android:height="30dp"
+                    android:layout_weight="0.5"
+                    android:background="@color/colorLightTeal"
+                    android:text="@string/action_setAllToNo"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:layout_marginLeft="5dp"
+                    android:id="@+id/symptoms_setAllToNo"/>
+
+            </LinearLayout>
+
             <de.symeda.sormas.app.component.SymptomStateField
                 android:id="@+id/symptoms_fever"
                 android:layout_width="match_parent"
@@ -393,6 +425,8 @@
                     android:id="@+id/symptoms_onsetSymptom1"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:paddingTop="@dimen/field_padding"
+                    android:paddingBottom="@dimen/field_padding"
                     android:value="@={symptoms.onsetSymptom}"/>
 
             </LinearLayout>

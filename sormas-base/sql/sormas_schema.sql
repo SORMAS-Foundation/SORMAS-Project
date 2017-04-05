@@ -1327,3 +1327,9 @@ INSERT INTO schema_version (version_number, comment) VALUES (41, 'Added EPID num
 DELETE FROM task;
 
 INSERT INTO schema_version (version_number, comment) VALUES (42, 'Task types update, drop all tasks');
+
+-- 2017-04-05 Rename POSSIBLE case classification to NOT_CLASSIFIED #175
+
+UPDATE cases SET caseclassification = 'NOT_CLASSIFIED' WHERE caseclassification = 'POSSIBLE';
+
+INSERT INTO schema_version (version_number, comment) VALUES (43, 'Rename POSSBILE case classification to NOT_CLASSIFIED');

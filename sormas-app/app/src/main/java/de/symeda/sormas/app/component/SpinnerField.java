@@ -25,6 +25,7 @@ import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import de.symeda.sormas.api.I18nProperties;
@@ -137,6 +138,17 @@ public class SpinnerField extends PropertyField<Object> implements SpinnerFieldI
         spinnerElement.setSelection(adapter.getCount());
     }
 
+//    public void setOnsetSymptomSpinnerAdapter() {
+//        ArrayAdapter<Item> adapter = new ArrayAdapter<>(
+//                getContext(),
+//                android.R.layout.simple_spinner_item,
+//                new ArrayList<Item>());
+//
+//        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//        adapter.add(new Item("", null));
+//        spinnerElement.setAdapter(adapter);
+//    }
+
     public void setMonthSpinnerAdapter(List<Item> items) {
         ArrayAdapter<Item> adapter = new ArrayAdapter<Item>(
                 getContext(),
@@ -186,6 +198,10 @@ public class SpinnerField extends PropertyField<Object> implements SpinnerFieldI
             this.registerListener(listener);
         }
     }
+
+//    public void initializeForOnsetSymptom() {
+//        this.setOnsetSymptomSpinnerAdapter();
+//    }
 
     public void initializeForMonth(List<Item> items, final AdapterView.OnItemSelectedListener[] moreListeners) {
         this.setMonthSpinnerAdapter(items);
@@ -277,6 +293,16 @@ public class SpinnerField extends PropertyField<Object> implements SpinnerFieldI
                 break;
             }
         }
+    }
+
+    public int getPositionOf(Item item) {
+        for (int i = 0; i < spinnerElement.getAdapter().getCount(); i++) {
+            if (item.getValue().equals(((Item) spinnerElement.getAdapter().getItem(i)).getValue())) {
+                return i;
+            }
+        }
+
+        return -1;
     }
 
     private void setSelectedItem(Object selectedItem) {
