@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -29,6 +30,7 @@ import de.symeda.sormas.app.component.SpinnerField;
 import de.symeda.sormas.app.databinding.CaseNewFragmentLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.FormTab;
+import de.symeda.sormas.app.util.Item;
 
 public class CaseNewForm extends FormTab {
 
@@ -127,6 +129,26 @@ public class CaseNewForm extends FormTab {
 
         FieldHelper.initSpinnerField(binding.caseDataHealthFacility, facilitiesByCommunity);
     }
+
+//    public void setNameReadOnly(boolean readOnly) {
+//        binding.caseDataFirstName.setEnabled(!readOnly);
+//        binding.caseDataLastName.setEnabled(!readOnly);
+//    }
+//
+//    public void setDiseaseReadOnly(boolean readOnly) {
+//        binding.caseDataDisease.setEnabled(!readOnly);
+//    }
+
+//    public void setPerson(Person person) {
+//        binding.caseDataFirstName.setValue(person.getFirstName());
+//        binding.caseDataLastName.setValue(person.getLastName());
+////        if (person.getAddress() != null) {
+////            ArrayAdapter<Item> regionAdapter = (ArrayAdapter<Item>) binding.caseDataRegion.getAdapter();
+////            ArrayAdapter<Item> districtAdapter = (ArrayAdapter<Item>) binding.caseDataDistrict.getAdapter();
+////            ArrayAdapter<Item> communityAdapter = (ArrayAdapter<Item>) binding.caseDataCommunity.getAdapter();
+////            binding.caseDataRegion.select
+////        }
+//    }
 
     @Override
     public Case getData() {

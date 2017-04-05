@@ -14,6 +14,9 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.contact.ContactClassification;
+import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.EpiDataFacade;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
@@ -42,6 +45,7 @@ public class CaseController {
 	private SymptomsFacade sf = FacadeProvider.getSymptomsFacade();
 	private HospitalizationFacade hf = FacadeProvider.getHospitalizationFacade();
 	private EpiDataFacade edf = FacadeProvider.getEpiDataFacade();
+	private ContactFacade conf = FacadeProvider.getContactFacade();
 	
     public CaseController() {
     	
@@ -58,13 +62,18 @@ public class CaseController {
     }
     
     public void create() {
-    	CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(null, null);
+    	CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(null, null, null);
     	VaadinUiUtil.showModalPopupWindow(caseCreateComponent, "Create new case");    	
     }
     
     public void create(PersonDto person, Disease disease) {
-    	CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(person, disease);
+    	CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(person, disease, null);
     	VaadinUiUtil.showModalPopupWindow(caseCreateComponent, "Create new case"); 
+    }
+    
+    public void create(PersonDto person, Disease disease, ContactDto contact) {
+    	CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(person, disease, contact);
+    	VaadinUiUtil.showModalPopupWindow(caseCreateComponent, "Create new case");
     }
     
     public void navigateToData(String caseUuid) {
@@ -147,10 +156,17 @@ public class CaseController {
     	return caze;
     }
     
-    public CommitDiscardWrapperComponent<CaseCreateForm> getCaseCreateComponent(PersonDto person, Disease disease) {
+    public CommitDiscardWrapperComponent<CaseCreateForm> getCaseCreateComponent(PersonDto person, Disease disease, ContactDto contact) {
     	
     	CaseCreateForm createForm = new CaseCreateForm();
         createForm.setValue(createNewCase(person, disease));
+        if (person != null) {
+        	createForm.setPerson(person);
+        }
+        if (contact != null) {
+        	createForm.setNameReadOnly(true);
+        	createForm.setDiseaseReadOnly(true);
+        }
         final CommitDiscardWrapperComponent<CaseCreateForm> editView = new CommitDiscardWrapperComponent<CaseCreateForm>(createForm, createForm.getFieldGroup());
        
         editView.addCommitListener(new CommitListener() {
@@ -159,16 +175,26 @@ public class CaseController {
         		if (createForm.getFieldGroup().isValid()) {
         			final CaseDataDto dto = createForm.getValue();
         			
-        			ControllerProvider.getPersonController().selectOrCreatePerson(
-        					createForm.getPersonFirstName(), createForm.getPersonLastName(), 
-        					person -> {
-        						if (person != null) {
-	        						dto.setPerson(person);
-	        						cf.saveCase(dto);
-	        	        			Notification.show("New case created", Type.ASSISTIVE_NOTIFICATION);
-	        	        			navigateToPerson(dto.getUuid());
-        						}
-        					});
+        			if (contact == null) {
+	        			ControllerProvider.getPersonController().selectOrCreatePerson(
+	        					createForm.getPersonFirstName(), createForm.getPersonLastName(), 
+	        					person -> {
+	        						if (person != null) {
+		        						dto.setPerson(person);
+		        						cf.saveCase(dto);
+		        	        			Notification.show("New case created", Type.ASSISTIVE_NOTIFICATION);
+		        	        			navigateToPerson(dto.getUuid());
+	        						}
+	        					});
+        			
+        			} else {
+        				dto.setPerson(person);
+        				cf.saveCase(dto);
+						contact.setContactClassification(ContactClassification.CONVERTED);
+						conf.saveContact(contact);
+	        			Notification.show("New case created", Type.ASSISTIVE_NOTIFICATION);
+	        			navigateToPerson(dto.getUuid());
+					}
         		}
         	}
         });

@@ -6,6 +6,7 @@ import com.vaadin.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -79,6 +80,36 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 
     public String getPersonLastName() {
     	return (String)getField(LAST_NAME).getValue();
+    }
+    
+    public void setPerson(PersonDto person) {
+    	((TextField) getField(FIRST_NAME)).setValue(person.getFirstName());
+    	((TextField) getField(LAST_NAME)).setValue(person.getLastName());
+    	if (person.getAddress() != null) {
+    		ComboBox region = (ComboBox) getField(CaseDataDto.REGION);
+    		ComboBox district = (ComboBox) getField(CaseDataDto.DISTRICT);
+    		ComboBox community = (ComboBox) getField(CaseDataDto.COMMUNITY);
+    		region.setValue(person.getAddress().getRegion());
+    		if (region.getValue() != null) {
+	    		district.removeAllItems();
+	    		district.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(((RegionReferenceDto) region.getValue()).getUuid()));
+	    		district.setValue(person.getAddress().getDistrict());
+	    		if (district.getValue() != null) {
+		    		community.removeAllItems();
+		    		community.addItems(FacadeProvider.getCommunityFacade().getAllByDistrict(((DistrictReferenceDto) district.getValue()).getUuid()));
+		    		community.setValue(person.getAddress().getCommunity());
+	    		}
+    		}
+    	}
+    }
+    
+    public void setNameReadOnly(boolean readOnly) {
+    	getField(FIRST_NAME).setEnabled(!readOnly);
+    	getField(LAST_NAME).setEnabled(!readOnly);
+    }
+    
+    public void setDiseaseReadOnly(boolean readOnly) {
+    	getField(CaseDataDto.DISEASE).setEnabled(!readOnly);
     }
     
 	@Override

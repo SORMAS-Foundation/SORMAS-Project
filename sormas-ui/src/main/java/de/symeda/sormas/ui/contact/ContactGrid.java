@@ -14,15 +14,19 @@ import com.vaadin.ui.renderers.HtmlRenderer;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.login.LoginHelper;
+import de.symeda.sormas.ui.utils.CaseUuidRenderer;
 import de.symeda.sormas.ui.utils.HtmlReferenceDtoConverter;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 
@@ -32,6 +36,7 @@ public class ContactGrid extends Grid {
 	public static final String NUMBER_OF_VISITS = "numberOfVisits";
 	public static final String NUMBER_OF_PENDING_TASKS = "numberOfPendingTasks";
 	public static final String DISEASE_SHORT = "diseaseShort";
+	public static final String ASSOCIATED_CASE = "associatedCase";
 	
 	public ContactGrid() {
 		setSizeFull();
@@ -80,18 +85,37 @@ public class ContactGrid extends Grid {
 				return String.class;
 			}
         });
+        
+        generatedContainer.addGeneratedProperty(ASSOCIATED_CASE, new PropertyValueGenerator<String>() {
+			@Override
+			public String getValue(Item item, Object itemId, Object propertyId) {
+				ContactIndexDto contactIndexDto = (ContactIndexDto) itemId;
+				PersonDto personDto = FacadeProvider.getPersonFacade().getPersonByUuid(contactIndexDto.getPerson().getUuid());
+				String caseId = findAssociatedCaseId(personDto, contactIndexDto);
+				if(caseId != null) {
+					return caseId;
+				} else {
+					return "";
+				}
+			}
+			@Override
+			public Class<String> getType() {
+				return String.class;
+			}
+		});
 
         setColumns(ContactIndexDto.UUID, ContactIndexDto.PERSON, ContactIndexDto.CONTACT_PROXIMITY,
         		ContactIndexDto.LAST_CONTACT_DATE, ContactIndexDto.CONTACT_CLASSIFICATION, 
         		ContactIndexDto.FOLLOW_UP_STATUS, ContactIndexDto.FOLLOW_UP_UNTIL, NUMBER_OF_VISITS,
         		DISEASE_SHORT, ContactIndexDto.CAZE,
-        		ContactIndexDto.CONTACT_OFFICER, NUMBER_OF_PENDING_TASKS
+        		ContactIndexDto.CONTACT_OFFICER, NUMBER_OF_PENDING_TASKS, ASSOCIATED_CASE
         		);
         getColumn(ContactIndexDto.CONTACT_PROXIMITY).setWidth(200);
         getColumn(ContactIndexDto.UUID).setRenderer(new UuidRenderer());
         getColumn(ContactIndexDto.CAZE).setRenderer(new HtmlRenderer(), new HtmlReferenceDtoConverter());
         getColumn(ContactIndexDto.LAST_CONTACT_DATE).setRenderer(new DateRenderer(DateHelper.getDateFormat()));
         getColumn(ContactIndexDto.FOLLOW_UP_UNTIL).setRenderer(new DateRenderer(DateHelper.getDateFormat()));
+		getColumn(ASSOCIATED_CASE).setRenderer(new CaseUuidRenderer(true));
         
         for (Column column : getColumns()) {
         	column.setHeaderCaption(I18nProperties.getPrefixFieldCaption(
@@ -99,13 +123,23 @@ public class ContactGrid extends Grid {
         }
         
         addItemClickListener(e -> {
-        	ContactIndexDto indexDto = (ContactIndexDto)e.getItemId();
-        	if (ContactIndexDto.CAZE.equals(e.getPropertyId())) {
-        		ControllerProvider.getCaseController().navigateToData(indexDto.getCaze().getUuid());
-        	} else {
-        		ControllerProvider.getContactController().editData(indexDto.getUuid());
-        	}
-        });
+	       	ContactIndexDto contactIndexDto = (ContactIndexDto)e.getItemId();
+	       	if(ASSOCIATED_CASE.equals(e.getPropertyId())) {
+	       		PersonDto personDto = FacadeProvider.getPersonFacade().getPersonByUuid(contactIndexDto.getPerson().getUuid());
+				CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(findAssociatedCaseId(personDto, contactIndexDto));
+				if(caseDto != null) {
+					ControllerProvider.getCaseController().navigateToData(findAssociatedCaseId(personDto, contactIndexDto));
+				} else {
+					ControllerProvider.getCaseController().create(personDto, contactIndexDto.getCazeDisease(), FacadeProvider.getContactFacade().getContactByUuid(contactIndexDto.getUuid()));
+				}
+	       	} else {
+	       		if (ContactIndexDto.CAZE.equals(e.getPropertyId())) {
+	        		ControllerProvider.getCaseController().navigateToData(contactIndexDto.getCaze().getUuid());
+	        	} else {
+	        		ControllerProvider.getContactController().editData(contactIndexDto.getUuid());
+	        	}
+	       	}
+		});	
 	}
 	
 
@@ -168,6 +202,20 @@ public class ContactGrid extends Grid {
     	getContainer().removeAllItems();
         getContainer().addAll(entries);    	
     }
+    
+    private String findAssociatedCaseId(PersonDto personDto, ContactIndexDto contactIndexDto) {
+		if(personDto == null || contactIndexDto == null) {
+			return null;
+		}
+		
+		UserDto user = LoginHelper.getCurrentUser();
+		CaseDataDto caze = FacadeProvider.getCaseFacade().getByPersonAndDisease(personDto.getUuid(), contactIndexDto.getCazeDisease(), user.getUuid());
+		if(caze != null) {
+			return caze.getUuid();
+		} else {
+			return null;
+		}
+	}
     
 }
 

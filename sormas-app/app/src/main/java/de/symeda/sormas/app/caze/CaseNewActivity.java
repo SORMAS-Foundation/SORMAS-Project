@@ -23,6 +23,7 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.SelectOrCreatePersonDialogBuilder;
@@ -35,6 +36,7 @@ import de.symeda.sormas.app.util.Consumer;
  */
 public class CaseNewActivity extends AppCompatActivity {
 
+    public static final String CONTACT = "contact";
 
     private CaseNewForm caseNewForm;
 
@@ -53,6 +55,13 @@ public class CaseNewActivity extends AppCompatActivity {
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         caseNewForm = new CaseNewForm();
+//        Bundle params = getIntent().getExtras();
+//        if (params.containsKey(CONTACT)) {
+//            Contact contact = DatabaseHelper.getContactDao().queryUuid((String) params.get(CONTACT));
+//            caseNewForm.setNameReadOnly(true);
+//            caseNewForm.setDiseaseReadOnly(true);
+//            caseNewForm.setPerson(contact.getPerson());
+//        }
         ft.add(R.id.fragment_frame, caseNewForm).commit();
 
     }
