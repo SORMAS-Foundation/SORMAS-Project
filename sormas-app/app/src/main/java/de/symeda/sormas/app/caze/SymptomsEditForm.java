@@ -145,17 +145,17 @@ public class SymptomsEditForm extends FormTab {
                 }
             });
 
-            Button setAllToNoBtn = binding.symptomsSetAllToNo;
+            Button setAllToNoBtn = binding.symptomsSetEmptyToNo;
             setAllToNoBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     for (SymptomStateField symptom : nonConditionalSymptoms) {
-                        if (symptom.getVisibility() == View.VISIBLE) {
+                        if (symptom.getVisibility() == View.VISIBLE && symptom.getValue() == null) {
                             symptom.setValue(SymptomState.NO);
                         }
                     }
                     for (SymptomStateField symptom : conditionalBleedingSymptoms) {
-                        if (symptom.getVisibility() == View.VISIBLE) {
+                        if (symptom.getVisibility() == View.VISIBLE && symptom.getValue() == null) {
                             symptom.setValue(SymptomState.NO);
                         }
                     }

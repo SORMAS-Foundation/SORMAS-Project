@@ -35,7 +35,7 @@
     <string name="action_create">Create</string>
     <string name="action_delete">Delete</string>
     <string name="action_clearAll">Clear all</string>
-    <string name="action_setAllToNo">Set all to No</string>
+    <string name="action_setEmptyToNo">Set cleared to No</string>
     <string name="action_createCaseFromContact">Create a new case for this contact</string>
 
     <!-- field -->

@@ -89,10 +89,10 @@
                     android:height="30dp"
                     android:layout_weight="0.5"
                     android:background="@color/colorLightTeal"
-                    android:text="@string/action_setAllToNo"
+                    android:text="@string/action_setEmptyToNo"
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:layout_marginLeft="5dp"
-                    android:id="@+id/symptoms_setAllToNo"/>
+                    android:id="@+id/symptoms_setEmptyToNo"/>
 
             </LinearLayout>
 
