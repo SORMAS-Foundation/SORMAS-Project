@@ -102,6 +102,14 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
     }
   }
   
+  .v-grid-header th {
+    font-size: 12px;
+  }
+  
+  .v-grid-cell {
+    font-size: 13px;
+  }
+  
   .v-grid-cell.priority-high {
     background-color: #DFA7A5;
     color: white;
