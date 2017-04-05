@@ -121,9 +121,12 @@ public class SampleEditForm extends FormTab {
             FieldHelper.initSpinnerField(binding.sampleLab, laboratories);
             binding.sampleReceivedDate.initialize(this);
             binding.sampleReceivedDate.setEnabled(false);
+            binding.sampleLabSampleID.setEnabled(false);
             if (binding.getSample().getShipmentStatus() != ShipmentStatus.RECEIVED) {
                 binding.sampleReceivedDate.setVisibility(View.GONE);
+                binding.sampleLabSampleID.setVisibility(View.GONE);
             }
+
 
             // recent test should only be displayed when an existing sample is viewed, not
             // when a new one is created
