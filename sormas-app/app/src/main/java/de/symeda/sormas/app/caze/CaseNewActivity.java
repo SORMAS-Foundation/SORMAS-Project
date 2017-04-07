@@ -37,6 +37,8 @@ import de.symeda.sormas.app.util.Consumer;
 public class CaseNewActivity extends AppCompatActivity {
 
     public static final String CONTACT = "contact";
+    public static final String PERSON = "person";
+    public static final String DISEASE = "disease";
 
     private CaseNewForm caseNewForm;
 
@@ -55,14 +57,17 @@ public class CaseNewActivity extends AppCompatActivity {
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         caseNewForm = new CaseNewForm();
-//        Bundle params = getIntent().getExtras();
-//        if (params.containsKey(CONTACT)) {
-//            Contact contact = DatabaseHelper.getContactDao().queryUuid((String) params.get(CONTACT));
-//            caseNewForm.setNameReadOnly(true);
-//            caseNewForm.setDiseaseReadOnly(true);
-//            caseNewForm.setPerson(contact.getPerson());
-//        }
+
+        Bundle params = getIntent().getExtras();
+        Bundle arguments = new Bundle();
+        if (params.containsKey(CONTACT)) {
+            Contact contact = DatabaseHelper.getContactDao().queryUuid((String) params.get(CONTACT));
+            arguments.putSerializable(PERSON, contact.getPerson());
+            arguments.putSerializable(DISEASE, contact.getCaze().getDisease());
+        }
+        caseNewForm.setArguments(arguments);
         ft.add(R.id.fragment_frame, caseNewForm).commit();
+
 
     }
 
@@ -119,29 +124,34 @@ public class CaseNewActivity extends AppCompatActivity {
 
                     if (validData) {
 
-                        List<Person> existingPersons = DatabaseHelper.getPersonDao().getAllByName(caze.getPerson().getFirstName(), caze.getPerson().getLastName());
-                        if (existingPersons.size() > 0) {
+                        Bundle params = getIntent().getExtras();
+                        if (params.containsKey(CONTACT)) {
+                            savePersonAndCase(caze);
+                        } else {
+                            List<Person> existingPersons = DatabaseHelper.getPersonDao().getAllByName(caze.getPerson().getFirstName(), caze.getPerson().getLastName());
+                            if (existingPersons.size() > 0) {
 
-                            AlertDialog.Builder dialogBuilder = new SelectOrCreatePersonDialogBuilder(this, caze.getPerson(), existingPersons, new Consumer() {
-                                @Override
-                                public void accept(Object parameter) {
-                                    if (parameter instanceof Person) {
-                                        try {
-                                            caze.setPerson((Person) parameter);
-                                            savePersonAndCase(caze);
-                                        } catch (Exception e) {
-                                            Toast.makeText(getApplicationContext(), "Error while saving the case. " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                                            e.printStackTrace();
+                                AlertDialog.Builder dialogBuilder = new SelectOrCreatePersonDialogBuilder(this, caze.getPerson(), existingPersons, new Consumer() {
+                                    @Override
+                                    public void accept(Object parameter) {
+                                        if (parameter instanceof Person) {
+                                            try {
+                                                caze.setPerson((Person) parameter);
+                                                savePersonAndCase(caze);
+                                            } catch (Exception e) {
+                                                Toast.makeText(getApplicationContext(), "Error while saving the case. " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                                e.printStackTrace();
+                                            }
                                         }
                                     }
-                                }
-                            });
-                            AlertDialog newPersonDialog = dialogBuilder.create();
-                            newPersonDialog.show();
-                            ((SelectOrCreatePersonDialogBuilder)dialogBuilder).setButtonListeners(newPersonDialog, this);
+                                });
+                                AlertDialog newPersonDialog = dialogBuilder.create();
+                                newPersonDialog.show();
+                                ((SelectOrCreatePersonDialogBuilder) dialogBuilder).setButtonListeners(newPersonDialog, this);
 
-                        } else {
-                            savePersonAndCase(caze);
+                            } else {
+                                savePersonAndCase(caze);
+                            }
                         }
 
 //                      NavUtils.navigateUpFromSameTask(this);

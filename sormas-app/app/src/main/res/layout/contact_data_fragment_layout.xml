@@ -149,7 +149,8 @@
                 android:textColor="@android:color/tab_indicator_text"
                 android:textSize="@dimen/abc_text_size_body_1_material"
                 android:textStyle="bold"
-                android:paddingBottom="10dp" />
+                android:paddingBottom="10dp"
+                android:paddingTop="20dp"/>
 
             <LinearLayout
                 android:orientation="horizontal"
@@ -226,22 +227,41 @@
 
             </LinearLayout>
 
-            <!--<Button-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_margin="2dp"-->
-                <!--android:background="@color/colorPrimary"-->
-                <!--android:text="@string/action_createCaseFromContact"-->
-                <!--android:textAppearance="?android:attr/textAppearanceSmall"-->
-                <!--android:id="@+id/contact_createCase"/>-->
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="2dp"
+                android:background="@color/colorPrimary"
+                android:text="@string/action_createCaseFromContact"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:id="@+id/contact_createCase"/>
 
-            <!--<de.symeda.sormas.app.component.LabelField-->
-                <!--android:id="@+id/contact_associatedCase"-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_weight="0.5"-->
-                <!--android:paddingTop="@dimen/field_padding"-->
-                <!--android:paddingBottom="@dimen/field_padding"/>-->
+            <LinearLayout
+                android:id="@+id/contact_layoutAssociatedCase"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:text="@string/headline_associated_case"
+                    android:textColor="@android:color/tab_indicator_text"
+                    android:textSize="@dimen/abc_text_size_body_1_material"
+                    android:textStyle="bold"
+                    android:paddingBottom="10dp"
+                    android:paddingTop="20dp"/>
+
+                <de.symeda.sormas.app.component.LabelField
+                    android:id="@+id/contact_associatedCase"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:paddingTop="@dimen/field_padding"
+                    android:paddingBottom="@dimen/field_padding"/>
+
+            </LinearLayout>
 
         </LinearLayout>
 

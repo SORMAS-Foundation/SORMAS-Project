@@ -91,4 +91,9 @@ public class LocationDto extends DataTransferObject {
 		sb.append(city!=null?city:"");
 		return sb.toString();
 	}
+	
+	public boolean isEmptyLocation() {
+		return address == null && details == null && city == null && region == null
+				&& district == null && community == null;
+	}
 }

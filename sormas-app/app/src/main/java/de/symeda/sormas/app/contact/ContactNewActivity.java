@@ -15,17 +15,20 @@ import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.api.contact.ContactClassification;
+import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
+import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.caze.CaseEditActivity;
 import de.symeda.sormas.app.component.SelectOrCreatePersonDialogBuilder;
 import de.symeda.sormas.app.person.SyncPersonsTask;
 import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.Consumer;
+import de.symeda.sormas.app.util.DataUtils;
 
 
 /**
@@ -162,6 +165,23 @@ public class ContactNewActivity extends AppCompatActivity {
     }
 
     private void savePersonAndContact(Contact contact) {
+        Person person = contact.getPerson();
+
+        try {
+            if (person.getAddress() == null) {
+                person.setAddress(DataUtils.createNew(Location.class));
+            }
+        } catch(Exception e ) {
+            Toast.makeText(getApplicationContext(), "Couldn't create location. " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+        }
+
+        if(contact.getRelationToCase() == ContactRelation.SAME_HOUSEHOLD && person.getAddress().isEmptyLocation()) {
+            person.getAddress().setRegion(contact.getCaze().getRegion());
+            person.getAddress().setDistrict(contact.getCaze().getDistrict());
+            person.getAddress().setCommunity(contact.getCaze().getCommunity());
+        }
+
         // save the person
         DatabaseHelper.getPersonDao().save(contact.getPerson());
         new SyncPersonsTask().execute();
@@ -178,6 +198,7 @@ public class ContactNewActivity extends AppCompatActivity {
             }
         });
     }
+
 
 
 }

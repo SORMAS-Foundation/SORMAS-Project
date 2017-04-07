@@ -132,4 +132,9 @@ public class Location extends AbstractDomainObject {
 		}
 		return sb.toString();
 	}
+
+	public boolean isEmptyLocation() {
+		return address == null && details == null && city == null && region == null &&
+				district == null && community == null;
+	}
 }

@@ -83,6 +83,7 @@
     <string name="headline_visits">Follow-up visits</string>
     <string name="headline_contact">Contact</string>
     <string name="headline_source_case">Source case</string>
+    <string name="headline_associated_case">Associated case</string>
     <string name="headline_pick_person">Pick or create a person</string>
     <string name="headline_visit">Follow-up visit</string>
     <string name="headline_event">Alert</string>

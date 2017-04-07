@@ -9,18 +9,21 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.contact.ContactDao;
+import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.component.AbstractEditActivity;
 import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.task.TaskEditActivity;
 import de.symeda.sormas.app.task.TaskForm;
+import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.visit.VisitEditActivity;
 import de.symeda.sormas.app.visit.VisitEditDataForm;
 
@@ -185,9 +188,22 @@ public class ContactEditActivity extends AbstractEditActivity {
                     contactDao.save(contact);
 
                     Person person = (Person) adapter.getData(ContactEditTabs.PERSON.ordinal());
-                    if (person.getAddress() != null) {
-                        DatabaseHelper.getLocationDao().save(person.getAddress());
+                    try {
+                        if (person.getAddress() == null) {
+                            person.setAddress(DataUtils.createNew(Location.class));
+                        }
+                    } catch(Exception e ) {
+                        Toast.makeText(getApplicationContext(), "Couldn't create location. " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        e.printStackTrace();
                     }
+
+                    if(contact.getRelationToCase() == ContactRelation.SAME_HOUSEHOLD && person.getAddress().isEmptyLocation()) {
+                        person.getAddress().setRegion(contact.getCaze().getRegion());
+                        person.getAddress().setDistrict(contact.getCaze().getDistrict());
+                        person.getAddress().setCommunity(contact.getCaze().getCommunity());
+                    }
+
+                    DatabaseHelper.getLocationDao().save(person.getAddress());
                     DatabaseHelper.getPersonDao().save(person);
 
                     Toast.makeText(this, "contact " + DataHelper.getShortUuid(contact.getUuid()) + " saved", Toast.LENGTH_SHORT).show();

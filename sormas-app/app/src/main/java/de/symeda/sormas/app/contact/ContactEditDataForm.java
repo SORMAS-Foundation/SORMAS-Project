@@ -56,27 +56,29 @@ public class ContactEditDataForm extends FormTab {
 
         FieldHelper.initSpinnerField(binding.contactRelationToCase, ContactRelation.class);
 
-//        final Case associatedCase = findAssociatedCase(binding.getContact().getPerson(), binding.getContact().getCaze().getDisease());
-//        if (associatedCase == null) {
-//            Button createCaseButton = binding.contactCreateCase;
-//            createCaseButton.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View view) {
-//                    Intent intent = new Intent(getContext(), CaseNewActivity.class);
-//                    intent.putExtra(CaseNewActivity.CONTACT, contactUuid);
-//                    startActivity(intent);
-//                }
-//            });
-//        } else {
-//            LabelField associatedCaseLabel = binding.contactAssociatedCase;
-//            associatedCaseLabel.setValue(DataHelper.getShortUuid(associatedCase.getUuid()));
-//            associatedCaseLabel.makeLink(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    showCaseEditView(associatedCase);
-//                }
-//            });
-//        }
+        final Case associatedCase = findAssociatedCase(binding.getContact().getPerson(), binding.getContact().getCaze().getDisease());
+        if (associatedCase == null) {
+            Button createCaseButton = binding.contactCreateCase;
+            createCaseButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(getContext(), CaseNewActivity.class);
+                    intent.putExtra(CaseNewActivity.CONTACT, contactUuid);
+                    startActivity(intent);
+                }
+            });
+            binding.contactLayoutAssociatedCase.setVisibility(View.GONE);
+        } else {
+            LabelField associatedCaseLabel = binding.contactAssociatedCase;
+            associatedCaseLabel.setValue(DataHelper.getShortUuid(associatedCase.getUuid()));
+            associatedCaseLabel.makeLink(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    showCaseEditView(associatedCase);
+                }
+            });
+            binding.contactCreateCase.setVisibility(View.GONE);
+        }
 
     }
 
@@ -101,18 +103,18 @@ public class ContactEditDataForm extends FormTab {
         startActivity(intent);
     }
 
-//    private Case findAssociatedCase(Person person, Disease disease) {
-//        if(person == null || disease == null) {
-//            return null;
-//        }
-//
-//        Case caze = DatabaseHelper.getCaseDao().getByPersonAndDisease(person, disease);
-//        if (caze != null) {
-//            return caze;
-//        } else {
-//            return null;
-//        }
-//    }
+    private Case findAssociatedCase(Person person, Disease disease) {
+        if(person == null || disease == null) {
+            return null;
+        }
+
+        Case caze = DatabaseHelper.getCaseDao().getByPersonAndDisease(person, disease);
+        if (caze != null) {
+            return caze;
+        } else {
+            return null;
+        }
+    }
 
     @Override
     public AbstractDomainObject getData() {

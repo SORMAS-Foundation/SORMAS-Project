@@ -9,10 +9,14 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactFacade;
+import de.symeda.sormas.api.contact.ContactRelation;
+import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -113,6 +117,20 @@ public class ContactController {
         					person -> {
         						if (person != null) {
 	        						dto.setPerson(person);
+	        						
+        							// set the contact person's address to the one of the case when it is currently empty and
+        		        			// the relationship with the case has been set to living in the same household
+        							if (dto.getRelationToCase() == ContactRelation.SAME_HOUSEHOLD) {
+        								PersonDto personDto = FacadeProvider.getPersonFacade().getPersonByUuid(person.getUuid());
+        								if (personDto.getAddress().isEmptyLocation()) {
+        									CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(caze.getUuid());
+	        	        					personDto.getAddress().setRegion(caseDto.getRegion());
+	        	        					personDto.getAddress().setDistrict(caseDto.getDistrict());
+	        	        					personDto.getAddress().setCommunity(caseDto.getCommunity());
+        								}
+        								FacadeProvider.getPersonFacade().savePerson(personDto);
+        							}
+        							
 	        						cof.saveContact(dto);
 	        	        			Notification.show("New contact created", Type.WARNING_MESSAGE);
 	        	        			editData(dto.getUuid());
@@ -138,6 +156,20 @@ public class ContactController {
         	public void onCommit() {
         		if (editForm.getFieldGroup().isValid()) {
         			ContactDto dto = editForm.getValue();
+        			
+        			// set the contact person's address to the one of the case when it is currently empty and
+        			// the relationship with the case has been set to living in the same household
+        			if (dto.getRelationToCase() == ContactRelation.SAME_HOUSEHOLD) {
+        				PersonDto person = FacadeProvider.getPersonFacade().getPersonByUuid(dto.getPerson().getUuid());
+        				if (person.getAddress().isEmptyLocation()) {
+        					CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(dto.getCaze().getUuid());
+        					person.getAddress().setRegion(caze.getRegion());
+        					person.getAddress().setDistrict(caze.getDistrict());
+        					person.getAddress().setCommunity(caze.getCommunity());
+        				}
+        				FacadeProvider.getPersonFacade().savePerson(person);
+        			}
+        			
         			dto = cof.saveContact(dto);
         			Notification.show("Contact data saved", Type.WARNING_MESSAGE);
         			editData(dto.getUuid());
@@ -147,4 +179,5 @@ public class ContactController {
         
         return editComponent;
     }
+    
 }

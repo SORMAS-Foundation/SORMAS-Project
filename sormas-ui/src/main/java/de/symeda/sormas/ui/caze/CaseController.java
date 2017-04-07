@@ -154,40 +154,13 @@ public class CaseController {
     	caze.setRegion(user.getRegion());
     	caze.setDistrict(user.getDistrict());
     	
-    	if (person != null && person.getAddress() != null) {
-    		// use the address of the person, if existen
-    		LocationDto address = person.getAddress();
-        	if (caze.getRegion() == null)
-        		caze.setRegion(address.getRegion());
-        	if (caze.getDistrict() == null)
-        		caze.setDistrict(address.getDistrict());
-        	if (caze.getCommunity() == null)
-        		caze.setCommunity(address.getCommunity());
-    	}
-    	
     	return caze;
     }
     
     public CommitDiscardWrapperComponent<CaseCreateForm> getCaseCreateComponent(PersonDto person, Disease disease, ContactDto contact) {
     	
     	CaseCreateForm createForm = new CaseCreateForm();
-    	
     	CaseDataDto caze = createNewCase(person, disease);
-    	    	
-    	if (contact != null) {
-    		// if the contact is available use it's regional data if we have no other
-    		CaseDataDto contactsCase = cf.getCaseDataByUuid(contact.getCaze().getUuid());
-    		// TODO what if the regions and districts dont match?
-        	if (caze.getRegion() == null)
-        		caze.setRegion(contactsCase.getRegion());
-        	if (caze.getDistrict() == null)
-        		caze.setDistrict(contactsCase.getDistrict());
-        	if (caze.getCommunity() == null)
-        		caze.setCommunity(contactsCase.getCommunity());
-        	if (caze.getHealthFacility() == null)
-        		caze.setHealthFacility(contactsCase.getHealthFacility());
-    	}
-    	
         createForm.setValue(caze);
         
         if (person != null) {

@@ -36,18 +36,25 @@ public class CaseNewForm extends FormTab {
 
     private Case caze;
     private Person person;
+    private Disease disease;
     private CaseNewFragmentLayoutBinding binding;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        Bundle arguments = this.getArguments();
         try {
-            person = DataUtils.createNew(Person.class);
+            if (arguments.containsKey(CaseNewActivity.DISEASE)) {
+                person = (Person) arguments.get(CaseNewActivity.PERSON);
+                disease = (Disease) arguments.get(CaseNewActivity.DISEASE);
+            } else {
+                person = DataUtils.createNew(Person.class);
+            }
             caze = DatabaseHelper.getCaseDao().createCase(person);
-
         } catch (Exception e) {
             Toast.makeText(getContext(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
+
         binding = DataBindingUtil.inflate(inflater, R.layout.case_new_fragment_layout, container, false);
         return binding.getRoot();
     }
@@ -84,8 +91,6 @@ public class CaseNewForm extends FormTab {
 
             }
         });
-
-
 
         FieldHelper.initSpinnerField(binding.caseDataDistrict, districtsByRegion, new AdapterView.OnItemSelectedListener() {
             @Override
@@ -128,27 +133,15 @@ public class CaseNewForm extends FormTab {
         });
 
         FieldHelper.initSpinnerField(binding.caseDataHealthFacility, facilitiesByCommunity);
+
+        if (disease != null) {
+            binding.caseDataFirstName.setEnabled(false);
+            binding.caseDataLastName.setEnabled(false);
+            binding.caseDataDisease.setEnabled(false);
+            binding.getCaze().setPerson(person);
+            binding.getCaze().setDisease(disease);
+        }
     }
-
-//    public void setNameReadOnly(boolean readOnly) {
-//        binding.caseDataFirstName.setEnabled(!readOnly);
-//        binding.caseDataLastName.setEnabled(!readOnly);
-//    }
-//
-//    public void setDiseaseReadOnly(boolean readOnly) {
-//        binding.caseDataDisease.setEnabled(!readOnly);
-//    }
-
-//    public void setPerson(Person person) {
-//        binding.caseDataFirstName.setValue(person.getFirstName());
-//        binding.caseDataLastName.setValue(person.getLastName());
-////        if (person.getAddress() != null) {
-////            ArrayAdapter<Item> regionAdapter = (ArrayAdapter<Item>) binding.caseDataRegion.getAdapter();
-////            ArrayAdapter<Item> districtAdapter = (ArrayAdapter<Item>) binding.caseDataDistrict.getAdapter();
-////            ArrayAdapter<Item> communityAdapter = (ArrayAdapter<Item>) binding.caseDataCommunity.getAdapter();
-////            binding.caseDataRegion.select
-////        }
-//    }
 
     @Override
     public Case getData() {
