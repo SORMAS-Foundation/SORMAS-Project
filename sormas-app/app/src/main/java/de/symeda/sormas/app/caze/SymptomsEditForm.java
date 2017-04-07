@@ -129,8 +129,10 @@ public class SymptomsEditForm extends FormTab {
                     binding.symptomsDigestedBloodVomit, binding.symptomsCoughingBlood, binding.symptomsBleedingVagina,
                     binding.symptomsSkinBruising1, binding.symptomsBloodUrine, binding.symptomsOtherHemorrhagicSymptoms);
 
-//            FieldHelper.initOnsetSymptomSpinnerField(binding.symptomsOnsetSymptom1, new ArrayList<Item>());
-//            addListenerForOnsetSymptom();
+            List<Item> onsetSymptoms = new ArrayList<>();
+            onsetSymptoms.add(new Item("",null));
+            FieldHelper.initOnsetSymptomSpinnerField(binding.symptomsOnsetSymptom1, onsetSymptoms);
+            addListenerForOnsetSymptom();
 
             Button clearAllBtn = binding.symptomsClearAll;
             clearAllBtn.setOnClickListener(new View.OnClickListener() {
@@ -325,37 +327,47 @@ public class SymptomsEditForm extends FormTab {
         }
     }
 
-//    private void addListenerForOnsetSymptom() {
-//        final ArrayAdapter<Item> adapter = (ArrayAdapter<Item>) binding.symptomsOnsetSymptom1.getAdapter();
-//
-//        for (SymptomStateField symptom : nonConditionalSymptoms) {
-//            symptom.addValueChangedListener(new PropertyField.ValueChangeListener() {
-//                @Override
-//                public void onChange(PropertyField field) {
-//                    if (field.getValue() == SymptomState.YES) {
-//                        adapter.add(new Item(field.getCaption(), field.getCaption()));
-//                    } else {
-//                        adapter.remove((Item) binding.symptomsOnsetSymptom1.getItemAtPosition(
-//                                binding.symptomsOnsetSymptom1.getPositionOf(new Item(field.getCaption(), field.getCaption()))));
-//                    }
-//                }
-//            });
-//        }
-//
-//        for (SymptomStateField symptom : conditionalBleedingSymptoms) {
-//            symptom.addValueChangedListener(new PropertyField.ValueChangeListener() {
-//                @Override
-//                public void onChange(PropertyField field) {
-//                    if (field.getValue() == SymptomState.YES) {
-//                        adapter.add(new Item(field.getCaption(), field.getCaption()));
-//                    } else {
-//                        adapter.remove((Item) binding.symptomsOnsetSymptom1.getItemAtPosition(
-//                                binding.symptomsOnsetSymptom1.getPositionOf(new Item(field.getCaption(), field.getCaption()))));
-//                    }
-//                }
-//            });
-//        }
-//    }
+    private void addListenerForOnsetSymptom() {
+        final ArrayAdapter<Item> adapter = (ArrayAdapter<Item>) binding.symptomsOnsetSymptom1.getAdapter();
+
+        for (SymptomStateField symptom : nonConditionalSymptoms) {
+            symptom.addValueChangedListener(new PropertyField.ValueChangeListener() {
+                @Override
+                public void onChange(PropertyField field) {
+                    if (field.getValue() == SymptomState.YES) {
+                        adapter.remove(adapter.getItem(adapter.getCount()));
+                        adapter.add(new Item(field.getCaption(), field.getCaption()));
+                        adapter.add(new Item("Select entry", null));
+                    } else {
+                        Item item = new Item(field.getCaption(), field.getCaption());
+                        if (binding.symptomsOnsetSymptom1.getPositionOf(item) != -1) {
+                            adapter.remove((Item) binding.symptomsOnsetSymptom1.getItemAtPosition(
+                                    binding.symptomsOnsetSymptom1.getPositionOf(new Item(field.getCaption(), field.getCaption()))));
+                        }
+                    }
+                }
+            });
+        }
+
+        for (SymptomStateField symptom : conditionalBleedingSymptoms) {
+            symptom.addValueChangedListener(new PropertyField.ValueChangeListener() {
+                @Override
+                public void onChange(PropertyField field) {
+                    if (field.getValue() == SymptomState.YES) {
+                        adapter.remove(adapter.getItem(adapter.getCount()));
+                        adapter.add(new Item(field.getCaption(), field.getCaption()));
+                        adapter.add(new Item("Select entry", null));
+                    } else {
+                        Item item = new Item(field.getCaption(), field.getCaption());
+                        if (binding.symptomsOnsetSymptom1.getPositionOf(item) != -1) {
+                            adapter.remove((Item) binding.symptomsOnsetSymptom1.getItemAtPosition(
+                                    binding.symptomsOnsetSymptom1.getPositionOf(new Item(field.getCaption(), field.getCaption()))));
+                        }
+                    }
+                }
+            });
+        }
+    }
 
     @Override
     public AbstractDomainObject getData() {

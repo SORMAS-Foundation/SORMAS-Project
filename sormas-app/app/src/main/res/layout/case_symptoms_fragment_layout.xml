@@ -421,7 +421,7 @@
                     android:nextFocusForward="@+id/symptoms_onsetSymptom1"
                     android:value="@={symptoms.onsetDate}"/>
 
-                <de.symeda.sormas.app.component.TextField
+                <de.symeda.sormas.app.component.SpinnerField
                     android:id="@+id/symptoms_onsetSymptom1"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"

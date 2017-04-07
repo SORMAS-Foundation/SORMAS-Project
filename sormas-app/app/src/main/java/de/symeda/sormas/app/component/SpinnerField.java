@@ -138,16 +138,34 @@ public class SpinnerField extends PropertyField<Object> implements SpinnerFieldI
         spinnerElement.setSelection(adapter.getCount());
     }
 
-//    public void setOnsetSymptomSpinnerAdapter() {
-//        ArrayAdapter<Item> adapter = new ArrayAdapter<>(
-//                getContext(),
-//                android.R.layout.simple_spinner_item,
-//                new ArrayList<Item>());
-//
-//        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-//        adapter.add(new Item("", null));
-//        spinnerElement.setAdapter(adapter);
-//    }
+    public void setOnsetSymptomSpinnerAdapter(List<Item> items) {
+        ArrayAdapter<Item> adapter = new ArrayAdapter<Item>(
+                getContext(),
+                android.R.layout.simple_spinner_item,
+                items) {
+
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                View v = super.getView(position, convertView, parent);
+                if (position == getCount()) {
+                    ((TextView) v.findViewById(android.R.id.text1)).setText("");
+                    ((TextView) v.findViewById(android.R.id.text1)).setHint(getItem(getCount()).getKey());
+                    ((TextView) v.findViewById(android.R.id.text1)).setHintTextColor(Color.LTGRAY);
+                }
+
+                return v;
+            }
+             @Override
+             public int getCount() {
+                        return super.getCount() - 1;
+                    }
+        };
+
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        adapter.add(new Item("Select entry", null));
+        spinnerElement.setAdapter(adapter);
+        spinnerElement.setSelection(adapter.getCount());
+    }
 
     public void setMonthSpinnerAdapter(List<Item> items) {
         ArrayAdapter<Item> adapter = new ArrayAdapter<Item>(
@@ -199,9 +217,9 @@ public class SpinnerField extends PropertyField<Object> implements SpinnerFieldI
         }
     }
 
-//    public void initializeForOnsetSymptom() {
-//        this.setOnsetSymptomSpinnerAdapter();
-//    }
+    public void initializeForOnsetSymptom(List<Item> items) {
+        this.setOnsetSymptomSpinnerAdapter(items);
+    }
 
     public void initializeForMonth(List<Item> items, final AdapterView.OnItemSelectedListener[] moreListeners) {
         this.setMonthSpinnerAdapter(items);
@@ -297,12 +315,20 @@ public class SpinnerField extends PropertyField<Object> implements SpinnerFieldI
 
     public int getPositionOf(Item item) {
         for (int i = 0; i < spinnerElement.getAdapter().getCount(); i++) {
-            if (item.getValue().equals(((Item) spinnerElement.getAdapter().getItem(i)).getValue())) {
+            if (item.getKey().equals(((Item) spinnerElement.getAdapter().getItem(i)).getKey())) {
                 return i;
             }
         }
 
         return -1;
+    }
+
+    public void selectLastEntry() {
+        spinnerElement.setSelection(spinnerElement.getCount());
+    }
+
+    public Item getSelectedItem() {
+        return (Item) spinnerElement.getSelectedItem();
     }
 
     private void setSelectedItem(Object selectedItem) {
