@@ -19,7 +19,9 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.ShipmentStatus;
 import de.symeda.sormas.api.sample.SpecimenCondition;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateTimeField;
@@ -85,7 +87,7 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 		addField(SampleDto.SAMPLE_CODE, TextField.class);
 		addField(SampleDto.LAB_SAMPLE_ID, TextField.class);
 		
-		addField(SampleDto.SAMPLE_DATE_TIME, DateTimeField.class);
+		DateTimeField sampleDate = addField(SampleDto.SAMPLE_DATE_TIME, DateTimeField.class);
 		addField(SampleDto.REPORT_DATE_TIME, DateTimeField.class);
 		
 		addField(SampleDto.REPORTING_USER, ComboBox.class);
@@ -95,7 +97,7 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 		DateField shipmentDate = addField(SampleDto.SHIPMENT_DATE, DateField.class);
 		shipmentDate.setDateFormat(DateHelper.getShortDateFormat().toPattern());
 		addField(SampleDto.SHIPMENT_DETAILS, TextField.class);
-		OptionGroup shipmentStatus = addField(SampleDto.SHIPMENT_STATUS, OptionGroup.class);
+		OptionGroup shipmentStatus = addField(SampleDto.SHIPMENT_STATUS, OptionGroup.class);		
 		addField(SampleDto.SUGGESTED_TYPE_OF_TEST, ComboBox.class);
 		addField(SampleDto.RECEIVED_DATE, DateField.class).setDateFormat(DateHelper.getShortDateFormat().toPattern());
 		ComboBox lab = addField(SampleDto.LAB, ComboBox.class);
@@ -137,6 +139,12 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 			CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(getValue().getAssociatedCase().getUuid());
 			if (caze.getDisease() != Disease.AVIAN_INFLUENCA) {
 				sampleSource.setVisible(false);
+			}
+			if ((LoginHelper.getCurrentUser().getUserRoles().contains(UserRole.LAB_USER)) && getValue().getShipmentStatus() != ShipmentStatus.NOT_SHIPPED) {
+				shipmentStatus.setItemEnabled(ShipmentStatus.NOT_SHIPPED, false);
+				shipmentStatus.setItemEnabled(ShipmentStatus.SHIPPED, false);
+				shipmentDate.setEnabled(false);
+				sampleDate.setEnabled(false);
 			}
 		});
 		
