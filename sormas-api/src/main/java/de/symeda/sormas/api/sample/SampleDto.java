@@ -32,6 +32,8 @@ public class SampleDto extends SampleReferenceDto {
 	public static final String SPECIMEN_CONDITION = "specimenCondition";
 	public static final String NO_TEST_POSSIBLE_REASON = "noTestPossibleReason";
 	public static final String COMMENT = "comment";
+	public static final String SAMPLE_SOURCE = "sampleSource";
+	public static final String SUGGESTED_TYPE_OF_TEST = "suggestedTypeOfTest";
 	
 	private CaseReferenceDto associatedCase;
 	private String sampleCode;
@@ -50,6 +52,8 @@ public class SampleDto extends SampleReferenceDto {
 	private SpecimenCondition specimenCondition;
 	private String noTestPossibleReason;
 	private String comment;
+	private SampleSource sampleSource;
+	private SampleTestType suggestedTypeOfTest;
 	
 	public CaseReferenceDto getAssociatedCase() {
 		return associatedCase;
@@ -160,6 +164,18 @@ public class SampleDto extends SampleReferenceDto {
 	}
 	public void setComment(String comment) {
 		this.comment = comment;
+	}
+	public SampleSource getSampleSource() {
+		return sampleSource;
+	}
+	public void setSampleSource(SampleSource sampleSource) {
+		this.sampleSource = sampleSource;
+	}
+	public SampleTestType getSuggestedTypeOfTest() {
+		return suggestedTypeOfTest;
+	}
+	public void setSuggestedTypeOfTest(SampleTestType suggestedTypeOfTest) {
+		this.suggestedTypeOfTest = suggestedTypeOfTest;
 	}
 	
 }

@@ -12,6 +12,8 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
 import de.symeda.sormas.api.sample.SampleMaterial;
+import de.symeda.sormas.api.sample.SampleSource;
+import de.symeda.sormas.api.sample.SampleTestType;
 import de.symeda.sormas.api.sample.ShipmentStatus;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.app.backend.caze.Case;
@@ -87,6 +89,12 @@ public class Sample extends AbstractDomainObject {
 
     @Column(length = 512)
     private String comment;
+
+    @Enumerated(EnumType.STRING)
+    private SampleSource sampleSource;
+
+    @Enumerated(EnumType.STRING)
+    private SampleTestType suggestedTypeOfTest;
 
     public Case getAssociatedCase() {
         return associatedCase;
@@ -222,5 +230,21 @@ public class Sample extends AbstractDomainObject {
 
     public void setComment(String comment) {
         this.comment = comment;
+    }
+
+    public SampleSource getSampleSource() {
+        return sampleSource;
+    }
+
+    public void setSampleSource(SampleSource sampleSource) {
+        this.sampleSource = sampleSource;
+    }
+
+    public SampleTestType getSuggestedTypeOfTest() {
+        return suggestedTypeOfTest;
+    }
+
+    public void setSuggestedTypeOfTest(SampleTestType suggestedTypeOfTest) {
+        this.suggestedTypeOfTest = suggestedTypeOfTest;
     }
 }

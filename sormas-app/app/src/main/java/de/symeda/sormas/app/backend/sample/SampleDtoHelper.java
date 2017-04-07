@@ -70,6 +70,8 @@ public class SampleDtoHelper extends AdoDtoHelper<Sample, SampleDto> {
         ado.setSpecimenCondition(dto.getSpecimenCondition());
         ado.setNoTestPossibleReason(dto.getNoTestPossibleReason());
         ado.setComment(dto.getComment());
+        ado.setSampleSource(dto.getSampleSource());
+        ado.setSuggestedTypeOfTest(dto.getSuggestedTypeOfTest());
     }
 
     @Override
@@ -115,6 +117,8 @@ public class SampleDtoHelper extends AdoDtoHelper<Sample, SampleDto> {
         dto.setSpecimenCondition(ado.getSpecimenCondition());
         dto.setNoTestPossibleReason(ado.getNoTestPossibleReason());
         dto.setComment(ado.getComment());
+        dto.setSampleSource(ado.getSampleSource());
+        dto.setSuggestedTypeOfTest(ado.getSuggestedTypeOfTest());
     }
 
     public static SampleReferenceDto toReferenceDto(Sample ado) {

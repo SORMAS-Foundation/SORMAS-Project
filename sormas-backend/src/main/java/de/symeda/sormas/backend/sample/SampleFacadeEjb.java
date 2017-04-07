@@ -133,6 +133,8 @@ public class SampleFacadeEjb implements SampleFacade {
 		target.setSpecimenCondition(source.getSpecimenCondition());
 		target.setNoTestPossibleReason(source.getNoTestPossibleReason());
 		target.setComment(source.getComment());
+		target.setSampleSource(source.getSampleSource());
+		target.setSuggestedTypeOfTest(source.getSuggestedTypeOfTest());
 		
 		return target;
 	}
@@ -161,6 +163,8 @@ public class SampleFacadeEjb implements SampleFacade {
 		target.setSpecimenCondition(source.getSpecimenCondition());
 		target.setNoTestPossibleReason(source.getNoTestPossibleReason());
 		target.setComment(source.getComment());
+		target.setSampleSource(source.getSampleSource());
+		target.setSuggestedTypeOfTest(source.getSuggestedTypeOfTest());
 		
 		return target;
 	}

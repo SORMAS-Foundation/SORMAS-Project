@@ -1339,3 +1339,10 @@ INSERT INTO schema_version (version_number, comment) VALUES (43, 'Rename POSSBIL
 UPDATE task SET taskstatus = 'REMOVED' WHERE taskstatus = 'DISCARDED';
 
 INSERT INTO schema_version (version_number, comment) VALUES (44, 'Rename DISCARDED task status to REMOVED');
+
+-- 2017-04-07 Sample soruce and suggested type of test #178
+
+ALTER TABLE samples ADD COLUMN samplesource varchar(255);
+ALTER TABLE samples ADD COLUMN suggestedtypeoftest varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (45, 'Sample source and suggested type of test');

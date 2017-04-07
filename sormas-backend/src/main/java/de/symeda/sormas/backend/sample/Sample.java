@@ -14,6 +14,8 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import de.symeda.sormas.api.sample.SampleMaterial;
+import de.symeda.sormas.api.sample.SampleSource;
+import de.symeda.sormas.api.sample.SampleTestType;
 import de.symeda.sormas.api.sample.ShipmentStatus;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -43,6 +45,8 @@ public class Sample extends AbstractDomainObject {
 	public static final String RECEIVED_DATE = "receivedDate";
 	public static final String NO_TEST_POSSIBLE_REASON = "noTestPossibleReason";
 	public static final String COMMENT = "comment";
+	public static final String SAMPLE_SOURCE = "sampleSource";
+	public static final String SUGGESTED_TYPE_OF_TEST = "suggestedTypeOfTest";
 	
 	private Case associatedCase;
 	private String sampleCode;
@@ -61,6 +65,8 @@ public class Sample extends AbstractDomainObject {
 	private SpecimenCondition specimenCondition;
 	private String noTestPossibleReason;
 	private String comment;
+	private SampleSource sampleSource;
+	private SampleTestType suggestedTypeOfTest;
 	
 	private List<SampleTest> sampleTests;
 	
@@ -213,6 +219,22 @@ public class Sample extends AbstractDomainObject {
 	}
 	public void setComment(String comment) {
 		this.comment = comment;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SampleSource getSampleSource() {
+		return sampleSource;
+	}
+	public void setSampleSource(SampleSource sampleSource) {
+		this.sampleSource = sampleSource;
+	}
+	
+	@Enumerated(EnumType.STRING)
+	public SampleTestType getSuggestedTypeOfTest() {
+		return suggestedTypeOfTest;
+	}
+	public void setSuggestedTypeOfTest(SampleTestType suggestedTypeOfTest) {
+		this.suggestedTypeOfTest = suggestedTypeOfTest;
 	}
 	
 	@Override

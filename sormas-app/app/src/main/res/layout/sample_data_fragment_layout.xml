@@ -93,6 +93,14 @@
 
             </LinearLayout>
 
+            <de.symeda.sormas.app.component.SpinnerField
+                android:id="@+id/sample_sampleSource"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.5"
+                android:paddingBottom="@dimen/field_padding"
+                android:value="@={sample.sampleSource}"/>
+
             <de.symeda.sormas.app.component.TextField
                 android:id="@+id/sample_comment"
                 android:layout_width="match_parent"
@@ -101,6 +109,15 @@
                 android:paddingBottom="@dimen/field_padding"
                 android:nextFocusForward="@+id/sample_lab"
                 android:value="@={sample.comment}"/>
+
+            <de.symeda.sormas.app.component.SpinnerField
+                android:id="@+id/sample_suggestedTypeOfTest"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.5"
+                android:paddingTop="@dimen/field_padding"
+                android:paddingBottom="@dimen/field_padding"
+                android:value="@={sample.suggestedTypeOfTest}"/>
 
             <de.symeda.sormas.app.component.SpinnerField
                 android:id="@+id/sample_lab"

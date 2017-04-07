@@ -11,8 +11,10 @@ import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.ShipmentStatus;
@@ -45,7 +47,11 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 												LayoutUtil.oneOfThreeCol(LayoutUtil.loc(SampleDto.SAMPLE_MATERIAL_TEXT))
 										),
 										LayoutUtil.fluidRow(
-												LayoutUtil.loc(SampleDto.SHIPMENT_STATUS)
+												LayoutUtil.oneOfThreeCol(LayoutUtil.loc(SampleDto.SAMPLE_SOURCE))
+										),
+										LayoutUtil.fluidRow(
+												LayoutUtil.twoOfThreeCol(LayoutUtil.loc(SampleDto.SHIPMENT_STATUS)),
+												LayoutUtil.oneOfThreeCol(LayoutUtil.loc(SampleDto.SUGGESTED_TYPE_OF_TEST))
 										),
 										LayoutUtil.fluidRow(
 												LayoutUtil.oneOfThreeCol(LayoutUtil.loc(SampleDto.SHIPMENT_DATE)),
@@ -85,10 +91,12 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 		addField(SampleDto.REPORTING_USER, ComboBox.class);
 		addField(SampleDto.SAMPLE_MATERIAL, ComboBox.class);
 		addField(SampleDto.SAMPLE_MATERIAL_TEXT, TextField.class);
+		ComboBox sampleSource = addField(SampleDto.SAMPLE_SOURCE, ComboBox.class);
 		DateField shipmentDate = addField(SampleDto.SHIPMENT_DATE, DateField.class);
 		shipmentDate.setDateFormat(DateHelper.getShortDateFormat().toPattern());
 		addField(SampleDto.SHIPMENT_DETAILS, TextField.class);
 		OptionGroup shipmentStatus = addField(SampleDto.SHIPMENT_STATUS, OptionGroup.class);
+		addField(SampleDto.SUGGESTED_TYPE_OF_TEST, ComboBox.class);
 		addField(SampleDto.RECEIVED_DATE, DateField.class).setDateFormat(DateHelper.getShortDateFormat().toPattern());
 		ComboBox lab = addField(SampleDto.LAB, ComboBox.class);
 		ComboBox otherLab = addField(SampleDto.OTHER_LAB, ComboBox.class);
@@ -123,8 +131,13 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 		reportInfoLabel.setContentMode(ContentMode.HTML);
 		reportInfoLabel.setCaption(I18nProperties.getPrefixFieldCaption(SampleDto.I18N_PREFIX, REPORT_INFO));
 		getContent().addComponent(reportInfoLabel, REPORT_INFO);
+		
 		addValueChangeListener(e -> {
 			updateReportInfo();
+			CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(getValue().getAssociatedCase().getUuid());
+			if (caze.getDisease() != Disease.AVIAN_INFLUENCA) {
+				sampleSource.setVisible(false);
+			}
 		});
 		
 		shipmentStatus.addValueChangeListener(event -> {

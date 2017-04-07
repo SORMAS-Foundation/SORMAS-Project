@@ -14,8 +14,11 @@ import android.widget.Toast;
 import java.util.Date;
 import java.util.List;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.sample.SampleMaterial;
+import de.symeda.sormas.api.sample.SampleSource;
+import de.symeda.sormas.api.sample.SampleTestType;
 import de.symeda.sormas.api.sample.ShipmentStatus;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.app.R;
@@ -116,6 +119,12 @@ public class SampleEditForm extends FormTab {
 
             binding.sampleDateTime.initialize(this);
             FieldHelper.initSpinnerField(binding.sampleMaterial, SampleMaterial.class);
+            FieldHelper.initSpinnerField(binding.sampleSampleSource, SampleSource.class);
+            if (binding.getSample().getAssociatedCase().getDisease() != Disease.AVIAN_INFLUENCA) {
+                binding.sampleSampleSource.setVisibility(View.GONE);
+            }
+
+            FieldHelper.initSpinnerField(binding.sampleSuggestedTypeOfTest, SampleTestType.class);
 
             final List laboratories = DataUtils.toItems(DatabaseHelper.getFacilityDao().getByType(FacilityType.LABORATORY));
             FieldHelper.initSpinnerField(binding.sampleLab, laboratories);
