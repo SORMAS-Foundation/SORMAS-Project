@@ -23,18 +23,18 @@ SORMAS Server & Domain
 
 Updating the SORMAS domain
 --------
-(you can ignore this when you are setting up a whole development enviroment)
+(ignore this when you are setting up a whole development enviroment, as described below)
 
 1. Get the latest SORMAS build from github: https://github.com/hzi-braunschweig/SORMAS-Open/releases/ (deploy.zip and app-debug.apk)
-2. locate the server domain directory (<domain-dir>). Mostly /srv/payara-sormas/glassfish/domains/sormas
+2. locate the server domain directory (domain-dir). Mostly /srv/payara-sormas/glassfish/domains/sormas
 3. make sure the server is not running
 4. delete the content from the following subfolders: 
-   <domain-dir>/autodeploy/bundles/... 
-   <domain-dir>/osgi-cache/felix
-5. copy the files from deploy/bundles to <domain-dir>/autodeploy/bundles
+   domain-dir/autodeploy/bundles/... 
+   domain-dir/osgi-cache/felix
+5. copy the files from deploy/bundles to domain-dir/autodeploy/bundles
 6. update database: open sormas_schema.sql and execute ONLY the new part (compare based on table schema_version)
 7. start server: /srv/payara-sormas/glassfish/bin/startserv.bat
-8. copy sormas-ear.ear, sormas-rest.war, sormas-ui.war to <domain-dir>\autodeploy
+8. copy sormas-ear.ear, sormas-rest.war, sormas-ui.war to domain-dir\autodeploy
    after some seconds the server should be updated (wait until nothing happens in the log)
 9. try to login at https://localhost:6081/sormas-ui
    if it doesn't work: restart the server
@@ -56,4 +56,4 @@ Development Environment
 - Drag the "build.xml" file contained in "sormas-base" into the Ant view in Eclipse and execute the "install [default]", "deploy-serverlibs" and "deploy-bundles" scripts
 - Build the Android Studio project by executing the gradle build (this may be done automatically)
 - Start the Glassfish server and deploy "sormas-ear", "sormas-rest" and "sormas-ui" by dragging the respective projects onto it
-- Open your browser and type in "localhost:6080/sormas-ui" to test whether everything has been set up correctly (and to use the application)
+- Open your browser and type in "https://localhost:6081/sormas-ui" to test whether everything has been set up correctly (and to use the application)
