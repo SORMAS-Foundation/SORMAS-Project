@@ -36,7 +36,7 @@ Updating the SORMAS domain
 7. start server: /srv/payara-sormas/glassfish/bin/startserv.bat
 8. copy sormas-ear.ear, sormas-rest.war, sormas-ui.war to <domain-dir>\autodeploy
    after some seconds the server should be updated (wait until nothing happens in the log)
-9. try to login at https://<your-ip>:6081/sormas-ui
+9. try to login at https://localhost:6081/sormas-ui
    if it doesn't work: restart the server
 10. update the mobile app with the new apk file 
 
