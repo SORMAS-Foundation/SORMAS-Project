@@ -19,7 +19,7 @@ SORMAS Server & Domain
 2. Create a PostgreSQL database named "sormas_db" (password: "sormas_db") with user "sormas_user" (password: "sormas_db") as its owner, and run the SQL scripts contained in "/sormas-base/sql/sormas_schema.sql"
 3. Get the latest SORMAS build from github: https://github.com/hzi-braunschweig/SORMAS-Open/releases/ (deploy.zip and app-debug.apk)
 4. Open "deploy/glassfish-config.bat" (or glassfish-config.sh on linux) in a text editor and change GLASSFISH_HOME to the location of the Glassfish folder inside your payara installation
-5. Set up a payara domain called "sormas" by executing "glassfish-config.bat" from the command line
+5. Set up a payara domain called "sormas" by executing <code>glassfish-config.bat</code> from the command line
 
 Updating the SORMAS domain
 --------
@@ -43,7 +43,7 @@ Updating the SORMAS domain
 Development Environment
 --------
 - Install the latest Eclipse version, Git for Windows and (optional) a Git client such as TortoiseGit if you don't want to handle version control from the command line/separately for the Eclipse and Android Studio projects
-- Open the Git Bash and execute the command "git config --global branch.development.rebase true" (which ensures that rebase is used when pulling rather than merge)
+- Open the Git Bash and execute the command <code>git config --global branch.development.rebase true</code> (which ensures that rebase is used when pulling rather than merge)
 - Clone the SORMAS-Open repository and import the projects to Eclipse
 	- If you're using Eclipse to clone, choose "File -> Import -> Git -> Projects from Git" and continue until you're asked to create a new project from the cloned repository; click cancel instead and use "File -> Import -> Maven -> Existing Maven Projects" to import the separate projects into your workspace
 	- If you've cloned the repository from the command line or a Git client, you obviously only need to perform the last step
