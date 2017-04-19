@@ -65,6 +65,19 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 	
 	@Override
+	public List<ContactDto> getFollowUpBetween(Date fromDate, Date toDate, Disease disease, String userUuid) {
+		User user = userService.getByUuid(userUuid);
+		
+		if (user == null) {
+			return Collections.emptyList();
+		}
+		
+		return service.getFollowUpBetween(fromDate, toDate, disease, user).stream()
+				.map(c -> toDto(c))
+				.collect(Collectors.toList());
+	}
+	
+	@Override
 	public List<ContactIndexDto> getIndexList(String userUuid) {
 		
 		User user = userService.getByUuid(userUuid);

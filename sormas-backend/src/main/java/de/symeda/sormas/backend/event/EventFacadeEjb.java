@@ -10,6 +10,7 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventFacade;
 import de.symeda.sormas.api.event.EventReferenceDto;
@@ -45,6 +46,19 @@ public class EventFacadeEjb implements EventFacade {
 		return eventService.getAllAfter(date, user).stream()
 			.map(e -> toEventDto(e))
 			.collect(Collectors.toList());
+	}
+	
+	@Override
+	public List<EventDto> getAllEventsBetween(Date fromDate, Date toDate, Disease disease, String userUuid) {
+		User user = userService.getByUuid(userUuid);
+		
+		if (user == null) {
+			return Collections.emptyList();
+		}
+		
+		return eventService.getAllBetween(fromDate, toDate, disease, user).stream()
+				.map(e -> toEventDto(e))
+				.collect(Collectors.toList());
 	}
 	
 	@Override

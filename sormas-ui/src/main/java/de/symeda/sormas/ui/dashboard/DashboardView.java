@@ -26,6 +26,10 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventType;
 import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -59,6 +63,7 @@ public class DashboardView extends AbstractView {
         
 		mapComponent = new MapComponent();
 		VerticalLayout layout = createContents();
+		layout.setHeightUndefined();
         addComponent(layout);
         setExpandRatio(layout, 1);
 	}
@@ -109,7 +114,7 @@ public class DashboardView extends AbstractView {
         keyLayout.addComponent(new Label("Probable"));
         keyLayout.addComponent(iconRed);
         keyLayout.addComponent(new Label("Confirmed"));
-        CssStyles.stylePrimary(keyLayout, CssStyles.DASHBOARD_KEY);
+//        CssStyles.stylePrimary(keyLayout, CssStyles.DASHBOARD_KEY);
         
         filterLayout.addComponent(keyLayout);
         filterLayout.setComponentAlignment(keyLayout, Alignment.MIDDLE_RIGHT);
@@ -135,6 +140,7 @@ public class DashboardView extends AbstractView {
         infoGraphicsLayout.setWidth(100, Unit.PERCENTAGE);
         infoGraphicsLayout.setSpacing(true);
         infoGraphicsLayout.setMargin(true);
+        infoGraphicsLayout.setSizeFull();
         layout.addComponent(infoGraphicsLayout);
         layout.setExpandRatio(infoGraphicsLayout, 1);
         
@@ -251,6 +257,36 @@ public class DashboardView extends AbstractView {
 				.filter(p -> p.getOccupationType() == OccupationType.HEALTHCARE_WORKER)
 				.count();
 		
+		// Contacts
+		List<ContactDto> contacts = FacadeProvider.getContactFacade().getFollowUpBetween(fromDate, toDate, disease, userUuid);
+		List<ContactDto> previousContacts = FacadeProvider.getContactFacade().getFollowUpBetween(DateHelper.subtractDays(fromDate, DateHelper.getDaysBetween(fromDate, toDate)), DateHelper.subtractDays(toDate, DateHelper.getDaysBetween(fromDate, toDate)), disease, userUuid);
+		int onLastDayOfPeriod = (int) contacts.stream()
+				.filter(c -> (c.getFollowUpUntil().after(toDate) || c.getFollowUpUntil().equals(toDate)) && 
+						(c.getLastContactDate().before(toDate) || c.getLastContactDate().equals(toDate)))
+				.count();
+		int lostToFollowUpCount = (int) contacts.stream()
+				.filter(c -> c.getFollowUpStatus() == FollowUpStatus.LOST)
+				.count();
+		int previousLostToFollowUpCount = (int) previousContacts.stream()
+				.filter(c -> c.getFollowUpStatus() == FollowUpStatus.LOST)
+				.count();
+		
+		// Events
+		List<EventDto> events = FacadeProvider.getEventFacade().getAllEventsBetween(fromDate, toDate, disease, userUuid);
+		List<EventDto> previousEvents = FacadeProvider.getEventFacade().getAllEventsBetween(DateHelper.subtractDays(fromDate, DateHelper.getDaysBetween(fromDate, toDate)), DateHelper.subtractDays(toDate, DateHelper.getDaysBetween(fromDate, toDate)), disease, userUuid);
+		int outbreaksCount = (int) events.stream()
+				.filter(e -> e.getEventType() == EventType.OUTBREAK)
+				.count();
+		int previousOutbreaksCount = (int) previousEvents.stream()
+				.filter(e -> e.getEventType() == EventType.OUTBREAK)
+				.count();
+		int rumorsCount = (int) events.stream()
+				.filter(e -> e.getEventType() == EventType.RUMOR)
+				.count();
+		int previousRumorsCount = (int) previousEvents.stream()
+				.filter(e -> e.getEventType() == EventType.RUMOR)
+				.count();
+		
 		// Add data to the table
 		addRowToTable(new Label("<b>Cases</b>", ContentMode.HTML), new Label("<b>Confirmed</b>", ContentMode.HTML), confirmedCases.size(), previousConfirmedCases.size(), 0, false);
 		addRowToTable(null, createHcwLabel(), confirmedHcwsCount, previousConfirmedHcwsCount, 1, true);
@@ -262,13 +298,13 @@ public class DashboardView extends AbstractView {
 		addRowToTable(null, createHcwLabel(), totalHcwsCount, previousTotalHcwsCount, 7, true);
 		addRowToTable(new Label("<b>Deaths</b>", ContentMode.HTML), new Label("Healthcare workers"), deadHcws, previousDeadHcws, 8, false);
 		addRowToTable(null, new Label("Total"), deadPersons.size(), previousDeadPersons.size(), 9, false);
-		addRowToTable(new Label("<b>Contacts</b>", ContentMode.HTML), new Label("Under follow-up"), 152, 120, 10, false);
+		addRowToTable(new Label("<b>Contacts</b>", ContentMode.HTML), new Label("Under follow-up"), contacts.size(), previousContacts.size(), 10, false);
 		Label dayLabel = new Label("<i>on " + DateHelper.formatShortDate(toDate) + "</i>", ContentMode.HTML);
 		dayLabel.setSizeFull();
-		addRowToTable(null, dayLabel, 38, null, 11, false);
-		addRowToTable(null, new Label("Lost to follow-up"), 8, 4, 12, false);
-		addRowToTable(new Label("<b>Events</b>", ContentMode.HTML), new Label("Outbreaks"), 4, 11, 13, false);
-		addRowToTable(null, new Label("Rumors"), 82, 52, 14, false);	
+		addRowToTable(null, dayLabel, onLastDayOfPeriod, null, 11, false);
+		addRowToTable(null, new Label("Lost to follow-up"), lostToFollowUpCount, previousLostToFollowUpCount, 12, false);
+		addRowToTable(new Label("<b>Alerts</b>", ContentMode.HTML), new Label("Outbreaks"), outbreaksCount, previousOutbreaksCount, 13, false);
+		addRowToTable(null, new Label("Rumors"), rumorsCount, previousRumorsCount, 14, false);	
 	}
 	
 	private void addRowToTable(Label heading, Label subHeading, Integer queryPeriod, Integer previousPeriod, int position, boolean smallRow) {

@@ -12,6 +12,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -47,6 +48,34 @@ public class EventService extends AbstractAdoService<Event> {
 		}
 		
 		cq.orderBy(cb.desc(from.get(Event.REPORT_DATE_TIME)));
+		
+		List<Event> resultList = em.createQuery(cq).getResultList();
+		return resultList;
+	}
+	
+	public List<Event> getAllBetween(Date fromDate, Date toDate, Disease disease, User user) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Event> cq = cb.createQuery(getElementClass());
+		Root<Event> from = cq.from(getElementClass());
+		
+		Predicate filter = createUserFilter(cb, from, user);
+		Predicate dateFilter = cb.greaterThanOrEqualTo(from.get(Event.EVENT_DATE), fromDate);
+		dateFilter = cb.and(dateFilter, cb.lessThanOrEqualTo(from.get(Event.EVENT_DATE), toDate));
+		
+		if (filter != null) {
+			filter = cb.and(filter, dateFilter);
+		} else {
+			filter = dateFilter;
+		}
+		
+		if (filter != null && disease != null) {
+			filter = cb.and(filter, cb.isNotNull(from.get(Event.DISEASE)));
+			filter = cb.and(filter, cb.equal(from.get(Event.DISEASE), disease));
+		}
+		
+		if (filter != null) {
+			cq.where(filter);
+		}
 		
 		List<Event> resultList = em.createQuery(cq).getResultList();
 		return resultList;
