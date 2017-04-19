@@ -407,6 +407,10 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
 	}
   }
   
+  .font-size-small {
+  	font-size: 12px;
+  }
+  
   .sublist-margin {
   	margin-top: 50px;
   }
@@ -417,5 +421,23 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
   
   .info-column-margin {
   	margin-left: 25px;
+  }
+  
+  .color-red {
+  	.v-icon {
+  	  color: #7F3300;
+  	}
+  }
+  
+  .color-green {
+  	.v-icon {
+    	color: #007F0E;
+    }
+  }
+  
+  .color-grey {
+  	.v-icon {
+  		color: #A8A8A8;
+  	}
   }
 }

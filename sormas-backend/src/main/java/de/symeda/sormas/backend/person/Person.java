@@ -34,6 +34,7 @@ public class Person extends AbstractDomainObject {
 	public static final String ADDRESS = "address";
 	public static final String SEX = "sex";
 	public static final String CAZE = "caze";
+	public static final String DEATH_DATE = "deathDate";
 
 	private String firstName;
 	private String lastName;

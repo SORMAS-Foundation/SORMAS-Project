@@ -17,6 +17,8 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 public class Symptoms extends AbstractDomainObject {
 
 	private static final long serialVersionUID = 1467852910743225822L;
+	
+	public static final String ONSET_DATE = "onsetDate";
 
 	private Date onsetDate;
 	private String onsetSymptom;

@@ -13,6 +13,7 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 import de.symeda.sormas.api.person.PersonDto;
@@ -95,6 +96,19 @@ public class PersonFacadeEjb implements PersonFacade {
 		List<PersonDto> result = service.getAllAfter(date, user).stream()
 			.map(c -> toDto(c))
 			.collect(Collectors.toList());
+		return result;
+	}
+	
+	@Override
+	public List<PersonDto> getDeathsBetween(Date fromDate, Date toDate, Disease disease, String uuid) {
+		User user = userService.getByUuid(uuid);
+		if (user == null) {
+			return Collections.emptyList();
+		}
+		
+		List<PersonDto> result = service.getDeathsBetween(fromDate, toDate, disease, user).stream()
+				.map(c -> toDto(c))
+				.collect(Collectors.toList());
 		return result;
 	}
 

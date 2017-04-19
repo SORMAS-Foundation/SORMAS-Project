@@ -13336,6 +13336,10 @@ div.v-layout.v-horizontal.v-widget {
 	line-height: 32px;
 }
 
+.sormastheme .font-size-small {
+	font-size: 12px;
+}
+
 .sormastheme .sublist-margin {
 	margin-top: 50px;
 }
@@ -13346,4 +13350,16 @@ div.v-layout.v-horizontal.v-widget {
 
 .sormastheme .info-column-margin {
 	margin-left: 25px;
+}
+
+.sormastheme .color-red .v-icon {
+	color: #7F3300;
+}
+
+.sormastheme .color-green .v-icon {
+	color: #007F0E;
+}
+
+.sormastheme .color-grey .v-icon {
+	color: #A8A8A8;
 }

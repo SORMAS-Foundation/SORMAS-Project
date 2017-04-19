@@ -12,6 +12,8 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 public interface CaseFacade {
 
 	List<CaseDataDto> getAllCasesAfter(Date date, String userUuid);
+	
+	List<CaseDataDto> getAllCasesBetween(Date fromDate, Date toDate, Disease disease, String userUuid);
 
 	CaseDataDto getCaseDataByUuid(String uuid);
     

@@ -91,6 +91,19 @@ public class CaseFacadeEjb implements CaseFacade {
 			.map(c -> toCaseDataDto(c))
 			.collect(Collectors.toList());
 	}
+
+	@Override
+	public List<CaseDataDto> getAllCasesBetween(Date fromDate, Date toDate, Disease disease, String userUuid) {
+		User user = userService.getByUuid(userUuid);
+		
+		if (user == null) {
+			return Collections.emptyList();
+		}
+		
+		return caseService.getAllBetween(fromDate, toDate, disease, user).stream()
+				.map(c -> toCaseDataDto(c))
+				.collect(Collectors.toList());
+	}
 	
 	@Override
 	public List<CaseReferenceDto> getAllCasesAfterAsReference(Date date, String userUuid) {
@@ -331,4 +344,5 @@ public class CaseFacadeEjb implements CaseFacade {
 	@Stateless
 	public static class CaseFacadeEjbLocal extends CaseFacadeEjb {
 	}
+	
 }

@@ -320,6 +320,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		return false;
 	}
 	
+	@SuppressWarnings("rawtypes")
 	private void addListenerForOnsetSymptom(ComboBox onsetSymptom) {
 		List<Object> allPropertyIds = 
 				Stream.concat(unconditionalSymptomFieldIds.stream(), conditionalBleedingSymptomFieldIds.stream())

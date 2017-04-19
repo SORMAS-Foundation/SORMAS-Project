@@ -77,7 +77,37 @@ public class CaseService extends AbstractAdoService<Case> {
 		List<Case> resultList = em.createQuery(cq).getResultList();
 		return resultList;
 	}
-
+	
+	public List<Case> getAllBetween(Date fromDate, Date toDate, Disease disease, User user) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Case> cq = cb.createQuery(getElementClass());
+		Root<Case> from = cq.from(getElementClass());
+		
+		Predicate filter = createUserFilter(cb, from, user);
+		Join<Case, Symptoms> symptoms = from.join(Case.SYMPTOMS);
+		Predicate dateFilter = cb.isNotNull(symptoms.get(Symptoms.ONSET_DATE));
+		dateFilter = cb.and(dateFilter, cb.greaterThanOrEqualTo(symptoms.get(Symptoms.ONSET_DATE), fromDate));
+		dateFilter = cb.and(dateFilter, cb.lessThanOrEqualTo(symptoms.get(Symptoms.ONSET_DATE), toDate));
+		
+		if (filter != null) {
+			filter = cb.and(filter, dateFilter);
+		} else {
+			filter = dateFilter;
+		}
+		
+		if (filter != null && disease != null) {
+			filter = cb.and(filter, cb.equal(from.get(Case.DISEASE), disease));
+		}
+		
+		if (filter != null) {
+			cq.where(filter);
+		}
+		
+		cq.distinct(true);
+		List<Case> resultList = em.createQuery(cq).getResultList();
+		return resultList;
+	}
+	
 	/**
 	 * @see /sormas-backend/doc/UserDataAccess.md
 	 */

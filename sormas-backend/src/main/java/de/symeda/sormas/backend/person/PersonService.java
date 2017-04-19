@@ -16,6 +16,8 @@ import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
@@ -135,4 +137,45 @@ public class PersonService extends AbstractAdoService<Person> {
 				.sorted(Comparator.comparing(Person::getId))
 				.collect(Collectors.toList());
 	}
+	
+	public List<Person> getDeathsBetween(Date fromDate, Date toDate, Disease disease, User user) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		
+		CriteriaQuery<Person> casePersonsQuery = cb.createQuery(Person.class);
+		Root<Case> casePersonsRoot = casePersonsQuery.from(Case.class);
+		Path<Person> casePersonsSelect = casePersonsRoot.get(Case.PERSON);
+		casePersonsQuery.select(casePersonsSelect);
+		Predicate casePersonsFilter = caseService.createUserFilter(cb, casePersonsRoot, user);
+		
+		// only probable and confirmed cases are of interest
+		Predicate classificationFilter = cb.equal(casePersonsRoot.get(Case.CASE_CLASSIFICATION), CaseClassification.CONFIRMED);
+		classificationFilter = cb.or(classificationFilter, cb.equal(casePersonsRoot.get(Case.CASE_CLASSIFICATION), CaseClassification.PROBABLE));
+		
+		if (casePersonsFilter != null) {
+			casePersonsFilter = cb.and(casePersonsFilter, classificationFilter);
+		} else {
+			casePersonsFilter = classificationFilter;
+		}
+		
+		// death date range
+		Predicate dateFilter = cb.isNotNull(casePersonsSelect.get(Person.DEATH_DATE));
+		dateFilter = cb.and(dateFilter, cb.greaterThanOrEqualTo(casePersonsSelect.get(Person.DEATH_DATE), fromDate));
+		dateFilter = cb.and(dateFilter, cb.lessThanOrEqualTo(casePersonsSelect.get(Person.DEATH_DATE), toDate));
+		
+		if (casePersonsFilter != null) {
+			casePersonsFilter = cb.and(casePersonsFilter, dateFilter);
+		} else {
+			casePersonsFilter = dateFilter;
+		}
+		
+		if (casePersonsFilter != null && disease != null) {
+			casePersonsFilter = cb.and(casePersonsFilter, cb.equal(casePersonsRoot.get(Case.DISEASE), disease));
+		}
+		
+		casePersonsQuery.where(casePersonsFilter);
+		casePersonsQuery.distinct(true);
+		List<Person> casePersonsResultList = em.createQuery(casePersonsQuery).getResultList();
+		return casePersonsResultList;
+	}
+	
 }
