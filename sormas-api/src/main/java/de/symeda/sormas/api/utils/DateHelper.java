@@ -88,7 +88,16 @@ public final class DateHelper {
 		return (SimpleDateFormat) sdf.clone();
 	}
 	
-	
+	public static boolean isSameDay(Date firstDate, Date secondDate) {
+		Calendar firstCalendar = new GregorianCalendar();
+		firstCalendar.setTime(firstDate);
+		Calendar secondCalendar = new GregorianCalendar();
+		secondCalendar.setTime(secondDate);
+		
+		return firstCalendar.get(Calendar.YEAR) == secondCalendar.get(Calendar.YEAR) &&
+				firstCalendar.get(Calendar.MONTH) == secondCalendar.get(Calendar.MONTH) &&
+				firstCalendar.get(Calendar.DAY_OF_MONTH) == secondCalendar.get(Calendar.DAY_OF_MONTH);
+	}
 	
 	/**
      * Returns a Date at 0 h, 0 m, 0 s

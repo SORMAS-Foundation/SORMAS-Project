@@ -1,16 +1,25 @@
 package de.symeda.sormas.ui.dashboard;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.byteowls.vaadin.chartjs.ChartJs;
+import com.byteowls.vaadin.chartjs.config.BarChartConfig;
+import com.byteowls.vaadin.chartjs.data.BarDataset;
+import com.byteowls.vaadin.chartjs.options.InteractionMode;
+import com.byteowls.vaadin.chartjs.options.scale.Axis;
+import com.byteowls.vaadin.chartjs.options.scale.DefaultScale;
+import com.byteowls.vaadin.chartjs.options.scale.LinearScale;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
@@ -44,11 +53,15 @@ public class DashboardView extends AbstractView {
 	public static final String I18N_PREFIX = "Dashboard";
 	public static final String VIEW_NAME = "dashboard";
 	
+	private HorizontalLayout infoGraphicsLayout;
+	
 	private final ComboBox diseaseFilter;
 	private final DateField dateFromFilter;
 	private final DateField dateToFilter;
+	private final CheckBox useDateFilterForMap;
 	private final MapComponent mapComponent;
 	private Table situationReportTable;
+	private ChartJs epiCurveChart;
 
 	public DashboardView() {
 		setSizeFull();
@@ -59,6 +72,8 @@ public class DashboardView extends AbstractView {
 		dateFromFilter.setDateFormat(DateHelper.getShortDateFormat().toLocalizedPattern());
 		dateToFilter = new DateField();
 		dateToFilter.setDateFormat(DateHelper.getShortDateFormat().toLocalizedPattern());
+		useDateFilterForMap = new CheckBox();
+		useDateFilterForMap.addStyleName(CssStyles.FORCE_CAPTION);
         addComponent(createTopBar());
         
 		mapComponent = new MapComponent();
@@ -90,6 +105,10 @@ public class DashboardView extends AbstractView {
         dateToFilter.addValueChangeListener(e -> refreshDashboard());
         filterLayout.addComponent(dateToFilter);
 
+        useDateFilterForMap.setCaption("Use date filter for map");
+        useDateFilterForMap.addValueChangeListener(e -> refreshDashboard());
+        filterLayout.addComponent(useDateFilterForMap);
+        
         diseaseFilter.setWidth(200, Unit.PIXELS);
         diseaseFilter.setInputPrompt("All");
         diseaseFilter.addItems((Object[])Disease.values());
@@ -107,7 +126,7 @@ public class DashboardView extends AbstractView {
         Image iconRed = new Image(null, new ThemeResource("mapicons/red-dot-small.png"));
         
         keyLayout.addComponent(iconGrey);
-        keyLayout.addComponent(new Label("Possible"));
+        keyLayout.addComponent(new Label("Not yet classified"));
         keyLayout.addComponent(iconYellow);
         keyLayout.addComponent(new Label("Suspect"));
         keyLayout.addComponent(iconOrange);
@@ -132,9 +151,9 @@ public class DashboardView extends AbstractView {
         layout.addComponent(mapComponent);
         layout.setExpandRatio(mapComponent, 1);
         
-        HorizontalLayout infoGraphicsLayout = new HorizontalLayout();
-        Image previewImg1 = new Image(null, new ThemeResource("img/dashboard-preview1.png"));
-        infoGraphicsLayout.addComponent(previewImg1);
+        infoGraphicsLayout = new HorizontalLayout();
+        createEpiCurveChart();
+        infoGraphicsLayout.addComponent(epiCurveChart);
         createSituationReportTable();
         infoGraphicsLayout.addComponent(situationReportTable);
         infoGraphicsLayout.setWidth(100, Unit.PERCENTAGE);
@@ -153,18 +172,31 @@ public class DashboardView extends AbstractView {
 	}
 	
 	private void refreshDashboard() {
-    	List<CaseDataDto> cases = ControllerProvider.getCaseController().getCaseIndexList();
-
-    	// TODO move into service layer
-		Disease disease = (Disease) diseaseFilter.getValue(); 
-		if (disease != null) {
-			cases = cases.stream()
-    		.filter(entry -> disease.equals(entry.getDisease()))
-    		.collect(Collectors.toList());
-		}
+		Date fromDate = dateFromFilter.getValue();
+		Date toDate = dateToFilter.getValue();
+		Disease disease = (Disease) diseaseFilter.getValue();
+		String userUuid = LoginHelper.getCurrentUser().getUuid();
+		
+    	List<CaseDataDto> cases;
+    	if (useDateFilterForMap.getValue() == true) {
+    		cases = FacadeProvider.getCaseFacade().getAllCasesBetween(fromDate, toDate, disease, userUuid);
+    	} else {
+    		cases = FacadeProvider.getCaseFacade().getAllCasesAfter(null, userUuid);
+    		if (disease != null) {
+    			cases = cases.stream()
+    					.filter(entry -> disease.equals(entry.getDisease()))
+    		    		.collect(Collectors.toList());
+    		}
+    	}
 		
     	mapComponent.showFacilities(cases);
     	clearAndFillSituationReportTable();
+    	
+    	// Epi curve chart has to be created again due to a canvas resizing issue when simply
+    	// refreshing the component
+    	infoGraphicsLayout.removeComponent(epiCurveChart);
+    	createEpiCurveChart();
+    	infoGraphicsLayout.addComponent(epiCurveChart, 0);
 	}
 	
 	private void createSituationReportTable() {
@@ -261,8 +293,8 @@ public class DashboardView extends AbstractView {
 		List<ContactDto> contacts = FacadeProvider.getContactFacade().getFollowUpBetween(fromDate, toDate, disease, userUuid);
 		List<ContactDto> previousContacts = FacadeProvider.getContactFacade().getFollowUpBetween(DateHelper.subtractDays(fromDate, DateHelper.getDaysBetween(fromDate, toDate)), DateHelper.subtractDays(toDate, DateHelper.getDaysBetween(fromDate, toDate)), disease, userUuid);
 		int onLastDayOfPeriod = (int) contacts.stream()
-				.filter(c -> (c.getFollowUpUntil().after(toDate) || c.getFollowUpUntil().equals(toDate)) && 
-						(c.getLastContactDate().before(toDate) || c.getLastContactDate().equals(toDate)))
+				.filter(c -> (c.getFollowUpUntil().after(toDate) || DateHelper.isSameDay(c.getFollowUpUntil(), toDate)) && 
+						(c.getLastContactDate().before(toDate) || DateHelper.isSameDay(c.getLastContactDate(), toDate)))
 				.count();
 		int lostToFollowUpCount = (int) contacts.stream()
 				.filter(c -> c.getFollowUpStatus() == FollowUpStatus.LOST)
@@ -345,6 +377,122 @@ public class DashboardView extends AbstractView {
 		hcwLabel.setSizeFull();
 		hcwLabel.addStyleName(CssStyles.FONT_SIZE_SMALL);
 		return hcwLabel;
+	}
+	
+	private void createEpiCurveChart() {
+		BarChartConfig config = new BarChartConfig();
+		config.data()
+				.labels("Hallo")
+				.addDataset(new BarDataset().label("Confirmed").backgroundColor("rgba(204,0,0,1)"))
+				.addDataset(new BarDataset().label("Probable").backgroundColor("rgba(255,128,0,1)"))
+				.addDataset(new BarDataset().label("Suspect").backgroundColor("rgba(255,215,0,1)"))
+				.and();
+		
+		config.options()
+				.responsive(true)
+				.title()
+						.display(true)
+						.text("New cases")
+						.and()
+				.tooltips()
+						.mode(InteractionMode.INDEX)
+						.intersect(false)
+						.and()
+				.scales()
+				.add(Axis.X, new DefaultScale()
+						.stacked(true))
+				.add(Axis.Y, new LinearScale()
+						.display(true)
+						.scaleLabel()
+							.display(false)
+							.and()
+						.ticks()
+							.suggestedMax(10)
+							.beginAtZero(true)
+							.and()
+						.stacked(true))
+				.and()
+				.done();
+		
+		epiCurveChart = new ChartJs(config);
+		epiCurveChart.setWidth(100, Unit.PERCENTAGE);
+		epiCurveChart.setHeight(100, Unit.PERCENTAGE);
+		epiCurveChart.setSizeFull();
+		epiCurveChart.setJsLoggingEnabled(true);
+		
+		clearAndFillEpiCurveChart();
+	}
+	
+	private void clearAndFillEpiCurveChart() {
+		Date fromDate = dateFromFilter.getValue();
+		Date toDate = dateToFilter.getValue();
+		Disease disease = (Disease) diseaseFilter.getValue();
+		String userUuid = LoginHelper.getCurrentUser().getUuid();
+		
+		BarChartConfig config = (BarChartConfig) epiCurveChart.getConfig();
+		if (config.data().getDatasetAtIndex(0).getData() != null) {
+			config.data().getDatasetAtIndex(0).getData().clear();
+		}
+		if (config.data().getDatasetAtIndex(1).getData() != null) {
+			config.data().getDatasetAtIndex(1).getData().clear();
+		}
+		if (config.data().getDatasetAtIndex(2).getData() != null) {
+			config.data().getDatasetAtIndex(2).getData().clear();
+		}
+//		config.data().getLabels().clear();
+		
+		List<Date> filteredDates = buildListOfFilteredDates();
+		List<String> newLabels = new ArrayList<>();
+		for (Date date : filteredDates) {
+			String label = DateHelper.formatShortDate(date);
+			newLabels.add(label);
+		}
+		config.data().labelsAsList(newLabels);
+		
+		List<CaseDataDto> cases = FacadeProvider.getCaseFacade().getAllCasesBetween(fromDate, toDate, disease, userUuid);
+		List<CaseDataDto> confirmedCases = cases.stream()
+				.filter(c -> c.getCaseClassification() == CaseClassification.CONFIRMED)
+				.collect(Collectors.toList());
+		List<CaseDataDto> suspectedCases = cases.stream()
+				.filter(c -> c.getCaseClassification() == CaseClassification.SUSPECT)
+				.collect(Collectors.toList());
+		List<CaseDataDto> probableCases = cases.stream()
+				.filter(c -> c.getCaseClassification() == CaseClassification.PROBABLE)
+				.collect(Collectors.toList());
+		
+		BarDataset confirmedDataset = (BarDataset) config.data().getDatasetAtIndex(0);
+		BarDataset probableDataset = (BarDataset) config.data().getDatasetAtIndex(1);
+		BarDataset suspectDataset = (BarDataset) config.data().getDatasetAtIndex(2);
+			
+		for (Date date : filteredDates) {
+			//config.data().getLabels().add(DateHelper.formatShortDate(date));
+			int confirmedCasesAtDate = (int) confirmedCases.stream()
+					.filter(c -> DateHelper.isSameDay(c.getSymptoms().getOnsetDate(), date))
+					.count();
+			int probableCasesAtDate = (int) probableCases.stream()
+					.filter(c -> DateHelper.isSameDay(c.getSymptoms().getOnsetDate(), date))
+					.count();
+			int suspectCasesAtDate = (int) suspectedCases.stream()
+					.filter(c -> DateHelper.isSameDay(c.getSymptoms().getOnsetDate(), date))
+					.count();
+			confirmedDataset.addData(confirmedCasesAtDate);
+			probableDataset.addData(probableCasesAtDate);
+			suspectDataset.addData(suspectCasesAtDate);
+		}
+	}
+	
+	private List<Date> buildListOfFilteredDates() {
+		Date fromDate = dateFromFilter.getValue();
+		Date toDate = dateToFilter.getValue();
+		
+		List<Date> filteredDates = new ArrayList<>();
+		Date currentDate = new Date(fromDate.getTime());
+		while (!DateHelper.isSameDay(currentDate, toDate)) {
+			filteredDates.add(currentDate);
+			currentDate = DateHelper.addDays(currentDate, 1);
+		}
+		
+		return filteredDates;
 	}
 	
 }
