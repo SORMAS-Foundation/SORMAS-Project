@@ -200,12 +200,6 @@
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 		</dependency>
-		
-		<!-- chart.js Vaadin addon -->
-		<dependency>
-  			<groupId>com.byteowls</groupId>
-  			<artifactId>vaadin-chartjs</artifactId>
-		</dependency>
 
 	</dependencies>
 	

@@ -78,6 +78,43 @@ public class CaseService extends AbstractAdoService<Case> {
 		return resultList;
 	}
 	
+	public List<Case> getAllByDiseaseAfter(Date date, Disease disease, User user) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Case> cq = cb.createQuery(getElementClass());
+		Root<Case> from = cq.from(getElementClass());
+
+		Predicate filter = createUserFilter(cb, from, user);
+		
+		if (date != null) {
+			Predicate dateFilter = cb.greaterThan(from.get(AbstractDomainObject.CHANGE_DATE), date);
+			Join<Case, Symptoms> symptoms = from.join(Case.SYMPTOMS);
+			dateFilter = cb.or(dateFilter, cb.greaterThan(symptoms.get(AbstractDomainObject.CHANGE_DATE), date));
+			Join<Case, Hospitalization> hospitalization = from.join(Case.HOSPITALIZATION);
+			dateFilter = cb.or(dateFilter, cb.greaterThan(hospitalization.get(AbstractDomainObject.CHANGE_DATE), date));
+			Join<Case, EpiData> epiData = from.join(Case.EPI_DATA);
+			dateFilter = cb.or(dateFilter, cb.greaterThan(epiData.get(AbstractDomainObject.CHANGE_DATE), date));
+
+			if (filter != null) {
+				filter = cb.and(filter, dateFilter);
+			} else {
+				filter = dateFilter;
+			}
+		}
+		
+		if (filter != null && disease != null) {
+			filter = cb.and(filter, cb.equal(from.get(Case.DISEASE), disease));
+		}
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+		cq.orderBy(cb.desc(from.get(Case.REPORT_DATE)));
+		cq.distinct(true);
+
+		List<Case> resultList = em.createQuery(cq).getResultList();
+		return resultList;
+	}
+	
 	public List<Case> getAllBetween(Date fromDate, Date toDate, Disease disease, User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Case> cq = cb.createQuery(getElementClass());

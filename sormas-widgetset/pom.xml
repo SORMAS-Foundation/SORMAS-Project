@@ -36,6 +36,11 @@
 		   <groupId>com.vaadin.tapio</groupId>
 		   <artifactId>googlemaps</artifactId>
 		</dependency>
+		<!-- chart.js Vaadin addon -->
+		<dependency>
+  			<groupId>com.byteowls</groupId>
+  			<artifactId>vaadin-chartjs</artifactId>
+		</dependency>
     </dependencies>
 
     <build>
