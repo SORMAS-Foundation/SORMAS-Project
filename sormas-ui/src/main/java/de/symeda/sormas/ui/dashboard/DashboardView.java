@@ -6,13 +6,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.byteowls.vaadin.chartjs.ChartJs;
-import com.byteowls.vaadin.chartjs.config.BarChartConfig;
-import com.byteowls.vaadin.chartjs.data.BarDataset;
-import com.byteowls.vaadin.chartjs.options.InteractionMode;
-import com.byteowls.vaadin.chartjs.options.scale.Axis;
-import com.byteowls.vaadin.chartjs.options.scale.DefaultScale;
-import com.byteowls.vaadin.chartjs.options.scale.LinearScale;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.ThemeResource;
@@ -43,6 +36,7 @@ import de.symeda.sormas.api.event.EventType;
 import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.ui.highcharts.HighChart;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -89,7 +83,7 @@ public class DashboardView extends AbstractView {
 	private final CheckBox useDateFilterForMap;
 	private final MapComponent mapComponent;
 	private Table situationReportTable;
-	private ChartJs epiCurveChart;
+	private HighChart epiCurveChart;
 	
 	private List<CaseDataDto> cases = new ArrayList<>();
 	private Date fromDate;
@@ -100,6 +94,9 @@ public class DashboardView extends AbstractView {
 		setSizeFull();
 		setSpacing(false);
 
+        // Initialize case list with the pre-selected data
+		cases = FacadeProvider.getCaseFacade().getAllCasesBetween(fromDate, toDate, disease, LoginHelper.getCurrentUser().getUuid());
+		
 		diseaseFilter = new ComboBox();
 		dateFromFilter = new DateField();
 		dateFromFilter.setDateFormat(DateHelper.getShortDateFormat().toLocalizedPattern());
@@ -112,9 +109,6 @@ public class DashboardView extends AbstractView {
 		layout.setHeightUndefined();
         addComponent(layout);
         setExpandRatio(layout, 1);
-        
-        // Initialize case list with the pre-selected data
-		cases = FacadeProvider.getCaseFacade().getAllCasesBetween(fromDate, toDate, disease, LoginHelper.getCurrentUser().getUuid());
 	}
 	
 	private VerticalLayout createTopBar() {
@@ -215,27 +209,6 @@ public class DashboardView extends AbstractView {
         infoGraphicsLayout.setHeightUndefined();
         infoGraphicsLayout.setSpacing(true);
         
-        VerticalLayout epiCurveLayout = new VerticalLayout();
-        {
-	        epiCurveLayout.setHeightUndefined();
-	        epiCurveLayout.setWidth(100, Unit.PERCENTAGE);
-	        
-	        Label epiCurveLabel = new Label(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, EPI_CURVE));
-	        epiCurveLabel.addStyleName(CssStyles.H3);
-	        epiCurveLayout.addComponent(epiCurveLabel);
-	        
-	        chartWrapper = new CssLayout();
-	        {
-		        createEpiCurveChart();
-		        chartWrapper.setHeight(532, Unit.PIXELS);
-		        chartWrapper.setWidth(100, Unit.PERCENTAGE);
-		        chartWrapper.addComponent(epiCurveChart);
-		        epiCurveLayout.addComponent(chartWrapper);
-	        }
-	        
-	        infoGraphicsLayout.addComponent(epiCurveLayout);
-        }
-        
         VerticalLayout reportTableLayout = new VerticalLayout();
         
         Label reportTableLabel = new Label(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, SITUATION_REPORT));
@@ -247,6 +220,30 @@ public class DashboardView extends AbstractView {
         reportTableLayout.setHeightUndefined();
         
         infoGraphicsLayout.addComponent(reportTableLayout);
+        
+        VerticalLayout epiCurveLayout = new VerticalLayout();
+        epiCurveLayout.setWidth(100, Unit.PERCENTAGE);
+        epiCurveLayout.setHeight(100, Unit.PERCENTAGE);
+        {
+	        epiCurveLayout.setHeight(100, Unit.PERCENTAGE);
+	        
+	        Label epiCurveLabel = new Label(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, EPI_CURVE));
+	        epiCurveLabel.addStyleName(CssStyles.H3);
+	        epiCurveLayout.addComponent(epiCurveLabel);
+	        
+	        chartWrapper = new CssLayout();
+	        {
+		        createEpiCurveChart();
+		        chartWrapper.setHeight(100, Unit.PERCENTAGE);
+		        chartWrapper.setWidth(100, Unit.PERCENTAGE);
+		        chartWrapper.addComponent(epiCurveChart);
+		        epiCurveLayout.addComponent(chartWrapper);
+		        epiCurveLayout.setExpandRatio(chartWrapper, 1);
+	        }
+	        
+        }
+        
+        infoGraphicsLayout.addComponent(epiCurveLayout, 0);
         
         layout.addComponent(infoGraphicsLayout);
         layout.setExpandRatio(infoGraphicsLayout, 1);
@@ -491,68 +488,45 @@ public class DashboardView extends AbstractView {
 	 * Creates the epi curve chart using the Chart.js Vaadin addon
 	 */
 	private void createEpiCurveChart() {
-		BarChartConfig config = new BarChartConfig();
-		config.data()
-				.labels()
-				.addDataset(new BarDataset().label(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, CONFIRMED)).backgroundColor("rgba(204,0,0,1)"))
-				.addDataset(new BarDataset().label(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, PROBABLE)).backgroundColor("rgba(255,128,0,1)"))
-				.addDataset(new BarDataset().label(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, SUSPECT)).backgroundColor("rgba(255,215,0,1)"))
-				.and();
-		config.options()
-				.responsive(true)
-				.tooltips()
-						.mode(InteractionMode.INDEX)
-						.intersect(false)
-						.and()
-				.scales()
-				.add(Axis.X, new DefaultScale()
-						.stacked(true))
-				.add(Axis.Y, new LinearScale()
-						.display(true)
-						.scaleLabel()
-							.display(false)
-							.and()
-						.ticks()
-							.suggestedMax(10)
-							.beginAtZero(true)
-							.and()
-						.stacked(true))
-				.and()
-				.done();
-		
-		epiCurveChart = new ChartJs(config);
+		epiCurveChart = new HighChart();
 		epiCurveChart.setSizeFull();
-		
 		clearAndFillEpiCurveChart();
 	}
 	
 	private void clearAndFillEpiCurveChart() {
-		BarChartConfig config = (BarChartConfig) epiCurveChart.getConfig();
-		BarDataset confirmedDataset = (BarDataset) config.data().getDatasetAtIndex(0);
-		BarDataset probableDataset = (BarDataset) config.data().getDatasetAtIndex(1);
-		BarDataset suspectDataset = (BarDataset) config.data().getDatasetAtIndex(2);
+		StringBuilder hcjs = new StringBuilder();
+		hcjs.append("var options = {"
+				+ "chart: { type: 'column', backgroundColor: null },"
+				+ "credits: { enabled: false },"
+				+ "title: { text: '' },");
 		
-		// clear all data from the datasets as long as they contain elements
-		if (confirmedDataset.getData() != null) {
-			confirmedDataset.getData().clear();
-		}
-		if (probableDataset.getData() != null) {
-			probableDataset.getData().clear();
-		}
-		if (suspectDataset.getData() != null) {
-			suspectDataset.getData().clear();
-		}
-
+		// Creates and sets the labels for each day on the x-axis
 		List<Date> filteredDates = buildListOfFilteredDates();
-		
-		// Creates and sets the labels for each day, used for the x-axis of the chart
 		List<String> newLabels = new ArrayList<>();
 		for (Date date : filteredDates) {
 			String label = DateHelper.formatShortDate(date);
 			newLabels.add(label);
 		}
-		config.data().labelsAsList(newLabels);
+				
+		hcjs.append("xAxis: { categories: [");
+		for (String s : newLabels) {
+			if (newLabels.indexOf(s) == newLabels.size() - 1) {
+				hcjs.append("'" + s + "']},");
+			} else {
+				hcjs.append("'" + s + "', ");
+			}
+		}
+				
+		hcjs.append("yAxis: { min: 0, title: { text: '' }, allowDecimals: false, softMax: 10, stackLabels: { enabled: true, style: {"
+				+ "fontWeight: 'bold', color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray' } } },"
+				+ "legend: { verticalAlign: 'top', backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || 'white',"
+				+ "borderColor: '#CCC', borderWidth: 1, shadow: false },"
+				+ "tooltip: { headerFormat: '<b>{point.x}</b><br/>', pointFormat: '{series.name}: {point.y}<br/>Total: {point.stackTotal}'},"
+				+ "plotOptions: { column: { stacking: 'normal', dataLabels: {"
+				+ "enabled: true, formatter: function() { if (this.y > 0) return this.y; },"
+				+ "color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white' } } },");
 		
+		// Adds the number of confirmed, probable and suspect cases for each day as data
 		List<CaseDataDto> confirmedCases = cases.stream()
 				.filter(c -> c.getCaseClassification() == CaseClassification.CONFIRMED)
 				.collect(Collectors.toList());
@@ -563,21 +537,53 @@ public class DashboardView extends AbstractView {
 				.filter(c -> c.getCaseClassification() == CaseClassification.PROBABLE)
 				.collect(Collectors.toList());
 		
-		// Adds the number of confirmed, probable and suspect cases for each day to the datasets
-		for (Date date : filteredDates) {
+		int[] confirmedNumbers = new int[newLabels.size()];
+		int[] probableNumbers = new int[newLabels.size()];
+		int[] suspectNumbers = new int[newLabels.size()];
+		
+		for (int i = 0; i < filteredDates.size(); i++) {
+			Date date = filteredDates.get(i);
 			int confirmedCasesAtDate = (int) confirmedCases.stream()
 					.filter(c -> DateHelper.isSameDay(c.getSymptoms().getOnsetDate(), date))
 					.count();
+			confirmedNumbers[i] = confirmedCasesAtDate;
 			int probableCasesAtDate = (int) probableCases.stream()
 					.filter(c -> DateHelper.isSameDay(c.getSymptoms().getOnsetDate(), date))
 					.count();
+			probableNumbers[i] = probableCasesAtDate;
 			int suspectCasesAtDate = (int) suspectedCases.stream()
 					.filter(c -> DateHelper.isSameDay(c.getSymptoms().getOnsetDate(), date))
 					.count();
-			confirmedDataset.addData(confirmedCasesAtDate);
-			probableDataset.addData(probableCasesAtDate);
-			suspectDataset.addData(suspectCasesAtDate);
+			suspectNumbers[i] = suspectCasesAtDate;
 		}
+
+		hcjs.append("series: [");
+		hcjs.append("{ name: 'Confirmed', color: '#B22222', dataLabels: { allowOverlap: false }, data: [");
+		for (int i = 0; i < confirmedNumbers.length; i++) {
+			if (i == confirmedNumbers.length - 1) {
+				hcjs.append(confirmedNumbers[i] + "]},");
+			} else {
+				hcjs.append(confirmedNumbers[i] + ", ");
+			}
+		}
+		hcjs.append("{ name: 'Probable', color: '#FF4500', dataLabels: { allowOverlap: false },  data: [");
+		for (int i = 0; i < probableNumbers.length; i++) {
+			if (i == probableNumbers.length - 1) {
+				hcjs.append(probableNumbers[i] + "]},");
+			} else {
+				hcjs.append(probableNumbers[i] + ", ");
+			}
+		}
+		hcjs.append("{ name: 'Suspect', color: '#FFD700', dataLabels: { allowOverlap: false },  data: [");
+		for (int i = 0; i < suspectNumbers.length; i++) {
+			if (i == suspectNumbers.length - 1) {
+				hcjs.append(suspectNumbers[i] + "]}]};");
+			} else {
+				hcjs.append(suspectNumbers[i] + ", ");
+			}
+		}
+		
+		epiCurveChart.setHcjs(hcjs.toString());	
 	}
 	
 	/**
