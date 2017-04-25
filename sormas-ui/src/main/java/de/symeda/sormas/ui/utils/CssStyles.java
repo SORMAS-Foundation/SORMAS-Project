@@ -23,6 +23,8 @@ public final class CssStyles {
 	public static final String VSPACE3 = "vspace3";
 	public static final String VSPACE4 = "vspace4";
 	public static final String VSPACE5 = "vspace5";
+	public static final String VSPACE_NO_FILTERS = "vspace-no-filters";
+	public static final String VSPACETOP3 = "vspacetop3";
 
 	public static final String SELECTABLE = "selectable";
 

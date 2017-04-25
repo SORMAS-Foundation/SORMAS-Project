@@ -75,55 +75,69 @@ public class DashboardView extends AbstractView {
 	public static final String SITUATION_REPORT = "situationReport";
 	public static final String CASE_MAP = "caseMap";
 	
-	private CssLayout chartWrapper;
-	
-	private final ComboBox diseaseFilter;
-	private final DateField dateFromFilter;
-	private final DateField dateToFilter;
-	private final CheckBox useDateFilterForMap;
 	private final MapComponent mapComponent;
 	private Table situationReportTable;
+	private CssLayout chartWrapper;
 	private HighChart epiCurveChart;
-	
+
 	private List<CaseDataDto> cases = new ArrayList<>();
+	
 	private Date fromDate;
 	private Date toDate;
 	private Disease disease;
+	private boolean useDateFilterForMap;
 
 	public DashboardView() {
 		setSizeFull();
-		setSpacing(false);
+		addStyleName("crud-view");
 
         // Initialize case list with the pre-selected data
 		cases = FacadeProvider.getCaseFacade().getAllCasesBetween(fromDate, toDate, disease, LoginHelper.getCurrentUser().getUuid());
 		
-		diseaseFilter = new ComboBox();
-		dateFromFilter = new DateField();
-		dateFromFilter.setDateFormat(DateHelper.getShortDateFormat().toLocalizedPattern());
-		dateToFilter = new DateField();
-		dateToFilter.setDateFormat(DateHelper.getShortDateFormat().toLocalizedPattern());
-		useDateFilterForMap = new CheckBox();
-        addComponent(createTopBar());
 		mapComponent = new MapComponent();
-		VerticalLayout layout = createContents();
-		layout.setHeightUndefined();
-        addComponent(layout);
-        setExpandRatio(layout, 1);
+		
+		VerticalLayout dashboardLayout = new VerticalLayout();
+        dashboardLayout.setSpacing(false);
+        dashboardLayout.setSizeFull();
+        dashboardLayout.setStyleName("crud-main-layout");
+        dashboardLayout.setMargin(true);
+        
+        dashboardLayout.addComponent(createTopBar());
+        dashboardLayout.addComponent(createFilterBar());
+		VerticalLayout contentLayout = createContents();
+        dashboardLayout.addComponent(contentLayout);
+        dashboardLayout.setExpandRatio(contentLayout, 1);
+        
+        addComponent(dashboardLayout);
 	}
 	
-	private VerticalLayout createTopBar() {
-		VerticalLayout topLayout = new VerticalLayout();
-		topLayout.setMargin(true);
+	private HorizontalLayout createTopBar() {
+		HorizontalLayout topLayout = new HorizontalLayout();
+		topLayout.setSpacing(true);
+		topLayout.setWidth(100, Unit.PERCENTAGE);
+		topLayout.addStyleName(CssStyles.VSPACE_NO_FILTERS);
 		
+		Label header = new Label("Dashboard");
+    	header.setSizeUndefined();
+    	CssStyles.style(header, CssStyles.H2, CssStyles.NO_MARGIN);
+    	topLayout.addComponent(header);
+		
+		return topLayout;
+	}
+	
+	private HorizontalLayout createFilterBar() {
 		HorizontalLayout filterLayout = new HorizontalLayout();
 		filterLayout.setSpacing(true);
-		filterLayout.setMargin(false);
+		filterLayout.setSizeUndefined();
+		filterLayout.addStyleName(CssStyles.VSPACE3);
         
 		Calendar c = Calendar.getInstance();
 		c.setTime(new Date());
 		c.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+		
+		DateField dateFromFilter = new DateField();
+		dateFromFilter.setDateFormat(DateHelper.getShortDateFormat().toLocalizedPattern());
         dateFromFilter.setWidth(200, Unit.PIXELS);
-        dateFromFilter.setCaption(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, FROM));
         dateFromFilter.setValue(DateHelper.subtractDays(c.getTime(), 28));
         dateFromFilter.setDateFormat(DateHelper.getShortDateFormat().toPattern());
         dateFromFilter.addValueChangeListener(e -> {
@@ -132,8 +146,10 @@ public class DashboardView extends AbstractView {
         });
         filterLayout.addComponent(dateFromFilter);
         fromDate = dateFromFilter.getValue();
+        
+        DateField dateToFilter = new DateField();
+		dateToFilter.setDateFormat(DateHelper.getShortDateFormat().toLocalizedPattern());
         dateToFilter.setWidth(200, Unit.PIXELS);
-        dateToFilter.setCaption(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, TO));
         dateToFilter.setValue(c.getTime());
         dateToFilter.setDateFormat(DateHelper.getShortDateFormat().toPattern());
         dateToFilter.addValueChangeListener(e -> {
@@ -143,10 +159,18 @@ public class DashboardView extends AbstractView {
         filterLayout.addComponent(dateToFilter);
         toDate = dateToFilter.getValue();
         
+        CheckBox dateFilterForMap = new CheckBox();
+        dateFilterForMap.setCaption(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, DATE_FILTER_FOR_MAP));
+        dateFilterForMap.addValueChangeListener(e -> {
+        	useDateFilterForMap = dateFilterForMap.getValue();
+        	refreshMap();
+        });
+        filterLayout.addComponent(dateFilterForMap);
+
+		ComboBox diseaseFilter = new ComboBox();
         diseaseFilter.setWidth(200, Unit.PIXELS);
-        diseaseFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, ALL));
+        diseaseFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, DISEASE));
         diseaseFilter.addItems((Object[])Disease.values());
-        diseaseFilter.setCaption(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, DISEASE));
         diseaseFilter.addValueChangeListener(e -> {
         	disease = (Disease) diseaseFilter.getValue();
         	refreshDashboard();
@@ -154,84 +178,91 @@ public class DashboardView extends AbstractView {
         filterLayout.addComponent(diseaseFilter);
         disease = (Disease) diseaseFilter.getValue();
         
-        topLayout.addComponent(filterLayout);
-  
-        useDateFilterForMap.setCaption(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, DATE_FILTER_FOR_MAP));
-        useDateFilterForMap.addValueChangeListener(e -> refreshMap());
-        topLayout.addComponent(useDateFilterForMap);
-        
-		return topLayout;
+        return filterLayout;
 	}
 	
 	private VerticalLayout createContents() {
 		VerticalLayout layout = new VerticalLayout();
-		layout.setMargin(new MarginInfo(false, true, true, true));
 		
+		// Map header
 		HorizontalLayout mapHeaderLayout = new HorizontalLayout();
 		mapHeaderLayout.setWidth(100, Unit.PERCENTAGE);
-		
-        Label caseMapLabel = new Label(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, CASE_MAP));
-        caseMapLabel.setSizeUndefined();
-		caseMapLabel.addStyleName(CssStyles.H3);
-		mapHeaderLayout.addComponent(caseMapLabel);
-
-		HorizontalLayout keyLayout = new HorizontalLayout();
-        keyLayout.setSpacing(true);
-        
-        Image iconGrey = new Image(null, new ThemeResource("mapicons/grey-dot-small.png"));
-        Image iconYellow = new Image(null, new ThemeResource("mapicons/yellow-dot-small.png"));
-        Image iconOrange = new Image(null, new ThemeResource("mapicons/orange-dot-small.png"));
-        Image iconRed = new Image(null, new ThemeResource("mapicons/red-dot-small.png"));
-        
-        keyLayout.addComponent(iconGrey);
-        keyLayout.addComponent(new Label(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, NOT_YET_CLASSIFIED)));
-        keyLayout.addComponent(iconYellow);
-        keyLayout.addComponent(new Label(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, SUSPECT)));
-        keyLayout.addComponent(iconOrange);
-        keyLayout.addComponent(new Label(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, PROBABLE)));
-        keyLayout.addComponent(iconRed);
-        keyLayout.addComponent(new Label(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, CONFIRMED)));
-//        CssStyles.stylePrimary(keyLayout, CssStyles.DASHBOARD_KEY);
-        
-        mapHeaderLayout.addComponent(keyLayout);
-        mapHeaderLayout.setComponentAlignment(keyLayout, Alignment.MIDDLE_RIGHT);
-        mapHeaderLayout.setExpandRatio(keyLayout, 1);
+		{
+	        Label caseMapLabel = new Label(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, CASE_MAP));
+	        caseMapLabel.setSizeUndefined();
+	        CssStyles.style(caseMapLabel, CssStyles.H3, CssStyles.NO_MARGIN);
+			mapHeaderLayout.addComponent(caseMapLabel);
+	
+			HorizontalLayout keyLayout = new HorizontalLayout();
+	        keyLayout.setSpacing(true);
+	        
+	        Image iconGrey = new Image(null, new ThemeResource("mapicons/grey-dot-small.png"));
+	        Image iconYellow = new Image(null, new ThemeResource("mapicons/yellow-dot-small.png"));
+	        Image iconOrange = new Image(null, new ThemeResource("mapicons/orange-dot-small.png"));
+	        Image iconRed = new Image(null, new ThemeResource("mapicons/red-dot-small.png"));
+	        iconGrey.setWidth(16.5f, Unit.PIXELS);
+	        iconGrey.setHeight(22.5f, Unit.PIXELS);
+	        iconYellow.setWidth(16.5f, Unit.PIXELS);
+	        iconYellow.setHeight(22.5f, Unit.PIXELS);
+	        iconOrange.setWidth(16.5f, Unit.PIXELS);
+	        iconOrange.setHeight(22.5f, Unit.PIXELS);
+	        iconRed.setWidth(16.5f, Unit.PIXELS);
+	        iconRed.setHeight(22.5f, Unit.PIXELS);
+	        
+	        keyLayout.addComponent(iconGrey);
+	        keyLayout.addComponent(new Label(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, NOT_YET_CLASSIFIED)));
+	        keyLayout.addComponent(iconYellow);
+	        keyLayout.addComponent(new Label(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, SUSPECT)));
+	        keyLayout.addComponent(iconOrange);
+	        keyLayout.addComponent(new Label(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, PROBABLE)));
+	        keyLayout.addComponent(iconRed);
+	        keyLayout.addComponent(new Label(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, CONFIRMED)));
+	        
+	        mapHeaderLayout.addComponent(keyLayout);
+	        mapHeaderLayout.setComponentAlignment(keyLayout, Alignment.MIDDLE_RIGHT);
+	        mapHeaderLayout.setExpandRatio(keyLayout, 1);
+		}
 		layout.addComponent(mapHeaderLayout);
         
-        mapComponent.setHeight(700, Unit.PIXELS);
-        mapComponent.setWidth(100, Unit.PERCENTAGE);
-        mapComponent.setMargin(new MarginInfo(false, false, true, false));
+		// Map
+	    mapComponent.setHeight(700, Unit.PIXELS);
+	    mapComponent.setWidth(100, Unit.PERCENTAGE);
+	    mapComponent.addStyleName(CssStyles.VSPACE3);
+	    mapComponent.addStyleName(CssStyles.VSPACETOP3);
         layout.addComponent(mapComponent);
         layout.setExpandRatio(mapComponent, 1);
         
+        // Info graphics
         HorizontalLayout infoGraphicsLayout = new HorizontalLayout();
+        infoGraphicsLayout.setId("infoGraphicsLayout");
         infoGraphicsLayout.setWidth(100, Unit.PERCENTAGE);
         infoGraphicsLayout.setHeightUndefined();
         infoGraphicsLayout.setSpacing(true);
-        
-        VerticalLayout reportTableLayout = new VerticalLayout();
-        
-        Label reportTableLabel = new Label(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, SITUATION_REPORT));
-        reportTableLabel.addStyleName(CssStyles.H3);
-        reportTableLayout.addComponent(reportTableLabel);
-        
-        createSituationReportTable();
-        reportTableLayout.addComponent(situationReportTable);
-        reportTableLayout.setHeightUndefined();
-        
-        infoGraphicsLayout.addComponent(reportTableLayout);
-        
-        VerticalLayout epiCurveLayout = new VerticalLayout();
-        epiCurveLayout.setWidth(100, Unit.PERCENTAGE);
-        epiCurveLayout.setHeight(100, Unit.PERCENTAGE);
+        infoGraphicsLayout.setMargin(new MarginInfo(false, false, true, false));
         {
-	        epiCurveLayout.setHeight(100, Unit.PERCENTAGE);
+        	VerticalLayout reportTableLayout = new VerticalLayout();
+
+        	Label reportTableLabel = new Label(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, SITUATION_REPORT));
+        	reportTableLabel.addStyleName(CssStyles.H3);
+        	reportTableLayout.addComponent(reportTableLabel);
+        
+        	createSituationReportTable();
+        	reportTableLayout.addComponent(situationReportTable);
+        	reportTableLayout.setHeightUndefined();
+        	reportTableLayout.setWidth(100, Unit.PERCENTAGE);
+            infoGraphicsLayout.addComponent(reportTableLayout);
+            
+            VerticalLayout epiCurveLayout = new VerticalLayout();
+            epiCurveLayout.setId("epiCurveLayout");
+            epiCurveLayout.setWidth(100, Unit.PERCENTAGE);
+        	epiCurveLayout.setHeight(100, Unit.PERCENTAGE);
 	        
 	        Label epiCurveLabel = new Label(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, EPI_CURVE));
 	        epiCurveLabel.addStyleName(CssStyles.H3);
 	        epiCurveLayout.addComponent(epiCurveLabel);
 	        
 	        chartWrapper = new CssLayout();
+	        chartWrapper.setId("chartWrapper");
 	        {
 		        createEpiCurveChart();
 		        chartWrapper.setHeight(100, Unit.PERCENTAGE);
@@ -241,10 +272,8 @@ public class DashboardView extends AbstractView {
 		        epiCurveLayout.setExpandRatio(chartWrapper, 1);
 	        }
 	        
+	        infoGraphicsLayout.addComponent(epiCurveLayout, 0);
         }
-        
-        infoGraphicsLayout.addComponent(epiCurveLayout, 0);
-        
         layout.addComponent(infoGraphicsLayout);
         layout.setExpandRatio(infoGraphicsLayout, 1);
         
@@ -271,7 +300,7 @@ public class DashboardView extends AbstractView {
 		String userUuid = LoginHelper.getCurrentUser().getUuid();
 		
 		// If the "use date filter for map" check box is not checked, use a list of all cases irrespective of the dates instead
-		if (useDateFilterForMap.getValue() == true) {
+		if (useDateFilterForMap == true) {
         	mapComponent.showFacilities(cases);
     	} else {
     		List<CaseDataDto> casesForMap = FacadeProvider.getCaseFacade().getAllCasesByDiseaseAfter(null, disease, userUuid);
@@ -495,8 +524,38 @@ public class DashboardView extends AbstractView {
 	
 	private void clearAndFillEpiCurveChart() {
 		StringBuilder hcjs = new StringBuilder();
+		String chartLoadFunction = "MutationObserver = window.MutationObserver;"
+				+ "var observer = new MutationObserver(function(mutations, observer) {"
+				+ "console.log(mutations, observer);"
+				+ "mutations.forEach(function(mutation) {"
+				+ "console.log(mutation.target);"
+				+ "});"
+//				+ "var mutatedObject = mutations.target;"
+//				+ "var parent = mutatedObject.parentElement;"
+//				+ "var width = parent.offsetWidth;"
+//				+ "var height = parent.offsetHeight;"
+//				+ "mutatedObject.style.width = width;"
+//				+ "mutatedObject.style.height = height;"
+				+ "});"
+				+ ""
+				+ "event.target.redraw();"
+				+ "var chartWrapper = document.getElementById(\"chartWrapper\");"
+				+ "console.log(event.target.offsetWidth);"
+				+ "console.log(event.target.offsetHeight);"
+				+ "console.log(chartWrapper.offsetWidth);"
+				+ "console.log(chartWrapper.offsetHeight);"
+				+ "observer.observe(chartWrapper, {"
+				+ "childList: false,"
+				+ "subtree: false,"
+				+ "attributes: true"
+				+ "});";
+//		String chartLoadFunction = "var infoGraphicsLayout = document.getElementById(\"infoGraphicsLayout\");"
+//				+ "var chartDiv = document.getElementsByClassName(\"highcharts-container\")[0];"
+//				+ "console.log(infoGraphicsLayout.clientWidth + \" \" + infoGraphicsLayout.clientHeight);"
+//				+ "chartDiv.style.width = chartWrapper.clientWidth;"
+//				+ "chartDiv.style.height = chartWrapper.clientHeight;";
 		hcjs.append("var options = {"
-				+ "chart: { type: 'column', backgroundColor: null },"
+				+ "chart: { type: 'column', backgroundColor: null, events: { addSeries: function(event) {" + chartLoadFunction + "} } },"
 				+ "credits: { enabled: false },"
 				+ "title: { text: '' },");
 		

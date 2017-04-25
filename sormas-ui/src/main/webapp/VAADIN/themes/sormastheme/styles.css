@@ -13363,3 +13363,7 @@ div.v-layout.v-horizontal.v-widget {
 .sormastheme .color-grey .v-icon {
 	color: #A8A8A8;
 }
+
+.sormastheme .vspace-no-filters {
+	margin-bottom: 16px;
+}

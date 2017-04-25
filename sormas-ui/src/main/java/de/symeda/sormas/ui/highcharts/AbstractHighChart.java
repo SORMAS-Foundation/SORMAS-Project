@@ -3,6 +3,8 @@ package de.symeda.sormas.ui.highcharts;
 import com.vaadin.ui.AbstractJavaScriptComponent;
 import com.vaadin.ui.JavaScript;
 
+// TODO add copyright
+
 /**
  * <p>Abstract Highcharts chart.</p>
  * <p>

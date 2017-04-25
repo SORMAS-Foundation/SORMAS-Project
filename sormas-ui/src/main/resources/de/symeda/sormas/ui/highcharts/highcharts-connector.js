@@ -9,7 +9,7 @@ window.de_symeda_sormas_ui_highcharts_AbstractHighChart = function () {
 
 		// evaluate highcharts JS which needs to define var "options"
 		eval(hcjs);
-
+		
 		// set chart context
 		if (typeof chartType === 'undefined' || chartType == 'HighChart') {
 			$('#' + domId).highcharts(options);
