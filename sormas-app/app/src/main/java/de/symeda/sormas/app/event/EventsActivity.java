@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.event;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -8,7 +9,9 @@ import android.view.MenuItem;
 
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.component.AbstractRootTabActivity;
+import de.symeda.sormas.app.component.UserReportDialog;
 
 public class EventsActivity extends AbstractRootTabActivity {
 
@@ -46,6 +49,14 @@ public class EventsActivity extends AbstractRootTabActivity {
         switch(item.getItemId()) {
             case R.id.action_reload:
                 SyncEventsTask.syncEvents(getSupportFragmentManager());
+                return true;
+
+            // Report problem button
+            case R.id.action_report:
+                UserReportDialog userReportDialog = new UserReportDialog(this, this.getClass().getSimpleName(), null);
+                AlertDialog dialog = userReportDialog.create();
+                dialog.show();
+
                 return true;
 
             case R.id.action_new_case:

@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.user;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.view.Menu;
@@ -8,8 +9,10 @@ import android.view.MenuItem;
 
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.AbstractRootTabActivity;
+import de.symeda.sormas.app.component.UserReportDialog;
 
 
 public class UserActivity extends AbstractRootTabActivity {
@@ -56,6 +59,14 @@ public class UserActivity extends AbstractRootTabActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+
+            // Report problem button
+            case R.id.action_report:
+                UserReportDialog userReportDialog = new UserReportDialog(this, this.getClass().getSimpleName(), null);
+                AlertDialog dialog = userReportDialog.create();
+                dialog.show();
+
+                return true;
 
             case R.id.action_save:
                 User user = userForm.getUser();

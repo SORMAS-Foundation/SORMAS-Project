@@ -9,6 +9,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 
+import com.google.android.gms.analytics.Tracker;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -20,15 +22,18 @@ import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.symptoms.TemperatureSource;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.component.FieldHelper;
 import de.symeda.sormas.app.component.PropertyField;
 import de.symeda.sormas.app.component.SymptomStateField;
 import de.symeda.sormas.app.databinding.CaseSymptomsFragmentLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
+import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.FormTab;
 import de.symeda.sormas.app.util.Item;
 import de.symeda.sormas.app.util.ValidationFailedException;
@@ -46,10 +51,16 @@ public class SymptomsEditForm extends FormTab {
     private List<SymptomStateField> nonConditionalSymptoms;
     private List<SymptomStateField> conditionalBleedingSymptoms;
 
+    private Tracker tracker;
+
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.case_symptoms_fragment_layout, container, false);
         View view = binding.getRoot();
+
+        SormasApplication application = (SormasApplication) getActivity().getApplication();
+        tracker = application.getDefaultTracker();
+
         //view.requestFocus();
         return view;
     }
@@ -57,11 +68,11 @@ public class SymptomsEditForm extends FormTab {
     @Override
     public void onResume() {
         super.onResume();
+        Symptoms symptoms = null;
 
         try {
             final Disease disease = (Disease) getArguments().getSerializable(Case.DISEASE);
 
-            Symptoms symptoms;
             // create a new visit from contact data
             if(getArguments().getBoolean(NEW_SYMPTOMS)) {
                 symptoms = DataUtils.createNew(Symptoms.class);
@@ -168,6 +179,8 @@ public class SymptomsEditForm extends FormTab {
             getView().requestFocus();
 
         } catch (Exception e) {
+            ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, true,
+                    " - Symptoms: " + symptoms!=null?symptoms.getUuid():"null", " - User: " + ConfigProvider.getUser().getUuid());
             e.printStackTrace();
         }
     }

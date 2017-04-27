@@ -8,12 +8,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.google.android.gms.analytics.Tracker;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.event.EventType;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventDao;
 import de.symeda.sormas.app.backend.location.Location;
@@ -22,6 +26,7 @@ import de.symeda.sormas.app.component.LocationDialog;
 import de.symeda.sormas.app.component.PropertyField;
 import de.symeda.sormas.app.databinding.EventDataFragmentLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
+import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.FormTab;
 import de.symeda.sormas.app.util.Consumer;
 
@@ -29,9 +34,15 @@ public class EventEditDataForm extends FormTab {
 
     private EventDataFragmentLayoutBinding binding;
 
+    private Tracker tracker;
+
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.event_data_fragment_layout, container, false);
+
+        SormasApplication application = (SormasApplication) getActivity().getApplication();
+        tracker = application.getDefaultTracker();
+
         return binding.getRoot();
     }
 
@@ -81,6 +92,8 @@ public class EventEditDataForm extends FormTab {
                     }
                 });
             } catch (Exception e) {
+                ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, true,
+                        " - Event: " + event.getUuid(), " - User: " + ConfigProvider.getUser().getUuid());
                 Toast.makeText(getContext(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 e.printStackTrace();
             }
@@ -89,6 +102,8 @@ public class EventEditDataForm extends FormTab {
             toggleTypeOfPlaceTextField();
 
         } catch (Exception e) {
+            ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, true,
+                    " - User: " + ConfigProvider.getUser().getUuid());
             Toast.makeText(getContext(), "Error while creating the event. " + e.getMessage(), Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }

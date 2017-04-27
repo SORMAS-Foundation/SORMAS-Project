@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.event;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -13,8 +14,10 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.component.UserReportDialog;
 import de.symeda.sormas.app.person.PersonEditForm;
 import de.symeda.sormas.app.util.Callback;
 
@@ -109,11 +112,21 @@ public class EventParticipantEditActivity extends AppCompatActivity {
 
                 return true;
 
+            // Report problem button
+            case R.id.action_report:
+                EventParticipant eventParticipant = (EventParticipant) eventParticipantTab.getData();
+
+                UserReportDialog userReportDialog = new UserReportDialog(this, this.getClass().getSimpleName(), eventParticipant.getUuid());
+                AlertDialog dialog = userReportDialog.create();
+                dialog.show();
+
+                return true;
+
             // Save button
             case R.id.action_save:
 
 
-                EventParticipant eventParticipant = (EventParticipant) eventParticipantTab.getData();
+                eventParticipant = (EventParticipant) eventParticipantTab.getData();
                 Person person = (Person) personEditForm.getData();
 
                 if(person!=null) {

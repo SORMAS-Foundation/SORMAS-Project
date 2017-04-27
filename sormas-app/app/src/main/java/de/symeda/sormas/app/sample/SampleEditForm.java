@@ -11,6 +11,8 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.Toast;
 
+import com.google.android.gms.analytics.Tracker;
+
 import java.util.Date;
 import java.util.List;
 
@@ -22,15 +24,18 @@ import de.symeda.sormas.api.sample.SampleTestType;
 import de.symeda.sormas.api.sample.ShipmentStatus;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.backend.sample.SampleDao;
 import de.symeda.sormas.app.backend.sample.SampleTest;
 import de.symeda.sormas.app.component.FieldHelper;
 import de.symeda.sormas.app.databinding.SampleDataFragmentLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
+import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.FormTab;
 import de.symeda.sormas.app.util.Item;
 
@@ -42,18 +47,24 @@ public class SampleEditForm extends FormTab {
 
     private SampleDataFragmentLayoutBinding binding;
 
+    private Tracker tracker;
+
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.sample_data_fragment_layout, container, false);
+
+        SormasApplication application = (SormasApplication) getActivity().getApplication();
+        tracker = application.getDefaultTracker();
+
         return binding.getRoot();
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        final String sampleUuid = getArguments().getString(SampleEditActivity.KEY_SAMPLE_UUID);
 
         try {
-            final String sampleUuid = getArguments().getString(SampleEditActivity.KEY_SAMPLE_UUID);
             final SampleDao sampleDao = DatabaseHelper.getSampleDao();
             Sample sample = null;
 
@@ -160,6 +171,8 @@ public class SampleEditForm extends FormTab {
             }
 
         } catch (Exception e) {
+            ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, true,
+                    "- Sample: " + sampleUuid, " - User: " + ConfigProvider.getUser().getUuid());
             Toast.makeText(getContext(), "Error while creating the sample. " + e.getMessage(), Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }

@@ -12,6 +12,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.google.android.gms.analytics.Tracker;
+
 import java.util.Date;
 import java.util.List;
 
@@ -19,6 +21,7 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -27,8 +30,10 @@ import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.SelectOrCreatePersonDialogBuilder;
+import de.symeda.sormas.app.component.UserReportDialog;
 import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.Consumer;
+import de.symeda.sormas.app.util.ErrorReportingHelper;
 
 
 /**
@@ -41,6 +46,8 @@ public class CaseNewActivity extends AppCompatActivity {
     public static final String DISEASE = "disease";
 
     private CaseNewForm caseNewForm;
+
+    private Tracker tracker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +67,7 @@ public class CaseNewActivity extends AppCompatActivity {
 
         Bundle params = getIntent().getExtras();
         Bundle arguments = new Bundle();
-        if (params.containsKey(CONTACT)) {
+        if (params != null && params.containsKey(CONTACT)) {
             Contact contact = DatabaseHelper.getContactDao().queryUuid((String) params.get(CONTACT));
             arguments.putSerializable(PERSON, contact.getPerson());
             arguments.putSerializable(DISEASE, contact.getCaze().getDisease());
@@ -68,7 +75,8 @@ public class CaseNewActivity extends AppCompatActivity {
         caseNewForm.setArguments(arguments);
         ft.add(R.id.fragment_frame, caseNewForm).commit();
 
-
+        SormasApplication application = (SormasApplication) getApplication();
+        tracker = application.getDefaultTracker();
     }
 
     @Override
@@ -94,6 +102,14 @@ public class CaseNewActivity extends AppCompatActivity {
             case android.R.id.home:
                 //Home/back button
                 NavUtils.navigateUpFromSameTask(this);
+                return true;
+
+            // Report problem button
+            case R.id.action_report:
+                UserReportDialog userReportDialog = new UserReportDialog(this, this.getClass().getSimpleName(), null);
+                android.app.AlertDialog dialog = userReportDialog.create();
+                dialog.show();
+
                 return true;
 
             case R.id.action_save:
@@ -125,7 +141,7 @@ public class CaseNewActivity extends AppCompatActivity {
                     if (validData) {
 
                         Bundle params = getIntent().getExtras();
-                        if (params.containsKey(CONTACT)) {
+                        if (params != null && params.containsKey(CONTACT)) {
                             savePersonAndCase(caze);
                         } else {
                             List<Person> existingPersons = DatabaseHelper.getPersonDao().getAllByName(caze.getPerson().getFirstName(), caze.getPerson().getLastName());
@@ -139,6 +155,8 @@ public class CaseNewActivity extends AppCompatActivity {
                                                 caze.setPerson((Person) parameter);
                                                 savePersonAndCase(caze);
                                             } catch (Exception e) {
+                                                ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, true,
+                                                        " - User: " + ConfigProvider.getUser().getUuid());
                                                 Toast.makeText(getApplicationContext(), "Error while saving the case. " + e.getMessage(), Toast.LENGTH_SHORT).show();
                                                 e.printStackTrace();
                                             }
@@ -159,6 +177,8 @@ public class CaseNewActivity extends AppCompatActivity {
 
                     return true;
                 } catch (Exception e) {
+                    ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, true,
+                            " - User: " + ConfigProvider.getUser().getUuid());
                     Toast.makeText(this, "Error while saving the case. " + e.getMessage(), Toast.LENGTH_SHORT).show();
                     e.printStackTrace();
                 }

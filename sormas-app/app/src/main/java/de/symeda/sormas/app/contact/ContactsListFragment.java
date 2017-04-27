@@ -11,26 +11,36 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 
+import com.google.android.gms.analytics.Tracker;
+
 import java.sql.SQLException;
 import java.util.List;
 
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.person.SyncPersonsTask;
 import de.symeda.sormas.app.util.Callback;
+import de.symeda.sormas.app.util.ErrorReportingHelper;
 
 public class ContactsListFragment extends ListFragment {
 
-    private String caseUuid;
     public static final String ARG_FILTER_STATUS = "filterStatus";
+
+    private String caseUuid;
+
+    private Tracker tracker;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.list_layout, container, false);
+        SormasApplication application = (SormasApplication) getActivity().getApplication();
+        tracker = application.getDefaultTracker();
         return view;
     }
 
@@ -91,6 +101,8 @@ public class ContactsListFragment extends ListFragment {
                 try {
                     contacts = DatabaseHelper.getContactDao().getByCase(caze);
                 } catch (SQLException e) {
+                    ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, true,
+                            " - Case: " + caze.getUuid(), " - User: " + ConfigProvider.getUser().getUuid());
                     e.printStackTrace();
                 }
                 ArrayAdapter<Contact> listAdapter = (ArrayAdapter<Contact>)getListAdapter();

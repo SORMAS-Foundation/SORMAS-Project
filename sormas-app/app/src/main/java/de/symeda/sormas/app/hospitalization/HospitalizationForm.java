@@ -7,11 +7,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.gms.analytics.Tracker;
+
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.app.backend.hospitalization.PreviousHospitalization;
 import de.symeda.sormas.app.component.LabelField;
@@ -20,6 +24,7 @@ import de.symeda.sormas.app.component.PropertyField;
 import de.symeda.sormas.app.databinding.CaseHospitalizationFragmentLayoutBinding;
 import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.DataUtils;
+import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.FormTab;
 
 public class HospitalizationForm extends FormTab {
@@ -28,20 +33,25 @@ public class HospitalizationForm extends FormTab {
 
     private CaseHospitalizationFragmentLayoutBinding binding;
 
+    private Tracker tracker;
+
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.case_hospitalization_fragment_layout, container, false);
         View view = binding.getRoot();
+
+        SormasApplication application = (SormasApplication) getActivity().getApplication();
+        tracker = application.getDefaultTracker();
+
         return view;
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        final String caseUuid = getArguments().getString(HospitalizationForm.KEY_CASE_UUID);
 
         try {
-
-            final String caseUuid = getArguments().getString(HospitalizationForm.KEY_CASE_UUID);
             final Case caze = DatabaseHelper.getCaseDao().queryUuid(caseUuid);
             if (caze.getHealthFacility() != null) {
                 ((LabelField) getView().findViewById(R.id.hospitalization_healthFacility)).setValue(caze.getHealthFacility().toString());
@@ -70,6 +80,8 @@ public class HospitalizationForm extends FormTab {
                                 try {
                                     prevHosp = DataUtils.createNew(PreviousHospitalization.class);
                                 } catch (Exception e) {
+                                    ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, true,
+                                            "- Case: " + caseUuid, " - User: " + ConfigProvider.getUser().getUuid());
                                     e.printStackTrace();
                                 }
                             }
@@ -125,6 +137,8 @@ public class HospitalizationForm extends FormTab {
             });
 
         } catch (Exception e) {
+            ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, true,
+                    "- Case: " + caseUuid, " - User: " + ConfigProvider.getUser().getUuid());
             e.printStackTrace();
         }
     }

@@ -14,7 +14,6 @@ public class HelpDialog  {
     private AlertDialog dialog;
     private String title;
 
-
     public HelpDialog(Context context) {
         builder = new AlertDialog.Builder(context);
         builder.setPositiveButton("Ok",

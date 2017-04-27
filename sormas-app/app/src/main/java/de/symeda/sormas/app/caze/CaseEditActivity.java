@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.caze;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
@@ -12,7 +13,11 @@ import android.view.MenuItem;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
+
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -29,6 +34,7 @@ import de.symeda.sormas.app.backend.symptoms.SymptomsDao;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.component.AbstractEditActivity;
 import de.symeda.sormas.app.component.HelpDialog;
+import de.symeda.sormas.app.component.UserReportDialog;
 import de.symeda.sormas.app.contact.ContactNewActivity;
 import de.symeda.sormas.app.sample.SampleEditActivity;
 import de.symeda.sormas.app.util.Callback;
@@ -41,6 +47,7 @@ public class CaseEditActivity extends AbstractEditActivity {
     public static final String KEY_CASE_UUID = "caseUuid";
     public static final String CASE_SUBTITLE = "caseSubtitle";
 
+    private Tracker tracker;
     private CaseEditPagerAdapter adapter;
     private String caseUuid;
     private String taskUuid;
@@ -190,6 +197,16 @@ public class CaseEditActivity extends AbstractEditActivity {
 
                 return true;
 
+            // Report problem button
+            case R.id.action_report:
+                Case caze = (Case) adapter.getData(CaseEditTabs.CASE_DATA.ordinal());
+
+                UserReportDialog userReportDialog = new UserReportDialog(this, this.getClass().getSimpleName() + ":" + tab.toString(), caze.getUuid());
+                AlertDialog dialog = userReportDialog.create();
+                dialog.show();
+
+                return true;
+
             // Save button
             case R.id.action_save:
                 CaseDao caseDao = DatabaseHelper.getCaseDao();
@@ -213,7 +230,7 @@ public class CaseEditActivity extends AbstractEditActivity {
                 EpiData epiData = (EpiData) adapter.getData(CaseEditTabs.EPIDATA.ordinal());
 
                 // CASE_DATA
-                Case caze = (Case) adapter.getData(CaseEditTabs.CASE_DATA.ordinal());
+                caze = (Case) adapter.getData(CaseEditTabs.CASE_DATA.ordinal());
 
                 boolean validData = true;
 

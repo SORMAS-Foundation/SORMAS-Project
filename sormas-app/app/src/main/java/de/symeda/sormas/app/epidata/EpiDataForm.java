@@ -7,6 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.gms.analytics.Tracker;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -16,9 +18,11 @@ import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.WaterSource;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.epidata.EpiData;
 import de.symeda.sormas.app.backend.epidata.EpiDataBurial;
 import de.symeda.sormas.app.backend.epidata.EpiDataGathering;
@@ -29,6 +33,7 @@ import de.symeda.sormas.app.component.PropertyField;
 import de.symeda.sormas.app.databinding.CaseEpidataFragmentLayoutBinding;
 import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.DataUtils;
+import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.FormTab;
 
 /**
@@ -41,10 +46,16 @@ public class EpiDataForm extends FormTab {
 
     private CaseEpidataFragmentLayoutBinding binding;
 
+    private Tracker tracker;
+
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.case_epidata_fragment_layout, container, false);
         View view = binding.getRoot();
+
+        SormasApplication application = (SormasApplication) getActivity().getApplication();
+        tracker = application.getDefaultTracker();
+
         return view;
     }
 
@@ -52,11 +63,10 @@ public class EpiDataForm extends FormTab {
     public void onResume() {
         super.onResume();
 
+        final Disease disease = (Disease) getArguments().getSerializable(Case.DISEASE);
+        final String epiDataUuid = getArguments().getString(EpiData.UUID);
+
         try {
-
-            final Disease disease = (Disease) getArguments().getSerializable(Case.DISEASE);
-
-            final String epiDataUuid = getArguments().getString(EpiData.UUID);
             if (epiDataUuid != null) {
                 final EpiData epiData = DatabaseHelper.getEpiDataDao().queryUuid(epiDataUuid);
                 DatabaseHelper.getEpiDataDao().initLazyData(epiData);
@@ -76,6 +86,8 @@ public class EpiDataForm extends FormTab {
                                 try {
                                     burial = DataUtils.createNew(EpiDataBurial.class);
                                 } catch (Exception e) {
+                                    ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, true,
+                                            "- EpiData: " + epiDataUuid, " - User: " + ConfigProvider.getUser().getUuid());
                                     e.printStackTrace();
                                 }
                             }
@@ -121,6 +133,8 @@ public class EpiDataForm extends FormTab {
                                 try {
                                     gathering = DataUtils.createNew(EpiDataGathering.class);
                                 } catch (Exception e) {
+                                    ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, true,
+                                            "- EpiData: " + epiDataUuid, " - User: " + ConfigProvider.getUser().getUuid());
                                     e.printStackTrace();
                                 }
                             }
@@ -166,6 +180,8 @@ public class EpiDataForm extends FormTab {
                                 try {
                                     travel = DataUtils.createNew(EpiDataTravel.class);
                                 } catch (Exception e) {
+                                    ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, true,
+                                            "- EpiData: " + epiDataUuid, " - User: " + ConfigProvider.getUser().getUuid());
                                     e.printStackTrace();
                                 }
                             }
@@ -276,6 +292,8 @@ public class EpiDataForm extends FormTab {
             showOrHideHeadlines();
 
         } catch(Exception e) {
+            ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, true,
+                    "- EpiData: " + epiDataUuid, " - User: " + ConfigProvider.getUser().getUuid());
             e.printStackTrace();;
         }
     }

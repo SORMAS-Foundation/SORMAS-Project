@@ -7,4 +7,12 @@
         android:title="@string/action_reload"
         app:showAsAction="always"/>
 
+    <group android:id="@+id/group_action_report">
+        <item
+            android:id="@+id/action_report"
+            android:icon="@drawable/ic_report_black_24dp"
+            android:title="@string/action_report"
+            app:showAsAction="always|withText"/>
+    </group>
+
 </menu>

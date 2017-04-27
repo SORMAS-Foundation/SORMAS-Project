@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.contact;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
@@ -9,9 +10,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.google.android.gms.analytics.Tracker;
+
 import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.SormasApplication;
+import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
@@ -19,11 +24,14 @@ import de.symeda.sormas.app.backend.contact.ContactDao;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.task.Task;
+import de.symeda.sormas.app.caze.CaseEditTabs;
 import de.symeda.sormas.app.component.AbstractEditActivity;
+import de.symeda.sormas.app.component.UserReportDialog;
 import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.task.TaskEditActivity;
 import de.symeda.sormas.app.task.TaskForm;
 import de.symeda.sormas.app.util.DataUtils;
+import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.visit.VisitEditActivity;
 import de.symeda.sormas.app.visit.VisitEditDataForm;
 
@@ -38,6 +46,8 @@ public class ContactEditActivity extends AbstractEditActivity {
     private String contactUuid;
     private String taskUuid;
 
+    private Tracker tracker;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,6 +60,9 @@ public class ContactEditActivity extends AbstractEditActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setTitle(getResources().getText(R.string.headline_contact) + " - " + ConfigProvider.getUser().getUserRole().toShortString());
         }
+
+        SormasApplication application = (SormasApplication) getApplication();
+        tracker = application.getDefaultTracker();
     }
 
     @Override
@@ -157,10 +170,20 @@ public class ContactEditActivity extends AbstractEditActivity {
                 // @TODO help for contact edit tabs
                 return true;
 
+            // Report problem button
+            case R.id.action_report:
+                Contact contact = (Contact) adapter.getData(ContactEditTabs.CONTACT_DATA.ordinal());
+
+                UserReportDialog userReportDialog = new UserReportDialog(this, this.getClass().getSimpleName() + ":" + tab.toString(), contact.getUuid());
+                AlertDialog dialog = userReportDialog.create();
+                dialog.show();
+
+                return true;
+
             // Save button
             case R.id.action_save:
                 ContactDao contactDao = DatabaseHelper.getContactDao();
-                Contact contact = (Contact) adapter.getData(ContactEditTabs.CONTACT_DATA.ordinal());
+                contact = (Contact) adapter.getData(ContactEditTabs.CONTACT_DATA.ordinal());
 
                 boolean validData = true;
 
@@ -193,6 +216,8 @@ public class ContactEditActivity extends AbstractEditActivity {
                             person.setAddress(DataUtils.createNew(Location.class));
                         }
                     } catch(Exception e ) {
+                        ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, true,
+                                " - Person: " + person.getUuid(), " - User: " + ConfigProvider.getUser().getUuid());
                         Toast.makeText(getApplicationContext(), "Couldn't create location. " + e.getMessage(), Toast.LENGTH_SHORT).show();
                         e.printStackTrace();
                     }

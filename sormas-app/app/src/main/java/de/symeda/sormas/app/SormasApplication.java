@@ -3,6 +3,10 @@ package de.symeda.sormas.app;
 import android.app.Application;
 import android.util.Log;
 
+import com.google.android.gms.analytics.ExceptionReporter;
+import com.google.android.gms.analytics.GoogleAnalytics;
+import com.google.android.gms.analytics.Tracker;
+
 import java.util.concurrent.ExecutionException;
 
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -20,6 +24,14 @@ import de.symeda.sormas.app.util.SyncInfrastructureTask;
  */
 public class SormasApplication extends Application {
 
+    private static final String PROPERTY_ID = "UA-98128295-1";
+
+    private Tracker tracker;
+
+    synchronized public Tracker getDefaultTracker() {
+        return tracker;
+    }
+
     @Override
     public void onCreate() {
         DatabaseHelper.init(this);
@@ -34,6 +46,19 @@ public class SormasApplication extends Application {
         });
 
         TaskNotificationService.startTaskNotificationAlarm(this);
+
+        // Initialize the tracker that is used to send information to Google Analytics
+        GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
+        tracker = analytics.newTracker(PROPERTY_ID);
+        tracker.enableExceptionReporting(true);
+
+        // Enable the forwarding of uncaught exceptions to Google Analytics
+        Thread.UncaughtExceptionHandler handler = new ExceptionReporter(
+                tracker,
+                Thread.getDefaultUncaughtExceptionHandler(),
+                getApplicationContext()
+        );
+        Thread.setDefaultUncaughtExceptionHandler(handler);
 
         super.onCreate();
     }

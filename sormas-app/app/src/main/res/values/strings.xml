@@ -37,6 +37,8 @@
     <string name="action_clearAll">Clear all</string>
     <string name="action_setEmptyToNo">Set cleared to No</string>
     <string name="action_createCaseFromContact">Create a new case for this contact</string>
+    <string name="action_send">Send</string>
+    <string name="action_report">Report Problem</string>
 
     <!-- field -->
     <string name="field_yes_no_yes">Yes</string>
@@ -105,6 +107,7 @@
     <string name="headline_burial">Burial</string>
     <string name="headline_gathering">Social event</string>
     <string name="headline_travel">Travel</string>
+    <string name="headline_user_report">Report a problem</string>
 
     <!-- forms -->
     <string name="form_p_first_name">First name</string>
@@ -212,5 +215,6 @@
     <string name="isolated">isolated</string>
 
     <string name="empty_list_hint">Add a new entry by pressing the "+" symbol in the top right.</string>
+    <string name="hint_user_report">Please briefly describe the problem you have experienced. Don\'t enter any personal or otherwise sensitive data!</string>
 
 </resources>

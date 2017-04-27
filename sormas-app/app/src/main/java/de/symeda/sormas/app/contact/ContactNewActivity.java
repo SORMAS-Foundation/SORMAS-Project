@@ -11,6 +11,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.google.android.gms.analytics.Tracker;
+
 import java.util.Date;
 import java.util.List;
 
@@ -18,6 +20,7 @@ import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
@@ -25,10 +28,12 @@ import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.caze.CaseEditActivity;
 import de.symeda.sormas.app.component.SelectOrCreatePersonDialogBuilder;
+import de.symeda.sormas.app.component.UserReportDialog;
 import de.symeda.sormas.app.person.SyncPersonsTask;
 import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.DataUtils;
+import de.symeda.sormas.app.util.ErrorReportingHelper;
 
 
 /**
@@ -37,9 +42,9 @@ import de.symeda.sormas.app.util.DataUtils;
 public class ContactNewActivity extends AppCompatActivity {
 
     private String caseUuid;
-
-
     private ContactNewForm contactNewForm;
+
+    private Tracker tracker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +65,9 @@ public class ContactNewActivity extends AppCompatActivity {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         contactNewForm = new ContactNewForm();
         ft.add(R.id.fragment_frame, contactNewForm).commit();
+
+        SormasApplication application = (SormasApplication) getApplication();
+        tracker = application.getDefaultTracker();
     }
 
     @Override
@@ -91,9 +99,18 @@ public class ContactNewActivity extends AppCompatActivity {
 
                 return true;
 
+            // Report problem button
+            case R.id.action_report:
+                UserReportDialog userReportDialog = new UserReportDialog(this, this.getClass().getSimpleName(), null);
+                android.app.AlertDialog dialog = userReportDialog.create();
+                dialog.show();
+
+                return true;
+
             case R.id.action_save:
+                final Contact contact = contactNewForm.getData();
+
                 try {
-                    final Contact contact = contactNewForm.getData();
                     contact.setContactClassification(ContactClassification.POSSIBLE);
                     contact.setFollowUpStatus(FollowUpStatus.FOLLOW_UP);
                     contact.setReportingUser(ConfigProvider.getUser());
@@ -133,6 +150,8 @@ public class ContactNewActivity extends AppCompatActivity {
                                             contact.setPerson((Person) parameter);
                                             savePersonAndContact(contact);
                                         } catch (Exception e) {
+                                            ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, true,
+                                                    " - Contact: " + contact.getUuid(), " - User: " + ConfigProvider.getUser().getUuid());
                                             Toast.makeText(getApplicationContext(), "Error while saving the contact. " + e.getMessage(), Toast.LENGTH_SHORT).show();
                                             e.printStackTrace();
                                         }
@@ -149,6 +168,8 @@ public class ContactNewActivity extends AppCompatActivity {
 
                     return true;
                 } catch (Exception e) {
+                    ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, true,
+                            " - Contact: " + contact.getUuid(), " - User: " + ConfigProvider.getUser().getUuid());
                     Toast.makeText(this, "Error while saving the contact. " + e.getMessage(), Toast.LENGTH_SHORT).show();
                     e.printStackTrace();
                 }
@@ -172,6 +193,8 @@ public class ContactNewActivity extends AppCompatActivity {
                 person.setAddress(DataUtils.createNew(Location.class));
             }
         } catch(Exception e ) {
+            ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, true,
+                    " - Person: " + person.getUuid(), " - User: " + ConfigProvider.getUser().getUuid());
             Toast.makeText(getApplicationContext(), "Couldn't create location. " + e.getMessage(), Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }

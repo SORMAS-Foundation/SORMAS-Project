@@ -10,12 +10,15 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
+import com.google.android.gms.analytics.Tracker;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
@@ -29,6 +32,7 @@ import de.symeda.sormas.app.component.FieldHelper;
 import de.symeda.sormas.app.component.SpinnerField;
 import de.symeda.sormas.app.databinding.CaseNewFragmentLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
+import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.FormTab;
 import de.symeda.sormas.app.util.Item;
 
@@ -39,10 +43,16 @@ public class CaseNewForm extends FormTab {
     private Disease disease;
     private CaseNewFragmentLayoutBinding binding;
 
+    private Tracker tracker;
+
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        SormasApplication application = (SormasApplication) getActivity().getApplication();
+        tracker = application.getDefaultTracker();
+
         Bundle arguments = this.getArguments();
         try {
+            // If this case is created from a contact, there's already a disease and person available
             if (arguments.containsKey(CaseNewActivity.DISEASE)) {
                 person = (Person) arguments.get(CaseNewActivity.PERSON);
                 disease = (Disease) arguments.get(CaseNewActivity.DISEASE);
@@ -51,6 +61,8 @@ public class CaseNewForm extends FormTab {
             }
             caze = DatabaseHelper.getCaseDao().createCase(person);
         } catch (Exception e) {
+            ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, true,
+                    " - User: " + ConfigProvider.getUser().getUuid());
             Toast.makeText(getContext(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }

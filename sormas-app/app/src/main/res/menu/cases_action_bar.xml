@@ -10,6 +10,14 @@
             app:showAsAction="always"/>
     </group>
 
+    <group android:id="@+id/group_action_report">
+        <item
+            android:id="@+id/action_report"
+            android:icon="@drawable/ic_report_black_24dp"
+            android:title="@string/action_report"
+            app:showAsAction="always|withText"/>
+    </group>
+
     <item
         android:id="@+id/action_new_case"
         android:icon="@drawable/ic_add_black_24dp"

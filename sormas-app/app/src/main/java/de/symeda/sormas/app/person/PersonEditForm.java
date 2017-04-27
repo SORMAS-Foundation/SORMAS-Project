@@ -10,6 +10,8 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Toast;
 
+import com.google.android.gms.analytics.Tracker;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -24,8 +26,10 @@ import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.person.Person;
@@ -40,6 +44,7 @@ import de.symeda.sormas.app.component.SpinnerField;
 import de.symeda.sormas.app.component.TextField;
 import de.symeda.sormas.app.databinding.PersonEditFragmentLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
+import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.FormTab;
 import de.symeda.sormas.app.util.Item;
 import de.symeda.sormas.app.util.Consumer;
@@ -52,9 +57,15 @@ public class PersonEditForm extends FormTab {
 
     PersonEditFragmentLayoutBinding binding;
 
+    private Tracker tracker;
+
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.person_edit_fragment_layout, container, false);
+
+        SormasApplication application = (SormasApplication) getActivity().getApplication();
+        tracker = application.getDefaultTracker();
+
         return binding.getRoot();
     }
 
@@ -146,6 +157,8 @@ public class PersonEditForm extends FormTab {
                 }
             });
         } catch (Exception e) {
+            ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, true,
+                    "- Person: " + personUuid, " - User: " + ConfigProvider.getUser().getUuid());
             Toast.makeText(getContext(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }

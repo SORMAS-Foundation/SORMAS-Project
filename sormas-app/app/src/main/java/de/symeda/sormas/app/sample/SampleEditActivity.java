@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.sample;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
@@ -18,8 +19,10 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.backend.sample.SampleDao;
+import de.symeda.sormas.app.component.UserReportDialog;
 import de.symeda.sormas.app.util.Callback;
 
 /**
@@ -119,9 +122,20 @@ public class SampleEditActivity extends AppCompatActivity {
             case android.R.id.home:
                 finish();
                 return true;
+
+            // Report problem button
+            case R.id.action_report:
+                Sample sample = (Sample) sampleTab.getData();
+
+                UserReportDialog userReportDialog = new UserReportDialog(this, this.getClass().getSimpleName(), sample.getUuid());
+                AlertDialog dialog = userReportDialog.create();
+                dialog.show();
+
+                return true;
+
             case R.id.action_save:
                 SampleDao sampleDao = DatabaseHelper.getSampleDao();
-                Sample sample = (Sample) sampleTab.getData();
+                sample = (Sample) sampleTab.getData();
                 CheckBox shipped = (CheckBox) findViewById(R.id.sample_shipmentStatus);
                 if (shipped.isEnabled()) {
                     if (shipped.isChecked()) {

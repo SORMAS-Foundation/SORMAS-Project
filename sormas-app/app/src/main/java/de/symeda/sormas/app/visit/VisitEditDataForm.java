@@ -8,12 +8,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.google.android.gms.analytics.Tracker;
+
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.visit.Visit;
 import de.symeda.sormas.app.databinding.VisitDataFragmentLayoutBinding;
+import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.FormTab;
 
 public class VisitEditDataForm extends FormTab {
@@ -23,11 +28,15 @@ public class VisitEditDataForm extends FormTab {
 
     private VisitDataFragmentLayoutBinding binding;
 
-
+    private Tracker tracker;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.visit_data_fragment_layout, container, false);
+
+        SormasApplication application = (SormasApplication) getActivity().getApplication();
+        tracker = application.getDefaultTracker();
+
         return binding.getRoot();
     }
 
@@ -53,6 +62,8 @@ public class VisitEditDataForm extends FormTab {
             binding.visitVisitDateTime.initialize(this);
             binding.visitVisitStatus.initialize(VisitStatus.class);
         } catch (Exception e) {
+            ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, true,
+                    " - User: " + ConfigProvider.getUser().getUuid());
             Toast.makeText(getContext(), "Error while creating the visit. " + e.getMessage(), Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }

@@ -8,8 +8,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.google.android.gms.analytics.Tracker;
+
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.epidata.EpiDataBurial;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.component.AbstractFormDialogFragment;
@@ -17,6 +21,7 @@ import de.symeda.sormas.app.component.LocationDialog;
 import de.symeda.sormas.app.databinding.EpidataBurialEditFragmentLayoutBinding;
 import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.DataUtils;
+import de.symeda.sormas.app.util.ErrorReportingHelper;
 
 /**
  * Created by Mate Strysewske on 09.03.2017.
@@ -26,10 +31,16 @@ public class EpiDataBurialForm extends AbstractFormDialogFragment<EpiDataBurial>
 
     private EpidataBurialEditFragmentLayoutBinding binding;
 
+    private Tracker tracker;
+
     @Override
     public View onCreateDialogView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.epidata_burial_edit_fragment_layout, container, false);
         View view = binding.getRoot();
+
+        SormasApplication application = (SormasApplication) getActivity().getApplication();
+        tracker = application.getDefaultTracker();
+
         return view;
     }
 
@@ -54,6 +65,8 @@ public class EpiDataBurialForm extends AbstractFormDialogFragment<EpiDataBurial>
                 }
             });
         } catch(Exception e) {
+            ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, true,
+                    " - User: " + ConfigProvider.getUser().getUuid());
             Toast.makeText(getContext(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }

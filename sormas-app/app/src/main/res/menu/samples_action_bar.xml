@@ -10,6 +10,14 @@
             app:showAsAction="always"/>
     </group>
 
+    <group android:id="@+id/group_action_report">
+        <item
+            android:id="@+id/action_report"
+            android:icon="@drawable/ic_report_black_24dp"
+            android:title="@string/action_report"
+            app:showAsAction="always|withText"/>
+    </group>
+
     <!-- Settings, should always be in the overflow
     <item android:id="@+id/action_user"
         android:title="@string/action_user"

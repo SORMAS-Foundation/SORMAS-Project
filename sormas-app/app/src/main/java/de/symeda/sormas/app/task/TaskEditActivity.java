@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.task;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
@@ -15,8 +16,10 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.task.TaskDao;
+import de.symeda.sormas.app.component.UserReportDialog;
 
 
 /**
@@ -107,8 +110,19 @@ public class TaskEditActivity extends AppCompatActivity {
                 }
 
                 return true;
-            case R.id.action_save:
+
+            // Report problem button
+            case R.id.action_report:
                 Task task = (Task) taskForm.getData();
+
+                UserReportDialog userReportDialog = new UserReportDialog(this, this.getClass().getSimpleName(), task.getUuid());
+                AlertDialog dialog = userReportDialog.create();
+                dialog.show();
+
+                return true;
+
+            case R.id.action_save:
+                task = (Task) taskForm.getData();
 
                 TaskDao taskDao = DatabaseHelper.getTaskDao();
                 taskDao.save(task);

@@ -11,23 +11,30 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.google.android.gms.analytics.Tracker;
+
 import java.util.List;
 
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.component.SelectOrCreatePersonDialogBuilder;
+import de.symeda.sormas.app.component.UserReportDialog;
 import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.Consumer;
+import de.symeda.sormas.app.util.ErrorReportingHelper;
 
 public class EventParticipantNewActivity extends AppCompatActivity {
 
     private String eventUuid;
 
     private EventParticipantNewPersonForm eventParticipantNewPersonForm;
+
+    private Tracker tracker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +59,8 @@ public class EventParticipantNewActivity extends AppCompatActivity {
         eventParticipantNewPersonForm.setArguments(params);
         ft.add(R.id.fragment_frame, eventParticipantNewPersonForm).commit();
 
+        SormasApplication application = (SormasApplication) getApplication();
+        tracker = application.getDefaultTracker();
     }
 
     @Override
@@ -80,10 +89,18 @@ public class EventParticipantNewActivity extends AppCompatActivity {
 
                 return true;
 
-            case R.id.action_save:
-                try {
-                    final EventParticipant eventParticipant = eventParticipantNewPersonForm.getData();
+            // Report problem button
+            case R.id.action_report:
+                UserReportDialog userReportDialog = new UserReportDialog(this, this.getClass().getSimpleName(), null);
+                android.app.AlertDialog dialog = userReportDialog.create();
+                dialog.show();
 
+                return true;
+
+            case R.id.action_save:
+                final EventParticipant eventParticipant = eventParticipantNewPersonForm.getData();
+
+                try {
                     boolean eventParticipantDescReq =  eventParticipant.getInvolvementDescription()==null||eventParticipant.getInvolvementDescription().isEmpty();
                     boolean eventParticipantFirstNameReq =  eventParticipant.getPerson().getFirstName()==null||eventParticipant.getPerson().getFirstName().isEmpty();
                     boolean eventParticipantLastNameReq =  eventParticipant.getPerson().getLastName()==null||eventParticipant.getPerson().getLastName().isEmpty();
@@ -128,6 +145,8 @@ public class EventParticipantNewActivity extends AppCompatActivity {
 
                     return true;
                 } catch (Exception e) {
+                    ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, true,
+                            " - EventParticipant: " + eventParticipant.getUuid(), " - User: " + ConfigProvider.getUser().getUuid());
                     Toast.makeText(this, "Error while saving the event person. " + e.getMessage(), Toast.LENGTH_SHORT).show();
                     e.printStackTrace();
                 }

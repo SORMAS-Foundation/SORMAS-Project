@@ -10,16 +10,21 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.google.android.gms.analytics.Tracker;
+
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.databinding.EventParticipantNewFragmentLayoutBinding;
 import de.symeda.sormas.app.databinding.PersonSelectOrCreateFragmentLayoutBinding;
 import de.symeda.sormas.app.person.PersonSelectVO;
+import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.Item;
 import de.symeda.sormas.app.util.Consumer;
 
@@ -32,6 +37,10 @@ public class SelectOrCreatePersonDialogBuilder extends AlertDialog.Builder {
 
     public SelectOrCreatePersonDialogBuilder(final FragmentActivity activity, final Person person, final List<Person> existingPersons, final Consumer positiveCallback ) {
         super(activity);
+
+        SormasApplication application = (SormasApplication) activity.getApplication();
+        final Tracker tracker = application.getDefaultTracker();
+
         this.positiveCallback = positiveCallback;
         this.person = person;
 
@@ -57,6 +66,8 @@ public class SelectOrCreatePersonDialogBuilder extends AlertDialog.Builder {
                     // search for existing person with this name
                     existingPersons = DatabaseHelper.getPersonDao().getAllByName(person.getFirstName(), person.getLastName());
                 } catch (SQLException e) {
+                    ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, true,
+                            " - User: " + ConfigProvider.getUser().getUuid());
                     Toast.makeText(getContext(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                     e.printStackTrace();
                 }

@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.task;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -7,7 +8,9 @@ import android.view.MenuItem;
 
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.component.AbstractRootTabActivity;
+import de.symeda.sormas.app.component.UserReportDialog;
 
 public class TasksActivity extends AbstractRootTabActivity {
 
@@ -47,6 +50,14 @@ public class TasksActivity extends AbstractRootTabActivity {
         switch(item.getItemId()) {
             case R.id.action_reload:
                 SyncTasksTask.syncTasks(getSupportFragmentManager(), this);
+                return true;
+
+            // Report problem button
+            case R.id.action_report:
+                UserReportDialog userReportDialog = new UserReportDialog(this, this.getClass().getSimpleName(), null);
+                AlertDialog dialog = userReportDialog.create();
+                dialog.show();
+
                 return true;
 
             default:

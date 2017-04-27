@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.event;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
@@ -14,9 +15,12 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.component.AbstractEditActivity;
+import de.symeda.sormas.app.component.UserReportDialog;
+import de.symeda.sormas.app.contact.ContactEditTabs;
 import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.task.TaskEditActivity;
 import de.symeda.sormas.app.task.TaskForm;
@@ -148,13 +152,23 @@ public class EventEditActivity extends AbstractEditActivity {
                 // @TODO help for contact edit tabs
                 return true;
 
+            // Report problem button
+            case R.id.action_report:
+                Event event = (Event) adapter.getData(EventEditTabs.EVENT_DATA.ordinal());
+
+                UserReportDialog userReportDialog = new UserReportDialog(this, this.getClass().getSimpleName() + ":" + tab.toString(), event.getUuid());
+                AlertDialog dialog = userReportDialog.create();
+                dialog.show();
+
+                return true;
+
             // Save button
             case R.id.action_save:
 
                 switch(tab) {
                     // contact data tab
                     case EVENT_DATA:
-                        Event event = (Event) adapter.getData(EventEditTabs.EVENT_DATA.ordinal());
+                        event = (Event) adapter.getData(EventEditTabs.EVENT_DATA.ordinal());
 
                         // check required fields
                         boolean eventTypeReq = event.getEventType()==null;

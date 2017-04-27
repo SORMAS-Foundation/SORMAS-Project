@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.visit;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
@@ -17,10 +18,12 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
+import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.visit.Visit;
 import de.symeda.sormas.app.caze.SymptomsEditForm;
 import de.symeda.sormas.app.component.AbstractEditActivity;
 import de.symeda.sormas.app.component.HelpDialog;
+import de.symeda.sormas.app.component.UserReportDialog;
 import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.ValidationFailedException;
 
@@ -118,9 +121,19 @@ public class VisitEditActivity extends AbstractEditActivity {
 
                 return true;
 
+            // Report problem button
+            case R.id.action_report:
+                Visit visit = (Visit) adapter.getData(VisitEditTabs.VISIT_DATA.ordinal());
+
+                UserReportDialog userReportDialog = new UserReportDialog(this, this.getClass().getSimpleName() + ":" + tab.toString(), visit.getUuid());
+                AlertDialog dialog = userReportDialog.create();
+                dialog.show();
+
+                return true;
+
             // Save button
             case R.id.action_save:
-                Visit visit = (Visit) adapter.getData(VisitEditTabs.VISIT_DATA.ordinal());
+                visit = (Visit) adapter.getData(VisitEditTabs.VISIT_DATA.ordinal());
                 Symptoms symptoms = (Symptoms)adapter.getData(VisitEditTabs.SYMPTOMS.ordinal());
 
                 SymptomsEditForm symptomsEditForm = (SymptomsEditForm) adapter.getTabByPosition(VisitEditTabs.SYMPTOMS.ordinal());

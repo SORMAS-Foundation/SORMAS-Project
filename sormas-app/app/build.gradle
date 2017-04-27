@@ -44,12 +44,15 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:23.3.0'
-    compile 'com.android.support:design:23.0.1'
+    compile 'com.android.support:design:23.3.0'
     compile 'com.squareup.retrofit2:retrofit:2.0.2'
     compile 'com.squareup.retrofit2:converter-gson:2.0.2'
     compile 'com.j256.ormlite:ormlite-core:4.48'
     compile 'com.j256.ormlite:ormlite-android:4.48'
     compile 'javax.persistence:persistence-api:1.0.2'
     compile 'de.symeda.sormas:sormas-api:0.0.1-SNAPSHOT'
-    compile 'com.google.android.gms:play-services-appindexing:8.4.0'
+    compile 'com.google.firebase:firebase-appindexing:10.0.1'
+    compile 'com.google.android.gms:play-services-analytics:10.0.1'
 }
+
+apply plugin: 'com.google.gms.google-services'
