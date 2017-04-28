@@ -865,6 +865,7 @@ INSERT INTO schema_version (version_number, comment) VALUES (12, 'Contact added 
 
 ALTER TABLE cases ADD COLUMN caseclassification character varying(255) DEFAULT 'POSSIBLE' NOT NULL;
 ALTER TABLE cases ADD COLUMN investigationstatus character varying(255) DEFAULT 'PENDING' NOT NULL;
+ALTER TABLE cases DROP COLUMN casestatus;
 
 INSERT INTO schema_version (version_number, comment) VALUES (13, 'Split CaseStatus to CaseClassification and InvestigationStatus');
 
