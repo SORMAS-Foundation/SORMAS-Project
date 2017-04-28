@@ -37,14 +37,10 @@ public abstract class AbstractTabActivity extends AppCompatActivity {
         tabs.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
             }
-
             @Override
             public void onPageScrollStateChanged(int state) {
-
             }
-
             @Override
             public void onPageSelected(int position) {
                 setCurrentTab(position);

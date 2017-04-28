@@ -126,22 +126,22 @@ public class ContactEditActivity extends AbstractEditActivity {
         switch (tab) {
             // contact data tab
             case CONTACT_DATA:
-                updateActionBarGroups(menu, false, false, true);
+                updateActionBarGroups(menu, false, true, false, true);
                 break;
 
             // person tab
             case PERSON:
-                updateActionBarGroups(menu, true, false, true);
+                updateActionBarGroups(menu, true, true, false, true);
                 break;
 
             // tasks tab
             case VISITS:
-                updateActionBarGroups(menu, false, true, false);
+                updateActionBarGroups(menu, false, true, true, false);
                 break;
 
             // tasks tab
             case TASKS:
-                updateActionBarGroups(menu, false, false, false);
+                updateActionBarGroups(menu, false, true, false, false);
                 break;
 
         }

@@ -47,7 +47,6 @@ public class CaseEditActivity extends AbstractEditActivity {
     public static final String KEY_CASE_UUID = "caseUuid";
     public static final String CASE_SUBTITLE = "caseSubtitle";
 
-    private Tracker tracker;
     private CaseEditPagerAdapter adapter;
     private String caseUuid;
     private String taskUuid;
@@ -99,7 +98,6 @@ public class CaseEditActivity extends AbstractEditActivity {
         pager.setCurrentItem(currentTab);
     }
 
-
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         Bundle params = getIntent().getExtras();
@@ -124,41 +122,40 @@ public class CaseEditActivity extends AbstractEditActivity {
         return true;
     }
 
-
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         CaseEditTabs tab = CaseEditTabs.values()[currentTab];
         switch (tab) {
             case CASE_DATA:
-                updateActionBarGroups(menu, false, false, true);
+                updateActionBarGroups(menu, false, true, false, true);
                 break;
 
             case PATIENT:
-                updateActionBarGroups(menu, false, false, true);
+                updateActionBarGroups(menu, false, true, false, true);
                 break;
 
             case SYMPTOMS:
-                updateActionBarGroups(menu, true, false, true);
+                updateActionBarGroups(menu, true, true, false, true);
                 break;
 
             case CONTACTS:
-                updateActionBarGroups(menu, false, true, false);
+                updateActionBarGroups(menu, false, true, true, false);
                 break;
 
             case TASKS:
-                updateActionBarGroups(menu, false, false, false);
+                updateActionBarGroups(menu, false, true, false, false);
                 break;
 
             case SAMPLES:
-                updateActionBarGroups(menu, false, true, false);
+                updateActionBarGroups(menu, false, true, true, false);
                 break;
 
             case HOSPITALIZATION:
-                updateActionBarGroups(menu, false, false, true);
+                updateActionBarGroups(menu, false, true, false, true);
                 break;
 
             case EPIDATA:
-                updateActionBarGroups(menu, false, false, true);
+                updateActionBarGroups(menu, false, true, false, true);
                 break;
         }
 
@@ -169,6 +166,7 @@ public class CaseEditActivity extends AbstractEditActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         setCurrentTab(pager.getCurrentItem());
         CaseEditTabs tab = CaseEditTabs.values()[currentTab];
+        Case caze = (Case) adapter.getData(CaseEditTabs.CASE_DATA.ordinal());
         switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button
             case android.R.id.home:
@@ -178,12 +176,10 @@ public class CaseEditActivity extends AbstractEditActivity {
                     NavUtils.navigateUpFromSameTask(this);
                 }
 
-                //Home/back button
                 return true;
 
             // Help button
             case R.id.action_help:
-                boolean showSaved = false;
                 HelpDialog helpDialog = new HelpDialog(this);
 
                 switch (tab) {
@@ -199,8 +195,6 @@ public class CaseEditActivity extends AbstractEditActivity {
 
             // Report problem button
             case R.id.action_report:
-                Case caze = (Case) adapter.getData(CaseEditTabs.CASE_DATA.ordinal());
-
                 UserReportDialog userReportDialog = new UserReportDialog(this, this.getClass().getSimpleName() + ":" + tab.toString(), caze.getUuid());
                 AlertDialog dialog = userReportDialog.create();
                 dialog.show();

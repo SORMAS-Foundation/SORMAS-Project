@@ -114,17 +114,17 @@ public class EventEditActivity extends AbstractEditActivity {
         switch(tab) {
             // contact data tab
             case EVENT_DATA:
-                updateActionBarGroups(menu, false, false, true);
+                updateActionBarGroups(menu, false, true, false, true);
                 break;
 
             // person tab
             case EVENT_PERSONS:
-                updateActionBarGroups(menu, false, true, false);
+                updateActionBarGroups(menu, false, true, true, false);
                 break;
 
             // tasks tab
             case EVENT_TASKS:
-                updateActionBarGroups(menu, false, false, false);
+                updateActionBarGroups(menu, false, true, false, false);
                 break;
         }
 
