@@ -7,10 +7,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.server.FontAwesome;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.MarginInfo;
-import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
@@ -19,22 +17,13 @@ import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.Table.Align;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.contact.ContactDto;
-import de.symeda.sormas.api.contact.FollowUpStatus;
-import de.symeda.sormas.api.event.EventDto;
-import de.symeda.sormas.api.event.EventType;
-import de.symeda.sormas.api.person.OccupationType;
-import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.highcharts.HighChart;
 import de.symeda.sormas.ui.login.LoginHelper;
@@ -76,7 +65,7 @@ public class DashboardView extends AbstractView {
 	public static final String CASE_MAP = "caseMap";
 	
 	private final MapComponent mapComponent;
-	private Table situationReportTable;
+	private SituationReportTable situationReportTable;
 	private CssLayout chartWrapper;
 	private HighChart epiCurveChart;
 
@@ -246,7 +235,8 @@ public class DashboardView extends AbstractView {
         	reportTableLabel.addStyleName(CssStyles.H3);
         	reportTableLayout.addComponent(reportTableLabel);
         
-        	createSituationReportTable();
+        	situationReportTable = new SituationReportTable();
+        	situationReportTable.clearAndFill(fromDate, toDate, disease, cases);
         	reportTableLayout.addComponent(situationReportTable);
         	reportTableLayout.setHeightUndefined();
         	reportTableLayout.setWidth(100, Unit.PERCENTAGE);
@@ -289,7 +279,7 @@ public class DashboardView extends AbstractView {
     	refreshMap();
 		
     	// Update situation report and epi curve data
-    	clearAndFillSituationReportTable();
+    	situationReportTable.clearAndFill(fromDate, toDate, disease, cases);
     	// Epi curve chart has to be created again due to a canvas resizing issue when simply refreshing the component
     	chartWrapper.removeComponent(epiCurveChart);
     	createEpiCurveChart();
@@ -306,211 +296,6 @@ public class DashboardView extends AbstractView {
     		List<CaseDataDto> casesForMap = FacadeProvider.getCaseFacade().getAllCasesByDiseaseAfter(null, disease, userUuid);
     		mapComponent.showFacilities(casesForMap);
     	}
-	}
-	
-	private void createSituationReportTable() {
-		situationReportTable = new Table();
-		situationReportTable.addStyleName(ValoTheme.TABLE_NO_HORIZONTAL_LINES);
-		situationReportTable.addStyleName(ValoTheme.TABLE_NO_VERTICAL_LINES);
-		situationReportTable.addContainerProperty(HEADING, Label.class, null);
-		situationReportTable.addContainerProperty(SUB_HEADING, Label.class, null);
-		situationReportTable.addContainerProperty(QUERY_PERIOD, HorizontalLayout.class, null);
-		situationReportTable.addContainerProperty(PREVIOUS_PERIOD, HorizontalLayout.class, null);
-		situationReportTable.setWidth(100, Unit.PERCENTAGE);
-		situationReportTable.setColumnAlignment(QUERY_PERIOD, Align.CENTER);
-		situationReportTable.setColumnAlignment(PREVIOUS_PERIOD, Align.CENTER);
-		
-		clearAndFillSituationReportTable();
-	}
-	
-	private void clearAndFillSituationReportTable() {
-		situationReportTable.removeAllItems();
-
-		// Update header captions; this has to be done every time the data is changed to update the amount of days
-		for (Object columnId : situationReportTable.getVisibleColumns()) {
-			situationReportTable.setColumnHeader(columnId, String.format(
-					I18nProperties.getPrefixFieldCaption(I18N_PREFIX, (String) columnId),
-					DateHelper.getDaysBetween(fromDate, toDate)));
-		}
-
-		// Fetch data for chosen time period and disease
-		String userUuid = LoginHelper.getCurrentUser().getUuid();
-		
-		// Cases
-		List<CaseDataDto> previousCases = FacadeProvider.getCaseFacade().getAllCasesBetween(
-				DateHelper.subtractDays(fromDate, DateHelper.getDaysBetween(fromDate, toDate)), 
-				DateHelper.subtractDays(toDate, DateHelper.getDaysBetween(fromDate, toDate)), disease, userUuid);
-						
-		List<CaseDataDto> confirmedCases = cases.stream()
-				.filter(c -> c.getCaseClassification() == CaseClassification.CONFIRMED)
-				.collect(Collectors.toList());
-		List<CaseDataDto> suspectedCases = cases.stream()
-				.filter(c -> c.getCaseClassification() == CaseClassification.SUSPECT)
-				.collect(Collectors.toList());
-		List<CaseDataDto> probableCases = cases.stream()
-				.filter(c -> c.getCaseClassification() == CaseClassification.PROBABLE)
-				.collect(Collectors.toList());
-		List<CaseDataDto> previousConfirmedCases = previousCases.stream()
-				.filter(c -> c.getCaseClassification() == CaseClassification.CONFIRMED)
-				.collect(Collectors.toList());
-		List<CaseDataDto> previousSuspectedCases = previousCases.stream()
-				.filter(c -> c.getCaseClassification() == CaseClassification.SUSPECT)
-				.collect(Collectors.toList());
-		List<CaseDataDto> previousProbableCases = previousCases.stream()
-				.filter(c -> c.getCaseClassification() == CaseClassification.PROBABLE)
-				.collect(Collectors.toList());
-		
-		int confirmedHcwsCount = (int) confirmedCases.stream()
-				.filter(c -> FacadeProvider.getPersonFacade().getPersonByUuid(c.getPerson().getUuid()).getOccupationType() == OccupationType.HEALTHCARE_WORKER)
-				.count();
-		int suspectedHcwsCount = (int) suspectedCases.stream()
-				.filter(c -> FacadeProvider.getPersonFacade().getPersonByUuid(c.getPerson().getUuid()).getOccupationType() == OccupationType.HEALTHCARE_WORKER)
-				.count();
-		int probableHcwsCount = (int) suspectedCases.stream()
-				.filter(c -> FacadeProvider.getPersonFacade().getPersonByUuid(c.getPerson().getUuid()).getOccupationType() == OccupationType.HEALTHCARE_WORKER)
-				.count();
-		int previousConfirmedHcwsCount = (int) previousConfirmedCases.stream()
-				.filter(c -> FacadeProvider.getPersonFacade().getPersonByUuid(c.getPerson().getUuid()).getOccupationType() == OccupationType.HEALTHCARE_WORKER)
-				.count();
-		int previousSuspectedHcwsCount = (int) previousSuspectedCases.stream()
-				.filter(c -> FacadeProvider.getPersonFacade().getPersonByUuid(c.getPerson().getUuid()).getOccupationType() == OccupationType.HEALTHCARE_WORKER)
-				.count();
-		int previousProbableHcwsCount = (int) previousProbableCases.stream()
-				.filter(c -> FacadeProvider.getPersonFacade().getPersonByUuid(c.getPerson().getUuid()).getOccupationType() == OccupationType.HEALTHCARE_WORKER)
-				.count();
-		
-		int totalCases = confirmedCases.size() + suspectedCases.size() + probableCases.size();
-		int previousTotalCases = previousConfirmedCases.size() + previousSuspectedCases.size() + previousProbableCases.size();
-		int totalHcwsCount = confirmedHcwsCount + suspectedHcwsCount + probableHcwsCount;
-		int previousTotalHcwsCount = previousConfirmedHcwsCount + previousSuspectedHcwsCount + previousProbableHcwsCount;
-		
-		// Deaths
-		List<PersonDto> deadPersons = FacadeProvider.getPersonFacade().getDeathsBetween(fromDate, toDate, disease, userUuid);
-		List<PersonDto> previousDeadPersons = FacadeProvider.getPersonFacade().getDeathsBetween(
-				DateHelper.subtractDays(fromDate, DateHelper.getDaysBetween(fromDate, toDate)), 
-				DateHelper.subtractDays(toDate, DateHelper.getDaysBetween(fromDate, toDate)), disease, userUuid);
-		int deadHcws = (int) deadPersons.stream()
-				.filter(p -> p.getOccupationType() == OccupationType.HEALTHCARE_WORKER)
-				.count();
-		int previousDeadHcws = (int) previousDeadPersons.stream()
-				.filter(p -> p.getOccupationType() == OccupationType.HEALTHCARE_WORKER)
-				.count();
-		
-		// Contacts
-		List<ContactDto> contacts = FacadeProvider.getContactFacade().getFollowUpBetween(fromDate, toDate, disease, userUuid);
-		List<ContactDto> previousContacts = FacadeProvider.getContactFacade().getFollowUpBetween(
-				DateHelper.subtractDays(fromDate, DateHelper.getDaysBetween(fromDate, toDate)), 
-				DateHelper.subtractDays(toDate, DateHelper.getDaysBetween(fromDate, toDate)), disease, userUuid);
-		int onLastDayOfPeriod = (int) contacts.stream()
-				.filter(c -> (c.getFollowUpUntil().after(toDate) || DateHelper.isSameDay(c.getFollowUpUntil(), toDate)) && 
-						(c.getLastContactDate().before(toDate) || DateHelper.isSameDay(c.getLastContactDate(), toDate)))
-				.count();
-		int lostToFollowUpCount = (int) contacts.stream()
-				.filter(c -> c.getFollowUpStatus() == FollowUpStatus.LOST)
-				.count();
-		int previousLostToFollowUpCount = (int) previousContacts.stream()
-				.filter(c -> c.getFollowUpStatus() == FollowUpStatus.LOST)
-				.count();
-		
-		// Events
-		List<EventDto> events = FacadeProvider.getEventFacade().getAllEventsBetween(fromDate, toDate, disease, userUuid);
-		List<EventDto> previousEvents = FacadeProvider.getEventFacade().getAllEventsBetween(
-				DateHelper.subtractDays(fromDate, DateHelper.getDaysBetween(fromDate, toDate)), 
-				DateHelper.subtractDays(toDate, DateHelper.getDaysBetween(fromDate, toDate)), disease, userUuid);
-		int outbreaksCount = (int) events.stream()
-				.filter(e -> e.getEventType() == EventType.OUTBREAK)
-				.count();
-		int previousOutbreaksCount = (int) previousEvents.stream()
-				.filter(e -> e.getEventType() == EventType.OUTBREAK)
-				.count();
-		int rumorsCount = (int) events.stream()
-				.filter(e -> e.getEventType() == EventType.RUMOR)
-				.count();
-		int previousRumorsCount = (int) previousEvents.stream()
-				.filter(e -> e.getEventType() == EventType.RUMOR)
-				.count();
-		
-		// Add data to the table
-		addRowToTable(new Label("<b>" + I18nProperties.getPrefixFieldCaption(I18N_PREFIX, CASES) + "</b>", ContentMode.HTML), 
-				new Label("<b>" + I18nProperties.getPrefixFieldCaption(I18N_PREFIX, CONFIRMED) + "</b>", ContentMode.HTML), 
-				confirmedCases.size(), previousConfirmedCases.size(), 0, false);
-		addRowToTable(null, createHcwLabel(), confirmedHcwsCount, previousConfirmedHcwsCount, 1, true);
-		addRowToTable(null, new Label("<b>" + I18nProperties.getPrefixFieldCaption(I18N_PREFIX, PROBABLE) + "</b>", ContentMode.HTML), 
-				probableCases.size(), previousProbableCases.size(), 4, false);
-		addRowToTable(null, createHcwLabel(), probableHcwsCount, previousProbableHcwsCount, 5, true);
-		addRowToTable(null, new Label("<b>" + I18nProperties.getPrefixFieldCaption(I18N_PREFIX, SUSPECT) + "</b>", ContentMode.HTML), 
-				suspectedCases.size(), previousSuspectedCases.size(), 2, false);
-		addRowToTable(null, createHcwLabel(), suspectedHcwsCount, previousSuspectedHcwsCount, 3, true);
-		addRowToTable(null, new Label("<b>" + I18nProperties.getPrefixFieldCaption(I18N_PREFIX, TOTAL) + "</b>", ContentMode.HTML), 
-				totalCases, previousTotalCases, 6, false);
-		addRowToTable(null, createHcwLabel(), totalHcwsCount, previousTotalHcwsCount, 7, true);
-		addRowToTable(new Label("<b>" + I18nProperties.getPrefixFieldCaption(I18N_PREFIX, DEATHS) + "</b>", ContentMode.HTML), 
-				new Label(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, HCWS)), deadHcws, previousDeadHcws, 8, false);
-		addRowToTable(null, new Label(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, TOTAL)), deadPersons.size(), previousDeadPersons.size(), 9, false);
-		addRowToTable(new Label("<b>" + I18nProperties.getPrefixFieldCaption(I18N_PREFIX, CONTACTS) + "</b>", ContentMode.HTML), 
-				new Label(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, UNDER_FOLLOW_UP)), contacts.size(), previousContacts.size(), 10, false);
-		Label dayLabel = new Label("<i>" + I18nProperties.getPrefixFieldCaption(I18N_PREFIX, ON) + " " + 
-				DateHelper.formatShortDate(toDate) + "</i>", ContentMode.HTML);
-		addRowToTable(null, dayLabel, onLastDayOfPeriod, null, 11, false);
-		addRowToTable(null, new Label(I18nProperties.getEnumCaption(FollowUpStatus.LOST)), lostToFollowUpCount, previousLostToFollowUpCount, 12, false);
-		addRowToTable(new Label("<b>" + I18nProperties.getPrefixFieldCaption(I18N_PREFIX, ALERTS) + "</b>", ContentMode.HTML), 
-				new Label(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, OUTBREAKS)), outbreaksCount, previousOutbreaksCount, 13, false);
-		addRowToTable(null, new Label(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, RUMORS)), rumorsCount, previousRumorsCount, 14, false);	
-	}
-	
-	/**
-	 * Add a row consisting of four columns to the situation report table
-	 * 
-	 * @param heading The heading, only used for the first row of a section (cases, deaths, contacts, alerts)
-	 * @param subHeading The sub-heading that categorizes the data (e.g. confirmed, probable, suspect and total for cases)
-	 * @param queryPeriod The amount of data entries of this row for the chosen time period
-	 * @param previousPeriod The amount of data entries of this row for the period before the chosen time period
-	 * @param position The position in the table
-	 * @param smallRow Whether the fonts in this row should be displayed in a small size
-	 */
-	private void addRowToTable(Label heading, Label subHeading, Integer queryPeriod, Integer previousPeriod, int position, boolean smallRow) {
-		// This layout is used to center the contents of the column
-		HorizontalLayout queryPeriodLayout = new HorizontalLayout();
-		Label queryPeriodLabel = new Label(String.valueOf(queryPeriod));
-		queryPeriodLayout.addComponent(queryPeriodLabel);
-		
-		// Create the layout for the rightmost column that displays a number and a FontAwesome arrow
-		HorizontalLayout previousPeriodLayout = new HorizontalLayout();
-		previousPeriodLayout.setSpacing(true);
-		if (previousPeriod != null) {
-			Label number = new Label(String.valueOf(previousPeriod));
-			Label arrow;
-			if (previousPeriod > queryPeriod) {
-				arrow = new Label(FontAwesome.ARROW_DOWN.getHtml(), ContentMode.HTML);
-				arrow.addStyleName(CssStyles.COLOR_GREEN);
-			} else if (previousPeriod < queryPeriod) {
-				arrow = new Label(FontAwesome.ARROW_UP.getHtml(), ContentMode.HTML);
-				arrow.addStyleName(CssStyles.COLOR_RED);
-			} else {
-				arrow = new Label(FontAwesome.ARROW_RIGHT.getHtml(), ContentMode.HTML);
-				arrow.addStyleName(CssStyles.COLOR_GREY);
-			}
-			previousPeriodLayout.addComponent(number);
-			previousPeriodLayout.addComponent(arrow);
-		}
-		
-		// Disply the contents of the row in a small font size when the respective attribute is set
-		if (smallRow) {
-			previousPeriodLayout.addStyleName(CssStyles.FONT_SIZE_SMALL);
-			queryPeriodLabel.addStyleName(CssStyles.FONT_SIZE_SMALL);
-		}
-		
-		situationReportTable.addItem(new Object[]{heading, subHeading, queryPeriodLayout, previousPeriodLayout}, position);
-	}
-	
-	/**
-	 * Creates a "Healthcare worker" label with small font size and italic text
-	 * @return
-	 */
-	private Label createHcwLabel() {
-		Label hcwLabel = new Label("<i>" + I18nProperties.getPrefixFieldCaption(I18N_PREFIX, HCWS) + "</i>", ContentMode.HTML);
-		hcwLabel.addStyleName(CssStyles.FONT_SIZE_SMALL);
-		return hcwLabel;
 	}
 	
 	/**
