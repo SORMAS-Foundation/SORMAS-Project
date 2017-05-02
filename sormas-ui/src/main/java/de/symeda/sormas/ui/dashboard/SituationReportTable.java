@@ -51,6 +51,7 @@ public class SituationReportTable extends Table {
 					DateHelper.getDaysBetween(fromDate, toDate)));
 		}
 
+		this.setColumnExpandRatio(this.getVisibleColumns()[1], 1);
 		// Fetch data for chosen time period and disease
 		String userUuid = LoginHelper.getCurrentUser().getUuid();
 
