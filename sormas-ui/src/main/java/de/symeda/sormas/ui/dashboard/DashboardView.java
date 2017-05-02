@@ -7,9 +7,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.FontAwesome;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.CssLayout;
@@ -18,6 +22,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
@@ -63,6 +68,8 @@ public class DashboardView extends AbstractView {
 	public static final String EPI_CURVE = "epiCurve";
 	public static final String SITUATION_REPORT = "situationReport";
 	public static final String CASE_MAP = "caseMap";
+	public static final String EXPAND = "expand";
+	public static final String COLLAPSE = "collapse";
 	
 	private final MapComponent mapComponent;
 	private SituationReportTable situationReportTable;
@@ -93,7 +100,7 @@ public class DashboardView extends AbstractView {
         
         dashboardLayout.addComponent(createTopBar());
         dashboardLayout.addComponent(createFilterBar());
-		VerticalLayout contentLayout = createContents();
+		HorizontalLayout contentLayout = createContents();
         dashboardLayout.addComponent(contentLayout);
         dashboardLayout.setExpandRatio(contentLayout, 1);
         
@@ -128,6 +135,7 @@ public class DashboardView extends AbstractView {
 		dateFromFilter.setDateFormat(DateHelper.getShortDateFormat().toLocalizedPattern());
         dateFromFilter.setWidth(200, Unit.PIXELS);
         dateFromFilter.setValue(DateHelper.subtractDays(c.getTime(), 28));
+        dateFromFilter.setCaption(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, FROM));
         dateFromFilter.setDateFormat(DateHelper.getShortDateFormat().toPattern());
         dateFromFilter.addValueChangeListener(e -> {
         	fromDate = dateFromFilter.getValue();
@@ -140,6 +148,7 @@ public class DashboardView extends AbstractView {
 		dateToFilter.setDateFormat(DateHelper.getShortDateFormat().toLocalizedPattern());
         dateToFilter.setWidth(200, Unit.PIXELS);
         dateToFilter.setValue(c.getTime());
+        dateToFilter.setCaption(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, TO));
         dateToFilter.setDateFormat(DateHelper.getShortDateFormat().toPattern());
         dateToFilter.addValueChangeListener(e -> {
         	toDate = dateToFilter.getValue();
@@ -148,14 +157,6 @@ public class DashboardView extends AbstractView {
         filterLayout.addComponent(dateToFilter);
         toDate = dateToFilter.getValue();
         
-        CheckBox dateFilterForMap = new CheckBox();
-        dateFilterForMap.setCaption(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, DATE_FILTER_FOR_MAP));
-        dateFilterForMap.addValueChangeListener(e -> {
-        	useDateFilterForMap = dateFilterForMap.getValue();
-        	refreshMap();
-        });
-        filterLayout.addComponent(dateFilterForMap);
-
 		ComboBox diseaseFilter = new ComboBox();
         diseaseFilter.setWidth(200, Unit.PIXELS);
         diseaseFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, DISEASE));
@@ -164,88 +165,120 @@ public class DashboardView extends AbstractView {
         	disease = (Disease) diseaseFilter.getValue();
         	refreshDashboard();
         });
+        diseaseFilter.setCaption(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, DISEASE));
         filterLayout.addComponent(diseaseFilter);
         disease = (Disease) diseaseFilter.getValue();
         
         return filterLayout;
 	}
 	
-	private VerticalLayout createContents() {
-		VerticalLayout layout = new VerticalLayout();
+	private HorizontalLayout createContents() {
+		HorizontalLayout layout = new HorizontalLayout();
+		layout.setWidth(100, Unit.PERCENTAGE);
+		layout.setSpacing(true);
+		layout.setMargin(new MarginInfo(false, false, true, false));
 		
+		// Initialize layouts (needs to be done here for the button listener below
+    	VerticalLayout mapLayout = new VerticalLayout();
+    	mapLayout.setWidth(100, Unit.PERCENTAGE);
+    	VerticalLayout rightSideLayout = new VerticalLayout();
+    	rightSideLayout.setHeightUndefined();
+    	rightSideLayout.setWidth(100, Unit.PERCENTAGE);
+    	
 		// Map header
 		HorizontalLayout mapHeaderLayout = new HorizontalLayout();
 		mapHeaderLayout.setWidth(100, Unit.PERCENTAGE);
 		{
 	        Label caseMapLabel = new Label(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, CASE_MAP));
 	        caseMapLabel.setSizeUndefined();
-	        CssStyles.style(caseMapLabel, CssStyles.H3, CssStyles.NO_MARGIN);
+	        CssStyles.style(caseMapLabel, CssStyles.H3);
 			mapHeaderLayout.addComponent(caseMapLabel);
-	
-			HorizontalLayout keyLayout = new HorizontalLayout();
-	        keyLayout.setSpacing(true);
+			
+	    	Button expandMap = new Button(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, EXPAND), FontAwesome.EXPAND);
+	        expandMap.setStyleName(ValoTheme.BUTTON_LINK);
+	        expandMap.addStyleName(CssStyles.NO_MARGIN);	       
+	        Button collapseMap = new Button(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, COLLAPSE), FontAwesome.COMPRESS);
+	        collapseMap.setStyleName(ValoTheme.BUTTON_LINK);
+	        collapseMap.addStyleName(CssStyles.NO_MARGIN);
 	        
-	        Image iconGrey = new Image(null, new ThemeResource("mapicons/grey-dot-small.png"));
-	        Image iconYellow = new Image(null, new ThemeResource("mapicons/yellow-dot-small.png"));
-	        Image iconOrange = new Image(null, new ThemeResource("mapicons/orange-dot-small.png"));
-	        Image iconRed = new Image(null, new ThemeResource("mapicons/red-dot-small.png"));
-	        iconGrey.setWidth(16.5f, Unit.PIXELS);
-	        iconGrey.setHeight(22.5f, Unit.PIXELS);
-	        iconYellow.setWidth(16.5f, Unit.PIXELS);
-	        iconYellow.setHeight(22.5f, Unit.PIXELS);
-	        iconOrange.setWidth(16.5f, Unit.PIXELS);
-	        iconOrange.setHeight(22.5f, Unit.PIXELS);
-	        iconRed.setWidth(16.5f, Unit.PIXELS);
-	        iconRed.setHeight(22.5f, Unit.PIXELS);
+	        expandMap.addClickListener(new ClickListener() {
+				@Override
+				public void buttonClick(ClickEvent event) {
+					layout.removeComponent(rightSideLayout);
+					mapComponent.setHeight(1200, Unit.PIXELS);
+					mapHeaderLayout.removeComponent(expandMap);
+					mapHeaderLayout.addComponent(collapseMap);
+					mapHeaderLayout.setComponentAlignment(collapseMap, Alignment.MIDDLE_RIGHT);
+					mapHeaderLayout.setExpandRatio(collapseMap, 1);
+				}
+	        });
+	        collapseMap.addClickListener(new ClickListener() {
+				@Override
+				public void buttonClick(ClickEvent event) {
+					layout.addComponent(rightSideLayout);
+					mapComponent.setHeight(700, Unit.PIXELS);
+					mapHeaderLayout.removeComponent(collapseMap);
+					mapHeaderLayout.addComponent(expandMap);
+					mapHeaderLayout.setComponentAlignment(expandMap, Alignment.MIDDLE_RIGHT);
+					mapHeaderLayout.setExpandRatio(expandMap, 1);
+				}
+	        });
 	        
-	        keyLayout.addComponent(iconGrey);
-	        keyLayout.addComponent(new Label(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, NOT_YET_CLASSIFIED)));
-	        keyLayout.addComponent(iconYellow);
-	        keyLayout.addComponent(new Label(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, SUSPECT)));
-	        keyLayout.addComponent(iconOrange);
-	        keyLayout.addComponent(new Label(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, PROBABLE)));
-	        keyLayout.addComponent(iconRed);
-	        keyLayout.addComponent(new Label(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, CONFIRMED)));
-	        
-	        mapHeaderLayout.addComponent(keyLayout);
-	        mapHeaderLayout.setComponentAlignment(keyLayout, Alignment.MIDDLE_RIGHT);
-	        mapHeaderLayout.setExpandRatio(keyLayout, 1);
+	        mapHeaderLayout.addComponent(expandMap);
+	        mapHeaderLayout.setComponentAlignment(expandMap, Alignment.MIDDLE_RIGHT);
+	        mapHeaderLayout.setExpandRatio(expandMap, 1);
 		}
-		layout.addComponent(mapHeaderLayout);
+		mapLayout.addComponent(mapHeaderLayout);
+		
+		CheckBox dateFilterForMap = new CheckBox();
+        dateFilterForMap.setCaption(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, DATE_FILTER_FOR_MAP));
+        dateFilterForMap.addValueChangeListener(e -> {
+        	useDateFilterForMap = dateFilterForMap.getValue();
+        	refreshMap();
+        });
+        mapLayout.addComponent(dateFilterForMap);
         
-		// Map
-	    mapComponent.setHeight(700, Unit.PIXELS);
+		// Map and map key
+		mapComponent.setHeight(700, Unit.PIXELS);
 	    mapComponent.setWidth(100, Unit.PERCENTAGE);
 	    mapComponent.addStyleName(CssStyles.VSPACE3);
 	    mapComponent.addStyleName(CssStyles.VSPACETOP3);
-        layout.addComponent(mapComponent);
-        layout.setExpandRatio(mapComponent, 1);
+        mapLayout.addComponent(mapComponent);
+        mapLayout.setExpandRatio(mapComponent, 1);
         
-        // Info graphics
-        HorizontalLayout infoGraphicsLayout = new HorizontalLayout();
-        infoGraphicsLayout.setId("infoGraphicsLayout");
-        infoGraphicsLayout.setWidth(100, Unit.PERCENTAGE);
-        infoGraphicsLayout.setHeightUndefined();
-        infoGraphicsLayout.setSpacing(true);
-        infoGraphicsLayout.setMargin(new MarginInfo(false, false, true, false));
+        HorizontalLayout keyLayout = new HorizontalLayout();
+        keyLayout.setSpacing(true);
+        
+        Image iconGrey = new Image(null, new ThemeResource("mapicons/grey-dot-small.png"));
+        Image iconYellow = new Image(null, new ThemeResource("mapicons/yellow-dot-small.png"));
+        Image iconOrange = new Image(null, new ThemeResource("mapicons/orange-dot-small.png"));
+        Image iconRed = new Image(null, new ThemeResource("mapicons/red-dot-small.png"));
+        iconGrey.setWidth(16.5f, Unit.PIXELS);
+        iconGrey.setHeight(22.5f, Unit.PIXELS);
+        iconYellow.setWidth(16.5f, Unit.PIXELS);
+        iconYellow.setHeight(22.5f, Unit.PIXELS);
+        iconOrange.setWidth(16.5f, Unit.PIXELS);
+        iconOrange.setHeight(22.5f, Unit.PIXELS);
+        iconRed.setWidth(16.5f, Unit.PIXELS);
+        iconRed.setHeight(22.5f, Unit.PIXELS);
+        
+        keyLayout.addComponent(iconGrey);
+        keyLayout.addComponent(new Label(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, NOT_YET_CLASSIFIED)));
+        keyLayout.addComponent(iconYellow);
+        keyLayout.addComponent(new Label(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, SUSPECT)));
+        keyLayout.addComponent(iconOrange);
+        keyLayout.addComponent(new Label(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, PROBABLE)));
+        keyLayout.addComponent(iconRed);
+        keyLayout.addComponent(new Label(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, CONFIRMED)));
+        mapLayout.addComponent(keyLayout);
+     
+        layout.addComponent(mapLayout);
+		
+        // Epi curve
+        VerticalLayout epiCurveLayout = new VerticalLayout();
         {
-        	VerticalLayout reportTableLayout = new VerticalLayout();
-
-        	Label reportTableLabel = new Label(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, SITUATION_REPORT));
-        	reportTableLabel.addStyleName(CssStyles.H3);
-        	reportTableLayout.addComponent(reportTableLabel);
-        
-        	situationReportTable = new SituationReportTable();
-        	situationReportTable.clearAndFill(fromDate, toDate, disease, cases);
-        	reportTableLayout.addComponent(situationReportTable);
-        	reportTableLayout.setHeightUndefined();
-        	reportTableLayout.setWidth(100, Unit.PERCENTAGE);
-            infoGraphicsLayout.addComponent(reportTableLayout);
-            
-            VerticalLayout epiCurveLayout = new VerticalLayout();
             epiCurveLayout.setId("epiCurveLayout");
             epiCurveLayout.setWidth(100, Unit.PERCENTAGE);
-        	epiCurveLayout.setHeight(100, Unit.PERCENTAGE);
 	        
 	        Label epiCurveLabel = new Label(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, EPI_CURVE));
 	        epiCurveLabel.addStyleName(CssStyles.H3);
@@ -255,17 +288,26 @@ public class DashboardView extends AbstractView {
 	        chartWrapper.setId("chartWrapper");
 	        {
 		        createEpiCurveChart();
-		        chartWrapper.setHeight(100, Unit.PERCENTAGE);
 		        chartWrapper.setWidth(100, Unit.PERCENTAGE);
 		        chartWrapper.addComponent(epiCurveChart);
 		        epiCurveLayout.addComponent(chartWrapper);
-		        epiCurveLayout.setExpandRatio(chartWrapper, 1);
 	        }
 	        
-	        infoGraphicsLayout.addComponent(epiCurveLayout, 0);
         }
-        layout.addComponent(infoGraphicsLayout);
-        layout.setExpandRatio(infoGraphicsLayout, 1);
+        rightSideLayout.addComponent(epiCurveLayout);
+        
+        // Situation report summary
+        VerticalLayout situationReportLayout = new VerticalLayout();
+        {
+	        Label reportTableLabel = new Label(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, SITUATION_REPORT));
+	    	reportTableLabel.addStyleName(CssStyles.H3);
+	    	situationReportLayout.addComponent(reportTableLabel);
+	    	situationReportTable = new SituationReportTable();
+	    	situationReportTable.clearAndFill(fromDate, toDate, disease, cases);
+	    	situationReportLayout.addComponent(situationReportTable);
+        }
+        rightSideLayout.addComponent(situationReportLayout);
+        layout.addComponent(rightSideLayout);
         
         return layout;
 	}
