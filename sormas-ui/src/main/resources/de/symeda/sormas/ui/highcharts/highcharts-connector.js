@@ -1,6 +1,9 @@
-window.de_symeda_sormas_ui_highcharts_AbstractHighChart = function () {
+window.de_symeda_sormas_ui_highcharts_HighChart = function () {
 
 	this.onStateChange = function () {
+
+		// make sure to manually reload this after making changes, because it is being cached  
+
 		// read state
 		var domId = this.getState().domId;
 		var hcjs = this.getState().hcjs;
@@ -11,11 +14,12 @@ window.de_symeda_sormas_ui_highcharts_AbstractHighChart = function () {
 		eval(hcjs);
 		
 		// set chart context
-		if (typeof chartType === 'undefined' || chartType == 'HighChart') {
-			$('#' + domId).highcharts(options);
-		} else {
-			$('#' + domId).highcharts(chartType, options);
-		}
+		var chart = Highcharts.chart(domId, options);
+		chart.setSize(this.getElement().offsetWidth, this.getElement().offsetHeight, { duration: 0 });
+		
+		// resize the diagram whenever the vaadin element is resized
+		this.addResizeListener(this.getElement(), function(o,b) {
+			chart.setSize(o.element.offsetWidth, o.element.offsetHeight, { duration: 0 });
+		});
 	};
-	
-};
+}

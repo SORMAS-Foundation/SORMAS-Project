@@ -16,7 +16,6 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
@@ -71,9 +70,10 @@ public class DashboardView extends AbstractView {
 	public static final String EXPAND = "expand";
 	public static final String COLLAPSE = "collapse";
 	
-	private final MapComponent mapComponent;
+	private VerticalLayout mapLayout;
+	private MapComponent mapComponent;
+	
 	private SituationReportTable situationReportTable;
-	private CssLayout chartWrapper;
 	private HighChart epiCurveChart;
 
 	private List<CaseDataDto> cases = new ArrayList<>();
@@ -89,8 +89,6 @@ public class DashboardView extends AbstractView {
 
         // Initialize case list with the pre-selected data
 		cases = FacadeProvider.getCaseFacade().getAllCasesBetween(fromDate, toDate, disease, LoginHelper.getCurrentUser().getUuid());
-		
-		mapComponent = new MapComponent();
 		
 		VerticalLayout dashboardLayout = new VerticalLayout();
         dashboardLayout.setSpacing(false);
@@ -173,30 +171,109 @@ public class DashboardView extends AbstractView {
 	}
 	
 	private HorizontalLayout createContents() {
+		
 		HorizontalLayout layout = new HorizontalLayout();
 		layout.setWidth(100, Unit.PERCENTAGE);
 		layout.setSpacing(true);
 		layout.setMargin(new MarginInfo(false, false, true, false));
-		
+
+    	VerticalLayout leftColumnLayout = new VerticalLayout();
+    	leftColumnLayout.setHeightUndefined();
+    	leftColumnLayout.setWidth(100, Unit.PERCENTAGE);
+
+    	VerticalLayout rightColumnLayout = new VerticalLayout();
+    	rightColumnLayout.setHeightUndefined();
+    	rightColumnLayout.setWidth(100, Unit.PERCENTAGE);
+    	
+    	layout.addComponent(leftColumnLayout);
+    	layout.addComponent(rightColumnLayout);
+		        
+        // Situation report summary
+        VerticalLayout situationReportLayout = new VerticalLayout();
+        {
+	        Label reportTableLabel = new Label(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, SITUATION_REPORT));
+	    	reportTableLabel.addStyleName(CssStyles.H3);
+	    	situationReportLayout.addComponent(reportTableLabel);
+	    	situationReportTable = new SituationReportTable();
+	    	situationReportTable.clearAndFill(fromDate, toDate, disease, cases);
+	    	situationReportLayout.addComponent(situationReportTable);
+        }
+        leftColumnLayout.addComponent(situationReportLayout);
+        
+        // Epi curve
+        VerticalLayout epiCurveLayout = new VerticalLayout();
+        {
+            epiCurveLayout.setId("epiCurveLayout");
+            epiCurveLayout.setWidth(100, Unit.PERCENTAGE);
+            epiCurveLayout.setHeight(360, Unit.PIXELS);
+	        
+	        Label epiCurveLabel = new Label(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, EPI_CURVE));
+	        epiCurveLabel.addStyleName(CssStyles.H3);
+	        epiCurveLayout.addComponent(epiCurveLabel);
+	        
+	        createEpiCurveChart();
+	        epiCurveLayout.addComponent(epiCurveChart);
+	        epiCurveLayout.setExpandRatio(epiCurveChart, 1);
+        }
+        rightColumnLayout.addComponent(epiCurveLayout);
+        
+        mapLayout = createMapLayout(
+			new ClickListener() {
+				@Override
+				public void buttonClick(ClickEvent event) {
+					layout.removeComponent(leftColumnLayout);
+					layout.removeComponent(rightColumnLayout);
+					layout.addComponent(mapLayout);
+					layout.setHeight(100, Unit.PERCENTAGE);
+					mapLayout.setSizeFull();
+				}
+	        },
+	        new ClickListener() {
+				@Override
+				public void buttonClick(ClickEvent event) {
+					rightColumnLayout.addComponent(mapLayout);
+					mapLayout.setHeight(360, Unit.PIXELS);
+					layout.setHeightUndefined();
+					layout.addComponent(leftColumnLayout);
+					layout.addComponent(rightColumnLayout);
+				}
+	        });
+     
+		rightColumnLayout.addComponent(mapLayout);
+        
+        return layout;
+	}
+
+	private VerticalLayout createMapLayout(ClickListener expandListener, ClickListener collapseListener) {
 		// Initialize layouts (needs to be done here for the button listener below
     	VerticalLayout mapLayout = new VerticalLayout();
     	mapLayout.setWidth(100, Unit.PERCENTAGE);
-    	VerticalLayout rightSideLayout = new VerticalLayout();
-    	rightSideLayout.setHeightUndefined();
-    	rightSideLayout.setWidth(100, Unit.PERCENTAGE);
+    	mapLayout.setHeight(360, Unit.PIXELS);
     	
 		// Map header
 		HorizontalLayout mapHeaderLayout = new HorizontalLayout();
-		mapHeaderLayout.setWidth(100, Unit.PERCENTAGE);
 		{
-	        Label caseMapLabel = new Label(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, CASE_MAP));
+			mapHeaderLayout.setWidth(100, Unit.PERCENTAGE);
+			mapHeaderLayout.setSpacing(true);
+
+			Label caseMapLabel = new Label(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, CASE_MAP));
 	        caseMapLabel.setSizeUndefined();
 	        CssStyles.style(caseMapLabel, CssStyles.H3);
 			mapHeaderLayout.addComponent(caseMapLabel);
 			
+			CheckBox dateFilterForMap = new CheckBox();
+			dateFilterForMap.addStyleName(CssStyles.NO_MARGIN);
+	        dateFilterForMap.setCaption(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, DATE_FILTER_FOR_MAP));
+	        dateFilterForMap.addValueChangeListener(e -> {
+	        	useDateFilterForMap = dateFilterForMap.getValue();
+	        	refreshMap();
+	        });
+	        mapHeaderLayout.addComponent(dateFilterForMap);	        
+	        mapHeaderLayout.setComponentAlignment(dateFilterForMap, Alignment.MIDDLE_LEFT);
+			
 	    	Button expandMap = new Button(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, EXPAND), FontAwesome.EXPAND);
 	        expandMap.setStyleName(ValoTheme.BUTTON_LINK);
-	        expandMap.addStyleName(CssStyles.NO_MARGIN);	       
+	        expandMap.addStyleName(CssStyles.NO_MARGIN);   
 	        Button collapseMap = new Button(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, COLLAPSE), FontAwesome.COMPRESS);
 	        collapseMap.setStyleName(ValoTheme.BUTTON_LINK);
 	        collapseMap.addStyleName(CssStyles.NO_MARGIN);
@@ -204,8 +281,7 @@ public class DashboardView extends AbstractView {
 	        expandMap.addClickListener(new ClickListener() {
 				@Override
 				public void buttonClick(ClickEvent event) {
-					layout.removeComponent(rightSideLayout);
-					mapComponent.setHeight(1200, Unit.PIXELS);
+					expandListener.buttonClick(event);
 					mapHeaderLayout.removeComponent(expandMap);
 					mapHeaderLayout.addComponent(collapseMap);
 					mapHeaderLayout.setComponentAlignment(collapseMap, Alignment.MIDDLE_RIGHT);
@@ -215,8 +291,7 @@ public class DashboardView extends AbstractView {
 	        collapseMap.addClickListener(new ClickListener() {
 				@Override
 				public void buttonClick(ClickEvent event) {
-					layout.addComponent(rightSideLayout);
-					mapComponent.setHeight(700, Unit.PIXELS);
+					collapseListener.buttonClick(event);
 					mapHeaderLayout.removeComponent(collapseMap);
 					mapHeaderLayout.addComponent(expandMap);
 					mapHeaderLayout.setComponentAlignment(expandMap, Alignment.MIDDLE_RIGHT);
@@ -230,24 +305,16 @@ public class DashboardView extends AbstractView {
 		}
 		mapLayout.addComponent(mapHeaderLayout);
 		
-		CheckBox dateFilterForMap = new CheckBox();
-        dateFilterForMap.setCaption(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, DATE_FILTER_FOR_MAP));
-        dateFilterForMap.addValueChangeListener(e -> {
-        	useDateFilterForMap = dateFilterForMap.getValue();
-        	refreshMap();
-        });
-        mapLayout.addComponent(dateFilterForMap);
-        
 		// Map and map key
-		mapComponent.setHeight(700, Unit.PIXELS);
-	    mapComponent.setWidth(100, Unit.PERCENTAGE);
-	    mapComponent.addStyleName(CssStyles.VSPACE3);
-	    mapComponent.addStyleName(CssStyles.VSPACETOP3);
+		mapComponent = new MapComponent();
+		mapComponent.setSizeFull();
         mapLayout.addComponent(mapComponent);
         mapLayout.setExpandRatio(mapComponent, 1);
         
-        HorizontalLayout keyLayout = new HorizontalLayout();
-        keyLayout.setSpacing(true);
+        HorizontalLayout legendLayout = new HorizontalLayout();
+        legendLayout.addStyleName(CssStyles.VSPACETOP3);
+        legendLayout.setSizeUndefined();
+        legendLayout.setSpacing(true);
         
         Image iconGrey = new Image(null, new ThemeResource("mapicons/grey-dot-small.png"));
         Image iconYellow = new Image(null, new ThemeResource("mapicons/yellow-dot-small.png"));
@@ -262,54 +329,17 @@ public class DashboardView extends AbstractView {
         iconRed.setWidth(16.5f, Unit.PIXELS);
         iconRed.setHeight(22.5f, Unit.PIXELS);
         
-        keyLayout.addComponent(iconGrey);
-        keyLayout.addComponent(new Label(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, NOT_YET_CLASSIFIED)));
-        keyLayout.addComponent(iconYellow);
-        keyLayout.addComponent(new Label(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, SUSPECT)));
-        keyLayout.addComponent(iconOrange);
-        keyLayout.addComponent(new Label(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, PROBABLE)));
-        keyLayout.addComponent(iconRed);
-        keyLayout.addComponent(new Label(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, CONFIRMED)));
-        mapLayout.addComponent(keyLayout);
-     
-        layout.addComponent(mapLayout);
-		
-        // Epi curve
-        VerticalLayout epiCurveLayout = new VerticalLayout();
-        {
-            epiCurveLayout.setId("epiCurveLayout");
-            epiCurveLayout.setWidth(100, Unit.PERCENTAGE);
-	        
-	        Label epiCurveLabel = new Label(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, EPI_CURVE));
-	        epiCurveLabel.addStyleName(CssStyles.H3);
-	        epiCurveLayout.addComponent(epiCurveLabel);
-	        
-	        chartWrapper = new CssLayout();
-	        chartWrapper.setId("chartWrapper");
-	        {
-		        createEpiCurveChart();
-		        chartWrapper.setWidth(100, Unit.PERCENTAGE);
-		        chartWrapper.addComponent(epiCurveChart);
-		        epiCurveLayout.addComponent(chartWrapper);
-	        }
-	        
-        }
-        rightSideLayout.addComponent(epiCurveLayout);
+        legendLayout.addComponent(iconGrey);
+        legendLayout.addComponent(new Label(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, NOT_YET_CLASSIFIED)));
+        legendLayout.addComponent(iconYellow);
+        legendLayout.addComponent(new Label(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, SUSPECT)));
+        legendLayout.addComponent(iconOrange);
+        legendLayout.addComponent(new Label(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, PROBABLE)));
+        legendLayout.addComponent(iconRed);
+        legendLayout.addComponent(new Label(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, CONFIRMED)));
+        mapLayout.addComponent(legendLayout);
         
-        // Situation report summary
-        VerticalLayout situationReportLayout = new VerticalLayout();
-        {
-	        Label reportTableLabel = new Label(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, SITUATION_REPORT));
-	    	reportTableLabel.addStyleName(CssStyles.H3);
-	    	situationReportLayout.addComponent(reportTableLabel);
-	    	situationReportTable = new SituationReportTable();
-	    	situationReportTable.clearAndFill(fromDate, toDate, disease, cases);
-	    	situationReportLayout.addComponent(situationReportTable);
-        }
-        rightSideLayout.addComponent(situationReportLayout);
-        layout.addComponent(rightSideLayout);
-        
-        return layout;
+		return mapLayout;
 	}
 	
 	private void refreshDashboard() {
@@ -323,9 +353,9 @@ public class DashboardView extends AbstractView {
     	// Update situation report and epi curve data
     	situationReportTable.clearAndFill(fromDate, toDate, disease, cases);
     	// Epi curve chart has to be created again due to a canvas resizing issue when simply refreshing the component
-    	chartWrapper.removeComponent(epiCurveChart);
-    	createEpiCurveChart();
-    	chartWrapper.addComponent(epiCurveChart);
+    	//chartWrapper.removeComponent(epiCurveChart);
+    	clearAndFillEpiCurveChart();
+    	//chartWrapper.addComponent(epiCurveChart);
 	}
 	
 	private void refreshMap() {
@@ -351,38 +381,8 @@ public class DashboardView extends AbstractView {
 	
 	private void clearAndFillEpiCurveChart() {
 		StringBuilder hcjs = new StringBuilder();
-		String chartLoadFunction = "MutationObserver = window.MutationObserver;"
-				+ "var observer = new MutationObserver(function(mutations, observer) {"
-				+ "console.log(mutations, observer);"
-				+ "mutations.forEach(function(mutation) {"
-				+ "console.log(mutation.target);"
-				+ "});"
-//				+ "var mutatedObject = mutations.target;"
-//				+ "var parent = mutatedObject.parentElement;"
-//				+ "var width = parent.offsetWidth;"
-//				+ "var height = parent.offsetHeight;"
-//				+ "mutatedObject.style.width = width;"
-//				+ "mutatedObject.style.height = height;"
-				+ "});"
-				+ ""
-				+ "event.target.redraw();"
-				+ "var chartWrapper = document.getElementById(\"chartWrapper\");"
-				+ "console.log(event.target.offsetWidth);"
-				+ "console.log(event.target.offsetHeight);"
-				+ "console.log(chartWrapper.offsetWidth);"
-				+ "console.log(chartWrapper.offsetHeight);"
-				+ "observer.observe(chartWrapper, {"
-				+ "childList: false,"
-				+ "subtree: false,"
-				+ "attributes: true"
-				+ "});";
-//		String chartLoadFunction = "var infoGraphicsLayout = document.getElementById(\"infoGraphicsLayout\");"
-//				+ "var chartDiv = document.getElementsByClassName(\"highcharts-container\")[0];"
-//				+ "console.log(infoGraphicsLayout.clientWidth + \" \" + infoGraphicsLayout.clientHeight);"
-//				+ "chartDiv.style.width = chartWrapper.clientWidth;"
-//				+ "chartDiv.style.height = chartWrapper.clientHeight;";
 		hcjs.append("var options = {"
-				+ "chart: { type: 'column', backgroundColor: null, events: { addSeries: function(event) {" + chartLoadFunction + "} } },"
+				+ "chart: { type: 'column', backgroundColor: null },"//, events: { addSeries: function(event) {" + chartLoadFunction + "} } },"
 				+ "credits: { enabled: false },"
 				+ "title: { text: '' },");
 		
