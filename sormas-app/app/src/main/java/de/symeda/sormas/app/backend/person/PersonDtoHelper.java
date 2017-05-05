@@ -3,6 +3,7 @@ package de.symeda.sormas.app.backend.person;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
+import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.facility.FacilityDtoHelper;
@@ -25,28 +26,31 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
 
     @Override
     public void fillInnerFromDto(Person ado, PersonDto dto) {
-
-        ado.setFirstName(dto.getFirstName());
-        ado.setLastName(dto.getLastName());
-        ado.setNickname(dto.getNickname());
-        ado.setMothersMaidenName(dto.getMothersMaidenName());
-        ado.setSex(dto.getSex());
-        ado.setBirthdateDD(dto.getBirthdateDD());
-        ado.setBirthdateMM(dto.getBirthdateMM());
-        ado.setBirthdateYYYY(dto.getBirthdateYYYY());
-        ado.setApproximateAge(dto.getApproximateAge());
-        ado.setApproximateAgeType(dto.getApproximateAgeType());
-        ado.setPhone(dto.getPhone());
-        ado.setPhoneOwner(dto.getPhoneOwner());
-        ado.setPresentCondition(dto.getPresentCondition());
-        ado.setDeathDate(dto.getDeathDate());
-        ado.setAddress(locationHelper.fillOrCreateFromDto(ado.getAddress(), dto.getAddress()));
-        ado.setOccupationType(dto.getOccupationType());
-        ado.setOccupationDetails(dto.getOccupationDetails());
-        if (dto.getOccupationFacility() != null) {
-            ado.setOccupationFacility(DatabaseHelper.getFacilityDao().queryUuid(dto.getOccupationFacility().getUuid()));
-        } else {
-            ado.setOccupationFacility(null);
+        try {
+            ado.setFirstName(dto.getFirstName());
+            ado.setLastName(dto.getLastName());
+            ado.setNickname(dto.getNickname());
+            ado.setMothersMaidenName(dto.getMothersMaidenName());
+            ado.setSex(dto.getSex());
+            ado.setBirthdateDD(dto.getBirthdateDD());
+            ado.setBirthdateMM(dto.getBirthdateMM());
+            ado.setBirthdateYYYY(dto.getBirthdateYYYY());
+            ado.setApproximateAge(dto.getApproximateAge());
+            ado.setApproximateAgeType(dto.getApproximateAgeType());
+            ado.setPhone(dto.getPhone());
+            ado.setPhoneOwner(dto.getPhoneOwner());
+            ado.setPresentCondition(dto.getPresentCondition());
+            ado.setDeathDate(dto.getDeathDate());
+            ado.setAddress(locationHelper.fillOrCreateFromDto(ado.getAddress(), dto.getAddress()));
+            ado.setOccupationType(dto.getOccupationType());
+            ado.setOccupationDetails(dto.getOccupationDetails());
+            if (dto.getOccupationFacility() != null) {
+                ado.setOccupationFacility(DatabaseHelper.getFacilityDao().queryUuid(dto.getOccupationFacility().getUuid()));
+            } else {
+                ado.setOccupationFacility(null);
+            }
+        } catch (DaoException e) {
+            throw new RuntimeException(e);
         }
 
     }

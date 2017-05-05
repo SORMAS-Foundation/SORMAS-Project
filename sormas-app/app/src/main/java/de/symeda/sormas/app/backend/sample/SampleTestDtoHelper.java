@@ -2,6 +2,7 @@ package de.symeda.sormas.app.backend.sample;
 
 import de.symeda.sormas.api.sample.SampleTestDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
+import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 
 /**
@@ -26,15 +27,19 @@ public class SampleTestDtoHelper extends AdoDtoHelper<SampleTest, SampleTestDto>
 
     @Override
     protected void fillInnerFromDto(SampleTest ado, SampleTestDto dto) {
-        if(dto.getSample() != null) {
-            ado.setSample(DatabaseHelper.getSampleDao().queryUuid(dto.getSample().getUuid()));
-        } else {
-            ado.setSample(null);
-        }
+        try {
+            if (dto.getSample() != null) {
+                ado.setSample(DatabaseHelper.getSampleDao().queryUuid(dto.getSample().getUuid()));
+            } else {
+                ado.setSample(null);
+            }
 
-        ado.setTestDateTime(dto.getTestDateTime());
-        ado.setTestResult(dto.getTestResult());
-        ado.setTestType(dto.getTestType());
+            ado.setTestDateTime(dto.getTestDateTime());
+            ado.setTestResult(dto.getTestResult());
+            ado.setTestType(dto.getTestType());
+        } catch (DaoException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

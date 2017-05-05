@@ -123,10 +123,7 @@ public abstract class AbstractRootTabActivity extends AbstractTabActivity {
         getSupportActionBar().setTitle(mainViewTitle + userRole);
     }
 
-
-
     private void setupDrawer() {
-
         menuDrawerToggle = new ActionBarDrawerToggle(
                 this,
                 menuDrawerLayout,

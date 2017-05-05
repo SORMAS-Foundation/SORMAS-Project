@@ -29,31 +29,16 @@ public class FacilityDao extends AbstractAdoDao<Facility> {
         return Facility.TABLE_NAME;
     }
 
-    public List<Facility> getByCommunity(Community community) {
-
+    public List<Facility> getByCommunity(Community community) throws SQLException {
         QueryBuilder<Facility, Long> facilityQb = this.queryBuilder();
-
-        try {
-            facilityQb.where().eq("community_id", community);
-            return facilityQb.query();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return null;
+        facilityQb.where().eq("community_id", community);
+        return facilityQb.query();
     }
 
-    public List<Facility> getByType(FacilityType type) {
+    public List<Facility> getByType(FacilityType type) throws SQLException {
         QueryBuilder<Facility, Long> facilityQb = this.queryBuilder();
-
-        try {
-            facilityQb.where().eq("type", type);
-            return facilityQb.query();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return null;
+        facilityQb.where().eq("type", type);
+        return facilityQb.query();
     }
 
 }

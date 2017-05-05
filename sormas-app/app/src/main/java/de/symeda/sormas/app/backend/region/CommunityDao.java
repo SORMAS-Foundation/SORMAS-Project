@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
+import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.user.User;
 
 /**
@@ -23,8 +24,12 @@ public class CommunityDao extends AbstractAdoDao<Community> {
     }
 
 
-    public List<Community> getByDistrict(District district) {
-        return queryForEq("district_id", district);
+    public List<Community> getByDistrict(District district) throws DaoException {
+        try {
+            return queryForEq("district_id", district);
+        } catch (RuntimeException e) {
+            throw new DaoException(e);
+        }
     }
 
 }

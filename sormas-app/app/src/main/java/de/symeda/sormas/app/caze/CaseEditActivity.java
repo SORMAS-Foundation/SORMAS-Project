@@ -332,9 +332,7 @@ public class CaseEditActivity extends AbstractEditActivity {
 
         }
 
-        return super.
-
-                onOptionsItemSelected(item);
+        return super.onOptionsItemSelected(item);
     }
 
 }

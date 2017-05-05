@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
+import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.app.backend.location.LocationDao;
@@ -31,7 +32,6 @@ public class EpiDataDao extends AbstractAdoDao<EpiData> {
     }
 
     public EpiData initLazyData(EpiData epiData) {
-
         try {
             epiData.setBurials(DatabaseHelper.getEpiDataBurialDao().getByEpiData(epiData));
             epiData.setGatherings(DatabaseHelper.getEpiDataGatheringDao().getByEpiData(epiData));
@@ -44,7 +44,7 @@ public class EpiDataDao extends AbstractAdoDao<EpiData> {
     }
 
     @Override
-    public boolean save(EpiData epiData) {
+    public boolean save(EpiData epiData) throws DaoException {
         try {
             if (!super.save(epiData)) {
                 return false;
@@ -80,13 +80,12 @@ public class EpiDataDao extends AbstractAdoDao<EpiData> {
             }
             return true;
         } catch (SQLException e) {
-            logger.error(e, "save threw exception");
-            throw new RuntimeException(e);
+            throw new DaoException(e);
         }
     }
 
     @Override
-    public boolean saveUnmodified(EpiData epiData) {
+    public boolean saveUnmodified(EpiData epiData) throws DaoException {
         try {
             super.saveUnmodified(epiData);
             DatabaseHelper.getEpiDataBurialDao().deleteOrphansOfEpiData(epiData);
@@ -112,8 +111,7 @@ public class EpiDataDao extends AbstractAdoDao<EpiData> {
             }
             return true;
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new DaoException(e);
         }
     }
 }

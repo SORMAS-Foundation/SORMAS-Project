@@ -8,6 +8,7 @@ import de.symeda.sormas.api.region.CommunityDto;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
+import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.region.DistrictDtoHelper;
@@ -31,30 +32,33 @@ public class FacilityDtoHelper extends AdoDtoHelper<Facility, FacilityDto> {
 
     @Override
     public void fillInnerFromDto(Facility ado, FacilityDto dto) {
+        try {
+            ado.setName(dto.getName());
 
-        ado.setName(dto.getName());
+            if (dto.getCommunity() != null) {
+                ado.setCommunity(DatabaseHelper.getCommunityDao().queryUuid(dto.getCommunity().getUuid()));
+            } else {
+                ado.setCommunity(null);
+            }
+            if (dto.getDistrict() != null) {
+                ado.setDistrict(DatabaseHelper.getDistrictDao().queryUuid(dto.getDistrict().getUuid()));
+            } else {
+                ado.setDistrict(null);
+            }
+            if (dto.getRegion() != null) {
+                ado.setRegion(DatabaseHelper.getRegionDao().queryUuid(dto.getRegion().getUuid()));
+            } else {
+                ado.setRegion(null);
+            }
 
-        if (dto.getCommunity() != null) {
-            ado.setCommunity(DatabaseHelper.getCommunityDao().queryUuid(dto.getCommunity().getUuid()));
-        } else {
-            ado.setCommunity(null);
+            ado.setCity(dto.getCity());
+            ado.setLatitude(dto.getLatitude());
+            ado.setLongitude(dto.getLongitude());
+            ado.setPublicOwnership(dto.isPublicOwnership());
+            ado.setType(dto.getType());
+        } catch (DaoException e) {
+            throw new RuntimeException(e);
         }
-        if (dto.getDistrict() != null) {
-            ado.setDistrict(DatabaseHelper.getDistrictDao().queryUuid(dto.getDistrict().getUuid()));
-        } else {
-            ado.setDistrict(null);
-        }
-        if (dto.getRegion() != null) {
-            ado.setRegion(DatabaseHelper.getRegionDao().queryUuid(dto.getRegion().getUuid()));
-        } else {
-            ado.setRegion(null);
-        }
-
-        ado.setCity(dto.getCity());
-        ado.setLatitude(dto.getLatitude());
-        ado.setLongitude(dto.getLongitude());
-        ado.setPublicOwnership(dto.isPublicOwnership());
-        ado.setType(dto.getType());
     }
 
     @Override

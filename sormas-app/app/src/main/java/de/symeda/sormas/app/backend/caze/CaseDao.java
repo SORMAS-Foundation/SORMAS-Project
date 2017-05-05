@@ -13,6 +13,7 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
+import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.epidata.EpiData;
@@ -41,32 +42,25 @@ public class CaseDao extends AbstractAdoDao<Case> {
     }
 
     @Override
-    public boolean saveUnmodified(Case caze) {
-        try {
-
-            if (caze.getIllLocation() != null) {
-                DatabaseHelper.getLocationDao().saveUnmodified(caze.getIllLocation());
-            }
-            if (caze.getSymptoms() != null) {
-                DatabaseHelper.getSymptomsDao().saveUnmodified(caze.getSymptoms());
-            }
-            if (caze.getHospitalization() != null) {
-                DatabaseHelper.getHospitalizationDao().saveUnmodified(caze.getHospitalization());
-            }
-            if (caze.getEpiData() != null) {
-                DatabaseHelper.getEpiDataDao().saveUnmodified(caze.getEpiData());
-            }
+    public boolean saveUnmodified(Case caze) throws DaoException {
+        if (caze.getIllLocation() != null) {
+            DatabaseHelper.getLocationDao().saveUnmodified(caze.getIllLocation());
         }
-        catch (Exception e) {
-            logger.error(e, "saveUnmodified(Case caze) threw exception on: " + e.getCause());
+        if (caze.getSymptoms() != null) {
+            DatabaseHelper.getSymptomsDao().saveUnmodified(caze.getSymptoms());
+        }
+        if (caze.getHospitalization() != null) {
+            DatabaseHelper.getHospitalizationDao().saveUnmodified(caze.getHospitalization());
+        }
+        if (caze.getEpiData() != null) {
+            DatabaseHelper.getEpiDataDao().saveUnmodified(caze.getEpiData());
         }
 
         return super.saveUnmodified(caze);
     }
 
     @Override
-    public Date getLatestChangeDate() {
-
+    public Date getLatestChangeDate() throws DaoException, SQLException {
         Date cazeDate = super.getLatestChangeDate();
         if (cazeDate == null) {
             return null;
@@ -88,23 +82,15 @@ public class CaseDao extends AbstractAdoDao<Case> {
     }
 
     // TODO #69 create some date filter for finding the right case (this is implemented in CaseService.java too)
-    public Case getByPersonAndDisease(Person person, Disease disease) {
-        try {
+    public Case getByPersonAndDisease(Person person, Disease disease) throws SQLException {
+        QueryBuilder builder = queryBuilder();
+        Where where = builder.where();
+        where.and(
+                where.eq(Case.PERSON+"_id", person),
+                where.eq(Case.DISEASE, disease)
+        );
 
-            QueryBuilder builder = queryBuilder();
-
-            Where where = builder.where();
-            where.and(
-                    where.eq(Case.PERSON+"_id", person),
-                    where.eq(Case.DISEASE, disease)
-            );
-
-            return (Case) builder.queryForFirst();
-
-        } catch (SQLException e) {
-            logger.log(LOG_LEVEL, e, "query getByPersonAndDisease threw exception");
-            throw new RuntimeException(e);
-        }
+        return (Case) builder.queryForFirst();
     }
 
     public static Case createCase(Person person) throws InstantiationException, IllegalAccessException {
@@ -120,6 +106,7 @@ public class CaseDao extends AbstractAdoDao<Case> {
         // Epi Data
         caze.setEpiData(DataUtils.createNew(EpiData.class));
 
+        // Location
         User currentUser = ConfigProvider.getUser();
         caze.setRegion(currentUser.getRegion());
         caze.setDistrict(currentUser.getDistrict());

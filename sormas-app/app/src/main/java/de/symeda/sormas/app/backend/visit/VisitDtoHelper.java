@@ -3,6 +3,7 @@ package de.symeda.sormas.app.backend.visit;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
+import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDtoHelper;
@@ -14,7 +15,6 @@ import de.symeda.sormas.app.backend.user.UserDtoHelper;
 public class VisitDtoHelper extends AdoDtoHelper<Visit, VisitDto> {
 
     private SymptomsDtoHelper symptomsDtoHelper;
-
 
     public VisitDtoHelper() {
         symptomsDtoHelper = new SymptomsDtoHelper();
@@ -32,24 +32,27 @@ public class VisitDtoHelper extends AdoDtoHelper<Visit, VisitDto> {
 
     @Override
     public void fillInnerFromDto(Visit ado, VisitDto dto) {
+        try {
+            ado.setDisease(dto.getDisease());
 
-        ado.setDisease(dto.getDisease());
+            if (dto.getPerson() != null) {
+                ado.setPerson(DatabaseHelper.getPersonDao().queryUuid(dto.getPerson().getUuid()));
+            } else {
+                ado.setPerson(null);
+            }
 
-        if (dto.getPerson() != null) {
-            ado.setPerson(DatabaseHelper.getPersonDao().queryUuid(dto.getPerson().getUuid()));
-        } else {
-            ado.setPerson(null);
-        }
+            ado.setSymptoms(symptomsDtoHelper.fillOrCreateFromDto(ado.getSymptoms(), dto.getSymptoms()));
+            ado.setVisitDateTime(dto.getVisitDateTime());
+            ado.setVisitRemarks(dto.getVisitRemarks());
+            ado.setVisitStatus(dto.getVisitStatus());
 
-        ado.setSymptoms(symptomsDtoHelper.fillOrCreateFromDto(ado.getSymptoms(), dto.getSymptoms()));
-        ado.setVisitDateTime(dto.getVisitDateTime());
-        ado.setVisitRemarks(dto.getVisitRemarks());
-        ado.setVisitStatus(dto.getVisitStatus());
-
-        if (dto.getVisitUser() != null) {
-            ado.setVisitUser(DatabaseHelper.getUserDao().queryUuid(dto.getVisitUser().getUuid()));
-        } else {
-            ado.setVisitUser(null);
+            if (dto.getVisitUser() != null) {
+                ado.setVisitUser(DatabaseHelper.getUserDao().queryUuid(dto.getVisitUser().getUuid()));
+            } else {
+                ado.setVisitUser(null);
+            }
+        } catch (DaoException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -83,8 +86,5 @@ public class VisitDtoHelper extends AdoDtoHelper<Visit, VisitDto> {
         } else {
             dto.setVisitUser(null);
         }
-
-
-
     }
 }

@@ -16,6 +16,7 @@ import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
+import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
@@ -39,11 +40,11 @@ public class TaskDao extends AbstractAdoDao<Task> {
     }
 
     @Override
-    public boolean saveUnmodified(Task task) {
+    public boolean saveUnmodified(Task task) throws DaoException {
         return super.saveUnmodified(task);
     }
 
-    public void changeTaskStatus(Task task, TaskStatus targetStatus) {
+    public void changeTaskStatus(Task task, TaskStatus targetStatus) throws DaoException {
         task.setTaskStatus(targetStatus);
         task.setStatusChangeDate(new Date());
         save(task);
@@ -57,13 +58,10 @@ public class TaskDao extends AbstractAdoDao<Task> {
      * Ordered by priority, then due date - oldes (most due) first
      * @return
      */
-    public List<Task> queryMyPendingForNotification(Date rangeStart, Date rangeEnd) {
-        try {
-
-            QueryBuilder builder = queryBuilder();
-
-            Where where = builder.where();
-            where.and(
+    public List<Task> queryMyPendingForNotification(Date rangeStart, Date rangeEnd) throws SQLException {
+        QueryBuilder builder = queryBuilder();
+        Where where = builder.where();
+        where.and(
                 where.eq(Task.ASSIGNEE_USER + "_id", ConfigProvider.getUser()),
                 where.eq(Task.TASK_STATUS, TaskStatus.PENDING),
                 where.or(
@@ -75,17 +73,12 @@ public class TaskDao extends AbstractAdoDao<Task> {
                         where.le(Task.SUGGESTED_START, rangeEnd)
                     )
                 )
-            );
+        );
 
-            builder.orderBy(Task.PRIORITY, true).orderBy(Task.DUE_DATE, true);
+        builder.orderBy(Task.PRIORITY, true).orderBy(Task.DUE_DATE, true);
 
-            String test = builder.prepareStatementString();
-            return builder.query();
-
-        } catch (SQLException e) {
-            logger.log(LOG_LEVEL, e, "queryMyPendingForNotification threw exception");
-            throw new RuntimeException(e);
-        }
+        builder.prepareStatementString();
+        return builder.query();
     }
 
     /**
@@ -93,23 +86,17 @@ public class TaskDao extends AbstractAdoDao<Task> {
      * Ordered by priority, then due date - oldest (most due) first
      * @return
      */
-    public List<Task> queryMyPending() {
-        try {
+    public List<Task> queryMyPending() throws SQLException {
+        QueryBuilder builder = queryBuilder();
+        Where where = builder.where();
+        where.and(
+                where.eq(Task.ASSIGNEE_USER + "_id", ConfigProvider.getUser()),
+                where.eq(Task.TASK_STATUS, TaskStatus.PENDING)
+        );
 
-            QueryBuilder builder = queryBuilder();
-
-            Where where = builder.where();
-            where.and(
-                    where.eq(Task.ASSIGNEE_USER + "_id", ConfigProvider.getUser()),
-                    where.eq(Task.TASK_STATUS, TaskStatus.PENDING));
-
-            return builder
-                    .orderBy(Task.PRIORITY, true).orderBy(Task.DUE_DATE, true)
-                    .query();
-        } catch (SQLException e) {
-            logger.log(LOG_LEVEL, e, "queryMyPending threw exception");
-            throw new RuntimeException(e);
-        }
+        return builder
+                .orderBy(Task.PRIORITY, true).orderBy(Task.DUE_DATE, true)
+                .query();
     }
 
     /**
@@ -117,71 +104,45 @@ public class TaskDao extends AbstractAdoDao<Task> {
      * Ordered by due date - newest first
      * @return
      */
-    public List<Task> queryMyNotExecutable() {
-        try {
-            QueryBuilder builder = queryBuilder();
+    public List<Task> queryMyNotExecutable() throws SQLException {
+        QueryBuilder builder = queryBuilder();
+        Where where = builder.where();
+        where.and(
+                where.eq(Task.ASSIGNEE_USER + "_id", ConfigProvider.getUser()),
+                where.eq(Task.TASK_STATUS, TaskStatus.NOT_EXECUTABLE)
+        );
 
-            Where where = builder.where();
-            where.and(
-                    where.eq(Task.ASSIGNEE_USER + "_id", ConfigProvider.getUser()),
-                    where.eq(Task.TASK_STATUS, TaskStatus.NOT_EXECUTABLE));
-
-            return builder
-                    .orderBy(Task.PRIORITY, true).orderBy(Task.DUE_DATE, true)
-                    .query();
-        } catch (SQLException e) {
-            logger.log(LOG_LEVEL, e, "queryMyPending threw exception");
-            throw new RuntimeException(e);
-        }
+        return builder
+                .orderBy(Task.PRIORITY, true).orderBy(Task.DUE_DATE, true)
+                .query();
     }
     /**
      * Gets all done and discarded tasks.
      * Ordered by due date - newest first
      * @return
      */
-    public List<Task> queryMyDoneOrRemoved() {
-        try {
-            QueryBuilder builder = queryBuilder();
+    public List<Task> queryMyDoneOrRemoved() throws SQLException {
+        QueryBuilder builder = queryBuilder();
+        Where where = builder.where();
+        where.and(
+                where.eq(Task.ASSIGNEE_USER + "_id", ConfigProvider.getUser()),
+                where.eq(Task.TASK_STATUS, TaskStatus.DONE).or().eq(Task.TASK_STATUS, TaskStatus.REMOVED));
 
-            Where where = builder.where();
-            where.and(
-                    where.eq(Task.ASSIGNEE_USER + "_id", ConfigProvider.getUser()),
-                    where.eq(Task.TASK_STATUS, TaskStatus.DONE).or().eq(Task.TASK_STATUS, TaskStatus.REMOVED));
-
-            return builder
-                    .orderBy(Task.PRIORITY, true).orderBy(Task.DUE_DATE, true)
-                    .query();
-        } catch (SQLException e) {
-            logger.log(LOG_LEVEL, e, "queryMyDoneOrRemoved threw exception");
-            throw new RuntimeException(e);
-        }
+        return builder
+                .orderBy(Task.PRIORITY, true).orderBy(Task.DUE_DATE, true)
+                .query();
     }
 
-    public List<Task> queryForCase(Case caze) {
-        try {
-            return queryBuilder().orderBy(Task.PRIORITY, true).orderBy(Task.DUE_DATE, true).where().eq(Task.CAZE+"_id", caze).query();
-        } catch(SQLException e) {
-            logger.log(LOG_LEVEL, e, "queryForCase threw exception");
-            throw new RuntimeException(e);
-        }
+    public List<Task> queryForCase(Case caze) throws SQLException {
+        return queryBuilder().orderBy(Task.PRIORITY, true).orderBy(Task.DUE_DATE, true).where().eq(Task.CAZE+"_id", caze).query();
     }
 
-    public List<Task> queryForContact(Contact contact) {
-        try {
-            return queryBuilder().orderBy(Task.PRIORITY, true).orderBy(Task.DUE_DATE, true).where().eq(Task.CONTACT+"_id", contact).query();
-        } catch(SQLException e) {
-            logger.log(LOG_LEVEL, e, "queryForContact threw exception");
-            throw new RuntimeException(e);
-        }
+    public List<Task> queryForContact(Contact contact) throws SQLException {
+        return queryBuilder().orderBy(Task.PRIORITY, true).orderBy(Task.DUE_DATE, true).where().eq(Task.CONTACT+"_id", contact).query();
     }
 
-    public List<Task> queryForEvent(Event event) {
-        try {
-            return queryBuilder().orderBy(Task.PRIORITY, true).orderBy(Task.DUE_DATE, true).where().eq(Task.EVENT+"_id", event).query();
-        } catch(SQLException e) {
-            logger.log(LOG_LEVEL, e, "queryForEvent threw exception");
-            throw new RuntimeException(e);
-        }
+    public List<Task> queryForEvent(Event event) throws SQLException {
+        return queryBuilder().orderBy(Task.PRIORITY, true).orderBy(Task.DUE_DATE, true).where().eq(Task.EVENT+"_id", event).query();
     }
 
 }

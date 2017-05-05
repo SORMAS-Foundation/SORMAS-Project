@@ -39,13 +39,8 @@ public class SampleDao extends AbstractAdoDao<Sample> {
         return sample;
     }
 
-    public List<Sample> queryForCase(Case caze) {
-        try {
-            return queryBuilder().orderBy(Sample.SAMPLE_DATE_TIME, true).where().eq(Sample.ASSOCIATED_CASE+"_id", caze).query();
-        } catch (SQLException e) {
-            logger.log(LOG_LEVEL, e, "queryForCase threw exception");
-            throw new RuntimeException(e);
-        }
+    public List<Sample> queryForCase(Case caze) throws SQLException {
+        return queryBuilder().orderBy(Sample.SAMPLE_DATE_TIME, true).where().eq(Sample.ASSOCIATED_CASE+"_id", caze).query();
     }
 
     @Override

@@ -5,6 +5,7 @@ import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDtoHelper;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
+import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDtoHelper;
@@ -22,7 +23,6 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
     private RegionDtoHelper regionDtoHelper;
     private UserDtoHelper userDtoHelper;
     private CaseDtoHelper caseDtoHelper;
-
 
     public ContactDtoHelper() {
         symptomsDtoHelper = new SymptomsDtoHelper();
@@ -42,42 +42,43 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 
     @Override
     public void fillInnerFromDto(Contact ado, ContactDto dto) {
+        try {
+            if (dto.getCaze() != null) {
+                ado.setCaze(DatabaseHelper.getCaseDao().queryUuid(dto.getCaze().getUuid()));
+            } else {
+                ado.setCaze(null);
+            }
 
-        if (dto.getCaze() != null) {
-            ado.setCaze(DatabaseHelper.getCaseDao().queryUuid(dto.getCaze().getUuid()));
-        } else {
-            ado.setCaze(null);
+            if (dto.getPerson() != null) {
+                ado.setPerson(DatabaseHelper.getPersonDao().queryUuid(dto.getPerson().getUuid()));
+            } else {
+                ado.setPerson(null);
+            }
+
+            if (dto.getReportingUser() != null) {
+                ado.setReportingUser(DatabaseHelper.getUserDao().queryUuid(dto.getReportingUser().getUuid()));
+            } else {
+                ado.setReportingUser(null);
+            }
+
+            ado.setReportDateTime(dto.getReportDateTime());
+            ado.setLastContactDate(dto.getLastContactDate());
+            ado.setContactProximity(dto.getContactProximity());
+            ado.setContactClassification(dto.getContactClassification());
+            ado.setRelationToCase(dto.getRelationToCase());
+            ado.setFollowUpStatus(dto.getFollowUpStatus());
+            ado.setFollowUpUntil(dto.getFollowUpUntil());
+
+            if (dto.getContactOfficer() != null) {
+                ado.setContactOfficer(DatabaseHelper.getUserDao().queryUuid(dto.getContactOfficer().getUuid()));
+            } else {
+                ado.setContactOfficer(null);
+            }
+
+            ado.setDescription(dto.getDescription());
+        } catch (DaoException e) {
+            throw new RuntimeException(e);
         }
-
-        if (dto.getPerson() != null) {
-            ado.setPerson(DatabaseHelper.getPersonDao().queryUuid(dto.getPerson().getUuid()));
-        } else {
-            ado.setPerson(null);
-        }
-
-        if (dto.getReportingUser() != null) {
-            ado.setReportingUser(DatabaseHelper.getUserDao().queryUuid(dto.getReportingUser().getUuid()));
-        } else {
-            ado.setReportingUser(null);
-        }
-
-        ado.setReportDateTime(dto.getReportDateTime());
-        ado.setLastContactDate(dto.getLastContactDate());
-        ado.setContactProximity(dto.getContactProximity());
-        ado.setContactClassification(dto.getContactClassification());
-        ado.setRelationToCase(dto.getRelationToCase());
-        ado.setFollowUpStatus(dto.getFollowUpStatus());
-        ado.setFollowUpUntil(dto.getFollowUpUntil());
-
-        if (dto.getContactOfficer() != null) {
-            ado.setContactOfficer(DatabaseHelper.getUserDao().queryUuid(dto.getContactOfficer().getUuid()));
-        } else {
-            ado.setContactOfficer(null);
-        }
-
-        ado.setDescription(dto.getDescription());
-
-
     }
 
     @Override
@@ -117,7 +118,6 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
             dto.setContactOfficer(null);
         }
         dto.setDescription(ado.getDescription());
-
     }
 
     public static ContactReferenceDto toReferenceDto(Contact ado) {

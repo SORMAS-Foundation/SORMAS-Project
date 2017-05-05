@@ -6,6 +6,7 @@ import com.j256.ormlite.logger.Logger;
 import com.j256.ormlite.logger.LoggerFactory;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
@@ -25,7 +26,6 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
     private static final Logger logger = LoggerFactory.getLogger(AdoDtoHelper.class);
 
     public ADO fillOrCreateFromDto(ADO ado, DTO dto) {
-
         if (dto == null) {
             return null;
         }
@@ -44,7 +44,6 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
     }
 
     public DTO adoToDto(ADO ado) {
-
         DTO dto = createDto();
         dto.setUuid(ado.getUuid());
         dto.setChangeDate(new Timestamp(ado.getChangeDate().getTime()));
@@ -63,75 +62,72 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 
     protected void preparePulledResult(List<DTO> result) { }
 
-    public void pullEntities(DtoGetInterface<DTO> getInterface, final AbstractAdoDao<ADO> dao) {
+    public void pullEntities(DtoGetInterface<DTO> getInterface, final AbstractAdoDao<ADO> dao) throws DaoException, SQLException, IOException {
+        Date maxModifiedDate;
+        Call<List<DTO>> dtoCall;
 
-        Date maxModifiedDate = dao.getLatestChangeDate();
+        maxModifiedDate = dao.getLatestChangeDate();
         // server change date has higher precision
         // adding 1 is workaround to make sure we don't get entities we already know
-        maxModifiedDate.setTime(maxModifiedDate.getTime()+1);
+        maxModifiedDate.setTime(maxModifiedDate.getTime() + 1);
 
-        Call<List<DTO>> dtoCall = getInterface.getAll(maxModifiedDate != null ? maxModifiedDate.getTime() : 0);
+        dtoCall = getInterface.getAll(maxModifiedDate != null ? maxModifiedDate.getTime() : 0);
         if (dtoCall == null) {
             return;
         }
 
-        try {
-            Response<List<DTO>> response = dtoCall.execute();
-            final List<DTO> result  = response.body();
-            if (result != null) {
-                preparePulledResult(result);
+        Response<List<DTO>> response = dtoCall.execute();
+        final List<DTO> result = response.body();
+        if (result != null) {
+            preparePulledResult(result);
+            try {
                 dao.callBatchTasks(new Callable<Void>() {
                     public Void call() throws Exception {
                         boolean empty = dao.countOf() == 0;
                         for (DTO dto : result) {
                             ADO ado = empty ? null : dao.queryUuid(dto.getUuid());
                             if (ado == null || !ado.isModified()) {
-                                try {
-                                    // isModified check is a workarround to make sure data entered in the app is not lost (#53)
-                                    // this has to be replaced with a proper merging of old and new data (#46)
-                                    ado = fillOrCreateFromDto(ado, dto);
-                                    dao.saveUnmodified(ado);
-                                } catch (Exception exception) {
-                                    logger.error(exception, "Exception thrown during pull process is ignored on a single entity base");
-                                }
+                                // isModified check is a workaround to make sure data entered in the app is not lost (#53)
+                                // this has to be replaced with a proper merging of old and new data (#46)
+                                ado = fillOrCreateFromDto(ado, dto);
+                                dao.saveUnmodified(ado);
                             }
                         }
                         return null;
                     }
                 });
-
-                Log.d(dao.getTableName(), "Pulled: " + result.size());
+            } catch (RuntimeException ex) {
+                // TODO should be removed once we go back to throwing
+                throw new DaoException(ex);
             }
-        } catch (IOException e) {
-            Log.e(dao.getTableName(), e.toString(), e);
+
+            Log.d(dao.getTableName(), "Pulled: " + result.size());
         }
     }
 
     /**
      * @return true: another pull is needed, because data has been changed on the server
      */
-    public boolean pushEntities(DtoPostInterface<DTO> postInterface, final AbstractAdoDao<ADO> dao) {
-
-        final List<ADO> modifiedAdos = dao.queryForEq(ADO.MODIFIED, true);
-
-        List<DTO> modifiedDtos = new ArrayList<>(modifiedAdos.size());
-        for (ADO ado : modifiedAdos) {
-            DTO dto = adoToDto(ado);
-            modifiedDtos.add(dto);
-        }
-
-        if (modifiedDtos.isEmpty()) {
-            return false;
-        }
-
-        Call<Long> call = postInterface.postAll(modifiedDtos);
-
+    public boolean pushEntities(DtoPostInterface<DTO> postInterface, final AbstractAdoDao<ADO> dao) throws DaoException, IOException {
         try {
+            final List<ADO> modifiedAdos = dao.queryForEq(ADO.MODIFIED, true);
+
+            List<DTO> modifiedDtos = new ArrayList<>(modifiedAdos.size());
+            for (ADO ado : modifiedAdos) {
+                DTO dto = adoToDto(ado);
+                modifiedDtos.add(dto);
+            }
+
+            if (modifiedDtos.isEmpty()) {
+                return false;
+            }
+
+            Call<Long> call = postInterface.postAll(modifiedDtos);
+
             final Long resultChangeDate = call.execute().body();
             if (resultChangeDate == null) {
                 Log.e(dao.getTableName(), "PostAll did not work");
             } else {
-
                 dao.callBatchTasks(new Callable<Void>() {
                     public Void call() throws Exception {
                         for (ADO ado : modifiedAdos) {
@@ -150,25 +146,21 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 
             // do we need to pull again
             return resultChangeDate == -1;
-
-        } catch (IOException e) {
-            Log.e(dao.getTableName(), e.toString(), e);
+        } catch (RuntimeException e) {
+            throw new DaoException(e);
         }
-        return false;
+//        return false;
     }
 
     public interface DtoGetInterface<DTO extends DataTransferObject> {
-
         Call<List<DTO>> getAll(long since);
     }
 
     public interface DtoPostInterface<DTO extends DataTransferObject> {
-
         Call<Long> postAll(List<DTO> dtos);
     }
 
     public static void fillDto(DataTransferObject dto, AbstractDomainObject ado) {
-
         dto.setChangeDate(ado.getChangeDate());
         dto.setCreationDate(ado.getCreationDate());
         dto.setUuid(ado.getUuid());

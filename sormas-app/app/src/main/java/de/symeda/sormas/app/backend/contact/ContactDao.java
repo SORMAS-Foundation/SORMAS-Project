@@ -28,13 +28,11 @@ public class ContactDao extends AbstractAdoDao<Contact> {
         return Contact.TABLE_NAME;
     }
 
-    public List<Contact> getByCase(Case caze)  throws SQLException {
-
+    public List<Contact> getByCase(Case caze) throws SQLException {
         QueryBuilder qb = queryBuilder();
         qb.where().eq(Contact.CAZE+"_id", caze);
         qb.orderBy(Contact.LAST_CONTACT_DATE, false);
         return qb.query();
-
     }
 
 

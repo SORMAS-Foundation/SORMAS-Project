@@ -2,6 +2,7 @@ package de.symeda.sormas.app.backend.epidata;
 
 import de.symeda.sormas.api.epidata.EpiDataBurialDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
+import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.location.LocationDtoHelper;
@@ -32,21 +33,24 @@ public class EpiDataBurialDtoHelper extends AdoDtoHelper<EpiDataBurial, EpiDataB
 
     @Override
     public void fillInnerFromDto(EpiDataBurial a, EpiDataBurialDto b) {
+        try {
+            // epi data is set by calling method
 
-        // epi data is set by calling method
+            if (b.getBurialAddress() != null) {
+                a.setBurialAddress(DatabaseHelper.getLocationDao().queryUuid(b.getBurialAddress().getUuid()));
+            } else {
+                a.setBurialAddress(null);
+            }
 
-        if (b.getBurialAddress() != null) {
-            a.setBurialAddress(DatabaseHelper.getLocationDao().queryUuid(b.getBurialAddress().getUuid()));
-        } else {
-            a.setBurialAddress(null);
+            a.setBurialDateFrom(b.getBurialDateFrom());
+            a.setBurialDateTo(b.getBurialDateTo());
+            a.setBurialPersonname(b.getBurialPersonName());
+            a.setBurialRelation(b.getBurialRelation());
+            a.setBurialIll(b.getBurialIll());
+            a.setBurialTouching(b.getBurialTouching());
+        } catch (DaoException e) {
+            throw new RuntimeException(e);
         }
-
-        a.setBurialDateFrom(b.getBurialDateFrom());
-        a.setBurialDateTo(b.getBurialDateTo());
-        a.setBurialPersonname(b.getBurialPersonName());
-        a.setBurialRelation(b.getBurialRelation());
-        a.setBurialIll(b.getBurialIll());
-        a.setBurialTouching(b.getBurialTouching());
     }
 
     @Override

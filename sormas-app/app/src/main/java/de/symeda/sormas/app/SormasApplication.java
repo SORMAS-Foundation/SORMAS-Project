@@ -37,7 +37,7 @@ public class SormasApplication extends Application {
         DatabaseHelper.init(this);
         ConfigProvider.init();
 
-        SyncInfrastructureTask.syncInfrastructure(new Callback() {
+        SyncInfrastructureTask.syncInfrastructure(getApplicationContext(), new Callback() {
             @Override
             public void call() {
                 // this also syncs cases which syncs persons

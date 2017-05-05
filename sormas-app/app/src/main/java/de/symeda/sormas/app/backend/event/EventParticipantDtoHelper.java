@@ -3,6 +3,7 @@ package de.symeda.sormas.app.backend.event;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
+import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDtoHelper;
@@ -27,22 +28,23 @@ public class EventParticipantDtoHelper extends AdoDtoHelper<EventParticipant, Ev
 
     @Override
     public void fillInnerFromDto(EventParticipant ado, EventParticipantDto dto) {
+        try {
+            if (dto.getEvent() != null) {
+                ado.setEvent(DatabaseHelper.getEventDao().queryUuid(dto.getEvent().getUuid()));
+            } else {
+                ado.setEvent(null);
+            }
 
-        if(dto.getEvent()!=null) {
-            ado.setEvent(DatabaseHelper.getEventDao().queryUuid(dto.getEvent().getUuid()));
-        }
-        else {
-            ado.setEvent(null);
-        }
+            if (dto.getPerson() != null) {
+                ado.setPerson(DatabaseHelper.getPersonDao().queryUuid(dto.getPerson().getUuid()));
+            } else {
+                ado.setPerson(null);
+            }
 
-        if(dto.getPerson()!=null) {
-            ado.setPerson(DatabaseHelper.getPersonDao().queryUuid(dto.getPerson().getUuid()));
+            ado.setInvolvementDescription(dto.getInvolvementDescription());
+        } catch (DaoException e) {
+            throw new RuntimeException(e);
         }
-        else {
-            ado.setPerson(null);
-        }
-
-        ado.setInvolvementDescription(dto.getInvolvementDescription());
         
     }
 

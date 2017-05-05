@@ -7,6 +7,7 @@ import com.j256.ormlite.logger.LoggerFactory;
 import java.sql.SQLException;
 
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
+import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 
 /**
@@ -27,7 +28,6 @@ public class HospitalizationDao extends AbstractAdoDao<Hospitalization> {
     }
 
     public Hospitalization initLazyData(Hospitalization hospitalization) {
-
         try {
             hospitalization.setPreviousHospitalizations(DatabaseHelper.getPreviousHospitalizationDao().getByHospitalization(hospitalization));
         } catch (SQLException e) {
@@ -38,7 +38,7 @@ public class HospitalizationDao extends AbstractAdoDao<Hospitalization> {
     }
 
     @Override
-    public boolean save(Hospitalization hospitalization) {
+    public boolean save(Hospitalization hospitalization) throws DaoException {
         try {
             if (!super.save(hospitalization)) {
                 return false;
@@ -53,13 +53,12 @@ public class HospitalizationDao extends AbstractAdoDao<Hospitalization> {
             }
             return true;
         } catch (SQLException e) {
-            logger.error(e, "save threw exception");
-            throw new RuntimeException(e);
+            throw new DaoException(e);
         }
     }
 
     @Override
-    public boolean saveUnmodified(Hospitalization hospitalization) {
+    public boolean saveUnmodified(Hospitalization hospitalization) throws DaoException {
         try {
             super.saveUnmodified(hospitalization);
             DatabaseHelper.getPreviousHospitalizationDao().deleteOrphansOfHospitalization(hospitalization);
@@ -71,8 +70,7 @@ public class HospitalizationDao extends AbstractAdoDao<Hospitalization> {
             }
             return true;
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new DaoException(e);
         }
     }
 

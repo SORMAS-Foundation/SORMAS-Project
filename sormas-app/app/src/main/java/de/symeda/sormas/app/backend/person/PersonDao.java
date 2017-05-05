@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
+import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 
 /**
@@ -23,7 +24,7 @@ public class PersonDao extends AbstractAdoDao<Person> {
     }
 
     @Override
-    public boolean saveUnmodified(Person person) {
+    public boolean saveUnmodified(Person person) throws DaoException {
 
         if (person.getAddress() != null) {
             DatabaseHelper.getLocationDao().saveUnmodified(person.getAddress());

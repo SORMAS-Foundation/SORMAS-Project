@@ -3,7 +3,9 @@ package de.symeda.sormas.app.backend.common;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
+import android.widget.Toast;
 
+import com.google.android.gms.analytics.Tracker;
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.support.ConnectionSource;
@@ -11,6 +13,7 @@ import com.j256.ormlite.table.TableUtils;
 
 import java.sql.SQLException;
 
+import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
@@ -107,10 +110,15 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	private EpiDataGatheringDao epiDataGatheringDao;
 	private EpiDataTravelDao epiDataTravelDao;
 
+	private Tracker tracker;
+
 	private DatabaseHelper(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);//, R.raw.ormlite_config);
 		// HACK to make sure database is initialized - otherwise we could run into problems caused by threads
 		this.getReadableDatabase();
+
+		SormasApplication application = (SormasApplication) context.getApplicationContext();
+		tracker = application.getDefaultTracker();
 	}
 
 	public static void clearTables(boolean clearInfrastructure) {
@@ -119,8 +127,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		}
 		instance.clearingTables = true;
 
-		ConnectionSource connectionSource = getCaseDao().getConnectionSource();
 		try {
+			ConnectionSource connectionSource = getCaseDao().getConnectionSource();
 			TableUtils.clearTable(connectionSource, Case.class);
 			TableUtils.clearTable(connectionSource, Person.class);
 			TableUtils.clearTable(connectionSource, Symptoms.class);
@@ -631,4 +639,5 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		epiDataGatheringDao = null;
 		epiDataTravelDao = null;
 	}
+
 }

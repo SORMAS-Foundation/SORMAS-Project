@@ -5,6 +5,7 @@ import de.symeda.sormas.api.region.CommunityDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
+import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.facility.Facility;
 
@@ -25,9 +26,12 @@ public class CommunityDtoHelper extends AdoDtoHelper<Community, CommunityDto> {
 
     @Override
     public void fillInnerFromDto(Community ado, CommunityDto dto) {
-
-        ado.setName(dto.getName());
-        ado.setDistrict(DatabaseHelper.getDistrictDao().queryUuid(dto.getDistrict().getUuid()));
+        try {
+            ado.setName(dto.getName());
+            ado.setDistrict(DatabaseHelper.getDistrictDao().queryUuid(dto.getDistrict().getUuid()));
+        } catch (DaoException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

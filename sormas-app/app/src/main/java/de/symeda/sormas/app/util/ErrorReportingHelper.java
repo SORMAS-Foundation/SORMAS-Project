@@ -24,7 +24,17 @@ public class ErrorReportingHelper {
         StringBuilder description = new StringBuilder();
         description.append(e.getClass().getSimpleName() + " in " + className + " - "
                 + e.getStackTrace()[0].getClassName() + ":" + e.getStackTrace()[0].getMethodName() + ":"
-                + e.getStackTrace()[0].getLineNumber());
+                + e.getStackTrace()[0].getLineNumber() + " - Stack trace: ");
+        for (int i = 0; i < e.getStackTrace().length; i++) {
+            StackTraceElement element = e.getStackTrace()[i];
+            if (i == e.getStackTrace().length - 1) {
+                description.append(element.getClassName() + ":" + element.getMethodName() + ":" +
+                        element.getLineNumber());
+            } else {
+                description.append(element.getClassName() + ":" + element.getMethodName() + ":" +
+                        element.getLineNumber() + " -> ");
+            }
+        }
         for (String s : additionalInformation) {
             description.append(s);
         }

@@ -3,6 +3,7 @@ package de.symeda.sormas.app.backend.location;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
+import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.region.CommunityDtoHelper;
@@ -26,27 +27,30 @@ public class LocationDtoHelper extends AdoDtoHelper<Location, LocationDto> {
 
     @Override
     public void fillInnerFromDto(Location ado, LocationDto dto) {
+        try {
+            ado.setAddress(dto.getAddress());
+            ado.setCity(dto.getCity());
+            ado.setDetails(dto.getDetails());
+            ado.setLatitude(dto.getLatitude());
+            ado.setLongitude(dto.getLongitude());
 
-        ado.setAddress(dto.getAddress());
-        ado.setCity(dto.getCity());
-        ado.setDetails(dto.getDetails());
-        ado.setLatitude(dto.getLatitude());
-        ado.setLongitude(dto.getLongitude());
-
-        if (dto.getCommunity() != null) {
-            ado.setCommunity(DatabaseHelper.getCommunityDao().queryUuid(dto.getCommunity().getUuid()));
-        } else {
-            ado.setCommunity(null);
-        }
-        if (dto.getDistrict() != null) {
-            ado.setDistrict(DatabaseHelper.getDistrictDao().queryUuid(dto.getDistrict().getUuid()));
-        } else {
-            ado.setDistrict(null);
-        }
-        if (dto.getRegion() != null) {
-            ado.setRegion(DatabaseHelper.getRegionDao().queryUuid(dto.getRegion().getUuid()));
-        } else {
-            ado.setRegion(null);
+            if (dto.getCommunity() != null) {
+                ado.setCommunity(DatabaseHelper.getCommunityDao().queryUuid(dto.getCommunity().getUuid()));
+            } else {
+                ado.setCommunity(null);
+            }
+            if (dto.getDistrict() != null) {
+                ado.setDistrict(DatabaseHelper.getDistrictDao().queryUuid(dto.getDistrict().getUuid()));
+            } else {
+                ado.setDistrict(null);
+            }
+            if (dto.getRegion() != null) {
+                ado.setRegion(DatabaseHelper.getRegionDao().queryUuid(dto.getRegion().getUuid()));
+            } else {
+                ado.setRegion(null);
+            }
+        } catch (DaoException e) {
+            throw new RuntimeException(e);
         }
     }
 

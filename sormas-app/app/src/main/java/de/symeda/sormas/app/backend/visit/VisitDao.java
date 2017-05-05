@@ -17,6 +17,7 @@ import java.util.List;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
+import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.task.Task;
@@ -38,8 +39,7 @@ public class VisitDao extends AbstractAdoDao<Visit> {
     }
 
     @Override
-    public boolean saveUnmodified(Visit visit) {
-
+    public boolean saveUnmodified(Visit visit) throws DaoException {
         if (visit.getSymptoms() != null) {
             DatabaseHelper.getSymptomsDao().saveUnmodified(visit.getSymptoms());
         }
@@ -47,36 +47,29 @@ public class VisitDao extends AbstractAdoDao<Visit> {
         return super.saveUnmodified(visit);
     }
 
-    public List<Visit> getByContact(Contact contact) {
-        try {
-
-            QueryBuilder qb = queryBuilder();
-            Where where = qb.where();
-
-            where.and(
-                    where.eq(Visit.PERSON+"_id", contact.getPerson()),
-                    where.eq(Visit.DISEASE, contact.getCaze().getDisease())
-            );
-            // see sormas-backend/VisitService.getAllByContact()
-            Date lowerLimit = contact.getLastContactDate() != null ? DateHelper.subtractDays(contact.getLastContactDate(), 10) : contact.getReportDateTime();
-            if(lowerLimit!=null) {
-                where.and();
-                where.gt(Visit.VISIT_DATE_TIME, lowerLimit);
-            }
-
-            Date upperLimit = DateHelper.addDays(contact.getFollowUpUntil(), 10);
-            if(upperLimit!=null) {
-                where.and();
-                where.lt(Visit.VISIT_DATE_TIME, upperLimit);
-            }
-
-            qb.orderBy(Visit.VISIT_DATE_TIME, true);
-
-            return qb.query();
-        } catch(SQLException e) {
-            logger.log(LOG_LEVEL, e, "getByContact threw exception");
-            throw new RuntimeException(e);
+    public List<Visit> getByContact(Contact contact) throws SQLException {
+        QueryBuilder qb = queryBuilder();
+        Where where = qb.where();
+        where.and(
+                where.eq(Visit.PERSON+"_id", contact.getPerson()),
+                where.eq(Visit.DISEASE, contact.getCaze().getDisease())
+        );
+        // see sormas-backend/VisitService.getAllByContact()
+        Date lowerLimit = contact.getLastContactDate() != null ? DateHelper.subtractDays(contact.getLastContactDate(), 10) : contact.getReportDateTime();
+        if(lowerLimit!=null) {
+            where.and();
+            where.gt(Visit.VISIT_DATE_TIME, lowerLimit);
         }
+
+        Date upperLimit = DateHelper.addDays(contact.getFollowUpUntil(), 10);
+        if(upperLimit!=null) {
+            where.and();
+            where.lt(Visit.VISIT_DATE_TIME, upperLimit);
+        }
+
+        qb.orderBy(Visit.VISIT_DATE_TIME, true);
+
+        return qb.query();
     }
 
     /**
@@ -87,7 +80,7 @@ public class VisitDao extends AbstractAdoDao<Visit> {
      * @throws InstantiationException
      */
     @NonNull
-    public Visit getNewVisitForContact(String contactUuid) throws IllegalAccessException, InstantiationException {
+    public Visit getNewVisitForContact(String contactUuid) throws IllegalAccessException, InstantiationException, DaoException {
         Contact contact = DatabaseHelper.getContactDao().queryUuid(contactUuid);
 
         Visit visit = DataUtils.createNew(Visit.class);

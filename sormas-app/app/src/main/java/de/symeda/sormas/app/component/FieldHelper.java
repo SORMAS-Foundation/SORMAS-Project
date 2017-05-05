@@ -21,8 +21,6 @@ import de.symeda.sormas.app.util.Item;
 
 public class FieldHelper {
 
-
-
     /**
      * Fill the spinner for the given enum, set the selected entry, register the base listeners and the given ones.
      * @param enumClass

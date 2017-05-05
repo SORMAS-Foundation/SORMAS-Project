@@ -26,9 +26,7 @@ public class LocationDialog extends AlertDialog.Builder {
 
     public LocationDialog(FragmentActivity activity, final Location location, final Consumer positiveCallback , final Callback negativeCallback) {
         super(activity);
-
         this.setTitle(activity.getResources().getString(R.string.headline_location));
-
         final View dialogView = activity.getLayoutInflater().inflate(R.layout.location_fragment_layout, null);
         this.setView(dialogView);
 

@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
+import de.symeda.sormas.app.backend.common.DaoException;
 
 /**
  * Created by Martin Wahnschaffe on 22.07.2016.
@@ -21,8 +22,12 @@ public class DistrictDao extends AbstractAdoDao<District> {
         return District.TABLE_NAME;
     }
 
-    public List<District> getByRegion(Region region) {
-        return queryForEq("region_id", region);
+    public List<District> getByRegion(Region region) throws DaoException {
+        try {
+            return queryForEq("region_id", region);
+        } catch (RuntimeException e) {
+            throw new DaoException(e);
+        }
     }
 
 }

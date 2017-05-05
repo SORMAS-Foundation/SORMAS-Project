@@ -2,6 +2,7 @@ package de.symeda.sormas.app.backend.hospitalization;
 
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
+import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.facility.FacilityDtoHelper;
@@ -30,19 +31,22 @@ public class PreviousHospitalizationDtoHelper extends AdoDtoHelper<PreviousHospi
 
     @Override
     public void fillInnerFromDto(PreviousHospitalization a, PreviousHospitalizationDto b) {
+        try {
+            // hospitalization is set by calling method
 
-        // hospitalization is set by calling method
+            if (b.getHealthFacility() != null) {
+                a.setHealthFacility(DatabaseHelper.getFacilityDao().queryUuid(b.getHealthFacility().getUuid()));
+            } else {
+                a.setHealthFacility(null);
+            }
 
-        if (b.getHealthFacility() != null) {
-            a.setHealthFacility(DatabaseHelper.getFacilityDao().queryUuid(b.getHealthFacility().getUuid()));
-        } else {
-            a.setHealthFacility(null);
+            a.setIsolated(b.getIsolated());
+            a.setAdmissionDate(b.getAdmissionDate());
+            a.setDischargeDate(b.getDischargeDate());
+            a.setDescription(b.getDescription());
+        } catch (DaoException e) {
+            throw new RuntimeException(e);
         }
-
-        a.setIsolated(b.getIsolated());
-        a.setAdmissionDate(b.getAdmissionDate());
-        a.setDischargeDate(b.getDischargeDate());
-        a.setDescription(b.getDescription());
     }
 
     @Override
