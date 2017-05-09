@@ -49,7 +49,7 @@ public class EventEditDataForm extends FormTab {
         Event event = null;
 
         // create a new event for empty uuid
-        if(eventUuid==null) {
+        if (eventUuid==null) {
             event = DatabaseHelper.getEventDao().getNewEvent();
 
         }

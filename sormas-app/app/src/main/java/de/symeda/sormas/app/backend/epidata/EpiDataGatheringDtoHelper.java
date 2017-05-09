@@ -14,11 +14,9 @@ import de.symeda.sormas.app.backend.location.LocationDtoHelper;
 public class EpiDataGatheringDtoHelper extends AdoDtoHelper<EpiDataGathering, EpiDataGatheringDto> {
 
     private LocationDtoHelper locationHelper;
-    private EpiDataDtoHelper epiDataHelper;
 
-    public EpiDataGatheringDtoHelper(EpiDataDtoHelper epiDataHelper) {
+    public EpiDataGatheringDtoHelper() {
         locationHelper = new LocationDtoHelper();
-        this.epiDataHelper = epiDataHelper;
     }
 
     @Override
@@ -32,17 +30,13 @@ public class EpiDataGatheringDtoHelper extends AdoDtoHelper<EpiDataGathering, Ep
     }
 
     @Override
-    public void fillInnerFromDto(EpiDataGathering a, EpiDataGatheringDto b) {
+    public void fillInnerFromDto(EpiDataGathering target, EpiDataGatheringDto source) {
+
         // epi data is set by calling method
 
-        if (b.getGatheringAddress() != null) {
-            a.setGatheringAddress(DatabaseHelper.getLocationDao().queryUuid(b.getGatheringAddress().getUuid()));
-        } else {
-            a.setGatheringAddress(locationHelper.create());
-        }
-
-        a.setDescription(b.getDescription());
-        a.setGatheringDate(b.getGatheringDate());
+        target.setGatheringAddress(locationHelper.fillOrCreateFromDto(target.getGatheringAddress(), source.getGatheringAddress()));
+        target.setDescription(source.getDescription());
+        target.setGatheringDate(source.getGatheringDate());
     }
 
     @Override

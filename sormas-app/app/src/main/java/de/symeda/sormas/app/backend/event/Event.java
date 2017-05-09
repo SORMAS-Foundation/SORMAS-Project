@@ -138,9 +138,6 @@ public class Event extends AbstractDomainObject {
 	}
 	
 	public Location getEventLocation() {
-		if(eventLocation == null) {
-			eventLocation = new Location();
-		}
 		return eventLocation;
 	}
 	

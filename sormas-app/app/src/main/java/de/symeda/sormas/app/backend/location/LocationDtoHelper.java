@@ -1,11 +1,8 @@
 package de.symeda.sormas.app.backend.location;
 
-import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
-import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.region.CommunityDtoHelper;
 import de.symeda.sormas.app.backend.region.DistrictDtoHelper;
 import de.symeda.sormas.app.backend.region.RegionDtoHelper;
@@ -26,28 +23,17 @@ public class LocationDtoHelper extends AdoDtoHelper<Location, LocationDto> {
     }
 
     @Override
-    public void fillInnerFromDto(Location ado, LocationDto dto) {
-        ado.setAddress(dto.getAddress());
-        ado.setCity(dto.getCity());
-        ado.setDetails(dto.getDetails());
-        ado.setLatitude(dto.getLatitude());
-        ado.setLongitude(dto.getLongitude());
+    public void fillInnerFromDto(Location target, LocationDto source) {
 
-        if (dto.getCommunity() != null) {
-            ado.setCommunity(DatabaseHelper.getCommunityDao().queryUuid(dto.getCommunity().getUuid()));
-        } else {
-            ado.setCommunity(null);
-        }
-        if (dto.getDistrict() != null) {
-            ado.setDistrict(DatabaseHelper.getDistrictDao().queryUuid(dto.getDistrict().getUuid()));
-        } else {
-            ado.setDistrict(null);
-        }
-        if (dto.getRegion() != null) {
-            ado.setRegion(DatabaseHelper.getRegionDao().queryUuid(dto.getRegion().getUuid()));
-        } else {
-            ado.setRegion(null);
-        }
+        target.setAddress(source.getAddress());
+        target.setCity(source.getCity());
+        target.setDetails(source.getDetails());
+        target.setLatitude(source.getLatitude());
+        target.setLongitude(source.getLongitude());
+
+        target.setRegion(DatabaseHelper.getRegionDao().getByReferenceDto(source.getRegion()));
+        target.setDistrict(DatabaseHelper.getDistrictDao().getByReferenceDto(source.getDistrict()));
+        target.setCommunity(DatabaseHelper.getCommunityDao().getByReferenceDto(source.getCommunity()));
     }
 
     @Override

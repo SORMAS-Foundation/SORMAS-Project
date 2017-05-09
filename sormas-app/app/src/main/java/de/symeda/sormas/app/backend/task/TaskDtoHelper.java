@@ -4,7 +4,6 @@ import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDtoHelper;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
-import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.contact.ContactDtoHelper;
@@ -29,54 +28,25 @@ public class TaskDtoHelper extends AdoDtoHelper<Task, TaskDto> {
     }
 
     @Override
-    public void fillInnerFromDto(Task ado, TaskDto dto) {
-        ado.setTaskContext(dto.getTaskContext());
-        if (dto.getCaze() != null) {
-            ado.setCaze(DatabaseHelper.getCaseDao().queryUuid(dto.getCaze().getUuid()));
-        } else {
-            ado.setCaze(null);
-        }
-        if (dto.getContact() != null) {
-            ado.setContact(DatabaseHelper.getContactDao().queryUuid(dto.getContact().getUuid()));
-        } else {
-            ado.setContact(null);
-        }
-        if (dto.getEvent() != null) {
-            ado.setEvent(DatabaseHelper.getEventDao().queryUuid(dto.getEvent().getUuid()));
-        } else {
-            ado.setEvent(null);
-        }
-        ado.setTaskType(dto.getTaskType());
-        ado.setTaskStatus(dto.getTaskStatus());
-        ado.setDueDate(dto.getDueDate());
-        ado.setPriority(dto.getPriority());
-        ado.setSuggestedStart(dto.getSuggestedStart());
-        ado.setStatusChangeDate(dto.getStatusChangeDate());
-        ado.setPerceivedStart(dto.getPerceivedStart());
+    public void fillInnerFromDto(Task target, TaskDto source) {
 
-        if (dto.getCreatorUser() != null) {
-            ado.setCreatorUser(DatabaseHelper.getUserDao().queryUuid(dto.getCreatorUser().getUuid()));
-        } else {
-            ado.setCreatorUser(null);
-        }
-        ado.setCreatorComment(dto.getCreatorComment());
-        if (dto.getAssigneeUser() != null) {
-            ado.setAssigneeUser(DatabaseHelper.getUserDao().queryUuid(dto.getAssigneeUser().getUuid()));
-        } else {
-            ado.setAssigneeUser(null);
-        }
-        ado.setAssigneeReply(dto.getAssigneeReply());
+        target.setTaskContext(source.getTaskContext());
+        target.setCaze(DatabaseHelper.getCaseDao().getByReferenceDto(source.getCaze()));
+        target.setContact(DatabaseHelper.getContactDao().getByReferenceDto(source.getContact()));
+        target.setEvent(DatabaseHelper.getEventDao().getByReferenceDto(source.getEvent()));
 
-        /*
-        @TODO Event
+        target.setTaskType(source.getTaskType());
+        target.setTaskStatus(source.getTaskStatus());
+        target.setDueDate(source.getDueDate());
+        target.setPriority(source.getPriority());
+        target.setSuggestedStart(source.getSuggestedStart());
+        target.setStatusChangeDate(source.getStatusChangeDate());
+        target.setPerceivedStart(source.getPerceivedStart());
 
-        if (dto.getEvent() != null) {
-            ado.setCaze(DatabaseHelper.getCaseDao().queryUuid(dto.getEvent().getUuid()));
-        } else {
-            ado.setCaze(null);
-        }
-
-        */
+        target.setCreatorUser(DatabaseHelper.getUserDao().getByReferenceDto(source.getCreatorUser()));
+        target.setCreatorComment(source.getCreatorComment());
+        target.setAssigneeUser(DatabaseHelper.getUserDao().getByReferenceDto(source.getAssigneeUser()));
+        target.setAssigneeReply(source.getAssigneeReply());
     }
 
     @Override

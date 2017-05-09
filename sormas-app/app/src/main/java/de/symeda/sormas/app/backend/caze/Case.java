@@ -60,13 +60,13 @@ public class Case extends AbstractDomainObject {
 	@Column(nullable = false)
 	private InvestigationStatus investigationStatus;
 
-	@DatabaseField(foreign = true, foreignAutoCreate = true, foreignAutoRefresh = true)
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private Region region;
 
-	@DatabaseField(foreign = true, foreignAutoCreate = true, foreignAutoRefresh = true)
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private District district;
 
-	@DatabaseField(foreign = true, foreignAutoCreate = true, foreignAutoRefresh = true)
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private Community community;
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)

@@ -12,12 +12,10 @@ import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
-import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.util.DataUtils;
 //import kotlin.NotImplementedError;
 
@@ -34,6 +32,8 @@ public class VisitDao extends AbstractAdoDao<Visit> {
 
     @Override
     public boolean saveUnmodified(Visit visit) throws DaoException {
+
+        // saving unmodified also includes cascading sub entities
         if (visit.getSymptoms() != null) {
             DatabaseHelper.getSymptomsDao().saveUnmodified(visit.getSymptoms());
         }

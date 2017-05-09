@@ -9,8 +9,6 @@ import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDtoHelper;
-import de.symeda.sormas.app.backend.region.RegionDtoHelper;
-import de.symeda.sormas.app.backend.symptoms.SymptomsDtoHelper;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.backend.user.UserDtoHelper;
 
@@ -19,15 +17,7 @@ import de.symeda.sormas.app.backend.user.UserDtoHelper;
  */
 public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 
-    private SymptomsDtoHelper symptomsDtoHelper;
-    private RegionDtoHelper regionDtoHelper;
-    private UserDtoHelper userDtoHelper;
-    private CaseDtoHelper caseDtoHelper;
-
     public ContactDtoHelper() {
-        symptomsDtoHelper = new SymptomsDtoHelper();
-        regionDtoHelper = new RegionDtoHelper();
-        caseDtoHelper = new CaseDtoHelper();
     }
 
     @Override
@@ -41,40 +31,23 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
     }
 
     @Override
-    public void fillInnerFromDto(Contact ado, ContactDto dto) {
-        if (dto.getCaze() != null) {
-            ado.setCaze(DatabaseHelper.getCaseDao().queryUuid(dto.getCaze().getUuid()));
-        } else {
-            ado.setCaze(null);
-        }
+    public void fillInnerFromDto(Contact target, ContactDto source) {
 
-        if (dto.getPerson() != null) {
-            ado.setPerson(DatabaseHelper.getPersonDao().queryUuid(dto.getPerson().getUuid()));
-        } else {
-            ado.setPerson(null);
-        }
+        target.setCaze(DatabaseHelper.getCaseDao().getByReferenceDto(source.getCaze()));
+        target.setPerson(DatabaseHelper.getPersonDao().getByReferenceDto(source.getPerson()));
 
-        if (dto.getReportingUser() != null) {
-            ado.setReportingUser(DatabaseHelper.getUserDao().queryUuid(dto.getReportingUser().getUuid()));
-        } else {
-            ado.setReportingUser(null);
-        }
+        target.setReportingUser(DatabaseHelper.getUserDao().getByReferenceDto(source.getReportingUser()));
+        target.setReportDateTime(source.getReportDateTime());
+        target.setContactOfficer(DatabaseHelper.getUserDao().getByReferenceDto(source.getContactOfficer()));
 
-        ado.setReportDateTime(dto.getReportDateTime());
-        ado.setLastContactDate(dto.getLastContactDate());
-        ado.setContactProximity(dto.getContactProximity());
-        ado.setContactClassification(dto.getContactClassification());
-        ado.setRelationToCase(dto.getRelationToCase());
-        ado.setFollowUpStatus(dto.getFollowUpStatus());
-        ado.setFollowUpUntil(dto.getFollowUpUntil());
+        target.setLastContactDate(source.getLastContactDate());
+        target.setContactProximity(source.getContactProximity());
+        target.setContactClassification(source.getContactClassification());
+        target.setRelationToCase(source.getRelationToCase());
+        target.setFollowUpStatus(source.getFollowUpStatus());
+        target.setFollowUpUntil(source.getFollowUpUntil());
 
-        if (dto.getContactOfficer() != null) {
-            ado.setContactOfficer(DatabaseHelper.getUserDao().queryUuid(dto.getContactOfficer().getUuid()));
-        } else {
-            ado.setContactOfficer(null);
-        }
-
-        ado.setDescription(dto.getDescription());
+        target.setDescription(source.getDescription());
     }
 
     @Override

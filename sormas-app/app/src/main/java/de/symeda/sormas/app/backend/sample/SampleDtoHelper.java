@@ -5,7 +5,6 @@ import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDtoHelper;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
-import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.facility.FacilityDtoHelper;
@@ -33,46 +32,30 @@ public class SampleDtoHelper extends AdoDtoHelper<Sample, SampleDto> {
     }
 
     @Override
-    public void fillInnerFromDto(Sample ado, SampleDto dto) {
-        if (dto.getAssociatedCase() != null) {
-            ado.setAssociatedCase(DatabaseHelper.getCaseDao().queryUuid(dto.getAssociatedCase().getUuid()));
-        } else {
-            ado.setAssociatedCase(null);
-        }
+    public void fillInnerFromDto(Sample target, SampleDto source) {
 
-        if (dto.getReportingUser() != null) {
-            ado.setReportingUser(DatabaseHelper.getUserDao().queryUuid(dto.getReportingUser().getUuid()));
-        } else {
-            ado.setReportingUser(null);
-        }
+        target.setAssociatedCase(DatabaseHelper.getCaseDao().getByReferenceDto(source.getAssociatedCase()));
 
-        if (dto.getLab() != null) {
-            ado.setLab(DatabaseHelper.getFacilityDao().queryUuid(dto.getLab().getUuid()));
-        } else {
-            ado.setLab(null);
-        }
+        target.setReportingUser(DatabaseHelper.getUserDao().getByReferenceDto(source.getReportingUser()));
+        target.setReportDateTime(source.getReportDateTime());
 
-        if (dto.getOtherLab() != null) {
-            ado.setOtherLab(DatabaseHelper.getFacilityDao().queryUuid(dto.getOtherLab().getUuid()));
-        } else {
-            ado.setOtherLab(null);
-        }
+        target.setLab(DatabaseHelper.getFacilityDao().getByReferenceDto(source.getLab()));
+        target.setOtherLab(DatabaseHelper.getFacilityDao().getByReferenceDto(source.getOtherLab()));
 
-        ado.setSampleCode(dto.getSampleCode());
-        ado.setLabSampleID(dto.getLabSampleID());
-        ado.setSampleDateTime(dto.getSampleDateTime());
-        ado.setReportDateTime(dto.getReportDateTime());
-        ado.setSampleMaterial(dto.getSampleMaterial());
-        ado.setSampleMaterialText(dto.getSampleMaterialText());
-        ado.setShipmentStatus(dto.getShipmentStatus());
-        ado.setShipmentDate(dto.getShipmentDate());
-        ado.setShipmentDetails(dto.getShipmentDetails());
-        ado.setReceivedDate(dto.getReceivedDate());
-        ado.setSpecimenCondition(dto.getSpecimenCondition());
-        ado.setNoTestPossibleReason(dto.getNoTestPossibleReason());
-        ado.setComment(dto.getComment());
-        ado.setSampleSource(dto.getSampleSource());
-        ado.setSuggestedTypeOfTest(dto.getSuggestedTypeOfTest());
+        target.setSampleCode(source.getSampleCode());
+        target.setLabSampleID(source.getLabSampleID());
+        target.setSampleDateTime(source.getSampleDateTime());
+        target.setSampleMaterial(source.getSampleMaterial());
+        target.setSampleMaterialText(source.getSampleMaterialText());
+        target.setShipmentStatus(source.getShipmentStatus());
+        target.setShipmentDate(source.getShipmentDate());
+        target.setShipmentDetails(source.getShipmentDetails());
+        target.setReceivedDate(source.getReceivedDate());
+        target.setSpecimenCondition(source.getSpecimenCondition());
+        target.setNoTestPossibleReason(source.getNoTestPossibleReason());
+        target.setComment(source.getComment());
+        target.setSampleSource(source.getSampleSource());
+        target.setSuggestedTypeOfTest(source.getSuggestedTypeOfTest());
     }
 
     @Override

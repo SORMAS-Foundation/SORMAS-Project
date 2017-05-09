@@ -3,7 +3,6 @@ package de.symeda.sormas.app.backend.visit;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
-import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDtoHelper;
@@ -31,25 +30,17 @@ public class VisitDtoHelper extends AdoDtoHelper<Visit, VisitDto> {
     }
 
     @Override
-    public void fillInnerFromDto(Visit ado, VisitDto dto) {
-        ado.setDisease(dto.getDisease());
+    public void fillInnerFromDto(Visit target, VisitDto source) {
 
-        if (dto.getPerson() != null) {
-            ado.setPerson(DatabaseHelper.getPersonDao().queryUuid(dto.getPerson().getUuid()));
-        } else {
-            ado.setPerson(null);
-        }
+        target.setDisease(source.getDisease());
 
-        ado.setSymptoms(symptomsDtoHelper.fillOrCreateFromDto(ado.getSymptoms(), dto.getSymptoms()));
-        ado.setVisitDateTime(dto.getVisitDateTime());
-        ado.setVisitRemarks(dto.getVisitRemarks());
-        ado.setVisitStatus(dto.getVisitStatus());
+        target.setPerson(DatabaseHelper.getPersonDao().getByReferenceDto(source.getPerson()));
 
-        if (dto.getVisitUser() != null) {
-            ado.setVisitUser(DatabaseHelper.getUserDao().queryUuid(dto.getVisitUser().getUuid()));
-        } else {
-            ado.setVisitUser(null);
-        }
+        target.setSymptoms(symptomsDtoHelper.fillOrCreateFromDto(target.getSymptoms(), source.getSymptoms()));
+        target.setVisitDateTime(source.getVisitDateTime());
+        target.setVisitRemarks(source.getVisitRemarks());
+        target.setVisitStatus(source.getVisitStatus());
+        target.setVisitUser(DatabaseHelper.getUserDao().getByReferenceDto(source.getVisitUser()));
     }
 
     @Override

@@ -265,9 +265,6 @@ public class CaseEditActivity extends AbstractEditActivity {
 
                 if (validData) {
                     try {
-                        if (person.getAddress() != null) {
-                            locLocationDao.save(person.getAddress());
-                        }
                         if (!personDao.save(person)) {
                             Toast.makeText(this, "person not saved", Toast.LENGTH_SHORT).show();
                         }

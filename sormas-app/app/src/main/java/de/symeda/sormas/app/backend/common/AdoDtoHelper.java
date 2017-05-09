@@ -35,6 +35,9 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
             ado.setCreationDate(dto.getCreationDate());
             ado.setUuid(dto.getUuid());
         }
+        else if (!ado.getUuid().equals(dto.getUuid())) {
+            throw new RuntimeException("Existing object uuid does not match dto: " + ado.getUuid() + " vs. " + dto.getUuid());
+        }
 
         ado.setChangeDate(dto.getChangeDate());
 
@@ -123,16 +126,22 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 
             final Long resultChangeDate = call.execute().body();
             if (resultChangeDate == null) {
+                // TODO throw exception
                 Log.e(dao.getTableName(), "PostAll did not work");
             } else {
                 dao.callBatchTasks(new Callable<Void>() {
                     public Void call() throws Exception {
                         for (ADO ado : modifiedAdos) {
+                            // data has been pushed, we no longer need the old unmodified version
+                            ADO unmodifiedAdo = dao.queryUnmodifiedUuid(ado.getUuid());
+                            dao.delete(unmodifiedAdo);
+
+                            // this is now our unmodified version
                             ado.setModified(false);
                             if (resultChangeDate >= 0) {
                                 ado.setChangeDate(new Date(resultChangeDate));
                             }
-                            dao.update(ado);
+                            dao.update(ado); // override the unmodified version with the latest state from the modified
                         }
                         return null;
                     }
@@ -142,8 +151,7 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
             }
 
             // do we need to pull again
-            return resultChangeDate == -1;
-//        return false;
+            return resultChangeDate == null || resultChangeDate == -1;
         } catch (RuntimeException e) {
             Log.e(getClass().getName(), "Exception thrown when trying to push entities");
             throw new DaoException(e);

@@ -3,7 +3,6 @@ package de.symeda.sormas.app.backend.event;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
-import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.location.LocationDtoHelper;
@@ -29,39 +28,24 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
     }
 
     @Override
-    public void fillInnerFromDto(Event ado, EventDto dto) {
-        ado.setEventType(dto.getEventType());
-        ado.setEventStatus(dto.getEventStatus());
-        ado.setEventDesc(dto.getEventDesc());
-        ado.setEventDate(dto.getEventDate());
-        ado.setReportDateTime(dto.getReportDateTime());
+    public void fillInnerFromDto(Event target, EventDto source) {
 
-        if (dto.getReportingUser() != null) {
-            ado.setReportingUser(DatabaseHelper.getUserDao().queryUuid(dto.getReportingUser().getUuid()));
-        } else {
-            ado.setReportingUser(null);
-        }
+        target.setEventType(source.getEventType());
+        target.setEventStatus(source.getEventStatus());
+        target.setEventDesc(source.getEventDesc());
+        target.setEventDate(source.getEventDate());
+        target.setReportDateTime(source.getReportDateTime());
+        target.setReportingUser(DatabaseHelper.getUserDao().getByReferenceDto(source.getReportingUser()));
+        target.setSurveillanceOfficer(DatabaseHelper.getUserDao().getByReferenceDto(source.getSurveillanceOfficer()));
 
-        if (dto.getEventLocation() != null) {
-            ado.setEventLocation(DatabaseHelper.getLocationDao().queryUuid(dto.getEventLocation().getUuid()));
-        } else {
-            ado.setEventLocation(null);
-        }
-
-        ado.setTypeOfPlace(dto.getTypeOfPlace());
-        ado.setSrcFirstName(dto.getSrcFirstName());
-        ado.setSrcLastName(dto.getSrcLastName());
-        ado.setSrcTelNo(dto.getSrcTelNo());
-        ado.setSrcEmail(dto.getSrcEmail());
-        ado.setDisease(dto.getDisease());
-
-        if (dto.getSurveillanceOfficer() != null) {
-            ado.setSurveillanceOfficer(DatabaseHelper.getUserDao().queryUuid(dto.getSurveillanceOfficer().getUuid()));
-        } else {
-            ado.setSurveillanceOfficer(null);
-        }
-
-        ado.setTypeOfPlaceText(dto.getTypeOfPlaceText());
+        target.setEventLocation(locationHelper.fillOrCreateFromDto(target.getEventLocation(), source.getEventLocation()));
+        target.setTypeOfPlace(source.getTypeOfPlace());
+        target.setTypeOfPlaceText(source.getTypeOfPlaceText());
+        target.setSrcFirstName(source.getSrcFirstName());
+        target.setSrcLastName(source.getSrcLastName());
+        target.setSrcTelNo(source.getSrcTelNo());
+        target.setSrcEmail(source.getSrcEmail());
+        target.setDisease(source.getDisease());
     }
 
     @Override

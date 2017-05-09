@@ -14,11 +14,9 @@ import de.symeda.sormas.app.backend.location.LocationDtoHelper;
 public class EpiDataBurialDtoHelper extends AdoDtoHelper<EpiDataBurial, EpiDataBurialDto> {
 
     private LocationDtoHelper locationHelper;
-    private EpiDataDtoHelper epiDataHelper;
 
-    public EpiDataBurialDtoHelper(EpiDataDtoHelper epiDataHelper) {
+    public EpiDataBurialDtoHelper() {
         locationHelper = new LocationDtoHelper();
-        this.epiDataHelper = epiDataHelper;
     }
 
     @Override
@@ -32,21 +30,17 @@ public class EpiDataBurialDtoHelper extends AdoDtoHelper<EpiDataBurial, EpiDataB
     }
 
     @Override
-    public void fillInnerFromDto(EpiDataBurial a, EpiDataBurialDto b) {
+    public void fillInnerFromDto(EpiDataBurial target, EpiDataBurialDto source) {
+
         // epi data is set by calling method
 
-        if (b.getBurialAddress() != null) {
-            a.setBurialAddress(DatabaseHelper.getLocationDao().queryUuid(b.getBurialAddress().getUuid()));
-        } else {
-            a.setBurialAddress(null);
-        }
-
-        a.setBurialDateFrom(b.getBurialDateFrom());
-        a.setBurialDateTo(b.getBurialDateTo());
-        a.setBurialPersonname(b.getBurialPersonName());
-        a.setBurialRelation(b.getBurialRelation());
-        a.setBurialIll(b.getBurialIll());
-        a.setBurialTouching(b.getBurialTouching());
+        target.setBurialAddress(locationHelper.fillOrCreateFromDto(target.getBurialAddress(), source.getBurialAddress()));
+        target.setBurialDateFrom(source.getBurialDateFrom());
+        target.setBurialDateTo(source.getBurialDateTo());
+        target.setBurialPersonname(source.getBurialPersonName());
+        target.setBurialRelation(source.getBurialRelation());
+        target.setBurialIll(source.getBurialIll());
+        target.setBurialTouching(source.getBurialTouching());
     }
 
     @Override

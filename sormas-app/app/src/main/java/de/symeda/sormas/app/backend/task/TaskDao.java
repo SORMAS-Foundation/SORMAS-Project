@@ -9,6 +9,7 @@ import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -56,6 +57,11 @@ public class TaskDao extends AbstractAdoDao<Task> {
      * @return
      */
     public List<Task> queryMyPendingForNotification(Date rangeStart, Date rangeEnd) {
+
+        if (ConfigProvider.getUser() == null) {
+            return new ArrayList<Task>();
+        }
+
         try {
             QueryBuilder builder = queryBuilder();
             Where where = builder.where();

@@ -55,47 +55,18 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
         target.setCaseClassification(source.getCaseClassification());
         target.setInvestigationStatus(source.getInvestigationStatus());
         target.setDisease(source.getDisease());
-
-        if (source.getHealthFacility() != null) {
-            target.setHealthFacility(DatabaseHelper.getFacilityDao().queryUuid(source.getHealthFacility().getUuid()));
-        } else {
-            target.setHealthFacility(null);
-        }
-
-        if (source.getPerson() != null) {
-            target.setPerson(DatabaseHelper.getPersonDao().queryUuid(source.getPerson().getUuid()));
-        } else {
-            target.setPerson(null);
-        }
-
+        target.setHealthFacility(DatabaseHelper.getFacilityDao().getByReferenceDto(source.getHealthFacility()));
+        target.setPerson(DatabaseHelper.getPersonDao().getByReferenceDto(source.getPerson()));
         target.setInvestigatedDate(source.getInvestigatedDate());
-        target.setReportDate(source.getReportDate());
 
-        if (source.getReportingUser() != null) {
-            target.setReportingUser(DatabaseHelper.getUserDao().queryUuid(source.getReportingUser().getUuid()));
-        } else {
-            target.setReportingUser(null);
-        }
+        target.setReportDate(source.getReportDate());
+        target.setReportingUser(DatabaseHelper.getUserDao().getByReferenceDto(source.getReportingUser()));
 
         target.setSymptoms(symptomsDtoHelper.fillOrCreateFromDto(target.getSymptoms(), source.getSymptoms()));
 
-        if (source.getRegion() != null) {
-            target.setRegion(DatabaseHelper.getRegionDao().queryUuid(source.getRegion().getUuid()));
-        } else {
-            target.setRegion(null);
-        }
-
-        if (source.getDistrict() != null) {
-            target.setDistrict(DatabaseHelper.getDistrictDao().queryUuid(source.getDistrict().getUuid()));
-        } else {
-            target.setDistrict(null);
-        }
-
-        if (source.getCommunity() != null) {
-            target.setCommunity(DatabaseHelper.getCommunityDao().queryUuid(source.getCommunity().getUuid()));
-        } else {
-            target.setCommunity(null);
-        }
+        target.setRegion(DatabaseHelper.getRegionDao().getByReferenceDto(source.getRegion()));
+        target.setDistrict(DatabaseHelper.getDistrictDao().getByReferenceDto(source.getDistrict()));
+        target.setCommunity(DatabaseHelper.getCommunityDao().getByReferenceDto(source.getCommunity()));
 
         target.setHospitalization(hospitalizationDtoHelper.fillOrCreateFromDto(target.getHospitalization(), source.getHospitalization()));
         target.setEpiData(epiDataDtoHelper.fillOrCreateFromDto(target.getEpiData(), source.getEpiData()));

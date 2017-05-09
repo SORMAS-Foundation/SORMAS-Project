@@ -26,15 +26,49 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> extends R
         super(innerDao);
     }
 
+    /**
+     * Use queryUnmodifiedUuid if you want to retrieve the unmodified version in any case.
+     * @param uuid
+     * @return The modified version of the entity (if exists) or else the unmodified
+     */
     public ADO queryUuid(String uuid) {
         List<ADO> results = queryForEq(AbstractDomainObject.UUID, uuid);
         if (results.size() == 0) {
             return null;
         } else if (results.size() == 1) {
             return results.get(0);
+        } else if (results.size() == 2) {
+            if (results.get(0).isModified()) {
+                if (results.get(1).isModified()) {
+                    throw new NonUniqueResultException("Found multiple modified results for uuid: " + uuid);
+                }
+                return results.get(0);
+            } else {
+                if (!results.get(1).isModified()) {
+                    throw new NonUniqueResultException("Found multiple unmodified results for uuid: " + uuid);
+                }
+                return results.get(1);
+            }
         } else {
             Log.e(getTableName(), "Found multiple results for UUID: " + uuid);
             throw new NonUniqueResultException("Found multiple results for UUID: " + uuid);
+        }
+    }
+
+    public ADO queryUnmodifiedUuid(String uuid) {
+
+        try {
+            List<ADO> results = queryBuilder().where().eq(AbstractDomainObject.UUID, uuid).and().eq(AbstractDomainObject.MODIFIED, false).query();
+            if (results.size() == 0) {
+                return null;
+            } else if (results.size() == 1) {
+                return results.get(0);
+            } else {
+                throw new NonUniqueResultException("Found multiple results for uuid: " + uuid);
+            }
+        } catch (SQLException e) {
+            Log.e(getTableName(), "Could not perform queryForEq");
+            throw new RuntimeException(e);
         }
     }
 
@@ -89,16 +123,35 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> extends R
     }
 
     public boolean save(ADO ado) throws DaoException {
-        ado.setModified(true);
 
         try {
+
             int result;
             if (ado.getId() == null) {
+                // create the new entity and take not that it has been create in the app (modified)
+                ado.setModified(true);
                 result = create(ado);
-            } else {
-                result = update(ado);
             }
+            else {
+                if (ado.isModified()) {
+                    // just update the existing modified version
+                    result = update(ado);
+                } else {
+                    // we need to create a clone of the unmodified version, so we can use it for comparison when merging
+                    ADO unmodifiedAdo = queryForId(ado.getId());
+                    unmodifiedAdo.setId(null);
+
+                    // take note that we are now working with a modified entity
+                    ado.setModified(true);
+                    result = update(ado);
+
+                    // now save the clone
+                    create(unmodifiedAdo);
+                }
+            }
+
             if (result != 1) {
+
                 // #139 check if we couldn't save because the server sent a new version in between
                 // TODO replace with a proper merge mechanism
                 ADO existing = queryForId(ado.getId());
@@ -107,7 +160,9 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> extends R
                 }
                 throw new DaoException(getTableName() + ": Could not create or update entity - see log for additional details: " + ado);
             }
+
             return true;
+
         } catch (RuntimeException e) {
             throw new DaoException(e);
         }
@@ -115,6 +170,8 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> extends R
 
     public boolean saveUnmodified(ADO ado) throws DaoException {
         try {
+
+            // TODO replace with merging stuff1
             int result;
             if (ado.getId() == null) {
                 result = create(ado);

@@ -66,28 +66,11 @@ public class UserDtoHelper extends AdoDtoHelper<User, UserDto> {
             }
         }
 
-        if (source.getRegion() != null) {
-            target.setRegion(DatabaseHelper.getRegionDao().queryUuid(source.getRegion().getUuid()));
-        } else {
-            target.setRegion(null);
-        }
+        target.setRegion(DatabaseHelper.getRegionDao().getByReferenceDto(source.getRegion()));
+        target.setDistrict(DatabaseHelper.getDistrictDao().getByReferenceDto(source.getDistrict()));
+        target.setHealthFacility(DatabaseHelper.getFacilityDao().getByReferenceDto(source.getHealthFacility()));
 
-        if (source.getDistrict() != null) {
-            target.setDistrict(DatabaseHelper.getDistrictDao().queryUuid(source.getDistrict().getUuid()));
-        } else {
-            target.setDistrict(null);
-        }
-        if (source.getHealthFacility() != null) {
-            target.setHealthFacility(DatabaseHelper.getFacilityDao().queryUuid(source.getHealthFacility().getUuid()));
-        } else {
-            target.setHealthFacility(null);
-        }
-
-        if (source.getAssociatedOfficer() != null) {
-            target.setAssociatedOfficer(DatabaseHelper.getUserDao().queryUuid(source.getAssociatedOfficer().getUuid()));
-        } else {
-            target.setAssociatedOfficer(null);
-        }
+        target.setAssociatedOfficer(DatabaseHelper.getUserDao().getByReferenceDto(source.getAssociatedOfficer()));
 
         target.setAddress(locationHelper.fillOrCreateFromDto(target.getAddress(), source.getAddress()));
         target.setPhone(source.getPhone());

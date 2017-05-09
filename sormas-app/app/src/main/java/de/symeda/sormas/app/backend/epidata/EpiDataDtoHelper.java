@@ -21,9 +21,9 @@ public class EpiDataDtoHelper extends AdoDtoHelper<EpiData, EpiDataDto> {
     private EpiDataTravelDtoHelper travelDtoHelper;
 
     public EpiDataDtoHelper() {
-        burialDtoHelper = new EpiDataBurialDtoHelper(this);
-        gatheringDtoHelper = new EpiDataGatheringDtoHelper(this);
-        travelDtoHelper = new EpiDataTravelDtoHelper(this);
+        burialDtoHelper = new EpiDataBurialDtoHelper();
+        gatheringDtoHelper = new EpiDataGatheringDtoHelper();
+        travelDtoHelper = new EpiDataTravelDtoHelper();
     }
 
     @Override

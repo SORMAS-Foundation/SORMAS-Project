@@ -26,7 +26,24 @@ public class PersonDao extends AbstractAdoDao<Person> {
     }
 
     @Override
+    public boolean save(Person person) throws DaoException {
+
+        if (person.getAddress() != null) {
+            DatabaseHelper.getLocationDao().save(person.getAddress());
+        }
+        if (person.getBurialLocation() != null) {
+            DatabaseHelper.getLocationDao().save(person.getBurialLocation());
+        }
+        if (person.getDeathLocation() != null) {
+            DatabaseHelper.getLocationDao().save(person.getDeathLocation());
+        }
+
+        return super.save(person);
+    }
+
+    @Override
     public boolean saveUnmodified(Person person) throws DaoException {
+
         if (person.getAddress() != null) {
             DatabaseHelper.getLocationDao().saveUnmodified(person.getAddress());
         }

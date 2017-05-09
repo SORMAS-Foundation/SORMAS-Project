@@ -11,12 +11,7 @@ import de.symeda.sormas.app.backend.location.LocationDtoHelper;
 
 public class EpiDataTravelDtoHelper extends AdoDtoHelper<EpiDataTravel, EpiDataTravelDto> {
 
-    private LocationDtoHelper locationHelper;
-    private EpiDataDtoHelper epiDataHelper;
-
-    public EpiDataTravelDtoHelper(EpiDataDtoHelper epiDataHelper) {
-        locationHelper = new LocationDtoHelper();
-        this.epiDataHelper = epiDataHelper;
+    public EpiDataTravelDtoHelper() {
     }
 
     @Override
@@ -30,14 +25,14 @@ public class EpiDataTravelDtoHelper extends AdoDtoHelper<EpiDataTravel, EpiDataT
     }
 
     @Override
-    public void fillInnerFromDto(EpiDataTravel a, EpiDataTravelDto b) {
+    public void fillInnerFromDto(EpiDataTravel target, EpiDataTravelDto source) {
 
         // epi data is set by calling method
 
-        a.setTravelType(b.getTravelType());
-        a.setTravelDestination(b.getTravelDestination());
-        a.setTravelDateFrom(b.getTravelDateFrom());
-        a.setTravelDateTo(b.getTravelDateTo());
+        target.setTravelType(source.getTravelType());
+        target.setTravelDestination(source.getTravelDestination());
+        target.setTravelDateFrom(source.getTravelDateFrom());
+        target.setTravelDateTo(source.getTravelDateTo());
     }
 
     @Override
