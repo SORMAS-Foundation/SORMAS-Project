@@ -31,7 +31,7 @@ public class SamplesActivity extends AbstractRootTabActivity {
         createTabViews(adapter);
         pager.setCurrentItem(currentTab);
 
-        SyncSamplesTask.syncSamples(getSupportFragmentManager());
+        SyncSamplesTask.syncSamples(getApplicationContext(), getSupportFragmentManager());
     }
 
     @Override
@@ -46,7 +46,7 @@ public class SamplesActivity extends AbstractRootTabActivity {
 
         switch (item.getItemId()) {
             case R.id.action_reload:
-                SyncSamplesTask.syncSamples(getSupportFragmentManager());
+                SyncSamplesTask.syncSamples(getApplicationContext(), getSupportFragmentManager());
                 return true;
 
             // Report problem button

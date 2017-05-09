@@ -51,15 +51,9 @@ public final class ConfigProvider {
         if (instance.user == null)
             synchronized (ConfigProvider.class) {
                 if (instance.user == null) {
-                    try {
-                        Config config = DatabaseHelper.getConfigDao().queryForId(KEY_USER_UUID);
-                        if (config != null) {
-                            instance.user = DatabaseHelper.getUserDao().queryUuid(config.getValue());
-                        }
-                    } catch (DaoException | RuntimeException e) {
-                        Log.e(ConfigProvider.class.getName(), "Exception thrown by queryUuid in getUser method");
-                        // Do nothing here because we want to continue
-                        // TODO this is probably not the desired behaviour once we've implemented a login solution
+                    Config config = DatabaseHelper.getConfigDao().queryForId(KEY_USER_UUID);
+                    if (config != null) {
+                        instance.user = DatabaseHelper.getUserDao().queryUuid(config.getValue());
                     }
 
                     if (instance.user == null) {

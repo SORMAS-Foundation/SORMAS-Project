@@ -6,17 +6,21 @@ import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.widget.Toast;
 
-import com.j256.ormlite.logger.Logger;
-import com.j256.ormlite.logger.LoggerFactory;
+import com.google.android.gms.analytics.Tracker;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.caze.CaseDtoHelper;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper.DtoGetInterface;
+import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.user.User;
@@ -24,6 +28,7 @@ import de.symeda.sormas.app.person.SyncPersonsTask;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.sample.SyncSamplesTask;
 import de.symeda.sormas.app.util.Callback;
+import de.symeda.sormas.app.util.ErrorReportingHelper;
 import retrofit2.Call;
 
 /**
@@ -31,40 +36,46 @@ import retrofit2.Call;
  */
 public class SyncCasesTask extends AsyncTask<Void, Void, Void> {
 
-    private static final String TAG = SyncCasesTask.class.getSimpleName();
-    protected static Logger logger = LoggerFactory.getLogger(SyncCasesTask.class);
+    private final Context context;
 
-    private SyncCasesTask() {
-
+    private SyncCasesTask(Context context) {
+        this.context = context;
     }
 
     @Override
     protected Void doInBackground(Void... params) {
-
-        new CaseDtoHelper().pullEntities(new DtoGetInterface<CaseDataDto>() {
-            @Override
-            public Call<List<CaseDataDto>> getAll(long since) {
-                User user = ConfigProvider.getUser();
-                if (user != null) {
-                    return RetroProvider.getCaseFacade().getAll(user.getUuid(), since);
+        try {
+            new CaseDtoHelper().pullEntities(new DtoGetInterface<CaseDataDto>() {
+                @Override
+                public Call<List<CaseDataDto>> getAll(long since) {
+                    User user = ConfigProvider.getUser();
+                    if (user != null) {
+                        return RetroProvider.getCaseFacade().getAll(user.getUuid(), since);
+                    }
+                    return null;
                 }
-                return null;
-            }
-        }, DatabaseHelper.getCaseDao());
+            }, DatabaseHelper.getCaseDao());
 
-        new CaseDtoHelper().pushEntities(new AdoDtoHelper.DtoPostInterface<CaseDataDto>() {
-            @Override
-            public Call<Long> postAll(List<CaseDataDto> dtos) {
-                return RetroProvider.getCaseFacade().postAll(dtos);
-            }
-        }, DatabaseHelper.getCaseDao());
+            new CaseDtoHelper().pushEntities(new AdoDtoHelper.DtoPostInterface<CaseDataDto>() {
+                @Override
+                public Call<Long> postAll(List<CaseDataDto> dtos) {
+                    return RetroProvider.getCaseFacade().postAll(dtos);
+                }
+            }, DatabaseHelper.getCaseDao());
+        } catch (DaoException | SQLException | IOException e) {
+            Log.e(getClass().getName(), "Error while synchronizing cases", e);
+            Toast.makeText(context, "Synchronization of cases failed. Please try again.", Toast.LENGTH_LONG).show();
+            SormasApplication application = (SormasApplication) context.getApplicationContext();
+            Tracker tracker = application.getDefaultTracker();
+            ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, null, true);
+        }
 
         return null;
     }
 
-    public static void syncCases(final FragmentManager fragmentManager) {
+    public static void syncCases(Context context, final FragmentManager fragmentManager) {
         if (fragmentManager != null) {
-            syncCases(new Callback() {
+            syncCases(context, new Callback() {
                 @Override
                 public void call() {
                     if (fragmentManager.getFragments() != null) {
@@ -77,12 +88,12 @@ public class SyncCasesTask extends AsyncTask<Void, Void, Void> {
                 }
             });
         } else {
-            syncCases((Callback)null);
+            syncCases(context, (Callback)null);
         }
     }
 
-    public static void syncCases(final FragmentManager fragmentManager, SwipeRefreshLayout refreshLayout) {
-        syncCases(fragmentManager);
+    public static void syncCases(final FragmentManager fragmentManager, Context context, SwipeRefreshLayout refreshLayout) {
+        syncCases(context, fragmentManager);
         refreshLayout.setRefreshing(false);
     }
 
@@ -91,7 +102,7 @@ public class SyncCasesTask extends AsyncTask<Void, Void, Void> {
         final ProgressDialog progressDialog = ProgressDialog.show(context, "Case synchronization",
                 "Cases are being synchronized...", true);
 
-        syncCases(new Callback() {
+        syncCases(context, new Callback() {
             @Override
             public void call() {
                 progressDialog.dismiss();
@@ -100,20 +111,20 @@ public class SyncCasesTask extends AsyncTask<Void, Void, Void> {
         });
     }
 
-    public static void syncCases(final Callback callback) {
-        SyncPersonsTask.syncPersons(new Callback() {
+    public static void syncCases(final Context context, final Callback callback) {
+        SyncPersonsTask.syncPersons(context, new Callback() {
                                         @Override
                                         public void call() {
-                                            syncCasesWithoutDependencies(callback);
+                                            syncCasesWithoutDependencies(context, callback);
                                         }
                                     });
     }
 
-    public static AsyncTask<Void, Void, Void> syncCasesWithoutDependencies(final Callback callback) {
-        return new SyncCasesTask() {
+    public static AsyncTask<Void, Void, Void> syncCasesWithoutDependencies(final Context context, final Callback callback) {
+        return new SyncCasesTask(context) {
             @Override
             protected void onPostExecute(Void aVoid) {
-                SyncSamplesTask.syncSamples(callback);
+                SyncSamplesTask.syncSamples(context, callback);
             }
         }.execute();
     }

@@ -5,14 +5,19 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.google.android.gms.analytics.Tracker;
+
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.SormasApplication;
+import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
@@ -24,6 +29,7 @@ import de.symeda.sormas.app.contact.ContactEditTabs;
 import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.task.TaskEditActivity;
 import de.symeda.sormas.app.task.TaskForm;
+import de.symeda.sormas.app.util.ErrorReportingHelper;
 
 
 public class EventEditActivity extends AbstractEditActivity {
@@ -35,6 +41,8 @@ public class EventEditActivity extends AbstractEditActivity {
     private EventEditPagerAdapter adapter;
     private String eventUuid;
     private String taskUuid;
+
+    private Tracker tracker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +56,9 @@ public class EventEditActivity extends AbstractEditActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setTitle(getResources().getText(R.string.headline_event) + " - " + ConfigProvider.getUser().getUserRole().toShortString());
         }
+
+        SormasApplication application = (SormasApplication) getApplication();
+        tracker = application.getDefaultTracker();
     }
 
     @Override
@@ -78,10 +89,8 @@ public class EventEditActivity extends AbstractEditActivity {
         adapter = new EventEditPagerAdapter(getSupportFragmentManager(), eventUuid);
         createTabViews(adapter);
 
-
         pager.setCurrentItem(currentTab);
     }
-
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -106,7 +115,6 @@ public class EventEditActivity extends AbstractEditActivity {
         inflater.inflate(R.menu.edit_action_bar, menu);
         return true;
     }
-
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
@@ -190,21 +198,26 @@ public class EventEditActivity extends AbstractEditActivity {
                                 && !eventSrcTelNoReq;
 
                         if(validData) {
-
-                            if(event.getEventLocation()!=null) {
-                                DatabaseHelper.getLocationDao().save(event.getEventLocation());
-                            }
-
-                            DatabaseHelper.getEventDao().save(event);
-                            Toast.makeText(this, "event "+ DataHelper.getShortUuid(event.getUuid()) +" saved", Toast.LENGTH_SHORT).show();
-
-                            SyncEventsTask.syncEventsWithProgressDialog(this, new Callback() {
-                                @Override
-                                public void call() {
-                                    // go back to the list
-                                    finish();
+                            try {
+                                if (event.getEventLocation() != null) {
+                                    DatabaseHelper.getLocationDao().save(event.getEventLocation());
                                 }
-                            });
+
+                                DatabaseHelper.getEventDao().save(event);
+                                Toast.makeText(this, "event " + DataHelper.getShortUuid(event.getUuid()) + " saved", Toast.LENGTH_SHORT).show();
+
+                                SyncEventsTask.syncEventsWithProgressDialog(this, new Callback() {
+                                    @Override
+                                    public void call() {
+                                        // go back to the list
+                                        finish();
+                                    }
+                                });
+                            } catch (DaoException e) {
+                                Log.e(getClass().getName(), "Error while trying to save alert", e);
+                                Toast.makeText(this, "Alert could not be saved because of an internal error.", Toast.LENGTH_LONG).show();
+                                ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, event, true);
+                            }
 
                         }
                         else {
@@ -233,8 +246,6 @@ public class EventEditActivity extends AbstractEditActivity {
                                 Toast.makeText(this, "Not saved. Please specify the the source telephone no.", Toast.LENGTH_LONG).show();
                             }
                         }
-
-
 
                         break;
 //                    case EVENT_PERSONS:

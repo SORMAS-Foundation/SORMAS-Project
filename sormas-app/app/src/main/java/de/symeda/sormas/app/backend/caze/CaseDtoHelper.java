@@ -52,66 +52,60 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 
     @Override
     public void fillInnerFromDto(Case target, CaseDataDto source) {
-        try {
-            target.setCaseClassification(source.getCaseClassification());
-            target.setInvestigationStatus(source.getInvestigationStatus());
-            target.setDisease(source.getDisease());
+        target.setCaseClassification(source.getCaseClassification());
+        target.setInvestigationStatus(source.getInvestigationStatus());
+        target.setDisease(source.getDisease());
 
-            if (source.getHealthFacility() != null) {
-                target.setHealthFacility(DatabaseHelper.getFacilityDao().queryUuid(source.getHealthFacility().getUuid()));
-            } else {
-                target.setHealthFacility(null);
-            }
-
-            if (source.getPerson() != null) {
-                target.setPerson(DatabaseHelper.getPersonDao().queryUuid(source.getPerson().getUuid()));
-            } else {
-                target.setPerson(null);
-            }
-
-            target.setInvestigatedDate(source.getInvestigatedDate());
-            target.setReportDate(source.getReportDate());
-
-            if (source.getReportingUser() != null) {
-                target.setReportingUser(DatabaseHelper.getUserDao().queryUuid(source.getReportingUser().getUuid()));
-            } else {
-                target.setReportingUser(null);
-            }
-
-            target.setSymptoms(symptomsDtoHelper.fillOrCreateFromDto(target.getSymptoms(), source.getSymptoms()));
-
-            if (source.getRegion() != null) {
-                target.setRegion(DatabaseHelper.getRegionDao().queryUuid(source.getRegion().getUuid()));
-            } else {
-                target.setRegion(null);
-            }
-
-            if (source.getDistrict() != null) {
-                target.setDistrict(DatabaseHelper.getDistrictDao().queryUuid(source.getDistrict().getUuid()));
-            } else {
-                target.setDistrict(null);
-            }
-
-            if (source.getCommunity() != null) {
-                target.setCommunity(DatabaseHelper.getCommunityDao().queryUuid(source.getCommunity().getUuid()));
-            } else {
-                target.setCommunity(null);
-            }
-
-            target.setHospitalization(hospitalizationDtoHelper.fillOrCreateFromDto(target.getHospitalization(), source.getHospitalization()));
-            target.setEpiData(epiDataDtoHelper.fillOrCreateFromDto(target.getEpiData(), source.getEpiData()));
-
-            target.setSurveillanceOfficer(DatabaseHelper.getUserDao().getByReferenceDto(source.getSurveillanceOfficer()));
-            target.setPregnant(source.getPregnant());
-            target.setMeaslesVaccination(source.getMeaslesVaccination());
-            target.setMeaslesDoses(source.getMeaslesDoses());
-            target.setMeaslesVaccinationInfoSource(source.getMeaslesVaccinationInfoSource());
-            target.setEpidNumber(source.getEpidNumber());
-
-            // TODO user
-        } catch (DaoException e) {
-            throw new RuntimeException(e);
+        if (source.getHealthFacility() != null) {
+            target.setHealthFacility(DatabaseHelper.getFacilityDao().queryUuid(source.getHealthFacility().getUuid()));
+        } else {
+            target.setHealthFacility(null);
         }
+
+        if (source.getPerson() != null) {
+            target.setPerson(DatabaseHelper.getPersonDao().queryUuid(source.getPerson().getUuid()));
+        } else {
+            target.setPerson(null);
+        }
+
+        target.setInvestigatedDate(source.getInvestigatedDate());
+        target.setReportDate(source.getReportDate());
+
+        if (source.getReportingUser() != null) {
+            target.setReportingUser(DatabaseHelper.getUserDao().queryUuid(source.getReportingUser().getUuid()));
+        } else {
+            target.setReportingUser(null);
+        }
+
+        target.setSymptoms(symptomsDtoHelper.fillOrCreateFromDto(target.getSymptoms(), source.getSymptoms()));
+
+        if (source.getRegion() != null) {
+            target.setRegion(DatabaseHelper.getRegionDao().queryUuid(source.getRegion().getUuid()));
+        } else {
+            target.setRegion(null);
+        }
+
+        if (source.getDistrict() != null) {
+            target.setDistrict(DatabaseHelper.getDistrictDao().queryUuid(source.getDistrict().getUuid()));
+        } else {
+            target.setDistrict(null);
+        }
+
+        if (source.getCommunity() != null) {
+            target.setCommunity(DatabaseHelper.getCommunityDao().queryUuid(source.getCommunity().getUuid()));
+        } else {
+            target.setCommunity(null);
+        }
+
+        target.setHospitalization(hospitalizationDtoHelper.fillOrCreateFromDto(target.getHospitalization(), source.getHospitalization()));
+        target.setEpiData(epiDataDtoHelper.fillOrCreateFromDto(target.getEpiData(), source.getEpiData()));
+
+        target.setSurveillanceOfficer(DatabaseHelper.getUserDao().getByReferenceDto(source.getSurveillanceOfficer()));
+        target.setPregnant(source.getPregnant());
+        target.setMeaslesVaccination(source.getMeaslesVaccination());
+        target.setMeaslesDoses(source.getMeaslesDoses());
+        target.setMeaslesVaccinationInfoSource(source.getMeaslesVaccinationInfoSource());
+        target.setEpidNumber(source.getEpidNumber());
     }
 
     @Override

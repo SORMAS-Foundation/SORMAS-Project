@@ -82,7 +82,7 @@ public class EventParticipantsListFragment extends ListFragment {
     }
 
     private void syncEventParticipants(final Event event, final SwipeRefreshLayout refreshLayout) {
-        SyncEventParticipantsTask.syncEventParticipants(new Callback() {
+        SyncEventParticipantsTask.syncEventParticipants(getContext(), new Callback() {
             @Override
             public void call() {
                 List<EventParticipant> eventParticipants = DatabaseHelper.getEventParticipantDao().getByEvent(event);

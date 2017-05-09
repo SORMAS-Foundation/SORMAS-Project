@@ -22,14 +22,11 @@ import de.symeda.sormas.app.util.DataUtils;
 
 public class SampleDao extends AbstractAdoDao<Sample> {
 
-    private static final Log.Level LOG_LEVEL = Log.Level.DEBUG;
-    private static final Logger logger = LoggerFactory.getLogger(RuntimeExceptionDao.class);
-
     public SampleDao(Dao<Sample, Long> innerDao) throws SQLException {
         super(innerDao);
     }
 
-    public Sample getNewSample(Case associatedCase) throws IllegalAccessException, InstantiationException {
+    public Sample getNewSample(Case associatedCase) {
         Sample sample = DataUtils.createNew(Sample.class);
         sample.setAssociatedCase(associatedCase);
         sample.setReportDateTime(new Date());
@@ -39,8 +36,13 @@ public class SampleDao extends AbstractAdoDao<Sample> {
         return sample;
     }
 
-    public List<Sample> queryForCase(Case caze) throws SQLException {
-        return queryBuilder().orderBy(Sample.SAMPLE_DATE_TIME, true).where().eq(Sample.ASSOCIATED_CASE+"_id", caze).query();
+    public List<Sample> queryForCase(Case caze) {
+        try {
+            return queryBuilder().orderBy(Sample.SAMPLE_DATE_TIME, true).where().eq(Sample.ASSOCIATED_CASE + "_id", caze).query();
+        } catch (SQLException e) {
+            android.util.Log.e(getTableName(), "Could not perform queryForCase on Sample");
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

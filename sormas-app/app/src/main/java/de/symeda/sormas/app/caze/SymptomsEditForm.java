@@ -70,119 +70,112 @@ public class SymptomsEditForm extends FormTab {
         super.onResume();
         Symptoms symptoms = null;
 
-        try {
-            final Disease disease = (Disease) getArguments().getSerializable(Case.DISEASE);
+        final Disease disease = (Disease) getArguments().getSerializable(Case.DISEASE);
 
-            // create a new visit from contact data
-            if(getArguments().getBoolean(NEW_SYMPTOMS)) {
-                symptoms = DataUtils.createNew(Symptoms.class);
-            }
-            // open the given visit
-            else {
-                String symptomsUuid = getArguments().getString(Symptoms.UUID);
-                symptoms = DatabaseHelper.getSymptomsDao().queryUuid(symptomsUuid);
-            }
-
-            binding.setSymptoms(symptoms);
-
-            binding.symptomsOnsetDate.initialize(this);
-
-            List<Item> temperature = new ArrayList<>();
-            temperature.add(new Item("",null));
-            for (Float temperatureValue : SymptomsHelper.getTemperatureValues()) {
-                temperature.add(new Item(SymptomsHelper.getTemperatureString(temperatureValue),temperatureValue));
-            }
-
-            FieldHelper.initSpinnerField(binding.symptomsTemperature, temperature);
-            binding.symptomsTemperature.setSelectionOnOpen(37.0f);
-
-            FieldHelper.initSpinnerField(binding.symptomsTemperatureSource, TemperatureSource.class);
-
-            binding.symptomsUnexplainedBleeding.addValueChangedListener(new PropertyField.ValueChangeListener() {
-                @Override
-                public void onChange(PropertyField field) {
-                    toggleUnexplainedBleedingFields();
-                }
-            });
-            binding.symptomsOtherHemorrhagicSymptoms.addValueChangedListener(new PropertyField.ValueChangeListener() {
-                @Override
-                public void onChange(PropertyField field) {
-                    visibilityOtherHemorrhagicSymptoms();
-                }
-            });
-            binding.symptomsOtherNonHemorrhagicSymptoms.addValueChangedListener(new PropertyField.ValueChangeListener() {
-                @Override
-                public void onChange(PropertyField field) {
-                    visibilityOtherNonHemorrhagicSymptoms();
-                }
-            });
-
-            // set initial UI
-            toggleUnexplainedBleedingFields();
-            visibilityOtherHemorrhagicSymptoms();
-            visibilityOtherNonHemorrhagicSymptoms();
-
-            visibilityDisease(disease);
-
-            nonConditionalSymptoms = Arrays.asList(binding.symptomsFever, binding.symptomsVomiting,
-                    binding.symptomsDiarrhea, binding.symptomsBloodInStool1, binding.symptomsNausea, binding.symptomsAbdominalPain,
-                    binding.symptomsHeadache, binding.symptomsMusclePain, binding.symptomsFatigueWeakness, binding.symptomsUnexplainedBleeding,
-                    binding.symptomsSkinRash, binding.symptomsNeckStiffness, binding.symptomsSoreThroat, binding.symptomsCough,
-                    binding.symptomsRunnyNose, binding.symptomsDifficultyBreathing, binding.symptomsChestPain, binding.symptomsConfusedDisoriented,
-                    binding.symptomsSeizures, binding.symptomsAlteredConsciousness, binding.symptomsConjunctivitis,
-                    binding.symptomsEyePainLightSensitive, binding.symptomsKopliksSpots1, binding.symptomsThrobocytopenia,
-                    binding.symptomsOtitisMedia, binding.symptomsHearingloss, binding.symptomsDehydration, binding.symptomsAnorexiaAppetiteLoss,
-                    binding.symptomsRefusalFeedorDrink, binding.symptomsJointPain, binding.symptomsShock,
-                    binding.symptomsHiccups, binding.symptomsOtherNonHemorrhagicSymptoms);
-
-            conditionalBleedingSymptoms = Arrays.asList(binding.symptomsGumsBleeding1, binding.symptomsInjectionSiteBleeding,
-                    binding.symptomsNoseBleeding1, binding.symptomsBloodyBlackStool, binding.symptomsRedBloodVomit,
-                    binding.symptomsDigestedBloodVomit, binding.symptomsCoughingBlood, binding.symptomsBleedingVagina,
-                    binding.symptomsSkinBruising1, binding.symptomsBloodUrine, binding.symptomsOtherHemorrhagicSymptoms);
-
-            List<Item> onsetSymptoms = new ArrayList<>();
-            onsetSymptoms.add(new Item("",null));
-            FieldHelper.initOnsetSymptomSpinnerField(binding.symptomsOnsetSymptom1, onsetSymptoms);
-            addListenerForOnsetSymptom();
-
-            Button clearAllBtn = binding.symptomsClearAll;
-            clearAllBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    for (SymptomStateField symptom : nonConditionalSymptoms) {
-                        symptom.setValue(null);
-                    }
-                    for (SymptomStateField symptom : conditionalBleedingSymptoms) {
-                        symptom.setValue(null);
-                    }
-                }
-            });
-
-            Button setAllToNoBtn = binding.symptomsSetEmptyToNo;
-            setAllToNoBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    for (SymptomStateField symptom : nonConditionalSymptoms) {
-                        if (symptom.getVisibility() == View.VISIBLE && symptom.getValue() == null) {
-                            symptom.setValue(SymptomState.NO);
-                        }
-                    }
-                    for (SymptomStateField symptom : conditionalBleedingSymptoms) {
-                        if (symptom.getVisibility() == View.VISIBLE && symptom.getValue() == null) {
-                            symptom.setValue(SymptomState.NO);
-                        }
-                    }
-                }
-            });
-
-            // @TODO: Workaround, find a better solution. Remove autofocus on first field.
-            getView().requestFocus();
-
-        } catch (Exception e) {
-            ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, true,
-                    " - Symptoms: " + symptoms!=null?symptoms.getUuid():"null", " - User: " + ConfigProvider.getUser().getUuid());
-            e.printStackTrace();
+        // create a new visit from contact data
+        if(getArguments().getBoolean(NEW_SYMPTOMS)) {
+            symptoms = DataUtils.createNew(Symptoms.class);
         }
+        // open the given visit
+        else {
+            String symptomsUuid = getArguments().getString(Symptoms.UUID);
+            symptoms = DatabaseHelper.getSymptomsDao().queryUuid(symptomsUuid);
+        }
+
+        binding.setSymptoms(symptoms);
+
+        binding.symptomsOnsetDate.initialize(this);
+
+        List<Item> temperature = new ArrayList<>();
+        temperature.add(new Item("",null));
+        for (Float temperatureValue : SymptomsHelper.getTemperatureValues()) {
+            temperature.add(new Item(SymptomsHelper.getTemperatureString(temperatureValue),temperatureValue));
+        }
+
+        FieldHelper.initSpinnerField(binding.symptomsTemperature, temperature);
+        binding.symptomsTemperature.setSelectionOnOpen(37.0f);
+
+        FieldHelper.initSpinnerField(binding.symptomsTemperatureSource, TemperatureSource.class);
+
+        binding.symptomsUnexplainedBleeding.addValueChangedListener(new PropertyField.ValueChangeListener() {
+            @Override
+            public void onChange(PropertyField field) {
+                toggleUnexplainedBleedingFields();
+            }
+        });
+        binding.symptomsOtherHemorrhagicSymptoms.addValueChangedListener(new PropertyField.ValueChangeListener() {
+            @Override
+            public void onChange(PropertyField field) {
+                visibilityOtherHemorrhagicSymptoms();
+            }
+        });
+        binding.symptomsOtherNonHemorrhagicSymptoms.addValueChangedListener(new PropertyField.ValueChangeListener() {
+            @Override
+            public void onChange(PropertyField field) {
+                visibilityOtherNonHemorrhagicSymptoms();
+            }
+        });
+
+        // set initial UI
+        toggleUnexplainedBleedingFields();
+        visibilityOtherHemorrhagicSymptoms();
+        visibilityOtherNonHemorrhagicSymptoms();
+
+        visibilityDisease(disease);
+
+        nonConditionalSymptoms = Arrays.asList(binding.symptomsFever, binding.symptomsVomiting,
+                binding.symptomsDiarrhea, binding.symptomsBloodInStool1, binding.symptomsNausea, binding.symptomsAbdominalPain,
+                binding.symptomsHeadache, binding.symptomsMusclePain, binding.symptomsFatigueWeakness, binding.symptomsUnexplainedBleeding,
+                binding.symptomsSkinRash, binding.symptomsNeckStiffness, binding.symptomsSoreThroat, binding.symptomsCough,
+                binding.symptomsRunnyNose, binding.symptomsDifficultyBreathing, binding.symptomsChestPain, binding.symptomsConfusedDisoriented,
+                binding.symptomsSeizures, binding.symptomsAlteredConsciousness, binding.symptomsConjunctivitis,
+                binding.symptomsEyePainLightSensitive, binding.symptomsKopliksSpots1, binding.symptomsThrobocytopenia,
+                binding.symptomsOtitisMedia, binding.symptomsHearingloss, binding.symptomsDehydration, binding.symptomsAnorexiaAppetiteLoss,
+                binding.symptomsRefusalFeedorDrink, binding.symptomsJointPain, binding.symptomsShock,
+                binding.symptomsHiccups, binding.symptomsOtherNonHemorrhagicSymptoms);
+
+        conditionalBleedingSymptoms = Arrays.asList(binding.symptomsGumsBleeding1, binding.symptomsInjectionSiteBleeding,
+                binding.symptomsNoseBleeding1, binding.symptomsBloodyBlackStool, binding.symptomsRedBloodVomit,
+                binding.symptomsDigestedBloodVomit, binding.symptomsCoughingBlood, binding.symptomsBleedingVagina,
+                binding.symptomsSkinBruising1, binding.symptomsBloodUrine, binding.symptomsOtherHemorrhagicSymptoms);
+
+        List<Item> onsetSymptoms = new ArrayList<>();
+        onsetSymptoms.add(new Item("",null));
+        FieldHelper.initOnsetSymptomSpinnerField(binding.symptomsOnsetSymptom1, onsetSymptoms);
+        addListenerForOnsetSymptom();
+
+        Button clearAllBtn = binding.symptomsClearAll;
+        clearAllBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                for (SymptomStateField symptom : nonConditionalSymptoms) {
+                    symptom.setValue(null);
+                }
+                for (SymptomStateField symptom : conditionalBleedingSymptoms) {
+                    symptom.setValue(null);
+                }
+            }
+        });
+
+        Button setAllToNoBtn = binding.symptomsSetEmptyToNo;
+        setAllToNoBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                for (SymptomStateField symptom : nonConditionalSymptoms) {
+                    if (symptom.getVisibility() == View.VISIBLE && symptom.getValue() == null) {
+                        symptom.setValue(SymptomState.NO);
+                    }
+                }
+                for (SymptomStateField symptom : conditionalBleedingSymptoms) {
+                    if (symptom.getVisibility() == View.VISIBLE && symptom.getValue() == null) {
+                        symptom.setValue(SymptomState.NO);
+                    }
+                }
+            }
+        });
+
+        // @TODO: Workaround, find a better solution. Remove autofocus on first field.
+        getView().requestFocus();
     }
 
     /**
@@ -293,7 +286,7 @@ public class SymptomsEditForm extends FormTab {
             }
         }
     }
-    
+
     private void visibilityOtherHemorrhagicSymptoms() {
         SymptomState symptomState = binding.symptomsOtherHemorrhagicSymptoms.getValue();
         binding.symptomsOtherHemorrhagicSymptomsLayout.setVisibility(symptomState == SymptomState.YES?View.VISIBLE:View.GONE);
@@ -311,7 +304,6 @@ public class SymptomsEditForm extends FormTab {
     }
 
     private void toggleUnexplainedBleedingFields() {
-
         int[] fieldIds = {
                 R.id.symptoms_gumsBleeding1,
                 R.id.symptoms_injectionSiteBleeding,

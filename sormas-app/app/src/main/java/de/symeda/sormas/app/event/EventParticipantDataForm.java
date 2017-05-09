@@ -26,33 +26,19 @@ public class EventParticipantDataForm extends FormTab {
 
     private EventParticipantFragmentLayoutBinding binding;
 
-    private Tracker tracker;
-
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.event_participant_fragment_layout, container, false);
-
-        SormasApplication application = (SormasApplication) getActivity().getApplication();
-        tracker = application.getDefaultTracker();
-
         return binding.getRoot();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-
-        try {
-            final String personUuid = getArguments().getString(Person.UUID);
-            EventParticipantDao eventParticipantDao = DatabaseHelper.getEventParticipantDao();
-            EventParticipant eventParticipant = eventParticipantDao.queryUuid(personUuid);
-            binding.setEventParticipant(eventParticipant!=null?eventParticipant:eventParticipantDao.getNewEventParticipant());
-        } catch (Exception e) {
-            ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, true,
-                    " - User: " + ConfigProvider.getUser().getUuid());
-            Toast.makeText(getContext(), "Error while creating empty event person.", Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
-        }
+        final String personUuid = getArguments().getString(Person.UUID);
+        EventParticipantDao eventParticipantDao = DatabaseHelper.getEventParticipantDao();
+        EventParticipant eventParticipant = eventParticipantDao.queryUuid(personUuid);
+        binding.setEventParticipant(eventParticipant!=null?eventParticipant:eventParticipantDao.getNewEventParticipant());
     }
 
     @Override

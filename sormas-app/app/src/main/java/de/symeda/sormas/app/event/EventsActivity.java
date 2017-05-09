@@ -32,7 +32,7 @@ public class EventsActivity extends AbstractRootTabActivity {
         createTabViews(adapter);
         pager.setCurrentItem(currentTab);
 
-        SyncEventsTask.syncEvents(getSupportFragmentManager());
+        SyncEventsTask.syncEvents(getApplicationContext(), getSupportFragmentManager());
     }
 
 
@@ -48,7 +48,7 @@ public class EventsActivity extends AbstractRootTabActivity {
 
         switch(item.getItemId()) {
             case R.id.action_reload:
-                SyncEventsTask.syncEvents(getSupportFragmentManager());
+                SyncEventsTask.syncEvents(getApplicationContext(), getSupportFragmentManager());
                 return true;
 
             // Report problem button

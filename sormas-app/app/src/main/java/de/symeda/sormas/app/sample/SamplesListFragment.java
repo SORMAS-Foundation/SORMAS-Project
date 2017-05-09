@@ -81,7 +81,7 @@ public class SamplesListFragment extends ListFragment {
             refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                 @Override
                 public void onRefresh() {
-                    SyncSamplesTask.syncSamples(getActivity().getSupportFragmentManager(), refreshLayout);
+                    SyncSamplesTask.syncSamples(getActivity().getSupportFragmentManager(), getContext(), refreshLayout);
                 }
             });
         }

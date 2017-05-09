@@ -31,7 +31,7 @@ public class ContactsActivity extends AbstractRootTabActivity {
         createTabViews(adapter);
         pager.setCurrentItem(currentTab);
 
-        SyncContactsTask.syncContacts(getSupportFragmentManager());
+        SyncContactsTask.syncContacts(getApplicationContext(), getSupportFragmentManager());
     }
 
 
@@ -46,7 +46,7 @@ public class ContactsActivity extends AbstractRootTabActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
             case R.id.action_reload:
-                SyncContactsTask.syncContacts(getSupportFragmentManager());
+                SyncContactsTask.syncContacts(getApplicationContext(), getSupportFragmentManager());
                 return true;
 
             // Report problem button

@@ -30,42 +30,38 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 
     @Override
     public void fillInnerFromDto(Event ado, EventDto dto) {
-        try {
-            ado.setEventType(dto.getEventType());
-            ado.setEventStatus(dto.getEventStatus());
-            ado.setEventDesc(dto.getEventDesc());
-            ado.setEventDate(dto.getEventDate());
-            ado.setReportDateTime(dto.getReportDateTime());
+        ado.setEventType(dto.getEventType());
+        ado.setEventStatus(dto.getEventStatus());
+        ado.setEventDesc(dto.getEventDesc());
+        ado.setEventDate(dto.getEventDate());
+        ado.setReportDateTime(dto.getReportDateTime());
 
-            if (dto.getReportingUser() != null) {
-                ado.setReportingUser(DatabaseHelper.getUserDao().queryUuid(dto.getReportingUser().getUuid()));
-            } else {
-                ado.setReportingUser(null);
-            }
-
-            if (dto.getEventLocation() != null) {
-                ado.setEventLocation(DatabaseHelper.getLocationDao().queryUuid(dto.getEventLocation().getUuid()));
-            } else {
-                ado.setEventLocation(null);
-            }
-
-            ado.setTypeOfPlace(dto.getTypeOfPlace());
-            ado.setSrcFirstName(dto.getSrcFirstName());
-            ado.setSrcLastName(dto.getSrcLastName());
-            ado.setSrcTelNo(dto.getSrcTelNo());
-            ado.setSrcEmail(dto.getSrcEmail());
-            ado.setDisease(dto.getDisease());
-
-            if (dto.getSurveillanceOfficer() != null) {
-                ado.setSurveillanceOfficer(DatabaseHelper.getUserDao().queryUuid(dto.getSurveillanceOfficer().getUuid()));
-            } else {
-                ado.setSurveillanceOfficer(null);
-            }
-
-            ado.setTypeOfPlaceText(dto.getTypeOfPlaceText());
-        } catch (DaoException e) {
-            throw new RuntimeException(e);
+        if (dto.getReportingUser() != null) {
+            ado.setReportingUser(DatabaseHelper.getUserDao().queryUuid(dto.getReportingUser().getUuid()));
+        } else {
+            ado.setReportingUser(null);
         }
+
+        if (dto.getEventLocation() != null) {
+            ado.setEventLocation(DatabaseHelper.getLocationDao().queryUuid(dto.getEventLocation().getUuid()));
+        } else {
+            ado.setEventLocation(null);
+        }
+
+        ado.setTypeOfPlace(dto.getTypeOfPlace());
+        ado.setSrcFirstName(dto.getSrcFirstName());
+        ado.setSrcLastName(dto.getSrcLastName());
+        ado.setSrcTelNo(dto.getSrcTelNo());
+        ado.setSrcEmail(dto.getSrcEmail());
+        ado.setDisease(dto.getDisease());
+
+        if (dto.getSurveillanceOfficer() != null) {
+            ado.setSurveillanceOfficer(DatabaseHelper.getUserDao().queryUuid(dto.getSurveillanceOfficer().getUuid()));
+        } else {
+            ado.setSurveillanceOfficer(null);
+        }
+
+        ado.setTypeOfPlaceText(dto.getTypeOfPlaceText());
     }
 
     @Override

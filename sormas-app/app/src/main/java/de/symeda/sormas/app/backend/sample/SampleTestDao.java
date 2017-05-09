@@ -24,13 +24,18 @@ public class SampleTestDao extends AbstractAdoDao<SampleTest> {
         super(innerDao);
     }
 
-    public SampleTest getMostRecentForSample(Sample sample) throws SQLException {
-        if(sample == null) return null;
-        List<SampleTest> tests = queryBuilder().orderBy(SampleTest.TEST_DATE_TIME, false).where().eq(SampleTest.SAMPLE + "_id", sample).query();
-        if (!tests.isEmpty()) {
-            return tests.get(0);
-        } else {
-            return null;
+    public SampleTest getMostRecentForSample(Sample sample) {
+        try {
+            if (sample == null) return null;
+            List<SampleTest> tests = queryBuilder().orderBy(SampleTest.TEST_DATE_TIME, false).where().eq(SampleTest.SAMPLE + "_id", sample).query();
+            if (!tests.isEmpty()) {
+                return tests.get(0);
+            } else {
+                return null;
+            }
+        } catch (SQLException e) {
+            android.util.Log.e(getTableName(), "Could not perform getMostRecentForSample on SampleTest");
+            throw new RuntimeException(e);
         }
     }
 

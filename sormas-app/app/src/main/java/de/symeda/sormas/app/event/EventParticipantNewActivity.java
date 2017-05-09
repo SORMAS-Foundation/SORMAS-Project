@@ -6,6 +6,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -17,6 +18,7 @@ import java.util.List;
 
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
+import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.event.Event;
@@ -53,7 +55,6 @@ public class EventParticipantNewActivity extends AppCompatActivity {
         }
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-
 
         eventParticipantNewPersonForm = new EventParticipantNewPersonForm();
         eventParticipantNewPersonForm.setArguments(params);
@@ -100,63 +101,67 @@ public class EventParticipantNewActivity extends AppCompatActivity {
             case R.id.action_save:
                 final EventParticipant eventParticipant = eventParticipantNewPersonForm.getData();
 
-                try {
-                    boolean eventParticipantDescReq =  eventParticipant.getInvolvementDescription()==null||eventParticipant.getInvolvementDescription().isEmpty();
-                    boolean eventParticipantFirstNameReq =  eventParticipant.getPerson().getFirstName()==null||eventParticipant.getPerson().getFirstName().isEmpty();
-                    boolean eventParticipantLastNameReq =  eventParticipant.getPerson().getLastName()==null||eventParticipant.getPerson().getLastName().isEmpty();
+                boolean eventParticipantDescReq =  eventParticipant.getInvolvementDescription()==null||eventParticipant.getInvolvementDescription().isEmpty();
+                boolean eventParticipantFirstNameReq =  eventParticipant.getPerson().getFirstName()==null||eventParticipant.getPerson().getFirstName().isEmpty();
+                boolean eventParticipantLastNameReq =  eventParticipant.getPerson().getLastName()==null||eventParticipant.getPerson().getLastName().isEmpty();
 
-                    boolean validData = !eventParticipantDescReq
-                            && !eventParticipantFirstNameReq
-                            && !eventParticipantLastNameReq;
+                boolean validData = !eventParticipantDescReq
+                        && !eventParticipantFirstNameReq
+                        && !eventParticipantLastNameReq;
 
-                    if(validData) {
-
+                if(validData) {
+                    try {
                         List<Person> existingPersons = DatabaseHelper.getPersonDao().getAllByName(eventParticipant.getPerson().getFirstName(), eventParticipant.getPerson().getLastName());
                         if (existingPersons.size() > 0) {
 
                             AlertDialog.Builder dialogBuilder = new SelectOrCreatePersonDialogBuilder(this, eventParticipant.getPerson(), existingPersons, new Consumer() {
                                 @Override
                                 public void accept(Object parameter) {
-                                    if(parameter instanceof Person) {
-                                        eventParticipant.setPerson((Person) parameter);
-                                        savePersonAndEventParticipant(eventParticipant);
+                                    if (parameter instanceof Person) {
+                                        try {
+                                            eventParticipant.setPerson((Person) parameter);
+                                            savePersonAndEventParticipant(eventParticipant);
+                                        } catch (DaoException e) {
+                                            Log.e(getClass().getName(), "Error while trying to create alert person", e);
+                                            Toast.makeText(getApplicationContext(), "Alert person could not be created because of an internal error.", Toast.LENGTH_SHORT).show();
+                                            ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, null, true);
+                                        }
                                     }
                                 }
                             });
                             AlertDialog newPersonDialog = dialogBuilder.create();
                             newPersonDialog.show();
-                            ((SelectOrCreatePersonDialogBuilder)dialogBuilder).setButtonListeners(newPersonDialog, this);
+                            ((SelectOrCreatePersonDialogBuilder) dialogBuilder).setButtonListeners(newPersonDialog, this);
 
                         } else {
                             savePersonAndEventParticipant(eventParticipant);
                         }
+                    } catch (DaoException e) {
+                        Log.e(getClass().getName(), "Error while trying to create alert person", e);
+                        Toast.makeText(getApplicationContext(), "Alert person could not be created because of an internal error.", Toast.LENGTH_SHORT).show();
+                        ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, null, true);
                     }
-                    else {
-                        if(eventParticipantDescReq) {
-                            Toast.makeText(this, "Not saved. Please specify the involvement description.", Toast.LENGTH_LONG).show();
-                        }
-                        else if(eventParticipantFirstNameReq) {
-                            Toast.makeText(this, "Not saved. Please specify the first name.", Toast.LENGTH_LONG).show();
-                        }
-                        else if(eventParticipantLastNameReq) {
-                            Toast.makeText(this, "Not saved. Please specify the last name.", Toast.LENGTH_LONG).show();
-                        }
-                    }
-
-                    return true;
-                } catch (Exception e) {
-                    ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, true,
-                            " - EventParticipant: " + eventParticipant.getUuid(), " - User: " + ConfigProvider.getUser().getUuid());
-                    Toast.makeText(this, "Error while saving the event person. " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    e.printStackTrace();
                 }
+                else {
+                    if(eventParticipantDescReq) {
+                        Toast.makeText(this, "Not saved. Please specify the involvement description.", Toast.LENGTH_LONG).show();
+                    }
+                    else if(eventParticipantFirstNameReq) {
+                        Toast.makeText(this, "Not saved. Please specify the first name.", Toast.LENGTH_LONG).show();
+                    }
+                    else if(eventParticipantLastNameReq) {
+                        Toast.makeText(this, "Not saved. Please specify the last name.", Toast.LENGTH_LONG).show();
+                    }
+                }
+
+                return true;
 
         }
         return super.onOptionsItemSelected(item);
     }
 
 
-    private void savePersonAndEventParticipant(final EventParticipant eventParticipant) {
+    private void savePersonAndEventParticipant(final EventParticipant eventParticipant) throws DaoException {
         // save the person
         DatabaseHelper.getPersonDao().save(eventParticipant.getPerson());
         // set the given event
@@ -173,8 +178,6 @@ public class EventParticipantNewActivity extends AppCompatActivity {
                 showEventParticipantEditView(eventParticipant);
             }
         });
-
-
     }
 
     private void showEventParticipantEditView(EventParticipant eventParticipant) {
@@ -182,6 +185,5 @@ public class EventParticipantNewActivity extends AppCompatActivity {
         intent.putExtra(EventParticipant.UUID, eventParticipant.getUuid());
         startActivity(intent);
     }
-
 
 }

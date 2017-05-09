@@ -1,5 +1,7 @@
 package de.symeda.sormas.app.backend.facility;
 
+import android.util.Log;
+
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
 
@@ -29,16 +31,26 @@ public class FacilityDao extends AbstractAdoDao<Facility> {
         return Facility.TABLE_NAME;
     }
 
-    public List<Facility> getByCommunity(Community community) throws SQLException {
-        QueryBuilder<Facility, Long> facilityQb = this.queryBuilder();
-        facilityQb.where().eq("community_id", community);
-        return facilityQb.query();
+    public List<Facility> getByCommunity(Community community) {
+        try {
+            QueryBuilder<Facility, Long> facilityQb = this.queryBuilder();
+            facilityQb.where().eq("community_id", community);
+            return facilityQb.query();
+        } catch (SQLException e) {
+            Log.e(getTableName(), "Could not perform getByCommunity on Facility");
+            throw new RuntimeException(e);
+        }
     }
 
-    public List<Facility> getByType(FacilityType type) throws SQLException {
-        QueryBuilder<Facility, Long> facilityQb = this.queryBuilder();
-        facilityQb.where().eq("type", type);
-        return facilityQb.query();
+    public List<Facility> getByType(FacilityType type) {
+        try {
+            QueryBuilder<Facility, Long> facilityQb = this.queryBuilder();
+            facilityQb.where().eq("type", type);
+            return facilityQb.query();
+        } catch (SQLException e) {
+            Log.e(getTableName(), "Could not perform getByType on Facility");
+            throw new RuntimeException(e);
+        }
     }
 
 }

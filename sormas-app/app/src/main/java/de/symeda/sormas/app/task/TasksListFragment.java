@@ -102,7 +102,7 @@ public class TasksListFragment extends ListFragment {
             refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                 @Override
                 public void onRefresh() {
-                    SyncTasksTask.syncTasks(getActivity().getSupportFragmentManager(), getActivity(), refreshLayout);
+                    SyncTasksTask.syncTasks(getActivity().getSupportFragmentManager(), getContext(), getActivity(), refreshLayout);
                 }
             });
         }

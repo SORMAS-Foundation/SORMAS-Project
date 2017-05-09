@@ -30,43 +30,42 @@ public class TaskDtoHelper extends AdoDtoHelper<Task, TaskDto> {
 
     @Override
     public void fillInnerFromDto(Task ado, TaskDto dto) {
-        try {
-            ado.setTaskContext(dto.getTaskContext());
-            if (dto.getCaze() != null) {
-                ado.setCaze(DatabaseHelper.getCaseDao().queryUuid(dto.getCaze().getUuid()));
-            } else {
-                ado.setCaze(null);
-            }
-            if (dto.getContact() != null) {
-                ado.setContact(DatabaseHelper.getContactDao().queryUuid(dto.getContact().getUuid()));
-            } else {
-                ado.setContact(null);
-            }
-            if (dto.getEvent() != null) {
-                ado.setEvent(DatabaseHelper.getEventDao().queryUuid(dto.getEvent().getUuid()));
-            } else {
-                ado.setEvent(null);
-            }
-            ado.setTaskType(dto.getTaskType());
-            ado.setTaskStatus(dto.getTaskStatus());
-            ado.setDueDate(dto.getDueDate());
-            ado.setPriority(dto.getPriority());
-            ado.setSuggestedStart(dto.getSuggestedStart());
-            ado.setStatusChangeDate(dto.getStatusChangeDate());
-            ado.setPerceivedStart(dto.getPerceivedStart());
+        ado.setTaskContext(dto.getTaskContext());
+        if (dto.getCaze() != null) {
+            ado.setCaze(DatabaseHelper.getCaseDao().queryUuid(dto.getCaze().getUuid()));
+        } else {
+            ado.setCaze(null);
+        }
+        if (dto.getContact() != null) {
+            ado.setContact(DatabaseHelper.getContactDao().queryUuid(dto.getContact().getUuid()));
+        } else {
+            ado.setContact(null);
+        }
+        if (dto.getEvent() != null) {
+            ado.setEvent(DatabaseHelper.getEventDao().queryUuid(dto.getEvent().getUuid()));
+        } else {
+            ado.setEvent(null);
+        }
+        ado.setTaskType(dto.getTaskType());
+        ado.setTaskStatus(dto.getTaskStatus());
+        ado.setDueDate(dto.getDueDate());
+        ado.setPriority(dto.getPriority());
+        ado.setSuggestedStart(dto.getSuggestedStart());
+        ado.setStatusChangeDate(dto.getStatusChangeDate());
+        ado.setPerceivedStart(dto.getPerceivedStart());
 
-            if (dto.getCreatorUser() != null) {
-                ado.setCreatorUser(DatabaseHelper.getUserDao().queryUuid(dto.getCreatorUser().getUuid()));
-            } else {
-                ado.setCreatorUser(null);
-            }
-            ado.setCreatorComment(dto.getCreatorComment());
-            if (dto.getAssigneeUser() != null) {
-                ado.setAssigneeUser(DatabaseHelper.getUserDao().queryUuid(dto.getAssigneeUser().getUuid()));
-            } else {
-                ado.setAssigneeUser(null);
-            }
-            ado.setAssigneeReply(dto.getAssigneeReply());
+        if (dto.getCreatorUser() != null) {
+            ado.setCreatorUser(DatabaseHelper.getUserDao().queryUuid(dto.getCreatorUser().getUuid()));
+        } else {
+            ado.setCreatorUser(null);
+        }
+        ado.setCreatorComment(dto.getCreatorComment());
+        if (dto.getAssigneeUser() != null) {
+            ado.setAssigneeUser(DatabaseHelper.getUserDao().queryUuid(dto.getAssigneeUser().getUuid()));
+        } else {
+            ado.setAssigneeUser(null);
+        }
+        ado.setAssigneeReply(dto.getAssigneeReply());
 
         /*
         @TODO Event
@@ -78,9 +77,6 @@ public class TaskDtoHelper extends AdoDtoHelper<Task, TaskDto> {
         }
 
         */
-        } catch (DaoException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     @Override

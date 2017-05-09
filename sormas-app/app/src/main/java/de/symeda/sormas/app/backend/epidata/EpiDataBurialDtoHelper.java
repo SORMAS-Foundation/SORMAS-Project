@@ -33,24 +33,20 @@ public class EpiDataBurialDtoHelper extends AdoDtoHelper<EpiDataBurial, EpiDataB
 
     @Override
     public void fillInnerFromDto(EpiDataBurial a, EpiDataBurialDto b) {
-        try {
-            // epi data is set by calling method
+        // epi data is set by calling method
 
-            if (b.getBurialAddress() != null) {
-                a.setBurialAddress(DatabaseHelper.getLocationDao().queryUuid(b.getBurialAddress().getUuid()));
-            } else {
-                a.setBurialAddress(null);
-            }
-
-            a.setBurialDateFrom(b.getBurialDateFrom());
-            a.setBurialDateTo(b.getBurialDateTo());
-            a.setBurialPersonname(b.getBurialPersonName());
-            a.setBurialRelation(b.getBurialRelation());
-            a.setBurialIll(b.getBurialIll());
-            a.setBurialTouching(b.getBurialTouching());
-        } catch (DaoException e) {
-            throw new RuntimeException(e);
+        if (b.getBurialAddress() != null) {
+            a.setBurialAddress(DatabaseHelper.getLocationDao().queryUuid(b.getBurialAddress().getUuid()));
+        } else {
+            a.setBurialAddress(null);
         }
+
+        a.setBurialDateFrom(b.getBurialDateFrom());
+        a.setBurialDateTo(b.getBurialDateTo());
+        a.setBurialPersonname(b.getBurialPersonName());
+        a.setBurialRelation(b.getBurialRelation());
+        a.setBurialIll(b.getBurialIll());
+        a.setBurialTouching(b.getBurialTouching());
     }
 
     @Override

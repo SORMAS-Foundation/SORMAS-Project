@@ -1,5 +1,7 @@
 package de.symeda.sormas.app.backend.person;
 
+import android.util.Log;
+
 import com.j256.ormlite.dao.Dao;
 
 import java.sql.SQLException;
@@ -25,7 +27,6 @@ public class PersonDao extends AbstractAdoDao<Person> {
 
     @Override
     public boolean saveUnmodified(Person person) throws DaoException {
-
         if (person.getAddress() != null) {
             DatabaseHelper.getLocationDao().saveUnmodified(person.getAddress());
         }
@@ -39,8 +40,13 @@ public class PersonDao extends AbstractAdoDao<Person> {
         return super.saveUnmodified(person);
     }
 
-    public List<Person> getAllByName(String firstName, String lastName) throws SQLException {
-        return queryBuilder().where().eq(Person.FIRST_NAME, firstName).and().eq(Person.LAST_NAME, lastName).query();
+    public List<Person> getAllByName(String firstName, String lastName) {
+        try {
+            return queryBuilder().where().eq(Person.FIRST_NAME, firstName).and().eq(Person.LAST_NAME, lastName).query();
+        } catch (SQLException e) {
+            Log.e(getTableName(), "Could not perform getAllByName on Person");
+            throw new RuntimeException(e);
+        }
     }
 
 }

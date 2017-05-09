@@ -21,7 +21,6 @@ public class EventEditPagerAdapter extends FragmentStatePagerAdapter {
     private EventEditDataForm eventEditDataForm;
     private PersonEditForm personEditForm;
 
-
     // Build a Constructor and assign the passed Values to appropriate values in the class
     public EventEditPagerAdapter(FragmentManager fm, String eventUuid) {
         super(fm);

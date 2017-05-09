@@ -1,5 +1,7 @@
 package de.symeda.sormas.app.backend.epidata;
 
+import android.util.Log;
+
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.DeleteBuilder;
 import com.j256.ormlite.stmt.QueryBuilder;
@@ -22,11 +24,16 @@ public class EpiDataTravelDao extends AbstractAdoDao<EpiDataTravel> {
         super(innerDao);
     }
 
-    public List<EpiDataTravel> getByEpiData(EpiData epiData) throws SQLException {
-        QueryBuilder qb = queryBuilder();
-        qb.where().eq(EpiDataTravel.EPI_DATA + "_id", epiData);
-        qb.orderBy(EpiDataTravel.CHANGE_DATE, false);
-        return qb.query();
+    public List<EpiDataTravel> getByEpiData(EpiData epiData) {
+        try {
+            QueryBuilder qb = queryBuilder();
+            qb.where().eq(EpiDataTravel.EPI_DATA + "_id", epiData);
+            qb.orderBy(EpiDataTravel.CHANGE_DATE, false);
+            return qb.query();
+        } catch (SQLException e) {
+            Log.e(getTableName(), "Could not perform getByEpiData on EpiDataTravel");
+            throw new RuntimeException(e);
+        }
     }
 
     public void deleteOrphansOfEpiData(EpiData epiData) throws SQLException {

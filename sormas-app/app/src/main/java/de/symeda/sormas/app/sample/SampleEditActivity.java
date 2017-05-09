@@ -6,17 +6,22 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.CheckBox;
 import android.widget.Toast;
 
+import com.google.android.gms.analytics.Tracker;
+
 import java.util.Date;
 
 import de.symeda.sormas.api.sample.ShipmentStatus;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.SormasApplication;
+import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.event.EventParticipant;
@@ -24,6 +29,7 @@ import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.backend.sample.SampleDao;
 import de.symeda.sormas.app.component.UserReportDialog;
 import de.symeda.sormas.app.util.Callback;
+import de.symeda.sormas.app.util.ErrorReportingHelper;
 
 /**
  * Created by Mate Strysewske on 07.02.2017.
@@ -38,6 +44,8 @@ public class SampleEditActivity extends AppCompatActivity {
     private SampleEditForm sampleTab;
 
     private String sampleUuid;
+
+    private Tracker tracker;
 
     @Override
     protected void onNewIntent(Intent intent) {
@@ -67,6 +75,9 @@ public class SampleEditActivity extends AppCompatActivity {
         sampleTab = new SampleEditForm();
         sampleTab.setArguments(getIntent().getExtras());
         ft.add(R.id.fragment_frame, sampleTab).commit();
+
+        SormasApplication application = (SormasApplication) getApplication();
+        tracker = application.getDefaultTracker();
     }
 
     @Override
@@ -169,17 +180,22 @@ public class SampleEditActivity extends AppCompatActivity {
                         && !sampleLabReq;
 
                 if (validData) {
-                    sampleDao.save(sample);
-                    Toast.makeText(this, "sample " + DataHelper.getShortUuid(sample.getUuid()) + " saved", Toast.LENGTH_SHORT).show();
+                    try {
+                        sampleDao.save(sample);
+                        Toast.makeText(this, "sample " + DataHelper.getShortUuid(sample.getUuid()) + " saved", Toast.LENGTH_SHORT).show();
 
-                    SyncSamplesTask.syncSamplesWithProgressDialog(this, new Callback() {
-                        @Override
-                        public void call() {
-                            // go back to the list
-                            finish();
-                        }
-                    });
-
+                        SyncSamplesTask.syncSamplesWithProgressDialog(this, new Callback() {
+                            @Override
+                            public void call() {
+                                // go back to the list
+                                finish();
+                            }
+                        });
+                    } catch (DaoException e) {
+                        Log.e(getClass().getName(), "Error while trying to save sample", e);
+                        Toast.makeText(this, "Sample could not be saved because of an internal error.", Toast.LENGTH_LONG).show();
+                        ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, sample, true);
+                    }
                 } else {
                     if (sampleDateTimeReq) {
                         Toast.makeText(this, "Not saved. Please specify the date and time of sampling.", Toast.LENGTH_LONG).show();

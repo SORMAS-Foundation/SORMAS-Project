@@ -28,24 +28,19 @@ public class EventParticipantDtoHelper extends AdoDtoHelper<EventParticipant, Ev
 
     @Override
     public void fillInnerFromDto(EventParticipant ado, EventParticipantDto dto) {
-        try {
-            if (dto.getEvent() != null) {
-                ado.setEvent(DatabaseHelper.getEventDao().queryUuid(dto.getEvent().getUuid()));
-            } else {
-                ado.setEvent(null);
-            }
-
-            if (dto.getPerson() != null) {
-                ado.setPerson(DatabaseHelper.getPersonDao().queryUuid(dto.getPerson().getUuid()));
-            } else {
-                ado.setPerson(null);
-            }
-
-            ado.setInvolvementDescription(dto.getInvolvementDescription());
-        } catch (DaoException e) {
-            throw new RuntimeException(e);
+        if (dto.getEvent() != null) {
+            ado.setEvent(DatabaseHelper.getEventDao().queryUuid(dto.getEvent().getUuid()));
+        } else {
+            ado.setEvent(null);
         }
-        
+
+        if (dto.getPerson() != null) {
+            ado.setPerson(DatabaseHelper.getPersonDao().queryUuid(dto.getPerson().getUuid()));
+        } else {
+            ado.setPerson(null);
+        }
+
+        ado.setInvolvementDescription(dto.getInvolvementDescription());
     }
 
     @Override

@@ -1,10 +1,8 @@
 package de.symeda.sormas.app.backend.event;
 
+import android.util.Log;
+
 import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.dao.RuntimeExceptionDao;
-import com.j256.ormlite.logger.Log;
-import com.j256.ormlite.logger.Logger;
-import com.j256.ormlite.logger.LoggerFactory;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 
@@ -16,9 +14,6 @@ import de.symeda.sormas.app.util.DataUtils;
 
 public class EventParticipantDao extends AbstractAdoDao<EventParticipant> {
 
-    private static final Log.Level LOG_LEVEL = Log.Level.DEBUG;
-    private static final Logger logger = LoggerFactory.getLogger(RuntimeExceptionDao.class);
-
     public EventParticipantDao(Dao<EventParticipant,Long> innerDao) throws SQLException {
         super(innerDao);
     }
@@ -28,15 +23,20 @@ public class EventParticipantDao extends AbstractAdoDao<EventParticipant> {
         return EventParticipant.TABLE_NAME;
     }
 
-    public List<EventParticipant> getByEvent(Event event) throws SQLException {
-        QueryBuilder qb = queryBuilder();
-        Where where = qb.where();
-        where.eq(EventParticipant.EVENT+"_id", event);
+    public List<EventParticipant> getByEvent(Event event) {
+        try {
+            QueryBuilder qb = queryBuilder();
+            Where where = qb.where();
+            where.eq(EventParticipant.EVENT + "_id", event);
 //        qb.orderBy(EventParticipant.PERSON, true);
-        return qb.query();
+            return qb.query();
+        } catch (SQLException e) {
+            Log.e(getTableName(), "Could not perform getByEvent on EventParticipant");
+            throw new RuntimeException(e);
+        }
     }
 
-    public EventParticipant getNewEventParticipant() throws IllegalAccessException, InstantiationException {
+    public EventParticipant getNewEventParticipant() {
         EventParticipant eventParticipant = DataUtils.createNew(EventParticipant.class);
 
         //Person person = DataUtils.createNew(Person.class);

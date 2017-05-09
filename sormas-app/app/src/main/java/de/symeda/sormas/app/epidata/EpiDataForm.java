@@ -46,15 +46,10 @@ public class EpiDataForm extends FormTab {
 
     private CaseEpidataFragmentLayoutBinding binding;
 
-    private Tracker tracker;
-
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.case_epidata_fragment_layout, container, false);
         View view = binding.getRoot();
-
-        SormasApplication application = (SormasApplication) getActivity().getApplication();
-        tracker = application.getDefaultTracker();
 
         return view;
     }
@@ -66,236 +61,211 @@ public class EpiDataForm extends FormTab {
         final Disease disease = (Disease) getArguments().getSerializable(Case.DISEASE);
         final String epiDataUuid = getArguments().getString(EpiData.UUID);
 
-        try {
-            if (epiDataUuid != null) {
-                final EpiData epiData = DatabaseHelper.getEpiDataDao().queryUuid(epiDataUuid);
-                DatabaseHelper.getEpiDataDao().initLazyData(epiData);
-                binding.setEpiData(epiData);
-            } else {
-                binding.setEpiData(new EpiData());
-            }
-
-            binding.epiDataBurials.initialize(
-                    new EpiDataBurialsListArrayAdapter(
-                            this.getActivity(),
-                            R.layout.epidata_burials_list_item),
-                    new Consumer() {
-                        @Override
-                        public void accept(Object burial) {
-                            if (burial == null) {
-                                try {
-                                    burial = DataUtils.createNew(EpiDataBurial.class);
-                                } catch (Exception e) {
-                                    ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, true,
-                                            "- EpiData: " + epiDataUuid, " - User: " + ConfigProvider.getUser().getUuid());
-                                    e.printStackTrace();
-                                }
-                            }
-                            EpiDataBurialForm burialTab = new EpiDataBurialForm();
-                            burialTab.initialize(
-                                    (EpiDataBurial) burial,
-                                    new Consumer() {
-                                        @Override
-                                        public void accept(Object burialDialog) {
-                                            binding.epiDataBurials.setValue(
-                                                    ListField.updateList(
-                                                            binding.epiDataBurials.getValue(),
-                                                            (EpiDataBurial) burialDialog
-                                                    )
-                                            );
-                                        }
-                                    }, new Consumer() {
-                                        @Override
-                                        public void accept(Object burialDialog) {
-                                            binding.epiDataBurials.setValue(
-                                                    ListField.removeFromList(
-                                                            binding.epiDataBurials.getValue(),
-                                                            (EpiDataBurial) burialDialog
-                                                    )
-                                            );
-                                        }
-                                    },
-                                    getActivity().getResources().getString(R.string.headline_burial)
-                            );
-                            burialTab.show(getFragmentManager(), "epidata_burial_edit_fragment");
-                        }
-                    }
-            );
-
-            binding.epiDataGatherings.initialize(
-                    new EpiDataGatheringsListArrayAdapter(
-                            this.getActivity(),
-                            R.layout.epidata_gatherings_list_item),
-                    new Consumer() {
-                        @Override
-                        public void accept(Object gathering) {
-                            if (gathering == null) {
-                                try {
-                                    gathering = DataUtils.createNew(EpiDataGathering.class);
-                                } catch (Exception e) {
-                                    ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, true,
-                                            "- EpiData: " + epiDataUuid, " - User: " + ConfigProvider.getUser().getUuid());
-                                    e.printStackTrace();
-                                }
-                            }
-                            EpiDataGatheringForm gatheringTab = new EpiDataGatheringForm();
-                            gatheringTab.initialize(
-                                    (EpiDataGathering) gathering,
-                                    new Consumer() {
-                                        @Override
-                                        public void accept(Object gatheringDialog) {
-                                            binding.epiDataGatherings.setValue(
-                                                    ListField.updateList(
-                                                            binding.epiDataGatherings.getValue(),
-                                                            (EpiDataGathering) gatheringDialog
-                                                    )
-                                            );
-                                        }
-                                    }, new Consumer() {
-                                        @Override
-                                        public void accept(Object gatheringDialog) {
-                                            binding.epiDataGatherings.setValue(
-                                                    ListField.removeFromList(
-                                                            binding.epiDataGatherings.getValue(),
-                                                            (EpiDataGathering) gatheringDialog
-                                                    )
-                                            );
-                                        }
-                                    },
-                                    getActivity().getResources().getString(R.string.headline_gathering)
-                            );
-                            gatheringTab.show(getFragmentManager(), "epidata_gathering_edit_fragment");
-                        }
-                    }
-            );
-
-            binding.epiDataTravels.initialize(
-                    new EpiDataTravelsListArrayAdapter(
-                            this.getActivity(),
-                            R.layout.epidata_travels_list_item),
-                    new Consumer() {
-                        @Override
-                        public void accept(Object travel) {
-                            if (travel == null) {
-                                try {
-                                    travel = DataUtils.createNew(EpiDataTravel.class);
-                                } catch (Exception e) {
-                                    ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, true,
-                                            "- EpiData: " + epiDataUuid, " - User: " + ConfigProvider.getUser().getUuid());
-                                    e.printStackTrace();
-                                }
-                            }
-                            EpiDataTravelForm travelTab = new EpiDataTravelForm();
-                            travelTab.initialize(
-                                    (EpiDataTravel) travel,
-                                    new Consumer() {
-                                        @Override
-                                        public void accept(Object travelDialog) {
-                                            binding.epiDataTravels.setValue(
-                                                    ListField.updateList(
-                                                            binding.epiDataTravels.getValue(),
-                                                            (EpiDataTravel) travelDialog
-                                                    )
-                                            );
-                                        }
-                                    }, new Consumer() {
-                                        @Override
-                                        public void accept(Object travelDialog) {
-                                            binding.epiDataTravels.setValue(
-                                                    ListField.removeFromList(
-                                                            binding.epiDataTravels.getValue(),
-                                                            (EpiDataTravel) travelDialog
-                                                    )
-                                            );
-                                        }
-                                    },
-                                    getActivity().getResources().getString(R.string.headline_travel)
-                            );
-                            travelTab.show(getFragmentManager(), "epidata_travel_edit_fragment");
-                        }
-                    }
-            );
-
-            binding.epiData4poultryDate.initialize(this);
-            binding.epiData3wildbirdsDate.initialize(this);
-            FieldHelper.initSpinnerField(binding.epiDataWaterSource, WaterSource.class);
-
-            binding.epiDataBurialAttended.addValueChangedListener(new PropertyField.ValueChangeListener() {
-                @Override
-                public void onChange(PropertyField field) {
-                    binding.epiDataBurials.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
-                }
-            });
-
-            binding.epiDataGatheringAttended.addValueChangedListener(new PropertyField.ValueChangeListener() {
-                @Override
-                public void onChange(PropertyField field) {
-                    binding.epiDataGatherings.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
-                }
-            });
-
-            binding.epiDataTraveled.addValueChangedListener(new PropertyField.ValueChangeListener() {
-                @Override
-                public void onChange(PropertyField field) {
-                    binding.epiDataTravels.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
-                }
-            });
-
-            binding.epiDataPoultry.addValueChangedListener(new PropertyField.ValueChangeListener() {
-                @Override
-                public void onChange(PropertyField field) {
-                    binding.epiData1poultryDetails.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
-                    binding.epiData2poultrySick.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
-                }
-            });
-
-            binding.epiData2poultrySick.addValueChangedListener(new PropertyField.ValueChangeListener() {
-                @Override
-                public void onChange(PropertyField field) {
-                    binding.epiData3poultrySickDetails.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
-                    binding.epiData4poultryDate.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
-                    binding.epiData5poultryLocation.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
-                }
-            });
-
-            binding.epiDataOtherAnimals.addValueChangedListener(new PropertyField.ValueChangeListener() {
-                @Override
-                public void onChange(PropertyField field) {
-                    binding.epiData1otherAnimalsDetails.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
-                }
-            });
-
-            binding.epiDataWildbirds.addValueChangedListener(new PropertyField.ValueChangeListener() {
-                @Override
-                public void onChange(PropertyField field) {
-                    binding.epiData2wildbirdsDetails.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
-                    binding.epiData3wildbirdsDate.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
-                    binding.epiData4wildbirdsLocation.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
-                }
-            });
-
-            binding.epiDataWaterSource.addValueChangedListener(new PropertyField.ValueChangeListener() {
-                @Override
-                public void onChange(PropertyField field) {
-                    binding.epiData5waterSourceOther.setVisibility(field.getValue() == WaterSource.OTHER ? View.VISIBLE : View.GONE);
-                }
-            });
-
-            binding.epiDataWaterBody.addValueChangedListener(new PropertyField.ValueChangeListener() {
-                @Override
-                public void onChange(PropertyField field) {
-                    binding.epiData6waterBodyDetails.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
-                }
-            });
-
-            visibilityDisease(disease);
-            showOrHideHeadlines();
-
-        } catch(Exception e) {
-            ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, true,
-                    "- EpiData: " + epiDataUuid, " - User: " + ConfigProvider.getUser().getUuid());
-            e.printStackTrace();;
+        if (epiDataUuid != null) {
+            final EpiData epiData = DatabaseHelper.getEpiDataDao().queryUuid(epiDataUuid);
+            DatabaseHelper.getEpiDataDao().initLazyData(epiData);
+            binding.setEpiData(epiData);
+        } else {
+            binding.setEpiData(new EpiData());
         }
+
+        binding.epiDataBurials.initialize(
+                new EpiDataBurialsListArrayAdapter(
+                        this.getActivity(),
+                        R.layout.epidata_burials_list_item),
+                new Consumer() {
+                    @Override
+                    public void accept(Object burial) {
+                        if (burial == null) {
+                            burial = DataUtils.createNew(EpiDataBurial.class);
+                        }
+                        EpiDataBurialForm burialTab = new EpiDataBurialForm();
+                        burialTab.initialize(
+                                (EpiDataBurial) burial,
+                                new Consumer() {
+                                    @Override
+                                    public void accept(Object burialDialog) {
+                                        binding.epiDataBurials.setValue(
+                                                ListField.updateList(
+                                                        binding.epiDataBurials.getValue(),
+                                                        (EpiDataBurial) burialDialog
+                                                )
+                                        );
+                                    }
+                                }, new Consumer() {
+                                    @Override
+                                    public void accept(Object burialDialog) {
+                                        binding.epiDataBurials.setValue(
+                                                ListField.removeFromList(
+                                                        binding.epiDataBurials.getValue(),
+                                                        (EpiDataBurial) burialDialog
+                                                )
+                                        );
+                                    }
+                                },
+                                getActivity().getResources().getString(R.string.headline_burial)
+                        );
+                        burialTab.show(getFragmentManager(), "epidata_burial_edit_fragment");
+                    }
+                }
+        );
+
+        binding.epiDataGatherings.initialize(
+                new EpiDataGatheringsListArrayAdapter(
+                        this.getActivity(),
+                        R.layout.epidata_gatherings_list_item),
+                new Consumer() {
+                    @Override
+                    public void accept(Object gathering) {
+                        if (gathering == null) {
+                            gathering = DataUtils.createNew(EpiDataGathering.class);
+                        }
+                        EpiDataGatheringForm gatheringTab = new EpiDataGatheringForm();
+                        gatheringTab.initialize(
+                                (EpiDataGathering) gathering,
+                                new Consumer() {
+                                    @Override
+                                    public void accept(Object gatheringDialog) {
+                                        binding.epiDataGatherings.setValue(
+                                                ListField.updateList(
+                                                        binding.epiDataGatherings.getValue(),
+                                                        (EpiDataGathering) gatheringDialog
+                                                )
+                                        );
+                                    }
+                                }, new Consumer() {
+                                    @Override
+                                    public void accept(Object gatheringDialog) {
+                                        binding.epiDataGatherings.setValue(
+                                                ListField.removeFromList(
+                                                        binding.epiDataGatherings.getValue(),
+                                                        (EpiDataGathering) gatheringDialog
+                                                )
+                                        );
+                                    }
+                                },
+                                getActivity().getResources().getString(R.string.headline_gathering)
+                        );
+                        gatheringTab.show(getFragmentManager(), "epidata_gathering_edit_fragment");
+                    }
+                }
+        );
+
+        binding.epiDataTravels.initialize(
+                new EpiDataTravelsListArrayAdapter(
+                        this.getActivity(),
+                        R.layout.epidata_travels_list_item),
+                new Consumer() {
+                    @Override
+                    public void accept(Object travel) {
+                        if (travel == null) {
+                            travel = DataUtils.createNew(EpiDataTravel.class);
+                        }
+                        EpiDataTravelForm travelTab = new EpiDataTravelForm();
+                        travelTab.initialize(
+                                (EpiDataTravel) travel,
+                                new Consumer() {
+                                    @Override
+                                    public void accept(Object travelDialog) {
+                                        binding.epiDataTravels.setValue(
+                                                ListField.updateList(
+                                                        binding.epiDataTravels.getValue(),
+                                                        (EpiDataTravel) travelDialog
+                                                )
+                                        );
+                                    }
+                                }, new Consumer() {
+                                    @Override
+                                    public void accept(Object travelDialog) {
+                                        binding.epiDataTravels.setValue(
+                                                ListField.removeFromList(
+                                                        binding.epiDataTravels.getValue(),
+                                                        (EpiDataTravel) travelDialog
+                                                )
+                                        );
+                                    }
+                                },
+                                getActivity().getResources().getString(R.string.headline_travel)
+                        );
+                        travelTab.show(getFragmentManager(), "epidata_travel_edit_fragment");
+                    }
+                }
+        );
+
+        binding.epiData4poultryDate.initialize(this);
+        binding.epiData3wildbirdsDate.initialize(this);
+        FieldHelper.initSpinnerField(binding.epiDataWaterSource, WaterSource.class);
+
+        binding.epiDataBurialAttended.addValueChangedListener(new PropertyField.ValueChangeListener() {
+            @Override
+            public void onChange(PropertyField field) {
+                binding.epiDataBurials.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
+            }
+        });
+
+        binding.epiDataGatheringAttended.addValueChangedListener(new PropertyField.ValueChangeListener() {
+            @Override
+            public void onChange(PropertyField field) {
+                binding.epiDataGatherings.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
+            }
+        });
+
+        binding.epiDataTraveled.addValueChangedListener(new PropertyField.ValueChangeListener() {
+            @Override
+            public void onChange(PropertyField field) {
+                binding.epiDataTravels.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
+            }
+        });
+
+        binding.epiDataPoultry.addValueChangedListener(new PropertyField.ValueChangeListener() {
+            @Override
+            public void onChange(PropertyField field) {
+                binding.epiData1poultryDetails.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
+                binding.epiData2poultrySick.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
+            }
+        });
+
+        binding.epiData2poultrySick.addValueChangedListener(new PropertyField.ValueChangeListener() {
+            @Override
+            public void onChange(PropertyField field) {
+                binding.epiData3poultrySickDetails.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
+                binding.epiData4poultryDate.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
+                binding.epiData5poultryLocation.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
+            }
+        });
+
+        binding.epiDataOtherAnimals.addValueChangedListener(new PropertyField.ValueChangeListener() {
+            @Override
+            public void onChange(PropertyField field) {
+                binding.epiData1otherAnimalsDetails.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
+            }
+        });
+
+        binding.epiDataWildbirds.addValueChangedListener(new PropertyField.ValueChangeListener() {
+            @Override
+            public void onChange(PropertyField field) {
+                binding.epiData2wildbirdsDetails.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
+                binding.epiData3wildbirdsDate.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
+                binding.epiData4wildbirdsLocation.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
+            }
+        });
+
+        binding.epiDataWaterSource.addValueChangedListener(new PropertyField.ValueChangeListener() {
+            @Override
+            public void onChange(PropertyField field) {
+                binding.epiData5waterSourceOther.setVisibility(field.getValue() == WaterSource.OTHER ? View.VISIBLE : View.GONE);
+            }
+        });
+
+        binding.epiDataWaterBody.addValueChangedListener(new PropertyField.ValueChangeListener() {
+            @Override
+            public void onChange(PropertyField field) {
+                binding.epiData6waterBodyDetails.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
+            }
+        });
+
+        visibilityDisease(disease);
+        showOrHideHeadlines();
     }
 
     private void visibilityDisease(Disease disease) {

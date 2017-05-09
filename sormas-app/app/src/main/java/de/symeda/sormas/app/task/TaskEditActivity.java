@@ -7,19 +7,25 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.google.android.gms.analytics.Tracker;
+
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.SormasApplication;
+import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.task.TaskDao;
 import de.symeda.sormas.app.component.UserReportDialog;
+import de.symeda.sormas.app.util.ErrorReportingHelper;
 
 
 /**
@@ -33,9 +39,7 @@ public class TaskEditActivity extends AppCompatActivity {
     private String parentContactUuid;
     private String parentEventUuid;
 
-    public TaskEditActivity() {
-
-    }
+    private Tracker tracker;
 
     @Override
     protected void onNewIntent(Intent intent) {
@@ -72,6 +76,9 @@ public class TaskEditActivity extends AppCompatActivity {
         taskForm = new TaskForm();
         taskForm.setArguments(getIntent().getExtras());
         ft.add(R.id.fragment_frame, taskForm).commit();
+
+        SormasApplication application = (SormasApplication) getApplication();
+        tracker = application.getDefaultTracker();
     }
 
     @Override
@@ -123,13 +130,17 @@ public class TaskEditActivity extends AppCompatActivity {
 
             case R.id.action_save:
                 task = (Task) taskForm.getData();
+                try {
+                    TaskDao taskDao = DatabaseHelper.getTaskDao();
+                    taskDao.save(task);
+                    Toast.makeText(this, "task " + DataHelper.getShortUuid(task.getUuid()) + " saved", Toast.LENGTH_SHORT).show();
 
-                TaskDao taskDao = DatabaseHelper.getTaskDao();
-                taskDao.save(task);
-                Toast.makeText(this, "task "+ DataHelper.getShortUuid(task.getUuid()) +" saved", Toast.LENGTH_SHORT).show();
-
-                SyncTasksTask.syncTasks(getSupportFragmentManager(), null);
-
+                    SyncTasksTask.syncTasks(getSupportFragmentManager(), getApplicationContext(), null);
+                } catch (DaoException e) {
+                    Log.e(getClass().getName(), "Error while trying to save task", e);
+                    Toast.makeText(this, "Task could not be saved because of an internal error.", Toast.LENGTH_LONG).show();
+                    ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, task, true);
+                }
                 return true;
         }
         return super.onOptionsItemSelected(item);

@@ -31,7 +31,7 @@ public class CasesActivity extends AbstractRootTabActivity {
         createTabViews(adapter);
         pager.setCurrentItem(currentTab);
 
-        SyncCasesTask.syncCases(getSupportFragmentManager());
+        SyncCasesTask.syncCases(getApplicationContext(), getSupportFragmentManager());
     }
 
     @Override
@@ -46,7 +46,7 @@ public class CasesActivity extends AbstractRootTabActivity {
 
         switch(item.getItemId()) {
             case R.id.action_reload:
-                SyncCasesTask.syncCases(getSupportFragmentManager());
+                SyncCasesTask.syncCases(getApplicationContext(), getSupportFragmentManager());
                 return true;
 
             // Report problem button

@@ -59,16 +59,16 @@ public class ContactsListFragment extends ListFragment {
             refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                 @Override
                 public void onRefresh() {
-                    SyncContactsTask.syncContacts(getActivity().getSupportFragmentManager(), refreshLayout);
+                    SyncContactsTask.syncContacts(getActivity().getSupportFragmentManager(), getContext(), refreshLayout);
                 }
             });
         }
     }
 
     public void updateContactsArrayAdapter() {
-        new SyncPersonsTask().execute();
+        new SyncPersonsTask(getContext()).execute();
 
-        SyncContactsTask.syncContacts(new Callback() {
+        SyncContactsTask.syncContacts(getContext(), new Callback() {
             @Override
             public void call() {
                 List<Contact> contacts = null;
@@ -92,19 +92,12 @@ public class ContactsListFragment extends ListFragment {
         final CaseDao caseDao = DatabaseHelper.getCaseDao();
         final Case caze = caseDao.queryUuid(caseUuid);
 
-        new SyncPersonsTask().execute();
+        new SyncPersonsTask(getContext()).execute();
 
-        SyncContactsTask.syncContactsWithoutDependencies(new Callback() {
+        SyncContactsTask.syncContactsWithoutDependencies(getContext(), new Callback() {
             @Override
             public void call() {
-                List<Contact> contacts = null;
-                try {
-                    contacts = DatabaseHelper.getContactDao().getByCase(caze);
-                } catch (SQLException e) {
-                    ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, true,
-                            " - Case: " + caze.getUuid(), " - User: " + ConfigProvider.getUser().getUuid());
-                    e.printStackTrace();
-                }
+                List<Contact> contacts = DatabaseHelper.getContactDao().getByCase(caze);
                 ArrayAdapter<Contact> listAdapter = (ArrayAdapter<Contact>)getListAdapter();
                 listAdapter.clear();
                 listAdapter.addAll(contacts);

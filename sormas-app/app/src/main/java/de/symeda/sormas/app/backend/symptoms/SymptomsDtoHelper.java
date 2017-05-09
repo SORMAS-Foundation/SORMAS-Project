@@ -22,7 +22,6 @@ public class SymptomsDtoHelper extends AdoDtoHelper<Symptoms, SymptomsDto> {
 
     @Override
     public void fillInnerFromDto(Symptoms a, SymptomsDto b) {
-
         a.setAbdominalPain(b.getAbdominalPain());
         a.setAlteredConsciousness(b.getAlteredConsciousness());
         a.setAnorexiaAppetiteLoss(b.getAnorexiaAppetiteLoss());
@@ -79,7 +78,6 @@ public class SymptomsDtoHelper extends AdoDtoHelper<Symptoms, SymptomsDto> {
 
     @Override
     public void fillInnerFromAdo(SymptomsDto a, Symptoms b) {
-
         a.setAbdominalPain(b.getAbdominalPain());
         a.setAlteredConsciousness(b.getAlteredConsciousness());
         a.setAnorexiaAppetiteLoss(b.getAnorexiaAppetiteLoss());
@@ -132,6 +130,5 @@ public class SymptomsDtoHelper extends AdoDtoHelper<Symptoms, SymptomsDto> {
         a.setThrobocytopenia(b.getThrobocytopenia());
         a.setUnexplainedBleeding(b.getUnexplainedBleeding());
         a.setVomiting(b.getVomiting());
-
     }
 }

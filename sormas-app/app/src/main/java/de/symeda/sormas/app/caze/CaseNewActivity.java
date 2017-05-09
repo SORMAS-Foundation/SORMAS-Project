@@ -7,6 +7,7 @@ import android.support.v4.app.NavUtils;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -24,6 +25,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
+import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
@@ -113,40 +115,38 @@ public class CaseNewActivity extends AppCompatActivity {
                 return true;
 
             case R.id.action_save:
-                try {
-                    final Case caze = caseNewForm.getData();
+                final Case caze = caseNewForm.getData();
 
-                    boolean validData = true;
+                boolean validData = true;
 
-                    if (caze.getPerson().getFirstName() == null || caze.getPerson().getFirstName().isEmpty()) {
-                        validData = false;
-                        Toast.makeText(this, "Please enter a first name for the case person.", Toast.LENGTH_SHORT).show();
-                    }
+                if (caze.getPerson().getFirstName() == null || caze.getPerson().getFirstName().isEmpty()) {
+                    validData = false;
+                    Toast.makeText(this, "Please enter a first name for the case person.", Toast.LENGTH_SHORT).show();
+                }
 
-                    if (caze.getPerson().getLastName() == null || caze.getPerson().getLastName().isEmpty()) {
-                        validData = false;
-                        Toast.makeText(this, "Please enter a last name for the case person.", Toast.LENGTH_SHORT).show();
-                    }
+                if (caze.getPerson().getLastName() == null || caze.getPerson().getLastName().isEmpty()) {
+                    validData = false;
+                    Toast.makeText(this, "Please enter a last name for the case person.", Toast.LENGTH_SHORT).show();
+                }
 
-                    if (caze.getDisease() == null) {
-                        validData = false;
-                        Toast.makeText(this, "Please select a disease.", Toast.LENGTH_SHORT).show();
-                    }
+                if (caze.getDisease() == null) {
+                    validData = false;
+                    Toast.makeText(this, "Please select a disease.", Toast.LENGTH_SHORT).show();
+                }
 
-                    if (caze.getHealthFacility() == null) {
-                        validData = false;
-                        Toast.makeText(this, "Please select a health facility.", Toast.LENGTH_SHORT).show();
-                    }
+                if (caze.getHealthFacility() == null) {
+                    validData = false;
+                    Toast.makeText(this, "Please select a health facility.", Toast.LENGTH_SHORT).show();
+                }
 
-                    if (validData) {
-
+                if (validData) {
+                    try {
                         Bundle params = getIntent().getExtras();
                         if (params != null && params.containsKey(CONTACT)) {
                             savePersonAndCase(caze);
                         } else {
                             List<Person> existingPersons = DatabaseHelper.getPersonDao().getAllByName(caze.getPerson().getFirstName(), caze.getPerson().getLastName());
                             if (existingPersons.size() > 0) {
-
                                 AlertDialog.Builder dialogBuilder = new SelectOrCreatePersonDialogBuilder(this, caze.getPerson(), existingPersons, new Consumer() {
                                     @Override
                                     public void accept(Object parameter) {
@@ -154,11 +154,10 @@ public class CaseNewActivity extends AppCompatActivity {
                                             try {
                                                 caze.setPerson((Person) parameter);
                                                 savePersonAndCase(caze);
-                                            } catch (Exception e) {
-                                                ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, true,
-                                                        " - User: " + ConfigProvider.getUser().getUuid());
-                                                Toast.makeText(getApplicationContext(), "Error while saving the case. " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                                                e.printStackTrace();
+                                            } catch (DaoException e) {
+                                                Log.e(getClass().getName(), "Error while trying to create case", e);
+                                                Toast.makeText(getApplicationContext(), "Case could not be created because of an internal error.", Toast.LENGTH_SHORT).show();
+                                                ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, null, true);
                                             }
                                         }
                                     }
@@ -173,17 +172,16 @@ public class CaseNewActivity extends AppCompatActivity {
                         }
 
 //                      NavUtils.navigateUpFromSameTask(this);
+                    } catch (DaoException e) {
+                        Log.e(getClass().getName(), "Error while trying to create case", e);
+                        Toast.makeText(getApplicationContext(), "Case could not be created because of an internal error.", Toast.LENGTH_SHORT).show();
+                        ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, null, true);
                     }
 
                     return true;
-                } catch (Exception e) {
-                    ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, true,
-                            " - User: " + ConfigProvider.getUser().getUuid());
-                    Toast.makeText(this, "Error while saving the case. " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    e.printStackTrace();
                 }
-
         }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -195,8 +193,7 @@ public class CaseNewActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    private void savePersonAndCase(final Case caze) throws IllegalAccessException, InstantiationException {
-
+    private void savePersonAndCase(final Case caze) throws DaoException {
         // save the person
         DatabaseHelper.getPersonDao().save(caze.getPerson());
 
@@ -222,12 +219,11 @@ public class CaseNewActivity extends AppCompatActivity {
         Toast.makeText(CaseNewActivity.this, caze.getPerson().toString() + " saved", Toast.LENGTH_SHORT).show();
 
         SyncCasesTask.syncCasesWithProgressDialog(this, new Callback() {
-                                    @Override
-                                    public void call() {
-                                        showCaseEditView(caze);
-                                    }
-                                });
-
+            @Override
+            public void call() {
+                showCaseEditView(caze);
+            }
+        });
     }
 
 

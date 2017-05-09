@@ -26,7 +26,7 @@ public class EventDao extends AbstractAdoDao<Event> {
         return Event.TABLE_NAME;
     }
 
-    public Event getNewEvent() throws IllegalAccessException, InstantiationException {
+    public Event getNewEvent() {
         Event event = DataUtils.createNew(Event.class);
         event.setReportDateTime(new Date());
         event.setReportingUser(ConfigProvider.getUser());

@@ -1,15 +1,24 @@
 package de.symeda.sormas.app.event;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
+import android.widget.Toast;
 
+import com.google.android.gms.analytics.Tracker;
+
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 
 import de.symeda.sormas.api.event.EventParticipantDto;
+import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper.DtoGetInterface;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper.DtoPostInterface;
+import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.event.EventParticipantDtoHelper;
@@ -17,6 +26,7 @@ import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.person.SyncPersonsTask;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.util.Callback;
+import de.symeda.sormas.app.util.ErrorReportingHelper;
 import retrofit2.Call;
 
 /**
@@ -24,39 +34,49 @@ import retrofit2.Call;
  */
 public class SyncEventParticipantsTask extends AsyncTask<Void, Void, Void> {
 
-    public SyncEventParticipantsTask() {
+    private final Context context;
+
+    public SyncEventParticipantsTask(final Context context) {
+        this.context = context;
     }
 
     @Override
     protected Void doInBackground(Void... params) {
+        try {
+            new EventParticipantDtoHelper().pullEntities(new DtoGetInterface<EventParticipantDto>() {
+                @Override
+                public Call<List<EventParticipantDto>> getAll(long since) {
 
-        new EventParticipantDtoHelper().pullEntities(new DtoGetInterface<EventParticipantDto>() {
-            @Override
-            public Call<List<EventParticipantDto>> getAll(long since) {
-
-                User user = ConfigProvider.getUser();
-                if (user != null) {
-                    Call<List<EventParticipantDto>> all = RetroProvider.getEventParticipantFacade().getAll(user.getUuid(), since);
-                    return all;
+                    User user = ConfigProvider.getUser();
+                    if (user != null) {
+                        Call<List<EventParticipantDto>> all = RetroProvider.getEventParticipantFacade().getAll(user.getUuid(), since);
+                        return all;
+                    }
+                    return null;
                 }
-                return null;
-            }
-        }, DatabaseHelper.getEventParticipantDao());
+            }, DatabaseHelper.getEventParticipantDao());
 
-        new EventParticipantDtoHelper().pushEntities(new DtoPostInterface<EventParticipantDto>() {
-            @Override
-            public Call<Long> postAll(List<EventParticipantDto> dtos) {
-                // TODO postAll should return the date&time the server used as modifiedDate
-                return RetroProvider.getEventParticipantFacade().postAll(dtos);
-            }
-        }, DatabaseHelper.getEventParticipantDao());
+            new EventParticipantDtoHelper().pushEntities(new DtoPostInterface<EventParticipantDto>() {
+                @Override
+                public Call<Long> postAll(List<EventParticipantDto> dtos) {
+                    // TODO postAll should return the date&time the server used as modifiedDate
+                    return RetroProvider.getEventParticipantFacade().postAll(dtos);
+                }
+            }, DatabaseHelper.getEventParticipantDao());
+        } catch (DaoException | SQLException | IOException e) {
+            Log.e(getClass().getName(), "Error while synchronizing alert persons", e);
+            Toast.makeText(context, "Synchronization of alert persons failed. Please try again.", Toast.LENGTH_LONG).show();
+            SormasApplication application = (SormasApplication) context.getApplicationContext();
+            Tracker tracker = application.getDefaultTracker();
+            ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, null, true);
+        }
 
         return null;
     }
 
-    public static void syncEventParticipants(final FragmentManager fragmentManager) {
+    public static void syncEventParticipants(Context context, final FragmentManager fragmentManager) {
         if (fragmentManager != null) {
-            syncEventParticipants(new Callback() {
+            syncEventParticipants(context, new Callback() {
                 @Override
                 public void call() {
                     if (fragmentManager.getFragments() != null) {
@@ -69,27 +89,27 @@ public class SyncEventParticipantsTask extends AsyncTask<Void, Void, Void> {
                 }
             });
         } else {
-            syncEventParticipants((Callback)null);
+            syncEventParticipants(context, (Callback)null);
         }
     }
 
-    public static void syncEventParticipants(final FragmentManager fragmentManager, SwipeRefreshLayout refreshLayout) {
-        syncEventParticipants(fragmentManager);
+    public static void syncEventParticipants(final FragmentManager fragmentManager, Context context, SwipeRefreshLayout refreshLayout) {
+        syncEventParticipants(context, fragmentManager);
         refreshLayout.setRefreshing(false);
     }
 
-    public static void syncEventParticipants(final Callback callback, final SwipeRefreshLayout refreshLayout) {
-        syncEventParticipants(callback);
+    public static void syncEventParticipants(Context context, final Callback callback, final SwipeRefreshLayout refreshLayout) {
+        syncEventParticipants(context, callback);
         if (refreshLayout != null) {
             refreshLayout.setRefreshing(false);
         }
     }
 
-    public static void syncEventParticipants(final Callback callback) {
-        SyncPersonsTask.syncPersons(new Callback(){
+    public static void syncEventParticipants(final Context context, final Callback callback) {
+        SyncPersonsTask.syncPersons(context, new Callback(){
             @Override
             public void call(){
-                new SyncEventParticipantsTask(){
+                new SyncEventParticipantsTask(context){
                     @Override
                     protected void onPostExecute(Void aVoid){
                         if(callback!=null){
@@ -97,7 +117,7 @@ public class SyncEventParticipantsTask extends AsyncTask<Void, Void, Void> {
                         }
                     }
                 }.execute();
-             }
+            }
         });
     }
 }

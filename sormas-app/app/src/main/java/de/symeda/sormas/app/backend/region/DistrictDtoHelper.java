@@ -25,12 +25,8 @@ public class DistrictDtoHelper extends AdoDtoHelper<District, DistrictDto> {
 
     @Override
     public void fillInnerFromDto(District ado, DistrictDto dto) {
-        try {
-            ado.setName(dto.getName());
-            ado.setRegion(DatabaseHelper.getRegionDao().queryUuid(dto.getRegion().getUuid()));
-        } catch (DaoException e) {
-            throw new RuntimeException(e);
-        }
+        ado.setName(dto.getName());
+        ado.setRegion(DatabaseHelper.getRegionDao().queryUuid(dto.getRegion().getUuid()));
     }
 
     @Override

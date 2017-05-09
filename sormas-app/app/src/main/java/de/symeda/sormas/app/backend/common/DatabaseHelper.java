@@ -110,15 +110,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	private EpiDataGatheringDao epiDataGatheringDao;
 	private EpiDataTravelDao epiDataTravelDao;
 
-	private Tracker tracker;
-
 	private DatabaseHelper(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);//, R.raw.ormlite_config);
 		// HACK to make sure database is initialized - otherwise we could run into problems caused by threads
 		this.getReadableDatabase();
-
-		SormasApplication application = (SormasApplication) context.getApplicationContext();
-		tracker = application.getDefaultTracker();
 	}
 
 	public static void clearTables(boolean clearInfrastructure) {

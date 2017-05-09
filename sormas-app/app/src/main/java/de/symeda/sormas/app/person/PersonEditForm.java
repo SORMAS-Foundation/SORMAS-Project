@@ -57,15 +57,9 @@ public class PersonEditForm extends FormTab {
 
     PersonEditFragmentLayoutBinding binding;
 
-    private Tracker tracker;
-
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.person_edit_fragment_layout, container, false);
-
-        SormasApplication application = (SormasApplication) getActivity().getApplication();
-        tracker = application.getDefaultTracker();
-
         return binding.getRoot();
     }
 
@@ -145,23 +139,16 @@ public class PersonEditForm extends FormTab {
         updateApproximateAgeField();
 
         // ================ Address ================
-        try {
-            final Location location = person.getAddress() != null ? person.getAddress() : DataUtils.createNew(Location.class);
-            LocationDialog.addLocationField(getActivity(), location, binding.personAddress, binding.formCpBtnAddress, new Consumer() {
-                @Override
-                public void accept(Object parameter) {
-                    if(parameter instanceof Location) {
-                        binding.personAddress.setValue(parameter.toString());
-                        binding.getPerson().setAddress(((Location)parameter));
-                    }
+        final Location location = person.getAddress() != null ? person.getAddress() : DataUtils.createNew(Location.class);
+        LocationDialog.addLocationField(getActivity(), location, binding.personAddress, binding.formCpBtnAddress, new Consumer() {
+            @Override
+            public void accept(Object parameter) {
+                if(parameter instanceof Location) {
+                    binding.personAddress.setValue(parameter.toString());
+                    binding.getPerson().setAddress(((Location)parameter));
                 }
-            });
-        } catch (Exception e) {
-            ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, true,
-                    "- Person: " + personUuid, " - User: " + ConfigProvider.getUser().getUuid());
-            Toast.makeText(getContext(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
-        }
+            }
+        });
 
         // ================ Occupation ================
 
@@ -190,7 +177,6 @@ public class PersonEditForm extends FormTab {
         // @TODO: Workaround, find a better solution. Remove autofocus on first field.
         getView().requestFocus();
     }
-
 
     private void updateHeadlineOccupationDetailsFields(Item item, TextField occupationDetails) {
         if(item.getValue()!=null) {

@@ -1,6 +1,7 @@
 package de.symeda.sormas.app.util;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.DatePicker;
@@ -71,13 +72,18 @@ public class DataUtils {
         return items;
     }
 
-    public static <E extends AbstractDomainObject> E createNew(Class<E> clazz) throws IllegalAccessException, InstantiationException {
-        E e = clazz.newInstance();
-        e.setUuid(DataHelper.createUuid());
-        Date now = new Date();
-        e.setCreationDate(now);
-        e.setChangeDate(now);
-        return e;
+    public static <E extends AbstractDomainObject> E createNew(Class<E> clazz) {
+        try {
+            E e = clazz.newInstance();
+            e.setUuid(DataHelper.createUuid());
+            Date now = new Date();
+            e.setCreationDate(now);
+            e.setChangeDate(now);
+            return e;
+        } catch (Exception e) {
+            Log.e(DataUtils.class.getName(), "Could not perform createNew");
+            throw new RuntimeException(e);
+        }
     }
 
 }

@@ -5,13 +5,18 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.google.android.gms.analytics.Tracker;
+
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.SormasApplication;
+import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.event.Event;
@@ -20,6 +25,7 @@ import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.component.UserReportDialog;
 import de.symeda.sormas.app.person.PersonEditForm;
 import de.symeda.sormas.app.util.Callback;
+import de.symeda.sormas.app.util.ErrorReportingHelper;
 
 
 public class EventParticipantEditActivity extends AppCompatActivity {
@@ -28,6 +34,8 @@ public class EventParticipantEditActivity extends AppCompatActivity {
     private PersonEditForm personEditForm;
 
     private String eventParticipantUuid;
+
+    private Tracker tracker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +52,6 @@ public class EventParticipantEditActivity extends AppCompatActivity {
 
         // setting the fragment_frame
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-
 
         EventParticipant eventParticipant = null;
 
@@ -69,8 +76,10 @@ public class EventParticipantEditActivity extends AppCompatActivity {
         ft.add(R.id.eventParticipant_person_fragment, personEditForm);
 
         ft.commit();
-    }
 
+        SormasApplication application = (SormasApplication) getApplication();
+        tracker = application.getDefaultTracker();
+    }
 
     @Override
     protected void onResume() {
@@ -79,7 +88,6 @@ public class EventParticipantEditActivity extends AppCompatActivity {
         eventParticipantTab.onResume();
         personEditForm.onResume();
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -96,7 +104,6 @@ public class EventParticipantEditActivity extends AppCompatActivity {
 
         return true;
     }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -124,32 +131,35 @@ public class EventParticipantEditActivity extends AppCompatActivity {
 
             // Save button
             case R.id.action_save:
-
-
                 eventParticipant = (EventParticipant) eventParticipantTab.getData();
                 Person person = (Person) personEditForm.getData();
 
-                if(person!=null) {
-                    DatabaseHelper.getPersonDao().save(person);
-                }
-
-                if (eventParticipant != null) {
-                    eventParticipant.setPerson(person);
-                    DatabaseHelper.getEventParticipantDao().save(eventParticipant);
-                }
-
-                Toast.makeText(this, "event person " + DataHelper.getShortUuid(eventParticipant.getUuid()) + " saved", Toast.LENGTH_SHORT).show();
-
-                SyncEventsTask.syncEventsWithProgressDialog(this, new Callback() {
-                    @Override
-                    public void call() {
-                        // go back to the list
-                        finish();
+                try {
+                    if (person != null) {
+                        DatabaseHelper.getPersonDao().save(person);
                     }
-                });
+
+                    if (eventParticipant != null) {
+                        eventParticipant.setPerson(person);
+                        DatabaseHelper.getEventParticipantDao().save(eventParticipant);
+                    }
+
+                    Toast.makeText(this, "Alert person " + DataHelper.getShortUuid(eventParticipant.getUuid()) + " saved", Toast.LENGTH_SHORT).show();
+
+                    SyncEventsTask.syncEventsWithProgressDialog(this, new Callback() {
+                        @Override
+                        public void call() {
+                            // go back to the list
+                            finish();
+                        }
+                    });
+                } catch (DaoException e) {
+                    Log.e(getClass().getName(), "Error while trying to save alert person", e);
+                    Toast.makeText(this, "Alert person could not be saved because of an internal error.", Toast.LENGTH_LONG).show();
+                    ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, eventParticipant, true);
+                }
 
                 return true;
-
         }
         return super.onOptionsItemSelected(item);
     }

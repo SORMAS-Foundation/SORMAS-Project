@@ -31,10 +31,8 @@ public class TasksActivity extends AbstractRootTabActivity {
         createTabViews(adapter);
         pager.setCurrentItem(currentTab);
 
-        SyncTasksTask.syncTasks(getSupportFragmentManager(), this);
+        SyncTasksTask.syncTasks(getSupportFragmentManager(), getApplicationContext(), this);
     }
-
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -43,13 +41,12 @@ public class TasksActivity extends AbstractRootTabActivity {
         return true;
     }
 
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
         switch(item.getItemId()) {
             case R.id.action_reload:
-                SyncTasksTask.syncTasks(getSupportFragmentManager(), this);
+                SyncTasksTask.syncTasks(getSupportFragmentManager(), getApplicationContext(), this);
                 return true;
 
             // Report problem button

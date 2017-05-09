@@ -3,11 +3,11 @@ package de.symeda.sormas.app.caze;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import com.google.android.gms.analytics.Tracker;
@@ -16,25 +16,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
-import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.FieldHelper;
 import de.symeda.sormas.app.component.SpinnerField;
 import de.symeda.sormas.app.databinding.CaseNewFragmentLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.FormTab;
-import de.symeda.sormas.app.util.Item;
 
 public class CaseNewForm extends FormTab {
 
@@ -51,21 +47,14 @@ public class CaseNewForm extends FormTab {
         tracker = application.getDefaultTracker();
 
         Bundle arguments = this.getArguments();
-        try {
-            // If this case is created from a contact, there's already a disease and person available
-            if (arguments.containsKey(CaseNewActivity.DISEASE)) {
-                person = (Person) arguments.get(CaseNewActivity.PERSON);
-                disease = (Disease) arguments.get(CaseNewActivity.DISEASE);
-            } else {
-                person = DataUtils.createNew(Person.class);
-            }
-            caze = DatabaseHelper.getCaseDao().createCase(person);
-        } catch (Exception e) {
-            ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, true,
-                    " - User: " + ConfigProvider.getUser().getUuid());
-            Toast.makeText(getContext(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
+        // If this case is created from a contact, there's already a disease and person available
+        if (arguments.containsKey(CaseNewActivity.DISEASE)) {
+            person = (Person) arguments.get(CaseNewActivity.PERSON);
+            disease = (Disease) arguments.get(CaseNewActivity.DISEASE);
+        } else {
+            person = DataUtils.createNew(Person.class);
         }
+        caze = DatabaseHelper.getCaseDao().createCase(person);
 
         binding = DataBindingUtil.inflate(inflater, R.layout.case_new_fragment_layout, container, false);
         return binding.getRoot();

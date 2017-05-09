@@ -22,12 +22,8 @@ public class DistrictDao extends AbstractAdoDao<District> {
         return District.TABLE_NAME;
     }
 
-    public List<District> getByRegion(Region region) throws DaoException {
-        try {
-            return queryForEq("region_id", region);
-        } catch (RuntimeException e) {
-            throw new DaoException(e);
-        }
+    public List<District> getByRegion(Region region) {
+        return queryForEq("region_id", region);
     }
 
 }

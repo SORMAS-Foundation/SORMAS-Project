@@ -63,24 +63,21 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
     protected void preparePulledResult(List<DTO> result) { }
 
     public void pullEntities(DtoGetInterface<DTO> getInterface, final AbstractAdoDao<ADO> dao) throws DaoException, SQLException, IOException {
-        Date maxModifiedDate;
-        Call<List<DTO>> dtoCall;
+        try {
+            Date maxModifiedDate = dao.getLatestChangeDate();
+            // server change date has higher precision
+            // adding 1 is workaround to make sure we don't get entities we already know
+            maxModifiedDate.setTime(maxModifiedDate.getTime() + 1);
 
-        maxModifiedDate = dao.getLatestChangeDate();
-        // server change date has higher precision
-        // adding 1 is workaround to make sure we don't get entities we already know
-        maxModifiedDate.setTime(maxModifiedDate.getTime() + 1);
+            Call<List<DTO>> dtoCall = getInterface.getAll(maxModifiedDate != null ? maxModifiedDate.getTime() : 0);
+            if (dtoCall == null) {
+                return;
+            }
 
-        dtoCall = getInterface.getAll(maxModifiedDate != null ? maxModifiedDate.getTime() : 0);
-        if (dtoCall == null) {
-            return;
-        }
-
-        Response<List<DTO>> response = dtoCall.execute();
-        final List<DTO> result = response.body();
-        if (result != null) {
-            preparePulledResult(result);
-            try {
+            Response<List<DTO>> response = dtoCall.execute();
+            final List<DTO> result = response.body();
+            if (result != null) {
+                preparePulledResult(result);
                 dao.callBatchTasks(new Callable<Void>() {
                     public Void call() throws Exception {
                         boolean empty = dao.countOf() == 0;
@@ -96,12 +93,12 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
                         return null;
                     }
                 });
-            } catch (RuntimeException ex) {
-                // TODO should be removed once we go back to throwing
-                throw new DaoException(ex);
-            }
 
-            Log.d(dao.getTableName(), "Pulled: " + result.size());
+                Log.d(dao.getTableName(), "Pulled: " + result.size());
+            }
+        } catch (RuntimeException e) {
+            Log.e(getClass().getName(), "Exception thrown when trying to pull entities");
+            throw new DaoException(e);
         }
     }
 
@@ -146,10 +143,11 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 
             // do we need to pull again
             return resultChangeDate == -1;
+//        return false;
         } catch (RuntimeException e) {
+            Log.e(getClass().getName(), "Exception thrown when trying to push entities");
             throw new DaoException(e);
         }
-//        return false;
     }
 
     public interface DtoGetInterface<DTO extends DataTransferObject> {

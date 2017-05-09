@@ -28,45 +28,32 @@ public class VisitEditDataForm extends FormTab {
 
     private VisitDataFragmentLayoutBinding binding;
 
-    private Tracker tracker;
-
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.visit_data_fragment_layout, container, false);
-
-        SormasApplication application = (SormasApplication) getActivity().getApplication();
-        tracker = application.getDefaultTracker();
-
         return binding.getRoot();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        try {
-            Visit visit;
+        Visit visit;
 
-            // create a new visit from contact data
-            if(getArguments().getBoolean(NEW_VISIT)) {
-                String keyContactUuid = getArguments().getString(KEY_CONTACT_UUID);
-                visit = DatabaseHelper.getVisitDao().getNewVisitForContact(keyContactUuid);
-            }
-            // open the given visit
-            else {
-                final String visitUuid = getArguments().getString(Visit.UUID);
-                visit = DatabaseHelper.getVisitDao().queryUuid(visitUuid);
-            }
-
-            binding.setVisit(visit);
-
-            binding.visitVisitDateTime.initialize(this);
-            binding.visitVisitStatus.initialize(VisitStatus.class);
-        } catch (Exception e) {
-            ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, true,
-                    " - User: " + ConfigProvider.getUser().getUuid());
-            Toast.makeText(getContext(), "Error while creating the visit. " + e.getMessage(), Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
+        // create a new visit from contact data
+        if(getArguments().getBoolean(NEW_VISIT)) {
+            String keyContactUuid = getArguments().getString(KEY_CONTACT_UUID);
+            visit = DatabaseHelper.getVisitDao().getNewVisitForContact(keyContactUuid);
         }
+        // open the given visit
+        else {
+            final String visitUuid = getArguments().getString(Visit.UUID);
+            visit = DatabaseHelper.getVisitDao().queryUuid(visitUuid);
+        }
+
+        binding.setVisit(visit);
+
+        binding.visitVisitDateTime.initialize(this);
+        binding.visitVisitStatus.initialize(VisitStatus.class);
     }
 
     @Override

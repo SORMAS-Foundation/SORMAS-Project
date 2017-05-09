@@ -33,20 +33,16 @@ public class EpiDataGatheringDtoHelper extends AdoDtoHelper<EpiDataGathering, Ep
 
     @Override
     public void fillInnerFromDto(EpiDataGathering a, EpiDataGatheringDto b) {
-        try {
-            // epi data is set by calling method
+        // epi data is set by calling method
 
-            if (b.getGatheringAddress() != null) {
-                a.setGatheringAddress(DatabaseHelper.getLocationDao().queryUuid(b.getGatheringAddress().getUuid()));
-            } else {
-                a.setGatheringAddress(locationHelper.create());
-            }
-
-            a.setDescription(b.getDescription());
-            a.setGatheringDate(b.getGatheringDate());
-        } catch (DaoException e) {
-            throw new RuntimeException(e);
+        if (b.getGatheringAddress() != null) {
+            a.setGatheringAddress(DatabaseHelper.getLocationDao().queryUuid(b.getGatheringAddress().getUuid()));
+        } else {
+            a.setGatheringAddress(locationHelper.create());
         }
+
+        a.setDescription(b.getDescription());
+        a.setGatheringDate(b.getGatheringDate());
     }
 
     @Override

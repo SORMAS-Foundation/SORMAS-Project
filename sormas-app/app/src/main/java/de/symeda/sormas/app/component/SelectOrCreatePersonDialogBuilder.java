@@ -58,19 +58,12 @@ public class SelectOrCreatePersonDialogBuilder extends AlertDialog.Builder {
             @Override
             public void onClick(View v) {
                 List<Person> existingPersons = null;
-                try {
-                    // update person name from the fields
-                    person.setFirstName(bindingPersonSelect.personFirstName.getValue());
-                    person.setLastName(bindingPersonSelect.personLastName.getValue());
+                // update person name from the fields
+                person.setFirstName(bindingPersonSelect.personFirstName.getValue());
+                person.setLastName(bindingPersonSelect.personLastName.getValue());
 
-                    // search for existing person with this name
-                    existingPersons = DatabaseHelper.getPersonDao().getAllByName(person.getFirstName(), person.getLastName());
-                } catch (SQLException e) {
-                    ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, true,
-                            " - User: " + ConfigProvider.getUser().getUuid());
-                    Toast.makeText(getContext(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    e.printStackTrace();
-                }
+                // search for existing person with this name
+                existingPersons = DatabaseHelper.getPersonDao().getAllByName(person.getFirstName(), person.getLastName());
                 updatePersonSelectRadioGroupField(person, existingPersons, dialogView);
             }
         });

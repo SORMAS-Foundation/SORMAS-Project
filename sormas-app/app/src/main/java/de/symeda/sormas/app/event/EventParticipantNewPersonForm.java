@@ -28,26 +28,11 @@ public class EventParticipantNewPersonForm extends FormTab {
     private EventParticipant eventParticipant;
     private EventParticipantNewFragmentLayoutBinding binding;
 
-    private Person selectedPersonFromDialog;
-
-    private Tracker tracker;
-
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        SormasApplication application = (SormasApplication) getActivity().getApplication();
-        tracker = application.getDefaultTracker();
-
-        try {
-            Person person = DataUtils.createNew(Person.class);
-            eventParticipant = DataUtils.createNew(EventParticipant.class);
-            eventParticipant.setPerson(person);
-
-        } catch (Exception e) {
-            ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, true,
-                    " - User: " + ConfigProvider.getUser().getUuid());
-            Toast.makeText(getContext(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
-        }
+        Person person = DataUtils.createNew(Person.class);
+        eventParticipant = DataUtils.createNew(EventParticipant.class);
+        eventParticipant.setPerson(person);
 
         binding = DataBindingUtil.inflate(inflater, R.layout.event_participant_new_fragment_layout, container, false);
         return binding.getRoot();
@@ -59,7 +44,6 @@ public class EventParticipantNewPersonForm extends FormTab {
         super.onResume();
 
         binding.setEventParticipant(eventParticipant);
-
     }
 
     @Override

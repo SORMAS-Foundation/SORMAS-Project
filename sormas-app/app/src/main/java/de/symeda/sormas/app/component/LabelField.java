@@ -222,28 +222,16 @@ public class LabelField extends PropertyField<String> {
 
     @BindingAdapter("app:sampleTypeOfTest")
     public static void setSampleTypeOfTest(LabelField labelField, String sampleUuid) {
-        try {
-            Sample sample = DatabaseHelper.getSampleDao().queryUuid(sampleUuid);
-            SampleTest mostRecentTest = DatabaseHelper.getSampleTestDao().getMostRecentForSample(sample);
-            labelField.setValue(mostRecentTest != null ? mostRecentTest.getTestType().toString() : "");
-        } catch (DaoException | SQLException e) {
-            Log.e(LabelField.class.getName(), "Exception on trying to access a Sample/SampleTest", e);
-            // TODO how to send information to Google Analytics from here?
-            labelField.setValue(""); // TODO is this a good idea?
-        }
+        Sample sample = DatabaseHelper.getSampleDao().queryUuid(sampleUuid);
+        SampleTest mostRecentTest = DatabaseHelper.getSampleTestDao().getMostRecentForSample(sample);
+        labelField.setValue(mostRecentTest != null ? mostRecentTest.getTestType().toString() : "");
     }
 
     @BindingAdapter("app:sampleTestResult")
     public static void setSampleTestResult(LabelField labelField, String sampleUuid) {
-        try {
-            Sample sample = DatabaseHelper.getSampleDao().queryUuid(sampleUuid);
-            SampleTest mostRecentTest = DatabaseHelper.getSampleTestDao().getMostRecentForSample(sample);
-            labelField.setValue(mostRecentTest != null ? mostRecentTest.getTestResult().toString() : "");
-        } catch (DaoException | SQLException e) {
-            Log.e(LabelField.class.getName(), "Exception on trying to access a Sample/SampleTest", e);
-            // TODO how to send information to Google Analytics from here?
-            labelField.setValue(""); // TODO is this a good idea?
-        }
+        Sample sample = DatabaseHelper.getSampleDao().queryUuid(sampleUuid);
+        SampleTest mostRecentTest = DatabaseHelper.getSampleTestDao().getMostRecentForSample(sample);
+        labelField.setValue(mostRecentTest != null ? mostRecentTest.getTestResult().toString() : "");
     }
 
     @BindingAdapter("app:location")

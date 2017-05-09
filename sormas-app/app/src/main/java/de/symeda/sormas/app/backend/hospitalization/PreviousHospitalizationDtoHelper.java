@@ -31,22 +31,18 @@ public class PreviousHospitalizationDtoHelper extends AdoDtoHelper<PreviousHospi
 
     @Override
     public void fillInnerFromDto(PreviousHospitalization a, PreviousHospitalizationDto b) {
-        try {
-            // hospitalization is set by calling method
+        // hospitalization is set by calling method
 
-            if (b.getHealthFacility() != null) {
-                a.setHealthFacility(DatabaseHelper.getFacilityDao().queryUuid(b.getHealthFacility().getUuid()));
-            } else {
-                a.setHealthFacility(null);
-            }
-
-            a.setIsolated(b.getIsolated());
-            a.setAdmissionDate(b.getAdmissionDate());
-            a.setDischargeDate(b.getDischargeDate());
-            a.setDescription(b.getDescription());
-        } catch (DaoException e) {
-            throw new RuntimeException(e);
+        if (b.getHealthFacility() != null) {
+            a.setHealthFacility(DatabaseHelper.getFacilityDao().queryUuid(b.getHealthFacility().getUuid()));
+        } else {
+            a.setHealthFacility(null);
         }
+
+        a.setIsolated(b.getIsolated());
+        a.setAdmissionDate(b.getAdmissionDate());
+        a.setDischargeDate(b.getDischargeDate());
+        a.setDescription(b.getDescription());
     }
 
     @Override

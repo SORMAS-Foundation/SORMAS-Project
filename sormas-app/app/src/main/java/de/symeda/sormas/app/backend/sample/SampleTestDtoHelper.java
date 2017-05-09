@@ -27,19 +27,15 @@ public class SampleTestDtoHelper extends AdoDtoHelper<SampleTest, SampleTestDto>
 
     @Override
     protected void fillInnerFromDto(SampleTest ado, SampleTestDto dto) {
-        try {
-            if (dto.getSample() != null) {
-                ado.setSample(DatabaseHelper.getSampleDao().queryUuid(dto.getSample().getUuid()));
-            } else {
-                ado.setSample(null);
-            }
-
-            ado.setTestDateTime(dto.getTestDateTime());
-            ado.setTestResult(dto.getTestResult());
-            ado.setTestType(dto.getTestType());
-        } catch (DaoException e) {
-            throw new RuntimeException(e);
+        if (dto.getSample() != null) {
+            ado.setSample(DatabaseHelper.getSampleDao().queryUuid(dto.getSample().getUuid()));
+        } else {
+            ado.setSample(null);
         }
+
+        ado.setTestDateTime(dto.getTestDateTime());
+        ado.setTestResult(dto.getTestResult());
+        ado.setTestType(dto.getTestType());
     }
 
     @Override

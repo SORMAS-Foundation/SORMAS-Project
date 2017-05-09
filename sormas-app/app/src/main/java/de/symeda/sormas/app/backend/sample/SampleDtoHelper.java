@@ -34,49 +34,45 @@ public class SampleDtoHelper extends AdoDtoHelper<Sample, SampleDto> {
 
     @Override
     public void fillInnerFromDto(Sample ado, SampleDto dto) {
-        try {
-            if (dto.getAssociatedCase() != null) {
-                ado.setAssociatedCase(DatabaseHelper.getCaseDao().queryUuid(dto.getAssociatedCase().getUuid()));
-            } else {
-                ado.setAssociatedCase(null);
-            }
-
-            if (dto.getReportingUser() != null) {
-                ado.setReportingUser(DatabaseHelper.getUserDao().queryUuid(dto.getReportingUser().getUuid()));
-            } else {
-                ado.setReportingUser(null);
-            }
-
-            if (dto.getLab() != null) {
-                ado.setLab(DatabaseHelper.getFacilityDao().queryUuid(dto.getLab().getUuid()));
-            } else {
-                ado.setLab(null);
-            }
-
-            if (dto.getOtherLab() != null) {
-                ado.setOtherLab(DatabaseHelper.getFacilityDao().queryUuid(dto.getOtherLab().getUuid()));
-            } else {
-                ado.setOtherLab(null);
-            }
-
-            ado.setSampleCode(dto.getSampleCode());
-            ado.setLabSampleID(dto.getLabSampleID());
-            ado.setSampleDateTime(dto.getSampleDateTime());
-            ado.setReportDateTime(dto.getReportDateTime());
-            ado.setSampleMaterial(dto.getSampleMaterial());
-            ado.setSampleMaterialText(dto.getSampleMaterialText());
-            ado.setShipmentStatus(dto.getShipmentStatus());
-            ado.setShipmentDate(dto.getShipmentDate());
-            ado.setShipmentDetails(dto.getShipmentDetails());
-            ado.setReceivedDate(dto.getReceivedDate());
-            ado.setSpecimenCondition(dto.getSpecimenCondition());
-            ado.setNoTestPossibleReason(dto.getNoTestPossibleReason());
-            ado.setComment(dto.getComment());
-            ado.setSampleSource(dto.getSampleSource());
-            ado.setSuggestedTypeOfTest(dto.getSuggestedTypeOfTest());
-        } catch (DaoException e) {
-            throw new RuntimeException(e);
+        if (dto.getAssociatedCase() != null) {
+            ado.setAssociatedCase(DatabaseHelper.getCaseDao().queryUuid(dto.getAssociatedCase().getUuid()));
+        } else {
+            ado.setAssociatedCase(null);
         }
+
+        if (dto.getReportingUser() != null) {
+            ado.setReportingUser(DatabaseHelper.getUserDao().queryUuid(dto.getReportingUser().getUuid()));
+        } else {
+            ado.setReportingUser(null);
+        }
+
+        if (dto.getLab() != null) {
+            ado.setLab(DatabaseHelper.getFacilityDao().queryUuid(dto.getLab().getUuid()));
+        } else {
+            ado.setLab(null);
+        }
+
+        if (dto.getOtherLab() != null) {
+            ado.setOtherLab(DatabaseHelper.getFacilityDao().queryUuid(dto.getOtherLab().getUuid()));
+        } else {
+            ado.setOtherLab(null);
+        }
+
+        ado.setSampleCode(dto.getSampleCode());
+        ado.setLabSampleID(dto.getLabSampleID());
+        ado.setSampleDateTime(dto.getSampleDateTime());
+        ado.setReportDateTime(dto.getReportDateTime());
+        ado.setSampleMaterial(dto.getSampleMaterial());
+        ado.setSampleMaterialText(dto.getSampleMaterialText());
+        ado.setShipmentStatus(dto.getShipmentStatus());
+        ado.setShipmentDate(dto.getShipmentDate());
+        ado.setShipmentDetails(dto.getShipmentDetails());
+        ado.setReceivedDate(dto.getReceivedDate());
+        ado.setSpecimenCondition(dto.getSpecimenCondition());
+        ado.setNoTestPossibleReason(dto.getNoTestPossibleReason());
+        ado.setComment(dto.getComment());
+        ado.setSampleSource(dto.getSampleSource());
+        ado.setSuggestedTypeOfTest(dto.getSuggestedTypeOfTest());
     }
 
     @Override

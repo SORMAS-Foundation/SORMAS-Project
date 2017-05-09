@@ -82,7 +82,7 @@ public class VisitsListFragment extends ListFragment {
     }
 
     private void syncVisits(final Contact contact, final SwipeRefreshLayout refreshLayout) {
-        SyncVisitsTask.syncVisits(new Callback() {
+        SyncVisitsTask.syncVisits(getContext(), new Callback() {
             @Override
             public void call() {
                 List<Visit> visits = DatabaseHelper.getVisitDao().getByContact(contact);

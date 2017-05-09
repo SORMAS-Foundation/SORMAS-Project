@@ -7,6 +7,7 @@ import android.support.v4.app.NavUtils;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -20,6 +21,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
+import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.epidata.EpiData;
@@ -40,6 +42,7 @@ import de.symeda.sormas.app.sample.SampleEditActivity;
 import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.task.TaskEditActivity;
 import de.symeda.sormas.app.task.TaskForm;
+import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.ValidationFailedException;
 
 public class CaseEditActivity extends AbstractEditActivity {
@@ -51,6 +54,8 @@ public class CaseEditActivity extends AbstractEditActivity {
     private String caseUuid;
     private String taskUuid;
     private Toolbar toolbar;
+
+    private Tracker tracker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +76,9 @@ public class CaseEditActivity extends AbstractEditActivity {
 
             getSupportActionBar().setTitle(getResources().getText(R.string.headline_case) + " - " + ConfigProvider.getUser().getUserRole().toShortString());
         }
+
+        SormasApplication application = (SormasApplication) getApplication();
+        tracker = application.getDefaultTracker();
     }
 
     @Override
@@ -256,53 +264,58 @@ public class CaseEditActivity extends AbstractEditActivity {
                 }
 
                 if (validData) {
-
-                    if (person.getAddress() != null) {
-                        locLocationDao.save(person.getAddress());
-                    }
-                    if (!personDao.save(person)) {
-                        Toast.makeText(this, "person not saved", Toast.LENGTH_SHORT).show();
-                    }
-                    caze.setPerson(person); // we aren't sure why, but this is needed, otherwise the person will be overriden when first saved
-
-                    if (symptoms != null) {
-                        if (!symptomsDao.save(symptoms)) {
-                            Toast.makeText(this, "symptoms not saved", Toast.LENGTH_SHORT).show();
+                    try {
+                        if (person.getAddress() != null) {
+                            locLocationDao.save(person.getAddress());
                         }
-                        caze.setSymptoms(symptoms);
-                    }
-
-                    if (hospitalization != null) {
-                        if (!hospitalizationDao.save(hospitalization)) {
-                            Toast.makeText(this, "hospitalization not saved", Toast.LENGTH_SHORT).show();
+                        if (!personDao.save(person)) {
+                            Toast.makeText(this, "person not saved", Toast.LENGTH_SHORT).show();
                         }
-                        caze.setHospitalization(hospitalization);
-                    }
+                        caze.setPerson(person); // we aren't sure why, but this is needed, otherwise the person will be overriden when first saved
 
-                    if (epiData != null) {
-                        if (!epiDataDao.save(epiData)) {
-                            Toast.makeText(this, "epi data not saved", Toast.LENGTH_SHORT).show();
+                        if (symptoms != null) {
+                            if (!symptomsDao.save(symptoms)) {
+                                Toast.makeText(this, "symptoms not saved", Toast.LENGTH_SHORT).show();
+                            }
+                            caze.setSymptoms(symptoms);
                         }
-                        caze.setEpiData(epiData);
-                    }
 
-                    if (!caseDao.save(caze)) {
-                        Toast.makeText(this, "case not saved", Toast.LENGTH_SHORT).show();
-                    } else {
-                        Toast.makeText(this, "case saved", Toast.LENGTH_LONG).show();
-                    }
-
-                    SyncCasesTask.syncCasesWithProgressDialog(this, new Callback() {
-                        @Override
-                        public void call() {
-                            onResume();
-		                    try {
-		                        pager.setCurrentItem(currentTab + 1);
-		                    } catch (NullPointerException e) {
-		                        pager.setCurrentItem(currentTab);
-		                    }
+                        if (hospitalization != null) {
+                            if (!hospitalizationDao.save(hospitalization)) {
+                                Toast.makeText(this, "hospitalization not saved", Toast.LENGTH_SHORT).show();
+                            }
+                            caze.setHospitalization(hospitalization);
                         }
-                    });
+
+                        if (epiData != null) {
+                            if (!epiDataDao.save(epiData)) {
+                                Toast.makeText(this, "epi data not saved", Toast.LENGTH_SHORT).show();
+                            }
+                            caze.setEpiData(epiData);
+                        }
+
+                        if (!caseDao.save(caze)) {
+                            Toast.makeText(this, "case not saved", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(this, "case saved", Toast.LENGTH_LONG).show();
+                        }
+
+                        SyncCasesTask.syncCasesWithProgressDialog(this, new Callback() {
+                            @Override
+                            public void call() {
+                                onResume();
+                                try {
+                                    pager.setCurrentItem(currentTab + 1);
+                                } catch (NullPointerException e) {
+                                    pager.setCurrentItem(currentTab);
+                                }
+                            }
+                        });
+                    } catch (DaoException e) {
+                        Log.e(getClass().getName(), "Error while trying to save case", e);
+                        Toast.makeText(this, "Case could not be saved because of an internal error.", Toast.LENGTH_LONG).show();
+                        ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, caze, true);
+                    }
                 }
 
                 return true;
@@ -328,7 +341,6 @@ public class CaseEditActivity extends AbstractEditActivity {
                 }
 
                 return true;
-
 
         }
 

@@ -4,19 +4,24 @@ import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
+
+import com.google.android.gms.analytics.Tracker;
 
 import java.util.List;
 
 import de.symeda.sormas.api.task.TaskHelper;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
@@ -29,6 +34,7 @@ import de.symeda.sormas.app.caze.CaseEditActivity;
 import de.symeda.sormas.app.contact.ContactEditActivity;
 import de.symeda.sormas.app.databinding.TaskFragmentLayoutBinding;
 import de.symeda.sormas.app.event.EventEditActivity;
+import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.FormTab;
 
 /**
@@ -41,9 +47,13 @@ public class TaskForm extends FormTab {
 
     private TaskFragmentLayoutBinding binding;
 
+    private Tracker tracker;
+
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.task_fragment_layout, container, false);
+        SormasApplication application = (SormasApplication) getContext().getApplicationContext();
+        tracker = application.getDefaultTracker();
         return binding.getRoot();
     }
 
@@ -80,7 +90,13 @@ public class TaskForm extends FormTab {
                 @Override
                 public void onClick(View v) {
                     if(!binding.taskAssigneeReply.getValue().isEmpty()) {
-                        taskDao.changeTaskStatus(task, TaskStatus.NOT_EXECUTABLE);
+                        try {
+                            taskDao.changeTaskStatus(task, TaskStatus.NOT_EXECUTABLE);
+                        } catch (DaoException e) {
+                            Log.e(getClass().getName(), "Error while trying to update task status", e);
+                            Toast.makeText(getContext(), "Task status could not be edited because of an internal error.", Toast.LENGTH_LONG).show();
+                            ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, task, true);
+                        }
                         reloadFragment();
                     } else {
                         Toast.makeText(getContext(), "An assignee reply is required to set the task status to not executable.", Toast.LENGTH_SHORT).show();
@@ -98,7 +114,13 @@ public class TaskForm extends FormTab {
             binding.taskDoneBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    taskDao.changeTaskStatus(task, TaskStatus.DONE);
+                    try {
+                        taskDao.changeTaskStatus(task, TaskStatus.DONE);
+                    } catch (DaoException e) {
+                        Log.e(getClass().getName(), "Error while trying to update task status", e);
+                        Toast.makeText(getContext(), "Task status could not be edited because of an internal error.", Toast.LENGTH_LONG).show();
+                        ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, task, true);
+                    }
                     reloadFragment();
                 }
             });

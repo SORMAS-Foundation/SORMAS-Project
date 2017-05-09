@@ -4,16 +4,21 @@ import android.app.AlertDialog;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.google.android.gms.analytics.Tracker;
+
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.SormasApplication;
+import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
@@ -25,6 +30,7 @@ import de.symeda.sormas.app.component.AbstractEditActivity;
 import de.symeda.sormas.app.component.HelpDialog;
 import de.symeda.sormas.app.component.UserReportDialog;
 import de.symeda.sormas.app.util.Callback;
+import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.ValidationFailedException;
 
 
@@ -39,6 +45,8 @@ public class VisitEditActivity extends AbstractEditActivity {
     private String contactUuid;
 //    private String visitUuid;
 
+    private Tracker tracker;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,6 +59,9 @@ public class VisitEditActivity extends AbstractEditActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setTitle(getResources().getText(R.string.headline_visit) + " - " + ConfigProvider.getUser().getUserRole().toShortString());
         }
+
+        SormasApplication application = (SormasApplication) getApplication();
+        tracker = application.getDefaultTracker();
     }
 
     @Override
@@ -175,7 +186,7 @@ public class VisitEditActivity extends AbstractEditActivity {
                     });
 
                     return true;
-                } catch(ValidationFailedException e) {
+                } catch (ValidationFailedException e) {
                     Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
 
                     // if any symptomsfield is required, change pager to symptoms tab
@@ -183,6 +194,10 @@ public class VisitEditActivity extends AbstractEditActivity {
                         pager.setCurrentItem(VisitEditTabs.SYMPTOMS.ordinal());
                     }
                     return true;
+                } catch (DaoException e) {
+                    Log.e(getClass().getName(), "Error while trying to save visit", e);
+                    Toast.makeText(this, "Visit could not be saved because of an internal error.", Toast.LENGTH_LONG).show();
+                    ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, visit, true);
                 }
 
         }

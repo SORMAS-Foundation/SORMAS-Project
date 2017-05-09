@@ -16,8 +16,6 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 
 public class HospitalizationDao extends AbstractAdoDao<Hospitalization> {
 
-    private static final Logger logger = LoggerFactory.getLogger(HospitalizationDao.class);
-
     public HospitalizationDao(Dao<Hospitalization,Long> innerDao) throws SQLException {
         super(innerDao);
     }
@@ -28,12 +26,7 @@ public class HospitalizationDao extends AbstractAdoDao<Hospitalization> {
     }
 
     public Hospitalization initLazyData(Hospitalization hospitalization) {
-        try {
-            hospitalization.setPreviousHospitalizations(DatabaseHelper.getPreviousHospitalizationDao().getByHospitalization(hospitalization));
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-
+        hospitalization.setPreviousHospitalizations(DatabaseHelper.getPreviousHospitalizationDao().getByHospitalization(hospitalization));
         return hospitalization;
     }
 

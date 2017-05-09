@@ -41,7 +41,7 @@ public class SormasApplication extends Application {
             @Override
             public void call() {
                 // this also syncs cases which syncs persons
-                SyncTasksTask.syncTasks((Callback)null, SormasApplication.this);
+                SyncTasksTask.syncTasks(getApplicationContext(), (Callback)null, SormasApplication.this);
             }
         });
 

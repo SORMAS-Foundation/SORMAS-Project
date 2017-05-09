@@ -41,11 +41,8 @@ public abstract class PropertyField<T> extends LinearLayout {
         return I18nProperties.getFieldDescription(captionPropertyId);
     }
 
-
     public abstract void setValue(T value);
-
     public abstract T getValue();
-
 
     public void addValueChangedListener(ValueChangeListener listener) {
         if (valueChangedListeners == null) {
@@ -81,15 +78,6 @@ public abstract class PropertyField<T> extends LinearLayout {
         inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
-    public void removeValueChangedListener(ValueChangeListener listener) {
-        if (valueChangedListeners != null) {
-            int i = valueChangedListeners.indexOf(listener);
-            if (i >= 0) {
-                valueChangedListeners.remove(i);
-            }
-        }
-    }
-
     protected void onValueChanged() {
         if (valueChangedListeners != null) {
             for (ValueChangeListener valueChangedListener : valueChangedListeners) {
@@ -121,7 +109,6 @@ public abstract class PropertyField<T> extends LinearLayout {
         String captionPropertyId = fieldId.substring(seperatorIndex + 1, seperatorIndex+2).toUpperCase() + fieldId.substring(seperatorIndex + 2).replaceAll("_", ".");
         return captionPropertyId;
     }
-
 
     public interface ValueChangeListener {
         void onChange(PropertyField field);

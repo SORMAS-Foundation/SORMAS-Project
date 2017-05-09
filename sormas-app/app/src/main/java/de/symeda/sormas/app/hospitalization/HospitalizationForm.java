@@ -33,16 +33,10 @@ public class HospitalizationForm extends FormTab {
 
     private CaseHospitalizationFragmentLayoutBinding binding;
 
-    private Tracker tracker;
-
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.case_hospitalization_fragment_layout, container, false);
         View view = binding.getRoot();
-
-        SormasApplication application = (SormasApplication) getActivity().getApplication();
-        tracker = application.getDefaultTracker();
-
         return view;
     }
 
@@ -51,96 +45,83 @@ public class HospitalizationForm extends FormTab {
         super.onResume();
         final String caseUuid = getArguments().getString(HospitalizationForm.KEY_CASE_UUID);
 
-        try {
-            final Case caze = DatabaseHelper.getCaseDao().queryUuid(caseUuid);
-            if (caze.getHealthFacility() != null) {
-                ((LabelField) getView().findViewById(R.id.hospitalization_healthFacility)).setValue(caze.getHealthFacility().toString());
-            }
-
-            // lazy loading hospitalization and inner previousHospitalization
-            final String hospitalizationUuid = getArguments().getString(Hospitalization.UUID);
-            if (hospitalizationUuid != null) {
-                final Hospitalization hospitalization = DatabaseHelper.getHospitalizationDao().queryUuid(hospitalizationUuid);
-                DatabaseHelper.getHospitalizationDao().initLazyData(hospitalization);
-                binding.setHospitalization(hospitalization);
-
-            } else {
-                // TODO: check if it ok this way
-                binding.setHospitalization(new Hospitalization());
-            }
-
-            binding.hospitalizationPreviousHospitalizations.initialize(
-                    new PreviousHospitalizationsListArrayAdapter(
-                            this.getActivity(),
-                            R.layout.previous_hospitalizations_list_item),
-                    new Consumer() {
-                        @Override
-                        public void accept(Object prevHosp) {
-                            if (prevHosp == null) {
-                                try {
-                                    prevHosp = DataUtils.createNew(PreviousHospitalization.class);
-                                } catch (Exception e) {
-                                    ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, true,
-                                            "- Case: " + caseUuid, " - User: " + ConfigProvider.getUser().getUuid());
-                                    e.printStackTrace();
-                                }
-                            }
-                            PreviousHospitalizationForm previousHospitalizationForm = new PreviousHospitalizationForm();
-                            previousHospitalizationForm.initialize(
-                                    (PreviousHospitalization) prevHosp,
-                                    new Consumer() {
-                                        @Override
-                                        public void accept(Object prevHospDialog) {
-                                            binding.hospitalizationPreviousHospitalizations.setValue(
-                                                    ListField.updateList(
-                                                            binding.hospitalizationPreviousHospitalizations.getValue(),
-                                                            (PreviousHospitalization) prevHospDialog
-                                                    )
-                                            );
-
-                                        }
-                                    }, new Consumer() {
-                                        @Override
-                                        public void accept(Object prevHospDialog) {
-                                            binding.hospitalizationPreviousHospitalizations.setValue(
-                                                    ListField.removeFromList(
-                                                            binding.hospitalizationPreviousHospitalizations.getValue(),
-                                                            (PreviousHospitalization) prevHospDialog
-                                                    )
-                                            );
-
-                                        }
-                                    },
-                                    getActivity().getResources().getString(R.string.headline_previousHospitalization)
-                            );
-                            previousHospitalizationForm.show(getFragmentManager(), "previous_hospitalization_edit_fragment");
-                        }
-                    }
-            );
-
-            binding.hospitalizationAdmissionDate.initialize(this);
-            binding.hospitalizationDischargeDate.initialize(this);
-            binding.hospitalization1isolationDate.initialize(this);
-
-            binding.hospitalizationHospitalizedPreviously.addValueChangedListener(new PropertyField.ValueChangeListener() {
-                @Override
-                public void onChange(PropertyField field) {
-                    binding.hospitalizationPreviousHospitalizations.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
-                }
-            });
-
-            binding.hospitalizationIsolated.addValueChangedListener(new PropertyField.ValueChangeListener() {
-                @Override
-                public void onChange(PropertyField field) {
-                    binding.hospitalization1isolationDate.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
-                }
-            });
-
-        } catch (Exception e) {
-            ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, true,
-                    "- Case: " + caseUuid, " - User: " + ConfigProvider.getUser().getUuid());
-            e.printStackTrace();
+        final Case caze = DatabaseHelper.getCaseDao().queryUuid(caseUuid);
+        if (caze.getHealthFacility() != null) {
+            ((LabelField) getView().findViewById(R.id.hospitalization_healthFacility)).setValue(caze.getHealthFacility().toString());
         }
+
+        // lazy loading hospitalization and inner previousHospitalization
+        final String hospitalizationUuid = getArguments().getString(Hospitalization.UUID);
+        if (hospitalizationUuid != null) {
+            final Hospitalization hospitalization = DatabaseHelper.getHospitalizationDao().queryUuid(hospitalizationUuid);
+            DatabaseHelper.getHospitalizationDao().initLazyData(hospitalization);
+            binding.setHospitalization(hospitalization);
+
+        } else {
+            // TODO: check if it ok this way
+            binding.setHospitalization(new Hospitalization());
+        }
+
+        binding.hospitalizationPreviousHospitalizations.initialize(
+                new PreviousHospitalizationsListArrayAdapter(
+                        this.getActivity(),
+                        R.layout.previous_hospitalizations_list_item),
+                new Consumer() {
+                    @Override
+                    public void accept(Object prevHosp) {
+                        if (prevHosp == null) {
+                            prevHosp = DataUtils.createNew(PreviousHospitalization.class);
+                        }
+                        PreviousHospitalizationForm previousHospitalizationForm = new PreviousHospitalizationForm();
+                        previousHospitalizationForm.initialize(
+                                (PreviousHospitalization) prevHosp,
+                                new Consumer() {
+                                    @Override
+                                    public void accept(Object prevHospDialog) {
+                                        binding.hospitalizationPreviousHospitalizations.setValue(
+                                                ListField.updateList(
+                                                        binding.hospitalizationPreviousHospitalizations.getValue(),
+                                                        (PreviousHospitalization) prevHospDialog
+                                                )
+                                        );
+
+                                    }
+                                }, new Consumer() {
+                                    @Override
+                                    public void accept(Object prevHospDialog) {
+                                        binding.hospitalizationPreviousHospitalizations.setValue(
+                                                ListField.removeFromList(
+                                                        binding.hospitalizationPreviousHospitalizations.getValue(),
+                                                        (PreviousHospitalization) prevHospDialog
+                                                )
+                                        );
+
+                                    }
+                                },
+                                getActivity().getResources().getString(R.string.headline_previousHospitalization)
+                        );
+                        previousHospitalizationForm.show(getFragmentManager(), "previous_hospitalization_edit_fragment");
+                    }
+                }
+        );
+
+        binding.hospitalizationAdmissionDate.initialize(this);
+        binding.hospitalizationDischargeDate.initialize(this);
+        binding.hospitalization1isolationDate.initialize(this);
+
+        binding.hospitalizationHospitalizedPreviously.addValueChangedListener(new PropertyField.ValueChangeListener() {
+            @Override
+            public void onChange(PropertyField field) {
+                binding.hospitalizationPreviousHospitalizations.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
+            }
+        });
+
+        binding.hospitalizationIsolated.addValueChangedListener(new PropertyField.ValueChangeListener() {
+            @Override
+            public void onChange(PropertyField field) {
+                binding.hospitalization1isolationDate.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
+            }
+        });
     }
 
 

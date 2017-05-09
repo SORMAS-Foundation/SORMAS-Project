@@ -23,13 +23,8 @@ public class CommunityDao extends AbstractAdoDao<Community> {
         return Community.TABLE_NAME;
     }
 
-
-    public List<Community> getByDistrict(District district) throws DaoException {
-        try {
-            return queryForEq("district_id", district);
-        } catch (RuntimeException e) {
-            throw new DaoException(e);
-        }
+    public List<Community> getByDistrict(District district) {
+        return queryForEq("district_id", district);
     }
 
 }

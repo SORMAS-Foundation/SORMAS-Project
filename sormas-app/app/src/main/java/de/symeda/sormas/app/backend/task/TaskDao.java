@@ -27,9 +27,6 @@ import de.symeda.sormas.app.backend.event.Event;
  */
 public class TaskDao extends AbstractAdoDao<Task> {
 
-    private static final Log.Level LOG_LEVEL = Log.Level.DEBUG;
-    private static final Logger logger = LoggerFactory.getLogger(RuntimeExceptionDao.class);
-
     public TaskDao(Dao<Task,Long> innerDao) throws SQLException {
         super(innerDao);
     }
@@ -58,27 +55,32 @@ public class TaskDao extends AbstractAdoDao<Task> {
      * Ordered by priority, then due date - oldes (most due) first
      * @return
      */
-    public List<Task> queryMyPendingForNotification(Date rangeStart, Date rangeEnd) throws SQLException {
-        QueryBuilder builder = queryBuilder();
-        Where where = builder.where();
-        where.and(
-                where.eq(Task.ASSIGNEE_USER + "_id", ConfigProvider.getUser()),
-                where.eq(Task.TASK_STATUS, TaskStatus.PENDING),
-                where.or(
-                    where.between(Task.SUGGESTED_START, rangeStart, rangeEnd),
-                    where.between(Task.DUE_DATE, rangeStart, rangeEnd),
-                    where.and(
-                        where.between(Task.LOCAL_CHANGE_DATE, rangeStart, rangeEnd),
-                        where.eq(Task.MODIFIED, false),
-                        where.le(Task.SUGGESTED_START, rangeEnd)
+    public List<Task> queryMyPendingForNotification(Date rangeStart, Date rangeEnd) {
+        try {
+            QueryBuilder builder = queryBuilder();
+            Where where = builder.where();
+            where.and(
+                    where.eq(Task.ASSIGNEE_USER + "_id", ConfigProvider.getUser()),
+                    where.eq(Task.TASK_STATUS, TaskStatus.PENDING),
+                    where.or(
+                            where.between(Task.SUGGESTED_START, rangeStart, rangeEnd),
+                            where.between(Task.DUE_DATE, rangeStart, rangeEnd),
+                            where.and(
+                                    where.between(Task.LOCAL_CHANGE_DATE, rangeStart, rangeEnd),
+                                    where.eq(Task.MODIFIED, false),
+                                    where.le(Task.SUGGESTED_START, rangeEnd)
+                            )
                     )
-                )
-        );
+            );
 
-        builder.orderBy(Task.PRIORITY, true).orderBy(Task.DUE_DATE, true);
+            builder.orderBy(Task.PRIORITY, true).orderBy(Task.DUE_DATE, true);
 
-        builder.prepareStatementString();
-        return builder.query();
+            builder.prepareStatementString();
+            return builder.query();
+        } catch (SQLException e) {
+            android.util.Log.e(getTableName(), "Could not perform queryMyPendingForNotification on Task");
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -86,17 +88,22 @@ public class TaskDao extends AbstractAdoDao<Task> {
      * Ordered by priority, then due date - oldest (most due) first
      * @return
      */
-    public List<Task> queryMyPending() throws SQLException {
-        QueryBuilder builder = queryBuilder();
-        Where where = builder.where();
-        where.and(
-                where.eq(Task.ASSIGNEE_USER + "_id", ConfigProvider.getUser()),
-                where.eq(Task.TASK_STATUS, TaskStatus.PENDING)
-        );
+    public List<Task> queryMyPending() {
+        try {
+            QueryBuilder builder = queryBuilder();
+            Where where = builder.where();
+            where.and(
+                    where.eq(Task.ASSIGNEE_USER + "_id", ConfigProvider.getUser()),
+                    where.eq(Task.TASK_STATUS, TaskStatus.PENDING)
+            );
 
-        return builder
-                .orderBy(Task.PRIORITY, true).orderBy(Task.DUE_DATE, true)
-                .query();
+            return builder
+                    .orderBy(Task.PRIORITY, true).orderBy(Task.DUE_DATE, true)
+                    .query();
+        } catch (SQLException e) {
+            android.util.Log.e(getTableName(), "Could not perform queryMyPending on Task");
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -104,45 +111,70 @@ public class TaskDao extends AbstractAdoDao<Task> {
      * Ordered by due date - newest first
      * @return
      */
-    public List<Task> queryMyNotExecutable() throws SQLException {
-        QueryBuilder builder = queryBuilder();
-        Where where = builder.where();
-        where.and(
-                where.eq(Task.ASSIGNEE_USER + "_id", ConfigProvider.getUser()),
-                where.eq(Task.TASK_STATUS, TaskStatus.NOT_EXECUTABLE)
-        );
+    public List<Task> queryMyNotExecutable() {
+        try {
+            QueryBuilder builder = queryBuilder();
+            Where where = builder.where();
+            where.and(
+                    where.eq(Task.ASSIGNEE_USER + "_id", ConfigProvider.getUser()),
+                    where.eq(Task.TASK_STATUS, TaskStatus.NOT_EXECUTABLE)
+            );
 
-        return builder
-                .orderBy(Task.PRIORITY, true).orderBy(Task.DUE_DATE, true)
-                .query();
+            return builder
+                    .orderBy(Task.PRIORITY, true).orderBy(Task.DUE_DATE, true)
+                    .query();
+        } catch (SQLException e) {
+            android.util.Log.e(getTableName(), "Could not perform queryMyNotExecutable on Task");
+            throw new RuntimeException(e);
+        }
     }
     /**
      * Gets all done and discarded tasks.
      * Ordered by due date - newest first
      * @return
      */
-    public List<Task> queryMyDoneOrRemoved() throws SQLException {
-        QueryBuilder builder = queryBuilder();
-        Where where = builder.where();
-        where.and(
-                where.eq(Task.ASSIGNEE_USER + "_id", ConfigProvider.getUser()),
-                where.eq(Task.TASK_STATUS, TaskStatus.DONE).or().eq(Task.TASK_STATUS, TaskStatus.REMOVED));
+    public List<Task> queryMyDoneOrRemoved() {
+        try {
+            QueryBuilder builder = queryBuilder();
+            Where where = builder.where();
+            where.and(
+                    where.eq(Task.ASSIGNEE_USER + "_id", ConfigProvider.getUser()),
+                    where.eq(Task.TASK_STATUS, TaskStatus.DONE).or().eq(Task.TASK_STATUS, TaskStatus.REMOVED));
 
-        return builder
-                .orderBy(Task.PRIORITY, true).orderBy(Task.DUE_DATE, true)
-                .query();
+            return builder
+                    .orderBy(Task.PRIORITY, true).orderBy(Task.DUE_DATE, true)
+                    .query();
+        } catch (SQLException e) {
+            android.util.Log.e(getTableName(), "Could not perform queryMyDoneOrRemoved on Task");
+            throw new RuntimeException(e);
+        }
     }
 
-    public List<Task> queryForCase(Case caze) throws SQLException {
-        return queryBuilder().orderBy(Task.PRIORITY, true).orderBy(Task.DUE_DATE, true).where().eq(Task.CAZE+"_id", caze).query();
+    public List<Task> queryForCase(Case caze) {
+        try {
+            return queryBuilder().orderBy(Task.PRIORITY, true).orderBy(Task.DUE_DATE, true).where().eq(Task.CAZE + "_id", caze).query();
+        } catch (SQLException e) {
+            android.util.Log.e(getTableName(), "Could not perform queryForCase on Task");
+            throw new RuntimeException(e);
+        }
     }
 
-    public List<Task> queryForContact(Contact contact) throws SQLException {
-        return queryBuilder().orderBy(Task.PRIORITY, true).orderBy(Task.DUE_DATE, true).where().eq(Task.CONTACT+"_id", contact).query();
+    public List<Task> queryForContact(Contact contact) {
+        try {
+            return queryBuilder().orderBy(Task.PRIORITY, true).orderBy(Task.DUE_DATE, true).where().eq(Task.CONTACT + "_id", contact).query();
+        } catch (SQLException e) {
+            android.util.Log.e(getTableName(), "Could not perform queryForContact on Task");
+            throw new RuntimeException(e);
+        }
     }
 
-    public List<Task> queryForEvent(Event event) throws SQLException {
-        return queryBuilder().orderBy(Task.PRIORITY, true).orderBy(Task.DUE_DATE, true).where().eq(Task.EVENT+"_id", event).query();
+    public List<Task> queryForEvent(Event event) {
+        try {
+            return queryBuilder().orderBy(Task.PRIORITY, true).orderBy(Task.DUE_DATE, true).where().eq(Task.EVENT + "_id", event).query();
+        } catch (SQLException e) {
+            android.util.Log.e(getTableName(), "Could not perform queryForEvent on Task");
+            throw new RuntimeException(e);
+        }
     }
 
 }

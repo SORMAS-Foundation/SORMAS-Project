@@ -32,13 +32,9 @@ public class EpiDataDao extends AbstractAdoDao<EpiData> {
     }
 
     public EpiData initLazyData(EpiData epiData) {
-        try {
-            epiData.setBurials(DatabaseHelper.getEpiDataBurialDao().getByEpiData(epiData));
-            epiData.setGatherings(DatabaseHelper.getEpiDataGatheringDao().getByEpiData(epiData));
-            epiData.setTravels(DatabaseHelper.getEpiDataTravelDao().getByEpiData(epiData));
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        epiData.setBurials(DatabaseHelper.getEpiDataBurialDao().getByEpiData(epiData));
+        epiData.setGatherings(DatabaseHelper.getEpiDataGatheringDao().getByEpiData(epiData));
+        epiData.setTravels(DatabaseHelper.getEpiDataTravelDao().getByEpiData(epiData));
 
         return epiData;
     }

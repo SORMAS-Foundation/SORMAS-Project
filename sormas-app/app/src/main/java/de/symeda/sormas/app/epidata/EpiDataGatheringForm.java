@@ -33,16 +33,10 @@ public class EpiDataGatheringForm extends AbstractFormDialogFragment<EpiDataGath
 
     private EpidataGatheringEditFragmentLayoutBinding binding;
 
-    private Tracker tracker;
-
     @Override
     public View onCreateDialogView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.epidata_gathering_edit_fragment_layout, container, false);
         View view = binding.getRoot();
-
-        SormasApplication application = (SormasApplication) getActivity().getApplication();
-        tracker = application.getDefaultTracker();
-
         return view;
     }
 
@@ -54,23 +48,16 @@ public class EpiDataGatheringForm extends AbstractFormDialogFragment<EpiDataGath
         binding.gatherDate.initialize(this);
 
         EpiDataGathering gathering = binding.getEpiDataGathering();
-        try {
-            final Location location = gathering.getGatheringAddress() != null ? gathering.getGatheringAddress() : DataUtils.createNew(Location.class);
-            LocationDialog.addLocationField(getActivity(), location, binding.gatherAddress, binding.formCpBtnAddress, new Consumer() {
-                @Override
-                public void accept(Object parameter) {
-                    if (parameter instanceof Location) {
-                        binding.gatherAddress.setValue(parameter.toString());
-                        binding.getEpiDataGathering().setGatheringAddress(((Location)parameter));
-                    }
+        final Location location = gathering.getGatheringAddress() != null ? gathering.getGatheringAddress() : DataUtils.createNew(Location.class);
+        LocationDialog.addLocationField(getActivity(), location, binding.gatherAddress, binding.formCpBtnAddress, new Consumer() {
+            @Override
+            public void accept(Object parameter) {
+                if (parameter instanceof Location) {
+                    binding.gatherAddress.setValue(parameter.toString());
+                    binding.getEpiDataGathering().setGatheringAddress(((Location)parameter));
                 }
-            });
-        } catch(Exception e) {
-            ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, true,
-                    "- EpiData: " + binding.getEpiDataGathering().getUuid(), " - User: " + ConfigProvider.getUser().getUuid());
-            Toast.makeText(getContext(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
-        }
+            }
+        });
     }
 
     @Override

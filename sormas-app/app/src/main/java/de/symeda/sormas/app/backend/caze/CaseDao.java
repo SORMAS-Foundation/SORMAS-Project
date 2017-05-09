@@ -1,10 +1,8 @@
 package de.symeda.sormas.app.backend.caze;
 
+import android.util.Log;
+
 import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.dao.RuntimeExceptionDao;
-import com.j256.ormlite.logger.Log;
-import com.j256.ormlite.logger.Logger;
-import com.j256.ormlite.logger.LoggerFactory;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 
@@ -17,20 +15,13 @@ import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.epidata.EpiData;
-import de.symeda.sormas.app.backend.epidata.EpiDataBurial;
-import de.symeda.sormas.app.backend.epidata.EpiDataGathering;
-import de.symeda.sormas.app.backend.epidata.EpiDataTravel;
 import de.symeda.sormas.app.backend.hospitalization.Hospitalization;
-import de.symeda.sormas.app.backend.hospitalization.PreviousHospitalization;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.util.DataUtils;
 
 public class CaseDao extends AbstractAdoDao<Case> {
-
-    private static final Log.Level LOG_LEVEL = Log.Level.DEBUG;
-    private static final Logger logger = LoggerFactory.getLogger(RuntimeExceptionDao.class);
 
     public CaseDao(Dao<Case,Long> innerDao) throws SQLException {
         super(innerDao);
@@ -60,7 +51,7 @@ public class CaseDao extends AbstractAdoDao<Case> {
     }
 
     @Override
-    public Date getLatestChangeDate() throws DaoException, SQLException {
+    public Date getLatestChangeDate() {
         Date cazeDate = super.getLatestChangeDate();
         if (cazeDate == null) {
             return null;
@@ -82,18 +73,23 @@ public class CaseDao extends AbstractAdoDao<Case> {
     }
 
     // TODO #69 create some date filter for finding the right case (this is implemented in CaseService.java too)
-    public Case getByPersonAndDisease(Person person, Disease disease) throws SQLException {
-        QueryBuilder builder = queryBuilder();
-        Where where = builder.where();
-        where.and(
-                where.eq(Case.PERSON+"_id", person),
-                where.eq(Case.DISEASE, disease)
-        );
+    public Case getByPersonAndDisease(Person person, Disease disease) {
+        try {
+            QueryBuilder builder = queryBuilder();
+            Where where = builder.where();
+            where.and(
+                    where.eq(Case.PERSON + "_id", person),
+                    where.eq(Case.DISEASE, disease)
+            );
 
-        return (Case) builder.queryForFirst();
+            return (Case) builder.queryForFirst();
+        } catch (SQLException e) {
+            Log.e(getTableName(), "Could not perform getByPersonAndDisease");
+            throw new RuntimeException(e);
+        }
     }
 
-    public static Case createCase(Person person) throws InstantiationException, IllegalAccessException {
+    public static Case createCase(Person person) {
         Case caze = DataUtils.createNew(Case.class);
         caze.setPerson(person);
 

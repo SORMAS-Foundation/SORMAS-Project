@@ -58,7 +58,7 @@ public class EventsListFragment extends ListFragment {
             refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                 @Override
                 public void onRefresh() {
-                    SyncEventsTask.syncEvents(getActivity().getSupportFragmentManager(), refreshLayout);
+                    SyncEventsTask.syncEvents(getActivity().getSupportFragmentManager(), getContext(), refreshLayout);
                 }
             });
         }

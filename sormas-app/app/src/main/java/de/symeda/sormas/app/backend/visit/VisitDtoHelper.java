@@ -32,27 +32,23 @@ public class VisitDtoHelper extends AdoDtoHelper<Visit, VisitDto> {
 
     @Override
     public void fillInnerFromDto(Visit ado, VisitDto dto) {
-        try {
-            ado.setDisease(dto.getDisease());
+        ado.setDisease(dto.getDisease());
 
-            if (dto.getPerson() != null) {
-                ado.setPerson(DatabaseHelper.getPersonDao().queryUuid(dto.getPerson().getUuid()));
-            } else {
-                ado.setPerson(null);
-            }
+        if (dto.getPerson() != null) {
+            ado.setPerson(DatabaseHelper.getPersonDao().queryUuid(dto.getPerson().getUuid()));
+        } else {
+            ado.setPerson(null);
+        }
 
-            ado.setSymptoms(symptomsDtoHelper.fillOrCreateFromDto(ado.getSymptoms(), dto.getSymptoms()));
-            ado.setVisitDateTime(dto.getVisitDateTime());
-            ado.setVisitRemarks(dto.getVisitRemarks());
-            ado.setVisitStatus(dto.getVisitStatus());
+        ado.setSymptoms(symptomsDtoHelper.fillOrCreateFromDto(ado.getSymptoms(), dto.getSymptoms()));
+        ado.setVisitDateTime(dto.getVisitDateTime());
+        ado.setVisitRemarks(dto.getVisitRemarks());
+        ado.setVisitStatus(dto.getVisitStatus());
 
-            if (dto.getVisitUser() != null) {
-                ado.setVisitUser(DatabaseHelper.getUserDao().queryUuid(dto.getVisitUser().getUuid()));
-            } else {
-                ado.setVisitUser(null);
-            }
-        } catch (DaoException e) {
-            throw new RuntimeException(e);
+        if (dto.getVisitUser() != null) {
+            ado.setVisitUser(DatabaseHelper.getUserDao().queryUuid(dto.getVisitUser().getUuid()));
+        } else {
+            ado.setVisitUser(null);
         }
     }
 

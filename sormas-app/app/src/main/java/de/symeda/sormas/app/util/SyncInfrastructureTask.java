@@ -5,8 +5,6 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.google.android.gms.analytics.Tracker;
-import com.j256.ormlite.logger.Logger;
-import com.j256.ormlite.logger.LoggerFactory;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -35,9 +33,6 @@ import retrofit2.Call;
  * @see <a href="http://square.github.io/retrofit/">Retrofit</a>
  */
 public class SyncInfrastructureTask extends AsyncTask<Void, Void, Void> {
-
-    private static final String TAG = SyncInfrastructureTask.class.getSimpleName();
-    protected static Logger logger = LoggerFactory.getLogger(SyncInfrastructureTask.class);
 
     private final Context notificationContext;
 
@@ -83,13 +78,13 @@ public class SyncInfrastructureTask extends AsyncTask<Void, Void, Void> {
                 }
             }, DatabaseHelper.getUserDao());
         } catch(DaoException | SQLException | IOException e) {
+            Log.e(this.getClass().getName(), "Exception on executing background synchronization task");
             if (notificationContext != null) {
                 SormasApplication application = (SormasApplication) notificationContext.getApplicationContext();
                 Tracker tracker = application.getDefaultTracker();
-                ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, true,
+                ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, null, true,
                         " - User: " + ConfigProvider.getUser().getUuid());
             }
-            Log.e(this.getClass().getName(), "Exception on executing background synchronization task");
         }
 
         return null;
@@ -111,7 +106,7 @@ public class SyncInfrastructureTask extends AsyncTask<Void, Void, Void> {
             @Override
             public void call() {
             // this also syncs cases, contacts and events
-            SyncTasksTask.syncTasks(callback, notificationContext);
+            SyncTasksTask.syncTasks(notificationContext, callback, notificationContext);
             }
         });
 

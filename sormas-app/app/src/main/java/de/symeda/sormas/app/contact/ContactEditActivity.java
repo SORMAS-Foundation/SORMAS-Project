@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -17,6 +18,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
@@ -87,7 +89,6 @@ public class ContactEditActivity extends AbstractEditActivity {
         adapter = new ContactEditPagerAdapter(getSupportFragmentManager(), contactUuid);
         createTabViews(adapter);
 
-
         pager.setCurrentItem(currentTab);
     }
 
@@ -143,7 +144,6 @@ public class ContactEditActivity extends AbstractEditActivity {
             case TASKS:
                 updateActionBarGroups(menu, false, true, false, false);
                 break;
-
         }
 
         return true;
@@ -208,38 +208,37 @@ public class ContactEditActivity extends AbstractEditActivity {
                 }
 
                 if (validData) {
-                    contactDao.save(contact);
-
-                    Person person = (Person) adapter.getData(ContactEditTabs.PERSON.ordinal());
                     try {
+                        contactDao.save(contact);
+
+                        Person person = (Person) adapter.getData(ContactEditTabs.PERSON.ordinal());
                         if (person.getAddress() == null) {
                             person.setAddress(DataUtils.createNew(Location.class));
                         }
-                    } catch(Exception e ) {
-                        ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, true,
-                                " - Person: " + person.getUuid(), " - User: " + ConfigProvider.getUser().getUuid());
-                        Toast.makeText(getApplicationContext(), "Couldn't create location. " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                        e.printStackTrace();
-                    }
 
-                    if(contact.getRelationToCase() == ContactRelation.SAME_HOUSEHOLD && person.getAddress().isEmptyLocation()) {
-                        person.getAddress().setRegion(contact.getCaze().getRegion());
-                        person.getAddress().setDistrict(contact.getCaze().getDistrict());
-                        person.getAddress().setCommunity(contact.getCaze().getCommunity());
-                    }
-
-                    DatabaseHelper.getLocationDao().save(person.getAddress());
-                    DatabaseHelper.getPersonDao().save(person);
-
-                    Toast.makeText(this, "contact " + DataHelper.getShortUuid(contact.getUuid()) + " saved", Toast.LENGTH_SHORT).show();
-
-                    SyncContactsTask.syncContactsWithProgressDialog(this, new Callback() {
-                        @Override
-                        public void call() {
-                            onResume();
-                            pager.setCurrentItem(currentTab);
+                        if (contact.getRelationToCase() == ContactRelation.SAME_HOUSEHOLD && person.getAddress().isEmptyLocation()) {
+                            person.getAddress().setRegion(contact.getCaze().getRegion());
+                            person.getAddress().setDistrict(contact.getCaze().getDistrict());
+                            person.getAddress().setCommunity(contact.getCaze().getCommunity());
                         }
-                    });
+
+                        DatabaseHelper.getLocationDao().save(person.getAddress());
+                        DatabaseHelper.getPersonDao().save(person);
+
+                        Toast.makeText(this, "contact " + DataHelper.getShortUuid(contact.getUuid()) + " saved", Toast.LENGTH_SHORT).show();
+
+                        SyncContactsTask.syncContactsWithProgressDialog(this, new Callback() {
+                            @Override
+                            public void call() {
+                                onResume();
+                                pager.setCurrentItem(currentTab);
+                            }
+                        });
+                    } catch (DaoException e) {
+                        Log.e(getClass().getName(), "Error while trying to save contact", e);
+                        Toast.makeText(this, "Contact could not be saved because of an internal error.", Toast.LENGTH_LONG).show();
+                        ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, contact, true);
+                    }
                 }
                 return true;
 

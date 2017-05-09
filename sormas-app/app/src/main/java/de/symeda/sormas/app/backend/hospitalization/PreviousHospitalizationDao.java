@@ -1,5 +1,7 @@
 package de.symeda.sormas.app.backend.hospitalization;
 
+import android.util.Log;
+
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.DeleteBuilder;
 import com.j256.ormlite.stmt.QueryBuilder;
@@ -27,19 +29,16 @@ public class PreviousHospitalizationDao extends AbstractAdoDao<PreviousHospitali
         return PreviousHospitalization.TABLE_NAME;
     }
 
-    public List<PreviousHospitalization> getByHospitalization(Hospitalization hospitalization) throws SQLException {
-        QueryBuilder qb = queryBuilder();
-        qb.where().eq(PreviousHospitalization.HOSPITALIZATION + "_id", hospitalization);
-        qb.orderBy(PreviousHospitalization.CHANGE_DATE, false);
-        return qb.query();
-
-    }
-
-    public long getCntByHospitalization(Hospitalization hospitalization) throws SQLException {
-        QueryBuilder qb = queryBuilder();
-        qb.where().eq(PreviousHospitalization.HOSPITALIZATION + "_id", hospitalization);
-        return qb.countOf();
-
+    public List<PreviousHospitalization> getByHospitalization(Hospitalization hospitalization) {
+        try {
+            QueryBuilder qb = queryBuilder();
+            qb.where().eq(PreviousHospitalization.HOSPITALIZATION + "_id", hospitalization);
+            qb.orderBy(PreviousHospitalization.CHANGE_DATE, false);
+            return qb.query();
+        } catch (SQLException e) {
+            Log.e(getTableName(), "Could not perform getByHospitalization on PreviousHospitalization");
+            throw new RuntimeException(e);
+        }
     }
 
     public void deleteOrphansOfHospitalization(Hospitalization hospitalization) throws SQLException {

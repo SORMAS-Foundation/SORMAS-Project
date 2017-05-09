@@ -31,16 +31,10 @@ public class EpiDataBurialForm extends AbstractFormDialogFragment<EpiDataBurial>
 
     private EpidataBurialEditFragmentLayoutBinding binding;
 
-    private Tracker tracker;
-
     @Override
     public View onCreateDialogView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.epidata_burial_edit_fragment_layout, container, false);
         View view = binding.getRoot();
-
-        SormasApplication application = (SormasApplication) getActivity().getApplication();
-        tracker = application.getDefaultTracker();
-
         return view;
     }
 
@@ -53,23 +47,16 @@ public class EpiDataBurialForm extends AbstractFormDialogFragment<EpiDataBurial>
         binding.burialTo.initialize(this);
 
         EpiDataBurial burial = binding.getEpiDataBurial();
-        try {
-            final Location location = burial.getBurialAddress() != null ? burial.getBurialAddress() : DataUtils.createNew(Location.class);
-            LocationDialog.addLocationField(getActivity(), location, binding.burialAddress, binding.formCpBtnAddress, new Consumer() {
-                @Override
-                public void accept(Object parameter) {
-                    if (parameter instanceof Location) {
-                        binding.burialAddress.setValue(parameter.toString());
-                        binding.getEpiDataBurial().setBurialAddress(((Location)parameter));
-                    }
+        final Location location = burial.getBurialAddress() != null ? burial.getBurialAddress() : DataUtils.createNew(Location.class);
+        LocationDialog.addLocationField(getActivity(), location, binding.burialAddress, binding.formCpBtnAddress, new Consumer() {
+            @Override
+            public void accept(Object parameter) {
+                if (parameter instanceof Location) {
+                    binding.burialAddress.setValue(parameter.toString());
+                    binding.getEpiDataBurial().setBurialAddress(((Location)parameter));
                 }
-            });
-        } catch(Exception e) {
-            ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, true,
-                    " - User: " + ConfigProvider.getUser().getUuid());
-            Toast.makeText(getContext(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
-        }
+            }
+        });
     }
 
     @Override

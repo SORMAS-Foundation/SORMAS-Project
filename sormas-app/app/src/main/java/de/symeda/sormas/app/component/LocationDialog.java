@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.location.Location;

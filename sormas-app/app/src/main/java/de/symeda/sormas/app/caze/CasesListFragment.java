@@ -61,7 +61,7 @@ public class CasesListFragment extends ListFragment {
             refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                 @Override
                 public void onRefresh() {
-                    SyncCasesTask.syncCases(getActivity().getSupportFragmentManager(), refreshLayout);
+                    SyncCasesTask.syncCases(getActivity().getSupportFragmentManager(), getContext(), refreshLayout);
                 }
             });
         }

@@ -1,5 +1,7 @@
 package de.symeda.sormas.app.backend.contact;
 
+import android.util.Log;
+
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
 
@@ -28,11 +30,16 @@ public class ContactDao extends AbstractAdoDao<Contact> {
         return Contact.TABLE_NAME;
     }
 
-    public List<Contact> getByCase(Case caze) throws SQLException {
-        QueryBuilder qb = queryBuilder();
-        qb.where().eq(Contact.CAZE+"_id", caze);
-        qb.orderBy(Contact.LAST_CONTACT_DATE, false);
-        return qb.query();
+    public List<Contact> getByCase(Case caze) {
+        try {
+            QueryBuilder qb = queryBuilder();
+            qb.where().eq(Contact.CAZE + "_id", caze);
+            qb.orderBy(Contact.LAST_CONTACT_DATE, false);
+            return qb.query();
+        } catch (SQLException e) {
+            Log.e(getTableName(), "Could not perform getByCase on Contact");
+            throw new RuntimeException(e);
+        }
     }
 
 
