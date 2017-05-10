@@ -107,6 +107,7 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 	
 	public Sample fromSampleDto(@NotNull SampleDto source) {
+		
 		Sample target = sampleService.getByUuid(source.getUuid());
 		if(target == null) {
 			target = new Sample();
@@ -115,6 +116,7 @@ public class SampleFacadeEjb implements SampleFacade {
 				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
 			}
 		}
+		DtoHelper.validateDto(source, target);
 		
 		target.setAssociatedCase(caseService.getByReferenceDto(source.getAssociatedCase()));
 		target.setSampleCode(source.getSampleCode());

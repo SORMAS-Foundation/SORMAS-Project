@@ -29,55 +29,56 @@ public class LocationFacadeEjb implements LocationFacade {
 	@EJB
 	private CommunityService communityService;
 	
-	public Location fromLocationDto(LocationDto dto) {		
-		if (dto == null) {
+	public Location fromDto(LocationDto source) {		
+		if (source == null) {
 			return null;
 		}
 		
-		Location location = locationService.getByUuid(dto.getUuid());
-		if (location == null) {
-			location = new Location();
-			location.setUuid(dto.getUuid());
-			if (dto.getCreationDate() != null) {
-				location.setCreationDate(new Timestamp(dto.getCreationDate().getTime()));
+		Location target = locationService.getByUuid(source.getUuid());
+		if (target == null) {
+			target = new Location();
+			target.setUuid(source.getUuid());
+			if (source.getCreationDate() != null) {
+				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
 			}
 		} 
+		DtoHelper.validateDto(source, target);
 		
-		location.setAddress(dto.getAddress());
-		location.setDetails(dto.getDetails());
-		location.setCity(dto.getCity());
+		target.setAddress(source.getAddress());
+		target.setDetails(source.getDetails());
+		target.setCity(source.getCity());
 		
-		location.setRegion(regionService.getByReferenceDto(dto.getRegion()));
-		location.setDistrict(districtService.getByReferenceDto(dto.getDistrict()));
-		location.setCommunity(communityService.getByReferenceDto(dto.getCommunity()));
+		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
+		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
+		target.setCommunity(communityService.getByReferenceDto(source.getCommunity()));
 		
-		location.setLatitude(dto.getLatitude());
-		location.setLongitude(dto.getLongitude());
+		target.setLatitude(source.getLatitude());
+		target.setLongitude(source.getLongitude());
 		
-		return location;
+		return target;
 	}
 	
-	public static LocationDto toLocationDto(Location entity) {
+	public static LocationDto toDto(Location source) {
 		
-		if (entity == null) {
+		if (source == null) {
 			return null;
 		}
 
-		LocationDto dto = new LocationDto();
-		DtoHelper.fillDto(dto, entity);
+		LocationDto target = new LocationDto();
+		DtoHelper.fillDto(target, source);
 		
-		dto.setAddress(entity.getAddress());
-		dto.setDetails(entity.getDetails());
-		dto.setCity(entity.getCity());
+		target.setAddress(source.getAddress());
+		target.setDetails(source.getDetails());
+		target.setCity(source.getCity());
 		
-		dto.setRegion(RegionFacadeEjb.toReferenceDto(entity.getRegion()));
-		dto.setDistrict(DistrictFacadeEjb.toReferenceDto(entity.getDistrict()));
-		dto.setCommunity(CommunityFacadeEjb.toReferenceDto(entity.getCommunity()));
+		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));
+		target.setDistrict(DistrictFacadeEjb.toReferenceDto(source.getDistrict()));
+		target.setCommunity(CommunityFacadeEjb.toReferenceDto(source.getCommunity()));
 		
-		dto.setLatitude(entity.getLatitude());
-		dto.setLongitude(entity.getLongitude());
+		target.setLatitude(source.getLatitude());
+		target.setLongitude(source.getLongitude());
 		
-		return dto;
+		return target;
 	}
 	
 	@LocalBean

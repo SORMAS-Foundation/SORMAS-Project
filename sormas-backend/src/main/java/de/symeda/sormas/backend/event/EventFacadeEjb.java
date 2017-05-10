@@ -73,7 +73,7 @@ public class EventFacadeEjb implements EventFacade {
 	
 	@Override
 	public EventDto saveEvent(EventDto dto) {
-		Event event = fromEventDto(dto);
+		Event event = fromDto(dto);
 		eventService.ensurePersisted(event);
 		
 		return toEventDto(event);
@@ -87,7 +87,7 @@ public class EventFacadeEjb implements EventFacade {
 				.collect(Collectors.toList());
 	}
 	
-	public Event fromEventDto(@NotNull EventDto source) {
+	public Event fromDto(@NotNull EventDto source) {
 		Event target = eventService.getByUuid(source.getUuid());
 		if(target == null) {
 			target = new Event();
@@ -96,6 +96,7 @@ public class EventFacadeEjb implements EventFacade {
 				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
 			}
 		}
+		DtoHelper.validateDto(source, target);
 		
 		target.setEventType(source.getEventType());
 		target.setEventStatus(source.getEventStatus());
@@ -103,7 +104,7 @@ public class EventFacadeEjb implements EventFacade {
 		target.setEventDate(source.getEventDate());
 		target.setReportDateTime(source.getReportDateTime());
 		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
-		target.setEventLocation(locationFacade.fromLocationDto(source.getEventLocation()));
+		target.setEventLocation(locationFacade.fromDto(source.getEventLocation()));
 		target.setTypeOfPlace(source.getTypeOfPlace());
 		target.setSrcFirstName(source.getSrcFirstName());
 		target.setSrcLastName(source.getSrcLastName());
@@ -139,7 +140,7 @@ public class EventFacadeEjb implements EventFacade {
 		target.setEventDate(source.getEventDate());
 		target.setReportDateTime(source.getReportDateTime());
 		target.setReportingUser(UserFacadeEjb.toReferenceDto(source.getReportingUser()));
-		target.setEventLocation(LocationFacadeEjb.toLocationDto(source.getEventLocation()));
+		target.setEventLocation(LocationFacadeEjb.toDto(source.getEventLocation()));
 		target.setTypeOfPlace(source.getTypeOfPlace());
 		target.setSrcFirstName(source.getSrcFirstName());
 		target.setSrcLastName(source.getSrcLastName());

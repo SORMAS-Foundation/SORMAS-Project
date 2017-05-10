@@ -72,6 +72,7 @@ public class SampleTestFacadeEjb implements SampleTestFacade {
 	}
 	
 	public SampleTest fromSampleTestDto(@NotNull SampleTestDto source) {
+		
 		SampleTest target = sampleTestService.getByUuid(source.getUuid());
 		if(target == null) {
 			target = new SampleTest();
@@ -80,6 +81,7 @@ public class SampleTestFacadeEjb implements SampleTestFacade {
 				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
 			}
 		}
+		DtoHelper.validateDto(source, target);
 		
 		target.setSample(sampleService.getByReferenceDto(source.getSample()));
 		target.setTestType(source.getTestType());

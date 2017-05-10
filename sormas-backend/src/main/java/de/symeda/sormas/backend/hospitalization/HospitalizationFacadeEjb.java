@@ -14,6 +14,7 @@ import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
+import de.symeda.sormas.backend.util.DtoHelper;
 
 @Stateless(name = "HospitalizationFacade")
 public class HospitalizationFacadeEjb implements HospitalizationFacade {
@@ -56,6 +57,7 @@ public class HospitalizationFacadeEjb implements HospitalizationFacade {
 		
 		Hospitalization target = hospitalization;
 		HospitalizationDto source = dto;
+		DtoHelper.validateDto(source, target);
 		
 		target.setAdmissionDate(source.getAdmissionDate());
 		target.setDischargeDate(source.getDischargeDate());
@@ -91,6 +93,7 @@ public class HospitalizationFacadeEjb implements HospitalizationFacade {
 		
 		PreviousHospitalization target = prevHospitalization;
 		PreviousHospitalizationDto source = dto;
+		DtoHelper.validateDto(source, target);
 		
 		target.setAdmissionDate(source.getAdmissionDate());
 		target.setDischargeDate(source.getDischargeDate());

@@ -71,20 +71,22 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 	
 	@Override
 	public EventParticipantDto saveEventParticipant(EventParticipantDto dto) {
-		EventParticipant entity = fromEventParticipantDto(dto);
+		EventParticipant entity = fromDto(dto);
 		eventParticipantService.ensurePersisted(entity);
 		return toEventParticipantDto(entity);
 	}
 	
-	public EventParticipant fromEventParticipantDto(@NotNull EventParticipantDto source) {
+	public EventParticipant fromDto(@NotNull EventParticipantDto source) {
+		
 		EventParticipant target = eventParticipantService.getByUuid(source.getUuid());
-		if(target == null) {
+		if (target == null) {
 			target = new EventParticipant();
 			target.setUuid(source.getUuid());
 			if(source.getCreationDate() != null) {
 				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
 			}
 		}
+		DtoHelper.validateDto(source, target);
 		
 		target.setEvent(eventService.getByReferenceDto(source.getEvent()));
 		target.setPerson(personService.getByUuid(source.getPerson().getUuid()));

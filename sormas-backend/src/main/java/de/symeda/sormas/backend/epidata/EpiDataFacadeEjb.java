@@ -15,6 +15,7 @@ import de.symeda.sormas.api.epidata.EpiDataGatheringDto;
 import de.symeda.sormas.api.epidata.EpiDataTravelDto;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
+import de.symeda.sormas.backend.util.DtoHelper;
 
 @Stateless(name = "EpiDataFacade")
 public class EpiDataFacadeEjb implements EpiDataFacade {
@@ -38,22 +39,20 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		return toDto(epiData);
 	}
 	
-	public EpiData fromDto(EpiDataDto dto) {
-		if (dto == null) {
+	public EpiData fromDto(EpiDataDto source) {
+		if (source == null) {
 			return null;
 		}
 		
-		EpiData epiData = service.getByUuid(dto.getUuid());
-		if (epiData == null) {
-			epiData = new EpiData();
-			epiData.setUuid(dto.getUuid());
-			if (dto.getCreationDate() != null) {
-				epiData.setCreationDate(new Timestamp(dto.getCreationDate().getTime()));
+		EpiData target = service.getByUuid(source.getUuid());
+		if (target == null) {
+			target = new EpiData();
+			target.setUuid(source.getUuid());
+			if (source.getCreationDate() != null) {
+				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
 			}
 		}
-		
-		EpiData target = epiData;
-		EpiDataDto source = dto;
+		DtoHelper.validateDto(source, target);
 		
 		target.setBurialAttended(source.getBurialAttended());
 		target.setGatheringAttended(source.getGatheringAttended());
@@ -107,7 +106,7 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		}
 		target.setTravels(travels);
 		
-		return epiData;
+		return target;
 	}
 	
 	public EpiDataBurial fromDto(EpiDataBurialDto dto) {
@@ -126,8 +125,9 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		
 		EpiDataBurial target = burial;
 		EpiDataBurialDto source = dto;
+		DtoHelper.validateDto(source, target);
 		
-		target.setBurialAddress(locationFacade.fromLocationDto(source.getBurialAddress()));
+		target.setBurialAddress(locationFacade.fromDto(source.getBurialAddress()));
 		target.setBurialDateFrom(source.getBurialDateFrom());
 		target.setBurialDateTo(source.getBurialDateTo());
 		target.setBurialIll(source.getBurialIll());
@@ -154,9 +154,10 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		
 		EpiDataGathering target = gathering;
 		EpiDataGatheringDto source = dto;
+		DtoHelper.validateDto(source, target);
 		
 		target.setDescription(source.getDescription());
-		target.setGatheringAddress(locationFacade.fromLocationDto(source.getGatheringAddress()));
+		target.setGatheringAddress(locationFacade.fromDto(source.getGatheringAddress()));
 		target.setGatheringDate(source.getGatheringDate());
 		
 		return gathering;
@@ -178,6 +179,7 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		
 		EpiDataTravel target = travel;
 		EpiDataTravelDto source = dto;
+		DtoHelper.validateDto(source, target);
 		
 		target.setTravelDateFrom(source.getTravelDateFrom());
 		target.setTravelDateTo(source.getTravelDateTo());
@@ -263,7 +265,7 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setChangeDate(source.getChangeDate());
 		target.setUuid(source.getUuid());
 		
-		target.setBurialAddress(LocationFacadeEjb.toLocationDto(source.getBurialAddress()));
+		target.setBurialAddress(LocationFacadeEjb.toDto(source.getBurialAddress()));
 		target.setBurialDateFrom(source.getBurialDateFrom());
 		target.setBurialDateTo(source.getBurialDateTo());
 		target.setBurialIll(source.getBurialIll());
@@ -287,7 +289,7 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setUuid(source.getUuid());
 		
 		target.setDescription(source.getDescription());
-		target.setGatheringAddress(LocationFacadeEjb.toLocationDto(source.getGatheringAddress()));
+		target.setGatheringAddress(LocationFacadeEjb.toDto(source.getGatheringAddress()));
 		target.setGatheringDate(source.getGatheringDate());
 		
 		return target;

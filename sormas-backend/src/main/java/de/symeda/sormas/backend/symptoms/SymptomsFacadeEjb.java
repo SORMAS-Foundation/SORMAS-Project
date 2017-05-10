@@ -8,6 +8,7 @@ import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsFacade;
+import de.symeda.sormas.backend.util.DtoHelper;
 
 @Stateless(name = "SymptomsFacade")
 public class SymptomsFacadeEjb implements SymptomsFacade {
@@ -31,6 +32,7 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		
 		Symptoms target = symptoms;
 		SymptomsDto source = dto;
+		DtoHelper.validateDto(source, target);
 		
 		target.setAbdominalPain(source.getAbdominalPain());
 		target.setAlteredConsciousness(source.getAlteredConsciousness());

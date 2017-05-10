@@ -130,72 +130,73 @@ public class PersonFacadeEjb implements PersonFacade {
 	
 	@Override
 	public PersonReferenceDto savePerson(PersonReferenceDto dto) {
-		Person person = toPerson(dto);
+		Person person = fromDto(dto);
 		service.ensurePersisted(person);
-		
 		return toReferenceDto(person);
-		
 	}
 	
 	@Override
 	public PersonDto savePerson(PersonDto dto) {
-		Person person = fromCasePersonDto(dto);
+		Person person = fromDto(dto);
 		service.ensurePersisted(person);
 		
 		return toDto(person);
 		
 	}
 	
-	public Person toPerson(@NotNull PersonReferenceDto dto) {
-		Person bo = service.getByUuid(dto.getUuid());
-		if(bo==null) {
-			bo = service.createPerson();
-			if (dto.getCreationDate() != null) {
-				bo.setCreationDate(new Timestamp(dto.getCreationDate().getTime()));
+	public Person fromDto(@NotNull PersonReferenceDto source) {
+		
+		Person target = service.getByUuid(source.getUuid());
+		if(target==null) {
+			target = service.createPerson();
+			if (source.getCreationDate() != null) {
+				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
 			}
 		}
-		bo.setUuid(dto.getUuid());
-		bo.setFirstName(dto.getFirstName());
-		bo.setLastName(dto.getLastName());
-		return bo;
+		DtoHelper.validateDto(source, target);
+		
+		target.setUuid(source.getUuid());
+		target.setFirstName(source.getFirstName());
+		target.setLastName(source.getLastName());
+		return target;
 	}
 	
-	public Person fromCasePersonDto(@NotNull PersonDto dto) {
-		Person bo = service.getByUuid(dto.getUuid());
-		if(bo==null) {
-			bo = service.createPerson();
-			bo.setUuid(dto.getUuid());
-			if (dto.getCreationDate() != null) {
-				bo.setCreationDate(new Timestamp(dto.getCreationDate().getTime()));
+	public Person fromDto(@NotNull PersonDto source) {
+		
+		Person target = service.getByUuid(source.getUuid());
+		if(target==null) {
+			target = service.createPerson();
+			target.setUuid(source.getUuid());
+			if (source.getCreationDate() != null) {
+				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
 			}
 		}
+		DtoHelper.validateDto(source, target);
 		
-		// case uuid is ignored!
+		target.setFirstName(source.getFirstName());
+		target.setLastName(source.getLastName());
+		target.setSex(source.getSex());
 		
-		bo.setFirstName(dto.getFirstName());
-		bo.setLastName(dto.getLastName());
-		bo.setSex(dto.getSex());
+		target.setPresentCondition(source.getPresentCondition());
+		target.setBirthdateDD(source.getBirthdateDD());
+		target.setBirthdateMM(source.getBirthdateMM());
+		target.setBirthdateYYYY(source.getBirthdateYYYY());
+		target.setApproximateAge(source.getApproximateAge());
+		target.setApproximateAgeType(source.getApproximateAgeType());
+		target.setDeathDate(source.getDeathDate());
+		target.setDead(source.getDeathDate()!=null);
 		
-		bo.setPresentCondition(dto.getPresentCondition());
-		bo.setBirthdateDD(dto.getBirthdateDD());
-		bo.setBirthdateMM(dto.getBirthdateMM());
-		bo.setBirthdateYYYY(dto.getBirthdateYYYY());
-		bo.setApproximateAge(dto.getApproximateAge());
-		bo.setApproximateAgeType(dto.getApproximateAgeType());
-		bo.setDeathDate(dto.getDeathDate());
-		bo.setDead(dto.getDeathDate()!=null);
+		target.setNickname(source.getNickname());
+		target.setMothersMaidenName(source.getMothersMaidenName());
 		
-		bo.setNickname(dto.getNickname());
-		bo.setMothersMaidenName(dto.getMothersMaidenName());
+		target.setPhone(source.getPhone());
+		target.setPhoneOwner(source.getPhoneOwner());
+		target.setAddress(locationFacade.fromDto(source.getAddress()));
 		
-		bo.setPhone(dto.getPhone());
-		bo.setPhoneOwner(dto.getPhoneOwner());
-		bo.setAddress(locationFacade.fromLocationDto(dto.getAddress()));
-		
-		bo.setOccupationType(dto.getOccupationType());
-		bo.setOccupationDetails(dto.getOccupationDetails());
-		bo.setOccupationFacility(facilityService.getByReferenceDto(dto.getOccupationFacility()));
-		return bo;
+		target.setOccupationType(source.getOccupationType());
+		target.setOccupationDetails(source.getOccupationDetails());
+		target.setOccupationFacility(facilityService.getByReferenceDto(source.getOccupationFacility()));
+		return target;
 	}
 	
 	public static PersonReferenceDto toReferenceDto(Person entity) {
@@ -271,7 +272,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		
 		dto.setPhone(entity.getPhone());
 		dto.setPhoneOwner(entity.getPhoneOwner());
-		dto.setAddress(LocationFacadeEjb.toLocationDto(entity.getAddress()));
+		dto.setAddress(LocationFacadeEjb.toDto(entity.getAddress()));
 		
 		dto.setOccupationType(entity.getOccupationType());
 		dto.setOccupationDetails(entity.getOccupationDetails());

@@ -32,6 +32,7 @@ import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
+import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.user.UserService;
 
 @Stateless(name = "TaskFacade")
@@ -52,73 +53,71 @@ public class TaskFacadeEjb implements TaskFacade {
 	@EJB
 	private CaseFacadeEjbLocal caseFacade;
 	
-	public Task fromDto(TaskDto dto) {		
-		if (dto == null) {
+	public Task fromDto(TaskDto source) {		
+		if (source == null) {
 			return null;
 		}
 		
-		Task task = service.getByUuid(dto.getUuid());
-		if (task == null) {
-			task = new Task();
-			task.setUuid(dto.getUuid());
-			if (dto.getCreationDate() != null) {
-				task.setCreationDate(new Timestamp(dto.getCreationDate().getTime()));
+		Task target = service.getByUuid(source.getUuid());
+		if (target == null) {
+			target = new Task();
+			target.setUuid(source.getUuid());
+			if (source.getCreationDate() != null) {
+				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
 			}
 		} 
+		DtoHelper.validateDto(source, target);
 		
-		Task a = task;
-		TaskDto b = dto;
-		
-		a.setAssigneeUser(userService.getByReferenceDto(b.getAssigneeUser()));
-		a.setAssigneeReply(b.getAssigneeReply());
-		a.setCreatorUser(userService.getByReferenceDto(b.getCreatorUser()));
-		a.setCreatorComment(b.getCreatorComment());
-		a.setPriority(b.getPriority());
-		a.setDueDate(b.getDueDate());
-		a.setSuggestedStart(b.getSuggestedStart());
-		a.setPerceivedStart(b.getPerceivedStart());
+		target.setAssigneeUser(userService.getByReferenceDto(source.getAssigneeUser()));
+		target.setAssigneeReply(source.getAssigneeReply());
+		target.setCreatorUser(userService.getByReferenceDto(source.getCreatorUser()));
+		target.setCreatorComment(source.getCreatorComment());
+		target.setPriority(source.getPriority());
+		target.setDueDate(source.getDueDate());
+		target.setSuggestedStart(source.getSuggestedStart());
+		target.setPerceivedStart(source.getPerceivedStart());
 		// TODO is this a good place to do this?
-		if (a.getTaskStatus() != b.getTaskStatus()) {
-			a.setStatusChangeDate(new Date());
+		if (target.getTaskStatus() != source.getTaskStatus()) {
+			target.setStatusChangeDate(new Date());
 		} else {
-			a.setStatusChangeDate(b.getStatusChangeDate());
+			target.setStatusChangeDate(source.getStatusChangeDate());
 		}
-		a.setTaskStatus(b.getTaskStatus());
-		a.setTaskType(b.getTaskType());
+		target.setTaskStatus(source.getTaskStatus());
+		target.setTaskType(source.getTaskType());
 		
-		a.setTaskContext(b.getTaskContext());
-		if (b.getTaskContext() != null) {
-			switch (b.getTaskContext()) {
+		target.setTaskContext(source.getTaskContext());
+		if (source.getTaskContext() != null) {
+			switch (source.getTaskContext()) {
 			case CASE:
-				a.setCaze(caseService.getByReferenceDto(b.getCaze()));
-				a.setContact(null);
-				a.setEvent(null);
+				target.setCaze(caseService.getByReferenceDto(source.getCaze()));
+				target.setContact(null);
+				target.setEvent(null);
 				break;
 			case CONTACT:
-				a.setCaze(null);
-				a.setContact(contactService.getByReferenceDto(b.getContact()));
-				a.setEvent(null);
+				target.setCaze(null);
+				target.setContact(contactService.getByReferenceDto(source.getContact()));
+				target.setEvent(null);
 				break;
 			case EVENT:
-				a.setCaze(null);
-				a.setContact(null);
-				a.setEvent(eventService.getByReferenceDto(b.getEvent()));
+				target.setCaze(null);
+				target.setContact(null);
+				target.setEvent(eventService.getByReferenceDto(source.getEvent()));
 				break;
 			case GENERAL:
-				a.setCaze(null);
-				a.setContact(null);
-				a.setEvent(null);
+				target.setCaze(null);
+				target.setContact(null);
+				target.setEvent(null);
 				break;
 			default:
-				throw new UnsupportedOperationException(b.getTaskContext() + " is not implemented");
+				throw new UnsupportedOperationException(source.getTaskContext() + " is not implemented");
 			}
 		} else {
-			a.setCaze(null);
-			a.setContact(null);
-			a.setEvent(null);
+			target.setCaze(null);
+			target.setContact(null);
+			target.setEvent(null);
 		}
 		
-		return task;
+		return target;
 	}
 	
 	public TaskDto toDto(Task task) {

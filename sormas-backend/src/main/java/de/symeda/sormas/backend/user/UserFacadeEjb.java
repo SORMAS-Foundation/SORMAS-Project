@@ -1,5 +1,6 @@
 package de.symeda.sormas.backend.user;
 
+import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -111,7 +112,7 @@ public class UserFacadeEjb implements UserFacade {
 
 	@Override
 	public UserDto saveUser(UserDto dto) {
-		User user = toUser(dto);
+		User user = fromDto(dto);
 		
 		service.ensurePersisted(user);
 		
@@ -128,7 +129,7 @@ public class UserFacadeEjb implements UserFacade {
 		dto.setLastName(entity.getLastName());
 		dto.setUserEmail(entity.getUserEmail());
 		dto.setPhone(entity.getPhone());
-		dto.setAddress(LocationFacadeEjb.toLocationDto(entity.getAddress()));
+		dto.setAddress(LocationFacadeEjb.toDto(entity.getAddress()));
 		
 		dto.setRegion(RegionFacadeEjb.toReferenceDto(entity.getRegion()));
 		dto.setDistrict(DistrictFacadeEjb.toReferenceDto(entity.getDistrict()));
@@ -150,31 +151,36 @@ public class UserFacadeEjb implements UserFacade {
 		return dto;
 	}	
 	
-	private User toUser(UserDto dto) {
-		User entity = service.getByUuid(dto.getUuid());
-		if(entity==null) {
-			entity = service.createUser();
+	private User fromDto(UserDto source) {
+		
+		User target = service.getByUuid(source.getUuid());
+		if (target==null) {
+			target = service.createUser();
+			target.setUuid(source.getUuid());
+			if (source.getCreationDate() != null) {
+				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
+			}
 		}
-		entity.setUuid(dto.getUuid());
+		DtoHelper.validateDto(source, target);
 
-		entity.setAktiv(dto.isActive());
-		entity.setFirstName(dto.getFirstName());
-		entity.setLastName(dto.getLastName());
-		entity.setPhone(dto.getPhone());
-		entity.setAddress(locationFacade.fromLocationDto(dto.getAddress()));
+		target.setAktiv(source.isActive());
+		target.setFirstName(source.getFirstName());
+		target.setLastName(source.getLastName());
+		target.setPhone(source.getPhone());
+		target.setAddress(locationFacade.fromDto(source.getAddress()));
 		
-		entity.setUserName(dto.getUserName());
-		entity.setUserEmail(dto.getUserEmail());
+		target.setUserName(source.getUserName());
+		target.setUserEmail(source.getUserEmail());
 		
-		entity.setRegion(regionService.getByReferenceDto(dto.getRegion()));
-		entity.setDistrict(districtService.getByReferenceDto(dto.getDistrict()));
-		entity.setHealthFacility(facilityService.getByReferenceDto(dto.getHealthFacility()));
-		entity.setAssociatedOfficer(service.getByReferenceDto(dto.getAssociatedOfficer()));
-		entity.setLaboratory(facilityService.getByReferenceDto(dto.getLaboratory()));
+		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
+		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
+		target.setHealthFacility(facilityService.getByReferenceDto(source.getHealthFacility()));
+		target.setAssociatedOfficer(service.getByReferenceDto(source.getAssociatedOfficer()));
+		target.setLaboratory(facilityService.getByReferenceDto(source.getLaboratory()));
 
-		entity.setUserRoles(dto.getUserRoles());
+		target.setUserRoles(source.getUserRoles());
 
-		return entity;
+		return target;
 	}
 	
 	@Override

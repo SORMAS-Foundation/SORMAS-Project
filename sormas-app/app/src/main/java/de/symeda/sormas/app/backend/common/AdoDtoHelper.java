@@ -86,12 +86,9 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
                         boolean empty = dao.countOf() == 0;
                         for (DTO dto : result) {
                             ADO ado = empty ? null : dao.queryUuid(dto.getUuid());
-                            if (ado == null || !ado.isModified()) {
-                                // isModified check is a workaround to make sure data entered in the app is not lost (#53)
-                                // this has to be replaced with a proper merging of old and new data (#46)
-                                ado = fillOrCreateFromDto(ado, dto);
-                                dao.saveUnmodified(ado);
-                            }
+                            // TODO merge
+                            ado = fillOrCreateFromDto(ado, dto);
+                            dao.saveUnmodified(ado);
                         }
                         return null;
                     }
