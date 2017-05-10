@@ -63,7 +63,6 @@ public class SyncVisitsTask extends AsyncTask<Void, Void, Void> {
             }, DatabaseHelper.getVisitDao());
         } catch (DaoException | SQLException | IOException e) {
             Log.e(getClass().getName(), "Error while synchronizing visits", e);
-            Toast.makeText(context, "Synchronization of visits failed. Please try again.", Toast.LENGTH_LONG).show();
             SormasApplication application = (SormasApplication) context.getApplicationContext();
             Tracker tracker = application.getDefaultTracker();
             ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, null, true);

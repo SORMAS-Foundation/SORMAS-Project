@@ -80,7 +80,6 @@ public class SyncContactsTask extends AsyncTask<Void, Void, Void> {
             }
         } catch (DaoException | SQLException | IOException e) {
             Log.e(getClass().getName(), "Error while synchronizing contacts", e);
-            Toast.makeText(context, "Synchronization of contacts failed. Please try again.", Toast.LENGTH_LONG).show();
             SormasApplication application = (SormasApplication) context.getApplicationContext();
             Tracker tracker = application.getDefaultTracker();
             ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, null, true);

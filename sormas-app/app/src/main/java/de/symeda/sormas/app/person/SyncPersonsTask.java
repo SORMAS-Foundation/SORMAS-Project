@@ -2,6 +2,7 @@ package de.symeda.sormas.app.person;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -31,6 +32,7 @@ import retrofit2.Call;
 public class SyncPersonsTask extends AsyncTask<Void, Void, Void> {
 
     private final Context context;
+    private boolean hasThrownError;
 
     public SyncPersonsTask(Context context) {
         this.context = context;
@@ -58,7 +60,6 @@ public class SyncPersonsTask extends AsyncTask<Void, Void, Void> {
             }, DatabaseHelper.getPersonDao());
         } catch (DaoException | SQLException | IOException e) {
             Log.e(getClass().getName(), "Error while synchronizing persons", e);
-            Toast.makeText(context, "Synchronization of persons failed. Please try again.", Toast.LENGTH_LONG).show();
             SormasApplication application = (SormasApplication) context.getApplicationContext();
             Tracker tracker = application.getDefaultTracker();
             ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, null, true);

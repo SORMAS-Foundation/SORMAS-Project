@@ -3,6 +3,7 @@ package de.symeda.sormas.app.caze;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -64,10 +65,10 @@ public class SyncCasesTask extends AsyncTask<Void, Void, Void> {
             }, DatabaseHelper.getCaseDao());
         } catch (DaoException | SQLException | IOException e) {
             Log.e(getClass().getName(), "Error while synchronizing cases", e);
-            Toast.makeText(context, "Synchronization of cases failed. Please try again.", Toast.LENGTH_LONG).show();
             SormasApplication application = (SormasApplication) context.getApplicationContext();
             Tracker tracker = application.getDefaultTracker();
             ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, null, true);
+            // TODO make sure the user is notified that the synchronization failed
         }
 
         return null;
