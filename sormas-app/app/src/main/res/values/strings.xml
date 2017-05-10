@@ -39,6 +39,7 @@
     <string name="action_createCaseFromContact">Create a new case for this contact</string>
     <string name="action_send">Send</string>
     <string name="action_report">Report Problem</string>
+    <string name="action_options">Options</string>
 
     <!-- field -->
     <string name="field_yes_no_yes">Yes</string>

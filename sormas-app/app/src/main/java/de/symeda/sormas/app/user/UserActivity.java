@@ -49,7 +49,7 @@ public class UserActivity extends AbstractRootTabActivity {
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        menu.setGroupVisible(R.id.group_action_help,false);
+        menu.findItem(R.id.action_options).getSubMenu().setGroupVisible(R.id.group_action_help,false);
         menu.setGroupVisible(R.id.group_action_add,false);
         menu.setGroupVisible(R.id.group_action_save,true);
 
