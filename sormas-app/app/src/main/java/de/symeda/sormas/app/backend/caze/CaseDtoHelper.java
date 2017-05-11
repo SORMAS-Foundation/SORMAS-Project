@@ -12,6 +12,8 @@ import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.facility.FacilityDtoHelper;
 import de.symeda.sormas.app.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.app.backend.hospitalization.HospitalizationDtoHelper;
+import de.symeda.sormas.app.backend.location.Location;
+import de.symeda.sormas.app.backend.location.LocationDtoHelper;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDtoHelper;
 import de.symeda.sormas.app.backend.region.Community;
@@ -30,15 +32,11 @@ import de.symeda.sormas.app.backend.user.UserDtoHelper;
  */
 public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 
-    private SymptomsDtoHelper symptomsDtoHelper;
-    private HospitalizationDtoHelper hospitalizationDtoHelper;
-    private EpiDataDtoHelper epiDataDtoHelper;
+    private LocationDtoHelper locationHelper = new LocationDtoHelper();
+    private SymptomsDtoHelper  symptomsDtoHelper = new SymptomsDtoHelper();
+    private HospitalizationDtoHelper hospitalizationDtoHelper = new HospitalizationDtoHelper();
+    private EpiDataDtoHelper epiDataDtoHelper = new EpiDataDtoHelper();
 
-    public CaseDtoHelper() {
-        symptomsDtoHelper = new SymptomsDtoHelper();
-        hospitalizationDtoHelper = new HospitalizationDtoHelper();
-        epiDataDtoHelper = new EpiDataDtoHelper();
-    }
 
     @Override
     public Case create() {
@@ -64,6 +62,7 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
         target.setReportingUser(DatabaseHelper.getUserDao().getByReferenceDto(source.getReportingUser()));
 
         target.setSymptoms(symptomsDtoHelper.fillOrCreateFromDto(target.getSymptoms(), source.getSymptoms()));
+        target.setIllLocation(locationHelper.fillOrCreateFromDto(target.getIllLocation(), source.getIllLocation()));
 
         target.setRegion(DatabaseHelper.getRegionDao().getByReferenceDto(source.getRegion()));
         target.setDistrict(DatabaseHelper.getDistrictDao().getByReferenceDto(source.getDistrict()));
@@ -107,6 +106,11 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
             target.setReportingUser(UserDtoHelper.toReferenceDto(user));
         } else {
             target.setReportingUser(null);
+        }
+
+        if (source.getIllLocation() != null) {
+            Location location = DatabaseHelper.getLocationDao().queryForId(source.getIllLocation().getId());
+            target.setIllLocation(locationHelper.adoToDto(location));
         }
 
         if (source.getSymptoms() != null) {
@@ -166,8 +170,6 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
         target.setMeaslesDoses(source.getMeaslesDoses());
         target.setMeaslesVaccinationInfoSource(source.getMeaslesVaccinationInfoSource());
         target.setEpidNumber(source.getEpidNumber());
-
-        // TODO user
     }
 
     public static CaseReferenceDto toReferenceDto(Case ado) {

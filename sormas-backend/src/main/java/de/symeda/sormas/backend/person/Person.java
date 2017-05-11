@@ -54,7 +54,7 @@ public class Person extends AbstractDomainObject {
 	private Integer birthdateDD;
 	private Integer birthdateMM;
 	private Integer birthdateYYYY;
-	private boolean dead;
+	
 	private Date deathDate;
 	private Location deathLocation;
 	private Date burialDate;
@@ -177,13 +177,6 @@ public class Person extends AbstractDomainObject {
 	}
 	public void setPresentCondition(PresentCondition presentCondition) {
 		this.presentCondition = presentCondition;
-	}
-
-	public boolean isDead() {
-		return dead;
-	}
-	public void setDead(boolean dead) {
-		this.dead = dead;
 	}
 	
 	@Temporal(TemporalType.DATE)

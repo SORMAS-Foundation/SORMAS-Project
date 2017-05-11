@@ -31,15 +31,23 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
         target.setNickname(source.getNickname());
         target.setMothersMaidenName(source.getMothersMaidenName());
         target.setSex(source.getSex());
+
         target.setBirthdateDD(source.getBirthdateDD());
         target.setBirthdateMM(source.getBirthdateMM());
         target.setBirthdateYYYY(source.getBirthdateYYYY());
         target.setApproximateAge(source.getApproximateAge());
         target.setApproximateAgeType(source.getApproximateAgeType());
+
         target.setPhone(source.getPhone());
         target.setPhoneOwner(source.getPhoneOwner());
+
         target.setPresentCondition(source.getPresentCondition());
         target.setDeathDate(source.getDeathDate());
+        target.setDeathLocation(locationHelper.fillOrCreateFromDto(target.getDeathLocation(), source.getDeathLocation()));
+        target.setBurialDate(source.getBurialDate());
+        target.setBurialConductor(source.getBurialConductor());
+        target.setBurialLocation(locationHelper.fillOrCreateFromDto(target.getBurialLocation(), source.getBurialLocation()));
+
         target.setAddress(locationHelper.fillOrCreateFromDto(target.getAddress(), source.getAddress()));
         target.setOccupationType(source.getOccupationType());
         target.setOccupationDetails(source.getOccupationDetails());
@@ -47,37 +55,43 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
     }
 
     @Override
-    public void fillInnerFromAdo(PersonDto dto, Person ado) {
+    public void fillInnerFromAdo(PersonDto target, Person source) {
 
-        dto.setFirstName(ado.getFirstName());
-        dto.setLastName(ado.getLastName());
-        dto.setNickname(ado.getNickname());
-        dto.setMothersMaidenName(ado.getMothersMaidenName());
-        dto.setSex(ado.getSex());
-        dto.setBirthdateDD(ado.getBirthdateDD());
-        dto.setBirthdateMM(ado.getBirthdateMM());
-        dto.setBirthdateYYYY(ado.getBirthdateYYYY());
-        dto.setApproximateAge(ado.getApproximateAge());
-        dto.setApproximateAgeType(ado.getApproximateAgeType());
-        dto.setPhone(ado.getPhone());
-        dto.setPhoneOwner(ado.getPhoneOwner());
-        dto.setPresentCondition(ado.getPresentCondition());
-        dto.setDeathDate(ado.getDeathDate());
+        target.setFirstName(source.getFirstName());
+        target.setLastName(source.getLastName());
+        target.setNickname(source.getNickname());
+        target.setMothersMaidenName(source.getMothersMaidenName());
+        target.setSex(source.getSex());
 
-        if (ado.getAddress() != null) {
-            Location location = DatabaseHelper.getLocationDao().queryForId(ado.getAddress().getId());
-            dto.setAddress(locationHelper.adoToDto(location));
+        target.setBirthdateDD(source.getBirthdateDD());
+        target.setBirthdateMM(source.getBirthdateMM());
+        target.setBirthdateYYYY(source.getBirthdateYYYY());
+        target.setApproximateAge(source.getApproximateAge());
+        target.setApproximateAgeType(source.getApproximateAgeType());
+        target.setPhone(source.getPhone());
+        target.setPhoneOwner(source.getPhoneOwner());
+
+        target.setPresentCondition(source.getPresentCondition());
+        target.setDeathDate(source.getDeathDate());
+        if (source.getDeathLocation() != null) {
+            Location location = DatabaseHelper.getLocationDao().queryForId(source.getDeathLocation().getId());
+            target.setDeathLocation(locationHelper.adoToDto(location));
+        }
+        target.setBurialDate(source.getBurialDate());
+        target.setBurialConductor(source.getBurialConductor());
+        if (source.getBurialLocation() != null) {
+            Location location = DatabaseHelper.getLocationDao().queryForId(source.getBurialLocation().getId());
+            target.setBurialLocation(locationHelper.adoToDto(location));
         }
 
-        dto.setOccupationType(ado.getOccupationType());
-        dto.setOccupationDetails(ado.getOccupationDetails());
-        if (ado.getOccupationFacility() != null) {
-            Facility facility = DatabaseHelper.getFacilityDao().queryForId(ado.getOccupationFacility().getId());
-            dto.setOccupationFacility(FacilityDtoHelper.toReferenceDto(facility));
+        target.setOccupationType(source.getOccupationType());
+        target.setOccupationDetails(source.getOccupationDetails());
+        if (source.getOccupationFacility() != null) {
+            Facility facility = DatabaseHelper.getFacilityDao().queryForId(source.getOccupationFacility().getId());
+            target.setOccupationFacility(FacilityDtoHelper.toReferenceDto(facility));
         } else {
-            dto.setOccupationFacility(null);
+            target.setOccupationFacility(null);
         }
-
     }
 
     public static PersonReferenceDto toReferenceDto(Person ado) {

@@ -156,6 +156,9 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
                     if (property.getPropertyType().isAnnotationPresent(EmbeddedAdo.class)) {
                         // 2. embedded domain objects like a Location or Symptoms
                         // call merge for the object
+                        if (sourceFieldValue == null) {
+                            throw new NullPointerException("The embedded object " + property.getName() + " is not allowed to be null.");
+                        }
                         mergeData((ADO)targetFieldValue, (ADO)baseFieldValue, (ADO)sourceFieldValue);
                         copyData = false;
                     }

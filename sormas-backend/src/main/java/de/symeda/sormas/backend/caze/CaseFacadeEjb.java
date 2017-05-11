@@ -31,6 +31,8 @@ import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.hospitalization.HospitalizationFacadeEjb;
 import de.symeda.sormas.backend.hospitalization.HospitalizationFacadeEjb.HospitalizationFacadeEjbLocal;
 import de.symeda.sormas.backend.hospitalization.HospitalizationService;
+import de.symeda.sormas.backend.location.LocationFacadeEjb;
+import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.person.PersonService;
@@ -63,6 +65,8 @@ public class CaseFacadeEjb implements CaseFacade {
 	private UserService userService;
 	@EJB
 	private SymptomsFacadeEjbLocal symptomsFacade;
+	@EJB
+	private LocationFacadeEjbLocal locationFacade;
 	@EJB
 	private RegionService regionService;
 	@EJB
@@ -208,6 +212,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setCaseOfficer(userService.getByReferenceDto(source.getCaseOfficer()));
 		target.setContactOfficer(userService.getByReferenceDto(source.getContactOfficer()));
 
+		target.setIllLocation(locationFacade.fromDto(source.getIllLocation()));
 		target.setSymptoms(symptomsFacade.fromDto(source.getSymptoms()));
 		
 		target.setPregnant(source.getPregnant());
@@ -255,7 +260,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setSurveillanceOfficer(UserFacadeEjb.toReferenceDto(source.getSurveillanceOfficer()));
 		target.setCaseOfficer(UserFacadeEjb.toReferenceDto(source.getCaseOfficer()));
 		target.setContactOfficer(UserFacadeEjb.toReferenceDto(source.getContactOfficer()));
-		
+
+		target.setIllLocation(LocationFacadeEjb.toDto(source.getIllLocation()));
 		target.setSymptoms(SymptomsFacadeEjb.toDto(source.getSymptoms()));
 		
 		target.setPregnant(source.getPregnant());

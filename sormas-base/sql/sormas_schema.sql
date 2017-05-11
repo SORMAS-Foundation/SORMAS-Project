@@ -1347,3 +1347,10 @@ ALTER TABLE samples ADD COLUMN samplesource varchar(255);
 ALTER TABLE samples ADD COLUMN suggestedtypeoftest varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (45, 'Sample source and suggested type of test');
+
+-- 2017-05-11 Add missing fields to person DTO #196
+
+ALTER TABLE public.person DROP COLUMN dead;
+
+INSERT INTO schema_version (version_number, comment) VALUES (46, 'Drop person.dead');
+

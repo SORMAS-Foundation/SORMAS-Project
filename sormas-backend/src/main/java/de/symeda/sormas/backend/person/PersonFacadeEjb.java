@@ -184,7 +184,10 @@ public class PersonFacadeEjb implements PersonFacade {
 		target.setApproximateAge(source.getApproximateAge());
 		target.setApproximateAgeType(source.getApproximateAgeType());
 		target.setDeathDate(source.getDeathDate());
-		target.setDead(source.getDeathDate()!=null);
+		target.setDeathLocation(locationFacade.fromDto(source.getDeathLocation()));
+		target.setBurialDate(source.getBurialDate());
+		target.setBurialConductor(source.getBurialConductor());
+		target.setBurialLocation(locationFacade.fromDto(source.getBurialLocation()));
 		
 		target.setNickname(source.getNickname());
 		target.setMothersMaidenName(source.getMothersMaidenName());
@@ -237,47 +240,52 @@ public class PersonFacadeEjb implements PersonFacade {
 		return dto;
 	}
 	
-	public static PersonDto toDto(Person entity) {
-		PersonDto dto = new PersonDto();
-		DtoHelper.fillReferenceDto(dto, entity);
+	public static PersonDto toDto(Person source) {
+		PersonDto target = new PersonDto();
+		DtoHelper.fillReferenceDto(target, source);
 		
-		dto.setFirstName(entity.getFirstName());
-		dto.setLastName(entity.getLastName());
-		dto.setSex(entity.getSex());
+		target.setFirstName(source.getFirstName());
+		target.setLastName(source.getLastName());
+		target.setSex(source.getSex());
 		
-		dto.setPresentCondition(entity.getPresentCondition());
-		dto.setBirthdateDD(entity.getBirthdateDD());
-		dto.setBirthdateMM(entity.getBirthdateMM());
-		dto.setBirthdateYYYY(entity.getBirthdateYYYY());
-		dto.setDeathDate(entity.getDeathDate());
+		target.setPresentCondition(source.getPresentCondition());
+		target.setBirthdateDD(source.getBirthdateDD());
+		target.setBirthdateMM(source.getBirthdateMM());
+		target.setBirthdateYYYY(source.getBirthdateYYYY());
 		
-		if (entity.getBirthdateYYYY() != null) {
+		if (source.getBirthdateYYYY() != null) {
 			Calendar birthdate = new GregorianCalendar();
-			birthdate.set(entity.getBirthdateYYYY(), entity.getBirthdateMM()!=null?entity.getBirthdateMM()-1:0, entity.getBirthdateDD()!=null?entity.getBirthdateDD():1);
+			birthdate.set(source.getBirthdateYYYY(), source.getBirthdateMM()!=null?source.getBirthdateMM()-1:0, source.getBirthdateDD()!=null?source.getBirthdateDD():1);
 			
 			Pair<Integer, ApproximateAgeType> pair = ApproximateAgeHelper.getApproximateAge(
 					birthdate.getTime(),
-					entity.getDeathDate()
+					source.getDeathDate()
 					);
-			dto.setApproximateAge(pair.getElement0());
-			dto.setApproximateAgeType(pair.getElement1());
+			target.setApproximateAge(pair.getElement0());
+			target.setApproximateAgeType(pair.getElement1());
 		}
 		else {
-			dto.setApproximateAge(entity.getApproximateAge());
-			dto.setApproximateAgeType(entity.getApproximateAgeType());
+			target.setApproximateAge(source.getApproximateAge());
+			target.setApproximateAgeType(source.getApproximateAgeType());
 		}
 		
-		dto.setNickname(entity.getNickname());
-		dto.setMothersMaidenName(entity.getMothersMaidenName());
+		target.setDeathDate(source.getDeathDate());
+		target.setDeathLocation(LocationFacadeEjb.toDto(source.getDeathLocation()));
+		target.setBurialDate(source.getBurialDate());
+		target.setBurialConductor(source.getBurialConductor());
+		target.setBurialLocation(LocationFacadeEjb.toDto(source.getBurialLocation()));
+
+		target.setNickname(source.getNickname());
+		target.setMothersMaidenName(source.getMothersMaidenName());
 		
-		dto.setPhone(entity.getPhone());
-		dto.setPhoneOwner(entity.getPhoneOwner());
-		dto.setAddress(LocationFacadeEjb.toDto(entity.getAddress()));
+		target.setPhone(source.getPhone());
+		target.setPhoneOwner(source.getPhoneOwner());
+		target.setAddress(LocationFacadeEjb.toDto(source.getAddress()));
 		
-		dto.setOccupationType(entity.getOccupationType());
-		dto.setOccupationDetails(entity.getOccupationDetails());
-		dto.setOccupationFacility(FacilityFacadeEjb.toReferenceDto(entity.getOccupationFacility()));
-		return dto;
+		target.setOccupationType(source.getOccupationType());
+		target.setOccupationDetails(source.getOccupationDetails());
+		target.setOccupationFacility(FacilityFacadeEjb.toReferenceDto(source.getOccupationFacility()));
+		return target;
 	}
 
 }

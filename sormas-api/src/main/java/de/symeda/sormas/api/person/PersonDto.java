@@ -20,7 +20,13 @@ public class PersonDto extends PersonReferenceDto {
 	public static final String BIRTH_DATE_DD = "birthdateDD";
 	public static final String BIRTH_DATE_MM = "birthdateMM";
 	public static final String BIRTH_DATE_YYYY = "birthdateYYYY";
+	
 	public static final String DEATH_DATE = "deathDate";
+	public static final String DEATH_LOCATION = "deathLocation";
+	public static final String BURIAL_DATE = "burialDate";
+	public static final String BURIAL_LOCATION = "burialLocation";
+	public static final String BURIAL_CONDUCTOR = "burialConductor";
+	
 	public static final String APPROXIMATE_AGE = "approximateAge";
 	public static final String APPROXIMATE_AGE_TYPE = "approximateAgeType";
 	
@@ -41,9 +47,14 @@ public class PersonDto extends PersonReferenceDto {
 	private Integer birthdateDD;
 	private Integer birthdateMM;
 	private Integer birthdateYYYY;
-	private Date deathDate;
 	private Integer approximateAge;
 	private ApproximateAgeType approximateAgeType;
+
+	private Date deathDate;
+	private LocationDto deathLocation;
+	private Date burialDate;
+	private LocationDto burialLocation;
+	private BurialConductor burialConductor;
 		
 	private String nickname;
 	private String mothersMaidenName;
@@ -184,5 +195,37 @@ public class PersonDto extends PersonReferenceDto {
 	
 	public void setMothersMaidenName(String mothersMaidenName) {
 		this.mothersMaidenName = mothersMaidenName;
+	}
+
+	public LocationDto getDeathLocation() {
+		return deathLocation;
+	}
+
+	public void setDeathLocation(LocationDto deathLocation) {
+		this.deathLocation = deathLocation;
+	}
+
+	public Date getBurialDate() {
+		return burialDate;
+	}
+
+	public void setBurialDate(Date burialDate) {
+		this.burialDate = burialDate;
+	}
+
+	public LocationDto getBurialLocation() {
+		return burialLocation;
+	}
+
+	public void setBurialLocation(LocationDto burialLocation) {
+		this.burialLocation = burialLocation;
+	}
+
+	public BurialConductor getBurialConductor() {
+		return burialConductor;
+	}
+
+	public void setBurialConductor(BurialConductor burialConductor) {
+		this.burialConductor = burialConductor;
 	}
 }
