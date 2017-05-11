@@ -16,6 +16,7 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.epidata.EpiData;
 import de.symeda.sormas.app.backend.hospitalization.Hospitalization;
+import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.user.User;
@@ -105,6 +106,8 @@ public class CaseDao extends AbstractAdoDao<Case> {
     public static Case createCase(Person person) {
         Case caze = DataUtils.createNew(Case.class);
         caze.setPerson(person);
+
+        caze.setIllLocation(DataUtils.createNew(Location.class));
 
         // Symptoms
         caze.setSymptoms(DataUtils.createNew(Symptoms.class));

@@ -14,9 +14,11 @@ import javax.persistence.Enumerated;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.TemperatureSource;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.common.EmbeddedAdo;
 
 @Entity(name= Symptoms.TABLE_NAME)
 @DatabaseTable(tableName = Symptoms.TABLE_NAME)
+@EmbeddedAdo
 public class Symptoms extends AbstractDomainObject {
 	
 	private static final long serialVersionUID = 392886645668778670L;

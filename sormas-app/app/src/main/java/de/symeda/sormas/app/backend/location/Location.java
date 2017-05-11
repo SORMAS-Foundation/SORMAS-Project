@@ -10,12 +10,14 @@ import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.common.EmbeddedAdo;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
 
 @Entity(name=Location.TABLE_NAME)
 @DatabaseTable(tableName = Location.TABLE_NAME)
+@EmbeddedAdo
 public class Location extends AbstractDomainObject {
 	
 	private static final long serialVersionUID = 392776645668778670L;

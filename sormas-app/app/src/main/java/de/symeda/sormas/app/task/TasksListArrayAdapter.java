@@ -70,11 +70,11 @@ public class TasksListArrayAdapter extends ArrayAdapter<Task> {
         }
 
         TextView taskStatus = (TextView) convertView.findViewById(R.id.task_taskStatus_li);
-        taskStatus.setText(DataUtils.toString(task.getTaskStatus()));
+        taskStatus.setText(DataHelper.toStringNullable(task.getTaskStatus()));
         setFontStyle(taskStatus, task.getTaskStatus());
 
         TextView taskType = (TextView) convertView.findViewById(R.id.task_taskType_li);
-        taskType.setText(DataUtils.toString(task.getTaskType()));
+        taskType.setText(DataHelper.toStringNullable(task.getTaskType()));
         setFontStyle(taskType, task.getTaskStatus());
 
         TextView taskInfo = (TextView) convertView.findViewById(R.id.task_name_or_information_li);

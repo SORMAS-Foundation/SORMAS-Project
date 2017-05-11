@@ -38,6 +38,9 @@ android {
 
 repositories {
     mavenLocal()
+    maven {
+        url "https://maven.repository.redhat.com/ga/"
+    }
 }
 
 dependencies {
@@ -53,6 +56,7 @@ dependencies {
     compile 'de.symeda.sormas:sormas-api:0.0.1-SNAPSHOT'
     compile 'com.google.firebase:firebase-appindexing:10.0.1'
     compile 'com.google.android.gms:play-services-analytics:10.0.1'
+    compile 'com.googlecode:openbeans:1.0' // https://mvnrepository.com/artifact/com.googlecode/openbeans
 }
 
 apply plugin: 'com.google.gms.google-services'

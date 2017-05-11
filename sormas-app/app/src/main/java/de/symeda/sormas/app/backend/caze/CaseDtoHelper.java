@@ -52,6 +52,7 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 
     @Override
     public void fillInnerFromDto(Case target, CaseDataDto source) {
+
         target.setCaseClassification(source.getCaseClassification());
         target.setInvestigationStatus(source.getInvestigationStatus());
         target.setDisease(source.getDisease());

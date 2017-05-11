@@ -2,10 +2,16 @@ package de.symeda.sormas.app.backend.common;
 
 import android.util.Log;
 
+import com.googlecode.openbeans.BeanInfo;
+import com.googlecode.openbeans.IntrospectionException;
+import com.googlecode.openbeans.Introspector;
+import com.googlecode.openbeans.PropertyDescriptor;
 import com.j256.ormlite.logger.Logger;
 import com.j256.ormlite.logger.LoggerFactory;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -15,6 +21,7 @@ import java.util.concurrent.Callable;
 
 import de.symeda.sormas.api.DataTransferObject;
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -86,9 +93,18 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
                         boolean empty = dao.countOf() == 0;
                         for (DTO dto : result) {
                             ADO ado = empty ? null : dao.queryUuid(dto.getUuid());
-                            // TODO merge
-                            ado = fillOrCreateFromDto(ado, dto);
-                            dao.saveUnmodified(ado);
+
+                            if (ado != null && ado.isModified()) {
+                                // merge existing changes into incoming data
+                                ADO unmodifiedAdo = dao.queryUnmodifiedUuid(dto.getUuid());
+                                ADO source = fillOrCreateFromDto(null, dto);
+                                mergeData(ado, unmodifiedAdo, source);
+                                dao.save(ado);
+                                dao.saveUnmodified(unmodifiedAdo);
+                            } else {
+                                ado = fillOrCreateFromDto(ado, dto);
+                                dao.saveUnmodified(ado);
+                            }
                         }
                         return null;
                     }
@@ -99,6 +115,84 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
         } catch (RuntimeException e) {
             Log.e(getClass().getName(), "Exception thrown when trying to pull entities");
             throw new DaoException(e);
+        }
+    }
+
+    public void mergeData(ADO target, ADO base, ADO source) {
+
+        BeanInfo beanInfo;
+        try {
+            beanInfo = Introspector.getBeanInfo(target.getClass());
+        } catch (IntrospectionException e) {
+            e.printStackTrace();
+            return;
+        }
+
+        for (PropertyDescriptor property : beanInfo.getPropertyDescriptors()) {
+            try {
+                if (AbstractDomainObject.CREATION_DATE.equals(property.getName())
+                    || AbstractDomainObject.CHANGE_DATE.equals(property.getName())
+                    || AbstractDomainObject.LOCAL_CHANGE_DATE.equals(property.getName())
+                    || AbstractDomainObject.UUID.equals(property.getName())
+                    || AbstractDomainObject.ID.equals(property.getName())
+                    || AbstractDomainObject.MODIFIED.equals(property.getName())
+                    || property.getWriteMethod() == null)
+                    continue;
+
+                Object baseFieldValue = property.getReadMethod().invoke(base);
+                Object sourceFieldValue = property.getReadMethod().invoke(source);
+                Object targetFieldValue = property.getReadMethod().invoke(target);
+
+                boolean copyData;
+                // we now have to write the value from source into target and base
+                // there are three types of properties:
+
+                if (DataHelper.isValueType(property.getPropertyType())) {
+                    // 1. "value" types like String, Date, Enum, ...
+                    // just copy value from source into target and base
+                    copyData = true;
+                }
+                else if (AbstractDomainObject.class.isAssignableFrom(property.getPropertyType())) {
+                    if (property.getPropertyType().isAnnotationPresent(EmbeddedAdo.class)) {
+                        // 2. embedded domain objects like a Location or Symptoms
+                        // call merge for the object
+                        mergeData((ADO)targetFieldValue, (ADO)baseFieldValue, (ADO)sourceFieldValue);
+                        copyData = false;
+                    }
+                    else {
+                        // 3. reference domain objects like a reference to a Person or a District
+                        // just copy reference value from source into target and base
+                        copyData = true;
+                    }
+                }
+                else {
+                    // Other objects are not supported
+                    throw new UnsupportedOperationException(property.getPropertyType().getName() + " is not supported as a property type.");
+                }
+
+                if (copyData) {
+
+                    if (DataHelper.equal(baseFieldValue, sourceFieldValue)) {
+                        continue;
+                    }
+
+                    if (!DataHelper.equal(baseFieldValue, targetFieldValue)) {
+                        // we have a conflict
+                        Log.e(beanInfo.getBeanDescriptor().getName(), "Overriding " + property.getName() +
+                                " value changed from '" + DataHelper.toStringNullable(baseFieldValue) +
+                                "' to '" + DataHelper.toStringNullable(targetFieldValue) +
+                                "' with '" + DataHelper.toStringNullable(sourceFieldValue) + "'");
+                    }
+
+                    property.getWriteMethod().invoke(target, sourceFieldValue);
+                    property.getWriteMethod().invoke(base, sourceFieldValue);
+                }
+
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            }
         }
     }
 

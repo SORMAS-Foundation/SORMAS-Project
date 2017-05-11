@@ -30,16 +30,6 @@ import de.symeda.sormas.app.component.SpinnerField;
  */
 public class DataUtils {
 
-    /**
-     * @return null or object.toString()
-     */
-    public static String toString(Object object) {
-        if (object == null) {
-            return null;
-        }
-        return object.toString();
-    }
-
     public static <E>  List<Item> getEnumItems(Class<E> clazz) {
         E[] enumConstants = clazz.getEnumConstants();
         List<Item> list = new ArrayList<Item>();

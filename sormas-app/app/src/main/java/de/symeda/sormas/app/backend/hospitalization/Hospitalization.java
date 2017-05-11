@@ -14,6 +14,7 @@ import javax.persistence.Enumerated;
 
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.common.EmbeddedAdo;
 
 /**
  * Created by Mate Strysewske on 22.02.2017.
@@ -21,6 +22,7 @@ import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 
 @Entity(name = Hospitalization.TABLE_NAME)
 @DatabaseTable(tableName = Hospitalization.TABLE_NAME)
+@EmbeddedAdo
 public class Hospitalization extends AbstractDomainObject {
 
     private static final long serialVersionUID = -8576270649634034244L;

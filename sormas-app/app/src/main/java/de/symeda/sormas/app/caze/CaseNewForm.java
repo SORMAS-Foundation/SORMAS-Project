@@ -52,7 +52,7 @@ public class CaseNewForm extends FormTab {
             person = (Person) arguments.get(CaseNewActivity.PERSON);
             disease = (Disease) arguments.get(CaseNewActivity.DISEASE);
         } else {
-            person = DataUtils.createNew(Person.class);
+            person = DatabaseHelper.getPersonDao().createPerson();
         }
         caze = DatabaseHelper.getCaseDao().createCase(person);
 

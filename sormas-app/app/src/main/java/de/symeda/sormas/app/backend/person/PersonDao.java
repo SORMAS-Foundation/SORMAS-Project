@@ -7,9 +7,12 @@ import com.j256.ormlite.dao.Dao;
 import java.sql.SQLException;
 import java.util.List;
 
+import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.location.Location;
+import de.symeda.sormas.app.util.DataUtils;
 
 /**
  * Created by Martin Wahnschaffe on 22.07.2016.
@@ -66,4 +69,13 @@ public class PersonDao extends AbstractAdoDao<Person> {
         }
     }
 
+    public static Person createPerson() {
+        Person person = DataUtils.createNew(Person.class);
+
+        person.setAddress(DataUtils.createNew(Location.class));
+        person.setBurialLocation(DataUtils.createNew(Location.class));
+        person.setDeathLocation(DataUtils.createNew(Location.class));
+
+        return person;
+    }
 }

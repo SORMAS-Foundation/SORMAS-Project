@@ -15,6 +15,7 @@ import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.contact.Contact;
@@ -111,7 +112,7 @@ public class Task extends AbstractDomainObject {
 			case GENERAL:
 				return null;
 			default:
-				throw new IndexOutOfBoundsException(DataUtils.toString(getTaskContext()));
+				throw new IndexOutOfBoundsException(DataHelper.toStringNullable(getTaskContext()));
 		}
 	}
 
