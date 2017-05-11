@@ -33,6 +33,11 @@ public class TaskDao extends AbstractAdoDao<Task> {
     }
 
     @Override
+    protected Class<Task> getAdoClass() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public String getTableName() {
         return Task.TABLE_NAME;
     }

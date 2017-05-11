@@ -17,11 +17,13 @@ import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 
 public class SampleTestDao extends AbstractAdoDao<SampleTest> {
 
-    private static final Log.Level LOG_LEVEL = Log.Level.DEBUG;
-    private static final Logger logger = LoggerFactory.getLogger(RuntimeExceptionDao.class);
-
     public SampleTestDao(Dao<SampleTest, Long> innerDao) throws SQLException {
         super(innerDao);
+    }
+
+    @Override
+    protected Class<SampleTest> getAdoClass() {
+        return SampleTest.class;
     }
 
     public SampleTest getMostRecentForSample(Sample sample) {

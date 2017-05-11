@@ -16,8 +16,12 @@ public class RegionDao extends AbstractAdoDao<Region> {
     }
 
     @Override
+    protected Class<Region> getAdoClass() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public String getTableName() {
         return Region.TABLE_NAME;
     }
-
 }

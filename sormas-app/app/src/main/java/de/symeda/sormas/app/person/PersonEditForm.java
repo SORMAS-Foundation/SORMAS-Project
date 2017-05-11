@@ -139,8 +139,7 @@ public class PersonEditForm extends FormTab {
         updateApproximateAgeField();
 
         // ================ Address ================
-        final Location location = person.getAddress() != null ? person.getAddress() : DataUtils.createNew(Location.class);
-        LocationDialog.addLocationField(getActivity(), location, binding.personAddress, binding.formCpBtnAddress, new Consumer() {
+        LocationDialog.addLocationField(getActivity(), person.getAddress(), binding.personAddress, binding.formCpBtnAddress, new Consumer() {
             @Override
             public void accept(Object parameter) {
                 if(parameter instanceof Location) {

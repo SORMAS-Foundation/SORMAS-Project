@@ -21,13 +21,13 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
     }
 
     @Override
-    public Contact create() {
-        return new Contact();
+    protected Class<Contact> getAdoClass() {
+        return Contact.class;
     }
 
     @Override
-    public ContactDto createDto() {
-        return new ContactDto();
+    protected Class<ContactDto> getDtoClass() {
+        return ContactDto.class;
     }
 
     @Override

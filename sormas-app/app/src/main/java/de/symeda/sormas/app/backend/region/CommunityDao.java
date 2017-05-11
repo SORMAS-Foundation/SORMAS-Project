@@ -7,6 +7,7 @@ import java.util.List;
 
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.DaoException;
+import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.user.User;
 
 /**
@@ -19,6 +20,11 @@ public class CommunityDao extends AbstractAdoDao<Community> {
     }
 
     @Override
+    protected Class<Community> getAdoClass() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public String getTableName() {
         return Community.TABLE_NAME;
     }
@@ -26,5 +32,4 @@ public class CommunityDao extends AbstractAdoDao<Community> {
     public List<Community> getByDistrict(District district) {
         return queryForEq("district_id", district);
     }
-
 }

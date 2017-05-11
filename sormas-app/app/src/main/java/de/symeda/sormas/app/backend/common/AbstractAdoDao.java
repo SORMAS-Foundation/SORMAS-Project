@@ -16,6 +16,9 @@ import java.util.List;
 import javax.persistence.NonUniqueResultException;
 
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.util.DataUtils;
 
 /**
  * Created by Martin Wahnschaffe on 22.07.2016.
@@ -25,6 +28,8 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> extends R
     public AbstractAdoDao(Dao<ADO, Long> innerDao)  {
         super(innerDao);
     }
+
+    protected abstract Class<ADO> getAdoClass();
 
     /**
      * Use queryUnmodifiedUuid if you want to retrieve the unmodified version in any case.
@@ -171,7 +176,6 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> extends R
     public boolean saveUnmodified(ADO ado) throws DaoException {
         try {
 
-            // TODO replace with merging stuff1
             int result;
             if (ado.getId() == null) {
                 result = create(ado);
@@ -185,6 +189,23 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> extends R
             return true;
         } catch (RuntimeException e) {
             throw new DaoException(e);
+        }
+    }
+
+    public ADO create() {
+        try {
+            ADO ado = getAdoClass().newInstance();
+            ado.setUuid(DataHelper.createUuid());
+            Date now = new Date();
+            ado.setCreationDate(now);
+            ado.setChangeDate(now);
+            return ado;
+        } catch (InstantiationException e) {
+            Log.e(DataUtils.class.getName(), "Could not perform createNew");
+            throw new RuntimeException(e);
+        } catch (IllegalAccessException e) {
+            Log.e(DataUtils.class.getName(), "Could not perform createNew");
+            throw new RuntimeException(e);
         }
     }
 }

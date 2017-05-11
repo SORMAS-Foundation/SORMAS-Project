@@ -29,6 +29,11 @@ public class CaseDao extends AbstractAdoDao<Case> {
     }
 
     @Override
+    protected Class<Case> getAdoClass() {
+        return Case.class;
+    }
+
+    @Override
     public String getTableName() {
         return Case.TABLE_NAME;
     }
@@ -103,20 +108,28 @@ public class CaseDao extends AbstractAdoDao<Case> {
         }
     }
 
-    public static Case createCase(Person person) {
-        Case caze = DataUtils.createNew(Case.class);
+    @Override
+    public Case create() {
+        throw new UnsupportedOperationException("Use create(Person) instead");
+    }
+
+    public Case create(Person person) {
+        Case caze = super.create();
         caze.setPerson(person);
 
-        caze.setIllLocation(DataUtils.createNew(Location.class));
+        caze.setReportDate(new Date());
+        caze.setReportingUser(ConfigProvider.getUser());
+
+        caze.setIllLocation(DatabaseHelper.getLocationDao().create());
 
         // Symptoms
-        caze.setSymptoms(DataUtils.createNew(Symptoms.class));
+        caze.setSymptoms(DatabaseHelper.getSymptomsDao().create());
 
         // Hospitalization
-        caze.setHospitalization(DataUtils.createNew(Hospitalization.class));
+        caze.setHospitalization(DatabaseHelper.getHospitalizationDao().create());
 
         // Epi Data
-        caze.setEpiData(DataUtils.createNew(EpiData.class));
+        caze.setEpiData(DatabaseHelper.getEpiDataDao().create());
 
         // Location
         User currentUser = ConfigProvider.getUser();

@@ -74,7 +74,7 @@ public class SymptomsEditForm extends FormTab {
 
         // create a new visit from contact data
         if(getArguments().getBoolean(NEW_SYMPTOMS)) {
-            symptoms = DataUtils.createNew(Symptoms.class);
+            symptoms = DatabaseHelper.getSymptomsDao().create();
         }
         // open the given visit
         else {

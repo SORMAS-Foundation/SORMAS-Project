@@ -52,9 +52,9 @@ public class CaseNewForm extends FormTab {
             person = (Person) arguments.get(CaseNewActivity.PERSON);
             disease = (Disease) arguments.get(CaseNewActivity.DISEASE);
         } else {
-            person = DatabaseHelper.getPersonDao().createPerson();
+            person = DatabaseHelper.getPersonDao().create();
         }
-        caze = DatabaseHelper.getCaseDao().createCase(person);
+        caze = DatabaseHelper.getCaseDao().create(person);
 
         binding = DataBindingUtil.inflate(inflater, R.layout.case_new_fragment_layout, container, false);
         return binding.getRoot();

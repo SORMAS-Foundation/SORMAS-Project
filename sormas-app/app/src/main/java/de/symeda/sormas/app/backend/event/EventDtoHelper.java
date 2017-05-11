@@ -18,13 +18,13 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
     }
 
     @Override
-    public Event create() {
-        return new Event();
+    protected Class<Event> getAdoClass() {
+        return Event.class;
     }
 
     @Override
-    public EventDto createDto() {
-        return new EventDto();
+    protected Class<EventDto> getDtoClass() {
+        return EventDto.class;
     }
 
     @Override

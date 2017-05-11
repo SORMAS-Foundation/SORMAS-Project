@@ -2,6 +2,7 @@ package de.symeda.sormas.app.contact;
 
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +14,7 @@ import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.component.FieldHelper;
@@ -31,8 +33,8 @@ public class ContactNewForm extends FormTab {
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        person = DataUtils.createNew(Person.class);
-        contact = DataUtils.createNew(Contact.class);
+        person = DatabaseHelper.getPersonDao().create();
+        contact = DatabaseHelper.getContactDao().create();
         contact.setPerson(person);
         contact.setReportDateTime(new Date());
 

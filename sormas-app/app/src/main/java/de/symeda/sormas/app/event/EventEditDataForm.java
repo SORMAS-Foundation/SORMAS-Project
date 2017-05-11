@@ -48,13 +48,11 @@ public class EventEditDataForm extends FormTab {
         final EventDao eventDao = DatabaseHelper.getEventDao();
         Event event = null;
 
-        // create a new event for empty uuid
         if (eventUuid==null) {
-            event = DatabaseHelper.getEventDao().getNewEvent();
-
-        }
-        // open the given event
-        else {
+            // create a new event for empty uuid
+            event = DatabaseHelper.getEventDao().create();
+        } else {
+            // open the given event
             event = eventDao.queryUuid(eventUuid);
         }
 
@@ -73,8 +71,7 @@ public class EventEditDataForm extends FormTab {
 
         FieldHelper.initSpinnerField(binding.eventDisease, Disease.class);
 
-        final Location location = event.getEventLocation() != null ? event.getEventLocation() : DataUtils.createNew(Location.class);
-        LocationDialog.addLocationField(getActivity(), location, binding.eventEventLocation, binding.eventEventLocationBtn, new Consumer() {
+        LocationDialog.addLocationField(getActivity(), event.getEventLocation(), binding.eventEventLocation, binding.eventEventLocationBtn, new Consumer() {
             @Override
             public void accept(Object parameter) {
                 if(parameter instanceof Location) {

@@ -2,22 +2,15 @@ package de.symeda.sormas.app.backend.user;
 
 import android.util.Log;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import de.symeda.sormas.api.ReferenceDto;
-import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
-import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
-import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.location.LocationDtoHelper;
-import de.symeda.sormas.app.backend.region.Region;
 
 /**
  * Created by Martin Wahnschaffe on 27.07.2016.
@@ -27,15 +20,15 @@ public class UserDtoHelper extends AdoDtoHelper<User, UserDto> {
     private LocationDtoHelper locationHelper = new LocationDtoHelper();
 
     @Override
-    public User create() {
-        return new User();
+    protected Class<User> getAdoClass() {
+        return User.class;
     }
 
     @Override
-    public UserDto createDto() {
-        // TODO
+    protected Class<UserDto> getDtoClass() {
         throw new UnsupportedOperationException();
     }
+
 
     protected void preparePulledResult(List<UserDto> result) {
         Collections.sort(result, new Comparator<UserDto>() {

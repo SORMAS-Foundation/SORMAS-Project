@@ -70,7 +70,7 @@ public class HospitalizationForm extends FormTab {
                     @Override
                     public void accept(Object prevHosp) {
                         if (prevHosp == null) {
-                            prevHosp = DataUtils.createNew(PreviousHospitalization.class);
+                            prevHosp = DatabaseHelper.getPreviousHospitalizationDao().create();
                         }
                         PreviousHospitalizationForm previousHospitalizationForm = new PreviousHospitalizationForm();
                         previousHospitalizationForm.initialize(

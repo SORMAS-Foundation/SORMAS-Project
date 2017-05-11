@@ -42,7 +42,7 @@ public class VisitEditDataForm extends FormTab {
         // create a new visit from contact data
         if(getArguments().getBoolean(NEW_VISIT)) {
             String keyContactUuid = getArguments().getString(KEY_CONTACT_UUID);
-            visit = DatabaseHelper.getVisitDao().getNewVisitForContact(keyContactUuid);
+            visit = DatabaseHelper.getVisitDao().create(keyContactUuid);
         }
         // open the given visit
         else {

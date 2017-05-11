@@ -13,20 +13,14 @@ import de.symeda.sormas.app.backend.facility.FacilityDtoHelper;
 
 public class PreviousHospitalizationDtoHelper extends AdoDtoHelper<PreviousHospitalization, PreviousHospitalizationDto> {
 
-//    private HospitalizationDtoHelper hospitalizationDtoHelper;
-//
-//    public  PreviousHospitalizationDtoHelper() {
-//        hospitalizationDtoHelper = new HospitalizationDtoHelper();
-//    }
-
     @Override
-    public PreviousHospitalization create() {
-        return new PreviousHospitalization();
+    protected Class<PreviousHospitalization> getAdoClass() {
+        return PreviousHospitalization.class;
     }
 
     @Override
-    public PreviousHospitalizationDto createDto() {
-        return new PreviousHospitalizationDto();
+    protected Class<PreviousHospitalizationDto> getDtoClass() {
+        return PreviousHospitalizationDto.class;
     }
 
     @Override

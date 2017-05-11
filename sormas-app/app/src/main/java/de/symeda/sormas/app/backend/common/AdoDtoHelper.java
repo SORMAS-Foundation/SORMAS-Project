@@ -10,7 +10,6 @@ import com.j256.ormlite.logger.Logger;
 import com.j256.ormlite.logger.LoggerFactory;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -22,6 +21,7 @@ import java.util.concurrent.Callable;
 import de.symeda.sormas.api.DataTransferObject;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.app.util.DataUtils;
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -32,40 +32,8 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 
     private static final Logger logger = LoggerFactory.getLogger(AdoDtoHelper.class);
 
-    public ADO fillOrCreateFromDto(ADO ado, DTO dto) {
-        if (dto == null) {
-            return null;
-        }
-
-        if (ado == null) {
-            ado = create();
-            ado.setCreationDate(dto.getCreationDate());
-            ado.setUuid(dto.getUuid());
-        }
-        else if (!ado.getUuid().equals(dto.getUuid())) {
-            throw new RuntimeException("Existing object uuid does not match dto: " + ado.getUuid() + " vs. " + dto.getUuid());
-        }
-
-        ado.setChangeDate(dto.getChangeDate());
-
-        fillInnerFromDto(ado, dto);
-
-        return ado;
-    }
-
-    public DTO adoToDto(ADO ado) {
-        DTO dto = createDto();
-        dto.setUuid(ado.getUuid());
-        dto.setChangeDate(new Timestamp(ado.getChangeDate().getTime()));
-        dto.setCreationDate(new Timestamp(ado.getCreationDate().getTime()));
-
-        fillInnerFromAdo(dto, ado);
-
-        return dto;
-    }
-
-    protected abstract ADO create();
-    protected abstract DTO createDto();
+    protected abstract Class<ADO> getAdoClass();
+    protected abstract Class<DTO> getDtoClass();
 
     protected abstract void fillInnerFromDto(ADO ado, DTO dto);
     protected abstract void fillInnerFromAdo(DTO dto, ADO ado);
@@ -118,6 +86,111 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
         }
     }
 
+    /**
+     * @return true: another pull is needed, because data has been changed on the server
+     */
+    public boolean pushEntities(DtoPostInterface<DTO> postInterface, final AbstractAdoDao<ADO> dao) throws DaoException, IOException {
+        try {
+            final List<ADO> modifiedAdos = dao.queryForEq(ADO.MODIFIED, true);
+
+            List<DTO> modifiedDtos = new ArrayList<>(modifiedAdos.size());
+            for (ADO ado : modifiedAdos) {
+                DTO dto = adoToDto(ado);
+                modifiedDtos.add(dto);
+            }
+
+            if (modifiedDtos.isEmpty()) {
+                return false;
+            }
+
+            Call<Long> call = postInterface.postAll(modifiedDtos);
+
+            final Long resultChangeDate = call.execute().body();
+            if (resultChangeDate == null) {
+                // TODO throw exception
+                Log.e(dao.getTableName(), "PostAll did not work");
+            } else {
+                dao.callBatchTasks(new Callable<Void>() {
+                    public Void call() throws Exception {
+                        for (ADO ado : modifiedAdos) {
+                            // data has been pushed, we no longer need the old unmodified version
+                            ADO unmodifiedAdo = dao.queryUnmodifiedUuid(ado.getUuid());
+                            dao.delete(unmodifiedAdo);
+
+                            // this is now our unmodified version
+                            ado.setModified(false);
+                            if (resultChangeDate >= 0) {
+                                ado.setChangeDate(new Date(resultChangeDate));
+                            }
+                            dao.update(ado); // override the unmodified version with the latest state from the modified
+                        }
+                        return null;
+                    }
+                });
+
+                Log.d(dao.getTableName(), "Pushed: " + modifiedAdos.size());
+            }
+
+            // do we need to pull again
+            return resultChangeDate == null || resultChangeDate == -1;
+        } catch (RuntimeException e) {
+            Log.e(getClass().getName(), "Exception thrown when trying to push entities");
+            throw new DaoException(e);
+        }
+    }
+
+    public ADO fillOrCreateFromDto(ADO ado, DTO dto) {
+        if (dto == null) {
+            return null;
+        }
+
+        try {
+            if (ado == null) {
+                ado = getAdoClass().newInstance();
+                ado.setCreationDate(dto.getCreationDate());
+                ado.setUuid(dto.getUuid());
+            }
+            else if (!ado.getUuid().equals(dto.getUuid())) {
+                throw new RuntimeException("Existing object uuid does not match dto: " + ado.getUuid() + " vs. " + dto.getUuid());
+            }
+
+            ado.setChangeDate(dto.getChangeDate());
+
+            fillInnerFromDto(ado, dto);
+
+            return ado;
+        } catch (InstantiationException e) {
+            Log.e(DataUtils.class.getName(), "Could not perform fillOrCreateFromDto", e);
+            throw new RuntimeException(e);
+        } catch (IllegalAccessException e) {
+            Log.e(DataUtils.class.getName(), "Could not perform fillOrCreateFromDto", e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    public DTO adoToDto(ADO ado) {
+        try {
+            DTO dto = getDtoClass().newInstance();
+            dto.setUuid(ado.getUuid());
+            dto.setChangeDate(new Timestamp(ado.getChangeDate().getTime()));
+            dto.setCreationDate(new Timestamp(ado.getCreationDate().getTime()));
+            fillInnerFromAdo(dto, ado);
+            return dto;
+        } catch (InstantiationException e) {
+            Log.e(DataUtils.class.getName(), "Could not perform createNew", e);
+            throw new RuntimeException(e);
+        } catch (IllegalAccessException e) {
+            Log.e(DataUtils.class.getName(), "Could not perform createNew", e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Merges all changes made in source (compared to base) into target and base.
+     * @param target
+     * @param base Note: this is also updated!
+     * @param source
+     */
     public void mergeData(ADO target, ADO base, ADO source) {
 
         BeanInfo beanInfo;
@@ -131,12 +204,12 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
         for (PropertyDescriptor property : beanInfo.getPropertyDescriptors()) {
             try {
                 if (AbstractDomainObject.CREATION_DATE.equals(property.getName())
-                    || AbstractDomainObject.CHANGE_DATE.equals(property.getName())
-                    || AbstractDomainObject.LOCAL_CHANGE_DATE.equals(property.getName())
-                    || AbstractDomainObject.UUID.equals(property.getName())
-                    || AbstractDomainObject.ID.equals(property.getName())
-                    || AbstractDomainObject.MODIFIED.equals(property.getName())
-                    || property.getWriteMethod() == null)
+                        || AbstractDomainObject.CHANGE_DATE.equals(property.getName())
+                        || AbstractDomainObject.LOCAL_CHANGE_DATE.equals(property.getName())
+                        || AbstractDomainObject.UUID.equals(property.getName())
+                        || AbstractDomainObject.ID.equals(property.getName())
+                        || AbstractDomainObject.MODIFIED.equals(property.getName())
+                        || property.getWriteMethod() == null)
                     continue;
 
                 Object baseFieldValue = property.getReadMethod().invoke(base);
@@ -192,63 +265,10 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
                 }
 
             } catch (IllegalAccessException e) {
-                e.printStackTrace();
+                throw new RuntimeException(e);
             } catch (InvocationTargetException e) {
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
-        }
-    }
-
-    /**
-     * @return true: another pull is needed, because data has been changed on the server
-     */
-    public boolean pushEntities(DtoPostInterface<DTO> postInterface, final AbstractAdoDao<ADO> dao) throws DaoException, IOException {
-        try {
-            final List<ADO> modifiedAdos = dao.queryForEq(ADO.MODIFIED, true);
-
-            List<DTO> modifiedDtos = new ArrayList<>(modifiedAdos.size());
-            for (ADO ado : modifiedAdos) {
-                DTO dto = adoToDto(ado);
-                modifiedDtos.add(dto);
-            }
-
-            if (modifiedDtos.isEmpty()) {
-                return false;
-            }
-
-            Call<Long> call = postInterface.postAll(modifiedDtos);
-
-            final Long resultChangeDate = call.execute().body();
-            if (resultChangeDate == null) {
-                // TODO throw exception
-                Log.e(dao.getTableName(), "PostAll did not work");
-            } else {
-                dao.callBatchTasks(new Callable<Void>() {
-                    public Void call() throws Exception {
-                        for (ADO ado : modifiedAdos) {
-                            // data has been pushed, we no longer need the old unmodified version
-                            ADO unmodifiedAdo = dao.queryUnmodifiedUuid(ado.getUuid());
-                            dao.delete(unmodifiedAdo);
-
-                            // this is now our unmodified version
-                            ado.setModified(false);
-                            if (resultChangeDate >= 0) {
-                                ado.setChangeDate(new Date(resultChangeDate));
-                            }
-                            dao.update(ado); // override the unmodified version with the latest state from the modified
-                        }
-                        return null;
-                    }
-                });
-
-                Log.d(dao.getTableName(), "Pushed: " + modifiedAdos.size());
-            }
-
-            // do we need to pull again
-            return resultChangeDate == null || resultChangeDate == -1;
-        } catch (RuntimeException e) {
-            Log.e(getClass().getName(), "Exception thrown when trying to push entities");
-            throw new DaoException(e);
         }
     }
 

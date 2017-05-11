@@ -1,12 +1,8 @@
 package de.symeda.sormas.app.backend.region;
 
-import de.symeda.sormas.api.facility.FacilityDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
-import de.symeda.sormas.app.backend.facility.Facility;
-import de.symeda.sormas.app.backend.location.LocationDtoHelper;
 
 /**
  * Created by Martin Wahnschaffe on 27.07.2016.
@@ -14,12 +10,12 @@ import de.symeda.sormas.app.backend.location.LocationDtoHelper;
 public class RegionDtoHelper extends AdoDtoHelper<Region, RegionDto> {
 
     @Override
-    public Region create() {
-        return new Region();
+    protected Class<Region> getAdoClass() {
+        return Region.class;
     }
 
     @Override
-    public RegionDto createDto() {
+    protected Class<RegionDto> getDtoClass() {
         throw new UnsupportedOperationException();
     }
 

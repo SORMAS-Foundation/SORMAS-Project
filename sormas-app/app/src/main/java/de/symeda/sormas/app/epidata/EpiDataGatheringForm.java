@@ -48,8 +48,7 @@ public class EpiDataGatheringForm extends AbstractFormDialogFragment<EpiDataGath
         binding.gatherDate.initialize(this);
 
         EpiDataGathering gathering = binding.getEpiDataGathering();
-        final Location location = gathering.getGatheringAddress() != null ? gathering.getGatheringAddress() : DataUtils.createNew(Location.class);
-        LocationDialog.addLocationField(getActivity(), location, binding.gatherAddress, binding.formCpBtnAddress, new Consumer() {
+        LocationDialog.addLocationField(getActivity(), gathering.getGatheringAddress(), binding.gatherAddress, binding.formCpBtnAddress, new Consumer() {
             @Override
             public void accept(Object parameter) {
                 if (parameter instanceof Location) {

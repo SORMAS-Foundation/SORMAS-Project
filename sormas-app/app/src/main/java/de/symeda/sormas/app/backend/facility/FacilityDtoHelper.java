@@ -10,14 +10,13 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
  */
 public class FacilityDtoHelper extends AdoDtoHelper<Facility, FacilityDto> {
 
-
     @Override
-    public Facility create() {
-        return new Facility();
+    protected Class<Facility> getAdoClass() {
+        return Facility.class;
     }
 
     @Override
-    public FacilityDto createDto() {
+    protected Class<FacilityDto> getDtoClass() {
         throw new UnsupportedOperationException();
     }
 

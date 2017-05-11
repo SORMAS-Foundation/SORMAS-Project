@@ -27,13 +27,13 @@ public class EpiDataDtoHelper extends AdoDtoHelper<EpiData, EpiDataDto> {
     }
 
     @Override
-    public EpiData create() {
-        return new EpiData();
+    protected Class<EpiData> getAdoClass() {
+        return EpiData.class;
     }
 
     @Override
-    public EpiDataDto createDto() {
-        return new EpiDataDto();
+    protected Class<EpiDataDto> getDtoClass() {
+        return EpiDataDto.class;
     }
 
     @Override
@@ -131,8 +131,7 @@ public class EpiDataDtoHelper extends AdoDtoHelper<EpiData, EpiDataDto> {
         List<EpiDataBurialDto> burialDtos = new ArrayList<>();
         if (!b.getBurials().isEmpty()) {
             for (EpiDataBurial burial : b.getBurials()) {
-                EpiDataBurialDto burialDto = burialDtoHelper.createDto();
-                burialDtoHelper.fillInnerFromAdo(burialDto, burial);
+                EpiDataBurialDto burialDto = burialDtoHelper.adoToDto(burial);
                 burialDtos.add(burialDto);
             }
         }
@@ -141,8 +140,7 @@ public class EpiDataDtoHelper extends AdoDtoHelper<EpiData, EpiDataDto> {
         List<EpiDataGatheringDto> gatheringDtos = new ArrayList<>();
         if (!b.getGatherings().isEmpty()) {
             for (EpiDataGathering gathering : b.getGatherings()) {
-                EpiDataGatheringDto gatheringDto = gatheringDtoHelper.createDto();
-                gatheringDtoHelper.fillInnerFromAdo(gatheringDto, gathering);
+                EpiDataGatheringDto gatheringDto = gatheringDtoHelper.adoToDto(gathering);
                 gatheringDtos.add(gatheringDto);
             }
         }
@@ -151,8 +149,7 @@ public class EpiDataDtoHelper extends AdoDtoHelper<EpiData, EpiDataDto> {
         List<EpiDataTravelDto> travelDtos = new ArrayList<>();
         if (!b.getTravels().isEmpty()) {
             for (EpiDataTravel travel : b.getTravels()) {
-                EpiDataTravelDto travelDto = travelDtoHelper.createDto();
-                travelDtoHelper.fillInnerFromAdo(travelDto, travel);
+                EpiDataTravelDto travelDto = travelDtoHelper.adoToDto(travel);
                 travelDtos.add(travelDto);
             }
         }

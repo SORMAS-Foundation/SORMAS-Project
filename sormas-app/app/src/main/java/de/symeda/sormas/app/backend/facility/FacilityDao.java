@@ -27,6 +27,11 @@ public class FacilityDao extends AbstractAdoDao<Facility> {
     }
 
     @Override
+    protected Class<Facility> getAdoClass() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public String getTableName() {
         return Facility.TABLE_NAME;
     }
@@ -52,5 +57,4 @@ public class FacilityDao extends AbstractAdoDao<Facility> {
             throw new RuntimeException(e);
         }
     }
-
 }

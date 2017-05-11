@@ -26,6 +26,11 @@ public class VisitDao extends AbstractAdoDao<Visit> {
     }
 
     @Override
+    protected Class<Visit> getAdoClass() {
+        return Visit.class;
+    }
+
+    @Override
     public String getTableName() {
         return Visit.TABLE_NAME;
     }
@@ -71,6 +76,11 @@ public class VisitDao extends AbstractAdoDao<Visit> {
         }
     }
 
+    @Override
+    public Visit create() {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * new visit is assigned to the contact's person and has the same disease as the contact's case
      * @param contactUuid
@@ -79,10 +89,9 @@ public class VisitDao extends AbstractAdoDao<Visit> {
      * @throws InstantiationException
      */
     @NonNull
-    public Visit getNewVisitForContact(String contactUuid) {
+    public Visit create(String contactUuid) {
         Contact contact = DatabaseHelper.getContactDao().queryUuid(contactUuid);
-
-        Visit visit = DataUtils.createNew(Visit.class);
+        Visit visit = super.create();
         visit.setPerson(contact.getPerson());
         visit.setDisease(contact.getCaze().getDisease());
         visit.setVisitDateTime(new Date());

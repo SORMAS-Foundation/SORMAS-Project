@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Set;
 
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 
 /**
  * Created by Mate Strysewske on 08.03.2017.
@@ -23,6 +24,19 @@ public class EpiDataBurialDao extends AbstractAdoDao<EpiDataBurial> {
     public EpiDataBurialDao(Dao<EpiDataBurial,Long> innerDao) throws SQLException {
         super(innerDao);
     }
+
+    @Override
+    protected Class<EpiDataBurial> getAdoClass() {
+        return EpiDataBurial.class;
+    }
+
+    @Override
+    public EpiDataBurial create() {
+        EpiDataBurial ado = super.create();
+        ado.setBurialAddress(DatabaseHelper.getLocationDao().create());
+        return ado;
+    }
+
 
     public List<EpiDataBurial> getByEpiData(EpiData epiData) {
         try {

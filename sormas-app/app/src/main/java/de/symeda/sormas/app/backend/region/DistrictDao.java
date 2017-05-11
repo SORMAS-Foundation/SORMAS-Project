@@ -18,6 +18,11 @@ public class DistrictDao extends AbstractAdoDao<District> {
     }
 
     @Override
+    protected Class<District> getAdoClass() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public String getTableName() {
         return District.TABLE_NAME;
     }
@@ -25,5 +30,4 @@ public class DistrictDao extends AbstractAdoDao<District> {
     public List<District> getByRegion(Region region) {
         return queryForEq("region_id", region);
     }
-
 }

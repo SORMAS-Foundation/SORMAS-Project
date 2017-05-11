@@ -20,13 +20,13 @@ public class EpiDataBurialDtoHelper extends AdoDtoHelper<EpiDataBurial, EpiDataB
     }
 
     @Override
-    public EpiDataBurial create() {
-        return new EpiDataBurial();
+    protected Class<EpiDataBurial> getAdoClass() {
+        return EpiDataBurial.class;
     }
 
     @Override
-    public EpiDataBurialDto createDto() {
-        return new EpiDataBurialDto();
+    protected Class<EpiDataBurialDto> getDtoClass() {
+        return EpiDataBurialDto.class;
     }
 
     @Override

@@ -215,10 +215,6 @@ public class ContactEditActivity extends AbstractEditActivity {
                         contactDao.save(contact);
 
                         Person person = (Person) adapter.getData(ContactEditTabs.PERSON.ordinal());
-                        if (person.getAddress() == null) {
-                            person.setAddress(DataUtils.createNew(Location.class));
-                        }
-
                         if (contact.getRelationToCase() == ContactRelation.SAME_HOUSEHOLD && person.getAddress().isEmptyLocation()) {
                             person.getAddress().setRegion(contact.getCaze().getRegion());
                             person.getAddress().setDistrict(contact.getCaze().getDistrict());

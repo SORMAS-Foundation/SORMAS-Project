@@ -26,13 +26,22 @@ public class SampleDao extends AbstractAdoDao<Sample> {
         super(innerDao);
     }
 
-    public Sample getNewSample(Case associatedCase) {
-        Sample sample = DataUtils.createNew(Sample.class);
+    @Override
+    protected Class<Sample> getAdoClass() {
+        return Sample.class;
+    }
+
+    @Override
+    public Sample create() {
+        throw new UnsupportedOperationException();
+    }
+
+    public Sample create(Case associatedCase) {
+        Sample sample = super.create();
         sample.setAssociatedCase(associatedCase);
         sample.setReportDateTime(new Date());
         sample.setReportingUser(ConfigProvider.getUser());
         sample.setShipmentStatus(ShipmentStatus.NOT_SHIPPED);
-
         return sample;
     }
 

@@ -6,18 +6,12 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
-
-import com.google.android.gms.analytics.Tracker;
 
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.SormasApplication;
-import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.databinding.EventParticipantNewFragmentLayoutBinding;
-import de.symeda.sormas.app.util.DataUtils;
-import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.FormTab;
 
 /**
@@ -30,8 +24,8 @@ public class EventParticipantNewPersonForm extends FormTab {
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        Person person = DataUtils.createNew(Person.class);
-        eventParticipant = DataUtils.createNew(EventParticipant.class);
+        Person person = DatabaseHelper.getPersonDao().create();
+        eventParticipant = DatabaseHelper.getEventParticipantDao().create();
         eventParticipant.setPerson(person);
 
         binding = DataBindingUtil.inflate(inflater, R.layout.event_participant_new_fragment_layout, container, false);

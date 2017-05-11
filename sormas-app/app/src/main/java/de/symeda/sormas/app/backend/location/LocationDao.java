@@ -20,6 +20,11 @@ public class LocationDao extends AbstractAdoDao<Location> {
         super(innerDao);
     }
 
+    @Override
+    protected Class<Location> getAdoClass() {
+        return Location.class;
+    }
+
     public void initializeLocation(Location location) {
         RegionDao regionDao = DatabaseHelper.getRegionDao();
         if(location.getRegion() != null) location.setRegion(regionDao.queryForId(location.getRegion().getId()));

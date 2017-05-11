@@ -25,6 +25,11 @@ public class PreviousHospitalizationDao extends AbstractAdoDao<PreviousHospitali
     }
 
     @Override
+    protected Class<PreviousHospitalization> getAdoClass() {
+        return PreviousHospitalization.class;
+    }
+
+    @Override
     public String getTableName() {
         return PreviousHospitalization.TABLE_NAME;
     }

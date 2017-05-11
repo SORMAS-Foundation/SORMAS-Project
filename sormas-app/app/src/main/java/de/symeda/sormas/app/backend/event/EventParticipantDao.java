@@ -19,6 +19,11 @@ public class EventParticipantDao extends AbstractAdoDao<EventParticipant> {
     }
 
     @Override
+    protected Class<EventParticipant> getAdoClass() {
+        return EventParticipant.class;
+    }
+
+    @Override
     public String getTableName() {
         return EventParticipant.TABLE_NAME;
     }
@@ -35,14 +40,4 @@ public class EventParticipantDao extends AbstractAdoDao<EventParticipant> {
             throw new RuntimeException(e);
         }
     }
-
-    public EventParticipant getNewEventParticipant() {
-        EventParticipant eventParticipant = DataUtils.createNew(EventParticipant.class);
-
-        //Person person = DataUtils.createNew(Person.class);
-        //eventParticipant.setPerson(person);
-
-        return eventParticipant;
-    }
-
 }

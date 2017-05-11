@@ -24,6 +24,11 @@ public class PersonDao extends AbstractAdoDao<Person> {
     }
 
     @Override
+    protected Class<Person> getAdoClass() {
+        return Person.class;
+    }
+
+    @Override
     public String getTableName() {
         return Person.TABLE_NAME;
     }
@@ -69,12 +74,13 @@ public class PersonDao extends AbstractAdoDao<Person> {
         }
     }
 
-    public static Person createPerson() {
-        Person person = DataUtils.createNew(Person.class);
+    @Override
+    public Person create() {
+        Person person = super.create();
 
-        person.setAddress(DataUtils.createNew(Location.class));
-        person.setBurialLocation(DataUtils.createNew(Location.class));
-        person.setDeathLocation(DataUtils.createNew(Location.class));
+        person.setAddress(DatabaseHelper.getLocationDao().create());
+        person.setBurialLocation(DatabaseHelper.getLocationDao().create());
+        person.setDeathLocation(DatabaseHelper.getLocationDao().create());
 
         return person;
     }

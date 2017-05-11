@@ -38,7 +38,10 @@ public class EventParticipantDataForm extends FormTab {
         final String personUuid = getArguments().getString(Person.UUID);
         EventParticipantDao eventParticipantDao = DatabaseHelper.getEventParticipantDao();
         EventParticipant eventParticipant = eventParticipantDao.queryUuid(personUuid);
-        binding.setEventParticipant(eventParticipant!=null?eventParticipant:eventParticipantDao.getNewEventParticipant());
+        if (eventParticipant == null) {
+            eventParticipant = eventParticipantDao.create();
+        }
+        binding.setEventParticipant(eventParticipant);
     }
 
     @Override

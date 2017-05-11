@@ -21,13 +21,13 @@ public class HospitalizationDtoHelper extends AdoDtoHelper<Hospitalization, Hosp
     }
 
     @Override
-    public Hospitalization create() {
-        return new Hospitalization();
+    protected Class<Hospitalization> getAdoClass() {
+        return Hospitalization.class;
     }
 
     @Override
-    public HospitalizationDto createDto() {
-        return new HospitalizationDto();
+    protected Class<HospitalizationDto> getDtoClass() {
+        return HospitalizationDto.class;
     }
 
     @Override
@@ -64,8 +64,7 @@ public class HospitalizationDtoHelper extends AdoDtoHelper<Hospitalization, Hosp
 
         List<PreviousHospitalizationDto> previousHospitalizationDtos = new ArrayList<>();
         for (PreviousHospitalization prevHosp : b.getPreviousHospitalizations()) {
-            PreviousHospitalizationDto prevHospDto = previousHospitalizationDtoHelper.createDto();
-            previousHospitalizationDtoHelper.fillInnerFromAdo(prevHospDto, prevHosp);
+            PreviousHospitalizationDto prevHospDto = previousHospitalizationDtoHelper.adoToDto(prevHosp);
             previousHospitalizationDtos.add(prevHospDto);
         }
         a.setPreviousHospitalizations(previousHospitalizationDtos);

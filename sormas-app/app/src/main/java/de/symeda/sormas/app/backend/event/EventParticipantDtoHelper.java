@@ -10,20 +10,16 @@ import de.symeda.sormas.app.backend.person.PersonDtoHelper;
 
 public class EventParticipantDtoHelper extends AdoDtoHelper<EventParticipant, EventParticipantDto> {
 
-    private PersonDtoHelper personHelper;
+    private PersonDtoHelper personHelper = new PersonDtoHelper();
 
-    public EventParticipantDtoHelper() {
-        personHelper = new PersonDtoHelper();
+    @Override
+    protected Class<EventParticipant> getAdoClass() {
+        return EventParticipant.class;
     }
 
     @Override
-    public EventParticipant create() {
-        return new EventParticipant();
-    }
-
-    @Override
-    public EventParticipantDto createDto() {
-        return new EventParticipantDto();
+    protected Class<EventParticipantDto> getDtoClass() {
+        return EventParticipantDto.class;
     }
 
     @Override
@@ -62,7 +58,6 @@ public class EventParticipantDtoHelper extends AdoDtoHelper<EventParticipant, Ev
 
         dto.setInvolvementDescription(ado.getInvolvementDescription());
     }
-
 
     public static EventParticipantReferenceDto toReferenceDto(EventParticipant ado) {
         if (ado == null) {

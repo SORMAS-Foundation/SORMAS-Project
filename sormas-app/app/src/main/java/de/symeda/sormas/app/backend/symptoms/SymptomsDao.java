@@ -16,6 +16,11 @@ public class SymptomsDao extends AbstractAdoDao<Symptoms> {
     }
 
     @Override
+    protected Class<Symptoms> getAdoClass() {
+        return Symptoms.class;
+    }
+
+    @Override
     public String getTableName() {
         return Symptoms.TABLE_NAME;
     }

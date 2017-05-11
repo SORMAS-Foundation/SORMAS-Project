@@ -8,19 +8,20 @@ import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.facility.FacilityDtoHelper;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.location.LocationDtoHelper;
+import de.symeda.sormas.app.util.DataUtils;
 
 public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
 
     private LocationDtoHelper locationHelper = new LocationDtoHelper();
 
     @Override
-    public Person create() {
-        return new Person();
+    protected Class<Person> getAdoClass() {
+        return Person.class;
     }
 
     @Override
-    public PersonDto createDto() {
-        return new PersonDto();
+    protected Class<PersonDto> getDtoClass() {
+        return PersonDto.class;
     }
 
     @Override

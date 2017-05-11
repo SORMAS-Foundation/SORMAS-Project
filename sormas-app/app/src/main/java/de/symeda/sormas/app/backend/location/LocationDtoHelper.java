@@ -13,13 +13,13 @@ import de.symeda.sormas.app.backend.region.RegionDtoHelper;
 public class LocationDtoHelper extends AdoDtoHelper<Location, LocationDto> {
 
     @Override
-    public Location create() {
-        return new Location();
+    protected Class<Location> getAdoClass() {
+        return Location.class;
     }
 
     @Override
-    public LocationDto createDto() {
-        return new LocationDto();
+    protected Class<LocationDto> getDtoClass() {
+        return LocationDto.class;
     }
 
     @Override

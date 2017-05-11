@@ -17,18 +17,14 @@ import de.symeda.sormas.app.backend.user.UserDtoHelper;
 
 public class SampleDtoHelper extends AdoDtoHelper<Sample, SampleDto> {
 
-    public SampleDtoHelper() {
-
+    @Override
+    protected Class<Sample> getAdoClass() {
+        return Sample.class;
     }
 
     @Override
-    public Sample create() {
-        return new Sample();
-    }
-
-    @Override
-    public SampleDto createDto() {
-        return new SampleDto();
+    protected Class<SampleDto> getDtoClass() {
+        return SampleDto.class;
     }
 
     @Override

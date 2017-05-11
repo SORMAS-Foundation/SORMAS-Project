@@ -18,13 +18,13 @@ import de.symeda.sormas.app.backend.user.UserDtoHelper;
 public class TaskDtoHelper extends AdoDtoHelper<Task, TaskDto> {
 
     @Override
-    public Task create() {
-        return new Task();
+    protected Class<Task> getAdoClass() {
+        return Task.class;
     }
 
     @Override
-    public TaskDto createDto() {
-        return new TaskDto();
+    protected Class<TaskDto> getDtoClass() {
+        throw new UnsupportedOperationException();
     }
 
     @Override

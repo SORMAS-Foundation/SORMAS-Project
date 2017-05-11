@@ -77,7 +77,7 @@ public class EpiDataForm extends FormTab {
                     @Override
                     public void accept(Object burial) {
                         if (burial == null) {
-                            burial = DataUtils.createNew(EpiDataBurial.class);
+                            burial = DatabaseHelper.getEpiDataBurialDao().create();
                         }
                         EpiDataBurialForm burialTab = new EpiDataBurialForm();
                         burialTab.initialize(
@@ -118,7 +118,7 @@ public class EpiDataForm extends FormTab {
                     @Override
                     public void accept(Object gathering) {
                         if (gathering == null) {
-                            gathering = DataUtils.createNew(EpiDataGathering.class);
+                            gathering = DatabaseHelper.getEpiDataGatheringDao().create();
                         }
                         EpiDataGatheringForm gatheringTab = new EpiDataGatheringForm();
                         gatheringTab.initialize(
@@ -159,7 +159,7 @@ public class EpiDataForm extends FormTab {
                     @Override
                     public void accept(Object travel) {
                         if (travel == null) {
-                            travel = DataUtils.createNew(EpiDataTravel.class);
+                            travel = DatabaseHelper.getEpiDataTravelDao().create();
                         }
                         EpiDataTravelForm travelTab = new EpiDataTravelForm();
                         travelTab.initialize(

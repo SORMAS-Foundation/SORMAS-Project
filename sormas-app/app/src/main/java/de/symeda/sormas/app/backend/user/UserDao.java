@@ -24,6 +24,11 @@ public class UserDao extends AbstractAdoDao<User> {
     }
 
     @Override
+    protected Class<User> getAdoClass() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public String getTableName() {
         return User.TABLE_NAME;
     }

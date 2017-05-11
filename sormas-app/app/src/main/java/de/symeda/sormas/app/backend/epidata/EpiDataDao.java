@@ -27,6 +27,11 @@ public class EpiDataDao extends AbstractAdoDao<EpiData> {
     }
 
     @Override
+    protected Class<EpiData> getAdoClass() {
+        return EpiData.class;
+    }
+
+    @Override
     public String getTableName() {
         return EpiData.TABLE_NAME;
     }

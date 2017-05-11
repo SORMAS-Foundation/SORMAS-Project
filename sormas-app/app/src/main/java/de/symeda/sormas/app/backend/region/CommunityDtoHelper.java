@@ -15,12 +15,12 @@ import de.symeda.sormas.app.backend.facility.Facility;
 public class CommunityDtoHelper extends AdoDtoHelper<Community, CommunityDto> {
 
     @Override
-    public Community create() {
-        return new Community();
+    protected Class<Community> getAdoClass() {
+        return Community.class;
     }
 
     @Override
-    public CommunityDto createDto() {
+    protected Class<CommunityDto> getDtoClass() {
         throw new UnsupportedOperationException();
     }
 

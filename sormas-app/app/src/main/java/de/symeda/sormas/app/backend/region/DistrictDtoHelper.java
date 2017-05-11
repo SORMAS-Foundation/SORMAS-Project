@@ -14,12 +14,12 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 public class DistrictDtoHelper extends AdoDtoHelper<District, DistrictDto> {
 
     @Override
-    public District create() {
-        return new District();
+    protected Class<District> getAdoClass() {
+        return District.class;
     }
 
     @Override
-    public DistrictDto createDto() {
+    protected Class<DistrictDto> getDtoClass() {
         throw new UnsupportedOperationException();
     }
 

@@ -64,7 +64,7 @@ public class SampleEditForm extends FormTab {
         if (sampleUuid == null) {
             final String caseUuid = getArguments().getString(SampleEditActivity.KEY_CASE_UUID);
             final Case associatedCase = DatabaseHelper.getCaseDao().queryUuid(caseUuid);
-            sample = DatabaseHelper.getSampleDao().getNewSample(associatedCase);
+            sample = DatabaseHelper.getSampleDao().create(associatedCase);
         } else {
             sample = sampleDao.queryUuid(sampleUuid);
         }

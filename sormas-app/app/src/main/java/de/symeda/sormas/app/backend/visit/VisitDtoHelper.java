@@ -13,20 +13,16 @@ import de.symeda.sormas.app.backend.user.UserDtoHelper;
 
 public class VisitDtoHelper extends AdoDtoHelper<Visit, VisitDto> {
 
-    private SymptomsDtoHelper symptomsDtoHelper;
+    private SymptomsDtoHelper symptomsDtoHelper = new SymptomsDtoHelper();
 
-    public VisitDtoHelper() {
-        symptomsDtoHelper = new SymptomsDtoHelper();
+    @Override
+    protected Class<Visit> getAdoClass() {
+        return Visit.class;
     }
 
     @Override
-    public Visit create() {
-        return new Visit();
-    }
-
-    @Override
-    public VisitDto createDto() {
-        return new VisitDto();
+    protected Class<VisitDto> getDtoClass() {
+        return VisitDto.class;
     }
 
     @Override

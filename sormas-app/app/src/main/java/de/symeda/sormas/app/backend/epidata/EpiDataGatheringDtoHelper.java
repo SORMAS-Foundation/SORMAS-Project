@@ -2,7 +2,6 @@ package de.symeda.sormas.app.backend.epidata;
 
 import de.symeda.sormas.api.epidata.EpiDataGatheringDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
-import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.location.LocationDtoHelper;
@@ -20,13 +19,13 @@ public class EpiDataGatheringDtoHelper extends AdoDtoHelper<EpiDataGathering, Ep
     }
 
     @Override
-    public EpiDataGathering create() {
-        return new EpiDataGathering();
+    protected Class<EpiDataGathering> getAdoClass() {
+        return EpiDataGathering.class;
     }
 
     @Override
-    public EpiDataGatheringDto createDto() {
-        return new EpiDataGatheringDto();
+    protected Class<EpiDataGatheringDto> getDtoClass() {
+        return EpiDataGatheringDto.class;
     }
 
     @Override
@@ -42,12 +41,8 @@ public class EpiDataGatheringDtoHelper extends AdoDtoHelper<EpiDataGathering, Ep
     @Override
     public void fillInnerFromAdo(EpiDataGatheringDto a, EpiDataGathering b) {
 
-        if (b.getGatheringAddress() != null) {
-            Location location = DatabaseHelper.getLocationDao().queryForId(b.getGatheringAddress().getId());
-            a.setGatheringAddress(locationHelper.adoToDto(location));
-        } else {
-            a.setGatheringAddress(locationHelper.createDto());
-        }
+        Location location = DatabaseHelper.getLocationDao().queryForId(b.getGatheringAddress().getId());
+        a.setGatheringAddress(locationHelper.adoToDto(location));
 
         a.setDescription(b.getDescription());
         a.setGatheringDate(b.getGatheringDate());

@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Set;
 
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 
 /**
  * Created by Mate Strysewske on 08.03.2017.
@@ -22,6 +23,18 @@ public class EpiDataGatheringDao extends AbstractAdoDao<EpiDataGathering> {
 
     public EpiDataGatheringDao(Dao<EpiDataGathering,Long> innerDao) throws SQLException {
         super(innerDao);
+    }
+
+    @Override
+    protected Class<EpiDataGathering> getAdoClass() {
+        return EpiDataGathering.class;
+    }
+
+    @Override
+    public EpiDataGathering create() {
+        EpiDataGathering ado = super.create();
+        ado.setGatheringAddress(DatabaseHelper.getLocationDao().create());
+        return ado;
     }
 
     public List<EpiDataGathering> getByEpiData(EpiData epiData) {

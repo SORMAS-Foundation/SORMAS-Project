@@ -15,13 +15,13 @@ public class EpiDataTravelDtoHelper extends AdoDtoHelper<EpiDataTravel, EpiDataT
     }
 
     @Override
-    public EpiDataTravel create() {
-        return new EpiDataTravel();
+    protected Class<EpiDataTravel> getAdoClass() {
+        return EpiDataTravel.class;
     }
 
     @Override
-    public EpiDataTravelDto createDto() {
-        return new EpiDataTravelDto();
+    protected Class<EpiDataTravelDto> getDtoClass() {
+        return EpiDataTravelDto.class;
     }
 
     @Override

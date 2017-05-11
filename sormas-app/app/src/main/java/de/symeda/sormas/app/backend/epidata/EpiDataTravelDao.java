@@ -24,6 +24,11 @@ public class EpiDataTravelDao extends AbstractAdoDao<EpiDataTravel> {
         super(innerDao);
     }
 
+    @Override
+    protected Class<EpiDataTravel> getAdoClass() {
+        return EpiDataTravel.class;
+    }
+
     public List<EpiDataTravel> getByEpiData(EpiData epiData) {
         try {
             QueryBuilder qb = queryBuilder();

@@ -6,6 +6,7 @@ import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.epidata.EpiData;
 import de.symeda.sormas.app.backend.epidata.EpiDataDtoHelper;
 import de.symeda.sormas.app.backend.facility.Facility;
@@ -26,6 +27,7 @@ import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.symptoms.SymptomsDtoHelper;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.backend.user.UserDtoHelper;
+import de.symeda.sormas.app.util.DataUtils;
 
 /**
  * Created by Martin Wahnschaffe on 27.07.2016.
@@ -39,13 +41,13 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 
 
     @Override
-    public Case create() {
-        return new Case();
+    protected Class<Case> getAdoClass() {
+        return Case.class;
     }
 
     @Override
-    public CaseDataDto createDto() {
-        return new CaseDataDto();
+    protected Class<CaseDataDto> getDtoClass() {
+        return CaseDataDto.class;
     }
 
     @Override

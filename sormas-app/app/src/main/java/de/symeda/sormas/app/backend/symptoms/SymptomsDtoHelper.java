@@ -11,13 +11,13 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 public class SymptomsDtoHelper extends AdoDtoHelper<Symptoms, SymptomsDto> {
 
     @Override
-    public Symptoms create() {
-        return new Symptoms();
+    protected Class<Symptoms> getAdoClass() {
+        return Symptoms.class;
     }
 
     @Override
-    public SymptomsDto createDto() {
-        return new SymptomsDto();
+    protected Class<SymptomsDto> getDtoClass() {
+        return SymptomsDto.class;
     }
 
     @Override

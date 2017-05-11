@@ -188,10 +188,6 @@ public class ContactNewActivity extends AppCompatActivity {
     private void savePersonAndContact(Contact contact) throws DaoException {
         Person person = contact.getPerson();
 
-        if (person.getAddress() == null) {
-            person.setAddress(DataUtils.createNew(Location.class));
-        }
-
         if(contact.getRelationToCase() == ContactRelation.SAME_HOUSEHOLD && person.getAddress().isEmptyLocation()) {
             person.getAddress().setRegion(contact.getCaze().getRegion());
             person.getAddress().setDistrict(contact.getCaze().getDistrict());

@@ -6,10 +6,13 @@ import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
 
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
@@ -23,6 +26,11 @@ public class ContactDao extends AbstractAdoDao<Contact> {
 
     public ContactDao(Dao<Contact,Long> innerDao) throws SQLException {
         super(innerDao);
+    }
+
+    @Override
+    protected Class<Contact> getAdoClass() {
+        return Contact.class;
     }
 
     @Override
@@ -42,5 +50,14 @@ public class ContactDao extends AbstractAdoDao<Contact> {
         }
     }
 
+    @Override
+    public Contact create() {
 
+        Contact contact = super.create();
+
+        contact.setReportDateTime(new Date());
+        contact.setReportingUser(ConfigProvider.getUser());
+
+        return contact;
+    }
 }

@@ -20,6 +20,11 @@ public class EventDao extends AbstractAdoDao<Event> {
     }
 
     @Override
+    protected Class<Event> getAdoClass() {
+        return Event.class;
+    }
+
+    @Override
     public String getTableName() {
         return Event.TABLE_NAME;
     }
@@ -44,13 +49,15 @@ public class EventDao extends AbstractAdoDao<Event> {
         return super.saveUnmodified(event);
     }
 
-    public Event getNewEvent() {
+    @Override
+    public Event create() {
 
-        Event event = DataUtils.createNew(Event.class);
+        Event event = super.create();
+
         event.setReportDateTime(new Date());
         event.setReportingUser(ConfigProvider.getUser());
 
-        Location location = DataUtils.createNew(Location.class);
+        Location location = DatabaseHelper.getLocationDao().create();
         location.setRegion(ConfigProvider.getUser().getRegion());
         event.setEventLocation(location);
 
