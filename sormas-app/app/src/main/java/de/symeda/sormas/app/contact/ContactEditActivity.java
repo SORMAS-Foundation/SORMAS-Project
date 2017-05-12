@@ -32,8 +32,10 @@ import de.symeda.sormas.app.component.UserReportDialog;
 import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.task.TaskEditActivity;
 import de.symeda.sormas.app.task.TaskForm;
+import de.symeda.sormas.app.util.ConnectionHelper;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
+import de.symeda.sormas.app.util.SyncCallback;
 import de.symeda.sormas.app.visit.VisitEditActivity;
 import de.symeda.sormas.app.visit.VisitEditDataForm;
 
@@ -227,13 +229,18 @@ public class ContactEditActivity extends AbstractEditActivity {
 
                         Toast.makeText(this, "contact " + DataHelper.getShortUuid(contact.getUuid()) + " saved", Toast.LENGTH_SHORT).show();
 
-                        SyncContactsTask.syncContactsWithProgressDialog(this, new Callback() {
-                            @Override
-                            public void call() {
-                                onResume();
-                                pager.setCurrentItem(currentTab);
-                            }
-                        });
+                        if (ConnectionHelper.isConnectedToInternet(getApplicationContext())) {
+                            SyncContactsTask.syncContactsWithProgressDialog(this, new SyncCallback() {
+                                @Override
+                                public void call(boolean syncFailed) {
+                                    onResume();
+                                    pager.setCurrentItem(currentTab);
+                                    if (syncFailed) {
+                                        Toast.makeText(getApplicationContext(), "The contact has been saved, but could not be transferred to the server. An error report has been automatically sent and the synchronization will be repeated later.", Toast.LENGTH_LONG).show();
+                                    }
+                                }
+                            });
+                        }
                     } catch (DaoException e) {
                         Log.e(getClass().getName(), "Error while trying to save contact", e);
                         Toast.makeText(this, "Contact could not be saved because of an internal error.", Toast.LENGTH_LONG).show();

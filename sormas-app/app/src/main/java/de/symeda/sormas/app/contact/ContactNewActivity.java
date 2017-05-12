@@ -33,9 +33,11 @@ import de.symeda.sormas.app.component.SelectOrCreatePersonDialogBuilder;
 import de.symeda.sormas.app.component.UserReportDialog;
 import de.symeda.sormas.app.person.SyncPersonsTask;
 import de.symeda.sormas.app.util.Callback;
+import de.symeda.sormas.app.util.ConnectionHelper;
 import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
+import de.symeda.sormas.app.util.SyncCallback;
 
 
 /**
@@ -197,19 +199,27 @@ public class ContactNewActivity extends AppCompatActivity {
 
         // save the person
         DatabaseHelper.getPersonDao().save(contact.getPerson());
-        new SyncPersonsTask(getApplicationContext()).execute();
+//        new SyncPersonsTask(getApplicationContext()).execute();
 
         // save the contact
         DatabaseHelper.getContactDao().save(contact);
 
         Toast.makeText(this, "Contact to " + contact.getPerson().toString() + " saved", Toast.LENGTH_SHORT).show();
 
-        SyncContactsTask.syncContactsWithProgressDialog(this, new Callback() {
-            @Override
-            public void call() {
-                navBackToCaseContacts();
-            }
-        });
+        if (ConnectionHelper.isConnectedToInternet(getApplicationContext())) {
+            SyncContactsTask.syncContactsWithProgressDialog(this, new SyncCallback() {
+                @Override
+                public void call(boolean syncFailed) {
+                    if (syncFailed) {
+                        Toast.makeText(getApplicationContext(), "The case has been created, but could not yet be transferred to the server. An error report has been automatically sent and the synchronization will be repeated later.", Toast.LENGTH_LONG).show();
+                    }
+                    navBackToCaseContacts();
+                }
+            });
+        } else {
+            navBackToCaseContacts();
+        }
+
     }
 
 

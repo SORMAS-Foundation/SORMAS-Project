@@ -29,7 +29,9 @@ import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.backend.sample.SampleDao;
 import de.symeda.sormas.app.component.UserReportDialog;
 import de.symeda.sormas.app.util.Callback;
+import de.symeda.sormas.app.util.ConnectionHelper;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
+import de.symeda.sormas.app.util.SyncCallback;
 
 /**
  * Created by Mate Strysewske on 07.02.2017.
@@ -184,13 +186,19 @@ public class SampleEditActivity extends AppCompatActivity {
                         sampleDao.save(sample);
                         Toast.makeText(this, "sample " + DataHelper.getShortUuid(sample.getUuid()) + " saved", Toast.LENGTH_SHORT).show();
 
-                        SyncSamplesTask.syncSamplesWithProgressDialog(this, new Callback() {
-                            @Override
-                            public void call() {
-                                // go back to the list
-                                finish();
-                            }
-                        });
+                        if (ConnectionHelper.isConnectedToInternet(getApplicationContext())) {
+                            SyncSamplesTask.syncSamplesWithProgressDialog(this, new SyncCallback() {
+                                @Override
+                                public void call(boolean syncFailed) {
+                                    if (syncFailed) {
+                                        Toast.makeText(getApplicationContext(), "The sample has been saved, but could not be transferred to the server. An error report has been automatically sent and the synchronization will be repeated later.", Toast.LENGTH_LONG).show();
+                                    }
+                                    finish();
+                                }
+                            });
+                        } else {
+                            finish();
+                        }
                     } catch (DaoException e) {
                         Log.e(getClass().getName(), "Error while trying to save sample", e);
                         Toast.makeText(this, "Sample could not be saved because of an internal error.", Toast.LENGTH_LONG).show();

@@ -23,6 +23,7 @@ import de.symeda.sormas.app.person.SyncPersonsTask;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.task.SyncTasksTask;
 import de.symeda.sormas.app.util.Callback;
+import de.symeda.sormas.app.util.ConnectionHelper;
 import de.symeda.sormas.app.util.SyncInfrastructureTask;
 
 /**

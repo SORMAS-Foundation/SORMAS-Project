@@ -7,7 +7,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.android.gms.analytics.Tracker;
 
@@ -27,6 +26,7 @@ import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
+import de.symeda.sormas.app.util.SyncCallback;
 import retrofit2.Call;
 
 /**
@@ -34,6 +34,11 @@ import retrofit2.Call;
  */
 public class SyncEventsTask extends AsyncTask<Void, Void, Void> {
 
+    /**
+     * Should be set to true when the synchronization fails and reset to false as soon
+     * as the last callback is called (i.e. the synchronization has been completed/cancelled).
+     */
+    private static boolean hasThrownError;
     private final Context context;
 
     public SyncEventsTask(Context context) {
@@ -63,6 +68,7 @@ public class SyncEventsTask extends AsyncTask<Void, Void, Void> {
                 }
             }, DatabaseHelper.getEventDao());
         } catch (DaoException | SQLException | IOException e) {
+            hasThrownError = true;
             Log.e(getClass().getName(), "Error while synchronizing alerts", e);
             SormasApplication application = (SormasApplication) context.getApplicationContext();
             Tracker tracker = application.getDefaultTracker();
@@ -71,57 +77,83 @@ public class SyncEventsTask extends AsyncTask<Void, Void, Void> {
         return null;
     }
 
-    public static void syncEvents(Context context, final FragmentManager fragmentManager) {
+    public static void syncEventsWithoutCallback(Context context, final FragmentManager fragmentManager) {
         if (fragmentManager != null) {
-            syncEvents(context, new Callback() {
+            createSyncEventsTask(context, new SyncCallback() {
                 @Override
-                public void call() {
+                public void call(boolean syncFailed) {
                     if (fragmentManager.getFragments() != null) {
-                        for (Fragment fragement : fragmentManager.getFragments()) {
-                            if (fragement instanceof EventsListFragment) {
-                                fragement.onResume();
+                        for (Fragment fragment : fragmentManager.getFragments()) {
+                            if (fragment instanceof EventsListFragment) {
+                                fragment.onResume();
                             }
                         }
                     }
+                    hasThrownError = false;
                 }
             });
         } else {
-            syncEvents(context, (Callback)null);
+            createSyncEventsTask(context, null);
+            hasThrownError = false;
         }
     }
 
-    public static void syncEvents(final FragmentManager fragmentManager, Context context, SwipeRefreshLayout refreshLayout) {
-        syncEvents(context, fragmentManager);
-        refreshLayout.setRefreshing(false);
+    public static void syncEventsWithCallback(Context context, final FragmentManager fragmentManager, final SyncCallback callback) {
+        if (fragmentManager != null) {
+            createSyncEventsTask(context, new SyncCallback() {
+                @Override
+                public void call(boolean syncFailed) {
+                    if (fragmentManager.getFragments() != null) {
+                        for (Fragment fragment : fragmentManager.getFragments()) {
+                            if (fragment instanceof EventsListFragment) {
+                                fragment.onResume();
+                            }
+                        }
+                    }
+                    callback.call(syncFailed);
+                    hasThrownError = false;
+                }
+            });
+        } else {
+            createSyncEventsTask(context, callback);
+            hasThrownError = false;
+        }
     }
 
-    public static void syncEventsWithProgressDialog(Context context, final Callback callback) {
-
+    /**
+     * Synchronizes the events, displays a progress dialog and an error message when the synchronization fails.
+     * Should only be called when the user has manually triggered the synchronization.
+     *
+     * @param context
+     * @param callback
+     */
+    public static void syncEventsWithProgressDialog(Context context, final SyncCallback callback) {
         final ProgressDialog progressDialog = ProgressDialog.show(context, "Event synchronization",
                 "Events are being synchronized...", true);
 
-        syncEvents(context, new Callback() {
+        createSyncEventsTask(context, new SyncCallback() {
             @Override
-            public void call() {
+            public void call(boolean syncFailed) {
                 progressDialog.dismiss();
-                callback.call();
+                callback.call(syncFailed);
+                hasThrownError = false;
             }
         });
     }
 
-    public static void syncEvents(final Context context, final Callback callback) {
-        new SyncEventsTask(context) {
+    public static AsyncTask<Void, Void, Void> createSyncEventsTask(final Context context, final SyncCallback callback) {
+        return new SyncEventsTask(context) {
             @Override
             protected void onPostExecute(Void aVoid) {
-                SyncEventParticipantsTask.syncEventParticipants(context, new Callback() {
-                    @Override
-                    public void call() {
-                        if (callback != null) {
-                            callback.call();
-                        }
-                    }
-                });
+                if (hasThrownError) {
+                    callback.call(true);
+                    hasThrownError = false;
+                } else {
+                    SyncEventParticipantsTask.syncEventParticipants(context, callback);
+                    hasThrownError = false;
+                }
             }
         }.execute();
     }
+
 }

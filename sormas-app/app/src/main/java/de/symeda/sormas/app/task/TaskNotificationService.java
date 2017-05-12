@@ -57,8 +57,7 @@ public class TaskNotificationService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-        SyncTasksTask.syncTasks(this.getApplicationContext(), (Callback)null, this);
-
+        SyncTasksTask.syncTasks(this.getApplicationContext(), null, this);
         return super.onStartCommand(intent, flags, startId);
     }
 

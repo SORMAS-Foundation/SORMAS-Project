@@ -10,10 +10,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Toast;
 
 import com.google.android.gms.analytics.Tracker;
 
-import java.sql.SQLException;
 import java.util.List;
 
 import de.symeda.sormas.api.contact.FollowUpStatus;
@@ -22,11 +22,11 @@ import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.person.SyncPersonsTask;
 import de.symeda.sormas.app.util.Callback;
-import de.symeda.sormas.app.util.ErrorReportingHelper;
+import de.symeda.sormas.app.util.ConnectionHelper;
+import de.symeda.sormas.app.util.SyncCallback;
 
 public class ContactsListFragment extends ListFragment {
 
@@ -48,43 +48,49 @@ public class ContactsListFragment extends ListFragment {
     public void onResume() {
         super.onResume();
 
-        if(getArguments().containsKey(Case.UUID)) {
+        if (getArguments().containsKey(Case.UUID)) {
             updateCaseContactsArrayAdapter();
         } else {
             updateContactsArrayAdapter();
         }
 
         final SwipeRefreshLayout refreshLayout = (SwipeRefreshLayout)getView().findViewById(R.id.swiperefresh);
-        if(refreshLayout != null) {
-            refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-                @Override
-                public void onRefresh() {
-                    SyncContactsTask.syncContacts(getActivity().getSupportFragmentManager(), getContext(), refreshLayout);
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                if (ConnectionHelper.isConnectedToInternet(getContext())) {
+                    SyncContactsTask.syncContactsWithCallback(getContext(), getActivity().getSupportFragmentManager(), new SyncCallback() {
+                        @Override
+                        public void call(boolean syncFailed) {
+                            refreshLayout.setRefreshing(false);
+                            if (!syncFailed) {
+                                Toast.makeText(getContext(), "Synchronization successful.", Toast.LENGTH_LONG).show();
+                            } else {
+                                Toast.makeText(getContext(), "Synchronization failed. Please try again later. This error has automatically been reported.", Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
+                } else {
+                    refreshLayout.setRefreshing(false);
+                    Toast.makeText(getContext(), "You are not connected to the internet.", Toast.LENGTH_LONG).show();
                 }
-            });
-        }
+            }
+        });
     }
 
     public void updateContactsArrayAdapter() {
-        new SyncPersonsTask(getContext()).execute();
+        List<Contact> contacts;
+        Bundle arguments = getArguments();
+        if(arguments.containsKey(ARG_FILTER_STATUS)) {
+            FollowUpStatus filterStatus = (FollowUpStatus) arguments.getSerializable(ARG_FILTER_STATUS);
+            contacts = DatabaseHelper.getContactDao().queryForEq(Contact.FOLLOW_UP_STATUS, filterStatus, Contact.REPORT_DATE_TIME, false);
+        } else {
+            contacts = DatabaseHelper.getContactDao().queryForAll(Contact.REPORT_DATE_TIME, false);
+        }
 
-        SyncContactsTask.syncContacts(getContext(), new Callback() {
-            @Override
-            public void call() {
-                List<Contact> contacts = null;
-                Bundle arguments = getArguments();
-                if(arguments.containsKey(ARG_FILTER_STATUS)) {
-                    FollowUpStatus filterStatus = (FollowUpStatus) arguments.getSerializable(ARG_FILTER_STATUS);
-                    contacts = DatabaseHelper.getContactDao().queryForEq(Contact.FOLLOW_UP_STATUS, filterStatus, Contact.REPORT_DATE_TIME, false);
-                } else {
-                    contacts = DatabaseHelper.getContactDao().queryForAll(Contact.REPORT_DATE_TIME, false);
-                }
-
-                ArrayAdapter<Contact> listAdapter = (ArrayAdapter<Contact>)getListAdapter();
-                listAdapter.clear();
-                listAdapter.addAll(contacts);
-            }
-        });
+        ArrayAdapter<Contact> listAdapter = (ArrayAdapter<Contact>)getListAdapter();
+        listAdapter.clear();
+        listAdapter.addAll(contacts);
     }
 
     public void updateCaseContactsArrayAdapter() {
@@ -92,25 +98,18 @@ public class ContactsListFragment extends ListFragment {
         final CaseDao caseDao = DatabaseHelper.getCaseDao();
         final Case caze = caseDao.queryUuid(caseUuid);
 
-        new SyncPersonsTask(getContext()).execute();
+        List<Contact> contacts = DatabaseHelper.getContactDao().getByCase(caze);
+        ArrayAdapter<Contact> listAdapter = (ArrayAdapter<Contact>)getListAdapter();
+        listAdapter.clear();
+        listAdapter.addAll(contacts);
 
-        SyncContactsTask.syncContactsWithoutDependencies(getContext(), new Callback() {
-            @Override
-            public void call() {
-                List<Contact> contacts = DatabaseHelper.getContactDao().getByCase(caze);
-                ArrayAdapter<Contact> listAdapter = (ArrayAdapter<Contact>)getListAdapter();
-                listAdapter.clear();
-                listAdapter.addAll(contacts);
-
-                if (listAdapter.getCount() == 0) {
-                    getView().findViewById(R.id.empty_list_hint).setVisibility(View.VISIBLE);
-                    getView().findViewById(android.R.id.list).setVisibility(View.GONE);
-                } else {
-                    getView().findViewById(R.id.empty_list_hint).setVisibility(View.GONE);
-                    getView().findViewById(android.R.id.list).setVisibility(View.VISIBLE);
-                }
-            }
-        });
+        if (listAdapter.getCount() == 0) {
+            getView().findViewById(R.id.empty_list_hint).setVisibility(View.VISIBLE);
+            getView().findViewById(android.R.id.list).setVisibility(View.GONE);
+        } else {
+            getView().findViewById(R.id.empty_list_hint).setVisibility(View.GONE);
+            getView().findViewById(android.R.id.list).setVisibility(View.VISIBLE);
+        }
     }
 
     @Override

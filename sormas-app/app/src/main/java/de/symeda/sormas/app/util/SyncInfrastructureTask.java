@@ -34,6 +34,11 @@ import retrofit2.Call;
  */
 public class SyncInfrastructureTask extends AsyncTask<Void, Void, Void> {
 
+    /**
+     * Should be set to true when the synchronization fails and reset to false as soon
+     * as the last callback is called (i.e. the synchronization has been completed/cancelled).
+     */
+    private static boolean hasThrownError;
     private final Context notificationContext;
 
     private SyncInfrastructureTask(final Context notificationContext) {
@@ -78,35 +83,40 @@ public class SyncInfrastructureTask extends AsyncTask<Void, Void, Void> {
                 }
             }, DatabaseHelper.getUserDao());
         } catch(DaoException | SQLException | IOException e) {
-            Log.e(this.getClass().getName(), "Exception on executing background synchronization task");
+            hasThrownError = true;
+            Log.e(this.getClass().getName(), "Exception on executing background synchronization task", e);
             if (notificationContext != null) {
-                SormasApplication application = (SormasApplication) notificationContext.getApplicationContext();
-                Tracker tracker = application.getDefaultTracker();
-                ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, null, true,
-                        " - User: " + ConfigProvider.getUser().getUuid());
+                if (ConnectionHelper.isConnectedToInternet(notificationContext)) {
+                    SormasApplication application = (SormasApplication) notificationContext.getApplicationContext();
+                    Tracker tracker = application.getDefaultTracker();
+                    ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, null, true);
+                }
             }
         }
 
         return null;
     }
 
-    public static void syncInfrastructure(final Context notificationContext, final Callback callback) {
+    public static void syncInfrastructure(final Context notificationContext, final SyncCallback callback) {
         new SyncInfrastructureTask(notificationContext) {
             @Override
             protected void onPostExecute(Void aVoid) {
                 if (callback != null) {
-                    callback.call();
+                    callback.call(hasThrownError);
                 }
+                hasThrownError = false;
             }
         }.execute();
     }
 
-    public static void syncAll(final Callback callback, final Context notificationContext) {
-        syncInfrastructure(notificationContext, new Callback() {
+    public static void syncAll(final SyncCallback callback, final Context notificationContext) {
+        syncInfrastructure(notificationContext, new SyncCallback() {
             @Override
-            public void call() {
-            // this also syncs cases, contacts and events
-            SyncTasksTask.syncTasks(notificationContext, callback, notificationContext);
+            public void call(boolean syncFailed) {
+                if (!syncFailed) {
+                    // this also syncs cases, contacts and events
+                    SyncTasksTask.syncTasks(notificationContext, callback, notificationContext);
+                }
             }
         });
 

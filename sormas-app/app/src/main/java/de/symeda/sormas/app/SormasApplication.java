@@ -17,6 +17,7 @@ import de.symeda.sormas.app.person.SyncPersonsTask;
 import de.symeda.sormas.app.task.SyncTasksTask;
 import de.symeda.sormas.app.task.TaskNotificationService;
 import de.symeda.sormas.app.util.Callback;
+import de.symeda.sormas.app.util.SyncCallback;
 import de.symeda.sormas.app.util.SyncInfrastructureTask;
 
 /**
@@ -37,11 +38,11 @@ public class SormasApplication extends Application {
         DatabaseHelper.init(this);
         ConfigProvider.init();
 
-        SyncInfrastructureTask.syncInfrastructure(getApplicationContext(), new Callback() {
+        SyncInfrastructureTask.syncInfrastructure(getApplicationContext(), new SyncCallback() {
             @Override
-            public void call() {
+            public void call(boolean syncFailed) {
                 // this also syncs cases which syncs persons
-                SyncTasksTask.syncTasks(getApplicationContext(), (Callback)null, SormasApplication.this);
+                SyncTasksTask.syncTasks(getApplicationContext(), null, SormasApplication.this);
             }
         });
 

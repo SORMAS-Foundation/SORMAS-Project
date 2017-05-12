@@ -34,8 +34,10 @@ import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.SelectOrCreatePersonDialogBuilder;
 import de.symeda.sormas.app.component.UserReportDialog;
 import de.symeda.sormas.app.util.Callback;
+import de.symeda.sormas.app.util.ConnectionHelper;
 import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
+import de.symeda.sormas.app.util.SyncCallback;
 
 
 /**
@@ -218,13 +220,19 @@ public class CaseNewActivity extends AppCompatActivity {
 
         Toast.makeText(CaseNewActivity.this, caze.getPerson().toString() + " saved", Toast.LENGTH_SHORT).show();
 
-        SyncCasesTask.syncCasesWithProgressDialog(this, new Callback() {
-            @Override
-            public void call() {
-                showCaseEditView(caze);
-            }
-        });
+        if (ConnectionHelper.isConnectedToInternet(getApplicationContext())) {
+            SyncCasesTask.syncCasesWithProgressDialog(this, new SyncCallback() {
+                @Override
+                public void call(boolean syncFailed) {
+                    if (syncFailed) {
+                        Toast.makeText(getApplicationContext(), "The case has been created, but could not yet be transferred to the server. An error report has been automatically sent and the synchronization will be repeated later.", Toast.LENGTH_LONG).show();
+                    }
+                    showCaseEditView(caze);
+                }
+            });
+        } else {
+            showCaseEditView(caze);
+        }
     }
-
 
 }

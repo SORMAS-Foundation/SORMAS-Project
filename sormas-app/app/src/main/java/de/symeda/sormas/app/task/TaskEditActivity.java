@@ -21,11 +21,12 @@ import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
-import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.task.TaskDao;
 import de.symeda.sormas.app.component.UserReportDialog;
+import de.symeda.sormas.app.util.ConnectionHelper;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
+import de.symeda.sormas.app.util.SyncCallback;
 
 
 /**
@@ -135,7 +136,17 @@ public class TaskEditActivity extends AppCompatActivity {
                     taskDao.save(task);
                     Toast.makeText(this, "task " + DataHelper.getShortUuid(task.getUuid()) + " saved", Toast.LENGTH_SHORT).show();
 
-                    SyncTasksTask.syncTasks(getSupportFragmentManager(), getApplicationContext(), null);
+                    if (ConnectionHelper.isConnectedToInternet(getApplicationContext())) {
+                        SyncTasksTask.syncTasksWithProgressDialog(this, new SyncCallback() {
+                            @Override
+                            public void call(boolean syncFailed) {
+                                onResume();
+                                if (syncFailed) {
+                                    Toast.makeText(getApplicationContext(), "The task has been saved, but could not be transferred to the server. An error report has been automatically sent and the synchronization will be repeated later.", Toast.LENGTH_LONG).show();
+                                }
+                            }
+                        }, null);
+                    }
                 } catch (DaoException e) {
                     Log.e(getClass().getName(), "Error while trying to save task", e);
                     Toast.makeText(this, "Task could not be saved because of an internal error.", Toast.LENGTH_LONG).show();

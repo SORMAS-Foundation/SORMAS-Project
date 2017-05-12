@@ -17,7 +17,8 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventParticipant;
-import de.symeda.sormas.app.util.Callback;
+import de.symeda.sormas.app.util.ConnectionHelper;
+import de.symeda.sormas.app.util.SyncCallback;
 
 public class EventParticipantsListFragment extends ListFragment {
 
@@ -32,7 +33,9 @@ public class EventParticipantsListFragment extends ListFragment {
     @Override
     public void onResume() {
         super.onResume();
-
+        if (ConnectionHelper.isConnectedToInternet(getContext())) {
+            SyncEventParticipantsTask.syncEventParticipantsWithoutCallback(getContext(), getActivity().getSupportFragmentManager());
+        }
         updateArrayAdapter();
     }
 
@@ -40,14 +43,29 @@ public class EventParticipantsListFragment extends ListFragment {
         eventUuid = getArguments().getString(Event.UUID);
         if (eventUuid != null) {
             final Event event = DatabaseHelper.getEventDao().queryUuid(eventUuid);
-            syncEventParticipants(event, null);
+            updateEventParticipants(event);
 
             final SwipeRefreshLayout refreshLayout = (SwipeRefreshLayout) getView().findViewById(R.id.swiperefresh);
             if (refreshLayout != null) {
                 refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                     @Override
                     public void onRefresh() {
-                        syncEventParticipants(event, refreshLayout);
+                        if (ConnectionHelper.isConnectedToInternet(getContext())) {
+                            SyncEventParticipantsTask.syncEventParticipantsWithCallback(getContext(), getActivity().getSupportFragmentManager(), new SyncCallback() {
+                                @Override
+                                public void call(boolean syncFailed) {
+                                    refreshLayout.setRefreshing(false);
+                                    if (!syncFailed) {
+                                        Toast.makeText(getContext(), "Synchronization successful.", Toast.LENGTH_LONG).show();
+                                    } else {
+                                        Toast.makeText(getContext(), "Synchronization failed. Please try again later. This error has automatically been reported.", Toast.LENGTH_LONG).show();
+                                    }
+                                }
+                            });
+                        } else {
+                            refreshLayout.setRefreshing(false);
+                            Toast.makeText(getContext(), "You are not connected to the internet.", Toast.LENGTH_LONG).show();
+                        }
                     }
                 });
             }
@@ -81,24 +99,19 @@ public class EventParticipantsListFragment extends ListFragment {
         startActivity(intent);
     }
 
-    private void syncEventParticipants(final Event event, final SwipeRefreshLayout refreshLayout) {
-        SyncEventParticipantsTask.syncEventParticipants(getContext(), new Callback() {
-            @Override
-            public void call() {
-                List<EventParticipant> eventParticipants = DatabaseHelper.getEventParticipantDao().getByEvent(event);
-                ArrayAdapter<EventParticipant> listAdapter = (ArrayAdapter<EventParticipant>)getListAdapter();
-                listAdapter.clear();
-                listAdapter.addAll(eventParticipants);
+    private void updateEventParticipants(final Event event) {
+        List<EventParticipant> eventParticipants = DatabaseHelper.getEventParticipantDao().getByEvent(event);
+        ArrayAdapter<EventParticipant> listAdapter = (ArrayAdapter<EventParticipant>) getListAdapter();
+        listAdapter.clear();
+        listAdapter.addAll(eventParticipants);
 
-                if (listAdapter.getCount() == 0) {
-                    getView().findViewById(R.id.empty_list_hint).setVisibility(View.VISIBLE);
-                    getView().findViewById(android.R.id.list).setVisibility(View.GONE);
-                } else {
-                    getView().findViewById(R.id.empty_list_hint).setVisibility(View.GONE);
-                    getView().findViewById(android.R.id.list).setVisibility(View.VISIBLE);
-                }
-            }
-        }, refreshLayout);
+        if (listAdapter.getCount() == 0) {
+            getView().findViewById(R.id.empty_list_hint).setVisibility(View.VISIBLE);
+            getView().findViewById(android.R.id.list).setVisibility(View.GONE);
+        } else {
+            getView().findViewById(R.id.empty_list_hint).setVisibility(View.GONE);
+            getView().findViewById(android.R.id.list).setVisibility(View.VISIBLE);
+        }
     }
 
 }

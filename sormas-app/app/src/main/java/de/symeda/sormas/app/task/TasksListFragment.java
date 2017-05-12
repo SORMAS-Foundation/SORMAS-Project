@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +25,8 @@ import de.symeda.sormas.app.backend.contact.ContactDao;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventDao;
 import de.symeda.sormas.app.backend.task.Task;
+import de.symeda.sormas.app.util.ConnectionHelper;
+import de.symeda.sormas.app.util.SyncCallback;
 
 /**
  * Created by Stefan Szczesny on 24.10.2016.
@@ -98,14 +101,27 @@ public class TasksListFragment extends ListFragment {
         listAdapter.addAll(tasks);
 
         final SwipeRefreshLayout refreshLayout = (SwipeRefreshLayout)getView().findViewById(R.id.swiperefresh);
-        if(refreshLayout != null) {
-            refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-                @Override
-                public void onRefresh() {
-                    SyncTasksTask.syncTasks(getActivity().getSupportFragmentManager(), getContext(), getActivity(), refreshLayout);
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                if (ConnectionHelper.isConnectedToInternet(getContext())) {
+                    SyncTasksTask.syncTasksWithCallback(getActivity().getSupportFragmentManager(), getContext(), getContext(), new SyncCallback() {
+                        @Override
+                        public void call(boolean syncFailed) {
+                            refreshLayout.setRefreshing(false);
+                            if (!syncFailed) {
+                                Toast.makeText(getContext(), "Synchronization successful.", Toast.LENGTH_LONG).show();
+                            } else {
+                                Toast.makeText(getContext(), "Synchronization failed. Please try again later. This error has automatically been reported.", Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
+                } else {
+                    refreshLayout.setRefreshing(false);
+                    Toast.makeText(getContext(), "You are not connected to the internet.", Toast.LENGTH_LONG).show();
                 }
-            });
-        }
+            }
+        });
     }
 
     @Override

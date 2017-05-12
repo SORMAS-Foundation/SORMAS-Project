@@ -30,7 +30,9 @@ import de.symeda.sormas.app.component.AbstractEditActivity;
 import de.symeda.sormas.app.component.HelpDialog;
 import de.symeda.sormas.app.component.UserReportDialog;
 import de.symeda.sormas.app.util.Callback;
+import de.symeda.sormas.app.util.ConnectionHelper;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
+import de.symeda.sormas.app.util.SyncCallback;
 import de.symeda.sormas.app.util.ValidationFailedException;
 
 
@@ -177,13 +179,19 @@ public class VisitEditActivity extends AbstractEditActivity {
                     DatabaseHelper.getVisitDao().save(visit);
                     Toast.makeText(this, "visit " + DataHelper.getShortUuid(visit.getUuid()) + " saved", Toast.LENGTH_SHORT).show();
 
-                    SyncVisitsTask.syncVisitsWithProgressDialog(this, new Callback() {
-                        @Override
-                        public void call() {
-                            // go back to the list
-                            finish();
-                        }
-                    });
+                    if (ConnectionHelper.isConnectedToInternet(getApplicationContext())) {
+                        SyncVisitsTask.syncVisitsWithProgressDialog(this, new SyncCallback() {
+                            @Override
+                            public void call(boolean syncFailed) {
+                                if (syncFailed) {
+                                    Toast.makeText(getApplicationContext(), "The visit has been saved, but could not be transferred to the server. An error report has been automatically sent and the synchronization will be repeated later.", Toast.LENGTH_LONG).show();
+                                }
+                                finish();
+                            }
+                        });
+                    } else {
+                        finish();
+                    }
 
                     return true;
                 } catch (ValidationFailedException e) {

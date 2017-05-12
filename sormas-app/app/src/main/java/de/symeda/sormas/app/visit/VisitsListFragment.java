@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -17,6 +18,8 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.visit.Visit;
 import de.symeda.sormas.app.util.Callback;
+import de.symeda.sormas.app.util.ConnectionHelper;
+import de.symeda.sormas.app.util.SyncCallback;
 
 public class VisitsListFragment extends ListFragment {
 
@@ -40,14 +43,29 @@ public class VisitsListFragment extends ListFragment {
     public void updateArrayAdapter() {
         contactUuid = getArguments().getString(Contact.UUID);
         final Contact contact = DatabaseHelper.getContactDao().queryUuid(contactUuid);
-        syncVisits(contact, null);
+        syncVisits(contact);
 
-        final SwipeRefreshLayout refreshLayout = (SwipeRefreshLayout)getView().findViewById(R.id.swiperefresh);
-        if(refreshLayout != null) {
+        final SwipeRefreshLayout refreshLayout = (SwipeRefreshLayout) getView().findViewById(R.id.swiperefresh);
+        if (refreshLayout != null) {
             refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                 @Override
                 public void onRefresh() {
-                    syncVisits(contact, refreshLayout);
+                    if (ConnectionHelper.isConnectedToInternet(getContext())) {
+                        SyncVisitsTask.syncVisitsWithCallback(getContext(), getActivity().getSupportFragmentManager(), new SyncCallback() {
+                            @Override
+                            public void call(boolean syncFailed) {
+                                refreshLayout.setRefreshing(false);
+                                if (!syncFailed) {
+                                    Toast.makeText(getContext(), "Synchronization successful.", Toast.LENGTH_LONG).show();
+                                } else {
+                                    Toast.makeText(getContext(), "Synchronization failed. Please try again later. This error has automatically been reported.", Toast.LENGTH_LONG).show();
+                                }
+                            }
+                        });
+                    } else {
+                        refreshLayout.setRefreshing(false);
+                        Toast.makeText(getContext(), "You are not connected to the internet.", Toast.LENGTH_LONG).show();
+                    }
                 }
             });
         }
@@ -81,24 +99,19 @@ public class VisitsListFragment extends ListFragment {
         startActivity(intent);
     }
 
-    private void syncVisits(final Contact contact, final SwipeRefreshLayout refreshLayout) {
-        SyncVisitsTask.syncVisits(getContext(), new Callback() {
-            @Override
-            public void call() {
-                List<Visit> visits = DatabaseHelper.getVisitDao().getByContact(contact);
-                ArrayAdapter<Visit> listAdapter = (ArrayAdapter<Visit>)getListAdapter();
-                listAdapter.clear();
-                listAdapter.addAll(visits);
+    private void syncVisits(final Contact contact) {
+        List<Visit> visits = DatabaseHelper.getVisitDao().getByContact(contact);
+        ArrayAdapter<Visit> listAdapter = (ArrayAdapter<Visit>)getListAdapter();
+        listAdapter.clear();
+        listAdapter.addAll(visits);
 
-                if (listAdapter.getCount() == 0) {
-                    getView().findViewById(R.id.empty_list_hint).setVisibility(View.VISIBLE);
-                    getView().findViewById(android.R.id.list).setVisibility(View.GONE);
-                } else {
-                    getView().findViewById(R.id.empty_list_hint).setVisibility(View.GONE);
-                    getView().findViewById(android.R.id.list).setVisibility(View.VISIBLE);
-                }
-            }
-        }, refreshLayout);
+        if (listAdapter.getCount() == 0) {
+            getView().findViewById(R.id.empty_list_hint).setVisibility(View.VISIBLE);
+            getView().findViewById(android.R.id.list).setVisibility(View.GONE);
+        } else {
+            getView().findViewById(R.id.empty_list_hint).setVisibility(View.GONE);
+            getView().findViewById(android.R.id.list).setVisibility(View.VISIBLE);
+        }
     }
 
 }

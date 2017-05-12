@@ -24,6 +24,7 @@ import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
+import de.symeda.sormas.app.util.SyncCallback;
 import retrofit2.Call;
 
 /**
@@ -31,8 +32,12 @@ import retrofit2.Call;
  */
 public class SyncPersonsTask extends AsyncTask<Void, Void, Void> {
 
+    /**
+     * Should be set to true when the synchronization fails and reset to false as soon
+     * as the last callback is called (i.e. the synchronization has been completed/cancelled).
+     */
+    private static boolean hasThrownError;
     private final Context context;
-    private boolean hasThrownError;
 
     public SyncPersonsTask(Context context) {
         this.context = context;
@@ -59,21 +64,22 @@ public class SyncPersonsTask extends AsyncTask<Void, Void, Void> {
                 }
             }, DatabaseHelper.getPersonDao());
         } catch (DaoException | SQLException | IOException e) {
+            hasThrownError = true;
             Log.e(getClass().getName(), "Error while synchronizing persons", e);
             SormasApplication application = (SormasApplication) context.getApplicationContext();
             Tracker tracker = application.getDefaultTracker();
             ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, null, true);
         }
+
         return null;
     }
 
-    public static void syncPersons(Context context, final Callback callback) {
+    public static void syncPersons(final Context context, final SyncCallback callback) {
         new SyncPersonsTask(context) {
             @Override
             protected void onPostExecute(Void aVoid) {
-                if (callback != null) {
-                    callback.call();
-                }
+                callback.call(hasThrownError);
+                hasThrownError = false;
             }
         }.execute();
     }

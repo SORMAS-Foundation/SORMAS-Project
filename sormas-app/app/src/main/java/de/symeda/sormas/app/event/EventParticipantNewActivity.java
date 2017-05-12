@@ -27,8 +27,10 @@ import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.component.SelectOrCreatePersonDialogBuilder;
 import de.symeda.sormas.app.component.UserReportDialog;
 import de.symeda.sormas.app.util.Callback;
+import de.symeda.sormas.app.util.ConnectionHelper;
 import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
+import de.symeda.sormas.app.util.SyncCallback;
 
 public class EventParticipantNewActivity extends AppCompatActivity {
 
@@ -165,19 +167,27 @@ public class EventParticipantNewActivity extends AppCompatActivity {
         // save the person
         DatabaseHelper.getPersonDao().save(eventParticipant.getPerson());
         // set the given event
-        Event event = DatabaseHelper.getEventDao().queryUuid(eventUuid);
+        final Event event = DatabaseHelper.getEventDao().queryUuid(eventUuid);
         eventParticipant.setEvent(event);
         // save the contact
         DatabaseHelper.getEventParticipantDao().save(eventParticipant);
 
         Toast.makeText(this, "Event person saved", Toast.LENGTH_SHORT).show();
 
-        SyncEventsTask.syncEventsWithProgressDialog(this, new Callback() {
-            @Override
-            public void call() {
-                showEventParticipantEditView(eventParticipant);
-            }
-        });
+        if (ConnectionHelper.isConnectedToInternet(getApplicationContext())) {
+            SyncEventsTask.syncEventsWithProgressDialog(this, new SyncCallback() {
+                @Override
+                public void call(boolean syncFailed) {
+                    if (syncFailed) {
+                        Toast.makeText(getApplicationContext(), "The alert person has been saved, but could not be transferred to the server. An error report has been automatically sent and the synchronization will be repeated later.", Toast.LENGTH_LONG).show();
+                    }
+                    showEventParticipantEditView(eventParticipant);
+                }
+            });
+        } else {
+            finish();
+            showEventParticipantEditView(eventParticipant);
+        }
     }
 
     private void showEventParticipantEditView(EventParticipant eventParticipant) {

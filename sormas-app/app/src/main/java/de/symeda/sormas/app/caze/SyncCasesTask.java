@@ -3,12 +3,9 @@ package de.symeda.sormas.app.caze;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.android.gms.analytics.Tracker;
 
@@ -28,8 +25,8 @@ import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.person.SyncPersonsTask;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.sample.SyncSamplesTask;
-import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
+import de.symeda.sormas.app.util.SyncCallback;
 import retrofit2.Call;
 
 /**
@@ -37,6 +34,11 @@ import retrofit2.Call;
  */
 public class SyncCasesTask extends AsyncTask<Void, Void, Void> {
 
+    /**
+     * Should be set to true when the synchronization fails and reset to false as soon
+     * as the last callback is called (i.e. the synchronization has been completed/cancelled).
+     */
+    private static boolean hasThrownError;
     private final Context context;
 
     private SyncCasesTask(Context context) {
@@ -64,21 +66,21 @@ public class SyncCasesTask extends AsyncTask<Void, Void, Void> {
                 }
             }, DatabaseHelper.getCaseDao());
         } catch (DaoException | SQLException | IOException e) {
+            hasThrownError = true;
             Log.e(getClass().getName(), "Error while synchronizing cases", e);
             SormasApplication application = (SormasApplication) context.getApplicationContext();
             Tracker tracker = application.getDefaultTracker();
             ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, null, true);
-            // TODO make sure the user is notified that the synchronization failed
         }
 
         return null;
     }
 
-    public static void syncCases(Context context, final FragmentManager fragmentManager) {
+    public static void syncCasesWithoutCallback(Context context, final FragmentManager fragmentManager) {
         if (fragmentManager != null) {
-            syncCases(context, new Callback() {
+            syncCases(context, new SyncCallback() {
                 @Override
-                public void call() {
+                public void call(boolean syncFailed) {
                     if (fragmentManager.getFragments() != null) {
                         for (Fragment fragment : fragmentManager.getFragments()) {
                             if (fragment instanceof CasesListFragment) {
@@ -86,47 +88,85 @@ public class SyncCasesTask extends AsyncTask<Void, Void, Void> {
                             }
                         }
                     }
+                    hasThrownError = false;
                 }
             });
         } else {
-            syncCases(context, (Callback)null);
+            syncCases(context, null);
+            hasThrownError = false;
         }
     }
 
-    public static void syncCases(final FragmentManager fragmentManager, Context context, SwipeRefreshLayout refreshLayout) {
-        syncCases(context, fragmentManager);
-        refreshLayout.setRefreshing(false);
+    public static void syncCasesWithCallback(Context context, final FragmentManager fragmentManager, final SyncCallback callback) {
+        if (fragmentManager != null) {
+            syncCases(context, new SyncCallback() {
+                @Override
+                public void call(boolean syncFailed) {
+                    if (fragmentManager.getFragments() != null) {
+                        for (Fragment fragment : fragmentManager.getFragments()) {
+                            if (fragment instanceof CasesListFragment) {
+                                fragment.onResume();
+                            }
+                        }
+                    }
+                    callback.call(syncFailed);
+                    hasThrownError = false;
+                }
+            });
+        } else {
+            syncCases(context, callback);
+            hasThrownError = false;
+        }
     }
 
-    public static void syncCasesWithProgressDialog(Context context, final Callback callback) {
-
+    /**
+     * Synchronizes the cases, displays a progress dialog and an error message when the synchronization fails.
+     * Should only be called when the user has manually triggered the synchronization.
+     *
+     * @param context
+     * @param callback
+     */
+    public static void syncCasesWithProgressDialog(final Context context, final SyncCallback callback) {
         final ProgressDialog progressDialog = ProgressDialog.show(context, "Case synchronization",
                 "Cases are being synchronized...", true);
 
-        syncCases(context, new Callback() {
+        syncCases(context, new SyncCallback() {
             @Override
-            public void call() {
+            public void call(boolean syncFailed) {
                 progressDialog.dismiss();
-                callback.call();
+                callback.call(syncFailed);
+                hasThrownError = false;
             }
         });
     }
 
-    public static void syncCases(final Context context, final Callback callback) {
-        SyncPersonsTask.syncPersons(context, new Callback() {
-                                        @Override
-                                        public void call() {
-                                            syncCasesWithoutDependencies(context, callback);
-                                        }
-                                    });
+    public static void syncCases(final Context context, final SyncCallback callback) {
+        SyncPersonsTask.syncPersons(context, new SyncCallback() {
+            @Override
+            public void call(boolean syncFailed) {
+                if (!syncFailed) {
+                    createSyncCasesTask(context, callback);
+                } else {
+                    callback.call(true);
+                    hasThrownError = false;
+                }
+            }
+        });
     }
 
-    public static AsyncTask<Void, Void, Void> syncCasesWithoutDependencies(final Context context, final Callback callback) {
+    public static AsyncTask<Void, Void, Void> createSyncCasesTask(final Context context, final SyncCallback callback) {
         return new SyncCasesTask(context) {
             @Override
             protected void onPostExecute(Void aVoid) {
-                SyncSamplesTask.syncSamples(context, callback);
+                if (hasThrownError) {
+                    callback.call(true);
+                    hasThrownError = false;
+                } else {
+                    SyncSamplesTask.createSyncSamplesTask(context, callback);
+                    hasThrownError = false;
+                }
             }
         }.execute();
     }
+
 }

@@ -41,7 +41,9 @@ public class ErrorReportingHelper {
         if (entity != null) {
             description.append(" - " + entity.getClass().getSimpleName() + ": " + entity.getUuid());
         }
-        description.append(" - User: " + ConfigProvider.getUser().getUuid());
+        if (ConfigProvider.getUser() != null && ConfigProvider.getUser().getUuid() != null) {
+            description.append(" - User: " + ConfigProvider.getUser().getUuid());
+        }
         for (String s : additionalInformation) {
             description.append(s);
         }

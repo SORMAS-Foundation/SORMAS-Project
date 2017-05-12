@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +20,8 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.sample.Sample;
-import de.symeda.sormas.app.backend.sample.SampleDao;
+import de.symeda.sormas.app.util.ConnectionHelper;
+import de.symeda.sormas.app.util.SyncCallback;
 
 /**
  * Created by Mate Strysewske on 06.02.2017.
@@ -77,14 +79,27 @@ public class SamplesListFragment extends ListFragment {
         }
 
         final SwipeRefreshLayout refreshLayout = (SwipeRefreshLayout)getView().findViewById(R.id.swiperefresh);
-        if(refreshLayout != null) {
-            refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-                @Override
-                public void onRefresh() {
-                    SyncSamplesTask.syncSamples(getActivity().getSupportFragmentManager(), getContext(), refreshLayout);
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                if (ConnectionHelper.isConnectedToInternet(getContext())) {
+                    SyncSamplesTask.syncSamplesWithCallback(getContext(), getActivity().getSupportFragmentManager(), new SyncCallback() {
+                        @Override
+                        public void call(boolean syncFailed) {
+                            refreshLayout.setRefreshing(false);
+                            if (!syncFailed) {
+                                Toast.makeText(getContext(), "Synchronization successful.", Toast.LENGTH_LONG).show();
+                            } else {
+                                Toast.makeText(getContext(), "Synchronization failed. Please try again later. This error has automatically been reported.", Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
+                } else {
+                    refreshLayout.setRefreshing(false);
+                    Toast.makeText(getContext(), "You are not connected to the internet.", Toast.LENGTH_LONG).show();
                 }
-            });
-        }
+            }
+        });
     }
 
     @Override

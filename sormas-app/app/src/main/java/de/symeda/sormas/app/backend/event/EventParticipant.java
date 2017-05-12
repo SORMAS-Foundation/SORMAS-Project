@@ -27,7 +27,7 @@ public class EventParticipant extends AbstractDomainObject {
 	@DatabaseField(foreign = true, foreignAutoRefresh=true, canBeNull = false)
 	private Person person;
 
-	@Column(length=512, nullable=false)
+	@Column(length=512)
 	private String involvementDescription;
 	
 	public Event getEvent() {

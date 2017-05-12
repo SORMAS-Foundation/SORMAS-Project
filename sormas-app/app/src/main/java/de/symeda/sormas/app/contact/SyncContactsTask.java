@@ -7,7 +7,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.android.gms.analytics.Tracker;
 
@@ -28,6 +27,7 @@ import de.symeda.sormas.app.caze.SyncCasesTask;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
+import de.symeda.sormas.app.util.SyncCallback;
 import retrofit2.Call;
 
 /**
@@ -35,6 +35,11 @@ import retrofit2.Call;
  */
 public class SyncContactsTask extends AsyncTask<Void, Void, Void> {
 
+    /**
+     * Should be set to true when the synchronization fails and reset to false as soon
+     * as the last callback is called (i.e. the synchronization has been completed/cancelled).
+     */
+    private static boolean hasThrownError;
     private final Context context;
 
     public SyncContactsTask(Context context) {
@@ -79,6 +84,7 @@ public class SyncContactsTask extends AsyncTask<Void, Void, Void> {
                 }, DatabaseHelper.getContactDao());
             }
         } catch (DaoException | SQLException | IOException e) {
+            hasThrownError = true;
             Log.e(getClass().getName(), "Error while synchronizing contacts", e);
             SormasApplication application = (SormasApplication) context.getApplicationContext();
             Tracker tracker = application.getDefaultTracker();
@@ -88,59 +94,90 @@ public class SyncContactsTask extends AsyncTask<Void, Void, Void> {
         return null;
     }
 
-    public static void syncContactsWithProgressDialog(Context context, final Callback callback) {
-        final ProgressDialog progressDialog = ProgressDialog.show(context, "Contact synchronization",
-                "Contacts are being synchronized...", true);
-
-        syncContacts(context, new Callback() {
-            @Override
-            public void call() {
-                progressDialog.dismiss();
-                callback.call();
-            }
-        });
-    }
-
-    public static void syncContacts(Context context, final FragmentManager fragmentManager) {
+    public static void syncContactsWithoutCallback(Context context, final FragmentManager fragmentManager) {
         if (fragmentManager != null) {
-            syncContacts(context, new Callback() {
+            syncContacts(context, new SyncCallback() {
                 @Override
-                public void call() {
+                public void call(boolean syncFailed) {
                     if (fragmentManager.getFragments() != null) {
-                        for (Fragment fragement : fragmentManager.getFragments()) {
-                            if (fragement instanceof ContactsListFragment) {
-                                fragement.onResume();
+                        for (Fragment fragment : fragmentManager.getFragments()) {
+                            if (fragment instanceof ContactsListFragment) {
+                                fragment.onResume();
                             }
                         }
                     }
+                    hasThrownError = false;
                 }
             });
         } else {
-            syncContacts(context, (Callback)null);
+            syncContacts(context, null);
+            hasThrownError = false;
         }
     }
 
-    public static void syncContacts(final FragmentManager fragmentManager, Context context, SwipeRefreshLayout refreshLayout) {
-        syncContacts(context, fragmentManager);
-        refreshLayout.setRefreshing(false);
+    public static void syncContactsWithCallback(Context context, final FragmentManager fragmentManager, final SyncCallback callback) {
+        if (fragmentManager != null) {
+            syncContacts(context, new SyncCallback() {
+                @Override
+                public void call(boolean syncFailed) {
+                    if (fragmentManager.getFragments() != null) {
+                        for (Fragment fragment : fragmentManager.getFragments()) {
+                            if (fragment instanceof ContactsListFragment) {
+                                fragment.onResume();
+                            }
+                        }
+                    }
+                    callback.call(syncFailed);
+                    hasThrownError = false;
+                }
+            });
+        } else {
+            syncContacts(context, callback);
+            hasThrownError = false;
+        }
     }
 
-    public static void syncContacts(final Context context, final Callback callback) {
-        SyncCasesTask.syncCases(context, new Callback() {
+    /**
+     * Synchronizes the contacts, displays a progress dialog and an error message when the synchronization fails.
+     * Should only be called when the user has manually triggered the synchronization.
+     *
+     * @param context
+     * @param callback
+     */
+    public static void syncContactsWithProgressDialog(Context context, final SyncCallback callback) {
+        final ProgressDialog progressDialog = ProgressDialog.show(context, "Contact synchronization",
+                "Contacts are being synchronized...", true);
+
+        syncContacts(context, new SyncCallback() {
             @Override
-            public void call() {
-                syncContactsWithoutDependencies(context, callback);
+            public void call(boolean syncFailed) {
+                progressDialog.dismiss();
+                callback.call(syncFailed);
+                hasThrownError = false;
             }
         });
     }
 
-    public static void syncContactsWithoutDependencies(Context context, final Callback callback) {
-        new SyncContactsTask(context) {
+    public static void syncContacts(final Context context, final SyncCallback callback) {
+        SyncCasesTask.syncCases(context, new SyncCallback() {
+            @Override
+            public void call(boolean syncFailed) {
+                if (!syncFailed) {
+                    createSyncContactsTask(context, callback);
+                } else {
+                    callback.call(true);
+                    hasThrownError = false;
+                }
+            }
+        });
+    }
+
+    public static AsyncTask<Void, Void, Void> createSyncContactsTask(Context context, final SyncCallback callback) {
+        return new SyncContactsTask(context) {
             @Override
             protected void onPostExecute(Void aVoid) {
-                if (callback != null) {
-                    callback.call();
-                }
+                callback.call(hasThrownError);
+                hasThrownError = false;
             }
         }.execute();
     }

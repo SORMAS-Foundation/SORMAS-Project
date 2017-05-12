@@ -22,6 +22,7 @@ import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.FormTab;
 import de.symeda.sormas.app.util.Item;
+import de.symeda.sormas.app.util.SyncCallback;
 import de.symeda.sormas.app.util.SyncInfrastructureTask;
 
 /**
@@ -76,9 +77,9 @@ public class UserForm extends FormTab {
         binding.configProgressBar.setVisibility(View.VISIBLE);
 
         DatabaseHelper.clearTables(true);
-        SyncInfrastructureTask.syncAll(new Callback() {
+        SyncInfrastructureTask.syncAll(new SyncCallback() {
             @Override
-            public void call() {
+            public void call(boolean syncFailed) {
                 UserForm.this.onResume();
                 binding.configProgressBar.setVisibility(View.GONE);
             }

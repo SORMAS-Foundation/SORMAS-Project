@@ -29,6 +29,7 @@ import de.symeda.sormas.app.sample.SamplesActivity;
 import de.symeda.sormas.app.task.TasksActivity;
 import de.symeda.sormas.app.user.UserActivity;
 import de.symeda.sormas.app.util.Callback;
+import de.symeda.sormas.app.util.SyncCallback;
 import de.symeda.sormas.app.util.SyncInfrastructureTask;
 
 public abstract class AbstractRootTabActivity extends AbstractTabActivity {
@@ -186,12 +187,12 @@ public abstract class AbstractRootTabActivity extends AbstractTabActivity {
     }
 
     public void syncAll() {
-        SyncInfrastructureTask.syncAll(new Callback() {
+        SyncInfrastructureTask.syncAll(new SyncCallback() {
                               @Override
-                              public void call() {
+                              public void call(boolean syncFailed) {
                                   if (getSupportFragmentManager().getFragments() != null) {
-                                      for (Fragment fragement : getSupportFragmentManager().getFragments()) {
-                                          fragement.onResume();
+                                      for (Fragment fragment : getSupportFragmentManager().getFragments()) {
+                                          fragment.onResume();
                                       }
                                   }
                               }

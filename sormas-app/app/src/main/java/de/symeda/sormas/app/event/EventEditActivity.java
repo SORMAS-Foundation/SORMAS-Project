@@ -29,7 +29,9 @@ import de.symeda.sormas.app.contact.ContactEditTabs;
 import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.task.TaskEditActivity;
 import de.symeda.sormas.app.task.TaskForm;
+import de.symeda.sormas.app.util.ConnectionHelper;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
+import de.symeda.sormas.app.util.SyncCallback;
 
 
 public class EventEditActivity extends AbstractEditActivity {
@@ -206,13 +208,19 @@ public class EventEditActivity extends AbstractEditActivity {
                                 DatabaseHelper.getEventDao().save(event);
                                 Toast.makeText(this, "event " + DataHelper.getShortUuid(event.getUuid()) + " saved", Toast.LENGTH_SHORT).show();
 
-                                SyncEventsTask.syncEventsWithProgressDialog(this, new Callback() {
-                                    @Override
-                                    public void call() {
-                                        // go back to the list
-                                        finish();
-                                    }
-                                });
+                                if (ConnectionHelper.isConnectedToInternet(getApplicationContext())) {
+                                    SyncEventsTask.syncEventsWithProgressDialog(this, new SyncCallback() {
+                                        @Override
+                                        public void call(boolean syncFailed) {
+                                            if (syncFailed) {
+                                                Toast.makeText(getApplicationContext(), "The alert has been saved, but could not be transferred to the server. An error report has been automatically sent and the synchronization will be repeated later.", Toast.LENGTH_LONG).show();
+                                            }
+                                            finish();
+                                        }
+                                    });
+                                } else {
+                                    finish();
+                                }
                             } catch (DaoException e) {
                                 Log.e(getClass().getName(), "Error while trying to save alert", e);
                                 Toast.makeText(this, "Alert could not be saved because of an internal error.", Toast.LENGTH_LONG).show();

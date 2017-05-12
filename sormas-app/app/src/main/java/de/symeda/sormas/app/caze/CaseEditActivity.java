@@ -42,7 +42,9 @@ import de.symeda.sormas.app.sample.SampleEditActivity;
 import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.task.TaskEditActivity;
 import de.symeda.sormas.app.task.TaskForm;
+import de.symeda.sormas.app.util.ConnectionHelper;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
+import de.symeda.sormas.app.util.SyncCallback;
 import de.symeda.sormas.app.util.ValidationFailedException;
 
 public class CaseEditActivity extends AbstractEditActivity {
@@ -297,17 +299,30 @@ public class CaseEditActivity extends AbstractEditActivity {
                             Toast.makeText(this, "case saved", Toast.LENGTH_LONG).show();
                         }
 
-                        SyncCasesTask.syncCasesWithProgressDialog(this, new Callback() {
-                            @Override
-                            public void call() {
-                                onResume();
-                                try {
-                                    pager.setCurrentItem(currentTab + 1);
-                                } catch (NullPointerException e) {
-                                    pager.setCurrentItem(currentTab);
+                        if (ConnectionHelper.isConnectedToInternet(getApplicationContext())) {
+                            SyncCasesTask.syncCasesWithProgressDialog(this, new SyncCallback() {
+                                @Override
+                                public void call(boolean syncFailed) {
+                                    onResume();
+                                    if (syncFailed) {
+                                        Toast.makeText(getApplicationContext(), "The case has been saved, but could not be transferred to the server. An error report has been automatically sent and the synchronization will be repeated later.", Toast.LENGTH_LONG).show();
+                                    }
+
+                                    try {
+                                        pager.setCurrentItem(currentTab + 1);
+                                    } catch (NullPointerException e) {
+                                        pager.setCurrentItem(currentTab);
+                                    }
                                 }
+                            });
+                        } else {
+                            try {
+                                pager.setCurrentItem(currentTab + 1);
+                            } catch (NullPointerException e) {
+                                pager.setCurrentItem(currentTab);
                             }
-                        });
+                        }
+
                     } catch (DaoException e) {
                         Log.e(getClass().getName(), "Error while trying to save case", e);
                         Toast.makeText(this, "Case could not be saved because of an internal error.", Toast.LENGTH_LONG).show();

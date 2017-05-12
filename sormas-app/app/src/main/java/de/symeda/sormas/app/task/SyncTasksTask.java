@@ -1,12 +1,11 @@
 package de.symeda.sormas.app.task;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.android.gms.analytics.Tracker;
 
@@ -28,6 +27,7 @@ import de.symeda.sormas.app.event.SyncEventsTask;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
+import de.symeda.sormas.app.util.SyncCallback;
 import retrofit2.Call;
 
 /**
@@ -35,6 +35,11 @@ import retrofit2.Call;
  */
 public class SyncTasksTask extends AsyncTask<Void, Void, Void> {
 
+    /**
+     * Should be set to true when the synchronization fails and reset to false as soon
+     * as the last callback is called (i.e. the synchronization has been completed/cancelled).
+     */
+    private static boolean hasThrownError;
     private final Context context;
 
     private SyncTasksTask(Context context) {
@@ -65,6 +70,7 @@ public class SyncTasksTask extends AsyncTask<Void, Void, Void> {
                 }
             }, DatabaseHelper.getTaskDao());
         } catch (DaoException | SQLException | IOException e) {
+            hasThrownError = true;
             Log.e(getClass().getName(), "Error while synchronizing tasks", e);
             SormasApplication application = (SormasApplication) context.getApplicationContext();
             Tracker tracker = application.getDefaultTracker();
@@ -73,52 +79,107 @@ public class SyncTasksTask extends AsyncTask<Void, Void, Void> {
         return null;
     }
 
-    public static void syncTasks(final FragmentManager fragmentManager, Context context, final Context notificationContext) {
+    public static void syncTasksWithoutCallback(final FragmentManager fragmentManager, Context context, final Context notificationContext) {
         if (fragmentManager != null) {
-            syncTasks(context, new Callback() {
+            syncTasks(context, new SyncCallback() {
                 @Override
-                public void call() {
+                public void call(boolean syncFailed) {
                     if (fragmentManager.getFragments() != null) {
-                        for (Fragment fragement : fragmentManager.getFragments()) {
-                            if (fragement instanceof TasksListFragment) {
-                                fragement.onResume();
+                        for (Fragment fragment : fragmentManager.getFragments()) {
+                            if (fragment instanceof TasksListFragment) {
+                                fragment.onResume();
                             }
                         }
                     }
+                    hasThrownError = false;
                 }
             }, notificationContext);
         } else {
-            syncTasks(context, (Callback)null, notificationContext);
+            syncTasks(context, null, notificationContext);
+            hasThrownError = false;
         }
     }
 
-    public static void syncTasks(final FragmentManager fragmentManager, Context context, final Context notificationContext, SwipeRefreshLayout refreshLayout) {
-        syncTasks(fragmentManager, context, notificationContext);
-        refreshLayout.setRefreshing(false);
+    public static void syncTasksWithCallback(final FragmentManager fragmentManager, Context context, final Context notificationContext, final SyncCallback callback) {
+        if (fragmentManager != null) {
+            syncTasks(context, new SyncCallback() {
+                @Override
+                public void call(boolean syncFailed) {
+                    if (fragmentManager.getFragments() != null) {
+                        for (Fragment fragment : fragmentManager.getFragments()) {
+                            if (fragment instanceof TasksListFragment) {
+                                fragment.onResume();
+                            }
+                        }
+                    }
+                    callback.call(syncFailed);
+                    hasThrownError = false;
+                }
+            }, notificationContext);
+        } else {
+            syncTasks(context, callback, notificationContext);
+            hasThrownError = false;
+        }
     }
 
-    public static void syncTasks(final Context context, final Callback callback, final Context notificationContext) {
-        // syncing contacts also syncs cases
-        SyncContactsTask.syncContacts(context, new Callback() {
+    /**
+     * Synchronizes the tasks, displays a progress dialog and an error message when the synchronization fails.
+     * Should only be called when the user has manually triggered the synchronization.
+     *
+     * @param context
+     * @param callback
+     */
+    public static void syncTasksWithProgressDialog(final Context context, final SyncCallback callback, final Context notificationContext) {
+        final ProgressDialog progressDialog = ProgressDialog.show(context, "Case synchronization",
+                "Cases are being synchronized...", true);
+
+        syncTasks(context, new SyncCallback() {
             @Override
-            public void call() {
-                SyncEventsTask.syncEvents(context, new Callback() {
-                    @Override
-                    public void call() {
-                        syncTasksWithoutDependencies(context, callback, notificationContext);
+            public void call(boolean syncFailed) {
+                progressDialog.dismiss();
+                callback.call(syncFailed);
+                hasThrownError = false;
+            }
+        }, notificationContext);
+    }
+
+    public static void syncTasks(final Context context, final SyncCallback callback, final Context notificationContext) {
+        // syncing contacts also syncs cases
+        SyncContactsTask.syncContacts(context, new SyncCallback() {
+            @Override
+            public void call(boolean syncFailed) {
+                if (!syncFailed) {
+                    SyncEventsTask.createSyncEventsTask(context, new SyncCallback() {
+                        @Override
+                        public void call(boolean syncFailed) {
+                            if (!syncFailed) {
+                                createSyncTasksTask(context, callback, notificationContext);
+                            } else {
+                                if (callback != null) {
+                                    callback.call(true);
+                                }
+                                hasThrownError = false;
+                            }
+                        }
+                    });
+                } else {
+                    if (callback != null) {
+                        callback.call(true);
                     }
-                });
+                    hasThrownError = false;
+                }
             }
         });
     }
 
-    public static void syncTasksWithoutDependencies(Context context, final Callback callback, final Context notificationContext) {
+    public static void createSyncTasksTask(Context context, final SyncCallback callback, final Context notificationContext) {
         new SyncTasksTask(context) {
             @Override
             protected void onPostExecute(Void aVoid) {
                 if (callback != null) {
-                    callback.call();
+                    callback.call(hasThrownError);
                 }
+                hasThrownError = false;
                 if (notificationContext != null) {
                     TaskNotificationService.doTaskNotification(notificationContext);
                 }

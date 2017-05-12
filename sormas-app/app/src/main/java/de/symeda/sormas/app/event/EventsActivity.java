@@ -3,15 +3,18 @@ package de.symeda.sormas.app.event;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
-import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.component.AbstractRootTabActivity;
 import de.symeda.sormas.app.component.UserReportDialog;
+import de.symeda.sormas.app.util.ConnectionHelper;
+import de.symeda.sormas.app.util.SyncCallback;
 
 public class EventsActivity extends AbstractRootTabActivity {
 
@@ -32,7 +35,9 @@ public class EventsActivity extends AbstractRootTabActivity {
         createTabViews(adapter);
         pager.setCurrentItem(currentTab);
 
-        SyncEventsTask.syncEvents(getApplicationContext(), getSupportFragmentManager());
+        if (ConnectionHelper.isConnectedToInternet(getApplicationContext())) {
+            SyncEventsTask.syncEventsWithoutCallback(getApplicationContext(), getSupportFragmentManager());
+        }
     }
 
 
@@ -48,7 +53,23 @@ public class EventsActivity extends AbstractRootTabActivity {
 
         switch(item.getItemId()) {
             case R.id.action_reload:
-                SyncEventsTask.syncEvents(getApplicationContext(), getSupportFragmentManager());
+                if (ConnectionHelper.isConnectedToInternet(getApplicationContext())) {
+                    final SwipeRefreshLayout refreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
+                    refreshLayout.setRefreshing(true);
+                    SyncEventsTask.syncEventsWithCallback(getApplicationContext(), getSupportFragmentManager(), new SyncCallback() {
+                        @Override
+                        public void call(boolean syncFailed) {
+                            refreshLayout.setRefreshing(false);
+                            if (!syncFailed) {
+                                Toast.makeText(getApplicationContext(), "Synchronization successful.", Toast.LENGTH_LONG).show();
+                            } else {
+                                Toast.makeText(getApplicationContext(), "Synchronization failed. Please try again later. This error has automatically been reported.", Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
+                } else {
+                    Toast.makeText(getApplicationContext(), "You are not connected to the internet.", Toast.LENGTH_LONG).show();
+                }
                 return true;
 
             // Report problem button

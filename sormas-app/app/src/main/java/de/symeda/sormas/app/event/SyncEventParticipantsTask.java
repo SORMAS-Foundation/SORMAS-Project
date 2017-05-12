@@ -4,9 +4,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.android.gms.analytics.Tracker;
 
@@ -27,6 +25,7 @@ import de.symeda.sormas.app.person.SyncPersonsTask;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
+import de.symeda.sormas.app.util.SyncCallback;
 import retrofit2.Call;
 
 /**
@@ -34,6 +33,11 @@ import retrofit2.Call;
  */
 public class SyncEventParticipantsTask extends AsyncTask<Void, Void, Void> {
 
+    /**
+     * Should be set to true when the synchronization fails and reset to false as soon
+     * as the last callback is called (i.e. the synchronization has been completed/cancelled).
+     */
+    private static boolean hasThrownError;
     private final Context context;
 
     public SyncEventParticipantsTask(final Context context) {
@@ -64,6 +68,7 @@ public class SyncEventParticipantsTask extends AsyncTask<Void, Void, Void> {
                 }
             }, DatabaseHelper.getEventParticipantDao());
         } catch (DaoException | SQLException | IOException e) {
+            hasThrownError = true;
             Log.e(getClass().getName(), "Error while synchronizing alert persons", e);
             SormasApplication application = (SormasApplication) context.getApplicationContext();
             Tracker tracker = application.getDefaultTracker();
@@ -73,47 +78,58 @@ public class SyncEventParticipantsTask extends AsyncTask<Void, Void, Void> {
         return null;
     }
 
-    public static void syncEventParticipants(Context context, final FragmentManager fragmentManager) {
+    public static void syncEventParticipantsWithoutCallback(Context context, final FragmentManager fragmentManager) {
         if (fragmentManager != null) {
-            syncEventParticipants(context, new Callback() {
+            syncEventParticipants(context, new SyncCallback() {
                 @Override
-                public void call() {
+                public void call(boolean syncFailed) {
                     if (fragmentManager.getFragments() != null) {
-                        for (Fragment fragement : fragmentManager.getFragments()) {
-                            if (fragement instanceof EventParticipantsListFragment) {
-                                fragement.onResume();
+                        for (Fragment fragment : fragmentManager.getFragments()) {
+                            if (fragment instanceof EventParticipantsListFragment) {
+                                fragment.onResume();
                             }
                         }
                     }
+                    hasThrownError = false;
                 }
             });
         } else {
-            syncEventParticipants(context, (Callback)null);
+            syncEventParticipants(context, null);
+            hasThrownError = false;
         }
     }
 
-    public static void syncEventParticipants(final FragmentManager fragmentManager, Context context, SwipeRefreshLayout refreshLayout) {
-        syncEventParticipants(context, fragmentManager);
-        refreshLayout.setRefreshing(false);
-    }
-
-    public static void syncEventParticipants(Context context, final Callback callback, final SwipeRefreshLayout refreshLayout) {
-        syncEventParticipants(context, callback);
-        if (refreshLayout != null) {
-            refreshLayout.setRefreshing(false);
+    public static void syncEventParticipantsWithCallback(Context context, final FragmentManager fragmentManager, final SyncCallback callback) {
+        if (fragmentManager != null) {
+            syncEventParticipants(context, new SyncCallback() {
+                @Override
+                public void call(boolean syncFailed) {
+                    if (fragmentManager.getFragments() != null) {
+                        for (Fragment fragment : fragmentManager.getFragments()) {
+                            if (fragment instanceof EventsListFragment) {
+                                fragment.onResume();
+                            }
+                        }
+                    }
+                    callback.call(syncFailed);
+                    hasThrownError = false;
+                }
+            });
+        } else {
+            syncEventParticipants(context, callback);
+            hasThrownError = false;
         }
     }
 
-    public static void syncEventParticipants(final Context context, final Callback callback) {
-        SyncPersonsTask.syncPersons(context, new Callback(){
+    public static void syncEventParticipants(final Context context, final SyncCallback callback) {
+        SyncPersonsTask.syncPersons(context, new SyncCallback(){
             @Override
-            public void call(){
-                new SyncEventParticipantsTask(context){
+            public void call(boolean syncFailed){
+                new SyncEventParticipantsTask(context) {
                     @Override
                     protected void onPostExecute(Void aVoid){
-                        if(callback!=null){
-                            callback.call();
-                        }
+                        callback.call(hasThrownError);
+                        hasThrownError = false;
                     }
                 }.execute();
             }

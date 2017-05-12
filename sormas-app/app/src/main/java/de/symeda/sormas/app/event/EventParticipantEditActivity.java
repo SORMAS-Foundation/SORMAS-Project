@@ -25,7 +25,9 @@ import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.component.UserReportDialog;
 import de.symeda.sormas.app.person.PersonEditForm;
 import de.symeda.sormas.app.util.Callback;
+import de.symeda.sormas.app.util.ConnectionHelper;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
+import de.symeda.sormas.app.util.SyncCallback;
 
 
 public class EventParticipantEditActivity extends AppCompatActivity {
@@ -146,13 +148,19 @@ public class EventParticipantEditActivity extends AppCompatActivity {
 
                     Toast.makeText(this, "Alert person " + DataHelper.getShortUuid(eventParticipant.getUuid()) + " saved", Toast.LENGTH_SHORT).show();
 
-                    SyncEventsTask.syncEventsWithProgressDialog(this, new Callback() {
-                        @Override
-                        public void call() {
-                            // go back to the list
-                            finish();
-                        }
-                    });
+                    if (ConnectionHelper.isConnectedToInternet(getApplicationContext())) {
+                        SyncEventsTask.syncEventsWithProgressDialog(this, new SyncCallback() {
+                            @Override
+                            public void call(boolean syncFailed) {
+                                if (syncFailed) {
+                                    Toast.makeText(getApplicationContext(), "The alert person has been saved, but could not be transferred to the server. An error report has been automatically sent and the synchronization will be repeated later.", Toast.LENGTH_LONG).show();
+                                }
+                                finish();
+                            }
+                        });
+                    } else {
+                        finish();
+                    }
                 } catch (DaoException e) {
                     Log.e(getClass().getName(), "Error while trying to save alert person", e);
                     Toast.makeText(this, "Alert person could not be saved because of an internal error.", Toast.LENGTH_LONG).show();
