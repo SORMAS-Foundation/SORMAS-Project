@@ -17,7 +17,6 @@ import javax.persistence.NonUniqueResultException;
 
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.util.DataUtils;
 
 /**
@@ -32,38 +31,35 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> extends R
     protected abstract Class<ADO> getAdoClass();
 
     /**
-     * Use queryUnmodifiedUuid if you want to retrieve the unmodified version in any case.
+     * Use queryClonedOriginalUuid if you want to retrieve the unmodified version in any case.
      * @param uuid
      * @return The modified version of the entity (if exists) or else the unmodified
      */
     public ADO queryUuid(String uuid) {
-        List<ADO> results = queryForEq(AbstractDomainObject.UUID, uuid);
+
+        try {
+
+            List<ADO> results = queryBuilder().where().eq(AbstractDomainObject.UUID, uuid)
+                    .and().eq(AbstractDomainObject.CLONED_ORIGINAL, false).query();
         if (results.size() == 0) {
             return null;
         } else if (results.size() == 1) {
             return results.get(0);
-        } else if (results.size() == 2) {
-            if (results.get(0).isModified()) {
-                if (results.get(1).isModified()) {
-                    throw new NonUniqueResultException("Found multiple modified results for uuid: " + uuid);
-                }
-                return results.get(0);
-            } else {
-                if (!results.get(1).isModified()) {
-                    throw new NonUniqueResultException("Found multiple unmodified results for uuid: " + uuid);
-                }
-                return results.get(1);
-            }
         } else {
             Log.e(getTableName(), "Found multiple results for UUID: " + uuid);
             throw new NonUniqueResultException("Found multiple results for UUID: " + uuid);
         }
+        } catch (SQLException e) {
+            Log.e(getTableName(), "Could not perform queryUuid");
+            throw new RuntimeException(e);
+        }
     }
 
-    public ADO queryUnmodifiedUuid(String uuid) {
+    public ADO queryClonedOriginalUuid(String uuid) {
 
         try {
-            List<ADO> results = queryBuilder().where().eq(AbstractDomainObject.UUID, uuid).and().eq(AbstractDomainObject.MODIFIED, false).query();
+            List<ADO> results = queryBuilder().where().eq(AbstractDomainObject.UUID, uuid)
+                    .and().eq(AbstractDomainObject.CLONED_ORIGINAL, true).query();
             if (results.size() == 0) {
                 return null;
             } else if (results.size() == 1) {
@@ -72,7 +68,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> extends R
                 throw new NonUniqueResultException("Found multiple results for uuid: " + uuid);
             }
         } catch (SQLException e) {
-            Log.e(getTableName(), "Could not perform queryForEq");
+            Log.e(getTableName(), "Could not perform queryClonedOriginalUuid");
             throw new RuntimeException(e);
         }
     }
@@ -82,6 +78,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> extends R
             QueryBuilder builder = queryBuilder();
             Where where = builder.where();
             where.eq(fieldName, value);
+            where.and().eq(AbstractDomainObject.CLONED_ORIGINAL, false).query();
             return builder.orderBy(orderBy, ascending).query();
         } catch (SQLException | IllegalArgumentException e) {
             Log.e(getTableName(), "Could not perform queryForEq");
@@ -92,6 +89,8 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> extends R
     public List<ADO> queryForAll(String orderBy, boolean ascending) {
         try {
             QueryBuilder builder = queryBuilder();
+            Where where = builder.where();
+            where.and().eq(AbstractDomainObject.CLONED_ORIGINAL, false).query();
             return builder.orderBy(orderBy, ascending).query();
         } catch (SQLException | IllegalArgumentException e) {
             Log.e(getTableName(), "Could not perform queryForAll");
@@ -111,7 +110,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> extends R
     public abstract String getTableName();
 
     public Date getLatestChangeDate() {
-        // TODO rollback comment, when
+
         String query = "SELECT MAX(" + AbstractDomainObject.CHANGE_DATE + ") FROM " + getTableName()
                 ;//+ " WHERE " + AbstractDomainObject.MODIFIED + " = ?";
         GenericRawResults<Object[]> maxChangeDateResult = queryRaw(query, new DataType[]{DataType.DATE_LONG});//, "0");
@@ -143,22 +142,20 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> extends R
                     result = update(ado);
                 } else {
                     // we need to create a clone of the unmodified version, so we can use it for comparison when merging
-                    ADO unmodifiedAdo = queryForId(ado.getId());
-                    unmodifiedAdo.setId(null);
+                    ADO clonedOriginal = queryForId(ado.getId());
+                    clonedOriginal.setId(null);
+                    clonedOriginal.setClonedOriginal(true);
+                    create(clonedOriginal);
 
                     // take note that we are now working with a modified entity
                     ado.setModified(true);
                     result = update(ado);
-
-                    // now save the clone
-                    create(unmodifiedAdo);
                 }
             }
 
             if (result != 1) {
 
                 // #139 check if we couldn't save because the server sent a new version in between
-                // TODO replace with a proper merge mechanism
                 ADO existing = queryForId(ado.getId());
                 if (existing.getLocalChangeDate().after(ado.getLocalChangeDate())) {
                     return false;

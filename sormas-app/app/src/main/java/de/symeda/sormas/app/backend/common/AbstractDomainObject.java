@@ -12,36 +12,27 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 
-/**
- * TODO: Übersetzung und UUID anpassen
- * 
- * Neue Objekte sollen automatisch eine UUID erhalten. Diese soll schon vor dem Speichern über getUuid() zurückgegeben werden
- * können. Die Erzeugung von UUIDs ist relativ zeitaufwändig. Die meisten Objekte werden aus der Datenbank geladen. Daher
- * sollte für diese Objekte keine UUIDs erzeugt werden. Außerdem verträgt sich das nicht mit lazy instance loading: Die UUIDs
- * werden später nicht überschrieben. Lösung: getUuid() erstellt ggf. eine UUID & der ADO-Interceptor ruft vor dem Speichern
- * getUuid() auf. Dann kann das auch gleich mit getDate() gemacht werden.
- * 
- * @author reise
- */
 @MappedSuperclass
-public abstract class AbstractDomainObject extends BaseObservable implements Serializable, Cloneable, DomainObject  {
+public abstract class AbstractDomainObject extends BaseObservable implements Serializable, Cloneable  {
 
 	public static final String ID = "id";
+	public static final String UUID = "uuid";
+	public static final String CLONED_ORIGINAL = "clonedOriginal";
 	public static final String CREATION_DATE = "creationDate";
 	public static final String CHANGE_DATE = "changeDate";
 	public static final String LOCAL_CHANGE_DATE = "localChangeDate";
+	public static final String MODIFIED = "modified";
 
 	@Id
 	@GeneratedValue
 	private Long id;
 
 	/**
-	 * uniqueCombo is used, because we plan to keep a second copy to be able to merge this
-	 * TODO really use this
-	 * for now this is only used to determine which data needs to be send to the server
+	 * This marks the clone of a modified entity
+	 * that was created in order to be able to compare it with the latest version from the server
 	 */
 	@DatabaseField(uniqueCombo=true)
-	private boolean modified;
+	private boolean clonedOriginal = false;
 
 	@DatabaseField(uniqueCombo=true, canBeNull = false, width = 29)
 	private String uuid;
@@ -56,11 +47,16 @@ public abstract class AbstractDomainObject extends BaseObservable implements Ser
 	private Date changeDate;
 
 	/**
-	 * Date when the entity was last updated from the server
-	 * or locally modified.
+	 * Date when the entity was last updated from the server or locally modified.
 	 */
 	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = false, version = true)
 	private Date localChangeDate;
+
+	/**
+	 * marks if this entity was modified and needs to be send to the server
+	 */
+	@DatabaseField
+	private boolean modified = false;
 
 	@Override
 	public AbstractDomainObject clone() {
@@ -79,15 +75,14 @@ public abstract class AbstractDomainObject extends BaseObservable implements Ser
 		this.id = id;
 	}
 
-	public boolean isModified() {
-		return modified;
+	public boolean isClonedOriginal() {
+		return clonedOriginal;
 	}
 
-	public void setModified(boolean modified) {
-		this.modified = modified;
+	public void setClonedOriginal(boolean clonedOriginal) {
+		this.clonedOriginal = clonedOriginal;
 	}
 
-	@Override
 	public String getUuid() {
 		return uuid;
 	}
@@ -102,11 +97,6 @@ public abstract class AbstractDomainObject extends BaseObservable implements Ser
 
 	public void setCreationDate(Date creationDate) {
 		this.creationDate = creationDate;
-	}
-
-	@Override
-	public Date getCreation() {
-		return getCreationDate();
 	}
 
 	public Date getChangeDate() {
@@ -126,11 +116,6 @@ public abstract class AbstractDomainObject extends BaseObservable implements Ser
 	}
 
 	@Override
-	public Date getVersion() {
-		return getLocalChangeDate();
-	}
-
-	@Override
 	public boolean equals(Object o) {
 		if (this == o) {
 			return true;
@@ -139,9 +124,9 @@ public abstract class AbstractDomainObject extends BaseObservable implements Ser
 			return false;
 		}
 
-		if (o instanceof DomainObject) {
+		if (o instanceof AbstractDomainObject) {
 			// this works, because we are using UUIDs
-			DomainObject ado = (DomainObject) o;
+			AbstractDomainObject ado = (AbstractDomainObject) o;
 			return getUuid().equals(ado.getUuid());
 
 		} else {
@@ -152,5 +137,13 @@ public abstract class AbstractDomainObject extends BaseObservable implements Ser
 	@Override
 	public int hashCode() {
 		return getUuid().hashCode();
+	}
+
+	public boolean isModified() {
+		return modified;
+	}
+
+	public void setModified(boolean modified) {
+		this.modified = modified;
 	}
 }

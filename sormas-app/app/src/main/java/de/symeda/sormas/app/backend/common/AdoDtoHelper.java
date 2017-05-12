@@ -60,15 +60,20 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
                     public Void call() throws Exception {
                         boolean empty = dao.countOf() == 0;
                         for (DTO dto : result) {
+
                             ADO ado = empty ? null : dao.queryUuid(dto.getUuid());
 
                             if (ado != null && ado.isModified()) {
                                 // merge existing changes into incoming data
-                                ADO unmodifiedAdo = dao.queryUnmodifiedUuid(dto.getUuid());
+                                ADO original = dao.queryClonedOriginalUuid(dto.getUuid());
                                 ADO source = fillOrCreateFromDto(null, dto);
-                                mergeData(ado, unmodifiedAdo, source);
+                                mergeData(ado, original, source);
                                 dao.save(ado);
-                                dao.saveUnmodified(unmodifiedAdo);
+                                dao.saveUnmodified(original);
+
+                                // in theory ado and cloned original could now be equal
+                                // and we no longer need to keep the copy. Ignore this
+
                             } else {
                                 ado = fillOrCreateFromDto(ado, dto);
                                 dao.saveUnmodified(ado);
@@ -114,15 +119,15 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
                     public Void call() throws Exception {
                         for (ADO ado : modifiedAdos) {
                             // data has been pushed, we no longer need the old unmodified version
-                            ADO unmodifiedAdo = dao.queryUnmodifiedUuid(ado.getUuid());
+                            ADO unmodifiedAdo = dao.queryClonedOriginalUuid(ado.getUuid());
                             dao.delete(unmodifiedAdo);
 
-                            // this is now our unmodified version
+                            // all data is send -> be are now unmodified
                             ado.setModified(false);
                             if (resultChangeDate >= 0) {
                                 ado.setChangeDate(new Date(resultChangeDate));
                             }
-                            dao.update(ado); // override the unmodified version with the latest state from the modified
+                            dao.update(ado);
                         }
                         return null;
                     }
@@ -186,12 +191,12 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
     }
 
     /**
-     * Merges all changes made in source (compared to base) into target and base.
+     * Merges all changes made in source (compared to original) into target and original.
      * @param target
-     * @param base Note: this is also updated!
+     * @param original Note: this is also updated!
      * @param source
      */
-    public void mergeData(ADO target, ADO base, ADO source) {
+    public void mergeData(ADO target, ADO original, ADO source) {
 
         BeanInfo beanInfo;
         try {
@@ -201,6 +206,9 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
             return;
         }
 
+        target.setChangeDate(source.getChangeDate());
+        original.setChangeDate(source.getChangeDate());
+
         for (PropertyDescriptor property : beanInfo.getPropertyDescriptors()) {
             try {
                 if (AbstractDomainObject.CREATION_DATE.equals(property.getName())
@@ -208,11 +216,12 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
                         || AbstractDomainObject.LOCAL_CHANGE_DATE.equals(property.getName())
                         || AbstractDomainObject.UUID.equals(property.getName())
                         || AbstractDomainObject.ID.equals(property.getName())
+                        || AbstractDomainObject.CLONED_ORIGINAL.equals(property.getName())
                         || AbstractDomainObject.MODIFIED.equals(property.getName())
                         || property.getWriteMethod() == null)
                     continue;
 
-                Object baseFieldValue = property.getReadMethod().invoke(base);
+                Object baseFieldValue = property.getReadMethod().invoke(original);
                 Object sourceFieldValue = property.getReadMethod().invoke(source);
                 Object targetFieldValue = property.getReadMethod().invoke(target);
 
@@ -261,7 +270,7 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
                     }
 
                     property.getWriteMethod().invoke(target, sourceFieldValue);
-                    property.getWriteMethod().invoke(base, sourceFieldValue);
+                    property.getWriteMethod().invoke(original, sourceFieldValue);
                 }
 
             } catch (IllegalAccessException e) {

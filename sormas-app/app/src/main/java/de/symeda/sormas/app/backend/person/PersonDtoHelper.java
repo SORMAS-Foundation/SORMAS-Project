@@ -74,16 +74,15 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
 
         target.setPresentCondition(source.getPresentCondition());
         target.setDeathDate(source.getDeathDate());
-        if (source.getDeathLocation() != null) {
-            Location location = DatabaseHelper.getLocationDao().queryForId(source.getDeathLocation().getId());
-            target.setDeathLocation(locationHelper.adoToDto(location));
-        }
+        Location deathLocation = DatabaseHelper.getLocationDao().queryForId(source.getDeathLocation().getId());
+        target.setDeathLocation(locationHelper.adoToDto(deathLocation));
         target.setBurialDate(source.getBurialDate());
         target.setBurialConductor(source.getBurialConductor());
-        if (source.getBurialLocation() != null) {
-            Location location = DatabaseHelper.getLocationDao().queryForId(source.getBurialLocation().getId());
-            target.setBurialLocation(locationHelper.adoToDto(location));
-        }
+        Location burialLocation = DatabaseHelper.getLocationDao().queryForId(source.getBurialLocation().getId());
+        target.setBurialLocation(locationHelper.adoToDto(burialLocation));
+
+        Location address = DatabaseHelper.getLocationDao().queryForId(source.getAddress().getId());
+        target.setAddress(locationHelper.adoToDto(address));
 
         target.setOccupationType(source.getOccupationType());
         target.setOccupationDetails(source.getOccupationDetails());
