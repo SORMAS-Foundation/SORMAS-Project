@@ -46,14 +46,6 @@
 					</modules>
 				</configuration>
 			</plugin>
-
-			<!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-dependency-plugin</artifactId> <executions> 
-				<execution> <id>copy</id> <phase>package</phase> <goals> <goal>copy</goal> </goals> <configuration> <artifactItems> <artifactItem> 
-				<groupId>org.hibernate</groupId> <artifactId>hibernate-core</artifactId> <type>jar</type> </artifactItem> <artifactItem> 
-				<groupId>org.hibernate</groupId> <artifactId>hibernate-core</artifactId> <type>jar</type> </artifactItem> <artifactItem> 
-				<groupId>org.postgresql</groupId> <artifactId>postgresql</artifactId> <type>jar</type> </artifactItem> </artifactItems> <overWrite>true</overWrite> 
-				<outputDirectory>${domain.path}/lib</outputDirectory> </configuration> </execution> </executions> </plugin> -->
-
 		</plugins>
 		<finalName>${project.artifactId}</finalName>
 	</build>

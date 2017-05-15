@@ -16,15 +16,5 @@
 		<sonar.projectName>${project.name}</sonar.projectName>
 	</properties>
 
-	<dependencies>
-
-		<dependency>
-			<!-- für die eine Hibernate Version -->
-			<groupId>org.jboss.logging</groupId>
-			<artifactId>jboss-logging</artifactId>
-		</dependency>
-
-	</dependencies>
-
 </project>
 

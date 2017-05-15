@@ -15,7 +15,6 @@
 	<properties>
 		<slf4j.version>1.7.21</slf4j.version>
 		<logback.version>1.1.7</logback.version>
-		<jboss-logging.version>3.3.0.Final</jboss-logging.version>
 		<vaadin.version.warning>TODO: Remove bootstrap.js in widgetset</vaadin.version.warning>
 		<vaadin.version>7.7.6</vaadin.version> 
 		<vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
@@ -147,13 +146,6 @@
 			</dependency>
 			
 			<!-- glassfish modules -->
-			<dependency>
-				<groupId>org.jboss.logging</groupId>
-				<artifactId>jboss-logging</artifactId>
-				<version>${jboss-logging.version}</version>
-				<scope>provided</scope>
-				<!-- Wird von GlassFish bereitgestellt (allerdings per Default in älterer Version 3.1.x). -->
-			</dependency>
 						
 			<!-- Vaadin Addons -->			
 			<dependency>
