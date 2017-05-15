@@ -236,7 +236,7 @@ public class ContactEditActivity extends AbstractEditActivity {
                                     onResume();
                                     pager.setCurrentItem(currentTab);
                                     if (syncFailed) {
-                                        Toast.makeText(getApplicationContext(), "The contact has been saved, but could not be transferred to the server. An error report has been automatically sent and the synchronization will be repeated later.", Toast.LENGTH_LONG).show();
+                                        Toast.makeText(getApplicationContext(), String.format(getResources().getString(R.string.snackbar_sync_error_saved), getResources().getString(R.string.entity_contact)), Toast.LENGTH_LONG).show();
                                     }
                                 }
                             });

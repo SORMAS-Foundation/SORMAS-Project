@@ -38,7 +38,7 @@ public class SyncInfrastructureTask extends AsyncTask<Void, Void, Void> {
      * Should be set to true when the synchronization fails and reset to false as soon
      * as the last callback is called (i.e. the synchronization has been completed/cancelled).
      */
-    private static boolean hasThrownError;
+    protected boolean hasThrownError;
     private final Context notificationContext;
 
     private SyncInfrastructureTask(final Context notificationContext) {
@@ -97,18 +97,6 @@ public class SyncInfrastructureTask extends AsyncTask<Void, Void, Void> {
         return null;
     }
 
-    public static void syncInfrastructure(final Context notificationContext, final SyncCallback callback) {
-        new SyncInfrastructureTask(notificationContext) {
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                if (callback != null) {
-                    callback.call(hasThrownError);
-                }
-                hasThrownError = false;
-            }
-        }.execute();
-    }
-
     public static void syncAll(final SyncCallback callback, final Context notificationContext) {
         syncInfrastructure(notificationContext, new SyncCallback() {
             @Override
@@ -122,4 +110,17 @@ public class SyncInfrastructureTask extends AsyncTask<Void, Void, Void> {
 
         // TODO sync samples
     }
+
+    public static void syncInfrastructure(final Context notificationContext, final SyncCallback callback) {
+        new SyncInfrastructureTask(notificationContext) {
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                if (callback != null) {
+                    callback.call(this.hasThrownError);
+                }
+                this.hasThrownError = false;
+            }
+        }.execute();
+    }
+
 }

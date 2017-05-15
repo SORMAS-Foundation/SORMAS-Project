@@ -36,7 +36,7 @@ public class SyncVisitsTask extends AsyncTask<Void, Void, Void> {
      * Should be set to true when the synchronization fails and reset to false as soon
      * as the last callback is called (i.e. the synchronization has been completed/cancelled).
      */
-    private static boolean hasThrownError;
+    protected boolean hasThrownError;
     private final Context context;
 
     public SyncVisitsTask(Context context) {
@@ -89,12 +89,10 @@ public class SyncVisitsTask extends AsyncTask<Void, Void, Void> {
                         }
                     }
                     callback.call(syncFailed);
-                    hasThrownError = false;
                 }
             });
         } else {
             createSyncVisitsTask(context, callback);
-            hasThrownError = false;
         }
     }
 
@@ -107,7 +105,6 @@ public class SyncVisitsTask extends AsyncTask<Void, Void, Void> {
             public void call(boolean syncFailed) {
                 progressDialog.dismiss();
                 callback.call(syncFailed);
-                hasThrownError = false;
             }
         });
     }
@@ -116,8 +113,8 @@ public class SyncVisitsTask extends AsyncTask<Void, Void, Void> {
         new SyncVisitsTask(context) {
             @Override
             protected void onPostExecute(Void aVoid) {
-                callback.call(hasThrownError);
-                hasThrownError = false;
+                callback.call(this.hasThrownError);
+                this.hasThrownError = false;
             }
         }.execute();
     }

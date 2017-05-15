@@ -153,7 +153,7 @@ public class EventParticipantEditActivity extends AppCompatActivity {
                             @Override
                             public void call(boolean syncFailed) {
                                 if (syncFailed) {
-                                    Toast.makeText(getApplicationContext(), "The alert person has been saved, but could not be transferred to the server. An error report has been automatically sent and the synchronization will be repeated later.", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(getApplicationContext(), String.format(getResources().getString(R.string.snackbar_sync_error_saved), getResources().getString(R.string.entity_alert_person)), Toast.LENGTH_LONG).show();
                                 }
                                 finish();
                             }

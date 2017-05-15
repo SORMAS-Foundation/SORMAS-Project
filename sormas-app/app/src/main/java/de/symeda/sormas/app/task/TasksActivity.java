@@ -58,9 +58,9 @@ public class TasksActivity extends AbstractRootTabActivity {
                         public void call(boolean syncFailed) {
                             refreshLayout.setRefreshing(false);
                             if (!syncFailed) {
-                                Toast.makeText(getApplicationContext(), "Synchronization successful.", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getApplicationContext(), R.string.snackbar_sync_success, Toast.LENGTH_LONG).show();
                             } else {
-                                Toast.makeText(getApplicationContext(), "Synchronization failed. Please try again later. This error has automatically been reported.", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getApplicationContext(), R.string.snackbar_sync_error, Toast.LENGTH_LONG).show();
                             }
                         }
                     });

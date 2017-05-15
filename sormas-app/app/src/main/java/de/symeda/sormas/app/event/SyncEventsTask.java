@@ -38,7 +38,7 @@ public class SyncEventsTask extends AsyncTask<Void, Void, Void> {
      * Should be set to true when the synchronization fails and reset to false as soon
      * as the last callback is called (i.e. the synchronization has been completed/cancelled).
      */
-    private static boolean hasThrownError;
+    protected boolean hasThrownError;
     private final Context context;
 
     public SyncEventsTask(Context context) {
@@ -89,12 +89,10 @@ public class SyncEventsTask extends AsyncTask<Void, Void, Void> {
                             }
                         }
                     }
-                    hasThrownError = false;
                 }
             });
         } else {
             createSyncEventsTask(context, null);
-            hasThrownError = false;
         }
     }
 
@@ -111,12 +109,10 @@ public class SyncEventsTask extends AsyncTask<Void, Void, Void> {
                         }
                     }
                     callback.call(syncFailed);
-                    hasThrownError = false;
                 }
             });
         } else {
             createSyncEventsTask(context, callback);
-            hasThrownError = false;
         }
     }
 
@@ -136,7 +132,6 @@ public class SyncEventsTask extends AsyncTask<Void, Void, Void> {
             public void call(boolean syncFailed) {
                 progressDialog.dismiss();
                 callback.call(syncFailed);
-                hasThrownError = false;
             }
         });
     }
@@ -145,13 +140,12 @@ public class SyncEventsTask extends AsyncTask<Void, Void, Void> {
         return new SyncEventsTask(context) {
             @Override
             protected void onPostExecute(Void aVoid) {
-                if (hasThrownError) {
+                if (this.hasThrownError) {
                     callback.call(true);
-                    hasThrownError = false;
                 } else {
                     SyncEventParticipantsTask.syncEventParticipants(context, callback);
-                    hasThrownError = false;
                 }
+                this.hasThrownError = false;
             }
         }.execute();
     }

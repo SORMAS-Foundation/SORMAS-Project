@@ -37,7 +37,7 @@ public class SyncEventParticipantsTask extends AsyncTask<Void, Void, Void> {
      * Should be set to true when the synchronization fails and reset to false as soon
      * as the last callback is called (i.e. the synchronization has been completed/cancelled).
      */
-    private static boolean hasThrownError;
+    protected boolean hasThrownError;
     private final Context context;
 
     public SyncEventParticipantsTask(final Context context) {
@@ -90,12 +90,10 @@ public class SyncEventParticipantsTask extends AsyncTask<Void, Void, Void> {
                             }
                         }
                     }
-                    hasThrownError = false;
                 }
             });
         } else {
             syncEventParticipants(context, null);
-            hasThrownError = false;
         }
     }
 
@@ -112,12 +110,10 @@ public class SyncEventParticipantsTask extends AsyncTask<Void, Void, Void> {
                         }
                     }
                     callback.call(syncFailed);
-                    hasThrownError = false;
                 }
             });
         } else {
             syncEventParticipants(context, callback);
-            hasThrownError = false;
         }
     }
 
@@ -128,8 +124,8 @@ public class SyncEventParticipantsTask extends AsyncTask<Void, Void, Void> {
                 new SyncEventParticipantsTask(context) {
                     @Override
                     protected void onPostExecute(Void aVoid){
-                        callback.call(hasThrownError);
-                        hasThrownError = false;
+                        callback.call(this.hasThrownError);
+                        this.hasThrownError = false;
                     }
                 }.execute();
             }

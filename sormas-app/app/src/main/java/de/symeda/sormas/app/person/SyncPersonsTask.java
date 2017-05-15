@@ -36,7 +36,7 @@ public class SyncPersonsTask extends AsyncTask<Void, Void, Void> {
      * Should be set to true when the synchronization fails and reset to false as soon
      * as the last callback is called (i.e. the synchronization has been completed/cancelled).
      */
-    private static boolean hasThrownError;
+    protected boolean hasThrownError;
     private final Context context;
 
     public SyncPersonsTask(Context context) {
@@ -78,8 +78,8 @@ public class SyncPersonsTask extends AsyncTask<Void, Void, Void> {
         new SyncPersonsTask(context) {
             @Override
             protected void onPostExecute(Void aVoid) {
-                callback.call(hasThrownError);
-                hasThrownError = false;
+                callback.call(this.hasThrownError);
+                this.hasThrownError = false;
             }
         }.execute();
     }

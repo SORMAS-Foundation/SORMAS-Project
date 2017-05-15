@@ -305,7 +305,7 @@ public class CaseEditActivity extends AbstractEditActivity {
                                 public void call(boolean syncFailed) {
                                     onResume();
                                     if (syncFailed) {
-                                        Toast.makeText(getApplicationContext(), "The case has been saved, but could not be transferred to the server. An error report has been automatically sent and the synchronization will be repeated later.", Toast.LENGTH_LONG).show();
+                                        Toast.makeText(getApplicationContext(), String.format(getResources().getString(R.string.snackbar_sync_error_saved), getResources().getString(R.string.entity_case)), Toast.LENGTH_LONG).show();
                                     }
 
                                     try {
@@ -322,7 +322,6 @@ public class CaseEditActivity extends AbstractEditActivity {
                                 pager.setCurrentItem(currentTab);
                             }
                         }
-
                     } catch (DaoException e) {
                         Log.e(getClass().getName(), "Error while trying to save case", e);
                         Toast.makeText(this, "Case could not be saved because of an internal error.", Toast.LENGTH_LONG).show();

@@ -218,4 +218,17 @@
     <string name="empty_list_hint">Add a new entry by pressing the "+" symbol in the top right.</string>
     <string name="hint_user_report">Please briefly describe the problem you have experienced. Don\'t enter any personal or otherwise sensitive data!</string>
 
+    <string name="snackbar_sync_success">Synchronization successful.</string>
+    <string name="snackbar_sync_error">Synchronization failed. Please try again later.</string>
+    <string name="snackbar_sync_error_saved">%1$s has been saved, but could not be synchronized.</string>
+    <string name="snackbar_no_connection">You are not connected to the internet.</string>
+
+    <string name="entity_case">Case</string>
+    <string name="entity_contact">Contact</string>
+    <string name="entity_alert">Alert</string>
+    <string name="entity_alert_person">Alert person</string>
+    <string name="entity_sample">Sample</string>
+    <string name="entity_visit">Visit</string>
+    <string name="entity_task">Task</string>
+
 </resources>

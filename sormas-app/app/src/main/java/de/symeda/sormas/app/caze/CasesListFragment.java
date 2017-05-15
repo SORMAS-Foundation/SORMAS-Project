@@ -69,9 +69,9 @@ public class CasesListFragment extends ListFragment {
                         public void call(boolean syncFailed) {
                             refreshLayout.setRefreshing(false);
                             if (!syncFailed) {
-                                Toast.makeText(getContext(), "Synchronization successful.", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getContext(), R.string.snackbar_sync_success, Toast.LENGTH_LONG).show();
                             } else {
-                                Toast.makeText(getContext(), "Synchronization failed. Please try again later. This error has automatically been reported.", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getContext(), R.string.snackbar_sync_error, Toast.LENGTH_LONG).show();
                             }
                         }
                     });

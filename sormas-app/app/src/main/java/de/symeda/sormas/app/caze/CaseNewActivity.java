@@ -225,7 +225,7 @@ public class CaseNewActivity extends AppCompatActivity {
                 @Override
                 public void call(boolean syncFailed) {
                     if (syncFailed) {
-                        Toast.makeText(getApplicationContext(), "The case has been created, but could not yet be transferred to the server. An error report has been automatically sent and the synchronization will be repeated later.", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), String.format(getResources().getString(R.string.snackbar_sync_error_saved), getResources().getString(R.string.entity_case)), Toast.LENGTH_LONG).show();
                     }
                     showCaseEditView(caze);
                 }

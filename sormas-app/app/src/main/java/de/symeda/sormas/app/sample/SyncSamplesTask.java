@@ -39,7 +39,7 @@ public class SyncSamplesTask extends AsyncTask<Void, Void, Void> {
      * Should be set to true when the synchronization fails and reset to false as soon
      * as the last callback is called (i.e. the synchronization has been completed/cancelled).
      */
-    private static boolean hasThrownError;
+    protected boolean hasThrownError;
     private final Context context;
 
     public SyncSamplesTask(Context context) {
@@ -103,12 +103,10 @@ public class SyncSamplesTask extends AsyncTask<Void, Void, Void> {
                             }
                         }
                     }
-                    hasThrownError = false;
                 }
             });
         } else {
             createSyncSamplesTask(context, null);
-            hasThrownError = false;
         }
     }
 
@@ -125,12 +123,10 @@ public class SyncSamplesTask extends AsyncTask<Void, Void, Void> {
                         }
                     }
                     callback.call(syncFailed);
-                    hasThrownError = false;
                 }
             });
         } else {
             createSyncSamplesTask(context, callback);
-            hasThrownError = false;
         }
     }
 
@@ -150,7 +146,6 @@ public class SyncSamplesTask extends AsyncTask<Void, Void, Void> {
             public void call(boolean syncFailed) {
                 progressDialog.dismiss();
                 callback.call(syncFailed);
-                hasThrownError = false;
             }
         });
     }
@@ -159,8 +154,8 @@ public class SyncSamplesTask extends AsyncTask<Void, Void, Void> {
         new SyncSamplesTask(context) {
             @Override
             protected void onPostExecute(Void aVoid) {
-                callback.call(hasThrownError);
-                hasThrownError = false;
+                callback.call(this.hasThrownError);
+                this.hasThrownError = false;
             }
         }.execute();
     }
