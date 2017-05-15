@@ -36,7 +36,7 @@ public class UserReportDialog extends AlertDialog.Builder {
                 tracker.send(new HitBuilders.EventBuilder()
                         .setCategory("User Report")
                         .setAction("Error Report")
-                        .setLabel("Location: " + viewName + (uuid!=null?" - UUID: " + uuid:"") + " - User: " + ConfigProvider.getUser().getUuid() + " - Description: " + description)
+                        .setLabel("Location: " + viewName + (uuid!=null?" - UUID: " + uuid:"") + (ConfigProvider.getUser()!=null?" - User: " + ConfigProvider.getUser().getUuid():"") + " - Description: " + description)
                         .build());
                 Snackbar.make(activity.findViewById(R.id.base_layout), "Problem report successfully sent.", Snackbar.LENGTH_LONG).show();
 

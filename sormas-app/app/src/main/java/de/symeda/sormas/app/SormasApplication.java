@@ -53,6 +53,7 @@ public class SormasApplication extends Application {
         GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
         tracker = analytics.newTracker(PROPERTY_ID);
         tracker.enableExceptionReporting(true);
+        // TODO find a way to automatically disable exception reporting when the app is started in Android Studio
 
         // Enable the forwarding of uncaught exceptions to Google Analytics
         Thread.UncaughtExceptionHandler handler = new ExceptionReporter(

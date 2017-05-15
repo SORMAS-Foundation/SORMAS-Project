@@ -60,7 +60,8 @@ public class CaseService extends AbstractAdoService<Case> {
 			dateFilter = cb.or(dateFilter, cb.greaterThan(hospitalization.get(AbstractDomainObject.CHANGE_DATE), date));
 			Join<Case, EpiData> epiData = from.join(Case.EPI_DATA);
 			dateFilter = cb.or(dateFilter, cb.greaterThan(epiData.get(AbstractDomainObject.CHANGE_DATE), date));
-
+			// TODO add check to addresses
+			
 			if (filter != null) {
 				filter = cb.and(filter, dateFilter);
 			} else {
@@ -93,6 +94,7 @@ public class CaseService extends AbstractAdoService<Case> {
 			dateFilter = cb.or(dateFilter, cb.greaterThan(hospitalization.get(AbstractDomainObject.CHANGE_DATE), date));
 			Join<Case, EpiData> epiData = from.join(Case.EPI_DATA);
 			dateFilter = cb.or(dateFilter, cb.greaterThan(epiData.get(AbstractDomainObject.CHANGE_DATE), date));
+			
 
 			if (filter != null) {
 				filter = cb.and(filter, dateFilter);

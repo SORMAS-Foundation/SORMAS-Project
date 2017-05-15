@@ -112,15 +112,16 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 
             final Long resultChangeDate = call.execute().body();
             if (resultChangeDate == null) {
-                // TODO throw exception
-                Log.e(dao.getTableName(), "PostAll did not work");
+                throw new IOException("PostAll did not work");
             } else {
                 dao.callBatchTasks(new Callable<Void>() {
                     public Void call() throws Exception {
                         for (ADO ado : modifiedAdos) {
                             // data has been pushed, we no longer need the old unmodified version
-                            ADO unmodifiedAdo = dao.queryClonedOriginalUuid(ado.getUuid());
-                            dao.delete(unmodifiedAdo);
+                            ADO clonedOriginal = dao.queryClonedOriginalUuid(ado.getUuid());
+                            if (clonedOriginal == null) {
+                                dao.delete(clonedOriginal);
+                            }
 
                             // all data is send -> be are now unmodified
                             ado.setModified(false);
@@ -206,6 +207,7 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
             return;
         }
 
+        // use change date from server
         target.setChangeDate(source.getChangeDate());
         original.setChangeDate(source.getChangeDate());
 
@@ -218,7 +220,8 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
                         || AbstractDomainObject.ID.equals(property.getName())
                         || AbstractDomainObject.CLONED_ORIGINAL.equals(property.getName())
                         || AbstractDomainObject.MODIFIED.equals(property.getName())
-                        || property.getWriteMethod() == null)
+                        || property.getWriteMethod() == null
+                        || property.getReadMethod() == null)
                     continue;
 
                 Object baseFieldValue = property.getReadMethod().invoke(original);
@@ -251,16 +254,20 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
                     }
                 }
                 else {
+                    copyData = false;
                     // Other objects are not supported
-                    throw new UnsupportedOperationException(property.getPropertyType().getName() + " is not supported as a property type.");
+                    // TODO lists
+                    //throw new UnsupportedOperationException(property.getPropertyType().getName() + " is not supported as a property type.");
                 }
 
                 if (copyData) {
 
+                    // did the server send changes?
                     if (DataHelper.equal(baseFieldValue, sourceFieldValue)) {
                         continue;
                     }
 
+                    // do we have local changes?
                     if (!DataHelper.equal(baseFieldValue, targetFieldValue)) {
                         // we have a conflict
                         Log.e(beanInfo.getBeanDescriptor().getName(), "Overriding " + property.getName() +
