@@ -126,7 +126,7 @@ public class EventParticipantNewActivity extends AppCompatActivity {
                                         } catch (DaoException e) {
                                             Log.e(getClass().getName(), "Error while trying to create alert person", e);
                                             Toast.makeText(getApplicationContext(), "Alert person could not be created because of an internal error.", Toast.LENGTH_SHORT).show();
-                                            ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, null, true);
+                                            ErrorReportingHelper.sendCaughtException(tracker, e, null, true);
                                         }
                                     }
                                 }
@@ -141,7 +141,7 @@ public class EventParticipantNewActivity extends AppCompatActivity {
                     } catch (DaoException e) {
                         Log.e(getClass().getName(), "Error while trying to create alert person", e);
                         Toast.makeText(getApplicationContext(), "Alert person could not be created because of an internal error.", Toast.LENGTH_SHORT).show();
-                        ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, null, true);
+                        ErrorReportingHelper.sendCaughtException(tracker, e, null, true);
                     }
                 }
                 else {

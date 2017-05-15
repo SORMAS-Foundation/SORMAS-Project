@@ -205,7 +205,7 @@ public class VisitEditActivity extends AbstractEditActivity {
                 } catch (DaoException e) {
                     Log.e(getClass().getName(), "Error while trying to save visit", e);
                     Toast.makeText(this, "Visit could not be saved because of an internal error.", Toast.LENGTH_LONG).show();
-                    ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, visit, true);
+                    ErrorReportingHelper.sendCaughtException(tracker, e, visit, true);
                 }
 
         }

@@ -89,7 +89,7 @@ public class SyncInfrastructureTask extends AsyncTask<Void, Void, Void> {
                 if (ConnectionHelper.isConnectedToInternet(notificationContext)) {
                     SormasApplication application = (SormasApplication) notificationContext.getApplicationContext();
                     Tracker tracker = application.getDefaultTracker();
-                    ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, null, true);
+                    ErrorReportingHelper.sendCaughtException(tracker, e, null, true);
                 }
             }
         }

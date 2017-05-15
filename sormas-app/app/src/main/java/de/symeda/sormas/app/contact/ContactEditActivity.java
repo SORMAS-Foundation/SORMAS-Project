@@ -244,7 +244,7 @@ public class ContactEditActivity extends AbstractEditActivity {
                     } catch (DaoException e) {
                         Log.e(getClass().getName(), "Error while trying to save contact", e);
                         Toast.makeText(this, "Contact could not be saved because of an internal error.", Toast.LENGTH_LONG).show();
-                        ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, contact, true);
+                        ErrorReportingHelper.sendCaughtException(tracker, e, contact, true);
                     }
                 }
                 return true;

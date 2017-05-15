@@ -19,6 +19,7 @@ import de.symeda.sormas.app.task.TaskNotificationService;
 import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.SyncCallback;
 import de.symeda.sormas.app.util.SyncInfrastructureTask;
+import de.symeda.sormas.app.util.UncaughtExceptionParser;
 
 /**
  * Created by Martin Wahnschaffe on 22.07.2016.
@@ -59,6 +60,7 @@ public class SormasApplication extends Application {
                 Thread.getDefaultUncaughtExceptionHandler(),
                 getApplicationContext()
         );
+        ((ExceptionReporter) handler).setExceptionParser(new UncaughtExceptionParser());
         Thread.setDefaultUncaughtExceptionHandler(handler);
 
         super.onCreate();

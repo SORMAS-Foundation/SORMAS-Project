@@ -95,7 +95,7 @@ public class TaskForm extends FormTab {
                         } catch (DaoException e) {
                             Log.e(getClass().getName(), "Error while trying to update task status", e);
                             Toast.makeText(getContext(), "Task status could not be edited because of an internal error.", Toast.LENGTH_LONG).show();
-                            ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, task, true);
+                            ErrorReportingHelper.sendCaughtException(tracker, e, task, true);
                         }
                         reloadFragment();
                     } else {
@@ -119,7 +119,7 @@ public class TaskForm extends FormTab {
                     } catch (DaoException e) {
                         Log.e(getClass().getName(), "Error while trying to update task status", e);
                         Toast.makeText(getContext(), "Task status could not be edited because of an internal error.", Toast.LENGTH_LONG).show();
-                        ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, task, true);
+                        ErrorReportingHelper.sendCaughtException(tracker, e, task, true);
                     }
                     reloadFragment();
                 }

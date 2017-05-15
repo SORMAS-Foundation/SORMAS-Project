@@ -153,7 +153,7 @@ public class ContactNewActivity extends AppCompatActivity {
                                         } catch (DaoException e) {
                                             Log.e(getClass().getName(), "Error while trying to create contact", e);
                                             Toast.makeText(getApplicationContext(), "Contact could not be created because of an internal error.", Toast.LENGTH_LONG).show();
-                                            ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, null, true);
+                                            ErrorReportingHelper.sendCaughtException(tracker, e, null, true);
                                         }
                                     }
                                 }
@@ -167,7 +167,7 @@ public class ContactNewActivity extends AppCompatActivity {
                     } catch (DaoException e) {
                         Log.e(getClass().getName(), "Error while trying to create contact", e);
                         Toast.makeText(this, "Contact could not be created because of an internal error.", Toast.LENGTH_LONG).show();
-                        ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, null, true);
+                        ErrorReportingHelper.sendCaughtException(tracker, e, null, true);
                     }
                 }
 

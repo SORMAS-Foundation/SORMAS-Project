@@ -326,7 +326,7 @@ public class CaseEditActivity extends AbstractEditActivity {
                     } catch (DaoException e) {
                         Log.e(getClass().getName(), "Error while trying to save case", e);
                         Toast.makeText(this, "Case could not be saved because of an internal error.", Toast.LENGTH_LONG).show();
-                        ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, caze, true);
+                        ErrorReportingHelper.sendCaughtException(tracker, e, caze, true);
                     }
                 }
 

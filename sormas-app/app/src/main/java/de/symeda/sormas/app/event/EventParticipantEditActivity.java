@@ -164,7 +164,7 @@ public class EventParticipantEditActivity extends AppCompatActivity {
                 } catch (DaoException e) {
                     Log.e(getClass().getName(), "Error while trying to save alert person", e);
                     Toast.makeText(this, "Alert person could not be saved because of an internal error.", Toast.LENGTH_LONG).show();
-                    ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, eventParticipant, true);
+                    ErrorReportingHelper.sendCaughtException(tracker, e, eventParticipant, true);
                 }
 
                 return true;

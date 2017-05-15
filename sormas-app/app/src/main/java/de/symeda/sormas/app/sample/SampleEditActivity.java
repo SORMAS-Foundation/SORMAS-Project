@@ -202,7 +202,7 @@ public class SampleEditActivity extends AppCompatActivity {
                     } catch (DaoException e) {
                         Log.e(getClass().getName(), "Error while trying to save sample", e);
                         Toast.makeText(this, "Sample could not be saved because of an internal error.", Toast.LENGTH_LONG).show();
-                        ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, sample, true);
+                        ErrorReportingHelper.sendCaughtException(tracker, e, sample, true);
                     }
                 } else {
                     if (sampleDateTimeReq) {

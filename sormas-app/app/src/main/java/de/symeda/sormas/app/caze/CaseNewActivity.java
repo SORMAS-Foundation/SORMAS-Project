@@ -159,7 +159,7 @@ public class CaseNewActivity extends AppCompatActivity {
                                             } catch (DaoException e) {
                                                 Log.e(getClass().getName(), "Error while trying to create case", e);
                                                 Toast.makeText(getApplicationContext(), "Case could not be created because of an internal error.", Toast.LENGTH_SHORT).show();
-                                                ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, null, true);
+                                                ErrorReportingHelper.sendCaughtException(tracker, e, null, true);
                                             }
                                         }
                                     }
@@ -177,7 +177,7 @@ public class CaseNewActivity extends AppCompatActivity {
                     } catch (DaoException e) {
                         Log.e(getClass().getName(), "Error while trying to create case", e);
                         Toast.makeText(getApplicationContext(), "Case could not be created because of an internal error.", Toast.LENGTH_SHORT).show();
-                        ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, null, true);
+                        ErrorReportingHelper.sendCaughtException(tracker, e, null, true);
                     }
 
                     return true;

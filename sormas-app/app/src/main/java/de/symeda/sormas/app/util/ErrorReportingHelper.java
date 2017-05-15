@@ -15,22 +15,25 @@ public class ErrorReportingHelper {
     /**
      * Sends an exception report to Google Analytics
      * @param tracker
-     * @param className The name of the class where the exception was caught
      * @param e
      * @param entity The entity object (e.g. a case or contact) if this error is associated with one
      * @param fatal
      * @param additionalInformation Additional information about the exception, e.g. the case and user UUID; please
      *                              make sure that there is no sensitive data transferred!
      */
-    public static void sendCaughtException(Tracker tracker, String className, Exception e, AbstractDomainObject entity, boolean fatal, String... additionalInformation) {
-        // TODO add AbstractDomainObject and User parameters
+    public static void sendCaughtException(Tracker tracker, Exception e, AbstractDomainObject entity, boolean fatal, String... additionalInformation) {
+        tracker.send(new HitBuilders.ExceptionBuilder()
+                        .setDescription(buildDescription(e.getClass().getSimpleName(), e.getStackTrace(), entity, additionalInformation))
+                        .setFatal(fatal)
+                        .build());
+    }
+
+    public static String buildDescription(String exceptionName, StackTraceElement[] stackTrace, AbstractDomainObject entity, String... additionalInformation) {
         StringBuilder description = new StringBuilder();
-        description.append(e.getClass().getSimpleName() + " in " + className + " - "
-                + e.getStackTrace()[0].getClassName() + ":" + e.getStackTrace()[0].getMethodName() + ":"
-                + e.getStackTrace()[0].getLineNumber() + " - Stack trace: ");
-        for (int i = 0; i < e.getStackTrace().length; i++) {
-            StackTraceElement element = e.getStackTrace()[i];
-            if (i == e.getStackTrace().length - 1) {
+        description.append(exceptionName + " - Stack trace: ");
+        for (int i = 0; i < stackTrace.length; i++) {
+            StackTraceElement element = stackTrace[i];
+            if (i == stackTrace.length - 1) {
                 description.append(element.getClassName() + ":" + element.getMethodName() + ":" +
                         element.getLineNumber());
             } else {
@@ -48,10 +51,7 @@ public class ErrorReportingHelper {
             description.append(s);
         }
 
-        tracker.send(new HitBuilders.ExceptionBuilder()
-                        .setDescription(description.toString())
-                        .setFatal(fatal)
-                        .build());
+        return description.toString();
     }
 
 }

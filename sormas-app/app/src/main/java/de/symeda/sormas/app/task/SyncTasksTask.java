@@ -74,7 +74,7 @@ public class SyncTasksTask extends AsyncTask<Void, Void, Void> {
             Log.e(getClass().getName(), "Error while synchronizing tasks", e);
             SormasApplication application = (SormasApplication) context.getApplicationContext();
             Tracker tracker = application.getDefaultTracker();
-            ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, null, true);
+            ErrorReportingHelper.sendCaughtException(tracker, e, null, true);
         }
         return null;
     }

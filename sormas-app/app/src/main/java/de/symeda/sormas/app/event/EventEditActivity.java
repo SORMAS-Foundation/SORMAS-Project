@@ -224,7 +224,7 @@ public class EventEditActivity extends AbstractEditActivity {
                             } catch (DaoException e) {
                                 Log.e(getClass().getName(), "Error while trying to save alert", e);
                                 Toast.makeText(this, "Alert could not be saved because of an internal error.", Toast.LENGTH_LONG).show();
-                                ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, event, true);
+                                ErrorReportingHelper.sendCaughtException(tracker, e, event, true);
                             }
 
                         }

@@ -150,7 +150,7 @@ public class TaskEditActivity extends AppCompatActivity {
                 } catch (DaoException e) {
                     Log.e(getClass().getName(), "Error while trying to save task", e);
                     Toast.makeText(this, "Task could not be saved because of an internal error.", Toast.LENGTH_LONG).show();
-                    ErrorReportingHelper.sendCaughtException(tracker, this.getClass().getSimpleName(), e, task, true);
+                    ErrorReportingHelper.sendCaughtException(tracker, e, task, true);
                 }
                 return true;
         }
