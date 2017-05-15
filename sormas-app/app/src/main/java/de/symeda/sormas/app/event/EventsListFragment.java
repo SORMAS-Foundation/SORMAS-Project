@@ -3,6 +3,7 @@ package de.symeda.sormas.app.event;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ListFragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
@@ -66,15 +67,15 @@ public class EventsListFragment extends ListFragment {
                         public void call(boolean syncFailed) {
                             refreshLayout.setRefreshing(false);
                             if (!syncFailed) {
-                                Toast.makeText(getContext(), R.string.snackbar_sync_success, Toast.LENGTH_LONG).show();
+                                Snackbar.make(getActivity().findViewById(R.id.base_layout), R.string.snackbar_sync_success, Snackbar.LENGTH_LONG).show();
                             } else {
-                                Toast.makeText(getContext(), R.string.snackbar_sync_error, Toast.LENGTH_LONG).show();
+                                Snackbar.make(getActivity().findViewById(R.id.base_layout), R.string.snackbar_sync_error, Snackbar.LENGTH_LONG).show();
                             }
                         }
                     });
                 } else {
                     refreshLayout.setRefreshing(false);
-                    Toast.makeText(getContext(), "You are not connected to the internet.", Toast.LENGTH_LONG).show();
+                    Snackbar.make(getActivity().findViewById(R.id.base_layout), R.string.snackbar_no_connection, Snackbar.LENGTH_LONG).show();
                 }
             }
         });

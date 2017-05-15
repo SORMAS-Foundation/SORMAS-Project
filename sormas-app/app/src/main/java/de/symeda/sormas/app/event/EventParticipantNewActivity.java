@@ -2,6 +2,7 @@ package de.symeda.sormas.app.event;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -125,7 +126,7 @@ public class EventParticipantNewActivity extends AppCompatActivity {
                                             savePersonAndEventParticipant(eventParticipant);
                                         } catch (DaoException e) {
                                             Log.e(getClass().getName(), "Error while trying to create alert person", e);
-                                            Toast.makeText(getApplicationContext(), "Alert person could not be created because of an internal error.", Toast.LENGTH_SHORT).show();
+                                            Snackbar.make(findViewById(R.id.fragment_frame), "Alert person could not be saved because of an internal error.", Snackbar.LENGTH_LONG).show();
                                             ErrorReportingHelper.sendCaughtException(tracker, e, null, true);
                                         }
                                     }
@@ -140,19 +141,19 @@ public class EventParticipantNewActivity extends AppCompatActivity {
                         }
                     } catch (DaoException e) {
                         Log.e(getClass().getName(), "Error while trying to create alert person", e);
-                        Toast.makeText(getApplicationContext(), "Alert person could not be created because of an internal error.", Toast.LENGTH_SHORT).show();
+                        Snackbar.make(findViewById(R.id.fragment_frame), "Alert person could not be saved because of an internal error.", Snackbar.LENGTH_LONG).show();
                         ErrorReportingHelper.sendCaughtException(tracker, e, null, true);
                     }
                 }
                 else {
                     if(eventParticipantDescReq) {
-                        Toast.makeText(this, "Not saved. Please specify the involvement description.", Toast.LENGTH_LONG).show();
+                        Snackbar.make(findViewById(R.id.fragment_frame), "Not saved. Please specify the involvement description.", Snackbar.LENGTH_LONG).show();
                     }
                     else if(eventParticipantFirstNameReq) {
-                        Toast.makeText(this, "Not saved. Please specify the first name.", Toast.LENGTH_LONG).show();
+                        Snackbar.make(findViewById(R.id.fragment_frame), "Not saved. Please specify the first name.", Snackbar.LENGTH_LONG).show();
                     }
                     else if(eventParticipantLastNameReq) {
-                        Toast.makeText(this, "Not saved. Please specify the last name.", Toast.LENGTH_LONG).show();
+                        Snackbar.make(findViewById(R.id.fragment_frame), "Not saved. Please specify the last name.", Snackbar.LENGTH_LONG).show();
                     }
                 }
 
@@ -172,14 +173,14 @@ public class EventParticipantNewActivity extends AppCompatActivity {
         // save the contact
         DatabaseHelper.getEventParticipantDao().save(eventParticipant);
 
-        Toast.makeText(this, "Event person saved", Toast.LENGTH_SHORT).show();
+        Snackbar.make(findViewById(R.id.fragment_frame), "Alert person saved.", Snackbar.LENGTH_LONG).show();
 
         if (ConnectionHelper.isConnectedToInternet(getApplicationContext())) {
             SyncEventsTask.syncEventsWithProgressDialog(this, new SyncCallback() {
                 @Override
                 public void call(boolean syncFailed) {
                     if (syncFailed) {
-                        Toast.makeText(getApplicationContext(), String.format(getResources().getString(R.string.snackbar_sync_error_saved), getResources().getString(R.string.entity_alert_person)), Toast.LENGTH_LONG).show();
+                        Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_sync_error_saved), getResources().getString(R.string.entity_alert_person)), Snackbar.LENGTH_LONG).show();
                     }
                     showEventParticipantEditView(eventParticipant);
                 }

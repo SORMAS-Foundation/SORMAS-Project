@@ -3,6 +3,7 @@ package de.symeda.sormas.app.contact;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.NavUtils;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -191,22 +192,22 @@ public class ContactEditActivity extends AbstractEditActivity {
 
                 if (contact.getLastContactDate()==null || contact.getLastContactDate().getTime() > contact.getReportDateTime().getTime()) {
                     validData = false;
-                    Toast.makeText(this, "Please make sure contact date is set and not in the future.", Toast.LENGTH_SHORT).show();
+                    Snackbar.make(findViewById(R.id.base_layout), "Please make sure contact date is set and not in the future.", Snackbar.LENGTH_LONG).show();
                 }
 
                 if (contact.getContactProximity()==null) {
                     validData = false;
-                    Toast.makeText(this, "Please set a contact type.", Toast.LENGTH_SHORT).show();
+                    Snackbar.make(findViewById(R.id.base_layout), "Please select a contact type.", Snackbar.LENGTH_LONG).show();
                 }
 
                 if (contact.getPerson().getFirstName().isEmpty() || contact.getPerson().getLastName().isEmpty() ) {
                     validData = false;
-                    Toast.makeText(this, "Please select a person.", Toast.LENGTH_SHORT).show();
+                    Snackbar.make(findViewById(R.id.base_layout), "Please select a person.", Snackbar.LENGTH_LONG).show();
                 }
 
                 if (contact.getRelationToCase() == null) {
                     validData = false;
-                    Toast.makeText(this, "Please select a relationship with the case.", Toast.LENGTH_SHORT).show();
+                    Snackbar.make(findViewById(R.id.base_layout), "Please select a relationship with the case.", Snackbar.LENGTH_LONG).show();
                 }
 
                 if (validData) {
@@ -227,7 +228,8 @@ public class ContactEditActivity extends AbstractEditActivity {
                         DatabaseHelper.getLocationDao().save(person.getAddress());
                         DatabaseHelper.getPersonDao().save(person);
 
-                        Toast.makeText(this, "contact " + DataHelper.getShortUuid(contact.getUuid()) + " saved", Toast.LENGTH_SHORT).show();
+
+                        Snackbar.make(findViewById(R.id.base_layout), "Contact " + DataHelper.getShortUuid(contact.getUuid()) + " saved", Snackbar.LENGTH_LONG).show();
 
                         if (ConnectionHelper.isConnectedToInternet(getApplicationContext())) {
                             SyncContactsTask.syncContactsWithProgressDialog(this, new SyncCallback() {
@@ -236,14 +238,14 @@ public class ContactEditActivity extends AbstractEditActivity {
                                     onResume();
                                     pager.setCurrentItem(currentTab);
                                     if (syncFailed) {
-                                        Toast.makeText(getApplicationContext(), String.format(getResources().getString(R.string.snackbar_sync_error_saved), getResources().getString(R.string.entity_contact)), Toast.LENGTH_LONG).show();
+                                        Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_sync_error_saved), getResources().getString(R.string.entity_contact)), Snackbar.LENGTH_LONG).show();
                                     }
                                 }
                             });
                         }
                     } catch (DaoException e) {
                         Log.e(getClass().getName(), "Error while trying to save contact", e);
-                        Toast.makeText(this, "Contact could not be saved because of an internal error.", Toast.LENGTH_LONG).show();
+                        Snackbar.make(findViewById(R.id.base_layout), "Contact could not be saved because of an internal error.", Snackbar.LENGTH_LONG).show();
                         ErrorReportingHelper.sendCaughtException(tracker, e, contact, true);
                     }
                 }

@@ -3,6 +3,7 @@ package de.symeda.sormas.app.caze;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.NavUtils;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
@@ -240,63 +241,63 @@ public class CaseEditActivity extends AbstractEditActivity {
 
                 if (caze.getDisease() == null) {
                     validData = false;
-                    Toast.makeText(this, "Please select a disease.", Toast.LENGTH_SHORT).show();
+                    Snackbar.make(findViewById(R.id.base_layout), "Please select a disease.", Snackbar.LENGTH_LONG).show();
                 }
 
                 if (person.getFirstName() == null || person.getFirstName().isEmpty()) {
                     validData = false;
-                    Toast.makeText(this, "Please enter a first name for the case person.", Toast.LENGTH_SHORT).show();
+                    Snackbar.make(findViewById(R.id.base_layout), "Please enter a first name for the case person.", Snackbar.LENGTH_LONG).show();
                 }
 
                 if (person.getLastName() == null || person.getLastName().isEmpty()) {
                     validData = false;
-                    Toast.makeText(this, "Please enter a last name for the case person.", Toast.LENGTH_SHORT).show();
+                    Snackbar.make(findViewById(R.id.base_layout), "Please enter a last name for the case person.", Snackbar.LENGTH_LONG).show();
                 }
 
                 if (caze.getHealthFacility() == null) {
                     validData = false;
-                    Toast.makeText(this, "Please select a health facility.", Toast.LENGTH_SHORT).show();
+                    Snackbar.make(findViewById(R.id.base_layout), "Please select a health facility.", Snackbar.LENGTH_LONG).show();
                 }
 
                 try {
                     symptomsEditForm.validateCaseData(symptoms);
                 } catch(ValidationFailedException e) {
-                    Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
+                    Snackbar.make(findViewById(R.id.base_layout), e.getMessage(), Snackbar.LENGTH_LONG).show();
                     validData = false;
                 }
 
                 if (validData) {
                     try {
                         if (!personDao.save(person)) {
-                            Toast.makeText(this, "person not saved", Toast.LENGTH_SHORT).show();
+                            Snackbar.make(findViewById(R.id.base_layout), "Person not saved.", Snackbar.LENGTH_LONG).show();
                         }
                         caze.setPerson(person); // we aren't sure why, but this is needed, otherwise the person will be overriden when first saved
 
                         if (symptoms != null) {
                             if (!symptomsDao.save(symptoms)) {
-                                Toast.makeText(this, "symptoms not saved", Toast.LENGTH_SHORT).show();
+                                Snackbar.make(findViewById(R.id.base_layout), "Symptoms not saved.", Snackbar.LENGTH_LONG).show();
                             }
                             caze.setSymptoms(symptoms);
                         }
 
                         if (hospitalization != null) {
                             if (!hospitalizationDao.save(hospitalization)) {
-                                Toast.makeText(this, "hospitalization not saved", Toast.LENGTH_SHORT).show();
+                                Snackbar.make(findViewById(R.id.base_layout), "Hospitalization not saved.", Snackbar.LENGTH_LONG).show();
                             }
                             caze.setHospitalization(hospitalization);
                         }
 
                         if (epiData != null) {
                             if (!epiDataDao.save(epiData)) {
-                                Toast.makeText(this, "epi data not saved", Toast.LENGTH_SHORT).show();
+                                Snackbar.make(findViewById(R.id.base_layout), "Epi data not saved.", Snackbar.LENGTH_LONG).show();
                             }
                             caze.setEpiData(epiData);
                         }
 
                         if (!caseDao.save(caze)) {
-                            Toast.makeText(this, "case not saved", Toast.LENGTH_SHORT).show();
+                            Snackbar.make(findViewById(R.id.base_layout), "Case not saved.", Snackbar.LENGTH_LONG).show();
                         } else {
-                            Toast.makeText(this, "case saved", Toast.LENGTH_LONG).show();
+                            Snackbar.make(findViewById(R.id.base_layout), "Case saved.", Snackbar.LENGTH_LONG).show();
                         }
 
                         if (ConnectionHelper.isConnectedToInternet(getApplicationContext())) {
@@ -305,7 +306,7 @@ public class CaseEditActivity extends AbstractEditActivity {
                                 public void call(boolean syncFailed) {
                                     onResume();
                                     if (syncFailed) {
-                                        Toast.makeText(getApplicationContext(), String.format(getResources().getString(R.string.snackbar_sync_error_saved), getResources().getString(R.string.entity_case)), Toast.LENGTH_LONG).show();
+                                        Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_sync_error_saved), getResources().getString(R.string.entity_case)), Snackbar.LENGTH_LONG).show();
                                     }
 
                                     try {
@@ -324,7 +325,7 @@ public class CaseEditActivity extends AbstractEditActivity {
                         }
                     } catch (DaoException e) {
                         Log.e(getClass().getName(), "Error while trying to save case", e);
-                        Toast.makeText(this, "Case could not be saved because of an internal error.", Toast.LENGTH_LONG).show();
+                        Snackbar.make(findViewById(R.id.base_layout), "Case could not be saved because of an internal error.", Snackbar.LENGTH_LONG).show();
                         ErrorReportingHelper.sendCaughtException(tracker, e, caze, true);
                     }
                 }

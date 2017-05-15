@@ -2,6 +2,7 @@ package de.symeda.sormas.app.contact;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -121,22 +122,22 @@ public class ContactNewActivity extends AppCompatActivity {
 
                 if (contact.getLastContactDate()==null || contact.getLastContactDate().getTime() > contact.getReportDateTime().getTime()) {
                     validData = false;
-                    Toast.makeText(this, "Please make sure contact date is set and not in the future.", Toast.LENGTH_SHORT).show();
+                    Snackbar.make(findViewById(R.id.fragment_frame), "Please make sure contact date is set and not in the future.", Snackbar.LENGTH_LONG).show();
                 }
 
                 if (contact.getContactProximity()==null) {
                     validData = false;
-                    Toast.makeText(this, "Please set a contact type.", Toast.LENGTH_SHORT).show();
+                    Snackbar.make(findViewById(R.id.fragment_frame), "Please select a contact type.", Snackbar.LENGTH_LONG).show();
                 }
 
                 if (contact.getPerson().getFirstName().isEmpty() || contact.getPerson().getLastName().isEmpty() ) {
                     validData = false;
-                    Toast.makeText(this, "Please select a person.", Toast.LENGTH_SHORT).show();
+                    Snackbar.make(findViewById(R.id.fragment_frame), "Please select a person.", Snackbar.LENGTH_LONG).show();
                 }
 
                 if (contact.getRelationToCase() == null) {
                     validData = false;
-                    Toast.makeText(this, "Please select a relationship with the case.", Toast.LENGTH_SHORT).show();
+                    Snackbar.make(findViewById(R.id.fragment_frame), "Please select a relationship with the case.", Snackbar.LENGTH_LONG).show();
                 }
 
                 if (validData) {
@@ -152,7 +153,7 @@ public class ContactNewActivity extends AppCompatActivity {
                                             savePersonAndContact(contact);
                                         } catch (DaoException e) {
                                             Log.e(getClass().getName(), "Error while trying to create contact", e);
-                                            Toast.makeText(getApplicationContext(), "Contact could not be created because of an internal error.", Toast.LENGTH_LONG).show();
+                                            Snackbar.make(findViewById(R.id.fragment_frame), "Contact could not be created because of an internal error.", Snackbar.LENGTH_LONG).show();
                                             ErrorReportingHelper.sendCaughtException(tracker, e, null, true);
                                         }
                                     }
@@ -166,7 +167,7 @@ public class ContactNewActivity extends AppCompatActivity {
                         }
                     } catch (DaoException e) {
                         Log.e(getClass().getName(), "Error while trying to create contact", e);
-                        Toast.makeText(this, "Contact could not be created because of an internal error.", Toast.LENGTH_LONG).show();
+                        Snackbar.make(findViewById(R.id.fragment_frame), "Contact could not be saved because of an internal error.", Snackbar.LENGTH_LONG).show();
                         ErrorReportingHelper.sendCaughtException(tracker, e, null, true);
                     }
                 }
@@ -204,14 +205,14 @@ public class ContactNewActivity extends AppCompatActivity {
         // save the contact
         DatabaseHelper.getContactDao().save(contact);
 
-        Toast.makeText(this, "Contact to " + contact.getPerson().toString() + " saved", Toast.LENGTH_SHORT).show();
+        Snackbar.make(findViewById(R.id.fragment_frame), "Contact to " + contact.getPerson().toString() + " saved", Snackbar.LENGTH_LONG).show();
 
         if (ConnectionHelper.isConnectedToInternet(getApplicationContext())) {
             SyncContactsTask.syncContactsWithProgressDialog(this, new SyncCallback() {
                 @Override
                 public void call(boolean syncFailed) {
                     if (syncFailed) {
-                        Toast.makeText(getApplicationContext(), "The case has been created, but could not yet be transferred to the server. An error report has been automatically sent and the synchronization will be repeated later.", Toast.LENGTH_LONG).show();
+                        Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_sync_error_saved), getResources().getString(R.string.entity_contact)), Snackbar.LENGTH_LONG).show();
                     }
                     navBackToCaseContacts();
                 }

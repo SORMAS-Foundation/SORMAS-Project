@@ -2,6 +2,7 @@ package de.symeda.sormas.app.visit;
 
 import android.app.AlertDialog;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.util.Log;
@@ -154,13 +155,13 @@ public class VisitEditActivity extends AbstractEditActivity {
                 Contact contact = (Contact) DatabaseHelper.getContactDao().queryUuid(contactUuid);
                 if (visit.getVisitDateTime().before(contact.getLastContactDate()) &&
                         DateHelper.getDaysBetween(visit.getVisitDateTime(), contact.getLastContactDate()) > 10) {
-                    Toast.makeText(this, "The visit cannot be more than 10 days before the last contact date.", Toast.LENGTH_LONG).show();
+                    Snackbar.make(findViewById(R.id.base_layout), "The visit cannot be more than 10 days before the last contact date.", Snackbar.LENGTH_LONG).show();
                     return true;
                 }
 
                 if (contact.getFollowUpUntil() != null && visit.getVisitDateTime().after(contact.getFollowUpUntil()) &&
                         DateHelper.getDaysBetween(contact.getFollowUpUntil(), visit.getVisitDateTime()) > 10) {
-                    Toast.makeText(this, "The visit cannot be more than 10 days after the end of the follow-up duration.", Toast.LENGTH_LONG).show();
+                    Snackbar.make(findViewById(R.id.base_layout), "The visit cannot be more than 10 days after the end of the follow-up duration.", Snackbar.LENGTH_LONG).show();
                     return true;
                 }
 
@@ -177,14 +178,14 @@ public class VisitEditActivity extends AbstractEditActivity {
                     visit.setVisitUser(ConfigProvider.getUser());
 
                     DatabaseHelper.getVisitDao().save(visit);
-                    Toast.makeText(this, "visit " + DataHelper.getShortUuid(visit.getUuid()) + " saved", Toast.LENGTH_SHORT).show();
+                    Snackbar.make(findViewById(R.id.base_layout), "Visit " + DataHelper.getShortUuid(visit.getUuid()) + " saved", Snackbar.LENGTH_LONG).show();
 
                     if (ConnectionHelper.isConnectedToInternet(getApplicationContext())) {
                         SyncVisitsTask.syncVisitsWithProgressDialog(this, new SyncCallback() {
                             @Override
                             public void call(boolean syncFailed) {
                                 if (syncFailed) {
-                                    Toast.makeText(getApplicationContext(), String.format(getResources().getString(R.string.snackbar_sync_error_saved), getResources().getString(R.string.entity_visit)), Toast.LENGTH_LONG).show();
+                                    Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_sync_error_saved), getResources().getString(R.string.entity_visit)), Snackbar.LENGTH_LONG).show();
                                 }
                                 finish();
                             }
@@ -195,7 +196,7 @@ public class VisitEditActivity extends AbstractEditActivity {
 
                     return true;
                 } catch (ValidationFailedException e) {
-                    Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
+                    Snackbar.make(findViewById(R.id.base_layout), e.getMessage(), Snackbar.LENGTH_LONG).show();
 
                     // if any symptomsfield is required, change pager to symptoms tab
                     if(currentTab!=VisitEditTabs.SYMPTOMS.ordinal()) {
@@ -204,7 +205,7 @@ public class VisitEditActivity extends AbstractEditActivity {
                     return true;
                 } catch (DaoException e) {
                     Log.e(getClass().getName(), "Error while trying to save visit", e);
-                    Toast.makeText(this, "Visit could not be saved because of an internal error.", Toast.LENGTH_LONG).show();
+                    Snackbar.make(findViewById(R.id.base_layout), "Visit could not be saved because of an internal error.", Snackbar.LENGTH_LONG).show();
                     ErrorReportingHelper.sendCaughtException(tracker, e, visit, true);
                 }
 

@@ -3,6 +3,7 @@ package de.symeda.sormas.app.component;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.databinding.DataBindingUtil;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AlertDialog;
 import android.text.Html;
@@ -115,7 +116,7 @@ public class SelectOrCreatePersonDialogBuilder extends AlertDialog.Builder {
                     positiveCallback.accept(bindingPersonSelect.personSelectSelectedPerson.getValue());
                     dialog.dismiss();
                 } else {
-                    Toast.makeText(getContext(), "Please select a person or click 'create' to create a new one", Toast.LENGTH_SHORT).show();
+                    Snackbar.make(activity.findViewById(R.id.base_layout), "Please select a person or click 'create' to create a new one", Snackbar.LENGTH_LONG).show();
                 }
             }
         });
@@ -134,7 +135,7 @@ public class SelectOrCreatePersonDialogBuilder extends AlertDialog.Builder {
             @Override
             public void onClick(View v) {
                 if (bindingPersonSelect.personFirstName.getValue().isEmpty() || bindingPersonSelect.personLastName.getValue().isEmpty()) {
-                    Toast.makeText(getContext(), "Please enter a first and last name for the new person", Toast.LENGTH_SHORT).show();
+                    Snackbar.make(activity.findViewById(R.id.base_layout), "Please enter a first and last name for the new person", Snackbar.LENGTH_LONG).show();
                 } else {
                     person.setFirstName(bindingPersonSelect.personFirstName.getValue());
                     person.setLastName(bindingPersonSelect.personLastName.getValue());

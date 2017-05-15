@@ -3,6 +3,7 @@ package de.symeda.sormas.app.sample;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -184,14 +185,14 @@ public class SampleEditActivity extends AppCompatActivity {
                 if (validData) {
                     try {
                         sampleDao.save(sample);
-                        Toast.makeText(this, "sample " + DataHelper.getShortUuid(sample.getUuid()) + " saved", Toast.LENGTH_SHORT).show();
+                        Snackbar.make(findViewById(R.id.fragment_frame), "Sample " + DataHelper.getShortUuid(sample.getUuid()) + " saved", Snackbar.LENGTH_LONG).show();
 
                         if (ConnectionHelper.isConnectedToInternet(getApplicationContext())) {
                             SyncSamplesTask.syncSamplesWithProgressDialog(this, new SyncCallback() {
                                 @Override
                                 public void call(boolean syncFailed) {
                                     if (syncFailed) {
-                                        Toast.makeText(getApplicationContext(), String.format(getResources().getString(R.string.snackbar_sync_error_saved), getResources().getString(R.string.entity_sample)), Toast.LENGTH_LONG).show();
+                                        Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_sync_error_saved), getResources().getString(R.string.entity_sample)), Snackbar.LENGTH_LONG).show();
                                     }
                                     finish();
                                 }
@@ -201,22 +202,22 @@ public class SampleEditActivity extends AppCompatActivity {
                         }
                     } catch (DaoException e) {
                         Log.e(getClass().getName(), "Error while trying to save sample", e);
-                        Toast.makeText(this, "Sample could not be saved because of an internal error.", Toast.LENGTH_LONG).show();
+                        Snackbar.make(findViewById(R.id.fragment_frame), "Sample could not be saved because of an internal error.", Snackbar.LENGTH_LONG).show();
                         ErrorReportingHelper.sendCaughtException(tracker, e, sample, true);
                     }
                 } else {
                     if (sampleDateTimeReq) {
-                        Toast.makeText(this, "Not saved. Please specify the date and time of sampling.", Toast.LENGTH_LONG).show();
+                        Snackbar.make(findViewById(R.id.fragment_frame), "Not saved. Please specify the time of sampling.", Snackbar.LENGTH_LONG).show();
                     } else if (sampleMaterialReq) {
-                        Toast.makeText(this, "Not saved. Please specify the sample material.", Toast.LENGTH_LONG).show();
+                        Snackbar.make(findViewById(R.id.fragment_frame), "Not saved. Please specify the sample material.", Snackbar.LENGTH_LONG).show();
                     } else if (sampleMaterialTextReq) {
-                        Toast.makeText(this, "Not saved. Please specify the sample material.", Toast.LENGTH_LONG).show();
+                        Snackbar.make(findViewById(R.id.fragment_frame), "Not saved. Please specify the sample material.", Snackbar.LENGTH_LONG).show();
                     } else if (sampleLabReq) {
-                        Toast.makeText(this, "Not saved. Please specify the laboratory.", Toast.LENGTH_LONG).show();
+                        Snackbar.make(findViewById(R.id.fragment_frame), "Not saved. Please specify the laboratory.", Snackbar.LENGTH_LONG).show();
                     } else if (shipmentStatusReq) {
-                        Toast.makeText(this, "Not saved. Please specify the shipment status..", Toast.LENGTH_LONG).show();
+                        Snackbar.make(findViewById(R.id.fragment_frame), "Not saved. Please specify the shipment status.", Snackbar.LENGTH_LONG).show();
                     } else if (shipmentDateReq) {
-                        Toast.makeText(this, "Not saved. Please specify the shipment date.", Toast.LENGTH_LONG).show();
+                        Snackbar.make(findViewById(R.id.fragment_frame), "Not saved. Please specify the shipment date.", Snackbar.LENGTH_LONG).show();
                     }
                 }
 

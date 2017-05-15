@@ -3,6 +3,7 @@ package de.symeda.sormas.app.task;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
@@ -134,7 +135,7 @@ public class TaskEditActivity extends AppCompatActivity {
                 try {
                     TaskDao taskDao = DatabaseHelper.getTaskDao();
                     taskDao.save(task);
-                    Toast.makeText(this, "task " + DataHelper.getShortUuid(task.getUuid()) + " saved", Toast.LENGTH_SHORT).show();
+                    Snackbar.make(findViewById(R.id.fragment_frame), "Task " + DataHelper.getShortUuid(task.getUuid()) + " saved", Snackbar.LENGTH_LONG).show();
 
                     if (ConnectionHelper.isConnectedToInternet(getApplicationContext())) {
                         SyncTasksTask.syncTasksWithProgressDialog(this, new SyncCallback() {
@@ -142,14 +143,14 @@ public class TaskEditActivity extends AppCompatActivity {
                             public void call(boolean syncFailed) {
                                 onResume();
                                 if (syncFailed) {
-                                    Toast.makeText(getApplicationContext(), String.format(getResources().getString(R.string.snackbar_sync_error_saved), getResources().getString(R.string.entity_task)), Toast.LENGTH_LONG).show();
+                                    Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_sync_error_saved), getResources().getString(R.string.entity_task)), Snackbar.LENGTH_LONG).show();
                                 }
                             }
                         }, null);
                     }
                 } catch (DaoException e) {
                     Log.e(getClass().getName(), "Error while trying to save task", e);
-                    Toast.makeText(this, "Task could not be saved because of an internal error.", Toast.LENGTH_LONG).show();
+                    Snackbar.make(findViewById(R.id.fragment_frame), "Task could not be saved because of an internal error.", Snackbar.LENGTH_LONG).show();
                     ErrorReportingHelper.sendCaughtException(tracker, e, task, true);
                 }
                 return true;

@@ -2,6 +2,7 @@ package de.symeda.sormas.app.event;
 
 import android.app.AlertDialog;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -146,14 +147,14 @@ public class EventParticipantEditActivity extends AppCompatActivity {
                         DatabaseHelper.getEventParticipantDao().save(eventParticipant);
                     }
 
-                    Toast.makeText(this, "Alert person " + DataHelper.getShortUuid(eventParticipant.getUuid()) + " saved", Toast.LENGTH_SHORT).show();
+                    Snackbar.make(findViewById(R.id.base_layout), "Alert person " + DataHelper.getShortUuid(eventParticipant.getUuid()) + " saved", Snackbar.LENGTH_LONG).show();
 
                     if (ConnectionHelper.isConnectedToInternet(getApplicationContext())) {
                         SyncEventsTask.syncEventsWithProgressDialog(this, new SyncCallback() {
                             @Override
                             public void call(boolean syncFailed) {
                                 if (syncFailed) {
-                                    Toast.makeText(getApplicationContext(), String.format(getResources().getString(R.string.snackbar_sync_error_saved), getResources().getString(R.string.entity_alert_person)), Toast.LENGTH_LONG).show();
+                                    Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_sync_error_saved), getResources().getString(R.string.entity_alert_person)), Snackbar.LENGTH_LONG).show();
                                 }
                                 finish();
                             }
@@ -163,7 +164,7 @@ public class EventParticipantEditActivity extends AppCompatActivity {
                     }
                 } catch (DaoException e) {
                     Log.e(getClass().getName(), "Error while trying to save alert person", e);
-                    Toast.makeText(this, "Alert person could not be saved because of an internal error.", Toast.LENGTH_LONG).show();
+                    Snackbar.make(findViewById(R.id.base_layout), "Alert person could not be saved because of an internal error.", Snackbar.LENGTH_LONG).show();
                     ErrorReportingHelper.sendCaughtException(tracker, e, eventParticipant, true);
                 }
 

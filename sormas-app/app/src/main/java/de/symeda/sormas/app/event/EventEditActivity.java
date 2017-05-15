@@ -3,6 +3,7 @@ package de.symeda.sormas.app.event;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.NavUtils;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -206,14 +207,14 @@ public class EventEditActivity extends AbstractEditActivity {
                                 }
 
                                 DatabaseHelper.getEventDao().save(event);
-                                Toast.makeText(this, "event " + DataHelper.getShortUuid(event.getUuid()) + " saved", Toast.LENGTH_SHORT).show();
+                                Snackbar.make(findViewById(R.id.base_layout), "Alert " + DataHelper.getShortUuid(event.getUuid()) + " saved", Snackbar.LENGTH_LONG).show();
 
                                 if (ConnectionHelper.isConnectedToInternet(getApplicationContext())) {
                                     SyncEventsTask.syncEventsWithProgressDialog(this, new SyncCallback() {
                                         @Override
                                         public void call(boolean syncFailed) {
                                             if (syncFailed) {
-                                                Toast.makeText(getApplicationContext(), String.format(getResources().getString(R.string.snackbar_sync_error_saved), getResources().getString(R.string.entity_alert)), Toast.LENGTH_LONG).show();
+                                                Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_sync_error_saved), getResources().getString(R.string.entity_alert)), Snackbar.LENGTH_LONG).show();
                                             }
                                             finish();
                                         }
@@ -223,35 +224,35 @@ public class EventEditActivity extends AbstractEditActivity {
                                 }
                             } catch (DaoException e) {
                                 Log.e(getClass().getName(), "Error while trying to save alert", e);
-                                Toast.makeText(this, "Alert could not be saved because of an internal error.", Toast.LENGTH_LONG).show();
+                                Snackbar.make(findViewById(R.id.base_layout), "Alert could not be served because of an internal error.", Snackbar.LENGTH_LONG).show();
                                 ErrorReportingHelper.sendCaughtException(tracker, e, event, true);
                             }
 
                         }
                         else {
                             if(eventTypeReq) {
-                                Toast.makeText(this, "Not saved. Please specify the event type.", Toast.LENGTH_LONG).show();
+                                Snackbar.make(findViewById(R.id.base_layout), "Not saved. Please specify the event type.", Snackbar.LENGTH_LONG).show();
                             }
                             else if(eventDescReq) {
-                                Toast.makeText(this, "Not saved. Please specify the event description.", Toast.LENGTH_LONG).show();
+                                Snackbar.make(findViewById(R.id.base_layout), "Not saved. Please specify the event description.", Snackbar.LENGTH_LONG).show();
                             }
                             else if(eventDateReq) {
-                                Toast.makeText(this, "Not saved. Please specify the event date.", Toast.LENGTH_LONG).show();
+                                Snackbar.make(findViewById(R.id.base_layout), "Not saved. Please specify the event date.", Snackbar.LENGTH_LONG).show();
                             }
                             else if(typeOfPlaceReq) {
-                                Toast.makeText(this, "Not saved. Please specify the type of place.", Toast.LENGTH_LONG).show();
+                                Snackbar.make(findViewById(R.id.base_layout), "Not saved. Please specify the type of place.", Snackbar.LENGTH_LONG).show();
                             }
                             else if(typeOfPlaceTextReq) {
-                                Toast.makeText(this, "Not saved. Please specify the other type of place.", Toast.LENGTH_LONG).show();
+                                Snackbar.make(findViewById(R.id.base_layout), "Not saved. Please specify the other type of place.", Snackbar.LENGTH_LONG).show();
                             }
                             else if(eventSrcFirstNameReq) {
-                                Toast.makeText(this, "Not saved. Please specify the the source first name.", Toast.LENGTH_LONG).show();
+                                Snackbar.make(findViewById(R.id.base_layout), "Not saved. Please specify the source first name.", Snackbar.LENGTH_LONG).show();
                             }
                             else if(eventSrcLastNameReq) {
-                                Toast.makeText(this, "Not saved. Please specify the the source last name.", Toast.LENGTH_LONG).show();
+                                Snackbar.make(findViewById(R.id.base_layout), "Not saved. Please specify the source last name.", Snackbar.LENGTH_LONG).show();
                             }
                             else if(eventSrcTelNoReq) {
-                                Toast.makeText(this, "Not saved. Please specify the the source telephone no.", Toast.LENGTH_LONG).show();
+                                Snackbar.make(findViewById(R.id.base_layout), "Not saved. Please specify the source telephone no.", Snackbar.LENGTH_LONG).show();
                             }
                         }
 

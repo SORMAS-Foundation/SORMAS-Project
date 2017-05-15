@@ -2,6 +2,7 @@ package de.symeda.sormas.app.caze;
 
 import android.app.AlertDialog;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -58,14 +59,14 @@ public class CasesActivity extends AbstractRootTabActivity {
                         public void call(boolean syncFailed) {
                             refreshLayout.setRefreshing(false);
                             if (!syncFailed) {
-                                Toast.makeText(getApplicationContext(), R.string.snackbar_sync_success, Toast.LENGTH_LONG).show();
+                                Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_sync_success, Snackbar.LENGTH_LONG).show();
                             } else {
-                                Toast.makeText(getApplicationContext(), R.string.snackbar_sync_error, Toast.LENGTH_LONG).show();
+                                Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_sync_error, Snackbar.LENGTH_LONG).show();
                             }
                         }
                     });
                 } else {
-                    Toast.makeText(getApplicationContext(), R.string.snackbar_no_connection, Toast.LENGTH_LONG).show();
+                    Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_no_connection, Snackbar.LENGTH_LONG).show();
                 }
                 return true;
 

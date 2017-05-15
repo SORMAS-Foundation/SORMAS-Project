@@ -2,6 +2,7 @@ package de.symeda.sormas.app.component;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.widget.EditText;
@@ -37,7 +38,7 @@ public class UserReportDialog extends AlertDialog.Builder {
                         .setAction("Error Report")
                         .setLabel("Location: " + viewName + (uuid!=null?" - UUID: " + uuid:"") + " - User: " + ConfigProvider.getUser().getUuid() + " - Description: " + description)
                         .build());
-                Toast.makeText(getContext(), "Problem report successfully sent.", Toast.LENGTH_LONG).show();
+                Snackbar.make(activity.findViewById(R.id.base_layout), "Problem report successfully sent.", Snackbar.LENGTH_LONG).show();
 
             }
         });

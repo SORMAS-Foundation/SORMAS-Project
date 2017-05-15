@@ -2,6 +2,7 @@ package de.symeda.sormas.app.caze;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AlertDialog;
@@ -123,22 +124,22 @@ public class CaseNewActivity extends AppCompatActivity {
 
                 if (caze.getPerson().getFirstName() == null || caze.getPerson().getFirstName().isEmpty()) {
                     validData = false;
-                    Toast.makeText(this, "Please enter a first name for the case person.", Toast.LENGTH_SHORT).show();
+                    Snackbar.make(findViewById(R.id.fragment_frame), "Please enter a first name for the case person.", Snackbar.LENGTH_LONG).show();
                 }
 
                 if (caze.getPerson().getLastName() == null || caze.getPerson().getLastName().isEmpty()) {
                     validData = false;
-                    Toast.makeText(this, "Please enter a last name for the case person.", Toast.LENGTH_SHORT).show();
+                    Snackbar.make(findViewById(R.id.fragment_frame), "Please enter a last name for the case person.", Snackbar.LENGTH_LONG).show();
                 }
 
                 if (caze.getDisease() == null) {
                     validData = false;
-                    Toast.makeText(this, "Please select a disease.", Toast.LENGTH_SHORT).show();
+                    Snackbar.make(findViewById(R.id.fragment_frame), "Please select a disease.", Snackbar.LENGTH_LONG).show();
                 }
 
                 if (caze.getHealthFacility() == null) {
                     validData = false;
-                    Toast.makeText(this, "Please select a health facility.", Toast.LENGTH_SHORT).show();
+                    Snackbar.make(findViewById(R.id.fragment_frame), "Please select a health facility.", Snackbar.LENGTH_LONG).show();
                 }
 
                 if (validData) {
@@ -158,7 +159,7 @@ public class CaseNewActivity extends AppCompatActivity {
                                                 savePersonAndCase(caze);
                                             } catch (DaoException e) {
                                                 Log.e(getClass().getName(), "Error while trying to create case", e);
-                                                Toast.makeText(getApplicationContext(), "Case could not be created because of an internal error.", Toast.LENGTH_SHORT).show();
+                                                Snackbar.make(findViewById(R.id.fragment_frame), "Case could not be created because of an internal error.", Snackbar.LENGTH_LONG).show();
                                                 ErrorReportingHelper.sendCaughtException(tracker, e, null, true);
                                             }
                                         }
@@ -176,7 +177,7 @@ public class CaseNewActivity extends AppCompatActivity {
 //                      NavUtils.navigateUpFromSameTask(this);
                     } catch (DaoException e) {
                         Log.e(getClass().getName(), "Error while trying to create case", e);
-                        Toast.makeText(getApplicationContext(), "Case could not be created because of an internal error.", Toast.LENGTH_SHORT).show();
+                        Snackbar.make(findViewById(R.id.fragment_frame), "Case could not be created because of an internal error.", Snackbar.LENGTH_LONG).show();
                         ErrorReportingHelper.sendCaughtException(tracker, e, null, true);
                     }
 
@@ -218,14 +219,14 @@ public class CaseNewActivity extends AppCompatActivity {
         CaseDao caseDao = DatabaseHelper.getCaseDao();
         caseDao.save(caze);
 
-        Toast.makeText(CaseNewActivity.this, caze.getPerson().toString() + " saved", Toast.LENGTH_SHORT).show();
+        Snackbar.make(findViewById(R.id.fragment_frame), caze.getPerson().toString() + " saved", Snackbar.LENGTH_LONG).show();
 
         if (ConnectionHelper.isConnectedToInternet(getApplicationContext())) {
             SyncCasesTask.syncCasesWithProgressDialog(this, new SyncCallback() {
                 @Override
                 public void call(boolean syncFailed) {
                     if (syncFailed) {
-                        Toast.makeText(getApplicationContext(), String.format(getResources().getString(R.string.snackbar_sync_error_saved), getResources().getString(R.string.entity_case)), Toast.LENGTH_LONG).show();
+                        Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_sync_error_saved), getResources().getString(R.string.entity_case)), Snackbar.LENGTH_LONG).show();
                     }
                     showCaseEditView(caze);
                 }

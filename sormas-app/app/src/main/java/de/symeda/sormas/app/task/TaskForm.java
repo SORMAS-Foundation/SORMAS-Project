@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +17,7 @@ import java.util.List;
 
 import de.symeda.sormas.api.task.TaskHelper;
 import de.symeda.sormas.api.task.TaskStatus;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.caze.Case;
@@ -94,12 +96,12 @@ public class TaskForm extends FormTab {
                             taskDao.changeTaskStatus(task, TaskStatus.NOT_EXECUTABLE);
                         } catch (DaoException e) {
                             Log.e(getClass().getName(), "Error while trying to update task status", e);
-                            Toast.makeText(getContext(), "Task status could not be edited because of an internal error.", Toast.LENGTH_LONG).show();
+                            Snackbar.make(getActivity().findViewById(R.id.base_layout), "Task status could not be edited because of an internal error.", Snackbar.LENGTH_LONG).show();
                             ErrorReportingHelper.sendCaughtException(tracker, e, task, true);
                         }
                         reloadFragment();
                     } else {
-                        Toast.makeText(getContext(), "An assignee reply is required to set the task status to not executable.", Toast.LENGTH_SHORT).show();
+                        Snackbar.make(getActivity().findViewById(R.id.base_layout), "An assignee reply is required when setting the task status to not executable.", Snackbar.LENGTH_LONG).show();
                     }
                 }
             });
@@ -118,7 +120,7 @@ public class TaskForm extends FormTab {
                         taskDao.changeTaskStatus(task, TaskStatus.DONE);
                     } catch (DaoException e) {
                         Log.e(getClass().getName(), "Error while trying to update task status", e);
-                        Toast.makeText(getContext(), "Task status could not be edited because of an internal error.", Toast.LENGTH_LONG).show();
+                        Snackbar.make(getActivity().findViewById(R.id.base_layout), "Task status could not be edited because of an internal error.", Snackbar.LENGTH_LONG).show();
                         ErrorReportingHelper.sendCaughtException(tracker, e, task, true);
                     }
                     reloadFragment();
