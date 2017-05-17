@@ -23,9 +23,7 @@ public class TaskDtoHelper extends AdoDtoHelper<Task, TaskDto> {
     }
 
     @Override
-    protected Class<TaskDto> getDtoClass() {
-        throw new UnsupportedOperationException();
-    }
+    protected Class<TaskDto> getDtoClass() { return TaskDto.class; }
 
     @Override
     public void fillInnerFromDto(Task target, TaskDto source) {
