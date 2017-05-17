@@ -1,6 +1,10 @@
 package de.symeda.sormas.app.backend.user;
 
+import android.util.Log;
+
 import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.Where;
 
 import java.sql.SQLException;
 
@@ -42,5 +46,18 @@ public class UserDao extends AbstractAdoDao<User> {
         }
 
         return super.saveUnmodified(user);
+    }
+
+    public User getByUsername(String username) {
+        try {
+            QueryBuilder builder = queryBuilder();
+            Where where = builder.where();
+            where.eq(User.USER_NAME, username);
+
+            return (User) builder.queryForFirst();
+        } catch (SQLException e) {
+            Log.e(getTableName(), "Could not perform getByUsername", e);
+            throw new RuntimeException();
+        }
     }
 }

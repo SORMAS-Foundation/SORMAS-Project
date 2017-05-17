@@ -37,6 +37,11 @@
         <activity
             android:name=".user.UserActivity"
             android:launchMode="singleTop">
+        </activity>
+
+        <activity
+            android:name=".user.LoginActivity"
+            android:launchMode="singleTop">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

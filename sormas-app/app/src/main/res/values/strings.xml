@@ -7,7 +7,9 @@
     <string name="main_menu_events">Alerts</string>
     <string name="main_menu_samples">Samples</string>
     <string name="main_menu_user">User</string>
+    <string name="main_menu_settings">Settings</string>
     <string name="main_menu_sync_all">Synchronize</string>
+    <string name="main_menu_logout">Logout</string>
 
 
     <string name="drawer_open">Open navigation drawer</string>
@@ -40,6 +42,7 @@
     <string name="action_send">Send</string>
     <string name="action_report">Report Problem</string>
     <string name="action_options">Options</string>
+    <string name="action_login">Login</string>
 
     <!-- field -->
     <string name="field_yes_no_yes">Yes</string>
@@ -47,6 +50,7 @@
     <string name="field_yes_no_unk">Unk</string>
 
     <!-- headlines -->
+    <string name="headline_sormas">SORMAS</string>
     <string name="headline_date_picker">Select a date</string>
     <string name="headline_case">Case</string>
     <string name="headline_cases">Cases</string>
@@ -69,7 +73,7 @@
     <string name="headline_location">Location</string>
     <string name="headline_responsible">Responsible users</string>
     <string name="headline_user">User</string>
-    <string name="headline_user_administration">User</string>
+    <string name="headline_user_administration">Settings</string>
     <string name="headline_case_administration">Case administration</string>
     <string name="headline_new_case">Create new case</string>
     <string name="headline_new_person">Add new person</string>
@@ -146,6 +150,9 @@
 
     <string name="form_server_url">Server address</string>
 
+    <string name="form_username">Username</string>
+    <string name="form_password">Password</string>
+
     <string name="case_disease">Disease</string>
     <string name="case_region">State</string>
     <string name="case_district">LGA</string>
@@ -217,11 +224,14 @@
 
     <string name="empty_list_hint">Add a new entry by pressing the "+" symbol in the top right.</string>
     <string name="hint_user_report">Please briefly describe the problem you have experienced. Don\'t enter any personal or otherwise sensitive data!</string>
+    <string name="hint_login">Please log in to your account.</string>
 
     <string name="snackbar_sync_success">Synchronization successful.</string>
     <string name="snackbar_sync_error">Synchronization failed. Please try again later.</string>
     <string name="snackbar_sync_error_saved">%1$s has been saved, but could not be synchronized.</string>
     <string name="snackbar_no_connection">You are not connected to the internet.</string>
+    <string name="snackbar_empty_username">Please enter a username.</string>
+    <string name="snackbar_empty_password">Please enter a password.</string>
 
     <string name="entity_case">Case</string>
     <string name="entity_contact">Contact</string>
@@ -230,5 +240,9 @@
     <string name="entity_sample">Sample</string>
     <string name="entity_visit">Visit</string>
     <string name="entity_task">Task</string>
+
+    <string name="alert_encryption">SORMAS requires device encryption to be activated on your device to ensure data security. Please note that you cannot use the application as long as device encryption is disabled.</string>
+
+    <string name="preference_file_key">de.symeda.sormas.app.PREFERENCE_FILE_KEY</string>
 
 </resources>

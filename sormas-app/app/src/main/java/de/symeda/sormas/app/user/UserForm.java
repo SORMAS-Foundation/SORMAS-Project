@@ -1,5 +1,7 @@
 package de.symeda.sormas.app.user;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -45,25 +47,25 @@ public class UserForm extends FormTab {
     public void onResume() {
         super.onResume();
 
-        User user = ConfigProvider.getUser();
-
-        List<UserRole> userRoles = Arrays.asList(UserRole.INFORMANT, UserRole.SURVEILLANCE_OFFICER, UserRole.CASE_OFFICER, UserRole.CONTACT_OFFICER);
-        UserDao userDao = DatabaseHelper.getUserDao();
-        List<Item> items = null;
-        if (userRoles.size() == 0) {
-            items = DataUtils.toItems(userDao.queryForAll());
-        } else {
-            for (UserRole userRole : userRoles) {
-                if (items == null) {
-                    items = DataUtils.toItems(userDao.queryForEq(User.USER_ROLE, userRole));
-                } else {
-                    items = DataUtils.addItems(items, userDao.queryForEq(User.USER_ROLE, userRole));
-                }
-            }
-        }
-
-        binding.configUser.setSpinnerAdapter(items);
-        binding.configUser.setValue(user);
+//        User user = ConfigProvider.getUser();
+//
+//        List<UserRole> userRoles = Arrays.asList(UserRole.INFORMANT, UserRole.SURVEILLANCE_OFFICER, UserRole.CASE_OFFICER, UserRole.CONTACT_OFFICER);
+//        UserDao userDao = DatabaseHelper.getUserDao();
+//        List<Item> items = null;
+//        if (userRoles.size() == 0) {
+//            items = DataUtils.toItems(userDao.queryForAll());
+//        } else {
+//            for (UserRole userRole : userRoles) {
+//                if (items == null) {
+//                    items = DataUtils.toItems(userDao.queryForEq(User.USER_ROLE, userRole));
+//                } else {
+//                    items = DataUtils.addItems(items, userDao.queryForEq(User.USER_ROLE, userRole));
+//                }
+//            }
+//        }
+//
+//        binding.configUser.setSpinnerAdapter(items);
+//        binding.configUser.setValue(user);
         binding.configServerUrl.setValue((String)ConfigProvider.getServerRestUrl());
 
         binding.configDropData.setOnClickListener(new View.OnClickListener() {
@@ -80,15 +82,21 @@ public class UserForm extends FormTab {
         SyncInfrastructureTask.syncAll(new SyncCallback() {
             @Override
             public void call(boolean syncFailed) {
+                // User needs to be set again because the user table has been cleared
+                SharedPreferences sharedPref = getActivity().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+                String prefUsername = sharedPref.getString("username", null);
+                User user = DatabaseHelper.getUserDao().getByUsername(prefUsername);
+                ConfigProvider.setUser(user);
+
                 UserForm.this.onResume();
                 binding.configProgressBar.setVisibility(View.GONE);
             }
         }, getContext());
     }
 
-    public User getUser() {
-        return (User)binding.configUser.getValue();
-    }
+//    public User getUser() {
+//        return (User)binding.configUser.getValue();
+//    }
 
     public String getServerUrl() {
         return binding.configServerUrl.getValue();

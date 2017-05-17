@@ -24,7 +24,7 @@ public class UserActivity extends AbstractRootTabActivity {
         setContentView(R.layout.sormas_root_activity_layout);
 
         super.onCreate(savedInstanceState);
-        setTitle(getResources().getString(R.string.main_menu_user));
+        setTitle(getResources().getString(R.string.main_menu_settings));
 
         // setting the fragment_frame
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
@@ -69,8 +69,8 @@ public class UserActivity extends AbstractRootTabActivity {
                 return true;
 
             case R.id.action_save:
-                User user = userForm.getUser();
-                ConfigProvider.setUser(user);
+//                User user = userForm.getUser();
+//                ConfigProvider.setUser(user);
 
                 String serverUrl = userForm.getServerUrl();
                 ConfigProvider.setServerUrl(serverUrl);

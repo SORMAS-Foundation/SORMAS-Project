@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:descendantFocusability="beforeDescendants"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:layout_gravity="center_vertical"
+    android:gravity="center_horizontal"
+    android:paddingLeft="24dp"
+    android:paddingRight="24dp"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:id="@+id/base_layout">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        android:textSize="28sp"
+        android:text="@string/headline_sormas" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:textSize="12sp"
+        android:text="@string/hint_login" />
+
+    <ImageView
+        android:id="@+id/sormas_logo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1.00"
+        android:layout_marginBottom="48dp"
+        android:src="@mipmap/sormas_logo" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:labelFor="@+id/login_user"
+        android:text="@string/form_username"/>
+    <EditText
+        android:id="@+id/login_user"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/field_height"
+        android:maxLines="1"
+        android:inputType="text"
+        android:layout_marginBottom="24dp"
+        android:nextFocusDown="@+id/login_password"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:labelFor="@+id/login_password"
+        android:text="@string/form_password"/>
+    <EditText
+        android:id="@+id/login_password"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/field_height"
+        android:inputType="textPassword"
+        android:layout_marginBottom="24dp"/>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.5"
+        android:layout_margin="2dp"
+        android:background="@color/colorPrimary"
+        android:id="@+id/action_login"
+        android:onClick="login"
+        android:text="@string/action_login"/>
+
+</LinearLayout>

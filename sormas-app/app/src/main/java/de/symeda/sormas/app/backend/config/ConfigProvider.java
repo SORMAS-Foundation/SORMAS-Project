@@ -56,7 +56,6 @@ public final class ConfigProvider {
                     if (config != null) {
                         instance.user = DatabaseHelper.getUserDao().queryUuid(config.getValue());
                     }
-
                     if (instance.user == null) {
                         // no user found. Take first surveillance officer...
                         List<User> users = DatabaseHelper.getUserDao().queryForAll();

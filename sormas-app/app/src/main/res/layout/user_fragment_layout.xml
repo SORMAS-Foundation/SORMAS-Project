@@ -18,22 +18,22 @@
             android:focusableInTouchMode="true">
 
             <!-- ============= USER_ADMINISTRATION ============= -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="@string/headline_user_administration"
-                android:textColor="@android:color/tab_indicator_text"
-                android:textSize="@dimen/abc_text_size_body_1_material"
-                android:textStyle="bold"
-                android:paddingBottom="10dp" />
+            <!--<TextView-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:textAppearance="?android:attr/textAppearanceLarge"-->
+                <!--android:text="@string/headline_user_administration"-->
+                <!--android:textColor="@android:color/tab_indicator_text"-->
+                <!--android:textSize="@dimen/abc_text_size_body_1_material"-->
+                <!--android:textStyle="bold"-->
+                <!--android:paddingBottom="10dp" />-->
 
-            <de.symeda.sormas.app.component.SpinnerField
-                android:id="@+id/config_user"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="@dimen/field_padding"
-                android:paddingBottom="@dimen/field_padding" />
+            <!--<de.symeda.sormas.app.component.SpinnerField-->
+                <!--android:id="@+id/config_user"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:paddingTop="@dimen/field_padding"-->
+                <!--android:paddingBottom="@dimen/field_padding" />-->
 
             <de.symeda.sormas.app.component.TextField
                 android:id="@+id/config_serverUrl"

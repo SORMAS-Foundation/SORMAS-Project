@@ -1,7 +1,9 @@
 package de.symeda.sormas.app.component;
 
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -27,6 +29,7 @@ import de.symeda.sormas.app.contact.ContactsActivity;
 import de.symeda.sormas.app.event.EventsActivity;
 import de.symeda.sormas.app.sample.SamplesActivity;
 import de.symeda.sormas.app.task.TasksActivity;
+import de.symeda.sormas.app.user.LoginActivity;
 import de.symeda.sormas.app.user.UserActivity;
 import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.SyncCallback;
@@ -56,8 +59,9 @@ public abstract class AbstractRootTabActivity extends AbstractTabActivity {
                 getResources().getString(R.string.main_menu_contacts),
                 getResources().getString(R.string.main_menu_events),
                 getResources().getString(R.string.main_menu_samples),
-                getResources().getString(R.string.main_menu_user),
+                getResources().getString(R.string.main_menu_settings),
                 getResources().getString(R.string.main_menu_sync_all),
+                getResources().getString(R.string.main_menu_logout) + " (" + ConfigProvider.getUser().getUserName() + ")"
         };
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);
@@ -199,6 +203,15 @@ public abstract class AbstractRootTabActivity extends AbstractTabActivity {
                           }, AbstractRootTabActivity.this);
     }
 
+    public void logout() {
+        SharedPreferences sharedPref = this.getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.remove("username");
+        editor.apply();
+        ConfigProvider.setUser(null);
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
+    }
 
     /**
      * Swaps fragments in the main content view
@@ -228,6 +241,9 @@ public abstract class AbstractRootTabActivity extends AbstractTabActivity {
                 // don't keep this button selected
                 menuDrawerList.clearChoices();
                 menuDrawerLayout.closeDrawers();
+                break;
+            case 7:
+                logout();
                 break;
             default:
                 throw new IndexOutOfBoundsException("No action defined for menu entry: " + position);
