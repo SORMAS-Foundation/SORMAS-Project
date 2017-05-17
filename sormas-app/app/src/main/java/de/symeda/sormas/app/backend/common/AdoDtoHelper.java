@@ -119,7 +119,7 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
                         for (ADO ado : modifiedAdos) {
                             // data has been pushed, we no longer need the old unmodified version
                             ADO clonedOriginal = dao.queryClonedOriginalUuid(ado.getUuid());
-                            if (clonedOriginal == null) {
+                            if (clonedOriginal != null) {
                                 dao.delete(clonedOriginal);
                             }
 
