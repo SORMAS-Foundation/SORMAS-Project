@@ -1,7 +1,5 @@
 package de.symeda.sormas.app.user;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -83,9 +81,7 @@ public class UserForm extends FormTab {
             @Override
             public void call(boolean syncFailed) {
                 // User needs to be set again because the user table has been cleared
-                SharedPreferences sharedPref = getActivity().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
-                String prefUsername = sharedPref.getString("username", null);
-                User user = DatabaseHelper.getUserDao().getByUsername(prefUsername);
+                User user = DatabaseHelper.getUserDao().getByUsername(ConfigProvider.getUsername());
                 ConfigProvider.setUser(user);
 
                 UserForm.this.onResume();

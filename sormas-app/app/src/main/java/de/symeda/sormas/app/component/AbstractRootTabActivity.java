@@ -1,10 +1,6 @@
 package de.symeda.sormas.app.component;
 
-
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
@@ -191,11 +187,9 @@ public abstract class AbstractRootTabActivity extends AbstractTabActivity {
     }
 
     public void logout() {
-        SharedPreferences sharedPref = this.getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPref.edit();
-        editor.remove("username");
-        editor.apply();
         ConfigProvider.setUser(null);
+        ConfigProvider.setUsername(null);
+        ConfigProvider.setPassword(null);
         Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
     }

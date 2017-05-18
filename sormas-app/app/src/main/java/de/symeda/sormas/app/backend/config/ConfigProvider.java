@@ -32,6 +32,8 @@ import de.symeda.sormas.app.util.SyncInfrastructureTask;
 public final class ConfigProvider {
 
     private static String KEY_USER_UUID = "userUuid";
+    private static String KEY_USERNAME = "username";
+    private static String KEY_PASSWORD = "password";
     private static String KEY_SERVER_REST_URL = "serverRestUrl";
     private static String LAST_NOTIFICATION_DATE = "lastNotificationDate";
 
@@ -46,6 +48,8 @@ public final class ConfigProvider {
 
     private String serverRestUrl;
     private User user;
+    private String username;
+    private String password;
     private Date lastNotificationDate;
 
     public static User getUser() {
@@ -56,6 +60,8 @@ public final class ConfigProvider {
                     if (config != null) {
                         instance.user = DatabaseHelper.getUserDao().queryUuid(config.getValue());
                     }
+                    // TODO check if username == user.name
+                    // TODO remove this as soon as server stuff has been added, see #180
                     if (instance.user == null) {
                         // no user found. Take first surveillance officer...
                         List<User> users = DatabaseHelper.getUserDao().queryForAll();
@@ -87,6 +93,39 @@ public final class ConfigProvider {
 
         if (!wasNull) {
             DatabaseHelper.clearTables(false);
+        }
+    }
+
+    public static String getUsername() {
+        return instance.username;
+
+    }
+
+    public static void setUsername(String username) {
+        if (username != null && username.equals(instance.username))
+            return;
+
+        instance.username = username;
+        if (username == null) {
+            DatabaseHelper.getConfigDao().delete(new Config(KEY_USERNAME, ""));
+        } else {
+            DatabaseHelper.getConfigDao().createOrUpdate(new Config(KEY_USERNAME, username));
+        }
+    }
+
+    public static String getPassword() {
+        return instance.password;
+    }
+
+    public static void setPassword(String password) {
+        if (password != null && password.equals(instance.password))
+            return;
+
+        instance.password = password;
+        if (password == null) {
+            DatabaseHelper.getConfigDao().delete(new Config(KEY_PASSWORD, ""));
+        } else {
+            DatabaseHelper.getConfigDao().createOrUpdate(new Config(KEY_PASSWORD, password));
         }
     }
 
