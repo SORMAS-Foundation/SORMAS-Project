@@ -56,13 +56,9 @@ public class SormasApplication extends Application {
         // TODO find a way to automatically disable exception reporting when the app is started in Android Studio
 
         // Enable the forwarding of uncaught exceptions to Google Analytics
-        Thread.UncaughtExceptionHandler handler = new ExceptionReporter(
-                tracker,
-                Thread.getDefaultUncaughtExceptionHandler(),
-                getApplicationContext()
-        );
-        ((ExceptionReporter) handler).setExceptionParser(new UncaughtExceptionParser());
-        Thread.setDefaultUncaughtExceptionHandler(handler);
+        Thread.UncaughtExceptionHandler handler = Thread.getDefaultUncaughtExceptionHandler();
+        ExceptionReporter reporter = (ExceptionReporter) handler;
+        reporter.setExceptionParser(new UncaughtExceptionParser());
 
         super.onCreate();
     }

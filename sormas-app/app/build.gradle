@@ -54,7 +54,6 @@ dependencies {
     compile 'com.j256.ormlite:ormlite-android:4.48'
     compile 'javax.persistence:persistence-api:1.0.2'
     compile 'de.symeda.sormas:sormas-api:0.0.1-SNAPSHOT'
-    compile 'com.google.firebase:firebase-appindexing:10.0.1'
     compile 'com.google.android.gms:play-services-analytics:10.0.1'
     compile 'com.googlecode:openbeans:1.0' // https://mvnrepository.com/artifact/com.googlecode/openbeans
 }
