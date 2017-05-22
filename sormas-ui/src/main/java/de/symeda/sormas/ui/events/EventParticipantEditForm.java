@@ -34,7 +34,7 @@ public class EventParticipantEditForm extends AbstractEditForm<EventParticipantD
 			return;
 		}
     	
-		PersonEditForm pef = new PersonEditForm();
+		PersonEditForm pef = new PersonEditForm(null);
 		pef.setImmediate(true);
 		getFieldGroup().bind(pef, EventParticipantDto.PERSON);
 		getContent().addComponent(pef, EventParticipantDto.PERSON);

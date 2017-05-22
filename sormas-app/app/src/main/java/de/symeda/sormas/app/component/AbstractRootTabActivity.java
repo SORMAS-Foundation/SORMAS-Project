@@ -47,7 +47,7 @@ public abstract class AbstractRootTabActivity extends AbstractTabActivity {
                 getResources().getString(R.string.main_menu_samples),
                 getResources().getString(R.string.main_menu_settings),
                 getResources().getString(R.string.main_menu_sync_all),
-                getResources().getString(R.string.main_menu_logout) + " (" + ConfigProvider.getUser().getUserName() + ")"
+                getResources().getString(R.string.main_menu_logout) + " (" + ConfigProvider.getUsername() + ")"
         };
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);

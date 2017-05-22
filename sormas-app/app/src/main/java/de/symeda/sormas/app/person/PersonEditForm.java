@@ -8,28 +8,30 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.Toast;
-
-import com.google.android.gms.analytics.Tracker;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
+import de.symeda.sormas.api.person.BurialConductor;
+import de.symeda.sormas.api.person.DeathPlaceType;
 import de.symeda.sormas.api.person.OccupationType;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.SormasApplication;
+import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.person.Person;
@@ -44,7 +46,6 @@ import de.symeda.sormas.app.component.SpinnerField;
 import de.symeda.sormas.app.component.TextField;
 import de.symeda.sormas.app.databinding.PersonEditFragmentLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
-import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.FormTab;
 import de.symeda.sormas.app.util.Item;
 import de.symeda.sormas.app.util.Consumer;
@@ -71,6 +72,8 @@ public class PersonEditForm extends FormTab {
         PersonDao personDao = DatabaseHelper.getPersonDao();
         Person person = personDao.queryUuid(personUuid);
         binding.setPerson(person);
+
+        final Disease disease = (Disease) getArguments().get(Case.DISEASE);
 
         // date of birth
         FieldHelper.initSpinnerField(binding.personBirthdateDD, DataUtils.toItems(DateHelper.getDaysInMonth(),true), new AdapterView.OnItemSelectedListener() {
@@ -120,22 +123,26 @@ public class PersonEditForm extends FormTab {
             }
         });
 
+        binding.personBurialDate.initialize(this);
+
+        FieldHelper.initSpinnerField(binding.personDeathPlaceType, DeathPlaceType.class);
+        FieldHelper.initSpinnerField(binding.personBurialConductor, BurialConductor.class);
 
         // status of patient
         FieldHelper.initSpinnerField(binding.personPresentCondition, PresentCondition.class, new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                updateDateOfDeathField();
+                updateDeathAndBurialFields(disease);
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                updateDateOfDeathField();
+                updateDeathAndBurialFields(disease);
             }
         });
 
         // evaluate the model and set the ui
-        updateDateOfDeathField();
+        updateDeathAndBurialFields(disease);
         updateApproximateAgeField();
 
         // ================ Address ================
@@ -309,11 +316,45 @@ public class PersonEditForm extends FormTab {
         }
     }
 
-    private void updateDateOfDeathField() {
+    private void updateDeathAndBurialFields(Disease disease) {
+        List<PropertyField<?>> deathAndBurialFields = Arrays.asList(binding.personDeathPlaceType, binding.personDeathPlaceDescription,
+                binding.personBurialDate, binding.personBurialConductor, binding.personBurialPlaceDescription);
+
         PresentCondition condition = (PresentCondition)binding.personPresentCondition.getValue();
-        setFieldVisible(binding.cpDateOfDeathLayout, condition != null
+        setFieldVisible(binding.personDeathDate, condition != null
                 && (PresentCondition.DEAD.equals(condition) || PresentCondition.BURIED.equals(condition)));
+        setFieldVisibleOrGone(binding.personDeathPlaceType, condition != null
+                && (PresentCondition.DEAD.equals(condition) || PresentCondition.BURIED.equals(condition)));
+        setFieldVisibleOrGone(binding.personDeathPlaceDescription, condition != null
+                && (PresentCondition.DEAD.equals(condition) || PresentCondition.BURIED.equals(condition)));
+        setFieldVisibleOrGone(binding.personBurialDate, condition != null && PresentCondition.BURIED.equals(condition));
+        setFieldVisibleOrGone(binding.personBurialConductor, condition != null && PresentCondition.BURIED.equals(condition));
+        setFieldVisibleOrGone(binding.personBurialPlaceDescription, condition != null && PresentCondition.BURIED.equals(condition));
+
+        // Make sure that death and burial fields are only shown for EVD
+        for (PropertyField<?> field : deathAndBurialFields) {
+            String propertyId = field.getPropertyId();
+            boolean definedOrMissing = Diseases.DiseasesConfiguration.isDefinedOrMissing(PersonDto.class, propertyId, disease);
+            if (!definedOrMissing) {
+                field.setVisibility(View.GONE);
+            }
+        }
+
+        fillDeathAndBurialFields();
         binding.personDeathDate.clearFocus();
+    }
+
+    private void fillDeathAndBurialFields() {
+        if (binding.personDeathPlaceType.getVisibility() == View.VISIBLE && binding.personDeathPlaceType.getValue() == null) {
+            binding.personDeathPlaceType.setValue(DeathPlaceType.OTHER);
+            if (binding.personDeathPlaceDescription.getVisibility() == View.VISIBLE && (binding.personDeathPlaceDescription.getValue() == null || binding.personDeathPlaceDescription.getValue().isEmpty())) {
+                binding.personDeathPlaceDescription.setValue(binding.getPerson().getAddress().toString());
+            }
+        }
+
+        if (binding.personBurialPlaceDescription.getVisibility() == View.VISIBLE && (binding.personBurialPlaceDescription.getValue() == null || binding.personBurialPlaceDescription.getValue().isEmpty())) {
+            binding.personBurialPlaceDescription.setValue(binding.getPerson().getAddress().toString());
+        }
     }
 
     private void updateApproximateAgeField() {

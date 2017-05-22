@@ -4,8 +4,10 @@ import java.util.Date;
 
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.PreciseDateAdapter;
 
 public class PersonDto extends PersonReferenceDto {
@@ -21,14 +23,15 @@ public class PersonDto extends PersonReferenceDto {
 	public static final String BIRTH_DATE_MM = "birthdateMM";
 	public static final String BIRTH_DATE_YYYY = "birthdateYYYY";
 	
-	public static final String DEATH_DATE = "deathDate";
-	public static final String DEATH_LOCATION = "deathLocation";
-	public static final String BURIAL_DATE = "burialDate";
-	public static final String BURIAL_LOCATION = "burialLocation";
-	public static final String BURIAL_CONDUCTOR = "burialConductor";
-	
 	public static final String APPROXIMATE_AGE = "approximateAge";
 	public static final String APPROXIMATE_AGE_TYPE = "approximateAgeType";
+	
+	public static final String DEATH_DATE = "deathDate";
+	public static final String DEATH_PLACE_TYPE = "deathPlaceType";
+	public static final String DEATH_PLACE_DESCRIPTION = "deathPlaceDescription";
+	public static final String BURIAL_DATE = "burialDate";
+	public static final String BURIAL_PLACE_DESCRIPTION = "burialPlaceDescription";
+	public static final String BURIAL_CONDUCTOR = "burialConductor";
 	
 	public static final String NICKNAME = "nickname";
 	public static final String MOTHERS_MAIDEN_NAME = "mothersMaidenName";
@@ -49,11 +52,16 @@ public class PersonDto extends PersonReferenceDto {
 	private Integer birthdateYYYY;
 	private Integer approximateAge;
 	private ApproximateAgeType approximateAgeType;
-
 	private Date deathDate;
-	private LocationDto deathLocation;
+	@Diseases({Disease.EVD})
+	private DeathPlaceType deathPlaceType;
+	@Diseases({Disease.EVD})
+	private String deathPlaceDescription;
+	@Diseases({Disease.EVD})
 	private Date burialDate;
-	private LocationDto burialLocation;
+	@Diseases({Disease.EVD})
+	private String burialPlaceDescription;
+	@Diseases({Disease.EVD})
 	private BurialConductor burialConductor;
 		
 	private String nickname;
@@ -67,7 +75,6 @@ public class PersonDto extends PersonReferenceDto {
 	private String occupationDetails;
 	private FacilityReferenceDto occupationFacility;
 
-	
 	public Integer getBirthdateDD() {
 		return birthdateDD;
 	}
@@ -106,6 +113,49 @@ public class PersonDto extends PersonReferenceDto {
 
 	public void setApproximateAgeType(ApproximateAgeType approximateAgeType) {
 		this.approximateAgeType = approximateAgeType;
+	}
+
+	
+	public DeathPlaceType getDeathPlaceType() {
+		return deathPlaceType;
+	}
+
+	public void setDeathPlaceType(DeathPlaceType deathPlaceType) {
+		this.deathPlaceType = deathPlaceType;
+	}
+
+	public String getDeathPlaceDescription() {
+		return deathPlaceDescription;
+	}
+
+	public void setDeathPlaceDescription(String deathPlaceDescription) {
+		this.deathPlaceDescription = deathPlaceDescription;
+	}
+
+	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
+	public Date getBurialDate() {
+		return burialDate;
+	}
+
+	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
+	public void setBurialDate(Date burialDate) {
+		this.burialDate = burialDate;
+	}
+
+	public String getBurialPlaceDescription() {
+		return burialPlaceDescription;
+	}
+
+	public void setBurialPlaceDescription(String burialPlaceDescription) {
+		this.burialPlaceDescription = burialPlaceDescription;
+	}
+
+	public BurialConductor getBurialConductor() {
+		return burialConductor;
+	}
+
+	public void setBurialConductor(BurialConductor burialConductor) {
+		this.burialConductor = burialConductor;
 	}
 
 	public Sex getSex() {
@@ -197,35 +247,4 @@ public class PersonDto extends PersonReferenceDto {
 		this.mothersMaidenName = mothersMaidenName;
 	}
 
-	public LocationDto getDeathLocation() {
-		return deathLocation;
-	}
-
-	public void setDeathLocation(LocationDto deathLocation) {
-		this.deathLocation = deathLocation;
-	}
-
-	public Date getBurialDate() {
-		return burialDate;
-	}
-
-	public void setBurialDate(Date burialDate) {
-		this.burialDate = burialDate;
-	}
-
-	public LocationDto getBurialLocation() {
-		return burialLocation;
-	}
-
-	public void setBurialLocation(LocationDto burialLocation) {
-		this.burialLocation = burialLocation;
-	}
-
-	public BurialConductor getBurialConductor() {
-		return burialConductor;
-	}
-
-	public void setBurialConductor(BurialConductor burialConductor) {
-		this.burialConductor = burialConductor;
-	}
 }

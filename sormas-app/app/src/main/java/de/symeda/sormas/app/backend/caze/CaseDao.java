@@ -40,21 +40,11 @@ public class CaseDao extends AbstractAdoDao<Case> {
 
     @Override
     public boolean save(Case caze) throws DaoException {
-
-        if (caze.getIllLocation() != null) {
-            DatabaseHelper.getLocationDao().save(caze.getIllLocation());
-        }
-
         return super.save(caze);
     }
 
     @Override
     public boolean saveUnmodified(Case caze) throws DaoException {
-
-        if (caze.getIllLocation() != null) {
-            DatabaseHelper.getLocationDao().saveUnmodified(caze.getIllLocation());
-        }
-
         // saving unmodified also includes cascading sub entities
         if (caze.getSymptoms() != null) {
             DatabaseHelper.getSymptomsDao().saveUnmodified(caze.getSymptoms());
@@ -119,8 +109,6 @@ public class CaseDao extends AbstractAdoDao<Case> {
 
         caze.setReportDate(new Date());
         caze.setReportingUser(ConfigProvider.getUser());
-
-        caze.setIllLocation(DatabaseHelper.getLocationDao().create());
 
         // Symptoms
         caze.setSymptoms(DatabaseHelper.getSymptomsDao().create());

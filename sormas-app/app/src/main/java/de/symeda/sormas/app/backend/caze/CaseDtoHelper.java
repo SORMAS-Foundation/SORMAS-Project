@@ -34,7 +34,6 @@ import de.symeda.sormas.app.util.DataUtils;
  */
 public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 
-    private LocationDtoHelper locationHelper = new LocationDtoHelper();
     private SymptomsDtoHelper  symptomsDtoHelper = new SymptomsDtoHelper();
     private HospitalizationDtoHelper hospitalizationDtoHelper = new HospitalizationDtoHelper();
     private EpiDataDtoHelper epiDataDtoHelper = new EpiDataDtoHelper();
@@ -64,7 +63,6 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
         target.setReportingUser(DatabaseHelper.getUserDao().getByReferenceDto(source.getReportingUser()));
 
         target.setSymptoms(symptomsDtoHelper.fillOrCreateFromDto(target.getSymptoms(), source.getSymptoms()));
-        target.setIllLocation(locationHelper.fillOrCreateFromDto(target.getIllLocation(), source.getIllLocation()));
 
         target.setRegion(DatabaseHelper.getRegionDao().getByReferenceDto(source.getRegion()));
         target.setDistrict(DatabaseHelper.getDistrictDao().getByReferenceDto(source.getDistrict()));
@@ -108,11 +106,6 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
             target.setReportingUser(UserDtoHelper.toReferenceDto(user));
         } else {
             target.setReportingUser(null);
-        }
-
-        if (source.getIllLocation() != null) {
-            Location location = DatabaseHelper.getLocationDao().queryForId(source.getIllLocation().getId());
-            target.setIllLocation(locationHelper.adoToDto(location));
         }
 
         if (source.getSymptoms() != null) {

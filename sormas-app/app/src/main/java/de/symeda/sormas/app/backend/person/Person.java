@@ -20,6 +20,7 @@ import javax.persistence.TemporalType;
 
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.BurialConductor;
+import de.symeda.sormas.api.person.DeathPlaceType;
 import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
@@ -76,16 +77,16 @@ public class Person extends AbstractDomainObject {
 
 	@Enumerated(EnumType.STRING)
 	private PresentCondition presentCondition;
-	@Column
-	private boolean dead;
 	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
 	private Date deathDate;
-	@DatabaseField(foreign = true, foreignAutoCreate = true, foreignAutoRefresh = true)
-	private Location deathLocation;
+	@Enumerated(EnumType.STRING)
+	private DeathPlaceType deathPlaceType;
+	@Column(length = 255)
+	private String deathPlaceDescription;
 	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
 	private Date burialDate;
-	@DatabaseField(foreign = true, foreignAutoCreate = true, foreignAutoRefresh = true)
-	private Location burialLocation;
+	@Column(length=255)
+	private String burialPlaceDescription;
 	@Enumerated(EnumType.STRING)
 	private BurialConductor burialConductor;
 
@@ -200,13 +201,6 @@ public class Person extends AbstractDomainObject {
 	public void setPresentCondition(PresentCondition presentCondition) {
 		this.presentCondition = presentCondition;
 	}
-
-	public boolean isDead() {
-		return dead;
-	}
-	public void setDead(boolean dead) {
-		this.dead = dead;
-	}
 	
 	public Date getDeathDate() {
 		return deathDate;
@@ -214,26 +208,12 @@ public class Person extends AbstractDomainObject {
 	public void setDeathDate(Date deathDate) {
 		this.deathDate = deathDate;
 	}
-	
-	public Location getDeathLocation() {
-		return deathLocation;
-	}
-	public void setDeathLocation(Location deathLocation) {
-		this.deathLocation = deathLocation;
-	}
-	
+
 	public Date getBurialDate() {
 		return burialDate;
 	}
 	public void setBurialDate(Date burialDate) {
 		this.burialDate = burialDate;
-	}
-	
-	public Location getBurialLocation() {
-		return burialLocation;
-	}
-	public void setBurialLocation(Location burialLocation) {
-		this.burialLocation = burialLocation;
 	}
 	
 	public BurialConductor getBurialConductor() {
@@ -242,7 +222,31 @@ public class Person extends AbstractDomainObject {
 	public void setBurialConductor(BurialConductor burialConductor) {
 		this.burialConductor = burialConductor;
 	}
-	
+
+	public DeathPlaceType getDeathPlaceType() {
+		return deathPlaceType;
+	}
+
+	public void setDeathPlaceType(DeathPlaceType deathPlaceType) {
+		this.deathPlaceType = deathPlaceType;
+	}
+
+	public String getDeathPlaceDescription() {
+		return deathPlaceDescription;
+	}
+
+	public void setDeathPlaceDescription(String deathPlaceDescription) {
+		this.deathPlaceDescription = deathPlaceDescription;
+	}
+
+	public String getBurialPlaceDescription() {
+		return burialPlaceDescription;
+	}
+
+	public void setBurialPlaceDescription(String burialPlaceDescription) {
+		this.burialPlaceDescription = burialPlaceDescription;
+	}
+
 	public OccupationType getOccupationType() {
 		return occupationType;
 	}

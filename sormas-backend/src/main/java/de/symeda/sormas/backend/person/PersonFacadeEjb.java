@@ -184,10 +184,11 @@ public class PersonFacadeEjb implements PersonFacade {
 		target.setApproximateAge(source.getApproximateAge());
 		target.setApproximateAgeType(source.getApproximateAgeType());
 		target.setDeathDate(source.getDeathDate());
-		target.setDeathLocation(locationFacade.fromDto(source.getDeathLocation()));
+		target.setDeathPlaceType(source.getDeathPlaceType());
+		target.setDeathPlaceDescription(source.getDeathPlaceDescription());
 		target.setBurialDate(source.getBurialDate());
+		target.setBurialPlaceDescription(source.getBurialPlaceDescription());
 		target.setBurialConductor(source.getBurialConductor());
-		target.setBurialLocation(locationFacade.fromDto(source.getBurialLocation()));
 		
 		target.setNickname(source.getNickname());
 		target.setMothersMaidenName(source.getMothersMaidenName());
@@ -270,11 +271,12 @@ public class PersonFacadeEjb implements PersonFacade {
 		}
 		
 		target.setDeathDate(source.getDeathDate());
-		target.setDeathLocation(LocationFacadeEjb.toDto(source.getDeathLocation()));
+		target.setDeathPlaceType(source.getDeathPlaceType());
+		target.setDeathPlaceDescription(source.getDeathPlaceDescription());
 		target.setBurialDate(source.getBurialDate());
+		target.setBurialPlaceDescription(source.getBurialPlaceDescription());
 		target.setBurialConductor(source.getBurialConductor());
-		target.setBurialLocation(LocationFacadeEjb.toDto(source.getBurialLocation()));
-
+		
 		target.setNickname(source.getNickname());
 		target.setMothersMaidenName(source.getMothersMaidenName());
 		

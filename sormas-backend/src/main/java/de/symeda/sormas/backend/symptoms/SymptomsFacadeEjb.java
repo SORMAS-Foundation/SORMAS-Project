@@ -8,6 +8,8 @@ import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsFacade;
+import de.symeda.sormas.backend.location.LocationFacadeEjb;
+import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
 import de.symeda.sormas.backend.util.DtoHelper;
 
 @Stateless(name = "SymptomsFacade")
@@ -15,6 +17,8 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 	
 	@EJB
 	private SymptomsService service;
+	@EJB
+	private LocationFacadeEjbLocal locationFacade;
 
 	public Symptoms fromDto(SymptomsDto dto) {		
 		if (dto == null) {
@@ -86,7 +90,9 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setThrobocytopenia(source.getThrobocytopenia());
 		target.setUnexplainedBleeding(source.getUnexplainedBleeding());
 		target.setVomiting(source.getVomiting());
-
+		target.setIllLocation(locationFacade.fromDto(source.getIllLocation()));
+		target.setIllLocationFrom(source.getIllLocationFrom());
+		target.setIllLocationTo(source.getIllLocationTo());
 		
 		return symptoms;
 	}
@@ -156,6 +162,9 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setThrobocytopenia(source.getThrobocytopenia());
 		target.setUnexplainedBleeding(source.getUnexplainedBleeding());
 		target.setVomiting(source.getVomiting());
+		target.setIllLocation(LocationFacadeEjb.toDto(source.getIllLocation()));
+		target.setIllLocationFrom(source.getIllLocationFrom());
+		target.setIllLocationTo(source.getIllLocationTo());
 		
 		return target;
 	}
@@ -164,7 +173,8 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 	public SymptomsDto saveSymptoms(SymptomsDto dto) {
 		Symptoms ado = fromDto(dto);
 		service.ensurePersisted(ado);
-		return toDto(ado);	}
+		return toDto(ado);	
+	}
 	
 	@LocalBean
 	@Stateless

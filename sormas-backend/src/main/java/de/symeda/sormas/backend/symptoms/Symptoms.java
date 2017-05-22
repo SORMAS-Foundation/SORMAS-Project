@@ -2,16 +2,19 @@ package de.symeda.sormas.backend.symptoms;
 
 import java.util.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.TemperatureSource;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.location.Location;
 
 @Entity
 public class Symptoms extends AbstractDomainObject {
@@ -19,11 +22,18 @@ public class Symptoms extends AbstractDomainObject {
 	private static final long serialVersionUID = 1467852910743225822L;
 	
 	public static final String ONSET_DATE = "onsetDate";
+	public static final String ILLLOCATION = "illLocation";
+	public static final String ILLLOCATION_FROM = "illLocationFrom";
+	public static final String ILLLOCATION_TO = "illLocationTo";
 
 	private Date onsetDate;
 	private String onsetSymptom;
 	private Boolean symptomatic;
 
+	private Location illLocation;
+	private Date illLocationFrom;
+	private Date illLocationTo;
+	
 	private Float temperature;
 	private TemperatureSource temperatureSource;
 	private SymptomState fever;
@@ -99,6 +109,36 @@ public class Symptoms extends AbstractDomainObject {
 
 	public void setTemperatureSource(TemperatureSource temperatureSource) {
 		this.temperatureSource = temperatureSource;
+	}
+
+	@OneToOne(cascade = CascadeType.ALL)
+	public Location getIllLocation() {
+		if (illLocation == null) {
+			illLocation = new Location();
+		}
+		return illLocation;
+	}
+	
+	public void setIllLocation(Location illLocation) {
+		this.illLocation = illLocation;
+	}
+
+	@Temporal(TemporalType.DATE)
+	public Date getIllLocationFrom() {
+		return illLocationFrom;
+	}
+
+	public void setIllLocationFrom(Date illLocationFrom) {
+		this.illLocationFrom = illLocationFrom;
+	}
+
+	@Temporal(TemporalType.DATE)
+	public Date getIllLocationTo() {
+		return illLocationTo;
+	}
+
+	public void setIllLocationTo(Date illLocationTo) {
+		this.illLocationTo = illLocationTo;
 	}
 
 	@Enumerated(EnumType.STRING)

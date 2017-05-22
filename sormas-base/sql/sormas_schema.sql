@@ -1348,9 +1348,24 @@ ALTER TABLE samples ADD COLUMN suggestedtypeoftest varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (45, 'Sample source and suggested type of test');
 
--- 2017-05-11 Add missing fields to person DTO #196
+-- 2017-05-17 Missing person fields #196
 
-ALTER TABLE public.person DROP COLUMN dead;
+ALTER TABLE person DROP COLUMN dead;
+ALTER TABLE person DROP COLUMN buriallocation_id;
+ALTER TABLE person DROP COLUMN deathlocation_id;
+ALTER TABLE person ADD COLUMN deathplacetype varchar(255);
+ALTER TABLE person ADD COLUMN deathplacedescription varchar(512);
+ALTER TABLE person ADD COLUMN burialplacedescription varchar(512);
 
-INSERT INTO schema_version (version_number, comment) VALUES (46, 'Drop person.dead');
+INSERT INTO schema_version (version_number, comment) VALUES (46, 'Missing person fields #196');
 
+-- 2017-05-18 IllLocation for symptoms #196
+
+ALTER TABLE cases DROP COLUMN illlocation_id;
+ALTER TABLE symptoms ADD COLUMN illlocation_id bigint;
+ALTER TABLE symptoms ADD COLUMN illlocationfrom timestamp;
+ALTER TABLE symptoms ADD COLUMN illlocationto timestamp;
+
+ALTER TABLE symptoms ADD CONSTRAINT fk_symptoms_illlocation_id FOREIGN KEY (illlocation_id) REFERENCES location(id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (47, 'IllLocation for symptoms');

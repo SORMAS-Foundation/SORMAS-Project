@@ -44,15 +44,16 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
 
         target.setPresentCondition(source.getPresentCondition());
         target.setDeathDate(source.getDeathDate());
-        target.setDeathLocation(locationHelper.fillOrCreateFromDto(target.getDeathLocation(), source.getDeathLocation()));
-        target.setBurialDate(source.getBurialDate());
-        target.setBurialConductor(source.getBurialConductor());
-        target.setBurialLocation(locationHelper.fillOrCreateFromDto(target.getBurialLocation(), source.getBurialLocation()));
 
         target.setAddress(locationHelper.fillOrCreateFromDto(target.getAddress(), source.getAddress()));
         target.setOccupationType(source.getOccupationType());
         target.setOccupationDetails(source.getOccupationDetails());
         target.setOccupationFacility(DatabaseHelper.getFacilityDao().getByReferenceDto(source.getOccupationFacility()));
+        target.setDeathPlaceType(source.getDeathPlaceType());
+        target.setDeathPlaceDescription(source.getDeathPlaceDescription());
+        target.setBurialDate(source.getBurialDate());
+        target.setBurialPlaceDescription(source.getBurialPlaceDescription());
+        target.setBurialConductor(source.getBurialConductor());
     }
 
     @Override
@@ -63,6 +64,13 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
         target.setNickname(source.getNickname());
         target.setMothersMaidenName(source.getMothersMaidenName());
         target.setSex(source.getSex());
+        target.setPresentCondition(source.getPresentCondition());
+        target.setDeathDate(source.getDeathDate());
+        target.setDeathPlaceType(source.getDeathPlaceType());
+        target.setDeathPlaceDescription(source.getDeathPlaceDescription());
+        target.setBurialDate(source.getBurialDate());
+        target.setBurialPlaceDescription(source.getBurialPlaceDescription());
+        target.setBurialConductor(source.getBurialConductor());
 
         target.setBirthdateDD(source.getBirthdateDD());
         target.setBirthdateMM(source.getBirthdateMM());
@@ -72,14 +80,6 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
         target.setPhone(source.getPhone());
         target.setPhoneOwner(source.getPhoneOwner());
 
-        target.setPresentCondition(source.getPresentCondition());
-        target.setDeathDate(source.getDeathDate());
-        Location deathLocation = DatabaseHelper.getLocationDao().queryForId(source.getDeathLocation().getId());
-        target.setDeathLocation(locationHelper.adoToDto(deathLocation));
-        target.setBurialDate(source.getBurialDate());
-        target.setBurialConductor(source.getBurialConductor());
-        Location burialLocation = DatabaseHelper.getLocationDao().queryForId(source.getBurialLocation().getId());
-        target.setBurialLocation(locationHelper.adoToDto(burialLocation));
 
         Location address = DatabaseHelper.getLocationDao().queryForId(source.getAddress().getId());
         target.setAddress(locationHelper.adoToDto(address));

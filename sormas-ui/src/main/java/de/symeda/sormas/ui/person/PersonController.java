@@ -7,6 +7,7 @@ import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
@@ -40,7 +41,7 @@ public class PersonController {
     }
     
     public void openEditModal(String personUuid) {
-		CommitDiscardWrapperComponent<PersonEditForm> personEditComponent = getPersonEditComponent(personUuid);
+		CommitDiscardWrapperComponent<PersonEditForm> personEditComponent = getPersonEditComponent(personUuid, null);
 		VaadinUiUtil.showModalPopupWindow(personEditComponent, "Edit person");
     }
     
@@ -101,9 +102,8 @@ public class PersonController {
     }  
     
 	
-	public CommitDiscardWrapperComponent<PersonEditForm> getPersonEditComponent(String personUuid) {
-    	    	
-    	PersonEditForm personEditForm = new PersonEditForm();
+	public CommitDiscardWrapperComponent<PersonEditForm> getPersonEditComponent(String personUuid, Disease disease) {
+    	PersonEditForm personEditForm = new PersonEditForm(disease);
         
         PersonDto personDto = personFacade.getPersonByUuid(personUuid);
         personEditForm.setValue(personDto);

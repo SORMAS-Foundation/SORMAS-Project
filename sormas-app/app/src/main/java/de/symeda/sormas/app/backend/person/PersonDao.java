@@ -39,12 +39,6 @@ public class PersonDao extends AbstractAdoDao<Person> {
         if (person.getAddress() != null) {
             DatabaseHelper.getLocationDao().save(person.getAddress());
         }
-        if (person.getBurialLocation() != null) {
-            DatabaseHelper.getLocationDao().save(person.getBurialLocation());
-        }
-        if (person.getDeathLocation() != null) {
-            DatabaseHelper.getLocationDao().save(person.getDeathLocation());
-        }
 
         return super.save(person);
     }
@@ -54,12 +48,6 @@ public class PersonDao extends AbstractAdoDao<Person> {
 
         if (person.getAddress() != null) {
             DatabaseHelper.getLocationDao().saveUnmodified(person.getAddress());
-        }
-        if (person.getBurialLocation() != null) {
-            DatabaseHelper.getLocationDao().saveUnmodified(person.getBurialLocation());
-        }
-        if (person.getDeathLocation() != null) {
-            DatabaseHelper.getLocationDao().saveUnmodified(person.getDeathLocation());
         }
 
         return super.saveUnmodified(person);
@@ -79,8 +67,6 @@ public class PersonDao extends AbstractAdoDao<Person> {
         Person person = super.create();
 
         person.setAddress(DatabaseHelper.getLocationDao().create());
-        person.setBurialLocation(DatabaseHelper.getLocationDao().create());
-        person.setDeathLocation(DatabaseHelper.getLocationDao().create());
 
         return person;
     }

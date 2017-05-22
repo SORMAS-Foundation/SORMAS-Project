@@ -15,6 +15,7 @@ import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.TemperatureSource;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.EmbeddedAdo;
+import de.symeda.sormas.app.backend.location.Location;
 
 @Entity(name= Symptoms.TABLE_NAME)
 @DatabaseTable(tableName = Symptoms.TABLE_NAME)
@@ -32,6 +33,13 @@ public class Symptoms extends AbstractDomainObject {
 	@Column(length = 255)
 	private String symptomsComments;
 	private Boolean symptomatic;
+
+	@DatabaseField(foreign = true, foreignAutoCreate = true, foreignAutoRefresh = true)
+	private Location illLocation;
+	@DatabaseField(dataType = DataType.DATE_LONG)
+	private Date illLocationFrom;
+	@DatabaseField(dataType = DataType.DATE_LONG)
+	private Date illLocationTo;
 
 	@Column(columnDefinition = "float8")
 	private Float temperature;
@@ -152,6 +160,31 @@ public class Symptoms extends AbstractDomainObject {
 	public void setTemperatureSource(TemperatureSource temperatureSource) {
 		this.temperatureSource = temperatureSource;
 	}
+
+	public Location getIllLocation() {
+		return illLocation;
+	}
+
+	public void setIllLocation(Location illLocation) {
+		this.illLocation = illLocation;
+	}
+
+	public Date getIllLocationFrom() {
+		return illLocationFrom;
+	}
+
+	public void setIllLocationFrom(Date illLocationFrom) {
+		this.illLocationFrom = illLocationFrom;
+	}
+
+	public Date getIllLocationTo() {
+		return illLocationTo;
+	}
+
+	public void setIllLocationTo(Date illLocationTo) {
+		this.illLocationTo = illLocationTo;
+	}
+
 	public SymptomState getFever() {
 		return fever;
 	}

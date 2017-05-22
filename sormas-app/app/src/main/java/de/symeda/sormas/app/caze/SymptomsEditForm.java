@@ -27,11 +27,14 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.component.FieldHelper;
+import de.symeda.sormas.app.component.LocationDialog;
 import de.symeda.sormas.app.component.PropertyField;
 import de.symeda.sormas.app.component.SymptomStateField;
 import de.symeda.sormas.app.databinding.CaseSymptomsFragmentLayoutBinding;
+import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.FormTab;
@@ -173,6 +176,20 @@ public class SymptomsEditForm extends FormTab {
                 }
             }
         });
+
+        // ==================== IllLocation ===============
+        LocationDialog.addLocationField(getActivity(), symptoms.getIllLocation(), binding.symptomsIllLocation, binding.formCpBtnAddress, new Consumer() {
+            @Override
+            public void accept(Object parameter) {
+                if (parameter instanceof Location) {
+                    binding.symptomsIllLocation.setValue(parameter.toString());
+                    binding.getSymptoms().setIllLocation(((Location) parameter));
+                }
+            }
+        });
+
+        binding.symptomsIllLocationFrom.initialize(this);
+        binding.symptomsIllLocationTo.initialize(this);
 
         // @TODO: Workaround, find a better solution. Remove autofocus on first field.
         getView().requestFocus();

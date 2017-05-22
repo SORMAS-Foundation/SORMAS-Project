@@ -82,8 +82,6 @@ public class Case extends AbstractDomainObject {
 	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
 	private Date investigatedDate;
 
-	@DatabaseField(foreign = true, foreignAutoCreate = true, foreignAutoRefresh = true)
-	private Location illLocation;
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 1)
 	private User surveillanceOfficer;
@@ -188,12 +186,6 @@ public class Case extends AbstractDomainObject {
 	}
 	public void setHealthFacility(Facility healthFacility) {
 		this.healthFacility = healthFacility;
-	}
-	public Location getIllLocation() {
-		return illLocation;
-	}
-	public void setIllLocation(Location illLocation) {
-		this.illLocation = illLocation;
 	}
 
 	public Symptoms getSymptoms() {

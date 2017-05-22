@@ -4,11 +4,15 @@ import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.location.Location;
+import de.symeda.sormas.app.backend.location.LocationDtoHelper;
 
 /**
  * Created by Martin Wahnschaffe on 27.07.2016.
  */
 public class SymptomsDtoHelper extends AdoDtoHelper<Symptoms, SymptomsDto> {
+
+    private LocationDtoHelper locationHelper = new LocationDtoHelper();
 
     @Override
     protected Class<Symptoms> getAdoClass() {
@@ -74,6 +78,9 @@ public class SymptomsDtoHelper extends AdoDtoHelper<Symptoms, SymptomsDto> {
         a.setThrobocytopenia(b.getThrobocytopenia());
         a.setUnexplainedBleeding(b.getUnexplainedBleeding());
         a.setVomiting(b.getVomiting());
+        a.setIllLocation(locationHelper.fillOrCreateFromDto(a.getIllLocation(), b.getIllLocation()));
+        a.setIllLocationFrom(b.getIllLocationFrom());
+        a.setIllLocationTo(b.getIllLocationTo());
     }
 
     @Override
@@ -130,5 +137,9 @@ public class SymptomsDtoHelper extends AdoDtoHelper<Symptoms, SymptomsDto> {
         a.setThrobocytopenia(b.getThrobocytopenia());
         a.setUnexplainedBleeding(b.getUnexplainedBleeding());
         a.setVomiting(b.getVomiting());
+        Location location = DatabaseHelper.getLocationDao().queryForId(b.getIllLocation().getId());
+        a.setIllLocation(locationHelper.adoToDto(location));
+        a.setIllLocationFrom(b.getIllLocationFrom());
+        a.setIllLocationTo(b.getIllLocationTo());
     }
 }

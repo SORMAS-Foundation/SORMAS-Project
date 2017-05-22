@@ -57,7 +57,8 @@
     <string name="headline_case_data">Case data</string>
     <string name="headline_case_medical_information">Additional medical information</string>
     <string name="headline_patient">Patient</string>
-    <string name="headline_symptoms_data">Recent symptoms</string>
+    <string name="headline_symptoms_data">Clinical Signs and Symptoms</string>
+    <string name="headline_symptoms_illLocation">Location Where Person Became Symptomatic</string>
     <string name="headline_person_information">Person</string>
     <string name="headline_task">Tasks</string>
     <string name="headline_task_data">Task information</string>
@@ -199,7 +200,7 @@
     <string name="symptoms_temperatureSource">Temperature source</string>
     <string name="headline_symptoms_unexplainedBleeding">Unexplained bleeding from any side</string>
     <string name="headline_symptoms_otherNonHemorrhagic">Other non-hemorrhagis clinical symptoms</string>
-    <string name="symptoms_infoText">Please answer for all symptoms whether they occurred during this illness.</string>
+    <string name="symptoms_infoText">Please tick an answer for ALL symptoms indicating if they occurred during this illness between symptom onset and case detection:</string>
 
     <string name="task_taskType">Task type</string>
     <string name="task_taskPriority">Task priority</string>

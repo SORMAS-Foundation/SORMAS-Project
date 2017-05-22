@@ -171,6 +171,7 @@ public final class ConfigProvider {
             // reset everything
             RetroProvider.reset();
             DatabaseHelper.clearTables(true);
+            ConfigProvider.setUser(DatabaseHelper.getUserDao().getByUsername(ConfigProvider.getUsername()));
             SyncInfrastructureTask.syncAll(null, null);
         }
     }

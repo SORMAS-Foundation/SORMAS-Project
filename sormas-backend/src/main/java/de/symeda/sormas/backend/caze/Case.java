@@ -88,8 +88,6 @@ public class Case extends AbstractDomainObject {
 	private Date noCaseDate;
 	private Date recoveredDate;
 	
-	private Location illLocation;
-	
 	private User surveillanceOfficer;
 	private User caseOfficer;
 	private User contactOfficer;
@@ -219,17 +217,6 @@ public class Case extends AbstractDomainObject {
 	}
 	public void setHealthFacility(Facility healthFacility) {
 		this.healthFacility = healthFacility;
-	}
-	
-	@OneToOne(cascade = CascadeType.ALL)
-	public Location getIllLocation() {
-		if (illLocation == null) {
-			illLocation = new Location();
-		}
-		return illLocation;
-	}
-	public void setIllLocation(Location illLocation) {
-		this.illLocation = illLocation;
 	}
 	
 	@ManyToOne(cascade = {})

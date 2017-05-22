@@ -5,6 +5,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
+import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
@@ -50,6 +51,7 @@ public class ContactEditPagerAdapter extends FragmentStatePagerAdapter {
                 Bundle personEditBundle = new Bundle();
                 Contact contact = DatabaseHelper.getContactDao().queryUuid(contactEditBundle.getString(Contact.UUID));
                 personEditBundle.putString(Person.UUID, contact.getPerson().getUuid());
+                personEditBundle.putSerializable(Case.DISEASE, contact.getCaze().getDisease());
 
                 personEditForm.setArguments(personEditBundle);
                 frag = personEditForm;

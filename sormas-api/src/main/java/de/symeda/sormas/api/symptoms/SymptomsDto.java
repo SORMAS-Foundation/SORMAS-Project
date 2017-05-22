@@ -6,6 +6,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import de.symeda.sormas.api.DataTransferObject;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.PreciseDateAdapter;
 
@@ -67,10 +68,17 @@ public class SymptomsDto extends DataTransferObject {
 	public static final String THROBOCYTOPENIA = "throbocytopenia";
 	public static final String UNEXPLAINED_BLEEDING = "unexplainedBleeding";
 	public static final String VOMITING = "vomiting";
+	public static final String ILLLOCATION = "illLocation";
+	public static final String ILLLOCATION_FROM = "illLocationFrom";
+	public static final String ILLLOCATION_TO = "illLocationTo";
 
 	private Boolean symptomatic;
 	private Date onsetDate;
 	private String onsetSymptom;
+	
+	private LocationDto illLocation;
+	private Date illLocationFrom;
+	private Date illLocationTo;
 	
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES})
 	private Float temperature;
@@ -171,7 +179,6 @@ public class SymptomsDto extends DataTransferObject {
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES})
 	private String symptomsComments;
 
-
 	public Boolean getSymptomatic() {
 		return symptomatic;
 	}
@@ -191,6 +198,28 @@ public class SymptomsDto extends DataTransferObject {
 	}
 	public void setOnsetSymptom(String onsetSymptom) {
 		this.onsetSymptom = onsetSymptom;
+	}
+	public LocationDto getIllLocation() {
+		return illLocation;
+	}
+	public void setIllLocation(LocationDto illLocation) {
+		this.illLocation = illLocation;
+	}
+	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
+	public Date getIllLocationFrom() {
+		return illLocationFrom;
+	}
+	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
+	public void setIllLocationFrom(Date illLocationFrom) {
+		this.illLocationFrom = illLocationFrom;
+	}
+	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
+	public Date getIllLocationTo() {
+		return illLocationTo;
+	}
+	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
+	public void setIllLocationTo(Date illLocationTo) {
+		this.illLocationTo = illLocationTo;
 	}
 	public Float getTemperature() {
 		return temperature;
