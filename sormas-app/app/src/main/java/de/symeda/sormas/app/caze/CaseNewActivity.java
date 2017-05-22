@@ -120,27 +120,12 @@ public class CaseNewActivity extends AppCompatActivity {
             case R.id.action_save:
                 final Case caze = caseNewForm.getData();
 
-                boolean validData = true;
+                boolean diseaseReq = caze.getDisease() == null;
+                boolean firstNameReq = caze.getPerson().getFirstName() == null || caze.getPerson().getFirstName().isEmpty();
+                boolean lastNameReq = caze.getPerson().getLastName() == null || caze.getPerson().getLastName().isEmpty();
+                boolean facilityReq = caze.getHealthFacility() == null;
 
-                if (caze.getPerson().getFirstName() == null || caze.getPerson().getFirstName().isEmpty()) {
-                    validData = false;
-                    Snackbar.make(findViewById(R.id.fragment_frame), "Please enter a first name for the case person.", Snackbar.LENGTH_LONG).show();
-                }
-
-                if (caze.getPerson().getLastName() == null || caze.getPerson().getLastName().isEmpty()) {
-                    validData = false;
-                    Snackbar.make(findViewById(R.id.fragment_frame), "Please enter a last name for the case person.", Snackbar.LENGTH_LONG).show();
-                }
-
-                if (caze.getDisease() == null) {
-                    validData = false;
-                    Snackbar.make(findViewById(R.id.fragment_frame), "Please select a disease.", Snackbar.LENGTH_LONG).show();
-                }
-
-                if (caze.getHealthFacility() == null) {
-                    validData = false;
-                    Snackbar.make(findViewById(R.id.fragment_frame), "Please select a health facility.", Snackbar.LENGTH_LONG).show();
-                }
+                boolean validData = !diseaseReq && !firstNameReq && !lastNameReq && !facilityReq;
 
                 if (validData) {
                     try {
@@ -159,7 +144,7 @@ public class CaseNewActivity extends AppCompatActivity {
                                                 savePersonAndCase(caze);
                                             } catch (DaoException e) {
                                                 Log.e(getClass().getName(), "Error while trying to create case", e);
-                                                Snackbar.make(findViewById(R.id.fragment_frame), "Case could not be created because of an internal error.", Snackbar.LENGTH_LONG).show();
+                                                Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_create_error), getResources().getString(R.string.entity_case)), Snackbar.LENGTH_LONG).show();
                                                 ErrorReportingHelper.sendCaughtException(tracker, e, null, true);
                                             }
                                         }
@@ -168,20 +153,27 @@ public class CaseNewActivity extends AppCompatActivity {
                                 AlertDialog newPersonDialog = dialogBuilder.create();
                                 newPersonDialog.show();
                                 ((SelectOrCreatePersonDialogBuilder) dialogBuilder).setButtonListeners(newPersonDialog, this);
-
                             } else {
                                 savePersonAndCase(caze);
                             }
                         }
-
-//                      NavUtils.navigateUpFromSameTask(this);
                     } catch (DaoException e) {
                         Log.e(getClass().getName(), "Error while trying to create case", e);
-                        Snackbar.make(findViewById(R.id.fragment_frame), "Case could not be created because of an internal error.", Snackbar.LENGTH_LONG).show();
+                        Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_create_error), getResources().getString(R.string.entity_case)), Snackbar.LENGTH_LONG).show();
                         ErrorReportingHelper.sendCaughtException(tracker, e, null, true);
                     }
 
                     return true;
+                } else {
+                    if (diseaseReq) {
+                        Snackbar.make(findViewById(R.id.fragment_frame), R.string.snackbar_case_disease, Snackbar.LENGTH_LONG).show();
+                    } else if (firstNameReq) {
+                        Snackbar.make(findViewById(R.id.fragment_frame), R.string.snackbar_case_firstName, Snackbar.LENGTH_LONG).show();
+                    } else if (lastNameReq) {
+                        Snackbar.make(findViewById(R.id.fragment_frame), R.string.snackbar_case_lastName, Snackbar.LENGTH_LONG).show();
+                    } else if (facilityReq) {
+                        Snackbar.make(findViewById(R.id.fragment_frame), R.string.snackbar_case_facility, Snackbar.LENGTH_LONG).show();
+                    }
                 }
         }
 
@@ -198,7 +190,9 @@ public class CaseNewActivity extends AppCompatActivity {
 
     private void savePersonAndCase(final Case caze) throws DaoException {
         // save the person
-        DatabaseHelper.getPersonDao().save(caze.getPerson());
+        if (!DatabaseHelper.getPersonDao().save(caze.getPerson())) {
+            throw new DaoException();
+        }
 
         caze.setCaseClassification(CaseClassification.NOT_CLASSIFIED);
         caze.setInvestigationStatus(InvestigationStatus.PENDING);
@@ -212,26 +206,35 @@ public class CaseNewActivity extends AppCompatActivity {
         }
         caze.setReportDate(new Date());
 
-        DatabaseHelper.getSymptomsDao().save(caze.getSymptoms());
-        DatabaseHelper.getHospitalizationDao().save(caze.getHospitalization());
-        DatabaseHelper.getEpiDataDao().save(caze.getEpiData());
+        if (!DatabaseHelper.getSymptomsDao().save(caze.getSymptoms())) {
+            throw new DaoException();
+        }
+        if (!DatabaseHelper.getHospitalizationDao().save(caze.getHospitalization())) {
+            throw new DaoException();
+        }
+        if (!DatabaseHelper.getEpiDataDao().save(caze.getEpiData())) {
+            throw new DaoException();
+        }
 
         CaseDao caseDao = DatabaseHelper.getCaseDao();
-        caseDao.save(caze);
-
-        Snackbar.make(findViewById(R.id.fragment_frame), caze.getPerson().toString() + " saved", Snackbar.LENGTH_LONG).show();
+        if (!caseDao.save(caze)) {
+            throw new DaoException();
+        }
 
         if (ConnectionHelper.isConnectedToInternet(getApplicationContext())) {
             SyncCasesTask.syncCasesWithProgressDialog(this, new SyncCallback() {
                 @Override
                 public void call(boolean syncFailed) {
                     if (syncFailed) {
-                        Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_sync_error_saved), getResources().getString(R.string.entity_case)), Snackbar.LENGTH_LONG).show();
+                        Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_sync_error_created), getResources().getString(R.string.entity_case)), Snackbar.LENGTH_LONG).show();
+                    } else {
+                        Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_create_success), getResources().getString(R.string.entity_case)), Snackbar.LENGTH_LONG).show();
                     }
                     showCaseEditView(caze);
                 }
             });
         } else {
+            Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_create_success), getResources().getString(R.string.entity_case)), Snackbar.LENGTH_LONG).show();
             showCaseEditView(caze);
         }
     }

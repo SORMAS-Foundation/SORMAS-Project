@@ -184,40 +184,43 @@ public class SampleEditActivity extends AppCompatActivity {
 
                 if (validData) {
                     try {
-                        sampleDao.save(sample);
-                        Snackbar.make(findViewById(R.id.fragment_frame), "Sample " + DataHelper.getShortUuid(sample.getUuid()) + " saved", Snackbar.LENGTH_LONG).show();
-
+                        if (!sampleDao.save(sample)) {
+                            throw new DaoException();
+                        }
                         if (ConnectionHelper.isConnectedToInternet(getApplicationContext())) {
                             SyncSamplesTask.syncSamplesWithProgressDialog(this, new SyncCallback() {
                                 @Override
                                 public void call(boolean syncFailed) {
                                     if (syncFailed) {
                                         Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_sync_error_saved), getResources().getString(R.string.entity_sample)), Snackbar.LENGTH_LONG).show();
+                                    } else {
+                                        Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_sample)), Snackbar.LENGTH_LONG).show();
                                     }
                                     finish();
                                 }
                             });
                         } else {
+                            Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_sample)), Snackbar.LENGTH_LONG).show();
                             finish();
                         }
                     } catch (DaoException e) {
                         Log.e(getClass().getName(), "Error while trying to save sample", e);
-                        Snackbar.make(findViewById(R.id.fragment_frame), "Sample could not be saved because of an internal error.", Snackbar.LENGTH_LONG).show();
+                        Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_save_error), getResources().getString(R.string.entity_sample)), Snackbar.LENGTH_LONG).show();
                         ErrorReportingHelper.sendCaughtException(tracker, e, sample, true);
                     }
                 } else {
                     if (sampleDateTimeReq) {
-                        Snackbar.make(findViewById(R.id.fragment_frame), "Not saved. Please specify the time of sampling.", Snackbar.LENGTH_LONG).show();
+                        Snackbar.make(findViewById(R.id.fragment_frame), R.string.snackbar_sample_datetime, Snackbar.LENGTH_LONG).show();
                     } else if (sampleMaterialReq) {
-                        Snackbar.make(findViewById(R.id.fragment_frame), "Not saved. Please specify the sample material.", Snackbar.LENGTH_LONG).show();
+                        Snackbar.make(findViewById(R.id.fragment_frame), R.string.snackbar_sample_material, Snackbar.LENGTH_LONG).show();
                     } else if (sampleMaterialTextReq) {
-                        Snackbar.make(findViewById(R.id.fragment_frame), "Not saved. Please specify the sample material.", Snackbar.LENGTH_LONG).show();
+                        Snackbar.make(findViewById(R.id.fragment_frame), R.string.snackbar_sample_material_text, Snackbar.LENGTH_LONG).show();
                     } else if (sampleLabReq) {
-                        Snackbar.make(findViewById(R.id.fragment_frame), "Not saved. Please specify the laboratory.", Snackbar.LENGTH_LONG).show();
+                        Snackbar.make(findViewById(R.id.fragment_frame), R.string.snackbar_sample_lab, Snackbar.LENGTH_LONG).show();
                     } else if (shipmentStatusReq) {
-                        Snackbar.make(findViewById(R.id.fragment_frame), "Not saved. Please specify the shipment status.", Snackbar.LENGTH_LONG).show();
+                        Snackbar.make(findViewById(R.id.fragment_frame), R.string.snackbar_sample_shipment_status, Snackbar.LENGTH_LONG).show();
                     } else if (shipmentDateReq) {
-                        Snackbar.make(findViewById(R.id.fragment_frame), "Not saved. Please specify the shipment date.", Snackbar.LENGTH_LONG).show();
+                        Snackbar.make(findViewById(R.id.fragment_frame), R.string.snackbar_sample_shipment_date, Snackbar.LENGTH_LONG).show();
                     }
                 }
 

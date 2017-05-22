@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
+import com.j256.ormlite.dao.Dao;
 
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
@@ -237,69 +238,51 @@ public class CaseEditActivity extends AbstractEditActivity {
                 // CASE_DATA
                 caze = (Case) adapter.getData(CaseEditTabs.CASE_DATA.ordinal());
 
-                boolean validData = true;
-
-                if (caze.getDisease() == null) {
-                    validData = false;
-                    Snackbar.make(findViewById(R.id.base_layout), "Please select a disease.", Snackbar.LENGTH_LONG).show();
-                }
-
-                if (person.getFirstName() == null || person.getFirstName().isEmpty()) {
-                    validData = false;
-                    Snackbar.make(findViewById(R.id.base_layout), "Please enter a first name for the case person.", Snackbar.LENGTH_LONG).show();
-                }
-
-                if (person.getLastName() == null || person.getLastName().isEmpty()) {
-                    validData = false;
-                    Snackbar.make(findViewById(R.id.base_layout), "Please enter a last name for the case person.", Snackbar.LENGTH_LONG).show();
-                }
-
-                if (caze.getHealthFacility() == null) {
-                    validData = false;
-                    Snackbar.make(findViewById(R.id.base_layout), "Please select a health facility.", Snackbar.LENGTH_LONG).show();
-                }
+                boolean diseaseReq = caze.getDisease() == null;
+                boolean firstNameReq = person.getFirstName() == null || person.getFirstName().isEmpty();
+                boolean lastNameReq = person.getLastName() == null || person.getLastName().isEmpty();
+                boolean facilityReq = caze.getHealthFacility() == null;
 
                 try {
                     symptomsEditForm.validateCaseData(symptoms);
                 } catch(ValidationFailedException e) {
                     Snackbar.make(findViewById(R.id.base_layout), e.getMessage(), Snackbar.LENGTH_LONG).show();
-                    validData = false;
+                    return true;
                 }
+
+                boolean validData = !diseaseReq && !firstNameReq && !lastNameReq && !facilityReq;
 
                 if (validData) {
                     try {
                         if (!personDao.save(person)) {
-                            Snackbar.make(findViewById(R.id.base_layout), "Person not saved.", Snackbar.LENGTH_LONG).show();
+                            throw new DaoException();
                         }
                         caze.setPerson(person); // we aren't sure why, but this is needed, otherwise the person will be overriden when first saved
 
                         if (symptoms != null) {
                             if (!symptomsDao.save(symptoms)) {
-                                Snackbar.make(findViewById(R.id.base_layout), "Symptoms not saved.", Snackbar.LENGTH_LONG).show();
+                                throw new DaoException();
                             }
                             caze.setSymptoms(symptoms);
                         }
 
                         if (hospitalization != null) {
                             if (!hospitalizationDao.save(hospitalization)) {
-                                Snackbar.make(findViewById(R.id.base_layout), "Hospitalization not saved.", Snackbar.LENGTH_LONG).show();
+                                throw new DaoException();
                             }
                             caze.setHospitalization(hospitalization);
                         }
 
                         if (epiData != null) {
                             if (!epiDataDao.save(epiData)) {
-                                Snackbar.make(findViewById(R.id.base_layout), "Epi data not saved.", Snackbar.LENGTH_LONG).show();
+                                throw new DaoException();
                             }
                             caze.setEpiData(epiData);
                         }
 
                         if (!caseDao.save(caze)) {
-                            Snackbar.make(findViewById(R.id.base_layout), "Case not saved.", Snackbar.LENGTH_LONG).show();
-                        } else {
-                            Snackbar.make(findViewById(R.id.base_layout), "Case saved.", Snackbar.LENGTH_LONG).show();
+                            throw new DaoException();
                         }
-
                         if (ConnectionHelper.isConnectedToInternet(getApplicationContext())) {
                             SyncCasesTask.syncCasesWithProgressDialog(this, new SyncCallback() {
                                 @Override
@@ -307,6 +290,8 @@ public class CaseEditActivity extends AbstractEditActivity {
                                     onResume();
                                     if (syncFailed) {
                                         Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_sync_error_saved), getResources().getString(R.string.entity_case)), Snackbar.LENGTH_LONG).show();
+                                    } else {
+                                        Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_case)), Snackbar.LENGTH_LONG).show();
                                     }
 
                                     try {
@@ -317,6 +302,7 @@ public class CaseEditActivity extends AbstractEditActivity {
                                 }
                             });
                         } else {
+                            Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_case)), Snackbar.LENGTH_LONG).show();
                             try {
                                 pager.setCurrentItem(currentTab + 1);
                             } catch (NullPointerException e) {
@@ -325,8 +311,18 @@ public class CaseEditActivity extends AbstractEditActivity {
                         }
                     } catch (DaoException e) {
                         Log.e(getClass().getName(), "Error while trying to save case", e);
-                        Snackbar.make(findViewById(R.id.base_layout), "Case could not be saved because of an internal error.", Snackbar.LENGTH_LONG).show();
+                        Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_error), getResources().getString(R.string.entity_case)), Snackbar.LENGTH_LONG).show();
                         ErrorReportingHelper.sendCaughtException(tracker, e, caze, true);
+                    }
+                } else {
+                    if (diseaseReq) {
+                        Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_case_disease, Snackbar.LENGTH_LONG).show();
+                    } else if (firstNameReq) {
+                        Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_case_firstName, Snackbar.LENGTH_LONG).show();
+                    } else if (lastNameReq) {
+                        Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_case_lastName, Snackbar.LENGTH_LONG).show();
+                    } else if (facilityReq) {
+                        Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_case_facility, Snackbar.LENGTH_LONG).show();
                     }
                 }
 

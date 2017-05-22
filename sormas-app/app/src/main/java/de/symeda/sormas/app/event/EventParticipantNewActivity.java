@@ -126,7 +126,7 @@ public class EventParticipantNewActivity extends AppCompatActivity {
                                             savePersonAndEventParticipant(eventParticipant);
                                         } catch (DaoException e) {
                                             Log.e(getClass().getName(), "Error while trying to create alert person", e);
-                                            Snackbar.make(findViewById(R.id.fragment_frame), "Alert person could not be saved because of an internal error.", Snackbar.LENGTH_LONG).show();
+                                            Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_create_error), getResources().getString(R.string.entity_alert_person)), Snackbar.LENGTH_LONG).show();
                                             ErrorReportingHelper.sendCaughtException(tracker, e, null, true);
                                         }
                                     }
@@ -141,19 +141,17 @@ public class EventParticipantNewActivity extends AppCompatActivity {
                         }
                     } catch (DaoException e) {
                         Log.e(getClass().getName(), "Error while trying to create alert person", e);
-                        Snackbar.make(findViewById(R.id.fragment_frame), "Alert person could not be saved because of an internal error.", Snackbar.LENGTH_LONG).show();
+                        Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_create_error), getResources().getString(R.string.entity_alert_person)), Snackbar.LENGTH_LONG).show();
                         ErrorReportingHelper.sendCaughtException(tracker, e, null, true);
                     }
                 }
                 else {
-                    if(eventParticipantDescReq) {
-                        Snackbar.make(findViewById(R.id.fragment_frame), "Not saved. Please specify the involvement description.", Snackbar.LENGTH_LONG).show();
-                    }
-                    else if(eventParticipantFirstNameReq) {
-                        Snackbar.make(findViewById(R.id.fragment_frame), "Not saved. Please specify the first name.", Snackbar.LENGTH_LONG).show();
-                    }
-                    else if(eventParticipantLastNameReq) {
-                        Snackbar.make(findViewById(R.id.fragment_frame), "Not saved. Please specify the last name.", Snackbar.LENGTH_LONG).show();
+                    if (eventParticipantDescReq) {
+                        Snackbar.make(findViewById(R.id.fragment_frame), R.string.snackbar_alert_person_description, Snackbar.LENGTH_LONG).show();
+                    } else if (eventParticipantFirstNameReq) {
+                        Snackbar.make(findViewById(R.id.fragment_frame), R.string.snackbar_alert_person_firstName, Snackbar.LENGTH_LONG).show();
+                    } else if (eventParticipantLastNameReq) {
+                        Snackbar.make(findViewById(R.id.fragment_frame), R.string.snackbar_alert_person_lastName, Snackbar.LENGTH_LONG).show();
                     }
                 }
 
@@ -166,26 +164,31 @@ public class EventParticipantNewActivity extends AppCompatActivity {
 
     private void savePersonAndEventParticipant(final EventParticipant eventParticipant) throws DaoException {
         // save the person
-        DatabaseHelper.getPersonDao().save(eventParticipant.getPerson());
+        if (!DatabaseHelper.getPersonDao().save(eventParticipant.getPerson())) {
+            throw new DaoException();
+        }
         // set the given event
         final Event event = DatabaseHelper.getEventDao().queryUuid(eventUuid);
         eventParticipant.setEvent(event);
         // save the contact
-        DatabaseHelper.getEventParticipantDao().save(eventParticipant);
-
-        Snackbar.make(findViewById(R.id.fragment_frame), "Alert person saved.", Snackbar.LENGTH_LONG).show();
+        if (!DatabaseHelper.getEventParticipantDao().save(eventParticipant)) {
+            throw new DaoException();
+        }
 
         if (ConnectionHelper.isConnectedToInternet(getApplicationContext())) {
             SyncEventsTask.syncEventsWithProgressDialog(this, new SyncCallback() {
                 @Override
                 public void call(boolean syncFailed) {
                     if (syncFailed) {
-                        Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_sync_error_saved), getResources().getString(R.string.entity_alert_person)), Snackbar.LENGTH_LONG).show();
+                        Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_sync_error_created), getResources().getString(R.string.entity_alert_person)), Snackbar.LENGTH_LONG).show();
+                    } else {
+                        Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_create_success), getResources().getString(R.string.entity_alert_person)), Snackbar.LENGTH_LONG).show();
                     }
                     showEventParticipantEditView(eventParticipant);
                 }
             });
         } else {
+            Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_create_success), getResources().getString(R.string.entity_alert_person)), Snackbar.LENGTH_LONG).show();
             finish();
             showEventParticipantEditView(eventParticipant);
         }

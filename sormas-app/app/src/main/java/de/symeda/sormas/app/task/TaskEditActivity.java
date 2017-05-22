@@ -134,8 +134,9 @@ public class TaskEditActivity extends AppCompatActivity {
                 task = (Task) taskForm.getData();
                 try {
                     TaskDao taskDao = DatabaseHelper.getTaskDao();
-                    taskDao.save(task);
-                    Snackbar.make(findViewById(R.id.fragment_frame), "Task " + DataHelper.getShortUuid(task.getUuid()) + " saved", Snackbar.LENGTH_LONG).show();
+                    if (!taskDao.save(task)) {
+                        throw new DaoException();
+                    }
 
                     if (ConnectionHelper.isConnectedToInternet(getApplicationContext())) {
                         SyncTasksTask.syncTasksWithProgressDialog(this, new SyncCallback() {
@@ -144,13 +145,17 @@ public class TaskEditActivity extends AppCompatActivity {
                                 onResume();
                                 if (syncFailed) {
                                     Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_sync_error_saved), getResources().getString(R.string.entity_task)), Snackbar.LENGTH_LONG).show();
+                                } else {
+                                    Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_task)), Snackbar.LENGTH_LONG).show();
                                 }
                             }
                         }, null);
+                    } else {
+                        Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_task)), Snackbar.LENGTH_LONG).show();
                     }
                 } catch (DaoException e) {
                     Log.e(getClass().getName(), "Error while trying to save task", e);
-                    Snackbar.make(findViewById(R.id.fragment_frame), "Task could not be saved because of an internal error.", Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_save_error), getResources().getString(R.string.entity_task)), Snackbar.LENGTH_LONG).show();
                     ErrorReportingHelper.sendCaughtException(tracker, e, task, true);
                 }
                 return true;

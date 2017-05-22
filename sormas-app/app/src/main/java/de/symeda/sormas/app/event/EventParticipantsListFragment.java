@@ -34,9 +34,9 @@ public class EventParticipantsListFragment extends ListFragment {
     @Override
     public void onResume() {
         super.onResume();
-        if (ConnectionHelper.isConnectedToInternet(getContext())) {
-            SyncEventParticipantsTask.syncEventParticipantsWithoutCallback(getContext(), getActivity().getSupportFragmentManager());
-        }
+//        if (ConnectionHelper.isConnectedToInternet(getContext())) {
+//            SyncEventParticipantsTask.syncEventParticipantsWithoutCallback(getContext(), getActivity().getSupportFragmentManager());
+//        }
         updateArrayAdapter();
     }
 

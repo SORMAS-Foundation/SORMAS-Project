@@ -187,45 +187,35 @@ public class ContactEditActivity extends AbstractEditActivity {
             case R.id.action_save:
                 ContactDao contactDao = DatabaseHelper.getContactDao();
                 contact = (Contact) adapter.getData(ContactEditTabs.CONTACT_DATA.ordinal());
+                Person person = (Person) adapter.getData(ContactEditTabs.PERSON.ordinal());
 
-                boolean validData = true;
+                boolean lastContactDateReq = contact.getLastContactDate() == null || contact.getLastContactDate().getTime() > contact.getReportDateTime().getTime();
+                boolean proximityReq = contact.getContactProximity() == null;
+                boolean firstNameReq = person.getFirstName().isEmpty();
+                boolean lastNameReq = person.getLastName().isEmpty();
+                boolean relationReq = contact.getRelationToCase() == null;
 
-                if (contact.getLastContactDate()==null || contact.getLastContactDate().getTime() > contact.getReportDateTime().getTime()) {
-                    validData = false;
-                    Snackbar.make(findViewById(R.id.base_layout), "Please make sure contact date is set and not in the future.", Snackbar.LENGTH_LONG).show();
-                }
-
-                if (contact.getContactProximity()==null) {
-                    validData = false;
-                    Snackbar.make(findViewById(R.id.base_layout), "Please select a contact type.", Snackbar.LENGTH_LONG).show();
-                }
-
-                if (contact.getPerson().getFirstName().isEmpty() || contact.getPerson().getLastName().isEmpty() ) {
-                    validData = false;
-                    Snackbar.make(findViewById(R.id.base_layout), "Please select a person.", Snackbar.LENGTH_LONG).show();
-                }
-
-                if (contact.getRelationToCase() == null) {
-                    validData = false;
-                    Snackbar.make(findViewById(R.id.base_layout), "Please select a relationship with the case.", Snackbar.LENGTH_LONG).show();
-                }
+                boolean validData = !lastContactDateReq && !proximityReq && !firstNameReq && !lastNameReq && !relationReq;
 
                 if (validData) {
                     try {
-                        contactDao.save(contact);
-
-                        Person person = (Person) adapter.getData(ContactEditTabs.PERSON.ordinal());
                         if (contact.getRelationToCase() == ContactRelation.SAME_HOUSEHOLD && person.getAddress().isEmptyLocation()) {
                             person.getAddress().setRegion(contact.getCaze().getRegion());
                             person.getAddress().setDistrict(contact.getCaze().getDistrict());
                             person.getAddress().setCommunity(contact.getCaze().getCommunity());
                         }
 
-                        DatabaseHelper.getLocationDao().save(person.getAddress());
-                        DatabaseHelper.getPersonDao().save(person);
+                        if (!DatabaseHelper.getLocationDao().save(person.getAddress())) {
+                            throw new DaoException();
+                        }
 
+                        if (!DatabaseHelper.getPersonDao().save(person)) {
+                            throw new DaoException();
+                        }
 
-                        Snackbar.make(findViewById(R.id.base_layout), "Contact " + DataHelper.getShortUuid(contact.getUuid()) + " saved", Snackbar.LENGTH_LONG).show();
+                        if (!contactDao.save(contact)) {
+                            throw new DaoException();
+                        }
 
                         if (ConnectionHelper.isConnectedToInternet(getApplicationContext())) {
                             SyncContactsTask.syncContactsWithProgressDialog(this, new SyncCallback() {
@@ -235,14 +225,30 @@ public class ContactEditActivity extends AbstractEditActivity {
                                     pager.setCurrentItem(currentTab);
                                     if (syncFailed) {
                                         Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_sync_error_saved), getResources().getString(R.string.entity_contact)), Snackbar.LENGTH_LONG).show();
+                                    } else {
+                                        Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_contact)), Snackbar.LENGTH_LONG).show();
                                     }
                                 }
                             });
+                        } else {
+                            Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_contact)), Snackbar.LENGTH_LONG).show();
                         }
                     } catch (DaoException e) {
                         Log.e(getClass().getName(), "Error while trying to save contact", e);
-                        Snackbar.make(findViewById(R.id.base_layout), "Contact could not be saved because of an internal error.", Snackbar.LENGTH_LONG).show();
+                        Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_error), getResources().getString(R.string.entity_contact)), Snackbar.LENGTH_LONG).show();
                         ErrorReportingHelper.sendCaughtException(tracker, e, contact, true);
+                    }
+                } else {
+                    if (lastContactDateReq) {
+                        Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_contact_last_contact_date, Snackbar.LENGTH_LONG).show();
+                    } else if (proximityReq) {
+                        Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_contact_proximity, Snackbar.LENGTH_LONG).show();
+                    } else if (firstNameReq) {
+                        Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_contact_firstName, Snackbar.LENGTH_LONG).show();
+                    } else if (lastNameReq) {
+                        Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_contact_lastName, Snackbar.LENGTH_LONG).show();
+                    } else if (relationReq) {
+                        Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_contact_relation, Snackbar.LENGTH_LONG).show();
                     }
                 }
                 return true;

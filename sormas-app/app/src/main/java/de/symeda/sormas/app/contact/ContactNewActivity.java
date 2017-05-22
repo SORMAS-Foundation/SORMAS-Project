@@ -118,27 +118,13 @@ public class ContactNewActivity extends AppCompatActivity {
                 contact.setReportDateTime(new Date());
                 contact.setCaze(DatabaseHelper.getCaseDao().queryUuid(caseUuid));
 
-                boolean validData = true;
+                boolean lastContactDateReq = contact.getLastContactDate() == null || contact.getLastContactDate().getTime() > contact.getReportDateTime().getTime();
+                boolean proximityReq = contact.getContactProximity() == null;
+                boolean firstNameReq = contact.getPerson().getFirstName().isEmpty();
+                boolean lastNameReq = contact.getPerson().getLastName().isEmpty();
+                boolean relationReq = contact.getRelationToCase() == null;
 
-                if (contact.getLastContactDate()==null || contact.getLastContactDate().getTime() > contact.getReportDateTime().getTime()) {
-                    validData = false;
-                    Snackbar.make(findViewById(R.id.fragment_frame), "Please make sure contact date is set and not in the future.", Snackbar.LENGTH_LONG).show();
-                }
-
-                if (contact.getContactProximity()==null) {
-                    validData = false;
-                    Snackbar.make(findViewById(R.id.fragment_frame), "Please select a contact type.", Snackbar.LENGTH_LONG).show();
-                }
-
-                if (contact.getPerson().getFirstName().isEmpty() || contact.getPerson().getLastName().isEmpty() ) {
-                    validData = false;
-                    Snackbar.make(findViewById(R.id.fragment_frame), "Please select a person.", Snackbar.LENGTH_LONG).show();
-                }
-
-                if (contact.getRelationToCase() == null) {
-                    validData = false;
-                    Snackbar.make(findViewById(R.id.fragment_frame), "Please select a relationship with the case.", Snackbar.LENGTH_LONG).show();
-                }
+                boolean validData = !lastContactDateReq && !proximityReq && !firstNameReq && !lastNameReq && !relationReq;
 
                 if (validData) {
                     try {
@@ -153,7 +139,7 @@ public class ContactNewActivity extends AppCompatActivity {
                                             savePersonAndContact(contact);
                                         } catch (DaoException e) {
                                             Log.e(getClass().getName(), "Error while trying to create contact", e);
-                                            Snackbar.make(findViewById(R.id.fragment_frame), "Contact could not be created because of an internal error.", Snackbar.LENGTH_LONG).show();
+                                            Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_create_error), getResources().getString(R.string.entity_contact)), Snackbar.LENGTH_LONG).show();
                                             ErrorReportingHelper.sendCaughtException(tracker, e, null, true);
                                         }
                                     }
@@ -167,8 +153,20 @@ public class ContactNewActivity extends AppCompatActivity {
                         }
                     } catch (DaoException e) {
                         Log.e(getClass().getName(), "Error while trying to create contact", e);
-                        Snackbar.make(findViewById(R.id.fragment_frame), "Contact could not be saved because of an internal error.", Snackbar.LENGTH_LONG).show();
+                        Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_create_error), getResources().getString(R.string.entity_contact)), Snackbar.LENGTH_LONG).show();
                         ErrorReportingHelper.sendCaughtException(tracker, e, null, true);
+                    }
+                } else {
+                    if (lastContactDateReq) {
+                        Snackbar.make(findViewById(R.id.fragment_frame), R.string.snackbar_contact_last_contact_date, Snackbar.LENGTH_LONG).show();
+                    } else if (proximityReq) {
+                        Snackbar.make(findViewById(R.id.fragment_frame), R.string.snackbar_contact_proximity, Snackbar.LENGTH_LONG).show();
+                    } else if (firstNameReq) {
+                        Snackbar.make(findViewById(R.id.fragment_frame), R.string.snackbar_contact_firstName, Snackbar.LENGTH_LONG).show();
+                    } else if (lastNameReq) {
+                        Snackbar.make(findViewById(R.id.fragment_frame), R.string.snackbar_contact_lastName, Snackbar.LENGTH_LONG).show();
+                    } else if (relationReq) {
+                        Snackbar.make(findViewById(R.id.fragment_frame), R.string.snackbar_contact_relation, Snackbar.LENGTH_LONG).show();
                     }
                 }
 
@@ -194,26 +192,37 @@ public class ContactNewActivity extends AppCompatActivity {
             person.getAddress().setCommunity(contact.getCaze().getCommunity());
         }
 
+        // save the location
+        if (!DatabaseHelper.getLocationDao().save(person.getAddress())) {
+            throw new DaoException();
+        }
+
         // save the person
-        DatabaseHelper.getPersonDao().save(contact.getPerson());
+        if (!DatabaseHelper.getPersonDao().save(contact.getPerson())) {
+            throw new DaoException();
+        }
+
 //        new SyncPersonsTask(getApplicationContext()).execute();
 
         // save the contact
-        DatabaseHelper.getContactDao().save(contact);
-
-        Snackbar.make(findViewById(R.id.fragment_frame), "Contact to " + contact.getPerson().toString() + " saved", Snackbar.LENGTH_LONG).show();
+        if (!DatabaseHelper.getContactDao().save(contact)) {
+            throw new DaoException();
+        }
 
         if (ConnectionHelper.isConnectedToInternet(getApplicationContext())) {
             SyncContactsTask.syncContactsWithProgressDialog(this, new SyncCallback() {
                 @Override
                 public void call(boolean syncFailed) {
                     if (syncFailed) {
-                        Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_sync_error_saved), getResources().getString(R.string.entity_contact)), Snackbar.LENGTH_LONG).show();
+                        Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_sync_error_created), getResources().getString(R.string.entity_contact)), Snackbar.LENGTH_LONG).show();
+                    } else {
+                        Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_create_success), getResources().getString(R.string.entity_contact)), Snackbar.LENGTH_LONG).show();
                     }
                     navBackToCaseContacts();
                 }
             });
         } else {
+            Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_create_success), getResources().getString(R.string.entity_contact)), Snackbar.LENGTH_LONG).show();
             navBackToCaseContacts();
         }
 

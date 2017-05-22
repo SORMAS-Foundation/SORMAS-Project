@@ -53,7 +53,7 @@ public class EventParticipantEditActivity extends AppCompatActivity {
             getSupportActionBar().setTitle(getResources().getText(R.string.headline_eventParticipant) + " - " + ConfigProvider.getUser().getUserRole().toShortString());
         }
 
-        // setting the fragment_frame
+        // setting the base_layout
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
 
         EventParticipant eventParticipant = null;
@@ -137,35 +137,58 @@ public class EventParticipantEditActivity extends AppCompatActivity {
                 eventParticipant = (EventParticipant) eventParticipantTab.getData();
                 Person person = (Person) personEditForm.getData();
 
-                try {
-                    if (person != null) {
-                        DatabaseHelper.getPersonDao().save(person);
-                    }
+                boolean eventParticipantDescReq =  eventParticipant.getInvolvementDescription()==null||eventParticipant.getInvolvementDescription().isEmpty();
+                boolean eventParticipantFirstNameReq =  person.getFirstName()==null||person.getFirstName().isEmpty();
+                boolean eventParticipantLastNameReq =  person.getLastName()==null||person.getLastName().isEmpty();
 
-                    if (eventParticipant != null) {
-                        eventParticipant.setPerson(person);
-                        DatabaseHelper.getEventParticipantDao().save(eventParticipant);
-                    }
+                boolean validData = !eventParticipantDescReq
+                        && !eventParticipantFirstNameReq
+                        && !eventParticipantLastNameReq;
 
-                    Snackbar.make(findViewById(R.id.base_layout), "Alert person " + DataHelper.getShortUuid(eventParticipant.getUuid()) + " saved", Snackbar.LENGTH_LONG).show();
-
-                    if (ConnectionHelper.isConnectedToInternet(getApplicationContext())) {
-                        SyncEventsTask.syncEventsWithProgressDialog(this, new SyncCallback() {
-                            @Override
-                            public void call(boolean syncFailed) {
-                                if (syncFailed) {
-                                    Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_sync_error_saved), getResources().getString(R.string.entity_alert_person)), Snackbar.LENGTH_LONG).show();
-                                }
-                                finish();
+                if (validData) {
+                    try {
+                        if (person != null) {
+                            if (!DatabaseHelper.getPersonDao().save(person)) {
+                                throw new DaoException();
                             }
-                        });
-                    } else {
-                        finish();
+                        }
+
+                        if (eventParticipant != null) {
+                            eventParticipant.setPerson(person);
+                            if (!DatabaseHelper.getEventParticipantDao().save(eventParticipant)) {
+                                throw new DaoException();
+                            }
+                        }
+
+                        if (ConnectionHelper.isConnectedToInternet(getApplicationContext())) {
+                            SyncEventsTask.syncEventsWithProgressDialog(this, new SyncCallback() {
+                                @Override
+                                public void call(boolean syncFailed) {
+                                    if (syncFailed) {
+                                        Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_sync_error_saved), getResources().getString(R.string.entity_alert_person)), Snackbar.LENGTH_LONG).show();
+                                    } else {
+                                        Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_alert_person)), Snackbar.LENGTH_LONG).show();
+                                    }
+                                    finish();
+                                }
+                            });
+                        } else {
+                            Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_alert_person)), Snackbar.LENGTH_LONG).show();
+                            finish();
+                        }
+                    } catch (DaoException e) {
+                        Log.e(getClass().getName(), "Error while trying to save alert person", e);
+                        Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_error), getResources().getString(R.string.entity_alert_person)), Snackbar.LENGTH_LONG).show();
+                        ErrorReportingHelper.sendCaughtException(tracker, e, eventParticipant, true);
                     }
-                } catch (DaoException e) {
-                    Log.e(getClass().getName(), "Error while trying to save alert person", e);
-                    Snackbar.make(findViewById(R.id.base_layout), "Alert person could not be saved because of an internal error.", Snackbar.LENGTH_LONG).show();
-                    ErrorReportingHelper.sendCaughtException(tracker, e, eventParticipant, true);
+                } else {
+                    if (eventParticipantDescReq) {
+                        Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_alert_person_description, Snackbar.LENGTH_LONG).show();
+                    } else if (eventParticipantFirstNameReq) {
+                        Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_alert_person_firstName, Snackbar.LENGTH_LONG).show();
+                    } else if (eventParticipantLastNameReq) {
+                        Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_alert_person_lastName, Snackbar.LENGTH_LONG).show();
+                    }
                 }
 
                 return true;

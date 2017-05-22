@@ -203,11 +203,14 @@ public class EventEditActivity extends AbstractEditActivity {
                         if(validData) {
                             try {
                                 if (event.getEventLocation() != null) {
-                                    DatabaseHelper.getLocationDao().save(event.getEventLocation());
+                                    if (!DatabaseHelper.getLocationDao().save(event.getEventLocation())) {
+                                        throw new DaoException();
+                                    }
                                 }
 
-                                DatabaseHelper.getEventDao().save(event);
-                                Snackbar.make(findViewById(R.id.base_layout), "Alert " + DataHelper.getShortUuid(event.getUuid()) + " saved", Snackbar.LENGTH_LONG).show();
+                                if (!DatabaseHelper.getEventDao().save(event)) {
+                                    throw new DaoException();
+                                }
 
                                 if (ConnectionHelper.isConnectedToInternet(getApplicationContext())) {
                                     SyncEventsTask.syncEventsWithProgressDialog(this, new SyncCallback() {
@@ -215,44 +218,39 @@ public class EventEditActivity extends AbstractEditActivity {
                                         public void call(boolean syncFailed) {
                                             if (syncFailed) {
                                                 Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_sync_error_saved), getResources().getString(R.string.entity_alert)), Snackbar.LENGTH_LONG).show();
+                                            } else {
+                                                Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_alert)), Snackbar.LENGTH_LONG).show();
                                             }
                                             finish();
                                         }
                                     });
                                 } else {
+                                    Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_alert)), Snackbar.LENGTH_LONG).show();
                                     finish();
                                 }
                             } catch (DaoException e) {
                                 Log.e(getClass().getName(), "Error while trying to save alert", e);
-                                Snackbar.make(findViewById(R.id.base_layout), "Alert could not be served because of an internal error.", Snackbar.LENGTH_LONG).show();
+                                Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_error), getResources().getString(R.string.entity_alert)), Snackbar.LENGTH_LONG).show();
                                 ErrorReportingHelper.sendCaughtException(tracker, e, event, true);
                             }
 
-                        }
-                        else {
+                        } else {
                             if(eventTypeReq) {
-                                Snackbar.make(findViewById(R.id.base_layout), "Not saved. Please specify the event type.", Snackbar.LENGTH_LONG).show();
-                            }
-                            else if(eventDescReq) {
-                                Snackbar.make(findViewById(R.id.base_layout), "Not saved. Please specify the event description.", Snackbar.LENGTH_LONG).show();
-                            }
-                            else if(eventDateReq) {
-                                Snackbar.make(findViewById(R.id.base_layout), "Not saved. Please specify the event date.", Snackbar.LENGTH_LONG).show();
-                            }
-                            else if(typeOfPlaceReq) {
-                                Snackbar.make(findViewById(R.id.base_layout), "Not saved. Please specify the type of place.", Snackbar.LENGTH_LONG).show();
-                            }
-                            else if(typeOfPlaceTextReq) {
-                                Snackbar.make(findViewById(R.id.base_layout), "Not saved. Please specify the other type of place.", Snackbar.LENGTH_LONG).show();
-                            }
-                            else if(eventSrcFirstNameReq) {
-                                Snackbar.make(findViewById(R.id.base_layout), "Not saved. Please specify the source first name.", Snackbar.LENGTH_LONG).show();
-                            }
-                            else if(eventSrcLastNameReq) {
-                                Snackbar.make(findViewById(R.id.base_layout), "Not saved. Please specify the source last name.", Snackbar.LENGTH_LONG).show();
-                            }
-                            else if(eventSrcTelNoReq) {
-                                Snackbar.make(findViewById(R.id.base_layout), "Not saved. Please specify the source telephone no.", Snackbar.LENGTH_LONG).show();
+                                Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_alert_type, Snackbar.LENGTH_LONG).show();
+                            } else if (eventDescReq) {
+                                Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_alert_description, Snackbar.LENGTH_LONG).show();
+                            } else if (eventDateReq) {
+                                Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_alert_date, Snackbar.LENGTH_LONG).show();
+                            } else if (typeOfPlaceReq) {
+                                Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_alert_place, Snackbar.LENGTH_LONG).show();
+                            } else if (typeOfPlaceTextReq) {
+                                Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_alert_place_text, Snackbar.LENGTH_LONG).show();
+                            } else if (eventSrcFirstNameReq) {
+                                Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_alert_firstName, Snackbar.LENGTH_LONG).show();
+                            } else if (eventSrcLastNameReq) {
+                                Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_alert_lastName, Snackbar.LENGTH_LONG).show();
+                            } else if (eventSrcTelNoReq) {
+                                Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_alert_telNo, Snackbar.LENGTH_LONG).show();
                             }
                         }
 

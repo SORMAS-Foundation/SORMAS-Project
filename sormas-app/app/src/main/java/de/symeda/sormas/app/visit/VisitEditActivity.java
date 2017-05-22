@@ -149,65 +149,85 @@ public class VisitEditActivity extends AbstractEditActivity {
             case R.id.action_save:
                 visit = (Visit) adapter.getData(VisitEditTabs.VISIT_DATA.ordinal());
                 Symptoms symptoms = (Symptoms)adapter.getData(VisitEditTabs.SYMPTOMS.ordinal());
-
                 SymptomsEditForm symptomsEditForm = (SymptomsEditForm) adapter.getTabByPosition(VisitEditTabs.SYMPTOMS.ordinal());
 
-                Contact contact = (Contact) DatabaseHelper.getContactDao().queryUuid(contactUuid);
+                Contact contact = DatabaseHelper.getContactDao().queryUuid(contactUuid);
                 if (visit.getVisitDateTime().before(contact.getLastContactDate()) &&
                         DateHelper.getDaysBetween(visit.getVisitDateTime(), contact.getLastContactDate()) > 10) {
-                    Snackbar.make(findViewById(R.id.base_layout), "The visit cannot be more than 10 days before the last contact date.", Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_visit_10_days_before, Snackbar.LENGTH_LONG).show();
                     return true;
                 }
 
                 if (contact.getFollowUpUntil() != null && visit.getVisitDateTime().after(contact.getFollowUpUntil()) &&
                         DateHelper.getDaysBetween(contact.getFollowUpUntil(), visit.getVisitDateTime()) > 10) {
-                    Snackbar.make(findViewById(R.id.base_layout), "The visit cannot be more than 10 days after the end of the follow-up duration.", Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_visit_10_days_after, Snackbar.LENGTH_LONG).show();
                     return true;
                 }
 
-                // method returns a String, null means that there is no error message and thus
-                // the data is valid
                 try {
                     symptomsEditForm.validateVisitData(symptoms, visit.getVisitStatus() == VisitStatus.COOPERATIVE);
-
-                    if (symptoms != null) {
-                        visit.setSymptoms(symptoms);
-                        DatabaseHelper.getSymptomsDao().save(symptoms);
-                    }
-
-                    visit.setVisitUser(ConfigProvider.getUser());
-
-                    DatabaseHelper.getVisitDao().save(visit);
-                    Snackbar.make(findViewById(R.id.base_layout), "Visit " + DataHelper.getShortUuid(visit.getUuid()) + " saved", Snackbar.LENGTH_LONG).show();
-
-                    if (ConnectionHelper.isConnectedToInternet(getApplicationContext())) {
-                        SyncVisitsTask.syncVisitsWithProgressDialog(this, new SyncCallback() {
-                            @Override
-                            public void call(boolean syncFailed) {
-                                if (syncFailed) {
-                                    Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_sync_error_saved), getResources().getString(R.string.entity_visit)), Snackbar.LENGTH_LONG).show();
-                                }
-                                finish();
-                            }
-                        });
-                    } else {
-                        finish();
-                    }
-
-                    return true;
                 } catch (ValidationFailedException e) {
                     Snackbar.make(findViewById(R.id.base_layout), e.getMessage(), Snackbar.LENGTH_LONG).show();
 
                     // if any symptomsfield is required, change pager to symptoms tab
-                    if(currentTab!=VisitEditTabs.SYMPTOMS.ordinal()) {
+                    if (currentTab != VisitEditTabs.SYMPTOMS.ordinal()) {
                         pager.setCurrentItem(VisitEditTabs.SYMPTOMS.ordinal());
                     }
                     return true;
-                } catch (DaoException e) {
-                    Log.e(getClass().getName(), "Error while trying to save visit", e);
-                    Snackbar.make(findViewById(R.id.base_layout), "Visit could not be saved because of an internal error.", Snackbar.LENGTH_LONG).show();
-                    ErrorReportingHelper.sendCaughtException(tracker, e, visit, true);
                 }
+
+                boolean dateTimeReq = visit.getVisitDateTime() == null;
+                boolean visitStatusReq = visit.getVisitStatus() == null;
+
+                boolean isValid = !dateTimeReq && !visitStatusReq;
+
+                // method returns a String, null means that there is no error message and thus
+                // the data is valid
+                if (isValid) {
+                    try {
+                        if (symptoms != null) {
+                            visit.setSymptoms(symptoms);
+                            if (!DatabaseHelper.getSymptomsDao().save(symptoms)) {
+                                throw new DaoException();
+                            }
+                        }
+
+                        visit.setVisitUser(ConfigProvider.getUser());
+
+                        if (!DatabaseHelper.getVisitDao().save(visit)) {
+                            throw new DaoException();
+                        }
+
+                        if (ConnectionHelper.isConnectedToInternet(getApplicationContext())) {
+                            SyncVisitsTask.syncVisitsWithProgressDialog(this, new SyncCallback() {
+                                @Override
+                                public void call(boolean syncFailed) {
+                                    if (syncFailed) {
+                                        Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_sync_error_saved), getResources().getString(R.string.entity_visit)), Snackbar.LENGTH_LONG).show();
+                                    } else {
+                                        Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_visit)), Snackbar.LENGTH_LONG).show();
+                                    }
+                                    finish();
+                                }
+                            });
+                        } else {
+                            Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_visit)), Snackbar.LENGTH_LONG).show();
+                            finish();
+                        }
+                    } catch (DaoException e) {
+                        Log.e(getClass().getName(), "Error while trying to save visit", e);
+                        Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_error), getResources().getString(R.string.entity_visit)), Snackbar.LENGTH_LONG).show();
+                        ErrorReportingHelper.sendCaughtException(tracker, e, visit, true);
+                    }
+                } else {
+                    if (dateTimeReq) {
+                        Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_visit_date_time, Snackbar.LENGTH_LONG).show();
+                    } else if (visitStatusReq) {
+                        Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_visit_status, Snackbar.LENGTH_LONG).show();
+                    }
+                }
+
+                return true;
 
         }
         return super.onOptionsItemSelected(item);
