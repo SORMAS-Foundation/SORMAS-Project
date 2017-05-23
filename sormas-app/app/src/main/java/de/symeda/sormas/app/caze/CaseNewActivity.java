@@ -206,20 +206,7 @@ public class CaseNewActivity extends AppCompatActivity {
         }
         caze.setReportDate(new Date());
 
-        if (!DatabaseHelper.getSymptomsDao().save(caze.getSymptoms())) {
-            throw new DaoException();
-        }
-        if (!DatabaseHelper.getHospitalizationDao().save(caze.getHospitalization())) {
-            throw new DaoException();
-        }
-        if (!DatabaseHelper.getEpiDataDao().save(caze.getEpiData())) {
-            throw new DaoException();
-        }
-
-        CaseDao caseDao = DatabaseHelper.getCaseDao();
-        if (!caseDao.save(caze)) {
-            throw new DaoException();
-        }
+        DatabaseHelper.getCaseDao().save(caze);
 
         if (ConnectionHelper.isConnectedToInternet(getApplicationContext())) {
             SyncCasesTask.syncCasesWithProgressDialog(this, new SyncCallback() {

@@ -16,6 +16,9 @@ import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
+import de.symeda.sormas.app.backend.event.Event;
+import de.symeda.sormas.app.backend.location.Location;
+import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.util.DataUtils;
 //import kotlin.NotImplementedError;
 
@@ -33,17 +36,6 @@ public class VisitDao extends AbstractAdoDao<Visit> {
     @Override
     public String getTableName() {
         return Visit.TABLE_NAME;
-    }
-
-    @Override
-    public boolean saveUnmodified(Visit visit) throws DaoException {
-
-        // saving unmodified also includes cascading sub entities
-        if (visit.getSymptoms() != null) {
-            DatabaseHelper.getSymptomsDao().saveUnmodified(visit.getSymptoms());
-        }
-
-        return super.saveUnmodified(visit);
     }
 
     public List<Visit> getByContact(Contact contact) {
@@ -74,6 +66,21 @@ public class VisitDao extends AbstractAdoDao<Visit> {
             Log.e(getTableName(), "Could not perform getByContact on Visit");
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public Date getLatestChangeDate() {
+        Date date = super.getLatestChangeDate();
+        if (date == null) {
+            return null;
+        }
+
+        Date symptomsDate = getLatestChangeDateJoin(Symptoms.TABLE_NAME, Visit.SYMPTOMS);
+        if (symptomsDate != null && symptomsDate.after(date)) {
+            date = symptomsDate;
+        }
+
+        return date;
     }
 
     @Override

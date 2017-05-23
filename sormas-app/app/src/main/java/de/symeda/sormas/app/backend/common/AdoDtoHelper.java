@@ -2,15 +2,10 @@ package de.symeda.sormas.app.backend.common;
 
 import android.util.Log;
 
-import com.googlecode.openbeans.BeanInfo;
-import com.googlecode.openbeans.IntrospectionException;
-import com.googlecode.openbeans.Introspector;
-import com.googlecode.openbeans.PropertyDescriptor;
 import com.j256.ormlite.logger.Logger;
 import com.j256.ormlite.logger.LoggerFactory;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -20,7 +15,6 @@ import java.util.concurrent.Callable;
 
 import de.symeda.sormas.api.DataTransferObject;
 import de.symeda.sormas.api.ReferenceDto;
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.util.DataUtils;
 import retrofit2.Call;
 import retrofit2.Response;
@@ -54,30 +48,33 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 
             Response<List<DTO>> response = dtoCall.execute();
             final List<DTO> result = response.body();
-            if (result != null) {
+            if (result != null && result.size() > 0) {
                 preparePulledResult(result);
                 dao.callBatchTasks(new Callable<Void>() {
                     public Void call() throws Exception {
                         boolean empty = dao.countOf() == 0;
                         for (DTO dto : result) {
 
-                            ADO ado = empty ? null : dao.queryUuid(dto.getUuid());
+                            ADO source = fillOrCreateFromDto(null, dto);
+                            dao.mergeOrCreate(source);
 
-                            if (ado != null && ado.isModified()) {
-                                // merge existing changes into incoming data
-                                ADO original = dao.queryClonedOriginalUuid(dto.getUuid());
-                                ADO source = fillOrCreateFromDto(null, dto);
-                                mergeData(ado, original, source);
-                                dao.save(ado);
-                                dao.saveUnmodified(original);
-
-                                // in theory ado and cloned original could now be equal
-                                // and we no longer need to keep the copy. Ignore this
-
-                            } else {
-                                ado = fillOrCreateFromDto(ado, dto);
-                                dao.saveUnmodified(ado);
-                            }
+//                            ADO ado = empty ? null : dao.queryUuid(dto.getUuid());
+//
+//                            // merge or just save?
+//                            if (ado != null && ado.isModified()) {
+//                                // merge existing changes into incoming data
+//                                ADO original = dao.queryClonedOriginalUuid(dto.getUuid());
+//                                AdoMergeHelper.mergeAdo(ado, original, source);
+//                                dao.save(ado);
+//                                dao.saveUnmodified(original);
+//
+//                                // in theory ado and cloned original could now be equal
+//                                // and we no longer need to keep the copy. Ignore this
+//
+//                            } else {
+//                                ado = fillOrCreateFromDto(ado, dto);
+//                                dao.saveUnmodified(ado);
+//                            }
                         }
                         return null;
                     }
@@ -118,23 +115,15 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
                     public Void call() throws Exception {
                         for (ADO ado : modifiedAdos) {
                             // data has been pushed, we no longer need the old unmodified version
-                            ADO clonedOriginal = dao.queryClonedOriginalUuid(ado.getUuid());
-                            if (clonedOriginal != null) {
-                                dao.delete(clonedOriginal);
-                            }
-
-                            // all data is send -> be are now unmodified
-                            ado.setModified(false);
-                            if (resultChangeDate >= 0) {
-                                ado.setChangeDate(new Date(resultChangeDate));
-                            }
-                            dao.update(ado);
+                            dao.accept(ado);
                         }
                         return null;
                     }
                 });
 
-                Log.d(dao.getTableName(), "Pushed: " + modifiedAdos.size());
+                if (modifiedAdos.size() > 0) {
+                    Log.d(dao.getTableName(), "Pushed: " + modifiedAdos.size());
+                }
             }
 
             // do we need to pull again
@@ -188,103 +177,6 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
         } catch (IllegalAccessException e) {
             Log.e(DataUtils.class.getName(), "Could not perform createNew", e);
             throw new RuntimeException(e);
-        }
-    }
-
-    /**
-     * Merges all changes made in source (compared to original) into target and original.
-     * @param target
-     * @param original Note: this is also updated!
-     * @param source
-     */
-    public void mergeData(ADO target, ADO original, ADO source) {
-
-        BeanInfo beanInfo;
-        try {
-            beanInfo = Introspector.getBeanInfo(target.getClass());
-        } catch (IntrospectionException e) {
-            e.printStackTrace();
-            return;
-        }
-
-        // use change date from server
-        target.setChangeDate(source.getChangeDate());
-        original.setChangeDate(source.getChangeDate());
-
-        for (PropertyDescriptor property : beanInfo.getPropertyDescriptors()) {
-            try {
-                if (AbstractDomainObject.CREATION_DATE.equals(property.getName())
-                        || AbstractDomainObject.CHANGE_DATE.equals(property.getName())
-                        || AbstractDomainObject.LOCAL_CHANGE_DATE.equals(property.getName())
-                        || AbstractDomainObject.UUID.equals(property.getName())
-                        || AbstractDomainObject.ID.equals(property.getName())
-                        || AbstractDomainObject.CLONED_ORIGINAL.equals(property.getName())
-                        || AbstractDomainObject.MODIFIED.equals(property.getName())
-                        || property.getWriteMethod() == null
-                        || property.getReadMethod() == null)
-                    continue;
-
-                Object baseFieldValue = property.getReadMethod().invoke(original);
-                Object sourceFieldValue = property.getReadMethod().invoke(source);
-                Object targetFieldValue = property.getReadMethod().invoke(target);
-
-                boolean copyData;
-                // we now have to write the value from source into target and base
-                // there are three types of properties:
-
-                if (DataHelper.isValueType(property.getPropertyType())) {
-                    // 1. "value" types like String, Date, Enum, ...
-                    // just copy value from source into target and base
-                    copyData = true;
-                }
-                else if (AbstractDomainObject.class.isAssignableFrom(property.getPropertyType())) {
-                    if (property.getPropertyType().isAnnotationPresent(EmbeddedAdo.class)) {
-                        // 2. embedded domain objects like a Location or Symptoms
-                        // call merge for the object
-                        if (sourceFieldValue == null) {
-                            throw new NullPointerException("The embedded object " + property.getName() + " is not allowed to be null.");
-                        }
-                        mergeData((ADO)targetFieldValue, (ADO)baseFieldValue, (ADO)sourceFieldValue);
-                        copyData = false;
-                    }
-                    else {
-                        // 3. reference domain objects like a reference to a Person or a District
-                        // just copy reference value from source into target and base
-                        copyData = true;
-                    }
-                }
-                else {
-                    copyData = false;
-                    // Other objects are not supported
-                    // TODO lists
-                    //throw new UnsupportedOperationException(property.getPropertyType().getName() + " is not supported as a property type.");
-                }
-
-                if (copyData) {
-
-                    // did the server send changes?
-                    if (DataHelper.equal(baseFieldValue, sourceFieldValue)) {
-                        continue;
-                    }
-
-                    // do we have local changes?
-                    if (!DataHelper.equal(baseFieldValue, targetFieldValue)) {
-                        // we have a conflict
-                        Log.e(beanInfo.getBeanDescriptor().getName(), "Overriding " + property.getName() +
-                                " value changed from '" + DataHelper.toStringNullable(baseFieldValue) +
-                                "' to '" + DataHelper.toStringNullable(targetFieldValue) +
-                                "' with '" + DataHelper.toStringNullable(sourceFieldValue) + "'");
-                    }
-
-                    property.getWriteMethod().invoke(target, sourceFieldValue);
-                    property.getWriteMethod().invoke(original, sourceFieldValue);
-                }
-
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
-            } catch (InvocationTargetException e) {
-                throw new RuntimeException(e);
-            }
         }
     }
 

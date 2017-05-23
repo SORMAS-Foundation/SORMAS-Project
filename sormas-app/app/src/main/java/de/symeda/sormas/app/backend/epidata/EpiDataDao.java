@@ -6,6 +6,7 @@ import com.j256.ormlite.logger.LoggerFactory;
 import com.j256.ormlite.stmt.PreparedQuery;
 
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
@@ -45,74 +46,59 @@ public class EpiDataDao extends AbstractAdoDao<EpiData> {
     }
 
     @Override
-    public boolean save(EpiData epiData) throws DaoException {
-        try {
-            if (!super.save(epiData)) {
-                return false;
-            }
-            DatabaseHelper.getEpiDataBurialDao().deleteOrphansOfEpiData(epiData);
-            if (epiData.getBurials() != null && !epiData.getBurials().isEmpty()) {
-                for (EpiDataBurial burial : epiData.getBurials()) {
-                    burial.setEpiData(epiData);
-                    LocationDao locationDao = DatabaseHelper.getLocationDao();
-                    if (burial.getBurialAddress() != null) {
-                        locationDao.save(burial.getBurialAddress());
-                    }
-                    DatabaseHelper.getEpiDataBurialDao().save(burial);
-                }
-            }
-            DatabaseHelper.getEpiDataGatheringDao().deleteOrphansOfEpiData(epiData);
-            if (epiData.getGatherings() != null && !epiData.getGatherings().isEmpty()) {
-                for (EpiDataGathering gathering : epiData.getGatherings()) {
-                    gathering.setEpiData(epiData);
-                    LocationDao locationDao = DatabaseHelper.getLocationDao();
-                    if (gathering.getGatheringAddress() != null) {
-                        locationDao.save(gathering.getGatheringAddress());
-                    }
-                    DatabaseHelper.getEpiDataGatheringDao().save(gathering);
-                }
-            }
-            DatabaseHelper.getEpiDataTravelDao().deleteOrphansOfEpiData(epiData);
-            if (epiData.getTravels() != null && !epiData.getTravels().isEmpty()) {
-                for (EpiDataTravel travel : epiData.getTravels()) {
-                    travel.setEpiData(epiData);
-                    DatabaseHelper.getEpiDataTravelDao().save(travel);
-                }
-            }
-            return true;
-        } catch (SQLException e) {
-            throw new DaoException(e);
+    public Date getLatestChangeDate() {
+        Date date = super.getLatestChangeDate();
+        if (date == null) {
+            return null;
         }
+
+        Date burialDate = DatabaseHelper.getEpiDataBurialDao().getLatestChangeDate();
+        if (burialDate != null && burialDate.after(date)) {
+            date = burialDate;
+        }
+        Date gatheringDate = DatabaseHelper.getEpiDataGatheringDao().getLatestChangeDate();
+        if (gatheringDate != null && gatheringDate.after(date)) {
+            date = gatheringDate;
+        }
+        Date travelDate = DatabaseHelper.getEpiDataTravelDao().getLatestChangeDate();
+        if (travelDate != null && travelDate.after(date)) {
+            date = travelDate;
+        }
+
+        return date;
     }
 
-    @Override
-    public boolean saveUnmodified(EpiData epiData) throws DaoException {
-        try {
-            super.saveUnmodified(epiData);
-            DatabaseHelper.getEpiDataBurialDao().deleteOrphansOfEpiData(epiData);
-            if (epiData.getBurials() != null && !epiData.getBurials().isEmpty()) {
-                for (EpiDataBurial burial : epiData.getBurials()) {
-                    burial.setEpiData(epiData);
-                    DatabaseHelper.getEpiDataBurialDao().saveUnmodified(burial);
-                }
-            }
-            DatabaseHelper.getEpiDataGatheringDao().deleteOrphansOfEpiData(epiData);
-            if (epiData.getGatherings() != null && !epiData.getGatherings().isEmpty()) {
-                for (EpiDataGathering gathering : epiData.getGatherings()) {
-                    gathering.setEpiData(epiData);
-                    DatabaseHelper.getEpiDataGatheringDao().saveUnmodified(gathering);
-                }
-            }
-            DatabaseHelper.getEpiDataTravelDao().deleteOrphansOfEpiData(epiData);
-            if (epiData.getTravels() != null && !epiData.getTravels().isEmpty()) {
-                for (EpiDataTravel travel : epiData.getTravels()) {
-                    travel.setEpiData(epiData);
-                    DatabaseHelper.getEpiDataTravelDao().saveUnmodified(travel);
-                }
-            }
-            return true;
-        } catch (SQLException e) {
-            throw new DaoException(e);
-        }
-    }
+    // TODO
+//    @Override
+//    public void save(EpiData epiData) throws DaoException {
+//        try {
+//            super.save(epiData);
+//
+//            DatabaseHelper.getEpiDataBurialDao().deleteOrphansOfEpiData(epiData);
+//            if (epiData.getBurials() != null && !epiData.getBurials().isEmpty()) {
+//                for (EpiDataBurial burial : epiData.getBurials()) {
+//                    burial.setEpiData(epiData);
+//                    DatabaseHelper.getEpiDataBurialDao().save(burial);
+//                }
+//            }
+//            DatabaseHelper.getEpiDataGatheringDao().deleteOrphansOfEpiData(epiData);
+//            if (epiData.getGatherings() != null && !epiData.getGatherings().isEmpty()) {
+//                for (EpiDataGathering gathering : epiData.getGatherings()) {
+//                    gathering.setEpiData(epiData);
+//                    DatabaseHelper.getEpiDataGatheringDao().save(gathering);
+//                }
+//            }
+//            DatabaseHelper.getEpiDataTravelDao().deleteOrphansOfEpiData(epiData);
+//            if (epiData.getTravels() != null && !epiData.getTravels().isEmpty()) {
+//                for (EpiDataTravel travel : epiData.getTravels()) {
+//                    travel.setEpiData(epiData);
+//                    DatabaseHelper.getEpiDataTravelDao().save(travel);
+//                }
+//            }
+//
+//        } catch (SQLException e) {
+//            throw new DaoException(e);
+//        }
+//    }
+
 }

@@ -20,6 +20,7 @@ import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.user.User;
+import de.symeda.sormas.app.backend.visit.Visit;
 import de.symeda.sormas.app.util.DataUtils;
 
 public class CaseDao extends AbstractAdoDao<Case> {
@@ -39,46 +40,27 @@ public class CaseDao extends AbstractAdoDao<Case> {
     }
 
     @Override
-    public boolean save(Case caze) throws DaoException {
-        return super.save(caze);
-    }
-
-    @Override
-    public boolean saveUnmodified(Case caze) throws DaoException {
-        // saving unmodified also includes cascading sub entities
-        if (caze.getSymptoms() != null) {
-            DatabaseHelper.getSymptomsDao().saveUnmodified(caze.getSymptoms());
-        }
-        if (caze.getHospitalization() != null) {
-            DatabaseHelper.getHospitalizationDao().saveUnmodified(caze.getHospitalization());
-        }
-        if (caze.getEpiData() != null) {
-            DatabaseHelper.getEpiDataDao().saveUnmodified(caze.getEpiData());
-        }
-
-        return super.saveUnmodified(caze);
-    }
-
-    @Override
     public Date getLatestChangeDate() {
-        Date cazeDate = super.getLatestChangeDate();
-        if (cazeDate == null) {
+        Date date = super.getLatestChangeDate();
+        if (date == null) {
             return null;
         }
-        Date symptomsDate = DatabaseHelper.getSymptomsDao().getLatestChangeDate();
-        if (symptomsDate != null && symptomsDate.after(cazeDate)) {
-            cazeDate = symptomsDate;
-        }
-        Date hospitalizationDate = DatabaseHelper.getHospitalizationDao().getLatestChangeDate();
-        if (hospitalizationDate != null && hospitalizationDate.after(cazeDate)) {
-            cazeDate = hospitalizationDate;
-        }
-        Date epiDataDate = DatabaseHelper.getEpiDataDao().getLatestChangeDate();
-        if (epiDataDate != null && epiDataDate.after(cazeDate)) {
-            cazeDate = epiDataDate;
+
+        Date symptomsDate = getLatestChangeDateJoin(Symptoms.TABLE_NAME, Case.SYMPTOMS);
+        if (symptomsDate != null && symptomsDate.after(date)) {
+            date = symptomsDate;
         }
 
-        return cazeDate;
+        Date hospitalizationDate = DatabaseHelper.getHospitalizationDao().getLatestChangeDate();
+        if (hospitalizationDate != null && hospitalizationDate.after(date)) {
+            date = hospitalizationDate;
+        }
+        Date epiDataDate = DatabaseHelper.getEpiDataDao().getLatestChangeDate();
+        if (epiDataDate != null && epiDataDate.after(date)) {
+            date = epiDataDate;
+        }
+
+        return date;
     }
 
     // TODO #69 create some date filter for finding the right case (this is implemented in CaseService.java too)

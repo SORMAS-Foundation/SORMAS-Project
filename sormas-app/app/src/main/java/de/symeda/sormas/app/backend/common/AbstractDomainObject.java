@@ -53,7 +53,7 @@ public abstract class AbstractDomainObject extends BaseObservable implements Ser
 	private Date localChangeDate;
 
 	/**
-	 * marks if this entity was modified and needs to be send to the server
+	 * This entity or any embedded (not referenced) was modified and needs to be send to the server
 	 */
 	@DatabaseField
 	private boolean modified = false;

@@ -33,26 +33,6 @@ public class UserDao extends AbstractAdoDao<User> {
         return User.TABLE_NAME;
     }
 
-    @Override
-    public boolean save(User user) throws DaoException {
-
-        if (user.getAddress() != null) {
-            DatabaseHelper.getLocationDao().save(user.getAddress());
-        }
-
-        return super.save(user);
-    }
-
-    @Override
-    public boolean saveUnmodified(User user) throws DaoException {
-
-        if (user.getAddress() != null) {
-            DatabaseHelper.getLocationDao().saveUnmodified(user.getAddress());
-        }
-
-        return super.saveUnmodified(user);
-    }
-
     public User getByUsername(String username) {
         try {
             QueryBuilder builder = queryBuilder();

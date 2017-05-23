@@ -11,6 +11,7 @@ import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.location.Location;
+import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.util.DataUtils;
 
 public class EventDao extends AbstractAdoDao<Event> {
@@ -30,23 +31,18 @@ public class EventDao extends AbstractAdoDao<Event> {
     }
 
     @Override
-    public boolean save(Event event) throws DaoException {
-
-        if (event.getEventLocation() != null) {
-            DatabaseHelper.getLocationDao().save(event.getEventLocation());
+    public Date getLatestChangeDate() {
+        Date date = super.getLatestChangeDate();
+        if (date == null) {
+            return null;
         }
 
-        return super.save(event);
-    }
-
-    @Override
-    public boolean saveUnmodified(Event event) throws DaoException {
-
-        if (event.getEventLocation() != null) {
-            DatabaseHelper.getLocationDao().save(event.getEventLocation());
+        Date locationDate = getLatestChangeDateJoin(Location.TABLE_NAME, Event.EVENT_LOCATION);
+        if (locationDate != null && locationDate.after(date)) {
+            date = locationDate;
         }
 
-        return super.saveUnmodified(event);
+        return date;
     }
 
     @Override

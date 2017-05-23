@@ -254,35 +254,17 @@ public class CaseEditActivity extends AbstractEditActivity {
 
                 if (validData) {
                     try {
-                        if (!personDao.save(person)) {
-                            throw new DaoException();
-                        }
+
+                        personDao.save(person);
                         caze.setPerson(person); // we aren't sure why, but this is needed, otherwise the person will be overriden when first saved
+                        caze.setSymptoms(symptoms);
+                        caze.setHospitalization(hospitalization);
+                        caze.setEpiData(epiData);
 
-                        if (symptoms != null) {
-                            if (!symptomsDao.save(symptoms)) {
-                                throw new DaoException();
-                            }
-                            caze.setSymptoms(symptoms);
-                        }
+                        caseDao.save(caze);
 
-                        if (hospitalization != null) {
-                            if (!hospitalizationDao.save(hospitalization)) {
-                                throw new DaoException();
-                            }
-                            caze.setHospitalization(hospitalization);
-                        }
+                        Snackbar.make(findViewById(R.id.base_layout), "Case saved.", Snackbar.LENGTH_LONG).show();
 
-                        if (epiData != null) {
-                            if (!epiDataDao.save(epiData)) {
-                                throw new DaoException();
-                            }
-                            caze.setEpiData(epiData);
-                        }
-
-                        if (!caseDao.save(caze)) {
-                            throw new DaoException();
-                        }
                         if (ConnectionHelper.isConnectedToInternet(getApplicationContext())) {
                             SyncCasesTask.syncCasesWithProgressDialog(this, new SyncCallback() {
                                 @Override
@@ -311,6 +293,7 @@ public class CaseEditActivity extends AbstractEditActivity {
                         }
                     } catch (DaoException e) {
                         Log.e(getClass().getName(), "Error while trying to save case", e);
+						Log.e(getClass().getName(), "- root cause: ", ErrorReportingHelper.getRootCause(e));
                         Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_error), getResources().getString(R.string.entity_case)), Snackbar.LENGTH_LONG).show();
                         ErrorReportingHelper.sendCaughtException(tracker, e, caze, true);
                     }

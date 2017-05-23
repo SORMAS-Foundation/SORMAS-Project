@@ -1,8 +1,6 @@
 package de.symeda.sormas.app.backend.hospitalization;
 
 import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.logger.Logger;
-import com.j256.ormlite.logger.LoggerFactory;
 
 import java.sql.SQLException;
 
@@ -35,41 +33,22 @@ public class HospitalizationDao extends AbstractAdoDao<Hospitalization> {
         return hospitalization;
     }
 
-    @Override
-    public boolean save(Hospitalization hospitalization) throws DaoException {
-        try {
-            if (!super.save(hospitalization)) {
-                return false;
-            }
-
-            DatabaseHelper.getPreviousHospitalizationDao().deleteOrphansOfHospitalization(hospitalization);
-            if (hospitalization.getPreviousHospitalizations() != null && !hospitalization.getPreviousHospitalizations().isEmpty()) {
-                for (PreviousHospitalization previousHospitalization : hospitalization.getPreviousHospitalizations()) {
-                    previousHospitalization.setHospitalization(hospitalization);
-                    DatabaseHelper.getPreviousHospitalizationDao().save(previousHospitalization);
-                }
-            }
-            return true;
-        } catch (SQLException e) {
-            throw new DaoException(e);
-        }
-    }
-
-    @Override
-    public boolean saveUnmodified(Hospitalization hospitalization) throws DaoException {
-        try {
-            super.saveUnmodified(hospitalization);
-            DatabaseHelper.getPreviousHospitalizationDao().deleteOrphansOfHospitalization(hospitalization);
-            if (hospitalization.getPreviousHospitalizations() != null && !hospitalization.getPreviousHospitalizations().isEmpty()) {
-                for (PreviousHospitalization previousHospitalization : hospitalization.getPreviousHospitalizations()) {
-                    previousHospitalization.setHospitalization(hospitalization);
-                    DatabaseHelper.getPreviousHospitalizationDao().saveUnmodified(previousHospitalization);
-                }
-            }
-            return true;
-        } catch (SQLException e) {
-            throw new DaoException(e);
-        }
-    }
-
+    // TODO
+//    @Override
+//    public void save(Hospitalization hospitalization) throws DaoException {
+//        try {
+//            super.save(hospitalization);
+//
+//            DatabaseHelper.getPreviousHospitalizationDao().deleteOrphansOfHospitalization(hospitalization);
+//            if (hospitalization.getPreviousHospitalizations() != null && !hospitalization.getPreviousHospitalizations().isEmpty()) {
+//                for (PreviousHospitalization previousHospitalization : hospitalization.getPreviousHospitalizations()) {
+//                    previousHospitalization.setHospitalization(hospitalization);
+//                    DatabaseHelper.getPreviousHospitalizationDao().save(previousHospitalization);
+//                }
+//            }
+//
+//        } catch (SQLException e) {
+//            throw new DaoException(e);
+//        }
+//    }
 }

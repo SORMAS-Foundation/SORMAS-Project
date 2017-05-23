@@ -42,11 +42,6 @@ public class TaskDao extends AbstractAdoDao<Task> {
         return Task.TABLE_NAME;
     }
 
-    @Override
-    public boolean saveUnmodified(Task task) throws DaoException {
-        return super.saveUnmodified(task);
-    }
-
     public void changeTaskStatus(Task task, TaskStatus targetStatus) throws DaoException {
         task.setTaskStatus(targetStatus);
         task.setStatusChangeDate(new Date());
