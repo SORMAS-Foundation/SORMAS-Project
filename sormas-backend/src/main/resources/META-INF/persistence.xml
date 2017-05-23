@@ -5,7 +5,7 @@
 	<persistence-unit name="SormasPU" transaction-type="JTA">
 		<jta-data-source>jdbc/sormasDataPool</jta-data-source>
 
-		<!-- <mapping-file>META-INF/listener.xml</mapping-file> -->
+		<mapping-file>META-INF/listener.xml</mapping-file>
 
 		<class>de.symeda.sormas.backend.caze.Case</class>
 		<class>de.symeda.sormas.backend.common.AbstractDomainObject</class>
@@ -48,5 +48,20 @@
 			-->
 
 		</properties>
+	</persistence-unit>
+	
+	<persistence-unit name="auditlogPU" transaction-type="JTA">
+		<jta-data-source>jdbc/AuditlogPool</jta-data-source>
+
+		<class>de.symeda.sormas.backend.auditlog.AuditLogEntry</class>
+
+		<exclude-unlisted-classes>true</exclude-unlisted-classes>
+
+		<shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
+		<validation-mode>CALLBACK</validation-mode>
+		<properties>
+			<property name="eclipselink.ddl-generation" value="none" /> 
+		</properties>
+
 	</persistence-unit>
 </persistence>

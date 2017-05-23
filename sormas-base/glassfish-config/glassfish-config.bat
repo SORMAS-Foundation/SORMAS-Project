@@ -17,8 +17,11 @@ set PORT_ADMIN=6048
 
 REM DB
 set DB_USER=sormas_user
+set DB_USER_AUDIT=sormas_user
 set DB_PW=sormas_db
+set DB_PW_AUDIT=sormas_db
 set DB_NAME=sormas_db
+set DB_NAME_AUDIT=sormas_audit_db
 set DB_SERVER=localhost
 set DB_PORT=5432
 
@@ -69,6 +72,10 @@ PAUSE >nul
 REM JDBC pool
 %ASADMIN% create-jdbc-connection-pool --restype javax.sql.ConnectionPoolDataSource --datasourceclassname org.postgresql.ds.PGConnectionPoolDataSource --isconnectvalidatereq true --validationmethod custom-validation --validationclassname org.glassfish.api.jdbc.validation.PostgresConnectionValidation --property "portNumber=%DB_PORT%:databaseName=%DB_NAME%:serverName=%DB_SERVER%:user=%DB_USER%:password=%DB_PW%" %DOMAIN_NAME%DataPool
 %ASADMIN% create-jdbc-resource --connectionpoolid %DOMAIN_NAME%DataPool jdbc/%DOMAIN_NAME%DataPool
+
+REM Pool for audit log
+%ASADMIN% create-jdbc-connection-pool --restype javax.sql.XADataSource --datasourceclassname org.postgresql.xa.PGXADataSource --isconnectvalidatereq true --validationmethod custom-validation --validationclassname org.glassfish.api.jdbc.validation.PostgresConnectionValidation --property "portNumber=%DB_PORT%:databaseName=%DB_NAME_AUDIT%:serverName=%DB_SERVER%:user=%DB_USER_AUDIT%:password=%DB_PW_AUDIT%" %DOMAIN_NAME%AuditlogPool
+%ASADMIN% create-jdbc-resource --connectionpoolid %DOMAIN_NAME%AuditlogPool jdbc/AuditlogPool
 
 REM User datasource without pool (flexible jdbc realm seems to keep connections in cache)
 %ASADMIN% create-jdbc-connection-pool --restype javax.sql.DataSource --datasourceclassname org.postgresql.ds.PGSimpleDataSource --isconnectvalidatereq true --validationmethod custom-validation --validationclassname org.glassfish.api.jdbc.validation.PostgresConnectionValidation --property "portNumber=%DB_PORT%:databaseName=%DB_NAME%:serverName=%DB_SERVER%:user=%DB_USER%:password=%DB_PW%" %DOMAIN_NAME%UsersDataPool

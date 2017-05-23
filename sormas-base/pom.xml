@@ -85,6 +85,12 @@
 				<version>7.0</version>
 			</dependency>
 			
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-lang3</artifactId>
+				<version>3.4</version>
+			</dependency>
+			
 			<!-- serverlibs -->
 			<dependency>
 				<groupId>org.postgresql</groupId>

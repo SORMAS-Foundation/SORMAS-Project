@@ -14,11 +14,12 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Version;
 import javax.validation.constraints.Size;
 
+import de.symeda.auditlog.api.HasUuid;
 import de.symeda.sormas.api.utils.DataHelper;
 
 
 @MappedSuperclass
-public abstract class AbstractDomainObject implements Serializable, Cloneable {
+public abstract class AbstractDomainObject implements Serializable, Cloneable, HasUuid {
 
 	private static final long serialVersionUID = 3957437214306161226L;
 

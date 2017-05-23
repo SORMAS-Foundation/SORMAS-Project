@@ -183,5 +183,5 @@ public class Contact extends AbstractDomainObject {
 	public void setTasks(List<Task> tasks) {
 		this.tasks = tasks;
 	}
-
+	
 }
