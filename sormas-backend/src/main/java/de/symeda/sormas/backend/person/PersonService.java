@@ -11,6 +11,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
@@ -63,7 +64,7 @@ public class PersonService extends AbstractAdoService<Person> {
 		Predicate lgaFilter = cb.equal(address.get(Location.DISTRICT), user.getDistrict());
 		// date range
 		if (date != null) {
-			Predicate dateFilter = cb.greaterThan(lgaRoot.get(AbstractDomainObject.CHANGE_DATE), date);
+			Predicate dateFilter = cb.greaterThan(address.get(AbstractDomainObject.CHANGE_DATE), date);
 			if (lgaFilter != null) {
 				lgaFilter = cb.and(lgaFilter, dateFilter);
 			} else {
@@ -77,12 +78,12 @@ public class PersonService extends AbstractAdoService<Person> {
 		// persons by case
 		CriteriaQuery<Person> casePersonsQuery = cb.createQuery(Person.class);
 		Root<Case> casePersonsRoot = casePersonsQuery.from(Case.class);
-		Path<Person> casePersonsSelect = casePersonsRoot.get(Case.PERSON);
+		Join<Person, Person> casePersonsSelect = casePersonsRoot.join(Case.PERSON);
 		casePersonsQuery.select(casePersonsSelect);
 		Predicate casePersonsFilter = caseService.createUserFilter(cb, casePersonsRoot, user);
 		// date range
 		if (date != null) {
-			Predicate dateFilter = cb.greaterThan(casePersonsSelect.get(AbstractDomainObject.CHANGE_DATE), date);
+			Predicate dateFilter = createDateFilter(cb, casePersonsSelect, date);
 			if (casePersonsFilter != null) {
 				casePersonsFilter = cb.and(casePersonsFilter, dateFilter);
 			} else {
@@ -96,12 +97,12 @@ public class PersonService extends AbstractAdoService<Person> {
 		// persons by contact
 		CriteriaQuery<Person> contactPersonsQuery = cb.createQuery(Person.class);
 		Root<Contact> contactPersonsRoot = contactPersonsQuery.from(Contact.class);
-		Path<Person> contactPersonsSelect = contactPersonsRoot.get(Contact.PERSON);
+		Join<Person, Person> contactPersonsSelect = contactPersonsRoot.join(Contact.PERSON);
 		contactPersonsQuery.select(contactPersonsSelect);
 		Predicate contactPersonsFilter = contactService.createUserFilter(cb, contactPersonsRoot, user);
 		// date range
 		if (date != null) {
-			Predicate dateFilter = cb.greaterThan(contactPersonsSelect.get(AbstractDomainObject.CHANGE_DATE), date);
+			Predicate dateFilter = createDateFilter(cb, contactPersonsSelect, date);
 			if (contactPersonsFilter != null) {
 				contactPersonsFilter = cb.and(contactPersonsFilter, dateFilter);
 			} else {
@@ -115,12 +116,12 @@ public class PersonService extends AbstractAdoService<Person> {
 		// persons by event participant
 		CriteriaQuery<Person> eventPersonsQuery = cb.createQuery(Person.class);
 		Root<EventParticipant> eventPersonsRoot = eventPersonsQuery.from(EventParticipant.class);
-		Path<Person> eventPersonsSelect = eventPersonsRoot.get(EventParticipant.PERSON);
+		Join<Person, Person> eventPersonsSelect = eventPersonsRoot.join(EventParticipant.PERSON);
 		eventPersonsQuery.select(eventPersonsSelect);
 		Predicate eventPersonsFilter = eventParticipantService.createUserFilter(cb, eventPersonsRoot, user);
 		// date range
 		if (date != null) {
-			Predicate dateFilter = cb.greaterThan(eventPersonsSelect.get(AbstractDomainObject.CHANGE_DATE), date);
+			Predicate dateFilter = createDateFilter(cb, eventPersonsSelect, date);
 			if (eventPersonsFilter != null) {
 				eventPersonsFilter = cb.and(eventPersonsFilter, dateFilter);
 			} else {
@@ -136,6 +137,17 @@ public class PersonService extends AbstractAdoService<Person> {
 				.distinct()
 				.sorted(Comparator.comparing(Person::getId))
 				.collect(Collectors.toList());
+	}
+	
+	public Predicate createDateFilter(CriteriaBuilder cb, From<Person, Person> from, Date date) {
+		Predicate dateFilter = cb.greaterThan(from.get(AbstractDomainObject.CHANGE_DATE), date);
+		Join<Person, Location> address = from.join(Person.ADDRESS);
+		dateFilter = cb.or(dateFilter, cb.greaterThan(address.get(AbstractDomainObject.CHANGE_DATE), date));
+		Join<Person, Location> death = from.join(Person.DEATH_LOCATION);
+		dateFilter = cb.or(dateFilter, cb.greaterThan(death.get(AbstractDomainObject.CHANGE_DATE), date));
+		Join<Person, Location> burial = from.join(Person.BURIAL_LOCATION);
+		dateFilter = cb.or(dateFilter, cb.greaterThan(burial.get(AbstractDomainObject.CHANGE_DATE), date));
+		return dateFilter;
 	}
 	
 	public List<Person> getDeathsBetween(Date fromDate, Date toDate, Disease disease, User user) {
