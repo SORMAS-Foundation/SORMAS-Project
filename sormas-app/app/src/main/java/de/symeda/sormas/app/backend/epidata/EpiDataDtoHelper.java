@@ -65,6 +65,7 @@ public class EpiDataDtoHelper extends AdoDtoHelper<EpiData, EpiDataDto> {
         a.setWaterBodyDetails(b.getWaterBodyDetails());
         a.setTickBite(b.getTickBite());
 
+        // just recreate all of this and throw the old stuff away
         List<EpiDataBurial> burials = new ArrayList<>();
         if (!b.getBurials().isEmpty()) {
             for (EpiDataBurialDto burialDto : b.getBurials()) {
@@ -75,6 +76,7 @@ public class EpiDataDtoHelper extends AdoDtoHelper<EpiData, EpiDataDto> {
         }
         a.setBurials(burials);
 
+        // just recreate all of this and throw the old stuff away
         List<EpiDataGathering> gatherings = new ArrayList<>();
         if (!b.getGatherings().isEmpty()) {
             for (EpiDataGatheringDto gatheringDto : b.getGatherings()) {
@@ -85,6 +87,7 @@ public class EpiDataDtoHelper extends AdoDtoHelper<EpiData, EpiDataDto> {
         }
         a.setGatherings(gatherings);
 
+        // just recreate all of this and throw the old stuff away
         List<EpiDataTravel> travels = new ArrayList<>();
         if (!b.getTravels().isEmpty()) {
             for (EpiDataTravelDto travelDto : b.getTravels()) {

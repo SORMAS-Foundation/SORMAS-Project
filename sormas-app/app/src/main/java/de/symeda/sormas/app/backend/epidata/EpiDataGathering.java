@@ -10,6 +10,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.common.EmbeddedAdo;
 import de.symeda.sormas.app.backend.location.Location;
 
 /**
@@ -18,12 +19,15 @@ import de.symeda.sormas.app.backend.location.Location;
 
 @Entity(name = EpiDataGathering.TABLE_NAME)
 @DatabaseTable(tableName = EpiDataGathering.TABLE_NAME)
+@EmbeddedAdo
 public class EpiDataGathering extends AbstractDomainObject {
 
     private static final long serialVersionUID = 5491651166245301869L;
 
     public static final String TABLE_NAME = "epidatagathering";
+
     public static final String EPI_DATA = "epiData";
+    public static final String GATHERING_ADDRESS = "gatheringAddress";
 
     @DatabaseField(foreign = true, foreignAutoRefresh = true)
     private EpiData epiData;
@@ -34,7 +38,7 @@ public class EpiDataGathering extends AbstractDomainObject {
     @DatabaseField(dataType = DataType.DATE_LONG)
     private Date gatheringDate;
 
-    @DatabaseField(foreign = true, foreignAutoRefresh = true)
+    @DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 2)
     private Location gatheringAddress;
 
     public EpiData getEpiData() {

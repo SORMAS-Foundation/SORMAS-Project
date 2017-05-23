@@ -13,6 +13,7 @@ import javax.persistence.Enumerated;
 
 import de.symeda.sormas.api.epidata.TravelType;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.common.EmbeddedAdo;
 
 /**
  * Created by Mate Strysewske on 08.03.2017.
@@ -20,6 +21,7 @@ import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 
 @Entity(name = EpiDataTravel.TABLE_NAME)
 @DatabaseTable(tableName = EpiDataTravel.TABLE_NAME)
+@EmbeddedAdo
 public class EpiDataTravel extends AbstractDomainObject {
 
     private static final long serialVersionUID = -4280455878066233175L;

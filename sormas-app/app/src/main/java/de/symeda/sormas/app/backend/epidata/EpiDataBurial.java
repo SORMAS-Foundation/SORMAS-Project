@@ -13,6 +13,7 @@ import javax.persistence.Enumerated;
 
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.common.EmbeddedAdo;
 import de.symeda.sormas.app.backend.location.Location;
 
 /**
@@ -21,12 +22,16 @@ import de.symeda.sormas.app.backend.location.Location;
 
 @Entity(name = EpiDataBurial.TABLE_NAME)
 @DatabaseTable(tableName = EpiDataBurial.TABLE_NAME)
+@EmbeddedAdo
 public class EpiDataBurial extends AbstractDomainObject {
 
     private static final long serialVersionUID = 866789458483672591L;
 
     public static final String TABLE_NAME = "epidataburial";
+
     public static final String EPI_DATA = "epiData";
+    public static final String BURIAL_ADDRESS = "burialAddress";
+
 
     @DatabaseField(foreign = true, foreignAutoRefresh = true)
     private EpiData epiData;
@@ -43,7 +48,7 @@ public class EpiDataBurial extends AbstractDomainObject {
     @DatabaseField(dataType = DataType.DATE_LONG)
     private Date burialDateTo;
 
-    @DatabaseField(foreign = true, foreignAutoRefresh = true)
+    @DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 2)
     private Location burialAddress;
 
     @Enumerated(EnumType.STRING)

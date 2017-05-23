@@ -30,30 +30,26 @@ public class EpiDataTravelDao extends AbstractAdoDao<EpiDataTravel> {
     }
 
     public List<EpiDataTravel> getByEpiData(EpiData epiData) {
-        try {
-            QueryBuilder qb = queryBuilder();
-            qb.where().eq(EpiDataTravel.EPI_DATA + "_id", epiData);
-            qb.orderBy(EpiDataTravel.CHANGE_DATE, false);
-            return qb.query();
-        } catch (SQLException e) {
-            Log.e(getTableName(), "Could not perform getByEpiData on EpiDataTravel");
-            throw new RuntimeException(e);
-        }
+        return queryForEq(EpiDataTravel.EPI_DATA + "_id", epiData, EpiDataTravel.CHANGE_DATE, false);
     }
 
     public void deleteOrphansOfEpiData(EpiData epiData) throws SQLException {
-        DeleteBuilder deleteBuilder = deleteBuilder();
-        Where where = deleteBuilder.where().eq(EpiDataGathering.EPI_DATA + "_id", epiData);
-        if (epiData.getGatherings() != null) {
+        QueryBuilder queryBuilder = queryBuilder();
+        Where where = queryBuilder.where().eq(EpiDataTravel.EPI_DATA + "_id", epiData);
+        if (epiData.getTravels() != null) {
             Set<Long> idsToKeep = new HashSet<>();
-            for (EpiDataGathering gathering : epiData.getGatherings()) {
-                if (gathering.getId() != null) {
-                    idsToKeep.add(gathering.getId());
+            for (EpiDataTravel travel : epiData.getTravels()) {
+                if (travel.getId() != null) {
+                    idsToKeep.add(travel.getId());
                 }
             }
-            where.and().notIn(EpiDataGathering.ID, idsToKeep);
+            where.and().notIn(EpiDataTravel.ID, idsToKeep);
         }
-        deleteBuilder.delete();
+
+        List<EpiDataTravel> orphans = queryBuilder.query();
+        for (EpiDataTravel orphan : orphans) {
+            delete(orphan);
+        }
     }
 
     @Override
