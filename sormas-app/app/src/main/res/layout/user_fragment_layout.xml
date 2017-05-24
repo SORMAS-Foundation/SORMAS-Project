@@ -48,6 +48,13 @@
                 android:id="@+id/config_dropData"
                 android:text="@string/action_drop_data"/>
 
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/config_syncLog"
+                android:text="@string/action_open_syncLog"
+                android:onClick="openSyncLog"/>
+
             <ProgressBar
                 android:id="@+id/config_progressBar"
                 android:visibility="gone"

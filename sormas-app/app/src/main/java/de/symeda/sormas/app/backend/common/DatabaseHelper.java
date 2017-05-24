@@ -57,6 +57,8 @@ import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.symptoms.SymptomsDao;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.task.TaskDao;
+import de.symeda.sormas.app.backend.user.SyncLog;
+import de.symeda.sormas.app.backend.user.SyncLogDao;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.backend.user.UserDao;
 import de.symeda.sormas.app.backend.visit.Visit;
@@ -72,7 +74,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// name of the database file for your application -- change to something appropriate for your app
 	private static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	private static final int DATABASE_VERSION = 80;
+	private static final int DATABASE_VERSION = 82;
 
 	private static DatabaseHelper instance = null;
 	public static void init(Context context) {
@@ -109,6 +111,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	private EpiDataBurialDao epiDataBurialDao;
 	private EpiDataGatheringDao epiDataGatheringDao;
 	private EpiDataTravelDao epiDataTravelDao;
+	private SyncLogDao syncLogDao;
 
 	private DatabaseHelper(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);//, R.raw.ormlite_config);
@@ -141,6 +144,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.clearTable(connectionSource, EpiDataBurial.class);
 			TableUtils.clearTable(connectionSource, EpiDataGathering.class);
 			TableUtils.clearTable(connectionSource, EpiDataTravel.class);
+			TableUtils.clearTable(connectionSource, SyncLog.class);
 
 			if (clearInfrastructure) {
 				TableUtils.clearTable(connectionSource, Region.class);
@@ -192,6 +196,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.createTable(connectionSource, EpiDataBurial.class);
 			TableUtils.createTable(connectionSource, EpiDataGathering.class);
 			TableUtils.createTable(connectionSource, EpiDataTravel.class);
+			TableUtils.createTable(connectionSource, SyncLog.class);
 		} catch (SQLException e) {
 			Log.e(DatabaseHelper.class.getName(), "Can't create database", e);
 			throw new RuntimeException(e);
@@ -228,6 +233,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.dropTable(connectionSource, EpiDataBurial.class, true);
 			TableUtils.dropTable(connectionSource, EpiDataGathering.class, true);
 			TableUtils.dropTable(connectionSource, EpiDataTravel.class, true);
+			TableUtils.dropTable(connectionSource, SyncLog.class, true);
 			if (oldVersion < 30) {
 				TableUtils.dropTable(connectionSource, Config.class, true);
 			}
@@ -606,6 +612,22 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		return instance.epiDataTravelDao;
 	}
 
+	public static SyncLogDao getSyncLogDao() {
+		if (instance.syncLogDao == null) {
+			synchronized (DatabaseHelper.class) {
+				if (instance.syncLogDao == null) {
+					try {
+						instance.syncLogDao = new SyncLogDao((Dao<SyncLog, Long>) instance.getDao(SyncLog.class));
+					} catch (SQLException e) {
+						Log.e(DatabaseHelper.class.getName(), "Can't create SyncLogDao", e);
+						throw new RuntimeException(e);
+					}
+				}
+			}
+		}
+		return instance.syncLogDao;
+	}
+
 	/**
 	 * Close the database connections and clear any cached DAOs.
 	 */
@@ -633,6 +655,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		epiDataBurialDao = null;
 		epiDataGatheringDao = null;
 		epiDataTravelDao = null;
+		syncLogDao = null;
 	}
 
 }

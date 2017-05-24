@@ -18,12 +18,15 @@
 
     <!-- actions -->
     <string name="action_drop_data">Drop data</string>
+    <string name="action_open_syncLog">Synchronization conflicts</string>
     <string name="action_reload">Refresh</string>
     <string name="action_settings">Settings</string>
     <string name="action_save">Save</string>
     <string name="action_clear">Clear</string>
+    <string name="action_clearLog">Clear log</string>
     <string name="action_new_person">Add person</string>
     <string name="action_dimiss">Dismiss</string>
+    <string name="action_close">Close</string>
     <string name="action_done">Done</string>
     <string name="action_user">User</string>
     <string name="action_new_case">New case</string>
@@ -43,6 +46,7 @@
     <string name="action_report">Report Problem</string>
     <string name="action_options">Options</string>
     <string name="action_login">Login</string>
+    <string name="action_loadMore">Load more</string>
 
     <!-- field -->
     <string name="field_yes_no_yes">Yes</string>
@@ -114,6 +118,8 @@
     <string name="headline_gathering">Social event</string>
     <string name="headline_travel">Travel</string>
     <string name="headline_user_report">Report a problem</string>
+    <string name="headline_sync_log">Synchronization Conflicts</string>
+    <string name="headline_overridden_fields">Overridden fields:</string>
 
     <!-- forms -->
     <string name="form_p_first_name">First name</string>
@@ -226,6 +232,7 @@
     <string name="empty_list_hint">Add a new entry by pressing the "+" symbol in the top right.</string>
     <string name="hint_user_report">Please briefly describe the problem you have experienced. Don\'t enter any personal or otherwise sensitive data!</string>
     <string name="hint_login">Please log in to your account.</string>
+    <string name="hint_no_sync_errors">There are no synchronization conflicts to display.</string>
 
     <string name="snackbar_save_success">%1$s saved successfully.</string>
     <string name="snackbar_create_success">%1$s created successfully.</string>
@@ -268,6 +275,8 @@
     <string name="snackbar_visit_10_days_after">The visit cannot be more than 10 days after the end of the follow-up duration.</string>
     <string name="snackbar_visit_date_time">Please specify the date and time of the visit.</string>
     <string name="snackbar_visit_status">Please specify the visit status.</string>
+    <string name="snackbar_syncLog_clear_error">Synchronization conflicts log could not be cleared.</string>
+    <string name="snackbar_no_more_entries">There are no more entries to display.</string>
 
     <string name="entity_case">Case</string>
     <string name="entity_contact">Contact</string>
