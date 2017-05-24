@@ -97,8 +97,15 @@ public final class ConfigProvider {
     }
 
     public static String getUsername() {
-        return instance.username;
-
+        if (instance.username == null) {
+            Config config = DatabaseHelper.getConfigDao().queryForId(KEY_USERNAME);
+            if (config != null) {
+                return config.getValue();
+            }
+            return null;
+        } else {
+            return instance.username;
+        }
     }
 
     public static void setUsername(String username) {
