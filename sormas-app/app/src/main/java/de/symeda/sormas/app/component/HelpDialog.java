@@ -16,7 +16,7 @@ public class HelpDialog  {
 
     public HelpDialog(Context context) {
         builder = new AlertDialog.Builder(context);
-        builder.setPositiveButton("Ok",
+        builder.setPositiveButton(context.getResources().getText(R.string.action_ok),
                 new DialogInterface.OnClickListener() {
 
                     @Override

@@ -125,7 +125,7 @@ public class LoginActivity extends AppCompatActivity {
                 startActivity(intent);
             } catch (Exception e) {
                 Log.e(getClass().getName(), "Error while trying to write credentials to key store", e);
-                Snackbar.make(findViewById(R.id.base_layout), "Login failed. This error has been automatically reported.", Snackbar.LENGTH_LONG).show();
+                Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_login_failed, Snackbar.LENGTH_LONG).show();
                 ErrorReportingHelper.sendCaughtException(tracker, e, null, true);
             }
         }

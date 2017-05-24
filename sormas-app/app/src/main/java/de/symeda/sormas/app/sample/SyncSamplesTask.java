@@ -15,6 +15,7 @@ import java.util.List;
 
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleTestDto;
+import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DaoException;
@@ -138,8 +139,8 @@ public class SyncSamplesTask extends AsyncTask<Void, Void, Void> {
      * @param callback
      */
     public static void syncSamplesWithProgressDialog(Context context, final SyncCallback callback) {
-        final ProgressDialog progressDialog = ProgressDialog.show(context, "Sample synchronization",
-                "Samples are being synchronized...", true);
+        final ProgressDialog progressDialog = ProgressDialog.show(context, context.getString(R.string.headline_sample_synchronization),
+                context.getString(R.string.hint_sample_synchronization), true);
 
         createSyncSamplesTask(context, new SyncCallback() {
             @Override

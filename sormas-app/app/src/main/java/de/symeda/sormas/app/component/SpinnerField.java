@@ -133,7 +133,7 @@ public class SpinnerField extends PropertyField<Object> implements SpinnerFieldI
             }
         };
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        adapter.add(new Item("Select entry", null));
+        adapter.add(new Item(this.getContext().getString(R.string.hint_select_entry), null));
         spinnerElement.setAdapter(adapter);
         spinnerElement.setSelection(adapter.getCount());
     }
@@ -162,7 +162,7 @@ public class SpinnerField extends PropertyField<Object> implements SpinnerFieldI
         };
 
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        adapter.add(new Item("Select entry", null));
+        adapter.add(new Item(this.getContext().getString(R.string.hint_select_entry), null));
         spinnerElement.setAdapter(adapter);
         spinnerElement.setSelection(adapter.getCount());
     }
@@ -205,7 +205,7 @@ public class SpinnerField extends PropertyField<Object> implements SpinnerFieldI
             }
         };
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        adapter.add(new Item("Select entry", null));
+        adapter.add(new Item(this.getContext().getString(R.string.hint_select_entry), null));
         spinnerElement.setAdapter(adapter);
         spinnerElement.setSelection(adapter.getCount());
     }

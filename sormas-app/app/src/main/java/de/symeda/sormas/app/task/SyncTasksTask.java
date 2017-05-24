@@ -14,6 +14,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import de.symeda.sormas.api.task.TaskDto;
+import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper.DtoGetInterface;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper.DtoPostInterface;
@@ -126,8 +127,8 @@ public class SyncTasksTask extends AsyncTask<Void, Void, Void> {
      * @param callback
      */
     public static void syncTasksWithProgressDialog(final Context context, final SyncCallback callback, final Context notificationContext) {
-        final ProgressDialog progressDialog = ProgressDialog.show(context, "Case synchronization",
-                "Cases are being synchronized...", true);
+        final ProgressDialog progressDialog = ProgressDialog.show(context, context.getString(R.string.headline_task_synchronization),
+                context.getString(R.string.hint_task_synchronization), true);
 
         syncTasks(context, new SyncCallback() {
             @Override

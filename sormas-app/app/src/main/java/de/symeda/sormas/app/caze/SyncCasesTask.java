@@ -14,6 +14,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.caze.CaseDtoHelper;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
@@ -123,8 +124,8 @@ public class SyncCasesTask extends AsyncTask<Void, Void, Void> {
      * @param callback
      */
     public static void syncCasesWithProgressDialog(final Context context, final SyncCallback callback) {
-        final ProgressDialog progressDialog = ProgressDialog.show(context, "Case synchronization",
-                "Cases are being synchronized...", true);
+        final ProgressDialog progressDialog = ProgressDialog.show(context, context.getString(R.string.headline_case_synchronization),
+                context.getString(R.string.hint_synchronization), true);
 
         syncCases(context, new SyncCallback() {
             @Override

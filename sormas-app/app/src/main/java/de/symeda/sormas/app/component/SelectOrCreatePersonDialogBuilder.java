@@ -116,7 +116,7 @@ public class SelectOrCreatePersonDialogBuilder extends AlertDialog.Builder {
                     positiveCallback.accept(bindingPersonSelect.personSelectSelectedPerson.getValue());
                     dialog.dismiss();
                 } else {
-                    Snackbar.make(activity.findViewById(R.id.base_layout), "Please select a person or click 'create' to create a new one", Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(dialog.getWindow().getDecorView(), activity.getString(R.string.snackbar_select_create_person), Snackbar.LENGTH_LONG).show();
                 }
             }
         });
@@ -135,7 +135,7 @@ public class SelectOrCreatePersonDialogBuilder extends AlertDialog.Builder {
             @Override
             public void onClick(View v) {
                 if (bindingPersonSelect.personFirstName.getValue().isEmpty() || bindingPersonSelect.personLastName.getValue().isEmpty()) {
-                    Snackbar.make(activity.findViewById(R.id.base_layout), "Please enter a first and last name for the new person", Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(dialog.getWindow().getDecorView(), activity.getString(R.string.snackbar_person_first_last_name), Snackbar.LENGTH_LONG).show();
                 } else {
                     person.setFirstName(bindingPersonSelect.personFirstName.getValue());
                     person.setLastName(bindingPersonSelect.personLastName.getValue());

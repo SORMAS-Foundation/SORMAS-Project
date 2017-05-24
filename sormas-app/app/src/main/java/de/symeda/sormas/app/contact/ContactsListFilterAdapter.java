@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.app.R;
 
 /**
  * Created by Mate Strysewske on 20.01.2017.

@@ -47,6 +47,7 @@
     <string name="action_options">Options</string>
     <string name="action_login">Login</string>
     <string name="action_loadMore">Load more</string>
+    <string name="action_ok">Ok</string>
 
     <!-- field -->
     <string name="field_yes_no_yes">Yes</string>
@@ -120,6 +121,12 @@
     <string name="headline_user_report">Report a problem</string>
     <string name="headline_sync_log">Synchronization Conflicts</string>
     <string name="headline_overridden_fields">Overridden fields:</string>
+    <string name="headline_case_synchronization">Case Synchronization</string>
+    <string name="headline_contact_synchronization">Contact Synchronization</string>
+    <string name="headline_alert_synchronization">Alert Synchronization</string>
+    <string name="headline_sample_synchronization">Sample Synchronization</string>
+    <string name="headline_task_synchronization">Task Synchronization</string>
+    <string name="headline_visit_synchronization">Visit Synchronization</string>
 
     <!-- forms -->
     <string name="form_p_first_name">First name</string>
@@ -221,6 +228,11 @@
 
     <string name="label_days">days</string>
     <string name="label_today">today</string>
+    <string name="label_ago">ago</string>
+    <string name="label_enter_location">Enter location</string>
+    <string name="label_person_ill">Person ill / </string>
+    <string name="label_body_touched">Body touched</string>
+    <string name="label_body_not_touched">Body not touched</string>
 
     <string name="sample_shipmentStatus">Shipment status</string>
     <string name="sample_shipped">Shipped</string>
@@ -233,6 +245,13 @@
     <string name="hint_user_report">Please briefly describe the problem you have experienced. Don\'t enter any personal or otherwise sensitive data!</string>
     <string name="hint_login">Please log in to your account.</string>
     <string name="hint_no_sync_errors">There are no synchronization conflicts to display.</string>
+    <string name="hint_synchronization">Cases are being synchronized...</string>
+    <string name="hint_select_entry">Select entry</string>
+    <string name="hint_contact_synchronization">Contacts are being synchronized...</string>
+    <string name="hint_alert_synchronization">Alerts are being synchronized...</string>
+    <string name="hint_sample_synchronization">Samples are being synchronized...</string>
+    <string name="hint_task_synchronization">Tasks are being synchronized...</string>
+    <string name="hint_visit_synchronization">Visits are being synchronized...</string>
 
     <string name="snackbar_save_success">%1$s saved successfully.</string>
     <string name="snackbar_create_success">%1$s created successfully.</string>
@@ -277,6 +296,20 @@
     <string name="snackbar_visit_status">Please specify the visit status.</string>
     <string name="snackbar_syncLog_clear_error">Synchronization conflicts log could not be cleared.</string>
     <string name="snackbar_no_more_entries">There are no more entries to display.</string>
+    <string name="snackbar_symptoms_states">Please specify the symptom states for all symptoms.</string>
+    <string name="snackbar_symptoms_temperature">Please specify the temperature and a temperature source.</string>
+    <string name="snackbar_symptoms_onset_date">Please specify the date of the initial symptom onset.</string>
+    <string name="snackbar_symptoms_onset_symptom">Please specify the initial onset symptom.</string>
+    <string name="snackbar_symptoms_fever">Temperature is in fever range. Please set the \'Fever\' field to \'Yes\'.</string>
+    <string name="snackbar_symptoms_conditional">Please specify the states for all conditional bleeding symptoms.</string>
+    <string name="snacbkar_symptoms_hemorrhagic">Please specify the additional hemorrhagic symptoms.</string>
+    <string name="snackbar_symptoms_clinical">Please specify the additional clinical symptoms.</string>
+    <string name="snackbar_select_create_person">Please select a person or click \'Create\' to create a new one.</string>
+    <string name="snackbar_person_first_last_name">Please enter a first and last name for the new person.</string>
+    <string name="snackbar_report_sent">Problem report successfully sent.</string>
+    <string name="snackbar_task_status">Task status could not be edited because of an internal error.</string>
+    <string name="snackbar_task_reply">An assignee reply is required when setting the task status to not executable.</string>
+    <string name="snackbar_login_failed">Login failed. This error has been automatically reported.</string>
 
     <string name="entity_case">Case</string>
     <string name="entity_contact">Contact</string>

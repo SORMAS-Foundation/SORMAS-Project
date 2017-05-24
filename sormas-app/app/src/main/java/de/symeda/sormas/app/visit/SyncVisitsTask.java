@@ -14,6 +14,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import de.symeda.sormas.api.visit.VisitDto;
+import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper.DtoGetInterface;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper.DtoPostInterface;
@@ -97,8 +98,8 @@ public class SyncVisitsTask extends AsyncTask<Void, Void, Void> {
     }
 
     public static void syncVisitsWithProgressDialog(Context context, final SyncCallback callback) {
-        final ProgressDialog progressDialog = ProgressDialog.show(context, "Visit synchronization",
-                "Visits are being synchronized...", true);
+        final ProgressDialog progressDialog = ProgressDialog.show(context, context.getString(R.string.headline_visit_synchronization),
+                context.getString(R.string.hint_visit_synchronization), true);
 
         createSyncVisitsTask(context, new SyncCallback() {
             @Override

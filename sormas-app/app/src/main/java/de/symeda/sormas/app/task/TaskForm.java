@@ -96,12 +96,12 @@ public class TaskForm extends FormTab {
                             taskDao.changeTaskStatus(task, TaskStatus.NOT_EXECUTABLE);
                         } catch (DaoException e) {
                             Log.e(getClass().getName(), "Error while trying to update task status", e);
-                            Snackbar.make(getActivity().findViewById(R.id.base_layout), "Task status could not be edited because of an internal error.", Snackbar.LENGTH_LONG).show();
+                            Snackbar.make(getActivity().findViewById(R.id.base_layout), R.string.snackbar_task_status, Snackbar.LENGTH_LONG).show();
                             ErrorReportingHelper.sendCaughtException(tracker, e, task, true);
                         }
                         reloadFragment();
                     } else {
-                        Snackbar.make(getActivity().findViewById(R.id.base_layout), "An assignee reply is required when setting the task status to not executable.", Snackbar.LENGTH_LONG).show();
+                        Snackbar.make(getActivity().findViewById(R.id.base_layout), R.string.snackbar_task_reply, Snackbar.LENGTH_LONG).show();
                     }
                 }
             });
@@ -120,7 +120,7 @@ public class TaskForm extends FormTab {
                         taskDao.changeTaskStatus(task, TaskStatus.DONE);
                     } catch (DaoException e) {
                         Log.e(getClass().getName(), "Error while trying to update task status", e);
-                        Snackbar.make(getActivity().findViewById(R.id.base_layout), "Task status could not be edited because of an internal error.", Snackbar.LENGTH_LONG).show();
+                        Snackbar.make(getActivity().findViewById(R.id.base_layout), R.string.snackbar_task_status, Snackbar.LENGTH_LONG).show();
                         ErrorReportingHelper.sendCaughtException(tracker, e, task, true);
                     }
                     reloadFragment();

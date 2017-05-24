@@ -15,6 +15,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper.DtoGetInterface;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper.DtoPostInterface;
@@ -124,8 +125,8 @@ public class SyncEventsTask extends AsyncTask<Void, Void, Void> {
      * @param callback
      */
     public static void syncEventsWithProgressDialog(Context context, final SyncCallback callback) {
-        final ProgressDialog progressDialog = ProgressDialog.show(context, "Event synchronization",
-                "Events are being synchronized...", true);
+        final ProgressDialog progressDialog = ProgressDialog.show(context, context.getString(R.string.headline_alert_synchronization),
+                context.getString(R.string.hint_alert_synchronization), true);
 
         createSyncEventsTask(context, new SyncCallback() {
             @Override
