@@ -21,7 +21,7 @@ import de.symeda.sormas.app.backend.common.EmbeddedAdo;
 
 @Entity(name = EpiDataTravel.TABLE_NAME)
 @DatabaseTable(tableName = EpiDataTravel.TABLE_NAME)
-@EmbeddedAdo
+@EmbeddedAdo(parentAccessor = EpiDataTravel.EPI_DATA)
 public class EpiDataTravel extends AbstractDomainObject {
 
     private static final long serialVersionUID = -4280455878066233175L;

@@ -11,7 +11,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.google.android.gms.analytics.Tracker;
 
@@ -27,7 +26,6 @@ import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.component.SelectOrCreatePersonDialogBuilder;
 import de.symeda.sormas.app.component.UserReportDialog;
-import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.ConnectionHelper;
 import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
@@ -163,17 +161,14 @@ public class EventParticipantNewActivity extends AppCompatActivity {
 
 
     private void savePersonAndEventParticipant(final EventParticipant eventParticipant) throws DaoException {
-        // save the person
-        if (!DatabaseHelper.getPersonDao().save(eventParticipant.getPerson())) {
-            throw new DaoException();
-        }
+
+		// save the person
+        DatabaseHelper.getPersonDao().saveAndSnapshot(eventParticipant.getPerson());
         // set the given event
         final Event event = DatabaseHelper.getEventDao().queryUuid(eventUuid);
         eventParticipant.setEvent(event);
         // save the contact
-        if (!DatabaseHelper.getEventParticipantDao().save(eventParticipant)) {
-            throw new DaoException();
-        }
+        DatabaseHelper.getEventParticipantDao().saveAndSnapshot(eventParticipant);
 
         if (ConnectionHelper.isConnectedToInternet(getApplicationContext())) {
             SyncEventsTask.syncEventsWithProgressDialog(this, new SyncCallback() {

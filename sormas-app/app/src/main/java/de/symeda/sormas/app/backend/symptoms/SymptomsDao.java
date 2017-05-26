@@ -18,26 +18,6 @@ public class SymptomsDao extends AbstractAdoDao<Symptoms> {
     }
 
     @Override
-    public boolean save(Symptoms symptoms) throws DaoException {
-
-        if (symptoms.getIllLocation() != null) {
-            DatabaseHelper.getLocationDao().save(symptoms.getIllLocation());
-        }
-
-        return super.save(symptoms);
-    }
-
-    @Override
-    public boolean saveUnmodified(Symptoms symptoms) throws DaoException {
-
-        if (symptoms.getIllLocation() != null) {
-            DatabaseHelper.getLocationDao().saveUnmodified(symptoms.getIllLocation());
-        }
-
-        return super.saveUnmodified(symptoms);
-    }
-
-    @Override
     protected Class<Symptoms> getAdoClass() {
         return Symptoms.class;
     }
@@ -46,14 +26,4 @@ public class SymptomsDao extends AbstractAdoDao<Symptoms> {
     public String getTableName() {
         return Symptoms.TABLE_NAME;
     }
-
-    @Override
-    public Symptoms create() {
-        Symptoms symptoms = super.create();
-
-        symptoms.setIllLocation(DatabaseHelper.getLocationDao().create());
-
-        return symptoms;
-    }
-
 }

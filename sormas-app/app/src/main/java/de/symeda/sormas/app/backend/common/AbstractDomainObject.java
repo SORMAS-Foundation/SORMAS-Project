@@ -17,7 +17,7 @@ public abstract class AbstractDomainObject extends BaseObservable implements Ser
 
 	public static final String ID = "id";
 	public static final String UUID = "uuid";
-	public static final String CLONED_ORIGINAL = "clonedOriginal";
+	public static final String SNAPSHOT = "snapshot";
 	public static final String CREATION_DATE = "creationDate";
 	public static final String CHANGE_DATE = "changeDate";
 	public static final String LOCAL_CHANGE_DATE = "localChangeDate";
@@ -28,11 +28,10 @@ public abstract class AbstractDomainObject extends BaseObservable implements Ser
 	private Long id;
 
 	/**
-	 * This marks the clone of a modified entity
-	 * that was created in order to be able to compare it with the latest version from the server
+	 * This marks the snapshot of a modified entity that was created for merging
 	 */
 	@DatabaseField(uniqueCombo=true)
-	private boolean clonedOriginal = false;
+	private boolean snapshot = false;
 
 	@DatabaseField(uniqueCombo=true, canBeNull = false, width = 29)
 	private String uuid;
@@ -75,12 +74,12 @@ public abstract class AbstractDomainObject extends BaseObservable implements Ser
 		this.id = id;
 	}
 
-	public boolean isClonedOriginal() {
-		return clonedOriginal;
+	public boolean isSnapshot() {
+		return snapshot;
 	}
 
-	public void setClonedOriginal(boolean clonedOriginal) {
-		this.clonedOriginal = clonedOriginal;
+	public void setSnapshot(boolean snapshot) {
+		this.snapshot = snapshot;
 	}
 
 	public String getUuid() {

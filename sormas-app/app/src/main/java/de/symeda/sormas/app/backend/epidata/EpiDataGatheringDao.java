@@ -31,13 +31,6 @@ public class EpiDataGatheringDao extends AbstractAdoDao<EpiDataGathering> {
     }
 
     @Override
-    public EpiDataGathering create() {
-        EpiDataGathering ado = super.create();
-        ado.setGatheringAddress(DatabaseHelper.getLocationDao().create());
-        return ado;
-    }
-
-    @Override
     public int delete(EpiDataGathering data) {
 
         // TODO we need to make sure the other delete methods don't work

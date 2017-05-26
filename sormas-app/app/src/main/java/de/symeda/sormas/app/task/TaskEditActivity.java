@@ -12,7 +12,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.google.android.gms.analytics.Tracker;
 
@@ -134,9 +133,7 @@ public class TaskEditActivity extends AppCompatActivity {
                 task = (Task) taskForm.getData();
                 try {
                     TaskDao taskDao = DatabaseHelper.getTaskDao();
-                    if (!taskDao.save(task)) {
-                        throw new DaoException();
-                    }
+                    taskDao.saveAndSnapshot(task);
 
                     if (ConnectionHelper.isConnectedToInternet(getApplicationContext())) {
                         SyncTasksTask.syncTasksWithProgressDialog(this, new SyncCallback() {

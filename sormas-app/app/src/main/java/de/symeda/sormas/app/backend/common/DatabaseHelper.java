@@ -72,8 +72,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// name of the database file for your application -- change to something appropriate for your app
 	private static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	private static final int DATABASE_VERSION = 82;
-	private static final int DATABASE_VERSION = 83;
+	private static final int DATABASE_VERSION = 85;
 
 	private static DatabaseHelper instance = null;
 	public static void init(Context context) {
@@ -318,6 +317,22 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		return instance.configDao;
 	}
 
+	public static SyncLogDao getSyncLogDao() {
+		if (instance.syncLogDao == null) {
+			synchronized (DatabaseHelper.class) {
+				if (instance.syncLogDao == null) {
+					try {
+						instance.syncLogDao = new SyncLogDao((Dao<SyncLog, Long>) instance.getDao(SyncLog.class));
+					} catch (SQLException e) {
+						Log.e(DatabaseHelper.class.getName(), "Can't create SyncLogDao", e);
+						throw new RuntimeException(e);
+					}
+				}
+			}
+		}
+		return instance.syncLogDao;
+	}
+
 	public static CaseDao getCaseDao() {
 		return (CaseDao) getAdoDao(Case.class);
 	}
@@ -406,21 +421,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		return (EpiDataTravelDao) getAdoDao(EpiDataTravel.class);
 	}
 
-	public static SyncLogDao getSyncLogDao() {
-		if (instance.syncLogDao == null) {
-			synchronized (DatabaseHelper.class) {
-				if (instance.syncLogDao == null) {
-					try {
-						instance.syncLogDao = new SyncLogDao((Dao<SyncLog, Long>) instance.getDao(SyncLog.class));
-					} catch (SQLException e) {
-						Log.e(DatabaseHelper.class.getName(), "Can't create SyncLogDao", e);
-						throw new RuntimeException(e);
-					}
-				}
-			}
-		}
-		return instance.syncLogDao;
-	}
 
 	/**
 	 * Close the database connections and clear any cached DAOs.

@@ -102,8 +102,6 @@ public class EpiDataDtoHelper extends AdoDtoHelper<EpiData, EpiDataDto> {
     @Override
     public void fillInnerFromAdo(EpiDataDto a, EpiData b) {
 
-        DatabaseHelper.getEpiDataDao().initLazyData(b);
-
         a.setBurialAttended(b.getBurialAttended());
         a.setGatheringAttended(b.getGatheringAttended());
         a.setTraveled(b.getTraveled());

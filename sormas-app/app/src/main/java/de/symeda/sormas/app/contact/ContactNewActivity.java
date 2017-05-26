@@ -11,7 +11,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.google.android.gms.analytics.Tracker;
 
@@ -27,16 +26,12 @@ import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
-import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.caze.CaseEditActivity;
 import de.symeda.sormas.app.component.SelectOrCreatePersonDialogBuilder;
 import de.symeda.sormas.app.component.UserReportDialog;
-import de.symeda.sormas.app.person.SyncPersonsTask;
-import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.ConnectionHelper;
 import de.symeda.sormas.app.util.Consumer;
-import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.SyncCallback;
 
@@ -192,22 +187,9 @@ public class ContactNewActivity extends AppCompatActivity {
             person.getAddress().setCommunity(contact.getCaze().getCommunity());
         }
 
-        // save the location
-        if (!DatabaseHelper.getLocationDao().save(person.getAddress())) {
-            throw new DaoException();
-        }
-
-        // save the person
-        if (!DatabaseHelper.getPersonDao().save(contact.getPerson())) {
-            throw new DaoException();
-        }
-
-//        new SyncPersonsTask(getApplicationContext()).execute();
-
-        // save the contact
-        if (!DatabaseHelper.getContactDao().save(contact)) {
-            throw new DaoException();
-        }
+        // save
+        DatabaseHelper.getPersonDao().saveAndSnapshot(contact.getPerson());
+        DatabaseHelper.getContactDao().saveAndSnapshot(contact);
 
         if (ConnectionHelper.isConnectedToInternet(getApplicationContext())) {
             SyncContactsTask.syncContactsWithProgressDialog(this, new SyncCallback() {

@@ -10,7 +10,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.google.android.gms.analytics.Tracker;
 
@@ -20,12 +19,10 @@ import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
-import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.component.UserReportDialog;
 import de.symeda.sormas.app.person.PersonEditForm;
-import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.ConnectionHelper;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.SyncCallback;
@@ -147,18 +144,9 @@ public class EventParticipantEditActivity extends AppCompatActivity {
 
                 if (validData) {
                     try {
-                        if (person != null) {
-                            if (!DatabaseHelper.getPersonDao().save(person)) {
-                                throw new DaoException();
-                            }
-                        }
-
-                        if (eventParticipant != null) {
-                            eventParticipant.setPerson(person);
-                            if (!DatabaseHelper.getEventParticipantDao().save(eventParticipant)) {
-                                throw new DaoException();
-                            }
-                        }
+                        DatabaseHelper.getPersonDao().saveAndSnapshot(person);
+						eventParticipant.setPerson(person);
+                        DatabaseHelper.getEventParticipantDao().saveAndSnapshot(eventParticipant);
 
                         if (ConnectionHelper.isConnectedToInternet(getApplicationContext())) {
                             SyncEventsTask.syncEventsWithProgressDialog(this, new SyncCallback() {

@@ -54,7 +54,6 @@ public class HospitalizationForm extends FormTab {
         final String hospitalizationUuid = getArguments().getString(Hospitalization.UUID);
         if (hospitalizationUuid != null) {
             final Hospitalization hospitalization = DatabaseHelper.getHospitalizationDao().queryUuid(hospitalizationUuid);
-            DatabaseHelper.getHospitalizationDao().initLazyData(hospitalization);
             binding.setHospitalization(hospitalization);
 
         } else {

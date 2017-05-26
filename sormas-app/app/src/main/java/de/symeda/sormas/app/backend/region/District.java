@@ -25,7 +25,6 @@ public class District extends AbstractDomainObject {
 
 	public static final String NAME = "name";
 	public static final String REGION = "region";
-	public static final String COMMUNITIES = "communities";
 
 	@Column
 	private String name;
@@ -34,10 +33,6 @@ public class District extends AbstractDomainObject {
 	@JoinColumn(nullable = false)
 	private Region region;
 
-	@OneToMany(mappedBy = Community.DISTRICT, cascade = {}, fetch = FetchType.LAZY)
-	@OrderBy(District.NAME)
-	private List<Community> communities;
-	
 	public String getName() {
 		return name;
 	}
@@ -52,13 +47,6 @@ public class District extends AbstractDomainObject {
 		this.region = region;
 	}
 
-	public List<Community> getCommunities() {
-		return communities;
-	}
-	public void setCommunities(List<Community> communities) {
-		this.communities = communities;
-	}
-	
 	@Override
 	public String toString() {
 		return getName();

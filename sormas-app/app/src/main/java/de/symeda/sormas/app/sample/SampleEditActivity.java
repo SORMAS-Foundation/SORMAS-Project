@@ -12,7 +12,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.CheckBox;
-import android.widget.Toast;
 
 import com.google.android.gms.analytics.Tracker;
 
@@ -25,11 +24,9 @@ import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
-import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.backend.sample.SampleDao;
 import de.symeda.sormas.app.component.UserReportDialog;
-import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.ConnectionHelper;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.SyncCallback;
@@ -184,9 +181,10 @@ public class SampleEditActivity extends AppCompatActivity {
 
                 if (validData) {
                     try {
-                        if (!sampleDao.save(sample)) {
-                            throw new DaoException();
-                        }
+
+                        sampleDao.saveAndSnapshot(sample);
+                        Snackbar.make(findViewById(R.id.fragment_frame), "Sample " + DataHelper.getShortUuid(sample.getUuid()) + " saved", Snackbar.LENGTH_LONG).show();
+
                         if (ConnectionHelper.isConnectedToInternet(getApplicationContext())) {
                             SyncSamplesTask.syncSamplesWithProgressDialog(this, new SyncCallback() {
                                 @Override

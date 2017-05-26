@@ -1,10 +1,6 @@
 package de.symeda.sormas.app.backend.task;
 
 import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.dao.RuntimeExceptionDao;
-import com.j256.ormlite.logger.Log;
-import com.j256.ormlite.logger.Logger;
-import com.j256.ormlite.logger.LoggerFactory;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 
@@ -15,10 +11,8 @@ import java.util.List;
 
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.app.backend.caze.Case;
-import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.DaoException;
-import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.event.Event;
@@ -45,7 +39,7 @@ public class TaskDao extends AbstractAdoDao<Task> {
     public void changeTaskStatus(Task task, TaskStatus targetStatus) throws DaoException {
         task.setTaskStatus(targetStatus);
         task.setStatusChangeDate(new Date());
-        save(task);
+        saveAndSnapshot(task);
     }
 
     /**

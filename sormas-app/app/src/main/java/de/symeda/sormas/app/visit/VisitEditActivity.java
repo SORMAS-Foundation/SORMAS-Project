@@ -10,7 +10,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import com.google.android.gms.analytics.Tracker;
 
@@ -24,13 +23,11 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
-import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.visit.Visit;
 import de.symeda.sormas.app.caze.SymptomsEditForm;
 import de.symeda.sormas.app.component.AbstractEditActivity;
 import de.symeda.sormas.app.component.HelpDialog;
 import de.symeda.sormas.app.component.UserReportDialog;
-import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.ConnectionHelper;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.SyncCallback;
@@ -185,18 +182,10 @@ public class VisitEditActivity extends AbstractEditActivity {
                 // the data is valid
                 if (isValid) {
                     try {
-                        if (symptoms != null) {
-                            visit.setSymptoms(symptoms);
-                            if (!DatabaseHelper.getSymptomsDao().save(symptoms)) {
-                                throw new DaoException();
-                            }
-                        }
-
-                        visit.setVisitUser(ConfigProvider.getUser());
-
-                        if (!DatabaseHelper.getVisitDao().save(visit)) {
-                            throw new DaoException();
-                        }
+						
+						visit.setSymptoms(symptoms);
+						visit.setVisitUser(ConfigProvider.getUser());
+						DatabaseHelper.getVisitDao().saveAndSnapshot(visit);
 
                         if (ConnectionHelper.isConnectedToInternet(getApplicationContext())) {
                             SyncVisitsTask.syncVisitsWithProgressDialog(this, new SyncCallback() {

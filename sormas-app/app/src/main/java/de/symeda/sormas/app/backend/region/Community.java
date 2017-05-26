@@ -23,6 +23,7 @@ public class Community extends AbstractDomainObject {
 
 	@Column
 	private String name;
+
 	@ManyToOne(cascade = CascadeType.REFRESH, optional = false)
 	@JoinColumn(nullable = false)
 	private District district;

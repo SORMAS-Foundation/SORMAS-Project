@@ -55,24 +55,7 @@ public class PersonDao extends AbstractAdoDao<Person> {
         if (locationDate != null && locationDate.after(date)) {
             date = locationDate;
         }
-        locationDate = getLatestChangeDateJoin(Location.TABLE_NAME, Person.BURIAL_LOCATION);
-        if (locationDate != null && locationDate.after(date)) {
-            date = locationDate;
-        }
-        locationDate = getLatestChangeDateJoin(Location.TABLE_NAME, Person.DEATH_LOCATION);
-        if (locationDate != null && locationDate.after(date)) {
-            date = locationDate;
-        }
-		
+
         return date;
-    }
-
-    @Override
-    public Person create() {
-        Person person = super.create();
-
-        person.setAddress(DatabaseHelper.getLocationDao().create());
-
-        return person;
     }
 }

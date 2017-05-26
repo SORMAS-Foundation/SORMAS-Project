@@ -52,11 +52,7 @@ public class EventDao extends AbstractAdoDao<Event> {
 
         event.setReportDateTime(new Date());
         event.setReportingUser(ConfigProvider.getUser());
-
-        Location location = DatabaseHelper.getLocationDao().create();
-        location.setRegion(ConfigProvider.getUser().getRegion());
-        event.setEventLocation(location);
-
+        event.getEventLocation().setRegion(ConfigProvider.getUser().getRegion());
         event.setEventStatus(EventStatus.POSSIBLE);
 
         return event;

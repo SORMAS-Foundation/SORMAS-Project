@@ -63,7 +63,6 @@ public class EpiDataForm extends FormTab {
 
         if (epiDataUuid != null) {
             final EpiData epiData = DatabaseHelper.getEpiDataDao().queryUuid(epiDataUuid);
-            DatabaseHelper.getEpiDataDao().initLazyData(epiData);
             binding.setEpiData(epiData);
         } else {
             binding.setEpiData(new EpiData());

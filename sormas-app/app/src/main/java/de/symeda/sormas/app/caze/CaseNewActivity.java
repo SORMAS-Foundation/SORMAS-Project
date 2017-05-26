@@ -12,7 +12,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.google.android.gms.analytics.Tracker;
 
@@ -25,7 +24,6 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.caze.Case;
-import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
@@ -34,7 +32,6 @@ import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.SelectOrCreatePersonDialogBuilder;
 import de.symeda.sormas.app.component.UserReportDialog;
-import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.ConnectionHelper;
 import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
@@ -190,9 +187,7 @@ public class CaseNewActivity extends AppCompatActivity {
 
     private void savePersonAndCase(final Case caze) throws DaoException {
         // save the person
-        if (!DatabaseHelper.getPersonDao().save(caze.getPerson())) {
-            throw new DaoException();
-        }
+        DatabaseHelper.getPersonDao().saveAndSnapshot(caze.getPerson());
 
         caze.setCaseClassification(CaseClassification.NOT_CLASSIFIED);
         caze.setInvestigationStatus(InvestigationStatus.PENDING);
@@ -206,7 +201,7 @@ public class CaseNewActivity extends AppCompatActivity {
         }
         caze.setReportDate(new Date());
 
-        DatabaseHelper.getCaseDao().save(caze);
+        DatabaseHelper.getCaseDao().saveAndSnapshot(caze);
 
         if (ConnectionHelper.isConnectedToInternet(getApplicationContext())) {
             SyncCasesTask.syncCasesWithProgressDialog(this, new SyncCallback() {

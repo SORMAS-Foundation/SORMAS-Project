@@ -10,7 +10,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.google.android.gms.analytics.Tracker;
 
@@ -18,23 +17,16 @@ import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
-import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.contact.ContactDao;
-import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.person.Person;
-import de.symeda.sormas.app.backend.task.Task;
-import de.symeda.sormas.app.caze.CaseEditTabs;
 import de.symeda.sormas.app.component.AbstractEditActivity;
 import de.symeda.sormas.app.component.UserReportDialog;
-import de.symeda.sormas.app.util.Callback;
-import de.symeda.sormas.app.task.TaskEditActivity;
 import de.symeda.sormas.app.task.TaskForm;
 import de.symeda.sormas.app.util.ConnectionHelper;
-import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.SyncCallback;
 import de.symeda.sormas.app.visit.VisitEditActivity;
@@ -199,23 +191,16 @@ public class ContactEditActivity extends AbstractEditActivity {
 
                 if (validData) {
                     try {
+
                         if (contact.getRelationToCase() == ContactRelation.SAME_HOUSEHOLD && person.getAddress().isEmptyLocation()) {
                             person.getAddress().setRegion(contact.getCaze().getRegion());
                             person.getAddress().setDistrict(contact.getCaze().getDistrict());
                             person.getAddress().setCommunity(contact.getCaze().getCommunity());
                         }
 
-                        if (!DatabaseHelper.getLocationDao().save(person.getAddress())) {
-                            throw new DaoException();
-                        }
+                        DatabaseHelper.getPersonDao().saveAndSnapshot(person);
 
-                        if (!DatabaseHelper.getPersonDao().save(person)) {
-                            throw new DaoException();
-                        }
-
-                        if (!contactDao.save(contact)) {
-                            throw new DaoException();
-                        }
+                        contactDao.saveAndSnapshot(contact);
 
                         if (ConnectionHelper.isConnectedToInternet(getApplicationContext())) {
                             SyncContactsTask.syncContactsWithProgressDialog(this, new SyncCallback() {
@@ -234,7 +219,7 @@ public class ContactEditActivity extends AbstractEditActivity {
                             Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_contact)), Snackbar.LENGTH_LONG).show();
                         }
                     } catch (DaoException e) {
-                        Log.e(getClass().getName(), "Error while trying to save contact", e);
+                        Log.e(getClass().getName(), "Error while trying to saveAndSnapshot contact", e);
                         Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_error), getResources().getString(R.string.entity_contact)), Snackbar.LENGTH_LONG).show();
                         ErrorReportingHelper.sendCaughtException(tracker, e, contact, true);
                     }

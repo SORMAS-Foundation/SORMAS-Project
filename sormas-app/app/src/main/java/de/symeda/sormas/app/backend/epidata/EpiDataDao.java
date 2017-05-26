@@ -3,17 +3,13 @@ package de.symeda.sormas.app.backend.epidata;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.logger.Logger;
 import com.j256.ormlite.logger.LoggerFactory;
-import com.j256.ormlite.stmt.PreparedQuery;
 
 import java.sql.SQLException;
 import java.util.Date;
-import java.util.List;
 
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.hospitalization.Hospitalization;
-import de.symeda.sormas.app.backend.location.LocationDao;
 
 /**
  * Created by Mate Strysewske on 08.03.2017.
@@ -37,12 +33,57 @@ public class EpiDataDao extends AbstractAdoDao<EpiData> {
         return EpiData.TABLE_NAME;
     }
 
-    public EpiData initLazyData(EpiData epiData) {
+    @Override
+    public EpiData queryUuid(String uuid) {
+        EpiData data = super.queryUuid(uuid);
+        if (data != null) {
+            initLazyData(data);
+        }
+        return data;
+    }
+
+    @Override
+    public EpiData querySnapshotByUuid(String uuid) {
+        EpiData data = super.querySnapshotByUuid(uuid);
+        if (data != null) {
+            initLazyData(data);
+        }
+        return data;
+    }
+
+    @Override
+    public EpiData queryForId(Long id) {
+        EpiData data = super.queryForId(id);
+        if (data != null) {
+            initLazyData(data);
+        }
+        return data;
+    }
+
+    private EpiData initLazyData(EpiData epiData) {
         epiData.setBurials(DatabaseHelper.getEpiDataBurialDao().getByEpiData(epiData));
         epiData.setGatherings(DatabaseHelper.getEpiDataGatheringDao().getByEpiData(epiData));
         epiData.setTravels(DatabaseHelper.getEpiDataTravelDao().getByEpiData(epiData));
 
         return epiData;
+    }
+
+    @Override
+    public EpiData saveAndSnapshot(EpiData ado) throws DaoException {
+
+        EpiData snapshot = super.saveAndSnapshot(ado);
+
+        DatabaseHelper.getEpiDataBurialDao().saveCollectionWithSnapshot(
+                DatabaseHelper.getEpiDataBurialDao().getByEpiData(ado),
+                ado.getBurials(), ado);
+        DatabaseHelper.getEpiDataGatheringDao().saveCollectionWithSnapshot(
+                DatabaseHelper.getEpiDataGatheringDao().getByEpiData(ado),
+                ado.getGatherings(), ado);
+        DatabaseHelper.getEpiDataTravelDao().saveCollectionWithSnapshot(
+                DatabaseHelper.getEpiDataTravelDao().getByEpiData(ado),
+                ado.getTravels(), ado);
+
+        return snapshot;
     }
 
     @Override
@@ -67,38 +108,4 @@ public class EpiDataDao extends AbstractAdoDao<EpiData> {
 
         return date;
     }
-
-    // TODO
-//    @Override
-//    public void save(EpiData epiData) throws DaoException {
-//        try {
-//            super.save(epiData);
-//
-//            DatabaseHelper.getEpiDataBurialDao().deleteOrphansOfEpiData(epiData);
-//            if (epiData.getBurials() != null && !epiData.getBurials().isEmpty()) {
-//                for (EpiDataBurial burial : epiData.getBurials()) {
-//                    burial.setEpiData(epiData);
-//                    DatabaseHelper.getEpiDataBurialDao().save(burial);
-//                }
-//            }
-//            DatabaseHelper.getEpiDataGatheringDao().deleteOrphansOfEpiData(epiData);
-//            if (epiData.getGatherings() != null && !epiData.getGatherings().isEmpty()) {
-//                for (EpiDataGathering gathering : epiData.getGatherings()) {
-//                    gathering.setEpiData(epiData);
-//                    DatabaseHelper.getEpiDataGatheringDao().save(gathering);
-//                }
-//            }
-//            DatabaseHelper.getEpiDataTravelDao().deleteOrphansOfEpiData(epiData);
-//            if (epiData.getTravels() != null && !epiData.getTravels().isEmpty()) {
-//                for (EpiDataTravel travel : epiData.getTravels()) {
-//                    travel.setEpiData(epiData);
-//                    DatabaseHelper.getEpiDataTravelDao().save(travel);
-//                }
-//            }
-//
-//        } catch (SQLException e) {
-//            throw new DaoException(e);
-//        }
-//    }
-
 }

@@ -21,27 +21,15 @@ public class Region extends AbstractDomainObject {
 	public static final String TABLE_NAME = "region";
 
 	public static final String NAME = "name";
-	public static final String DISTRICTS = "districts";
 
 	@Column
 	private String name;
 
-	@OneToMany(mappedBy = District.REGION, cascade = {}, fetch = FetchType.LAZY)
-	@OrderBy(District.NAME)
-	private List<District> districts;
-	
 	public String getName() {
 		return name;
 	}
 	public void setName(String name) {
 		this.name = name;
-	}
-	
-	public List<District> getDistricts() {
-		return districts;
-	}
-	public void setDistricts(List<District> districts) {
-		this.districts = districts;
 	}
 	
 	@Override

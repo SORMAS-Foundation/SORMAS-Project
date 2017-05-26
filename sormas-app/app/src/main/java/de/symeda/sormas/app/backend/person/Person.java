@@ -41,8 +41,6 @@ public class Person extends AbstractDomainObject {
 	public static final String LAST_NAME = "lastName";
 	public static final String APPROXIMATE_AGE = "approximateAge";
 	public static final String ADDRESS = "address";
-	public static final String BURIAL_LOCATION = "burialLocation";
-	public static final String DEATH_LOCATION = "deathLocation";
 	public static final String SEX = "sex";
 	public static final String NICKNAME = "nickname";
 	public static final String MOTHERS_MAIDEN_NAME = "mothersMaidenName";

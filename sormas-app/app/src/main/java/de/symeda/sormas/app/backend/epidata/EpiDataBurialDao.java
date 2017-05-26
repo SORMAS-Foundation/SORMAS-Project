@@ -1,21 +1,16 @@
 package de.symeda.sormas.app.backend.epidata;
 
-import android.util.Log;
-
 import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.stmt.DeleteBuilder;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
-import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.location.Location;
 
@@ -32,13 +27,6 @@ public class EpiDataBurialDao extends AbstractAdoDao<EpiDataBurial> {
     @Override
     protected Class<EpiDataBurial> getAdoClass() {
         return EpiDataBurial.class;
-    }
-
-    @Override
-    public EpiDataBurial create() {
-        EpiDataBurial ado = super.create();
-        ado.setBurialAddress(DatabaseHelper.getLocationDao().create());
-        return ado;
     }
 
     @Override

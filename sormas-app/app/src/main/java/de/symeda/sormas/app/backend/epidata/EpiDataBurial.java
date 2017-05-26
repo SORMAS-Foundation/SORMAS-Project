@@ -22,7 +22,7 @@ import de.symeda.sormas.app.backend.location.Location;
 
 @Entity(name = EpiDataBurial.TABLE_NAME)
 @DatabaseTable(tableName = EpiDataBurial.TABLE_NAME)
-@EmbeddedAdo
+@EmbeddedAdo(parentAccessor = EpiDataBurial.EPI_DATA)
 public class EpiDataBurial extends AbstractDomainObject {
 
     private static final long serialVersionUID = 866789458483672591L;

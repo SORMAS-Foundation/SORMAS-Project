@@ -10,7 +10,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.google.android.gms.analytics.Tracker;
 
@@ -21,14 +20,9 @@ import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
-import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.event.Event;
-import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.component.AbstractEditActivity;
 import de.symeda.sormas.app.component.UserReportDialog;
-import de.symeda.sormas.app.contact.ContactEditTabs;
-import de.symeda.sormas.app.util.Callback;
-import de.symeda.sormas.app.task.TaskEditActivity;
 import de.symeda.sormas.app.task.TaskForm;
 import de.symeda.sormas.app.util.ConnectionHelper;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
@@ -202,15 +196,8 @@ public class EventEditActivity extends AbstractEditActivity {
 
                         if(validData) {
                             try {
-                                if (event.getEventLocation() != null) {
-                                    if (!DatabaseHelper.getLocationDao().save(event.getEventLocation())) {
-                                        throw new DaoException();
-                                    }
-                                }
 
-                                if (!DatabaseHelper.getEventDao().save(event)) {
-                                    throw new DaoException();
-                                }
+                                DatabaseHelper.getEventDao().saveAndSnapshot(event);
 
                                 if (ConnectionHelper.isConnectedToInternet(getApplicationContext())) {
                                     SyncEventsTask.syncEventsWithProgressDialog(this, new SyncCallback() {
@@ -262,10 +249,10 @@ public class EventEditActivity extends AbstractEditActivity {
 //                        Person person = (Person)adapter.getData(1);
 //
 //                        if(person.getAddress()!=null) {
-//                            locLocationDao.save(person.getAddress());
+//                            locLocationDao.saveAndSnapshot(person.getAddress());
 //                        }
 //
-//                        DatabaseHelper.getPersonDao().save(person);
+//                        DatabaseHelper.getPersonDao().saveAndSnapshot(person);
 //                        Toast.makeText(this, "person "+ DataHelper.getShortUuid(person.getUuid()) +" saved", Toast.LENGTH_SHORT).show();
 //                        break;
 

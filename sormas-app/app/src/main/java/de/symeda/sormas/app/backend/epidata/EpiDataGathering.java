@@ -19,7 +19,7 @@ import de.symeda.sormas.app.backend.location.Location;
 
 @Entity(name = EpiDataGathering.TABLE_NAME)
 @DatabaseTable(tableName = EpiDataGathering.TABLE_NAME)
-@EmbeddedAdo
+@EmbeddedAdo(parentAccessor = EpiDataGathering.EPI_DATA)
 public class EpiDataGathering extends AbstractDomainObject {
 
     private static final long serialVersionUID = 5491651166245301869L;

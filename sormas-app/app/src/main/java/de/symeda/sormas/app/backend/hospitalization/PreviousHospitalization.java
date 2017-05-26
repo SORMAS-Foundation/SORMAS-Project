@@ -22,7 +22,7 @@ import de.symeda.sormas.app.backend.facility.Facility;
 
 @Entity(name = PreviousHospitalization.TABLE_NAME)
 @DatabaseTable(tableName = PreviousHospitalization.TABLE_NAME)
-@EmbeddedAdo
+@EmbeddedAdo(parentAccessor = PreviousHospitalization.HOSPITALIZATION)
 public class PreviousHospitalization extends AbstractDomainObject {
 
     private static final long serialVersionUID = 768263094433806267L;

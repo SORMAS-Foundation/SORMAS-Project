@@ -54,8 +54,6 @@ public class HospitalizationDtoHelper extends AdoDtoHelper<Hospitalization, Hosp
     @Override
     public void fillInnerFromAdo(HospitalizationDto a, Hospitalization b) {
 
-        DatabaseHelper.getHospitalizationDao().initLazyData(b);
-
         a.setAdmissionDate(b.getAdmissionDate());
         a.setDischargeDate(b.getDischargeDate());
         a.setHospitalizedPreviously(b.getHospitalizedPreviously());

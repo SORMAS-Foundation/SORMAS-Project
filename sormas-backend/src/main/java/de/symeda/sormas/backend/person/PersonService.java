@@ -143,10 +143,6 @@ public class PersonService extends AbstractAdoService<Person> {
 		Predicate dateFilter = cb.greaterThan(from.get(AbstractDomainObject.CHANGE_DATE), date);
 		Join<Person, Location> address = from.join(Person.ADDRESS);
 		dateFilter = cb.or(dateFilter, cb.greaterThan(address.get(AbstractDomainObject.CHANGE_DATE), date));
-		Join<Person, Location> death = from.join(Person.DEATH_LOCATION);
-		dateFilter = cb.or(dateFilter, cb.greaterThan(death.get(AbstractDomainObject.CHANGE_DATE), date));
-		Join<Person, Location> burial = from.join(Person.BURIAL_LOCATION);
-		dateFilter = cb.or(dateFilter, cb.greaterThan(burial.get(AbstractDomainObject.CHANGE_DATE), date));
 		return dateFilter;
 	}
 	

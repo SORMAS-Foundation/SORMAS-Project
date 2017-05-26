@@ -13,9 +13,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
-import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.j256.ormlite.dao.Dao;
 
@@ -35,14 +33,11 @@ import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.symptoms.SymptomsDao;
-import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.component.AbstractEditActivity;
 import de.symeda.sormas.app.component.HelpDialog;
 import de.symeda.sormas.app.component.UserReportDialog;
 import de.symeda.sormas.app.contact.ContactNewActivity;
 import de.symeda.sormas.app.sample.SampleEditActivity;
-import de.symeda.sormas.app.util.Callback;
-import de.symeda.sormas.app.task.TaskEditActivity;
 import de.symeda.sormas.app.task.TaskForm;
 import de.symeda.sormas.app.util.ConnectionHelper;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
@@ -223,12 +218,10 @@ public class CaseEditActivity extends AbstractEditActivity {
                 Person person = (Person) adapter.getData(CaseEditTabs.PATIENT.ordinal());
 
                 // SYMPTOMS
-                SymptomsDao symptomsDao = DatabaseHelper.getSymptomsDao();
                 Symptoms symptoms = (Symptoms) adapter.getData(CaseEditTabs.SYMPTOMS.ordinal());
                 SymptomsEditForm symptomsEditForm = (SymptomsEditForm) adapter.getTabByPosition(CaseEditTabs.SYMPTOMS.ordinal());
 
                 // HOSPITALIZATION
-                HospitalizationDao hospitalizationDao = DatabaseHelper.getHospitalizationDao();
                 Hospitalization hospitalization = (Hospitalization) adapter.getData(CaseEditTabs.HOSPITALIZATION.ordinal());
 
                 // EPI DATA
@@ -255,13 +248,13 @@ public class CaseEditActivity extends AbstractEditActivity {
                 if (validData) {
                     try {
 
-                        personDao.save(person);
+                        personDao.saveAndSnapshot(person);
                         caze.setPerson(person); // we aren't sure why, but this is needed, otherwise the person will be overriden when first saved
                         caze.setSymptoms(symptoms);
                         caze.setHospitalization(hospitalization);
                         caze.setEpiData(epiData);
 
-                        caseDao.save(caze);
+                        caseDao.saveAndSnapshot(caze);
 
                         Snackbar.make(findViewById(R.id.base_layout), "Case saved.", Snackbar.LENGTH_LONG).show();
 
