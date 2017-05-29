@@ -16,14 +16,14 @@ set PORT_BASE=6000
 set PORT_ADMIN=6048
 
 REM DB
-set DB_USER=sormas_user
-set DB_USER_AUDIT=sormas_user
-set DB_PW=sormas_db
-set DB_PW_AUDIT=sormas_db
-set DB_NAME=sormas_db
-set DB_NAME_AUDIT=sormas_audit_db
 set DB_SERVER=localhost
 set DB_PORT=5432
+set DB_NAME=sormas_db
+set DB_USER=sormas_user
+set DB_PW=sormas_db
+set DB_NAME_AUDIT=sormas_audit_db
+set DB_USER_AUDIT=sormas_user
+set DB_PW_AUDIT=sormas_db
 
 REM MAIL
 set MAIL_FROM=noreply@symeda.de
