@@ -3,6 +3,7 @@ package de.symeda.sormas.rest;
 import java.util.Date;
 import java.util.List;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -18,9 +19,8 @@ import de.symeda.sormas.api.region.DistrictDto;
  *
  */
 @Path("/districts")
-@Produces({
-	MediaType.APPLICATION_JSON + "; charset=UTF-8"
-	})
+@Produces({MediaType.APPLICATION_JSON + "; charset=UTF-8"})
+@RolesAllowed("USER")
 public class DistrictResource {
 
 	@GET @Path("/all/{since}")

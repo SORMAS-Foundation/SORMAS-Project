@@ -1,9 +1,13 @@
 package de.symeda.sormas.app.rest;
 
+import android.text.TextUtils;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import okhttp3.Credentials;
+import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -34,17 +38,31 @@ public final class RetroProvider {
     private RetroProvider() {
 
         Gson gson = new GsonBuilder()
-                //.setDateFormat(DateFormat.LONG)
+                // date format needs to exactly match the server's
                 .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
                 .create();
 
         try {
-            // 10.0.2.2 points to localhost from emulator
+
+            // Basic auth as explained in https://futurestud.io/tutorials/android-basic-authentication-with-retrofit
+
+            // TODO use stored credentials
+            String authToken = Credentials.basic("SanaObas", "YK724TTcaeJh");
+            AuthenticationInterceptor interceptor =
+                    new AuthenticationInterceptor(authToken);
+
+            OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+            httpClient.addInterceptor(interceptor);
+
+            // URL: 10.0.2.2 points to localhost from emulator
             // SSL not working because of missing certificate
+
             retrofit = new Retrofit.Builder()
                     .baseUrl(ConfigProvider.getServerRestUrl())
                     .addConverterFactory(GsonConverterFactory.create(gson))
+                    .client(httpClient.build())
                     .build();
+
         } catch (IllegalArgumentException ex) {
             // likely the server url is wrong -> simply reset it
             // TODO replace this with proper error handling

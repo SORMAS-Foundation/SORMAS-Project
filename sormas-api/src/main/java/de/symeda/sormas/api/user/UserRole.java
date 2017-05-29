@@ -5,6 +5,11 @@ import java.util.HashSet;
 
 import de.symeda.sormas.api.I18nProperties;
 
+/**
+ * These are also used as user groups in the server realm
+ *  
+ * @author Martin Wahnschaffe
+ */
 public enum UserRole {
 
 	ADMIN(false, false),
