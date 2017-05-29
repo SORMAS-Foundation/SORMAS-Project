@@ -1,16 +1,13 @@
-package de.symeda.sormas.app.component;
+package de.symeda.sormas.app.synclog;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.support.design.widget.Snackbar;
 import android.text.Html;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
-import com.google.android.gms.analytics.Tracker;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 
@@ -22,8 +19,7 @@ import java.util.List;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.user.SyncLog;
-import de.symeda.sormas.app.util.ErrorReportingHelper;
+import de.symeda.sormas.app.backend.synclog.SyncLog;
 
 /**
  * Created by Mate Strysewske on 24.05.2017.

@@ -1,39 +1,21 @@
 package de.symeda.sormas.app.user;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
-import android.text.Html;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 
 import com.google.android.gms.analytics.Tracker;
-import com.j256.ormlite.support.ConnectionSource;
-import com.j256.ormlite.table.TableUtils;
-
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
-import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
-import de.symeda.sormas.app.backend.task.Task;
-import de.symeda.sormas.app.backend.user.SyncLog;
-import de.symeda.sormas.app.backend.user.SyncLogDao;
-import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.AbstractRootTabActivity;
-import de.symeda.sormas.app.component.SyncLogDialog;
+import de.symeda.sormas.app.synclog.SyncLogDialog;
 import de.symeda.sormas.app.component.UserReportDialog;
-import de.symeda.sormas.app.util.ErrorReportingHelper;
 
 
 public class UserActivity extends AbstractRootTabActivity {

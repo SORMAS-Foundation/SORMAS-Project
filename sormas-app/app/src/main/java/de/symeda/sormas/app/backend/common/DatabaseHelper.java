@@ -3,9 +3,7 @@ package de.symeda.sormas.app.backend.common;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
-import android.widget.Toast;
 
-import com.google.android.gms.analytics.Tracker;
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.support.ConnectionSource;
@@ -13,7 +11,6 @@ import com.j256.ormlite.table.TableUtils;
 
 import java.sql.SQLException;
 
-import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
@@ -57,8 +54,8 @@ import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.symptoms.SymptomsDao;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.task.TaskDao;
-import de.symeda.sormas.app.backend.user.SyncLog;
-import de.symeda.sormas.app.backend.user.SyncLogDao;
+import de.symeda.sormas.app.backend.synclog.SyncLog;
+import de.symeda.sormas.app.backend.synclog.SyncLogDao;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.backend.user.UserDao;
 import de.symeda.sormas.app.backend.visit.Visit;
