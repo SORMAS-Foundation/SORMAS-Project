@@ -11,7 +11,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import de.symeda.auditlog.api.ChangeEvent;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 
 /**
@@ -28,7 +27,7 @@ public class AuditLogServiceBean {
 	@TransactionAttribute(TransactionAttributeType.MANDATORY)
 	public void receiveChanges(@Observes(during = TransactionPhase.IN_PROGRESS) ChangeEvent event) {
 
-		Date changeDate = DateHelper.from(event.getChangeDate());
+		Date changeDate = AuditLogDateHelper.from(event.getChangeDate());
 
 		AuditLogEntry log = new AuditLogEntry();
 		log.setAttributes(event.getNewValues());
