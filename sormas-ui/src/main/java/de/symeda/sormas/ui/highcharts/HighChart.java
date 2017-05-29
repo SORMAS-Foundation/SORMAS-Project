@@ -3,8 +3,6 @@ package de.symeda.sormas.ui.highcharts;
 import com.vaadin.annotations.JavaScript;
 import com.vaadin.ui.AbstractJavaScriptComponent;
 
-// TODO add copyright
-
 /**
  * <p>Abstract Highcharts chart.</p>
  * <p>
@@ -26,6 +24,8 @@ import com.vaadin.ui.AbstractJavaScriptComponent;
  * </pre>
  *
  * @author Stefan Endrullis
+ * 
+ * Based on https://github.com/xylo/highcharts-vaadin7 (Apache 2.0 license)
  */
 @JavaScript({"jquery-min.js", "highcharts.js", "highcharts-connector.js"})
 public class HighChart extends AbstractJavaScriptComponent {
