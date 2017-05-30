@@ -22,7 +22,6 @@ import de.symeda.sormas.app.sample.SamplesActivity;
 import de.symeda.sormas.app.task.TasksActivity;
 import de.symeda.sormas.app.user.LoginActivity;
 import de.symeda.sormas.app.user.UserActivity;
-import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.SyncCallback;
 import de.symeda.sormas.app.util.SyncInfrastructureTask;
 
@@ -187,9 +186,7 @@ public abstract class AbstractRootTabActivity extends AbstractTabActivity {
     }
 
     public void logout() {
-        ConfigProvider.setUser(null);
-        ConfigProvider.setUsername(null);
-        ConfigProvider.setPassword(null);
+        ConfigProvider.clearUsernameAndPassword();
         Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
     }

@@ -85,6 +85,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	private boolean clearingTables = false;
 
 	private ConfigDao configDao = null;
+	private final Context context;
 
 	private final HashMap<Class<? extends AbstractDomainObject>, AbstractAdoDao<? extends AbstractDomainObject>> adoDaos = new HashMap<>();
 
@@ -92,6 +93,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	private SyncLogDao syncLogDao = null;
 	private DatabaseHelper(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);//, R.raw.ormlite_config);
+		this.context = context;
 		// HACK to make sure database is initialized - otherwise we could run into problems caused by threads
 		this.getReadableDatabase();
 	}
@@ -129,7 +131,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				TableUtils.clearTable(connectionSource, Community.class);
 				TableUtils.clearTable(connectionSource, Facility.class);
 				TableUtils.clearTable(connectionSource, User.class);
-				ConfigProvider.setUser(null); // important - otherwise the old instance is further used
+
+				ConfigProvider.init(instance.context);
 			}
 
 			// keep config!

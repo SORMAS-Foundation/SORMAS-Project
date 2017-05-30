@@ -1,29 +1,45 @@
 package de.symeda.sormas.app.backend.config;
 
+import android.content.Context;
+import android.security.KeyPairGeneratorSpec;
+import android.support.design.widget.Snackbar;
+import android.util.Base64;
 import android.util.Log;
 
-import com.j256.ormlite.support.ConnectionSource;
-import com.j256.ormlite.table.TableUtils;
-
-import java.sql.SQLException;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.KeyPairGenerator;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.PrivateKey;
+import java.security.UnrecoverableEntryException;
+import java.security.cert.CertificateException;
+import java.security.interfaces.RSAPrivateKey;
+import java.security.interfaces.RSAPublicKey;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
+
+import javax.crypto.Cipher;
+import javax.crypto.CipherInputStream;
+import javax.crypto.CipherOutputStream;
+import javax.crypto.NoSuchPaddingException;
+import javax.security.auth.x500.X500Principal;
 
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.app.SormasApplication;
-import de.symeda.sormas.app.backend.caze.Case;
-import de.symeda.sormas.app.backend.common.DaoException;
+import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.symptoms.Symptoms;
-import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.user.User;
-import de.symeda.sormas.app.caze.SyncCasesTask;
-import de.symeda.sormas.app.person.SyncPersonsTask;
 import de.symeda.sormas.app.rest.RetroProvider;
-import de.symeda.sormas.app.task.SyncTasksTask;
-import de.symeda.sormas.app.util.Callback;
-import de.symeda.sormas.app.util.ConnectionHelper;
+import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.SyncInfrastructureTask;
 
 /**
@@ -31,7 +47,6 @@ import de.symeda.sormas.app.util.SyncInfrastructureTask;
  */
 public final class ConfigProvider {
 
-    private static String KEY_USER_UUID = "userUuid";
     private static String KEY_USERNAME = "username";
     private static String KEY_PASSWORD = "password";
     private static String KEY_SERVER_REST_URL = "serverRestUrl";
@@ -39,102 +54,201 @@ public final class ConfigProvider {
 
     public static ConfigProvider instance = null;
 
-    public static void init() {
+    public static void init(Context context) {
         if (instance != null) {
             Log.e(ConfigProvider.class.getName(), "ConfigProvider has already been initalized");
         }
-        instance = new ConfigProvider();
+        instance = new ConfigProvider(context);
     }
 
+    private final Context context;
+
     private String serverRestUrl;
-    private User user;
     private String username;
     private String password;
+    private User user;
     private Date lastNotificationDate;
+
+    private ConfigProvider(Context context) {
+        this.context = context;
+    }
 
     public static User getUser() {
         if (instance.user == null)
             synchronized (ConfigProvider.class) {
                 if (instance.user == null) {
-                    Config config = DatabaseHelper.getConfigDao().queryForId(KEY_USER_UUID);
-                    if (config != null) {
-                        instance.user = DatabaseHelper.getUserDao().queryUuid(config.getValue());
-                    }
-                    // TODO check if username == user.name
-                    // TODO remove this as soon as server stuff has been added, see #180
-                    if (instance.user == null) {
-                        // no user found. Take first surveillance officer...
-                        List<User> users = DatabaseHelper.getUserDao().queryForAll();
-
-                        for (User dbUser : users) {
-                            if (UserRole.SURVEILLANCE_OFFICER.equals(dbUser.getUserRole())) {
-                                // got it
-                                setUser(dbUser);
-                                break;
-                            }
-                        }
-                    }
+                    String username = getUsername();
+                    instance.user = DatabaseHelper.getUserDao().getByUsername(username);
                 }
             }
         return instance.user;
-    }
-
-    public static void setUser(User user) {
-        if (user != null && user.equals(instance.user))
-            return;
-
-        boolean wasNull = instance.user == null;
-        instance.user = user;
-        if (user == null) {
-            DatabaseHelper.getConfigDao().delete(new Config(KEY_USER_UUID, ""));
-        } else {
-            DatabaseHelper.getConfigDao().createOrUpdate(new Config(KEY_USER_UUID, user.getUuid()));
-        }
-
-        if (!wasNull) {
-            DatabaseHelper.clearTables(false);
-        }
     }
 
     public static String getUsername() {
         if (instance.username == null) {
             Config config = DatabaseHelper.getConfigDao().queryForId(KEY_USERNAME);
             if (config != null) {
-                return config.getValue();
+                instance.username = config.getValue();
             }
-            return null;
-        } else {
-            return instance.username;
         }
-    }
-
-    public static void setUsername(String username) {
-        if (username != null && username.equals(instance.username))
-            return;
-
-        instance.username = username;
-        if (username == null) {
-            DatabaseHelper.getConfigDao().delete(new Config(KEY_USERNAME, ""));
-        } else {
-            DatabaseHelper.getConfigDao().createOrUpdate(new Config(KEY_USERNAME, username));
-        }
+        return instance.username;
     }
 
     public static String getPassword() {
-        return instance.password;
+        if (instance.password == null) {
+            Config config = DatabaseHelper.getConfigDao().queryForId(KEY_PASSWORD);
+            if (config != null) {
+                instance.password = config.getValue();
+            }
+        }
+        return decodePassword(instance.password);
     }
 
-    public static void setPassword(String password) {
-        if (password != null && password.equals(instance.password))
+    public static void clearUsernameAndPassword() {
+
+        instance.user = null;
+        instance.username = null;
+        instance.password = null;
+        DatabaseHelper.getConfigDao().delete(new Config(KEY_USERNAME, ""));
+        DatabaseHelper.getConfigDao().delete(new Config(KEY_PASSWORD, ""));
+
+        RetroProvider.init();
+    }
+
+    public static void setUsernameAndPassword(String username, String password) {
+
+        if (username == null)
+            throw new NullPointerException("username");
+        if (password == null)
+            throw new NullPointerException("password");
+
+        password = encodePassword(password);
+
+        if (username.equals(instance.username) && password.equals(instance.password))
             return;
 
+        instance.user = null;
+        instance.username = username;
         instance.password = password;
-        if (password == null) {
-            DatabaseHelper.getConfigDao().delete(new Config(KEY_PASSWORD, ""));
-        } else {
-            DatabaseHelper.getConfigDao().createOrUpdate(new Config(KEY_PASSWORD, password));
+
+        DatabaseHelper.getConfigDao().createOrUpdate(new Config(KEY_USERNAME, username));
+        DatabaseHelper.getConfigDao().createOrUpdate(new Config(KEY_PASSWORD, password));
+
+        DatabaseHelper.clearTables(false);
+        RetroProvider.init();
+    }
+
+    private static String encodePassword(String clearPassword) {
+
+        if (clearPassword == null) {
+            return null;
+        }
+
+        try {
+            KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
+            keyStore.load(null);
+
+            if (!keyStore.containsAlias("Credentials")) {
+                Calendar start = Calendar.getInstance();
+                Calendar end = Calendar.getInstance();
+                end.add(Calendar.YEAR, 1);
+
+                KeyPairGeneratorSpec credentialsSpec = new KeyPairGeneratorSpec.Builder(instance.context)
+                        .setAlias("Credentials")
+                        .setSubject(new X500Principal("CN=SORMAS, O=symeda, C=Germany"))
+                        .setSerialNumber(BigInteger.ONE)
+                        .setStartDate(start.getTime())
+                        .setEndDate(end.getTime())
+                        .build();
+
+                KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA", "AndroidKeyStore");
+                generator.initialize(credentialsSpec);
+                generator.generateKeyPair();
+            }
+
+            KeyStore.PrivateKeyEntry privateKeyEntry = (KeyStore.PrivateKeyEntry) keyStore.getEntry("Credentials", null);
+            RSAPublicKey publicKey = (RSAPublicKey) privateKeyEntry.getCertificate().getPublicKey();
+
+            Cipher input = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+            input.init(Cipher.ENCRYPT_MODE, publicKey);
+
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            CipherOutputStream cipherOutputStream = new CipherOutputStream(outputStream, input);
+            cipherOutputStream.write(clearPassword.getBytes("UTF-8"));
+            cipherOutputStream.close();
+
+            byte[] resultByteArray = outputStream.toByteArray();
+            String result = Base64.encodeToString(resultByteArray, Base64.DEFAULT);
+            return result;
+
+        } catch (KeyStoreException e) {
+            throw new RuntimeException(e);
+        } catch (UnrecoverableEntryException e) {
+            throw new RuntimeException(e);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        } catch (CertificateException e) {
+            throw new RuntimeException(e);
+        } catch (InvalidKeyException e) {
+            throw new RuntimeException(e);
+        } catch (InvalidAlgorithmParameterException e) {
+            throw new RuntimeException(e);
+        } catch (NoSuchPaddingException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (NoSuchProviderException e) {
+            throw new RuntimeException(e);
+        }
+//    } catch (Exception e) {
+//        Log.e(getClass().getName(), "Error while trying to write credentials to key store", e);
+//        Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_login_failed, Snackbar.LENGTH_LONG).show();
+//        ErrorReportingHelper.sendCaughtException(tracker, e, null, true);
+    }
+
+    private static String decodePassword(String encodedPassword) {
+
+        if (encodedPassword == null) {
+            return null;
+        }
+
+        try {
+            KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
+            keyStore.load(null);
+
+            KeyStore.PrivateKeyEntry privateKeyEntry = (KeyStore.PrivateKeyEntry) keyStore.getEntry("Credentials", null);
+            PrivateKey privateKey = privateKeyEntry.getPrivateKey();
+
+            Cipher decryptCipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+            decryptCipher.init(Cipher.DECRYPT_MODE, privateKey);
+
+            byte[] encodedBytes = Base64.decode(encodedPassword, Base64.DEFAULT);
+            InputStream inputStream = new ByteArrayInputStream(encodedBytes);
+            CipherInputStream cipherStream = new CipherInputStream(inputStream, decryptCipher);
+            byte[] passwordBytes = new byte[1024];
+            int passwordByteLength = cipherStream.read(passwordBytes);
+            cipherStream.close();
+
+            String result = new String(passwordBytes, 0, passwordByteLength, "UTF-8");
+            return result;
+
+        } catch (KeyStoreException e) {
+            throw new RuntimeException(e);
+        } catch (UnrecoverableEntryException e) {
+            throw new RuntimeException(e);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        } catch (CertificateException e) {
+            throw new RuntimeException(e);
+        } catch (InvalidKeyException e) {
+            throw new RuntimeException(e);
+        } catch (NoSuchPaddingException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
+
 
     public static String getServerRestUrl() {
         if (instance.serverRestUrl == null)
@@ -163,7 +277,7 @@ public final class ConfigProvider {
             return;
 
         // make sure no wrong user is set
-        setUser(null);
+        clearUsernameAndPassword();
 
         boolean wasNull = instance.serverRestUrl == null;
         instance.serverRestUrl = serverRestUrl;
@@ -175,11 +289,9 @@ public final class ConfigProvider {
         }
 
         if (!wasNull) {
-            // reset everything
-            RetroProvider.reset();
+            // init everything
+            RetroProvider.init();
             DatabaseHelper.clearTables(true);
-            ConfigProvider.setUser(DatabaseHelper.getUserDao().getByUsername(ConfigProvider.getUsername()));
-            SyncInfrastructureTask.syncAll(null, null);
         }
     }
 

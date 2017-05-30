@@ -15,6 +15,7 @@ import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.caze.CasesActivity;
 import de.symeda.sormas.app.caze.SyncCasesTask;
 import de.symeda.sormas.app.person.SyncPersonsTask;
+import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.task.SyncTasksTask;
 import de.symeda.sormas.app.task.TaskNotificationService;
 import de.symeda.sormas.app.util.Callback;
@@ -39,7 +40,8 @@ public class SormasApplication extends Application {
     @Override
     public void onCreate() {
         DatabaseHelper.init(this);
-        ConfigProvider.init();
+        ConfigProvider.init(this);
+        RetroProvider.init();
 
         SyncInfrastructureTask.syncInfrastructure(getApplicationContext(), new SyncCallback() {
             @Override

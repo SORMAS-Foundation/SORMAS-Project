@@ -80,10 +80,6 @@ public class UserForm extends FormTab {
         SyncInfrastructureTask.syncAll(new SyncCallback() {
             @Override
             public void call(boolean syncFailed) {
-                // User needs to be set again because the user table has been cleared
-                User user = DatabaseHelper.getUserDao().getByUsername(ConfigProvider.getUsername());
-                ConfigProvider.setUser(user);
-
                 UserForm.this.onResume();
                 binding.configProgressBar.setVisibility(View.GONE);
             }
