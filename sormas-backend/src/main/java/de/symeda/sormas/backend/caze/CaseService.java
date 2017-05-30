@@ -26,6 +26,7 @@ import de.symeda.sormas.backend.epidata.EpiDataBurial;
 import de.symeda.sormas.backend.epidata.EpiDataGathering;
 import de.symeda.sormas.backend.epidata.EpiDataTravel;
 import de.symeda.sormas.backend.hospitalization.Hospitalization;
+import de.symeda.sormas.backend.hospitalization.PreviousHospitalization;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
@@ -63,6 +64,8 @@ public class CaseService extends AbstractAdoService<Case> {
 			dateFilter = cb.or(dateFilter, cb.greaterThan(symptoms.get(AbstractDomainObject.CHANGE_DATE), date));
 			Join<Case, Hospitalization> hospitalization = from.join(Case.HOSPITALIZATION, JoinType.LEFT);
 			dateFilter = cb.or(dateFilter, cb.greaterThan(hospitalization.get(AbstractDomainObject.CHANGE_DATE), date));
+			Join<Hospitalization, PreviousHospitalization> previousHospitalization = hospitalization.join(Hospitalization.PREVIOUS_HOSPITALIZATIONS, JoinType.LEFT);
+			dateFilter = cb.or(dateFilter, cb.greaterThan(previousHospitalization.get(AbstractDomainObject.CHANGE_DATE), date));
 			Join<Case, EpiData> epiData = from.join(Case.EPI_DATA, JoinType.LEFT);
 			dateFilter = cb.or(dateFilter, cb.greaterThan(epiData.get(AbstractDomainObject.CHANGE_DATE), date));
 			Join<EpiData, EpiDataTravel> epiDataTravels = epiData.join(EpiData.TRAVELS, JoinType.LEFT);

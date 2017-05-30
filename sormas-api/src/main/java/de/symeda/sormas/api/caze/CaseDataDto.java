@@ -39,7 +39,6 @@ public class CaseDataDto extends CaseReferenceDto {
 	public static final String SURVEILLANCE_OFFICER = "surveillanceOfficer";
 	public static final String CASE_OFFICER = "caseOfficer";
 	public static final String CONTACT_OFFICER = "contactOfficer";
-	public static final String ILL_LOCATION = "illLocation";
 	public static final String SYMPTOMS = "symptoms";
 	public static final String HOSPITALIZATION = "hospitalization";
 	public static final String EPI_DATA = "epiData";
@@ -64,7 +63,6 @@ public class CaseDataDto extends CaseReferenceDto {
 	private CommunityReferenceDto community;
 	private FacilityReferenceDto healthFacility;
 
-	private LocationDto illLocation;
 	private SymptomsDto symptoms;
 		
 	private YesNoUnknown pregnant;
@@ -259,14 +257,6 @@ public class CaseDataDto extends CaseReferenceDto {
 	
 	public void setEpidNumber(String epidNumber) {
 		this.epidNumber = epidNumber;
-	}
-
-	public LocationDto getIllLocation() {
-		return illLocation;
-	}
-
-	public void setIllLocation(LocationDto illLocation) {
-		this.illLocation = illLocation;
 	}
 
 }
