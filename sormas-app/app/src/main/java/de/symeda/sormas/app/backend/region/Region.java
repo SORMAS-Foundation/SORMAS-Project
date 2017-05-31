@@ -19,6 +19,7 @@ public class Region extends AbstractDomainObject {
 	private static final long serialVersionUID = -2958216667876104358L;
 
 	public static final String TABLE_NAME = "region";
+	public static final String I18N_PREFIX = "Region";
 
 	public static final String NAME = "name";
 
@@ -35,5 +36,10 @@ public class Region extends AbstractDomainObject {
 	@Override
 	public String toString() {
 		return getName();
+	}
+
+	@Override
+	public String getI18nPrefix() {
+		return I18N_PREFIX;
 	}
 }

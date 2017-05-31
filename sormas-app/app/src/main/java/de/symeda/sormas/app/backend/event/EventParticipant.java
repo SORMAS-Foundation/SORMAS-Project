@@ -16,6 +16,7 @@ public class EventParticipant extends AbstractDomainObject {
 	private static final long serialVersionUID = -9006001699517297107L;
 
 	public static final String TABLE_NAME = "eventParticipants";
+	public static final String I18N_PREFIX = "EventParticipant";
 
 	public static final String EVENT = "event";
 	public static final String PERSON = "person";
@@ -61,6 +62,11 @@ public class EventParticipant extends AbstractDomainObject {
 	public boolean isModifiedOrChildModified() {
 		super.isModifiedOrChildModified();
 		return person.isModifiedOrChildModified();
+	}
+
+	@Override
+	public String getI18nPrefix() {
+		return I18N_PREFIX;
 	}
 
 }

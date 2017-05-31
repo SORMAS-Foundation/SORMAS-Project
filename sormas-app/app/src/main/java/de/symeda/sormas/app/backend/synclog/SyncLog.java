@@ -23,7 +23,6 @@ public class SyncLog {
     public static final String TABLE_NAME = "synclog";
 
     public static final String ENTITY_NAME = "entityName";
-    public static final String ENTITY_UUID = "entityUuid";
     public static final String CONFLICT_TEXT = "conflictText";
 
     @Id
@@ -37,16 +36,12 @@ public class SyncLog {
     private String entityName;
 
     @Column
-    private String entityUuid;
-
-    @Column
     private String conflictText;
 
     public SyncLog() { }
 
-    public SyncLog(String entityName, String entityUuid, String conflictText) {
+    public SyncLog(String entityName, String conflictText) {
         this.entityName = entityName;
-        this.entityUuid = entityUuid;
         this.conflictText = conflictText;
     }
 
@@ -72,14 +67,6 @@ public class SyncLog {
 
     public void setEntityName(String entityName) {
         this.entityName = entityName;
-    }
-
-    public String getEntityUuid() {
-        return entityUuid;
-    }
-
-    public void setEntityUuid(String entityUuid) {
-        this.entityUuid = entityUuid;
     }
 
     public String getConflictText() {

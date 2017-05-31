@@ -30,6 +30,7 @@ public class Task extends AbstractDomainObject {
 	private static final long serialVersionUID = -2666695184163562129L;
 
 	public static final String TABLE_NAME = "tasks";
+	public static final String I18N_PREFIX = "Task";
 
 	public static final String ASSIGNEE_REPLY = "assigneeReply";
 	public static final String ASSIGNEE_USER = "assigneeUser";
@@ -214,4 +215,8 @@ public class Task extends AbstractDomainObject {
 		this.suggestedStart = suggestedStart;
 	}
 
+	@Override
+	public String getI18nPrefix() {
+		return I18N_PREFIX;
+	}
 }

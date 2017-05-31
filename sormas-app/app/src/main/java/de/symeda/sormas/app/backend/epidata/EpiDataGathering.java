@@ -25,6 +25,7 @@ public class EpiDataGathering extends AbstractDomainObject {
     private static final long serialVersionUID = 5491651166245301869L;
 
     public static final String TABLE_NAME = "epidatagathering";
+    public static final String I18N_PREFIX = "EpiDataGathering";
 
     public static final String EPI_DATA = "epiData";
     public static final String GATHERING_ADDRESS = "gatheringAddress";
@@ -71,5 +72,10 @@ public class EpiDataGathering extends AbstractDomainObject {
 
     public void setGatheringAddress(Location gatheringAddress) {
         this.gatheringAddress = gatheringAddress;
+    }
+
+    @Override
+    public String getI18nPrefix() {
+        return I18N_PREFIX;
     }
 }

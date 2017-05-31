@@ -31,6 +31,7 @@ public class EpiData extends AbstractDomainObject {
     private static final long serialVersionUID = -8294812479501735785L;
 
     public static final String TABLE_NAME = "epidata";
+    public static final String I18N_PREFIX = "EpiData";
 
     @Enumerated(EnumType.STRING)
     private YesNoUnknown burialAttended;
@@ -356,5 +357,10 @@ public class EpiData extends AbstractDomainObject {
 
     public void setTravels(List<EpiDataTravel> travels) {
         this.travels = travels;
+    }
+
+    @Override
+    public String getI18nPrefix() {
+        return I18N_PREFIX;
     }
 }

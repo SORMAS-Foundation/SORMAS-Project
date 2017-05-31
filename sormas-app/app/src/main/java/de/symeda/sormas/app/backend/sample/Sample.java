@@ -16,6 +16,7 @@ import de.symeda.sormas.api.sample.SampleSource;
 import de.symeda.sormas.api.sample.SampleTestType;
 import de.symeda.sormas.api.sample.ShipmentStatus;
 import de.symeda.sormas.api.sample.SpecimenCondition;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.facility.Facility;
@@ -32,6 +33,7 @@ public class Sample extends AbstractDomainObject {
     private static final long serialVersionUID = -7196712070188634978L;
 
     public static final String TABLE_NAME = "samples";
+    public static final String I18N_PREFIX = "Sample";
 
     public static final String SHIPMENT_STATUS = "shipmentStatus";
     public static final String SAMPLE_DATE_TIME = "sampleDateTime";
@@ -246,5 +248,17 @@ public class Sample extends AbstractDomainObject {
 
     public void setSuggestedTypeOfTest(SampleTestType suggestedTypeOfTest) {
         this.suggestedTypeOfTest = suggestedTypeOfTest;
+    }
+
+    @Override
+    public String toString() {
+        String materialString = sampleMaterial == null ? "" : sampleMaterial.toString();
+        String sampleString = materialString.isEmpty() ? "Sample" : " sample";
+        return materialString + " " + sampleString + " for case " + DataHelper.getShortUuid(associatedCase.getUuid());
+    }
+
+    @Override
+    public String getI18nPrefix() {
+        return I18N_PREFIX;
     }
 }

@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.backend.common;
 
+import android.content.res.Resources;
 import android.util.Log;
 
 import com.googlecode.openbeans.BeanInfo;
@@ -24,8 +25,13 @@ import java.util.List;
 
 import javax.persistence.NonUniqueResultException;
 
+import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.SormasApplication;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.synclog.SyncLog;
 
 /**
  * Created by Martin Wahnschaffe on 22.07.2016.
@@ -383,13 +389,13 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> extends R
             throw new IllegalArgumentException("Merged source is not allowed to have an id");
         }
 
-        ADO result = queryUuid(source.getUuid());
+        ADO current = queryUuid(source.getUuid());
         ADO snapshot = querySnapshotByUuid(source.getUuid());
 
-        if (result == null) {
+        if (current == null) {
 
             // use the source as new entity
-            result = source;
+            current = source;
 
             if (snapshot != null) {
                 // no existing entity but a snapshot -> the entity was deleted
@@ -399,7 +405,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> extends R
                     Log.i(source.getClass().getSimpleName(), "Recreating deleted entity, because it was modified: " + source.getUuid());
 
                     // recreate the entity and set it to modified, because the list was changed before
-                    result.setModified(true);
+                    current.setModified(true);
                 }
                 else {
                     // the entity was delete and the server didn't send changes -> keep the deletion
@@ -409,7 +415,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> extends R
         }
 
         // use change date from server
-        result.setChangeDate(source.getChangeDate());
+        current.setChangeDate(source.getChangeDate());
         if (snapshot != null) {
             snapshot.setChangeDate(source.getChangeDate());
         }
@@ -424,6 +430,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> extends R
 
             List<PropertyDescriptor> collectionProperties = null;
 
+            String conflictString = "";
             for (PropertyDescriptor property : beanInfo.getPropertyDescriptors()) {
                 // ignore some types and specific properties
                 if (AbstractDomainObject.CREATION_DATE.equals(property.getName())
@@ -448,13 +455,13 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> extends R
                     // get the embedded entity
                     AbstractDomainObject embeddedSource = (AbstractDomainObject) property.getReadMethod().invoke(source);
                     // merge it - will return the merged result
-                    AbstractDomainObject embeddedResult = DatabaseHelper.getAdoDao(embeddedSource.getClass()).mergeOrCreateWithCast(embeddedSource);
+                    AbstractDomainObject embeddedCurrent = DatabaseHelper.getAdoDao(embeddedSource.getClass()).mergeOrCreateWithCast(embeddedSource);
 
-                    if (embeddedResult == null) {
+                    if (embeddedCurrent == null) {
                         throw new IllegalArgumentException("No merge result returned for was created for " + embeddedSource);
                     }
                     // write link for merged embedded
-                    property.getWriteMethod().invoke(result, embeddedResult);
+                    property.getWriteMethod().invoke(current, embeddedCurrent);
                 }
                 // 2. "value" types like String, Date, Enum, ...
                 // -> just copy value from source into target and base
@@ -465,21 +472,25 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> extends R
 
                     Object sourceFieldValue = property.getReadMethod().invoke(source);
 
-                    if (result.isModified()) {
+                    if (current.isModified()) {
                         // did the server send changes?
-                        Object baseFieldValue = property.getReadMethod().invoke(snapshot);
-                        if (DataHelper.equal(baseFieldValue, sourceFieldValue)) {
+                        Object snapshotFieldValue = property.getReadMethod().invoke(snapshot);
+                        if (DataHelper.equal(snapshotFieldValue, sourceFieldValue)) {
                             continue;
                         }
 
                         // do we have local changes?
-                        Object targetFieldValue = property.getReadMethod().invoke(result);
-                        if (!DataHelper.equal(baseFieldValue, targetFieldValue)) {
+                        Object currentFieldValue = property.getReadMethod().invoke(current);
+                        if (!DataHelper.equal(snapshotFieldValue, currentFieldValue)) {
                             // we have a conflict
                             Log.i(beanInfo.getBeanDescriptor().getName(), "Overriding " + property.getName() +
-                                    " value changed from '" + DataHelper.toStringNullable(baseFieldValue) +
-                                    "' to '" + DataHelper.toStringNullable(targetFieldValue) +
-                                    "' with '" + DataHelper.toStringNullable(sourceFieldValue) + "'");
+                                    "; Snapshot '" + DataHelper.toStringNullable(snapshotFieldValue) +
+                                    "'; Yours: '" + DataHelper.toStringNullable(currentFieldValue) +
+                                    "'; Server: '" + DataHelper.toStringNullable(sourceFieldValue) + "'");
+                            String caption = I18nProperties.getFieldCaption(source.getI18nPrefix() + "." + property.getName());
+                            conflictString += caption + "<br/><i>" +
+                                    SormasApplication.getContext().getResources().getString(R.string.synclog_yours) + "</i> " + DataHelper.toStringNullable(currentFieldValue) + "<br/><i>" +
+                                    SormasApplication.getContext().getResources().getString(R.string.synclog_server) + "</i> " + DataHelper.toStringNullable(sourceFieldValue);
                         }
 
                         // update snapshot
@@ -487,7 +498,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> extends R
                     }
 
                     // update result
-                    property.getWriteMethod().invoke(result, sourceFieldValue);
+                    property.getWriteMethod().invoke(current, sourceFieldValue);
                 }
                 // 4. lists of embedded domain objects
                 else if (Collection.class.isAssignableFrom(property.getPropertyType())) {
@@ -504,10 +515,14 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> extends R
                 }
             }
 
-            if (result.getId() == null) {
-                create(result);
+            if (!conflictString.isEmpty()) {
+                DatabaseHelper.getSyncLogDao().create(source.toString(), conflictString);
+            }
+
+            if (current.getId() == null) {
+                create(current);
             } else {
-                update(result);
+                update(current);
             }
 
             if (snapshot != null) {
@@ -518,13 +533,13 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> extends R
                 for (PropertyDescriptor property : collectionProperties) {
 
                     // merge all collection elements
-                    Collection<AbstractDomainObject> existingCollection = (Collection<AbstractDomainObject>)property.getReadMethod().invoke(result);
+                    Collection<AbstractDomainObject> currentCollection = (Collection<AbstractDomainObject>)property.getReadMethod().invoke(current);
                     Collection<AbstractDomainObject> sourceCollection = (Collection<AbstractDomainObject>)property.getReadMethod().invoke(source);
-                    mergeCollection(existingCollection, sourceCollection, result);
+                    mergeCollection(currentCollection, sourceCollection, current);
                 }
             }
 
-            return result;
+            return current;
 
         } catch (RuntimeException e) {
             throw new DaoException(e);

@@ -100,6 +100,10 @@ public abstract class AbstractDomainObject extends BaseObservable implements Ser
 		return false;
 	}
 
+	public String getI18nPrefix() {
+		throw new UnsupportedOperationException("Can't retrieve I18N prefix of an unspecified ADO object");
+	}
+
 	public Long getId() {
 		return id;
 	}

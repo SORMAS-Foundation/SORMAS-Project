@@ -29,6 +29,7 @@ public class SampleTest extends AbstractDomainObject {
     public static final String SAMPLE = "sample";
 
     public static final String TABLE_NAME = "sampleTests";
+    public static final String I18N_PREFIX = "SampleTest";
 
     @DatabaseField(foreign = true, foreignAutoRefresh = true, canBeNull = false)
     private Sample sample;
@@ -74,5 +75,10 @@ public class SampleTest extends AbstractDomainObject {
 
     public void setTestDateTime(Date testDateTime) {
         this.testDateTime = testDateTime;
+    }
+
+    @Override
+    public String getI18nPrefix() {
+        return I18N_PREFIX;
     }
 }

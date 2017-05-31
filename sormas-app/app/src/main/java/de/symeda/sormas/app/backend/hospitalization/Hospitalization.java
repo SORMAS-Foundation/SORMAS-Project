@@ -28,6 +28,7 @@ public class Hospitalization extends AbstractDomainObject {
     private static final long serialVersionUID = -8576270649634034244L;
 
     public static final String TABLE_NAME = "hospitalizations";
+    public static final String I18N_PREFIX = "CaseHospitalization";
 
     @DatabaseField(dataType = DataType.DATE_LONG)
     private Date admissionDate;
@@ -93,5 +94,10 @@ public class Hospitalization extends AbstractDomainObject {
 
     public void setPreviousHospitalizations(List<PreviousHospitalization> previousHospitalizations) {
         this.previousHospitalizations = previousHospitalizations;
+    }
+
+    @Override
+    public String getI18nPrefix() {
+        return I18N_PREFIX;
     }
 }

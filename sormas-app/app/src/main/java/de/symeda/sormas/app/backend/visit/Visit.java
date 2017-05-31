@@ -23,6 +23,7 @@ import de.symeda.sormas.app.backend.user.User;
 public class Visit extends AbstractDomainObject {
 
 	public static final String TABLE_NAME = "visits";
+	public static final String I18N_PREFIX = "Visit";
 
 	public static final String PERSON = "person";
 	public static final String DISEASE = "disease";
@@ -112,4 +113,8 @@ public class Visit extends AbstractDomainObject {
 		return person.isModifiedOrChildModified();
 	}
 
+	@Override
+	public String getI18nPrefix() {
+		return I18N_PREFIX;
+	}
 }

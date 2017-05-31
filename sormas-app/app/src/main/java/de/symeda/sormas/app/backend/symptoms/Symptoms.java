@@ -25,6 +25,7 @@ public class Symptoms extends AbstractDomainObject {
 	private static final long serialVersionUID = 392886645668778670L;
 
 	public static final String TABLE_NAME = "symptoms";
+	public static final String I18N_PREFIX = "Symptoms";
 
 	@DatabaseField(dataType = DataType.DATE_LONG)
 	private Date onsetDate;
@@ -537,5 +538,10 @@ public class Symptoms extends AbstractDomainObject {
 
 	public void setAlteredConsciousness(SymptomState alteredConsciousness) {
 		this.alteredConsciousness = alteredConsciousness;
+	}
+
+	@Override
+	public String getI18nPrefix() {
+		return I18N_PREFIX;
 	}
 }

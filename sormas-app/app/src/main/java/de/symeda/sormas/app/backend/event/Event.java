@@ -27,6 +27,7 @@ public class Event extends AbstractDomainObject {
 	private static final long serialVersionUID = 4964495716032049582L;
 
 	public static final String TABLE_NAME = "events";
+	public static final String I18N_PREFIX = "Event";
 	
 	public static final String EVENT_TYPE = "eventType";
 	public static final String EVENT_STATUS = "eventStatus";
@@ -209,4 +210,8 @@ public class Event extends AbstractDomainObject {
 		return diseaseString + " " + eventTypeString + " on " + DateHelper.formatDate(eventDate);
 	}
 
+	@Override
+	public String getI18nPrefix() {
+		return I18N_PREFIX;
+	}
 }

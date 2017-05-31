@@ -28,6 +28,7 @@ public class EpiDataBurial extends AbstractDomainObject {
     private static final long serialVersionUID = 866789458483672591L;
 
     public static final String TABLE_NAME = "epidataburial";
+    public static final String I18N_PREFIX = "EpiDataBurial";
 
     public static final String EPI_DATA = "epiData";
     public static final String BURIAL_ADDRESS = "burialAddress";
@@ -119,5 +120,10 @@ public class EpiDataBurial extends AbstractDomainObject {
 
     public void setBurialTouching(YesNoUnknown burialTouching) {
         this.burialTouching = burialTouching;
+    }
+
+    @Override
+    public String getI18nPrefix() {
+        return I18N_PREFIX;
     }
 }

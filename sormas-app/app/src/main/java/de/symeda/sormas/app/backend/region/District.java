@@ -22,6 +22,7 @@ public class District extends AbstractDomainObject {
 	private static final long serialVersionUID = -6057113756091470463L;
 
 	public static final String TABLE_NAME = "district";
+	public static final String I18N_PREFIX = "District";
 
 	public static final String NAME = "name";
 	public static final String REGION = "region";
@@ -50,5 +51,10 @@ public class District extends AbstractDomainObject {
 	@Override
 	public String toString() {
 		return getName();
+	}
+
+	@Override
+	public String getI18nPrefix() {
+		return I18N_PREFIX;
 	}
 }

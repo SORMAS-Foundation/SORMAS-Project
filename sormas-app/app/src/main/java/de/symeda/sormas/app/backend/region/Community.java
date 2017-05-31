@@ -17,6 +17,7 @@ public class Community extends AbstractDomainObject {
 	private static final long serialVersionUID = 1971053920357795693L;
 
 	public static final String TABLE_NAME = "community";
+	public static final String I18N_PREFIX = "Community";
 
 	public static final String NAME = "name";
 	public static final String DISTRICT = "district";
@@ -45,5 +46,10 @@ public class Community extends AbstractDomainObject {
 	@Override
 	public String toString() {
 		return getName();
+	}
+
+	@Override
+	public String getI18nPrefix() {
+		return I18N_PREFIX;
 	}
 }

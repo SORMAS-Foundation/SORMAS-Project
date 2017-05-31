@@ -1,4 +1,4 @@
-package de.symeda.sormas.app.synclog;
+package de.symeda.sormas.app.component;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -18,6 +18,7 @@ import java.util.List;
 
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.synclog.SyncLog;
 
@@ -46,25 +47,7 @@ public class SyncLogDialog {
     }
 
     public void show(final Context context) {
-        // TODO needs to be removed!
-        ConnectionSource connectionSource = DatabaseHelper.getSyncLogDao().getConnectionSource();
-        try {
-            TableUtils.clearTable(connectionSource, SyncLog.class);
-        } catch (SQLException e) {
-            throw new RuntimeException();
-        }
-
-        for (int i = 0; i <= 129; i++) {
-            SyncLog newLog = DatabaseHelper.getSyncLogDao().create("Entity " + (i + 1), "ABCDE-" + (i + 1), "Sample Status, Shipment Status");
-            if (i <= 10) {
-                newLog.setCreationDate(DateHelper.subtractDays(new Date(), 5));
-            }
-            if (i >= 70) {
-                newLog.setCreationDate(DateHelper.addDays(new Date(), 7));
-            }
-            logs.add(newLog);
-        }
-        // End of to do
+        logs = DatabaseHelper.getSyncLogDao().queryForAll(AbstractDomainObject.CREATION_DATE, false);
 
         dialog = builder.create();
         dialog.setCancelable(true);
@@ -100,12 +83,12 @@ public class SyncLogDialog {
                 }
                 SyncLog log = logs.get(i);
                 if (lastDate != null && DateHelper.isSameDay(lastDate, log.getCreationDate())) {
-                    content.append("<p><b>" + log.getEntityName() + " (" + log.getEntityUuid() + ")</b><br/><i>" + context.getString(R.string.headline_overridden_fields) + " </i> " + log.getConflictText() + "</p>");
+                    content.append("<p><b>" + log.getEntityName() + "</b><br/>" + log.getConflictText() + "</p>");
                 } else {
                     if (lastDate != null) {
                         content.append("<br/>");
                     }
-                    content.append("<p><b><u>" + DateHelper.formatDate(log.getCreationDate()) + "</u></b></p><p><b>" + log.getEntityName() + " (" + log.getEntityUuid() + ")</b><br/><i>" + context.getString(R.string.headline_overridden_fields) + " </i> " + log.getConflictText() + "</p>");
+                    content.append("<p><b><u>" + DateHelper.formatDate(log.getCreationDate()) + "</u></b></p><p><b>" + log.getEntityName() + "</b><br/>" + log.getConflictText() + "</p>");
                 }
                 lastDate = log.getCreationDate();
             }

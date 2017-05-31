@@ -72,7 +72,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// name of the database file for your application -- change to something appropriate for your app
 	private static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	private static final int DATABASE_VERSION = 85;
+	private static final int DATABASE_VERSION = 88;
 
 	private static DatabaseHelper instance = null;
 	public static void init(Context context) {
@@ -121,6 +121,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.clearTable(connectionSource, EpiDataBurial.class);
 			TableUtils.clearTable(connectionSource, EpiDataGathering.class);
 			TableUtils.clearTable(connectionSource, EpiDataTravel.class);
+			TableUtils.clearTable(connectionSource, SyncLog.class);
 
 			if (clearInfrastructure) {
 				TableUtils.clearTable(connectionSource, Region.class);
@@ -172,6 +173,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.createTable(connectionSource, EpiDataBurial.class);
 			TableUtils.createTable(connectionSource, EpiDataGathering.class);
 			TableUtils.createTable(connectionSource, EpiDataTravel.class);
+			TableUtils.createTable(connectionSource, SyncLog.class);
 		} catch (SQLException e) {
 			Log.e(DatabaseHelper.class.getName(), "Can't create database", e);
 			throw new RuntimeException(e);

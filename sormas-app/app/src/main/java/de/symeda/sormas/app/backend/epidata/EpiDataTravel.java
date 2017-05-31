@@ -27,6 +27,7 @@ public class EpiDataTravel extends AbstractDomainObject {
     private static final long serialVersionUID = -4280455878066233175L;
 
     public static final String TABLE_NAME = "epidatatravel";
+    public static final String I18N_PREFIX = "EpiDataTravel";
     public static final String EPI_DATA = "epiData";
 
     @DatabaseField(foreign = true, foreignAutoRefresh = true)
@@ -82,5 +83,10 @@ public class EpiDataTravel extends AbstractDomainObject {
 
     public void setTravelDateTo(Date travelDateTo) {
         this.travelDateTo = travelDateTo;
+    }
+
+    @Override
+    public String getI18nPrefix() {
+        return I18N_PREFIX;
     }
 }

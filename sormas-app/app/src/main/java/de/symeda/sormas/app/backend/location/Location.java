@@ -23,6 +23,7 @@ public class Location extends AbstractDomainObject {
 	private static final long serialVersionUID = 392776645668778670L;
 
 	public static final String TABLE_NAME = "location";
+	public static final String I18N_PREFIX = "Location";
 	public static final String COMMUNITY = "community";
 
 	@Column(length = 255)
@@ -138,5 +139,10 @@ public class Location extends AbstractDomainObject {
 	public boolean isEmptyLocation() {
 		return address == null && details == null && city == null && region == null &&
 				district == null && community == null;
+	}
+
+	@Override
+	public String getI18nPrefix() {
+		return I18N_PREFIX;
 	}
 }

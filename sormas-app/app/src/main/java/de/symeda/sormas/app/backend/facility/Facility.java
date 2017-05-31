@@ -25,6 +25,7 @@ public class Facility extends AbstractDomainObject {
 	private static final long serialVersionUID = 8572137127616417072L;
 
 	public static final String TABLE_NAME = "facility";
+	public static final String I18N_PREFIX = "Facility";
 	public static final String NAME = "name";
 
 	@Column
@@ -120,5 +121,10 @@ public class Facility extends AbstractDomainObject {
 			caption.append(" (").append(community.getName()).append(")");
 		}
 		return caption.toString();
+	}
+
+	@Override
+	public String getI18nPrefix() {
+		return I18N_PREFIX;
 	}
 }

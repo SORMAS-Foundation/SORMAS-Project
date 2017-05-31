@@ -28,6 +28,7 @@ public class Contact extends AbstractDomainObject {
 	private static final long serialVersionUID = -7799607075875188799L;
 
 	public static final String TABLE_NAME = "contacts";
+	public static final String I18N_PREFIX = "Contact";
 
 	public static final String PERSON = "person";
 	public static final String CAZE = "caze";
@@ -171,5 +172,10 @@ public class Contact extends AbstractDomainObject {
 	public boolean isModifiedOrChildModified() {
 		super.isModifiedOrChildModified();
 		return person.isModifiedOrChildModified();
+	}
+
+	@Override
+	public String getI18nPrefix() {
+		return I18N_PREFIX;
 	}
 }

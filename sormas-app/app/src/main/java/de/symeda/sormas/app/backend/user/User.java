@@ -23,6 +23,7 @@ public class User extends AbstractDomainObject {
 	private static final long serialVersionUID = -629432920970152112L;
 
 	public static final String TABLE_NAME = "users";
+	public static final String I18N_PREFIX = "User";
 
 	public static final String USER_NAME = "userName";
 	public static final String ACTIVE = "active";
@@ -155,5 +156,10 @@ public class User extends AbstractDomainObject {
 
 	public void setAssociatedOfficer(User associatedOfficer) {
 		this.associatedOfficer = associatedOfficer;
+	}
+
+	@Override
+	public String getI18nPrefix() {
+		return I18N_PREFIX;
 	}
 }
