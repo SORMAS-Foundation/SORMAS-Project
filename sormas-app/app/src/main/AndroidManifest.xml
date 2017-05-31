@@ -35,12 +35,12 @@
         </activity>
 
         <activity
-            android:name=".user.UserActivity"
+            android:name=".settings.SettingsActivity"
             android:launchMode="singleTop">
         </activity>
 
         <activity
-            android:name=".user.LoginActivity"
+            android:name=".LoginActivity"
             android:launchMode="singleTop">
 
             <intent-filter>

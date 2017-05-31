@@ -1,4 +1,4 @@
-package de.symeda.sormas.app.user;
+package de.symeda.sormas.app.settings;
 
 import android.app.AlertDialog;
 import android.os.Bundle;
@@ -18,9 +18,9 @@ import de.symeda.sormas.app.component.SyncLogDialog;
 import de.symeda.sormas.app.component.UserReportDialog;
 
 
-public class UserActivity extends AbstractRootTabActivity {
+public class SettingsActivity extends AbstractRootTabActivity {
 
-    private UserForm userForm;
+    private SettingsForm settingsForm;
 
     private Tracker tracker;
 
@@ -36,15 +36,15 @@ public class UserActivity extends AbstractRootTabActivity {
 
         // setting the fragment_frame
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        userForm = new UserForm();
-        ft.add(R.id.fragment_frame, userForm).commit();
+        settingsForm = new SettingsForm();
+        ft.add(R.id.fragment_frame, settingsForm).commit();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        userForm.onResume();
+        settingsForm.onResume();
     }
 
     @Override
@@ -76,10 +76,10 @@ public class UserActivity extends AbstractRootTabActivity {
                 return true;
 
             case R.id.action_save:
-//                User user = userForm.getUser();
+//                User user = settingsForm.getUser();
 //                ConfigProvider.setUser(user);
 
-                String serverUrl = userForm.getServerUrl();
+                String serverUrl = settingsForm.getServerUrl();
                 ConfigProvider.setServerRestUrl(serverUrl);
 
                 onResume();

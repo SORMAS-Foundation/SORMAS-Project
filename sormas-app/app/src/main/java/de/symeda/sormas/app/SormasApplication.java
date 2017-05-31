@@ -8,19 +8,9 @@ import com.google.android.gms.analytics.ExceptionReporter;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
 
-import java.util.concurrent.ExecutionException;
-
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
-import de.symeda.sormas.app.caze.CasesActivity;
-import de.symeda.sormas.app.caze.SyncCasesTask;
-import de.symeda.sormas.app.person.SyncPersonsTask;
-import de.symeda.sormas.app.rest.RetroProvider;
-import de.symeda.sormas.app.task.SyncTasksTask;
 import de.symeda.sormas.app.task.TaskNotificationService;
-import de.symeda.sormas.app.util.Callback;
-import de.symeda.sormas.app.util.SyncCallback;
-import de.symeda.sormas.app.util.SyncInfrastructureTask;
 import de.symeda.sormas.app.util.UncaughtExceptionParser;
 
 /**
@@ -41,15 +31,6 @@ public class SormasApplication extends Application {
     public void onCreate() {
         DatabaseHelper.init(this);
         ConfigProvider.init(this);
-        RetroProvider.init();
-
-        SyncInfrastructureTask.syncInfrastructure(getApplicationContext(), new SyncCallback() {
-            @Override
-            public void call(boolean syncFailed) {
-                // this also syncs cases which syncs persons
-                SyncTasksTask.syncTasks(getApplicationContext(), null, SormasApplication.this);
-            }
-        });
 
         TaskNotificationService.startTaskNotificationAlarm(this);
 

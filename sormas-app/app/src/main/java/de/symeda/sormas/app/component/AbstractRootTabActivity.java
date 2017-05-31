@@ -20,8 +20,8 @@ import de.symeda.sormas.app.contact.ContactsActivity;
 import de.symeda.sormas.app.event.EventsActivity;
 import de.symeda.sormas.app.sample.SamplesActivity;
 import de.symeda.sormas.app.task.TasksActivity;
-import de.symeda.sormas.app.user.LoginActivity;
-import de.symeda.sormas.app.user.UserActivity;
+import de.symeda.sormas.app.LoginActivity;
+import de.symeda.sormas.app.settings.SettingsActivity;
 import de.symeda.sormas.app.util.SyncCallback;
 import de.symeda.sormas.app.util.SyncInfrastructureTask;
 
@@ -167,8 +167,8 @@ public abstract class AbstractRootTabActivity extends AbstractTabActivity {
         startActivity(intent);
     }
 
-    public void showUserView() {
-        Intent intent = new Intent(this, UserActivity.class);
+    public void showSettingsView() {
+        Intent intent = new Intent(this, SettingsActivity.class);
         startActivity(intent);
     }
 
@@ -212,7 +212,7 @@ public abstract class AbstractRootTabActivity extends AbstractTabActivity {
                 showSamplesView();
                 break;
             case 5:
-                showUserView();
+                showSettingsView();
                 break;
             case 6:
                 syncAll();

@@ -1,4 +1,4 @@
-package de.symeda.sormas.app.user;
+package de.symeda.sormas.app;
 
 import android.app.admin.DevicePolicyManager;
 import android.content.Context;
@@ -18,6 +18,8 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.caze.CasesActivity;
+import de.symeda.sormas.app.rest.RetroProvider;
+import de.symeda.sormas.app.settings.SettingsActivity;
 
 /**
  * Created by Mate Strysewske on 16.05.2017.
@@ -45,8 +47,7 @@ public class LoginActivity extends AppCompatActivity {
             dialog.show();
         }
 
-        String username = ConfigProvider.getUsername();
-        if (username != null) {
+        if (ConfigProvider.getUser() != null) {
             Intent intent = new Intent(this, CasesActivity.class);
             startActivity(intent);
         }
@@ -69,10 +70,15 @@ public class LoginActivity extends AppCompatActivity {
             Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_empty_password, Snackbar.LENGTH_LONG).show();
         } else {
             ConfigProvider.setUsernameAndPassword(username, password);
-
-            Intent intent = new Intent(this, CasesActivity.class);
-            startActivity(intent);
+            if (RetroProvider.init(this)) {
+                Intent intent = new Intent(this, CasesActivity.class);
+                startActivity(intent);
+            }
         }
     }
 
+    public void showSettingsView(View view) {
+        Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
+    }
 }

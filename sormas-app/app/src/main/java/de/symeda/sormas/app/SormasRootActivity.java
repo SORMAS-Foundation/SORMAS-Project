@@ -18,9 +18,10 @@ import de.symeda.sormas.app.caze.CasesActivity;
 import de.symeda.sormas.app.contact.ContactNewActivity;
 import de.symeda.sormas.app.event.EventsActivity;
 import de.symeda.sormas.app.contact.ContactsActivity;
+import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.sample.SamplesActivity;
 import de.symeda.sormas.app.task.TasksActivity;
-import de.symeda.sormas.app.user.UserActivity;
+import de.symeda.sormas.app.settings.SettingsActivity;
 
 public abstract class SormasRootActivity extends AppCompatActivity {
 
@@ -34,6 +35,10 @@ public abstract class SormasRootActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (!RetroProvider.isInitialized()) {
+            RetroProvider.init(this);
+        }
 
         menuTitles = new String[]{
                 getResources().getString(R.string.main_menu_cases),
@@ -155,9 +160,8 @@ public abstract class SormasRootActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    // go to user
-    public void showUserView() {
-        Intent intent = new Intent(this, UserActivity.class);
+    public void showSettingsView() {
+        Intent intent = new Intent(this, SettingsActivity.class);
         startActivity(intent);
     }
 
@@ -189,7 +193,7 @@ public abstract class SormasRootActivity extends AppCompatActivity {
         }
         // Users
         else if(position==5) {
-            showUserView();
+            showSettingsView();
         }
     }
 

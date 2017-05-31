@@ -70,7 +70,9 @@ public final class ConfigProvider {
             synchronized (ConfigProvider.class) {
                 if (instance.user == null) {
                     String username = getUsername();
-                    instance.user = DatabaseHelper.getUserDao().getByUsername(username);
+                    if (username != null) {
+                        instance.user = DatabaseHelper.getUserDao().getByUsername(username);
+                    }
                 }
             }
         return instance.user;
@@ -109,8 +111,6 @@ public final class ConfigProvider {
 
         configDao.delete(new Config(KEY_USERNAME, ""));
         configDao.delete(new Config(KEY_PASSWORD, ""));
-
-        RetroProvider.init();
     }
 
     public static void setUsernameAndPassword(String username, String password) {
@@ -133,7 +133,6 @@ public final class ConfigProvider {
         DatabaseHelper.getConfigDao().createOrUpdate(new Config(KEY_PASSWORD, password));
 
         DatabaseHelper.clearTables(false);
-        RetroProvider.init();
     }
 
     private static String encodePassword(String clearPassword) {
@@ -284,8 +283,7 @@ public final class ConfigProvider {
         }
 
         if (!wasNull) {
-            // init everything
-            RetroProvider.init();
+            // clear everything
             DatabaseHelper.clearTables(true);
         }
     }

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:descendantFocusability="beforeDescendants"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
@@ -70,5 +71,15 @@
         android:id="@+id/action_login"
         android:onClick="login"
         android:text="@string/action_login"/>
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:onClick="showSettingsView"
+        android:text="Settings"
+        android:textAlignment="viewEnd"
+        android:textAppearance="@style/TextAppearance.AppCompat.Button"/>
 
 </LinearLayout>

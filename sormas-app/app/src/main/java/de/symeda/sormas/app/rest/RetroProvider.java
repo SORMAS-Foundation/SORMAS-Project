@@ -1,5 +1,9 @@
 package de.symeda.sormas.app.rest;
 
+import android.accounts.AuthenticatorException;
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.design.widget.Snackbar;
 
@@ -7,13 +11,15 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 
-import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.utils.InfoProvider;
+import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.task.SyncTasksTask;
+import de.symeda.sormas.app.LoginActivity;
+import de.symeda.sormas.app.util.SyncCallback;
+import de.symeda.sormas.app.util.SyncInfrastructureTask;
 import okhttp3.Credentials;
 import okhttp3.OkHttpClient;
 import retrofit2.Call;
@@ -46,12 +52,14 @@ public final class RetroProvider {
     private SampleTestFacadeRetro sampleTestFacadeRetro;
     private EventParticipantFacadeRetro eventParticipantFacadeRetro;
 
-    private RetroProvider() {
+    private RetroProvider() throws ExceptionInInitializerError, AuthenticatorException {
 
         Gson gson = new GsonBuilder()
                 // date format needs to exactly match the server's
                 .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
                 .create();
+
+        Response<String> versionResponse;
 
         try {
 
@@ -72,8 +80,8 @@ public final class RetroProvider {
                     .build();
 
 
+            // make call to get version info
             infoFacadeRetro = retrofit.create(InfoFacadeRetro.class);
-
             AsyncTask<Void, Void, Response<String>> asyncTask = new AsyncTask<Void, Void, Response<String>>() {
 
                 @Override
@@ -87,30 +95,64 @@ public final class RetroProvider {
                     }
                 }
             };
-            Response<String> versionResponse = asyncTask.execute().get();
+            versionResponse = asyncTask.execute().get();
 
-            if (versionResponse.isSuccessful()) {
-                String serverApiVersion = versionResponse.body();
-                String appApiVersion = InfoProvider.getVersion();
-                if (!serverApiVersion.equals(appApiVersion)) {
-                    throw new RuntimeException("App version '" + appApiVersion + "' does not match server version '" + serverApiVersion + "'");
-                }
-            }
-            else {
-
-            }
-
-        } catch (RuntimeException ex) {
-            throw ex;
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         } catch (ExecutionException e) {
             throw new RuntimeException(e);
         }
+
+        if (versionResponse.isSuccessful()) {
+            // success. now check the version
+            String serverApiVersion = versionResponse.body();
+            String appApiVersion = InfoProvider.getVersion();
+            if (!serverApiVersion.equals(appApiVersion)) {
+                throw new ExceptionInInitializerError("App version '" + appApiVersion + "' does not match server version '" + serverApiVersion + "'");
+            }
+        }
+        else {
+            switch (versionResponse.code()) {
+                case 401:
+                    throw new AuthenticatorException("Could not authenticate.");
+                case 403:
+                    throw new AuthenticatorException("You do not have the needed permissions.");
+                case 404:
+                    throw new ExceptionInInitializerError("Could not connect to server: " + ConfigProvider.getServerRestUrl());
+                default:
+                    throw new RuntimeException(versionResponse.toString());
+            }
+        }
     }
 
-    public static void init() {
-        instance = new RetroProvider();
+    public static boolean isInitialized() {
+        return instance != null;
+    }
+
+    public static boolean init(Activity activity) {
+        try {
+            instance = new RetroProvider();
+
+            final Context context = activity.getApplicationContext();
+            SyncInfrastructureTask.syncInfrastructure(context, new SyncCallback() {
+                @Override
+                public void call(boolean syncFailed) {
+                    // this also syncs cases which syncs persons
+                    SyncTasksTask.syncTasks(context, null, context);
+                }
+            });
+
+            return true;
+        } catch (AuthenticatorException e) {
+            if (activity instanceof LoginActivity) {
+                // TODO no idea why this is not showing
+                Snackbar.make(activity.findViewById(R.id.base_layout), e.getMessage(), Snackbar.LENGTH_LONG).show();
+            } else {
+                Intent intent = new Intent(activity, LoginActivity.class);
+                activity.startActivity(intent);
+            }
+            return false;
+        }
     }
 
     public static InfoFacadeRetro getInfoFacade() {
