@@ -1,5 +1,9 @@
 package de.symeda.sormas.api.utils;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
 import java.util.Date;
 
@@ -85,5 +89,21 @@ public final class DataHelper {
 	    public V getElement1() {
 	        return element1;
 	    }
+	}
+	
+	public static String convertStreamToString(InputStream is) throws IOException {
+	    
+		BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+	    StringBuilder sb = new StringBuilder();
+
+	    String line = null;
+	    try {
+	        while ((line = reader.readLine()) != null) {
+	            sb.append(line).append('\n');
+	        }
+	    } finally {
+	    	is.close();
+	    }
+	    return sb.toString();
 	}
 }

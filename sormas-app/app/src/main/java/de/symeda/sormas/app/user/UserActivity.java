@@ -80,7 +80,7 @@ public class UserActivity extends AbstractRootTabActivity {
 //                ConfigProvider.setUser(user);
 
                 String serverUrl = userForm.getServerUrl();
-                ConfigProvider.setServerUrl(serverUrl);
+                ConfigProvider.setServerRestUrl(serverUrl);
 
                 onResume();
 

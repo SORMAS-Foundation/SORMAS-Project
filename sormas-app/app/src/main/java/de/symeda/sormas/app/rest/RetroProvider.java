@@ -1,13 +1,23 @@
 package de.symeda.sormas.app.rest;
 
-import android.text.TextUtils;
+import android.os.AsyncTask;
+import android.support.design.widget.Snackbar;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+import java.util.concurrent.ExecutionException;
+
+import de.symeda.sormas.api.caze.CaseFacade;
+import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import okhttp3.Credentials;
 import okhttp3.OkHttpClient;
+import retrofit2.Call;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -16,10 +26,11 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 public final class RetroProvider {
 
-    private static RetroProvider instance = new RetroProvider();
+    private static RetroProvider instance = null;
 
     private final Retrofit retrofit;
 
+    private InfoFacadeRetro infoFacadeRetro;
     private CaseFacadeRetro caseFacadeRetro;
     private PersonFacadeRetro personFacadeRetro;
     private CommunityFacadeRetro communityFacadeRetro;
@@ -46,33 +57,64 @@ public final class RetroProvider {
 
             // Basic auth as explained in https://futurestud.io/tutorials/android-basic-authentication-with-retrofit
 
-            // TODO use stored credentials
-            String authToken = Credentials.basic("SanaObas", "YK724TTcaeJh");
+            String authToken = Credentials.basic(ConfigProvider.getUsername(), ConfigProvider.getPassword());
             AuthenticationInterceptor interceptor =
                     new AuthenticationInterceptor(authToken);
 
             OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
             httpClient.addInterceptor(interceptor);
 
-            // URL: 10.0.2.2 points to localhost from emulator
-            // SSL not working because of missing certificate
-
             retrofit = new Retrofit.Builder()
+                    //.baseUrl("http://10.0.2.2:6080/sormas-rest") // localhost - SSL would need certificate
                     .baseUrl(ConfigProvider.getServerRestUrl())
                     .addConverterFactory(GsonConverterFactory.create(gson))
                     .client(httpClient.build())
                     .build();
 
-        } catch (IllegalArgumentException ex) {
-            // likely the server url is wrong -> simply reset it
-            // TODO replace this with proper error handling
-            ConfigProvider.setServerUrl(null);
+
+            infoFacadeRetro = retrofit.create(InfoFacadeRetro.class);
+
+            AsyncTask<Void, Void, Response<String>> asyncTask = new AsyncTask<Void, Void, Response<String>>() {
+
+                @Override
+                protected Response<String> doInBackground(Void... params) {
+                    Call<String> versionCall = infoFacadeRetro.getVersion();
+                    Response<String> versionResponse = null;
+                    try {
+                        return versionCall.execute();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            };
+            Response<String> versionResponse = asyncTask.execute().get();
+
+            if (versionResponse.isSuccessful()) {
+                String serverApiVersion = versionResponse.body();
+                String appApiVersion = InfoProvider.getVersion();
+                if (!serverApiVersion.equals(appApiVersion)) {
+                    throw new RuntimeException("App version '" + appApiVersion + "' does not match server version '" + serverApiVersion + "'");
+                }
+            }
+            else {
+
+            }
+
+        } catch (RuntimeException ex) {
             throw ex;
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
         }
     }
 
-    public static void reset() {
+    public static void init() {
         instance = new RetroProvider();
+    }
+
+    public static InfoFacadeRetro getInfoFacade() {
+        return instance.infoFacadeRetro;
     }
 
     public static CaseFacadeRetro getCaseFacade() {

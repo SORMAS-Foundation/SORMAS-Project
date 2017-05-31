@@ -8,9 +8,26 @@
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>sormas-api</artifactId>
+	
 
 	<build>
 		<finalName>${project.artifactId}</finalName>
+		<resources>
+		    <resource>
+		      <directory>src/main/resources</directory>
+		      <filtering>true</filtering>
+		      <includes>
+		        <include>**/version.txt</include>
+		      </includes>
+		    </resource>
+		    <resource>
+		      <directory>src/main/resources</directory>
+		      <filtering>false</filtering>
+		      <excludes>
+		        <exclude>**/version.txt</exclude>
+		      </excludes>
+		    </resource>
+		</resources>		
 	</build>
 
 	<properties>

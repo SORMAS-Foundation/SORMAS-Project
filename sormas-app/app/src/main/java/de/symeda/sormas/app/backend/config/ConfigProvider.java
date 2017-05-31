@@ -2,7 +2,6 @@ package de.symeda.sormas.app.backend.config;
 
 import android.content.Context;
 import android.security.KeyPairGeneratorSpec;
-import android.support.design.widget.Snackbar;
 import android.util.Base64;
 import android.util.Log;
 
@@ -11,7 +10,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.KeyPairGenerator;
@@ -22,11 +20,9 @@ import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.UnrecoverableEntryException;
 import java.security.cert.CertificateException;
-import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
@@ -34,13 +30,9 @@ import javax.crypto.CipherOutputStream;
 import javax.crypto.NoSuchPaddingException;
 import javax.security.auth.x500.X500Principal;
 
-import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.rest.RetroProvider;
-import de.symeda.sormas.app.util.ErrorReportingHelper;
-import de.symeda.sormas.app.util.SyncInfrastructureTask;
 
 /**
  * Created by Martin Wahnschaffe on 10.08.2016.
@@ -109,8 +101,14 @@ public final class ConfigProvider {
         instance.user = null;
         instance.username = null;
         instance.password = null;
-        DatabaseHelper.getConfigDao().delete(new Config(KEY_USERNAME, ""));
-        DatabaseHelper.getConfigDao().delete(new Config(KEY_PASSWORD, ""));
+
+        ConfigDao configDao = DatabaseHelper.getConfigDao();
+        if (configDao.queryForId(KEY_PASSWORD) == null && configDao.queryForId(KEY_USERNAME) == null) {
+            return;
+        }
+
+        configDao.delete(new Config(KEY_USERNAME, ""));
+        configDao.delete(new Config(KEY_PASSWORD, ""));
 
         RetroProvider.init();
     }
@@ -260,14 +258,14 @@ public final class ConfigProvider {
                     }
 
                     if (instance.serverRestUrl == null) {
-                        setServerUrl("https://sormas.symeda.de/sormas-rest/");
+                        setServerRestUrl("https://sormas.symeda.de/sormas-rest/");
                     }
                 }
             }
         return instance.serverRestUrl;
     }
 
-    public static void setServerUrl(String serverRestUrl) {
+    public static void setServerRestUrl(String serverRestUrl) {
         if (serverRestUrl != null && serverRestUrl.isEmpty()) {
             serverRestUrl = null;
         }
@@ -275,9 +273,6 @@ public final class ConfigProvider {
         if (serverRestUrl == instance.serverRestUrl
                 || (serverRestUrl != null && serverRestUrl.equals(instance.serverRestUrl)))
             return;
-
-        // make sure no wrong user is set
-        clearUsernameAndPassword();
 
         boolean wasNull = instance.serverRestUrl == null;
         instance.serverRestUrl = serverRestUrl;
