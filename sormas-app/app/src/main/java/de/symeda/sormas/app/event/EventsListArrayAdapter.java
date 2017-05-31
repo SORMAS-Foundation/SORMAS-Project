@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import de.symeda.sormas.api.Disease;
@@ -57,6 +58,13 @@ public class EventsListArrayAdapter extends ArrayAdapter<Event> {
 
         TextView description = (TextView) convertView.findViewById(R.id.eli_description);
         description.setText(event.getEventDesc()!=null?event.getEventDesc().toString():null);
+
+        ImageView synchronizedIcon = (ImageView) convertView.findViewById(R.id.eli_synchronized);
+        if (event.isModifiedOrChildModified()) {
+            synchronizedIcon.setImageResource(R.drawable.ic_cached_black_18dp);
+        } else {
+            synchronizedIcon.setImageResource(R.drawable.ic_done_all_black_18dp);
+        }
 
         return convertView;
     }

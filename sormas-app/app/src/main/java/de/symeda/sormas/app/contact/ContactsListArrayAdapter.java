@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.Date;
@@ -61,6 +62,13 @@ public class ContactsListArrayAdapter extends ArrayAdapter<Contact> {
         StringBuilder sb = new StringBuilder();
         sb.append(contact.getContactClassification()).append(", " + contact.getContactProximity());
         information.setText(sb.toString());
+
+        ImageView synchronizedIcon = (ImageView) convertView.findViewById(R.id.contact_synchronized_li);
+        if (contact.isModifiedOrChildModified()) {
+            synchronizedIcon.setImageResource(R.drawable.ic_cached_black_18dp);
+        } else {
+            synchronizedIcon.setImageResource(R.drawable.ic_done_all_black_18dp);
+        }
 
         return convertView;
     }

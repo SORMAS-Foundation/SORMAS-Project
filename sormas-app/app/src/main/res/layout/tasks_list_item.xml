@@ -13,8 +13,7 @@
             android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:paddingTop="@dimen/field_padding"
-            android:paddingBottom="@dimen/field_padding"
-            android:layout_marginBottom="@dimen/field_padding" >
+            android:paddingBottom="@dimen/field_padding" >
 
             <TextView
                 android:layout_width="wrap_content"
@@ -43,16 +42,14 @@
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            >
-
+            android:layout_height="wrap_content">
 
             <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.05"
-                android:paddingBottom="@dimen/list_item_margin_bottom"
+                android:paddingBottom="@dimen/field_padding"
                 android:paddingRight="10dp">
 
                 <TextView
@@ -76,6 +73,15 @@
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:id="@+id/task_creatorComment_li"
                     android:paddingLeft="10dp" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:id="@+id/task_synchronized_li"
+                    android:tint="@color/colorLightGrey2"
+                    android:textAlignment="viewEnd"
+                    android:layout_gravity="end" />
+
             </LinearLayout>
 
             <View

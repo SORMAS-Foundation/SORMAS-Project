@@ -139,7 +139,7 @@ public class TaskNotificationService extends Service {
         AlarmManager alarmMgr = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
 
         Intent intent = new Intent(context, TaskNotificationService.class);
-        PendingIntent alarmIntent = PendingIntent.getService(context, 0, intent, 0);
+        PendingIntent alarmIntent = PendingIntent.getService(context, 1414, intent, 0);
 
         // setRepeating() lets you specify a precise custom interval--in this case, 5 minutes.
         Date now = new Date();

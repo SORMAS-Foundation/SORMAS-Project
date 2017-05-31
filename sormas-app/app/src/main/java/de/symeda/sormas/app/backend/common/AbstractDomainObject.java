@@ -2,12 +2,19 @@ package de.symeda.sormas.app.backend.common;
 
 import android.databinding.BaseObservable;
 
+import com.googlecode.openbeans.BeanInfo;
+import com.googlecode.openbeans.IntrospectionException;
+import com.googlecode.openbeans.Introspector;
+import com.googlecode.openbeans.PropertyDescriptor;
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
+import java.util.Iterator;
 
+import javax.persistence.Embedded;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
@@ -64,6 +71,33 @@ public abstract class AbstractDomainObject extends BaseObservable implements Ser
 		} catch (CloneNotSupportedException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	/**
+	 * Used to figure out whether this entity or one of its embedded child entities has been modified, but
+	 * not synchronized to the server yet. Needs to be overridden to check for child entities that don't
+	 * have the @EmbeddedAdo annotation.
+	 *
+	 * @return
+	 */
+	public boolean isModifiedOrChildModified() {
+		if (isModified()) return true;
+
+		Iterator<PropertyDescriptor> propertyIterator = AdoMergeHelper.getEmbeddedAdoProperties(this.getClass());
+		while (propertyIterator.hasNext()) {
+			PropertyDescriptor property = propertyIterator.next();
+			AbstractDomainObject embeddedAdo = DatabaseHelper.getAdoDao((Class<AbstractDomainObject>)property.getPropertyType()).create();
+
+			if (embeddedAdo == null) {
+				throw new IllegalArgumentException("No embedded entity was created for " + property.getName());
+			}
+
+			if (embeddedAdo.isModifiedOrChildModified()) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	public Long getId() {

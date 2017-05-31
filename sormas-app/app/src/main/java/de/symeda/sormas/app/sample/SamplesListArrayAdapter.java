@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import de.symeda.sormas.api.sample.SpecimenCondition;
@@ -68,6 +69,13 @@ public class SamplesListArrayAdapter extends ArrayAdapter<Sample> {
             } else {
                 testResult.setText(getContext().getResources().getText(R.string.no_recent_test));
             }
+        }
+
+        ImageView synchronizedIcon = (ImageView) convertView.findViewById(R.id.sample_synchronized_li);
+        if (sample.isModifiedOrChildModified()) {
+            synchronizedIcon.setImageResource(R.drawable.ic_cached_black_18dp);
+        } else {
+            synchronizedIcon.setImageResource(R.drawable.ic_done_all_black_18dp);
         }
 
         return convertView;

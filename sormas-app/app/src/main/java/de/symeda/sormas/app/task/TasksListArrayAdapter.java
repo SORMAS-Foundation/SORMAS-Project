@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.Space;
 import android.widget.TextView;
 
@@ -119,6 +120,13 @@ public class TasksListArrayAdapter extends ArrayAdapter<Task> {
             if (priorityColor != null) {
                 priority.setBackgroundColor(getContext().getResources().getColor(priorityColor));
             }
+        }
+
+        ImageView synchronizedIcon = (ImageView) convertView.findViewById(R.id.task_synchronized_li);
+        if (task.isModifiedOrChildModified()) {
+            synchronizedIcon.setImageResource(R.drawable.ic_cached_black_18dp);
+        } else {
+            synchronizedIcon.setImageResource(R.drawable.ic_done_all_black_18dp);
         }
 
         return convertView;

@@ -56,5 +56,11 @@ public class EventParticipant extends AbstractDomainObject {
 	public String toString() {
 		return getPerson().toString();
 	}
-	
+
+	@Override
+	public boolean isModifiedOrChildModified() {
+		super.isModifiedOrChildModified();
+		return person.isModifiedOrChildModified();
+	}
+
 }

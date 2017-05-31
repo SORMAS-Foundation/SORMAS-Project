@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import de.symeda.sormas.api.utils.DataHelper;
@@ -58,6 +59,13 @@ public class EventParticipantsListArrayAdapter extends ArrayAdapter<EventPartici
         sb.append(age + ageType);
         sb.append(eventParticipant.getPerson().getSex()!=null?eventParticipant.getPerson().getSex().toString():"");
         description.setText(sb.toString());
+
+        ImageView synchronizedIcon = (ImageView) convertView.findViewById(R.id.eventParticipant_synchronized_li);
+        if (eventParticipant.isModifiedOrChildModified()) {
+            synchronizedIcon.setImageResource(R.drawable.ic_cached_black_18dp);
+        } else {
+            synchronizedIcon.setImageResource(R.drawable.ic_done_all_black_18dp);
+        }
 
         return convertView;
     }

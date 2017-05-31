@@ -106,4 +106,10 @@ public class Visit extends AbstractDomainObject {
 		this.symptoms = symptoms;
 	}
 
+	@Override
+	public boolean isModifiedOrChildModified() {
+		super.isModifiedOrChildModified();
+		return person.isModifiedOrChildModified();
+	}
+
 }

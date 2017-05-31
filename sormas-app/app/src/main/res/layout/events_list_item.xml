@@ -68,6 +68,14 @@
                 android:paddingLeft="10dp"
                 android:paddingBottom="10dp"/>
 
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/eli_synchronized"
+                android:tint="@color/colorLightGrey2"
+                android:paddingRight="10dp"
+                android:textAlignment="viewEnd"
+                android:layout_gravity="end" />
 
         </LinearLayout>
     </LinearLayout>

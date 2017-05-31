@@ -166,4 +166,10 @@ public class Contact extends AbstractDomainObject {
 	public String toString() {
 		return (getPerson() != null ? getPerson().toString() : "") + " (" + DataHelper.getShortUuid(getUuid()) + ")";
 	}
+
+	@Override
+	public boolean isModifiedOrChildModified() {
+		super.isModifiedOrChildModified();
+		return person.isModifiedOrChildModified();
+	}
 }

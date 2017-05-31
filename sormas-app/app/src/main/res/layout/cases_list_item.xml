@@ -50,10 +50,11 @@
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="0.3"
             android:paddingTop="@dimen/field_padding"
             android:paddingBottom="@dimen/field_padding">
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -77,6 +78,15 @@
                 android:id="@+id/cli_reporter"
                 android:paddingLeft="10dp"
                 android:paddingBottom="10dp" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:id="@+id/cli_synchronized"
+                android:tint="@color/colorLightGrey2"
+                android:paddingRight="10dp"
+                android:textAlignment="viewEnd"
+                android:layout_gravity="end" />
 
         </LinearLayout>
     </LinearLayout>

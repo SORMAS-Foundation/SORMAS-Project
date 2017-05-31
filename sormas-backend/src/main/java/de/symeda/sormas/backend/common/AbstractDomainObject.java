@@ -17,7 +17,6 @@ import javax.validation.constraints.Size;
 import de.symeda.auditlog.api.HasUuid;
 import de.symeda.sormas.api.utils.DataHelper;
 
-
 @MappedSuperclass
 public abstract class AbstractDomainObject implements Serializable, Cloneable, HasUuid {
 
