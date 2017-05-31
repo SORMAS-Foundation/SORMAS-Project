@@ -50,6 +50,7 @@ public class SormasApplication extends Application {
         super.onCreate();
     }
 
+    // TODO Doesn't seem to be a good idea. Find another solution
     public static Context getContext() {
         return context;
     }
