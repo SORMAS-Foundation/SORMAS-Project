@@ -35,11 +35,25 @@ public class LoginActivity extends AppCompatActivity {
         SormasApplication application = (SormasApplication) getApplication();
         tracker = application.getDefaultTracker();
 
-        if (ConfigProvider.getUser() != null) {
-            if (RetroProvider.init(this)) {
-                Intent intent = new Intent(this, CasesActivity.class);
-                startActivity(intent);
+        // try to connect
+        if (ConfigProvider.getUsername() != null) {
+            try {
+                RetroProvider.connect(getApplicationContext());
+            } catch (AuthenticatorException e) {
+                // clear login data if authentication failed
+                ConfigProvider.clearUsernameAndPassword();
+                Snackbar.make(findViewById(R.id.base_layout), e.getMessage(), Snackbar.LENGTH_LONG).show();
+            } catch (RetroProvider.ApiVersionException e) {
+                Snackbar.make(findViewById(R.id.base_layout), e.getMessage(), Snackbar.LENGTH_LONG).show();
+            } catch (ConnectException e) {
+                Snackbar.make(findViewById(R.id.base_layout), e.getMessage(), Snackbar.LENGTH_LONG).show();
             }
+        }
+
+        // already logged in?
+        if (ConfigProvider.getUser() != null) {
+            Intent intent = new Intent(this, CasesActivity.class);
+            startActivity(intent);
         }
     }
 
