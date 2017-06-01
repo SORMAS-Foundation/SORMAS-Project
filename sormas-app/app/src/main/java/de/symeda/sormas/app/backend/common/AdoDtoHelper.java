@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.backend.common;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.j256.ormlite.logger.Logger;
@@ -34,7 +35,7 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 
     protected void preparePulledResult(List<DTO> result) { }
 
-    public void pullEntities(DtoGetInterface<DTO> getInterface, final AbstractAdoDao<ADO> dao) throws DaoException, SQLException, IOException {
+    public void pullEntities(DtoGetInterface<DTO> getInterface, final AbstractAdoDao<ADO> dao, final Context context) throws DaoException, SQLException, IOException {
         try {
             Date maxModifiedDate = dao.getLatestChangeDate();
             // server change date has higher precision
@@ -56,7 +57,7 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
                         for (DTO dto : result) {
 
                             ADO source = fillOrCreateFromDto(null, dto);
-                            dao.mergeOrCreate(source);
+                            dao.mergeOrCreate(source, context);
 
 //                            ADO ado = empty ? null : dao.queryUuid(dto.getUuid());
 //

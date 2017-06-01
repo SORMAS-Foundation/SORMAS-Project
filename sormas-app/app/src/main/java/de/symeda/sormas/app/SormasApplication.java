@@ -19,7 +19,6 @@ import de.symeda.sormas.app.util.UncaughtExceptionParser;
 public class SormasApplication extends Application {
 
     private static final String PROPERTY_ID = "UA-98128295-1";
-    private static Context context;
 
     private Tracker tracker;
 
@@ -45,13 +44,7 @@ public class SormasApplication extends Application {
         ExceptionReporter reporter = (ExceptionReporter) handler;
         reporter.setExceptionParser(new UncaughtExceptionParser());
 
-        context = this;
-
         super.onCreate();
     }
 
-    // TODO Doesn't seem to be a good idea. Find another solution
-    public static Context getContext() {
-        return context;
-    }
 }

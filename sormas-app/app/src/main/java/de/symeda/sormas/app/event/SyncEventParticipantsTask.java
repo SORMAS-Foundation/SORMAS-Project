@@ -58,7 +58,7 @@ public class SyncEventParticipantsTask extends AsyncTask<Void, Void, Void> {
                     }
                     return null;
                 }
-            }, DatabaseHelper.getEventParticipantDao());
+            }, DatabaseHelper.getEventParticipantDao(), context);
 
             new EventParticipantDtoHelper().pushEntities(new DtoPostInterface<EventParticipantDto>() {
                 @Override

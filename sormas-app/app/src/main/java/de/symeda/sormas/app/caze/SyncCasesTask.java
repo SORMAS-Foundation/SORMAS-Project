@@ -58,7 +58,7 @@ public class SyncCasesTask extends AsyncTask<Void, Void, Void> {
                     }
                     return null;
                 }
-            }, DatabaseHelper.getCaseDao());
+            }, DatabaseHelper.getCaseDao(), context);
 
             new CaseDtoHelper().pushEntities(new AdoDtoHelper.DtoPostInterface<CaseDataDto>() {
                 @Override

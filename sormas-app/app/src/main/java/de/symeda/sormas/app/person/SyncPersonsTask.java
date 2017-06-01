@@ -55,7 +55,7 @@ public class SyncPersonsTask extends AsyncTask<Void, Void, Void> {
                     }
                     return null;
                 }
-            }, DatabaseHelper.getPersonDao());
+            }, DatabaseHelper.getPersonDao(), context);
 
             new PersonDtoHelper().pushEntities(new DtoPostInterface<PersonDto>() {
                 @Override

@@ -53,35 +53,35 @@ public class SyncInfrastructureTask extends AsyncTask<Void, Void, Void> {
                 public Call<List<RegionDto>> getAll(long since) {
                     return RetroProvider.getRegionFacade().getAll(since);
                 }
-            }, DatabaseHelper.getRegionDao());
+            }, DatabaseHelper.getRegionDao(), notificationContext);
 
             new DistrictDtoHelper().pullEntities(new DtoGetInterface<DistrictDto>() {
                 @Override
                 public Call<List<DistrictDto>> getAll(long since) {
                     return RetroProvider.getDistrictFacade().getAll(since);
                 }
-            }, DatabaseHelper.getDistrictDao());
+            }, DatabaseHelper.getDistrictDao(), notificationContext);
 
             new CommunityDtoHelper().pullEntities(new DtoGetInterface<CommunityDto>() {
                 @Override
                 public Call<List<CommunityDto>> getAll(long since) {
                     return RetroProvider.getCommunityFacade().getAll(since);
                 }
-            }, DatabaseHelper.getCommunityDao());
+            }, DatabaseHelper.getCommunityDao(), notificationContext);
 
             new FacilityDtoHelper().pullEntities(new DtoGetInterface<FacilityDto>() {
                 @Override
                 public Call<List<FacilityDto>> getAll(long since) {
                     return RetroProvider.getFacilityFacade().getAll(since);
                 }
-            }, DatabaseHelper.getFacilityDao());
+            }, DatabaseHelper.getFacilityDao(), notificationContext);
 
             new UserDtoHelper().pullEntities(new DtoGetInterface<UserDto>() {
                 @Override
                 public Call<List<UserDto>> getAll(long since) {
                     return RetroProvider.getUserFacade().getAll(since);
                 }
-            }, DatabaseHelper.getUserDao());
+            }, DatabaseHelper.getUserDao(), notificationContext);
         } catch(DaoException | SQLException | IOException e) {
             hasThrownError = true;
             Log.e(this.getClass().getName(), "Exception on executing background synchronization task", e);

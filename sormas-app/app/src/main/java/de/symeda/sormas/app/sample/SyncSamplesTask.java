@@ -61,7 +61,7 @@ public class SyncSamplesTask extends AsyncTask<Void, Void, Void> {
                     }
                     return null;
                 }
-            }, DatabaseHelper.getSampleDao());
+            }, DatabaseHelper.getSampleDao(), context);
 
             new SampleTestDtoHelper().pullEntities(new AdoDtoHelper.DtoGetInterface<SampleTestDto>() {
                 @Override
@@ -74,7 +74,7 @@ public class SyncSamplesTask extends AsyncTask<Void, Void, Void> {
                     }
                     return null;
                 }
-            }, DatabaseHelper.getSampleTestDao());
+            }, DatabaseHelper.getSampleTestDao(), context);
 
             new SampleDtoHelper().pushEntities(new AdoDtoHelper.DtoPostInterface<SampleDto>() {
                 @Override

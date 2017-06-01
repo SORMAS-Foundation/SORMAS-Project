@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.backend.common;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.util.Log;
 
@@ -373,8 +374,8 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> extends R
         }
     }
 
-    private AbstractDomainObject mergeOrCreateWithCast(AbstractDomainObject ado) throws DaoException {
-        return mergeOrCreate((ADO)ado);
+    private AbstractDomainObject mergeOrCreateWithCast(AbstractDomainObject ado, Context context) throws DaoException {
+        return mergeOrCreate((ADO)ado, context);
     }
 
     /**
@@ -383,7 +384,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> extends R
      * @return
      * @throws DaoException
      */
-    public ADO mergeOrCreate(ADO source) throws DaoException {
+    public ADO mergeOrCreate(ADO source, Context context) throws DaoException {
 
         if (source.getId() != null) {
             throw new IllegalArgumentException("Merged source is not allowed to have an id");
@@ -455,7 +456,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> extends R
                     // get the embedded entity
                     AbstractDomainObject embeddedSource = (AbstractDomainObject) property.getReadMethod().invoke(source);
                     // merge it - will return the merged result
-                    AbstractDomainObject embeddedCurrent = DatabaseHelper.getAdoDao(embeddedSource.getClass()).mergeOrCreateWithCast(embeddedSource);
+                    AbstractDomainObject embeddedCurrent = DatabaseHelper.getAdoDao(embeddedSource.getClass()).mergeOrCreateWithCast(embeddedSource, context);
 
                     if (embeddedCurrent == null) {
                         throw new IllegalArgumentException("No merge result returned for was created for " + embeddedSource);
@@ -489,8 +490,8 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> extends R
                                     "'; Server: '" + DataHelper.toStringNullable(sourceFieldValue) + "'");
                             String caption = I18nProperties.getFieldCaption(source.getI18nPrefix() + "." + property.getName());
                             conflictString += caption + "<br/><i>" +
-                                    SormasApplication.getContext().getResources().getString(R.string.synclog_yours) + "</i> " + DataHelper.toStringNullable(currentFieldValue) + "<br/><i>" +
-                                    SormasApplication.getContext().getResources().getString(R.string.synclog_server) + "</i> " + DataHelper.toStringNullable(sourceFieldValue);
+                                    context.getResources().getString(R.string.synclog_yours) + "</i> " + DataHelper.toStringNullable(currentFieldValue) + "<br/><i>" +
+                                    context.getResources().getString(R.string.synclog_server) + "</i> " + DataHelper.toStringNullable(sourceFieldValue);
                         }
 
                         // update snapshot
@@ -535,7 +536,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> extends R
                     // merge all collection elements
                     Collection<AbstractDomainObject> currentCollection = (Collection<AbstractDomainObject>)property.getReadMethod().invoke(current);
                     Collection<AbstractDomainObject> sourceCollection = (Collection<AbstractDomainObject>)property.getReadMethod().invoke(source);
-                    mergeCollection(currentCollection, sourceCollection, current);
+                    mergeCollection(currentCollection, sourceCollection, current, context);
                 }
             }
 
@@ -552,7 +553,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> extends R
         }
     }
 
-    private void mergeCollection(Collection<AbstractDomainObject> existingCollection, Collection<AbstractDomainObject> sourceCollection, ADO parent) throws DaoException {
+    private void mergeCollection(Collection<AbstractDomainObject> existingCollection, Collection<AbstractDomainObject> sourceCollection, ADO parent, Context context) throws DaoException {
 
         // delete no longer existing elements
         existingCollection.removeAll(sourceCollection); // ignore kept
@@ -565,7 +566,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> extends R
 
             for (AbstractDomainObject sourceElement : sourceCollection) {
 
-                AbstractDomainObject resultElement = DatabaseHelper.getAdoDao(sourceElement.getClass()).mergeOrCreateWithCast(sourceElement);
+                AbstractDomainObject resultElement = DatabaseHelper.getAdoDao(sourceElement.getClass()).mergeOrCreateWithCast(sourceElement, context);
 
                 // result might be null, when it was previously deleted and didn't have changes
                 if (resultElement != null) {

@@ -58,7 +58,7 @@ public class SyncVisitsTask extends AsyncTask<Void, Void, Void> {
                     }
                     return null;
                 }
-            }, DatabaseHelper.getVisitDao());
+            }, DatabaseHelper.getVisitDao(), context);
 
             new VisitDtoHelper().pushEntities(new DtoPostInterface<VisitDto>() {
                 @Override

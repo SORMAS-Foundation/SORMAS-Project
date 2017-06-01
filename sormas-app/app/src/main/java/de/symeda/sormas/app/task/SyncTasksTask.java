@@ -61,7 +61,7 @@ public class SyncTasksTask extends AsyncTask<Void, Void, Void> {
                     }
                     return null;
                 }
-            }, DatabaseHelper.getTaskDao());
+            }, DatabaseHelper.getTaskDao(), context);
 
             new TaskDtoHelper().pushEntities(new DtoPostInterface<TaskDto>() {
                 @Override

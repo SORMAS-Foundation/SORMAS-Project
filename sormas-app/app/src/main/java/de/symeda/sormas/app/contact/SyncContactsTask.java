@@ -61,7 +61,7 @@ public class SyncContactsTask extends AsyncTask<Void, Void, Void> {
                     }
                     return null;
                 }
-            }, DatabaseHelper.getContactDao());
+            }, DatabaseHelper.getContactDao(), context);
 
             boolean anotherPullNeeded = new ContactDtoHelper().pushEntities(new DtoPostInterface<ContactDto>() {
                 @Override
@@ -82,7 +82,7 @@ public class SyncContactsTask extends AsyncTask<Void, Void, Void> {
                         }
                         return null;
                     }
-                }, DatabaseHelper.getContactDao());
+                }, DatabaseHelper.getContactDao(), context);
             }
         } catch (DaoException | SQLException | IOException e) {
             hasThrownError = true;
