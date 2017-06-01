@@ -48,8 +48,10 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         if (ConfigProvider.getUser() != null) {
-            Intent intent = new Intent(this, CasesActivity.class);
-            startActivity(intent);
+            if (RetroProvider.init(this)) {
+                Intent intent = new Intent(this, CasesActivity.class);
+                startActivity(intent);
+            }
         }
     }
 
