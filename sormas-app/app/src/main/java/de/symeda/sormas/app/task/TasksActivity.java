@@ -7,12 +7,11 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.component.AbstractRootTabActivity;
+import de.symeda.sormas.app.AbstractRootTabActivity;
 import de.symeda.sormas.app.component.UserReportDialog;
-import de.symeda.sormas.app.util.ConnectionHelper;
+import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.util.SyncCallback;
 
 public class TasksActivity extends AbstractRootTabActivity {
@@ -34,7 +33,7 @@ public class TasksActivity extends AbstractRootTabActivity {
         createTabViews(adapter);
         pager.setCurrentItem(currentTab);
 
-        if (ConnectionHelper.isConnectedToInternet(getApplicationContext())) {
+        if (RetroProvider.isConnected()) {
             SyncTasksTask.syncTasksWithoutCallback(getSupportFragmentManager(), getApplicationContext(), this);
         }
     }
@@ -51,7 +50,7 @@ public class TasksActivity extends AbstractRootTabActivity {
 
         switch(item.getItemId()) {
             case R.id.action_reload:
-                if (ConnectionHelper.isConnectedToInternet(getApplicationContext())) {
+                if (RetroProvider.isConnected()) {
                     final SwipeRefreshLayout refreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
                     refreshLayout.setRefreshing(true);
                     SyncTasksTask.syncTasksWithCallback(getSupportFragmentManager(), getApplicationContext(), this, new SyncCallback() {

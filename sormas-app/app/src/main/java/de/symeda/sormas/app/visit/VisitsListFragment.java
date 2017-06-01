@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Toast;
 
 import java.util.List;
 
@@ -18,8 +17,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.visit.Visit;
-import de.symeda.sormas.app.util.Callback;
-import de.symeda.sormas.app.util.ConnectionHelper;
+import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.util.SyncCallback;
 
 public class VisitsListFragment extends ListFragment {
@@ -51,7 +49,7 @@ public class VisitsListFragment extends ListFragment {
             refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                 @Override
                 public void onRefresh() {
-                    if (ConnectionHelper.isConnectedToInternet(getContext())) {
+                    if (RetroProvider.isConnected()) {
                         SyncVisitsTask.syncVisitsWithCallback(getContext(), getActivity().getSupportFragmentManager(), new SyncCallback() {
                             @Override
                             public void call(boolean syncFailed) {

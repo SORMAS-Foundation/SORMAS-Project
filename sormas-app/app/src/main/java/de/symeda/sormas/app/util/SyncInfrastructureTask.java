@@ -84,14 +84,20 @@ public class SyncInfrastructureTask extends AsyncTask<Void, Void, Void> {
             }, DatabaseHelper.getUserDao(), notificationContext);
         } catch(DaoException | SQLException | IOException e) {
             hasThrownError = true;
-            Log.e(this.getClass().getName(), "Exception on executing background synchronization task", e);
-            if (notificationContext != null) {
-                if (ConnectionHelper.isConnectedToInternet(notificationContext)) {
-                    SormasApplication application = (SormasApplication) notificationContext.getApplicationContext();
-                    Tracker tracker = application.getDefaultTracker();
-                    ErrorReportingHelper.sendCaughtException(tracker, e, null, true);
-                }
-            }
+            Log.e(getClass().getName(), "Error while synchronizing cases", e);
+            SormasApplication application = (SormasApplication) notificationContext.getApplicationContext();
+            Tracker tracker = application.getDefaultTracker();
+            ErrorReportingHelper.sendCaughtException(tracker, e, null, true);
+
+//            hasThrownError = true;
+//            Log.e(this.getClass().getName(), "Exception on executing background synchronization task", e);
+//            if (notificationContext != null) {
+//                if (RetroProvider.isConnected()) {
+//                    SormasApplication application = (SormasApplication) notificationContext.getApplicationContext();
+//                    Tracker tracker = application.getDefaultTracker();
+//                    ErrorReportingHelper.sendCaughtException(tracker, e, null, true);
+//                }
+//            }
         }
 
         return null;

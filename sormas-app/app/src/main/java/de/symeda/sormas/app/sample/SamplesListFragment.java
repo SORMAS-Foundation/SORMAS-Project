@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +20,7 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.sample.Sample;
-import de.symeda.sormas.app.util.ConnectionHelper;
+import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.util.SyncCallback;
 
 /**
@@ -83,7 +82,7 @@ public class SamplesListFragment extends ListFragment {
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                if (ConnectionHelper.isConnectedToInternet(getContext())) {
+                if (RetroProvider.isConnected()) {
                     SyncSamplesTask.syncSamplesWithCallback(getContext(), getActivity().getSupportFragmentManager(), new SyncCallback() {
                         @Override
                         public void call(boolean syncFailed) {

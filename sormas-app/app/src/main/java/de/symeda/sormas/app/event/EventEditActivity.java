@@ -14,22 +14,21 @@ import android.view.MenuItem;
 import com.google.android.gms.analytics.Tracker;
 
 import de.symeda.sormas.api.event.TypeOfPlace;
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.event.Event;
-import de.symeda.sormas.app.component.AbstractEditActivity;
+import de.symeda.sormas.app.AbstractEditTabActivity;
 import de.symeda.sormas.app.component.UserReportDialog;
+import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.task.TaskForm;
-import de.symeda.sormas.app.util.ConnectionHelper;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.SyncCallback;
 
 
-public class EventEditActivity extends AbstractEditActivity {
+public class EventEditActivity extends AbstractEditTabActivity {
 
     public static final String NEW_EVENT = "newEvent";
     public static final String KEY_EVENT_UUID = "eventUuid";
@@ -199,7 +198,7 @@ public class EventEditActivity extends AbstractEditActivity {
 
                                 DatabaseHelper.getEventDao().saveAndSnapshot(event);
 
-                                if (ConnectionHelper.isConnectedToInternet(getApplicationContext())) {
+                                if (RetroProvider.isConnected()) {
                                     SyncEventsTask.syncEventsWithProgressDialog(this, new SyncCallback() {
                                         @Override
                                         public void call(boolean syncFailed) {

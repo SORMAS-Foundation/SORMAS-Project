@@ -4,6 +4,8 @@ import android.accounts.AuthenticatorException;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.support.design.widget.Snackbar;
 
@@ -11,6 +13,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.io.IOException;
+import java.net.ConnectException;
 import java.util.concurrent.ExecutionException;
 
 import de.symeda.sormas.api.utils.InfoProvider;
@@ -34,6 +37,7 @@ public final class RetroProvider {
 
     private static RetroProvider instance = null;
 
+    private final Context context;
     private final Retrofit retrofit;
 
     private InfoFacadeRetro infoFacadeRetro;
@@ -52,33 +56,35 @@ public final class RetroProvider {
     private SampleTestFacadeRetro sampleTestFacadeRetro;
     private EventParticipantFacadeRetro eventParticipantFacadeRetro;
 
-    private RetroProvider() throws ExceptionInInitializerError, AuthenticatorException {
+    private RetroProvider(Context context) throws ApiVersionException, ConnectException, AuthenticatorException {
+
+        this.context = context;
 
         Gson gson = new GsonBuilder()
                 // date format needs to exactly match the server's
                 .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
                 .create();
 
+
+        // Basic auth as explained in https://futurestud.io/tutorials/android-basic-authentication-with-retrofit
+
+        String authToken = Credentials.basic(ConfigProvider.getUsername(), ConfigProvider.getPassword());
+        AuthenticationInterceptor interceptor =
+                new AuthenticationInterceptor(authToken);
+
+        OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+        httpClient.addInterceptor(interceptor);
+
+        retrofit = new Retrofit.Builder()
+                //.baseUrl("http://10.0.2.2:6080/sormas-rest") // localhost - SSL would need certificate
+                .baseUrl(ConfigProvider.getServerRestUrl())
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .client(httpClient.build())
+                .build();
+
+
         Response<String> versionResponse;
-
         try {
-
-            // Basic auth as explained in https://futurestud.io/tutorials/android-basic-authentication-with-retrofit
-
-            String authToken = Credentials.basic(ConfigProvider.getUsername(), ConfigProvider.getPassword());
-            AuthenticationInterceptor interceptor =
-                    new AuthenticationInterceptor(authToken);
-
-            OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
-            httpClient.addInterceptor(interceptor);
-
-            retrofit = new Retrofit.Builder()
-                    //.baseUrl("http://10.0.2.2:6080/sormas-rest") // localhost - SSL would need certificate
-                    .baseUrl(ConfigProvider.getServerRestUrl())
-                    .addConverterFactory(GsonConverterFactory.create(gson))
-                    .client(httpClient.build())
-                    .build();
-
 
             // make call to get version info
             infoFacadeRetro = retrofit.create(InfoFacadeRetro.class);
@@ -98,9 +104,9 @@ public final class RetroProvider {
             versionResponse = asyncTask.execute().get();
 
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            throw new ApiVersionException(e);
         } catch (ExecutionException e) {
-            throw new RuntimeException(e);
+            throw new ApiVersionException(e);
         }
 
         if (versionResponse.isSuccessful()) {
@@ -108,51 +114,48 @@ public final class RetroProvider {
             String serverApiVersion = versionResponse.body();
             String appApiVersion = InfoProvider.getVersion();
             if (!serverApiVersion.equals(appApiVersion)) {
-                throw new ExceptionInInitializerError("App version '" + appApiVersion + "' does not match server version '" + serverApiVersion + "'");
+                throw new ApiVersionException("App version '" + appApiVersion + "' does not match server version '" + serverApiVersion + "'");
             }
         }
         else {
             switch (versionResponse.code()) {
                 case 401:
-                    throw new AuthenticatorException("Could not authenticate.");
+                    throw new AuthenticatorException(context.getResources().getString(R.string.snackbar_http_401));
                 case 403:
-                    throw new AuthenticatorException("You do not have the needed permissions.");
+                    throw new AuthenticatorException(context.getResources().getString(R.string.snackbar_http_403));
                 case 404:
-                    throw new ExceptionInInitializerError("Could not connect to server: " + ConfigProvider.getServerRestUrl());
+                    throw new ConnectException(String.format(context.getResources().getString(R.string.snackbar_http_404), ConfigProvider.getServerRestUrl()));
                 default:
-                    throw new RuntimeException(versionResponse.toString());
+                    throw new ConnectException(versionResponse.toString());
             }
         }
     }
 
-    public static boolean isInitialized() {
-        return instance != null;
+    public static boolean isConnectedToNetwork(Context context) {
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        return activeNetwork != null && activeNetwork.isConnected();
     }
 
-    public static boolean init(Activity activity) {
-        try {
-            instance = new RetroProvider();
+    public static boolean isConnected() {
+        return instance != null && isConnectedToNetwork(instance.context);
+    }
 
-            final Context context = activity.getApplicationContext();
-            SyncInfrastructureTask.syncInfrastructure(context, new SyncCallback() {
-                @Override
-                public void call(boolean syncFailed) {
-                    // this also syncs cases which syncs persons
-                    SyncTasksTask.syncTasks(context, null, context);
-                }
-            });
+    public static void connect(Context context) throws ApiVersionException, ConnectException, AuthenticatorException {
 
-            return true;
-        } catch (AuthenticatorException e) {
-            if (activity instanceof LoginActivity) {
-                // TODO no idea why this is not showing
-                Snackbar.make(activity.findViewById(R.id.base_layout), e.getMessage(), Snackbar.LENGTH_LONG).show();
-            } else {
-                Intent intent = new Intent(activity, LoginActivity.class);
-                activity.startActivity(intent);
-            }
-            return false;
+        if (!isConnectedToNetwork(context)) {
+            throw new ConnectException(context.getResources().getString(R.string.snackbar_no_connection));
         }
+
+        instance = new RetroProvider(context);
+
+        SyncInfrastructureTask.syncInfrastructure(instance.context, new SyncCallback() {
+            @Override
+            public void call(boolean syncFailed) {
+                // this also syncs cases which syncs persons
+                SyncTasksTask.syncTasks(instance.context, null, instance.context);
+            }
+        });
     }
 
     public static InfoFacadeRetro getInfoFacade() {
@@ -313,4 +316,18 @@ public final class RetroProvider {
         return instance.eventParticipantFacadeRetro;
     }
 
+    public static class ApiVersionException extends Exception {
+        public ApiVersionException() {
+            super();
+        }
+        public ApiVersionException(String message) {
+            super(message);
+        }
+        public ApiVersionException(String message, Throwable cause) {
+            super(message, cause);
+        }
+        public ApiVersionException(Throwable cause) {
+            super(cause);
+        }
+    }
 }

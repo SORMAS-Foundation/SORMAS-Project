@@ -13,7 +13,6 @@ import android.widget.LinearLayout;
 
 import com.google.android.gms.analytics.Tracker;
 
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.app.R;
@@ -25,16 +24,16 @@ import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.visit.Visit;
 import de.symeda.sormas.app.caze.SymptomsEditForm;
-import de.symeda.sormas.app.component.AbstractEditActivity;
+import de.symeda.sormas.app.AbstractEditTabActivity;
 import de.symeda.sormas.app.component.HelpDialog;
 import de.symeda.sormas.app.component.UserReportDialog;
-import de.symeda.sormas.app.util.ConnectionHelper;
+import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.SyncCallback;
 import de.symeda.sormas.app.util.ValidationFailedException;
 
 
-public class VisitEditActivity extends AbstractEditActivity {
+public class VisitEditActivity extends AbstractEditTabActivity {
 
     public static final String VISIT_UUID = "visitUuid";
     public static final String KEY_CONTACT_UUID = "contactUuid";
@@ -187,7 +186,7 @@ public class VisitEditActivity extends AbstractEditActivity {
 						visit.setVisitUser(ConfigProvider.getUser());
 						DatabaseHelper.getVisitDao().saveAndSnapshot(visit);
 
-                        if (ConnectionHelper.isConnectedToInternet(getApplicationContext())) {
+                        if (RetroProvider.isConnected()) {
                             SyncVisitsTask.syncVisitsWithProgressDialog(this, new SyncCallback() {
                                 @Override
                                 public void call(boolean syncFailed) {

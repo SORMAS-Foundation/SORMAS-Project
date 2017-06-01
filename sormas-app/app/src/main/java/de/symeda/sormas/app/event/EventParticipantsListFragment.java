@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Toast;
 
 import java.util.List;
 
@@ -18,7 +17,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventParticipant;
-import de.symeda.sormas.app.util.ConnectionHelper;
+import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.util.SyncCallback;
 
 public class EventParticipantsListFragment extends ListFragment {
@@ -51,7 +50,7 @@ public class EventParticipantsListFragment extends ListFragment {
                 refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                     @Override
                     public void onRefresh() {
-                        if (ConnectionHelper.isConnectedToInternet(getContext())) {
+                        if (RetroProvider.isConnected()) {
                             SyncEventParticipantsTask.syncEventParticipantsWithCallback(getContext(), getActivity().getSupportFragmentManager(), new SyncCallback() {
                                 @Override
                                 public void call(boolean syncFailed) {

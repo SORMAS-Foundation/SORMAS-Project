@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.task;
 
+import android.accounts.AuthenticatorException;
 import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -15,6 +16,7 @@ import android.text.TextUtils;
 
 import org.joda.time.DateTime;
 
+import java.net.ConnectException;
 import java.util.Date;
 import java.util.List;
 
@@ -30,6 +32,7 @@ import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.task.TaskDao;
+import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.util.Callback;
 
 /**
@@ -57,7 +60,22 @@ public class TaskNotificationService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-        SyncTasksTask.syncTasks(this.getApplicationContext(), null, this);
+        if (!RetroProvider.isConnected()) {
+            try {
+                RetroProvider.connect(getApplicationContext());
+            } catch (AuthenticatorException e) {
+                // do nothing
+            } catch (RetroProvider.ApiVersionException e) {
+                // do nothing
+            } catch (ConnectException e) {
+                // do nothing
+            }
+        }
+
+        if (RetroProvider.isConnected()) {
+            SyncTasksTask.syncTasks(this.getApplicationContext(), null, this);
+        }
+
         return super.onStartCommand(intent, flags, startId);
     }
 

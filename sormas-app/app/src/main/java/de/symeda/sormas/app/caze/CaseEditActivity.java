@@ -1,9 +1,6 @@
 package de.symeda.sormas.app.caze;
 
-import android.app.AlarmManager;
 import android.app.AlertDialog;
-import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -18,7 +15,6 @@ import android.view.MenuItem;
 import android.widget.LinearLayout;
 
 import com.google.android.gms.analytics.Tracker;
-import com.j256.ormlite.dao.Dao;
 
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
@@ -30,24 +26,22 @@ import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.epidata.EpiData;
 import de.symeda.sormas.app.backend.epidata.EpiDataDao;
 import de.symeda.sormas.app.backend.hospitalization.Hospitalization;
-import de.symeda.sormas.app.backend.hospitalization.HospitalizationDao;
 import de.symeda.sormas.app.backend.location.LocationDao;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
-import de.symeda.sormas.app.backend.symptoms.SymptomsDao;
-import de.symeda.sormas.app.component.AbstractEditActivity;
+import de.symeda.sormas.app.AbstractEditTabActivity;
 import de.symeda.sormas.app.component.HelpDialog;
 import de.symeda.sormas.app.component.UserReportDialog;
 import de.symeda.sormas.app.contact.ContactNewActivity;
+import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.sample.SampleEditActivity;
 import de.symeda.sormas.app.task.TaskForm;
-import de.symeda.sormas.app.util.ConnectionHelper;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.SyncCallback;
 import de.symeda.sormas.app.util.ValidationFailedException;
 
-public class CaseEditActivity extends AbstractEditActivity {
+public class CaseEditActivity extends AbstractEditTabActivity {
 
     public static final String KEY_CASE_UUID = "caseUuid";
     public static final String CASE_SUBTITLE = "caseSubtitle";
@@ -261,7 +255,7 @@ public class CaseEditActivity extends AbstractEditActivity {
 
                         Snackbar.make(findViewById(R.id.base_layout), "Case saved.", Snackbar.LENGTH_LONG).show();
 
-                        if (ConnectionHelper.isConnectedToInternet(getApplicationContext())) {
+                        if (RetroProvider.isConnected()) {
                             SyncCasesTask.syncCasesWithProgressDialog(this, new SyncCallback() {
                                 @Override
                                 public void call(boolean syncFailed) {

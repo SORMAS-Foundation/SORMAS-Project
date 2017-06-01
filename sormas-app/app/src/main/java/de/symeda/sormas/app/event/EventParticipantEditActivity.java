@@ -13,7 +13,6 @@ import android.view.MenuItem;
 
 import com.google.android.gms.analytics.Tracker;
 
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.common.DaoException;
@@ -23,7 +22,7 @@ import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.component.UserReportDialog;
 import de.symeda.sormas.app.person.PersonEditForm;
-import de.symeda.sormas.app.util.ConnectionHelper;
+import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.SyncCallback;
 
@@ -148,7 +147,7 @@ public class EventParticipantEditActivity extends AppCompatActivity {
 						eventParticipant.setPerson(person);
                         DatabaseHelper.getEventParticipantDao().saveAndSnapshot(eventParticipant);
 
-                        if (ConnectionHelper.isConnectedToInternet(getApplicationContext())) {
+                        if (RetroProvider.isConnected()) {
                             SyncEventsTask.syncEventsWithProgressDialog(this, new SyncCallback() {
                                 @Override
                                 public void call(boolean syncFailed) {

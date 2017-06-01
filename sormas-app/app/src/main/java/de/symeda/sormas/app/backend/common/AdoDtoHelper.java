@@ -7,6 +7,7 @@ import com.j256.ormlite.logger.Logger;
 import com.j256.ormlite.logger.LoggerFactory;
 
 import java.io.IOException;
+import java.net.ConnectException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -110,7 +111,7 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 
             final Long resultChangeDate = call.execute().body();
             if (resultChangeDate == null) {
-                throw new IOException("PostAll did not work");
+                throw new ConnectException("PostAll did not work");
             } else {
                 dao.callBatchTasks(new Callable<Void>() {
                     public Void call() throws Exception {

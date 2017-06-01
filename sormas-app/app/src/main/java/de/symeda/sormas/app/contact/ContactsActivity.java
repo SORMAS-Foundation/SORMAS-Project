@@ -7,14 +7,11 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.backend.config.ConfigProvider;
-import de.symeda.sormas.app.backend.contact.Contact;
-import de.symeda.sormas.app.component.AbstractRootTabActivity;
+import de.symeda.sormas.app.AbstractRootTabActivity;
 import de.symeda.sormas.app.component.UserReportDialog;
-import de.symeda.sormas.app.util.ConnectionHelper;
+import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.util.SyncCallback;
 
 public class ContactsActivity extends AbstractRootTabActivity {
@@ -36,7 +33,7 @@ public class ContactsActivity extends AbstractRootTabActivity {
         createTabViews(adapter);
         pager.setCurrentItem(currentTab);
 
-        if (ConnectionHelper.isConnectedToInternet(getApplicationContext())) {
+        if (RetroProvider.isConnected()) {
             SyncContactsTask.syncContactsWithoutCallback(getApplicationContext(), getSupportFragmentManager());
         }
     }
@@ -53,7 +50,7 @@ public class ContactsActivity extends AbstractRootTabActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
             case R.id.action_reload:
-                if (ConnectionHelper.isConnectedToInternet(getApplicationContext())) {
+                if (RetroProvider.isConnected()) {
                     final SwipeRefreshLayout refreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
                     refreshLayout.setRefreshing(true);
                     SyncContactsTask.syncContactsWithCallback(getApplicationContext(), getSupportFragmentManager(), new SyncCallback() {

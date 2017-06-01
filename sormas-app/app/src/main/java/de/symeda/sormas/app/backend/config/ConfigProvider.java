@@ -1,7 +1,9 @@
 package de.symeda.sormas.app.backend.config;
 
+import android.app.admin.DevicePolicyManager;
 import android.content.Context;
 import android.security.KeyPairGeneratorSpec;
+import android.support.v7.app.AlertDialog;
 import android.util.Base64;
 import android.util.Log;
 
@@ -30,6 +32,7 @@ import javax.crypto.CipherOutputStream;
 import javax.crypto.NoSuchPaddingException;
 import javax.security.auth.x500.X500Principal;
 
+import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.rest.RetroProvider;
@@ -51,6 +54,8 @@ public final class ConfigProvider {
             Log.e(ConfigProvider.class.getName(), "ConfigProvider has already been initalized");
         }
         instance = new ConfigProvider(context);
+
+        instance.ensureDeviceEncryption();
     }
 
     private final Context context;
@@ -63,6 +68,21 @@ public final class ConfigProvider {
 
     private ConfigProvider(Context context) {
         this.context = context;
+    }
+
+    private void ensureDeviceEncryption() {
+        // If device encryption is not active, show a non-cancelable alert that blocks app usage
+        DevicePolicyManager dpm = (DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE);
+        if (dpm.getStorageEncryptionStatus() == DevicePolicyManager.ENCRYPTION_STATUS_INACTIVE ||
+                dpm.getStorageEncryptionStatus() == DevicePolicyManager.ENCRYPTION_STATUS_UNSUPPORTED) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            builder.setCancelable(false);
+            builder.setMessage(R.string.alert_encryption);
+            AlertDialog dialog = builder.create();
+            dialog.show();
+
+            // TODO close app
+        }
     }
 
     public static User getUser() {

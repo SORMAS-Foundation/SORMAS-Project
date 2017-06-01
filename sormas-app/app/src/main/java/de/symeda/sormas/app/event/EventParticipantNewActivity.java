@@ -26,7 +26,7 @@ import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.component.SelectOrCreatePersonDialogBuilder;
 import de.symeda.sormas.app.component.UserReportDialog;
-import de.symeda.sormas.app.util.ConnectionHelper;
+import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.SyncCallback;
@@ -170,7 +170,7 @@ public class EventParticipantNewActivity extends AppCompatActivity {
         // save the contact
         DatabaseHelper.getEventParticipantDao().saveAndSnapshot(eventParticipant);
 
-        if (ConnectionHelper.isConnectedToInternet(getApplicationContext())) {
+        if (RetroProvider.isConnected()) {
             SyncEventsTask.syncEventsWithProgressDialog(this, new SyncCallback() {
                 @Override
                 public void call(boolean syncFailed) {

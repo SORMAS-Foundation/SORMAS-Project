@@ -1,5 +1,6 @@
 package de.symeda.sormas.app;
 
+import android.accounts.AuthenticatorException;
 import android.app.admin.DevicePolicyManager;
 import android.content.Context;
 import android.content.Intent;
@@ -12,11 +13,9 @@ import android.widget.EditText;
 
 import com.google.android.gms.analytics.Tracker;
 
-import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.SormasApplication;
-import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import java.net.ConnectException;
+
 import de.symeda.sormas.app.backend.config.ConfigProvider;
-import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.caze.CasesActivity;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.settings.SettingsActivity;
@@ -35,17 +34,6 @@ public class LoginActivity extends AppCompatActivity {
 
         SormasApplication application = (SormasApplication) getApplication();
         tracker = application.getDefaultTracker();
-
-        // If device encryption is not active, show a non-cancelable alert that blocks app usage
-        DevicePolicyManager dpm = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
-        if (dpm.getStorageEncryptionStatus() == DevicePolicyManager.ENCRYPTION_STATUS_INACTIVE ||
-                dpm.getStorageEncryptionStatus() == DevicePolicyManager.ENCRYPTION_STATUS_UNSUPPORTED) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setCancelable(false);
-            builder.setMessage(R.string.alert_encryption);
-            AlertDialog dialog = builder.create();
-            dialog.show();
-        }
 
         if (ConfigProvider.getUser() != null) {
             if (RetroProvider.init(this)) {
@@ -72,7 +60,18 @@ public class LoginActivity extends AppCompatActivity {
             Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_empty_password, Snackbar.LENGTH_LONG).show();
         } else {
             ConfigProvider.setUsernameAndPassword(username, password);
-            if (RetroProvider.init(this)) {
+
+            try {
+                RetroProvider.connect(getApplicationContext());
+            } catch (AuthenticatorException e) {
+                Snackbar.make(findViewById(R.id.base_layout), e.getMessage(), Snackbar.LENGTH_LONG).show();
+            } catch (RetroProvider.ApiVersionException e) {
+                Snackbar.make(findViewById(R.id.base_layout), e.getMessage(), Snackbar.LENGTH_LONG).show();
+            } catch (ConnectException e) {
+                Snackbar.make(findViewById(R.id.base_layout), e.getMessage(), Snackbar.LENGTH_LONG).show();
+            }
+
+            if (RetroProvider.isConnected()) {
                 Intent intent = new Intent(this, CasesActivity.class);
                 startActivity(intent);
             }

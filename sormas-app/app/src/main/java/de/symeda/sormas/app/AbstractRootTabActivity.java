@@ -1,7 +1,9 @@
-package de.symeda.sormas.app.component;
+package de.symeda.sormas.app;
 
+import android.accounts.AuthenticatorException;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -12,16 +14,17 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import de.symeda.sormas.app.R;
+import java.net.ConnectException;
+
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.caze.CaseNewActivity;
 import de.symeda.sormas.app.caze.CasesActivity;
 import de.symeda.sormas.app.contact.ContactsActivity;
 import de.symeda.sormas.app.event.EventsActivity;
+import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.sample.SamplesActivity;
-import de.symeda.sormas.app.task.TasksActivity;
-import de.symeda.sormas.app.LoginActivity;
 import de.symeda.sormas.app.settings.SettingsActivity;
+import de.symeda.sormas.app.task.TasksActivity;
 import de.symeda.sormas.app.util.SyncCallback;
 import de.symeda.sormas.app.util.SyncInfrastructureTask;
 
@@ -49,11 +52,6 @@ public abstract class AbstractRootTabActivity extends AbstractTabActivity {
                 getResources().getString(R.string.main_menu_logout) + " (" + ConfigProvider.getUsername() + ")"
         };
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);
-        if (toolbar != null) {
-            setSupportActionBar(toolbar);
-        }
-
         menuDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         menuDrawerList = (ListView) findViewById(R.id.left_drawer);
 
@@ -66,12 +64,15 @@ public abstract class AbstractRootTabActivity extends AbstractTabActivity {
         // Set the list's click listener
         menuDrawerList.setOnItemClickListener(new DrawerItemClickListener());
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_menu_black_24dp);
 
-
         setupDrawer();
+
+        syncAll(false);
+    }
+
+    protected boolean isUserNeeded() {
+        return true;
     }
 
     @Override
@@ -111,6 +112,7 @@ public abstract class AbstractRootTabActivity extends AbstractTabActivity {
     }
 
     private void setupDrawer() {
+
         menuDrawerToggle = new ActionBarDrawerToggle(
                 this,
                 menuDrawerLayout,
@@ -173,16 +175,55 @@ public abstract class AbstractRootTabActivity extends AbstractTabActivity {
     }
 
     public void syncAll() {
-        SyncInfrastructureTask.syncAll(new SyncCallback() {
-                              @Override
-                              public void call(boolean syncFailed) {
-                                  if (getSupportFragmentManager().getFragments() != null) {
-                                      for (Fragment fragment : getSupportFragmentManager().getFragments()) {
-                                          fragment.onResume();
-                                      }
-                                  }
-                              }
-                          }, AbstractRootTabActivity.this);
+        syncAll(true);
+    }
+
+    public void syncAll(final boolean showResultSnackbar) {
+        if (!RetroProvider.isConnected()) {
+            try {
+                RetroProvider.connect(getApplicationContext());
+            } catch (AuthenticatorException e) {
+                if (showResultSnackbar) {
+                    Snackbar.make(findViewById(android.R.id.content), e.getMessage(), Snackbar.LENGTH_LONG).show();
+                }
+                // switch to LoginActivity is done below
+            } catch (RetroProvider.ApiVersionException e) {
+                if (showResultSnackbar) {
+                    Snackbar.make(findViewById(android.R.id.content), e.getMessage(), Snackbar.LENGTH_LONG).show();
+                }
+            } catch (ConnectException e) {
+                if (showResultSnackbar) {
+                    Snackbar.make(findViewById(android.R.id.content), e.getMessage(), Snackbar.LENGTH_LONG).show();
+                }
+            }
+        }
+
+        if (isUserNeeded() && ConfigProvider.getUser() == null) {
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+            return;
+        }
+
+        if (RetroProvider.isConnected()) {
+            SyncInfrastructureTask.syncAll(new SyncCallback() {
+                @Override
+                public void call(boolean syncFailed) {
+                    if (getSupportFragmentManager().getFragments() != null) {
+                        for (Fragment fragment : getSupportFragmentManager().getFragments()) {
+                            fragment.onResume();
+                        }
+                    }
+
+                    if (showResultSnackbar) {
+                        if (!syncFailed) {
+                            Snackbar.make(findViewById(android.R.id.content), R.string.snackbar_sync_success, Snackbar.LENGTH_LONG).show();
+                        } else {
+                            Snackbar.make(findViewById(android.R.id.content), R.string.snackbar_sync_error, Snackbar.LENGTH_LONG).show();
+                        }
+                    }
+                }
+            }, AbstractRootTabActivity.this);
+        }
     }
 
     public void logout() {

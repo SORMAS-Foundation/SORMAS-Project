@@ -14,7 +14,6 @@ import android.view.MenuItem;
 import com.google.android.gms.analytics.Tracker;
 
 import de.symeda.sormas.api.contact.ContactRelation;
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.common.DaoException;
@@ -23,16 +22,16 @@ import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.contact.ContactDao;
 import de.symeda.sormas.app.backend.person.Person;
-import de.symeda.sormas.app.component.AbstractEditActivity;
+import de.symeda.sormas.app.AbstractEditTabActivity;
 import de.symeda.sormas.app.component.UserReportDialog;
+import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.task.TaskForm;
-import de.symeda.sormas.app.util.ConnectionHelper;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.SyncCallback;
 import de.symeda.sormas.app.visit.VisitEditActivity;
 import de.symeda.sormas.app.visit.VisitEditDataForm;
 
-public class ContactEditActivity extends AbstractEditActivity {
+public class ContactEditActivity extends AbstractEditTabActivity {
 
     public static final String KEY_CASE_UUID = "caseUuid";
     public static final String KEY_CONTACT_UUID = "contactUuid";
@@ -202,7 +201,7 @@ public class ContactEditActivity extends AbstractEditActivity {
 
                         contactDao.saveAndSnapshot(contact);
 
-                        if (ConnectionHelper.isConnectedToInternet(getApplicationContext())) {
+                        if (RetroProvider.isConnected()) {
                             SyncContactsTask.syncContactsWithProgressDialog(this, new SyncCallback() {
                                 @Override
                                 public void call(boolean syncFailed) {

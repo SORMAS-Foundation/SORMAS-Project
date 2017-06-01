@@ -10,15 +10,16 @@ import android.view.View;
 
 import com.google.android.gms.analytics.Tracker;
 
+import de.symeda.sormas.app.AbstractEditTabActivity;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
-import de.symeda.sormas.app.component.AbstractRootTabActivity;
+import de.symeda.sormas.app.AbstractRootTabActivity;
 import de.symeda.sormas.app.component.SyncLogDialog;
 import de.symeda.sormas.app.component.UserReportDialog;
 
 
-public class SettingsActivity extends AbstractRootTabActivity {
+public class SettingsActivity extends AbstractEditTabActivity {
 
     private SettingsForm settingsForm;
 
@@ -67,23 +68,22 @@ public class SettingsActivity extends AbstractRootTabActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
 
+            // Settings don't have a parent -> go back instead of up
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+
             // Report problem button
             case R.id.action_report:
                 UserReportDialog userReportDialog = new UserReportDialog(this, this.getClass().getSimpleName(), null);
                 AlertDialog dialog = userReportDialog.create();
                 dialog.show();
-
                 return true;
 
             case R.id.action_save:
-//                User user = settingsForm.getUser();
-//                ConfigProvider.setUser(user);
-
                 String serverUrl = settingsForm.getServerUrl();
                 ConfigProvider.setServerRestUrl(serverUrl);
-
                 onResume();
-
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -93,5 +93,4 @@ public class SettingsActivity extends AbstractRootTabActivity {
         SyncLogDialog syncLogDialog = new SyncLogDialog(this);
         syncLogDialog.show(this);
     }
-
 }

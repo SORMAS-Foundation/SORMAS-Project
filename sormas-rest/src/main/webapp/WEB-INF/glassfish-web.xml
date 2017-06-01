@@ -7,16 +7,18 @@
     <security-role-mapping>
     	<!-- all groups map to user -->
         <role-name>USER</role-name>
+        <!-- officially only officers and informants have access
         <group-name>ADMIN</group-name>
         <group-name>SURVEILLANCE_SUPERVISOR</group-name>
-        <group-name>SURVEILLANCE_OFFICER</group-name>
-        <group-name>INFORMANT</group-name>
         <group-name>CASE_SUPERVISOR</group-name>
-        <group-name>CASE_OFFICER</group-name>
         <group-name>CONTACT_SUPERVISOR</group-name>
-        <group-name>CONTACT_OFFICER</group-name>
         <group-name>RUMOR_MANAGER</group-name>
         <group-name>LAB_USER</group-name>
+         -->
+        <group-name>SURVEILLANCE_OFFICER</group-name>
+        <group-name>INFORMANT</group-name>
+        <group-name>CASE_OFFICER</group-name>
+        <group-name>CONTACT_OFFICER</group-name>
     </security-role-mapping>
     <security-role-mapping>
         <role-name>ADMIN</role-name>

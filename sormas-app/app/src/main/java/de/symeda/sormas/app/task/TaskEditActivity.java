@@ -15,7 +15,6 @@ import android.view.MenuItem;
 
 import com.google.android.gms.analytics.Tracker;
 
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.common.DaoException;
@@ -24,7 +23,7 @@ import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.task.TaskDao;
 import de.symeda.sormas.app.component.UserReportDialog;
-import de.symeda.sormas.app.util.ConnectionHelper;
+import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.SyncCallback;
 
@@ -135,7 +134,7 @@ public class TaskEditActivity extends AppCompatActivity {
                     TaskDao taskDao = DatabaseHelper.getTaskDao();
                     taskDao.saveAndSnapshot(task);
 
-                    if (ConnectionHelper.isConnectedToInternet(getApplicationContext())) {
+                    if (RetroProvider.isConnected()) {
                         SyncTasksTask.syncTasksWithProgressDialog(this, new SyncCallback() {
                             @Override
                             public void call(boolean syncFailed) {
