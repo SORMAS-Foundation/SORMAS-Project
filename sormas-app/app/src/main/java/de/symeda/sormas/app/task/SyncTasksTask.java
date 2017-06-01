@@ -63,13 +63,27 @@ public class SyncTasksTask extends AsyncTask<Void, Void, Void> {
                 }
             }, DatabaseHelper.getTaskDao(), context);
 
-            new TaskDtoHelper().pushEntities(new DtoPostInterface<TaskDto>() {
+            boolean anotherPullNeeded = new TaskDtoHelper().pushEntities(new DtoPostInterface<TaskDto>() {
                 @Override
                 public Call<Long> postAll(List<TaskDto> dtos) {
-                    // TODO postAll should return the date&time the server used as modifiedDate
                     return RetroProvider.getTaskFacade().postAll(dtos);
                 }
             }, DatabaseHelper.getTaskDao());
+
+            if (anotherPullNeeded) {
+                new TaskDtoHelper().pullEntities(new DtoGetInterface<TaskDto>() {
+                    @Override
+                    public Call<List<TaskDto>> getAll(long since) {
+
+                        User user = ConfigProvider.getUser();
+                        if (user != null) {
+                            Call<List<TaskDto>> all = RetroProvider.getTaskFacade().getAll(user.getUuid(), since);
+                            return all;
+                        }
+                        return null;
+                    }
+                }, DatabaseHelper.getTaskDao(), context);
+            }
         } catch (DaoException | SQLException | IOException e) {
             hasThrownError = true;
             Log.e(getClass().getName(), "Error while synchronizing tasks", e);

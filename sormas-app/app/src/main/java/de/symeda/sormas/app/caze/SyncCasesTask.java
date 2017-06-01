@@ -60,12 +60,25 @@ public class SyncCasesTask extends AsyncTask<Void, Void, Void> {
                 }
             }, DatabaseHelper.getCaseDao(), context);
 
-            new CaseDtoHelper().pushEntities(new AdoDtoHelper.DtoPostInterface<CaseDataDto>() {
+            boolean anotherPullNeeded = new CaseDtoHelper().pushEntities(new AdoDtoHelper.DtoPostInterface<CaseDataDto>() {
                 @Override
                 public Call<Long> postAll(List<CaseDataDto> dtos) {
                     return RetroProvider.getCaseFacade().postAll(dtos);
                 }
             }, DatabaseHelper.getCaseDao());
+
+            if (anotherPullNeeded) {
+                new CaseDtoHelper().pullEntities(new DtoGetInterface<CaseDataDto>() {
+                    @Override
+                    public Call<List<CaseDataDto>> getAll(long since) {
+                        User user = ConfigProvider.getUser();
+                        if (user != null) {
+                            return RetroProvider.getCaseFacade().getAll(user.getUuid(), since);
+                        }
+                        return null;
+                    }
+                }, DatabaseHelper.getCaseDao(), context);
+            }
         } catch (DaoException | SQLException | IOException e) {
             hasThrownError = true;
             Log.e(getClass().getName(), "Error while synchronizing cases", e);

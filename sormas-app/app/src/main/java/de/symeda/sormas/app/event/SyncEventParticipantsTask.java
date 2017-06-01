@@ -60,13 +60,27 @@ public class SyncEventParticipantsTask extends AsyncTask<Void, Void, Void> {
                 }
             }, DatabaseHelper.getEventParticipantDao(), context);
 
-            new EventParticipantDtoHelper().pushEntities(new DtoPostInterface<EventParticipantDto>() {
+            boolean anotherPullNeeded = new EventParticipantDtoHelper().pushEntities(new DtoPostInterface<EventParticipantDto>() {
                 @Override
                 public Call<Long> postAll(List<EventParticipantDto> dtos) {
-                    // TODO postAll should return the date&time the server used as modifiedDate
                     return RetroProvider.getEventParticipantFacade().postAll(dtos);
                 }
             }, DatabaseHelper.getEventParticipantDao());
+
+            if (anotherPullNeeded) {
+                new EventParticipantDtoHelper().pullEntities(new DtoGetInterface<EventParticipantDto>() {
+                    @Override
+                    public Call<List<EventParticipantDto>> getAll(long since) {
+
+                        User user = ConfigProvider.getUser();
+                        if (user != null) {
+                            Call<List<EventParticipantDto>> all = RetroProvider.getEventParticipantFacade().getAll(user.getUuid(), since);
+                            return all;
+                        }
+                        return null;
+                    }
+                }, DatabaseHelper.getEventParticipantDao(), context);
+            }
         } catch (DaoException | SQLException | IOException e) {
             hasThrownError = true;
             Log.e(getClass().getName(), "Error while synchronizing alert persons", e);

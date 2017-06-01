@@ -57,12 +57,25 @@ public class SyncPersonsTask extends AsyncTask<Void, Void, Void> {
                 }
             }, DatabaseHelper.getPersonDao(), context);
 
-            new PersonDtoHelper().pushEntities(new DtoPostInterface<PersonDto>() {
+            boolean anotherPullNeeded = new PersonDtoHelper().pushEntities(new DtoPostInterface<PersonDto>() {
                 @Override
                 public Call<Long> postAll(List<PersonDto> dtos) {
                     return RetroProvider.getPersonFacade().postAll(dtos);
                 }
             }, DatabaseHelper.getPersonDao());
+
+            if (anotherPullNeeded) {
+                new PersonDtoHelper().pullEntities(new DtoGetInterface<PersonDto>() {
+                    @Override
+                    public Call<List<PersonDto>> getAll(long since) {
+                        User user = ConfigProvider.getUser();
+                        if (user != null) {
+                            return RetroProvider.getPersonFacade().getAll(user.getUuid(), since);
+                        }
+                        return null;
+                    }
+                }, DatabaseHelper.getPersonDao(), context);
+            }
         } catch (DaoException | SQLException | IOException e) {
             hasThrownError = true;
             Log.e(getClass().getName(), "Error while synchronizing persons", e);

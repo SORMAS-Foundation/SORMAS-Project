@@ -62,12 +62,27 @@ public class SyncEventsTask extends AsyncTask<Void, Void, Void> {
                 }
             }, DatabaseHelper.getEventDao(), context);
 
-            new EventDtoHelper().pushEntities(new DtoPostInterface<EventDto>() {
+            boolean anotherPullNeeded = new EventDtoHelper().pushEntities(new DtoPostInterface<EventDto>() {
                 @Override
                 public Call<Long> postAll(List<EventDto> dtos) {
                     return RetroProvider.getEventFacade().postAll(dtos);
                 }
             }, DatabaseHelper.getEventDao());
+
+            if (anotherPullNeeded) {
+                new EventDtoHelper().pullEntities(new DtoGetInterface<EventDto>() {
+                    @Override
+                    public Call<List<EventDto>> getAll(long since) {
+
+                        User user = ConfigProvider.getUser();
+                        if (user != null) {
+                            Call<List<EventDto>> all = RetroProvider.getEventFacade().getAll(user.getUuid(), since);
+                            return all;
+                        }
+                        return null;
+                    }
+                }, DatabaseHelper.getEventDao(), context);
+            }
         } catch (DaoException | SQLException | IOException e) {
             hasThrownError = true;
             Log.e(getClass().getName(), "Error while synchronizing alerts", e);

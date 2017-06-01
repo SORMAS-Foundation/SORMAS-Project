@@ -60,13 +60,27 @@ public class SyncVisitsTask extends AsyncTask<Void, Void, Void> {
                 }
             }, DatabaseHelper.getVisitDao(), context);
 
-            new VisitDtoHelper().pushEntities(new DtoPostInterface<VisitDto>() {
+            boolean anotherPullNeeded = new VisitDtoHelper().pushEntities(new DtoPostInterface<VisitDto>() {
                 @Override
                 public Call<Long> postAll(List<VisitDto> dtos) {
-                    // TODO postAll should return the date&time the server used as modifiedDate
                     return RetroProvider.getVisitFacade().postAll(dtos);
                 }
             }, DatabaseHelper.getVisitDao());
+
+            if (anotherPullNeeded) {
+                new VisitDtoHelper().pullEntities(new DtoGetInterface<VisitDto>() {
+                    @Override
+                    public Call<List<VisitDto>> getAll(long since) {
+
+                        User user = ConfigProvider.getUser();
+                        if (user != null) {
+                            Call<List<VisitDto>> all = RetroProvider.getVisitFacade().getAll(user.getUuid(), since);
+                            return all;
+                        }
+                        return null;
+                    }
+                }, DatabaseHelper.getVisitDao(), context);
+            }
         } catch (DaoException | SQLException | IOException e) {
             hasThrownError = true;
             Log.e(getClass().getName(), "Error while synchronizing visits", e);

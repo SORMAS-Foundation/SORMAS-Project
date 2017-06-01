@@ -76,12 +76,40 @@ public class SyncSamplesTask extends AsyncTask<Void, Void, Void> {
                 }
             }, DatabaseHelper.getSampleTestDao(), context);
 
-            new SampleDtoHelper().pushEntities(new AdoDtoHelper.DtoPostInterface<SampleDto>() {
+            boolean anotherPullNeeded = new SampleDtoHelper().pushEntities(new AdoDtoHelper.DtoPostInterface<SampleDto>() {
                 @Override
                 public Call<Long> postAll(List<SampleDto> dtos) {
                     return RetroProvider.getSampleFacade().postAll(dtos);
                 }
             }, DatabaseHelper.getSampleDao());
+
+            if (anotherPullNeeded) {
+                new SampleDtoHelper().pullEntities(new AdoDtoHelper.DtoGetInterface<SampleDto>() {
+                    @Override
+                    public Call<List<SampleDto>> getAll(long since) {
+
+                        User user = ConfigProvider.getUser();
+                        if (user != null) {
+                            Call<List<SampleDto>> all = RetroProvider.getSampleFacade().getAll(user.getUuid(), since);
+                            return all;
+                        }
+                        return null;
+                    }
+                }, DatabaseHelper.getSampleDao(), context);
+
+                new SampleTestDtoHelper().pullEntities(new AdoDtoHelper.DtoGetInterface<SampleTestDto>() {
+                    @Override
+                    public Call<List<SampleTestDto>> getAll(long since) {
+
+                        User user = ConfigProvider.getUser();
+                        if (user != null) {
+                            Call<List<SampleTestDto>> all = RetroProvider.getSampleTestFacade().getAll(user.getUuid(), since);
+                            return all;
+                        }
+                        return null;
+                    }
+                }, DatabaseHelper.getSampleTestDao(), context);
+            }
         } catch (DaoException | SQLException | IOException e) {
             hasThrownError = true;
             Log.e(getClass().getName(), "Error while synchronizing samples", e);
