@@ -11,6 +11,7 @@ import java.util.List;
 
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
+import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.person.Person;
@@ -39,9 +40,15 @@ public class ContactDao extends AbstractAdoDao<Contact> {
     }
 
     public List<Contact> getByCase(Case caze) {
+
+        if (caze.isSnapshot()) {
+            throw new IllegalArgumentException("Does not support snapshot entities");
+        }
+
         try {
             QueryBuilder qb = queryBuilder();
-            qb.where().eq(Contact.CAZE + "_id", caze);
+            qb.where().eq(Contact.CAZE + "_id", caze)
+                    .and().eq(AbstractDomainObject.SNAPSHOT, false);
             qb.orderBy(Contact.LAST_CONTACT_DATE, false);
             return qb.query();
         } catch (SQLException e) {

@@ -7,11 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.Toast;
-
-import com.google.android.gms.analytics.Tracker;
 
 import java.util.Date;
 import java.util.List;
@@ -24,18 +20,15 @@ import de.symeda.sormas.api.sample.SampleTestType;
 import de.symeda.sormas.api.sample.ShipmentStatus;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.backend.sample.SampleDao;
 import de.symeda.sormas.app.backend.sample.SampleTest;
 import de.symeda.sormas.app.component.FieldHelper;
 import de.symeda.sormas.app.databinding.SampleDataFragmentLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
-import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.FormTab;
 import de.symeda.sormas.app.util.Item;
 
@@ -148,7 +141,7 @@ public class SampleEditForm extends FormTab {
                 binding.sampleTestResult.setVisibility(View.GONE);
                 binding.sampleNoRecentTestText.setVisibility(View.GONE);
             } else {
-                SampleTest mostRecentTest = DatabaseHelper.getSampleTestDao().getMostRecentForSample(binding.getSample());
+                SampleTest mostRecentTest = DatabaseHelper.getSampleTestDao().queryMostRecentBySample(binding.getSample());
                 binding.sampleNoTestPossibleText.setVisibility(View.GONE);
                 binding.sampleNoTestPossibleReason.setVisibility(View.GONE);
                 if (mostRecentTest != null) {

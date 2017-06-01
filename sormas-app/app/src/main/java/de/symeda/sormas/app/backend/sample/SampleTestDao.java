@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
+import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 
 /**
  * Created by Mate Strysewske on 09.02.2017.
@@ -26,17 +27,26 @@ public class SampleTestDao extends AbstractAdoDao<SampleTest> {
         return SampleTest.class;
     }
 
-    public SampleTest getMostRecentForSample(Sample sample) {
+    public SampleTest queryMostRecentBySample(Sample sample) {
+
+        if (sample.isSnapshot()) {
+            throw new IllegalArgumentException("Does not support snapshot entities");
+        }
+
         try {
             if (sample == null) return null;
-            List<SampleTest> tests = queryBuilder().orderBy(SampleTest.TEST_DATE_TIME, false).where().eq(SampleTest.SAMPLE + "_id", sample).query();
+            List<SampleTest> tests = queryBuilder()
+                    .orderBy(SampleTest.TEST_DATE_TIME, false)
+                    .where().eq(SampleTest.SAMPLE + "_id", sample)
+                    .and().eq(AbstractDomainObject.SNAPSHOT, false)
+                    .query();
             if (!tests.isEmpty()) {
                 return tests.get(0);
             } else {
                 return null;
             }
         } catch (SQLException e) {
-            android.util.Log.e(getTableName(), "Could not perform getMostRecentForSample on SampleTest");
+            android.util.Log.e(getTableName(), "Could not perform queryMostRecentBySample on SampleTest");
             throw new RuntimeException(e);
         }
     }

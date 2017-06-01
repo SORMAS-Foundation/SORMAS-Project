@@ -7,6 +7,7 @@ import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 
 import java.sql.SQLException;
+import java.util.List;
 
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.DaoException;
@@ -34,15 +35,13 @@ public class UserDao extends AbstractAdoDao<User> {
     }
 
     public User getByUsername(String username) {
-        try {
-            QueryBuilder builder = queryBuilder();
-            Where where = builder.where();
-            where.eq(User.USER_NAME, username);
-
-            return (User) builder.queryForFirst();
-        } catch (SQLException e) {
-            Log.e(getTableName(), "Could not perform getByUsername", e);
-            throw new RuntimeException();
+        List<User> users = queryForEq(User.USER_NAME, username);
+        if (users.size() == 0) {
+            return null;
+        } else if (users.size() == 1) {
+            return users.get(0);
+        } else {
+            throw new RuntimeException("Found multiple users for name " + username);
         }
     }
 }

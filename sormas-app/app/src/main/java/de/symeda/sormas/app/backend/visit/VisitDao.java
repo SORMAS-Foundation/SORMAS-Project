@@ -13,13 +13,10 @@ import java.util.List;
 
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
-import de.symeda.sormas.app.backend.common.DaoException;
+import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
-import de.symeda.sormas.app.backend.event.Event;
-import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
-import de.symeda.sormas.app.util.DataUtils;
 //import kotlin.NotImplementedError;
 
 public class VisitDao extends AbstractAdoDao<Visit> {
@@ -39,10 +36,14 @@ public class VisitDao extends AbstractAdoDao<Visit> {
     }
 
     public List<Visit> getByContact(Contact contact) {
+        if (contact.isSnapshot()) {
+            throw new IllegalArgumentException("Does not support snapshot entities");
+        }
         try {
             QueryBuilder qb = queryBuilder();
             Where where = qb.where();
             where.and(
+                    where.eq(AbstractDomainObject.SNAPSHOT, false),
                     where.eq(Visit.PERSON + "_id", contact.getPerson()),
                     where.eq(Visit.DISEASE, contact.getCaze().getDisease())
             );

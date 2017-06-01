@@ -64,7 +64,7 @@ public class TasksListFragment extends ListFragment {
             final CaseDao caseDao = DatabaseHelper.getCaseDao();
             final Case caze = caseDao.queryUuid(parentCaseUuid);
             if(caze != null) {
-                tasks = DatabaseHelper.getTaskDao().queryForCase(caze);
+                tasks = DatabaseHelper.getTaskDao().queryByCase(caze);
             } else {
                 tasks = new ArrayList<>();
             }
@@ -73,7 +73,7 @@ public class TasksListFragment extends ListFragment {
             final ContactDao contactDao = DatabaseHelper.getContactDao();
             final Contact contact = contactDao.queryUuid(parentContactUuid);
             if (contact != null) {
-                tasks = DatabaseHelper.getTaskDao().queryForContact(contact);
+                tasks = DatabaseHelper.getTaskDao().queryByContact(contact);
             } else {
                 tasks = new ArrayList<>();
             }
@@ -82,7 +82,7 @@ public class TasksListFragment extends ListFragment {
             final EventDao eventDao = DatabaseHelper.getEventDao();
             final Event event = eventDao.queryUuid(parentEventUuid);
             if (event != null) {
-                tasks = DatabaseHelper.getTaskDao().queryForEvent(event);
+                tasks = DatabaseHelper.getTaskDao().queryByEvent(event);
             } else {
                 tasks = new ArrayList<>();
             }

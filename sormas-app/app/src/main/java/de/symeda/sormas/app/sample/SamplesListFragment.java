@@ -55,7 +55,7 @@ public class SamplesListFragment extends ListFragment {
                 final CaseDao caseDao = DatabaseHelper.getCaseDao();
                 final Case caze = caseDao.queryUuid(parentCaseUuid);
                 if (caze != null) {
-                    samples = DatabaseHelper.getSampleDao().queryForCase(caze);
+                    samples = DatabaseHelper.getSampleDao().queryByCase(caze);
                 } else {
                     samples = new ArrayList<>();
                 }

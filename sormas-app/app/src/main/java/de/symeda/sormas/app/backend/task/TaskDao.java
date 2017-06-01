@@ -12,6 +12,7 @@ import java.util.List;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
+import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
@@ -60,6 +61,7 @@ public class TaskDao extends AbstractAdoDao<Task> {
             QueryBuilder builder = queryBuilder();
             Where where = builder.where();
             where.and(
+                    where.eq(AbstractDomainObject.SNAPSHOT, false),
                     where.eq(Task.ASSIGNEE_USER + "_id", ConfigProvider.getUser()),
                     where.eq(Task.TASK_STATUS, TaskStatus.PENDING),
                     where.or(
@@ -93,6 +95,7 @@ public class TaskDao extends AbstractAdoDao<Task> {
             QueryBuilder builder = queryBuilder();
             Where where = builder.where();
             where.and(
+                    where.eq(AbstractDomainObject.SNAPSHOT, false),
                     where.eq(Task.ASSIGNEE_USER + "_id", ConfigProvider.getUser()),
                     where.eq(Task.TASK_STATUS, TaskStatus.PENDING)
             );
@@ -116,6 +119,7 @@ public class TaskDao extends AbstractAdoDao<Task> {
             QueryBuilder builder = queryBuilder();
             Where where = builder.where();
             where.and(
+                    where.eq(AbstractDomainObject.SNAPSHOT, false),
                     where.eq(Task.ASSIGNEE_USER + "_id", ConfigProvider.getUser()),
                     where.eq(Task.TASK_STATUS, TaskStatus.NOT_EXECUTABLE)
             );
@@ -138,6 +142,7 @@ public class TaskDao extends AbstractAdoDao<Task> {
             QueryBuilder builder = queryBuilder();
             Where where = builder.where();
             where.and(
+                    where.eq(AbstractDomainObject.SNAPSHOT, false),
                     where.eq(Task.ASSIGNEE_USER + "_id", ConfigProvider.getUser()),
                     where.eq(Task.TASK_STATUS, TaskStatus.DONE).or().eq(Task.TASK_STATUS, TaskStatus.REMOVED));
 
@@ -150,29 +155,50 @@ public class TaskDao extends AbstractAdoDao<Task> {
         }
     }
 
-    public List<Task> queryForCase(Case caze) {
+    public List<Task> queryByCase(Case caze) {
+        if (caze.isSnapshot()) {
+            throw new IllegalArgumentException("Does not support snapshot entities");
+        }
         try {
-            return queryBuilder().orderBy(Task.PRIORITY, true).orderBy(Task.DUE_DATE, true).where().eq(Task.CAZE + "_id", caze).query();
+            return queryBuilder()
+                    .orderBy(Task.PRIORITY, true).orderBy(Task.DUE_DATE, true)
+                    .where().eq(Task.CAZE + "_id", caze)
+                    .and().eq(AbstractDomainObject.SNAPSHOT, false)
+                    .query();
         } catch (SQLException e) {
-            android.util.Log.e(getTableName(), "Could not perform queryForCase on Task");
+            android.util.Log.e(getTableName(), "Could not perform queryByCase on Task");
             throw new RuntimeException(e);
         }
     }
 
-    public List<Task> queryForContact(Contact contact) {
+    public List<Task> queryByContact(Contact contact) {
+        if (contact.isSnapshot()) {
+            throw new IllegalArgumentException("Does not support snapshot entities");
+        }
         try {
-            return queryBuilder().orderBy(Task.PRIORITY, true).orderBy(Task.DUE_DATE, true).where().eq(Task.CONTACT + "_id", contact).query();
+            return queryBuilder().orderBy(Task.PRIORITY, true)
+                    .orderBy(Task.DUE_DATE, true)
+                    .where().eq(Task.CONTACT + "_id", contact)
+                    .and().eq(AbstractDomainObject.SNAPSHOT, false)
+                    .query();
         } catch (SQLException e) {
-            android.util.Log.e(getTableName(), "Could not perform queryForContact on Task");
+            android.util.Log.e(getTableName(), "Could not perform queryByContact on Task");
             throw new RuntimeException(e);
         }
     }
 
-    public List<Task> queryForEvent(Event event) {
+    public List<Task> queryByEvent(Event event) {
+        if (event.isSnapshot()) {
+            throw new IllegalArgumentException("Does not support snapshot entities");
+        }
         try {
-            return queryBuilder().orderBy(Task.PRIORITY, true).orderBy(Task.DUE_DATE, true).where().eq(Task.EVENT + "_id", event).query();
+            return queryBuilder()
+                    .orderBy(Task.PRIORITY, true).orderBy(Task.DUE_DATE, true)
+                    .where().eq(Task.EVENT + "_id", event)
+                    .and().eq(AbstractDomainObject.SNAPSHOT, false)
+                    .query();
         } catch (SQLException e) {
-            android.util.Log.e(getTableName(), "Could not perform queryForEvent on Task");
+            android.util.Log.e(getTableName(), "Could not perform queryByEvent on Task");
             throw new RuntimeException(e);
         }
     }

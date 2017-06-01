@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
+import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.util.DataUtils;
 
 public class EventParticipantDao extends AbstractAdoDao<EventParticipant> {
@@ -29,12 +30,16 @@ public class EventParticipantDao extends AbstractAdoDao<EventParticipant> {
     }
 
     public List<EventParticipant> getByEvent(Event event) {
+
+        if (event.isSnapshot()) {
+            throw new IllegalArgumentException("Does not support snapshot entities");
+        }
+
         try {
-            QueryBuilder qb = queryBuilder();
-            Where where = qb.where();
-            where.eq(EventParticipant.EVENT + "_id", event);
-//        qb.orderBy(EventParticipant.PERSON, true);
-            return qb.query();
+            return queryBuilder()
+                .where().eq(EventParticipant.EVENT + "_id", event)
+                .and().eq(AbstractDomainObject.SNAPSHOT, false)
+                .query();
         } catch (SQLException e) {
             Log.e(getTableName(), "Could not perform getByEvent on EventParticipant");
             throw new RuntimeException(e);

@@ -10,6 +10,7 @@ import java.util.List;
 
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
+import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.epidata.EpiDataGathering;
@@ -37,7 +38,10 @@ public class PersonDao extends AbstractAdoDao<Person> {
 
     public List<Person> getAllByName(String firstName, String lastName) {
         try {
-            return queryBuilder().where().eq(Person.FIRST_NAME, firstName).and().eq(Person.LAST_NAME, lastName).query();
+            return queryBuilder()
+                    .where().eq(Person.FIRST_NAME, firstName).and().eq(Person.LAST_NAME, lastName)
+                    .and().eq(AbstractDomainObject.SNAPSHOT, false)
+                    .query();
         } catch (SQLException e) {
             Log.e(getTableName(), "Could not perform getAllByName on Person");
             throw new RuntimeException(e);

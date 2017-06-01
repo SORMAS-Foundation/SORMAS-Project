@@ -1,9 +1,7 @@
 package de.symeda.sormas.app.component;
 
-import android.app.Application;
 import android.content.Context;
 import android.databinding.BindingAdapter;
-import android.databinding.BindingBuildInfo;
 import android.databinding.InverseBindingAdapter;
 import android.databinding.InverseBindingListener;
 import android.graphics.Color;
@@ -11,14 +9,10 @@ import android.graphics.Paint;
 import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.text.style.TextAppearanceSpan;
 import android.util.AttributeSet;
-import android.util.Log;
-import android.util.Size;
 import android.view.LayoutInflater;
 import android.widget.TextView;
 
-import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -28,7 +22,6 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
-import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.event.Event;
@@ -223,14 +216,14 @@ public class LabelField extends PropertyField<String> {
     @BindingAdapter("app:sampleTypeOfTest")
     public static void setSampleTypeOfTest(LabelField labelField, String sampleUuid) {
         Sample sample = DatabaseHelper.getSampleDao().queryUuid(sampleUuid);
-        SampleTest mostRecentTest = DatabaseHelper.getSampleTestDao().getMostRecentForSample(sample);
+        SampleTest mostRecentTest = DatabaseHelper.getSampleTestDao().queryMostRecentBySample(sample);
         labelField.setValue(mostRecentTest != null ? mostRecentTest.getTestType().toString() : "");
     }
 
     @BindingAdapter("app:sampleTestResult")
     public static void setSampleTestResult(LabelField labelField, String sampleUuid) {
         Sample sample = DatabaseHelper.getSampleDao().queryUuid(sampleUuid);
-        SampleTest mostRecentTest = DatabaseHelper.getSampleTestDao().getMostRecentForSample(sample);
+        SampleTest mostRecentTest = DatabaseHelper.getSampleTestDao().queryMostRecentBySample(sample);
         labelField.setValue(mostRecentTest != null ? mostRecentTest.getTestResult().toString() : "");
     }
 

@@ -13,6 +13,7 @@ import java.util.List;
 import de.symeda.sormas.api.sample.ShipmentStatus;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
+import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.util.DataUtils;
 
@@ -45,11 +46,19 @@ public class SampleDao extends AbstractAdoDao<Sample> {
         return sample;
     }
 
-    public List<Sample> queryForCase(Case caze) {
+    public List<Sample> queryByCase(Case caze) {
+        if (caze.isSnapshot()) {
+            throw new IllegalArgumentException("Does not support snapshot entities");
+        }
+
         try {
-            return queryBuilder().orderBy(Sample.SAMPLE_DATE_TIME, true).where().eq(Sample.ASSOCIATED_CASE + "_id", caze).query();
+            return queryBuilder()
+                    .orderBy(Sample.SAMPLE_DATE_TIME, true)
+                    .where().eq(Sample.ASSOCIATED_CASE + "_id", caze)
+                    .and().eq(AbstractDomainObject.SNAPSHOT, false)
+                    .query();
         } catch (SQLException e) {
-            android.util.Log.e(getTableName(), "Could not perform queryForCase on Sample");
+            android.util.Log.e(getTableName(), "Could not perform queryByCase on Sample");
             throw new RuntimeException(e);
         }
     }
