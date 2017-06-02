@@ -69,8 +69,7 @@ public final class RetroProvider {
         // Basic auth as explained in https://futurestud.io/tutorials/android-basic-authentication-with-retrofit
 
         String authToken = Credentials.basic(ConfigProvider.getUsername(), ConfigProvider.getPassword());
-        AuthenticationInterceptor interceptor =
-                new AuthenticationInterceptor(authToken);
+        AuthenticationInterceptor interceptor = new AuthenticationInterceptor(authToken);
 
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
         httpClient.addInterceptor(interceptor);
@@ -82,7 +81,7 @@ public final class RetroProvider {
                 .client(httpClient.build())
                 .build();
 
-
+        // check rest api version
         Response<String> versionResponse;
         try {
 
@@ -93,7 +92,6 @@ public final class RetroProvider {
                 @Override
                 protected Response<String> doInBackground(Void... params) {
                     Call<String> versionCall = infoFacadeRetro.getVersion();
-                    Response<String> versionResponse = null;
                     try {
                         return versionCall.execute();
                     } catch (IOException e) {

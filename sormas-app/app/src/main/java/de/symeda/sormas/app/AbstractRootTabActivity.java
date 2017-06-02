@@ -61,8 +61,16 @@ public abstract class AbstractRootTabActivity extends AbstractTabActivity {
                         this,
                         R.layout.drawer_list_item,
                         menuTitles));
+
         // Set the list's click listener
-        menuDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+        menuDrawerList.setOnItemClickListener(new ListView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                selectItem(position);
+                // necessary to prevent the drawer from staying open when the same entry is selected
+                menuDrawerLayout.closeDrawers();
+            }
+        });
 
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_menu_black_24dp);
 
@@ -254,12 +262,13 @@ public abstract class AbstractRootTabActivity extends AbstractTabActivity {
                 break;
             case 5:
                 showSettingsView();
+                // don't keep this button selected
+                menuDrawerList.clearChoices();
                 break;
             case 6:
                 syncAll();
                 // don't keep this button selected
                 menuDrawerList.clearChoices();
-                menuDrawerLayout.closeDrawers();
                 break;
             case 7:
                 logout();
@@ -278,14 +287,4 @@ public abstract class AbstractRootTabActivity extends AbstractTabActivity {
     public void onStop() {
         super.onStop();
     }
-
-    private class DrawerItemClickListener implements ListView.OnItemClickListener {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            selectItem(position);
-            // necessary to prevent the drawer from staying open when the same entry is selected
-            menuDrawerLayout.closeDrawers();
-        }
-    }
-
 }
