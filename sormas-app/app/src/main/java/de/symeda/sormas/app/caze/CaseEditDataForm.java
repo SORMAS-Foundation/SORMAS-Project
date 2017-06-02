@@ -47,12 +47,6 @@ public class CaseEditDataForm extends FormTab {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.case_data_fragment_layout, container, false);
-        return binding.getRoot();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
 
         final String caseUuid = (String) getArguments().getString(Case.UUID);
         final CaseDao caseDao = DatabaseHelper.getCaseDao();
@@ -161,6 +155,8 @@ public class CaseEditDataForm extends FormTab {
         if (binding.caseDataPregnant.getVisibility() == View.GONE && binding.caseDataMeaslesVaccination.getVisibility() == View.GONE) {
             binding.caseMedicalInformationHeadline.setVisibility(View.GONE);
         }
+
+        return binding.getRoot();
     }
 
     @Override

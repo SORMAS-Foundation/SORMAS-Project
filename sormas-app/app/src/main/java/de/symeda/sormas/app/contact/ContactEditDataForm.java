@@ -39,12 +39,6 @@ public class ContactEditDataForm extends FormTab {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.contact_data_fragment_layout, container, false);
-        return binding.getRoot();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
 
         final String contactUuid = (String) getArguments().getString(Contact.UUID);
         final ContactDao contactDao = DatabaseHelper.getContactDao();
@@ -80,6 +74,7 @@ public class ContactEditDataForm extends FormTab {
             binding.contactCreateCase.setVisibility(View.GONE);
         }
 
+        return binding.getRoot();
     }
 
     @Override

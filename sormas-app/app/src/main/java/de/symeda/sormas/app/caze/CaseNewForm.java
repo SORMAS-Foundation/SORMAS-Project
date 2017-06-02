@@ -39,13 +39,8 @@ public class CaseNewForm extends FormTab {
     private Disease disease;
     private CaseNewFragmentLayoutBinding binding;
 
-    private Tracker tracker;
-
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        SormasApplication application = (SormasApplication) getActivity().getApplication();
-        tracker = application.getDefaultTracker();
-
         Bundle arguments = this.getArguments();
         // If this case is created from a contact, there's already a disease and person available
         if (arguments.containsKey(CaseNewActivity.DISEASE)) {
@@ -57,12 +52,6 @@ public class CaseNewForm extends FormTab {
         caze = DatabaseHelper.getCaseDao().create(person);
 
         binding = DataBindingUtil.inflate(inflater, R.layout.case_new_fragment_layout, container, false);
-        return binding.getRoot();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
 
         binding.setCaze(caze);
 
@@ -142,6 +131,8 @@ public class CaseNewForm extends FormTab {
             binding.getCaze().setPerson(person);
             binding.getCaze().setDisease(disease);
         }
+
+        return binding.getRoot();
     }
 
     @Override

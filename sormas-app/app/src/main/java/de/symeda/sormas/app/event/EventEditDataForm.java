@@ -37,12 +37,6 @@ public class EventEditDataForm extends FormTab {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.event_data_fragment_layout, container, false);
-        return binding.getRoot();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
 
         final String eventUuid = getArguments().getString(Event.UUID);
         final EventDao eventDao = DatabaseHelper.getEventDao();
@@ -83,6 +77,8 @@ public class EventEditDataForm extends FormTab {
 
         // init fields
         toggleTypeOfPlaceTextField();
+
+        return binding.getRoot();
     }
 
     @Override

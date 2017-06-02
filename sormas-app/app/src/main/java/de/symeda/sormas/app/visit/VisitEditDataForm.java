@@ -31,12 +31,7 @@ public class VisitEditDataForm extends FormTab {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.visit_data_fragment_layout, container, false);
-        return binding.getRoot();
-    }
 
-    @Override
-    public void onResume() {
-        super.onResume();
         Visit visit;
 
         // create a new visit from contact data
@@ -54,6 +49,8 @@ public class VisitEditDataForm extends FormTab {
 
         binding.visitVisitDateTime.initialize(this);
         binding.visitVisitStatus.initialize(VisitStatus.class);
+
+        return binding.getRoot();
     }
 
     @Override

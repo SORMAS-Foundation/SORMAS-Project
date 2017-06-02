@@ -39,13 +39,6 @@ public class ContactNewForm extends FormTab {
         contact.setReportDateTime(new Date());
 
         binding = DataBindingUtil.inflate(inflater, R.layout.contact_new_fragment_layout, container, false);
-        return binding.getRoot();
-
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
 
         binding.setContact(contact);
 
@@ -53,6 +46,9 @@ public class ContactNewForm extends FormTab {
         binding.contactContactProximity.initialize(ContactProximity.class);
 
         FieldHelper.initSpinnerField(binding.contactRelationToCase, ContactRelation.class);
+
+        return binding.getRoot();
+
     }
 
     @Override

@@ -29,12 +29,15 @@ public class SampleTestDao extends AbstractAdoDao<SampleTest> {
 
     public SampleTest queryMostRecentBySample(Sample sample) {
 
+        if (sample == null) {
+            return null;
+        }
+
         if (sample.isSnapshot()) {
             throw new IllegalArgumentException("Does not support snapshot entities");
         }
 
         try {
-            if (sample == null) return null;
             List<SampleTest> tests = queryBuilder()
                     .orderBy(SampleTest.TEST_DATE_TIME, false)
                     .where().eq(SampleTest.SAMPLE + "_id", sample)

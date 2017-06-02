@@ -37,17 +37,12 @@ public class HospitalizationForm extends FormTab {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.case_hospitalization_fragment_layout, container, false);
         View view = binding.getRoot();
-        return view;
-    }
 
-    @Override
-    public void onResume() {
-        super.onResume();
         final String caseUuid = getArguments().getString(HospitalizationForm.KEY_CASE_UUID);
 
         final Case caze = DatabaseHelper.getCaseDao().queryUuid(caseUuid);
         if (caze.getHealthFacility() != null) {
-            ((LabelField) getView().findViewById(R.id.hospitalization_healthFacility)).setValue(caze.getHealthFacility().toString());
+            ((LabelField) view.findViewById(R.id.hospitalization_healthFacility)).setValue(caze.getHealthFacility().toString());
         }
 
         // lazy loading hospitalization and inner previousHospitalization
@@ -121,8 +116,9 @@ public class HospitalizationForm extends FormTab {
                 binding.hospitalization1isolationDate.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
             }
         });
-    }
 
+        return view;
+    }
 
     @Override
     public AbstractDomainObject getData() {

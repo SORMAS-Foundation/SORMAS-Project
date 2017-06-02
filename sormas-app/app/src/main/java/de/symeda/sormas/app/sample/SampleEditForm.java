@@ -43,12 +43,7 @@ public class SampleEditForm extends FormTab {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.sample_data_fragment_layout, container, false);
-        return binding.getRoot();
-    }
 
-    @Override
-    public void onResume() {
-        super.onResume();
         final String sampleUuid = getArguments().getString(SampleEditActivity.KEY_SAMPLE_UUID);
 
         final SampleDao sampleDao = DatabaseHelper.getSampleDao();
@@ -154,6 +149,8 @@ public class SampleEditForm extends FormTab {
         } else {
             binding.recentTestLayout.setVisibility(View.GONE);
         }
+
+        return binding.getRoot();
     }
 
     @Override

@@ -51,13 +51,6 @@ public class EpiDataForm extends FormTab {
         binding = DataBindingUtil.inflate(inflater, R.layout.case_epidata_fragment_layout, container, false);
         View view = binding.getRoot();
 
-        return view;
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-
         final Disease disease = (Disease) getArguments().getSerializable(Case.DISEASE);
         final String epiDataUuid = getArguments().getString(EpiData.UUID);
 
@@ -265,6 +258,8 @@ public class EpiDataForm extends FormTab {
 
         visibilityDisease(disease);
         showOrHideHeadlines();
+
+        return view;
     }
 
     private void visibilityDisease(Disease disease) {

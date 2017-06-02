@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.NavUtils;
+import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -50,6 +51,13 @@ public class ContactEditActivity extends AbstractEditTabActivity {
 
         setContentView(R.layout.case_edit_activity_layout);
 
+
+        // This makes sure that the given amount of tabs is kept in memory, which means that
+        // Android doesn't call onResume when the tab has no focus which would otherwise lead
+        // to certain spinners not displaying their values
+        ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
+        viewPager.setOffscreenPageLimit(10);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);
         if (toolbar != null) {
             setSupportActionBar(toolbar);
@@ -59,11 +67,6 @@ public class ContactEditActivity extends AbstractEditTabActivity {
 
         SormasApplication application = (SormasApplication) getApplication();
         tracker = application.getDefaultTracker();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
 
         Bundle params = getIntent().getExtras();
         if (params != null) {
@@ -85,7 +88,6 @@ public class ContactEditActivity extends AbstractEditTabActivity {
 
         pager.setCurrentItem(currentTab);
     }
-
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -205,7 +207,7 @@ public class ContactEditActivity extends AbstractEditTabActivity {
                             SyncContactsTask.syncContactsWithProgressDialog(this, new SyncCallback() {
                                 @Override
                                 public void call(boolean syncFailed) {
-                                    onResume();
+                                    reloadTabs();
                                     pager.setCurrentItem(currentTab);
                                     if (syncFailed) {
                                         Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_sync_error_saved), getResources().getString(R.string.entity_contact)), Snackbar.LENGTH_LONG).show();

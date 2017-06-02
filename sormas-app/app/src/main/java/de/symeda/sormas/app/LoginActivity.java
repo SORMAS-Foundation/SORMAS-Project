@@ -57,11 +57,6 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
     public void login(View view) {
         EditText usernameField = (EditText) findViewById(R.id.login_user);
         EditText passwordField = (EditText) findViewById(R.id.login_password);

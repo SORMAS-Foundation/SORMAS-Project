@@ -28,12 +28,6 @@ public class SettingsForm extends FormTab {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.settings_fragment_layout, container, false);
-        return binding.getRoot();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
 
         binding.configServerUrl.setValue((String)ConfigProvider.getServerRestUrl());
 
@@ -42,6 +36,8 @@ public class SettingsForm extends FormTab {
                 dropData();
             }
         });
+
+        return binding.getRoot();
     }
 
     private void dropData() {

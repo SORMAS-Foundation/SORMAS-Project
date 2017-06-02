@@ -50,7 +50,6 @@ import de.symeda.sormas.app.util.FormTab;
 import de.symeda.sormas.app.util.Item;
 import de.symeda.sormas.app.util.Consumer;
 
-
 /**
  * Created by Stefan Szczesny on 27.07.2016.
  */
@@ -61,12 +60,6 @@ public class PersonEditForm extends FormTab {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.person_edit_fragment_layout, container, false);
-        return binding.getRoot();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
 
         final String personUuid = getArguments().getString(Person.UUID);
         PersonDao personDao = DatabaseHelper.getPersonDao();
@@ -180,6 +173,12 @@ public class PersonEditForm extends FormTab {
         binding.personApproximate1Age.setInputType(InputType.TYPE_CLASS_NUMBER);
         binding.personPhone.setInputType(InputType.TYPE_CLASS_PHONE);
 
+        return binding.getRoot();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
         // @TODO: Workaround, find a better solution. Remove autofocus on first field.
         getView().requestFocus();
     }

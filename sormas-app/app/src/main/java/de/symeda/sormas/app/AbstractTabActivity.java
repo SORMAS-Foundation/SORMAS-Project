@@ -68,4 +68,8 @@ public abstract class AbstractTabActivity extends AppCompatActivity {
         this.currentTab = currentTab;
     }
 
+    public void reloadTabs() {
+        createTabViews((FragmentStatePagerAdapter) pager.getAdapter());
+    }
+
 }

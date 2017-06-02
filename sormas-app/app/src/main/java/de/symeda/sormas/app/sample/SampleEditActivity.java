@@ -78,11 +78,6 @@ public class SampleEditActivity extends AppCompatActivity {
 
         SormasApplication application = (SormasApplication) getApplication();
         tracker = application.getDefaultTracker();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
 
         Bundle params = getIntent().getExtras();
         if (params != null) {

@@ -89,8 +89,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	private final HashMap<Class<? extends AbstractDomainObject>, AbstractAdoDao<? extends AbstractDomainObject>> adoDaos = new HashMap<>();
 
-
 	private SyncLogDao syncLogDao = null;
+
 	private DatabaseHelper(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);//, R.raw.ormlite_config);
 		this.context = context;

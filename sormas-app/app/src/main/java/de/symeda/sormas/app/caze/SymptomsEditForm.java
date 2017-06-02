@@ -54,24 +54,12 @@ public class SymptomsEditForm extends FormTab {
     private List<SymptomStateField> nonConditionalSymptoms;
     private List<SymptomStateField> conditionalBleedingSymptoms;
 
-    private Tracker tracker;
-
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.case_symptoms_fragment_layout, container, false);
         View view = binding.getRoot();
 
-        SormasApplication application = (SormasApplication) getActivity().getApplication();
-        tracker = application.getDefaultTracker();
-
-        //view.requestFocus();
-        return view;
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        Symptoms symptoms = null;
+        Symptoms symptoms;
 
         final Disease disease = (Disease) getArguments().getSerializable(Case.DISEASE);
 
@@ -191,6 +179,13 @@ public class SymptomsEditForm extends FormTab {
         binding.symptomsIllLocationFrom.initialize(this);
         binding.symptomsIllLocationTo.initialize(this);
 
+        //view.requestFocus();
+        return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
         // @TODO: Workaround, find a better solution. Remove autofocus on first field.
         getView().requestFocus();
     }
@@ -338,10 +333,10 @@ public class SymptomsEditForm extends FormTab {
         SymptomState symptomState = binding.symptomsUnexplainedBleeding.getValue();
         for (int fieldId:fieldIds) {
             if(symptomState == SymptomState.YES) {
-                setFieldVisible(getView().findViewById(fieldId), true);
+                setFieldVisible(binding.getRoot().findViewById(fieldId), true);
             }
             else {
-                View view = getView().findViewById(fieldId);
+                View view = binding.getRoot().findViewById(fieldId);
                 // reset value
                 ((SymptomStateField)view).setValue(null);
                 setFieldGone(view);

@@ -61,11 +61,6 @@ public class VisitEditActivity extends AbstractEditTabActivity {
 
         SormasApplication application = (SormasApplication) getApplication();
         tracker = application.getDefaultTracker();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
 
         Bundle params = getIntent().getExtras();
         adapter = new VisitEditPagerAdapter(getSupportFragmentManager(), params);

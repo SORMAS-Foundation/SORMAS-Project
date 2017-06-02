@@ -75,11 +75,6 @@ public class CaseEditActivity extends AbstractEditTabActivity {
 
         SormasApplication application = (SormasApplication) getApplication();
         tracker = application.getDefaultTracker();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
 
         Bundle params = getIntent().getExtras();
         if (params != null) {
@@ -259,7 +254,9 @@ public class CaseEditActivity extends AbstractEditTabActivity {
                             SyncCasesTask.syncCasesWithProgressDialog(this, new SyncCallback() {
                                 @Override
                                 public void call(boolean syncFailed) {
-                                    onResume();
+                                    // entity has to be reloaded
+                                    reloadTabs();
+
                                     if (syncFailed) {
                                         Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_sync_error_saved), getResources().getString(R.string.entity_case)), Snackbar.LENGTH_LONG).show();
                                     } else {

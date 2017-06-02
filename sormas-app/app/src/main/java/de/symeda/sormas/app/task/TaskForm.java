@@ -56,11 +56,6 @@ public class TaskForm extends FormTab {
         binding = DataBindingUtil.inflate(inflater, R.layout.task_fragment_layout, container, false);
         SormasApplication application = (SormasApplication) getContext().getApplicationContext();
         tracker = application.getDefaultTracker();
-        return binding.getRoot();
-    }
-
-    @Override
-    public void onResume() {
 
         final String taskUuid = (String) getArguments().getString(Task.UUID);
         final TaskDao taskDao = DatabaseHelper.getTaskDao();
@@ -140,6 +135,8 @@ public class TaskForm extends FormTab {
         if (binding.getTask().getCreatorComment() == null || binding.getTask().getCreatorComment().isEmpty()) {
             binding.taskCreatorComment.setVisibility(View.GONE);
         }
+
+        return binding.getRoot();
     }
 
     @Override

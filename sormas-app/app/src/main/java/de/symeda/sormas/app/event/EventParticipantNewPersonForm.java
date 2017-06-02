@@ -29,15 +29,9 @@ public class EventParticipantNewPersonForm extends FormTab {
         eventParticipant.setPerson(person);
 
         binding = DataBindingUtil.inflate(inflater, R.layout.event_participant_new_fragment_layout, container, false);
+        binding.setEventParticipant(eventParticipant);
         return binding.getRoot();
 
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        binding.setEventParticipant(eventParticipant);
     }
 
     @Override

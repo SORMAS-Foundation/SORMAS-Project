@@ -84,8 +84,8 @@ public class EventParticipantEditActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        eventParticipantTab.onResume();
-        personEditForm.onResume();
+//        eventParticipantTab.onResume();
+//        personEditForm.onResume();
     }
 
     @Override
