@@ -8,10 +8,6 @@ import android.text.Html;
 import android.view.View;
 import android.widget.Button;
 
-import com.j256.ormlite.support.ConnectionSource;
-import com.j256.ormlite.table.TableUtils;
-
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -60,7 +56,7 @@ public class SyncLogDialog {
                     @Override
                     public void onClick(View v) {
                         if (logs.size() > lastDisplayCount) {
-                            buildAndDisplayAlertContent(context);
+                            buildAndDisplayDialogContent(context);
                         } else {
                             Snackbar.make(dialog.getWindow().getDecorView(), R.string.snackbar_no_more_entries, Snackbar.LENGTH_LONG).show();
                         }
@@ -69,11 +65,11 @@ public class SyncLogDialog {
             }
         });
 
-        buildAndDisplayAlertContent(context);
+        buildAndDisplayDialogContent(context);
         dialog.show();
     }
 
-    private void buildAndDisplayAlertContent(Context context) {
+    private void buildAndDisplayDialogContent(Context context) {
         if (logs.size() == 0) {
             dialog.setMessage(context.getString(R.string.hint_no_sync_errors));
         } else {
