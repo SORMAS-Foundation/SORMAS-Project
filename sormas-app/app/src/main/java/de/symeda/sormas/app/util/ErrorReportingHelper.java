@@ -47,6 +47,15 @@ public class ErrorReportingHelper {
                         .build());
     }
 
+    /**
+     * Builds a string to send to Google Analytics; doesn't use the detailMessage from the Throwable because it could contain personal information
+     *
+     * @param exceptionName
+     * @param stackTrace
+     * @param entity
+     * @param additionalInformation
+     * @return
+     */
     public static String buildDescription(String exceptionName, StackTraceElement[] stackTrace, AbstractDomainObject entity, String... additionalInformation) {
         StringBuilder description = new StringBuilder();
         description.append(exceptionName + " - Stack trace: ");

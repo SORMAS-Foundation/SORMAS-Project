@@ -63,7 +63,7 @@ public class CaseEditActivity extends AbstractEditTabActivity {
         // Android doesn't call onResume when the tab has no focus which would otherwise lead
         // to certain spinners not displaying their values
         ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
-        viewPager.setOffscreenPageLimit(10);
+        viewPager.setOffscreenPageLimit(CaseEditTabs.values().length);
 
         toolbar = (Toolbar) findViewById(R.id.my_toolbar);
         if (toolbar != null) {
