@@ -231,7 +231,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> extends R
                     snapshot = querySnapshotByUuid(ado.getUuid());
 
                     if (snapshot != null && !ado.getChangeDate().equals(snapshot.getChangeDate())) {
-                        throw new DaoException("Change date does not match. Looks like sync was done while between reading and saving the entity: " + ado);
+                        throw new DaoException("Change date does not match. Looks like sync was done between reading and saving the entity: " + ado);
                     }
 
                     // just update the existing modified version
@@ -239,7 +239,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> extends R
                 } else {
 
                     if (!ado.getChangeDate().equals(snapshot.getChangeDate())) {
-                        throw new DaoException("Change date does not match. Looks like sync was done while between reading and saving the entity: " + ado);
+                        throw new DaoException("Change date does not match. Looks like sync was done between reading and saving the entity: " + ado);
                     }
 
                     // set to modified and update
@@ -401,7 +401,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> extends R
             if (snapshot != null) {
                 // no existing entity but a snapshot -> the entity was deleted
                 if (!source.getChangeDate().equals(snapshot.getChangeDate())) {
-                    // source does not match snapshot -> there are changed
+                    // source does not match snapshot -> there are changed fields that we need to keep
                     // we have a conflict
                     Log.i(source.getClass().getSimpleName(), "Recreating deleted entity, because it was modified: " + source.getUuid());
 
@@ -533,7 +533,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> extends R
             if (collectionProperties != null) {
                 for (PropertyDescriptor property : collectionProperties) {
 
-                    // merge all collection elements
+                    // merge all collection elements - do this after saving because elements reference their parent
                     Collection<AbstractDomainObject> currentCollection = (Collection<AbstractDomainObject>)property.getReadMethod().invoke(current);
                     Collection<AbstractDomainObject> sourceCollection = (Collection<AbstractDomainObject>)property.getReadMethod().invoke(source);
                     mergeCollection(currentCollection, sourceCollection, current, context);
@@ -554,6 +554,9 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> extends R
     }
 
     private void mergeCollection(Collection<AbstractDomainObject> existingCollection, Collection<AbstractDomainObject> sourceCollection, ADO parent, Context context) throws DaoException {
+
+        // TODO keep new entries
+        // TODO log to sync problems when a modified entity is deleted by the server
 
         // delete no longer existing elements
         existingCollection.removeAll(sourceCollection); // ignore kept
@@ -597,6 +600,11 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> extends R
         accept((ADO)ado);
     }
 
+    /**
+     * Set a modified entity and its children to unmodified and remove the snapshots
+     * @param ado
+     * @throws DaoException
+     */
     public void accept(ADO ado) throws DaoException {
 
         if (ado.isSnapshot()) {
@@ -669,60 +677,6 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> extends R
         }
     }
 
-//    private AbstractDomainObject cloneCascadingCast(AbstractDomainObject ado) {
-//        return cloneCascading((ADO)ado);
-//    }
-//
-//    /**
-//     *
-//     * @param ado
-//     * @return The cloneCascading - not persisted yet!
-//     */
-//    public ADO cloneCascading(ADO ado) {
-//
-//        if (ado.isSnapshot()) {
-//            throw new IllegalArgumentException("Can't cloneCascading a cloned original");
-//        }
-//
-//        try {
-//
-//            ADO clone = queryForId(ado.getId());
-//            clone.setId(null);
-//            clone.setSnapshot(true);
-//
-//            // ignore parent property
-//            EmbeddedAdo annotation = ado.getClass().getAnnotation(EmbeddedAdo.class);
-//            String parentProperty = annotation.parentAccessor();
-//
-//            // go through all embedded entities and create clones for them
-//            Iterator<PropertyDescriptor> propertyIterator = AdoMergeHelper.getEmbeddedAdoProperties(ado.getClass());
-//            while (propertyIterator.hasNext()) {
-//                PropertyDescriptor property = propertyIterator.next();
-//
-//                // ignore parent property
-//                if (!parentProperty.isEmpty() == parentProperty.equals(property.getName()))
-//                    continue;
-//
-//                // get the embedded entity
-//                AbstractDomainObject embeddedAdo = (AbstractDomainObject)property.getReadMethod().invoke(ado);
-//                // cloneCascading it
-//                AbstractDomainObject clonedEmbeddedAdo = DatabaseHelper.getAdoDao(embeddedAdo.getClass()).cloneCascadingCast(embeddedAdo);
-//
-//                if (clonedEmbeddedAdo == null) {
-//                    throw new IllegalArgumentException("No cloneCascading was created for " + embeddedAdo);
-//                }
-//                // write link for cloneCascading of embedded entity
-//                property.getWriteMethod().invoke(clone, clonedEmbeddedAdo);
-//            }
-//
-//            return clone;
-//
-//        } catch (InvocationTargetException e) {
-//            throw new RuntimeException(e);
-//        } catch (IllegalAccessException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
     public void deleteCascadeWithCast(AbstractDomainObject ado) {
         deleteCascade((ADO)ado);
     }
