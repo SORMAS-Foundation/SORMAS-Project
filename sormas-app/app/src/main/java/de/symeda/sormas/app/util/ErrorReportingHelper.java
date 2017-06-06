@@ -7,7 +7,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 
-import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 
@@ -42,7 +41,7 @@ public class ErrorReportingHelper {
      */
     public static void sendCaughtException(Tracker tracker, Exception e, AbstractDomainObject entity, boolean fatal, String... additionalInformation) {
         tracker.send(new HitBuilders.ExceptionBuilder()
-                        .setDescription(buildDescription(e.getClass().getSimpleName(), e.getStackTrace(), entity, additionalInformation))
+                        .setDescription(buildErrorReportDescription(e, entity, additionalInformation))
                         .setFatal(fatal)
                         .build());
     }
@@ -50,15 +49,19 @@ public class ErrorReportingHelper {
     /**
      * Builds a string to send to Google Analytics; doesn't use the detailMessage from the Throwable because it could contain personal information
      *
-     * @param exceptionName
-     * @param stackTrace
+     * @param t
      * @param entity
      * @param additionalInformation
      * @return
      */
-    public static String buildDescription(String exceptionName, StackTraceElement[] stackTrace, AbstractDomainObject entity, String... additionalInformation) {
+    public static String buildErrorReportDescription(Throwable t, AbstractDomainObject entity, String... additionalInformation) {
+        StackTraceElement[] stackTrace = t.getStackTrace();
+        Throwable rootCause = getRootCause(t);
+        StackTraceElement[] rootCauseStackTrace = rootCause.getStackTrace();
+
         StringBuilder description = new StringBuilder();
-        description.append(exceptionName + " - Stack trace: ");
+        description.append(t.getClass().getSimpleName() + " - Root cause: ");
+        description.append(rootCause + " - Stack trace: ");
         for (int i = 0; i < stackTrace.length; i++) {
             StackTraceElement element = stackTrace[i];
             if (i == stackTrace.length - 1) {
@@ -69,8 +72,19 @@ public class ErrorReportingHelper {
                         element.getLineNumber() + " -> ");
             }
         }
+        description.append(" - Root cause stack trace: ");
+        for (int i = 0; i < rootCauseStackTrace.length; i++) {
+            StackTraceElement element = rootCauseStackTrace[i];
+            if (i == rootCauseStackTrace.length - 1) {
+                description.append(element.getClassName() + ":" + element.getMethodName() + ":" +
+                        element.getLineNumber());
+            } else {
+                description.append(element.getClassName() + ":" + element.getMethodName() + ":" +
+                        element.getLineNumber() + " -> ");
+            }
+        }
         if (entity != null) {
-            description.append(" - " + entity.getClass().getSimpleName() + ": " + entity.getUuid());
+            description.append(" - Entity: " + entity.getClass().getSimpleName() + ": " + entity.getUuid());
         }
         if (ConfigProvider.getUser() != null && ConfigProvider.getUser().getUuid() != null) {
             description.append(" - User: " + ConfigProvider.getUser().getUuid());
