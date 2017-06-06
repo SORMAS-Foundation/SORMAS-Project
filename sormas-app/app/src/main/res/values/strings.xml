@@ -64,6 +64,7 @@
     <string name="headline_patient">Patient</string>
     <string name="headline_symptoms_data">Clinical Signs and Symptoms</string>
     <string name="headline_symptoms_illLocation">Location Where Person Became Symptomatic</string>
+    <string name="headline_symptoms_stay_period">Time Period of Stay</string>
     <string name="headline_person_information">Person</string>
     <string name="headline_task">Tasks</string>
     <string name="headline_task_data">Task information</string>

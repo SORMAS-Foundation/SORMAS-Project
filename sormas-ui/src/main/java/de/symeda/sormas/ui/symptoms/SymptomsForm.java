@@ -38,6 +38,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 
 	private static final String BUTTONS_LOC = "buttonsLoc";
 	private static final String ILLLOCATION_LOC = "illLocationLoc";
+	private static final String STAY_PERIOD_LOC = "stayPeriodLoc";
 
 	private static final String HTML_LAYOUT = LayoutUtil.h3(CssStyles.VSPACE3, "Clinical Signs and Symptoms")
 			+ LayoutUtil.divCss(CssStyles.VSPACE3,
@@ -78,6 +79,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			+ LayoutUtil.loc(ILLLOCATION_LOC)
 			+ LayoutUtil.divCss(CssStyles.VSPACE3,
 					LayoutUtil.fluidRowLocs(SymptomsDto.ILLLOCATION))
+			+ LayoutUtil.loc(STAY_PERIOD_LOC)
 			+ LayoutUtil.divCss(CssStyles.VSPACE3,
 					LayoutUtil.fluidRowLocs(SymptomsDto.ILLLOCATION_FROM, SymptomsDto.ILLLOCATION_TO));
 
@@ -131,6 +133,10 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			illLocationCaptionLabel.setContentMode(ContentMode.HTML);
 			getContent().addComponent(illLocationCaptionLabel, ILLLOCATION_LOC);
 	    	addField(SymptomsDto.ILLLOCATION, LocationForm.class).setCaption(null);
+	    	String stayPeriodCaptionLayout = LayoutUtil.h3(CssStyles.VSPACE3, "Time Period of Stay");
+	    	Label stayPeriodCaptionLabel = new Label(stayPeriodCaptionLayout);
+	    	stayPeriodCaptionLabel.setContentMode(ContentMode.HTML);
+	    	getContent().addComponent(stayPeriodCaptionLabel, STAY_PERIOD_LOC);
 	    	addField(SymptomsDto.ILLLOCATION_FROM);
 	    	addField(SymptomsDto.ILLLOCATION_TO);
 		}

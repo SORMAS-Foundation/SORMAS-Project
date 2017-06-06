@@ -50,6 +50,7 @@ import de.symeda.sormas.app.util.ValidationFailedException;
 public class SymptomsEditForm extends FormTab {
 
     public static final String NEW_SYMPTOMS = "newSymptoms";
+    public static final String FOR_VISIT = "forVisit";
     private CaseSymptomsFragmentLayoutBinding binding;
     private List<SymptomStateField> nonConditionalSymptoms;
     private List<SymptomStateField> conditionalBleedingSymptoms;
@@ -165,20 +166,24 @@ public class SymptomsEditForm extends FormTab {
             }
         });
 
-        // ==================== IllLocation ===============
-        LocationDialog.addLocationField(getActivity(), symptoms.getIllLocation(), binding.symptomsIllLocation, binding.formCpBtnAddress, new Consumer() {
-            @Override
-            public void accept(Object parameter) {
-                if (parameter instanceof Location) {
-                    binding.symptomsIllLocation.setValue(parameter.toString());
-                    binding.getSymptoms().setIllLocation(((Location) parameter));
+        if (!getArguments().getBoolean(FOR_VISIT)) {
+            binding.symptomsIllLocationLayout.setVisibility(View.VISIBLE);
+            // ==================== IllLocation ===============
+            LocationDialog.addLocationField(getActivity(), symptoms.getIllLocation(), binding.symptomsIllLocation, binding.formCpBtnAddress, new Consumer() {
+                @Override
+                public void accept(Object parameter) {
+                    if (parameter instanceof Location) {
+                        binding.symptomsIllLocation.setValue(parameter.toString());
+                        binding.getSymptoms().setIllLocation(((Location) parameter));
+                    }
                 }
-            }
-        });
+            });
 
-        binding.symptomsIllLocationFrom.initialize(this);
-        binding.symptomsIllLocationTo.initialize(this);
-
+            binding.symptomsIllLocationFrom.initialize(this);
+            binding.symptomsIllLocationTo.initialize(this);
+        } else {
+            binding.symptomsIllLocationLayout.setVisibility(View.GONE);
+        }
         //view.requestFocus();
         return view;
     }

@@ -189,17 +189,22 @@
                     android:nextFocusForward="@+id/person_deathPlaceDescription"
                     android:value="@={person.deathPlaceType}"/>
 
-                <de.symeda.sormas.app.component.TextField
-                    android:id="@+id/person_deathPlaceDescription"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.5"
-                    android:paddingTop="@dimen/field_padding"
-                    android:paddingBottom="@dimen/field_padding"
-                    android:nextFocusForward="@+id/person_phone"
-                    android:value="@={person.deathPlaceDescription}"/>
+                    android:orientation="vertical"
+                    android:layout_weight="0.5"/>
 
             </LinearLayout>
+
+            <de.symeda.sormas.app.component.TextField
+                android:id="@+id/person_deathPlaceDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/field_padding"
+                android:paddingBottom="@dimen/field_padding"
+                android:nextFocusForward="@+id/person_phone"
+                android:value="@={person.deathPlaceDescription}"/>
 
             <LinearLayout
                 android:orientation="horizontal"

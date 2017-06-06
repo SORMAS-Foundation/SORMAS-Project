@@ -52,6 +52,7 @@ public class VisitEditPagerAdapter extends FragmentStatePagerAdapter {
                     Contact contact = DatabaseHelper.getContactDao().queryUuid(keyContactUuid);
                     symptomsEditBundle.putSerializable(Visit.DISEASE, contact.getCaze().getDisease());
                     symptomsEditBundle.putBoolean(SymptomsEditForm.NEW_SYMPTOMS, true);
+                    symptomsEditBundle.putBoolean(SymptomsEditForm.FOR_VISIT, true);
                 }
                 // edit symptoms for given visit
                 else {
@@ -59,6 +60,7 @@ public class VisitEditPagerAdapter extends FragmentStatePagerAdapter {
                     Visit visit = DatabaseHelper.getVisitDao().queryUuid(visitUuid);
                     symptomsEditBundle.putString(Symptoms.UUID, visit.getSymptoms().getUuid());
                     symptomsEditBundle.putSerializable(Visit.DISEASE, visit.getDisease());
+                    symptomsEditBundle.putBoolean(SymptomsEditForm.FOR_VISIT, true);
                 }
 
                 symptomsEditForm.setArguments(symptomsEditBundle);

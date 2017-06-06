@@ -432,57 +432,77 @@
 
             </LinearLayout>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="@string/headline_symptoms_illLocation"
-                android:id="@+id/case_illLocation_headline"
-                android:textColor="@android:color/tab_indicator_text"
-                android:textSize="@dimen/abc_text_size_body_1_material"
-                android:textStyle="bold"
-                android:paddingTop="30dp"/>
-
             <LinearLayout
-                android:orientation="horizontal"
+                android:id="@+id/symptoms_illLocationLayout"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
-                <ImageButton
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/form_cp_btn_address"
-                    android:src="@drawable/ic_explore_black_24dp"
-                    android:layout_gravity="center"
-                    android:background="@android:color/transparent"
-                    android:layout_marginRight="5dp" />
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:text="@string/headline_symptoms_illLocation"
+                    android:id="@+id/case_illLocation_headline"
+                    android:textColor="@android:color/tab_indicator_text"
+                    android:textSize="@dimen/abc_text_size_body_1_material"
+                    android:textStyle="bold"
+                    android:paddingTop="30dp"/>
 
-                <de.symeda.sormas.app.component.LabelField
-                    android:id="@+id/symptoms_illLocation"
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <ImageButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/form_cp_btn_address"
+                        android:src="@drawable/ic_explore_black_24dp"
+                        android:layout_gravity="center"
+                        android:background="@android:color/transparent"
+                        android:layout_marginRight="5dp" />
+
+                    <de.symeda.sormas.app.component.LabelField
+                        android:id="@+id/symptoms_illLocation"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="@dimen/field_padding"
+                        android:paddingBottom="@dimen/field_padding"
+                        app:location="@{symptoms.illLocation}"/>
+
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:text="@string/headline_symptoms_stay_period"
+                    android:id="@+id/case_stayPeriod_headline"
+                    android:textColor="@android:color/tab_indicator_text"
+                    android:textSize="@dimen/abc_text_size_body_1_material"
+                    android:textStyle="bold"
+                    android:paddingTop="@dimen/field_padding"
+                    android:paddingBottom="@dimen/field_padding_4"/>
+
+                <de.symeda.sormas.app.component.DateField
+                    android:id="@+id/symptoms_illLocationFrom"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingTop="@dimen/field_padding"
                     android:paddingBottom="@dimen/field_padding"
-                    app:location="@{symptoms.illLocation}"/>
+                    android:nextFocusForward="@+id/symptoms_illLocationTo"
+                    android:value="@={symptoms.illLocationFrom}"/>
+
+                <de.symeda.sormas.app.component.DateField
+                    android:id="@+id/symptoms_illLocationTo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="@dimen/field_padding"
+                    android:paddingBottom="@dimen/field_padding"
+                    android:value="@={symptoms.illLocationTo}"/>
 
             </LinearLayout>
-
-            <de.symeda.sormas.app.component.DateField
-                android:id="@+id/symptoms_illLocationFrom"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="@dimen/field_padding"
-                android:paddingBottom="@dimen/field_padding"
-                android:nextFocusForward="@+id/symptoms_illLocationTo"
-                android:value="@={symptoms.illLocationFrom}"/>
-
-            <de.symeda.sormas.app.component.DateField
-                android:id="@+id/symptoms_illLocationTo"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="@dimen/field_padding"
-                android:paddingBottom="@dimen/field_padding"
-                android:value="@={symptoms.illLocationTo}"/>
 
         </LinearLayout>
     </ScrollView>
