@@ -489,9 +489,17 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> extends R
                                     "'; Yours: '" + DataHelper.toStringNullable(currentFieldValue) +
                                     "'; Server: '" + DataHelper.toStringNullable(sourceFieldValue) + "'");
                             String caption = I18nProperties.getFieldCaption(source.getI18nPrefix() + "." + property.getName());
-                            conflictString += caption + "<br/><i>" +
-                                    context.getResources().getString(R.string.synclog_yours) + "</i> " + DataHelper.toStringNullable(currentFieldValue) + "<br/><i>" +
-                                    context.getResources().getString(R.string.synclog_server) + "</i> " + DataHelper.toStringNullable(sourceFieldValue);
+                            StringBuilder conflictBuilder = new StringBuilder();
+                            conflictBuilder.append(caption);
+                            conflictBuilder.append("br/><i>");
+                            conflictBuilder.append(context.getResources().getString(R.string.synclog_yours));
+                            conflictBuilder.append("</i>");
+                            conflictBuilder.append(DataHelper.toStringNullable(currentFieldValue));
+                            conflictBuilder.append("<br/><i>");
+                            conflictBuilder.append(context.getResources().getString(R.string.synclog_server));
+                            conflictBuilder.append("</i>");
+                            conflictBuilder.append(DataHelper.toStringNullable(sourceFieldValue));
+                            conflictString += conflictBuilder.toString();
                         }
 
                         // update snapshot
