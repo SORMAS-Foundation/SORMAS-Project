@@ -33,6 +33,7 @@ public class Hospitalization extends AbstractDomainObject {
 	private Date isolationDate;
 	private YesNoUnknown hospitalizedPreviously;
 	
+	private Date changeDateOfEmbeddedLists;
 	private List<PreviousHospitalization> previousHospitalizations = new ArrayList<PreviousHospitalization>();
 	
 	@Temporal(TemporalType.TIMESTAMP)
@@ -81,6 +82,17 @@ public class Hospitalization extends AbstractDomainObject {
 	}
 	public void setPreviousHospitalizations(List<PreviousHospitalization> previousHospitalizations) {
 		this.previousHospitalizations = previousHospitalizations;
+	}
+	
+	/**
+	 * This change date has to be set whenever one of the embedded lists is modified: !oldList.equals(newList)
+	 * @return
+	 */
+	public Date getChangeDateOfEmbeddedLists() {
+		return changeDateOfEmbeddedLists;
+	}
+	public void setChangeDateOfEmbeddedLists(Date changeDateOfEmbeddedLists) {
+		this.changeDateOfEmbeddedLists = changeDateOfEmbeddedLists;
 	}
 	
 }

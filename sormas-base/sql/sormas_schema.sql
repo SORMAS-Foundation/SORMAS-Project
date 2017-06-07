@@ -1369,3 +1369,10 @@ ALTER TABLE symptoms ADD COLUMN illlocationto timestamp;
 ALTER TABLE symptoms ADD CONSTRAINT fk_symptoms_illlocation_id FOREIGN KEY (illlocation_id) REFERENCES location(id);
 
 INSERT INTO schema_version (version_number, comment) VALUES (47, 'IllLocation for symptoms');
+
+-- 2017-06-07 change date for embedded lists #221
+
+ALTER TABLE epidata ADD COLUMN changedateofembeddedlists timestamp without time zone;
+ALTER TABLE hospitalization ADD COLUMN changedateofembeddedlists timestamp without time zone;
+
+INSERT INTO schema_version (version_number, comment) VALUES (48, 'Change data for embedded lists (epidata and hospitalization');

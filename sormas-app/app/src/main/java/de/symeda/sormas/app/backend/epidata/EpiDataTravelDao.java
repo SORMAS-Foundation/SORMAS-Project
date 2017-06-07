@@ -30,26 +30,10 @@ public class EpiDataTravelDao extends AbstractAdoDao<EpiDataTravel> {
     }
 
     public List<EpiDataTravel> getByEpiData(EpiData epiData) {
+        if (epiData.isSnapshot()) {
+            return querySnapshotsForEq(EpiDataTravel.EPI_DATA + "_id", epiData, EpiDataTravel.CHANGE_DATE, false);
+        }
         return queryForEq(EpiDataTravel.EPI_DATA + "_id", epiData, EpiDataTravel.CHANGE_DATE, false);
-    }
-
-    public void deleteOrphansOfEpiData(EpiData epiData) throws SQLException {
-        QueryBuilder queryBuilder = queryBuilder();
-        Where where = queryBuilder.where().eq(EpiDataTravel.EPI_DATA + "_id", epiData);
-        if (epiData.getTravels() != null) {
-            Set<Long> idsToKeep = new HashSet<>();
-            for (EpiDataTravel travel : epiData.getTravels()) {
-                if (travel.getId() != null) {
-                    idsToKeep.add(travel.getId());
-                }
-            }
-            where.and().notIn(EpiDataTravel.ID, idsToKeep);
-        }
-
-        List<EpiDataTravel> orphans = queryBuilder.query();
-        for (EpiDataTravel orphan : orphans) {
-            delete(orphan);
-        }
     }
 
     @Override

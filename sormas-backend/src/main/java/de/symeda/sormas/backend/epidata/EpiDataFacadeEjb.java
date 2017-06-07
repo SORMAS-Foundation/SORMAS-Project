@@ -2,6 +2,7 @@ package de.symeda.sormas.backend.epidata;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -13,6 +14,7 @@ import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.EpiDataFacade;
 import de.symeda.sormas.api.epidata.EpiDataGatheringDto;
 import de.symeda.sormas.api.epidata.EpiDataTravelDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -88,6 +90,9 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 			burial.setEpiData(target);
 			burials.add(burial);
 		}
+		if (!DataHelper.equal(target.getBurials(), burials)) {
+			target.setChangeDateOfEmbeddedLists(new Date());
+		}
 		target.setBurials(burials);
 		
 		List<EpiDataGathering> gatherings = new ArrayList<>();
@@ -96,6 +101,9 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 			gathering.setEpiData(target);
 			gatherings.add(gathering);
 		}
+		if (!DataHelper.equal(target.getGatherings(), gatherings)) {
+			target.setChangeDateOfEmbeddedLists(new Date());
+		}
 		target.setGatherings(gatherings);
 		
 		List<EpiDataTravel> travels = new ArrayList<>();
@@ -103,6 +111,9 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 			EpiDataTravel travel = fromDto(travelDto);
 			travel.setEpiData(target);
 			travels.add(travel);
+		}		
+		if (!DataHelper.equal(target.getTravels(), travels)) {
+			target.setChangeDateOfEmbeddedLists(new Date());
 		}
 		target.setTravels(travels);
 		

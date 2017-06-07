@@ -81,6 +81,7 @@ public class EpiData extends AbstractDomainObject {
 	private String waterBodyDetails;
 	private YesNoUnknown tickBite;
 
+	private Date changeDateOfEmbeddedLists;
 	private List<EpiDataBurial> burials = new ArrayList<>();
 	private List<EpiDataGathering> gatherings = new ArrayList<>();
 	private List<EpiDataTravel> travels = new ArrayList<>();
@@ -323,6 +324,17 @@ public class EpiData extends AbstractDomainObject {
 	}
 	public void setTravels(List<EpiDataTravel> travels) {
 		this.travels = travels;
+	}
+	
+	/**
+	 * This change date has to be set whenever one of the embedded lists is modified: !oldList.equals(newList)
+	 * @return
+	 */
+	public Date getChangeDateOfEmbeddedLists() {
+		return changeDateOfEmbeddedLists;
+	}
+	public void setChangeDateOfEmbeddedLists(Date changeDateOfEmbeddedLists) {
+		this.changeDateOfEmbeddedLists = changeDateOfEmbeddedLists;
 	}
 	
 }

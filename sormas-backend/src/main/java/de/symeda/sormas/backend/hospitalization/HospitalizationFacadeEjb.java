@@ -2,6 +2,7 @@ package de.symeda.sormas.backend.hospitalization;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -11,6 +12,7 @@ import javax.ejb.Stateless;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationFacade;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
@@ -71,6 +73,9 @@ public class HospitalizationFacadeEjb implements HospitalizationFacade {
 			PreviousHospitalization prevHosp = fromDto(prevDto);
 			prevHosp.setHospitalization(target);
 			previousHospitalizations.add(prevHosp);
+		}
+		if (!DataHelper.equal(target.getPreviousHospitalizations(), previousHospitalizations)) {
+			target.setChangeDateOfEmbeddedLists(new Date());
 		}
 		target.setPreviousHospitalizations(previousHospitalizations);
 		

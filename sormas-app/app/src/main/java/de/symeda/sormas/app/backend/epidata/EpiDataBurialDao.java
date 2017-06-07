@@ -40,6 +40,9 @@ public class EpiDataBurialDao extends AbstractAdoDao<EpiDataBurial> {
     }
 
     public List<EpiDataBurial> getByEpiData(EpiData epiData) {
+        if (epiData.isSnapshot()) {
+            return querySnapshotsForEq(EpiDataBurial.EPI_DATA + "_id", epiData, EpiDataBurial.CHANGE_DATE, false);
+        }
         return queryForEq(EpiDataBurial.EPI_DATA + "_id", epiData, EpiDataBurial.CHANGE_DATE, false);
     }
 
@@ -56,25 +59,6 @@ public class EpiDataBurialDao extends AbstractAdoDao<EpiDataBurial> {
         }
 
         return date;
-    }
-
-    public void deleteOrphansOfEpiData(EpiData epiData) throws SQLException {
-        QueryBuilder queryBuilder = queryBuilder();
-        Where where = queryBuilder.where().eq(EpiDataBurial.EPI_DATA + "_id", epiData);
-        if (epiData.getBurials() != null) {
-            Set<Long> idsToKeep = new HashSet<>();
-            for (EpiDataBurial burial : epiData.getBurials()) {
-                if (burial.getId() != null) {
-                    idsToKeep.add(burial.getId());
-                }
-            }
-            where.and().notIn(EpiDataBurial.ID, idsToKeep);
-        }
-
-        List<EpiDataBurial> orphans = queryBuilder.query();
-        for (EpiDataBurial orphan : orphans) {
-            delete(orphan);
-        }
     }
 
     @Override

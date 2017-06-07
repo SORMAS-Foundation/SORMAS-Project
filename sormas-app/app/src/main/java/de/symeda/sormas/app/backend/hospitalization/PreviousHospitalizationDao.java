@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Set;
 
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
+import de.symeda.sormas.app.backend.epidata.EpiDataTravel;
 
 /**
  * Created by Mate Strysewske on 22.02.2017.
@@ -35,33 +36,9 @@ public class PreviousHospitalizationDao extends AbstractAdoDao<PreviousHospitali
     }
 
     public List<PreviousHospitalization> getByHospitalization(Hospitalization hospitalization) {
-        try {
-            QueryBuilder qb = queryBuilder();
-            qb.where().eq(PreviousHospitalization.HOSPITALIZATION + "_id", hospitalization);
-            qb.orderBy(PreviousHospitalization.CHANGE_DATE, false);
-            return qb.query();
-        } catch (SQLException e) {
-            Log.e(getTableName(), "Could not perform getByHospitalization on PreviousHospitalization");
-            throw new RuntimeException(e);
+        if (hospitalization.isSnapshot()) {
+            return querySnapshotsForEq(PreviousHospitalization.HOSPITALIZATION + "_id", hospitalization, PreviousHospitalization.CHANGE_DATE, false);
         }
+        return querySnapshotsForEq(PreviousHospitalization.HOSPITALIZATION + "_id", hospitalization, PreviousHospitalization.CHANGE_DATE, false);
     }
-
-    public void deleteOrphansOfHospitalization(Hospitalization hospitalization) throws SQLException {
-        DeleteBuilder deleteBuilder = deleteBuilder();
-        Where where = deleteBuilder.where().eq(PreviousHospitalization.HOSPITALIZATION + "_id", hospitalization);
-
-        // don't delete previous hospitalizations that are still used
-        if (hospitalization.getPreviousHospitalizations() != null) {
-            Set<Long> idsToKeep = new HashSet<Long>();
-            for (PreviousHospitalization prevHosp : hospitalization.getPreviousHospitalizations()) {
-                if(prevHosp.getId()!=null) {
-                    idsToKeep.add(prevHosp.getId());
-                }
-            }
-            where.and().notIn(PreviousHospitalization.ID, idsToKeep);
-        }
-
-        deleteBuilder.delete();
-    }
-
 }

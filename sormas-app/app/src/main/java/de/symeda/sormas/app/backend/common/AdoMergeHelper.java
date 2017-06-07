@@ -5,9 +5,13 @@ import com.googlecode.openbeans.IntrospectionException;
 import com.googlecode.openbeans.Introspector;
 import com.googlecode.openbeans.PropertyDescriptor;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.NoSuchElementException;
+
+import de.symeda.sormas.api.utils.DataHelper;
 
 /**
  * TODO rename or delete
@@ -15,6 +19,135 @@ import java.util.NoSuchElementException;
  * Created by Martin Wahnschaffe on 18.05.2017.
  */
 public final class AdoMergeHelper {
+
+    /**
+     * Check if any property of the two objects is different.
+     * a and b need to have the same type
+     * @param includeEmbedded also check children (recursively)
+     */
+    public static boolean hasModifiedProperty(AbstractDomainObject a, AbstractDomainObject b, boolean includeEmbedded) {
+
+        try {
+            BeanInfo beanInfo = Introspector.getBeanInfo(a.getClass());
+
+            // ignore parent property
+            EmbeddedAdo annotation = a.getClass().getAnnotation(EmbeddedAdo.class);
+            String parentProperty = annotation != null ? annotation.parentAccessor() : "";
+
+            for (PropertyDescriptor property : beanInfo.getPropertyDescriptors()) {
+
+                // ignore some types and specific properties
+                if (!AdoMergeHelper.isModifyableProperty(property)
+                        || parentProperty.equals(property.getName())) {
+                    continue;
+                }
+
+                // there are four types of properties:
+
+                // 1. embedded domain objects like a Location or Symptoms
+                // -> ignore for now
+                if (property.getPropertyType().isAnnotationPresent(EmbeddedAdo.class)) {
+                    continue;
+                }
+                // 2. "value" types like String, Date, Enum, ...
+                // 3. reference domain objects like a reference to a Person or a District
+                // -> basic equals check
+                else if (DataHelper.isValueType(property.getPropertyType())
+                        || AbstractDomainObject.class.isAssignableFrom(property.getPropertyType())) {
+
+                    Object valueA = property.getReadMethod().invoke(a);
+                    Object valueB = property.getReadMethod().invoke(b);
+
+                    if (!DataHelper.equal(valueA, valueB)) {
+                        return true;
+                    }
+
+                }
+                // 4. lists of embedded domain objects
+                // -> basic equals check for the list (does not check for changes of the single elements)
+                else if (Collection.class.isAssignableFrom(property.getPropertyType())) {
+
+                    Collection<AbstractDomainObject> collectionA = (Collection<AbstractDomainObject>)property.getReadMethod().invoke(a);
+                    Collection<AbstractDomainObject> collectionB = (Collection<AbstractDomainObject>)property.getReadMethod().invoke(b);
+
+                    if (!DataHelper.equal(collectionA, collectionB)) {
+                        return true;
+                    }
+
+                } else {
+                    // Other objects are not supported
+                    throw new UnsupportedOperationException(property.getPropertyType().getName() + " is not supported as a property type.");
+                }
+            }
+
+            // do we have to recursively look into children?
+            if (includeEmbedded) {
+                for (PropertyDescriptor property : beanInfo.getPropertyDescriptors()) {
+
+                    if (property.getWriteMethod() == null
+                            || property.getReadMethod() == null
+                            || parentProperty.equals(property.getName()))
+                        continue;
+
+
+                    // 1. embedded domain objects like a Location or Symptoms
+                    // -> recursion
+                    if (property.getPropertyType().isAnnotationPresent(EmbeddedAdo.class)) {
+
+                        AbstractDomainObject embeddedA = (AbstractDomainObject)property.getReadMethod().invoke(a);
+                        AbstractDomainObject embeddedB = (AbstractDomainObject)property.getReadMethod().invoke(b);
+
+                        if (hasModifiedProperty(embeddedA, embeddedB, true)) {
+                            return true;
+                        }
+                    }
+                    // 4. lists of embedded domain objects
+                    // -> recursion for all elements
+                    else if (Collection.class.isAssignableFrom(property.getPropertyType())) {
+
+                        // order and size of collections is equal - otherwise we would already have returned
+                        Collection<AbstractDomainObject> collectionA = (Collection<AbstractDomainObject>)property.getReadMethod().invoke(a);
+                        Collection<AbstractDomainObject> collectionB = (Collection<AbstractDomainObject>)property.getReadMethod().invoke(b);
+
+                        Iterator<AbstractDomainObject> iteratorA = collectionA.iterator();
+                        Iterator<AbstractDomainObject> iteratorB = collectionB.iterator();
+                        while (iteratorA.hasNext()) {
+                            AbstractDomainObject elementA = iteratorA.next();
+                            AbstractDomainObject elementB = iteratorB.next();
+
+                            if (hasModifiedProperty(elementA, elementB, true)) {
+                                return true;
+                            }
+
+                        }
+                    }
+                }
+            }
+        } catch (IntrospectionException e) {
+            throw new RuntimeException(e);
+        } catch (InvocationTargetException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+
+        return false;
+    }
+
+    public static boolean isModifyableProperty(PropertyDescriptor property) {
+        // ignore some types and specific properties
+        if (AbstractDomainObject.CREATION_DATE.equals(property.getName())
+                || AbstractDomainObject.CHANGE_DATE.equals(property.getName())
+                || AbstractDomainObject.LOCAL_CHANGE_DATE.equals(property.getName())
+                || AbstractDomainObject.UUID.equals(property.getName())
+                || AbstractDomainObject.ID.equals(property.getName())
+                || AbstractDomainObject.SNAPSHOT.equals(property.getName())
+                || AbstractDomainObject.MODIFIED.equals(property.getName())
+                || property.getWriteMethod() == null
+                || property.getReadMethod() == null)
+            return false;
+        return true;
+    }
 
     /**
      * TODO move to proper class
@@ -56,6 +189,9 @@ public final class AdoMergeHelper {
             propertyDescriptors = null;
         }
 
+        /**
+         * @return true if the property should be part of the iteration
+         */
         protected abstract boolean filterProperty(PropertyDescriptor property);
 
         private void init() {

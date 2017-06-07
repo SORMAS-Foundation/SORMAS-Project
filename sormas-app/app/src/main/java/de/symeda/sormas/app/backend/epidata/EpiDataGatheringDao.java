@@ -41,6 +41,9 @@ public class EpiDataGatheringDao extends AbstractAdoDao<EpiDataGathering> {
     }
 
     public List<EpiDataGathering> getByEpiData(EpiData epiData) {
+        if (epiData.isSnapshot()) {
+            return querySnapshotsForEq(EpiDataGathering.EPI_DATA + "_id", epiData, EpiDataGathering.CHANGE_DATE, false);
+        }
         return queryForEq(EpiDataGathering.EPI_DATA + "_id", epiData, EpiDataGathering.CHANGE_DATE, false);
     }
 
@@ -57,25 +60,6 @@ public class EpiDataGatheringDao extends AbstractAdoDao<EpiDataGathering> {
         }
 
         return date;
-    }
-
-    public void deleteOrphansOfEpiData(EpiData epiData) throws SQLException {
-        QueryBuilder queryBuilder = queryBuilder();
-        Where where = queryBuilder.where().eq(EpiDataGathering.EPI_DATA + "_id", epiData);
-        if (epiData.getGatherings() != null) {
-            Set<Long> idsToKeep = new HashSet<>();
-            for (EpiDataGathering gathering : epiData.getGatherings()) {
-                if (gathering.getId() != null) {
-                    idsToKeep.add(gathering.getId());
-                }
-            }
-            where.and().notIn(EpiDataGathering.ID, idsToKeep);
-        }
-
-        List<EpiDataGathering> orphans = queryBuilder.query();
-        for (EpiDataGathering orphan : orphans) {
-            delete(orphan);
-        }
     }
 
     @Override

@@ -101,6 +101,19 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> extends R
         }
     }
 
+    public List<ADO> querySnapshotsForEq(String fieldName, Object value, String orderBy, boolean ascending) {
+        try {
+            QueryBuilder builder = queryBuilder();
+            Where where = builder.where();
+            where.eq(fieldName, value);
+            where.and().eq(AbstractDomainObject.SNAPSHOT, true).query();
+            return builder.orderBy(orderBy, ascending).query();
+        } catch (SQLException | IllegalArgumentException e) {
+            Log.e(getTableName(), "Could not perform queryForEq");
+            throw new RuntimeException(e);
+        }
+    }
+
     public List<ADO> queryForAll(String orderBy, boolean ascending) {
         try {
             QueryBuilder builder = queryBuilder();
@@ -431,19 +444,11 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> extends R
 
             List<PropertyDescriptor> collectionProperties = null;
 
-            String conflictString = "";
+            StringBuilder conflictStringBuilder = new StringBuilder();
             for (PropertyDescriptor property : beanInfo.getPropertyDescriptors()) {
                 // ignore some types and specific properties
-                if (AbstractDomainObject.CREATION_DATE.equals(property.getName())
-                        || AbstractDomainObject.CHANGE_DATE.equals(property.getName())
-                        || AbstractDomainObject.LOCAL_CHANGE_DATE.equals(property.getName())
-                        || AbstractDomainObject.UUID.equals(property.getName())
-                        || AbstractDomainObject.ID.equals(property.getName())
-                        || AbstractDomainObject.SNAPSHOT.equals(property.getName())
-                        || AbstractDomainObject.MODIFIED.equals(property.getName())
-                        || parentProperty.equals(property.getName())
-                        || property.getWriteMethod() == null
-                        || property.getReadMethod() == null)
+                if (!AdoMergeHelper.isModifyableProperty(property)
+                        || parentProperty.equals(property.getName()))
                     continue;
 
                 // we now have to write the value from source into target and base
@@ -488,18 +493,16 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> extends R
                                     "; Snapshot '" + DataHelper.toStringNullable(snapshotFieldValue) +
                                     "'; Yours: '" + DataHelper.toStringNullable(currentFieldValue) +
                                     "'; Server: '" + DataHelper.toStringNullable(sourceFieldValue) + "'");
-                            String caption = I18nProperties.getFieldCaption(source.getI18nPrefix() + "." + property.getName());
-                            StringBuilder conflictBuilder = new StringBuilder();
-                            conflictBuilder.append(caption);
-                            conflictBuilder.append("br/><i>");
-                            conflictBuilder.append(context.getResources().getString(R.string.synclog_yours));
-                            conflictBuilder.append("</i>");
-                            conflictBuilder.append(DataHelper.toStringNullable(currentFieldValue));
-                            conflictBuilder.append("<br/><i>");
-                            conflictBuilder.append(context.getResources().getString(R.string.synclog_server));
-                            conflictBuilder.append("</i>");
-                            conflictBuilder.append(DataHelper.toStringNullable(sourceFieldValue));
-                            conflictString += conflictBuilder.toString();
+
+                            conflictStringBuilder.append(I18nProperties.getFieldCaption(source.getI18nPrefix() + "." + property.getName()));
+                            conflictStringBuilder.append("<br/><i>");
+                            conflictStringBuilder.append(context.getResources().getString(R.string.synclog_yours));
+                            conflictStringBuilder.append("</i>");
+                            conflictStringBuilder.append(DataHelper.toStringNullable(currentFieldValue));
+                            conflictStringBuilder.append("<br/><i>");
+                            conflictStringBuilder.append(context.getResources().getString(R.string.synclog_server));
+                            conflictStringBuilder.append("</i>");
+                            conflictStringBuilder.append(DataHelper.toStringNullable(sourceFieldValue));
                         }
 
                         // update snapshot
@@ -524,6 +527,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> extends R
                 }
             }
 
+            String conflictString = conflictStringBuilder.toString();
             if (!conflictString.isEmpty()) {
                 DatabaseHelper.getSyncLogDao().create(source.toString(), conflictString);
             }
@@ -563,13 +567,31 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> extends R
 
     private void mergeCollection(Collection<AbstractDomainObject> existingCollection, Collection<AbstractDomainObject> sourceCollection, ADO parent, Context context) throws DaoException {
 
-        // TODO keep new entries
-        // TODO log to sync problems when a modified entity is deleted by the server
+        StringBuilder conflictStringBuilder = new StringBuilder();
 
         // delete no longer existing elements
         existingCollection.removeAll(sourceCollection); // ignore kept
-        for (AbstractDomainObject entry : existingCollection) {
-            DatabaseHelper.getAdoDao(entry.getClass()).deleteCascadeWithCast(entry);
+        for (AbstractDomainObject existingEntry : existingCollection) {
+            if (existingEntry.isModified()) {
+                AbstractDomainObject existingSnapshot = DatabaseHelper.getAdoDao(existingEntry.getClass()).querySnapshotByUuid(existingEntry.getUuid());
+                if (existingSnapshot == null) {
+                    // entry is new (not yet sent to the server) -> keep it
+                    continue;
+                } else if (AdoMergeHelper.hasModifiedProperty(existingEntry, existingSnapshot, true)) {
+                    // entry exists and is modified -> inform the user that the changes are deleted
+                    conflictStringBuilder.append("A list entry you modified was deleted:");
+                    conflictStringBuilder.append("<br/><i>");
+                    conflictStringBuilder.append(context.getResources().getString(R.string.synclog_yours));
+                    conflictStringBuilder.append("</i>");
+                    conflictStringBuilder.append(DataHelper.toStringNullable(existingEntry));
+                }
+            }
+            DatabaseHelper.getAdoDao(existingEntry.getClass()).deleteCascadeWithCast(existingEntry);
+        }
+
+        String conflictString = conflictStringBuilder.toString();
+        if (!conflictString.isEmpty()) {
+            DatabaseHelper.getSyncLogDao().create(parent.toString(), conflictString);
         }
 
         try {
