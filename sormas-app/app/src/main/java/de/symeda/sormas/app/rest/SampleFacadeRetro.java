@@ -15,8 +15,8 @@ import retrofit2.http.Path;
 
 public interface SampleFacadeRetro {
 
-    @GET("samples/all/{user}/{since}")
-    Call<List<SampleDto>> getAll(@Path("user") String userUuid, @Path("since") long since);
+    @GET("samples/all/{since}")
+    Call<List<SampleDto>> getAll(@Path("since") long since);
 
     @POST("samples/push")
     Call<Long> postAll(@Body List<SampleDto> dtos);

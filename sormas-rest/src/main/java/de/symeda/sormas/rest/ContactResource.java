@@ -10,11 +10,14 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.SecurityContext;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactFacade;
+import de.symeda.sormas.api.user.UserReferenceDto;
 
 /**
  * @see <a href="https://jersey.java.net/documentation/latest/">Jersey documentation</a>
@@ -28,10 +31,11 @@ import de.symeda.sormas.api.contact.ContactFacade;
 public class ContactResource {
 
 	@GET
-	@Path("/all/{user}/{since}")
-	public List<ContactDto> getAllContacts(@PathParam("user") String userUuid, @PathParam("since") long since) {
+	@Path("/all/{since}")
+	public List<ContactDto> getAllContacts(@Context SecurityContext sc, @PathParam("since") long since) {
 		
-		List<ContactDto> contacts = FacadeProvider.getContactFacade().getAllContactsAfter(new Date(since), userUuid);
+		UserReferenceDto userDto = FacadeProvider.getUserFacade().getByUserNameAsReference(sc.getUserPrincipal().getName());
+		List<ContactDto> contacts = FacadeProvider.getContactFacade().getAllContactsAfter(new Date(since), userDto.getUuid());
 		return contacts;
 	}
 	

@@ -15,8 +15,8 @@ import retrofit2.http.Path;
  */
 public interface TaskFacadeRetro {
 
-    @GET("tasks/all/{user}/{since}")
-    Call<List<TaskDto>> getAll(@Path("user") String userUuid, @Path("since") long since);
+    @GET("tasks/all/{since}")
+    Call<List<TaskDto>> getAll(@Path("since") long since);
 
     @POST("tasks/push")
     Call<Long> postAll(@Body List<TaskDto> dtos);

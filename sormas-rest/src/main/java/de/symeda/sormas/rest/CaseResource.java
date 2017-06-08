@@ -17,6 +17,7 @@ import javax.ws.rs.core.SecurityContext;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
+import de.symeda.sormas.api.user.UserReferenceDto;
 
 @Path("/cases")
 @Produces({MediaType.APPLICATION_JSON + "; charset=UTF-8"})
@@ -25,10 +26,11 @@ import de.symeda.sormas.api.caze.CaseFacade;
 public class CaseResource {
 
 	@GET
-	@Path("/all/{user}/{since}")
-	public List<CaseDataDto> getAllCases(@Context SecurityContext sc, @PathParam("user") String userUuid, @PathParam("since") long since) {
+	@Path("/all/{since}")
+	public List<CaseDataDto> getAllCases(@Context SecurityContext sc, @PathParam("since") long since) {
 		
-		List<CaseDataDto> cases = FacadeProvider.getCaseFacade().getAllCasesAfter(new Date(since), userUuid);
+		UserReferenceDto userDto = FacadeProvider.getUserFacade().getByUserNameAsReference(sc.getUserPrincipal().getName());
+		List<CaseDataDto> cases = FacadeProvider.getCaseFacade().getAllCasesAfter(new Date(since), userDto.getUuid());
 		return cases;
 	}
 	

@@ -10,11 +10,14 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.SecurityContext;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantFacade;
+import de.symeda.sormas.api.user.UserReferenceDto;
 
 /**
  * @see <a href="https://jersey.java.net/documentation/latest/">Jersey documentation</a>
@@ -28,9 +31,11 @@ import de.symeda.sormas.api.event.EventParticipantFacade;
 public class EventParticipantResource {
 
 	@GET 
-	@Path("/all/{user}/{since}")
-	public List<EventParticipantDto> getAllEventParticipantsAfter(@PathParam("user") String userUuid, @PathParam("since") long since) {
-		List<EventParticipantDto> result = FacadeProvider.getEventParticipantFacade().getAllEventParticipantsAfter(new Date(since), userUuid);
+	@Path("/all/{since}")
+	public List<EventParticipantDto> getAllEventParticipantsAfter(@Context SecurityContext sc, @PathParam("since") long since) {
+
+		UserReferenceDto userDto = FacadeProvider.getUserFacade().getByUserNameAsReference(sc.getUserPrincipal().getName());
+		List<EventParticipantDto> result = FacadeProvider.getEventParticipantFacade().getAllEventParticipantsAfter(new Date(since), userDto.getUuid());
 		return result;
 	}
 	

@@ -11,8 +11,8 @@ import retrofit2.http.Path;
 
 public interface EventFacadeRetro {
 
-    @GET("events/all/{user}/{since}")
-    Call<List<EventDto>> getAll(@Path("user") String userUuid, @Path("since") long since);
+    @GET("events/all/{since}")
+    Call<List<EventDto>> getAll(@Path("since") long since);
 
     @POST("events/push")
     Call<Long> postAll(@Body List<EventDto> dtos);

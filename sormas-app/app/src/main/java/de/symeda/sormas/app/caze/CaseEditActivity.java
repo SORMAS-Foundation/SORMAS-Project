@@ -248,8 +248,6 @@ public class CaseEditActivity extends AbstractEditTabActivity {
 
                         caseDao.saveAndSnapshot(caze);
 
-                        Snackbar.make(findViewById(R.id.base_layout), "Case saved.", Snackbar.LENGTH_LONG).show();
-
                         if (RetroProvider.isConnected()) {
                             SyncCasesTask.syncCasesWithProgressDialog(this, new SyncCallback() {
                                 @Override

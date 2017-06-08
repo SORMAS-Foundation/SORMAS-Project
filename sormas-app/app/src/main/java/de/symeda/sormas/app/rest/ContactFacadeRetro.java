@@ -14,8 +14,8 @@ import retrofit2.http.Path;
  */
 public interface ContactFacadeRetro {
 
-    @GET("contacts/all/{user}/{since}")
-    Call<List<ContactDto>> getAll(@Path("user") String userUuid, @Path("since") long since);
+    @GET("contacts/all/{since}")
+    Call<List<ContactDto>> getAll(@Path("since") long since);
 
     @POST("contacts/push")
     Call<Long> postAll(@Body List<ContactDto> dtos);

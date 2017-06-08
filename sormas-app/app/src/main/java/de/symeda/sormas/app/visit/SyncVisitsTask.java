@@ -53,7 +53,7 @@ public class SyncVisitsTask extends AsyncTask<Void, Void, Void> {
 
                     User user = ConfigProvider.getUser();
                     if (user != null) {
-                        Call<List<VisitDto>> all = RetroProvider.getVisitFacade().getAll(user.getUuid(), since);
+                        Call<List<VisitDto>> all = RetroProvider.getVisitFacade().getAll(since);
                         return all;
                     }
                     return null;
@@ -74,7 +74,7 @@ public class SyncVisitsTask extends AsyncTask<Void, Void, Void> {
 
                         User user = ConfigProvider.getUser();
                         if (user != null) {
-                            Call<List<VisitDto>> all = RetroProvider.getVisitFacade().getAll(user.getUuid(), since);
+                            Call<List<VisitDto>> all = RetroProvider.getVisitFacade().getAll(since);
                             return all;
                         }
                         return null;

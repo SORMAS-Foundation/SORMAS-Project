@@ -11,8 +11,8 @@ import retrofit2.http.Path;
 
 public interface VisitFacadeRetro {
 
-    @GET("visits/all/{user}/{since}")
-    Call<List<VisitDto>> getAll(@Path("user") String userUuid, @Path("since") long since);
+    @GET("visits/all/{since}")
+    Call<List<VisitDto>> getAll(@Path("since") long since);
 
     @POST("visits/push")
     Call<Long> postAll(@Body List<VisitDto> dtos);

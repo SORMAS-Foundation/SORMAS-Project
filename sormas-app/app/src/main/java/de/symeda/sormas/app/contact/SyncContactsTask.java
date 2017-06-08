@@ -56,7 +56,7 @@ public class SyncContactsTask extends AsyncTask<Void, Void, Void> {
 
                     User user = ConfigProvider.getUser();
                     if (user != null) {
-                        Call<List<ContactDto>> all = RetroProvider.getContactFacade().getAll(user.getUuid(), since);
+                        Call<List<ContactDto>> all = RetroProvider.getContactFacade().getAll(since);
                         return all;
                     }
                     return null;
@@ -77,7 +77,7 @@ public class SyncContactsTask extends AsyncTask<Void, Void, Void> {
 
                         User user = ConfigProvider.getUser();
                         if (user != null) {
-                            Call<List<ContactDto>> all = RetroProvider.getContactFacade().getAll(user.getUuid(), since);
+                            Call<List<ContactDto>> all = RetroProvider.getContactFacade().getAll(since);
                             return all;
                         }
                         return null;

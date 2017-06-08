@@ -56,7 +56,7 @@ public class SyncTasksTask extends AsyncTask<Void, Void, Void> {
 
                     User user = ConfigProvider.getUser();
                     if (user != null) {
-                        Call<List<TaskDto>> all = RetroProvider.getTaskFacade().getAll(user.getUuid(), since);
+                        Call<List<TaskDto>> all = RetroProvider.getTaskFacade().getAll(since);
                         return all;
                     }
                     return null;
@@ -77,7 +77,7 @@ public class SyncTasksTask extends AsyncTask<Void, Void, Void> {
 
                         User user = ConfigProvider.getUser();
                         if (user != null) {
-                            Call<List<TaskDto>> all = RetroProvider.getTaskFacade().getAll(user.getUuid(), since);
+                            Call<List<TaskDto>> all = RetroProvider.getTaskFacade().getAll(since);
                             return all;
                         }
                         return null;

@@ -14,8 +14,8 @@ import retrofit2.http.Path;
  */
 public interface CaseFacadeRetro {
 
-    @GET("cases/all/{user}/{since}")
-    Call<List<CaseDataDto>> getAll(@Path("user") String userUuid, @Path("since") long since);
+    @GET("cases/all/{since}")
+    Call<List<CaseDataDto>> getAll(@Path("since") long since);
 
     @POST("cases/push")
     Call<Long> postAll(@Body List<CaseDataDto> dtos);

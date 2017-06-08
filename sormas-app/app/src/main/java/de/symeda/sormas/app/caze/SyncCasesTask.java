@@ -54,7 +54,7 @@ public class SyncCasesTask extends AsyncTask<Void, Void, Void> {
                 public Call<List<CaseDataDto>> getAll(long since) {
                     User user = ConfigProvider.getUser();
                     if (user != null) {
-                        return RetroProvider.getCaseFacade().getAll(user.getUuid(), since);
+                        return RetroProvider.getCaseFacade().getAll(since);
                     }
                     return null;
                 }
@@ -73,7 +73,7 @@ public class SyncCasesTask extends AsyncTask<Void, Void, Void> {
                     public Call<List<CaseDataDto>> getAll(long since) {
                         User user = ConfigProvider.getUser();
                         if (user != null) {
-                            return RetroProvider.getCaseFacade().getAll(user.getUuid(), since);
+                            return RetroProvider.getCaseFacade().getAll(since);
                         }
                         return null;
                     }

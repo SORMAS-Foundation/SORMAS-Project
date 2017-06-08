@@ -10,9 +10,12 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.SecurityContext;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitFacade;
 
@@ -28,10 +31,11 @@ import de.symeda.sormas.api.visit.VisitFacade;
 public class VisitResource {
 
 	@GET
-	@Path("/all/{user}/{since}")
-	public List<VisitDto> getAllVisits(@PathParam("user") String userUuid, @PathParam("since") long since) {
+	@Path("/all/{since}")
+	public List<VisitDto> getAllVisits(@Context SecurityContext sc, @PathParam("since") long since) {
 		
-		List<VisitDto> result = FacadeProvider.getVisitFacade().getAllVisitsAfter(new Date(since), userUuid);
+		UserReferenceDto userDto = FacadeProvider.getUserFacade().getByUserNameAsReference(sc.getUserPrincipal().getName());
+		List<VisitDto> result = FacadeProvider.getVisitFacade().getAllVisitsAfter(new Date(since), userDto.getUuid());
 		return result;
 	}
 	

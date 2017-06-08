@@ -13,7 +13,7 @@ import retrofit2.http.Path;
 
 public interface SampleTestFacadeRetro {
 
-    @GET("sampletests/all/{user}/{since}")
-    Call<List<SampleTestDto>> getAll(@Path("user") String userUuid, @Path("since") long since);
+    @GET("sampletests/all/{since}")
+    Call<List<SampleTestDto>> getAll(@Path("since") long since);
 
 }

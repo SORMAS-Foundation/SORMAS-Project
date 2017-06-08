@@ -56,7 +56,7 @@ public class SyncSamplesTask extends AsyncTask<Void, Void, Void> {
 
                     User user = ConfigProvider.getUser();
                     if (user != null) {
-                        Call<List<SampleDto>> all = RetroProvider.getSampleFacade().getAll(user.getUuid(), since);
+                        Call<List<SampleDto>> all = RetroProvider.getSampleFacade().getAll(since);
                         return all;
                     }
                     return null;
@@ -69,7 +69,7 @@ public class SyncSamplesTask extends AsyncTask<Void, Void, Void> {
 
                     User user = ConfigProvider.getUser();
                     if (user != null) {
-                        Call<List<SampleTestDto>> all = RetroProvider.getSampleTestFacade().getAll(user.getUuid(), since);
+                        Call<List<SampleTestDto>> all = RetroProvider.getSampleTestFacade().getAll(since);
                         return all;
                     }
                     return null;
@@ -90,7 +90,7 @@ public class SyncSamplesTask extends AsyncTask<Void, Void, Void> {
 
                         User user = ConfigProvider.getUser();
                         if (user != null) {
-                            Call<List<SampleDto>> all = RetroProvider.getSampleFacade().getAll(user.getUuid(), since);
+                            Call<List<SampleDto>> all = RetroProvider.getSampleFacade().getAll(since);
                             return all;
                         }
                         return null;
@@ -103,7 +103,7 @@ public class SyncSamplesTask extends AsyncTask<Void, Void, Void> {
 
                         User user = ConfigProvider.getUser();
                         if (user != null) {
-                            Call<List<SampleTestDto>> all = RetroProvider.getSampleTestFacade().getAll(user.getUuid(), since);
+                            Call<List<SampleTestDto>> all = RetroProvider.getSampleTestFacade().getAll(since);
                             return all;
                         }
                         return null;

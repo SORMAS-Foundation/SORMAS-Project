@@ -55,7 +55,7 @@ public class SyncEventsTask extends AsyncTask<Void, Void, Void> {
 
                     User user = ConfigProvider.getUser();
                     if (user != null) {
-                        Call<List<EventDto>> all = RetroProvider.getEventFacade().getAll(user.getUuid(), since);
+                        Call<List<EventDto>> all = RetroProvider.getEventFacade().getAll(since);
                         return all;
                     }
                     return null;
@@ -76,7 +76,7 @@ public class SyncEventsTask extends AsyncTask<Void, Void, Void> {
 
                         User user = ConfigProvider.getUser();
                         if (user != null) {
-                            Call<List<EventDto>> all = RetroProvider.getEventFacade().getAll(user.getUuid(), since);
+                            Call<List<EventDto>> all = RetroProvider.getEventFacade().getAll(since);
                             return all;
                         }
                         return null;

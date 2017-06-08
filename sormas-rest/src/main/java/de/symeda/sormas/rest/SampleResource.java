@@ -10,11 +10,14 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.SecurityContext;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleFacade;
+import de.symeda.sormas.api.user.UserReferenceDto;
 
 @Path("/samples")
 @Produces({MediaType.APPLICATION_JSON + "; charset=UTF-8"})
@@ -23,9 +26,11 @@ import de.symeda.sormas.api.sample.SampleFacade;
 public class SampleResource {
 	
 	@GET
-	@Path("/all/{user}/{since}")
-	public List<SampleDto> getAllSamples(@PathParam("user") String userUuid, @PathParam("since") long since) {
-		List<SampleDto> samples = FacadeProvider.getSampleFacade().getAllSamplesAfter(new Date(since), userUuid);
+	@Path("/all/{since}")
+	public List<SampleDto> getAllSamples(@Context SecurityContext sc, @PathParam("since") long since) {
+
+		UserReferenceDto userDto = FacadeProvider.getUserFacade().getByUserNameAsReference(sc.getUserPrincipal().getName());
+		List<SampleDto> samples = FacadeProvider.getSampleFacade().getAllSamplesAfter(new Date(since), userDto.getUuid());
 		return samples;
 	}
 	
