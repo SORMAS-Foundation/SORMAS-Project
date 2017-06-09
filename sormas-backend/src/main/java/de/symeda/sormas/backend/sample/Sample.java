@@ -13,6 +13,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SampleSource;
 import de.symeda.sormas.api.sample.SampleTestType;
@@ -25,6 +26,7 @@ import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.user.User;
 
 @Entity(name="samples")
+@Audited
 public class Sample extends AbstractDomainObject {
 
 	private static final long serialVersionUID = -7196712070188634978L;

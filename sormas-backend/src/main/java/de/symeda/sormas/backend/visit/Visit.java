@@ -14,7 +14,6 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import de.symeda.auditlog.api.Audited;
-import de.symeda.auditlog.api.AuditedAttribute;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -44,7 +43,6 @@ public class Visit extends AbstractDomainObject {
 	private String visitRemarks;
 	private Symptoms symptoms;
 	
-	@AuditedAttribute
 	@ManyToOne(cascade = {})
 	@JoinColumn(nullable=false)
 	public Person getPerson() {
@@ -54,7 +52,6 @@ public class Visit extends AbstractDomainObject {
 		this.person = person;
 	}
 	
-	@AuditedAttribute
 	@Temporal(TemporalType.TIMESTAMP)
 	public Date getVisitDateTime() {
 		return visitDateTime;
@@ -63,7 +60,6 @@ public class Visit extends AbstractDomainObject {
 		this.visitDateTime = visitDateTime;
 	}
 	
-	@AuditedAttribute
 	@Enumerated(EnumType.STRING)
 	public VisitStatus getVisitStatus() {
 		return visitStatus;
@@ -72,7 +68,6 @@ public class Visit extends AbstractDomainObject {
 		this.visitStatus = visitStatus;
 	}
 	
-	@AuditedAttribute
 	@Column(length=512)
 	public String getVisitRemarks() {
 		return visitRemarks;
@@ -81,7 +76,6 @@ public class Visit extends AbstractDomainObject {
 		this.visitRemarks = visitRemarks;
 	}
 	
-	@AuditedAttribute
 	@Enumerated(EnumType.STRING)
 	public Disease getDisease() {
 		return disease;
@@ -90,7 +84,6 @@ public class Visit extends AbstractDomainObject {
 		this.disease = disease;
 	}
 	
-	@AuditedAttribute
 	@OneToOne(cascade = CascadeType.ALL)
 	public Symptoms getSymptoms() {
 		if (symptoms == null) {
@@ -102,7 +95,6 @@ public class Visit extends AbstractDomainObject {
 		this.symptoms = symptoms;
 	}
 
-	@AuditedAttribute
 	@ManyToOne(cascade = {})
 	public User getVisitUser() {
 		return visitUser;

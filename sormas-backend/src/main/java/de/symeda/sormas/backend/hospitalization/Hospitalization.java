@@ -12,10 +12,12 @@ import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 
 @Entity
+@Audited
 public class Hospitalization extends AbstractDomainObject {
 
 	private static final long serialVersionUID = -8576270649634034244L;

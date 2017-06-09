@@ -16,6 +16,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.InvestigationStatus;
@@ -36,6 +37,7 @@ import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.user.User;
 
 @Entity(name="cases")
+@Audited
 public class Case extends AbstractDomainObject {
 	
 	private static final long serialVersionUID = -2697795184663562129L;

@@ -4,12 +4,14 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 
+import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 
 @Entity
+@Audited
 public class Location extends AbstractDomainObject {
 	
 	private static final long serialVersionUID = 392776645668778670L;
@@ -31,7 +33,6 @@ public class Location extends AbstractDomainObject {
 	
 	private Float latitude;
 	private Float longitude;
-
 	
 	@Column(length = 255)
 	public String getAddress() {

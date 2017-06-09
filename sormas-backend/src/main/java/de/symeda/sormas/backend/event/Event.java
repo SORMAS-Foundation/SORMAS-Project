@@ -15,6 +15,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.EventType;
@@ -26,6 +27,7 @@ import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.user.User;
 
 @Entity(name="events")
+@Audited
 public class Event extends AbstractDomainObject {
 
 	private static final long serialVersionUID = 4964495716032049582L;

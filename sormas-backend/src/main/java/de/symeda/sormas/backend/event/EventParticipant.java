@@ -5,10 +5,12 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.person.Person;
 
 @Entity
+@Audited
 public class EventParticipant extends AbstractDomainObject {
 
 	private static final long serialVersionUID = -9006001699517297107L;

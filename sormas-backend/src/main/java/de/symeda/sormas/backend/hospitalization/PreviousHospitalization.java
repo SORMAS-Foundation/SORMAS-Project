@@ -11,11 +11,13 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.facility.Facility;
 
 @Entity(name="previoushospitalization")
+@Audited
 public class PreviousHospitalization extends AbstractDomainObject {
 
 	private static final long serialVersionUID = 768263094433806267L;

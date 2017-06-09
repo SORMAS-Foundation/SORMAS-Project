@@ -16,6 +16,8 @@ import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.Size;
 
+import de.symeda.auditlog.api.Audited;
+import de.symeda.auditlog.api.AuditedAttribute;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.facility.Facility;
@@ -24,6 +26,7 @@ import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 
 @Entity(name="users")
+@Audited
 public class User extends AbstractDomainObject {
 	
 	private static final long serialVersionUID = -629432920970152112L;
@@ -42,7 +45,6 @@ public class User extends AbstractDomainObject {
 	public static final String USER_ROLES = "userRoles";
 	public static final String LABORATORY = "laboratory";
 
-	
 	private String userName;
 	private String password;
 	private String seed;
@@ -76,6 +78,7 @@ public class User extends AbstractDomainObject {
 	
 	@Size(max = 64)
 	@Column(name = "password", nullable = false, length = 64)
+	@AuditedAttribute(anonymous = true, anonymizingString = "*****")
 	public String getPassword() {
 		return password;
 	}
@@ -84,6 +87,7 @@ public class User extends AbstractDomainObject {
 	}
 	
 	@Column(name = "seed", nullable = false, length = 16)
+	@AuditedAttribute(anonymous = true, anonymizingString = "*****")
 	public String getSeed() {
 		return seed;
 	}

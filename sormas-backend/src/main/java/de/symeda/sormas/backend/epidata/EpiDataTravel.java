@@ -11,10 +11,12 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.epidata.TravelType;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 
 @Entity
+@Audited
 public class EpiDataTravel extends AbstractDomainObject {
 
 	private static final long serialVersionUID = -4280455878066233175L;

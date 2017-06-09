@@ -13,11 +13,13 @@ import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.location.Location;
 
 @Entity
+@Audited
 public class EpiDataBurial extends AbstractDomainObject {
 
 	private static final long serialVersionUID = 866789458483672591L;

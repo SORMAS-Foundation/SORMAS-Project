@@ -11,12 +11,14 @@ import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.TemperatureSource;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.location.Location;
 
 @Entity
+@Audited
 public class Symptoms extends AbstractDomainObject {
 
 	private static final long serialVersionUID = 1467852910743225822L;

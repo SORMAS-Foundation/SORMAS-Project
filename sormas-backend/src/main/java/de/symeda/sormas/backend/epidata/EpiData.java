@@ -13,11 +13,13 @@ import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.epidata.WaterSource;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 
 @Entity
+@Audited
 public class EpiData extends AbstractDomainObject {
 
 	private static final long serialVersionUID = -8294812479501735785L;

@@ -12,6 +12,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.BurialConductor;
 import de.symeda.sormas.api.person.DeathPlaceType;
@@ -23,6 +24,7 @@ import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.location.Location;
 
 @Entity
+@Audited
 public class Person extends AbstractDomainObject {
 	
 	private static final long serialVersionUID = -1735038738114840087L;

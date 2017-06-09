@@ -11,10 +11,12 @@ import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.location.Location;
 
 @Entity
+@Audited
 public class EpiDataGathering extends AbstractDomainObject {
 
 	private static final long serialVersionUID = 5491651166245301869L;

@@ -13,6 +13,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.ContactRelation;
@@ -24,6 +25,7 @@ import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.user.User;
 
 @Entity
+@Audited
 public class Contact extends AbstractDomainObject {
 
 	private static final long serialVersionUID = -7764607075875188799L;

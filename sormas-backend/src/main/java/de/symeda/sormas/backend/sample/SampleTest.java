@@ -11,6 +11,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.sample.SampleTestResultType;
 import de.symeda.sormas.api.sample.SampleTestType;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -18,6 +19,7 @@ import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.user.User;
 
 @Entity(name="sampletest")
+@Audited
 public class SampleTest extends AbstractDomainObject {
 
 	private static final long serialVersionUID = 2290351143518627813L;
