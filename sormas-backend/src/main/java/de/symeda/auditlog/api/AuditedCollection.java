@@ -14,9 +14,9 @@ import de.symeda.auditlog.api.value.format.DefaultCollectionFormatter;
 import de.symeda.auditlog.api.value.format.ValueFormatter;
 
 /**
- * Legt für eine {@link Collection} eines Entity fest, dass seine Elemente durch das AuditLog auf Änderungen überprüft werden.
+ * Determines for a {@link Collection} of an entity that its elements should be checked for changes by the AuditLog.
  * <p/>
- * Nicht anwendbar für Collection-Attribute innerhalb von {@link Embeddable}.
+ * Not applicable for Collection attributes within an {@link Embeddable}.
  * 
  * @author Oliver Milke
  * @since 11.04.2016
@@ -28,16 +28,15 @@ import de.symeda.auditlog.api.value.format.ValueFormatter;
 public @interface AuditedCollection {
 
 	/**
-	 * Legt den Formatter für die Elemente der Collection fest, durch den diese formatiert werden soll.
-	 * Diese String-Repräsentation ist auch Basis für die Feststellung einer Änderung.
+	 * Determines the Formatter for the elements of this collection.
+	 * This String representation is also the foundation for the discovery of a change.
 	 * </p>
-	 * Mögliche Verwendungen:
+	 * Possible uses:
 	 * <ol>
 	 * <li>Default: {@link DefaultCollectionFormatter}.</li>
-	 * <li>Anderer {@link CollectionFormatter}, der einen eigenen {@link ValueFormatter} zur Formatierung der Collection-Elemente enthält.
+	 * <li>Other {@link CollectionFormatter} that contains a custom {@link ValueFormatter} to format the Collection elements.
 	 * </li>
-	 * <li>Ein {@link ValueFormatter} zur Formatierung der Collection-Elemente. Die Sortierung wird durch {@link DefaultCollectionFormatter}
-	 * sichergestellt.</li>
+	 * <li>A {@link ValueFormatter} for Collection formatting. The sorting will be ensured by {@link DefaultCollectionFormatter}.</li>
 	 * </ol>
 	 */
 	Class<? extends ValueFormatter<?>> value() default DefaultCollectionFormatter.class;

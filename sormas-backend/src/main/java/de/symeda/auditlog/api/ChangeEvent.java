@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.util.Map;
 
 /**
- * Event-Objekt, das die Änderung eines Entities beschreibt.
+ * Event object that describes the changes of an entity.
  * 
  * @author Oliver Milke
  * @since 13.01.2016
@@ -50,14 +50,16 @@ public class ChangeEvent {
 	}
 
 	/**
-	 * Liefert die {@link TransactionId} zur Beschreibung des aktuellen Transaktion (Benutzer + Transaktion).
+	 * Returns the {@link TransactionId} to describe the current transaction (user + transaction).
+	 * @return
 	 */
 	public String getTransactionId() {
 		return transactionId;
 	}
 
 	/**
-	 * Liefert die {@link EntityId} zur Beschreibung des geänderten Entities.
+	 * Returns the {@link EntityId} to describe the changes entity.
+	 * @return
 	 */
 	public EntityId getOid() {
 		return oid;
@@ -76,8 +78,9 @@ public class ChangeEvent {
 	}
 
 	/**
-	 * Liefert die Auflistung aller geänderten Attribute, wobei der <code>key</code> der Map der Name des geänderten Attributs
-	 * ist und der <code>value</code> der neue Wert des Attributs ist.
+	 * Returns the list of all changed attributes with the <code>key</code> of the map being the name of the changed attribute
+	 * and the <code>value</code> being its new value.
+	 * @return
 	 */
 	public Map<String, String> getNewValues() {
 		return newValues;

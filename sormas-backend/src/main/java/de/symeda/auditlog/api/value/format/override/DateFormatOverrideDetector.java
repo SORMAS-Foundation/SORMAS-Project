@@ -15,22 +15,21 @@ import de.symeda.auditlog.api.value.format.ValueFormatter;
 public class DateFormatOverrideDetector implements OverrideDetector<Date> {
 
 	/**
-	 * Liefert für ein Entity-Property einen angepassten {@link ValueFormatter}, sofern sich das aus der Methoden-Beschreibung ableiten
-	 * lässt.
+	 * Returns an adjusted {@link ValueFormatter} for an entity property as long as this is applicable according to the the method description.
 	 * 
 	 * @param m
-	 *            Die Methode, die das Property beschreibt.
-	 * @return Liefert <code>null</code>, falls keine sinnvolle Ableitung festgestellt werden kann. Liefert einen ValueFormatter der
-	 *         angepasst ist auf den Wert der {@link Temporal}-Annotation, falls vorhanden.
+	 * 			The method that describes the property.
+	 * @return	Returns <code>null</code> if no reasonable derivation can be found. Returns a ValueFormatter that is adjusted to the value of the
+	 * 			{@link Temporal} annotation, if present.
 	 */
 	@Override
 	public ValueFormatter<Date> override(Method m) {
 
 		if (!Date.class.isAssignableFrom(m.getReturnType())) {
-			//keine sinnvolle Ableitung möglich
+			// no reasonable derivation possible
 			return null;
 		} else {
-			//gründsätzlich möglich
+			// generally possible
 			Temporal annotation = m.getAnnotation(Temporal.class);
 
 			if (annotation == null) {

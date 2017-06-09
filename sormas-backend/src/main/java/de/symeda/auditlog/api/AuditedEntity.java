@@ -3,7 +3,7 @@ package de.symeda.auditlog.api;
 import de.symeda.auditlog.api.value.ValueContainer;
 
 /**
- * Interface zur Auditierung einer Entity.
+ * Interface for entity auditing.
  * 
  * @author Oliver Milke
  * @since 13.01.2016
@@ -11,8 +11,7 @@ import de.symeda.auditlog.api.value.ValueContainer;
 public interface AuditedEntity extends HasUuid {
 
 	/**
-	 * Liefert den Zustand aller inspizierten Attribute zum Aufrufzeitpunkt. Wird verwendet, um Änderung im Lauf einer Transaktion
-	 * festzustellen.
+	 * Provides the state of all inspected attributes at the time of calling. Used to detect changes in the course of a transaction.
 	 */
 	ValueContainer inspectAttributes();
 

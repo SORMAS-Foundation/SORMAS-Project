@@ -9,13 +9,13 @@ import java.util.List;
 import de.symeda.auditlog.api.value.ValueContainer;
 
 /**
- * Formatiert eine Collection von Enums als String.
- * Der übergebene {@link Comparator} stellt eine zuverlässige Sortierung sicher,
- * sodass Umsortierungen nicht als geänderter formatierter String erscheinen.
+ * Formats a Collection of Enums as String.
+ * The given {@link Comparator} provides a reliable sorting so that sorting it
+ * again does not result in a changed formatted String.
  * 
  * @author Stefan Kock
  * @param <V>
- *            Typ des zu formatierenden {@code value} innerhalb der {@link Collection}.
+ * 			Type of the {@code value} to format within the {@link Collection}.
  */
 public class ComparatorCollectionFormatter<V> extends AbstractCollectionFormatter<V> {
 
@@ -25,9 +25,9 @@ public class ComparatorCollectionFormatter<V> extends AbstractCollectionFormatte
 	 * <code>nullString = {@link ValueContainer#DEFAULT_NULL_STRING}</code>
 	 * 
 	 * @param comparator
-	 *            Zur stabilen Sortierung der Werte verwendete {@link Comparator}.
+	 * 			{@link Comparator} used for a reliable sorting of the values.
 	 * @param valueFormatter
-	 *            Zur Formatierung der einzelnen Werte zu verwendende {@link ValueFormatter}.
+	 * 			{@link ValueFormatter} to be used to format the individual values.
 	 */
 	public ComparatorCollectionFormatter(Comparator<V> comparator, ValueFormatter<V> valueFormatter) {
 
@@ -36,11 +36,11 @@ public class ComparatorCollectionFormatter<V> extends AbstractCollectionFormatte
 
 	/**
 	 * @param nullString
-	 *            Platzhalter für {@code null}-Values.
+				Placeholder for {@code null} values.
 	 * @param comparator
-	 *            Zur stabilen Sortierung der Werte verwendete {@link Comparator}.
+	 * 			{@link Comparator} used for a reliable sorting of the values.
 	 * @param valueFormatter
-	 *            Zur Formatierung der einzelnen Werte zu verwendende {@link ValueFormatter}.
+	 * 			{@link ValueFormatter} to be used to format the individual values.
 	 */
 	public ComparatorCollectionFormatter(String nullString, Comparator<V> comparator, ValueFormatter<V> valueFormatter) {
 

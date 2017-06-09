@@ -8,13 +8,13 @@ import java.util.List;
 import de.symeda.auditlog.api.value.ValueContainer;
 
 /**
- * Formatiert eine Collection von {@link Comparable}s als String.<br />
- * Die zuverlässige Sortierung wird durch die durch {@link Comparable} definierte natürliche Ordnung sichergestellt.<br />
- * <u>Achtung:</u> {@code null}-Values innerhalb der Collection werden nicht unterstützt.
+ * Formats a Collection of {@link Comparable}s as String.<br />
+ * The reliable sorting is provided by the natural order defined by {@link Comparable}.<br />
+ * <u>Caution:</u> {@code null} values within the Collection are not supported.
  * 
  * @author Stefan Kock
  * @param <V>
- *            Typ des zu formatierenden {@code value} innerhalb der {@link Collection}.
+ * 			Type of the {@code value} to format within the {@link Collection}.
  */
 public class ComparableCollectionFormatter<V extends Comparable<V>> extends AbstractCollectionFormatter<V> {
 
@@ -35,7 +35,7 @@ public class ComparableCollectionFormatter<V extends Comparable<V>> extends Abst
 	 * <ul>
 	 * 
 	 * @param valueFormatter
-	 *            Zur Formatierung der einzelnen Werte zu verwendende {@link ValueFormatter}.
+	 * 			{@link ValueFormatter} to be used to format the individual values.
 	 */
 	public ComparableCollectionFormatter(ValueFormatter<V> valueFormatter) {
 
@@ -44,9 +44,9 @@ public class ComparableCollectionFormatter<V extends Comparable<V>> extends Abst
 
 	/**
 	 * @param nullString
-	 *            Platzhalter für {@code null}-Values.
+	 *      	Placeholder for {@code null} values.
 	 * @param valueFormatter
-	 *            Zur Formatierung der einzelnen Werte zu verwendende {@link ValueFormatter}.
+	 * 			{@link ValueFormatter} to be used to format the individual values.
 	 */
 	public ComparableCollectionFormatter(String nullString, ValueFormatter<V> valueFormatter) {
 

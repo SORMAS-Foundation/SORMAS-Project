@@ -5,7 +5,7 @@ import de.symeda.auditlog.api.value.DefaultValueContainer;
 import de.symeda.auditlog.api.value.ValueContainer;
 
 /**
- * Einfaches Entity, das nur fürs Tests verwenden wird.
+ * Simple entity that is only used for tests.
  * 
  * @author Oliver Milke
  * @since 14.01.2016

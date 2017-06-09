@@ -1,9 +1,9 @@
 package de.symeda.auditlog.api;
 
 /**
- * Klasse zur eindeutigen Unterscheidung von verschiedenen Entities, sowohl hinsichtlich des Entity-Typs als zur Unterscheidung
- * verschiedener Instanzen desselben Entity-Typs.
- *
+ * Class for the unique differentiation of different entities, both in terms of the entity type as well as for the differentiation
+ * of different instances of the same entity type.
+ * 
  * @author Oliver Milke
  * @since 13.01.2016
  */

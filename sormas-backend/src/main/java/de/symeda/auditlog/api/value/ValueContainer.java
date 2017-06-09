@@ -6,66 +6,66 @@ import java.util.SortedMap;
 import de.symeda.auditlog.api.value.format.ValueFormatter;
 
 /**
- * Sammelt die für das Auditlog zu auditierende Attribute (Key-Value-Paare).
+ * Collects the attributes to be audited for the Auditlog (key-value pairs).
  * 
  * @author Oliver Milke, Stefan Kock
  */
 public interface ValueContainer extends Serializable {
 
 	/**
-	 * Platzhalter, wenn ein geändertes Attribut auf <code>null</code> gesetzt wurde.
+	 * Placeholder when a changed attribute is set to <code>null</code>.
 	 */
 	String DEFAULT_NULL_STRING = "[null]";
 
 	/**
-	 * @return Die bisher gespeicherten Attribute.
+	 * @return	The saved attributes so far.
 	 */
 	SortedMap<String, String> getAttributes();
 
 	/**
-	 * @return Platzhalter, wenn ein geändertes Attribut auf <code>null</code> gesetzt wurde.
+	 * @return	Placeholder when a changed attribute is set to <code>null</code>.
 	 */
 	default String getNullString() {
 		return DEFAULT_NULL_STRING;
 	}
 
 	/**
-	 * Vergleicht den Zustand mit einer älteren Version.
+	 * Compares the state with an older version.
 	 * 
 	 * @param originalState
-	 *            Der Original-Zustand eines Entities.
-	 * @return <ul>
-	 *         <li>Liefert eine Liste von Attributen, deren Werte abweichen von der ursprünglichen Version.</li>
-	 *         <li>Liefert eine leere Map, wenn beide Zustände identisch sind.</li>
-	 *         </ul>
+	 * 			The original state of an entity.
+	 * @return	<ul>
+	 * 			<li>Returns a list of attributes with values that differ from the original version.</li>
+	 * 			<li>Returns an empty map when both states are identical.</li>
+	 * 			</ul>
 	 */
 	SortedMap<String, String> compare(ValueContainer originalState);
 
 	/**
-	 * @return Liefert eine Liste von Attributen, deren Werte abweichen von der ursprünglichen Version,
-	 *         wie sie als Änderung ausgegeben/gespeichert werden sollen.
+	 * @return	Returns a list of attributes with values that differ from the original version,
+	 * 			the way they have to be put out as changes/saved.
 	 */
 	SortedMap<String, String> getChanges();
 
 	/**
-	 * Speichert den zu auditierenden String.
+	 * Saves the String to audit.
 	 * 
 	 * @param key
-	 *            Identifier für Attribut der auditierten Entity.
+	 * 			Identifier for attribute of the audited entity.
 	 * @param value
-	 *            Wenn {@code null}, dann wird {@link #getNullString()} als Wert gespeichert.
+	 * 			If {@code null}, the {@link #getNullString()} will be saved as the value.
 	 */
 	void put(String key, String value);
 	
 	/**
-	 * Speichert den zu auditierenden Wert.
+	 * Saves the value to audit.
 	 * 
 	 * @param key
-	 *            Identifier für Attribut der auditierten Entity.
+	 * 			Identifier for attribute of the audited entity.
 	 * @param value
-	 *            Wenn {@code null}, dann wird {@link #getNullString()} als Wert gespeichert.
+	 * 			If {@code null}, the {@link #getNullString()} will be saved as the value.
 	 * @param valueFormatter
-	 *            Formatiert den übergebenen {@code value}, wenn er nicht {@code null} ist.
+	 * 			Formats the given {@code value} if it is not {@code null}.
 	 */
 	<V> void put(String key, V value, ValueFormatter<V> valueFormatter);
 }

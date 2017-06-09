@@ -1,20 +1,20 @@
 package de.symeda.auditlog.api.value.format;
 
 /**
- * Formatiert den übergebenen Wert als String.
+ * Formats the given value as String.
  * 
  * @author Stefan Kock
  * @param <V>
- *            Typ des zu formatierenden {@code value}.
+ *      	Type of the {@code value} to format.
  */
 public interface ValueFormatter<V> {
 
 	/**
-	 * Formatiert den übergebenen Wert als {@link String}.
+	 * Formats the given value as String.
 	 * 
 	 * @param value
-	 *            Zu formatierender Wert.
-	 * @return String-Formatierung des übergebenen Werts.
+	 *        	Value to format.
+	 * @return 	String format of the given value.
 	 */
 	String format(V value);
 }

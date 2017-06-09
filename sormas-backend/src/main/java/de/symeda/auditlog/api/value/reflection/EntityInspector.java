@@ -24,7 +24,7 @@ import de.symeda.auditlog.api.value.format.DefaultValueFormatter;
 import de.symeda.auditlog.api.value.format.ValueFormatter;
 
 /**
- * Untersucht Entities, deren Änderungen verfolgt werden sollen.
+ * Inspects entities to track changes made to them.
  * 
  * @author Oliver Milke
  * @since 08.04.2016
@@ -42,7 +42,7 @@ public class EntityInspector {
 	}
 
 	/**
-	 * Liefert alle Attribute eines Entity, die der Änderungsverfolgung unterliegen sollen.
+	 * Returns all attributes of an entity that are tracked.
 	 */
 	public List<Method> getAuditedAttributes() {
 
@@ -58,8 +58,8 @@ public class EntityInspector {
 
 	/**
 	 * @param clazz
-	 *            Diese Klasse und alle Oberklassen, die {@link Audited} annotiert sind, werden auf zu auditierende Methoden inspiziert.
-	 * @return Alle zu auditierenden Methoden der übergebenen {@code clazz}.
+	 *      	This class and all super classes that are annotated with {@link Audited} are checked for methods to be audited.	
+	 * @return 	All methods to be audited of the given {@code clazz}.
 	 */
 	private List<Method> getAuditedAttributes(Class<?> clazz) {
 
@@ -67,7 +67,7 @@ public class EntityInspector {
 
 		if (clazz != null) {
 
-			// Möglicherweise ist nicht jede Klasse im Vererbungsbaum mit @Audited annotiert
+			// Potentially not all classes in the class tree are annotated with @Audited
 			if (clazz.getDeclaredAnnotation(Audited.class) != null) {
 
 				try {
@@ -93,7 +93,7 @@ public class EntityInspector {
 				}
 			}
 
-			// Aktuelle Klasse und alle Oberklassen bis hin zu Object prüfen
+			// Check current class and all super classes up to Object
 			auditedMethods.addAll(getAuditedAttributes(clazz.getSuperclass()));
 		}
 
@@ -106,9 +106,8 @@ public class EntityInspector {
 	 * relation that is mapped by a different class.
 	 * 
 	 * @param method
-	 * 				The method to check.
-	 * @return
-	 * 				True if the method should be audited, false if not.
+	 * 			The method to check.
+	 * @return	True if the method should be audited, false if not.
 	 */
 	private boolean isAudited(Method method) {
 		if (method.getAnnotation(AuditedIgnore.class) != null) {
@@ -123,25 +122,25 @@ public class EntityInspector {
 	}
 
 	/**
-	 * Liefert zu einem Attribut den eigentlichen Wert. Es wird angenommen, dass es sich bei dieser Methode um einen Getter handelt.
+	 * Returns the actual value of an attribute. It is assumed that this method is a getter.
 	 * 
 	 * @param method
-	 *            Das zu inspizierende Attribut.
-	 * @throws InvocationTargetException
-	 *             Falls dem Aufruf des Getters ein Fehler auftritt (Originale Exception).
-	 * @throws IllegalArgumentException
-	 *             Falls dem Aufruf des Getters ein Fehler auftritt (Originale Exception).
+	 * 			The attribute to inspect.
 	 * @throws IllegalAccessException
-	 *             Falls dem Aufruf des Getters ein Fehler auftritt (Originale Exception).
-	 * @see Method#invoke(Object, Object...)
+	 * 			If an error occurs during the call of the getter (original exception).
+	 * @throws IllegalArgumentException
+	 * 			If an error occurs during the call of the getter (original exception).
+	 * @throws InvocationTargetException
+	 * 			If an error occurs during the call of the getter (original exception).
+	 * @see	Method#invoke(Object, Object...)
 	 */
 	public Object getAttributeValue(Method method) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
 		return method.invoke(entity);
 	}
-
+	
 	/**
-	 * Liefert eine Instanz des konfigurierten {@link ValueFormatter} für diese Annotation.
+	 * Returns an instance of the configured {@link ValueFormatter} for this annotation.
 	 */
 	public static ValueFormatter<?> getFormatter(AuditedAttribute annotation) {
 		Class<? extends ValueFormatter<?>> formatterClass;
@@ -155,7 +154,7 @@ public class EntityInspector {
 	}
 
 	/**
-	 * Liefert eine Instanz des konfigurierten {@link CollectionFormatter} für diese Annotation.
+	 * Returns an instance of the configured {@link CollectionFormatter} for this annotation.
 	 */
 	@SuppressWarnings({
 			"rawtypes",
@@ -185,12 +184,12 @@ public class EntityInspector {
 		try {
 			return formatterClass.newInstance();
 		} catch (InstantiationException | IllegalAccessException e) {
-			throw new AuditlogException(String.format("ValueFormatter %s kann nicht instanziert werden!", formatterClass.getName()), e);
+			throw new AuditlogException(String.format("ValueFormatter %s can not be instantiated!", formatterClass.getName()), e);
 		}
 	}
 
 	/**
-	 * Liefert den Namen des zugrundeliegenden Fields nach JavaBean-Convention.
+	 * Returns the name of the underlying field according to the JavaBean convention.
 	 */
 	public static String buildFieldName(Method method) {
 

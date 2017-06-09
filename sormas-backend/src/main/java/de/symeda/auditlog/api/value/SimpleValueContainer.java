@@ -3,51 +3,49 @@ package de.symeda.auditlog.api.value;
 import java.util.Date;
 
 /**
- * Formatiert typische Java-Objekte und sammelt die für das Auditlog zu auditierende Attribute (Key-Value-Paare).
+ * Formats typical Java objects and collects the attributes to be audited for the Auditlog (key-value pairs).
  * 
  * @author Stefan Kock
  */
 public interface SimpleValueContainer extends ValueContainer {
 
 	/**
-	 * Speichert den zu auditierenden Boolean.
+	 * Saves the Boolean to audit.
 	 * 
 	 * @param key
-	 *            Identifier für Attribut der auditierten Entity.
+	 * 			Identifier for attribute of the audited entity.
 	 * @param value
-	 *            Wenn {@code null}, dann wird {@link #getNullString()} als Wert gespeichert.
+	 * 			If {@code null}, the {@link #getNullString()} will be saved as the value.
 	 */
 	void put(String key, Boolean value);
 
 	/**
-	 * Speichert den zu auditierenden {@link Enum}.
+	 * Saves the {@link Enum} to audit.
 	 * 
 	 * @param key
-	 *            Identifier für Attribut der auditierten Entity.
+	 * 			Identifier for attribute of the audited entity.
 	 * @param value
-	 *            Wenn {@code null}, dann wird {@link #getNullString()} als Wert gespeichert.
+	 * 			If {@code null}, the {@link #getNullString()} will be saved as the value.
 	 */
 	void put(String key, Enum<?> value);
 
 	/**
-	 * Speichert die zu auditierende {@link Number}.
+	 * Saves the {@link Number} to audit.
 	 * 
 	 * @param key
-	 *            Identifier für Attribut der auditierten Entity.
+	 * 			Identifier for attribute of the audited entity.
 	 * @param value
-	 *            Wenn {@code null}, dann wird {@link #getNullString()} als Wert gespeichert.
+	 * 			If {@code null}, the {@link #getNullString()} will be saved as the value.
 	 */
 	void put(String key, Number value);
 
 	/**
-	 * Speichert das zu auditierende {@link Date}.
+	 * Saves the {@link Date} to audit.
 	 * 
 	 * @param key
-	 *            Identifier für Attribut der auditierten Entity.
-	 * @param date
-	 *            Wenn {@code null}, dann wird {@link #getNullString()} als Wert gespeichert.
-	 * @param datePattern
-	 *            Regel zur Formatierung des übergebenen {@code date}.
+	 * 			Identifier for attribute of the audited entity.
+	 * @param value
+	 * 			If {@code null}, the {@link #getNullString()} will be saved as the value.
 	 */
 	void put(String key, Date date, String datePattern);
 }

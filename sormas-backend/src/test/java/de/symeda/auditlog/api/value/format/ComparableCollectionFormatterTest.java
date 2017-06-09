@@ -75,7 +75,7 @@ public class ComparableCollectionFormatterTest {
 	}
 
 	/**
-	 * {@code null} innerhalb der Collection wird nicht unterstützt!.
+	 * {@code null} within the Collection is not supported!
 	 */
 	@Test(expected = NullPointerException.class)
 	public void testFormatEnumsWithNullInCollection() {

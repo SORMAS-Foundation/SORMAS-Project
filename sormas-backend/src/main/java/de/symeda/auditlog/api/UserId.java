@@ -3,7 +3,7 @@ package de.symeda.auditlog.api;
 import java.io.Serializable;
 
 /**
- * Beschreibt den aktuell angemeldeten Benutzer.
+ * Describes the currently logged in user.
  * 
  * @author Oliver Milke
  * @since 12.11.2015

@@ -86,9 +86,7 @@ public class DefaultValueContainerTest {
 
 	@Test
 	public void compareShouldDetectNewAttributes() {
-
-		//wahrscheinlich ist dieser Test für den UseCase AuditLog nur mäßig hilfreich, aber generell ist er für diese Implementierung der vollständigkeithalber notwendig
-
+		
 		DefaultValueContainer original = new DefaultValueContainer();
 		original.put(ID, "1");
 		original.put("changeDate", LocalTime.of(12, 0).toString());
@@ -228,17 +226,17 @@ public class DefaultValueContainerTest {
 
 		DefaultValueContainer cut = new DefaultValueContainer();
 
-		// 1. anonymizeValue konfiguriert
+		// 1. configured anonymizeValue
 		String criticalKey = "critical";
 		String anonymizeValue = "----";
 		cut.configureAnonymizeValue(criticalKey, anonymizeValue);
 		assertThat(cut.getAnonymizeConfig().get(criticalKey), is(anonymizeValue));
 
-		// 2. CRITICAL hat sich nicht geändert -> wird in compare nicht zurückgegeben
+		// 2. CRITICAL has not changed -> is not returned in compare
 		assertTrue(cut.compare(new DefaultValueContainer()).isEmpty());
 		assertThat(cut.compare(new DefaultValueContainer()).get(criticalKey), is(nullValue()));
 
-		// 3. CRITICAL hat sich geändert -> anonymizeValue wird in compare zurückgegeben
+		// 3. CRITICAL has changed -> anonymizeValue will be returned in compare
 		cut.put(criticalKey, "dontReturnMeInCompare");
 		assertThat(cut.compare(new DefaultValueContainer()).get(criticalKey), is(anonymizeValue));
 	}

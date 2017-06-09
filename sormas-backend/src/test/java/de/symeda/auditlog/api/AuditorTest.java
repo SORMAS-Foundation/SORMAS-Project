@@ -101,11 +101,11 @@ public class AuditorTest {
 		ValueContainer annotationChanges = auditor.inspectEntity(entity);
 		ValueContainer inspectAttributes = entity.inspectAttributes();
 
-		//beide Varianten der ChangeDetection vergleichen 
+		// compare both variants of the ChangeDetection
 		SortedMap<String, String> comparedAttributes = inspectAttributes.compare(annotationChanges);
 		assertThat(comparedAttributes.size(), is(0));
 
-		//sicherstellen, dass beide Varianten auch der Erwartung entsprechen (und nicht nur gleich leer sind)
+		// make sure that both variants meet the expectations (and are not simply equally empty)
 		final SortedMap<String, String> annotationAttributes = annotationChanges.getAttributes();
 		assertThat(annotationAttributes.size(), is(3));
 		assertThat(annotationAttributes.get(Entity.FLAG), is(equalTo("false")));
@@ -118,13 +118,13 @@ public class AuditorTest {
 
 		Auditor auditor = new Auditor();
 
-		//benutzt einen BooleanFormatter, der 0 / 1 generiert statt false / true.
+		// uses a BooleanFormatter that generates 0 / 1 instead of false / true.
 		SimpleBooleanFlagEntity entity = new SimpleBooleanFlagEntity("uuid-1", false);
 
 		ValueContainer annotationChanges = auditor.inspectEntity(entity);
 		String formatted = annotationChanges.getAttributes().get(SimpleBooleanFlagEntity.FLAG);
 
-		//sicherstellen, dass dieser Formatter auch genutzt wird
+		// make sure that this Formatter is actually used
 		assertThat(formatted, is(equalTo(new DemoBooleanFormatter().format(false))));
 	}
 
@@ -133,7 +133,7 @@ public class AuditorTest {
 
 		Auditor auditor = new Auditor();
 
-		//benutzt einen BooleanFormatter, der 0 / 1 generiert statt false / true.
+		// uses a BooleanFormatter that generates 0 / 1 instead of false / true.
 		final Date date1 = AuditLogDateHelper.from(LocalDateTime.of(2016, Month.APRIL, 8, 14, 15));
 		final Date date2 = AuditLogDateHelper.from(LocalDateTime.of(2016, Month.APRIL, 13, 10, 00));
 		OverridingFormatterEntity entity = new OverridingFormatterEntity("uuid-1", date1, date2);
@@ -161,9 +161,9 @@ public class AuditorTest {
 
 		final SortedMap<String, String> changes = futureState.compare(pastState);
 
-		//der change wird festgestellt...
+		// the change is detected...
 		assertThat(changes.size(), is(1));
-		//jedoch wird der Wert korrekt anonymisiert
+		// ... but the value is correctly anonymized
 		assertThat(changes.get(AnonymizedEntity.PWD), is(AnonymizedEntity.ANONYMIZING));
 
 	}

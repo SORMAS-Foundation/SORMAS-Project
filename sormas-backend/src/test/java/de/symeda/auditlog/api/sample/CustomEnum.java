@@ -1,8 +1,8 @@
 package de.symeda.auditlog.api.sample;
 
 /**
- * Enum mit angepasster toString-Methode, die nicht {@link Enum#name()} ausgibt.
- * 
+ * Enum with adjusted toString method that does not return {@link Enum#name()}.
+
  * @author Stefan Kock
  */
 public enum CustomEnum {

@@ -21,7 +21,7 @@ import de.symeda.auditlog.api.TransactionId;
 import de.symeda.auditlog.api.UserId;
 
 /**
- * Entity Life-Cycle-Listener, der Änderungen an Entities feststellen kann.
+ * Entity life cycle listener that can detect changes on entities.
  * 
  * @author Oliver Milke
  * @since 13.01.2016

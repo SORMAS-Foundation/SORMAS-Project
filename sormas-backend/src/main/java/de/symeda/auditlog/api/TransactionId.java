@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * Identifiziert die Transaktion, in der eine Änderung entstanden ist.
+ * Identifies the transaction in which a change has happened.
  * 
  * @author Oliver Milke
  * @since 15.01.2016

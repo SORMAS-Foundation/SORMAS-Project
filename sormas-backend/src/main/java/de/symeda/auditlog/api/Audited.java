@@ -7,12 +7,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Marker-Annotation, dass die mit dieser Annotation versehene Klasse auditiert werden soll.
+ * Marker annotation that the class provided with this annotation should be audited.
  * </p>
- * Jedes instanzierte Objekt, bei dem die Klasse mit {@link Audited} annotiert ist und alle Oberklassen mit {@link Audited} werden in der
- * Auditierung berücksichtigt.
- * Sollte in der Vererbungshierarchie ein Element vorhanden sein, dass nicht mit {@link Audited} annotiert ist, dann dies (und damit alle
- * seine Attribute) übersprungen.
+ * Every instantiated object whose class is marked with the {@link Audited} annotation and all super classes with {@link Audited} will
+ * be taken into account.
+ * Should the depth of inheritance contain an element that is not marked with {@link Audited}, this element and all its attributes
+ * will be skipped.
  * 
  * @author Oliver Milke
  * @since 08.04.2016

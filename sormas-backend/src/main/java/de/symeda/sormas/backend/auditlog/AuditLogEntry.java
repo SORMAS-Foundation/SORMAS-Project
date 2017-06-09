@@ -22,7 +22,7 @@ import javax.persistence.TemporalType;
 import de.symeda.auditlog.api.ChangeType;
 
 /**
- * Zur Speicherung von Änderungen an Entities.
+ * For saving changes on entities.
  * 
  * @author Oliver Milke
  */
@@ -77,7 +77,7 @@ public class AuditLogEntry implements Serializable {
 	}
 
 	/**
-	 * @return Uuid der auditierten Entity.
+	 * @return 	Uuid of the audited entity.
 	 */
 	public String getUuid() {
 		return uuid;
@@ -104,7 +104,7 @@ public class AuditLogEntry implements Serializable {
 	}
 
 	/**
-	 * @return Der Zeitpunkt, zum dem die Änderung erkannt/protokolliert wurde.
+	 * @return 	The timestamp when the change has been detected/logged.
 	 */
 	public Date getDetectionTimestamp() {
 		return detectionTimestamp;

@@ -13,7 +13,7 @@ import de.symeda.auditlog.api.TransactionId;
 import de.symeda.auditlog.api.UserId;
 
 /**
- * Liefert für Auditlog relevante Umgebung.
+ * Provides the relevant environment for the Auditlog.
  * 
  * @author Oliver Milke
  * @since 13.01.2016
@@ -25,7 +25,7 @@ public class AuditContextProducer {
 	private SessionContext context;
 
 	/**
-	 * Liefert anhand des EJB-Kontextes die Information, welchem Benutzer eine Änderung zugeordnet werden soll.
+	 * Returns the information which user a change should be associated with according to the EJB context.
 	 */
 	@Produces
 	@Current

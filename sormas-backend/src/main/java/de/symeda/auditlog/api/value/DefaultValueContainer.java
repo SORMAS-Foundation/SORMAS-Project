@@ -12,7 +12,7 @@ import de.symeda.auditlog.api.value.format.EnumFormatter;
 import de.symeda.auditlog.api.value.format.ValueFormatter;
 
 /**
- * Standard-Implementierung zur Formatierung und Speicherung von Attributen.
+ * Standard implementation to format and save attributes.
  * 
  * @author Oliver Milke, Stefan Kock
  */
@@ -43,7 +43,7 @@ public class DefaultValueContainer implements SimpleValueContainer {
 
 	/**
 	 * @param cloneSource
-	 *            Zu kopierender {@link ValueContainer}.
+	 *            {@link ValueContainer} to copy.
 	 */
 	public DefaultValueContainer(ValueContainer cloneSource) {
 		this(DEFAULT_NULL_STRING, new TreeMap<>(cloneSource.getAttributes()));
@@ -51,9 +51,9 @@ public class DefaultValueContainer implements SimpleValueContainer {
 
 	/**
 	 * @param nullString
-	 *            Platzhalter für {@code null}-Values.
+	 *            Placeholder for {@code null} values.
 	 * @param attributes
-	 *            Bereits vorhandene Attribute.
+	 *            Already existing attributes.
 	 */
 	protected DefaultValueContainer(String nullString, SortedMap<String, String> attributes) {
 
@@ -63,12 +63,12 @@ public class DefaultValueContainer implements SimpleValueContainer {
 	}
 
 	/**
-	 * Speichert den zu auditierenden Wert.
+	 * Saves the value to be audited.
 	 * 
 	 * @param key
-	 *            Identifier für Attribut der auditierten Entity.
+	 * 			Identifier for attribute of the audited entity.
 	 * @param value
-	 *            Wenn {@code null}, dann wird {@link #getNullString()} als Wert gespeichert.
+	 * 			If {@code null}, the {@link #getNullString()} is saved as the value.
 	 */
 	protected void putToMap(String key, Object value) {
 
@@ -109,15 +109,14 @@ public class DefaultValueContainer implements SimpleValueContainer {
 	}
 
 	/**
-	 * Ersetzt geänderte Werte, wenn sie anhand von {@link #getAnonymizeConfig()} zur Anonymisierung vorgesehen sind.
-	 * 
+	 * Replaces changed values when they are designated for anonymization by {@link #getAnonymizeConfig()}.
 	 * @param result
 	 */
 	private void anonymizeValues(SortedMap<String, String> result) {
 
 		for (Map.Entry<String, String> anonEntry : anonymizeConfig.entrySet()) {
 			if (result.containsKey(anonEntry.getKey())) {
-				// Geänderten Wert durch anonymisierten String ersetzen
+				// Replace the changed value with an anonymized String
 				result.put(anonEntry.getKey(), anonEntry.getValue());
 			}
 		}
@@ -160,13 +159,13 @@ public class DefaultValueContainer implements SimpleValueContainer {
 	}
 
 	/**
-	 * Wenn für {@code key} eine Änderung in {@link #compare(ValueContainer)} erkannt wird,
-	 * dann wird {@code anonymizeValue} anstatt des neuen Werts zurückgegeben.
+	 * When a change is detected for {@code key} in {@link #compare(ValueContainer)},
+	 * {@code anonymizeValue} will be returned instead of the new value.
 	 * 
 	 * @param key
-	 *            Das zu anonymisierende Attribut.
+	 * 			The attribute to anonymize.
 	 * @param anonymizeValue
-	 *            Der anstatt des echten neuen Werts zurückzugebene Wert.
+	 * 			The value that is returned instead of the actual new value.
 	 */
 	public void configureAnonymizeValue(String key, String anonymizeValue) {
 

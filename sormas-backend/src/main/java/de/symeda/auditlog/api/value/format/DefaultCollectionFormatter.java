@@ -6,12 +6,12 @@ import java.util.Comparator;
 import de.symeda.auditlog.api.HasUuid;
 
 /**
- * Unterstützt folgende Elemente in Collections (relevant für stabile Sortierung):
+ * Supports the following elements in Collections (relevant for a reliable sorting):
  * <ol>
  * <li>{@link HasUuid}</li>
  * <li>{@link Comparable}</li>
  * </ol>
- * Zur Formatierung der Collection-Elemente wird standardmäßig {@link DefaultValueFormatter} verwendet.
+ * By default, {@link DefaultValueFormatter} will be used to format Collection elements.
  * 
  * @author Oliver Milke, Stefan Kock
  */
@@ -26,7 +26,7 @@ public class DefaultCollectionFormatter extends ComparatorCollectionFormatter<Ob
 	}
 
 	/**
-	 * Vergleicht Objekte nach ihrer natürlichen Ordnung, berücksichtigt dabei jedoch {@link HasUuid}.
+	 * Compares objects according to their natural order, with {@link HasUuid} being taken into account.
 	 * 
 	 * @author Oliver Milke
 	 * @since 11.04.2016
@@ -48,7 +48,7 @@ public class DefaultCollectionFormatter extends ComparatorCollectionFormatter<Ob
 				return uuidObject1.getUuid().compareTo(uuidObject2.getUuid());
 			} else {
 
-				// Eigentlich ein mieser Hack: Wenn hier Klassen reinkommen, die nicht Comparable sind, wird eine ClassCastException auftreten.
+				// Caution: Will produce a ClassCastException for classes that are not Comparable.
 				Comparator comparator = Comparator.naturalOrder();
 				return comparator.compare(o1, o2);
 			}

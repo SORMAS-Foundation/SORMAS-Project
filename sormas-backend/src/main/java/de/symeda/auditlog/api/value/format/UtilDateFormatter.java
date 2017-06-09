@@ -7,7 +7,7 @@ import java.util.Date;
 import javax.persistence.TemporalType;
 
 /**
- * Formatierung von {@link Date} anhand eines konfigurierbaren Patterns.
+ * Formats {@link Date}s according to a configurable pattern.
  * 
  * @author Oliver Milke, Stefan Kock
  */
@@ -32,7 +32,7 @@ public class UtilDateFormatter implements ValueFormatter<Date> {
 
 	/**
 	 * @param temporalType
-	 *            Für diesen {@link TemporalType} soll ein passendes {@link DateFormat}-Pattern ermittelt werden.
+	 * 			For this {@link TemporalType}, a matching {@link DateFormat} pattern shall be identified.
 	 * @see #toPattern(TemporalType)
 	 */
 	public UtilDateFormatter(TemporalType temporalType) {
@@ -42,14 +42,14 @@ public class UtilDateFormatter implements ValueFormatter<Date> {
 
 	/**
 	 * @param pattern
-	 *            Das zu verwendende {@link DateFormat}-Pattern.
+	 * 			The {@link DateFormat} pattern to use.
 	 */
 	public UtilDateFormatter(String pattern) {
 		this.pattern = pattern;
 	}
 
 	/**
-	 * @return Das zu verwendende {@link DateFormat}-Pattern.
+	 * @return 	The {@link DateFormat} pattern to use.
 	 */
 	public String getPattern() {
 		return pattern;
@@ -63,9 +63,9 @@ public class UtilDateFormatter implements ValueFormatter<Date> {
 
 	/**
 	 * @param temporalType
-	 *            Für diesen {@link TemporalType} soll ein passendes {@link DateFormat}-Pattern ermittelt werden. Liefert ein ausführliches
-	 *            Muster, falls temporalType <code>null</code> ist.
-	 * @return ein zum übergebenen {@link TemporalType} passendes Pattern.
+	 * 			For this {@link TemporalType}, a matching {@link DateFormat} pattern shall be identified. Returns a detailed pattern
+	 * 			if temporalType is <code>null</code>.
+	 * @return	A matching pattern for the given {@link TemporalType}.
 	 */
 	public static String toPattern(TemporalType temporalType) {
 

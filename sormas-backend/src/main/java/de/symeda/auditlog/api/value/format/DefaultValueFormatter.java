@@ -9,15 +9,15 @@ import de.symeda.auditlog.api.value.SimpleValueContainer;
 import de.symeda.auditlog.api.value.ValueContainer;
 
 /**
- * Default-Formatter für {@link AuditedAttribute}, der folgende Typen unterstützt.
+ * Default formatter for {@link AuditedAttribute} that supports the following types:
  * <ol>
  * <li>{@link Enum} -> {@code value.name()}</li>
  * <li>{@link HasUuid} -> {@code value.getUuid()}</li>
  * <li>{@code null} -> {@link ValueContainer#DEFAULT_NULL_STRING}</li>
- * <li>Sonstiges -> {@code value.toString()}</li>
+ * <li>Others -> {@code value.toString()}</li>
  * </ol>
  * <p/>
- * Implementierung ist kompatibel zu den Implementierungen im {@link DefaultValueContainer}.
+ * Implementation is compatible to the implementations in {@link DefaultValueContainer}.
  * 
  * @author Oliver Milke
  * @since 08.04.2016
@@ -34,7 +34,7 @@ public class DefaultValueFormatter implements ValueFormatter<Object> {
 		} else if (value instanceof HasUuid) {
 			HasUuid uuidObject = (HasUuid) value;
 
-			//niemals null wegen instanceof
+			// never null because of instanceof
 			return uuidObject.getUuid();
 		} else {
 			return Objects.toString(value, SimpleValueContainer.DEFAULT_NULL_STRING);

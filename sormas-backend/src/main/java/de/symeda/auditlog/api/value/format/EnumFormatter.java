@@ -5,7 +5,7 @@ import java.io.Serializable;
 import de.symeda.auditlog.api.value.SimpleValueContainer;
 
 /**
- * Formatiert Enums:
+ * Formats Enums:
  * <ol>
  * <li>{@code null} -> {@link SimpleValueContainer.DEFAULT_NULL_STRING}</li>
  * <li>{@code value.name()}</li>

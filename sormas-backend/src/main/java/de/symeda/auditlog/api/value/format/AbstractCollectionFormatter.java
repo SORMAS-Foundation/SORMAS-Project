@@ -7,20 +7,20 @@ import java.util.List;
 import de.symeda.auditlog.api.value.ValueContainer;
 
 /**
- * Formatiert eine Collection von Enums als String.<br />
- * Die Methode {@link #toSortedList(Collection)} stellt eine zuverlässige Sortierung sicher,
- * sodass eine Umsortierung nicht als geänderter formatierter String erscheint.<br />
- * Formatierung:
+ * Formats a Collection of Enums as a String.<br />
+ * The method {@link #toSortedList(Collection)} provides a reliable sorting so that sorting it
+ * again does not result in a changed formatted String.<br />
+ * Formatting:
  * <ul>
  * <li><code>null</code>: <code>{@link #getNullString()}</code></li>
- * <li>0 Werte: <code>0 []</code></li>
- * <li>1 Wert: <code>1 [value1]</code></li>
- * <li>N Werte: <code>n [value1, ..., valueN]</code> (sortiert gemäß <code>{@link #toSortedList(Collection)}</code>)</li>
+ * <li>0 values: <code>0 []</code></li>
+ * <li>1 value: <code>1 [value1]</code></li>
+ * <li>N values: <code>n [value1, ..., valueN]</code> (sorted according to <code>{@link #toSortedList(Collection)}</code>)</li>
  * </ul>
  * 
  * @author Stefan Kock
  * @param <V>
- *            Typ des zu formatierenden {@code value} innerhalb der {@link Collection}.
+ * 			Type of the {@code value} to be formatted within the {@link Collection}.
  */
 public abstract class AbstractCollectionFormatter<V> implements CollectionFormatter<V> {
 
@@ -31,7 +31,7 @@ public abstract class AbstractCollectionFormatter<V> implements CollectionFormat
 	 * <code>nullString = {@link ValueContainer#DEFAULT_NULL_STRING}</code>
 	 * 
 	 * @param valueFormatter
-	 *            Zur Formatierung der einzelnen Werte zu verwendende {@link ValueFormatter}.
+	 * 			The {@link ValueFormatter} to format the individual values with.
 	 */
 	public AbstractCollectionFormatter(ValueFormatter<V> valueFormatter) {
 
@@ -40,9 +40,9 @@ public abstract class AbstractCollectionFormatter<V> implements CollectionFormat
 
 	/**
 	 * @param nullString
-	 *            Platzhalter für {@code null}-Values.
+	 * 			Placeholder for {@code null} values.
 	 * @param valueFormatter
-	 *            Zur Formatierung der einzelnen Werte zu verwendende {@link ValueFormatter}.
+	 * 			The {@link ValueFormatter} to format the individual values with.
 	 */
 	public AbstractCollectionFormatter(String nullString, ValueFormatter<V> valueFormatter) {
 
@@ -79,13 +79,12 @@ public abstract class AbstractCollectionFormatter<V> implements CollectionFormat
 	}
 
 	/**
-	 * Sortiert die zu formatierende {@link Collection} vor der Formatierung.
-	 * Es wird eine zuverlässige Sortierung sichergestellt,
-	 * sodass eine Umsortierung nicht als geänderter formatierter String erscheint.
+	 * Sorts the {@link Collection} to format prior to the formatting.
+	 * Provides a reliable sorting so that sorting it again does not result in a changed formatted String.
 	 * 
 	 * @param valueCollection
-	 *            Zu formatierende {@link Collection}.
-	 * @return Sortierte Values.
+	 * 			{@link Collection} to format.
+	 * @return	Sorted values.
 	 */
 	protected abstract List<V> toSortedList(Collection<V> valueCollection);
 }

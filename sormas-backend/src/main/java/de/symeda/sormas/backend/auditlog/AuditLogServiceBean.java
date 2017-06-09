@@ -14,7 +14,7 @@ import de.symeda.auditlog.api.ChangeEvent;
 import de.symeda.sormas.backend.util.ModelConstants;
 
 /**
- * Verarbeitet {@link ChangeEvent}s zu {@link AuditLogEntry} und speichert dies.
+ * Turns {@link ChangeEvent}s to {@link AuditLogEntry} and saves it.
  * 
  * @author Oliver Milke
  */

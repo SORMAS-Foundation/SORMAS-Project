@@ -5,43 +5,43 @@ import java.util.Collection;
 import de.symeda.auditlog.api.value.ValueContainer;
 
 /**
- * Formatiert Collections als String für das Auditlog.<br />
- * Sollten {@code null}-Values vorhanden sein, dann wird {@link #getNullString()} als Platzhalter verwendet.
+ * Formats Collections as String for the Auditlog.<br />
+ * Should {@code null} values be present, {@link #getNullString()} will be used as placeholder.
  * 
  * @author Stefan Kock
  * @param <V>
- *            Typ des zu formatierenden {@code value} innerhalb der {@link Collection}.
+ * 			Type of the {@code value} to format within the {@link Collection}.
  */
 public interface CollectionFormatter<V> extends ValueFormatter<Collection<V>> {
 
 	/**
-	 * Standard-Zeichen als erste Zeichen für eine formatierte {@link Collection}.
+	 * Standard character as first sign of a formatted {@link Collection}.
 	 */
 	char PREFIX = '[';
 
 	/**
-	 * Standard-Trennzeichen zwischen Werten einer formatierten {@link Collection}.
+	 * Standard separator between values of a formatted {@link Collection}.
 	 */
 	String SEPARATOR = ";";
 
 	/**
-	 * Standard-Zeichen als letzte Zeichen für eine formatierte {@link Collection}.
+	 * Standard character as last character of a formatted {@link Collection}.
 	 */
 	char SUFFIX = ']';
 
 	/**
-	 * @return Platzhalter, wenn ein Wert der {@link Collection} auf <code>null</code> gesetzt wurde.
+	 * @return	Placeholder if a value of the {@link Collection} has been set to <code>null</code>.
 	 */
 	default String getNullString() {
 		return ValueContainer.DEFAULT_NULL_STRING;
 	}
 
 	/**
-	 * Formatiert die {@link Collection} als {@link String}.
+	 * Formats the {@link Collection} as {@link String}.
 	 * 
 	 * @param valueCollection
-	 *            Zu formatierende {@link Collection}.
-	 * @return String-Formatierung der übergebenen {@link Collection}.
+	 * 			{@link Collection} to format.
+	 * @return 	String format of the given {@link Collection}.
 	 */
 	@Override
 	String format(Collection<V> valueCollection);

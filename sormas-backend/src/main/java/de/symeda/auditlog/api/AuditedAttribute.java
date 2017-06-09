@@ -13,7 +13,7 @@ import de.symeda.auditlog.api.value.format.UtilDateFormatter;
 import de.symeda.auditlog.api.value.format.ValueFormatter;
 
 /**
- * Legt fest, dass Attribute eines Entity durch das AuditLog auf Änderungen überprüft werden.
+ * Determines that attributes of an entity should be checked for changes by the AuditLog.
  * 
  * @author Oliver Milke
  * @since 08.04.2016
@@ -27,31 +27,30 @@ public @interface AuditedAttribute {
 	Class<? extends ValueFormatter<?>> DEFAULT_FORMATTER = DefaultValueFormatter.class;
 
 	/**
-	 * Standard-Platzhalter für geänderte anonymisierte Attribute.
+	 * Standard placeholder for changed anonymized attributes.
 	 */
 	String ANONYMIZING = "****";
 
 	/**
-	 * Legt den Formatter fest, durch den das inspizierte Attribut formatiert werden soll. Diese String-Repräsentation ist auch Basis für
-	 * die Feststellung einer Änderung.
+	 * Determines the formatter the inspected attribute will be formatted with. This String representation is also the foundation for
+	 * the discovery of a change.
 	 * 
-	 * @return Default: {@link DefaultValueFormatter}, außer wenn {@link Date} mit {@link Temporal} annotiert ist, dann wird ein passender {@link UtilDateFormatter} verwendet.
+	 * @return Default: {@link DefaultValueFormatter}; if a {@link Date} is annotated with {@link Temporal}, a matching {@link UtilDateFormatter} will be used.
 	 */
 	Class<? extends ValueFormatter<?>> value() default DefaultValueFormatter.class;
 
 	/**
-	 * Legt fest, ob der geänderte Wert tatsächlich ins AuditLog geschrieben werden darf. Passworte sollte nicht bspw. nicht im AuditLog
-	 * erscheinen, auch wenn sie gehasht sind.
+	 * Determines whether the changed value may actually be written into the AuditLog. E.g. passwords should not appear in the AuditLog,
+	 * even when they are hashed.
 	 * <p/>
-	 * Das dient dazu, um nachzuverfolgen, dass beispielsweise ein Benutzer sein Passwort geändert hat, ohne dass das konkrete Passwort im
-	 * AuditLog gespeichert wird.
+	 * This can be used to e.g. track when users have changed their passwords without saving the actual value in the AuditLog.
 	 * 
 	 * @return Default: {@code false}.
 	 */
 	boolean anonymous() default false;
 
 	/**
-	 * Mit dieser Zeichenkette erscheinen anonyme Einträge im AuditLog.
+	 * The values of anonymized entries will be replaced by this String in the AuditLog.
 	 * 
 	 * @return Default: {@value #ANONYMIZING}.
 	 */

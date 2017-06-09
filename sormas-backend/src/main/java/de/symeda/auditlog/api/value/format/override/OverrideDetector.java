@@ -7,12 +7,12 @@ import de.symeda.auditlog.api.value.format.ValueFormatter;
 public interface OverrideDetector<T> {
 
 	/**
-	 * Liefert einen {@link ValueFormatter}, der angepasst ist auf das Entity-Property.
+	 * Returns a {@link ValueFormatter} that is adjusted to the entity property.
 	 * 
 	 * @param m
-	 *            Die Methode, die das Entity-Property beschreibt.
-	 * @return Liefert <code>null</code>, falls keine sinnvolle Ableitung gefunden werden kann. Liefert einen entsprechenden
-	 *         {@link ValueFormatter}, falls eine Ableitung beispielsweise anhand der Annotationen möglich ist.
+	 * 			The method that describes the entity property.
+	 * @return	Returns <code>null</code> if no reasonable derivation can be found. Returns a respective {@link ValueFormatter}
+	 * 			if a derivation is possible, e.g. according to the annotations.
 	 */
 	ValueFormatter<T> override(Method m);
 

@@ -26,9 +26,9 @@ import de.symeda.auditlog.api.value.format.override.OverrideDetector;
 import de.symeda.auditlog.api.value.reflection.EntityInspector;
 
 /**
- * Klasse zur Inspektion von Entity-Zuständen.
+ * Class for the inspection of entity states.
  * </p>
- * Der Auditor muss serialisierbar sein, weil er im Transaction Scope gehalten wird (Anforderung von CDI).
+ * The Auditor has to be serializable because it is kept in the Transaction Scope (requirement from CDI).
  * 
  * @author Oliver Milke
  * @since 13.01.2016
@@ -38,19 +38,19 @@ public class Auditor implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/*
-	 * Sollte der Auditor serialisiert werden, wird es für changes eine NPE geben.
-	 * Dies ist aber sehr unwahrscheinlich.
+	 * Should the Auditor be serialized, there will be an NPE for changes.
+	 * However, this is very unlikely.
 	 */
 	private final Map<EntityId, ValueContainer> changes = new HashMap<>();
 
 	/**
-	 * Registriert ein {@link HasUuid} zur Überwachung seiner Attribute. Spätere Vergleiche auf Attributsänderungen mit
-	 * {@link #detectChanges(HasUuid)} erfolgen gegen den Zustand des Entities zu diesem Zeitpunkt.
+	 * Registers a {@link HasUuid} to monitor its attributes. Later comparisons of attribute changes with
+	 * {@link #detectChanges(HasUuid)} take place against the entity's state to this point in time.
 	 * <p/>
-	 * Sollte daher möglichst unmittelbar nach dem Laden einer Entity aufgerufen werden.
+	 * Should therefore be called immediately after an entity has been loaded.
 	 * 
 	 * @param entity
-	 *            Das zu inspizierende Entity.
+	 * 			The entity to inspect.
 	 */
 	public void register(HasUuid entity) {
 
@@ -64,17 +64,15 @@ public class Auditor implements Serializable {
 	}
 
 	/**
-	 * Überprüft, welche Attribute sich für dieses Entity geändert haben. Liefert eine leere Map, sofern keine Änderungen festgestellt
-	 * wurden.
+	 * Checks which attributes have changed for this entity. Returns an empty map when no changes have been detected.
 	 * 
 	 * @param entity
-	 *            Die zu inspizierende Entity.
+	 * 			The entity to inspect.
 	 * @return
-	 *         <ol>
-	 *         <li>Liefert eine Auflistung aller geänderten Attribute, wobei der <code>key</code> der Map der Name des geänderten Attributs
-	 *         ist und der <code>value</code> der neue Wert des Attributs ist.</li>
-	 *         <li>Gibt an, ob es sich um {@link ChangeType#CREATE} oder {@link ChangeType#UPDATE} handelt.</li>
-	 *         </ol>
+	 * 			<ol>
+	 * 			<li>Returns a list of all changed attributes, with the <code>key</code> of the map being the name of the changed attribute
+	 * 			and the <code>value</code> being the new value of the attribute.</li>
+	 * 			<li>Specifies whether it is a {@link ChangeType#CREATE} or {@link ChangeType#UPDATE}.</li>
 	 */
 	public ChangeEvent detectChanges(HasUuid entity) {
 
@@ -85,25 +83,25 @@ public class Auditor implements Serializable {
 			final ChangeType changeType = detectChangeType(entity);
 			final SortedMap<String, String> entityChanges;
 			if (this.changes.containsKey(entity.getOid())) {
-				//Attribute vergleichen, weil bereits vorhanden
+				// Compare attributes because already existing
 				ValueContainer originalContainer = this.changes.get(entity.getOid());
 				entityChanges = getValueContainerOf(entity).compare(originalContainer);
 			} else {
-				//Entity ist neu
+				// Entity is new
 				entityChanges = getValueContainerOf(entity).getChanges();
 			}
 
-			// Für nächsten Aufruf innerhalb derselben TX den aktuellen Zustand merken
+			// Save the current state for the next call within the same TX
 			register(entity);
 			return new ChangeEvent(entityChanges, changeType);
 		}
 	}
-
+	
 	/**
-	 * Überprüft, ob ein Entity auditierbar ist.
+	 * Checks whether an entity is auditable.
 	 * 
-	 * @return Liefert <code>true</code>, wenn das Entity auditierbar ist (weil es von {@link AuditedEntity} ableitet oder mit
-	 *         {@link Audited} annotiert ist). Liefert <code>false</code> anderenfalls.
+	 * @return 	Returns <code>true</code> if the entity is auditable (because it derives from {@link AuditedEntity} or is annotated
+	 * 			with {@link Audited}). Returns <code>false</code> otherwise.
 	 */
 	private boolean isAudited(HasUuid entity) {
 
@@ -115,12 +113,11 @@ public class Auditor implements Serializable {
 	}
 
 	/**
-	 * Überprüft, ob ein Entity ganz neu ist, oder geändert wurde.
+	 * Checks whether this entity is completely new or has been changed.
 	 * 
 	 * @param entity
-	 *            Die zu inspizierende Entity.
-	 * @return Liefert {@link ChangeType#UPDATE}, falls die Entity in dieser Transaktion verändert wurde, liefert {@link ChangeType#CREATE}
-	 *         anderenfalls.
+	 * 			The entity to inspect.
+	 * @return	Returns {@link ChangeType#UPDATE} if the entity has been changed in this transaction or {@link ChangeType#CREATE} otherwise.
 	 */
 	private ChangeType detectChangeType(HasUuid entity) {
 
@@ -132,11 +129,11 @@ public class Auditor implements Serializable {
 	}
 
 	/**
-	 * Liefert zu einem auditierbaren Entity den ValueContainer.
+	 * Returns the ValueContainer to an auditable entity.
 	 * 
-	 * @throws IllegalStateException
-	 *             Falls das Entity nicht auditierbar ist.
-	 * @see #isAudited(HasUuid)
+	 * @throws 	IllegalStateException
+	 * 				If the entity is not auditable.
+	 * @see	#isAudited(HasUuid)
 	 */
 	private ValueContainer getValueContainerOf(HasUuid entity) {
 
@@ -149,14 +146,14 @@ public class Auditor implements Serializable {
 			if (entity instanceof AuditedEntity) {
 				LoggerFactory.getLogger(Auditor.class).warn(
 					String.format(
-						"Entity %s ist sowohl mit @Audited annotiert als auch von AuditedEntity abgeleitet. Nur die Annotationen werden betrachtet.",
+						"Entity %s is both annotated with @Audited and derives from AuditedEntity. Only the annotations will be considered.",
 						entity.getClass()));
 			}
 
 		} else if (entity instanceof AuditedEntity) {
 			container = ((AuditedEntity) entity).inspectAttributes();
 		} else {
-			throw new IllegalStateException("ValueContainer kann nicht erstellt werden für Entity: " + entity);
+			throw new IllegalStateException("ValueContainer cannot be created for entity: " + entity);
 		}
 
 		return container;
@@ -164,10 +161,9 @@ public class Auditor implements Serializable {
 	}
 
 	/**
-	 * Liefert anhand der Annotationen den {@link ValueContainer}.
+	 * Returns the {@link ValueContainer} based on the annotations.
 	 * 
-	 * @return Liefert den {@link ValueContainer} für dieses Entity. Der {@link ValueContainer} ist leer, wenn keine auditierten Attribute
-	 *         gefunden werden können.
+	 * @return	Returns the {@link ValueContainer} for this entity. The {@link ValueContainer} is empty if no auditable attributes are found.
 	 */
 	ValueContainer inspectEntity(HasUuid entity) {
 		DefaultValueContainer result = new DefaultValueContainer();
@@ -179,7 +175,6 @@ public class Auditor implements Serializable {
 				AuditedAttribute auditedAttribute = currentAttribute.getAnnotation(AuditedAttribute.class);
 				AuditedCollection auditedCollection = currentAttribute.getAnnotation(AuditedCollection.class);
 				boolean isCollection = Collection.class.isAssignableFrom(currentAttribute.getReturnType());
-				// TODO add warning when annotation does not match actual type (i.e. auditedAttribute on collection and vice versa)
 				
 				if (auditedAttribute != null || !isCollection) {
 					logAttributeChange(result, inspector, currentAttribute, auditedAttribute);
@@ -187,7 +182,7 @@ public class Auditor implements Serializable {
 					logCollectionChange(result, inspector, currentAttribute, auditedCollection);
 				}
 			} catch (InvocationTargetException | IllegalAccessException e) {
-				throw new AuditlogException(String.format("Änderung der Entity %s konnte nicht festgestellt werden.", entity.toString()), e);
+				throw new AuditlogException(String.format("No changes for entity %s can be detected.", entity.toString()), e);
 			}
 		}
 
@@ -197,7 +192,6 @@ public class Auditor implements Serializable {
 	@SuppressWarnings("unchecked")
 	private void logCollectionChange(DefaultValueContainer result, EntityInspector inspector, Method currentAttribute, AuditedCollection annotation)
 		throws IllegalAccessException, InvocationTargetException {
-		// TODO add @Nullable to annotation, call this with null
 		@SuppressWarnings("rawtypes")
 		CollectionFormatter collectionFormatter = EntityInspector.getCollectionFormatter(annotation);
 
@@ -213,7 +207,7 @@ public class Auditor implements Serializable {
 		if (isEmbeddedElement(currentAttribute)) {
 
 			if (isClassAudited(currentAttribute.getReturnType())) {
-				//die Attribute des Embeddables loggen
+				// Log the attributes of the Embeddable
 				Object embeddable = inspector.getAttributeValue(currentAttribute);
 				EntityInspector embeddableInspector = new EntityInspector(embeddable);
 
@@ -230,7 +224,7 @@ public class Auditor implements Serializable {
 
 			}
 		} else {
-			//log simple value
+			// Log simple value
 			logSingularAttributeChange(result, inspector, currentAttribute, annotation);
 		}
 
@@ -292,18 +286,17 @@ public class Auditor implements Serializable {
 	}
 
 	/**
-	 * Entscheidet, welcher {@link ValueFormatter} für das Entity-Property verwendet werden soll. Liefert den originalen
-	 * {@link ValueFormatter}, falls dieser
+	 * Decides which {@link ValueFormatter} should be used for this entity property. Returns the original {@link ValueFormatter} if
 	 * <ol>
-	 * <li>bereits abweicht vom Default-ValueFormatter</li>
-	 * <li>keine sinnvolle Ableitung anhand des Entity-Properties gefunden werden kann</li>
-	 * </ol>
+	 * <li>it already differs from the default ValueFormatter</li>
+	 * <li>no reasonable derivation based on the entity property can be found</li>
+	 * <ol>
 	 * 
 	 * @param original
-	 *            Der {@link ValueFormatter}, der mithilfe bei {@link AuditedAttribute} angegeben wurde.
+	 * 			The {@link ValueFormatter} given as a parameter to {@link AuditedAttribute}.
 	 * @param m
-	 *            Das Entity-Property.
-	 * @return Den zu verwendenden {@link ValueFormatter}. Niemals jedoch <code>null</code>.
+	 * 			The entity property.
+	 * @return	The {@link ValueFormatter} to be used. Must not return <code>null</code>.
 	 */
 	@SuppressWarnings("unchecked")
 	ValueFormatter<?> overrideFormatter(ValueFormatter<?> original, Method m) {
@@ -312,7 +305,7 @@ public class Auditor implements Serializable {
 			OverrideDetector<?> detector = findOverrideDector(m);
 
 			if (detector != null) {
-				//falls ein sinnvoller Default existiert, diesen verwenden.
+				// If a reasonable default exists, use it.
 				return ObjectUtils.firstNonNull(detector.override(m), original);
 			} else {
 				return original;
@@ -323,11 +316,11 @@ public class Auditor implements Serializable {
 	}
 
 	/**
-	 * Prüft anhand des Entity-Properties, welcher OverrideDetector infrage kommt.
+	 * Checks based on the entity property which OverrideDetector may be used.
 	 * 
 	 * @param m
-	 *            Das Entity-Property.
-	 * @return Liefert <code>null</code>, falls kein {@link OverrideDetector} für das Entity-Property gefunden werden kann.
+	 * 			The entity property.
+	 * @return	Returns <code>null</code> if no {@link OverrideDetector} for the entity property can be found.
 	 */
 	private OverrideDetector<?> findOverrideDector(Method m) {
 
@@ -340,12 +333,11 @@ public class Auditor implements Serializable {
 	}
 
 	/**
-	 * prüft, ob ein {@link ValueFormatter}, der Default-ValueFormatter ist.
+	 * Checks whether a {@link ValueFormatter} is the default ValueFormatter.
 	 * 
 	 * @param specifiedFormatter
-	 *            Der zu überprüfende {@link ValueFormatter}.
-	 * @return Liefert <code>true</code>, falls der zu prüfende Formatter dem Default-ValueFormatter entspricht. Liefert <code>false</code>
-	 *         anderenfalls.
+	 * 			The {@link ValueFormatter} to check.
+	 * @return	Returns <code>true</code> if the Formatter to check matches the default ValueFormatter. Returns <code>false</code> otherwise.
 	 */
 	@SuppressWarnings("rawtypes")
 	private static boolean isDefaultFormatter(Class<? extends ValueFormatter> specifiedFormatter) {

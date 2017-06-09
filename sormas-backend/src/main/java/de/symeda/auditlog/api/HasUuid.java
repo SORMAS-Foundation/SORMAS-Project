@@ -5,15 +5,15 @@ import javax.persistence.Transient;
 public interface HasUuid {
 
 	/**
-	 * Liefert eine Identifikationsmöglichkeit für diesen Entity-Typ, damit Objekte dieses Typs eindeutig voneinander unterschieden werden
-	 * können.
+	 * Returns an identification possibility for this entity type so that objects of this type can be uniquely differentiated from each other.
 	 */
 	String getUuid();
 
 	/**
-	 * Liefert die Object-Id zur Unterscheidung von unterschiedlichen Entity-Typen und unterschiedlichen Instanzen desselben Entity-Typs.
+	 * Returns the object ID to differentiate various entity types and instances of the same entity type.
 	 * <p/>
-	 * Verwendet im Default-Modus {@link #getClass()} und {@link #getUuid()}.
+	 * Uses {@link #getClass()} and {@link #getUuid()} in the default mode.
+	 * @return
 	 */
 	@Transient
 	default EntityId getOid() {
