@@ -170,7 +170,6 @@ public class Auditor implements Serializable {
 	 *         gefunden werden können.
 	 */
 	ValueContainer inspectEntity(HasUuid entity) {
-
 		DefaultValueContainer result = new DefaultValueContainer();
 
 		EntityInspector inspector = new EntityInspector(entity);
@@ -179,13 +178,14 @@ public class Auditor implements Serializable {
 			try {
 				AuditedAttribute auditedAttribute = currentAttribute.getAnnotation(AuditedAttribute.class);
 				AuditedCollection auditedCollection = currentAttribute.getAnnotation(AuditedCollection.class);
-
-				if (auditedAttribute != null) {
+				boolean isCollection = Collection.class.isAssignableFrom(currentAttribute.getReturnType());
+				// TODO add warning when annotation does not match actual type (i.e. auditedAttribute on collection and vice versa)
+				
+				if (auditedAttribute != null || !isCollection) {
 					logAttributeChange(result, inspector, currentAttribute, auditedAttribute);
-				} else if (auditedCollection != null) {
+				} else if (auditedCollection != null || isCollection) {
 					logCollectionChange(result, inspector, currentAttribute, auditedCollection);
 				}
-
 			} catch (InvocationTargetException | IllegalAccessException e) {
 				throw new AuditlogException(String.format("Änderung der Entity %s konnte nicht festgestellt werden.", entity.toString()), e);
 			}
@@ -197,7 +197,7 @@ public class Auditor implements Serializable {
 	@SuppressWarnings("unchecked")
 	private void logCollectionChange(DefaultValueContainer result, EntityInspector inspector, Method currentAttribute, AuditedCollection annotation)
 		throws IllegalAccessException, InvocationTargetException {
-
+		// TODO add @Nullable to annotation, call this with null
 		@SuppressWarnings("rawtypes")
 		CollectionFormatter collectionFormatter = EntityInspector.getCollectionFormatter(annotation);
 
@@ -274,8 +274,10 @@ public class Auditor implements Serializable {
 
 		result.put(prefixFieldNameWith(prefix, fieldName), fieldValue, formatter);
 
-		if (annotation.anonymous()) {
-			result.configureAnonymizeValue(fieldName, annotation.anonymizingString());
+		if (annotation != null) {
+			if (annotation.anonymous()) {
+				result.configureAnonymizeValue(fieldName, annotation.anonymizingString());
+			}
 		}
 	}
 

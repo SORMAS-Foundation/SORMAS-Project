@@ -56,7 +56,7 @@ public interface ValueContainer extends Serializable {
 	 *            Wenn {@code null}, dann wird {@link #getNullString()} als Wert gespeichert.
 	 */
 	void put(String key, String value);
-
+	
 	/**
 	 * Speichert den zu auditierenden Wert.
 	 * 

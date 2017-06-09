@@ -1,16 +1,26 @@
 package de.symeda.auditlog.api.value.reflection;
 
+import java.beans.BeanInfo;
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Transient;
+
 import de.symeda.auditlog.api.Audited;
 import de.symeda.auditlog.api.AuditedAttribute;
 import de.symeda.auditlog.api.AuditedCollection;
+import de.symeda.auditlog.api.AuditedIgnore;
 import de.symeda.auditlog.api.AuditlogException;
 import de.symeda.auditlog.api.value.format.CollectionFormatter;
 import de.symeda.auditlog.api.value.format.DefaultCollectionFormatter;
+import de.symeda.auditlog.api.value.format.DefaultValueFormatter;
 import de.symeda.auditlog.api.value.format.ValueFormatter;
 
 /**
@@ -60,11 +70,26 @@ public class EntityInspector {
 			// Möglicherweise ist nicht jede Klasse im Vererbungsbaum mit @Audited annotiert
 			if (clazz.getDeclaredAnnotation(Audited.class) != null) {
 
-				Method[] methods = clazz.getDeclaredMethods();
-				for (Method method : methods) {
-					if (isAudited(method)) {
-						auditedMethods.add(method);
+				try {
+					// Ignore inherited methods because those will be processed later
+					BeanInfo beanInfo = Introspector.getBeanInfo(clazz, clazz.getSuperclass());
+					List<Method> methods = new ArrayList<>();
+					
+					// Only get/is methods are relevant - even if there are no setters (e.g. because they're protected)
+					for (PropertyDescriptor property : beanInfo.getPropertyDescriptors()) {
+						if (property.getReadMethod() != null) {
+							methods.add(property.getReadMethod());
+						}
 					}
+				
+					for (Method method : methods) {
+						if (isAudited(method)) {
+							auditedMethods.add(method);
+						}
+					}
+
+				} catch (IntrospectionException e) {
+					throw new AuditlogException(String.format("Error while trying to retrieve the BeanInfo for %s!", clazz.getName()), e);
 				}
 			}
 
@@ -75,9 +100,26 @@ public class EntityInspector {
 		return auditedMethods;
 	}
 
+	/**
+	 * Returns whether the given method should be audited. This is the case when neither the {@link Transient} nor the
+	 * {@link AuditedIgnore} annotations are set and the method does not have a {@link OneToMany} or {@link OneToOne}
+	 * relation that is mapped by a different class.
+	 * 
+	 * @param method
+	 * 				The method to check.
+	 * @return
+	 * 				True if the method should be audited, false if not.
+	 */
 	private boolean isAudited(Method method) {
-
-		return method.getAnnotation(AuditedAttribute.class) != null || method.getAnnotation(AuditedCollection.class) != null;
+		if (method.getAnnotation(AuditedIgnore.class) != null) {
+			return false;
+		} else if (method.getAnnotation(AuditedAttribute.class) != null || method.getAnnotation(AuditedCollection.class) != null) {
+			return true;
+		} else {
+			return method.getAnnotation(Transient.class) == null 
+					&& (method.getAnnotation(OneToMany.class) == null || method.getAnnotation(OneToMany.class).mappedBy().isEmpty()) 
+					&& (method.getAnnotation(OneToOne.class) == null || method.getAnnotation(OneToOne.class).mappedBy().isEmpty());
+		}
 	}
 
 	/**
@@ -102,8 +144,12 @@ public class EntityInspector {
 	 * Liefert eine Instanz des konfigurierten {@link ValueFormatter} für diese Annotation.
 	 */
 	public static ValueFormatter<?> getFormatter(AuditedAttribute annotation) {
-
-		Class<? extends ValueFormatter<?>> formatterClass = annotation.value();
+		Class<? extends ValueFormatter<?>> formatterClass;
+		if (annotation == null) {
+			formatterClass = DefaultValueFormatter.class;
+		} else {
+			formatterClass = annotation.value();
+		}
 
 		return buildFormatter(formatterClass);
 	}
@@ -115,8 +161,13 @@ public class EntityInspector {
 			"rawtypes",
 			"unchecked" })
 	public static CollectionFormatter<?> getCollectionFormatter(AuditedCollection annotation) {
-
-		Class<? extends ValueFormatter<?>> formatterClass = annotation.value();
+		Class<? extends ValueFormatter<?>> formatterClass;
+		if (annotation == null) {
+			formatterClass = DefaultCollectionFormatter.class;
+		} else {
+			formatterClass = annotation.value();
+		}
+		
 		ValueFormatter declaredFormatter = buildFormatter(formatterClass);
 
 		final CollectionFormatter resultingCollectionFormatter;
