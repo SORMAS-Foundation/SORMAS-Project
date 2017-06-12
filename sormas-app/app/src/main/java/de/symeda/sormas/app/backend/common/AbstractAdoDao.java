@@ -1,19 +1,18 @@
 package de.symeda.sormas.app.backend.common;
 
-import android.content.Context;
-import android.content.res.Resources;
 import android.util.Log;
 
 import com.googlecode.openbeans.BeanInfo;
 import com.googlecode.openbeans.IntrospectionException;
 import com.googlecode.openbeans.Introspector;
 import com.googlecode.openbeans.PropertyDescriptor;
+import com.j256.ormlite.dao.CloseableIterator;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.GenericRawResults;
-import com.j256.ormlite.dao.RuntimeExceptionDao;
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
+import com.j256.ormlite.support.ConnectionSource;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -23,6 +22,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import javax.persistence.NonUniqueResultException;
 
@@ -30,17 +30,18 @@ import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.SormasApplication;
-import de.symeda.sormas.app.backend.config.ConfigProvider;
-import de.symeda.sormas.app.backend.synclog.SyncLog;
 
 /**
+ * Some methods are copied from {@link com.j256.ormlite.dao.RuntimeExceptionDao}.
+ *
  * Created by Martin Wahnschaffe on 22.07.2016.
  */
-public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> extends RuntimeExceptionDao<ADO, Long> {
+public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
+
+    Dao<ADO, Long> dao;
 
     public AbstractAdoDao(Dao<ADO, Long> innerDao)  {
-        super(innerDao);
+        this.dao = innerDao;
     }
 
     protected abstract Class<ADO> getAdoClass();
@@ -387,8 +388,8 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> extends R
         }
     }
 
-    private AbstractDomainObject mergeOrCreateWithCast(AbstractDomainObject ado, Context context) throws DaoException {
-        return mergeOrCreate((ADO)ado, context);
+    private AbstractDomainObject mergeOrCreateWithCast(AbstractDomainObject ado) throws DaoException {
+        return mergeOrCreate((ADO)ado);
     }
 
     /**
@@ -397,7 +398,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> extends R
      * @return
      * @throws DaoException
      */
-    public ADO mergeOrCreate(ADO source, Context context) throws DaoException {
+    public ADO mergeOrCreate(ADO source) throws DaoException {
 
         if (source.getId() != null) {
             throw new IllegalArgumentException("Merged source is not allowed to have an id");
@@ -461,7 +462,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> extends R
                     // get the embedded entity
                     AbstractDomainObject embeddedSource = (AbstractDomainObject) property.getReadMethod().invoke(source);
                     // merge it - will return the merged result
-                    AbstractDomainObject embeddedCurrent = DatabaseHelper.getAdoDao(embeddedSource.getClass()).mergeOrCreateWithCast(embeddedSource, context);
+                    AbstractDomainObject embeddedCurrent = DatabaseHelper.getAdoDao(embeddedSource.getClass()).mergeOrCreateWithCast(embeddedSource);
 
                     if (embeddedCurrent == null) {
                         throw new IllegalArgumentException("No merge result returned for was created for " + embeddedSource);
@@ -496,11 +497,11 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> extends R
 
                             conflictStringBuilder.append(I18nProperties.getFieldCaption(source.getI18nPrefix() + "." + property.getName()));
                             conflictStringBuilder.append("<br/><i>");
-                            conflictStringBuilder.append(context.getResources().getString(R.string.synclog_yours));
+                            conflictStringBuilder.append(DatabaseHelper.getContext().getResources().getString(R.string.synclog_yours));
                             conflictStringBuilder.append("</i>");
                             conflictStringBuilder.append(DataHelper.toStringNullable(currentFieldValue));
                             conflictStringBuilder.append("<br/><i>");
-                            conflictStringBuilder.append(context.getResources().getString(R.string.synclog_server));
+                            conflictStringBuilder.append(DatabaseHelper.getContext().getResources().getString(R.string.synclog_server));
                             conflictStringBuilder.append("</i>");
                             conflictStringBuilder.append(DataHelper.toStringNullable(sourceFieldValue));
                         }
@@ -548,7 +549,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> extends R
                     // merge all collection elements - do this after saving because elements reference their parent
                     Collection<AbstractDomainObject> currentCollection = (Collection<AbstractDomainObject>)property.getReadMethod().invoke(current);
                     Collection<AbstractDomainObject> sourceCollection = (Collection<AbstractDomainObject>)property.getReadMethod().invoke(source);
-                    mergeCollection(currentCollection, sourceCollection, current, context);
+                    mergeCollection(currentCollection, sourceCollection, current);
                 }
             }
 
@@ -565,7 +566,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> extends R
         }
     }
 
-    private void mergeCollection(Collection<AbstractDomainObject> existingCollection, Collection<AbstractDomainObject> sourceCollection, ADO parent, Context context) throws DaoException {
+    private void mergeCollection(Collection<AbstractDomainObject> existingCollection, Collection<AbstractDomainObject> sourceCollection, ADO parent) throws DaoException {
 
         StringBuilder conflictStringBuilder = new StringBuilder();
 
@@ -581,7 +582,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> extends R
                     // entry exists and is modified -> inform the user that the changes are deleted
                     conflictStringBuilder.append("A list entry you modified was deleted:");
                     conflictStringBuilder.append("<br/><i>");
-                    conflictStringBuilder.append(context.getResources().getString(R.string.synclog_yours));
+                    conflictStringBuilder.append(DatabaseHelper.getContext().getResources().getString(R.string.synclog_yours));
                     conflictStringBuilder.append("</i>");
                     conflictStringBuilder.append(DataHelper.toStringNullable(existingEntry));
                 }
@@ -599,7 +600,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> extends R
 
             for (AbstractDomainObject sourceElement : sourceCollection) {
 
-                AbstractDomainObject resultElement = DatabaseHelper.getAdoDao(sourceElement.getClass()).mergeOrCreateWithCast(sourceElement, context);
+                AbstractDomainObject resultElement = DatabaseHelper.getAdoDao(sourceElement.getClass()).mergeOrCreateWithCast(sourceElement);
 
                 // result might be null, when it was previously deleted and didn't have changes
                 if (resultElement != null) {
@@ -713,7 +714,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> extends R
 
     public void deleteCascade(ADO ado) {
 
-        super.delete(ado);
+        delete(ado);
 
         try {
             // ignore parent property
@@ -787,4 +788,134 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> extends R
             throw new RuntimeException(e);
         }
     }
+
+    /**
+     * @see Dao#queryForId(Object)
+     */
+    public ADO queryForId(Long id) {
+        try {
+            return dao.queryForId(id);
+        } catch (SQLException e) {
+            Log.e(getTableName(), "queryForId threw exception on: " + id, e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * @see Dao#queryForAll()
+     */
+    public List<ADO> queryForAll() {
+        try {
+            return dao.queryForAll();
+        } catch (SQLException e) {
+            Log.e(getTableName(), "queryForAll threw exception", e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * @see Dao#queryForEq(String, Object)
+     */
+    public List<ADO> queryForEq(String fieldName, Object value) {
+        try {
+            return dao.queryForEq(fieldName, value);
+        } catch (SQLException e) {
+            Log.e(getTableName(), "queryForEq threw exception on: " + fieldName, e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * @see Dao#queryBuilder()
+     */
+    public QueryBuilder<ADO, Long> queryBuilder() {
+        return dao.queryBuilder();
+    }
+
+    /**
+     * @see Dao#create(Object)
+     */
+    public int create(ADO data) {
+        try {
+            return dao.create(data);
+        } catch (SQLException e) {
+            Log.e(getTableName(), "create threw exception on: " + data, e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * @see Dao#update(Object)
+     */
+    public int update(ADO data) {
+        try {
+            return dao.update(data);
+        } catch (SQLException e) {
+            Log.e(getTableName(), "update threw exception on: " + data, e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * @see Dao#delete(Object)
+     */
+    public int delete(ADO data) {
+        try {
+            return dao.delete(data);
+        } catch (SQLException e) {
+            Log.e(getTableName(), "delete threw exception on: " + data, e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * @see Dao#iterator()
+     */
+    public CloseableIterator<ADO> iterator() {
+        return dao.iterator();
+    }
+
+    /**
+     * @see Dao#queryRaw(String, DataType[], String...)
+     */
+    public GenericRawResults<Object[]> queryRaw(String query, DataType[] columnTypes, String... arguments) {
+        try {
+            return dao.queryRaw(query, columnTypes, arguments);
+        } catch (SQLException e) {
+            Log.e(getTableName(), "queryRaw threw exception on: " + query, e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * @see Dao#callBatchTasks(Callable)
+     */
+    public <CT> CT callBatchTasks(Callable<CT> callable) {
+        try {
+            return dao.callBatchTasks(callable);
+        } catch (Exception e) {
+            Log.e(getTableName(), "callBatchTasks threw exception on: " + callable, e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * @see Dao#countOf()
+     */
+    public long countOf() {
+        try {
+            return dao.countOf();
+        } catch (SQLException e) {
+            Log.e(getTableName(), "countOf threw exception", e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * @see Dao#getConnectionSource()
+     */
+    public ConnectionSource getConnectionSource() {
+        return dao.getConnectionSource();
+    }
+
 }

@@ -86,7 +86,7 @@ public final class ConfigProvider {
     }
 
     public static User getUser() {
-        if (instance.user == null)
+        if (instance.user == null) {
             synchronized (ConfigProvider.class) {
                 if (instance.user == null) {
                     String username = getUsername();
@@ -95,6 +95,7 @@ public final class ConfigProvider {
                     }
                 }
             }
+        }
         return instance.user;
     }
 

@@ -58,7 +58,7 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
                         for (DTO dto : result) {
 
                             ADO source = fillOrCreateFromDto(null, dto);
-                            dao.mergeOrCreate(source, context);
+                            dao.mergeOrCreate(source);
 
 //                            ADO ado = empty ? null : dao.queryUuid(dto.getUuid());
 //

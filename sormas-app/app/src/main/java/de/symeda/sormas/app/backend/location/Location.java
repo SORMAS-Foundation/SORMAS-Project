@@ -127,7 +127,7 @@ public class Location extends AbstractDomainObject {
 			}
 		}
 		if (getDetails() != null && !getDetails().isEmpty()) {
-			if ((getAddress() != null && !getAddress().isEmpty()) || (getCity() != null || !getCity().isEmpty()) ||
+			if ((getAddress() != null && !getAddress().isEmpty()) || (getCity() != null && !getCity().isEmpty()) ||
 					getCommunity() != null || getDistrict() != null) {
 				sb.append("\n");
 			}

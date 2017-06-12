@@ -438,4 +438,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		syncLogDao = null;
 	}
 
+	public static Context getContext() {
+		return instance.context;
+	}
+
 }
