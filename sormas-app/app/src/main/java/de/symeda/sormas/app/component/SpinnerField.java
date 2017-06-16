@@ -101,6 +101,10 @@ public class SpinnerField extends PropertyField<Object> implements SpinnerFieldI
         spinnerFieldListener.registerListener(listener);
     }
 
+    public Spinner getSpinnerElement() {
+        return spinnerElement;
+    }
+
 //    public void setOnItemSelectedListener(OnItemSelectedListener listener) {
 //        spinnerElement.setOnItemSelectedListener(listener);
 //    }

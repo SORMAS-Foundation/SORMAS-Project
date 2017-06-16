@@ -70,9 +70,11 @@ public final class RetroProvider {
 
         String authToken = Credentials.basic(ConfigProvider.getUsername(), ConfigProvider.getPassword());
         AuthenticationInterceptor interceptor = new AuthenticationInterceptor(authToken);
+        TestEnvironmentInterceptor testInterceptor = new TestEnvironmentInterceptor();
 
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
         httpClient.addInterceptor(interceptor);
+        httpClient.addInterceptor(testInterceptor);
 
         retrofit = new Retrofit.Builder()
                 //.baseUrl("http://10.0.2.2:6080/sormas-rest") // localhost - SSL would need certificate

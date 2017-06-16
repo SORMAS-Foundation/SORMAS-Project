@@ -64,7 +64,6 @@ public class CaseEditActivity extends AbstractEditTabActivity {
         // to certain spinners not displaying their values
         ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
         viewPager.setOffscreenPageLimit(CaseEditTabs.values().length);
-
         toolbar = (Toolbar) findViewById(R.id.my_toolbar);
         if (toolbar != null) {
             setSupportActionBar(toolbar);
