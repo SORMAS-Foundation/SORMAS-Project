@@ -15,11 +15,15 @@ Getting Started
 ========
 SORMAS Server & Domain
 --------
-1. Download payara 4.1.1.161 (http://bit.ly/2aY0aEX - possible issues with more recent versions) and extract it to a folder on your hard drive (e.g. /srv/payara-sormas)
-2. Create a PostgreSQL database named "sormas_db" (password: "sormas_db") with user "sormas_user" (password: "sormas_db") as its owner, and run the SQL scripts contained in "/sormas-base/sql/sormas_schema.sql"
-3. Get the latest SORMAS build from github: https://github.com/hzi-braunschweig/SORMAS-Open/releases/tag/sprints%2FSprint_18 (deploy.zip and app-debug.apk)
-4. Open "deploy/glassfish-config.bat" (or glassfish-config.sh on linux) in a text editor and change GLASSFISH_HOME to the location of the Glassfish folder inside your payara installation
-5. Set up a payara domain called "sormas" by executing <code>glassfish-config.bat</code> from the command line
+1. Install PostgreSQL (currently we are using 9.6) on your system
+2. Install the "temporal tables" addon for Postgres (https://github.com/arkhipov/temporal_tables)
+  * Windows: Download latest version for your postgres version: https://github.com/arkhipov/temporal_tables/releases/latest Then you must copy the DLL from the project into the PostgreSQL's lib directory and the .sql and .control files into the directory share\extension.
+  * Linux: <code>pgxn install temporal_tables</code> (see https://github.com/arkhipov/temporal_tables#installation)
+3. Download payara 4.1.1.161 (http://bit.ly/2aY0aEX - possible issues with more recent versions) and extract it to a folder on your hard drive (e.g. /srv/payara-sormas)
+4. Create a PostgreSQL database named "sormas_db" (password: "sormas_db") with user "sormas_user" (password: "sormas_db") as its owner, and run the SQL scripts contained in "/sormas-base/sql/sormas_schema.sql"
+5. Get the latest SORMAS build from github: https://github.com/hzi-braunschweig/SORMAS-Open/releases/latest (deploy.zip and app-debug.apk)
+6. Open "deploy/glassfish-config.bat" (or glassfish-config.sh on linux) in a text editor and change GLASSFISH_HOME to the location of the Glassfish folder inside your payara installation
+7. Set up a payara domain called "sormas" by executing <code>glassfish-config.bat</code> from the command line
 
 Updating the SORMAS domain
 --------

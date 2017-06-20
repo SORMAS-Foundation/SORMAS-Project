@@ -1376,3 +1376,154 @@ ALTER TABLE epidata ADD COLUMN changedateofembeddedlists timestamp without time 
 ALTER TABLE hospitalization ADD COLUMN changedateofembeddedlists timestamp without time zone;
 
 INSERT INTO schema_version (version_number, comment) VALUES (48, 'Change data for embedded lists (epidata and hospitalization');
+
+-- 2017-06-20 data history for future reporting (postgres temporal tables) #170
+
+CREATE EXTENSION temporal_tables;
+
+ALTER TABLE cases ADD COLUMN sys_period tstzrange;
+UPDATE cases SET sys_period=tstzrange(creationdate, null);
+ALTER TABLE cases ALTER COLUMN sys_period SET NOT NULL;
+CREATE TABLE cases_history (LIKE cases);
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE OR DELETE ON cases
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'cases_history', true);
+ALTER TABLE cases_history OWNER TO sormas_user;
+
+ALTER TABLE contact ADD COLUMN sys_period tstzrange;
+UPDATE contact SET sys_period=tstzrange(creationdate, null);
+ALTER TABLE contact ALTER COLUMN sys_period SET NOT NULL;
+CREATE TABLE contact_history (LIKE contact);
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE OR DELETE ON contact
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'contact_history', true);
+ALTER TABLE contact_history OWNER TO sormas_user;
+
+ALTER TABLE epidata ADD COLUMN sys_period tstzrange;
+UPDATE epidata SET sys_period=tstzrange(creationdate, null);
+ALTER TABLE epidata ALTER COLUMN sys_period SET NOT NULL;
+CREATE TABLE epidata_history (LIKE epidata);
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE OR DELETE ON epidata
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'epidata_history', true);
+ALTER TABLE epidata_history OWNER TO sormas_user;
+
+ALTER TABLE epidataburial ADD COLUMN sys_period tstzrange;
+UPDATE epidataburial SET sys_period=tstzrange(creationdate, null);
+ALTER TABLE epidataburial ALTER COLUMN sys_period SET NOT NULL;
+CREATE TABLE epidataburial_history (LIKE epidataburial);
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE OR DELETE ON epidataburial
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'epidataburial_history', true);
+ALTER TABLE epidataburial_history OWNER TO sormas_user;
+
+ALTER TABLE epidatagathering ADD COLUMN sys_period tstzrange;
+UPDATE epidatagathering SET sys_period=tstzrange(creationdate, null);
+ALTER TABLE epidatagathering ALTER COLUMN sys_period SET NOT NULL;
+CREATE TABLE epidatagathering_history (LIKE epidatagathering);
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE OR DELETE ON epidatagathering
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'epidatagathering_history', true);
+ALTER TABLE epidatagathering_history OWNER TO sormas_user;
+
+ALTER TABLE epidatatravel ADD COLUMN sys_period tstzrange;
+UPDATE epidatatravel SET sys_period=tstzrange(creationdate, null);
+ALTER TABLE epidatatravel ALTER COLUMN sys_period SET NOT NULL;
+CREATE TABLE epidatatravel_history (LIKE epidatatravel);
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE OR DELETE ON epidatatravel
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'epidatatravel_history', true);
+ALTER TABLE epidatatravel_history OWNER TO sormas_user;
+
+ALTER TABLE events ADD COLUMN sys_period tstzrange;
+UPDATE events SET sys_period=tstzrange(creationdate, null);
+ALTER TABLE events ALTER COLUMN sys_period SET NOT NULL;
+CREATE TABLE events_history (LIKE events);
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE OR DELETE ON events
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'events_history', true);
+ALTER TABLE events_history OWNER TO sormas_user;
+
+ALTER TABLE location ADD COLUMN sys_period tstzrange;
+UPDATE location SET sys_period=tstzrange(creationdate, null);
+ALTER TABLE location ALTER COLUMN sys_period SET NOT NULL;
+CREATE TABLE location_history (LIKE location);
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE OR DELETE ON location
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'location_history', true);
+ALTER TABLE location_history OWNER TO sormas_user;
+
+ALTER TABLE person ADD COLUMN sys_period tstzrange;
+UPDATE person SET sys_period=tstzrange(creationdate, null);
+ALTER TABLE person ALTER COLUMN sys_period SET NOT NULL;
+CREATE TABLE person_history (LIKE person);
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE OR DELETE ON person
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'person_history', true);
+ALTER TABLE person_history OWNER TO sormas_user;
+
+ALTER TABLE previoushospitalization ADD COLUMN sys_period tstzrange;
+UPDATE previoushospitalization SET sys_period=tstzrange(creationdate, null);
+ALTER TABLE previoushospitalization ALTER COLUMN sys_period SET NOT NULL;
+CREATE TABLE previoushospitalization_history (LIKE previoushospitalization);
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE OR DELETE ON previoushospitalization
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'previoushospitalization_history', true);
+ALTER TABLE previoushospitalization_history OWNER TO sormas_user;
+
+ALTER TABLE samples ADD COLUMN sys_period tstzrange;
+UPDATE samples SET sys_period=tstzrange(creationdate, null);
+ALTER TABLE samples ALTER COLUMN sys_period SET NOT NULL;
+CREATE TABLE samples_history (LIKE samples);
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE OR DELETE ON samples
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'samples_history', true);
+ALTER TABLE samples_history OWNER TO sormas_user;
+
+ALTER TABLE sampletest ADD COLUMN sys_period tstzrange;
+UPDATE sampletest SET sys_period=tstzrange(creationdate, null);
+ALTER TABLE sampletest ALTER COLUMN sys_period SET NOT NULL;
+CREATE TABLE sampletest_history (LIKE sampletest);
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE OR DELETE ON sampletest
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'sampletest_history', true);
+ALTER TABLE sampletest_history OWNER TO sormas_user;
+
+ALTER TABLE symptoms ADD COLUMN sys_period tstzrange;
+UPDATE symptoms SET sys_period=tstzrange(creationdate, null);
+ALTER TABLE symptoms ALTER COLUMN sys_period SET NOT NULL;
+CREATE TABLE symptoms_history (LIKE symptoms);
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE OR DELETE ON symptoms
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'symptoms_history', true);
+ALTER TABLE symptoms_history OWNER TO sormas_user;
+
+ALTER TABLE task ADD COLUMN sys_period tstzrange;
+UPDATE task SET sys_period=tstzrange(creationdate, null);
+ALTER TABLE task ALTER COLUMN sys_period SET NOT NULL;
+CREATE TABLE task_history (LIKE task);
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE OR DELETE ON task
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'task_history', true);
+ALTER TABLE task_history OWNER TO sormas_user;
+
+ALTER TABLE users ADD COLUMN sys_period tstzrange;
+UPDATE users SET sys_period=tstzrange(creationdate, null);
+ALTER TABLE users ALTER COLUMN sys_period SET NOT NULL;
+CREATE TABLE users_history (LIKE users);
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE OR DELETE ON users
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'users_history', true);
+ALTER TABLE users_history OWNER TO sormas_user;
+
+ALTER TABLE visit ADD COLUMN sys_period tstzrange;
+UPDATE visit SET sys_period=tstzrange(creationdate, null);
+ALTER TABLE visit ALTER COLUMN sys_period SET NOT NULL;
+CREATE TABLE visit_history (LIKE visit);
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE OR DELETE ON visit
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'visit_history', true);
+ALTER TABLE visit_history OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (49, 'data history for future reporting (postgres temporal tables) #170');
+
