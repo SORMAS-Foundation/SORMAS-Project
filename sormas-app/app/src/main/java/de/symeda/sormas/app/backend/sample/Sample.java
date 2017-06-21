@@ -17,6 +17,7 @@ import de.symeda.sormas.api.sample.SampleTestType;
 import de.symeda.sormas.api.sample.ShipmentStatus;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.facility.Facility;
@@ -251,14 +252,12 @@ public class Sample extends AbstractDomainObject {
     }
 
     @Override
-    public String toString() {
-        String materialString = sampleMaterial == null ? "" : sampleMaterial.toString();
-        String sampleString = materialString.isEmpty() ? "Sample" : " sample";
-        return materialString + " " + sampleString + " for case " + DataHelper.getShortUuid(associatedCase.getUuid());
+    public String getI18nPrefix() {
+        return I18N_PREFIX;
     }
 
     @Override
-    public String getI18nPrefix() {
-        return I18N_PREFIX;
+    public String toString() {
+        return super.toString() + DateHelper.formatShortDate(getSampleDateTime());
     }
 }

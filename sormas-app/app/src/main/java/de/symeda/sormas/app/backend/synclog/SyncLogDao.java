@@ -6,10 +6,10 @@ import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import de.symeda.sormas.app.backend.common.AbstractAdoDao;
+import java.util.Stack;
 
 /**
  * Some methods are copied from {@link com.j256.ormlite.dao.RuntimeExceptionDao}.
@@ -24,7 +24,36 @@ public class SyncLogDao {
         this.dao = innerDao;
     }
 
-    public SyncLog create(String entityName, String conflictText) {
+    private final Stack<String> parentEntityNameStack = new Stack<>();
+    private String parentEntityNames = null;
+
+    public void pushParentEntityName(String parentEntityName) {
+        if (parentEntityName == null || parentEntityName.isEmpty())
+            throw new IllegalArgumentException("parentEntityName is null or empty");
+
+        parentEntityNameStack.push(parentEntityName);
+        parentEntityNames = null;
+    }
+
+    public String popParentEntityName() {
+        String result = parentEntityNameStack.pop();
+        parentEntityNames = null;
+        return result;
+    }
+
+    public SyncLog createWithParentStack(String entityName, String conflictText) {
+
+        if (!parentEntityNameStack.empty()) {
+            if (parentEntityNames == null) {
+                StringBuilder nameBuilder = new StringBuilder();
+                for (String parentEntityName : parentEntityNameStack) {
+                    nameBuilder.append(parentEntityName).append(", ");
+                }
+                parentEntityNames = nameBuilder.toString();
+            }
+            entityName = parentEntityNames + entityName;
+        }
+
         SyncLog syncLog = new SyncLog(entityName, conflictText);
         syncLog.setCreationDate(new Date());
         create(syncLog);

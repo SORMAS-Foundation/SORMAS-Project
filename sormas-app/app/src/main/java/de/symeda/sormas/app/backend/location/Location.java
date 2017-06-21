@@ -9,6 +9,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 
+import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.EmbeddedAdo;
 import de.symeda.sormas.app.backend.region.Community;
@@ -131,8 +132,12 @@ public class Location extends AbstractDomainObject {
 					getCommunity() != null || getDistrict() != null) {
 				sb.append("\n");
 			}
-			sb.append("Contact: " + getDetails());
+			sb.append(getDetails());
 		}
+		if (sb.length() == 0) {
+			sb.append(super.toString());
+		}
+
 		return sb.toString();
 	}
 

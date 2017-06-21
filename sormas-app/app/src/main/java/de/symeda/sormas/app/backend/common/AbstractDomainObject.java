@@ -19,6 +19,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 
+import de.symeda.sormas.api.I18nProperties;
+
 @MappedSuperclass
 public abstract class AbstractDomainObject extends BaseObservable implements Serializable, Cloneable  {
 
@@ -182,5 +184,10 @@ public abstract class AbstractDomainObject extends BaseObservable implements Ser
 
 	public void setModified(boolean modified) {
 		this.modified = modified;
+	}
+
+	@Override
+	public String toString() {
+		return I18nProperties.getFieldCaption(getI18nPrefix());
 	}
 }

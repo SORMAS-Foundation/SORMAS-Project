@@ -13,6 +13,7 @@ import javax.persistence.Enumerated;
 
 import de.symeda.sormas.api.sample.SampleTestResultType;
 import de.symeda.sormas.api.sample.SampleTestType;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 
 /**
@@ -80,5 +81,10 @@ public class SampleTest extends AbstractDomainObject {
     @Override
     public String getI18nPrefix() {
         return I18N_PREFIX;
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() + DateHelper.formatShortDate(getTestDateTime());
     }
 }

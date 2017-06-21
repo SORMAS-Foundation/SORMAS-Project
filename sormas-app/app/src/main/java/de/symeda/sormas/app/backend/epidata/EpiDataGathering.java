@@ -9,6 +9,7 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.EmbeddedAdo;
 import de.symeda.sormas.app.backend.location.Location;
@@ -72,6 +73,11 @@ public class EpiDataGathering extends AbstractDomainObject {
 
     public void setGatheringAddress(Location gatheringAddress) {
         this.gatheringAddress = gatheringAddress;
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() + " " + DateHelper.formatShortDate(getGatheringDate());
     }
 
     @Override

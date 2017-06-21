@@ -284,7 +284,7 @@ public class Case extends AbstractDomainObject {
 
 	@Override
 	public String toString() {
-		return (getPerson() != null ? getPerson().toString() : "") + " (" + DataHelper.getShortUuid(getUuid()) + ")";
+		return super.toString() + " " + (getPerson() != null ? getPerson().toString() : "") + " (" + DataHelper.getShortUuid(getUuid()) + ")";
 	}
 
 	@Override

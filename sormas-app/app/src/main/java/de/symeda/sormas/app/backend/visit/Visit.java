@@ -12,6 +12,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.person.Person;
@@ -116,5 +117,10 @@ public class Visit extends AbstractDomainObject {
 	@Override
 	public String getI18nPrefix() {
 		return I18N_PREFIX;
+	}
+
+	@Override
+	public String toString() {
+		return super.toString() + " " + DateHelper.formatShortDate(getVisitDateTime());
 	}
 }

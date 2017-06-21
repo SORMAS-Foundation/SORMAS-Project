@@ -11,6 +11,7 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.EmbeddedAdo;
@@ -126,4 +127,10 @@ public class EpiDataBurial extends AbstractDomainObject {
     public String getI18nPrefix() {
         return I18N_PREFIX;
     }
+
+    @Override
+    public String toString() {
+        return super.toString() + " " + DateHelper.formatShortDate(getBurialDateTo());
+    }
+
 }

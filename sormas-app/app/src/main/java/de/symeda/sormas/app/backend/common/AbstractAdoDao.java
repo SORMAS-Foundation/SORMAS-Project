@@ -406,6 +406,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 
         ADO current = queryUuid(source.getUuid());
         ADO snapshot = querySnapshotByUuid(source.getUuid());
+        String sourceEntityString = source.toString();
 
         if (current == null) {
 
@@ -418,7 +419,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
                     // source does not match snapshot -> there are changed fields that we need to keep
                     // we have a conflict
                     Log.i(source.getClass().getSimpleName(), "Recreating deleted entity, because it was modified: " + source.getUuid());
-
+                    DatabaseHelper.getSyncLogDao().createWithParentStack(source.toString(), "Recreated because it was modified by someone else.");
                     // recreate the entity and set it to modified, because the list was changed before
                     current.setModified(true);
                 }
@@ -444,6 +445,8 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
             String parentProperty = annotation != null ? annotation.parentAccessor() : "";
 
             List<PropertyDescriptor> collectionProperties = null;
+
+            DatabaseHelper.getSyncLogDao().pushParentEntityName(sourceEntityString);
 
             StringBuilder conflictStringBuilder = new StringBuilder();
             for (PropertyDescriptor property : beanInfo.getPropertyDescriptors()) {
@@ -528,9 +531,11 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
                 }
             }
 
+            DatabaseHelper.getSyncLogDao().popParentEntityName();
+
             String conflictString = conflictStringBuilder.toString();
             if (!conflictString.isEmpty()) {
-                DatabaseHelper.getSyncLogDao().create(source.toString(), conflictString);
+                DatabaseHelper.getSyncLogDao().createWithParentStack(sourceEntityString, conflictString);
             }
 
             if (current.getId() == null) {
@@ -544,6 +549,9 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
             }
 
             if (collectionProperties != null) {
+
+                DatabaseHelper.getSyncLogDao().pushParentEntityName(sourceEntityString);
+
                 for (PropertyDescriptor property : collectionProperties) {
 
                     // merge all collection elements - do this after saving because elements reference their parent
@@ -551,6 +559,8 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
                     Collection<AbstractDomainObject> sourceCollection = (Collection<AbstractDomainObject>)property.getReadMethod().invoke(source);
                     mergeCollection(currentCollection, sourceCollection, current);
                 }
+
+                DatabaseHelper.getSyncLogDao().popParentEntityName();
             }
 
             return current;
@@ -592,7 +602,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 
         String conflictString = conflictStringBuilder.toString();
         if (!conflictString.isEmpty()) {
-            DatabaseHelper.getSyncLogDao().create(parent.toString(), conflictString);
+            DatabaseHelper.getSyncLogDao().createWithParentStack(parent.toString(), conflictString);
         }
 
         try {
