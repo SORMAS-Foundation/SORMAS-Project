@@ -1,5 +1,7 @@
 package de.symeda.sormas.app;
 
+import android.provider.ContactsContract;
+
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
@@ -7,9 +9,11 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.event.EventType;
 import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SampleTestResultType;
 import de.symeda.sormas.api.sample.SampleTestType;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -22,12 +26,14 @@ import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.hospitalization.PreviousHospitalization;
+import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.backend.sample.SampleTest;
+import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.visit.Visit;
 
 /**
@@ -43,11 +49,12 @@ public class TestEntityCreator {
 
         try {
             DatabaseHelper.getPersonDao().saveAndSnapshot(person);
+            DatabaseHelper.getPersonDao().accept(person);
         } catch (DaoException e) {
             throw new RuntimeException(e);
         }
 
-        return person;
+        return DatabaseHelper.getPersonDao().queryForId(person.getId());
     }
 
     public static Case createCase() {
@@ -70,11 +77,12 @@ public class TestEntityCreator {
 
         try {
             DatabaseHelper.getCaseDao().saveAndSnapshot(caze);
+            DatabaseHelper.getCaseDao().accept(caze);
         } catch (DaoException e) {
             throw new RuntimeException(e);
         }
 
-        return caze;
+        return DatabaseHelper.getCaseDao().queryForId(caze.getId());
     }
 
     public static Contact createContact() {
@@ -87,11 +95,12 @@ public class TestEntityCreator {
 
         try {
             DatabaseHelper.getContactDao().saveAndSnapshot(contact);
+            DatabaseHelper.getContactDao().accept(contact);
         } catch (DaoException e) {
             throw new RuntimeException(e);
         }
 
-        return contact;
+        return DatabaseHelper.getContactDao().queryForId(contact.getId());
     }
 
     public static Event createEvent() {
@@ -114,29 +123,33 @@ public class TestEntityCreator {
 
         try {
             DatabaseHelper.getEventDao().saveAndSnapshot(event);
+            DatabaseHelper.getEventDao().accept(event);
         } catch (DaoException e) {
             throw new RuntimeException(e);
         }
 
-        return event;
+        return DatabaseHelper.getEventDao().queryForId(event.getId());
     }
 
     public static Sample createSample() {
         Case caze = createCase();
         Date sampleDateTime = DateHelper.subtractDays(new Date(), 1);
         Facility lab = DatabaseHelper.getFacilityDao().queryForAll().get(0);
+        SampleMaterial material = SampleMaterial.BLOOD;
 
         Sample sample = DatabaseHelper.getSampleDao().create(caze);
         sample.setSampleDateTime(sampleDateTime);
         sample.setLab(lab);
+        sample.setSampleMaterial(material);
 
         try {
             DatabaseHelper.getSampleDao().saveAndSnapshot(sample);
+            DatabaseHelper.getSampleDao().accept(sample);
         } catch (DaoException e) {
             throw new RuntimeException(e);
         }
 
-        return sample;
+        return DatabaseHelper.getSampleDao().queryForId(sample.getId());
     }
 
     public static PreviousHospitalization createPreviousHospitalization(Case caze) {
@@ -145,11 +158,12 @@ public class TestEntityCreator {
 
         try {
             DatabaseHelper.getPreviousHospitalizationDao().saveAndSnapshot(prevHosp);
+            DatabaseHelper.getPreviousHospitalizationDao().accept(prevHosp);
         } catch (DaoException e) {
             throw new RuntimeException(e);
         }
 
-        return prevHosp;
+        return DatabaseHelper.getPreviousHospitalizationDao().queryForId(prevHosp.getId());
     }
 
     public static EpiDataBurial createEpiDataBurial(Case caze) {
@@ -158,11 +172,12 @@ public class TestEntityCreator {
 
         try {
             DatabaseHelper.getEpiDataBurialDao().saveAndSnapshot(burial);
+            DatabaseHelper.getEpiDataBurialDao().accept(burial);
         } catch (DaoException e) {
             throw new RuntimeException(e);
         }
 
-        return burial;
+        return DatabaseHelper.getEpiDataBurialDao().queryForId(burial.getId());
     }
 
     public static EpiDataGathering createEpiDataGathering(Case caze) {
@@ -171,11 +186,12 @@ public class TestEntityCreator {
 
         try {
             DatabaseHelper.getEpiDataGatheringDao().saveAndSnapshot(gathering);
+            DatabaseHelper.getEpiDataGatheringDao().accept(gathering);
         } catch (DaoException e) {
             throw new RuntimeException(e);
         }
 
-        return gathering;
+        return DatabaseHelper.getEpiDataGatheringDao().queryForId(gathering.getId());
     }
 
     public static EpiDataTravel createEpiDataTravel(Case caze) {
@@ -184,24 +200,30 @@ public class TestEntityCreator {
 
         try {
             DatabaseHelper.getEpiDataTravelDao().saveAndSnapshot(travel);
+            DatabaseHelper.getEpiDataTravelDao().accept(travel);
         } catch (DaoException e) {
             throw new RuntimeException(e);
         }
 
-        return travel;
+        return DatabaseHelper.getEpiDataTravelDao().queryForId(travel.getId());
     }
 
     public static Visit createVisit(Contact contact) {
         Visit visit = DatabaseHelper.getVisitDao().create(contact.getUuid());
+        Symptoms symptoms = DatabaseHelper.getSymptomsDao().create();
+        Location illLocation = DatabaseHelper.getLocationDao().create();
+        symptoms.setIllLocation(illLocation);
+        visit.setSymptoms(symptoms);
         visit.setVisitUser(ConfigProvider.getUser());
 
         try {
             DatabaseHelper.getVisitDao().saveAndSnapshot(visit);
+            DatabaseHelper.getVisitDao().accept(visit);
         } catch (DaoException e) {
             throw new RuntimeException(e);
         }
 
-        return visit;
+        return DatabaseHelper.getVisitDao().queryForId(visit.getId());
     }
 
     public static EventParticipant createEventParticipant(Event event) {
@@ -213,11 +235,12 @@ public class TestEntityCreator {
 
         try {
             DatabaseHelper.getEventParticipantDao().saveAndSnapshot(eventParticipant);
+            DatabaseHelper.getEventParticipantDao().accept(eventParticipant);
         } catch (DaoException e) {
             throw new RuntimeException(e);
         }
 
-        return eventParticipant;
+        return DatabaseHelper.getEventParticipantDao().queryForId(eventParticipant.getId());
     }
 
     public static SampleTest createSampleTest(Sample sample) {
@@ -233,11 +256,12 @@ public class TestEntityCreator {
 
         try {
             DatabaseHelper.getSampleTestDao().saveAndSnapshot(sampleTest);
+            DatabaseHelper.getSampleTestDao().accept(sampleTest);
         } catch (DaoException e) {
             throw new RuntimeException(e);
         }
 
-        return sampleTest;
+        return DatabaseHelper.getSampleTestDao().queryForId(sampleTest.getId());
     }
 
 }

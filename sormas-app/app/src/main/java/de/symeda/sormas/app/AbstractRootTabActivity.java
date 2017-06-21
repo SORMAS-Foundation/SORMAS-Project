@@ -218,7 +218,9 @@ public abstract class AbstractRootTabActivity extends AbstractTabActivity {
                 public void call(boolean syncFailed) {
                     if (getSupportFragmentManager().getFragments() != null) {
                         for (Fragment fragment : getSupportFragmentManager().getFragments()) {
-                            fragment.onResume();
+                            if (fragment != null) {
+                                fragment.onResume();
+                            }
                         }
                     }
 

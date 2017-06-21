@@ -1,13 +1,10 @@
 package de.symeda.sormas.app.rest;
 
 import android.accounts.AuthenticatorException;
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
-import android.support.design.widget.Snackbar;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -20,10 +17,10 @@ import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.task.SyncTasksTask;
-import de.symeda.sormas.app.LoginActivity;
 import de.symeda.sormas.app.util.SyncCallback;
 import de.symeda.sormas.app.util.SyncInfrastructureTask;
 import okhttp3.Credentials;
+import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Response;
@@ -56,7 +53,7 @@ public final class RetroProvider {
     private SampleTestFacadeRetro sampleTestFacadeRetro;
     private EventParticipantFacadeRetro eventParticipantFacadeRetro;
 
-    private RetroProvider(Context context) throws ApiVersionException, ConnectException, AuthenticatorException {
+    private RetroProvider(Context context, Interceptor... additionalInterceptors) throws ApiVersionException, ConnectException, AuthenticatorException {
 
         this.context = context;
 
@@ -70,11 +67,12 @@ public final class RetroProvider {
 
         String authToken = Credentials.basic(ConfigProvider.getUsername(), ConfigProvider.getPassword());
         AuthenticationInterceptor interceptor = new AuthenticationInterceptor(authToken);
-        TestEnvironmentInterceptor testInterceptor = new TestEnvironmentInterceptor();
 
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
         httpClient.addInterceptor(interceptor);
-        httpClient.addInterceptor(testInterceptor);
+        for (Interceptor additionalInterceptor : additionalInterceptors) {
+            httpClient.addInterceptor(additionalInterceptor);
+        }
 
         retrofit = new Retrofit.Builder()
                 //.baseUrl("http://10.0.2.2:6080/sormas-rest") // localhost - SSL would need certificate

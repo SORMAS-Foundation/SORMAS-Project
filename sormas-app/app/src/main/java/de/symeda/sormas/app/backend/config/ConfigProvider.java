@@ -45,7 +45,6 @@ public final class ConfigProvider {
     private static String KEY_USERNAME = "username";
     private static String KEY_PASSWORD = "password";
     private static String KEY_SERVER_REST_URL = "serverRestUrl";
-    private static String KEY_TEST_ENVIRONMENT = "testEnvironment";
     private static String LAST_NOTIFICATION_DATE = "lastNotificationDate";
 
     public static ConfigProvider instance = null;
@@ -64,7 +63,6 @@ public final class ConfigProvider {
     private String serverRestUrl;
     private String username;
     private String password;
-    private Boolean testEnvironment;
     private User user;
     private Date lastNotificationDate;
 
@@ -335,27 +333,6 @@ public final class ConfigProvider {
             DatabaseHelper.getConfigDao().delete(new Config(LAST_NOTIFICATION_DATE, ""));
         } else {
             DatabaseHelper.getConfigDao().createOrUpdate(new Config(LAST_NOTIFICATION_DATE, String.valueOf(lastNotificationDate.getTime())));
-        }
-    }
-
-    public static Boolean isTestEnvironment() {
-        if (instance.testEnvironment == null) {
-            Config config = DatabaseHelper.getConfigDao().queryForId(KEY_TEST_ENVIRONMENT);
-            if (config != null) {
-                instance.testEnvironment = config.getValue().equals("true");
-            } else {
-                instance.testEnvironment = false;
-            }
-        }
-        return instance.testEnvironment;
-    }
-
-    public static void setTestEnvironment(Boolean testEnvironment) {
-        if (testEnvironment.equals(instance.testEnvironment)) {
-            return;
-        } else {
-            instance.testEnvironment = testEnvironment;
-            DatabaseHelper.getConfigDao().createOrUpdate(new Config(KEY_TEST_ENVIRONMENT, String.valueOf(testEnvironment)));
         }
     }
 }

@@ -8,6 +8,7 @@ import android.test.RenamingDelegatingContext;
 import java.util.Date;
 
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.facility.Facility;
@@ -41,27 +42,8 @@ public class TestHelper {
         DatabaseHelper.init(context);
         ConfigProvider.init(context);
 
-        // Set the testEnvironment configuration object
-        ConfigProvider.setTestEnvironment(true);
-
         insertUser();
         insertInfrastructureData();
-
-        // Perform the login and make sure that it has worked
-        Instrumentation.ActivityMonitor activityMonitor = getInstrumentation().addMonitor(CasesActivity.class.getName(), null, false);
-
-        onView(withId(R.id.login_user)).perform(typeText("SanaObas")).perform(closeSoftKeyboard());
-        onView(withId(R.id.login_password)).perform(typeText("TestPassword")).perform(closeSoftKeyboard());
-        onView(withId(R.id.action_login)).perform(click());
-
-        CasesActivity nextActivity = (CasesActivity) getInstrumentation().waitForMonitorWithTimeout(activityMonitor, 5000);
-        assertNotNull(nextActivity);
-    }
-
-    public static void destroyTestEnvironment() {
-        RenamingDelegatingContext context = new RenamingDelegatingContext(InstrumentationRegistry.getTargetContext(), "test_");
-        context.deleteDatabase("sormas.db");
-        ConfigProvider.clearUsernameAndPassword();
     }
 
     private static void insertUser() {

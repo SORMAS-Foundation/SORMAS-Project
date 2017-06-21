@@ -4,7 +4,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
         android:name=".SormasApplication"
@@ -15,11 +15,11 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".caze.CasesActivity"
-            android:launchMode="singleTop">
-        </activity>
+            android:launchMode="singleTop"></activity>
         <activity
             android:name=".caze.CaseEditActivity"
             android:parentActivityName=".caze.CasesActivity">
+
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -28,48 +28,44 @@
         <activity
             android:name=".caze.CaseNewActivity"
             android:parentActivityName=".caze.CasesActivity">
+
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".caze.CasesActivity" />
         </activity>
-
         <activity
             android:name=".settings.SettingsActivity"
-            android:launchMode="singleTop">
-        </activity>
-
+            android:launchMode="singleTop"></activity>
         <activity
             android:name=".LoginActivity"
             android:launchMode="singleTop">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
-
         <activity
             android:name=".task.TasksActivity"
-            android:launchMode="singleTop"></activity>
-
+            android:launchMode="singleTop" />
         <activity
             android:name=".task.TaskEditActivity"
-            android:parentActivityName=".task.TasksActivity"
-            android:launchMode="singleTop">
+            android:launchMode="singleTop"
+            android:parentActivityName=".task.TasksActivity">
+
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".task.TasksActivity" />
         </activity>
-
         <activity
             android:name=".contact.ContactsActivity"
-            android:launchMode="singleTop"></activity>
+            android:launchMode="singleTop" />
         <activity
             android:name=".contact.ContactNewActivity"
             android:parentActivityName=".contact.ContactsActivity">
+
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -78,87 +74,108 @@
         <activity
             android:name=".contact.ContactEditActivity"
             android:parentActivityName=".contact.ContactsActivity">
+
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".contact.ContactsActivity" />
         </activity>
-
-        <activity android:name=".visit.VisitEditActivity"
+        <activity
+            android:name=".visit.VisitEditActivity"
             android:parentActivityName=".contact.ContactEditActivity">
+
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".contact.ContactEditActivity" />
         </activity>
-
         <activity
             android:name=".event.EventsActivity"
-            android:launchMode="singleTop"></activity>
-        <activity android:name=".event.EventEditActivity"
+            android:launchMode="singleTop" />
+        <activity
+            android:name=".event.EventEditActivity"
             android:parentActivityName=".event.EventsActivity">
+
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".event.EventsActivity" />
         </activity>
-        <activity android:name=".event.EventParticipantEditActivity"
+        <activity
+            android:name=".event.EventParticipantEditActivity"
             android:parentActivityName=".event.EventEditActivity">
+
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".event.EventEditActivity" />
         </activity>
-        <activity android:name=".event.EventParticipantNewActivity"
+        <activity
+            android:name=".event.EventParticipantNewActivity"
             android:noHistory="true"
             android:parentActivityName=".event.EventEditActivity">
+
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".event.EventEditActivity" />
         </activity>
-
         <activity
             android:name=".sample.SamplesActivity"
-            android:launchMode="singleTop"></activity>
-        <activity android:name=".sample.SampleEditActivity"
+            android:launchMode="singleTop" />
+        <activity
+            android:name=".sample.SampleEditActivity"
             android:parentActivityName=".sample.SamplesActivity">
+
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".sample.SamplesActivity" />
         </activity>
 
-        <receiver android:name=".SormasBootstrap"
+        <receiver
+            android:name=".SormasBootstrap"
             android:enabled="true">
             <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED"></action>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
 
-        <!-- Optionally, register AnalyticsReceiver and AnalyticsService to support background
-             dispatching on non-Google Play devices -->
-        <receiver android:name="com.google.android.gms.analytics.AnalyticsReceiver"
+        <!--
+             Optionally, register AnalyticsReceiver and AnalyticsService to support background
+             dispatching on non-Google Play devices
+        -->
+        <receiver
+            android:name="com.google.android.gms.analytics.AnalyticsReceiver"
             android:enabled="true">
             <intent-filter>
                 <action android:name="com.google.android.gms.analytics.ANALYTICS_DISPATCH" />
             </intent-filter>
         </receiver>
-        <service android:name="com.google.android.gms.analytics.AnalyticsService"
-            android:enabled="true"
-            android:exported="false"/>
 
-        <!-- Optionally, register CampaignTrackingReceiver and CampaignTrackingService to enable
-             installation campaign reporting -->
-        <receiver android:name="com.google.android.gms.analytics.CampaignTrackingReceiver"
+        <service
+            android:name="com.google.android.gms.analytics.AnalyticsService"
+            android:enabled="true"
+            android:exported="false" />
+
+        <!--
+             Optionally, register CampaignTrackingReceiver and CampaignTrackingService to enable
+             installation campaign reporting
+        -->
+        <receiver
+            android:name="com.google.android.gms.analytics.CampaignTrackingReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="com.android.vending.INSTALL_REFERRER" />
             </intent-filter>
         </receiver>
-        <service android:name="com.google.android.gms.analytics.CampaignTrackingService" />
 
-        <service android:enabled="true" android:name=".task.TaskNotificationService" />
+        <service android:name="com.google.android.gms.analytics.CampaignTrackingService" />
+        <service
+            android:name=".task.TaskNotificationService"
+            android:enabled="true" />
+
+        <activity android:name=".TestBackendActivity"></activity>
     </application>
 
 </manifest>
