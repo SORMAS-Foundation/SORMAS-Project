@@ -19,6 +19,8 @@ import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.visit.Visit;
 
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -46,7 +48,7 @@ public class ContactBackendTest {
     }
 
     @Test
-    public void shouldCreateVisit() {
+    public void shouldCreateVisit() throws DaoException {
         assertThat(DatabaseHelper.getVisitDao().queryForAll().size(), is(0));
 
         Contact contact = TestEntityCreator.createContact();
@@ -75,9 +77,7 @@ public class ContactBackendTest {
         mergeContact.setPerson((Person) contact.getPerson().clone());
         mergeContact.setCaze((Case) contact.getCaze().clone());
         mergeContact.setId(null);
-        mergeContact.getPerson().setId(null);
         mergeContact.getPerson().getAddress().setId(null);
-        mergeContact.getCaze().setId(null);
 
         mergeContact.setDescription("ServerDescription");
 
@@ -87,7 +87,6 @@ public class ContactBackendTest {
         mergeVisit.setSymptoms((Symptoms) visit.getSymptoms().clone());
         mergeVisit.getSymptoms().setIllLocation((Location) visit.getSymptoms().getIllLocation().clone());
         mergeVisit.setId(null);
-        mergeVisit.getPerson().setId(null);
         mergeVisit.getPerson().getAddress().setId(null);
         mergeVisit.getSymptoms().setId(null);
         mergeVisit.getSymptoms().getIllLocation().setId(null);
@@ -101,6 +100,26 @@ public class ContactBackendTest {
         assertThat(updatedContact.getDescription(), is("ServerDescription"));
         Visit updatedVisit = DatabaseHelper.getVisitDao().queryUuid(visit.getUuid());
         assertThat(updatedVisit.getVisitStatus(), is(VisitStatus.COOPERATIVE));
+    }
+
+    @Test
+    public void shouldAcceptAsExpected() throws DaoException {
+        Contact contact = TestEntityCreator.createContact();
+        assertThat(contact.isModified(), is(false));
+
+        contact.setDescription("NewContactDescription");
+
+        DatabaseHelper.getContactDao().saveAndSnapshot(contact);
+        contact = DatabaseHelper.getContactDao().queryUuid(contact.getUuid());
+
+        assertThat(contact.isModified(), is(true));
+        assertNotNull(DatabaseHelper.getContactDao().querySnapshotByUuid(contact.getUuid()));
+
+        DatabaseHelper.getContactDao().accept(contact);
+        contact = DatabaseHelper.getContactDao().queryUuid(contact.getUuid());
+
+        assertNull(DatabaseHelper.getContactDao().querySnapshotByUuid(contact.getUuid()));
+        assertThat(contact.isModified(), is(false));
     }
 
 }

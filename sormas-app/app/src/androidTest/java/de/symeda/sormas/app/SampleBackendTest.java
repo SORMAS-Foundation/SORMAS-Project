@@ -21,6 +21,8 @@ import de.symeda.sormas.app.backend.sample.SampleTest;
 import de.symeda.sormas.app.sample.SamplesActivity;
 
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -86,6 +88,26 @@ public class SampleBackendTest {
         assertThat(updatedSample.getComment(), is("ServerSampleComment"));
         SampleTest updatedSampleTest = DatabaseHelper.getSampleTestDao().queryUuid(sampleTest.getUuid());
         assertThat(updatedSampleTest.getTestResult(), is(SampleTestResultType.POSITIVE));
+    }
+
+    @Test
+    public void shouldAcceptAsExpected() throws DaoException {
+        Sample sample = TestEntityCreator.createSample();
+        assertThat(sample.isModified(), is(false));
+
+        sample.setComment("NewSampleComment");
+
+        DatabaseHelper.getSampleDao().saveAndSnapshot(sample);
+        sample = DatabaseHelper.getSampleDao().queryUuid(sample.getUuid());
+
+        assertThat(sample.isModified(), is(true));
+        assertNotNull(DatabaseHelper.getSampleDao().querySnapshotByUuid(sample.getUuid()));
+
+        DatabaseHelper.getSampleDao().accept(sample);
+        sample = DatabaseHelper.getSampleDao().queryUuid(sample.getUuid());
+
+        assertNull(DatabaseHelper.getSampleDao().querySnapshotByUuid(sample.getUuid()));
+        assertThat(sample.isModified(), is(false));
     }
 
 }

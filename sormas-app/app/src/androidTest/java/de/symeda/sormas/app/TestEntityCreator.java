@@ -208,7 +208,7 @@ public class TestEntityCreator {
         return DatabaseHelper.getEpiDataTravelDao().queryForId(travel.getId());
     }
 
-    public static Visit createVisit(Contact contact) {
+    public static Visit createVisit(Contact contact) throws DaoException {
         Visit visit = DatabaseHelper.getVisitDao().create(contact.getUuid());
         Symptoms symptoms = DatabaseHelper.getSymptomsDao().create();
         Location illLocation = DatabaseHelper.getLocationDao().create();
@@ -216,12 +216,8 @@ public class TestEntityCreator {
         visit.setSymptoms(symptoms);
         visit.setVisitUser(ConfigProvider.getUser());
 
-        try {
-            DatabaseHelper.getVisitDao().saveAndSnapshot(visit);
-            DatabaseHelper.getVisitDao().accept(visit);
-        } catch (DaoException e) {
-            throw new RuntimeException(e);
-        }
+        DatabaseHelper.getVisitDao().saveAndSnapshot(visit);
+        DatabaseHelper.getVisitDao().accept(visit);
 
         return DatabaseHelper.getVisitDao().queryForId(visit.getId());
     }

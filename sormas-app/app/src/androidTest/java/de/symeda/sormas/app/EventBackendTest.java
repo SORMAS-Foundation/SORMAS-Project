@@ -19,6 +19,8 @@ import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.event.EventsActivity;
 
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -91,6 +93,26 @@ public class EventBackendTest {
         assertThat(updatedEvent.getEventDesc(), is("ServerEventDescription"));
         EventParticipant updatedEventParticipant = DatabaseHelper.getEventParticipantDao().queryUuid(eventParticipant.getUuid());
         assertThat(updatedEventParticipant.getInvolvementDescription(), is("ServerInvolvementDescription"));
+    }
+
+    @Test
+    public void shouldAcceptAsExpected() throws DaoException {
+        Event event = TestEntityCreator.createEvent();
+        assertThat(event.isModified(), is(false));
+
+        event.setEventDesc("NewEventDescription");
+
+        DatabaseHelper.getEventDao().saveAndSnapshot(event);
+        event = DatabaseHelper.getEventDao().queryUuid(event.getUuid());
+
+        assertThat(event.isModified(), is(true));
+        assertNotNull(DatabaseHelper.getEventDao().querySnapshotByUuid(event.getUuid()));
+
+        DatabaseHelper.getEventDao().accept(event);
+        event = DatabaseHelper.getEventDao().queryUuid(event.getUuid());
+
+        assertNull(DatabaseHelper.getEventDao().querySnapshotByUuid(event.getUuid()));
+        assertThat(event.isModified(), is(false));
     }
 
 }
