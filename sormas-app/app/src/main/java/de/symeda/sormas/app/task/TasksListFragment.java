@@ -122,6 +122,8 @@ public class TasksListFragment extends ListFragment {
                 }
             }
         });
+
+        ((TasksListArrayAdapter)getListAdapter()).updateUnreadIndicator();
     }
 
     @Override

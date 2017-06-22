@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Space;
 import android.widget.TextView;
 
@@ -33,6 +34,8 @@ public class TasksListArrayAdapter extends ArrayAdapter<Task> {
 
     private final Context context;
     private int resource;
+    private Task task;
+    private View convertView;
 
     public TasksListArrayAdapter(Context context, int resource) {
         super(context, resource);
@@ -47,8 +50,9 @@ public class TasksListArrayAdapter extends ArrayAdapter<Task> {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = inflater.inflate(this.resource, parent, false);
         }
+        this.convertView = convertView;
 
-        Task task = (Task) getItem(position);
+        task = (Task) getItem(position);
 
         TextView dueDate = (TextView) convertView.findViewById(R.id.task_dueDate_li);
         dueDate.setText(DateHelper.formatDate(task.getDueDate()));
@@ -129,9 +133,21 @@ public class TasksListArrayAdapter extends ArrayAdapter<Task> {
             synchronizedIcon.setImageResource(R.drawable.ic_done_all_black_18dp);
         }
 
+        updateUnreadIndicator();
+
         return convertView;
     }
 
+    public void updateUnreadIndicator() {
+        if (task != null && convertView != null) {
+            LinearLayout itemLayout = (LinearLayout) convertView.findViewById(R.id.task_item_layout);
+            if (task.isUnreadOrChildUnread()) {
+                itemLayout.setBackgroundResource(R.color.bgColorUnread);
+            } else {
+                itemLayout.setBackground(null);
+            }
+        }
+    }
 
     private void setFontStyle(TextView textView, TaskStatus taskStatus) {
         setFontStyle(textView,taskStatus,null);

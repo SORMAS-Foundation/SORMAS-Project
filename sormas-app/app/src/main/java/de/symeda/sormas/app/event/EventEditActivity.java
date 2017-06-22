@@ -14,6 +14,8 @@ import android.view.MenuItem;
 
 import com.google.android.gms.analytics.Tracker;
 
+import java.util.Date;
+
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
@@ -22,6 +24,7 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.AbstractEditTabActivity;
+import de.symeda.sormas.app.backend.event.EventDao;
 import de.symeda.sormas.app.component.UserReportDialog;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.task.TaskForm;
@@ -76,6 +79,8 @@ public class EventEditActivity extends AbstractEditTabActivity {
 
             if (params.containsKey(KEY_EVENT_UUID)) {
                 eventUuid = params.getString(KEY_EVENT_UUID);
+                Event event = DatabaseHelper.getEventDao().queryUuid(eventUuid);
+                DatabaseHelper.getEventDao().markAsRead(event);
             }
             if (params.containsKey(TaskForm.KEY_TASK_UUID)) {
                 taskUuid = params.getString(TaskForm.KEY_TASK_UUID);
@@ -198,7 +203,9 @@ public class EventEditActivity extends AbstractEditTabActivity {
                         if(validData) {
                             try {
 
-                                DatabaseHelper.getEventDao().saveAndSnapshot(event);
+                                EventDao eventDao = DatabaseHelper.getEventDao();
+                                eventDao.saveAndSnapshot(event);
+                                eventDao.markAsRead(event);
 
                                 if (RetroProvider.isConnected()) {
                                     SyncEventsTask.syncEventsWithProgressDialog(this, new SyncCallback() {

@@ -100,6 +100,9 @@ public class SamplesListFragment extends ListFragment {
                 }
             }
         });
+
+        ((SamplesListArrayAdapter)getListAdapter()).updateUnreadIndicator();
+
     }
 
     @Override

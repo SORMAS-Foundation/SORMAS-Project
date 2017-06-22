@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import de.symeda.sormas.api.Disease;
@@ -20,6 +21,8 @@ public class EventsListArrayAdapter extends ArrayAdapter<Event> {
 
     private final Context context;
     private int resource;
+    private Event event;
+    private View convertView;
 
     public EventsListArrayAdapter(Context context, int resource) {
         super(context, resource);
@@ -34,8 +37,9 @@ public class EventsListArrayAdapter extends ArrayAdapter<Event> {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = inflater.inflate(this.resource, parent, false);
         }
+        this.convertView = convertView;
 
-        Event event = (Event)getItem(position);
+        event = (Event)getItem(position);
 
         TextView uuid = (TextView) convertView.findViewById(R.id.eli_uuid);
         uuid.setText(DataHelper.getShortUuid(event.getUuid()));
@@ -66,6 +70,19 @@ public class EventsListArrayAdapter extends ArrayAdapter<Event> {
             synchronizedIcon.setImageResource(R.drawable.ic_done_all_black_18dp);
         }
 
+        updateUnreadIndicator();
+
         return convertView;
+    }
+
+    public void updateUnreadIndicator() {
+        if (event != null && convertView != null) {
+            LinearLayout itemLayout = (LinearLayout) convertView.findViewById(R.id.eli_item_layout);
+            if (event.isUnreadOrChildUnread()) {
+                itemLayout.setBackgroundResource(R.color.bgColorUnread);
+            } else {
+                itemLayout.setBackground(null);
+            }
+        }
     }
 }

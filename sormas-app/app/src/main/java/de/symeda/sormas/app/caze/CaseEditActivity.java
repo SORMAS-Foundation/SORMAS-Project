@@ -16,6 +16,8 @@ import android.widget.LinearLayout;
 
 import com.google.android.gms.analytics.Tracker;
 
+import java.util.Date;
+
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.caze.Case;
@@ -79,6 +81,9 @@ public class CaseEditActivity extends AbstractEditTabActivity {
         if (params != null) {
             if (params.containsKey(KEY_CASE_UUID)) {
                 caseUuid = params.getString(KEY_CASE_UUID);
+                Case caze = DatabaseHelper.getCaseDao().queryUuid(caseUuid);
+                DatabaseHelper.getCaseDao().markAsRead(caze);
+                DatabaseHelper.getPersonDao().markAsRead(caze.getPerson());
             }
             if (params.containsKey(TaskForm.KEY_TASK_UUID)) {
                 taskUuid = params.getString(TaskForm.KEY_TASK_UUID);
@@ -239,12 +244,13 @@ public class CaseEditActivity extends AbstractEditTabActivity {
                 if (validData) {
                     try {
 
+                        personDao.markAsRead(person);
                         personDao.saveAndSnapshot(person);
                         caze.setPerson(person); // we aren't sure why, but this is needed, otherwise the person will be overriden when first saved
                         caze.setSymptoms(symptoms);
                         caze.setHospitalization(hospitalization);
                         caze.setEpiData(epiData);
-
+                        caseDao.markAsRead(caze);
                         caseDao.saveAndSnapshot(caze);
 
                         if (RetroProvider.isConnected()) {

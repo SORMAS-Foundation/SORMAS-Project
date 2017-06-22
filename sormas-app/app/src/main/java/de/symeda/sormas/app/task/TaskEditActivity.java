@@ -15,6 +15,8 @@ import android.view.MenuItem;
 
 import com.google.android.gms.analytics.Tracker;
 
+import java.util.Date;
+
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.common.DaoException;
@@ -60,6 +62,18 @@ public class TaskEditActivity extends AppCompatActivity {
 
         Bundle extras = getIntent().getExtras();
         if(extras != null) {
+            if (extras.containsKey(Task.UUID)) {
+                TaskDao taskDao = DatabaseHelper.getTaskDao();
+                Task task = taskDao.queryUuid(extras.getString(Task.UUID));
+                taskDao.markAsRead(task);
+                try {
+                    DatabaseHelper.getTaskDao().saveAndSnapshot(task);
+                } catch (DaoException e) {
+                    Log.e(getClass().getName(), "Error while trying to save task after updating last opened date", e);
+                    Log.e(getClass().getName(), "- root cause: ", ErrorReportingHelper.getRootCause(e));
+                    ErrorReportingHelper.sendCaughtException(tracker, e, task, true);
+                }
+            }
             if (extras.containsKey(TasksListFragment.KEY_CASE_UUID)) {
                 parentCaseUuid = (String) extras.get(TasksListFragment.KEY_CASE_UUID);
             }
@@ -133,6 +147,7 @@ public class TaskEditActivity extends AppCompatActivity {
                 try {
                     TaskDao taskDao = DatabaseHelper.getTaskDao();
                     taskDao.saveAndSnapshot(task);
+                    taskDao.markAsRead(task);
 
                     if (RetroProvider.isConnected()) {
                         SyncTasksTask.syncTasksWithProgressDialog(this, new SyncCallback() {

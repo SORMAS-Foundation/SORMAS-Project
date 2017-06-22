@@ -74,6 +74,8 @@ public class ContactsListFragment extends ListFragment {
                 }
             }
         });
+
+        ((ContactsListArrayAdapter)getListAdapter()).updateUnreadIndicator();
     }
 
     public void updateContactsArrayAdapter() {

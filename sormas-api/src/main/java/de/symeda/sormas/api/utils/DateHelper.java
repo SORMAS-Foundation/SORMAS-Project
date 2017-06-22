@@ -193,4 +193,11 @@ public final class DateHelper {
 		return new LocalDate(date).minusDays(amountOfDays).toDate();
 	}
 	
+	public static Date addSeconds(Date date, int amountOfSeconds) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(date);
+		calendar.add(Calendar.SECOND, amountOfSeconds);
+		return calendar.getTime();
+	}
+	
 }

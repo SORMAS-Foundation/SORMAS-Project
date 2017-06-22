@@ -13,13 +13,17 @@ import android.view.MenuItem;
 
 import com.google.android.gms.analytics.Tracker;
 
+import java.util.Date;
+
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.event.EventParticipant;
+import de.symeda.sormas.app.backend.event.EventParticipantDao;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.component.UserReportDialog;
 import de.symeda.sormas.app.person.PersonEditForm;
 import de.symeda.sormas.app.rest.RetroProvider;
@@ -68,7 +72,11 @@ public class EventParticipantEditActivity extends AppCompatActivity {
         personEditForm = new PersonEditForm();
         // load person from eventParticipant and give it to personEditForm
         Bundle personEditBundle = new Bundle();
-        eventParticipant = DatabaseHelper.getEventParticipantDao().queryUuid(eventParticipantUuid);
+        EventParticipantDao dao = DatabaseHelper.getEventParticipantDao();
+        eventParticipant = dao.queryUuid(eventParticipantUuid);
+        dao.markAsRead(eventParticipant);
+        DatabaseHelper.getPersonDao().markAsRead(eventParticipant.getPerson());
+
         personEditBundle.putString(Person.UUID, eventParticipant.getPerson().getUuid());
 
         personEditForm.setArguments(personEditBundle);
@@ -143,9 +151,13 @@ public class EventParticipantEditActivity extends AppCompatActivity {
 
                 if (validData) {
                     try {
-                        DatabaseHelper.getPersonDao().saveAndSnapshot(person);
-						eventParticipant.setPerson(person);
-                        DatabaseHelper.getEventParticipantDao().saveAndSnapshot(eventParticipant);
+                        PersonDao personDao = DatabaseHelper.getPersonDao();
+                        EventParticipantDao eventParticipantDao = DatabaseHelper.getEventParticipantDao();
+                        personDao.saveAndSnapshot(person);
+                        personDao.markAsRead(person);
+                        eventParticipant.setPerson(person);
+                        eventParticipantDao.saveAndSnapshot(eventParticipant);
+                        eventParticipantDao.markAsRead(eventParticipant);
 
                         if (RetroProvider.isConnected()) {
                             SyncEventsTask.syncEventsWithProgressDialog(this, new SyncCallback() {

@@ -1,5 +1,8 @@
 package de.symeda.sormas.app.backend.visit;
 
+import android.support.annotation.Nullable;
+
+import com.googlecode.openbeans.PropertyDescriptor;
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
@@ -43,7 +46,7 @@ public class Visit extends AbstractDomainObject {
 	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = false)
 	private Date visitDateTime;
 
-	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 1, canBeNull = false)
+	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3, canBeNull = false)
 	private User visitUser;
 
 	@Enumerated(EnumType.STRING)
@@ -52,7 +55,7 @@ public class Visit extends AbstractDomainObject {
 	@Column(length=512)
 	private String visitRemarks;
 
-	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 1)
+	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
 	private Symptoms symptoms;
 	
 	public Person getPerson() {
@@ -106,12 +109,6 @@ public class Visit extends AbstractDomainObject {
 	}
 	public void setSymptoms(Symptoms symptoms) {
 		this.symptoms = symptoms;
-	}
-
-	@Override
-	public boolean isModifiedOrChildModified() {
-		super.isModifiedOrChildModified();
-		return person.isModifiedOrChildModified();
 	}
 
 	@Override

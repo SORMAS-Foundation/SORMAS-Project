@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import de.symeda.sormas.api.utils.DateHelper;
@@ -18,6 +19,8 @@ public class VisitsListArrayAdapter extends ArrayAdapter<Visit> {
 
     private final Context context;
     private int resource;
+    private Visit visit;
+    private View convertView;
 
     public VisitsListArrayAdapter(Context context, int resource) {
         super(context, resource);
@@ -32,8 +35,9 @@ public class VisitsListArrayAdapter extends ArrayAdapter<Visit> {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = inflater.inflate(this.resource, parent, false);
         }
+        this.convertView = convertView;
 
-        Visit visit = getItem(position);
+        visit = getItem(position);
 
         TextView visitDate = (TextView) convertView.findViewById(R.id.visit_date_li);
         visitDate.setText(DateHelper.formatDate(visit.getVisitDateTime()));
@@ -61,6 +65,19 @@ public class VisitsListArrayAdapter extends ArrayAdapter<Visit> {
             synchronizedIcon.setImageResource(R.drawable.ic_done_all_black_18dp);
         }
 
+        updateUnreadIndicator();
+
         return convertView;
+    }
+
+    public void updateUnreadIndicator() {
+        if (visit != null && convertView != null) {
+            LinearLayout itemLayout = (LinearLayout) convertView.findViewById(R.id.visit_item_layout);
+            if (visit.isUnreadOrChildUnread()) {
+                itemLayout.setBackgroundResource(R.color.bgColorUnread);
+            } else {
+                itemLayout.setBackground(null);
+            }
+        }
     }
 }

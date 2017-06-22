@@ -1,6 +1,8 @@
 package de.symeda.sormas.app.backend.common;
 
 import android.databinding.BaseObservable;
+import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.googlecode.openbeans.BeanInfo;
 import com.googlecode.openbeans.IntrospectionException;
@@ -31,6 +33,7 @@ public abstract class AbstractDomainObject extends BaseObservable implements Ser
 	public static final String CHANGE_DATE = "changeDate";
 	public static final String LOCAL_CHANGE_DATE = "localChangeDate";
 	public static final String MODIFIED = "modified";
+	public static final String LAST_OPENED_DATE = "lastOpenedDate";
 
 	@Id
 	@GeneratedValue
@@ -66,6 +69,12 @@ public abstract class AbstractDomainObject extends BaseObservable implements Ser
 	@DatabaseField
 	private boolean modified = false;
 
+	/**
+	 * Date when the entity has been opened lastly.
+	 */
+	@DatabaseField(dataType = DataType.DATE_LONG)
+	private Date lastOpenedDate;
+
 	@Override
 	public AbstractDomainObject clone() {
 		try {
@@ -87,15 +96,56 @@ public abstract class AbstractDomainObject extends BaseObservable implements Ser
 
 		Iterator<PropertyDescriptor> propertyIterator = AdoMergeHelper.getEmbeddedAdoProperties(this.getClass());
 		while (propertyIterator.hasNext()) {
-			PropertyDescriptor property = propertyIterator.next();
-			AbstractDomainObject embeddedAdo = DatabaseHelper.getAdoDao((Class<AbstractDomainObject>)property.getPropertyType()).create();
+			try {
+				PropertyDescriptor property = propertyIterator.next();
+				AbstractDomainObject embeddedAdo = (AbstractDomainObject) property.getReadMethod().invoke(this);
+				if (embeddedAdo == null) {
+					throw new IllegalArgumentException("No embedded entity was created for " + property.getName());
+				}
 
-			if (embeddedAdo == null) {
-				throw new IllegalArgumentException("No embedded entity was created for " + property.getName());
+				if (embeddedAdo.isModifiedOrChildModified()) {
+					return true;
+				}
+			} catch (InvocationTargetException e) {
+				Log.e(getClass().getName(), "Error while trying to invoke read method to request modified state", e);
+				throw new RuntimeException(e);
+			} catch (IllegalAccessException e) {
+				Log.e(getClass().getName(), "Error while trying to invoke read method to request modified state", e);
+				throw new RuntimeException(e);
 			}
+		}
 
-			if (embeddedAdo.isModifiedOrChildModified()) {
-				return true;
+		return false;
+	}
+
+	public boolean isUnreadOrChildUnread() {
+		if (lastOpenedDate == null) {
+			return true;
+		}
+
+		if (lastOpenedDate.before(localChangeDate)) {
+			return true;
+		}
+
+		Iterator<PropertyDescriptor> propertyIterator = AdoMergeHelper.getEmbeddedAdoProperties(this.getClass());
+		while (propertyIterator.hasNext()) {
+			try {
+				PropertyDescriptor property = propertyIterator.next();
+				AbstractDomainObject embeddedAdo = (AbstractDomainObject) property.getReadMethod().invoke(this);
+
+				if (embeddedAdo == null) {
+					throw new IllegalArgumentException("No embedded entity was created for " + property.getName());
+				}
+
+				if (embeddedAdo.isUnreadOrChildUnread()) {
+					return true;
+				}
+			} catch (InvocationTargetException e) {
+				Log.e(getClass().getName(), "Error while trying to invoke read method to request unread state", e);
+				throw new RuntimeException(e);
+			} catch (IllegalAccessException e) {
+				Log.e(getClass().getName(), "Error while trying to invoke read method to request unread state", e);
+				throw new RuntimeException(e);
 			}
 		}
 
@@ -186,6 +236,13 @@ public abstract class AbstractDomainObject extends BaseObservable implements Ser
 		this.modified = modified;
 	}
 
+	public Date getLastOpenedDate() {
+		return lastOpenedDate;
+	}
+
+	public void setLastOpenedDate(Date lastOpenedDate) {
+		this.lastOpenedDate = lastOpenedDate;
+	}
 	@Override
 	public String toString() {
 		return I18nProperties.getFieldCaption(getI18nPrefix());

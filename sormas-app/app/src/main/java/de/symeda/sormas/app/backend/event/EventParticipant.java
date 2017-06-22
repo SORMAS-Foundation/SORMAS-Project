@@ -1,7 +1,12 @@
 package de.symeda.sormas.app.backend.event;
 
+import android.support.annotation.Nullable;
+
+import com.googlecode.openbeans.PropertyDescriptor;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
+
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -60,8 +65,14 @@ public class EventParticipant extends AbstractDomainObject {
 
 	@Override
 	public boolean isModifiedOrChildModified() {
-		super.isModifiedOrChildModified();
-		return person.isModifiedOrChildModified();
+		boolean modified = super.isModifiedOrChildModified();
+		return person.isModifiedOrChildModified() || modified;
+	}
+
+	@Override
+	public boolean isUnreadOrChildUnread() {
+		boolean unread = super.isUnreadOrChildUnread();
+		return person.isUnreadOrChildUnread() || unread;
 	}
 
 	@Override

@@ -14,6 +14,8 @@ import android.view.MenuItem;
 
 import com.google.android.gms.analytics.Tracker;
 
+import java.util.Date;
+
 import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
@@ -24,6 +26,7 @@ import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.contact.ContactDao;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.AbstractEditTabActivity;
+import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.component.UserReportDialog;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.task.TaskForm;
@@ -75,6 +78,9 @@ public class ContactEditActivity extends AbstractEditTabActivity {
             }
             if (params.containsKey(KEY_CONTACT_UUID)) {
                 contactUuid = params.getString(KEY_CONTACT_UUID);
+                Contact contact = DatabaseHelper.getContactDao().queryUuid(contactUuid);
+                DatabaseHelper.getContactDao().markAsRead(contact);
+                DatabaseHelper.getPersonDao().markAsRead(contact.getPerson());
             }
             if (params.containsKey(TaskForm.KEY_TASK_UUID)) {
                 taskUuid = params.getString(TaskForm.KEY_TASK_UUID);
@@ -199,9 +205,11 @@ public class ContactEditActivity extends AbstractEditTabActivity {
                             person.getAddress().setCommunity(contact.getCaze().getCommunity());
                         }
 
-                        DatabaseHelper.getPersonDao().saveAndSnapshot(person);
-
+                        PersonDao personDao = DatabaseHelper.getPersonDao();
+                        personDao.saveAndSnapshot(person);
+                        personDao.markAsRead(person);
                         contactDao.saveAndSnapshot(contact);
+                        contactDao.markAsRead(contact);
 
                         if (RetroProvider.isConnected()) {
                             SyncContactsTask.syncContactsWithProgressDialog(this, new SyncCallback() {

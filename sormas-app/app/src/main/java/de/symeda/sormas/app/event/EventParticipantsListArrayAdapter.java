@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import de.symeda.sormas.api.utils.DataHelper;
@@ -22,6 +23,8 @@ public class EventParticipantsListArrayAdapter extends ArrayAdapter<EventPartici
 
     private final Context context;
     private int resource;
+    private EventParticipant eventParticipant;
+    private View convertView;
 
     public EventParticipantsListArrayAdapter(Context context, int resource) {
         super(context, resource);
@@ -36,8 +39,9 @@ public class EventParticipantsListArrayAdapter extends ArrayAdapter<EventPartici
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = inflater.inflate(this.resource, parent, false);
         }
+        this.convertView = convertView;
 
-        EventParticipant eventParticipant = (EventParticipant) getItem(position);
+        eventParticipant = (EventParticipant) getItem(position);
 
         TextView uuid = (TextView) convertView.findViewById(R.id.eventParticipant_uuid_li);
         uuid.setText(DataHelper.getShortUuid(eventParticipant.getUuid()));
@@ -67,7 +71,20 @@ public class EventParticipantsListArrayAdapter extends ArrayAdapter<EventPartici
             synchronizedIcon.setImageResource(R.drawable.ic_done_all_black_18dp);
         }
 
+        updateUnreadIndicator();
+
         return convertView;
+    }
+
+    public void updateUnreadIndicator() {
+        if (eventParticipant != null && convertView != null) {
+            LinearLayout itemLayout = (LinearLayout) convertView.findViewById(R.id.eventParticipant_item_layout);
+            if (eventParticipant.isUnreadOrChildUnread()) {
+                itemLayout.setBackgroundResource(R.color.bgColorUnread);
+            } else {
+                itemLayout.setBackground(null);
+            }
+        }
     }
 
 }

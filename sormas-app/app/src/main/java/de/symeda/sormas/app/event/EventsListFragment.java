@@ -78,6 +78,8 @@ public class EventsListFragment extends ListFragment {
                 }
             }
         });
+
+        ((EventsListArrayAdapter)getListAdapter()).updateUnreadIndicator();
     }
 
     @Override

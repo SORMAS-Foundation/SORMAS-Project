@@ -143,6 +143,7 @@ public final class AdoMergeHelper {
                 || AbstractDomainObject.ID.equals(property.getName())
                 || AbstractDomainObject.SNAPSHOT.equals(property.getName())
                 || AbstractDomainObject.MODIFIED.equals(property.getName())
+                || AbstractDomainObject.LAST_OPENED_DATE.equals(property.getName())
                 || property.getWriteMethod() == null
                 || property.getReadMethod() == null)
             return false;

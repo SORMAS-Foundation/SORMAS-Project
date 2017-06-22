@@ -89,6 +89,9 @@ public class SampleEditActivity extends AppCompatActivity {
 
             if (params.containsKey(KEY_SAMPLE_UUID)) {
                 sampleUuid = params.getString(KEY_SAMPLE_UUID);
+                SampleDao sampleDao = DatabaseHelper.getSampleDao();
+                Sample sample = sampleDao.queryUuid(sampleUuid);
+                sampleDao.markAsRead(sample);
             }
         }
 
@@ -176,8 +179,8 @@ public class SampleEditActivity extends AppCompatActivity {
 
                 if (validData) {
                     try {
-
                         sampleDao.saveAndSnapshot(sample);
+                        sampleDao.markAsRead(sample);
                         Snackbar.make(findViewById(R.id.fragment_frame), "Sample " + DataHelper.getShortUuid(sample.getUuid()) + " saved", Snackbar.LENGTH_LONG).show();
 
                         if (RetroProvider.isConnected()) {

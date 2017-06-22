@@ -24,7 +24,9 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventParticipant;
+import de.symeda.sormas.app.backend.event.EventParticipantDao;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.component.SelectOrCreatePersonDialogBuilder;
 import de.symeda.sormas.app.component.UserReportDialog;
 import de.symeda.sormas.app.rest.RetroProvider;
@@ -164,12 +166,16 @@ public class EventParticipantNewActivity extends AppCompatActivity {
     private void savePersonAndEventParticipant(final EventParticipant eventParticipant) throws DaoException {
 
 		// save the person
-        DatabaseHelper.getPersonDao().saveAndSnapshot(eventParticipant.getPerson());
+        PersonDao personDao = DatabaseHelper.getPersonDao();
+        personDao.saveAndSnapshot(eventParticipant.getPerson());
+        personDao.markAsRead(eventParticipant.getPerson());
         // set the given event
         final Event event = DatabaseHelper.getEventDao().queryUuid(eventUuid);
         eventParticipant.setEvent(event);
         // save the contact
-        DatabaseHelper.getEventParticipantDao().saveAndSnapshot(eventParticipant);
+        EventParticipantDao eventParticipantDao = DatabaseHelper.getEventParticipantDao();
+        eventParticipantDao.saveAndSnapshot(eventParticipant);
+        eventParticipantDao.markAsRead(eventParticipant);
 
         if (RetroProvider.isConnected()) {
             SyncEventsTask.syncEventsWithProgressDialog(this, new SyncCallback() {

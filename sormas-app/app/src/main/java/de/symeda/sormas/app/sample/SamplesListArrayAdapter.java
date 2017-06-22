@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import de.symeda.sormas.api.sample.SpecimenCondition;
@@ -23,6 +24,8 @@ public class SamplesListArrayAdapter extends ArrayAdapter<Sample> {
 
     private final Context context;
     private int resource;
+    private Sample sample;
+    private View convertView;
 
     public SamplesListArrayAdapter(Context context, int resource) {
         super(context, resource);
@@ -37,7 +40,9 @@ public class SamplesListArrayAdapter extends ArrayAdapter<Sample> {
             convertView = inflater.inflate(this.resource, parent, false);
         }
 
-        Sample sample = (Sample) getItem(position);
+        this.convertView = convertView;
+
+        sample = (Sample) getItem(position);
 
         TextView dateTime = (TextView) convertView.findViewById(R.id.sample_date_time_li);
         dateTime.setText(DateHelper.formatDate(sample.getSampleDateTime()));
@@ -77,7 +82,25 @@ public class SamplesListArrayAdapter extends ArrayAdapter<Sample> {
             synchronizedIcon.setImageResource(R.drawable.ic_done_all_black_18dp);
         }
 
+        if (sample.isUnreadOrChildUnread()) {
+            LinearLayout itemLayout = (LinearLayout) convertView.findViewById(R.id.sample_item_layout);
+            itemLayout.setBackgroundResource(R.color.bgColorUnread);
+        }
+
+        updateUnreadIndicator();
+
         return convertView;
+    }
+
+    public void updateUnreadIndicator() {
+        if (sample != null && convertView != null) {
+            LinearLayout itemLayout = (LinearLayout) convertView.findViewById(R.id.sample_item_layout);
+            if (sample.isUnreadOrChildUnread()) {
+                itemLayout.setBackgroundResource(R.color.bgColorUnread);
+            } else {
+                itemLayout.setBackground(null);
+            }
+        }
     }
 
 }

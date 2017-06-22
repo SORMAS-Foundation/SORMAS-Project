@@ -29,6 +29,7 @@ import javax.persistence.NonUniqueResultException;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
 
 /**
@@ -38,7 +39,7 @@ import de.symeda.sormas.app.R;
  */
 public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 
-    Dao<ADO, Long> dao;
+    private Dao<ADO, Long> dao;
 
     public AbstractAdoDao(Dao<ADO, Long> innerDao)  {
         this.dao = innerDao;
@@ -799,6 +800,34 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
         }
     }
 
+    public void markAsRead(ADO ado) {
+        ado.setLastOpenedDate(DateHelper.addSeconds(new Date(), 5));
+        update(ado);
+
+        Iterator<PropertyDescriptor> propertyIterator = AdoMergeHelper.getEmbeddedAdoProperties(ado.getClass());
+        while (propertyIterator.hasNext()) {
+            try {
+                PropertyDescriptor property = propertyIterator.next();
+                AbstractDomainObject embeddedAdo = (AbstractDomainObject) property.getReadMethod().invoke(ado);
+                if (embeddedAdo == null) {
+                    throw new IllegalArgumentException("No embedded entity was created for " + property.getName());
+                }
+
+                DatabaseHelper.getAdoDao(embeddedAdo.getClass()).markAsReadWithCast(embeddedAdo);
+            } catch (InvocationTargetException e) {
+                Log.e(getClass().getName(), "Error while trying to invoke read method to set last opened dates", e);
+                throw new RuntimeException(e);
+            } catch (IllegalAccessException e) {
+                Log.e(getClass().getName(), "Error while trying to invoke read method to set last opened dates", e);
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    public void markAsReadWithCast(AbstractDomainObject ado) {
+        markAsRead((ADO) ado);
+    }
+
     /**
      * @see Dao#queryForId(Object)
      */
@@ -816,7 +845,10 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
      */
     public List<ADO> queryForAll() {
         try {
-            return dao.queryForAll();
+            QueryBuilder builder = queryBuilder();
+            Where where = builder.where();
+            where.eq(AbstractDomainObject.SNAPSHOT, false).query();
+            return builder.query();
         } catch (SQLException e) {
             Log.e(getTableName(), "queryForAll threw exception", e);
             throw new RuntimeException(e);
@@ -828,7 +860,11 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
      */
     public List<ADO> queryForEq(String fieldName, Object value) {
         try {
-            return dao.queryForEq(fieldName, value);
+            QueryBuilder builder = queryBuilder();
+            Where where = builder.where();
+            where.eq(fieldName, value);
+            where.and().eq(AbstractDomainObject.SNAPSHOT, false).query();
+            return builder.query();
         } catch (SQLException e) {
             Log.e(getTableName(), "queryForEq threw exception on: " + fieldName, e);
             throw new RuntimeException(e);
@@ -838,7 +874,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
     /**
      * @see Dao#queryBuilder()
      */
-    public QueryBuilder<ADO, Long> queryBuilder() {
+    protected QueryBuilder<ADO, Long> queryBuilder() {
         return dao.queryBuilder();
     }
 
@@ -857,7 +893,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
     /**
      * @see Dao#update(Object)
      */
-    public int update(ADO data) {
+    protected int update(ADO data) {
         try {
             return dao.update(data);
         } catch (SQLException e) {
@@ -879,16 +915,9 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
     }
 
     /**
-     * @see Dao#iterator()
-     */
-    public CloseableIterator<ADO> iterator() {
-        return dao.iterator();
-    }
-
-    /**
      * @see Dao#queryRaw(String, DataType[], String...)
      */
-    public GenericRawResults<Object[]> queryRaw(String query, DataType[] columnTypes, String... arguments) {
+    protected GenericRawResults<Object[]> queryRaw(String query, DataType[] columnTypes, String... arguments) {
         try {
             return dao.queryRaw(query, columnTypes, arguments);
         } catch (SQLException e) {

@@ -24,11 +24,13 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.SelectOrCreatePersonDialogBuilder;
 import de.symeda.sormas.app.component.UserReportDialog;
@@ -187,7 +189,9 @@ public class CaseNewActivity extends AppCompatActivity {
 
     private void savePersonAndCase(final Case caze) throws DaoException {
         // save the person
-        DatabaseHelper.getPersonDao().saveAndSnapshot(caze.getPerson());
+        PersonDao personDao = DatabaseHelper.getPersonDao();
+        personDao.saveAndSnapshot(caze.getPerson());
+        personDao.markAsRead(caze.getPerson());
 
         caze.setCaseClassification(CaseClassification.NOT_CLASSIFIED);
         caze.setInvestigationStatus(InvestigationStatus.PENDING);
@@ -201,7 +205,9 @@ public class CaseNewActivity extends AppCompatActivity {
         }
         caze.setReportDate(new Date());
 
-        DatabaseHelper.getCaseDao().saveAndSnapshot(caze);
+        CaseDao caseDao = DatabaseHelper.getCaseDao();
+        caseDao.saveAndSnapshot(caze);
+        caseDao.markAsRead(caze);
 
         if (RetroProvider.isConnected()) {
             SyncCasesTask.syncCasesWithProgressDialog(this, new SyncCallback() {

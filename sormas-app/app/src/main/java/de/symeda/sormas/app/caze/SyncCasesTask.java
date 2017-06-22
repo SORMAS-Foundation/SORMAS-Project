@@ -49,8 +49,6 @@ public class SyncCasesTask extends AsyncTask<Void, Void, Void> {
     @Override
     protected Void doInBackground(Void... params) {
         try {
-
-
             new CaseDtoHelper().pullEntities(new DtoGetInterface<CaseDataDto>() {
                 @Override
                 public Call<List<CaseDataDto>> getAll(long since) {

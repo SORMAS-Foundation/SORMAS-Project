@@ -1,11 +1,13 @@
 package de.symeda.sormas.app.caze;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import de.symeda.sormas.api.Disease;
@@ -26,6 +28,8 @@ public class CasesListArrayAdapter extends ArrayAdapter<Case> {
 
     private final Context context;
     private int resource;
+    private Case caze;
+    private View convertView;
 
     public CasesListArrayAdapter(Context context, int resource) {
         super(context, resource);
@@ -35,13 +39,14 @@ public class CasesListArrayAdapter extends ArrayAdapter<Case> {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-
         if(convertView == null) {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = inflater.inflate(this.resource, parent, false);
         }
 
-        Case caze = (Case)getItem(position);
+        this.convertView = convertView;
+
+        caze = (Case)getItem(position);
 
         TextView uuid = (TextView) convertView.findViewById(R.id.cli_uuid);
         uuid.setText(DataHelper.getShortUuid(caze.getUuid()));
@@ -81,6 +86,25 @@ public class CasesListArrayAdapter extends ArrayAdapter<Case> {
             synchronizedIcon.setImageResource(R.drawable.ic_done_all_black_18dp);
         }
 
+        if (caze.isUnreadOrChildUnread()) {
+            LinearLayout itemLayout = (LinearLayout) convertView.findViewById(R.id.cli_item_layout);
+            itemLayout.setBackgroundResource(R.color.bgColorUnread);
+        }
+
+        updateUnreadIndicator();
+
         return convertView;
     }
+
+    public void updateUnreadIndicator() {
+        if (caze != null && convertView != null) {
+            LinearLayout itemLayout = (LinearLayout) convertView.findViewById(R.id.cli_item_layout);
+            if (caze.isUnreadOrChildUnread()) {
+                itemLayout.setBackgroundResource(R.color.bgColorUnread);
+            } else {
+                itemLayout.setBackground(null);
+            }
+        }
+    }
+
 }

@@ -48,7 +48,7 @@ public class User extends AbstractDomainObject {
 	private String userEmail;
 	@Column
 	private String phone;
-	@DatabaseField(foreign = true, foreignAutoCreate = true, foreignAutoRefresh = true)
+	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 2)
 	private Location address;
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private Region region;

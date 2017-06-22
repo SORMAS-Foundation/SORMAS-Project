@@ -13,6 +13,8 @@ import android.widget.LinearLayout;
 
 import com.google.android.gms.analytics.Tracker;
 
+import java.util.Date;
+
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.app.R;
@@ -21,8 +23,10 @@ import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
+import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.visit.Visit;
+import de.symeda.sormas.app.backend.visit.VisitDao;
 import de.symeda.sormas.app.caze.SymptomsEditForm;
 import de.symeda.sormas.app.AbstractEditTabActivity;
 import de.symeda.sormas.app.component.HelpDialog;
@@ -66,6 +70,12 @@ public class VisitEditActivity extends AbstractEditTabActivity {
         adapter = new VisitEditPagerAdapter(getSupportFragmentManager(), params);
         createTabViews(adapter);
 
+        if (params != null && params.containsKey(Visit.UUID)) {
+            String visitUuid = params.getString(Visit.UUID);
+            VisitDao visitDao = DatabaseHelper.getVisitDao();
+            Visit visit = visitDao.queryUuid(visitUuid);
+            visitDao.markAsRead(visit);
+        }
         if (params != null && params.containsKey(KEY_PAGE)) {
             currentTab = params.getInt(KEY_PAGE);
         }
@@ -176,10 +186,11 @@ public class VisitEditActivity extends AbstractEditTabActivity {
                 // the data is valid
                 if (isValid) {
                     try {
-						
 						visit.setSymptoms(symptoms);
 						visit.setVisitUser(ConfigProvider.getUser());
-						DatabaseHelper.getVisitDao().saveAndSnapshot(visit);
+                        VisitDao visitDao = DatabaseHelper.getVisitDao();
+						visitDao.saveAndSnapshot(visit);
+                        visitDao.markAsRead(visit);
 
                         if (RetroProvider.isConnected()) {
                             SyncVisitsTask.syncVisitsWithProgressDialog(this, new SyncCallback() {

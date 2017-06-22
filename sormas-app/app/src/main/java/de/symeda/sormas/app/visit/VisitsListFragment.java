@@ -68,6 +68,8 @@ public class VisitsListFragment extends ListFragment {
                 }
             });
         }
+
+        ((VisitsListArrayAdapter)getListAdapter()).updateUnreadIndicator();
     }
 
     @Override

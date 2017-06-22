@@ -81,6 +81,8 @@ public class CasesListFragment extends ListFragment {
                 }
             }
         });
+
+        ((CasesListArrayAdapter)getListAdapter()).updateUnreadIndicator();
     }
 
     @Override

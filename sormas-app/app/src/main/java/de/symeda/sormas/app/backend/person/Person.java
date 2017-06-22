@@ -281,4 +281,5 @@ public class Person extends AbstractDomainObject {
 	public String getI18nPrefix() {
 		return I18N_PREFIX;
 	}
+
 }

@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -67,6 +68,11 @@ public class EpiDataBurialsListArrayAdapter extends ArrayAdapter<EpiDataBurial> 
         illTouchedString.append(YesNoUnknown.YES.equals(burial.getBurialIll())?convertView.getResources().getString(R.string.label_person_ill):"");
         illTouchedString.append(YesNoUnknown.YES.equals(burial.getBurialTouching())?convertView.getResources().getString(R.string.label_body_touched):convertView.getResources().getString(R.string.label_body_not_touched));
         illTouched.setText(illTouchedString.toString());
+
+        if (burial.isUnreadOrChildUnread()) {
+            LinearLayout itemLayout = (LinearLayout) convertView.findViewById(R.id.cli_item_layout);
+            itemLayout.setBackgroundResource(R.color.bgColorUnread);
+        }
 
         return convertView;
     }

@@ -35,7 +35,7 @@ public class Symptoms extends AbstractDomainObject {
 	private String symptomsComments;
 	private Boolean symptomatic;
 
-	@DatabaseField(foreign = true, foreignAutoCreate = true, foreignAutoRefresh = true)
+	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 2)
 	private Location illLocation;
 	@DatabaseField(dataType = DataType.DATE_LONG)
 	private Date illLocationFrom;
@@ -544,4 +544,5 @@ public class Symptoms extends AbstractDomainObject {
 	public String getI18nPrefix() {
 		return I18N_PREFIX;
 	}
+
 }

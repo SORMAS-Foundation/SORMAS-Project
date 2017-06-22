@@ -26,7 +26,9 @@ import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
+import de.symeda.sormas.app.backend.contact.ContactDao;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.caze.CaseEditActivity;
 import de.symeda.sormas.app.component.SelectOrCreatePersonDialogBuilder;
 import de.symeda.sormas.app.component.UserReportDialog;
@@ -188,8 +190,12 @@ public class ContactNewActivity extends AppCompatActivity {
         }
 
         // save
-        DatabaseHelper.getPersonDao().saveAndSnapshot(contact.getPerson());
-        DatabaseHelper.getContactDao().saveAndSnapshot(contact);
+        PersonDao personDao = DatabaseHelper.getPersonDao();
+        ContactDao contactDao = DatabaseHelper.getContactDao();
+        personDao.saveAndSnapshot(person);
+        personDao.markAsRead(person);
+        contactDao.saveAndSnapshot(contact);
+        contactDao.markAsRead(contact);
 
         if (RetroProvider.isConnected()) {
             SyncContactsTask.syncContactsWithProgressDialog(this, new SyncCallback() {

@@ -1,5 +1,8 @@
 package de.symeda.sormas.app.backend.contact;
 
+import android.support.annotation.Nullable;
+
+import com.googlecode.openbeans.PropertyDescriptor;
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
@@ -170,8 +173,14 @@ public class Contact extends AbstractDomainObject {
 
 	@Override
 	public boolean isModifiedOrChildModified() {
-		super.isModifiedOrChildModified();
-		return person.isModifiedOrChildModified();
+		boolean modified = super.isModifiedOrChildModified();
+		return person.isModifiedOrChildModified() || modified;
+	}
+
+	@Override
+	public boolean isUnreadOrChildUnread() {
+		boolean unread = super.isUnreadOrChildUnread();
+		return person.isUnreadOrChildUnread() || unread;
 	}
 
 	@Override

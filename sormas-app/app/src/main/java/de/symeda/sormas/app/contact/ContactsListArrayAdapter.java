@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.Date;
@@ -24,6 +25,8 @@ public class ContactsListArrayAdapter extends ArrayAdapter<Contact> {
 
     private final Context context;
     private int resource;
+    private Contact contact;
+    private View convertView;
 
     public ContactsListArrayAdapter(Context context, int resource) {
         super(context, resource);
@@ -33,13 +36,14 @@ public class ContactsListArrayAdapter extends ArrayAdapter<Contact> {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-
         if(convertView == null) {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = inflater.inflate(this.resource, parent, false);
         }
 
-        Contact contact = (Contact)getItem(position);
+        this.convertView = convertView;
+
+        contact = (Contact)getItem(position);
 
         TextView uuid = (TextView) convertView.findViewById(R.id.contact_uuid_li);
         uuid.setText(DataHelper.getShortUuid(contact.getUuid()));
@@ -70,6 +74,20 @@ public class ContactsListArrayAdapter extends ArrayAdapter<Contact> {
             synchronizedIcon.setImageResource(R.drawable.ic_done_all_black_18dp);
         }
 
+        updateUnreadIndicator();
+
         return convertView;
     }
+
+    public void updateUnreadIndicator() {
+        if (contact !=  null && convertView != null) {
+            LinearLayout itemLayout = (LinearLayout) convertView.findViewById(R.id.contact_item_layout);
+            if (contact.isUnreadOrChildUnread()) {
+                itemLayout.setBackgroundResource(R.color.bgColorUnread);
+            } else {
+                itemLayout.setBackground(null);
+            }
+        }
+    }
+
 }
