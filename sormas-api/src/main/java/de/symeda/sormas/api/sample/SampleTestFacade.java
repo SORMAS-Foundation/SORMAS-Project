@@ -15,4 +15,6 @@ public interface SampleTestFacade {
 	SampleTestDto getByUuid(String uuid);
 	
 	SampleTestDto saveSampleTest(SampleTestDto dto);
+
+	List<String> getAllUuids(String userUuid);
 }

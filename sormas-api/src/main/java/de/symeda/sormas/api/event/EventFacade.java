@@ -23,4 +23,6 @@ public interface EventFacade {
 	
 	EventReferenceDto getReferenceByUuid(String uuid);
 
+	List<String> getAllUuids(String userUuid);
+
 }

@@ -31,7 +31,7 @@ import de.symeda.sormas.backend.util.DtoHelper;
 public class VisitFacadeEjb implements VisitFacade {
 	
 	@EJB
-	private VisitService service;	
+	private VisitService visitService;	
 	@EJB
 	private ContactService contactService;
 	@EJB
@@ -43,6 +43,18 @@ public class VisitFacadeEjb implements VisitFacade {
 
 	
 	@Override
+	public List<String> getAllUuids(String userUuid) {
+		
+		User user = userService.getByUuid(userUuid);
+		
+		if (user == null) {
+			return Collections.emptyList();
+		}
+		
+		return visitService.getAllUuids(user);
+	}
+	
+	@Override
 	public List<VisitDto> getAllVisitsAfter(Date date, String userUuid) {
 		
 		User user = userService.getByUuid(userUuid);
@@ -51,7 +63,7 @@ public class VisitFacadeEjb implements VisitFacade {
 			return Collections.emptyList();
 		}
 		
-		return service.getAllAfter(date, user).stream()
+		return visitService.getAllAfter(date, user).stream()
 			.map(c -> toDto(c))
 			.collect(Collectors.toList());
 	}
@@ -61,7 +73,7 @@ public class VisitFacadeEjb implements VisitFacade {
 		
 		Contact contact = contactService.getByReferenceDto(contactRef);
 		
-		return service.getAllByContact(contact).stream()
+		return visitService.getAllByContact(contact).stream()
 			.map(c -> toDto(c))
 			.collect(Collectors.toList());
 	}
@@ -71,31 +83,31 @@ public class VisitFacadeEjb implements VisitFacade {
 		
 		Person person = personService.getByReferenceDto(personRef);
 		
-		return service.getAllByPerson(person).stream()
+		return visitService.getAllByPerson(person).stream()
 			.map(c -> toDto(c))
 			.collect(Collectors.toList());
 	}
 	
 	@Override
 	public VisitDto getVisitByUuid(String uuid) {
-		return toDto(service.getByUuid(uuid));
+		return toDto(visitService.getByUuid(uuid));
 	}
 	
 	@Override
 	public VisitReferenceDto getReferenceByUuid(String uuid) {
-		return toReferenceDto(service.getByUuid(uuid));
+		return toReferenceDto(visitService.getByUuid(uuid));
 	}
 	
 	@Override
 	public VisitDto saveVisit(VisitDto dto) {
 		Visit entity = fromDto(dto);
-		service.ensurePersisted(entity);
+		visitService.ensurePersisted(entity);
 		return toDto(entity);
 	}
 
 	public Visit fromDto(@NotNull VisitDto source) {
 		
-		Visit target = service.getByUuid(source.getUuid());
+		Visit target = visitService.getByUuid(source.getUuid());
 		if (target == null) {
 			target = new Visit();
 			target.setUuid(source.getUuid());

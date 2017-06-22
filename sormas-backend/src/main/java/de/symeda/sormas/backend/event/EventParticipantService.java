@@ -83,6 +83,7 @@ public class EventParticipantService extends AbstractAdoService<EventParticipant
 	/**
 	 * @see /sormas-backend/doc/UserDataAccess.md
 	 */
+	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, From<EventParticipant, EventParticipant> eventParticipantPath, User user) {
 		// can see the participants of all accessible events
 		Predicate filter = eventService.createUserFilter(cb, eventParticipantPath.join(EventParticipant.EVENT, JoinType.LEFT), user);

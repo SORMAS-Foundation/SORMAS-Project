@@ -39,4 +39,6 @@ public interface TaskFacade {
 
 	TaskDto getByUuid(String uuid);
 
+	List<String> getAllUuids(String userUuid);
+
 }

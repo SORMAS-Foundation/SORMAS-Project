@@ -28,4 +28,6 @@ public interface PersonFacade {
     PersonReferenceDto savePerson(PersonReferenceDto dto);
 
     PersonDto savePerson(PersonDto dto);
+
+	List<String> getAllUuids(String userUuid);
 }

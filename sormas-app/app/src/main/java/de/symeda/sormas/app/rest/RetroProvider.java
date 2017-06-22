@@ -69,6 +69,7 @@ public final class RetroProvider {
         AuthenticationInterceptor interceptor = new AuthenticationInterceptor(authToken);
 
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+        // adds "Accept-Encoding: gzip" by default
         httpClient.addInterceptor(interceptor);
         for (Interceptor additionalInterceptor : additionalInterceptors) {
             httpClient.addInterceptor(additionalInterceptor);

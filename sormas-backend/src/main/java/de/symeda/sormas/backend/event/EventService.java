@@ -84,6 +84,7 @@ public class EventService extends AbstractAdoService<Event> {
 	/**
 	 * @see /sormas-backend/doc/UserDataAccess.md
 	 */
+	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, From<Event,Event> eventPath, User user) {
 
 		// whoever created the event or is assigned to it is allowed to access it

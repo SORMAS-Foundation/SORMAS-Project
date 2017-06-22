@@ -50,6 +50,18 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 	}
 	
 	@Override
+	public List<String> getAllUuids(String userUuid) {
+		
+		User user = userService.getByUuid(userUuid);
+		
+		if (user == null) {
+			return Collections.emptyList();
+		}
+		
+		return eventParticipantService.getAllUuids(user);
+	}	
+	
+	@Override
 	public List<EventParticipantDto> getAllEventParticipantsAfter(Date date, String userUuid) {
 		
 		User user = userService.getByUuid(userUuid);

@@ -8,9 +8,9 @@ import javax.ejb.Stateless;
 import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
@@ -91,7 +91,8 @@ public class CaseService extends AbstractAdoService<Case> {
 		List<Case> resultList = em.createQuery(cq).getResultList();
 		return resultList;
 	}
-	
+
+
 	public List<Case> getAllByDiseaseAfter(Date date, Disease disease, User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Case> cq = cb.createQuery(getElementClass());
@@ -162,11 +163,11 @@ public class CaseService extends AbstractAdoService<Case> {
 		List<Case> resultList = em.createQuery(cq).getResultList();
 		return resultList;
 	}
-	
+
 	/**
 	 * @see /sormas-backend/doc/UserDataAccess.md
 	 */
-	public Predicate createUserFilter(CriteriaBuilder cb, Path<Case> casePath, User user) {
+	public Predicate createUserFilter(CriteriaBuilder cb, From<Case,Case> casePath, User user) {
 		// whoever created the case or is assigned to it is allowed to access it
 		Predicate filter = cb.equal(casePath.get(Case.REPORTING_USER), user);
 		filter = cb.or(filter, cb.equal(casePath.get(Case.SURVEILLANCE_OFFICER), user));

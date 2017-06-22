@@ -96,6 +96,18 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 	
 	@Override
+	public List<String> getAllUuids(String userUuid) {
+		
+		User user = userService.getByUuid(userUuid);
+		
+		if (user == null) {
+			return Collections.emptyList();
+		}
+		
+		return caseService.getAllUuids(user);
+	}
+	
+	@Override
 	public List<CaseDataDto> getAllCasesByDiseaseAfter(Date date, Disease disease, String userUuid) {
 		User user = userService.getByUuid(userUuid);
 		

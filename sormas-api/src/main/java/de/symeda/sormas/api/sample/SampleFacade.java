@@ -24,4 +24,6 @@ public interface SampleFacade {
 	
 	SampleReferenceDto getReferenceByUuid(String uuid);
 
+	List<String> getAllUuids(String userUuid);
+
 }

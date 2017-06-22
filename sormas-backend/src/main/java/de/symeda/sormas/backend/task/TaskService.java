@@ -8,6 +8,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.From;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -60,7 +61,8 @@ public class TaskService extends AbstractAdoService<Task> {
 	/**
 	 * @see /sormas-backend/doc/UserDataAccess.md
 	 */
-	public Predicate createUserFilter(CriteriaBuilder cb, Root<Task> taskPath, User user) {
+	@Override
+	public Predicate createUserFilter(CriteriaBuilder cb, From<Task,Task> taskPath, User user) {
 		// whoever created the task or is assigned to it is allowed to access it
 		Predicate filter = cb.equal(taskPath.get(Task.CREATOR_USER), user);
 		filter = cb.or(filter, cb.equal(taskPath.get(Task.ASSIGNEE_USER), user));

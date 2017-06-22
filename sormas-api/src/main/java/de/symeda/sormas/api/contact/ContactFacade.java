@@ -27,4 +27,6 @@ public interface ContactFacade {
 	List<ContactReferenceDto> getSelectableContacts(UserReferenceDto user);
 
 	ContactReferenceDto getReferenceByUuid(String uuid);
+
+	List<String> getAllUuids(String userUuid);
 }

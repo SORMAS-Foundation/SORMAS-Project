@@ -50,10 +50,57 @@ public class PersonService extends AbstractAdoService<Person> {
 		return person;
 	}
 
+	@Override
+	public List<String> getAllUuids(User user) {
+		
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		
+		// persons by LGA
+		CriteriaQuery<String> lgaQuery = cb.createQuery(String.class);
+		Root<Person> lgaRoot = lgaQuery.from(Person.class);
+		Join<Person, Location> address = lgaRoot.join(Person.ADDRESS);
+		lgaQuery.select(lgaRoot.get(Person.UUID));
+		Predicate lgaFilter = cb.equal(address.get(Location.DISTRICT), user.getDistrict());
+		lgaQuery.where(lgaFilter);
+		List<String> lgaResultList = em.createQuery(lgaQuery).getResultList();
+		
+		// persons by case
+		CriteriaQuery<String> casePersonsQuery = cb.createQuery(String.class);
+		Root<Case> casePersonsRoot = casePersonsQuery.from(Case.class);
+		Join<Person, Person> casePersonsSelect = casePersonsRoot.join(Case.PERSON);
+		casePersonsQuery.select(casePersonsSelect.get(Person.UUID));
+		Predicate casePersonsFilter = caseService.createUserFilter(cb, casePersonsRoot, user);
+		casePersonsQuery.where(casePersonsFilter);
+		casePersonsQuery.distinct(true);
+		List<String> casePersonsResultList = em.createQuery(casePersonsQuery).getResultList();
+
+		// persons by contact
+		CriteriaQuery<String> contactPersonsQuery = cb.createQuery(String.class);
+		Root<Contact> contactPersonsRoot = contactPersonsQuery.from(Contact.class);
+		Join<Person, Person> contactPersonsSelect = contactPersonsRoot.join(Contact.PERSON);
+		contactPersonsQuery.select(contactPersonsSelect.get(Person.UUID));
+		Predicate contactPersonsFilter = contactService.createUserFilter(cb, contactPersonsRoot, user);
+		contactPersonsQuery.where(contactPersonsFilter);
+		contactPersonsQuery.distinct(true);
+		List<String> contactPersonsResultList = em.createQuery(contactPersonsQuery).getResultList();
+
+		// persons by event participant
+		CriteriaQuery<String> eventPersonsQuery = cb.createQuery(String.class);
+		Root<EventParticipant> eventPersonsRoot = eventPersonsQuery.from(EventParticipant.class);
+		Join<Person, Person> eventPersonsSelect = eventPersonsRoot.join(EventParticipant.PERSON);
+		eventPersonsQuery.select(eventPersonsSelect.get(Person.UUID));
+		Predicate eventPersonsFilter = eventParticipantService.createUserFilter(cb, eventPersonsRoot, user);
+		eventPersonsQuery.where(eventPersonsFilter);
+		eventPersonsQuery.distinct(true);
+		List<String> eventPersonsResultList = em.createQuery(eventPersonsQuery).getResultList();
+		
+		return Stream.of(lgaResultList, casePersonsResultList, contactPersonsResultList, eventPersonsResultList)
+				.flatMap(List<String>::stream)
+				.distinct()
+				.collect(Collectors.toList());
+	}
 	
 	public List<Person> getAllAfter(Date date, User user) {
-
-		// TODO get user from session?
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		
@@ -72,7 +119,6 @@ public class PersonService extends AbstractAdoService<Person> {
 			}
 		}
 		lgaQuery.where(lgaFilter);
-		lgaQuery.distinct(true);
 		List<Person> lgaResultList = em.createQuery(lgaQuery).getResultList();
 		
 		// persons by case
@@ -185,5 +231,10 @@ public class PersonService extends AbstractAdoService<Person> {
 		List<Person> casePersonsResultList = em.createQuery(casePersonsQuery).getResultList();
 		return casePersonsResultList;
 	}
-	
+
+	@Override
+	protected Predicate createUserFilter(CriteriaBuilder cb, From<Person, Person> from, User user) {
+		// getAllUuids and getAllAfter have custom implementations
+		throw new UnsupportedOperationException();
+	}
 }

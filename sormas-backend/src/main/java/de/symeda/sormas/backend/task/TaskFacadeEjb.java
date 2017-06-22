@@ -39,7 +39,7 @@ import de.symeda.sormas.backend.user.UserService;
 public class TaskFacadeEjb implements TaskFacade {
 	
 	@EJB
-	private TaskService service;
+	private TaskService taskService;
 	@EJB
 	private UserService userService;
 	@EJB
@@ -58,7 +58,7 @@ public class TaskFacadeEjb implements TaskFacade {
 			return null;
 		}
 		
-		Task target = service.getByUuid(source.getUuid());
+		Task target = taskService.getByUuid(source.getUuid());
 		if (target == null) {
 			target = new Task();
 			target.setUuid(source.getUuid());
@@ -155,7 +155,7 @@ public class TaskFacadeEjb implements TaskFacade {
 	@Override
 	public TaskDto saveTask(TaskDto dto) {
 		Task ado = fromDto(dto);
-		service.ensurePersisted(ado);
+		taskService.ensurePersisted(ado);
 		
 		// once we have to handle additional logic this should be moved to it's own function or even class 
 		if (ado.getTaskType() == TaskType.CASE_INVESTIGATION) {
@@ -166,6 +166,18 @@ public class TaskFacadeEjb implements TaskFacade {
 	}
 	
 	@Override
+	public List<String> getAllUuids(String userUuid) {
+		
+		User user = userService.getByUuid(userUuid);
+		
+		if (user == null) {
+			return Collections.emptyList();
+		}
+		
+		return taskService.getAllUuids(user);
+	}
+	
+	@Override
 	public List<TaskDto> getAllAfter(Date date, String userUuid) {
 		User user = userService.getByUuid(userUuid);
 		
@@ -173,7 +185,7 @@ public class TaskFacadeEjb implements TaskFacade {
 			return Collections.emptyList();
 		}
 		
-		return service.getAllAfter(date, user).stream()
+		return taskService.getAllAfter(date, user).stream()
 			.map(c -> toDto(c))
 			.collect(Collectors.toList());
 	}
@@ -186,7 +198,7 @@ public class TaskFacadeEjb implements TaskFacade {
 
 		Case caze = caseService.getByUuid(caseRef.getUuid());
 		
-		return service.findBy(new TaskCriteria().cazeEquals(caze))
+		return taskService.findBy(new TaskCriteria().cazeEquals(caze))
 				.stream()
 				.map(c -> toDto(c))
 				.collect(Collectors.toList());
@@ -200,7 +212,7 @@ public class TaskFacadeEjb implements TaskFacade {
 
 		Contact contact = contactService.getByUuid(contactRef.getUuid());
 		
-		return service.findBy(new TaskCriteria().contactEquals(contact))
+		return taskService.findBy(new TaskCriteria().contactEquals(contact))
 				.stream()
 				.map(c -> toDto(c))
 				.collect(Collectors.toList());
@@ -214,7 +226,7 @@ public class TaskFacadeEjb implements TaskFacade {
 
 		Event event = eventService.getByUuid(eventRef.getUuid());
 		
-		return service.findBy(new TaskCriteria().eventEquals(event))
+		return taskService.findBy(new TaskCriteria().eventEquals(event))
 				.stream()
 				.map(c -> toDto(c))
 				.collect(Collectors.toList());
@@ -232,7 +244,7 @@ public class TaskFacadeEjb implements TaskFacade {
 			return Collections.emptyList();
 		}
 		
-		return service.findBy(new TaskCriteria().cazeEquals(caze).taskStatusEquals(TaskStatus.PENDING))
+		return taskService.findBy(new TaskCriteria().cazeEquals(caze).taskStatusEquals(TaskStatus.PENDING))
 				.stream()
 				.map(c -> toDto(c))
 				.collect(Collectors.toList());
@@ -250,7 +262,7 @@ public class TaskFacadeEjb implements TaskFacade {
 			return Collections.emptyList();
 		}
 		
-		return service.findBy(new TaskCriteria().contactEquals(contact).taskStatusEquals(TaskStatus.PENDING))
+		return taskService.findBy(new TaskCriteria().contactEquals(contact).taskStatusEquals(TaskStatus.PENDING))
 				.stream()
 				.map(c -> toDto(c))
 				.collect(Collectors.toList());
@@ -268,7 +280,7 @@ public class TaskFacadeEjb implements TaskFacade {
 			return 0;
 		}
 		
-		return service.getCount(new TaskCriteria().cazeEquals(caze).taskStatusEquals(TaskStatus.PENDING));
+		return taskService.getCount(new TaskCriteria().cazeEquals(caze).taskStatusEquals(TaskStatus.PENDING));
 	}
 	
 	@Override
@@ -283,7 +295,7 @@ public class TaskFacadeEjb implements TaskFacade {
 			return 0;
 		}
 		
-		return service.getCount(new TaskCriteria().contactEquals(contact).taskStatusEquals(TaskStatus.PENDING));
+		return taskService.getCount(new TaskCriteria().contactEquals(contact).taskStatusEquals(TaskStatus.PENDING));
 	}
 	
 	@Override
@@ -298,19 +310,19 @@ public class TaskFacadeEjb implements TaskFacade {
 			return 0;
 		}
 		
-		return service.getCount(new TaskCriteria().eventEquals(event).taskStatusEquals(TaskStatus.PENDING));
+		return taskService.getCount(new TaskCriteria().eventEquals(event).taskStatusEquals(TaskStatus.PENDING));
 	}
 	
 	@Override
 	public long getPendingTaskCount(String userUuid) {
 		// TODO cache...
 		User user = userService.getByUuid(userUuid);
-		return service.getCount(new TaskCriteria().taskStatusEquals(TaskStatus.PENDING).assigneeUserEquals(user));
+		return taskService.getCount(new TaskCriteria().taskStatusEquals(TaskStatus.PENDING).assigneeUserEquals(user));
 	}
 
 	@Override
 	public TaskDto getByUuid(String uuid) {
-		return toDto(service.getByUuid(uuid));
+		return toDto(taskService.getByUuid(uuid));
 	}
 }
 

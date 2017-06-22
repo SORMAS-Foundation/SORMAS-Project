@@ -8,6 +8,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.From;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -73,10 +74,13 @@ public class SampleService extends AbstractAdoService<Sample> {
 	/**
 	 * @see /sormas-backend/doc/UserDataAccess.md
 	 */
-	public Predicate createUserFilter(CriteriaBuilder cb, Path<Sample> samplePath, User user) {
+	@Override
+	public Predicate createUserFilter(CriteriaBuilder cb, From<Sample,Sample> samplePath, User user) {
 		// whoever created the case the sample is associated with or is assigned to it
 		// is allowed to access it
-		Predicate filter = caseService.createUserFilter(cb, samplePath.get(Sample.ASSOCIATED_CASE), user);
+		Path<Case> casePath = samplePath.get(Sample.ASSOCIATED_CASE);
+		@SuppressWarnings("unchecked")
+		Predicate filter = caseService.createUserFilter(cb, (From<Case,Case>)casePath, user);
 		
 		// whoever created the sample is allowed to access it
 		filter = cb.or(filter, cb.equal(samplePath.get(Sample.REPORTING_USER), user));

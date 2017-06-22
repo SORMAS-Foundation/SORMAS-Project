@@ -33,6 +33,18 @@ public class SampleTestFacadeEjb implements SampleTestFacade {
 	private UserService userService;
 	
 	@Override
+	public List<String> getAllUuids(String userUuid) {
+		
+		User user = userService.getByUuid(userUuid);
+		
+		if (user == null) {
+			return Collections.emptyList();
+		}
+		
+		return sampleTestService.getAllUuids(user);
+	}	
+	
+	@Override
 	public List<SampleTestDto> getAllSampleTestsAfter(Date date, String userUuid) {
 		User user = userService.getByUuid(userUuid);
 		

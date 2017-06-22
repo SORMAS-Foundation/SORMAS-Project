@@ -30,4 +30,6 @@ public interface CaseFacade {
 	CaseReferenceDto getReferenceByUuid(String uuid);
 	
 	CaseDataDto getByPersonAndDisease(String personUuid, Disease disease, String userUuid);
+
+	List<String> getAllUuids(String userUuid);
 }

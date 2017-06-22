@@ -13,11 +13,14 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.From;
 import javax.persistence.criteria.ParameterExpression;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.backend.user.Permission;
+import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.ModelConstants;
 
 /**
@@ -71,6 +74,27 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 
 		return em.createQuery(cq).getResultList();
 	}
+	
+	
+	public List<String> getAllUuids(User user) {
+		
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<ADO> from = cq.from(getElementClass());
+
+		Predicate filter = createUserFilter(cb, from, user);
+		if (filter != null) {
+			cq.where(filter);
+		}
+		
+		cq.select(from.get(AbstractDomainObject.UUID));
+		return em.createQuery(cq).getResultList();
+	}
+
+	/**
+	 * Used by most getAll* and getAllUuids methods to filter by user 
+	 */
+	protected abstract Predicate createUserFilter(CriteriaBuilder cb, From<ADO,ADO> from, User user);
 
 	@Override
 	public ADO getById(long id) {

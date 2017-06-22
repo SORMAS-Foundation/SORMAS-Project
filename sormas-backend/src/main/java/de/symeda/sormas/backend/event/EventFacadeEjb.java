@@ -36,6 +36,18 @@ public class EventFacadeEjb implements EventFacade {
 	private LocationFacadeEjbLocal locationFacade;
 	
 	@Override
+	public List<String> getAllUuids(String userUuid) {
+		
+		User user = userService.getByUuid(userUuid);
+		
+		if (user == null) {
+			return Collections.emptyList();
+		}
+		
+		return eventService.getAllUuids(user);
+	}	
+	
+	@Override
 	public List<EventDto> getAllEventsAfter(Date date, String userUuid) {
 		User user = userService.getByUuid(userUuid);
 		

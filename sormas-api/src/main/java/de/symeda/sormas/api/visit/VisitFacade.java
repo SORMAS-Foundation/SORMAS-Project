@@ -22,4 +22,6 @@ public interface VisitFacade {
 	List<VisitDto> getAllByPerson(PersonReferenceDto personRef);
 
 	List<VisitDto> getAllByContact(ContactReferenceDto contactRef);
+
+	List<String> getAllUuids(String userUuid);
 }

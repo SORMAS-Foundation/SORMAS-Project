@@ -57,4 +57,13 @@ public class ContactResource {
 		// -1 tells the device to pull again
 		return contactModified ? -1L : new Date().getTime();
 	}
+	
+	@GET
+	@Path("/uuids")
+	public List<String> getAllUuids(@Context SecurityContext sc) {
+		
+		UserReferenceDto userDto = FacadeProvider.getUserFacade().getByUserNameAsReference(sc.getUserPrincipal().getName());
+		List<String> uuids = FacadeProvider.getContactFacade().getAllUuids(userDto.getUuid());
+		return uuids;
+	}
 }

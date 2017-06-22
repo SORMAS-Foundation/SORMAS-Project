@@ -35,7 +35,7 @@ import de.symeda.sormas.backend.util.DtoHelper;
 public class PersonFacadeEjb implements PersonFacade {
 	
 	@EJB
-	private PersonService service;
+	private PersonService personService;
 	@EJB
 	private FacilityService facilityService;
 	@EJB
@@ -47,6 +47,18 @@ public class PersonFacadeEjb implements PersonFacade {
 
 	
 	@Override
+	public List<String> getAllUuids(String userUuid) {
+		
+		User user = userService.getByUuid(userUuid);
+		
+		if (user == null) {
+			return Collections.emptyList();
+		}
+		
+		return personService.getAllUuids(user);
+	}
+	
+	@Override
 	public List<PersonReferenceDto> getAllPersons(UserReferenceDto userRef) {
 
 		User user = userService.getByReferenceDto(userRef);
@@ -54,7 +66,7 @@ public class PersonFacadeEjb implements PersonFacade {
 			return Collections.emptyList();
 		}
 
-		return service.getAllAfter(null, user).stream()
+		return personService.getAllAfter(null, user).stream()
 			.map(c -> toReferenceDto(c))
 			.collect(Collectors.toList());
 	}
@@ -67,7 +79,7 @@ public class PersonFacadeEjb implements PersonFacade {
 			return Collections.emptyList();
 		}
 
-		return service.getAllAfter(null, user).stream()
+		return personService.getAllAfter(null, user).stream()
 			.map(c -> toIndexDto(c))
 			.collect(Collectors.toList());
 	}
@@ -80,7 +92,7 @@ public class PersonFacadeEjb implements PersonFacade {
 			return Collections.emptyList();
 		}
 		
-		return service.getAllAfter(date, user).stream()
+		return personService.getAllAfter(date, user).stream()
 			.map(c -> toReferenceDto(c))
 			.collect(Collectors.toList());
 	}
@@ -93,7 +105,7 @@ public class PersonFacadeEjb implements PersonFacade {
 			return Collections.emptyList();
 		}
 		
-		List<PersonDto> result = service.getAllAfter(date, user).stream()
+		List<PersonDto> result = personService.getAllAfter(date, user).stream()
 			.map(c -> toDto(c))
 			.collect(Collectors.toList());
 		return result;
@@ -106,7 +118,7 @@ public class PersonFacadeEjb implements PersonFacade {
 			return Collections.emptyList();
 		}
 		
-		List<PersonDto> result = service.getDeathsBetween(fromDate, toDate, disease, user).stream()
+		List<PersonDto> result = personService.getDeathsBetween(fromDate, toDate, disease, user).stream()
 				.map(c -> toDto(c))
 				.collect(Collectors.toList());
 		return result;
@@ -115,7 +127,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	@Override
 	public PersonReferenceDto getReferenceByUuid(String uuid) {
 		return Optional.of(uuid)
-				.map(u -> service.getByUuid(u))
+				.map(u -> personService.getByUuid(u))
 				.map(c -> toReferenceDto(c))
 				.orElse(null);
 	}
@@ -123,7 +135,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	@Override
 	public PersonDto getPersonByUuid(String uuid) {
 		return Optional.of(uuid)
-				.map(u -> service.getByUuid(u))
+				.map(u -> personService.getByUuid(u))
 				.map(c -> toDto(c))
 				.orElse(null);
 	}
@@ -131,14 +143,14 @@ public class PersonFacadeEjb implements PersonFacade {
 	@Override
 	public PersonReferenceDto savePerson(PersonReferenceDto dto) {
 		Person person = fromDto(dto);
-		service.ensurePersisted(person);
+		personService.ensurePersisted(person);
 		return toReferenceDto(person);
 	}
 	
 	@Override
 	public PersonDto savePerson(PersonDto dto) {
 		Person person = fromDto(dto);
-		service.ensurePersisted(person);
+		personService.ensurePersisted(person);
 		
 		return toDto(person);
 		
@@ -146,9 +158,9 @@ public class PersonFacadeEjb implements PersonFacade {
 	
 	public Person fromDto(@NotNull PersonReferenceDto source) {
 		
-		Person target = service.getByUuid(source.getUuid());
+		Person target = personService.getByUuid(source.getUuid());
 		if(target==null) {
-			target = service.createPerson();
+			target = personService.createPerson();
 			if (source.getCreationDate() != null) {
 				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
 			}
@@ -163,9 +175,9 @@ public class PersonFacadeEjb implements PersonFacade {
 	
 	public Person fromDto(@NotNull PersonDto source) {
 		
-		Person target = service.getByUuid(source.getUuid());
+		Person target = personService.getByUuid(source.getUuid());
 		if(target==null) {
-			target = service.createPerson();
+			target = personService.createPerson();
 			target.setUuid(source.getUuid());
 			if (source.getCreationDate() != null) {
 				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));

@@ -8,6 +8,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.From;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
@@ -31,12 +32,33 @@ public class VisitService extends AbstractAdoService<Visit> {
 		super(Visit.class);
 	}
 	
+	@Override
+	public List<String> getAllUuids(User user) {
+		
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> visitsQuery = cb.createQuery(String.class);
+		Root<Visit> visitRoot = visitsQuery.from(Visit.class);
+		visitsQuery.select(visitRoot.get(Visit.UUID));
+
+		// get all visits of the user's contact's persons
+		Subquery<Integer> contactPersonSubquery = visitsQuery.subquery(Integer.class);
+		Root<Contact> contactRoot = contactPersonSubquery.from(Contact.class);
+		contactPersonSubquery.where(contactService.createUserFilter(cb, contactRoot, user));
+		contactPersonSubquery.select(contactRoot.get(Contact.PERSON).get(Person.ID));
+		
+		Predicate filter = cb.in(visitRoot.get(Visit.PERSON).get(Person.ID)).value(contactPersonSubquery);
+		visitsQuery.where(filter);
+		visitsQuery.distinct(true);
+		visitsQuery.orderBy(cb.asc(visitRoot.get(AbstractDomainObject.ID)));
+		
+		List<String> resultList = em.createQuery(visitsQuery).getResultList();
+		return resultList;	
+	}
+	
 	/**
 	 * @see /sormas-backend/doc/UserDataAccess.md
 	 */
 	public List<Visit> getAllAfter(Date date, User user) {
-
-		// TODO get user from session?
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Visit> visitsQuery = cb.createQuery(getElementClass());
@@ -116,5 +138,11 @@ public class VisitService extends AbstractAdoService<Visit> {
 
 		List<Visit> resultList = em.createQuery(cq).getResultList();
 		return resultList;
+	}
+	
+	@Override
+	protected Predicate createUserFilter(CriteriaBuilder cb, From<Visit, Visit> from, User user) {
+		// getAllUuids and getAllAfter have custom implementations
+		throw new UnsupportedOperationException();
 	}
 }

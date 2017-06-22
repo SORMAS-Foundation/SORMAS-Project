@@ -45,4 +45,13 @@ public class SampleTestResource {
 		return new Date().getTime();
 	}
 
+	
+	@GET
+	@Path("/uuids")
+	public List<String> getAllUuids(@Context SecurityContext sc) {
+		
+		UserReferenceDto userDto = FacadeProvider.getUserFacade().getByUserNameAsReference(sc.getUserPrincipal().getName());
+		List<String> uuids = FacadeProvider.getSampleTestFacade().getAllUuids(userDto.getUuid());
+		return uuids;
+	}
 }

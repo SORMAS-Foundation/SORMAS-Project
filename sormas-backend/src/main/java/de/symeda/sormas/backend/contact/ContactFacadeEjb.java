@@ -39,7 +39,7 @@ import de.symeda.sormas.backend.visit.VisitService;
 public class ContactFacadeEjb implements ContactFacade {
 	
 	@EJB
-	private ContactService service;	
+	private ContactService contactService;	
 	@EJB
 	private CaseService caseService;
 	@EJB
@@ -49,6 +49,17 @@ public class ContactFacadeEjb implements ContactFacade {
 	@EJB
 	private VisitService visitService;
 
+	@Override
+	public List<String> getAllUuids(String userUuid) {
+		
+		User user = userService.getByUuid(userUuid);
+		
+		if (user == null) {
+			return Collections.emptyList();
+		}
+		
+		return contactService.getAllUuids(user);
+	}	
 	
 	@Override
 	public List<ContactDto> getAllContactsAfter(Date date, String userUuid) {
@@ -59,7 +70,7 @@ public class ContactFacadeEjb implements ContactFacade {
 			return Collections.emptyList();
 		}
 		
-		return service.getAllAfter(date, user).stream()
+		return contactService.getAllAfter(date, user).stream()
 			.map(c -> toDto(c))
 			.collect(Collectors.toList());
 	}
@@ -72,7 +83,7 @@ public class ContactFacadeEjb implements ContactFacade {
 			return Collections.emptyList();
 		}
 		
-		return service.getFollowUpBetween(fromDate, toDate, disease, user).stream()
+		return contactService.getFollowUpBetween(fromDate, toDate, disease, user).stream()
 				.map(c -> toDto(c))
 				.collect(Collectors.toList());
 	}
@@ -86,7 +97,7 @@ public class ContactFacadeEjb implements ContactFacade {
 			return Collections.emptyList();
 		}
 		
-		return service.getAllAfter(null, user).stream()
+		return contactService.getAllAfter(null, user).stream()
 			.map(c -> toIndexDto(c))
 			.collect(Collectors.toList());
 	}
@@ -96,7 +107,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		
 		Case caze = caseService.getByReferenceDto(caseRef);
 		
-		return service.getAllByCase(caze).stream()
+		return contactService.getAllByCase(caze).stream()
 			.map(c -> toIndexDto(c))
 			.collect(Collectors.toList());
 	}
@@ -104,33 +115,33 @@ public class ContactFacadeEjb implements ContactFacade {
 
 	@Override
 	public ContactDto getContactByUuid(String uuid) {
-		return toDto(service.getByUuid(uuid));
+		return toDto(contactService.getByUuid(uuid));
 	}
 	
 	@Override
 	public ContactReferenceDto getReferenceByUuid(String uuid) {
-		return toReferenceDto(service.getByUuid(uuid));
+		return toReferenceDto(contactService.getByUuid(uuid));
 	}
 	
 	@Override
 	public ContactDto saveContact(ContactDto dto) {
 		Contact entity = fromDto(dto);
 		updateFollowUpUntil(entity);
-		service.ensurePersisted(entity);
+		contactService.ensurePersisted(entity);
 		return toDto(entity);
 	}
 	
 	@Override
 	public List<ContactReferenceDto> getSelectableContacts(UserReferenceDto userRef) {
 		User user = userService.getByReferenceDto(userRef);
-		return service.getAllAfter(null, user).stream()
+		return contactService.getAllAfter(null, user).stream()
 				.map(c -> toReferenceDto(c))
 				.collect(Collectors.toList());
 	}
 
 	public Contact fromDto(@NotNull ContactDto source) {
 		
-		Contact target = service.getByUuid(source.getUuid());
+		Contact target = contactService.getByUuid(source.getUuid());
 		if (target == null) {
 			target = new Contact();
 			target.setUuid(source.getUuid());

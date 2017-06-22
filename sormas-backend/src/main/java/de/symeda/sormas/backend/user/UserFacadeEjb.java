@@ -33,7 +33,7 @@ import de.symeda.sormas.backend.util.DtoHelper;
 public class UserFacadeEjb implements UserFacade {
 	
 	@EJB
-	private UserService service;
+	private UserService userService;
 	@EJB
 	private LocationFacadeEjbLocal locationFacade;
 	@EJB
@@ -50,11 +50,23 @@ public class UserFacadeEjb implements UserFacade {
 	private EventService eventService;
 
 	@Override
+	public List<String> getAllUuids(String userUuid) {
+		
+		User user = userService.getByUuid(userUuid);
+		
+		if (user == null) {
+			return Collections.emptyList();
+		}
+		
+		return userService.getAllUuids(user);
+	}	
+	
+	@Override
 	public List<UserReferenceDto> getAssignableUsers(UserReferenceDto assigningUser, UserRole ...assignableRoles) {
-		User user = service.getByReferenceDto(assigningUser);
+		User user = userService.getByReferenceDto(assigningUser);
 		
 		if (user != null && user.getRegion() != null) {
-			return service.getAllByRegionAndUserRoles(user.getRegion(), assignableRoles).stream()
+			return userService.getAllByRegionAndUserRoles(user.getRegion(), assignableRoles).stream()
 					.map(f -> toReferenceDto(f))
 					.collect(Collectors.toList());
 		}
@@ -66,7 +78,7 @@ public class UserFacadeEjb implements UserFacade {
 	public List<UserReferenceDto> getAssignableUsersByDistrict(DistrictReferenceDto districtRef, boolean includeSupervisors, UserRole ...assignableRoles) {
 		District district = districtService.getByReferenceDto(districtRef);
 		
-		return service.getAllByDistrict(district, includeSupervisors, assignableRoles).stream()
+		return userService.getAllByDistrict(district, includeSupervisors, assignableRoles).stream()
 				.map(f -> toReferenceDto(f))
 				.collect(Collectors.toList());
 	}
@@ -76,45 +88,45 @@ public class UserFacadeEjb implements UserFacade {
 		
 		//TODO user region of the current user
 		
-		return service.getAllByRegionAndUserRoles(null, roles).stream()
+		return userService.getAllByRegionAndUserRoles(null, roles).stream()
 				.map(f -> toDto(f))
 				.collect(Collectors.toList());
 	}
 	
 	@Override
 	public List<UserDto> getAllAfter(Date date) {
-		return service.getAllAfter(date).stream()
+		return userService.getAllAfter(date).stream()
 			.map(c -> toDto(c))
 			.collect(Collectors.toList());
 	}
 	
 	@Override
 	public List<UserReferenceDto> getAllAfterAsReference(Date date) {
-		return service.getAllAfter(date).stream()
+		return userService.getAllAfter(date).stream()
 			.map(c -> toReferenceDto(c))
 			.collect(Collectors.toList());
 	}
 
 	@Override
 	public UserDto getByUuid(String uuid) {
-		return toDto(service.getByUuid(uuid));
+		return toDto(userService.getByUuid(uuid));
 	}
 	
 	@Override
 	public UserDto getByUserName(String userName) {
-		return toDto(service.getByUserName(userName));
+		return toDto(userService.getByUserName(userName));
 	}
 	
 	@Override
 	public UserReferenceDto getByUserNameAsReference(String userName) {
-		return toReferenceDto(service.getByUserName(userName));
+		return toReferenceDto(userService.getByUserName(userName));
 	}
 
 	@Override
 	public UserDto saveUser(UserDto dto) {
 		User user = fromDto(dto);
 		
-		service.ensurePersisted(user);
+		userService.ensurePersisted(user);
 		
 		return toDto(user);
 	}
@@ -153,9 +165,9 @@ public class UserFacadeEjb implements UserFacade {
 	
 	private User fromDto(UserDto source) {
 		
-		User target = service.getByUuid(source.getUuid());
+		User target = userService.getByUuid(source.getUuid());
 		if (target==null) {
-			target = service.createUser();
+			target = userService.createUser();
 			target.setUuid(source.getUuid());
 			if (source.getCreationDate() != null) {
 				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
@@ -175,7 +187,7 @@ public class UserFacadeEjb implements UserFacade {
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
 		target.setHealthFacility(facilityService.getByReferenceDto(source.getHealthFacility()));
-		target.setAssociatedOfficer(service.getByReferenceDto(source.getAssociatedOfficer()));
+		target.setAssociatedOfficer(userService.getByReferenceDto(source.getAssociatedOfficer()));
 		target.setLaboratory(facilityService.getByReferenceDto(source.getLaboratory()));
 
 		target.setUserRoles(source.getUserRoles());
@@ -185,13 +197,13 @@ public class UserFacadeEjb implements UserFacade {
 	
 	@Override
 	public boolean isLoginUnique(String uuid, String userName) {
-		return service.isLoginUnique(uuid, userName);
+		return userService.isLoginUnique(uuid, userName);
 	}
 
 
 	@Override
 	public String resetPassword(String uuid) {
-		return service.resetPassword(uuid);
+		return userService.resetPassword(uuid);
 	}
 	
 	@LocalBean

@@ -8,6 +8,7 @@ import javax.ejb.Stateless;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.ParameterExpression;
@@ -155,6 +156,12 @@ public class UserService extends AbstractAdoService<User> {
 		user.setPassword(PasswordHelper.encodePassword(password, user.getSeed()));
 
 		return password;
+	}
+
+	@Override
+	protected Predicate createUserFilter(CriteriaBuilder cb, From<User, User> from, User user) {
+		// a user can read all other users
+		return null;
 	}
 	
 }
