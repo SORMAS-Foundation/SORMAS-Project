@@ -13,14 +13,17 @@ import org.junit.runners.MethodSorters;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.epidata.EpiData;
+import de.symeda.sormas.app.backend.epidata.EpiDataBurial;
 import de.symeda.sormas.app.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 
+import static junit.framework.Assert.assertEquals;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -180,6 +183,23 @@ public class CaseBackendTest {
         // Snapshot should be removed and entity should not be modified after accepting
         assertNull(DatabaseHelper.getCaseDao().querySnapshotByUuid(caze.getUuid()));
         assertThat(caze.isModified(), is(false));
+    }
+
+    @Test
+    public void shouldUpdateUnreadStatus() throws DaoException {
+        CaseDao caseDao = DatabaseHelper.getCaseDao();
+        Case caze = TestEntityCreator.createCase();
+        EpiDataBurial burial = TestEntityCreator.createEpiDataBurial(caze);
+
+        // Newly created case should be unread
+        assertThat(caze.isUnreadOrChildUnread(), is(true));
+        caseDao.markAsRead(caze);
+        DatabaseHelper.getPersonDao().markAsRead(caze.getPerson());
+        // Case shouldn't be marked as unread after markAsRead has been called
+        assertThat(caze.isUnreadOrChildUnread(), is(false));
+        // UUID of embedded object should still be the same
+        EpiDataBurial burialFromDB = DatabaseHelper.getEpiDataBurialDao().queryUuid(burial.getUuid());
+        assertEquals(burial.getUuid(), burialFromDB.getUuid());
     }
 
 }

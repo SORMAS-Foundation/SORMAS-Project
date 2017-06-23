@@ -19,6 +19,7 @@
     <string name="action_drop_data">Drop data</string>
     <string name="action_open_syncLog">Synchronization conflicts</string>
     <string name="action_reload">Refresh</string>
+    <string name="action_markAllAsRead">Mark All As Read</string>
     <string name="action_save">Save</string>
     <string name="action_clear">Clear</string>
     <string name="action_dimiss">Dismiss</string>

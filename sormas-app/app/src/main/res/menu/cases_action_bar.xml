@@ -21,6 +21,11 @@
                 android:title="@string/action_reload"
                 app:showAsAction="always|withText"/>
             <item
+                android:id="@+id/action_markAllAsRead"
+                android:icon="@drawable/ic_check_circle_black_24dp"
+                android:title="@string/action_markAllAsRead"
+                app:showAsAction="always|withText"/>
+            <item
                 android:id="@+id/action_report"
                 android:icon="@drawable/ic_report_black_24dp"
                 android:title="@string/action_report"

@@ -243,8 +243,10 @@ public abstract class AbstractDomainObject extends BaseObservable implements Ser
 	public void setLastOpenedDate(Date lastOpenedDate) {
 		this.lastOpenedDate = lastOpenedDate;
 	}
+
 	@Override
 	public String toString() {
 		return I18nProperties.getFieldCaption(getI18nPrefix());
 	}
+
 }

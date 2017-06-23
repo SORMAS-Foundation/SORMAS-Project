@@ -3,7 +3,9 @@ package de.symeda.sormas.app.caze;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.NavUtils;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
@@ -17,6 +19,7 @@ import android.widget.LinearLayout;
 import com.google.android.gms.analytics.Tracker;
 
 import java.util.Date;
+import java.util.List;
 
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
@@ -25,20 +28,29 @@ import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.contact.Contact;
+import de.symeda.sormas.app.backend.contact.ContactDao;
 import de.symeda.sormas.app.backend.epidata.EpiData;
 import de.symeda.sormas.app.backend.epidata.EpiDataDao;
 import de.symeda.sormas.app.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.app.backend.location.LocationDao;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDao;
+import de.symeda.sormas.app.backend.sample.Sample;
+import de.symeda.sormas.app.backend.sample.SampleDao;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.AbstractEditTabActivity;
+import de.symeda.sormas.app.backend.task.Task;
+import de.symeda.sormas.app.backend.task.TaskDao;
 import de.symeda.sormas.app.component.HelpDialog;
 import de.symeda.sormas.app.component.UserReportDialog;
 import de.symeda.sormas.app.contact.ContactNewActivity;
+import de.symeda.sormas.app.contact.ContactsListFragment;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.sample.SampleEditActivity;
+import de.symeda.sormas.app.sample.SamplesListFragment;
 import de.symeda.sormas.app.task.TaskForm;
+import de.symeda.sormas.app.task.TasksListFragment;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.SyncCallback;
 import de.symeda.sormas.app.util.ValidationFailedException;
@@ -130,35 +142,35 @@ public class CaseEditActivity extends AbstractEditTabActivity {
         CaseEditTabs tab = CaseEditTabs.values()[currentTab];
         switch (tab) {
             case CASE_DATA:
-                updateActionBarGroups(menu, false, true, false, true);
+                updateActionBarGroups(menu, false, false, true, false, true);
                 break;
 
             case PATIENT:
-                updateActionBarGroups(menu, false, true, false, true);
+                updateActionBarGroups(menu, false, false, true, false, true);
                 break;
 
             case SYMPTOMS:
-                updateActionBarGroups(menu, true, true, false, true);
+                updateActionBarGroups(menu, true, false, true, false, true);
                 break;
 
             case CONTACTS:
-                updateActionBarGroups(menu, false, true, true, false);
+                updateActionBarGroups(menu, false, true, true, true, false);
                 break;
 
             case TASKS:
-                updateActionBarGroups(menu, false, true, false, false);
+                updateActionBarGroups(menu, false, true, true, false, false);
                 break;
 
             case SAMPLES:
-                updateActionBarGroups(menu, false, true, true, false);
+                updateActionBarGroups(menu, false, true, true, true, false);
                 break;
 
             case HOSPITALIZATION:
-                updateActionBarGroups(menu, false, true, false, true);
+                updateActionBarGroups(menu, false, false, true, false, true);
                 break;
 
             case EPIDATA:
-                updateActionBarGroups(menu, false, true, false, true);
+                updateActionBarGroups(menu, false, false, true, false, true);
                 break;
         }
 
@@ -170,6 +182,7 @@ public class CaseEditActivity extends AbstractEditTabActivity {
         setCurrentTab(pager.getCurrentItem());
         CaseEditTabs tab = CaseEditTabs.values()[currentTab];
         Case caze = (Case) adapter.getData(CaseEditTabs.CASE_DATA.ordinal());
+        CaseDao caseDao = DatabaseHelper.getCaseDao();
         switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button
             case android.R.id.home:
@@ -196,6 +209,52 @@ public class CaseEditActivity extends AbstractEditTabActivity {
 
                 return true;
 
+            case R.id.action_markAllAsRead:
+                switch (tab) {
+                    case CONTACTS:
+                        ContactDao contactDao = DatabaseHelper.getContactDao();
+                        PersonDao personDao = DatabaseHelper.getPersonDao();
+                        List<Contact> contacts = contactDao.getByCase(caze);
+                        for (Contact contactToMark : contacts) {
+                            contactDao.markAsRead(contactToMark);
+                            personDao.markAsRead(contactToMark.getPerson());
+                        }
+
+                        for (Fragment fragment : getSupportFragmentManager().getFragments()) {
+                            if (fragment instanceof ContactsListFragment) {
+                                fragment.onResume();
+                            }
+                        }
+                        break;
+                    case SAMPLES:
+                        SampleDao sampleDao = DatabaseHelper.getSampleDao();
+                        List<Sample> samples = sampleDao.queryByCase(caze);
+                        for (Sample sampleToMark : samples) {
+                            sampleDao.markAsRead(sampleToMark);
+                        }
+
+                        for (Fragment fragment : getSupportFragmentManager().getFragments()) {
+                            if (fragment instanceof SamplesListFragment) {
+                                fragment.onResume();
+                            }
+                        }
+                        break;
+                    case TASKS:
+                        TaskDao taskDao = DatabaseHelper.getTaskDao();
+                        List<Task> tasks = taskDao.queryByCase(caze);
+                        for (Task taskToMark : tasks) {
+                            taskDao.markAsRead(taskToMark);
+                        }
+
+                        for (Fragment fragment : getSupportFragmentManager().getFragments()) {
+                            if (fragment instanceof TasksListFragment) {
+                                fragment.onResume();
+                            }
+                        }
+                        break;
+                }
+                return true;
+
             // Report problem button
             case R.id.action_report:
                 UserReportDialog userReportDialog = new UserReportDialog(this, this.getClass().getSimpleName() + ":" + tab.toString(), caze.getUuid());
@@ -206,8 +265,6 @@ public class CaseEditActivity extends AbstractEditTabActivity {
 
             // Save button
             case R.id.action_save:
-                CaseDao caseDao = DatabaseHelper.getCaseDao();
-
                 // PATIENT
                 LocationDao locLocationDao = DatabaseHelper.getLocationDao();
                 PersonDao personDao = DatabaseHelper.getPersonDao();

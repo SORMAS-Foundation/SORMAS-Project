@@ -3,13 +3,20 @@ package de.symeda.sormas.app.caze;
 import android.app.AlertDialog;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import java.util.List;
+
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.AbstractRootTabActivity;
+import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.caze.CaseDao;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.component.UserReportDialog;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.util.SyncCallback;
@@ -66,6 +73,22 @@ public class CasesActivity extends AbstractRootTabActivity {
                     });
                 } else {
                     Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_no_connection, Snackbar.LENGTH_LONG).show();
+                }
+                return true;
+
+            case R.id.action_markAllAsRead:
+                CaseDao caseDao = DatabaseHelper.getCaseDao();
+                PersonDao personDao = DatabaseHelper.getPersonDao();
+                List<Case> cases = caseDao.queryForAll();
+                for (Case caseToMark : cases) {
+                    caseDao.markAsRead(caseToMark);
+                    personDao.markAsRead(caseToMark.getPerson());
+                }
+
+                for (Fragment fragment : getSupportFragmentManager().getFragments()) {
+                    if (fragment instanceof CasesListFragment) {
+                        fragment.onResume();
+                    }
                 }
                 return true;
 

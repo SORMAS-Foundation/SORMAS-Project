@@ -98,11 +98,11 @@ public class VisitEditActivity extends AbstractEditTabActivity {
         VisitEditTabs tab = VisitEditTabs.values()[currentTab];
         switch(tab) {
             case VISIT_DATA:
-                updateActionBarGroups(menu, false, true, false, true);
+                updateActionBarGroups(menu, false, false, true, false, true);
                 break;
 
             case SYMPTOMS:
-                updateActionBarGroups(menu, true, true, false, true);
+                updateActionBarGroups(menu, true, false, true, false, true);
                 break;
 
         }

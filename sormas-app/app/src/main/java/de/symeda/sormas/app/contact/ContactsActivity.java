@@ -3,13 +3,20 @@ package de.symeda.sormas.app.contact;
 import android.app.AlertDialog;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import java.util.List;
+
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.AbstractRootTabActivity;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.contact.Contact;
+import de.symeda.sormas.app.backend.contact.ContactDao;
+import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.component.UserReportDialog;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.util.SyncCallback;
@@ -66,6 +73,23 @@ public class ContactsActivity extends AbstractRootTabActivity {
                     });
                 } else {
                     Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_no_connection, Snackbar.LENGTH_LONG).show();
+                }
+                return true;
+
+
+            case R.id.action_markAllAsRead:
+                ContactDao contactDao = DatabaseHelper.getContactDao();
+                PersonDao personDao = DatabaseHelper.getPersonDao();
+                List<Contact> contacts = contactDao.queryForAll();
+                for (Contact contactToMark : contacts) {
+                    contactDao.markAsRead(contactToMark);
+                    personDao.markAsRead(contactToMark.getPerson());
+                }
+
+                for (Fragment fragment : getSupportFragmentManager().getFragments()) {
+                    if (fragment instanceof ContactsListFragment) {
+                        fragment.onResume();
+                    }
                 }
                 return true;
 

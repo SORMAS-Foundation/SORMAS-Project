@@ -4,14 +4,20 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import java.util.List;
+
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.AbstractRootTabActivity;
+import de.symeda.sormas.app.backend.event.Event;
+import de.symeda.sormas.app.backend.event.EventDao;
 import de.symeda.sormas.app.component.UserReportDialog;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.util.SyncCallback;
@@ -69,6 +75,20 @@ public class EventsActivity extends AbstractRootTabActivity {
                     });
                 } else {
                     Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_no_connection, Snackbar.LENGTH_LONG).show();
+                }
+                return true;
+
+            case R.id.action_markAllAsRead:
+                EventDao eventDao = DatabaseHelper.getEventDao();
+                List<Event> events = eventDao.queryForAll();
+                for (Event eventToMark : events) {
+                    eventDao.markAsRead(eventToMark);
+                }
+
+                for (Fragment fragment : getSupportFragmentManager().getFragments()) {
+                    if (fragment instanceof EventsListFragment) {
+                        fragment.onResume();
+                    }
                 }
                 return true;
 

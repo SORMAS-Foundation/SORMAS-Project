@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.NavUtils;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
@@ -15,6 +16,7 @@ import android.view.MenuItem;
 import com.google.android.gms.analytics.Tracker;
 
 import java.util.Date;
+import java.util.List;
 
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.app.R;
@@ -25,9 +27,15 @@ import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.AbstractEditTabActivity;
 import de.symeda.sormas.app.backend.event.EventDao;
+import de.symeda.sormas.app.backend.event.EventParticipant;
+import de.symeda.sormas.app.backend.event.EventParticipantDao;
+import de.symeda.sormas.app.backend.person.PersonDao;
+import de.symeda.sormas.app.backend.task.Task;
+import de.symeda.sormas.app.backend.task.TaskDao;
 import de.symeda.sormas.app.component.UserReportDialog;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.task.TaskForm;
+import de.symeda.sormas.app.task.TasksListFragment;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.SyncCallback;
 
@@ -125,17 +133,17 @@ public class EventEditActivity extends AbstractEditTabActivity {
         switch(tab) {
             // contact data tab
             case EVENT_DATA:
-                updateActionBarGroups(menu, false, true, false, true);
+                updateActionBarGroups(menu, false, false, true, false, true);
                 break;
 
             // person tab
             case EVENT_PERSONS:
-                updateActionBarGroups(menu, false, true, true, false);
+                updateActionBarGroups(menu, false, true, true, true, false);
                 break;
 
             // tasks tab
             case EVENT_TASKS:
-                updateActionBarGroups(menu, false, true, false, false);
+                updateActionBarGroups(menu, false, true, true, false, false);
                 break;
         }
 
@@ -146,6 +154,7 @@ public class EventEditActivity extends AbstractEditTabActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         currentTab = pager.getCurrentItem();
         EventEditTabs tab = EventEditTabs.values()[currentTab];
+        Event event = (Event) adapter.getData(EventEditTabs.EVENT_DATA.ordinal());
 
         switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button
@@ -163,10 +172,41 @@ public class EventEditActivity extends AbstractEditTabActivity {
                 // @TODO help for contact edit tabs
                 return true;
 
+            case R.id.action_markAllAsRead:
+                switch (tab) {
+                    case EVENT_PERSONS:
+                        EventParticipantDao eventParticipantDao = DatabaseHelper.getEventParticipantDao();
+                        PersonDao personDao = DatabaseHelper.getPersonDao();
+                        List<EventParticipant> eventParticipants = eventParticipantDao.getByEvent(event);
+                        for (EventParticipant participantToMark : eventParticipants) {
+                            eventParticipantDao.markAsRead(participantToMark);
+                            personDao.markAsRead(participantToMark.getPerson());
+                        }
+
+                        for (Fragment fragment : getSupportFragmentManager().getFragments()) {
+                            if (fragment instanceof EventParticipantsListFragment) {
+                                fragment.onResume();
+                            }
+                        }
+                        break;
+                    case EVENT_TASKS:
+                        TaskDao taskDao = DatabaseHelper.getTaskDao();
+                        List<Task> tasks = taskDao.queryByEvent(event);
+                        for (Task taskToMark : tasks) {
+                            taskDao.markAsRead(taskToMark);
+                        }
+
+                        for (Fragment fragment : getSupportFragmentManager().getFragments()) {
+                            if (fragment instanceof TasksListFragment) {
+                                fragment.onResume();
+                            }
+                        }
+                        break;
+                }
+                return true;
+
             // Report problem button
             case R.id.action_report:
-                Event event = (Event) adapter.getData(EventEditTabs.EVENT_DATA.ordinal());
-
                 UserReportDialog userReportDialog = new UserReportDialog(this, this.getClass().getSimpleName() + ":" + tab.toString(), event.getUuid());
                 AlertDialog dialog = userReportDialog.create();
                 dialog.show();
@@ -179,8 +219,6 @@ public class EventEditActivity extends AbstractEditTabActivity {
                 switch(tab) {
                     // contact data tab
                     case EVENT_DATA:
-                        event = (Event) adapter.getData(EventEditTabs.EVENT_DATA.ordinal());
-
                         // check required fields
                         boolean eventTypeReq = event.getEventType()==null;
                         boolean eventDescReq = event.getEventDesc()==null || event.getEventDesc().isEmpty();
