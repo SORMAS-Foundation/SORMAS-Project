@@ -13,6 +13,6 @@ import retrofit2.http.Path;
 public interface CommunityFacadeRetro {
 
     @GET("communities/all/{since}")
-    Call<List<CommunityDto>> getAll(@Path("since") long since);
+    Call<List<CommunityDto>> pullAllSince(@Path("since") long since);
 
 }

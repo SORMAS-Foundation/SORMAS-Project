@@ -2,9 +2,7 @@ package de.symeda.sormas.app.person;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.os.Handler;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.android.gms.analytics.Tracker;
 
@@ -22,7 +20,6 @@ import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.person.PersonDtoHelper;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.rest.RetroProvider;
-import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.SyncCallback;
 import retrofit2.Call;
@@ -51,7 +48,7 @@ public class SyncPersonsTask extends AsyncTask<Void, Void, Void> {
                 public Call<List<PersonDto>> getAll(long since) {
                     User user = ConfigProvider.getUser();
                     if (user != null) {
-                        return RetroProvider.getPersonFacade().getAll(since);
+                        return RetroProvider.getPersonFacade().pullAllSince(since);
                     }
                     return null;
                 }
@@ -70,7 +67,7 @@ public class SyncPersonsTask extends AsyncTask<Void, Void, Void> {
                     public Call<List<PersonDto>> getAll(long since) {
                         User user = ConfigProvider.getUser();
                         if (user != null) {
-                            return RetroProvider.getPersonFacade().getAll(since);
+                            return RetroProvider.getPersonFacade().pullAllSince(since);
                         }
                         return null;
                     }

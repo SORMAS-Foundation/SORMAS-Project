@@ -15,11 +15,11 @@ import retrofit2.http.Path;
 public interface PersonFacadeRetro {
 
     @GET("persons/all/{since}")
-    Call<List<PersonDto>> getAll(@Path("since") long since);
+    Call<List<PersonDto>> pullAllSince(@Path("since") long since);
 
     @POST("persons/push")
     Call<Long> postAll(@Body List<PersonDto> dtos);
 
     @GET("persons/uuids")
-    Call<List<String>> getUuids();
+    Call<List<String>> pullUuids();
 }

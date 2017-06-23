@@ -5,7 +5,6 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 
 import com.google.android.gms.analytics.Tracker;
@@ -26,7 +25,6 @@ import de.symeda.sormas.app.backend.contact.ContactDtoHelper;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.caze.SyncCasesTask;
 import de.symeda.sormas.app.rest.RetroProvider;
-import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.SyncCallback;
 import retrofit2.Call;
@@ -56,7 +54,7 @@ public class SyncContactsTask extends AsyncTask<Void, Void, Void> {
 
                     User user = ConfigProvider.getUser();
                     if (user != null) {
-                        Call<List<ContactDto>> all = RetroProvider.getContactFacade().getAll(since);
+                        Call<List<ContactDto>> all = RetroProvider.getContactFacade().pullAllSince(since);
                         return all;
                     }
                     return null;
@@ -66,7 +64,7 @@ public class SyncContactsTask extends AsyncTask<Void, Void, Void> {
             boolean anotherPullNeeded = new ContactDtoHelper().pushEntities(new DtoPostInterface<ContactDto>() {
                 @Override
                 public Call<Long> postAll(List<ContactDto> dtos) {
-                    return RetroProvider.getContactFacade().postAll(dtos);
+                    return RetroProvider.getContactFacade().pushAll(dtos);
                 }
             }, DatabaseHelper.getContactDao());
 
@@ -77,7 +75,7 @@ public class SyncContactsTask extends AsyncTask<Void, Void, Void> {
 
                         User user = ConfigProvider.getUser();
                         if (user != null) {
-                            Call<List<ContactDto>> all = RetroProvider.getContactFacade().getAll(since);
+                            Call<List<ContactDto>> all = RetroProvider.getContactFacade().pullAllSince(since);
                             return all;
                         }
                         return null;

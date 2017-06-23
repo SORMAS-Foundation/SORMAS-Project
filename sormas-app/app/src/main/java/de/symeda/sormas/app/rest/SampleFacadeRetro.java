@@ -16,12 +16,12 @@ import retrofit2.http.Path;
 public interface SampleFacadeRetro {
 
     @GET("samples/all/{since}")
-    Call<List<SampleDto>> getAll(@Path("since") long since);
+    Call<List<SampleDto>> pullAllSince(@Path("since") long since);
 
     @POST("samples/push")
-    Call<Long> postAll(@Body List<SampleDto> dtos);
+    Call<Long> pushAll(@Body List<SampleDto> dtos);
 
     @GET("samples/uuids")
-    Call<List<String>> getUuids();
+    Call<List<String>> pullUuids();
 
 }

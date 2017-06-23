@@ -12,11 +12,11 @@ import retrofit2.http.Path;
 public interface EventFacadeRetro {
 
     @GET("events/all/{since}")
-    Call<List<EventDto>> getAll(@Path("since") long since);
+    Call<List<EventDto>> pullAllSince(@Path("since") long since);
 
     @POST("events/push")
-    Call<Long> postAll(@Body List<EventDto> dtos);
+    Call<Long> pushhAll(@Body List<EventDto> dtos);
 
     @GET("events/uuids")
-    Call<List<String>> getUuids();
+    Call<List<String>> pullUuids();
 }

@@ -5,7 +5,6 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 
 import com.google.android.gms.analytics.Tracker;
@@ -25,7 +24,6 @@ import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.event.EventDtoHelper;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.rest.RetroProvider;
-import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.SyncCallback;
 import retrofit2.Call;
@@ -55,7 +53,7 @@ public class SyncEventsTask extends AsyncTask<Void, Void, Void> {
 
                     User user = ConfigProvider.getUser();
                     if (user != null) {
-                        Call<List<EventDto>> all = RetroProvider.getEventFacade().getAll(since);
+                        Call<List<EventDto>> all = RetroProvider.getEventFacade().pullAllSince(since);
                         return all;
                     }
                     return null;
@@ -65,7 +63,7 @@ public class SyncEventsTask extends AsyncTask<Void, Void, Void> {
             boolean anotherPullNeeded = new EventDtoHelper().pushEntities(new DtoPostInterface<EventDto>() {
                 @Override
                 public Call<Long> postAll(List<EventDto> dtos) {
-                    return RetroProvider.getEventFacade().postAll(dtos);
+                    return RetroProvider.getEventFacade().pushhAll(dtos);
                 }
             }, DatabaseHelper.getEventDao());
 
@@ -76,7 +74,7 @@ public class SyncEventsTask extends AsyncTask<Void, Void, Void> {
 
                         User user = ConfigProvider.getUser();
                         if (user != null) {
-                            Call<List<EventDto>> all = RetroProvider.getEventFacade().getAll(since);
+                            Call<List<EventDto>> all = RetroProvider.getEventFacade().pullAllSince(since);
                             return all;
                         }
                         return null;

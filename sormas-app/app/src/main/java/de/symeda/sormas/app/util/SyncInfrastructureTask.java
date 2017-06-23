@@ -19,7 +19,6 @@ import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper.DtoGetInterface;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.facility.FacilityDtoHelper;
 import de.symeda.sormas.app.backend.region.CommunityDtoHelper;
 import de.symeda.sormas.app.backend.region.DistrictDtoHelper;
@@ -51,35 +50,35 @@ public class SyncInfrastructureTask extends AsyncTask<Void, Void, Void> {
             new RegionDtoHelper().pullEntities(new DtoGetInterface<RegionDto>() {
                 @Override
                 public Call<List<RegionDto>> getAll(long since) {
-                    return RetroProvider.getRegionFacade().getAll(since);
+                    return RetroProvider.getRegionFacade().pullAllSince(since);
                 }
             }, DatabaseHelper.getRegionDao(), notificationContext);
 
             new DistrictDtoHelper().pullEntities(new DtoGetInterface<DistrictDto>() {
                 @Override
                 public Call<List<DistrictDto>> getAll(long since) {
-                    return RetroProvider.getDistrictFacade().getAll(since);
+                    return RetroProvider.getDistrictFacade().pullAllSince(since);
                 }
             }, DatabaseHelper.getDistrictDao(), notificationContext);
 
             new CommunityDtoHelper().pullEntities(new DtoGetInterface<CommunityDto>() {
                 @Override
                 public Call<List<CommunityDto>> getAll(long since) {
-                    return RetroProvider.getCommunityFacade().getAll(since);
+                    return RetroProvider.getCommunityFacade().pullAllSince(since);
                 }
             }, DatabaseHelper.getCommunityDao(), notificationContext);
 
             new FacilityDtoHelper().pullEntities(new DtoGetInterface<FacilityDto>() {
                 @Override
                 public Call<List<FacilityDto>> getAll(long since) {
-                    return RetroProvider.getFacilityFacade().getAll(since);
+                    return RetroProvider.getFacilityFacade().pullAllSince(since);
                 }
             }, DatabaseHelper.getFacilityDao(), notificationContext);
 
             new UserDtoHelper().pullEntities(new DtoGetInterface<UserDto>() {
                 @Override
                 public Call<List<UserDto>> getAll(long since) {
-                    return RetroProvider.getUserFacade().getAll(since);
+                    return RetroProvider.getUserFacade().pullAllSince(since);
                 }
             }, DatabaseHelper.getUserDao(), notificationContext);
         } catch(DaoException | SQLException | IOException e) {

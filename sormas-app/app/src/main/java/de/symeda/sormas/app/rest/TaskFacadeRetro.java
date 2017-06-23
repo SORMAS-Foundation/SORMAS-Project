@@ -16,11 +16,11 @@ import retrofit2.http.Path;
 public interface TaskFacadeRetro {
 
     @GET("tasks/all/{since}")
-    Call<List<TaskDto>> getAll(@Path("since") long since);
+    Call<List<TaskDto>> pullAllSince(@Path("since") long since);
 
     @POST("tasks/push")
-    Call<Long> postAll(@Body List<TaskDto> dtos);
+    Call<Long> pushAll(@Body List<TaskDto> dtos);
 
     @GET("tasks/uuids")
-    Call<List<String>> getUuids();
+    Call<List<String>> pullUuids();
 }

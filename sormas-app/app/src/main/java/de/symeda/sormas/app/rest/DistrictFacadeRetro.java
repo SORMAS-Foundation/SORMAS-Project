@@ -13,6 +13,6 @@ import retrofit2.http.Path;
 public interface DistrictFacadeRetro {
 
     @GET("districts/all/{since}")
-    Call<List<DistrictDto>> getAll(@Path("since") long since);
+    Call<List<DistrictDto>> pullAllSince(@Path("since") long since);
 
 }

@@ -13,5 +13,5 @@ import retrofit2.http.Path;
 public interface UserFacadeRetro {
 
     @GET("users/all/{since}")
-    Call<List<UserDto>> getAll(@Path("since") long since);
+    Call<List<UserDto>> pullAllSince(@Path("since") long since);
 }

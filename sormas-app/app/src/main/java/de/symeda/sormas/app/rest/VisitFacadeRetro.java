@@ -12,11 +12,11 @@ import retrofit2.http.Path;
 public interface VisitFacadeRetro {
 
     @GET("visits/all/{since}")
-    Call<List<VisitDto>> getAll(@Path("since") long since);
+    Call<List<VisitDto>> pullAllSince(@Path("since") long since);
 
     @POST("visits/push")
-    Call<Long> postAll(@Body List<VisitDto> dtos);
+    Call<Long> pushAll(@Body List<VisitDto> dtos);
 
     @GET("visits/uuids")
-    Call<List<String>> getUuids();
+    Call<List<String>> pullUuids();
 }

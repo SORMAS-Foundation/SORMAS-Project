@@ -25,7 +25,6 @@ import de.symeda.sormas.app.backend.sample.SampleDtoHelper;
 import de.symeda.sormas.app.backend.sample.SampleTestDtoHelper;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.rest.RetroProvider;
-import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.SyncCallback;
 import retrofit2.Call;
@@ -56,7 +55,7 @@ public class SyncSamplesTask extends AsyncTask<Void, Void, Void> {
 
                     User user = ConfigProvider.getUser();
                     if (user != null) {
-                        Call<List<SampleDto>> all = RetroProvider.getSampleFacade().getAll(since);
+                        Call<List<SampleDto>> all = RetroProvider.getSampleFacade().pullAllSince(since);
                         return all;
                     }
                     return null;
@@ -69,7 +68,7 @@ public class SyncSamplesTask extends AsyncTask<Void, Void, Void> {
 
                     User user = ConfigProvider.getUser();
                     if (user != null) {
-                        Call<List<SampleTestDto>> all = RetroProvider.getSampleTestFacade().getAll(since);
+                        Call<List<SampleTestDto>> all = RetroProvider.getSampleTestFacade().pullAllSince(since);
                         return all;
                     }
                     return null;
@@ -79,7 +78,7 @@ public class SyncSamplesTask extends AsyncTask<Void, Void, Void> {
             boolean anotherPullNeeded = new SampleDtoHelper().pushEntities(new AdoDtoHelper.DtoPostInterface<SampleDto>() {
                 @Override
                 public Call<Long> postAll(List<SampleDto> dtos) {
-                    return RetroProvider.getSampleFacade().postAll(dtos);
+                    return RetroProvider.getSampleFacade().pushAll(dtos);
                 }
             }, DatabaseHelper.getSampleDao());
 
@@ -90,7 +89,7 @@ public class SyncSamplesTask extends AsyncTask<Void, Void, Void> {
 
                         User user = ConfigProvider.getUser();
                         if (user != null) {
-                            Call<List<SampleDto>> all = RetroProvider.getSampleFacade().getAll(since);
+                            Call<List<SampleDto>> all = RetroProvider.getSampleFacade().pullAllSince(since);
                             return all;
                         }
                         return null;
@@ -103,7 +102,7 @@ public class SyncSamplesTask extends AsyncTask<Void, Void, Void> {
 
                         User user = ConfigProvider.getUser();
                         if (user != null) {
-                            Call<List<SampleTestDto>> all = RetroProvider.getSampleTestFacade().getAll(since);
+                            Call<List<SampleTestDto>> all = RetroProvider.getSampleTestFacade().pullAllSince(since);
                             return all;
                         }
                         return null;

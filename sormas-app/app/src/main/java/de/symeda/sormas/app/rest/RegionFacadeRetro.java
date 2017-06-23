@@ -13,6 +13,6 @@ import retrofit2.http.Path;
 public interface RegionFacadeRetro {
 
     @GET("regions/all/{since}")
-    Call<List<RegionDto>> getAll(@Path("since") long since);
+    Call<List<RegionDto>> pullAllSince(@Path("since") long since);
 
 }

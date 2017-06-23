@@ -26,7 +26,6 @@ import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.contact.SyncContactsTask;
 import de.symeda.sormas.app.event.SyncEventsTask;
 import de.symeda.sormas.app.rest.RetroProvider;
-import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.SyncCallback;
 import retrofit2.Call;
@@ -56,7 +55,7 @@ public class SyncTasksTask extends AsyncTask<Void, Void, Void> {
 
                     User user = ConfigProvider.getUser();
                     if (user != null) {
-                        Call<List<TaskDto>> all = RetroProvider.getTaskFacade().getAll(since);
+                        Call<List<TaskDto>> all = RetroProvider.getTaskFacade().pullAllSince(since);
                         return all;
                     }
                     return null;
@@ -66,7 +65,7 @@ public class SyncTasksTask extends AsyncTask<Void, Void, Void> {
             boolean anotherPullNeeded = new TaskDtoHelper().pushEntities(new DtoPostInterface<TaskDto>() {
                 @Override
                 public Call<Long> postAll(List<TaskDto> dtos) {
-                    return RetroProvider.getTaskFacade().postAll(dtos);
+                    return RetroProvider.getTaskFacade().pushAll(dtos);
                 }
             }, DatabaseHelper.getTaskDao());
 
@@ -77,7 +76,7 @@ public class SyncTasksTask extends AsyncTask<Void, Void, Void> {
 
                         User user = ConfigProvider.getUser();
                         if (user != null) {
-                            Call<List<TaskDto>> all = RetroProvider.getTaskFacade().getAll(since);
+                            Call<List<TaskDto>> all = RetroProvider.getTaskFacade().pullAllSince(since);
                             return all;
                         }
                         return null;

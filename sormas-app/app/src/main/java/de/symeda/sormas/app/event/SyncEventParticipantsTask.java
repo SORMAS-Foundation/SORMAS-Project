@@ -23,7 +23,6 @@ import de.symeda.sormas.app.backend.event.EventParticipantDtoHelper;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.person.SyncPersonsTask;
 import de.symeda.sormas.app.rest.RetroProvider;
-import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.SyncCallback;
 import retrofit2.Call;
@@ -53,7 +52,7 @@ public class SyncEventParticipantsTask extends AsyncTask<Void, Void, Void> {
 
                     User user = ConfigProvider.getUser();
                     if (user != null) {
-                        Call<List<EventParticipantDto>> all = RetroProvider.getEventParticipantFacade().getAll(since);
+                        Call<List<EventParticipantDto>> all = RetroProvider.getEventParticipantFacade().pullAllSince(since);
                         return all;
                     }
                     return null;
@@ -63,7 +62,7 @@ public class SyncEventParticipantsTask extends AsyncTask<Void, Void, Void> {
             boolean anotherPullNeeded = new EventParticipantDtoHelper().pushEntities(new DtoPostInterface<EventParticipantDto>() {
                 @Override
                 public Call<Long> postAll(List<EventParticipantDto> dtos) {
-                    return RetroProvider.getEventParticipantFacade().postAll(dtos);
+                    return RetroProvider.getEventParticipantFacade().pushAll(dtos);
                 }
             }, DatabaseHelper.getEventParticipantDao());
 
@@ -74,7 +73,7 @@ public class SyncEventParticipantsTask extends AsyncTask<Void, Void, Void> {
 
                         User user = ConfigProvider.getUser();
                         if (user != null) {
-                            Call<List<EventParticipantDto>> all = RetroProvider.getEventParticipantFacade().getAll(since);
+                            Call<List<EventParticipantDto>> all = RetroProvider.getEventParticipantFacade().pullAllSince(since);
                             return all;
                         }
                         return null;

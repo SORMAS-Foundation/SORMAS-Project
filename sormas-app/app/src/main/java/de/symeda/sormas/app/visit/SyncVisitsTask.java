@@ -53,7 +53,7 @@ public class SyncVisitsTask extends AsyncTask<Void, Void, Void> {
 
                     User user = ConfigProvider.getUser();
                     if (user != null) {
-                        Call<List<VisitDto>> all = RetroProvider.getVisitFacade().getAll(since);
+                        Call<List<VisitDto>> all = RetroProvider.getVisitFacade().pullAllSince(since);
                         return all;
                     }
                     return null;
@@ -63,7 +63,7 @@ public class SyncVisitsTask extends AsyncTask<Void, Void, Void> {
             boolean anotherPullNeeded = new VisitDtoHelper().pushEntities(new DtoPostInterface<VisitDto>() {
                 @Override
                 public Call<Long> postAll(List<VisitDto> dtos) {
-                    return RetroProvider.getVisitFacade().postAll(dtos);
+                    return RetroProvider.getVisitFacade().pushAll(dtos);
                 }
             }, DatabaseHelper.getVisitDao());
 
@@ -74,7 +74,7 @@ public class SyncVisitsTask extends AsyncTask<Void, Void, Void> {
 
                         User user = ConfigProvider.getUser();
                         if (user != null) {
-                            Call<List<VisitDto>> all = RetroProvider.getVisitFacade().getAll(since);
+                            Call<List<VisitDto>> all = RetroProvider.getVisitFacade().pullAllSince(since);
                             return all;
                         }
                         return null;

@@ -753,10 +753,14 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
         }
     }
 
-    public void deleteNotInList(List<String> uuidList) {
+    /**
+     * Delete all entities (cascading) that are not in the list
+     * @param validUuids
+     */
+    public void deleteInvalid(List<String> validUuids) {
         try {
             QueryBuilder<ADO, Long> builder = queryBuilder();
-            builder.where().notIn(AbstractDomainObject.UUID, uuidList);
+            builder.where().notIn(AbstractDomainObject.UUID, validUuids);
             List<ADO> invalidEntities = builder.query();
             for (ADO invalidEntity : invalidEntities) {
                 // let user now if changes are lost
