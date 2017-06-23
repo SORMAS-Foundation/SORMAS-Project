@@ -753,6 +753,24 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
         }
     }
 
+    public void deleteNotInList(List<String> uuidList) {
+        try {
+            QueryBuilder<ADO, Long> builder = queryBuilder();
+            builder.where().notIn(AbstractDomainObject.UUID, uuidList);
+            List<ADO> invalidEntities = builder.query();
+            for (ADO invalidEntity : invalidEntities) {
+                // let user now if changes are lost
+                if (invalidEntity.isModified()) {
+                    DatabaseHelper.getSyncLogDao().createWithParentStack(invalidEntity.toString(), "Changes dropped because you have no longer access to this entity.");
+                }
+                // delete with all embedded entities
+                deleteCascade(invalidEntity);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public int updateWithCast(AbstractDomainObject ado) {
         return update((ADO)ado);
     }

@@ -16,4 +16,7 @@ public interface SampleTestFacadeRetro {
     @GET("sampletests/all/{since}")
     Call<List<SampleTestDto>> getAll(@Path("since") long since);
 
+    @GET("sampletests/uuids")
+    Call<List<String>> getUuids();
+
 }

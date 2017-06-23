@@ -16,4 +16,7 @@ public interface VisitFacadeRetro {
 
     @POST("visits/push")
     Call<Long> postAll(@Body List<VisitDto> dtos);
+
+    @GET("visits/uuids")
+    Call<List<String>> getUuids();
 }

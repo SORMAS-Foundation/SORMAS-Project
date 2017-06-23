@@ -31,6 +31,4 @@ public interface UserFacade {
 	List<UserReferenceDto> getAssignableUsers(UserReferenceDto assigningUser, UserRole... assignableRoles);
 	
 	List<UserReferenceDto> getAssignableUsersByDistrict(DistrictReferenceDto district, boolean includeSupervisors, UserRole... assignableRoles);
-
-	List<String> getAllUuids(String userUuid);
 }

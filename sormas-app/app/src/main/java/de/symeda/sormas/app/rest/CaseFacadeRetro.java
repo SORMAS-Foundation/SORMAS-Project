@@ -21,6 +21,5 @@ public interface CaseFacadeRetro {
     Call<Long> postAll(@Body List<CaseDataDto> dtos);
 
     @GET("cases/uuids")
-    Call<List<String>> getUUids();
-
+    Call<List<String>> getUuids();
 }

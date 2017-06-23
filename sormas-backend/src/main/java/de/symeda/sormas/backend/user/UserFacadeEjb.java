@@ -48,18 +48,6 @@ public class UserFacadeEjb implements UserFacade {
 	private ContactService contactService;
 	@EJB
 	private EventService eventService;
-
-	@Override
-	public List<String> getAllUuids(String userUuid) {
-		
-		User user = userService.getByUuid(userUuid);
-		
-		if (user == null) {
-			return Collections.emptyList();
-		}
-		
-		return userService.getAllUuids(user);
-	}	
 	
 	@Override
 	public List<UserReferenceDto> getAssignableUsers(UserReferenceDto assigningUser, UserRole ...assignableRoles) {

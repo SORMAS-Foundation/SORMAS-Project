@@ -14,5 +14,4 @@ public interface UserFacadeRetro {
 
     @GET("users/all/{since}")
     Call<List<UserDto>> getAll(@Path("since") long since);
-
 }

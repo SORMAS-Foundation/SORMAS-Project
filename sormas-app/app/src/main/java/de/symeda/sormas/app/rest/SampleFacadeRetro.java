@@ -21,4 +21,7 @@ public interface SampleFacadeRetro {
     @POST("samples/push")
     Call<Long> postAll(@Body List<SampleDto> dtos);
 
+    @GET("samples/uuids")
+    Call<List<String>> getUuids();
+
 }

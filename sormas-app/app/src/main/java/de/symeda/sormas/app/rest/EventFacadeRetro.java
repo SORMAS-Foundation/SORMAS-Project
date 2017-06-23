@@ -16,4 +16,7 @@ public interface EventFacadeRetro {
 
     @POST("events/push")
     Call<Long> postAll(@Body List<EventDto> dtos);
+
+    @GET("events/uuids")
+    Call<List<String>> getUuids();
 }

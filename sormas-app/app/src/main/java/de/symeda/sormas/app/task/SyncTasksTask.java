@@ -84,6 +84,9 @@ public class SyncTasksTask extends AsyncTask<Void, Void, Void> {
                     }
                 }, DatabaseHelper.getTaskDao(), context);
             }
+
+
+
         } catch (DaoException | SQLException | IOException e) {
             hasThrownError = true;
             Log.e(getClass().getName(), "Error while synchronizing tasks", e);

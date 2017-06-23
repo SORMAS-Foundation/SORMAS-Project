@@ -2,6 +2,7 @@ package de.symeda.sormas.rest;
 
 import javax.ws.rs.ApplicationPath;
 
+import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
 
@@ -19,5 +20,7 @@ public class RestApplication extends ResourceConfig  {
         
         // as described in https://jersey.github.io/documentation/latest/security.html
         register(RolesAllowedDynamicFeature.class);
+        
+        register(JacksonFeature.class);
     }
 }

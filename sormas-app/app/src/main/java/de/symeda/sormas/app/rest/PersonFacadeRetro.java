@@ -19,4 +19,7 @@ public interface PersonFacadeRetro {
 
     @POST("persons/push")
     Call<Long> postAll(@Body List<PersonDto> dtos);
+
+    @GET("persons/uuids")
+    Call<List<String>> getUuids();
 }

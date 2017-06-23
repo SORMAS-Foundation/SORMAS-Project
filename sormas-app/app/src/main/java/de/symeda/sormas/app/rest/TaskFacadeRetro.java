@@ -20,4 +20,7 @@ public interface TaskFacadeRetro {
 
     @POST("tasks/push")
     Call<Long> postAll(@Body List<TaskDto> dtos);
+
+    @GET("tasks/uuids")
+    Call<List<String>> getUuids();
 }

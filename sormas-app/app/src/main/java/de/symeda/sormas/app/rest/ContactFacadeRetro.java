@@ -19,4 +19,7 @@ public interface ContactFacadeRetro {
 
     @POST("contacts/push")
     Call<Long> postAll(@Body List<ContactDto> dtos);
+
+    @GET("contacts/uuids")
+    Call<List<String>> getUuids();
 }
