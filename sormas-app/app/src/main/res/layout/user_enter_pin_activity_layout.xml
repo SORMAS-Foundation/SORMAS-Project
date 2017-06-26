@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:descendantFocusability="beforeDescendants"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:layout_gravity="center_vertical"
+    android:gravity="center_horizontal"
+    android:paddingLeft="24dp"
+    android:paddingRight="24dp"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:id="@+id/base_layout">
+
+    <TextView
+        android:id="@+id/pin_headline_createOrEnter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        android:textSize="22sp"
+        android:text="@string/headline_create_pin" />
+
+    <TextView
+        android:id="@+id/pin_hint_createOrEnter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:textSize="12sp"
+        android:ellipsize="start"
+        android:gravity="center"
+        android:text="@string/hint_create_pin" />
+
+    <LinearLayout
+        android:id="@+id/pin_fields_layout"
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:id="@+id/pin_char1"
+            android:ems="2"
+            android:maxLength="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:ellipsize="start"
+            android:gravity="center"
+            android:layout_marginRight="5dp"><requestFocus/></EditText>
+
+        <EditText
+            android:id="@+id/pin_char2"
+            android:ems="2"
+            android:maxLength="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:ellipsize="start"
+            android:gravity="center"
+            android:layout_marginRight="5dp" />
+
+        <EditText
+            android:id="@+id/pin_char3"
+            android:ems="2"
+            android:maxLength="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:ellipsize="start"
+            android:gravity="center"
+            android:layout_marginRight="5dp" />
+
+        <EditText
+            android:id="@+id/pin_char4"
+            android:ems="2"
+            android:maxLength="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:ellipsize="start"
+            android:gravity="center" />
+
+    </LinearLayout>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.5"
+        android:layout_marginTop="24dp"
+        android:background="@color/colorPrimary"
+        android:id="@+id/action_submit"
+        android:onClick="submit"
+        android:text="@string/action_submit"/>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/action_backToSettings"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:onClick="backToSettings"
+            android:text="@string/action_back_to_settings"
+            android:textAlignment="viewStart"
+            android:textAppearance="@style/TextAppearance.AppCompat.Button"/>
+        <TextView
+            android:id="@+id/action_forgotPIN"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:onClick="forgotPIN"
+            android:text="@string/action_forgot_PIN"
+            android:textAlignment="viewEnd"
+            android:textAppearance="@style/TextAppearance.AppCompat.Button"/>
+
+    </LinearLayout>
+</LinearLayout>

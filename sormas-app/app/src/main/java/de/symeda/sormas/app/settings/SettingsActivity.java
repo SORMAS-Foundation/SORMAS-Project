@@ -1,6 +1,7 @@
 package de.symeda.sormas.app.settings;
 
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.view.Menu;
@@ -11,6 +12,7 @@ import android.view.View;
 import com.google.android.gms.analytics.Tracker;
 
 import de.symeda.sormas.app.AbstractEditTabActivity;
+import de.symeda.sormas.app.EnterPinActivity;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
@@ -93,4 +95,11 @@ public class SettingsActivity extends AbstractEditTabActivity {
         SyncLogDialog syncLogDialog = new SyncLogDialog(this);
         syncLogDialog.show(this);
     }
+
+    public void changePIN(View view) {
+        Intent intent = new Intent(this, EnterPinActivity.class);
+        intent.putExtra(EnterPinActivity.CALLED_FROM_SETTINGS, true);
+        startActivity(intent);
+    }
+
 }

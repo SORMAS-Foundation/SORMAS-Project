@@ -35,7 +35,6 @@ import javax.security.auth.x500.X500Principal;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.user.User;
-import de.symeda.sormas.app.rest.RetroProvider;
 
 /**
  * Created by Martin Wahnschaffe on 10.08.2016.
@@ -44,6 +43,7 @@ public final class ConfigProvider {
 
     private static String KEY_USERNAME = "username";
     private static String KEY_PASSWORD = "password";
+    private static String KEY_PIN = "pin";
     private static String KEY_SERVER_REST_URL = "serverRestUrl";
     private static String LAST_NOTIFICATION_DATE = "lastNotificationDate";
 
@@ -63,6 +63,7 @@ public final class ConfigProvider {
     private String serverRestUrl;
     private String username;
     private String password;
+    private String pin;
     private User user;
     private Date lastNotificationDate;
 
@@ -116,7 +117,17 @@ public final class ConfigProvider {
                 instance.password = config.getValue();
             }
         }
-        return decodePassword(instance.password);
+        return decodeCredential(instance.password, "Password");
+    }
+
+    public static String getPin() {
+        if (instance.pin == null) {
+            Config config = DatabaseHelper.getConfigDao().queryForId(KEY_PIN);
+            if (config != null) {
+                instance.pin = config.getValue();
+            }
+        }
+        return decodeCredential(instance.pin, "PIN");
     }
 
     public static void clearUsernameAndPassword() {
@@ -134,6 +145,17 @@ public final class ConfigProvider {
         configDao.delete(new Config(KEY_PASSWORD, ""));
     }
 
+    public static void clearPin() {
+        instance.pin = null;
+
+        ConfigDao configDao = DatabaseHelper.getConfigDao();
+        if (configDao.queryForId(KEY_PIN) == null) {
+            return;
+        }
+
+        configDao.delete(new Config(KEY_PIN, ""));
+    }
+
     public static void setUsernameAndPassword(String username, String password) {
 
         if (username == null)
@@ -141,7 +163,7 @@ public final class ConfigProvider {
         if (password == null)
             throw new NullPointerException("password");
 
-        password = encodePassword(password);
+        password = encodeCredential(password, "Password");
 
         if (username.equals(instance.username) && password.equals(instance.password))
             return;
@@ -156,9 +178,25 @@ public final class ConfigProvider {
         DatabaseHelper.clearTables(false);
     }
 
-    private static String encodePassword(String clearPassword) {
+    public static void setPin(String pin) {
+        if (pin == null) {
+            throw new NullPointerException("pin");
+        }
 
-        if (clearPassword == null) {
+        pin = encodeCredential(pin, "PIN");
+
+        if (pin.equals(instance.pin)) {
+            return;
+        }
+
+        instance.pin = pin;
+
+        DatabaseHelper.getConfigDao().createOrUpdate(new Config(KEY_PIN, pin));
+    }
+
+    private static String encodeCredential(String clearCredential, String keyStoreAlias) {
+
+        if (clearCredential == null) {
             return null;
         }
 
@@ -166,13 +204,13 @@ public final class ConfigProvider {
             KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
             keyStore.load(null);
 
-            if (!keyStore.containsAlias("Credentials")) {
+            if (!keyStore.containsAlias(keyStoreAlias)) {
                 Calendar start = Calendar.getInstance();
                 Calendar end = Calendar.getInstance();
                 end.add(Calendar.YEAR, 1);
 
                 KeyPairGeneratorSpec credentialsSpec = new KeyPairGeneratorSpec.Builder(instance.context)
-                        .setAlias("Credentials")
+                        .setAlias(keyStoreAlias)
                         .setSubject(new X500Principal("CN=SORMAS, O=symeda, C=Germany"))
                         .setSerialNumber(BigInteger.ONE)
                         .setStartDate(start.getTime())
@@ -184,7 +222,7 @@ public final class ConfigProvider {
                 generator.generateKeyPair();
             }
 
-            KeyStore.PrivateKeyEntry privateKeyEntry = (KeyStore.PrivateKeyEntry) keyStore.getEntry("Credentials", null);
+            KeyStore.PrivateKeyEntry privateKeyEntry = (KeyStore.PrivateKeyEntry) keyStore.getEntry(keyStoreAlias, null);
             RSAPublicKey publicKey = (RSAPublicKey) privateKeyEntry.getCertificate().getPublicKey();
 
             Cipher input = Cipher.getInstance("RSA/ECB/PKCS1Padding");
@@ -192,7 +230,7 @@ public final class ConfigProvider {
 
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             CipherOutputStream cipherOutputStream = new CipherOutputStream(outputStream, input);
-            cipherOutputStream.write(clearPassword.getBytes("UTF-8"));
+            cipherOutputStream.write(clearCredential.getBytes("UTF-8"));
             cipherOutputStream.close();
 
             byte[] resultByteArray = outputStream.toByteArray();
@@ -224,9 +262,9 @@ public final class ConfigProvider {
 //        ErrorReportingHelper.sendCaughtException(tracker, e, null, true);
     }
 
-    private static String decodePassword(String encodedPassword) {
+    private static String decodeCredential(String encodedCredential, String keyStoreAlias) {
 
-        if (encodedPassword == null) {
+        if (encodedCredential == null) {
             return null;
         }
 
@@ -234,13 +272,13 @@ public final class ConfigProvider {
             KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
             keyStore.load(null);
 
-            KeyStore.PrivateKeyEntry privateKeyEntry = (KeyStore.PrivateKeyEntry) keyStore.getEntry("Credentials", null);
+            KeyStore.PrivateKeyEntry privateKeyEntry = (KeyStore.PrivateKeyEntry) keyStore.getEntry(keyStoreAlias, null);
             PrivateKey privateKey = privateKeyEntry.getPrivateKey();
 
             Cipher decryptCipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
             decryptCipher.init(Cipher.DECRYPT_MODE, privateKey);
 
-            byte[] encodedBytes = Base64.decode(encodedPassword, Base64.DEFAULT);
+            byte[] encodedBytes = Base64.decode(encodedCredential, Base64.DEFAULT);
             InputStream inputStream = new ByteArrayInputStream(encodedBytes);
             CipherInputStream cipherStream = new CipherInputStream(inputStream, decryptCipher);
             byte[] passwordBytes = new byte[1024];
@@ -266,7 +304,6 @@ public final class ConfigProvider {
             throw new RuntimeException(e);
         }
     }
-
 
     public static String getServerRestUrl() {
         if (instance.serverRestUrl == null)

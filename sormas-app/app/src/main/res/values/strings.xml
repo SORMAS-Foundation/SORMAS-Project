@@ -40,8 +40,13 @@
     <string name="action_report">Report Problem</string>
     <string name="action_options">Options</string>
     <string name="action_login">Login</string>
+    <string name="action_submit">Submit</string>
     <string name="action_loadMore">Load more</string>
     <string name="action_ok">Ok</string>
+    <string name="action_forgot_PIN">Forgot PIN?</string>
+    <string name="action_change_PIN">Change PIN</string>
+    <string name="action_back_to_settings">Back to settings</string>
+
 
     <!-- field -->
     <string name="field_yes_no_yes">Yes</string>
@@ -50,6 +55,10 @@
 
     <!-- headlines -->
     <string name="headline_sormas">SORMAS</string>
+    <string name="headline_enter_pin">Enter Your PIN</string>
+    <string name="headline_create_pin">Create A PIN</string>
+    <string name="headline_new_pin">Enter A New PIN</string>
+    <string name="headline_enter_current_pin">Enter Your Current PIN</string>
     <string name="headline_date_picker">Select a date</string>
     <string name="headline_case">Case</string>
     <string name="headline_case_data">Case data</string>
@@ -105,6 +114,7 @@
     <string name="headline_sample_synchronization">Sample Synchronization</string>
     <string name="headline_task_synchronization">Task Synchronization</string>
     <string name="headline_visit_synchronization">Visit Synchronization</string>
+    <string name="headline_reset_PIN">Reset PIN</string>
 
     <!-- forms -->
     <string name="form_p_date_of_birth">Date of birth (day / month / year)</string>
@@ -113,6 +123,7 @@
     <string name="form_password">Password</string>
 
     <string name="symptoms_infoText">Please tick an answer for ALL symptoms indicating if they occurred during this illness between symptom onset and case detection:</string>
+    <string name="infoText_resetPIN">If you forgot your PIN, you can click on \'Ok\' and log in to the SORMAS app again. Afterwards, you will be able to choose a new PIN.</string>
 
     <string name="synclog_yours">Yours: </string>
     <string name="synclog_server">Server: </string>
@@ -143,6 +154,12 @@
     <string name="hint_sample_synchronization">Samples are being synchronized...</string>
     <string name="hint_task_synchronization">Tasks are being synchronized...</string>
     <string name="hint_visit_synchronization">Visits are being synchronized...</string>
+    <string name="hint_enter_pin">Please enter your authentication PIN.</string>
+    <string name="hint_create_pin">Please choose a four-digit PIN which you will use to authenticate yourself whenever you open the SORMAS app.</string>
+    <string name="hint_create_pin_again">Please enter the PIN again.</string>
+    <string name="hint_enter_current_pin">Enter your current PIN.</string>
+    <string name="hint_new_pin">Please choose a new four-digit PIN to authenticate when opening the SORMAS app in the future.</string>
+    <string name="hint_new_pin_again">Please enter the new PIN again.</string>
 
     <string name="snackbar_save_success">%1$s saved successfully.</string>
     <string name="snackbar_create_success">%1$s created successfully.</string>
@@ -194,6 +211,10 @@
     <string name="snackbar_report_sent">Problem report successfully sent.</string>
     <string name="snackbar_task_status">Task status could not be edited because of an internal error.</string>
     <string name="snackbar_task_reply">An assignee reply is required when setting the task status to not executable.</string>
+    <string name="snackbar_pin_not_matching">The PINs you\'ve entered do not match. Please try again.</string>
+    <string name="snackbar_pin_wrong">You\'ve entered an incorrect PIN.</string>
+    <string name="snackbar_pin_too_short">The PIN has to be four digits long.</string>
+    <string name="snackbar_pin_changed">PIN has been successfully changed.</string>
 
     <string name="entity_case">Case</string>
     <string name="entity_contact">Contact</string>

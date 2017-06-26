@@ -238,6 +238,7 @@ public abstract class AbstractRootTabActivity extends AbstractTabActivity {
 
     public void logout() {
         ConfigProvider.clearUsernameAndPassword();
+        ConfigProvider.clearPin();
         Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
     }

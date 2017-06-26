@@ -52,7 +52,7 @@ public class LoginActivity extends AppCompatActivity {
 
         // already logged in?
         if (ConfigProvider.getUser() != null) {
-            Intent intent = new Intent(this, CasesActivity.class);
+            Intent intent = new Intent(this, EnterPinActivity.class);
             startActivity(intent);
         }
     }
@@ -81,7 +81,7 @@ public class LoginActivity extends AppCompatActivity {
             }
 
             if (RetroProvider.isConnected()) {
-                Intent intent = new Intent(this, CasesActivity.class);
+                Intent intent = new Intent(this, EnterPinActivity.class);
                 startActivity(intent);
             }
         }

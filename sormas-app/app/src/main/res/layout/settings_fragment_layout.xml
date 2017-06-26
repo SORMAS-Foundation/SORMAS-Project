@@ -45,6 +45,13 @@
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:id="@+id/config_changePIN"
+                android:onClick="changePIN"
+                android:text="@string/action_change_PIN"/>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:id="@+id/config_dropData"
                 android:text="@string/action_drop_data"/>
 
