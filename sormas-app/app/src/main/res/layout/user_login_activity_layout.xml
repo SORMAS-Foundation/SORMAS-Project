@@ -30,11 +30,11 @@
 
     <ImageView
         android:id="@+id/sormas_logo"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1.00"
+        android:layout_width="128dp"
+        android:layout_height="128dp"
         android:layout_marginBottom="48dp"
-        android:src="@mipmap/sormas_logo" />
+        android:layout_weight="0.11"
+        android:src="@drawable/sormas_logo_big"/>
 
     <TextView
         android:layout_width="wrap_content"
