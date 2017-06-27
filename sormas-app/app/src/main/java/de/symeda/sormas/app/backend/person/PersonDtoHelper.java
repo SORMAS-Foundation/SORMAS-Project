@@ -1,5 +1,7 @@
 package de.symeda.sormas.app.backend.person;
 
+import java.util.List;
+
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
@@ -8,7 +10,9 @@ import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.facility.FacilityDtoHelper;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.location.LocationDtoHelper;
+import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.util.DataUtils;
+import retrofit2.Call;
 
 public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
 
@@ -22,6 +26,16 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
     @Override
     protected Class<PersonDto> getDtoClass() {
         return PersonDto.class;
+    }
+
+    @Override
+    protected Call<List<PersonDto>> pullAllSince(long since) {
+        return RetroProvider.getPersonFacade().pullAllSince(since);
+    }
+
+    @Override
+    protected Call<Long> pushAll(List<PersonDto> personDtos) {
+        return RetroProvider.getPersonFacade().pushAll(personDtos);
     }
 
     @Override

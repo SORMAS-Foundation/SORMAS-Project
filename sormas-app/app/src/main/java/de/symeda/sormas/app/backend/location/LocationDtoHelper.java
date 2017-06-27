@@ -1,11 +1,14 @@
 package de.symeda.sormas.app.backend.location;
 
+import java.util.List;
+
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.region.CommunityDtoHelper;
 import de.symeda.sormas.app.backend.region.DistrictDtoHelper;
 import de.symeda.sormas.app.backend.region.RegionDtoHelper;
+import retrofit2.Call;
 
 /**
  * Created by Martin Wahnschaffe on 27.07.2016.
@@ -20,6 +23,16 @@ public class LocationDtoHelper extends AdoDtoHelper<Location, LocationDto> {
     @Override
     protected Class<LocationDto> getDtoClass() {
         return LocationDto.class;
+    }
+
+    @Override
+    protected Call<List<LocationDto>> pullAllSince(long since) {
+        throw new UnsupportedOperationException("Entity is embedded");
+    }
+
+    @Override
+    protected Call<Long> pushAll(List<LocationDto> locationDtos) {
+        throw new UnsupportedOperationException("Entity is embedded");
     }
 
     @Override

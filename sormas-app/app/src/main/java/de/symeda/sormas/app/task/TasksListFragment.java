@@ -26,6 +26,7 @@ import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventDao;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.rest.RetroProvider;
+import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.util.SyncCallback;
 
 /**
@@ -105,10 +106,11 @@ public class TasksListFragment extends ListFragment {
             @Override
             public void onRefresh() {
                 if (RetroProvider.isConnected()) {
-                    SyncTasksTask.syncTasksWithCallback(getActivity().getSupportFragmentManager(), getContext(), getContext(), new SyncCallback() {
+                    SynchronizeDataAsync.call(SynchronizeDataAsync.SyncMode.ChangesOnly, getContext(), new SyncCallback() {
                         @Override
                         public void call(boolean syncFailed) {
                             refreshLayout.setRefreshing(false);
+                            onResume();
                             if (!syncFailed) {
                                 Snackbar.make(getActivity().findViewById(R.id.base_layout), R.string.snackbar_sync_success, Snackbar.LENGTH_LONG).show();
                             } else {

@@ -18,6 +18,7 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.rest.RetroProvider;
+import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.util.SyncCallback;
 
 public class EventParticipantsListFragment extends ListFragment {
@@ -33,9 +34,6 @@ public class EventParticipantsListFragment extends ListFragment {
     @Override
     public void onResume() {
         super.onResume();
-//        if (ConnectionHelper.isConnectedToInternet(getContext())) {
-//            SyncEventParticipantsTask.syncEventParticipantsWithoutCallback(getContext(), getActivity().getSupportFragmentManager());
-//        }
         updateArrayAdapter();
     }
 
@@ -51,10 +49,11 @@ public class EventParticipantsListFragment extends ListFragment {
                     @Override
                     public void onRefresh() {
                         if (RetroProvider.isConnected()) {
-                            SyncEventParticipantsTask.syncEventParticipantsWithCallback(getContext(), getActivity().getSupportFragmentManager(), new SyncCallback() {
+                            SynchronizeDataAsync.call(SynchronizeDataAsync.SyncMode.ChangesOnly, getContext(), new SyncCallback() {
                                 @Override
                                 public void call(boolean syncFailed) {
                                     refreshLayout.setRefreshing(false);
+                                    onResume();
                                     if (!syncFailed) {
                                         Snackbar.make(getActivity().findViewById(R.id.base_layout), R.string.snackbar_sync_success, Snackbar.LENGTH_LONG).show();
                                     } else {

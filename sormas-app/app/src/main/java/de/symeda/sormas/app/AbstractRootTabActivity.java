@@ -6,8 +6,8 @@ import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -22,11 +22,11 @@ import de.symeda.sormas.app.caze.CasesActivity;
 import de.symeda.sormas.app.contact.ContactsActivity;
 import de.symeda.sormas.app.event.EventsActivity;
 import de.symeda.sormas.app.rest.RetroProvider;
+import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.sample.SamplesActivity;
 import de.symeda.sormas.app.settings.SettingsActivity;
 import de.symeda.sormas.app.task.TasksActivity;
 import de.symeda.sormas.app.util.SyncCallback;
-import de.symeda.sormas.app.util.SyncInfrastructureTask;
 
 public abstract class AbstractRootTabActivity extends AbstractTabActivity {
 
@@ -75,8 +75,6 @@ public abstract class AbstractRootTabActivity extends AbstractTabActivity {
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_menu_black_24dp);
 
         setupDrawer();
-
-        syncAll(false);
     }
 
     protected boolean isUserNeeded() {
@@ -92,6 +90,8 @@ public abstract class AbstractRootTabActivity extends AbstractTabActivity {
                 currentTab = params.getInt(KEY_PAGE);
             }
         }
+
+        synchronizeData(SynchronizeDataAsync.SyncMode.ChangesOnly, false);
     }
 
     @Override
@@ -182,49 +182,65 @@ public abstract class AbstractRootTabActivity extends AbstractTabActivity {
         startActivity(intent);
     }
 
-    public void syncAll() {
-        syncAll(true);
+    public void synchronizeData() {
+        synchronizeData(SynchronizeDataAsync.SyncMode.Complete, true);
     }
 
-    public void syncAll(final boolean showResultSnackbar) {
+    public void synchronizeData(SynchronizeDataAsync.SyncMode syncMode, final boolean showResultSnackbarAndRefreshLayout) {
+
+        final SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
+
+        if (swipeRefreshLayout != null) {
+            swipeRefreshLayout.setRefreshing(true);
+        }
+
         if (!RetroProvider.isConnected()) {
             try {
                 RetroProvider.connect(getApplicationContext());
             } catch (AuthenticatorException e) {
-                if (showResultSnackbar) {
+                if (showResultSnackbarAndRefreshLayout) {
                     Snackbar.make(findViewById(android.R.id.content), e.getMessage(), Snackbar.LENGTH_LONG).show();
                 }
                 // switch to LoginActivity is done below
             } catch (RetroProvider.ApiVersionException e) {
-                if (showResultSnackbar) {
+                if (showResultSnackbarAndRefreshLayout) {
                     Snackbar.make(findViewById(android.R.id.content), e.getMessage(), Snackbar.LENGTH_LONG).show();
                 }
             } catch (ConnectException e) {
-                if (showResultSnackbar) {
+                if (showResultSnackbarAndRefreshLayout) {
                     Snackbar.make(findViewById(android.R.id.content), e.getMessage(), Snackbar.LENGTH_LONG).show();
                 }
             }
         }
 
         if (isUserNeeded() && ConfigProvider.getUser() == null) {
+            if (swipeRefreshLayout != null) {
+                swipeRefreshLayout.setRefreshing(false);
+            }
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
             return;
         }
 
         if (RetroProvider.isConnected()) {
-            SyncInfrastructureTask.syncAll(new SyncCallback() {
+
+            SynchronizeDataAsync.call(syncMode, getApplicationContext(), new SyncCallback() {
                 @Override
                 public void call(boolean syncFailed) {
+
+                    if (swipeRefreshLayout != null) {
+                        swipeRefreshLayout.setRefreshing(false);
+                    }
+
                     if (getSupportFragmentManager().getFragments() != null) {
                         for (Fragment fragment : getSupportFragmentManager().getFragments()) {
-                            if (fragment != null) {
+                            if (fragment != null && fragment.isVisible()) {
                                 fragment.onResume();
                             }
                         }
                     }
 
-                    if (showResultSnackbar) {
+                    if (showResultSnackbarAndRefreshLayout) {
                         if (!syncFailed) {
                             Snackbar.make(findViewById(android.R.id.content), R.string.snackbar_sync_success, Snackbar.LENGTH_LONG).show();
                         } else {
@@ -232,7 +248,14 @@ public abstract class AbstractRootTabActivity extends AbstractTabActivity {
                         }
                     }
                 }
-            }, AbstractRootTabActivity.this);
+            });
+        }
+        else {
+            if (swipeRefreshLayout != null) {
+                swipeRefreshLayout.setRefreshing(false);
+            }
+
+            Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_no_connection, Snackbar.LENGTH_LONG).show();
         }
     }
 
@@ -269,7 +292,7 @@ public abstract class AbstractRootTabActivity extends AbstractTabActivity {
                 menuDrawerList.clearChoices();
                 break;
             case 6:
-                syncAll();
+                synchronizeData();
                 // don't keep this button selected
                 menuDrawerList.clearChoices();
                 break;

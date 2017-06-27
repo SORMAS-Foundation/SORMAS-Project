@@ -1,5 +1,7 @@
 package de.symeda.sormas.app.backend.sample;
 
+import java.util.List;
+
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.app.backend.caze.Case;
@@ -10,6 +12,8 @@ import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.facility.FacilityDtoHelper;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.backend.user.UserDtoHelper;
+import de.symeda.sormas.app.rest.RetroProvider;
+import retrofit2.Call;
 
 /**
  * Created by Mate Strysewske on 06.02.2017.
@@ -25,6 +29,16 @@ public class SampleDtoHelper extends AdoDtoHelper<Sample, SampleDto> {
     @Override
     protected Class<SampleDto> getDtoClass() {
         return SampleDto.class;
+    }
+
+    @Override
+    protected Call<List<SampleDto>> pullAllSince(long since) {
+        return RetroProvider.getSampleFacade().pullAllSince(since);
+    }
+
+    @Override
+    protected Call<Long> pushAll(List<SampleDto> sampleDtos) {
+        return RetroProvider.getSampleFacade().pushAll(sampleDtos);
     }
 
     @Override

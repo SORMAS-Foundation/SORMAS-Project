@@ -1,6 +1,5 @@
 package de.symeda.sormas.app.backend.common;
 
-import android.content.Context;
 import android.util.Log;
 
 import com.j256.ormlite.logger.Logger;
@@ -30,20 +29,32 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 
     protected abstract Class<ADO> getAdoClass();
     protected abstract Class<DTO> getDtoClass();
+    protected abstract Call<List<DTO>> pullAllSince(long since);
+    protected abstract Call<Long> pushAll(List<DTO> dtos);
 
     protected abstract void fillInnerFromDto(ADO ado, DTO dto);
     protected abstract void fillInnerFromAdo(DTO dto, ADO ado);
 
     protected void preparePulledResult(List<DTO> result) { }
 
-    public void pullEntities(DtoGetInterface<DTO> getInterface, final AbstractAdoDao<ADO> dao, final Context context) throws DaoException, SQLException, IOException {
-        try {
-            Date maxModifiedDate = dao.getLatestChangeDate();
-            // server change date has higher precision
-            // adding 1 is workaround to make sure we don't get entities we already know
-            maxModifiedDate.setTime(maxModifiedDate.getTime() + 1);
+    public void synchronizeEntities()
+            throws DaoException, SQLException, IOException {
 
-            Call<List<DTO>> dtoCall = getInterface.getAll(maxModifiedDate != null ? maxModifiedDate.getTime() : 0);
+        pullEntities();
+
+        boolean anotherPullNeeded = pushEntities();
+
+        if (anotherPullNeeded) {
+            pullEntities();
+        }
+    }
+
+    public void pullEntities() throws DaoException, SQLException, IOException {
+        try {
+            final AbstractAdoDao<ADO> dao = DatabaseHelper.getAdoDao(getAdoClass());
+
+            Date maxModifiedDate = dao.getLatestChangeDate();
+            Call<List<DTO>> dtoCall = pullAllSince(maxModifiedDate != null ? maxModifiedDate.getTime() + 1 : 0);
             if (dtoCall == null) {
                 return;
             }
@@ -56,27 +67,8 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
                     public Void call() throws Exception {
                         boolean empty = dao.countOf() == 0;
                         for (DTO dto : result) {
-
                             ADO source = fillOrCreateFromDto(null, dto);
                             dao.mergeOrCreate(source);
-
-//                            ADO ado = empty ? null : dao.queryUuid(dto.getUuid());
-//
-//                            // merge or just saveAndSnapshot?
-//                            if (ado != null && ado.isModified()) {
-//                                // merge existing changes into incoming data
-//                                ADO original = dao.querySnapshotByUuid(dto.getUuid());
-//                                AdoMergeHelper.mergeAdo(ado, original, source);
-//                                dao.saveAndSnapshot(ado);
-//                                dao.saveUnmodified(original);
-//
-//                                // in theory ado and cloned original could now be equal
-//                                // and we no longer need to keep the copy. Ignore this
-//
-//                            } else {
-//                                ado = fillOrCreateFromDto(ado, dto);
-//                                dao.saveUnmodified(ado);
-//                            }
                         }
                         return null;
                     }
@@ -93,8 +85,10 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
     /**
      * @return true: another pull is needed, because data has been changed on the server
      */
-    public boolean pushEntities(DtoPostInterface<DTO> postInterface, final AbstractAdoDao<ADO> dao) throws DaoException, IOException {
+    public boolean pushEntities() throws DaoException, IOException {
         try {
+            final AbstractAdoDao<ADO> dao = DatabaseHelper.getAdoDao(getAdoClass());
+
             final List<ADO> modifiedAdos = dao.queryForEq(ADO.MODIFIED, true);
 
             List<DTO> modifiedDtos = new ArrayList<>(modifiedAdos.size());
@@ -107,29 +101,27 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
                 return false;
             }
 
-            Call<Long> call = postInterface.postAll(modifiedDtos);
+            Call<Long> call = pushAll(modifiedDtos);
 
-            final Long resultChangeDate = call.execute().body();
-            if (resultChangeDate == null) {
-                throw new ConnectException("PostAll did not work");
-            } else {
-                dao.callBatchTasks(new Callable<Void>() {
-                    public Void call() throws Exception {
-                        for (ADO ado : modifiedAdos) {
-                            // data has been pushed, we no longer need the old unmodified version
-                            dao.accept(ado);
-                        }
-                        return null;
+            Response<Long> response = call.execute();
+            if(!response.isSuccessful()) {
+                throw new ConnectException("Pushing changes to server did not work: " + response.errorBody().string());
+            }
+            dao.callBatchTasks(new Callable<Void>() {
+                public Void call() throws Exception {
+                    for (ADO ado : modifiedAdos) {
+                        // data has been pushed, we no longer need the old unmodified version
+                        dao.accept(ado);
                     }
-                });
-
-                if (modifiedAdos.size() > 0) {
-                    Log.d(dao.getTableName(), "Pushed: " + modifiedAdos.size());
+                    return null;
                 }
+            });
+
+            if (modifiedAdos.size() > 0) {
+                Log.d(dao.getTableName(), "Pushed: " + modifiedAdos.size());
             }
 
-            // do we need to pull again
-            return resultChangeDate == null || resultChangeDate == -1;
+            return true;
         } catch (RuntimeException e) {
             Log.e(getClass().getName(), "Exception thrown when trying to push entities");
             throw new DaoException(e);
@@ -180,14 +172,6 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
             Log.e(DataUtils.class.getName(), "Could not perform createNew", e);
             throw new RuntimeException(e);
         }
-    }
-
-    public interface DtoGetInterface<DTO extends DataTransferObject> {
-        Call<List<DTO>> getAll(long since);
-    }
-
-    public interface DtoPostInterface<DTO extends DataTransferObject> {
-        Call<Long> postAll(List<DTO> dtos);
     }
 
     public static void fillDto(DataTransferObject dto, AbstractDomainObject ado) {

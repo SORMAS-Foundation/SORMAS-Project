@@ -173,6 +173,10 @@ public final class RetroProvider {
         SynchronizeDataAsync.call(SynchronizeDataAsync.SyncMode.ChangesAndInfrastructure, context, null);
     }
 
+    public static void disconnect() {
+        instance = null;
+    }
+
     public static InfoFacadeRetro getInfoFacade() {
         return instance.infoFacadeRetro;
     }

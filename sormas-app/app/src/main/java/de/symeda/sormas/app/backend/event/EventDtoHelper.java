@@ -1,5 +1,7 @@
 package de.symeda.sormas.app.backend.event;
 
+import java.util.List;
+
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
@@ -8,6 +10,8 @@ import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.location.LocationDtoHelper;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.backend.user.UserDtoHelper;
+import de.symeda.sormas.app.rest.RetroProvider;
+import retrofit2.Call;
 
 public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 
@@ -25,6 +29,16 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
     @Override
     protected Class<EventDto> getDtoClass() {
         return EventDto.class;
+    }
+
+    @Override
+    protected Call<List<EventDto>> pullAllSince(long since) {
+        return RetroProvider.getEventFacade().pullAllSince(since);
+    }
+
+    @Override
+    protected Call<Long> pushAll(List<EventDto> eventDtos) {
+        return RetroProvider.getEventFacade().pushAll(eventDtos);
     }
 
     @Override

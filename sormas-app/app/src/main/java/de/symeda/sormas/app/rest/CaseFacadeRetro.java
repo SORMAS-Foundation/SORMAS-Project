@@ -15,11 +15,11 @@ import retrofit2.http.Path;
 public interface CaseFacadeRetro {
 
     @GET("cases/all/{since}")
-    Call<List<CaseDataDto>> getAll(@Path("since") long since);
+    Call<List<CaseDataDto>> pullAllSince(@Path("since") long since);
 
     @POST("cases/push")
-    Call<Long> postAll(@Body List<CaseDataDto> dtos);
+    Call<Long> pushAll(@Body List<CaseDataDto> dtos);
 
     @GET("cases/uuids")
-    Call<List<String>> getUuids();
+    Call<List<String>> pullUuids();
 }

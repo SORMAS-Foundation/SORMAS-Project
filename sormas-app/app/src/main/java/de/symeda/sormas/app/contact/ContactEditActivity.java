@@ -35,6 +35,7 @@ import de.symeda.sormas.app.backend.visit.Visit;
 import de.symeda.sormas.app.backend.visit.VisitDao;
 import de.symeda.sormas.app.component.UserReportDialog;
 import de.symeda.sormas.app.rest.RetroProvider;
+import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.task.TaskForm;
 import de.symeda.sormas.app.task.TasksListFragment;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
@@ -249,7 +250,7 @@ public class ContactEditActivity extends AbstractEditTabActivity {
                         contactDao.markAsRead(contact);
 
                         if (RetroProvider.isConnected()) {
-                            SyncContactsTask.syncContactsWithProgressDialog(this, new SyncCallback() {
+                            SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.ChangesOnly, this, new SyncCallback() {
                                 @Override
                                 public void call(boolean syncFailed) {
                                     reloadTabs();

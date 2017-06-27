@@ -4,6 +4,7 @@ import java.util.List;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.task.TaskDto;
+import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;

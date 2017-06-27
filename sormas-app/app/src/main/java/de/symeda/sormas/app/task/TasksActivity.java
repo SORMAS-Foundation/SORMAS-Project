@@ -18,6 +18,7 @@ import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.task.TaskDao;
 import de.symeda.sormas.app.component.UserReportDialog;
 import de.symeda.sormas.app.rest.RetroProvider;
+import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.util.SyncCallback;
 
 public class TasksActivity extends AbstractRootTabActivity {
@@ -38,10 +39,6 @@ public class TasksActivity extends AbstractRootTabActivity {
         adapter = new TasksListFilterAdapter(getSupportFragmentManager());
         createTabViews(adapter);
         pager.setCurrentItem(currentTab);
-
-        if (RetroProvider.isConnected()) {
-            SyncTasksTask.syncTasksWithoutCallback(getSupportFragmentManager(), getApplicationContext(), this);
-        }
     }
 
     @Override
@@ -56,23 +53,7 @@ public class TasksActivity extends AbstractRootTabActivity {
 
         switch(item.getItemId()) {
             case R.id.action_reload:
-                if (RetroProvider.isConnected()) {
-                    final SwipeRefreshLayout refreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
-                    refreshLayout.setRefreshing(true);
-                    SyncTasksTask.syncTasksWithCallback(getSupportFragmentManager(), getApplicationContext(), this, new SyncCallback() {
-                        @Override
-                        public void call(boolean syncFailed) {
-                            refreshLayout.setRefreshing(false);
-                            if (!syncFailed) {
-                                Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_sync_success, Snackbar.LENGTH_LONG).show();
-                            } else {
-                                Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_sync_error, Snackbar.LENGTH_LONG).show();
-                            }
-                        }
-                    });
-                } else {
-                    Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_no_connection, Snackbar.LENGTH_LONG).show();
-                }
+                synchronizeData(SynchronizeDataAsync.SyncMode.ChangesOnly, true);
                 return true;
 
             case R.id.action_markAllAsRead:

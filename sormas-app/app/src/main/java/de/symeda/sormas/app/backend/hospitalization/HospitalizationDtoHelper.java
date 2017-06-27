@@ -7,6 +7,7 @@ import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import retrofit2.Call;
 
 /**
  * Created by Mate Strysewske on 22.02.2017.
@@ -28,6 +29,16 @@ public class HospitalizationDtoHelper extends AdoDtoHelper<Hospitalization, Hosp
     @Override
     protected Class<HospitalizationDto> getDtoClass() {
         return HospitalizationDto.class;
+    }
+
+    @Override
+    protected Call<List<HospitalizationDto>> pullAllSince(long since) {
+        throw new UnsupportedOperationException("Entity is embedded");
+    }
+
+    @Override
+    protected Call<Long> pushAll(List<HospitalizationDto> hospitalizationDtos) {
+        throw new UnsupportedOperationException("Entity is embedded");
     }
 
     @Override

@@ -1,5 +1,7 @@
 package de.symeda.sormas.app.backend.visit;
 
+import java.util.List;
+
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
@@ -10,6 +12,8 @@ import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.symptoms.SymptomsDtoHelper;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.backend.user.UserDtoHelper;
+import de.symeda.sormas.app.rest.RetroProvider;
+import retrofit2.Call;
 
 public class VisitDtoHelper extends AdoDtoHelper<Visit, VisitDto> {
 
@@ -23,6 +27,16 @@ public class VisitDtoHelper extends AdoDtoHelper<Visit, VisitDto> {
     @Override
     protected Class<VisitDto> getDtoClass() {
         return VisitDto.class;
+    }
+
+    @Override
+    protected Call<List<VisitDto>> pullAllSince(long since) {
+        return RetroProvider.getVisitFacade().pullAllSince(since);
+    }
+
+    @Override
+    protected Call<Long> pushAll(List<VisitDto> visitDtos) {
+        return RetroProvider.getVisitFacade().pushAll(visitDtos);
     }
 
     @Override

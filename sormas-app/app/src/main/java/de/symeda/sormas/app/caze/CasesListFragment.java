@@ -19,6 +19,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.rest.RetroProvider;
+import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.util.SyncCallback;
 
 /**
@@ -64,10 +65,11 @@ public class CasesListFragment extends ListFragment {
             @Override
             public void onRefresh() {
                 if (RetroProvider.isConnected()) {
-                    SyncCasesTask.syncCasesWithCallback(getContext(), getActivity().getSupportFragmentManager(), new SyncCallback() {
+                    SynchronizeDataAsync.call(SynchronizeDataAsync.SyncMode.ChangesOnly, getContext(), new SyncCallback() {
                         @Override
                         public void call(boolean syncFailed) {
                             refreshLayout.setRefreshing(false);
+                            onResume();
                             if (!syncFailed) {
                                 Snackbar.make(getActivity().findViewById(R.id.base_layout), R.string.snackbar_sync_success, Snackbar.LENGTH_LONG).show();
                             } else {

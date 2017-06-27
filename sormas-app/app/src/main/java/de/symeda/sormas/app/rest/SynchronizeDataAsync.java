@@ -7,19 +7,32 @@ import android.util.Log;
 
 import com.google.android.gms.analytics.Tracker;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
+import de.symeda.sormas.app.backend.caze.CaseDtoHelper;
+import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.contact.ContactDtoHelper;
+import de.symeda.sormas.app.backend.event.EventDtoHelper;
+import de.symeda.sormas.app.backend.event.EventParticipantDtoHelper;
+import de.symeda.sormas.app.backend.facility.FacilityDtoHelper;
+import de.symeda.sormas.app.backend.person.PersonDtoHelper;
+import de.symeda.sormas.app.backend.region.CommunityDtoHelper;
+import de.symeda.sormas.app.backend.region.DistrictDtoHelper;
+import de.symeda.sormas.app.backend.region.RegionDtoHelper;
+import de.symeda.sormas.app.backend.sample.SampleDtoHelper;
+import de.symeda.sormas.app.backend.sample.SampleTestDtoHelper;
+import de.symeda.sormas.app.backend.task.TaskDtoHelper;
+import de.symeda.sormas.app.backend.user.UserDtoHelper;
+import de.symeda.sormas.app.backend.visit.VisitDtoHelper;
 import de.symeda.sormas.app.task.TaskNotificationService;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.SyncCallback;
 
-/**
- * Querries for uuids of all non-embedded entities and deletes local entities that are not in the whitelist
- * TODO find a better name
- */
 public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
     /**
@@ -27,9 +40,14 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
      * as the last callback is called (i.e. the synchronization has been completed/cancelled).
      */
     protected boolean syncFailed;
+    protected boolean secondTry;
+
+    private final SyncMode syncMode;
     private final Context context;
 
-    private SynchronizeDataAsync(Context context) {
+
+    private SynchronizeDataAsync(SyncMode syncMode, Context context) {
+        this.syncMode = syncMode;
         this.context = context;
     }
 
@@ -37,16 +55,67 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
     protected Void doInBackground(Void... params) {
         try {
 
-            pullUuidsAndDeleteInvalid();
+            switch (syncMode) {
+                case ChangesOnly:
+                    if (secondTry) {
+                        pullUuidsAndDeleteInvalid();
+                    }
+                    synchronizeChangedData();
+                    break;
+                case ChangesAndInfrastructure:
+                    pullInfrastructure();
+                    if (secondTry) {
+                        pullUuidsAndDeleteInvalid();
+                    }
+                    synchronizeChangedData();
+                    break;
+                case Complete:
+                    pullInfrastructure();
+                    pullUuidsAndDeleteInvalid();
+                    synchronizeChangedData();
+                    break;
+                default:
+                    throw new IllegalArgumentException(syncMode.toString());
+            }
 
         } catch (Exception e) {
-            syncFailed = true;
-            Log.e(getClass().getName(), "Error while synchronizing removed entities", e);
+
+            Log.e(getClass().getName(), "Error trying to synchronize data", e);
             SormasApplication application = (SormasApplication) context.getApplicationContext();
             Tracker tracker = application.getDefaultTracker();
             ErrorReportingHelper.sendCaughtException(tracker, e, null, true);
+
+            if (!secondTry) {
+                secondTry = true;
+                doInBackground(params);
+            } else {
+                syncFailed = true;
+                RetroProvider.disconnect();
+            }
         }
         return null;
+    }
+
+    private void synchronizeChangedData() throws DaoException, SQLException, IOException {
+
+        new PersonDtoHelper().synchronizeEntities();
+        new EventDtoHelper().synchronizeEntities();
+        new EventParticipantDtoHelper().synchronizeEntities();
+        new CaseDtoHelper().synchronizeEntities();
+        new SampleDtoHelper().synchronizeEntities();
+        new SampleTestDtoHelper().synchronizeEntities();
+        new ContactDtoHelper().synchronizeEntities();
+        new VisitDtoHelper().synchronizeEntities();
+        new TaskDtoHelper().synchronizeEntities();
+    }
+
+    private void pullInfrastructure() throws DaoException, SQLException, IOException {
+
+        new RegionDtoHelper().pullEntities();
+        new DistrictDtoHelper().pullEntities();
+        new CommunityDtoHelper().pullEntities();
+        new FacilityDtoHelper().pullEntities();
+        new UserDtoHelper().pullEntities();
     }
 
     private void pullUuidsAndDeleteInvalid() throws java.io.IOException {
@@ -73,7 +142,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         DatabaseHelper.getSampleDao().deleteInvalid(uuids);
 
         // cases
-        uuids = RetroProvider.getCaseFacade().getUuids().execute().body();
+        uuids = RetroProvider.getCaseFacade().pullUuids().execute().body();
         DatabaseHelper.getCaseDao().deleteInvalid(uuids);
 
         // event participants
@@ -96,32 +165,38 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
      * @param context
      * @param callback
      */
-    public static void callWithProgressDialog(final Context context, final SyncCallback callback, final Context notificationContext) {
-        final ProgressDialog progressDialog = ProgressDialog.show(context, context.getString(R.string.headline_task_synchronization),
-                context.getString(R.string.hint_task_synchronization), true);
+    public static void callWithProgressDialog(SyncMode syncMode, final Context context, final SyncCallback callback) {
+        final ProgressDialog progressDialog = ProgressDialog.show(context, context.getString(R.string.headline_synchronization),
+                context.getString(R.string.hint_synchronization), true);
 
-        call(context, new SyncCallback() {
+        call(syncMode, context, new SyncCallback() {
             @Override
             public void call(boolean syncFailed) {
                 progressDialog.dismiss();
                 callback.call(syncFailed);
             }
-        }, notificationContext);
+        });
     }
 
 
-    public static void call(Context context, final SyncCallback callback, final Context notificationContext) {
-        new SynchronizeDataAsync(context) {
+    public static void call(SyncMode syncMode, final Context context, final SyncCallback callback) {
+        new SynchronizeDataAsync(syncMode, context) {
             @Override
             protected void onPostExecute(Void aVoid) {
                 if (callback != null) {
                     callback.call(this.syncFailed);
                 }
                 this.syncFailed = false;
-                if (notificationContext != null) {
-                    TaskNotificationService.doTaskNotification(notificationContext);
+                if (context != null) {
+                    TaskNotificationService.doTaskNotification(context);
                 }
             }
         }.execute();
+    }
+
+    public enum SyncMode {
+        ChangesOnly,
+        ChangesAndInfrastructure,
+        Complete,
     }
 }

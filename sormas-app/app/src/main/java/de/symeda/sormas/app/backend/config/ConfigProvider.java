@@ -204,7 +204,7 @@ public final class ConfigProvider {
             throw new NullPointerException("pin");
         }
 
-        pin = this.encodeCredential(pin, "PIN");
+        pin = instance.encodeCredential(pin, "PIN");
 
         if (pin.equals(instance.pin)) {
             return;
@@ -298,6 +298,9 @@ public final class ConfigProvider {
             keyStore.load(null);
 
             KeyStore.PrivateKeyEntry privateKeyEntry = (KeyStore.PrivateKeyEntry) keyStore.getEntry(keyStoreAlias, null);
+            if (privateKeyEntry == null) {
+                return null;
+            }
             PrivateKey privateKey = privateKeyEntry.getPrivateKey();
 
             Cipher decryptCipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");

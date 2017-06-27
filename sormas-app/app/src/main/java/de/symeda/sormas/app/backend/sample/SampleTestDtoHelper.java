@@ -1,8 +1,12 @@
 package de.symeda.sormas.app.backend.sample;
 
+import java.util.List;
+
 import de.symeda.sormas.api.sample.SampleTestDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.rest.RetroProvider;
+import retrofit2.Call;
 
 /**
  * Created by Mate Strysewske on 09.02.2017.
@@ -18,6 +22,16 @@ public class SampleTestDtoHelper extends AdoDtoHelper<SampleTest, SampleTestDto>
     @Override
     protected Class<SampleTestDto> getDtoClass() {
         return SampleTestDto.class;
+    }
+
+    @Override
+    protected Call<List<SampleTestDto>> pullAllSince(long since) {
+        return RetroProvider.getSampleTestFacade().pullAllSince(since);
+    }
+
+    @Override
+    protected Call<Long> pushAll(List<SampleTestDto> sampleTestDtos) {
+        throw new UnsupportedOperationException("Can't change sample tests in app");
     }
 
     @Override

@@ -34,6 +34,7 @@ import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.task.TaskDao;
 import de.symeda.sormas.app.component.UserReportDialog;
 import de.symeda.sormas.app.rest.RetroProvider;
+import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.task.TaskForm;
 import de.symeda.sormas.app.task.TasksListFragment;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
@@ -246,7 +247,7 @@ public class EventEditActivity extends AbstractEditTabActivity {
                                 eventDao.markAsRead(event);
 
                                 if (RetroProvider.isConnected()) {
-                                    SyncEventsTask.syncEventsWithProgressDialog(this, new SyncCallback() {
+                                    SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.ChangesOnly, this, new SyncCallback() {
                                         @Override
                                         public void call(boolean syncFailed) {
                                             if (syncFailed) {

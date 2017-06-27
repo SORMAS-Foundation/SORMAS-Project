@@ -11,6 +11,8 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.location.LocationDtoHelper;
+import de.symeda.sormas.app.rest.RetroProvider;
+import retrofit2.Call;
 
 /**
  * Created by Martin Wahnschaffe on 27.07.2016.
@@ -27,6 +29,17 @@ public class UserDtoHelper extends AdoDtoHelper<User, UserDto> {
     @Override
     protected Class<UserDto> getDtoClass() {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    protected Call<List<UserDto>> pullAllSince(long since) {
+        return RetroProvider.getUserFacade().pullAllSince(since);
+    }
+
+    @Override
+    protected Call<Long> pushAll(List<UserDto> userDtos) {
+        // TODO
+        throw new UnsupportedOperationException("Can't change users in app");
     }
 
 
@@ -72,7 +85,7 @@ public class UserDtoHelper extends AdoDtoHelper<User, UserDto> {
     @Override
     protected void fillInnerFromAdo(UserDto userDto, User user) {
         // TODO
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("Can't change users in app");
     }
 
     public static UserReferenceDto toReferenceDto(User ado) {

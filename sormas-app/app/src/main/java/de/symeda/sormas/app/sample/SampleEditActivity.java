@@ -28,6 +28,7 @@ import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.backend.sample.SampleDao;
 import de.symeda.sormas.app.component.UserReportDialog;
 import de.symeda.sormas.app.rest.RetroProvider;
+import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.SyncCallback;
 
@@ -184,7 +185,7 @@ public class SampleEditActivity extends AppCompatActivity {
                         Snackbar.make(findViewById(R.id.fragment_frame), "Sample " + DataHelper.getShortUuid(sample.getUuid()) + " saved", Snackbar.LENGTH_LONG).show();
 
                         if (RetroProvider.isConnected()) {
-                            SyncSamplesTask.syncSamplesWithProgressDialog(this, new SyncCallback() {
+                            SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.ChangesOnly, this, new SyncCallback() {
                                 @Override
                                 public void call(boolean syncFailed) {
                                     if (syncFailed) {

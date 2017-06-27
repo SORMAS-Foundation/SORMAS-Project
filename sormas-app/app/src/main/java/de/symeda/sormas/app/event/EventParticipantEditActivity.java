@@ -27,6 +27,7 @@ import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.component.UserReportDialog;
 import de.symeda.sormas.app.person.PersonEditForm;
 import de.symeda.sormas.app.rest.RetroProvider;
+import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.SyncCallback;
 
@@ -160,7 +161,7 @@ public class EventParticipantEditActivity extends AppCompatActivity {
                         eventParticipantDao.markAsRead(eventParticipant);
 
                         if (RetroProvider.isConnected()) {
-                            SyncEventsTask.syncEventsWithProgressDialog(this, new SyncCallback() {
+                            SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.ChangesOnly, this, new SyncCallback() {
                                 @Override
                                 public void call(boolean syncFailed) {
                                     if (syncFailed) {

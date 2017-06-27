@@ -1,5 +1,7 @@
 package de.symeda.sormas.app.backend.task;
 
+import java.util.List;
+
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDtoHelper;
@@ -11,6 +13,8 @@ import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventDtoHelper;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.backend.user.UserDtoHelper;
+import de.symeda.sormas.app.rest.RetroProvider;
+import retrofit2.Call;
 
 /**
  * Created by Stefan Szczesny on 24.10.2016.
@@ -24,6 +28,16 @@ public class TaskDtoHelper extends AdoDtoHelper<Task, TaskDto> {
 
     @Override
     protected Class<TaskDto> getDtoClass() { return TaskDto.class; }
+
+    @Override
+    protected Call<List<TaskDto>> pullAllSince(long since) {
+        return RetroProvider.getTaskFacade().pullAllSince(since);
+    }
+
+    @Override
+    protected Call<Long> pushAll(List<TaskDto> taskDtos) {
+        return RetroProvider.getTaskFacade().pushAll(taskDtos);
+    }
 
     @Override
     public void fillInnerFromDto(Task target, TaskDto source) {

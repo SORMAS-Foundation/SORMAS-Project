@@ -9,6 +9,7 @@ import de.symeda.sormas.api.epidata.EpiDataGatheringDto;
 import de.symeda.sormas.api.epidata.EpiDataTravelDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import retrofit2.Call;
 
 /**
  * Created by Mate Strysewske on 08.03.2017.
@@ -34,6 +35,16 @@ public class EpiDataDtoHelper extends AdoDtoHelper<EpiData, EpiDataDto> {
     @Override
     protected Class<EpiDataDto> getDtoClass() {
         return EpiDataDto.class;
+    }
+
+    @Override
+    protected Call<List<EpiDataDto>> pullAllSince(long since) {
+        throw new UnsupportedOperationException("Entity is embedded");
+    }
+
+    @Override
+    protected Call<Long> pushAll(List<EpiDataDto> epiDataDtos) {
+        throw new UnsupportedOperationException("Entity is embedded");
     }
 
     @Override

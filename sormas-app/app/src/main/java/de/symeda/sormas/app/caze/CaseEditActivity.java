@@ -47,6 +47,7 @@ import de.symeda.sormas.app.component.UserReportDialog;
 import de.symeda.sormas.app.contact.ContactNewActivity;
 import de.symeda.sormas.app.contact.ContactsListFragment;
 import de.symeda.sormas.app.rest.RetroProvider;
+import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.sample.SampleEditActivity;
 import de.symeda.sormas.app.sample.SamplesListFragment;
 import de.symeda.sormas.app.task.TaskForm;
@@ -311,7 +312,7 @@ public class CaseEditActivity extends AbstractEditTabActivity {
                         caseDao.saveAndSnapshot(caze);
 
                         if (RetroProvider.isConnected()) {
-                            SyncCasesTask.syncCasesWithProgressDialog(this, new SyncCallback() {
+                            SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.ChangesOnly,this, new SyncCallback() {
                                 @Override
                                 public void call(boolean syncFailed) {
                                     // entity has to be reloaded

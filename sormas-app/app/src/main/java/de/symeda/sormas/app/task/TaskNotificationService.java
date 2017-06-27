@@ -33,6 +33,7 @@ import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.task.TaskDao;
 import de.symeda.sormas.app.rest.RetroProvider;
+import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.util.Callback;
 
 /**
@@ -73,7 +74,7 @@ public class TaskNotificationService extends Service {
         }
 
         if (RetroProvider.isConnected()) {
-            SyncTasksTask.syncTasks(this.getApplicationContext(), null, this);
+            SynchronizeDataAsync.call(SynchronizeDataAsync.SyncMode.ChangesOnly, this, null);
         }
 
         return super.onStartCommand(intent, flags, startId);
@@ -163,8 +164,8 @@ public class TaskNotificationService extends Service {
         Date now = new Date();
         alarmMgr.setInexactRepeating(
                 AlarmManager.RTC_WAKEUP,
-                now.getTime(), // TODO start at full XX:X5 minute
-                1000 * 30,
+                now.getTime(), // TODO start at full XX:X5 minute, not somewhere in between
+                1000 * 60 * 2, // TODO sync every 5 minutes - not 2
                 alarmIntent);
     }
 }

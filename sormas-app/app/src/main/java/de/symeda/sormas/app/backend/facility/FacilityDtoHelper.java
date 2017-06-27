@@ -1,9 +1,13 @@
 package de.symeda.sormas.app.backend.facility;
 
+import java.util.List;
+
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.rest.RetroProvider;
+import retrofit2.Call;
 
 /**
  * Created by Martin Wahnschaffe on 27.07.2016.
@@ -18,6 +22,16 @@ public class FacilityDtoHelper extends AdoDtoHelper<Facility, FacilityDto> {
     @Override
     protected Class<FacilityDto> getDtoClass() {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    protected Call<List<FacilityDto>> pullAllSince(long since) {
+        return RetroProvider.getFacilityFacade().pullAllSince(since);
+    }
+
+    @Override
+    protected Call<Long> pushAll(List<FacilityDto> facilityDtos) {
+        throw new UnsupportedOperationException("Entity is infrastructure");
     }
 
     @Override

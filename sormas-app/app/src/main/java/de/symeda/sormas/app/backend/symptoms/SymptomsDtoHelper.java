@@ -1,11 +1,14 @@
 package de.symeda.sormas.app.backend.symptoms;
 
+import java.util.List;
+
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.location.LocationDtoHelper;
+import retrofit2.Call;
 
 /**
  * Created by Martin Wahnschaffe on 27.07.2016.
@@ -22,6 +25,16 @@ public class SymptomsDtoHelper extends AdoDtoHelper<Symptoms, SymptomsDto> {
     @Override
     protected Class<SymptomsDto> getDtoClass() {
         return SymptomsDto.class;
+    }
+
+    @Override
+    protected Call<List<SymptomsDto>> pullAllSince(long since) {
+        throw new UnsupportedOperationException("Entity is embedded");
+    }
+
+    @Override
+    protected Call<Long> pushAll(List<SymptomsDto> symptomsDtos) {
+        throw new UnsupportedOperationException("Entity is embedded");
     }
 
     @Override

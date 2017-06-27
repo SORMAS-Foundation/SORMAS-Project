@@ -32,6 +32,7 @@ import de.symeda.sormas.app.AbstractEditTabActivity;
 import de.symeda.sormas.app.component.HelpDialog;
 import de.symeda.sormas.app.component.UserReportDialog;
 import de.symeda.sormas.app.rest.RetroProvider;
+import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.SyncCallback;
 import de.symeda.sormas.app.util.ValidationFailedException;
@@ -193,7 +194,7 @@ public class VisitEditActivity extends AbstractEditTabActivity {
                         visitDao.markAsRead(visit);
 
                         if (RetroProvider.isConnected()) {
-                            SyncVisitsTask.syncVisitsWithProgressDialog(this, new SyncCallback() {
+                            SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.ChangesOnly, this, new SyncCallback() {
                                 @Override
                                 public void call(boolean syncFailed) {
                                     if (syncFailed) {

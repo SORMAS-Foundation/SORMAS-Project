@@ -26,6 +26,7 @@ import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.task.TaskDao;
 import de.symeda.sormas.app.component.UserReportDialog;
 import de.symeda.sormas.app.rest.RetroProvider;
+import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.SyncCallback;
 
@@ -150,7 +151,7 @@ public class TaskEditActivity extends AppCompatActivity {
                     taskDao.markAsRead(task);
 
                     if (RetroProvider.isConnected()) {
-                        SyncTasksTask.syncTasksWithProgressDialog(this, new SyncCallback() {
+                        SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.ChangesOnly, this, new SyncCallback() {
                             @Override
                             public void call(boolean syncFailed) {
                                 onResume();
@@ -160,7 +161,7 @@ public class TaskEditActivity extends AppCompatActivity {
                                     Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_task)), Snackbar.LENGTH_LONG).show();
                                 }
                             }
-                        }, null);
+                        });
                     } else {
                         Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_task)), Snackbar.LENGTH_LONG).show();
                     }

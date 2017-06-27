@@ -1,5 +1,7 @@
 package de.symeda.sormas.app.backend.contact;
 
+import java.util.List;
+
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.app.backend.caze.Case;
@@ -11,6 +13,8 @@ import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDtoHelper;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.backend.user.UserDtoHelper;
+import de.symeda.sormas.app.rest.RetroProvider;
+import retrofit2.Call;
 
 /**
  * Created by Stefan Szczesny on 29.11.2016.
@@ -28,6 +32,16 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
     @Override
     protected Class<ContactDto> getDtoClass() {
         return ContactDto.class;
+    }
+
+    @Override
+    protected Call<List<ContactDto>> pullAllSince(long since) {
+        return RetroProvider.getContactFacade().pullAllSince(since);
+    }
+
+    @Override
+    protected Call<Long> pushAll(List<ContactDto> contactDtos) {
+        return RetroProvider.getContactFacade().pushAll(contactDtos);
     }
 
     @Override
