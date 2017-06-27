@@ -108,7 +108,7 @@
     <string name="headline_travel">Travel</string>
     <string name="headline_user_report">Report a problem</string>
     <string name="headline_sync_log">Synchronization Conflicts</string>
-    <string name="headline_case_synchronization">Case Synchronization</string>
+    <string name="headline_synchronization">Synchronization</string>
     <string name="headline_contact_synchronization">Contact Synchronization</string>
     <string name="headline_alert_synchronization">Alert Synchronization</string>
     <string name="headline_sample_synchronization">Sample Synchronization</string>
@@ -147,7 +147,7 @@
     <string name="hint_user_report">Please briefly describe the problem you have experienced. Don\'t enter any personal or otherwise sensitive data!</string>
     <string name="hint_login">Please log in to your account.</string>
     <string name="hint_no_sync_errors">There are no synchronization conflicts to display.</string>
-    <string name="hint_synchronization">Cases are being synchronized...</string>
+    <string name="hint_synchronization">Synchronizing with SORMAS server...</string>
     <string name="hint_select_entry">Select entry</string>
     <string name="hint_contact_synchronization">Contacts are being synchronized...</string>
     <string name="hint_alert_synchronization">Alerts are being synchronized...</string>
@@ -224,6 +224,6 @@
     <string name="entity_visit">Visit</string>
     <string name="entity_task">Task</string>
 
-    <string name="alert_encryption">SORMAS requires device encryption to be activated on your device to ensure data security. Please note that you cannot use the application as long as device encryption is disabled.</string>
+    <string name="alert_encryption">SORMAS requires device encryption to be activated on your device to ensure data security.\n\nPlease note that you cannot use the application as long as device encryption is disabled.</string>
 
 </resources>

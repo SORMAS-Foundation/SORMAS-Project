@@ -1,7 +1,9 @@
 package de.symeda.sormas.app.backend.config;
 
+import android.app.Activity;
 import android.app.admin.DevicePolicyManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.security.KeyPairGeneratorSpec;
 import android.support.v7.app.AlertDialog;
 import android.util.Base64;
@@ -54,8 +56,6 @@ public final class ConfigProvider {
             Log.e(ConfigProvider.class.getName(), "ConfigProvider has already been initalized");
         }
         instance = new ConfigProvider(context);
-
-        instance.ensureDeviceEncryption();
     }
 
     private final Context context;
@@ -71,19 +71,40 @@ public final class ConfigProvider {
         this.context = context;
     }
 
-    private void ensureDeviceEncryption() {
-        // If device encryption is not active, show a non-cancelable alert that blocks app usage
+    private boolean hasDeviceEncryption() {
+
         DevicePolicyManager dpm = (DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE);
-        if (dpm.getStorageEncryptionStatus() == DevicePolicyManager.ENCRYPTION_STATUS_INACTIVE ||
-                dpm.getStorageEncryptionStatus() == DevicePolicyManager.ENCRYPTION_STATUS_UNSUPPORTED) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        return dpm.getStorageEncryptionStatus() == DevicePolicyManager.ENCRYPTION_STATUS_ACTIVE ||
+                dpm.getStorageEncryptionStatus() == DevicePolicyManager.ENCRYPTION_STATUS_ACTIVE_DEFAULT_KEY;
+    }
+
+    /**
+     * If device encryption is not active, show a non-cancelable alert that blocks app usage
+     * @param activity
+     * @return
+     */
+    public static boolean ensureDeviceEncryption(final Activity activity) {
+
+        if (!instance.hasDeviceEncryption()) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(activity);
             builder.setCancelable(false);
             builder.setMessage(R.string.alert_encryption);
             AlertDialog dialog = builder.create();
+            dialog.setButton(AlertDialog.BUTTON_POSITIVE, activity.getString(R.string.action_ok),
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Activity finishActivity = activity;
+                            do {
+                                finishActivity.finish();
+                                finishActivity = finishActivity.getParent();
+                            } while (finishActivity != null);
+                        }
+                    });
             dialog.show();
-
-            // TODO close app
+            return false;
         }
+        return true;
     }
 
     public static User getUser() {
@@ -117,7 +138,7 @@ public final class ConfigProvider {
                 instance.password = config.getValue();
             }
         }
-        return decodeCredential(instance.password, "Password");
+        return instance.decodeCredential(instance.password, "Password");
     }
 
     public static String getPin() {
@@ -127,7 +148,7 @@ public final class ConfigProvider {
                 instance.pin = config.getValue();
             }
         }
-        return decodeCredential(instance.pin, "PIN");
+        return instance.decodeCredential(instance.pin, "PIN");
     }
 
     public static void clearUsernameAndPassword() {
@@ -163,7 +184,7 @@ public final class ConfigProvider {
         if (password == null)
             throw new NullPointerException("password");
 
-        password = encodeCredential(password, "Password");
+        password = instance.encodeCredential(password, "Password");
 
         if (username.equals(instance.username) && password.equals(instance.password))
             return;
@@ -183,7 +204,7 @@ public final class ConfigProvider {
             throw new NullPointerException("pin");
         }
 
-        pin = encodeCredential(pin, "PIN");
+        pin = this.encodeCredential(pin, "PIN");
 
         if (pin.equals(instance.pin)) {
             return;
@@ -194,10 +215,14 @@ public final class ConfigProvider {
         DatabaseHelper.getConfigDao().createOrUpdate(new Config(KEY_PIN, pin));
     }
 
-    private static String encodeCredential(String clearCredential, String keyStoreAlias) {
+    private String encodeCredential(String clearCredential, String keyStoreAlias) {
 
         if (clearCredential == null) {
             return null;
+        }
+
+        if (!hasDeviceEncryption()) {
+            throw new IllegalStateException(context.getString(R.string.alert_encryption));
         }
 
         try {
@@ -256,16 +281,16 @@ public final class ConfigProvider {
         } catch (NoSuchProviderException e) {
             throw new RuntimeException(e);
         }
-//    } catch (Exception e) {
-//        Log.e(getClass().getName(), "Error while trying to write credentials to key store", e);
-//        Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_login_failed, Snackbar.LENGTH_LONG).show();
-//        ErrorReportingHelper.sendCaughtException(tracker, e, null, true);
     }
 
-    private static String decodeCredential(String encodedCredential, String keyStoreAlias) {
+    private String decodeCredential(String encodedCredential, String keyStoreAlias) {
 
         if (encodedCredential == null) {
             return null;
+        }
+
+        if (!hasDeviceEncryption()) {
+            throw new IllegalStateException(context.getString(R.string.alert_encryption));
         }
 
         try {

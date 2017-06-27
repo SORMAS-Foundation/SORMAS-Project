@@ -35,6 +35,10 @@ public class LoginActivity extends AppCompatActivity {
         SormasApplication application = (SormasApplication) getApplication();
         tracker = application.getDefaultTracker();
 
+        if (!ConfigProvider.ensureDeviceEncryption(LoginActivity.this)) {
+            return;
+        }
+
         // try to connect
         if (ConfigProvider.getUsername() != null) {
             try {
