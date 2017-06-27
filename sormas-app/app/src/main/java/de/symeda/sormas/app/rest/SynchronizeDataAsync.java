@@ -111,11 +111,11 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
     private void pullInfrastructure() throws DaoException, SQLException, IOException {
 
-        new RegionDtoHelper().pullEntities();
-        new DistrictDtoHelper().pullEntities();
-        new CommunityDtoHelper().pullEntities();
-        new FacilityDtoHelper().pullEntities();
-        new UserDtoHelper().pullEntities();
+        new RegionDtoHelper().pullEntities(false);
+        new DistrictDtoHelper().pullEntities(false);
+        new CommunityDtoHelper().pullEntities(false);
+        new FacilityDtoHelper().pullEntities(false);
+        new UserDtoHelper().pullEntities(false);
     }
 
     private void pullUuidsAndDeleteInvalid() throws java.io.IOException {

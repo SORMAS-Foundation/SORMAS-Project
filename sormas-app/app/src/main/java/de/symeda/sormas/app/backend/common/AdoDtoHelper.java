@@ -40,16 +40,16 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
     public void synchronizeEntities()
             throws DaoException, SQLException, IOException {
 
-        pullEntities();
+        pullEntities(false);
 
         boolean anotherPullNeeded = pushEntities();
 
         if (anotherPullNeeded) {
-            pullEntities();
+            pullEntities(true);
         }
     }
 
-    public void pullEntities() throws DaoException, SQLException, IOException {
+    public void pullEntities(final boolean markAsRead) throws DaoException, SQLException, IOException {
         try {
             final AbstractAdoDao<ADO> dao = DatabaseHelper.getAdoDao(getAdoClass());
 
@@ -68,7 +68,10 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
                         boolean empty = dao.countOf() == 0;
                         for (DTO dto : result) {
                             ADO source = fillOrCreateFromDto(null, dto);
-                            dao.mergeOrCreate(source);
+                            source = dao.mergeOrCreate(source);
+                            if (markAsRead) {
+                                dao.markAsRead(source);
+                            }
                         }
                         return null;
                     }
