@@ -2,13 +2,10 @@ package de.symeda.sormas.api.epidata;
 
 import java.util.Date;
 
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
 import de.symeda.sormas.api.DataTransferObject;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.utils.Diseases;
-import de.symeda.sormas.api.utils.PreciseDateAdapter;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
 public class EpiDataBurialDto extends DataTransferObject {
@@ -54,20 +51,16 @@ public class EpiDataBurialDto extends DataTransferObject {
 		this.burialRelation = burialRelation;
 	}
 
-	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public Date getBurialDateFrom() {
 		return burialDateFrom;
 	}
-	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public void setBurialDateFrom(Date burialDateFrom) {
 		this.burialDateFrom = burialDateFrom;
 	}
 
-	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public Date getBurialDateTo() {
 		return burialDateTo;
 	}
-	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public void setBurialDateTo(Date burialDateTo) {
 		this.burialDateTo = burialDateTo;
 	}

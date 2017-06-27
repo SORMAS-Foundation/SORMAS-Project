@@ -8,17 +8,24 @@ import android.os.AsyncTask;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.net.ConnectException;
+import java.util.Date;
 import java.util.concurrent.ExecutionException;
 
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
-import de.symeda.sormas.app.task.SyncTasksTask;
-import de.symeda.sormas.app.util.SyncCallback;
-import de.symeda.sormas.app.util.SyncInfrastructureTask;
 import okhttp3.Credentials;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
@@ -58,10 +65,25 @@ public final class RetroProvider {
         this.context = context;
 
         Gson gson = new GsonBuilder()
-                // date format needs to exactly match the server's
-                .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
+                .registerTypeAdapter(Date.class, new JsonDeserializer<Date>() {
+                    public Date deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+                        if (json.isJsonNull()) {
+                            return null;
+                        }
+                        long milliseconds = json.getAsLong();
+                        return new Date(milliseconds);
+                    }
+                })
+                .registerTypeAdapter(Date.class, new JsonSerializer<Date>() {
+                    @Override
+                    public JsonElement serialize(Date src, Type typeOfSrc, JsonSerializationContext context) {
+                        if (src == null) {
+                            return JsonNull.INSTANCE;
+                        }
+                        return new JsonPrimitive(src.getTime());
+                    }
+                })
                 .create();
-
 
         // Basic auth as explained in https://futurestud.io/tutorials/android-basic-authentication-with-retrofit
 
@@ -148,13 +170,7 @@ public final class RetroProvider {
 
         instance = new RetroProvider(context);
 
-        SyncInfrastructureTask.syncInfrastructure(instance.context, new SyncCallback() {
-            @Override
-            public void call(boolean syncFailed) {
-                // this also syncs cases which syncs persons
-                SyncTasksTask.syncTasks(instance.context, null, instance.context);
-            }
-        });
+        SynchronizeDataAsync.call(SynchronizeDataAsync.SyncMode.ChangesAndInfrastructure, context, null);
     }
 
     public static InfoFacadeRetro getInfoFacade() {

@@ -2,12 +2,9 @@ package de.symeda.sormas.api.sample;
 
 import java.util.Date;
 
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
-import de.symeda.sormas.api.utils.PreciseDateAdapter;
 
 public class SampleDto extends SampleReferenceDto {
 
@@ -73,19 +70,15 @@ public class SampleDto extends SampleReferenceDto {
 	public void setLabSampleID(String labSampleID) {
 		this.labSampleID = labSampleID;
 	}
-	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public Date getSampleDateTime() {
 		return sampleDateTime;
 	}
-	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public void setSampleDateTime(Date sampleDateTime) {
 		this.sampleDateTime = sampleDateTime;
 	}
-	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public Date getReportDateTime() {
 		return reportDateTime;
 	}
-	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public void setReportDateTime(Date reportDateTime) {
 		this.reportDateTime = reportDateTime;
 	}
@@ -125,11 +118,9 @@ public class SampleDto extends SampleReferenceDto {
 	public void setShipmentStatus(ShipmentStatus shipmentStatus) {
 		this.shipmentStatus = shipmentStatus;
 	}
-	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public Date getShipmentDate() {
 		return shipmentDate;
 	}
-	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public void setShipmentDate(Date shipmentDate) {
 		this.shipmentDate = shipmentDate;
 	}
@@ -139,11 +130,9 @@ public class SampleDto extends SampleReferenceDto {
 	public void setShipmentDetails(String shipmentDetails) {
 		this.shipmentDetails = shipmentDetails;
 	}
-	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public Date getReceivedDate() {
 		return receivedDate;
 	}
-	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public void setReceivedDate(Date receivedDate) {
 		this.receivedDate = receivedDate;
 	}

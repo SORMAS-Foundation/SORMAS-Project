@@ -3,10 +3,6 @@ package de.symeda.sormas.api;
 import java.io.Serializable;
 import java.util.Date;
 
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
-import de.symeda.sormas.api.utils.PreciseDateAdapter;
-
 public abstract class DataTransferObject implements Serializable, Cloneable {
 
 	private static final long serialVersionUID = -1L;
@@ -19,22 +15,18 @@ public abstract class DataTransferObject implements Serializable, Cloneable {
 	private Date changeDate;
 	private String uuid;
 
-	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public Date getCreationDate() {
 		return creationDate;
 	}
 
-	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public void setCreationDate(Date creationDate) {
 		this.creationDate = creationDate;
 	}
 
-	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public Date getChangeDate() {
 		return changeDate;
 	}
 	
-	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public void setChangeDate(Date changeDate) {
 		this.changeDate = changeDate;
 	}

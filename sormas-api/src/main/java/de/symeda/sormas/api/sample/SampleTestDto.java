@@ -2,11 +2,8 @@ package de.symeda.sormas.api.sample;
 
 import java.util.Date;
 
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
-import de.symeda.sormas.api.utils.PreciseDateAdapter;
 
 public class SampleTestDto extends SampleTestReferenceDto {
 
@@ -52,11 +49,9 @@ public class SampleTestDto extends SampleTestReferenceDto {
 	public void setTestTypeText(String testTypeText) {
 		this.testTypeText = testTypeText;
 	}
-	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public Date getTestDateTime() {
 		return testDateTime;
 	}
-	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public void setTestDateTime(Date testDateTime) {
 		this.testDateTime = testDateTime;
 	}

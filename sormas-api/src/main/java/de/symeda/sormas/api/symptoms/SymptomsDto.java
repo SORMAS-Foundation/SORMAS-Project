@@ -2,13 +2,10 @@ package de.symeda.sormas.api.symptoms;
 
 import java.util.Date;
 
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
 import de.symeda.sormas.api.DataTransferObject;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.utils.Diseases;
-import de.symeda.sormas.api.utils.PreciseDateAdapter;
 
 public class SymptomsDto extends DataTransferObject {
 
@@ -185,11 +182,9 @@ public class SymptomsDto extends DataTransferObject {
 	public void setSymptomatic(Boolean symptomatic) {
 		this.symptomatic = symptomatic;
 	}
-	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public Date getOnsetDate() {
 		return onsetDate;
 	}
-	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public void setOnsetDate(Date onsetDate) {
 		this.onsetDate = onsetDate;
 	}
@@ -205,19 +200,15 @@ public class SymptomsDto extends DataTransferObject {
 	public void setIllLocation(LocationDto illLocation) {
 		this.illLocation = illLocation;
 	}
-	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public Date getIllLocationFrom() {
 		return illLocationFrom;
 	}
-	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public void setIllLocationFrom(Date illLocationFrom) {
 		this.illLocationFrom = illLocationFrom;
 	}
-	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public Date getIllLocationTo() {
 		return illLocationTo;
 	}
-	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public void setIllLocationTo(Date illLocationTo) {
 		this.illLocationTo = illLocationTo;
 	}

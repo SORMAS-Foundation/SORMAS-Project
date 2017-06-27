@@ -18,7 +18,7 @@ public interface PersonFacadeRetro {
     Call<List<PersonDto>> pullAllSince(@Path("since") long since);
 
     @POST("persons/push")
-    Call<Long> postAll(@Body List<PersonDto> dtos);
+    Call<Long> pushAll(@Body List<PersonDto> dtos);
 
     @GET("persons/uuids")
     Call<List<String>> pullUuids();

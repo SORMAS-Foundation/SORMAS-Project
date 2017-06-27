@@ -2,13 +2,10 @@ package de.symeda.sormas.api.caze;
 
 import java.util.Date;
 
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
-import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -16,7 +13,6 @@ import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.Diseases;
-import de.symeda.sormas.api.utils.PreciseDateAdapter;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
 public class CaseDataDto extends CaseReferenceDto {
@@ -119,22 +115,18 @@ public class CaseDataDto extends CaseReferenceDto {
 		this.healthFacility = healthFacility;
 	}
 
-	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public Date getReportDate() {
 		return reportDate;
 	}
 
-	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public void setReportDate(Date reportDate) {
 		this.reportDate = reportDate;
 	}
 
-	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public Date getInvestigatedDate() {
 		return investigatedDate;
 	}
 
-	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public void setInvestigatedDate(Date investigatedDate) {
 		this.investigatedDate = investigatedDate;
 	}

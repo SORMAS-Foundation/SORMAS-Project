@@ -2,12 +2,9 @@ package de.symeda.sormas.api.event;
 
 import java.util.Date;
 
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
-import de.symeda.sormas.api.utils.PreciseDateAdapter;
 
 public class EventDto extends EventReferenceDto {
 
@@ -72,22 +69,16 @@ public class EventDto extends EventReferenceDto {
 		this.eventDesc = eventDesc;
 	}
 	
-	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public Date getEventDate() {
 		return eventDate;
 	}
-	
-	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public void setEventDate(Date eventDate) {
 		this.eventDate = eventDate;
 	}
 	
-	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public Date getReportDateTime() {
 		return reportDateTime;
 	}
-	
-	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public void setReportDateTime(Date reportDateTime) {
 		this.reportDateTime = reportDateTime;
 	}

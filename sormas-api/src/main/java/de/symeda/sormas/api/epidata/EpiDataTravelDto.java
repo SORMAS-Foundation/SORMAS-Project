@@ -2,12 +2,9 @@ package de.symeda.sormas.api.epidata;
 
 import java.util.Date;
 
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
 import de.symeda.sormas.api.DataTransferObject;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.utils.Diseases;
-import de.symeda.sormas.api.utils.PreciseDateAdapter;
 
 public class EpiDataTravelDto extends DataTransferObject {
 
@@ -44,20 +41,16 @@ public class EpiDataTravelDto extends DataTransferObject {
 		this.travelDestination = travelDestination;
 	}
 
-	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public Date getTravelDateFrom() {
 		return travelDateFrom;
 	}
-	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public void setTravelDateFrom(Date travelDateFrom) {
 		this.travelDateFrom = travelDateFrom;
 	}
 
-	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public Date getTravelDateTo() {
 		return travelDateTo;
 	}
-	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public void setTravelDateTo(Date travelDateTo) {
 		this.travelDateTo = travelDateTo;
 	}

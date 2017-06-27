@@ -4,10 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
 import de.symeda.sormas.api.DataTransferObject;
-import de.symeda.sormas.api.utils.PreciseDateAdapter;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
 public class HospitalizationDto extends DataTransferObject {
@@ -31,20 +28,16 @@ public class HospitalizationDto extends DataTransferObject {
 	
 	private List<PreviousHospitalizationDto> previousHospitalizations = new ArrayList<>();
 	
-	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public Date getAdmissionDate() {
 		return admissionDate;
 	}
-	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public void setAdmissionDate(Date admissionDate) {
 		this.admissionDate = admissionDate;
 	}
 	
-	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public Date getDischargeDate() {
 		return dischargeDate;
 	}
-	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public void setDischargeDate(Date dischargeDate) {
 		this.dischargeDate = dischargeDate;
 	}
@@ -56,11 +49,9 @@ public class HospitalizationDto extends DataTransferObject {
 		this.isolated = isolated;
 	}
 	
-	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public Date getIsolationDate() {
 		return isolationDate;
 	}
-	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public void setIsolationDate(Date isolationDate) {
 		this.isolationDate = isolationDate;
 	}

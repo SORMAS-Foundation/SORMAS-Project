@@ -2,13 +2,10 @@ package de.symeda.sormas.api.epidata;
 
 import java.util.Date;
 
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
 import de.symeda.sormas.api.DataTransferObject;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.utils.Diseases;
-import de.symeda.sormas.api.utils.PreciseDateAdapter;
 
 public class EpiDataGatheringDto extends DataTransferObject {
 
@@ -35,11 +32,9 @@ public class EpiDataGatheringDto extends DataTransferObject {
 		this.description = description;
 	}
 
-	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public Date getGatheringDate() {
 		return gatheringDate;
 	}
-	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public void setGatheringDate(Date gatheringDate) {
 		this.gatheringDate = gatheringDate;
 	}

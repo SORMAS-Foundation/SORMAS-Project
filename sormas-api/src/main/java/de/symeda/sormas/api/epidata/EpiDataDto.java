@@ -4,12 +4,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
 import de.symeda.sormas.api.DataTransferObject;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.utils.Diseases;
-import de.symeda.sormas.api.utils.PreciseDateAdapter;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
 public class EpiDataDto extends DataTransferObject {
@@ -199,11 +196,9 @@ public class EpiDataDto extends DataTransferObject {
 		this.poultrySickDetails = poultrySickDetails;
 	}
 
-	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public Date getPoultryDate() {
 		return poultryDate;
 	}
-	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public void setPoultryDate(Date poultryDate) {
 		this.poultryDate = poultryDate;
 	}
@@ -229,11 +224,9 @@ public class EpiDataDto extends DataTransferObject {
 		this.wildbirdsDetails = wildbirdsDetails;
 	}
 
-	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public Date getWildbirdsDate() {
 		return wildbirdsDate;
 	}
-	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public void setWildbirdsDate(Date wildbirdsDate) {
 		this.wildbirdsDate = wildbirdsDate;
 	}

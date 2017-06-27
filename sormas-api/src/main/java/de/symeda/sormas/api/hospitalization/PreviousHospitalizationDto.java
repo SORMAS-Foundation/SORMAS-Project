@@ -2,11 +2,8 @@ package de.symeda.sormas.api.hospitalization;
 
 import java.util.Date;
 
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
 import de.symeda.sormas.api.DataTransferObject;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.utils.PreciseDateAdapter;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
 public class PreviousHospitalizationDto extends DataTransferObject {
@@ -27,20 +24,16 @@ public class PreviousHospitalizationDto extends DataTransferObject {
 	private YesNoUnknown isolated;
 	private String description;
 	
-	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public Date getAdmissionDate() {
 		return admissionDate;
 	}
-	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public void setAdmissionDate(Date admissionDate) {
 		this.admissionDate = admissionDate;
 	}
 	
-	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public Date getDischargeDate() {
 		return dischargeDate;
 	}
-	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public void setDischargeDate(Date dischargeDate) {
 		this.dischargeDate = dischargeDate;
 	}

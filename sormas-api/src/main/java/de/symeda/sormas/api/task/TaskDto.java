@@ -2,15 +2,12 @@ package de.symeda.sormas.api.task;
 
 import java.util.Date;
 
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
 import de.symeda.sormas.api.DataTransferObject;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
-import de.symeda.sormas.api.utils.PreciseDateAdapter;
 
 public class TaskDto extends DataTransferObject {
 
@@ -84,19 +81,15 @@ public class TaskDto extends DataTransferObject {
 	public void setTaskType(TaskType taskType) {
 		this.taskType = taskType;
 	}
-	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public Date getDueDate() {
 		return dueDate;
 	}
-	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public void setDueDate(Date dueDate) {
 		this.dueDate = dueDate;
 	}
-	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public Date getSuggestedStart() {
 		return suggestedStart;
 	}
-	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public void setSuggestedStart(Date suggestedStart) {
 		this.suggestedStart = suggestedStart;
 	}
@@ -107,19 +100,15 @@ public class TaskDto extends DataTransferObject {
 	public void setTaskStatus(TaskStatus taskStatus) {
 		this.taskStatus = taskStatus;
 	}
-	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public Date getStatusChangeDate() {
 		return statusChangeDate;
 	}
-	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public void setStatusChangeDate(Date statusChangeDate) {
 		this.statusChangeDate = statusChangeDate;
 	}
-	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public Date getPerceivedStart() {
 		return perceivedStart;
 	}
-	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public void setPerceivedStart(Date perceivedStart) {
 		this.perceivedStart = perceivedStart;
 	}

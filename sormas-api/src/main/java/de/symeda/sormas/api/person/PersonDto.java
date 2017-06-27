@@ -2,13 +2,10 @@ package de.symeda.sormas.api.person;
 
 import java.util.Date;
 
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.utils.Diseases;
-import de.symeda.sormas.api.utils.PreciseDateAdapter;
 
 public class PersonDto extends PersonReferenceDto {
 
@@ -132,12 +129,9 @@ public class PersonDto extends PersonReferenceDto {
 		this.deathPlaceDescription = deathPlaceDescription;
 	}
 
-	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public Date getBurialDate() {
 		return burialDate;
 	}
-
-	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public void setBurialDate(Date burialDate) {
 		this.burialDate = burialDate;
 	}
@@ -173,12 +167,9 @@ public class PersonDto extends PersonReferenceDto {
 		this.presentCondition = presentCondition;
 	}
 
-	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public Date getDeathDate() {
 		return deathDate;
 	}
-
-	@XmlJavaTypeAdapter(PreciseDateAdapter.class)
 	public void setDeathDate(Date deathDate) {
 		this.deathDate = deathDate;
 	}
