@@ -37,7 +37,7 @@ public class SampleDtoHelper extends AdoDtoHelper<Sample, SampleDto> {
     }
 
     @Override
-    protected Call<Long> pushAll(List<SampleDto> sampleDtos) {
+    protected Call<Integer> pushAll(List<SampleDto> sampleDtos) {
         return RetroProvider.getSampleFacade().pushAll(sampleDtos);
     }
 

@@ -35,7 +35,7 @@ public class TaskDtoHelper extends AdoDtoHelper<Task, TaskDto> {
     }
 
     @Override
-    protected Call<Long> pushAll(List<TaskDto> taskDtos) {
+    protected Call<Integer> pushAll(List<TaskDto> taskDtos) {
         return RetroProvider.getTaskFacade().pushAll(taskDtos);
     }
 

@@ -34,7 +34,7 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
     }
 
     @Override
-    protected Call<Long> pushAll(List<PersonDto> personDtos) {
+    protected Call<Integer> pushAll(List<PersonDto> personDtos) {
         return RetroProvider.getPersonFacade().pushAll(personDtos);
     }
 

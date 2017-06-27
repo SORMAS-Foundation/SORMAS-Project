@@ -31,7 +31,7 @@ public class LocationDtoHelper extends AdoDtoHelper<Location, LocationDto> {
     }
 
     @Override
-    protected Call<Long> pushAll(List<LocationDto> locationDtos) {
+    protected Call<Integer> pushAll(List<LocationDto> locationDtos) {
         throw new UnsupportedOperationException("Entity is embedded");
     }
 

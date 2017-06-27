@@ -38,7 +38,7 @@ public class EpiDataBurialDtoHelper extends AdoDtoHelper<EpiDataBurial, EpiDataB
     }
 
     @Override
-    protected Call<Long> pushAll(List<EpiDataBurialDto> epiDataBurialDtos) {
+    protected Call<Integer> pushAll(List<EpiDataBurialDto> epiDataBurialDtos) {
         throw new UnsupportedOperationException("Entity is embedded");
     }
 

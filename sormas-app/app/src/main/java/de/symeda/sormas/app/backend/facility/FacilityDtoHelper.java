@@ -30,7 +30,7 @@ public class FacilityDtoHelper extends AdoDtoHelper<Facility, FacilityDto> {
     }
 
     @Override
-    protected Call<Long> pushAll(List<FacilityDto> facilityDtos) {
+    protected Call<Integer> pushAll(List<FacilityDto> facilityDtos) {
         throw new UnsupportedOperationException("Entity is infrastructure");
     }
 

@@ -35,7 +35,7 @@ public class VisitDtoHelper extends AdoDtoHelper<Visit, VisitDto> {
     }
 
     @Override
-    protected Call<Long> pushAll(List<VisitDto> visitDtos) {
+    protected Call<Integer> pushAll(List<VisitDto> visitDtos) {
         return RetroProvider.getVisitFacade().pushAll(visitDtos);
     }
 

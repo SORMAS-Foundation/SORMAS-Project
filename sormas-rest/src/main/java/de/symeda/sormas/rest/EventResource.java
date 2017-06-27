@@ -36,13 +36,13 @@ public class EventResource {
 	
 	@POST
 	@Path("/push")
-	public Long postEvents(List<EventDto> dtos) {
+	public Integer postEvents(List<EventDto> dtos) {
 		EventFacade eventFacade = FacadeProvider.getEventFacade();
 		for(EventDto dto : dtos) {
 			eventFacade.saveEvent(dto);
 		}
 		
-		return new Date().getTime();
+		return dtos.size();
 	}
 	
 	@GET

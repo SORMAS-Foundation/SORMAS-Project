@@ -15,6 +15,8 @@ import android.widget.ArrayAdapter;
 import java.util.List;
 
 import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.app.AbstractRootTabActivity;
+import de.symeda.sormas.app.AbstractTabActivity;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.event.Event;
@@ -61,23 +63,7 @@ public class EventsListFragment extends ListFragment {
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                if (RetroProvider.isConnected()) {
-                    SynchronizeDataAsync.call(SynchronizeDataAsync.SyncMode.ChangesOnly, getContext(), new SyncCallback() {
-                        @Override
-                        public void call(boolean syncFailed) {
-                            refreshLayout.setRefreshing(false);
-                            onResume();
-                            if (!syncFailed) {
-                                Snackbar.make(getActivity().findViewById(R.id.base_layout), R.string.snackbar_sync_success, Snackbar.LENGTH_LONG).show();
-                            } else {
-                                Snackbar.make(getActivity().findViewById(R.id.base_layout), R.string.snackbar_sync_error, Snackbar.LENGTH_LONG).show();
-                            }
-                        }
-                    });
-                } else {
-                    refreshLayout.setRefreshing(false);
-                    Snackbar.make(getActivity().findViewById(R.id.base_layout), R.string.snackbar_no_connection, Snackbar.LENGTH_LONG).show();
-                }
+                ((AbstractTabActivity)getActivity()).synchronizeData(SynchronizeDataAsync.SyncMode.ChangesOnly, true, refreshLayout);
             }
         });
 

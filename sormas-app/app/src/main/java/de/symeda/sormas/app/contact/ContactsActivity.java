@@ -54,9 +54,8 @@ public class ContactsActivity extends AbstractRootTabActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
             case R.id.action_reload:
-                synchronizeData(SynchronizeDataAsync.SyncMode.ChangesOnly, true);
+                synchronizeChangedData();
                 return true;
-
 
             case R.id.action_markAllAsRead:
                 ContactDao contactDao = DatabaseHelper.getContactDao();

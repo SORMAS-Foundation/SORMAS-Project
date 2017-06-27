@@ -37,7 +37,7 @@ public class UserDtoHelper extends AdoDtoHelper<User, UserDto> {
     }
 
     @Override
-    protected Call<Long> pushAll(List<UserDto> userDtos) {
+    protected Call<Integer> pushAll(List<UserDto> userDtos) {
         // TODO
         throw new UnsupportedOperationException("Can't change users in app");
     }

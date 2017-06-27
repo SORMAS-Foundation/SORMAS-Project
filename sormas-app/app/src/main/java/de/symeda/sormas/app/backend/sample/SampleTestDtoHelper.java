@@ -30,7 +30,7 @@ public class SampleTestDtoHelper extends AdoDtoHelper<SampleTest, SampleTestDto>
     }
 
     @Override
-    protected Call<Long> pushAll(List<SampleTestDto> sampleTestDtos) {
+    protected Call<Integer> pushAll(List<SampleTestDto> sampleTestDtos) {
         throw new UnsupportedOperationException("Can't change sample tests in app");
     }
 

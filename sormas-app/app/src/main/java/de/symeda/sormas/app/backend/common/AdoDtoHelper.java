@@ -30,7 +30,7 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
     protected abstract Class<ADO> getAdoClass();
     protected abstract Class<DTO> getDtoClass();
     protected abstract Call<List<DTO>> pullAllSince(long since);
-    protected abstract Call<Long> pushAll(List<DTO> dtos);
+    protected abstract Call<Integer> pushAll(List<DTO> dtos);
 
     protected abstract void fillInnerFromDto(ADO ado, DTO dto);
     protected abstract void fillInnerFromAdo(DTO dto, ADO ado);
@@ -101,12 +101,14 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
                 return false;
             }
 
-            Call<Long> call = pushAll(modifiedDtos);
-
-            Response<Long> response = call.execute();
-            if(!response.isSuccessful()) {
+            Call<Integer> call = pushAll(modifiedDtos);
+            Response<Integer> response = call.execute();
+            if (!response.isSuccessful()) {
                 throw new ConnectException("Pushing changes to server did not work: " + response.errorBody().string());
+            } else if (response.body() != modifiedDtos.size()) {
+                throw new ConnectException("Server responded with wrong count of changed entities: " + response.body() + " - expected: " + modifiedDtos.size());
             }
+
             dao.callBatchTasks(new Callable<Void>() {
                 public Void call() throws Exception {
                     for (ADO ado : modifiedAdos) {

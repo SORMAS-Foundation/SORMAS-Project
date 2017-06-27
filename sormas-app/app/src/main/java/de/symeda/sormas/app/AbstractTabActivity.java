@@ -1,14 +1,24 @@
 package de.symeda.sormas.app;
 
+import android.accounts.AuthenticatorException;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
-import de.symeda.sormas.app.R;
+import java.net.ConnectException;
+
+import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.rest.RetroProvider;
+import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.util.SlidingTabLayout;
+import de.symeda.sormas.app.util.SyncCallback;
 
 public abstract class AbstractTabActivity extends AppCompatActivity {
 
@@ -17,6 +27,10 @@ public abstract class AbstractTabActivity extends AppCompatActivity {
     protected ViewPager pager;
     protected SlidingTabLayout tabs;
     protected int currentTab = 0;
+
+    protected boolean isUserNeeded() {
+        return true;
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -70,6 +84,88 @@ public abstract class AbstractTabActivity extends AppCompatActivity {
 
     public void reloadTabs() {
         createTabViews((FragmentStatePagerAdapter) pager.getAdapter());
+    }
+
+
+    public void synchronizeCompleteData() {
+        synchronizeData(SynchronizeDataAsync.SyncMode.Complete, true, (SwipeRefreshLayout) findViewById(R.id.swiperefresh));
+    }
+
+    public void synchronizeChangedData() {
+        synchronizeData(SynchronizeDataAsync.SyncMode.ChangesOnly, true, (SwipeRefreshLayout) findViewById(R.id.swiperefresh));
+    }
+
+    public void synchronizeData(SynchronizeDataAsync.SyncMode syncMode, final boolean showResultSnackbar, final SwipeRefreshLayout swipeRefreshLayout) {
+
+        if (swipeRefreshLayout != null) {
+            swipeRefreshLayout.setRefreshing(true);
+        }
+
+        if (!RetroProvider.isConnected()) {
+            try {
+                RetroProvider.connect(getApplicationContext());
+            } catch (AuthenticatorException e) {
+                if (showResultSnackbar) {
+                    Snackbar.make(findViewById(android.R.id.content), e.getMessage(), Snackbar.LENGTH_LONG).show();
+                }
+                // switch to LoginActivity is done below
+            } catch (RetroProvider.ApiVersionException e) {
+                if (showResultSnackbar) {
+                    Snackbar.make(findViewById(android.R.id.content), e.getMessage(), Snackbar.LENGTH_LONG).show();
+                }
+            } catch (ConnectException e) {
+                if (showResultSnackbar) {
+                    Snackbar.make(findViewById(android.R.id.content), e.getMessage(), Snackbar.LENGTH_LONG).show();
+                }
+            }
+        }
+
+        if (isUserNeeded() && ConfigProvider.getUser() == null) {
+            if (swipeRefreshLayout != null) {
+                swipeRefreshLayout.setRefreshing(false);
+            }
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+            return;
+        }
+
+        if (RetroProvider.isConnected()) {
+
+            SynchronizeDataAsync.call(syncMode, getApplicationContext(), new SyncCallback() {
+                @Override
+                public void call(boolean syncFailed) {
+
+                    if (swipeRefreshLayout != null) {
+                        swipeRefreshLayout.setRefreshing(false);
+                    }
+
+                    if (getSupportFragmentManager().getFragments() != null) {
+                        for (Fragment fragment : getSupportFragmentManager().getFragments()) {
+                            if (fragment != null && fragment.isVisible()) {
+                                fragment.onResume();
+                            }
+                        }
+                    }
+
+                    if (showResultSnackbar) {
+                        if (!syncFailed) {
+                            Snackbar.make(findViewById(android.R.id.content), R.string.snackbar_sync_success, Snackbar.LENGTH_LONG).show();
+                        } else {
+                            Snackbar.make(findViewById(android.R.id.content), R.string.snackbar_sync_error, Snackbar.LENGTH_LONG).show();
+                        }
+                    }
+                }
+            });
+        }
+        else {
+            if (swipeRefreshLayout != null) {
+                swipeRefreshLayout.setRefreshing(false);
+            }
+
+            if (showResultSnackbar) {
+                Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_no_connection, Snackbar.LENGTH_LONG).show();
+            }
+        }
     }
 
 }

@@ -77,10 +77,6 @@ public abstract class AbstractRootTabActivity extends AbstractTabActivity {
         setupDrawer();
     }
 
-    protected boolean isUserNeeded() {
-        return true;
-    }
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -91,7 +87,7 @@ public abstract class AbstractRootTabActivity extends AbstractTabActivity {
             }
         }
 
-        synchronizeData(SynchronizeDataAsync.SyncMode.ChangesOnly, false);
+        synchronizeData(SynchronizeDataAsync.SyncMode.ChangesOnly, false, null);
     }
 
     @Override
@@ -182,83 +178,6 @@ public abstract class AbstractRootTabActivity extends AbstractTabActivity {
         startActivity(intent);
     }
 
-    public void synchronizeData() {
-        synchronizeData(SynchronizeDataAsync.SyncMode.Complete, true);
-    }
-
-    public void synchronizeData(SynchronizeDataAsync.SyncMode syncMode, final boolean showResultSnackbarAndRefreshLayout) {
-
-        final SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
-
-        if (swipeRefreshLayout != null) {
-            swipeRefreshLayout.setRefreshing(true);
-        }
-
-        if (!RetroProvider.isConnected()) {
-            try {
-                RetroProvider.connect(getApplicationContext());
-            } catch (AuthenticatorException e) {
-                if (showResultSnackbarAndRefreshLayout) {
-                    Snackbar.make(findViewById(android.R.id.content), e.getMessage(), Snackbar.LENGTH_LONG).show();
-                }
-                // switch to LoginActivity is done below
-            } catch (RetroProvider.ApiVersionException e) {
-                if (showResultSnackbarAndRefreshLayout) {
-                    Snackbar.make(findViewById(android.R.id.content), e.getMessage(), Snackbar.LENGTH_LONG).show();
-                }
-            } catch (ConnectException e) {
-                if (showResultSnackbarAndRefreshLayout) {
-                    Snackbar.make(findViewById(android.R.id.content), e.getMessage(), Snackbar.LENGTH_LONG).show();
-                }
-            }
-        }
-
-        if (isUserNeeded() && ConfigProvider.getUser() == null) {
-            if (swipeRefreshLayout != null) {
-                swipeRefreshLayout.setRefreshing(false);
-            }
-            Intent intent = new Intent(this, LoginActivity.class);
-            startActivity(intent);
-            return;
-        }
-
-        if (RetroProvider.isConnected()) {
-
-            SynchronizeDataAsync.call(syncMode, getApplicationContext(), new SyncCallback() {
-                @Override
-                public void call(boolean syncFailed) {
-
-                    if (swipeRefreshLayout != null) {
-                        swipeRefreshLayout.setRefreshing(false);
-                    }
-
-                    if (getSupportFragmentManager().getFragments() != null) {
-                        for (Fragment fragment : getSupportFragmentManager().getFragments()) {
-                            if (fragment != null && fragment.isVisible()) {
-                                fragment.onResume();
-                            }
-                        }
-                    }
-
-                    if (showResultSnackbarAndRefreshLayout) {
-                        if (!syncFailed) {
-                            Snackbar.make(findViewById(android.R.id.content), R.string.snackbar_sync_success, Snackbar.LENGTH_LONG).show();
-                        } else {
-                            Snackbar.make(findViewById(android.R.id.content), R.string.snackbar_sync_error, Snackbar.LENGTH_LONG).show();
-                        }
-                    }
-                }
-            });
-        }
-        else {
-            if (swipeRefreshLayout != null) {
-                swipeRefreshLayout.setRefreshing(false);
-            }
-
-            Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_no_connection, Snackbar.LENGTH_LONG).show();
-        }
-    }
-
     public void logout() {
         ConfigProvider.clearUsernameAndPassword();
         ConfigProvider.clearPin();
@@ -292,7 +211,7 @@ public abstract class AbstractRootTabActivity extends AbstractTabActivity {
                 menuDrawerList.clearChoices();
                 break;
             case 6:
-                synchronizeData();
+                synchronizeCompleteData();
                 // don't keep this button selected
                 menuDrawerList.clearChoices();
                 break;

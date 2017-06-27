@@ -37,7 +37,7 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
     }
 
     @Override
-    protected Call<Long> pushAll(List<EventDto> eventDtos) {
+    protected Call<Integer> pushAll(List<EventDto> eventDtos) {
         return RetroProvider.getEventFacade().pushAll(eventDtos);
     }
 

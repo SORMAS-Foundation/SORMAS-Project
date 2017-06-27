@@ -60,7 +60,7 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
     }
 
     @Override
-    protected Call<Long> pushAll(List<CaseDataDto> caseDataDtos) {
+    protected Call<Integer> pushAll(List<CaseDataDto> caseDataDtos) {
         return RetroProvider.getCaseFacade().pushAll(caseDataDtos);
     }
 

@@ -43,7 +43,7 @@ public class EpiDataDtoHelper extends AdoDtoHelper<EpiData, EpiDataDto> {
     }
 
     @Override
-    protected Call<Long> pushAll(List<EpiDataDto> epiDataDtos) {
+    protected Call<Integer> pushAll(List<EpiDataDto> epiDataDtos) {
         throw new UnsupportedOperationException("Entity is embedded");
     }
 

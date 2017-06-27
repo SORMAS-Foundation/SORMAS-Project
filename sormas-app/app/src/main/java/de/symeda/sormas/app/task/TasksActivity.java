@@ -53,7 +53,7 @@ public class TasksActivity extends AbstractRootTabActivity {
 
         switch(item.getItemId()) {
             case R.id.action_reload:
-                synchronizeData(SynchronizeDataAsync.SyncMode.ChangesOnly, true);
+                synchronizeChangedData();
                 return true;
 
             case R.id.action_markAllAsRead:

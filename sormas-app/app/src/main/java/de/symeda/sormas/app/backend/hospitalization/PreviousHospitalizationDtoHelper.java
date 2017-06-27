@@ -32,7 +32,7 @@ public class PreviousHospitalizationDtoHelper extends AdoDtoHelper<PreviousHospi
     }
 
     @Override
-    protected Call<Long> pushAll(List<PreviousHospitalizationDto> previousHospitalizationDtos) {
+    protected Call<Integer> pushAll(List<PreviousHospitalizationDto> previousHospitalizationDtos) {
         throw new UnsupportedOperationException("Entity is embedded");
     }
 

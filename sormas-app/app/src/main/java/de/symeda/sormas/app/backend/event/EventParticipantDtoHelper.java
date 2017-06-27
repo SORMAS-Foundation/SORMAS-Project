@@ -32,7 +32,7 @@ public class EventParticipantDtoHelper extends AdoDtoHelper<EventParticipant, Ev
     }
 
     @Override
-    protected Call<Long> pushAll(List<EventParticipantDto> eventParticipantDtos) {
+    protected Call<Integer> pushAll(List<EventParticipantDto> eventParticipantDtos) {
         return RetroProvider.getEventParticipantFacade().pushAll(eventParticipantDtos);
     }
 

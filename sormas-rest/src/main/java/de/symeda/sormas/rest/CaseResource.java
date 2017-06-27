@@ -11,7 +11,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.SecurityContext;
 
@@ -37,14 +36,14 @@ public class CaseResource {
 	
 	@POST 
 	@Path("/push")
-	public Long postCases(List<CaseDataDto> dtos) {
+	public Integer postCases(List<CaseDataDto> dtos) {
 		
 		CaseFacade caseFacade = FacadeProvider.getCaseFacade();
 		for (CaseDataDto dto : dtos) {
 			caseFacade.saveCase(dto);
 		}
 		
-		return new Date().getTime();
+		return dtos.size();
 	}
 	
 	@GET

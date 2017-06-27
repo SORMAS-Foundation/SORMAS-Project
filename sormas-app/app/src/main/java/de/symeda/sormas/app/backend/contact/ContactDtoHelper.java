@@ -40,7 +40,7 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
     }
 
     @Override
-    protected Call<Long> pushAll(List<ContactDto> contactDtos) {
+    protected Call<Integer> pushAll(List<ContactDto> contactDtos) {
         return RetroProvider.getContactFacade().pushAll(contactDtos);
     }
 

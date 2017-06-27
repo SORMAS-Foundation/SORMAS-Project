@@ -33,7 +33,7 @@ public class EpiDataTravelDtoHelper extends AdoDtoHelper<EpiDataTravel, EpiDataT
     }
 
     @Override
-    protected Call<Long> pushAll(List<EpiDataTravelDto> epiDataTravelDtos) {
+    protected Call<Integer> pushAll(List<EpiDataTravelDto> epiDataTravelDtos) {
         throw new UnsupportedOperationException("Entity is embedded");
     }
 

@@ -36,13 +36,13 @@ public class SampleResource {
 	
 	@POST
 	@Path("/push")
-	public Long postSamples(List<SampleDto> dtos) {
+	public Integer postSamples(List<SampleDto> dtos) {
 		SampleFacade sampleFacade = FacadeProvider.getSampleFacade();
 		for (SampleDto dto : dtos) {
 			sampleFacade.saveSample(dto);
 		}
 		
-		return new Date().getTime();
+		return dtos.size();
 	}
 	
 	@GET

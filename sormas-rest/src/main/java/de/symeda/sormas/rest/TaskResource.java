@@ -41,14 +41,14 @@ public class TaskResource {
 	
 	@POST 
 	@Path("/push")
-	public Long postTasks(List<TaskDto> dtos) {
+	public Integer postTasks(List<TaskDto> dtos) {
 		
 		TaskFacade raskFacade = FacadeProvider.getTaskFacade();
 		for (TaskDto dto : dtos) {
 			raskFacade.saveTask(dto);
 		}
 		
-		return new Date().getTime();
+		return dtos.size();
 	}
 	
 	
