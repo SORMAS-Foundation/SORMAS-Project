@@ -105,6 +105,12 @@ public class EnterPinActivity extends AppCompatActivity {
 
         char1.requestFocus();
 
+        InputMethodManager imm = (InputMethodManager)
+                getSystemService(Context.INPUT_METHOD_SERVICE);
+        if(imm != null){
+            imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, 0);
+        }
+
         char1.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
@@ -267,7 +273,7 @@ public class EnterPinActivity extends AppCompatActivity {
         Intent intent = new Intent(this, SettingsActivity.class);
         startActivity(intent);
     }
-
+    
     private void startMainActivity() {
         Intent intent = new Intent(this, CasesActivity.class);
         startActivity(intent);
