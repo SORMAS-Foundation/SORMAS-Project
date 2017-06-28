@@ -181,7 +181,6 @@ public class SampleEditActivity extends AppCompatActivity {
                 if (validData) {
                     try {
                         sampleDao.saveAndSnapshot(sample);
-                        sampleDao.markAsRead(sample);
                         Snackbar.make(findViewById(R.id.fragment_frame), "Sample " + DataHelper.getShortUuid(sample.getUuid()) + " saved", Snackbar.LENGTH_LONG).show();
 
                         if (RetroProvider.isConnected()) {

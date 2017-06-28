@@ -191,7 +191,6 @@ public class VisitEditActivity extends AbstractEditTabActivity {
 						visit.setVisitUser(ConfigProvider.getUser());
                         VisitDao visitDao = DatabaseHelper.getVisitDao();
 						visitDao.saveAndSnapshot(visit);
-                        visitDao.markAsRead(visit);
 
                         if (RetroProvider.isConnected()) {
                             SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.ChangesOnly, this, new SyncCallback() {

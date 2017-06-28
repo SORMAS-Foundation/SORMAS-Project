@@ -199,6 +199,8 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
                 snapshot = null;
             }
 
+            ado.setLastOpenedDate(DateHelper.addSeconds(new Date(), 5));
+
             // ignore parent property
             EmbeddedAdo annotation = ado.getClass().getAnnotation(EmbeddedAdo.class);
             String parentProperty = annotation != null ? annotation.parentAccessor() : "";
@@ -822,15 +824,20 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
         }
     }
 
+    /**
+     * Sets the last opened date OF THE ORIGINAL OBJECT in the database and its embedded objects to the current date.
+     * This does NOT manipulate the entity given as the parameter to avoid the unintended saving of other fields.
+     */
     public void markAsRead(ADO ado) {
-        ado.setLastOpenedDate(DateHelper.addSeconds(new Date(), 5));
-        update(ado);
+        ADO originalAdo = queryForId(ado.getId());
+        originalAdo.setLastOpenedDate(DateHelper.addSeconds(new Date(), 5));
+        update(originalAdo);
 
-        Iterator<PropertyDescriptor> propertyIterator = AdoMergeHelper.getEmbeddedAdoProperties(ado.getClass());
+        Iterator<PropertyDescriptor> propertyIterator = AdoMergeHelper.getEmbeddedAdoProperties(originalAdo.getClass());
         while (propertyIterator.hasNext()) {
             try {
                 PropertyDescriptor property = propertyIterator.next();
-                AbstractDomainObject embeddedAdo = (AbstractDomainObject) property.getReadMethod().invoke(ado);
+                AbstractDomainObject embeddedAdo = (AbstractDomainObject) property.getReadMethod().invoke(originalAdo);
                 if (embeddedAdo == null) {
                     throw new IllegalArgumentException("No embedded entity was created for " + property.getName());
                 }

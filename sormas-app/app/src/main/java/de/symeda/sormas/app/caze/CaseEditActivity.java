@@ -301,14 +301,11 @@ public class CaseEditActivity extends AbstractEditTabActivity {
 
                 if (validData) {
                     try {
-
-                        personDao.markAsRead(person);
                         personDao.saveAndSnapshot(person);
                         caze.setPerson(person); // we aren't sure why, but this is needed, otherwise the person will be overriden when first saved
                         caze.setSymptoms(symptoms);
                         caze.setHospitalization(hospitalization);
                         caze.setEpiData(epiData);
-                        caseDao.markAsRead(caze);
                         caseDao.saveAndSnapshot(caze);
 
                         if (RetroProvider.isConnected()) {

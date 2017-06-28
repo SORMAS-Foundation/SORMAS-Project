@@ -273,7 +273,9 @@ public class EnterPinActivity extends AppCompatActivity {
         Intent intent = new Intent(this, SettingsActivity.class);
         startActivity(intent);
     }
-    
+
+
+
     private void startMainActivity() {
         Intent intent = new Intent(this, CasesActivity.class);
         startActivity(intent);

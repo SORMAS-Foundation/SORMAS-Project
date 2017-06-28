@@ -148,7 +148,6 @@ public class TaskEditActivity extends AppCompatActivity {
                 try {
                     TaskDao taskDao = DatabaseHelper.getTaskDao();
                     taskDao.saveAndSnapshot(task);
-                    taskDao.markAsRead(task);
 
                     if (RetroProvider.isConnected()) {
                         SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.ChangesOnly, this, new SyncCallback() {

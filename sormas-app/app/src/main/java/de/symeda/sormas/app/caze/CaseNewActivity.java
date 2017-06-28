@@ -192,7 +192,6 @@ public class CaseNewActivity extends AppCompatActivity {
         // save the person
         PersonDao personDao = DatabaseHelper.getPersonDao();
         personDao.saveAndSnapshot(caze.getPerson());
-        personDao.markAsRead(caze.getPerson());
 
         caze.setCaseClassification(CaseClassification.NOT_CLASSIFIED);
         caze.setInvestigationStatus(InvestigationStatus.PENDING);
@@ -208,7 +207,6 @@ public class CaseNewActivity extends AppCompatActivity {
 
         CaseDao caseDao = DatabaseHelper.getCaseDao();
         caseDao.saveAndSnapshot(caze);
-        caseDao.markAsRead(caze);
 
         if (RetroProvider.isConnected()) {
             SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.ChangesOnly, this, new SyncCallback() {

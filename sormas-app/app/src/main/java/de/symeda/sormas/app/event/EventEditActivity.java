@@ -244,7 +244,6 @@ public class EventEditActivity extends AbstractEditTabActivity {
 
                                 EventDao eventDao = DatabaseHelper.getEventDao();
                                 eventDao.saveAndSnapshot(event);
-                                eventDao.markAsRead(event);
 
                                 if (RetroProvider.isConnected()) {
                                     SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.ChangesOnly, this, new SyncCallback() {

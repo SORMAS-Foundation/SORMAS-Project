@@ -245,9 +245,7 @@ public class ContactEditActivity extends AbstractEditTabActivity {
 
                         PersonDao personDao = DatabaseHelper.getPersonDao();
                         personDao.saveAndSnapshot(person);
-                        personDao.markAsRead(person);
                         contactDao.saveAndSnapshot(contact);
-                        contactDao.markAsRead(contact);
 
                         if (RetroProvider.isConnected()) {
                             SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.ChangesOnly, this, new SyncCallback() {

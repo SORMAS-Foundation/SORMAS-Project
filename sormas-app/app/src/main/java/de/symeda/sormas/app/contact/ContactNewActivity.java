@@ -194,9 +194,7 @@ public class ContactNewActivity extends AppCompatActivity {
         PersonDao personDao = DatabaseHelper.getPersonDao();
         ContactDao contactDao = DatabaseHelper.getContactDao();
         personDao.saveAndSnapshot(person);
-        personDao.markAsRead(person);
         contactDao.saveAndSnapshot(contact);
-        contactDao.markAsRead(contact);
 
         if (RetroProvider.isConnected()) {
             SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.ChangesOnly, this, new SyncCallback() {

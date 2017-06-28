@@ -155,10 +155,8 @@ public class EventParticipantEditActivity extends AppCompatActivity {
                         PersonDao personDao = DatabaseHelper.getPersonDao();
                         EventParticipantDao eventParticipantDao = DatabaseHelper.getEventParticipantDao();
                         personDao.saveAndSnapshot(person);
-                        personDao.markAsRead(person);
                         eventParticipant.setPerson(person);
                         eventParticipantDao.saveAndSnapshot(eventParticipant);
-                        eventParticipantDao.markAsRead(eventParticipant);
 
                         if (RetroProvider.isConnected()) {
                             SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.ChangesOnly, this, new SyncCallback() {

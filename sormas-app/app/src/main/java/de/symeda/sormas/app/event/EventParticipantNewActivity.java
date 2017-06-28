@@ -169,14 +169,12 @@ public class EventParticipantNewActivity extends AppCompatActivity {
 		// save the person
         PersonDao personDao = DatabaseHelper.getPersonDao();
         personDao.saveAndSnapshot(eventParticipant.getPerson());
-        personDao.markAsRead(eventParticipant.getPerson());
         // set the given event
         final Event event = DatabaseHelper.getEventDao().queryUuid(eventUuid);
         eventParticipant.setEvent(event);
         // save the contact
         EventParticipantDao eventParticipantDao = DatabaseHelper.getEventParticipantDao();
         eventParticipantDao.saveAndSnapshot(eventParticipant);
-        eventParticipantDao.markAsRead(eventParticipant);
 
         if (RetroProvider.isConnected()) {
             SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.ChangesOnly, this, new SyncCallback() {
