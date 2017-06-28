@@ -1,5 +1,7 @@
 package de.symeda.sormas.app.backend.common;
 
+import android.content.Intent;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.j256.ormlite.logger.Logger;
@@ -16,6 +18,7 @@ import java.util.concurrent.Callable;
 
 import de.symeda.sormas.api.DataTransferObject;
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.app.backend.synclog.SyncLogDao;
 import de.symeda.sormas.app.util.DataUtils;
 import retrofit2.Call;
 import retrofit2.Response;
@@ -68,10 +71,34 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
                         boolean empty = dao.countOf() == 0;
                         for (DTO dto : result) {
                             ADO source = fillOrCreateFromDto(null, dto);
+                            SyncLogDao syncLogDao = DatabaseHelper.getSyncLogDao();
+                            long syncLogLengthBefore = syncLogDao.countOf();
                             source = dao.mergeOrCreate(source);
-                            if (markAsRead) {
-                                dao.markAsRead(source);
+							if (markAsRead) {
+								dao.markAsRead(source);
+							}
+                            if (syncLogDao.countOf() > syncLogLengthBefore) {
+                                Intent intent = new Intent("SYNC_ERROR_SNACKBAR");
+                                LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
                             }
+
+//                            ADO ado = empty ? null : dao.queryUuid(dto.getUuid());
+//
+//                            // merge or just saveAndSnapshot?
+//                            if (ado != null && ado.isModified()) {
+//                                // merge existing changes into incoming data
+//                                ADO original = dao.querySnapshotByUuid(dto.getUuid());
+//                                AdoMergeHelper.mergeAdo(ado, original, source);
+//                                dao.saveAndSnapshot(ado);
+//                                dao.saveUnmodified(original);
+//
+//                                // in theory ado and cloned original could now be equal
+//                                // and we no longer need to keep the copy. Ignore this
+//
+//                            } else {
+//                                ado = fillOrCreateFromDto(ado, dto);
+//                                dao.saveUnmodified(ado);
+//                            }
                         }
                         return null;
                     }

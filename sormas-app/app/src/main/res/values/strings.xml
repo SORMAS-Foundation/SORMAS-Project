@@ -215,6 +215,8 @@
     <string name="snackbar_pin_wrong">You\'ve entered an incorrect PIN.</string>
     <string name="snackbar_pin_too_short">The PIN has to be four digits long.</string>
     <string name="snackbar_pin_changed">PIN has been successfully changed.</string>
+    <string name="snackbar_sync_conflict">Synchronization conflicts detected. Please check the Sync Log to review them.</string>
+    <string name="snackbar_open_synclog">Open Sync Log</string>
 
     <string name="entity_case">Case</string>
     <string name="entity_contact">Contact</string>

@@ -1,10 +1,14 @@
 package de.symeda.sormas.app;
 
 import android.accounts.AuthenticatorException;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -19,6 +23,7 @@ import java.net.ConnectException;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.caze.CaseNewActivity;
 import de.symeda.sormas.app.caze.CasesActivity;
+import de.symeda.sormas.app.component.SyncLogDialog;
 import de.symeda.sormas.app.contact.ContactsActivity;
 import de.symeda.sormas.app.event.EventsActivity;
 import de.symeda.sormas.app.rest.RetroProvider;
@@ -75,6 +80,26 @@ public abstract class AbstractRootTabActivity extends AbstractTabActivity {
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_menu_black_24dp);
 
         setupDrawer();
+
+        BroadcastReceiver messageReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                Snackbar snackbar = Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_sync_conflict, Snackbar.LENGTH_INDEFINITE);
+                snackbar.setAction(R.string.snackbar_open_synclog, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        openSyncLog();
+                    }
+                });
+                snackbar.show();
+            }
+        };
+
+        IntentFilter filter = new IntentFilter("SYNC_ERROR_SNACKBAR");
+        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(messageReceiver, filter);
+
+
+        syncAll(false);
     }
 
     @Override
@@ -141,6 +166,11 @@ public abstract class AbstractRootTabActivity extends AbstractTabActivity {
         menuDrawerToggle.setDrawerIndicatorEnabled(true);
         menuDrawerToggle.setHomeAsUpIndicator(R.drawable.ic_drawer);
         menuDrawerLayout.addDrawerListener(menuDrawerToggle);
+    }
+
+    private void openSyncLog() {
+        SyncLogDialog syncLogDialog = new SyncLogDialog(this);
+        syncLogDialog.show(this);
     }
 
     public void showCasesView() {

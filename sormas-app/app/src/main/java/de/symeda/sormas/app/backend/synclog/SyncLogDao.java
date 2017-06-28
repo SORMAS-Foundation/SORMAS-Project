@@ -61,6 +61,16 @@ public class SyncLogDao {
         return syncLog;
     }
 
+    public long countOf() {
+        try {
+            QueryBuilder builder = queryBuilder();
+            return builder.countOf();
+        } catch (SQLException e) {
+            Log.e(getClass().getName(), "Could not perform countOf");
+            throw new RuntimeException(e);
+        }
+    }
+
     public List<SyncLog> queryForAll(String orderBy, boolean ascending) {
         try {
             QueryBuilder builder = queryBuilder();
