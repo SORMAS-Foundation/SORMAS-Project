@@ -73,21 +73,14 @@ public class EntityInspector {
 				try {
 					// Ignore inherited methods because those will be processed later
 					BeanInfo beanInfo = Introspector.getBeanInfo(clazz, clazz.getSuperclass());
-					List<Method> methods = new ArrayList<>();
 					
 					// Only get/is methods are relevant - even if there are no setters (e.g. because they're protected)
 					for (PropertyDescriptor property : beanInfo.getPropertyDescriptors()) {
-						if (property.getReadMethod() != null) {
-							methods.add(property.getReadMethod());
+						Method readMethod = property.getReadMethod();
+						if (readMethod != null && isAudited(readMethod)) {
+							auditedMethods.add(readMethod);
 						}
 					}
-				
-					for (Method method : methods) {
-						if (isAudited(method)) {
-							auditedMethods.add(method);
-						}
-					}
-
 				} catch (IntrospectionException e) {
 					throw new AuditlogException(String.format("Error while trying to retrieve the BeanInfo for %s!", clazz.getName()), e);
 				}
