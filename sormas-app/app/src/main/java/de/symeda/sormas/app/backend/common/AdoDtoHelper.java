@@ -71,16 +71,10 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
                         boolean empty = dao.countOf() == 0;
                         for (DTO dto : result) {
                             ADO source = fillOrCreateFromDto(null, dto);
-                            SyncLogDao syncLogDao = DatabaseHelper.getSyncLogDao();
-                            long syncLogLengthBefore = syncLogDao.countOf();
                             source = dao.mergeOrCreate(source);
 							if (markAsRead) {
 								dao.markAsRead(source);
 							}
-                            if (syncLogDao.countOf() > syncLogLengthBefore) {
-                                Intent intent = new Intent("SYNC_ERROR_SNACKBAR");
-                                LocalBroadcastManager.getInstance(DatabaseHelper.getContext()).sendBroadcast(intent);
-                            }
                         }
                         return null;
                     }

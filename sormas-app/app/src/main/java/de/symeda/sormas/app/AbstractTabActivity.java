@@ -11,10 +11,14 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
 
 import java.net.ConnectException;
 
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.synclog.SyncLogDao;
+import de.symeda.sormas.app.component.SyncLogDialog;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.util.SlidingTabLayout;
@@ -101,6 +105,9 @@ public abstract class AbstractTabActivity extends AppCompatActivity {
             swipeRefreshLayout.setRefreshing(true);
         }
 
+        final SyncLogDao syncLogDao = DatabaseHelper.getSyncLogDao();
+        final long syncLogCountBefore = syncLogDao.countOf();
+
         if (!RetroProvider.isConnected()) {
             try {
                 RetroProvider.connect(getApplicationContext());
@@ -147,11 +154,21 @@ public abstract class AbstractTabActivity extends AppCompatActivity {
                         }
                     }
 
+                    long syncLogCountAfter = syncLogDao.countOf();
+
                     if (showResultSnackbar) {
                         if (!syncFailed) {
-                            Snackbar.make(findViewById(android.R.id.content), R.string.snackbar_sync_success, Snackbar.LENGTH_LONG).show();
+                            if (syncLogCountAfter > syncLogCountBefore) {
+                                showConflictSnackbar();
+                            } else {
+                                Snackbar.make(findViewById(android.R.id.content), R.string.snackbar_sync_success, Snackbar.LENGTH_LONG).show();
+                            }
                         } else {
                             Snackbar.make(findViewById(android.R.id.content), R.string.snackbar_sync_error, Snackbar.LENGTH_LONG).show();
+                        }
+                    } else {
+                        if (syncLogCountAfter > syncLogCountBefore) {
+                            showConflictSnackbar();
                         }
                     }
                 }
@@ -166,6 +183,22 @@ public abstract class AbstractTabActivity extends AppCompatActivity {
                 Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_no_connection, Snackbar.LENGTH_LONG).show();
             }
         }
+    }
+
+    private void showConflictSnackbar() {
+        Snackbar snackbar = Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_sync_conflict, Snackbar.LENGTH_LONG);
+        snackbar.setAction(R.string.snackbar_open_synclog, new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openSyncLog();
+            }
+        });
+        snackbar.show();
+    }
+
+    private void openSyncLog() {
+        SyncLogDialog syncLogDialog = new SyncLogDialog(this);
+        syncLogDialog.show(this);
     }
 
 }

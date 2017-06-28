@@ -80,23 +80,6 @@ public abstract class AbstractRootTabActivity extends AbstractTabActivity {
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_menu_black_24dp);
 
         setupDrawer();
-
-        BroadcastReceiver messageReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                Snackbar snackbar = Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_sync_conflict, Snackbar.LENGTH_INDEFINITE);
-                snackbar.setAction(R.string.snackbar_open_synclog, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        openSyncLog();
-                    }
-                });
-                snackbar.show();
-            }
-        };
-
-        IntentFilter filter = new IntentFilter("SYNC_ERROR_SNACKBAR");
-        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(messageReceiver, filter);
     }
 
     @Override
@@ -163,11 +146,6 @@ public abstract class AbstractRootTabActivity extends AbstractTabActivity {
         menuDrawerToggle.setDrawerIndicatorEnabled(true);
         menuDrawerToggle.setHomeAsUpIndicator(R.drawable.ic_drawer);
         menuDrawerLayout.addDrawerListener(menuDrawerToggle);
-    }
-
-    private void openSyncLog() {
-        SyncLogDialog syncLogDialog = new SyncLogDialog(this);
-        syncLogDialog.show(this);
     }
 
     public void showCasesView() {
