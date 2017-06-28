@@ -24,7 +24,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
+        android:layout_marginBottom="12dp"
         android:textSize="12sp"
         android:text="@string/hint_login" />
 
@@ -32,7 +32,7 @@
         android:id="@+id/sormas_logo"
         android:layout_width="128dp"
         android:layout_height="128dp"
-        android:layout_marginBottom="48dp"
+        android:layout_marginBottom="24dp"
         android:layout_weight="0.11"
         android:src="@drawable/sormas_logo_big"/>
 
