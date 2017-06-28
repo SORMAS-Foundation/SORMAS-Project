@@ -79,26 +79,8 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 							}
                             if (syncLogDao.countOf() > syncLogLengthBefore) {
                                 Intent intent = new Intent("SYNC_ERROR_SNACKBAR");
-                                LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+                                LocalBroadcastManager.getInstance(DatabaseHelper.getContext()).sendBroadcast(intent);
                             }
-
-//                            ADO ado = empty ? null : dao.queryUuid(dto.getUuid());
-//
-//                            // merge or just saveAndSnapshot?
-//                            if (ado != null && ado.isModified()) {
-//                                // merge existing changes into incoming data
-//                                ADO original = dao.querySnapshotByUuid(dto.getUuid());
-//                                AdoMergeHelper.mergeAdo(ado, original, source);
-//                                dao.saveAndSnapshot(ado);
-//                                dao.saveUnmodified(original);
-//
-//                                // in theory ado and cloned original could now be equal
-//                                // and we no longer need to keep the copy. Ignore this
-//
-//                            } else {
-//                                ado = fillOrCreateFromDto(ado, dto);
-//                                dao.saveUnmodified(ado);
-//                            }
                         }
                         return null;
                     }

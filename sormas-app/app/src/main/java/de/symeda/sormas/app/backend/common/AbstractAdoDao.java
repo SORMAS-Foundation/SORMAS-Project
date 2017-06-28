@@ -765,7 +765,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
             builder.where().notIn(AbstractDomainObject.UUID, validUuids);
             List<ADO> invalidEntities = builder.query();
             for (ADO invalidEntity : invalidEntities) {
-                // let user now if changes are lost
+                // let user know if changes are lost
                 if (invalidEntity.isModified()) {
                     DatabaseHelper.getSyncLogDao().createWithParentStack(invalidEntity.toString(), "Changes dropped because you have no longer access to this entity.");
                 }

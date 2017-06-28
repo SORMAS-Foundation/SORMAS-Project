@@ -24,6 +24,7 @@ SORMAS Server & Domain
 5. Get the latest SORMAS build from github: https://github.com/hzi-braunschweig/SORMAS-Open/releases/latest (deploy.zip and app-debug.apk)
 6. Open "deploy/glassfish-config.bat" (or glassfish-config.sh on linux) in a text editor and change GLASSFISH_HOME to the location of the Glassfish folder inside your payara installation
 7. Set up a payara domain called "sormas" by executing "deploy/glassfish-config.bat" (or glassfish-config.sh on linux) from the command line
+8. 
 
 Updating Payara Version
 --------
@@ -70,3 +71,27 @@ Development Environment
 - Build the Android Studio project by executing the gradle build (this may be done automatically)
 - Start the Glassfish server and deploy "sormas-ear", "sormas-rest" and "sormas-ui" by dragging the respective projects onto it
 - Open your browser and type in "https://localhost:6081/sormas-ui" to test whether everything has been set up correctly (and to use the application)
+
+Apache Server
+--------
+When you are using SORMAS in a production environment you should use a http server like Apache 2 instead of putting the payara server in the first line.
+Here are some things that you should do to configure the apache server as proxy:
+
+* Force SSL secured connections (redirect from http to https)
+* Add a proxy pass to the local port:
+
+		ProxyRequests Off
+		ProxyPass /sormas-ui http://localhost:5080/sormas-ui
+		ProxyPassReverse /sormas-ui http://localhost:5080/sormas-ui
+		ProxyPass /sormas-rest http://localhost:5080/sormas-rest
+		ProxyPassReverse /sormas-rest http://localhost:5080/sormas-rest
+* Activate output compression (very important!): 
+
+        <IfModule mod_deflate.c>
+                AddOutputFilterByType DEFLATE text/plain text/html text/xml
+                AddOutputFilterByType DEFLATE text/css text/javascript
+                AddOutputFilterByType DEFLATE application/json
+                AddOutputFilterByType DEFLATE application/xml application/xhtml+xml
+                AddOutputFilterByType DEFLATE application/javascript application/x-javascript
+                DeflateCompressionLevel 1
+        </IfModule></code>
