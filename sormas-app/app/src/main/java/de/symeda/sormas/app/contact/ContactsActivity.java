@@ -63,7 +63,6 @@ public class ContactsActivity extends AbstractRootTabActivity {
                 List<Contact> contacts = contactDao.queryForAll();
                 for (Contact contactToMark : contacts) {
                     contactDao.markAsRead(contactToMark);
-                    personDao.markAsRead(contactToMark.getPerson());
                 }
 
                 for (Fragment fragment : getSupportFragmentManager().getFragments()) {

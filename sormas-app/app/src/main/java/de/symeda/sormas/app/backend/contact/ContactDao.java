@@ -12,6 +12,7 @@ import java.util.List;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.person.Person;
@@ -66,5 +67,11 @@ public class ContactDao extends AbstractAdoDao<Contact> {
         contact.setReportingUser(ConfigProvider.getUser());
 
         return contact;
+    }
+
+    @Override
+    public void markAsRead(Contact contact) {
+        super.markAsRead(contact);
+        DatabaseHelper.getPersonDao().markAsRead(contact.getPerson());
     }
 }

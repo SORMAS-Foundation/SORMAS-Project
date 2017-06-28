@@ -181,7 +181,6 @@ public class EventEditActivity extends AbstractEditTabActivity {
                         List<EventParticipant> eventParticipants = eventParticipantDao.getByEvent(event);
                         for (EventParticipant participantToMark : eventParticipants) {
                             eventParticipantDao.markAsRead(participantToMark);
-                            personDao.markAsRead(participantToMark.getPerson());
                         }
 
                         for (Fragment fragment : getSupportFragmentManager().getFragments()) {

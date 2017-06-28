@@ -11,6 +11,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 
 import de.symeda.sormas.api.caze.Vaccination;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
@@ -22,6 +23,7 @@ import de.symeda.sormas.app.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
+import de.symeda.sormas.app.backend.synclog.SyncLogDao;
 
 import static junit.framework.Assert.assertEquals;
 import static org.hamcrest.Matchers.is;
@@ -191,15 +193,51 @@ public class CaseBackendTest {
         Case caze = TestEntityCreator.createCase();
         EpiDataBurial burial = TestEntityCreator.createEpiDataBurial(caze);
 
-        // Newly created case should be unread
+        caze.setLocalChangeDate(DateHelper.addSeconds(caze.getLocalChangeDate(), 6));
+
+        // Updated case should be unread
         assertThat(caze.isUnreadOrChildUnread(), is(true));
+
         caseDao.markAsRead(caze);
-        DatabaseHelper.getPersonDao().markAsRead(caze.getPerson());
+        caze = DatabaseHelper.getCaseDao().queryUuid(caze.getUuid());
         // Case shouldn't be marked as unread after markAsRead has been called
         assertThat(caze.isUnreadOrChildUnread(), is(false));
         // UUID of embedded object should still be the same
         EpiDataBurial burialFromDB = DatabaseHelper.getEpiDataBurialDao().queryUuid(burial.getUuid());
         assertEquals(burial.getUuid(), burialFromDB.getUuid());
+    }
+
+    @Test
+    public void shouldCreateSyncLogEntry() throws DaoException {
+        SyncLogDao syncLogDao = DatabaseHelper.getSyncLogDao();
+        assertThat(syncLogDao.countOf(), is(0L));
+
+        CaseDao caseDao = DatabaseHelper.getCaseDao();
+        Case caze = TestEntityCreator.createCase();
+        caze.setEpidNumber("AppEpidNumber");
+        DatabaseHelper.getCaseDao().saveAndSnapshot(caze);
+        DatabaseHelper.getPersonDao().saveAndSnapshot(caze.getPerson());
+
+        Case mergeCase = (Case) caze.clone();
+        mergeCase.setPerson((Person) caze.getPerson().clone());
+        mergeCase.getPerson().setAddress((Location) caze.getPerson().getAddress().clone());
+        mergeCase.setSymptoms((Symptoms) caze.getSymptoms().clone());
+        mergeCase.getSymptoms().setIllLocation((Location) caze.getSymptoms().getIllLocation().clone());
+        mergeCase.setHospitalization((Hospitalization) caze.getHospitalization().clone());
+        mergeCase.setEpiData((EpiData) caze.getEpiData().clone());
+        mergeCase.setId(null);
+        mergeCase.getPerson().setId(null);
+        mergeCase.getPerson().getAddress().setId(null);
+        mergeCase.getSymptoms().setId(null);
+        mergeCase.getSymptoms().getIllLocation().setId(null);
+        mergeCase.getHospitalization().setId(null);
+        mergeCase.getEpiData().setId(null);
+        mergeCase.setEpidNumber("ServerEpidNumber");
+
+        caseDao.mergeOrCreate(mergeCase);
+        DatabaseHelper.getPersonDao().mergeOrCreate(mergeCase.getPerson());
+
+        assertThat(syncLogDao.countOf(), is(1L));
     }
 
 }

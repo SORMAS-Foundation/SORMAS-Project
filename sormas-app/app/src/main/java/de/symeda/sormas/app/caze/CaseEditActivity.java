@@ -96,7 +96,6 @@ public class CaseEditActivity extends AbstractEditTabActivity {
                 caseUuid = params.getString(KEY_CASE_UUID);
                 Case caze = DatabaseHelper.getCaseDao().queryUuid(caseUuid);
                 DatabaseHelper.getCaseDao().markAsRead(caze);
-                DatabaseHelper.getPersonDao().markAsRead(caze.getPerson());
             }
             if (params.containsKey(TaskForm.KEY_TASK_UUID)) {
                 taskUuid = params.getString(TaskForm.KEY_TASK_UUID);
@@ -218,7 +217,6 @@ public class CaseEditActivity extends AbstractEditTabActivity {
                         List<Contact> contacts = contactDao.getByCase(caze);
                         for (Contact contactToMark : contacts) {
                             contactDao.markAsRead(contactToMark);
-                            personDao.markAsRead(contactToMark.getPerson());
                         }
 
                         for (Fragment fragment : getSupportFragmentManager().getFragments()) {

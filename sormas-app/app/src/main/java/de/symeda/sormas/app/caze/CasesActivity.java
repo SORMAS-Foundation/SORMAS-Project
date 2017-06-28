@@ -63,7 +63,6 @@ public class CasesActivity extends AbstractRootTabActivity {
                 List<Case> cases = caseDao.queryForAll();
                 for (Case caseToMark : cases) {
                     caseDao.markAsRead(caseToMark);
-                    personDao.markAsRead(caseToMark.getPerson());
                 }
 
                 for (Fragment fragment : getSupportFragmentManager().getFragments()) {

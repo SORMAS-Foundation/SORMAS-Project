@@ -112,4 +112,10 @@ public class CaseDao extends AbstractAdoDao<Case> {
 
         return caze;
     }
+
+    @Override
+    public void markAsRead(Case caze) {
+        super.markAsRead(caze);
+        DatabaseHelper.getPersonDao().markAsRead(caze.getPerson());
+    }
 }

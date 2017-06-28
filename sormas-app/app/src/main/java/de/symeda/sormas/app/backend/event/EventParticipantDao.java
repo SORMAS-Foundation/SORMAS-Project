@@ -11,6 +11,7 @@ import java.util.List;
 
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.util.DataUtils;
 
 public class EventParticipantDao extends AbstractAdoDao<EventParticipant> {
@@ -44,5 +45,11 @@ public class EventParticipantDao extends AbstractAdoDao<EventParticipant> {
             Log.e(getTableName(), "Could not perform getByEvent on EventParticipant");
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public void markAsRead(EventParticipant eventParticipant) {
+        super.markAsRead(eventParticipant);
+        DatabaseHelper.getPersonDao().markAsRead(eventParticipant.getPerson());
     }
 }
