@@ -97,9 +97,6 @@ public abstract class AbstractRootTabActivity extends AbstractTabActivity {
 
         IntentFilter filter = new IntentFilter("SYNC_ERROR_SNACKBAR");
         LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(messageReceiver, filter);
-
-
-        syncAll(false);
     }
 
     @Override
