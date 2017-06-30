@@ -82,11 +82,6 @@ public class SamplesListArrayAdapter extends ArrayAdapter<Sample> {
             synchronizedIcon.setImageResource(R.drawable.ic_done_all_black_18dp);
         }
 
-        if (sample.isUnreadOrChildUnread()) {
-            LinearLayout itemLayout = (LinearLayout) convertView.findViewById(R.id.sample_item_layout);
-            itemLayout.setBackgroundResource(R.color.bgColorUnread);
-        }
-
         updateUnreadIndicator();
 
         return convertView;
@@ -94,7 +89,7 @@ public class SamplesListArrayAdapter extends ArrayAdapter<Sample> {
 
     public void updateUnreadIndicator() {
         if (sample != null && convertView != null) {
-            LinearLayout itemLayout = (LinearLayout) convertView.findViewById(R.id.sample_item_layout);
+            LinearLayout itemLayout = (LinearLayout) convertView.findViewById(R.id.samples_list_item_layout);
             if (sample.isUnreadOrChildUnread()) {
                 itemLayout.setBackgroundResource(R.color.bgColorUnread);
             } else {

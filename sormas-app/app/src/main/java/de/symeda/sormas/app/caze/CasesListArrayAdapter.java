@@ -86,11 +86,6 @@ public class CasesListArrayAdapter extends ArrayAdapter<Case> {
             synchronizedIcon.setImageResource(R.drawable.ic_done_all_black_18dp);
         }
 
-        if (caze.isUnreadOrChildUnread()) {
-            LinearLayout itemLayout = (LinearLayout) convertView.findViewById(R.id.cli_item_layout);
-            itemLayout.setBackgroundResource(R.color.bgColorUnread);
-        }
-
         updateUnreadIndicator();
 
         return convertView;
@@ -98,7 +93,7 @@ public class CasesListArrayAdapter extends ArrayAdapter<Case> {
 
     public void updateUnreadIndicator() {
         if (caze != null && convertView != null) {
-            LinearLayout itemLayout = (LinearLayout) convertView.findViewById(R.id.cli_item_layout);
+            LinearLayout itemLayout = (LinearLayout) convertView.findViewById(R.id.cases_list_item_layout);
             if (caze.isUnreadOrChildUnread()) {
                 itemLayout.setBackgroundResource(R.color.bgColorUnread);
             } else {

@@ -72,7 +72,7 @@ public class VisitsListArrayAdapter extends ArrayAdapter<Visit> {
 
     public void updateUnreadIndicator() {
         if (visit != null && convertView != null) {
-            LinearLayout itemLayout = (LinearLayout) convertView.findViewById(R.id.visit_item_layout);
+            LinearLayout itemLayout = (LinearLayout) convertView.findViewById(R.id.visits_list_item_layout);
             if (visit.isUnreadOrChildUnread()) {
                 itemLayout.setBackgroundResource(R.color.bgColorUnread);
             } else {

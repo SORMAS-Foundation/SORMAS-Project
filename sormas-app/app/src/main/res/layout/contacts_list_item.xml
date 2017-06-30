@@ -3,7 +3,7 @@
     android:layout_width="match_parent" android:layout_height="match_parent">
 
     <LinearLayout
-        android:id="@+id/contact_item_layout"
+        android:id="@+id/contacts_list_item_layout"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">

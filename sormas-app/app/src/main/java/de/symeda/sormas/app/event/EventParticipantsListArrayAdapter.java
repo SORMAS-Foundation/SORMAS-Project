@@ -78,7 +78,7 @@ public class EventParticipantsListArrayAdapter extends ArrayAdapter<EventPartici
 
     public void updateUnreadIndicator() {
         if (eventParticipant != null && convertView != null) {
-            LinearLayout itemLayout = (LinearLayout) convertView.findViewById(R.id.eventParticipant_item_layout);
+            LinearLayout itemLayout = (LinearLayout) convertView.findViewById(R.id.event_participants_list_item_layout);
             if (eventParticipant.isUnreadOrChildUnread()) {
                 itemLayout.setBackgroundResource(R.color.bgColorUnread);
             } else {

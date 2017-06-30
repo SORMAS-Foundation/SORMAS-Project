@@ -4,7 +4,7 @@
 
 
     <LinearLayout
-        android:id="@+id/eli_item_layout"
+        android:id="@+id/events_list_item_layout"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">

@@ -81,7 +81,7 @@ public class ContactsListArrayAdapter extends ArrayAdapter<Contact> {
 
     public void updateUnreadIndicator() {
         if (contact !=  null && convertView != null) {
-            LinearLayout itemLayout = (LinearLayout) convertView.findViewById(R.id.contact_item_layout);
+            LinearLayout itemLayout = (LinearLayout) convertView.findViewById(R.id.contacts_list_item_layout);
             if (contact.isUnreadOrChildUnread()) {
                 itemLayout.setBackgroundResource(R.color.bgColorUnread);
             } else {

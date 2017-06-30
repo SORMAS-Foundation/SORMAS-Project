@@ -63,6 +63,10 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
             }
 
             Response<List<DTO>> response = dtoCall.execute();
+            if (!response.isSuccessful()) {
+                throw new ConnectException("Pulling changes from server did not work: " + response.errorBody().string());
+            }
+
             final List<DTO> result = response.body();
             if (result != null && result.size() > 0) {
                 preparePulledResult(result);

@@ -14,6 +14,7 @@ import android.widget.ArrayAdapter;
 import java.util.List;
 
 import de.symeda.sormas.app.AbstractRootTabActivity;
+import de.symeda.sormas.app.AbstractTabActivity;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
@@ -38,18 +39,17 @@ public class VisitsListFragment extends ListFragment {
     public void onResume() {
         super.onResume();
 
-        updateArrayAdapter();
-    }
-
-    public void updateArrayAdapter() {
         contactUuid = getArguments().getString(Contact.UUID);
         final Contact contact = DatabaseHelper.getContactDao().queryUuid(contactUuid);
         syncVisits(contact);
 
         final SwipeRefreshLayout refreshLayout = (SwipeRefreshLayout) getView().findViewById(R.id.swiperefresh);
-        if (refreshLayout != null) {
-            ((AbstractRootTabActivity)getActivity()).synchronizeData(SynchronizeDataAsync.SyncMode.ChangesOnly, true, refreshLayout);
-        }
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                ((AbstractTabActivity)getActivity()).synchronizeData(SynchronizeDataAsync.SyncMode.ChangesOnly, true, refreshLayout);
+            }
+        });
 
         ((VisitsListArrayAdapter)getListAdapter()).updateUnreadIndicator();
     }

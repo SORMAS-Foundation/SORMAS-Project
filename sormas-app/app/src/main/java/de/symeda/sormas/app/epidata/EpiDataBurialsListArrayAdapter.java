@@ -69,11 +69,6 @@ public class EpiDataBurialsListArrayAdapter extends ArrayAdapter<EpiDataBurial> 
         illTouchedString.append(YesNoUnknown.YES.equals(burial.getBurialTouching())?convertView.getResources().getString(R.string.label_body_touched):convertView.getResources().getString(R.string.label_body_not_touched));
         illTouched.setText(illTouchedString.toString());
 
-        if (burial.isUnreadOrChildUnread()) {
-            LinearLayout itemLayout = (LinearLayout) convertView.findViewById(R.id.cli_item_layout);
-            itemLayout.setBackgroundResource(R.color.bgColorUnread);
-        }
-
         return convertView;
     }
 

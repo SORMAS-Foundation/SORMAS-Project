@@ -3,7 +3,7 @@
     <color name="colorPrimary"> #03a9f4</color>
     <color name="colorPrimaryDark">#01579b</color>
     <color name="colorLightGrey">#11000000</color>
-    <color name="colorLightGrey2">#d6d6d6</color>
+    <color name="colorLightGrey2">#6d8ea0</color>
     <color name="colorLightTeal">#4DB6AC</color>
     <color name="colorInvisible">#00FFFFFF</color>
 
@@ -15,5 +15,5 @@
 
     <color name="textColorRed">#e61610</color>
 
-    <color name="bgColorUnread">#80d6e0f5</color>
+    <color name="bgColorUnread">#DCEAF4</color>
 </resources>

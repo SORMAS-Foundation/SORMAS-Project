@@ -140,7 +140,7 @@ public class TasksListArrayAdapter extends ArrayAdapter<Task> {
 
     public void updateUnreadIndicator() {
         if (task != null && convertView != null) {
-            LinearLayout itemLayout = (LinearLayout) convertView.findViewById(R.id.task_item_layout);
+            LinearLayout itemLayout = (LinearLayout) convertView.findViewById(R.id.tasks_list_item_layout);
             if (task.isUnreadOrChildUnread()) {
                 itemLayout.setBackgroundResource(R.color.bgColorUnread);
             } else {

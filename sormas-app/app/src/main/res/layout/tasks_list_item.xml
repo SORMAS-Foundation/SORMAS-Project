@@ -4,7 +4,7 @@
 
 
     <LinearLayout
-        android:id="@+id/task_item_layout"
+        android:id="@+id/tasks_list_item_layout"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
