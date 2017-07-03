@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -179,6 +180,53 @@ public class EnterPinActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        // using this, because onKeyDown does not receiver ENTER key event
+
+        if (event.getAction() == KeyEvent.ACTION_DOWN) {
+            // support hardware keyboard inputs
+
+            switch (event.getKeyCode()) {
+                case KeyEvent.KEYCODE_0:
+                    enterNumber("0");
+                    break;
+                case KeyEvent.KEYCODE_1:
+                    enterNumber("1");
+                    break;
+                case KeyEvent.KEYCODE_2:
+                    enterNumber("2");
+                    break;
+                case KeyEvent.KEYCODE_3:
+                    enterNumber("3");
+                    break;
+                case KeyEvent.KEYCODE_4:
+                    enterNumber("4");
+                    break;
+                case KeyEvent.KEYCODE_5:
+                    enterNumber("5");
+                    break;
+                case KeyEvent.KEYCODE_6:
+                    enterNumber("6");
+                    break;
+                case KeyEvent.KEYCODE_7:
+                    enterNumber("7");
+                    break;
+                case KeyEvent.KEYCODE_8:
+                    enterNumber("8");
+                    break;
+                case KeyEvent.KEYCODE_9:
+                    enterNumber("9");
+                    break;
+                case KeyEvent.KEYCODE_ENTER:
+                    submit(null);
+                    break;
+            }
+        }
+
+        return super.dispatchKeyEvent(event);
+    }
+
     public void forgotPIN(final View view) {
         AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
         builder.setPositiveButton(view.getContext().getResources().getText(R.string.action_ok),
@@ -211,14 +259,22 @@ public class EnterPinActivity extends AppCompatActivity {
 
     public void enterNumber(View view)
     {
-        CharSequence text = ((Button)view).getText();
+        enterNumber(((Button)view).getText());
+    }
+
+    public void enterNumber(CharSequence number) {
+
+        if (number.length() != 1 || !Character.isDigit(number.charAt(0))) {
+            throw new IllegalArgumentException(number + " is not a single number");
+        }
 
         for (int i = 0; i< pinFields.length; i++) {
             if (pinFields[i].length() == 0) {
-                pinFields[i].setText(text);
+                pinFields[i].setText(number);
                 break;
             }
         }
+
     }
 
     public void deleteNumber(View view) {
