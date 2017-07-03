@@ -8,9 +8,9 @@ REM  * glassfish-config-directory prepared
 REM ------ Config BEGIN ------
 
 REM GLASSFISH
-set GLASSFISH_HOME=\srv\payara-sormas\glassfish
+set GLASSFISH_HOME=\srv\payara-172\glassfish
 set DOMAIN_NAME=sormas
-set DOMAIN_DIR=%GLASSFISH_HOME%\domains\%DOMAIN_NAME%
+set DOMAIN_DIR=\srv\domains\%DOMAIN_NAME%
 set LOG_HOME=\var\log\glassfish\sormas
 set PORT_BASE=6000
 set PORT_ADMIN=6048

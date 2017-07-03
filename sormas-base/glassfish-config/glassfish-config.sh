@@ -9,12 +9,12 @@
 # ------ Config BEGIN ------
 
 # GLASSFISH
-GLASSFISH_HOME=/opt/payara-162-sormas/glassfish
+GLASSFISH_HOME=/opt/payara-172-sormas/glassfish
 DOMAIN_NAME=sormas
-DOMAIN_DIR=${GLASSFISH_HOME}/domains/${DOMAIN_NAME}
+DOMAIN_DIR=/opt/domains/${DOMAIN_NAME}
 LOG_HOME=/var/log/glassfish/sormas
-PORT_BASE=10000
-PORT_ADMIN=10048
+PORT_BASE=6000
+PORT_ADMIN=6048
 
 # DB
 DB_USER=sormas_user
