@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:descendantFocusability="beforeDescendants"
+    android:focusableInTouchMode="true"
+    android:id="@+id/base_layout">
+
+    <data>
+        <variable name="event" type="de.symeda.sormas.app.backend.event.Event"/>
+    </data>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="10dp"
+            android:theme="@style/AppTheme">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="@string/headline_event_information"
+                android:id="@+id/event_information_headline"
+                android:textColor="@android:color/tab_indicator_text"
+                android:textSize="@dimen/abc_text_size_body_1_material"
+                android:textStyle="bold"
+                android:paddingBottom="10dp" />
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <de.symeda.sormas.app.component.LabelField
+                    android:id="@+id/event_uuid"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:paddingTop="@dimen/field_padding"
+                    android:paddingBottom="@dimen/field_padding"
+                    app:short_uuid="@{event.uuid}"/>
+
+                <de.symeda.sormas.app.component.LabelField
+                    android:id="@+id/event_eventStatus"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:paddingTop="@dimen/field_padding"
+                    android:paddingBottom="@dimen/field_padding"
+                    app:enum="@{event.eventStatus}"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <de.symeda.sormas.app.component.LabelField
+                    android:id="@+id/event_reportDateTime"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:paddingTop="@dimen/field_padding"
+                    android:paddingBottom="@dimen/field_padding"
+                    app:dateTime="@{event.reportDateTime}"/>
+
+                <de.symeda.sormas.app.component.LabelField
+                    android:id="@+id/event_reportingUser"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:paddingTop="@dimen/field_padding"
+                    android:paddingBottom="@dimen/field_padding"
+                    app:user="@{event.reportingUser}"/>
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <de.symeda.sormas.app.component.LabelField
+                    android:id="@+id/event_surveillanceOfficer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:paddingTop="@dimen/field_padding"
+                    android:paddingBottom="@dimen/field_padding"
+                    app:user="@{event.surveillanceOfficer}"/>
+
+
+            </LinearLayout>
+
+            <de.symeda.sormas.app.component.RadioGroupField
+                    android:id="@+id/event_eventType"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="@dimen/field_padding"
+                    android:paddingBottom="@dimen/field_padding"
+                    android:value="@={event.eventType}"/>
+
+            <de.symeda.sormas.app.component.TextField
+                android:id="@+id/event_eventDesc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/field_padding"
+                android:paddingBottom="@dimen/field_padding"
+                android:value="@={event.eventDesc}"/>
+
+            <de.symeda.sormas.app.component.SpinnerField
+                android:id="@+id/event_disease"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingTop="@dimen/field_padding"
+                android:paddingBottom="@dimen/field_padding"
+                android:nextFocusForward="@+id/event_eventDate"
+                android:value="@={event.disease}"/>
+
+            <de.symeda.sormas.app.component.DateField
+                android:id="@+id/event_eventDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/field_padding"
+                android:paddingBottom="@dimen/field_padding"
+                android:nextFocusForward="@+id/event_typeOfPlace"
+                android:value="@={event.eventDate}"/>
+
+            <de.symeda.sormas.app.component.SpinnerField
+                android:id="@+id/event_typeOfPlace"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingTop="@dimen/field_padding"
+                android:paddingBottom="@dimen/field_padding"
+                android:nextFocusForward="@+id/event_typeOfPlaceTxt"
+                android:value="@={event.typeOfPlace}"/>
+
+            <de.symeda.sormas.app.component.TextField
+                android:id="@+id/event_typeOfPlaceTxt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/field_padding"
+                android:paddingBottom="@dimen/field_padding"
+                android:nextFocusForward="@+id/event_srcLastName"
+                android:value="@={event.typeOfPlaceText}"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="@string/headline_eventLocation"
+                android:textColor="@android:color/tab_indicator_text"
+                android:textSize="@dimen/abc_text_size_body_1_material"
+                android:textStyle="bold"
+                android:paddingTop="30dp"/>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/event_eventLocation_btn"
+                    android:src="@drawable/ic_explore_black_24dp"
+                    android:layout_gravity="center"
+                    android:background="@android:color/transparent"
+                    android:layout_marginRight="5dp" />
+
+                <de.symeda.sormas.app.component.LabelField
+                    android:id="@+id/event_eventLocation"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="@dimen/field_padding"
+                    android:paddingBottom="@dimen/field_padding"
+                    app:location="@{event.eventLocation}"/>
+
+            </LinearLayout>
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="@string/headline_event_sourceOfInformation"
+                android:id="@+id/event_sourceOfInformation_headline"
+                android:textColor="@android:color/tab_indicator_text"
+                android:textSize="@dimen/abc_text_size_body_1_material"
+                android:textStyle="bold"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp" />
+
+            <de.symeda.sormas.app.component.TextField
+                android:id="@+id/event_srcFirstName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/field_padding"
+                android:paddingBottom="@dimen/field_padding"
+                android:nextFocusForward="@+id/event_srcLastName"
+                android:value="@={event.srcFirstName}"/>
+
+            <de.symeda.sormas.app.component.TextField
+                android:id="@+id/event_srcLastName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/field_padding"
+                android:paddingBottom="@dimen/field_padding"
+                android:nextFocusForward="@+id/event_srcTelNo"
+                android:value="@={event.srcLastName}"/>
+
+            <de.symeda.sormas.app.component.TextField
+                android:id="@+id/event_srcTelNo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/field_padding"
+                android:paddingBottom="@dimen/field_padding"
+                android:nextFocusForward="@+id/event_srcEmail"
+                android:value="@={event.srcTelNo}"/>
+
+            <de.symeda.sormas.app.component.TextField
+                android:id="@+id/event_srcEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/field_padding"
+                android:paddingBottom="@dimen/field_padding"
+                android:value="@={event.srcEmail}"/>
+
+
+        </LinearLayout>
+
+    </ScrollView>
+</layout>

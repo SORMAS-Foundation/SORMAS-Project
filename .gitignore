@@ -1,0 +1,15 @@
+*.project
+*.classpath
+*.settings
+*target
+*.metadata
+*.recommenders
+*.idea
+/sormas-backend/bin
+/sormas-rest/bin
+/sormas-surveillance-ui/bin
+/sormas-widgetset/bin
+/deploy/bundles
+deploy
+/sormas-base/build.properties
+/sormas-ui/bin

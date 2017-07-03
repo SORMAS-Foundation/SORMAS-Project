@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <group android:id="@+id/group_action_add">
+        <item
+            android:id="@+id/action_add"
+            android:icon="@drawable/ic_add_black_24dp"
+            android:title="@string/action_add"
+            app:showAsAction="always|withText"/>
+    </group>
+
+    <group android:id="@+id/group_action_save">
+        <item
+            android:id="@+id/action_save"
+            android:icon="@drawable/ic_save_black_24dp"
+            android:title="@string/action_save"
+            app:showAsAction="always|withText"/>
+    </group>
+
+    <item
+        android:id="@+id/action_options"
+        android:icon="@drawable/ic_more_vert_black_24dp"
+        android:title="@string/action_options"
+        app:showAsAction="always">
+
+        <menu>
+            <group android:id="@+id/group_action_help">
+                <item
+                    android:id="@+id/action_help"
+                    android:icon="@drawable/ic_help_black_24dp"
+                    android:title="@string/action_help"
+                    app:showAsAction="always|withText"/>
+            </group>
+            <group android:id="@+id/group_action_markAllAsRead">
+                <item
+                    android:id="@+id/action_markAllAsRead"
+                    android:icon="@drawable/ic_check_circle_black_24dp"
+                    android:title="@string/action_markAllAsRead"
+                    app:showAsAction="always|withText"/>
+            </group>
+            <group android:id="@+id/group_action_report">
+                <item
+                    android:id="@+id/action_report"
+                    android:icon="@drawable/ic_report_black_24dp"
+                    android:title="@string/action_report"
+                    app:showAsAction="always|withText"/>
+            </group>
+        </menu>
+
+    </item>
+
+</menu>

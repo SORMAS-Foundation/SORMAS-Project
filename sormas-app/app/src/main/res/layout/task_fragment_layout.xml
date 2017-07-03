@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:descendantFocusability="beforeDescendants"
+    android:focusableInTouchMode="true"
+    android:id="@+id/base_layout">
+
+    <data>
+        <variable name="task" type="de.symeda.sormas.app.backend.task.Task"/>
+    </data>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="10dp"
+            android:theme="@style/AppTheme"
+            android:focusable="true"
+            android:focusableInTouchMode="true">
+
+            <!-- ============= USER_ADMINISTRATION ============= -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="@string/headline_task_data"
+                android:textColor="@android:color/tab_indicator_text"
+                android:textSize="@dimen/abc_text_size_body_1_material"
+                android:textStyle="bold"
+                android:paddingBottom="10dp" />
+
+            <de.symeda.sormas.app.component.LabelField
+                android:id="@+id/task_taskType"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/field_padding"
+                android:paddingBottom="@dimen/field_padding"
+                app:enum="@{task.taskType}"/>
+
+            <de.symeda.sormas.app.component.LabelField
+                android:id="@+id/task_caze"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/field_padding"
+                android:paddingBottom="@dimen/field_padding"
+                app:cazeAndLocation="@{task.caze}" />
+
+            <de.symeda.sormas.app.component.LabelField
+                android:id="@+id/task_contact"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/field_padding"
+                android:paddingBottom="@dimen/field_padding"
+                app:contactAndLocation="@{task.contact}" />
+
+            <de.symeda.sormas.app.component.LabelField
+                android:id="@+id/task_event"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/field_padding"
+                android:paddingBottom="@dimen/field_padding"
+                app:eventAndLocation="@{task.event}" />
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <de.symeda.sormas.app.component.LabelField
+                    android:id="@+id/task_priority"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:paddingTop="@dimen/field_padding"
+                    android:paddingBottom="@dimen/field_padding"
+                    app:enum="@{task.priority}"/>
+
+                <de.symeda.sormas.app.component.LabelField
+                    android:id="@+id/task_taskStatus"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:paddingTop="@dimen/field_padding"
+                    android:paddingBottom="@dimen/field_padding"
+                    app:enum="@{task.taskStatus}"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <de.symeda.sormas.app.component.LabelField
+                    android:id="@+id/task_suggestedStart"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:paddingTop="@dimen/field_padding"
+                    android:paddingBottom="@dimen/field_padding"
+                    app:dateTime="@{task.suggestedStart}"/>
+
+                <de.symeda.sormas.app.component.LabelField
+                    android:id="@+id/task_dueDate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:paddingTop="@dimen/field_padding"
+                    android:paddingBottom="@dimen/field_padding"
+                    app:dateTime="@{task.dueDate}"/>
+
+            </LinearLayout>
+
+            <de.symeda.sormas.app.component.LabelField
+                android:id="@+id/task_creatorComment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/field_padding"
+                android:paddingBottom="@dimen/field_padding"
+                android:value="@{task.creatorComment}"/>
+
+
+            <de.symeda.sormas.app.component.LabelField
+                android:id="@+id/task_creatorUser"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/field_padding"
+                android:paddingBottom="@dimen/field_padding"
+                app:user="@{task.creatorUser}"/>
+
+            <de.symeda.sormas.app.component.TextField
+                android:id="@+id/task_assigneeReply"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/field_padding"
+                android:paddingBottom="@dimen/field_padding"
+                android:value="@={task.assigneeReply}"/>
+
+            <android.support.v4.widget.Space
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/list_item_margin_bottom" />
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:layout_margin="2dp"
+                    android:background="@color/colorPrimary"
+                    android:id="@+id/task_not_executable_btn"/>
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:layout_margin="2dp"
+                    android:background="@color/colorPrimary"
+                    android:id="@+id/task_done_btn"/>
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+</layout>

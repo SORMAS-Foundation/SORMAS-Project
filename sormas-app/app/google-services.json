@@ -1,0 +1,38 @@
+{
+  "project_info": {
+    "project_number": "760056161360",
+    "project_id": "firebase-sormas"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:760056161360:android:6fafcdbe8a96d8fd",
+        "android_client_info": {
+          "package_name": "de.symeda.sormas.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyANSALdHZnRqG9iLez51K9wzvQ-DvmpXDo"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 2,
+          "analytics_property": {
+            "tracking_id": "UA-98128295-1"
+          }
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,17 @@
+@import "font-awesome.min.css";
+@import "bootstrap-reduced.css";
+@import "general.css";
+
+@import "sormastheme.scss";
+@import "addons.scss";
+
+// This should be in the Valo theme as a shorthand
+$v-layout-margin: $v-layout-margin-top $v-layout-margin-right $v-layout-margin-bottom $v-layout-margin-left !default;
+
+// This file prefixes all rules with the theme name to avoid causing conflicts with other themes.
+// The actual styles should be defined in sormastheme.scss
+
+.sormastheme {
+  @include addons;
+  @include sormastheme;
+}

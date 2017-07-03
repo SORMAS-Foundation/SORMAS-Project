@@ -1,0 +1,204 @@
+package de.symeda.sormas.app.event;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.NavUtils;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+
+import com.google.android.gms.analytics.Tracker;
+
+import java.util.List;
+
+import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.SormasApplication;
+import de.symeda.sormas.app.backend.common.DaoException;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.event.Event;
+import de.symeda.sormas.app.backend.event.EventParticipant;
+import de.symeda.sormas.app.backend.event.EventParticipantDao;
+import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.backend.person.PersonDao;
+import de.symeda.sormas.app.component.SelectOrCreatePersonDialogBuilder;
+import de.symeda.sormas.app.component.UserReportDialog;
+import de.symeda.sormas.app.rest.RetroProvider;
+import de.symeda.sormas.app.rest.SynchronizeDataAsync;
+import de.symeda.sormas.app.util.Consumer;
+import de.symeda.sormas.app.util.ErrorReportingHelper;
+import de.symeda.sormas.app.util.SyncCallback;
+
+public class EventParticipantNewActivity extends AppCompatActivity {
+
+    private String eventUuid;
+
+    private EventParticipantNewPersonForm eventParticipantNewPersonForm;
+
+    private Tracker tracker;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        Bundle params = getIntent().getExtras();
+        eventUuid = params.getString(EventEditActivity.KEY_EVENT_UUID);
+
+        setContentView(R.layout.sormas_root_activity_layout);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        if (toolbar != null) {
+            setSupportActionBar(toolbar);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setTitle(getResources().getText(R.string.headline_new_eventParticipant) + " - " + ConfigProvider.getUser().getUserRole().toShortString());
+        }
+
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+
+        eventParticipantNewPersonForm = new EventParticipantNewPersonForm();
+        eventParticipantNewPersonForm.setArguments(params);
+        ft.add(R.id.fragment_frame, eventParticipantNewPersonForm).commit();
+
+        SormasApplication application = (SormasApplication) getApplication();
+        tracker = application.getDefaultTracker();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.edit_action_bar, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        menu.setGroupVisible(R.id.group_action_help,false);
+        menu.setGroupVisible(R.id.group_action_add,false);
+        menu.setGroupVisible(R.id.group_action_save,true);
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+
+            case android.R.id.home:
+                //Home/back button
+                NavUtils.navigateUpFromSameTask(this);
+
+                return true;
+
+            // Report problem button
+            case R.id.action_report:
+                UserReportDialog userReportDialog = new UserReportDialog(this, this.getClass().getSimpleName(), null);
+                android.app.AlertDialog dialog = userReportDialog.create();
+                dialog.show();
+
+                return true;
+
+            case R.id.action_save:
+                final EventParticipant eventParticipant = eventParticipantNewPersonForm.getData();
+
+                boolean eventParticipantDescReq =  eventParticipant.getInvolvementDescription()==null||eventParticipant.getInvolvementDescription().isEmpty();
+                boolean eventParticipantFirstNameReq =  eventParticipant.getPerson().getFirstName()==null||eventParticipant.getPerson().getFirstName().isEmpty();
+                boolean eventParticipantLastNameReq =  eventParticipant.getPerson().getLastName()==null||eventParticipant.getPerson().getLastName().isEmpty();
+
+                boolean validData = !eventParticipantDescReq
+                        && !eventParticipantFirstNameReq
+                        && !eventParticipantLastNameReq;
+
+                if(validData) {
+                    try {
+                        List<Person> existingPersons = DatabaseHelper.getPersonDao().getAllByName(eventParticipant.getPerson().getFirstName(), eventParticipant.getPerson().getLastName());
+                        if (existingPersons.size() > 0) {
+
+                            AlertDialog.Builder dialogBuilder = new SelectOrCreatePersonDialogBuilder(this, eventParticipant.getPerson(), existingPersons, new Consumer() {
+                                @Override
+                                public void accept(Object parameter) {
+                                    if (parameter instanceof Person) {
+                                        try {
+                                            eventParticipant.setPerson((Person) parameter);
+                                            savePersonAndEventParticipant(eventParticipant);
+                                        } catch (DaoException e) {
+                                            Log.e(getClass().getName(), "Error while trying to create alert person", e);
+                                            Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_create_error), getResources().getString(R.string.entity_alert_person)), Snackbar.LENGTH_LONG).show();
+                                            ErrorReportingHelper.sendCaughtException(tracker, e, null, true);
+                                        }
+                                    }
+                                }
+                            });
+                            AlertDialog newPersonDialog = dialogBuilder.create();
+                            newPersonDialog.show();
+                            ((SelectOrCreatePersonDialogBuilder) dialogBuilder).setButtonListeners(newPersonDialog, this);
+
+                        } else {
+                            savePersonAndEventParticipant(eventParticipant);
+                        }
+                    } catch (DaoException e) {
+                        Log.e(getClass().getName(), "Error while trying to create alert person", e);
+                        Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_create_error), getResources().getString(R.string.entity_alert_person)), Snackbar.LENGTH_LONG).show();
+                        ErrorReportingHelper.sendCaughtException(tracker, e, null, true);
+                    }
+                }
+                else {
+                    if (eventParticipantDescReq) {
+                        Snackbar.make(findViewById(R.id.fragment_frame), R.string.snackbar_alert_person_description, Snackbar.LENGTH_LONG).show();
+                    } else if (eventParticipantFirstNameReq) {
+                        Snackbar.make(findViewById(R.id.fragment_frame), R.string.snackbar_alert_person_firstName, Snackbar.LENGTH_LONG).show();
+                    } else if (eventParticipantLastNameReq) {
+                        Snackbar.make(findViewById(R.id.fragment_frame), R.string.snackbar_alert_person_lastName, Snackbar.LENGTH_LONG).show();
+                    }
+                }
+
+                return true;
+
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+
+    private void savePersonAndEventParticipant(final EventParticipant eventParticipant) throws DaoException {
+
+		// save the person
+        PersonDao personDao = DatabaseHelper.getPersonDao();
+        personDao.saveAndSnapshot(eventParticipant.getPerson());
+        // set the given event
+        final Event event = DatabaseHelper.getEventDao().queryUuid(eventUuid);
+        eventParticipant.setEvent(event);
+        // save the contact
+        EventParticipantDao eventParticipantDao = DatabaseHelper.getEventParticipantDao();
+        eventParticipantDao.saveAndSnapshot(eventParticipant);
+
+        if (RetroProvider.isConnected()) {
+            SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.ChangesOnly, this, new SyncCallback() {
+                @Override
+                public void call(boolean syncFailed) {
+                    if (syncFailed) {
+                        Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_sync_error_created), getResources().getString(R.string.entity_alert_person)), Snackbar.LENGTH_LONG).show();
+                    } else {
+                        Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_create_success), getResources().getString(R.string.entity_alert_person)), Snackbar.LENGTH_LONG).show();
+                    }
+                    showEventParticipantEditView(eventParticipant);
+                }
+            });
+        } else {
+            Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_create_success), getResources().getString(R.string.entity_alert_person)), Snackbar.LENGTH_LONG).show();
+            finish();
+            showEventParticipantEditView(eventParticipant);
+        }
+    }
+
+    private void showEventParticipantEditView(EventParticipant eventParticipant) {
+        Intent intent = new Intent(this, EventParticipantEditActivity.class);
+        intent.putExtra(EventParticipant.UUID, eventParticipant.getUuid());
+        startActivity(intent);
+    }
+
+}

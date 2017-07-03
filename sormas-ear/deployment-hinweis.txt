@@ -1,0 +1,3 @@
+
+Alle jars, die in der pom.xml auf provided gesetzt sind (z.B. vaadin),
+ müssen mitsamt ihrer dependencies in der domain bereitgestellt werden.

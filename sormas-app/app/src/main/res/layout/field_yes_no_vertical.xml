@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/radio_caption"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/field_caption_size"
+            android:textColor="?android:attr/editTextColor"
+            android:layout_marginLeft="@dimen/field_caption_margin_left"
+            android:layout_marginTop="@dimen/field_yes_no_caption_margin_top" />
+
+        <RadioGroup
+            android:id="@+id/radio_group"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/field_yes_no_yes"
+                android:textColor="?attr/colorControlNormal"
+                android:textSize="@dimen/field_radio_font_size" />
+
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/field_yes_no_no"
+                android:textColor="?attr/colorControlNormal"
+                android:textSize="@dimen/field_radio_font_size" />
+
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/field_yes_no_unk"
+                android:textColor="?attr/colorControlNormal"
+                android:textSize="@dimen/field_radio_font_size" />
+        </RadioGroup>
+
+    </LinearLayout>
+</merge>

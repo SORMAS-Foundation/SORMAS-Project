@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:descendantFocusability="beforeDescendants"
+    android:id="@+id/base_layout">
+
+    <data>
+        <variable name="eventParticipant" type="de.symeda.sormas.app.backend.event.EventParticipant"/>
+    </data>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="10dp"
+        android:theme="@style/AppTheme"
+        android:focusable="true"
+        android:focusableInTouchMode="true">
+
+
+        <de.symeda.sormas.app.component.TextField
+            android:id="@+id/eventParticipant_involvementDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/field_padding"
+            android:paddingBottom="@dimen/field_padding"
+            android:nextFocusForward="@+id/eventParticipant_involvementDescription"
+            android:value="@={eventParticipant.involvementDescription}"/>
+
+
+    </LinearLayout>
+</layout>

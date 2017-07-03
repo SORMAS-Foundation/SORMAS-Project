@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="30 seconds" debug="true">
+
+        <!-- allow JMX configuration (http://logback.qos.ch/manual/jmxConfig.html) -->
+        <!-- <jmxConfigurator /> -->
+
+        <property name="LOG_FOLDER" value="/var/log/payara-sormas" />
+
+        <appender name="FILE_DEBUG"     class="ch.qos.logback.core.rolling.RollingFileAppender">
+                <file>${LOG_FOLDER}/application.debug</file>
+                <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                        <fileNamePattern>${LOG_FOLDER}/application.%d{yyyy-ww}.debug</fileNamePattern>
+                        <maxHistory>2</maxHistory>
+                </rollingPolicy>
+                <encoder>
+                        <pattern>%date %-5level %X{USER} %X{APP} %thread %logger{36} - %msg%n</pattern>
+                </encoder>
+        </appender>
+
+        <appender name="FILE_INFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
+                <file>${LOG_FOLDER}/application.info</file>
+                <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                        <fileNamePattern>${LOG_FOLDER}/application.%d{yyyy-ww}.info</fileNamePattern>
+                        <maxHistory>5</maxHistory>
+                </rollingPolicy>
+                <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+                        <level>INFO</level>
+                </filter>
+                <encoder>
+                        <pattern>%date %-5level %X{USER} %X{APP} %logger{36} - %msg%n</pattern>
+                </encoder>
+        </appender>
+
+        <appender name="FILE_WARN" class="ch.qos.logback.core.rolling.RollingFileAppender">
+                <file>${LOG_FOLDER}/application.warn</file>
+                <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                        <fileNamePattern>${LOG_FOLDER}/application.%d{yyyy-ww}.warn</fileNamePattern>
+                        <maxHistory>5</maxHistory>
+                </rollingPolicy>
+                <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+                        <level>WARN</level>
+                </filter>
+                <encoder>
+                        <pattern>%date %-5level %X{USER} %X{APP} %logger{36} - %msg%n</pattern>
+                </encoder>
+        </appender>
+
+        <appender name="EMAIL_ERROR" class="ch.qos.logback.classic.net.SMTPAppender">
+                <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+                        <level>ERROR</level>
+                </filter>
+                <cyclicBufferTracker class="ch.qos.logback.core.spi.CyclicBufferTracker">
+                        <!-- send just 20 log entries per email -->
+                        <bufferSize>20</bufferSize>
+                </cyclicBufferTracker>
+                <smtpHost>localhost</smtpHost>
+                <to>m.wahnschaffe@symeda.de</to>
+                <from>noreply@sormas.symeda.de</from>
+                <subject>SORMAS [DEMO]: %logger{20} - %m</subject>
+                <layout class="ch.qos.logback.classic.PatternLayout">
+                        <pattern>%date %-5level %X{USER} %X{APP} %logger{36} - %msg%n</pattern>
+                </layout>
+                <discriminator class="ch.qos.logback.classic.sift.MDCBasedDiscriminator">
+                        <key>USER</key>
+                        <defaultValue>SYSTEM</defaultValue>
+                </discriminator>
+        </appender>
+
+        <!-- Meldung "Number larger than 32 characters in hex" unterdrücken. -->
+        <logger name="org.wamblee.glassfish.auth.HexEncoder" level="ERROR" />
+
+        <!-- Patientendaten beim Kopieren von DTOs nicht loggen -->
+        <logger name="org.apache.commons.beanutils.BeanUtils" level="INFO" />
+
+        <root level="debug">
+                <appender-ref ref="FILE_DEBUG" />
+                <appender-ref ref="FILE_INFO" />
+                <appender-ref ref="FILE_WARN" />
+                <appender-ref ref="EMAIL_ERROR" />
+        </root>
+</configuration>

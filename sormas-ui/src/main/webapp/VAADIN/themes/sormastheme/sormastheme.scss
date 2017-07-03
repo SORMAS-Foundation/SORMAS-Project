@@ -1,0 +1,447 @@
+// If you edit this file you need to compile the theme. See README.md for details.
+
+// Global variable overrides. Must be declared before importing Valo.
+// For more information, see: https://vaadin.com/book/-/page/themes.valo.html
+// Example variants can be copy/pasted from https://vaadin.com/wiki/-/wiki/Main/Valo+Examples
+
+$v-luminance-threshold: 180 !default;
+
+$editor-background-color: #3b3f42 !default;
+$valo-menu-background-color: $editor-background-color !default;
+
+$v-focus-color: rgb(96, 160, 234) !default;
+$v-error-indicator-color: #eb2977 !default;
+$v-friendly-color: rgb(54, 185, 85);
+
+$v-font-size: 15px !default;
+$v-font-weight: 400 !default;
+$v-unit-size: 32px !default;
+
+$login-info-width: 300px !default;
+$login-info-opacity: 0.7 !default;
+$login-background-color: $editor-background-color !default;
+// Get more background images from unsplash.com (remember to optimize the filesize)
+$login-background-image: "img/login-bg.png" !default;
+
+$editor-shadow: 0 0 10px 10px rgba(0,0,0,.1) !default;
+$editor-embed-background-color: darken($editor-background-color, 5%) !default;
+$editor-raised-background-color: lighten($editor-background-color, 10%) !default;
+$editor-caption-font-color: valo-font-color($editor-background-color, 0.5) !default;
+
+$v-layout-margin-top: round($v-unit-size / 1.5) !default;
+$v-layout-margin-right: $v-layout-margin-top !default;
+$v-layout-margin-bottom: $v-layout-margin-top !default;
+$v-layout-margin-left: $v-layout-margin-top !default;
+$v-layout-spacing-vertical: round($v-unit-size / 1.8) !default;
+$v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
+
+
+@import "../valo/valo.scss";
+
+
+@mixin sormastheme {
+  @include valo;
+
+  .valo-menu {
+    font-size: 16px;
+  }
+  .valo-menu-item {
+    padding-top: 8px;
+  }
+
+  // login screen - for small screens, see below
+  .login-screen {
+    background: #EFF5FC;
+
+    @if $login-background-image {
+      background-image: url(#{$login-background-image});
+	  background-size: 960px;
+	  background-repeat: no-repeat;
+      background-position: 50% 50%;
+    }
+
+    width: 100%;
+    height: 100%;
+
+    .login-form {
+      @include valo-panel-style;
+      border: none;
+      padding: $v-layout-margin;
+      @include valo-animate-in-fade($duration: 1s);
+	  margin-right: 50%;
+	  margin-bottom: 10%;      
+    }
+
+    .login-information {
+      display: inline-block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: $login-info-width;
+      height: 100%;
+      background: $v-selection-color; // For IE8
+      background-color: rgba($v-selection-color, $login-info-opacity);
+      padding: $v-layout-margin;
+      color: valo-font-color($v-selection-color, 0.9);
+      @include animation(valo-animate-in-fade 1s 1s backwards);
+
+      h1 {
+        color: inherit;
+      }
+    }
+
+    .centering-layout {
+      display: inline-block;
+      width: 100%;
+      height: 100%;
+      padding-left: $login-info-width;
+
+      .v-slot {
+        height: 100%;
+      }
+    }
+  }
+  
+  .v-grid-header th {
+    font-size: 12px;
+  }
+  
+  .v-grid-cell {
+    font-size: 13px;
+  }
+  
+  .v-grid-cell.priority-high {
+    background-color: #DFA7A5;
+    color: white;
+  }
+  .v-grid-cell.priority-normal {
+    background-color: #A6BFDD;
+    color: white;
+  }
+
+  .v-grid-row.status-discarded .v-grid-cell {
+    text-decoration: line-through;
+    color: #888;
+  }
+  .v-grid-row.status-done .v-grid-cell {
+    color: #888;
+  }
+  .v-grid-row.status-not .v-grid-cell {
+    color: #C44;
+  }
+  
+  .callout {
+	text-align: center;
+	outline: none;
+	-webkit-tap-highlight-color: transparent;
+	-webkit-touch-callout: none;
+	padding: 0 14px;
+	color: #191919;
+	font-weight: 500;
+	
+	border-radius: 4px;
+	border: 1px solid #c5c5c5;
+	border-left: 7px solid #60a0ea;
+	border-top-color: #c5c5c5;
+	border-bottom-color: #bcbcbc;
+	background-color: #fafafa;
+  }
+  
+  .dashboard-key {
+  	text-align: center;
+  	outline: none;
+  	-webkit-tap-highlight-color: transparent;
+  	-webkit-touch-callout: none;
+  	padding: 7px;
+  	color: #191919;
+  	font-weight: 500;
+  	
+  	border-radius: 4px;
+  	border: 1px solid #c5c5c5;
+  	border-top-color: #c5c5c5;
+  	border-bottom-color: #bcbcbc;
+  	background-color: #fafafa;
+  }
+  
+  .valo-content {
+  	overflow: auto;
+  }
+  
+  .v-caption {
+    padding-bottom: 0.1em;
+  }
+  
+  .v-widget.v-textfield, .v-widget.v-textarea, .v-widget.v-select, .v-widget.v-datefield,
+  .v-widget.v-filterselect {
+  	margin-bottom: 10px;
+  }
+  
+  .v-caption-row-optiongroup {
+  	float: left;
+  	padding-top: 7px;
+  	height: 22px;
+  	padding-bottom: 1px;
+  	margin-bottom: -30px;
+  }
+
+  .v-select-optiongroup-row-optiongroup {
+  	text-align: right;
+  }
+  
+  .v-select-optiongroup-row-optiongroup .v-select-option,
+  .v-select-optiongroup-inline-optiongroup .v-select-option  {
+  	display: inline-block;
+  }
+  
+  .v-panel {
+  	background: inherit;
+    border: medium none;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  // makes the CRUD view keep the sidebar editor within the view as sidebar is absolutely positioned
+  .crud-view {
+  	position: relative;
+
+    .filter-textfield {
+      width: round($v-unit-size * 9);
+    }
+  }
+  
+  .v-caption {
+	display: block;
+  }
+  .v-caption.v-caption-caption-hidden {
+    display: none;
+  }
+  
+  .force-caption {
+	margin-top: 1.5em;
+  }
+  .no-margin, .h1.no-margin, .h2.no-margin, .h3.no-margin, .h4.no-margin, .h5.no-margin, .v-checkbox.no-margin label {
+  	margin: 0;
+  }
+  .sublist-padding {
+    padding-top: 7px;
+  }
+  
+  .v-readonly, .v-caption-v-readonly {
+  	color: #aaa;
+  }
+  
+  // About view
+
+  .about-view {
+    overflow: auto;
+
+    .about-content {
+      @include valo-panel-style;
+      max-width: 500px;
+      // Override the default of CustomLayout
+      padding: $v-unit-size !important;
+    }
+  }
+
+  // Style rules for smaller display sizes
+
+  // No top menu on the login view, login screen layout changes
+  .v-ui[width-range~="0-800px"] {
+
+    .main-screen {
+      padding-top: $v-unit-size;
+    }
+    // TODO also move loading indicator if using the hack above
+
+    // More compact login screen
+    .login-screen {
+      height: auto;
+      min-height: 100%;
+
+      .login-information {
+        position: static;
+        width: 100%;
+        height: auto;
+
+        .v-label {
+          text-align: center;
+
+          h1 {
+            margin-top: .4em;
+          }
+          
+        }
+      }
+
+      .centering-layout {
+        display: block;
+        width: 100%;
+        height: auto;
+        padding-left: 0;
+        padding-top: 60px;
+        padding-bottom: 60px;
+      }
+
+      .login-form {
+        width: 400px;
+        max-width: 100%;
+
+        table {
+          width: 100%;
+        }
+
+        .v-textfield {
+          width: 100% !important;
+        }
+
+        .v-formlayout-captioncell,
+        .v-formlayout-contentcell,
+        .v-formlayout-errorcell {
+          display: block;
+          text-align: center;
+          padding-top: 0;
+        }
+        .buttons {
+          width: 100%;
+          .v-button {
+            display: block;
+            text-align: center;
+          }
+        }
+      }
+    }
+  }
+
+  // hide the logo for a more compact header when the menu is narrow
+  .v-ui[width-range~="801px-1100px"] .valo-menu-part {
+    .v-slot-logo,
+    .v-slot-logo + .v-spacing {
+      display: none;
+    }
+  }
+
+  // Move logout button to the bottom of the menu on large screens
+  .v-ui[width-range~="801px-"] .valo-menu-part {
+    .user-menu {
+      position: fixed;
+      bottom: 0;
+      margin-bottom: 0;
+    }
+  }
+
+  // Editor should take whole browser width when we are under 550px in width.
+  .v-ui[width-range~="0-550px"] {
+
+    // Remove margins around the grid and reduce top bar margins on small screens
+    .crud-view .crud-main-layout {
+      padding: 0 0 0 0;
+
+      .top-bar {
+        // Use spacing to the grid below as the margin - smaller than default margin
+        padding: $v-layout-spacing-vertical $v-layout-spacing-horizontal 0 $v-layout-spacing-horizontal;
+
+        .filter-textfield {
+          width: 100%;
+        }
+      }
+    }
+
+    // About view fills the display on small screens
+    .about-view {
+      padding-bottom: 0;
+      padding-top: 0;
+      height: auto;
+      padding: 0.1 * $v-unit-size;
+
+      .v-slot-about-content {
+        overflow: auto;
+      }
+
+      .about-content {
+        width: 100%;
+        max-width: 100%;
+        height: auto;
+        vertical-align: top;
+        padding: 0;
+        background: transparent;
+        @include box-shadow(none);
+      }
+    }
+  }
+
+  // Override valo default narrow menu button on small screens to have the full logout text visible
+  .v-ui[width-range~="0-500px"] {
+    .valo-menu .v-menubar-user-menu .v-menubar-menuitem-caption {
+      width: auto;
+    }
+  }
+
+  // Hide spinner buttons from number input
+  input[type=number]::-webkit-inner-spin-button,
+  input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  
+  // For aligning in grid until #15438 is done
+  .align-right {
+  	text-align: right;
+  }
+
+  .v-Notification.error {
+    background: #C31924;
+  }
+  
+  .cursor-link {
+  	cursor: pointer;
+  }
+  
+  .font-size-large {
+  	font-size: 18px;
+  }
+  
+  .font-size-xlarge {
+  	font-size: 22px;
+  	li, ol {
+      line-height: 32px;
+	}
+  }
+  
+  .font-size-small {
+  	font-size: 12px;
+  }
+  
+  .sublist-margin {
+  	margin-top: 50px;
+  }
+  
+  .sublist-margin-small {
+  	margin-top: 20px;
+  }
+  
+  .info-column-margin {
+  	margin-left: 25px;
+  }
+  
+  .color-red {
+  	.v-icon {
+  	  color: #7F3300;
+  	}
+  }
+  
+  .color-green {
+  	.v-icon {
+    	color: #007F0E;
+    }
+  }
+  
+  .color-grey {
+  	.v-icon {
+  		color: #A8A8A8;
+  	}
+  }
+  
+  .vspace-no-filters {
+  	margin-bottom: 16px;
+  }
+}
