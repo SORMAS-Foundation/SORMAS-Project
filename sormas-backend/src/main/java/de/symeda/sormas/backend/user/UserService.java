@@ -159,7 +159,7 @@ public class UserService extends AbstractAdoService<User> {
 	}
 
 	@Override
-	protected Predicate createUserFilter(CriteriaBuilder cb, From<User, User> from, User user) {
+	protected Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<User, User> from, User user) {
 		// a user can read all other users
 		return null;
 	}

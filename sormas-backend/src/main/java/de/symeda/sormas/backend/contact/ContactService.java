@@ -55,7 +55,7 @@ public class ContactService extends AbstractAdoService<Contact> {
 		CriteriaQuery<Contact> cq = cb.createQuery(getElementClass());
 		Root<Contact> from = cq.from(getElementClass());
 
-		Predicate filter = createUserFilter(cb, from, user);
+		Predicate filter = createUserFilter(cb, cq, from, user);
 				
 		if (date != null) {
 			Predicate dateFilter = cb.greaterThan(from.get(AbstractDomainObject.CHANGE_DATE), date);
@@ -80,7 +80,7 @@ public class ContactService extends AbstractAdoService<Contact> {
 		CriteriaQuery<Contact> cq = cb.createQuery(getElementClass());
 		Root<Contact> from = cq.from(getElementClass());
 		
-		Predicate filter = createUserFilter(cb, from, user);
+		Predicate filter = createUserFilter(cb, cq, from, user);
 		Predicate followUpFilter = cb.isNotNull(from.get(Contact.FOLLOW_UP_UNTIL));
 		followUpFilter = cb.and(followUpFilter, cb.greaterThanOrEqualTo(from.get(Contact.FOLLOW_UP_UNTIL), fromDate));
 		followUpFilter = cb.and(followUpFilter, cb.lessThanOrEqualTo(from.get(Contact.LAST_CONTACT_DATE), toDate));
@@ -107,13 +107,17 @@ public class ContactService extends AbstractAdoService<Contact> {
 	/**
 	 * @see /sormas-backend/doc/UserDataAccess.md
 	 */
-	public Predicate createUserFilter(CriteriaBuilder cb, From<Contact, Contact> contactPath, User user) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Contact, Contact> contactPath, User user) {
+		
+		Predicate userFilter = caseService.createUserFilter(cb, cq, contactPath.join(Contact.CAZE, JoinType.LEFT), user);
+		Predicate filter = cb.or(createUserFilterWithoutCase(cb, cq, contactPath, user), userFilter);
+		return filter;
+	}
+	
+	public Predicate createUserFilterWithoutCase(CriteriaBuilder cb, CriteriaQuery cq, From<Contact, Contact> contactPath, User user) {
 		// whoever created it or is assigned to it is allowed to access it
 		Predicate filter = cb.equal(contactPath.get(Contact.REPORTING_USER), user);
 		filter = cb.or(filter, cb.equal(contactPath.get(Contact.CONTACT_OFFICER), user));
-		
-		Predicate userFilter = caseService.createUserFilter(cb, contactPath.join(Contact.CAZE, JoinType.LEFT), user);
-		filter = cb.or(filter, userFilter);
 		return filter;
 	}
 }

@@ -36,7 +36,7 @@ public class SampleService extends AbstractAdoService<Sample> {
 		CriteriaQuery<Sample> cq = cb.createQuery(getElementClass());
 		Root<Sample> from = cq.from(getElementClass());
 		
-		Predicate filter = createUserFilter(cb, from, user);
+		Predicate filter = createUserFilter(cb, cq, from, user);
 		
 		if(date != null) {
 			Predicate dateFilter = cb.greaterThan(from.get(AbstractDomainObject.CHANGE_DATE), date);
@@ -75,15 +75,15 @@ public class SampleService extends AbstractAdoService<Sample> {
 	 * @see /sormas-backend/doc/UserDataAccess.md
 	 */
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, From<Sample,Sample> samplePath, User user) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Sample,Sample> samplePath, User user) {
 		// whoever created the case the sample is associated with or is assigned to it
 		// is allowed to access it
 		Path<Case> casePath = samplePath.get(Sample.ASSOCIATED_CASE);
 		@SuppressWarnings("unchecked")
-		Predicate filter = caseService.createUserFilter(cb, (From<Case,Case>)casePath, user);
+		Predicate filter = caseService.createUserFilter(cb, cq, (From<Case,Case>)casePath, user);
 		
-		// whoever created the sample is allowed to access it
-		filter = cb.or(filter, cb.equal(samplePath.get(Sample.REPORTING_USER), user));
+		// user that reported it is not able to access it. Otherwise they would also need to access the case
+		//filter = cb.or(filter, cb.equal(samplePath.get(Sample.REPORTING_USER), user));
 		
 		// lab users can see samples assigned to their laboratory
 		if(user.getUserRoles().contains(UserRole.LAB_USER)) {

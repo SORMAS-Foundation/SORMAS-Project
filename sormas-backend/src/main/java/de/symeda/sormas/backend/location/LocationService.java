@@ -3,6 +3,7 @@ package de.symeda.sormas.backend.location;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Predicate;
 
@@ -18,7 +19,7 @@ public class LocationService extends AbstractAdoService<Location> {
 	}
 
 	@Override
-	protected Predicate createUserFilter(CriteriaBuilder cb, From<Location, Location> from, User user) {
+	protected Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Location, Location> from, User user) {
 		// A user should not directly query for this
 		throw new UnsupportedOperationException();
 	}

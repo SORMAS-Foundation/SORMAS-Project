@@ -69,7 +69,7 @@ public class PersonService extends AbstractAdoService<Person> {
 		Root<Case> casePersonsRoot = casePersonsQuery.from(Case.class);
 		Join<Person, Person> casePersonsSelect = casePersonsRoot.join(Case.PERSON);
 		casePersonsQuery.select(casePersonsSelect.get(Person.UUID));
-		Predicate casePersonsFilter = caseService.createUserFilter(cb, casePersonsRoot, user);
+		Predicate casePersonsFilter = caseService.createUserFilter(cb, casePersonsQuery, casePersonsRoot, user);
 		casePersonsQuery.where(casePersonsFilter);
 		casePersonsQuery.distinct(true);
 		List<String> casePersonsResultList = em.createQuery(casePersonsQuery).getResultList();
@@ -79,7 +79,7 @@ public class PersonService extends AbstractAdoService<Person> {
 		Root<Contact> contactPersonsRoot = contactPersonsQuery.from(Contact.class);
 		Join<Person, Person> contactPersonsSelect = contactPersonsRoot.join(Contact.PERSON);
 		contactPersonsQuery.select(contactPersonsSelect.get(Person.UUID));
-		Predicate contactPersonsFilter = contactService.createUserFilter(cb, contactPersonsRoot, user);
+		Predicate contactPersonsFilter = contactService.createUserFilter(cb, contactPersonsQuery, contactPersonsRoot, user);
 		contactPersonsQuery.where(contactPersonsFilter);
 		contactPersonsQuery.distinct(true);
 		List<String> contactPersonsResultList = em.createQuery(contactPersonsQuery).getResultList();
@@ -89,7 +89,7 @@ public class PersonService extends AbstractAdoService<Person> {
 		Root<EventParticipant> eventPersonsRoot = eventPersonsQuery.from(EventParticipant.class);
 		Join<Person, Person> eventPersonsSelect = eventPersonsRoot.join(EventParticipant.PERSON);
 		eventPersonsQuery.select(eventPersonsSelect.get(Person.UUID));
-		Predicate eventPersonsFilter = eventParticipantService.createUserFilter(cb, eventPersonsRoot, user);
+		Predicate eventPersonsFilter = eventParticipantService.createUserFilter(cb, eventPersonsQuery, eventPersonsRoot, user);
 		eventPersonsQuery.where(eventPersonsFilter);
 		eventPersonsQuery.distinct(true);
 		List<String> eventPersonsResultList = em.createQuery(eventPersonsQuery).getResultList();
@@ -126,7 +126,7 @@ public class PersonService extends AbstractAdoService<Person> {
 		Root<Case> casePersonsRoot = casePersonsQuery.from(Case.class);
 		Join<Person, Person> casePersonsSelect = casePersonsRoot.join(Case.PERSON);
 		casePersonsQuery.select(casePersonsSelect);
-		Predicate casePersonsFilter = caseService.createUserFilter(cb, casePersonsRoot, user);
+		Predicate casePersonsFilter = caseService.createUserFilter(cb, casePersonsQuery, casePersonsRoot, user);
 		// date range
 		if (date != null) {
 			Predicate dateFilter = createDateFilter(cb, casePersonsSelect, date);
@@ -145,7 +145,7 @@ public class PersonService extends AbstractAdoService<Person> {
 		Root<Contact> contactPersonsRoot = contactPersonsQuery.from(Contact.class);
 		Join<Person, Person> contactPersonsSelect = contactPersonsRoot.join(Contact.PERSON);
 		contactPersonsQuery.select(contactPersonsSelect);
-		Predicate contactPersonsFilter = contactService.createUserFilter(cb, contactPersonsRoot, user);
+		Predicate contactPersonsFilter = contactService.createUserFilter(cb, contactPersonsQuery, contactPersonsRoot, user);
 		// date range
 		if (date != null) {
 			Predicate dateFilter = createDateFilter(cb, contactPersonsSelect, date);
@@ -164,7 +164,7 @@ public class PersonService extends AbstractAdoService<Person> {
 		Root<EventParticipant> eventPersonsRoot = eventPersonsQuery.from(EventParticipant.class);
 		Join<Person, Person> eventPersonsSelect = eventPersonsRoot.join(EventParticipant.PERSON);
 		eventPersonsQuery.select(eventPersonsSelect);
-		Predicate eventPersonsFilter = eventParticipantService.createUserFilter(cb, eventPersonsRoot, user);
+		Predicate eventPersonsFilter = eventParticipantService.createUserFilter(cb, eventPersonsQuery, eventPersonsRoot, user);
 		// date range
 		if (date != null) {
 			Predicate dateFilter = createDateFilter(cb, eventPersonsSelect, date);
@@ -199,7 +199,7 @@ public class PersonService extends AbstractAdoService<Person> {
 		Root<Case> casePersonsRoot = casePersonsQuery.from(Case.class);
 		Path<Person> casePersonsSelect = casePersonsRoot.get(Case.PERSON);
 		casePersonsQuery.select(casePersonsSelect);
-		Predicate casePersonsFilter = caseService.createUserFilter(cb, casePersonsRoot, user);
+		Predicate casePersonsFilter = caseService.createUserFilter(cb, casePersonsQuery, casePersonsRoot, user);
 		
 		// only probable and confirmed cases are of interest
 		Predicate classificationFilter = cb.equal(casePersonsRoot.get(Case.CASE_CLASSIFICATION), CaseClassification.CONFIRMED);
@@ -233,7 +233,7 @@ public class PersonService extends AbstractAdoService<Person> {
 	}
 
 	@Override
-	protected Predicate createUserFilter(CriteriaBuilder cb, From<Person, Person> from, User user) {
+	protected Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Person, Person> from, User user) {
 		// getAllUuids and getAllAfter have custom implementations
 		throw new UnsupportedOperationException();
 	}

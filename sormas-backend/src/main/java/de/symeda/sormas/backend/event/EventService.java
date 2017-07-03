@@ -32,7 +32,7 @@ public class EventService extends AbstractAdoService<Event> {
 		CriteriaQuery<Event> cq = cb.createQuery(getElementClass());
 		Root<Event> from = cq.from(getElementClass());
 		
-		Predicate filter = createUserFilter(cb, from, user);
+		Predicate filter = createUserFilter(cb, cq, from, user);
 
 		if (date != null) {
 			Predicate dateFilter = cb.greaterThan(from.get(AbstractDomainObject.CHANGE_DATE), date);
@@ -58,7 +58,7 @@ public class EventService extends AbstractAdoService<Event> {
 		CriteriaQuery<Event> cq = cb.createQuery(getElementClass());
 		Root<Event> from = cq.from(getElementClass());
 		
-		Predicate filter = createUserFilter(cb, from, user);
+		Predicate filter = createUserFilter(cb, cq, from, user);
 		Predicate dateFilter = cb.greaterThanOrEqualTo(from.get(Event.EVENT_DATE), fromDate);
 		dateFilter = cb.and(dateFilter, cb.lessThanOrEqualTo(from.get(Event.EVENT_DATE), toDate));
 		
@@ -85,7 +85,7 @@ public class EventService extends AbstractAdoService<Event> {
 	 * @see /sormas-backend/doc/UserDataAccess.md
 	 */
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, From<Event,Event> eventPath, User user) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Event,Event> eventPath, User user) {
 
 		// whoever created the event or is assigned to it is allowed to access it
 		Predicate filter = cb.equal(eventPath.get(Event.REPORTING_USER), user);

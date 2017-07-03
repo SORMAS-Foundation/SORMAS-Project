@@ -3,6 +3,7 @@ package de.symeda.sormas.backend.caze;
 import java.util.Date;
 import java.util.List;
 
+import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.NoResultException;
@@ -13,6 +14,7 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +23,8 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.epidata.EpiDataBurial;
 import de.symeda.sormas.backend.epidata.EpiDataGathering;
@@ -36,6 +40,9 @@ import de.symeda.sormas.backend.user.User;
 public class CaseService extends AbstractAdoService<Case> {
 	
 	private final Logger logger = LoggerFactory.getLogger(getClass());
+	
+	@EJB
+	ContactService contactService;
 	
 	public CaseService() {
 		super(Case.class);
@@ -56,7 +63,7 @@ public class CaseService extends AbstractAdoService<Case> {
 		CriteriaQuery<Case> cq = cb.createQuery(getElementClass());
 		Root<Case> from = cq.from(getElementClass());
 
-		Predicate filter = createUserFilter(cb, from, user);
+		Predicate filter = createUserFilter(cb, cq, from, user);
 		
 		if (date != null) {
 			Predicate dateFilter = cb.greaterThan(from.get(AbstractDomainObject.CHANGE_DATE), date);
@@ -98,7 +105,7 @@ public class CaseService extends AbstractAdoService<Case> {
 		CriteriaQuery<Case> cq = cb.createQuery(getElementClass());
 		Root<Case> from = cq.from(getElementClass());
 
-		Predicate filter = createUserFilter(cb, from, user);
+		Predicate filter = createUserFilter(cb, cq, from, user);
 		
 		if (date != null) {
 			Predicate dateFilter = createDateFilter(cb, from, date);
@@ -139,7 +146,7 @@ public class CaseService extends AbstractAdoService<Case> {
 		CriteriaQuery<Case> cq = cb.createQuery(getElementClass());
 		Root<Case> from = cq.from(getElementClass());
 		
-		Predicate filter = createUserFilter(cb, from, user);
+		Predicate filter = createUserFilter(cb, cq, from, user);
 		Join<Case, Symptoms> symptoms = from.join(Case.SYMPTOMS);
 		Predicate dateFilter = cb.isNotNull(symptoms.get(Symptoms.ONSET_DATE));
 		dateFilter = cb.and(dateFilter, cb.greaterThanOrEqualTo(symptoms.get(Symptoms.ONSET_DATE), fromDate));
@@ -167,7 +174,7 @@ public class CaseService extends AbstractAdoService<Case> {
 	/**
 	 * @see /sormas-backend/doc/UserDataAccess.md
 	 */
-	public Predicate createUserFilter(CriteriaBuilder cb, From<Case,Case> casePath, User user) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Case,Case> casePath, User user) {
 		// whoever created the case or is assigned to it is allowed to access it
 		Predicate filter = cb.equal(casePath.get(Case.REPORTING_USER), user);
 		filter = cb.or(filter, cb.equal(casePath.get(Case.SURVEILLANCE_OFFICER), user));
@@ -204,9 +211,17 @@ public class CaseService extends AbstractAdoService<Case> {
 			}
 		}
 		
-//		// add cases for assigned tasks of the user
-//		Join<Case, Task> tasksJoin = from.join(Case.TASKS, JoinType.LEFT);
-//		filter = cb.or(filter, cb.equal(tasksJoin.get(Task.ASSIGNEE_USER), user));
+		// get all cases based on the user's contact association
+		Subquery<Long> contactCaseSubquery = cq.subquery(Long.class);
+		Root<Contact> contactRoot = contactCaseSubquery.from(Contact.class);
+		contactCaseSubquery.where(contactService.createUserFilterWithoutCase(cb, cq, contactRoot, user));
+		contactCaseSubquery.select(contactRoot.get(Contact.CAZE).get(Case.ID));
+		
+		filter = cb.or(filter, cb.in(casePath.get(Case.ID)).value(contactCaseSubquery));
+		
+		// users can only be assigned to a task when they have also access to the case
+		//Join<Case, Task> tasksJoin = from.join(Case.TASKS, JoinType.LEFT);
+		//filter = cb.or(filter, cb.equal(tasksJoin.get(Task.ASSIGNEE_USER), user));
 
 		return filter;
 	}

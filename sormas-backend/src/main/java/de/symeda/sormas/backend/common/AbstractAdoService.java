@@ -82,7 +82,7 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
 		Root<ADO> from = cq.from(getElementClass());
 
-		Predicate filter = createUserFilter(cb, from, user);
+		Predicate filter = createUserFilter(cb, cq, from, user);
 		if (filter != null) {
 			cq.where(filter);
 		}
@@ -94,7 +94,7 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 	/**
 	 * Used by most getAll* and getAllUuids methods to filter by user 
 	 */
-	protected abstract Predicate createUserFilter(CriteriaBuilder cb, From<ADO,ADO> from, User user);
+	protected abstract Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<ADO,ADO> from, User user);
 
 	@Override
 	public ADO getById(long id) {

@@ -7,6 +7,7 @@ import com.googlecode.openbeans.PropertyDescriptor;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -181,6 +182,9 @@ public final class AdoMergeHelper {
 
     private static abstract class PropertyIterator implements Iterator<PropertyDescriptor> {
 
+        private static final HashMap<Class<? extends AbstractDomainObject>, PropertyDescriptor[]> propertyDescriptorCache
+                = new HashMap<>();
+
         private final Class<? extends AbstractDomainObject> type;
         private PropertyDescriptor[] propertyDescriptors;
         private int currentPropertyIndex;
@@ -197,8 +201,13 @@ public final class AdoMergeHelper {
 
         private void init() {
             try {
-                BeanInfo beanInfo = Introspector.getBeanInfo(type);
-                propertyDescriptors = beanInfo.getPropertyDescriptors();
+                // TODO make threadsafe
+                if (!propertyDescriptorCache.containsKey(type)) {
+                    BeanInfo beanInfo = Introspector.getBeanInfo(type);
+                    PropertyDescriptor[] propertyDescriptors = beanInfo.getPropertyDescriptors();
+                    propertyDescriptorCache.put(type, propertyDescriptors);
+                }
+                propertyDescriptors = propertyDescriptorCache.get(type);
             } catch (IntrospectionException e) {
                 throw new RuntimeException(e);
             }

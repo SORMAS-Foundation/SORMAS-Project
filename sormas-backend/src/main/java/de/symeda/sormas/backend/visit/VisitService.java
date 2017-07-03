@@ -41,9 +41,9 @@ public class VisitService extends AbstractAdoService<Visit> {
 		visitsQuery.select(visitRoot.get(Visit.UUID));
 
 		// get all visits of the user's contact's persons
-		Subquery<Integer> contactPersonSubquery = visitsQuery.subquery(Integer.class);
+		Subquery<Long> contactPersonSubquery = visitsQuery.subquery(Long.class);
 		Root<Contact> contactRoot = contactPersonSubquery.from(Contact.class);
-		contactPersonSubquery.where(contactService.createUserFilter(cb, contactRoot, user));
+		contactPersonSubquery.where(contactService.createUserFilter(cb, visitsQuery, contactRoot, user));
 		contactPersonSubquery.select(contactRoot.get(Contact.PERSON).get(Person.ID));
 		
 		Predicate filter = cb.in(visitRoot.get(Visit.PERSON).get(Person.ID)).value(contactPersonSubquery);
@@ -67,7 +67,7 @@ public class VisitService extends AbstractAdoService<Visit> {
 		// get all visits of the user's contact's persons
 		Subquery<Integer> contactPersonSubquery = visitsQuery.subquery(Integer.class);
 		Root<Contact> contactRoot = contactPersonSubquery.from(Contact.class);
-		contactPersonSubquery.where(contactService.createUserFilter(cb, contactRoot, user));
+		contactPersonSubquery.where(contactService.createUserFilter(cb, visitsQuery, contactRoot, user));
 		contactPersonSubquery.select(contactRoot.get(Contact.PERSON).get(Person.ID));
 		
 		Predicate filter = cb.in(visitRoot.get(Visit.PERSON).get(Person.ID)).value(contactPersonSubquery);
@@ -141,7 +141,7 @@ public class VisitService extends AbstractAdoService<Visit> {
 	}
 	
 	@Override
-	protected Predicate createUserFilter(CriteriaBuilder cb, From<Visit, Visit> from, User user) {
+	protected Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Visit, Visit> from, User user) {
 		// getAllUuids and getAllAfter have custom implementations
 		throw new UnsupportedOperationException();
 	}

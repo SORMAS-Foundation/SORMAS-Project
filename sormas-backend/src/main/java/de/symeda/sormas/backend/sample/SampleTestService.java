@@ -33,7 +33,7 @@ public class SampleTestService extends AbstractAdoService<SampleTest> {
 		CriteriaQuery<SampleTest> cq = cb.createQuery(getElementClass());
 		Root<SampleTest> from = cq.from(getElementClass());
 		
-		Predicate filter = createUserFilter(cb, from, user);
+		Predicate filter = createUserFilter(cb, cq, from, user);
 		
 		if(date != null) {
 			Predicate dateFilter = cb.greaterThan(from.get(AbstractDomainObject.CHANGE_DATE), date);
@@ -71,11 +71,11 @@ public class SampleTestService extends AbstractAdoService<SampleTest> {
 	/**
 	 * @see /sormas-backend/doc/UserDataAccess.md
 	 */
-	public Predicate createUserFilter(CriteriaBuilder cb, From<SampleTest,SampleTest> sampleTestPath, User user) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<SampleTest,SampleTest> sampleTestPath, User user) {
 		// whoever created the sample the sample test is associated with is allowed to access it
 		Path<Sample> samplePath = sampleTestPath.get(SampleTest.SAMPLE);
 		@SuppressWarnings("unchecked")
-		Predicate filter = sampleService.createUserFilter(cb, (From<Sample,Sample>)samplePath, user);
+		Predicate filter = sampleService.createUserFilter(cb, cq, (From<Sample,Sample>)samplePath, user);
 	
 		return filter;
 	}

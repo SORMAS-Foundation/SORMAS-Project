@@ -5,10 +5,12 @@ import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.app.R;
@@ -40,6 +42,13 @@ public class CasesActivity extends AbstractRootTabActivity {
         adapter = new CasesListFilterAdapter(getSupportFragmentManager());
         createTabViews(adapter);
         pager.setCurrentItem(currentTab);
+
+//        Log.i(CasesActivity.class.getName(), "Start: " + new Date().getTime());
+//        List<Case> cases = DatabaseHelper.getCaseDao().queryForAll();
+//        for (Case caze : cases) {
+//            caze.isModifiedOrChildModified();
+//        }
+//        Log.i(CasesActivity.class.getName(), "End: " + new Date().getTime());
     }
 
     @Override

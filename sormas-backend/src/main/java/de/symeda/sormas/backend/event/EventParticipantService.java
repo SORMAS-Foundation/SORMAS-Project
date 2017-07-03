@@ -59,7 +59,7 @@ public class EventParticipantService extends AbstractAdoService<EventParticipant
 		CriteriaQuery<EventParticipant> cq = cb.createQuery(getElementClass());
 		Root<EventParticipant> from = cq.from(getElementClass());
 		
-		Predicate filter = createUserFilter(cb, from, user);
+		Predicate filter = createUserFilter(cb, cq, from, user);
 		
 		if(date != null) {
 			Predicate dateFilter = cb.greaterThan(from.get(AbstractDomainObject.CHANGE_DATE), date);
@@ -84,9 +84,9 @@ public class EventParticipantService extends AbstractAdoService<EventParticipant
 	 * @see /sormas-backend/doc/UserDataAccess.md
 	 */
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, From<EventParticipant, EventParticipant> eventParticipantPath, User user) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<EventParticipant, EventParticipant> eventParticipantPath, User user) {
 		// can see the participants of all accessible events
-		Predicate filter = eventService.createUserFilter(cb, eventParticipantPath.join(EventParticipant.EVENT, JoinType.LEFT), user);
+		Predicate filter = eventService.createUserFilter(cb, cq, eventParticipantPath.join(EventParticipant.EVENT, JoinType.LEFT), user);
 	
 		return filter;
 	}

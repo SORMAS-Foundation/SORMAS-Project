@@ -94,9 +94,9 @@ public abstract class AbstractDomainObject extends BaseObservable implements Ser
 	public boolean isModifiedOrChildModified() {
 		if (isModified()) return true;
 
-		Iterator<PropertyDescriptor> propertyIterator = AdoMergeHelper.getEmbeddedAdoProperties(this.getClass());
-		while (propertyIterator.hasNext()) {
-			try {
+		try {
+			Iterator<PropertyDescriptor> propertyIterator = AdoMergeHelper.getEmbeddedAdoProperties(this.getClass());
+			while (propertyIterator.hasNext()) {
 				PropertyDescriptor property = propertyIterator.next();
 				AbstractDomainObject embeddedAdo = (AbstractDomainObject) property.getReadMethod().invoke(this);
 				if (embeddedAdo == null) {
@@ -106,13 +106,13 @@ public abstract class AbstractDomainObject extends BaseObservable implements Ser
 				if (embeddedAdo.isModifiedOrChildModified()) {
 					return true;
 				}
-			} catch (InvocationTargetException e) {
-				Log.e(getClass().getName(), "Error while trying to invoke read method to request modified state", e);
-				throw new RuntimeException(e);
-			} catch (IllegalAccessException e) {
-				Log.e(getClass().getName(), "Error while trying to invoke read method to request modified state", e);
-				throw new RuntimeException(e);
 			}
+		} catch (InvocationTargetException e) {
+			Log.e(getClass().getName(), "Error while trying to invoke read method to request modified state", e);
+			throw new RuntimeException(e);
+		} catch (IllegalAccessException e) {
+			Log.e(getClass().getName(), "Error while trying to invoke read method to request modified state", e);
+			throw new RuntimeException(e);
 		}
 
 		return false;

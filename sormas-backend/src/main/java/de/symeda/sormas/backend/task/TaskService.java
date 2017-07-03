@@ -47,7 +47,7 @@ public class TaskService extends AbstractAdoService<Task> {
 		CriteriaQuery<Task> cq = cb.createQuery(getElementClass());
 		Root<Task> from = cq.from(getElementClass());
 
-		Predicate filter = createUserFilter(cb, from, user);
+		Predicate filter = createUserFilter(cb, cq, from, user);
 		if (date != null) {
 			filter = cb.and(filter, cb.greaterThan(from.get(AbstractDomainObject.CHANGE_DATE), date));
 		}
@@ -62,14 +62,14 @@ public class TaskService extends AbstractAdoService<Task> {
 	 * @see /sormas-backend/doc/UserDataAccess.md
 	 */
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, From<Task,Task> taskPath, User user) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Task,Task> taskPath, User user) {
 		// whoever created the task or is assigned to it is allowed to access it
 		Predicate filter = cb.equal(taskPath.get(Task.CREATOR_USER), user);
 		filter = cb.or(filter, cb.equal(taskPath.get(Task.ASSIGNEE_USER), user));
 		
-		filter = cb.or(filter, caseService.createUserFilter(cb, taskPath.join(Task.CAZE, JoinType.LEFT), user));
-		filter = cb.or(filter, contactService.createUserFilter(cb, taskPath.join(Task.CONTACT, JoinType.LEFT), user));
-		filter = cb.or(filter, eventService.createUserFilter(cb, taskPath.join(Task.EVENT, JoinType.LEFT), user));
+		filter = cb.or(filter, caseService.createUserFilter(cb, cq, taskPath.join(Task.CAZE, JoinType.LEFT), user));
+		filter = cb.or(filter, contactService.createUserFilter(cb, cq, taskPath.join(Task.CONTACT, JoinType.LEFT), user));
+		filter = cb.or(filter, eventService.createUserFilter(cb, cq, taskPath.join(Task.EVENT, JoinType.LEFT), user));
 		
 		return filter;
 	}

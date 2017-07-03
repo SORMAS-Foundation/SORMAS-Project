@@ -64,7 +64,7 @@ public class FacilityService extends AbstractAdoService<Facility> {
 	}
 
 	@Override
-	protected Predicate createUserFilter(CriteriaBuilder cb, From<Facility, Facility> from, User user) {
+	protected Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Facility, Facility> from, User user) {
 		throw new UnsupportedOperationException();
 	}
 }
