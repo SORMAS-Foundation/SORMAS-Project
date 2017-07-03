@@ -55,10 +55,10 @@
 
     <!-- headlines -->
     <string name="headline_sormas">SORMAS</string>
-    <string name="headline_enter_pin">Enter Your PIN</string>
-    <string name="headline_create_pin">Create A PIN</string>
-    <string name="headline_new_pin">Enter A New PIN</string>
-    <string name="headline_enter_current_pin">Enter Your Current PIN</string>
+    <string name="headline_enter_pin">Enter PIN</string>
+    <string name="headline_create_pin">Create PIN</string>
+    <string name="headline_confirm_pin">Confirm PIN</string>
+    <string name="headline_new_pin">Create New PIN</string>
     <string name="headline_date_picker">Select a date</string>
     <string name="headline_case">Case</string>
     <string name="headline_case_data">Case data</string>
@@ -123,7 +123,7 @@
     <string name="form_password">Password</string>
 
     <string name="symptoms_infoText">Please tick an answer for ALL symptoms indicating if they occurred during this illness between symptom onset and case detection:</string>
-    <string name="infoText_resetPIN">If you forgot your PIN, you can click on \'Ok\' and log in to the SORMAS app again. Afterwards, you will be able to choose a new PIN.</string>
+    <string name="infoText_resetPIN">To reset your PIN you will <b>need your SORMAS user password.</b></string>
 
     <string name="synclog_yours">Yours: </string>
     <string name="synclog_server">Server: </string>
@@ -212,8 +212,11 @@
     <string name="snackbar_task_status">Task status could not be edited because of an internal error.</string>
     <string name="snackbar_task_reply">An assignee reply is required when setting the task status to not executable.</string>
     <string name="snackbar_pin_not_matching">The PINs you\'ve entered do not match. Please try again.</string>
+    <string name="snackbar_pin_correct_loading">PIN correct. Starting SORMAS ...</string>
     <string name="snackbar_pin_wrong">You\'ve entered an incorrect PIN.</string>
-    <string name="snackbar_pin_too_short">The PIN has to be four digits long.</string>
+    <string name="snackbar_pin_too_short">PIN has to be four digits long.</string>
+    <string name="snackbar_pin_no_consecutive">PIN must not be made of consecutive numbers.</string>
+    <string name="snackbar_pin_no_same">PIN must not have more than 2 equal numbers.</string>
     <string name="snackbar_pin_changed">PIN has been successfully changed.</string>
     <string name="snackbar_sync_conflict">Synchronization conflicts detected. Please check the Sync Log to review them.</string>
     <string name="snackbar_open_synclog">Open Sync Log</string>

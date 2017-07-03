@@ -1,19 +1,18 @@
 package de.symeda.sormas.app;
 
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import java.util.regex.Pattern;
 
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.caze.CasesActivity;
@@ -26,9 +25,11 @@ public class EnterPinActivity extends AppCompatActivity {
 
     public static final String CALLED_FROM_SETTINGS = "calledFromSettings";
 
-    public String lastEnteredPIN;
-    public boolean calledFromSettings;
-    public boolean confirmedCurrentPIN;
+    private String lastEnteredPIN;
+    private boolean calledFromSettings;
+    private boolean confirmedCurrentPIN;
+    private boolean triedAgain;
+    private EditText[] pinFields;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +42,10 @@ public class EnterPinActivity extends AppCompatActivity {
                 calledFromSettings = params.getBoolean(CALLED_FROM_SETTINGS);
             }
         }
+
+        getWindow().setSoftInputMode(
+                WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
+        );
     }
 
     @Override
@@ -50,13 +55,10 @@ public class EnterPinActivity extends AppCompatActivity {
         final TextView headline = (TextView) findViewById(R.id.pin_headline_createOrEnter);
         final TextView hint = (TextView) findViewById(R.id.pin_hint_createOrEnter);
 
-        if (calledFromSettings) {
-            // Hide the forgot PIN button
-            findViewById(R.id.action_forgotPIN).setVisibility(View.GONE);
-        } else {
-            // Hide back to settings button
-            findViewById(R.id.action_backToSettings).setVisibility(View.GONE);
-        }
+        // Hide back to settings button
+        findViewById(R.id.action_backToSettings).setVisibility(calledFromSettings ? View.VISIBLE : View.GONE);
+        // Hide the forgot PIN button?
+        findViewById(R.id.action_forgotPIN).setVisibility(!calledFromSettings && triedAgain ? View.VISIBLE : View.GONE);
 
         // Adjust headline and hint
         String savedPIN = ConfigProvider.getPin();
@@ -67,7 +69,7 @@ public class EnterPinActivity extends AppCompatActivity {
                 headline.setText(R.string.headline_create_pin);
                 hint.setText(R.string.hint_create_pin);
             } else {
-                headline.setText(R.string.headline_create_pin);
+                headline.setText(R.string.headline_confirm_pin);
                 hint.setText(R.string.hint_create_pin_again);
             }
         } else {
@@ -77,11 +79,11 @@ public class EnterPinActivity extends AppCompatActivity {
                         headline.setText(R.string.headline_new_pin);
                         hint.setText(R.string.hint_new_pin);
                     } else {
-                        headline.setText(R.string.headline_new_pin);
+                        headline.setText(R.string.headline_confirm_pin);
                         hint.setText(R.string.hint_new_pin_again);
                     }
                 } else {
-                    headline.setText(R.string.headline_enter_current_pin);
+                    headline.setText(R.string.headline_enter_pin);
                     hint.setText(R.string.hint_enter_current_pin);
                 }
             } else {
@@ -90,93 +92,27 @@ public class EnterPinActivity extends AppCompatActivity {
             }
         }
 
-        final EditText char1 = (EditText) findViewById(R.id.pin_char1);
-        final EditText char2 = (EditText) findViewById(R.id.pin_char2);
-        final EditText char3 = (EditText) findViewById(R.id.pin_char3);
-        final EditText char4 = (EditText) findViewById(R.id.pin_char4);
-        final Button submitButton = (Button) findViewById(R.id.action_submit);
+       pinFields = new EditText[] {
+                (EditText) findViewById(R.id.pin_char1),
+                (EditText) findViewById(R.id.pin_char2),
+                (EditText) findViewById(R.id.pin_char3),
+                (EditText) findViewById(R.id.pin_char4)};
 
         // Clear the PIN entry fields in case the activity is resumed after an unsuccessful
         // submit attempt or when it has to be entered a second time
-        char1.setText("");
-        char2.setText("");
-        char3.setText("");
-        char4.setText("");
-
-        char1.requestFocus();
-
-        InputMethodManager imm = (InputMethodManager)
-                getSystemService(Context.INPUT_METHOD_SERVICE);
-        if(imm != null){
-            imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, 0);
+        for (int i = 0; i< pinFields.length; i++) {
+            pinFields[i].setText("");
         }
-
-        char1.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
-            @Override
-            public void afterTextChanged(Editable editable) {
-                if (!char1.getText().toString().isEmpty()) {
-                    char2.requestFocus();
-                }
-            }
-        });
-
-        char2.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
-            @Override
-            public void afterTextChanged(Editable editable) {
-                if (!char2.getText().toString().isEmpty()) {
-                    char3.requestFocus();
-                }
-            }
-        });
-
-        char3.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
-            @Override
-            public void afterTextChanged(Editable editable) {
-                if (!char3.getText().toString().isEmpty()) {
-                    char4.requestFocus();
-                }
-            }
-        });
-
-        char4.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
-            @Override
-            public void afterTextChanged(Editable editable) {
-                if (!char4.getText().toString().isEmpty()) {
-                    submitButton.requestFocus();
-                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(char4.getWindowToken(), 0);
-                }
-            }
-        });
     }
 
     public void submit(View view) {
-        final EditText char1 = (EditText) findViewById(R.id.pin_char1);
-        final EditText char2 = (EditText) findViewById(R.id.pin_char2);
-        final EditText char3 = (EditText) findViewById(R.id.pin_char3);
-        final EditText char4 = (EditText) findViewById(R.id.pin_char4);
 
-        String enteredPIN = char1.getText().toString() + char2.getText().toString() +
-                char3.getText().toString() + char4.getText().toString();
+        String enteredPIN = "";
+        for (int i = 0; i< pinFields.length; i++) {
+            enteredPIN += pinFields[i].getText().toString();
+        }
 
-        if (enteredPIN.length() != 4) {
-            Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_pin_too_short, Snackbar.LENGTH_LONG).show();
+        if (!validateNumber(enteredPIN, true)) {
             onResume();
             return;
         }
@@ -194,6 +130,7 @@ public class EnterPinActivity extends AppCompatActivity {
                 // otherwise display an error message and restart the activity
                 if (lastEnteredPIN.equals(enteredPIN)) {
                     ConfigProvider.setPin(enteredPIN);
+                    Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_pin_correct_loading, Snackbar.LENGTH_LONG).show();
                     startMainActivity();
                 } else {
                     lastEnteredPIN = null;
@@ -224,15 +161,18 @@ public class EnterPinActivity extends AppCompatActivity {
                         onResume();
                     } else {
                         Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_pin_wrong, Snackbar.LENGTH_LONG).show();
+                        triedAgain = true;
                         onResume();
                     }
                 }
             } else {
                 // Process the login if the PIN is correct, otherwise display an error message and restart the activity
                 if (enteredPIN.equals(savedPIN)) {
+                    Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_pin_correct_loading, Snackbar.LENGTH_LONG).show();
                     startMainActivity();
                 } else {
                     Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_pin_wrong, Snackbar.LENGTH_LONG).show();
+                    triedAgain = true;
                     onResume();
                 }
             }
@@ -269,6 +209,28 @@ public class EnterPinActivity extends AppCompatActivity {
         dialog.show();
     }
 
+    public void enterNumber(View view)
+    {
+        CharSequence text = ((Button)view).getText();
+
+        for (int i = 0; i< pinFields.length; i++) {
+            if (pinFields[i].length() == 0) {
+                pinFields[i].setText(text);
+                break;
+            }
+        }
+    }
+
+    public void deleteNumber(View view) {
+
+        for (int i = pinFields.length-1; i>=0; i--) {
+            if (pinFields[i].length() > 0) {
+                pinFields[i].setText("");
+                break;
+            }
+        }
+    }
+
     public void backToSettings(View view) {
         Intent intent = new Intent(this, SettingsActivity.class);
         startActivity(intent);
@@ -281,4 +243,31 @@ public class EnterPinActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    private boolean validateNumber(String number, boolean showSnackbar) {
+
+        if (number.length() != 4) {
+            if (showSnackbar) {
+                Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_pin_too_short, Snackbar.LENGTH_LONG).show();
+            }
+            return false;
+        }
+
+        boolean consecutiveNumbers = Pattern.matches("(0123|1234|2345|3456|4567|5678|6789|9876|8765|7654|6543|5432|4321|3210)", number);
+        if (consecutiveNumbers) {
+            if (showSnackbar) {
+                Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_pin_no_consecutive, Snackbar.LENGTH_LONG).show();
+            }
+            return false;
+        }
+
+        boolean sameNumbers = Pattern.matches("\\\\d*?(\\\\d)\\\\1{2,}\\\\d*", number);
+        if (sameNumbers) {
+            if (showSnackbar) {
+                Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_pin_no_same, Snackbar.LENGTH_LONG).show();
+            }
+            return false;
+        }
+
+        return true;
+    }
 }
