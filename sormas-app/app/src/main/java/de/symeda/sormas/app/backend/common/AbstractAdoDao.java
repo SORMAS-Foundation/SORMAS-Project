@@ -2,11 +2,7 @@ package de.symeda.sormas.app.backend.common;
 
 import android.util.Log;
 
-import com.googlecode.openbeans.BeanInfo;
-import com.googlecode.openbeans.IntrospectionException;
-import com.googlecode.openbeans.Introspector;
 import com.googlecode.openbeans.PropertyDescriptor;
-import com.j256.ormlite.dao.CloseableIterator;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.GenericRawResults;
 import com.j256.ormlite.field.DataType;
@@ -206,7 +202,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
             String parentProperty = annotation != null ? annotation.parentAccessor() : "";
 
             // go through all embedded entities and saveAndSnapshot them
-            Iterator<PropertyDescriptor> propertyIterator = AdoMergeHelper.getEmbeddedAdoProperties(ado.getClass());
+            Iterator<PropertyDescriptor> propertyIterator = AdoPropertyHelper.getEmbeddedAdoProperties(ado.getClass());
             while (propertyIterator.hasNext()) {
                 PropertyDescriptor property = propertyIterator.next();
 
@@ -344,7 +340,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
             String parentProperty = annotation != null ? annotation.parentAccessor() : "";
 
             // go through all embedded entities and delete them
-            Iterator<PropertyDescriptor> propertyIterator = AdoMergeHelper.getEmbeddedAdoProperties(ado.getClass());
+            Iterator<PropertyDescriptor> propertyIterator = AdoPropertyHelper.getEmbeddedAdoProperties(ado.getClass());
             while (propertyIterator.hasNext()) {
                 PropertyDescriptor property = propertyIterator.next();
 
@@ -441,8 +437,6 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 
         try {
 
-            BeanInfo beanInfo = Introspector.getBeanInfo(source.getClass());
-
             // ignore parent property
             EmbeddedAdo annotation = source.getClass().getAnnotation(EmbeddedAdo.class);
             String parentProperty = annotation != null ? annotation.parentAccessor() : "";
@@ -452,9 +446,9 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
             DatabaseHelper.getSyncLogDao().pushParentEntityName(sourceEntityString);
 
             StringBuilder conflictStringBuilder = new StringBuilder();
-            for (PropertyDescriptor property : beanInfo.getPropertyDescriptors()) {
+            for (PropertyDescriptor property : AdoPropertyHelper.getPropertyDescriptors(source.getClass())) {
                 // ignore some types and specific properties
-                if (!AdoMergeHelper.isModifyableProperty(property)
+                if (!AdoPropertyHelper.isModifyableProperty(property)
                         || parentProperty.equals(property.getName()))
                     continue;
 
@@ -463,7 +457,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 
                 // 1. embedded domain objects like a Location or Symptoms
                 // -> call merge for the object
-                if (property.getPropertyType().isAnnotationPresent(EmbeddedAdo.class)) {
+                if (AdoPropertyHelper.hasEmbeddedAnnotation(property)) {
 
                     // get the embedded entity
                     AbstractDomainObject embeddedSource = (AbstractDomainObject) property.getReadMethod().invoke(source);
@@ -496,7 +490,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
                         Object currentFieldValue = property.getReadMethod().invoke(current);
                         if (!DataHelper.equal(snapshotFieldValue, currentFieldValue)) {
                             // we have a conflict
-                            Log.i(beanInfo.getBeanDescriptor().getName(), "Overriding " + property.getName() +
+                            Log.i(source.getClass().getName(), "Overriding " + property.getName() +
                                     "; Snapshot '" + DataHelper.toStringNullable(snapshotFieldValue) +
                                     "'; Yours: '" + DataHelper.toStringNullable(currentFieldValue) +
                                     "'; Server: '" + DataHelper.toStringNullable(sourceFieldValue) + "'");
@@ -574,8 +568,6 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
             throw new RuntimeException(e);
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
-        } catch (IntrospectionException e) {
-            throw new RuntimeException(e);
         }
     }
 
@@ -591,7 +583,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
                 if (existingSnapshot == null) {
                     // entry is new (not yet sent to the server) -> keep it
                     continue;
-                } else if (AdoMergeHelper.hasModifiedProperty(existingEntry, existingSnapshot, true)) {
+                } else if (AdoPropertyHelper.hasModifiedProperty(existingEntry, existingSnapshot, true)) {
                     // entry exists and is modified -> inform the user that the changes are deleted
                     conflictStringBuilder.append("A list entry you modified was deleted:");
                     conflictStringBuilder.append("<br/><i>");
@@ -662,7 +654,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 
             ADO snapshot = querySnapshotByUuid(ado.getUuid());
 
-            Iterator<PropertyDescriptor> propertyIterator = AdoMergeHelper.getCollectionProperties(ado.getClass());
+            Iterator<PropertyDescriptor> propertyIterator = AdoPropertyHelper.getCollectionProperties(ado.getClass());
             while (propertyIterator.hasNext()) {
                 PropertyDescriptor property = propertyIterator.next();
 
@@ -692,7 +684,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
             String parentProperty = annotation != null ? annotation.parentAccessor() : "";
 
             // go through all embedded entities and accept them
-            propertyIterator = AdoMergeHelper.getEmbeddedAdoProperties(ado.getClass());
+            propertyIterator = AdoPropertyHelper.getEmbeddedAdoProperties(ado.getClass());
             while (propertyIterator.hasNext()) {
                 PropertyDescriptor property = propertyIterator.next();
 
@@ -734,7 +726,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
             EmbeddedAdo annotation = ado.getClass().getAnnotation(EmbeddedAdo.class);
             String parentProperty = annotation != null ? annotation.parentAccessor() : "";
 
-            Iterator<PropertyDescriptor> propertyIterator = AdoMergeHelper.getEmbeddedAdoProperties(ado.getClass());
+            Iterator<PropertyDescriptor> propertyIterator = AdoPropertyHelper.getEmbeddedAdoProperties(ado.getClass());
             while (propertyIterator.hasNext()) {
                 PropertyDescriptor property = propertyIterator.next();
 
@@ -795,7 +787,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
             EmbeddedAdo annotation = ado.getClass().getAnnotation(EmbeddedAdo.class);
             String parentProperty = annotation != null ? annotation.parentAccessor() : "";
 
-            Iterator<PropertyDescriptor> propertyIterator = AdoMergeHelper.getEmbeddedAdoProperties(ado.getClass());
+            Iterator<PropertyDescriptor> propertyIterator = AdoPropertyHelper.getEmbeddedAdoProperties(ado.getClass());
             while (propertyIterator.hasNext()) {
                 PropertyDescriptor property = propertyIterator.next();
 
@@ -833,7 +825,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
         originalAdo.setLastOpenedDate(DateHelper.addSeconds(new Date(), 5));
         update(originalAdo);
 
-        Iterator<PropertyDescriptor> propertyIterator = AdoMergeHelper.getEmbeddedAdoProperties(originalAdo.getClass());
+        Iterator<PropertyDescriptor> propertyIterator = AdoPropertyHelper.getEmbeddedAdoProperties(originalAdo.getClass());
         while (propertyIterator.hasNext()) {
             try {
                 PropertyDescriptor property = propertyIterator.next();

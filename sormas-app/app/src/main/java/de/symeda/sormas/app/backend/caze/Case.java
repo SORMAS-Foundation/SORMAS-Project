@@ -292,14 +292,14 @@ public class Case extends AbstractDomainObject {
 
 	@Override
 	public boolean isModifiedOrChildModified() {
-		boolean modified = super.isModifiedOrChildModified();
-		return person.isModifiedOrChildModified() || modified;
+		if (person.isModifiedOrChildModified()) return true;
+		return super.isModifiedOrChildModified();
 	}
 
 	@Override
 	public boolean isUnreadOrChildUnread() {
-		boolean unread = super.isUnreadOrChildUnread();
-		return person.isUnreadOrChildUnread() || unread;
+		if (person.isUnreadOrChildUnread()) return true;
+		return super.isUnreadOrChildUnread();
 	}
 
 	@Override

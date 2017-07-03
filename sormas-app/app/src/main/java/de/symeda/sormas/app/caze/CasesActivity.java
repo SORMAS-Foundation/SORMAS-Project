@@ -42,13 +42,6 @@ public class CasesActivity extends AbstractRootTabActivity {
         adapter = new CasesListFilterAdapter(getSupportFragmentManager());
         createTabViews(adapter);
         pager.setCurrentItem(currentTab);
-
-//        Log.i(CasesActivity.class.getName(), "Start: " + new Date().getTime());
-//        List<Case> cases = DatabaseHelper.getCaseDao().queryForAll();
-//        for (Case caze : cases) {
-//            caze.isModifiedOrChildModified();
-//        }
-//        Log.i(CasesActivity.class.getName(), "End: " + new Date().getTime());
     }
 
     @Override

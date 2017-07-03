@@ -7,19 +7,44 @@ import com.googlecode.openbeans.PropertyDescriptor;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.concurrent.ConcurrentHashMap;
 
 import de.symeda.sormas.api.utils.DataHelper;
 
 /**
- * TODO rename or delete
+ * Contains methods that help to iterate through properties of ADO.
  *
  * Created by Martin Wahnschaffe on 18.05.2017.
  */
-public final class AdoMergeHelper {
+public final class AdoPropertyHelper {
+
+    private static final ConcurrentHashMap<Class<? extends AbstractDomainObject>, PropertyDescriptor[]> propertyDescriptorCache
+            = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<PropertyDescriptor, Boolean> propertyHasEmbeddedAnnotationCache
+            = new ConcurrentHashMap<>();
+
+    public static PropertyDescriptor[] getPropertyDescriptors(Class<? extends AbstractDomainObject> type) {
+
+        if (!propertyDescriptorCache.containsKey(type)) {
+            try {
+                BeanInfo beanInfo = Introspector.getBeanInfo(type);
+                PropertyDescriptor[] propertyDescriptors = beanInfo.getPropertyDescriptors();
+                propertyDescriptorCache.put(type, propertyDescriptors);
+            } catch (IntrospectionException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return propertyDescriptorCache.get(type);
+    }
+
+    public static boolean hasEmbeddedAnnotation(PropertyDescriptor property) {
+        if (!propertyHasEmbeddedAnnotationCache.containsKey(property)) {
+            propertyHasEmbeddedAnnotationCache.put(property, property.getPropertyType().isAnnotationPresent(EmbeddedAdo.class));
+        }
+        return propertyHasEmbeddedAnnotationCache.get(property);
+    }
 
     /**
      * Check if any property of the two objects is different.
@@ -29,16 +54,14 @@ public final class AdoMergeHelper {
     public static boolean hasModifiedProperty(AbstractDomainObject a, AbstractDomainObject b, boolean includeEmbedded) {
 
         try {
-            BeanInfo beanInfo = Introspector.getBeanInfo(a.getClass());
-
             // ignore parent property
             EmbeddedAdo annotation = a.getClass().getAnnotation(EmbeddedAdo.class);
             String parentProperty = annotation != null ? annotation.parentAccessor() : "";
 
-            for (PropertyDescriptor property : beanInfo.getPropertyDescriptors()) {
+            for (PropertyDescriptor property : getPropertyDescriptors(a.getClass())) {
 
                 // ignore some types and specific properties
-                if (!AdoMergeHelper.isModifyableProperty(property)
+                if (!AdoPropertyHelper.isModifyableProperty(property)
                         || parentProperty.equals(property.getName())) {
                     continue;
                 }
@@ -47,7 +70,7 @@ public final class AdoMergeHelper {
 
                 // 1. embedded domain objects like a Location or Symptoms
                 // -> ignore for now
-                if (property.getPropertyType().isAnnotationPresent(EmbeddedAdo.class)) {
+                if (AdoPropertyHelper.hasEmbeddedAnnotation(property)) {
                     continue;
                 }
                 // 2. "value" types like String, Date, Enum, ...
@@ -83,7 +106,7 @@ public final class AdoMergeHelper {
 
             // do we have to recursively look into children?
             if (includeEmbedded) {
-                for (PropertyDescriptor property : beanInfo.getPropertyDescriptors()) {
+                for (PropertyDescriptor property : getPropertyDescriptors(a.getClass())) {
 
                     if (property.getWriteMethod() == null
                             || property.getReadMethod() == null
@@ -93,7 +116,7 @@ public final class AdoMergeHelper {
 
                     // 1. embedded domain objects like a Location or Symptoms
                     // -> recursion
-                    if (property.getPropertyType().isAnnotationPresent(EmbeddedAdo.class)) {
+                    if (AdoPropertyHelper.hasEmbeddedAnnotation(property)) {
 
                         AbstractDomainObject embeddedA = (AbstractDomainObject)property.getReadMethod().invoke(a);
                         AbstractDomainObject embeddedB = (AbstractDomainObject)property.getReadMethod().invoke(b);
@@ -124,8 +147,6 @@ public final class AdoMergeHelper {
                     }
                 }
             }
-        } catch (IntrospectionException e) {
-            throw new RuntimeException(e);
         } catch (InvocationTargetException e) {
             throw new RuntimeException(e);
         } catch (IllegalAccessException e) {
@@ -151,6 +172,7 @@ public final class AdoMergeHelper {
         return true;
     }
 
+
     /**
      * TODO move to proper class
      * @param type
@@ -160,7 +182,7 @@ public final class AdoMergeHelper {
 
         return new PropertyIterator(type) {
             protected boolean filterProperty(PropertyDescriptor property) {
-                return property.getPropertyType().isAnnotationPresent(EmbeddedAdo.class);
+                return hasEmbeddedAnnotation(property);
             }
         };
     }
@@ -182,8 +204,6 @@ public final class AdoMergeHelper {
 
     private static abstract class PropertyIterator implements Iterator<PropertyDescriptor> {
 
-        private static final HashMap<Class<? extends AbstractDomainObject>, PropertyDescriptor[]> propertyDescriptorCache
-                = new HashMap<>();
 
         private final Class<? extends AbstractDomainObject> type;
         private PropertyDescriptor[] propertyDescriptors;
@@ -200,17 +220,7 @@ public final class AdoMergeHelper {
         protected abstract boolean filterProperty(PropertyDescriptor property);
 
         private void init() {
-            try {
-                // TODO make threadsafe
-                if (!propertyDescriptorCache.containsKey(type)) {
-                    BeanInfo beanInfo = Introspector.getBeanInfo(type);
-                    PropertyDescriptor[] propertyDescriptors = beanInfo.getPropertyDescriptors();
-                    propertyDescriptorCache.put(type, propertyDescriptors);
-                }
-                propertyDescriptors = propertyDescriptorCache.get(type);
-            } catch (IntrospectionException e) {
-                throw new RuntimeException(e);
-            }
+            propertyDescriptors = getPropertyDescriptors(type);
             currentPropertyIndex = -1;
             moveToNextFilteredProperty();
         }
