@@ -9,9 +9,10 @@
 # ------ Config BEGIN ------
 
 # GLASSFISH
-GLASSFISH_HOME=/opt/payara-172-sormas/glassfish
+GLASSFISH_HOME=/opt/payara-172/glassfish
 DOMAIN_NAME=sormas
-DOMAIN_DIR=/opt/domains/${DOMAIN_NAME}
+DOMAINS_HOME=/opt/domains
+DOMAIN_DIR=${DOMAINS_HOME}/${DOMAIN_NAME}
 LOG_HOME=/var/log/glassfish/sormas
 PORT_BASE=6000
 PORT_ADMIN=6048
@@ -31,14 +32,14 @@ MAIL_FROM=noreply@symeda.de
 
 # ------ Config END ------
 
-echo '--- all values set properly?'
+echo "--- all values set properly?"
 echo 
-echo 'GF_HOME: ${GLASSFISH_HOME}'
-echo 'Domain Name: ${DOMAIN_NAME}'
-echo 'Domain Home: ${DOMAIN_DIR}'
-echo 'Log Home: ${LOG_HOME}'
-echo 'Port Base: ${PORT_BASE}'
-echo 'Admin Port: ${PORT_ADMIN}'
+echo "GF_HOME: ${GLASSFISH_HOME}"
+echo "Domain Name: ${DOMAIN_NAME}"
+echo "Domain Home: ${DOMAIN_DIR}"
+echo "Log Home: ${LOG_HOME}"
+echo "Port Base: ${PORT_BASE}"
+echo "Admin Port: ${PORT_ADMIN}"
 
 read -p "Press [Enter] to continue..."
 
@@ -47,15 +48,14 @@ read -p "Press [Enter] to continue..."
 
 # patching gf-modules
 ##removing old versions
-
-rm ${GLASSFISH_HOME}/modules/jboss-logging.jar
+#rm ${GLASSFISH_HOME}/modules/jboss-logging.jar
 
 ##placing new versions
-cp gf-modules/*.jar ${GLASSFISH_HOME}/modules/
+#cp gf-modules/*.jar ${GLASSFISH_HOME}/modules/
 
 # setting ASADMIN_CALL and creating domain
 ASADMIN="${GLASSFISH_HOME}/bin/asadmin --port ${PORT_ADMIN}"
-${GLASSFISH_HOME}/bin/asadmin create-domain --portbase ${PORT_BASE} ${DOMAIN_NAME}
+${GLASSFISH_HOME}/bin/asadmin create-domain --domaindir ${DOMAINS_HOME} --portbase ${PORT_BASE} ${DOMAIN_NAME}
 
 read -p "Press [Enter] to continue..."
 
@@ -66,18 +66,18 @@ cp serverlibs/*.jar ${DOMAIN_DIR}/lib/
 mkdir -p ${DOMAIN_DIR}/autodeploy/bundles
 cp -a bundles/*.jar ${DOMAIN_DIR}/autodeploy/bundles/
 
-#copying libs completed
+echo "copying libs completed"
 read -p "Press [Enter] to continue..."
 
 
-cat << END > ${GLASSFISH_HOME}/domains/${DOMAIN_NAME}/config/login.conf
+cat << END > ${DOMAIN_DIR}/config/login.conf
 ${DOMAIN_NAME}Realm { org.wamblee.glassfish.auth.FlexibleJdbcLoginModule required; };
 END
 
 chown -R glassfish:glassfish ${GLASSFISH_HOME}
 read -p "Press [Enter] to continue..."
 
-${GLASSFISH_HOME}/bin/asadmin start-domain ${DOMAIN_NAME}
+${GLASSFISH_HOME}/bin/asadmin start-domain --domaindir ${DOMAINS_HOME} ${DOMAIN_NAME}
 read -p "Press [Enter] to continue..."
 
 # JDBC pool
@@ -89,7 +89,7 @@ ${ASADMIN} create-jdbc-connection-pool --restype javax.sql.XADataSource --dataso
 ${ASADMIN} create-jdbc-resource --connectionpoolid ${DOMAIN_NAME}AuditlogPool jdbc/AuditlogPool
 
 # User datasource without pool (flexible jdbc realm seems to keep connections in cache)
-${ASADMIN} create-jdbc-connection-pool --restype javax.sql.DataSource --datasourceclassname org.postgresql.ds.PGSimpleDataSource --isconnectvalidatereq true --validationmethod custom-validation --validationclassname org.glassfish.api.jdbc.validation.PostgresConnectionValidation --property "portNumber=${DB_PORT}:databaseName=${DB_NAME}:serverName=${DB_SERVER}:user=${DB_USER}:password=${DB_PW}" ${DOMAIN_NAME}UsersDataPool
+${ASADMIN} create-jdbc-connection-pool --restype javax.sql.DataSource --datasourceclassname org.postgresql.ds.PGSimpleDataSource --isconnectvalidatereq true --nontransactionalconnections true --validationmethod custom-validation --validationclassname org.glassfish.api.jdbc.validation.PostgresConnectionValidation --property "portNumber=${DB_PORT}:databaseName=${DB_NAME}:serverName=${DB_SERVER}:user=${DB_USER}:password=${DB_PW}" ${DOMAIN_NAME}UsersDataPool
 ${ASADMIN} create-jdbc-resource --connectionpoolid ${DOMAIN_NAME}UsersDataPool jdbc/${DOMAIN_NAME}UsersDataPool
 
 read -p "Press [Enter] to continue..."
@@ -146,9 +146,9 @@ ${ASADMIN} set configs.config.server-config.admin-service.jmx-connector.system.a
 read -p "Press [Enter] to continue..."
 
 #Applications deployen
-cp -a applications/*.*ar ${DOMAIN_DIR}/autodeploy/
+#cp -a applications/*.*ar ${DOMAIN_DIR}/autodeploy/
 
-read -p "Press [Enter] to continue..."
+#read -p "Press [Enter] to continue..."
 
 
 #templates einfügen
@@ -158,12 +158,12 @@ read -p "Press [Enter] to continue..."
 #read -p "Press [Enter] to continue..."
 
 
-${GLASSFISH_HOME}/bin/asadmin stop-domain ${DOMAIN_NAME}
+${GLASSFISH_HOME}/bin/asadmin stop-domain --domaindir ${DOMAINS_HOME} ${DOMAIN_NAME}
 
 read -p "Press [Enter] to continue..."
 
 ##do not run the server here (as in bat script), because it will be executed as root
-#${GLASSFISH_HOME}/bin/asadmin start-domain ${DOMAIN_NAME}
+#${GLASSFISH_HOME}/bin/asadmin start-domain --domaindir ${DOMAINS_HOME} ${DOMAIN_NAME}
 
 chown -R glassfish:glassfish ${GLASSFISH_HOME}
 
