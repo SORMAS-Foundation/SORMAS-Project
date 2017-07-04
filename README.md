@@ -82,6 +82,7 @@ Remember to create a backup of the database (see above)
     * ``CREATE DATABASE sormas_db WITH OWNER = sormas_user ENCODING = 'UTF8';``
     * ``CREATE DATABASE sormas_audit_db WITH OWNER = sormas_user ENCODING = 'UTF8';``
     * ``\q``
+* Setup the audit log database schema using the sormas_audit_schema.sql from the latest release: ``sudo -u postgres psql sormas_audit_db < sql/sormas_audit_schema.sql``
 	
 ### Payara Application Server
 * Download payara 4.1.2.172 (https://www.payara.fish/all_downloads) and extract it to the directory where your servers should be located (e.g. /opt/payara-172)
@@ -89,7 +90,6 @@ Remember to create a backup of the database (see above)
     * ``rm -R /opt/payara-172/glassfish/domains/domain1``
     * ``rm -R /opt/payara-172/glassfish/domains/payaradomain``
 * Create a directory for your domains. Put it next to the payara server or somewhere else: ``mkdir /opt/domains``
-
 
 ### SORMAS Domain
 * Get the latest SORMAS build from github: https://github.com/hzi-braunschweig/SORMAS-Open/releases/latest (deploy.zip). 
