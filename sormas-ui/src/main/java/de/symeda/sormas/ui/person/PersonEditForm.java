@@ -133,7 +133,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
     	
     	addField(PersonDto.PRESENT_CONDITION, NativeSelect.class);
     	NativeSelect days = addField(PersonDto.BIRTH_DATE_DD, NativeSelect.class);
-    	days.setCaption(I18nProperties.getFieldCaption(PersonDto.I18N_PREFIX, "Date of birth"));
+    	days.setCaption(I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, "birthdate"));
     	// @TODO: Done for nullselection Bug, fixed in Vaadin 7.7.3
     	days.setNullSelectionAllowed(true);
     	days.setNullSelectionItemId("");
