@@ -7,7 +7,9 @@
 		<version>0.0.2-SNAPSHOT</version>
 		<relativePath>../sormas-base</relativePath>
 	</parent>
+
 	<artifactId>sormas-ear</artifactId>
+	<name>${project.artifactId}</name>
 	<packaging>ear</packaging>
 
 	<properties>
@@ -18,7 +20,7 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>de.symeda.sormas</groupId>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>sormas-backend</artifactId>
 			<version>${project.version}</version>
 			<type>ejb</type>
@@ -50,5 +52,4 @@
 		<finalName>${project.artifactId}</finalName>
 	</build>
 
-	<name>${project.artifactId}</name>
 </project>
