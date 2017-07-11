@@ -101,6 +101,13 @@
 				<version>1.1.0.Final</version>
 			</dependency>
 
+			<dependency>
+				<groupId>org.hibernate</groupId>
+				<artifactId>hibernate-validator</artifactId>
+				<version>5.1.0.CR1</version>
+				<!-- Bean validation implementation -->
+			</dependency>
+
 			<!-- glassfish-modules -->
 
 			<dependency>
@@ -184,6 +191,17 @@
 				<version>${vaadin.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
+			</dependency>
+			<dependency>
+			<groupId>com.vaadin</groupId>
+				<artifactId>vaadin-server</artifactId>
+				<version>${vaadin.version}</version>
+			</dependency>
+			<dependency>
+			<groupId>com.vaadin</groupId>
+				<artifactId>vaadin-themes</artifactId>
+				<version>${vaadin.version}</version>
+				<scope>provided</scope>
 			</dependency>
 
 			<dependency>
