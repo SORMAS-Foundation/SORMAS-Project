@@ -5,7 +5,6 @@
 	<!-- Dieses Build-Skript wird von Artefakten importiert, die gepackt ins autodeploy-Verzeichnis deployt werden können -->
 
 	<property file="../sormas-base/build.properties" />
-	<property name="target.dir" value="./target" />
 	<property environment="env" />
 	<property name="autodeploy.dir" value="${glassfish.domain.root}/autodeploy" />
 	<property name="maven.test.skip" value="true" />
@@ -20,6 +19,7 @@
 
 		<fail unless="copy.path">deploy.path is not set!</fail>
 
+		<property name="target.dir" value="./target" />
 		<copy todir="${copy.path}" preservelastmodified="true" verbose="true">
 			<fileset dir="${target.dir}">
 				<include name="**/*.${file.suffix}" />

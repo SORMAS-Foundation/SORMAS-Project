@@ -3,7 +3,6 @@
 <project name="sormas-base" basedir="." xmlns:artifact="antlib:org.apache.maven.artifact.ant" default="install">
 
 	<property file="build.properties" />
-	<property name="target.dir" value="./target" />
 	<property name="deploy.path" value="${glassfish.domain.root}/autodeploy" />
 	<property name="deploy.bundles.path" value="${deploy.path}/bundles" />
 	<property name="deploy.serverlibs.path" value="${glassfish.domain.root}/lib" />
@@ -176,6 +175,7 @@
 		<ant dir="../sormas-ear" target="3-collect" />
 		<ant dir="../sormas-ui" target="3-collect" />
 		<ant dir="../sormas-rest" target="3-collect" />
+		<ant dir="../sormas-app" target="3-collect" />
 	</target>
 
 	<target name="collect-all" description="collects all serverlibs, bundles and so on for the setup-script.">
