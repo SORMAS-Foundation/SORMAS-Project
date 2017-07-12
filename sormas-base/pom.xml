@@ -447,6 +447,17 @@
 				</pluginRepository>
 			</pluginRepositories>
 		</profile>
+
+		<profile>
+			<!-- Profile to build also the app -->
+			<id>with-app</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<modules>
+				<module>../sormas-app</module>
+			</modules>
+		</profile>
 	</profiles>
 
 	<modules>
