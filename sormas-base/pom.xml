@@ -398,6 +398,29 @@
 					<artifactId>maven-source-plugin</artifactId>
 					<version>2.4</version>
 				</plugin>
+
+				<plugin>
+					<groupId>external.atlassian.jgitflow</groupId>
+					<artifactId>jgitflow-maven-plugin</artifactId>
+					<version>1.0-m5.1</version>
+					<configuration>
+						<flowInitContext>
+							<masterBranchName>master</masterBranchName>
+							<developBranchName>development</developBranchName>
+							<featureBranchPrefix>feature-</featureBranchPrefix>
+							<releaseBranchPrefix>release-</releaseBranchPrefix>
+							<hotfixBranchPrefix>hotfix-</hotfixBranchPrefix>
+							<versionTagPrefix>releases/version-</versionTagPrefix>
+						</flowInitContext>
+						<username>${git.user}</username>
+						<password>${git.pw}</password>
+						<scmCommentPrefix>[GITFLOW]</scmCommentPrefix>
+						<pushReleases>true</pushReleases>
+						<autoVersionSubmodules>true</autoVersionSubmodules>
+						<updateDependencies>true</updateDependencies>
+					</configuration>
+				</plugin>
+
 			</plugins>
 		</pluginManagement>
 	</build>
@@ -458,6 +481,16 @@
 				<module>../sormas-app</module>
 			</modules>
 		</profile>
+
+		<profile>
+			<id>with-dep-poms</id>
+			<modules>
+				<module>./dependencies/bundles.pom</module>
+				<module>./dependencies/gf-modules.pom</module>
+				<module>./dependencies/serverlibs.pom</module>
+			</modules>
+		</profile>
+
 	</profiles>
 
 	<modules>
