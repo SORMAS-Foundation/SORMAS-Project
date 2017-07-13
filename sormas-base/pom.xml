@@ -283,6 +283,14 @@
 			<plugins>
 
 				<plugin>
+					<artifactId>maven-javadoc-plugin</artifactId>
+					<configuration>
+						<!-- Deactivate javadoc validation (active by default since Java 1.8) -->
+						<additionalparam>-Xdoclint:none</additionalparam>
+					</configuration>
+				</plugin>
+
+				<plugin>
 					<groupId>org.jacoco</groupId>
 					<artifactId>jacoco-maven-plugin</artifactId>
 					<version>0.7.7.201606060606</version>
