@@ -148,7 +148,19 @@ Here are some things that you should do to configure the apache server as proxy:
 
 ## Release workflow
 
-TODO #215 Describe release workflow
+As release workflow we use the Gitflow Workflow (see https://www.atlassian.com/git/tutorials/comparing-workflows#gitflow-workflow).
+
+For releasing a new version of this project, we integrated the <code>jgitflow-maven-plugin</code> (see https://bitbucket.org/atlassian/jgit-flow/wiki/Home).
+
+Steps to build a new version:
+
+1. Checkout branch <code>development</code>.
+2. Run <code>mvn install -Pwith-app</code>.
+3. If the build was successful, run <code>mvn jgitflow:release-start jgitflow:release-finish -Pwith-app,with-dep-poms</code>.
+	- You will be asked for the release version. Leave this empty to keep the current snapshot version as release version number (<code>-SNAPSHOT</code> will be cut of by jgitflow-maven-plugin).
+	- You will be asked for the next development version. Leave this empty and the plugin will increment the micro release number (<code>1.0.1-SNAPSHOT</code> becomes <code>1.0.2-SNAPSHOT</code>). If you want to alter the version just type e.g. <code>1.1.0-SNAPSHOT</code>.
+
+4. The result is that the current state of branch <code>development</code> gets merged to branch <code>master</code> (without -SNAPSHOT), tagged as <code>releases/version-1.0.1</code> and the development version is automatically increased.
 
 
 ### Local configuration for jgitflow-maven-plugin
