@@ -425,8 +425,8 @@
 							<hotfixBranchPrefix>hotfix-</hotfixBranchPrefix>
 							<versionTagPrefix>releases/version-</versionTagPrefix>
 						</flowInitContext>
-						<username>${git.user}</username>
-						<password>${git.pw}</password>
+						<username>${github.sormas.user}</username>
+						<password>${github.sormas.password}</password>
 						<scmCommentPrefix>[GITFLOW]</scmCommentPrefix>
 						<pushReleases>true</pushReleases>
 						<noDeploy>true</noDeploy>

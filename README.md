@@ -145,3 +145,28 @@ Here are some things that you should do to configure the apache server as proxy:
 - Start the Glassfish server and deploy "sormas-ear", "sormas-rest" and "sormas-ui" by dragging the respective projects onto it
 - Open your browser and type in "https://localhost:6081/sormas-ui" to test whether everything has been set up correctly (and to use the application)
 
+
+## Release workflow
+
+TODO #215 Describe release workflow
+
+
+### Local configuration for jgitflow-maven-plugin
+
+The <code>jgitflow-maven-plugin</code> needs credentials for git, which are configurated as variables in <code>sormas-base/pom.xml</code>. 
+To use it you need to configure this in your .m2/settings.xml (or pass it as arguments when executing the plugin).
+
+        <profiles>
+                <profile>
+                        <id>github-config</id>
+                        <!-- For jgitflow-maven-plugin against github.com -->
+                        <properties>
+                                <github.sormas.user>myUserName</github.sormas.user>
+                                <github.sormas.password>myPassword</github.sormas.password>
+                        </properties>
+                </profile>
+        </profiles>
+
+        <activeProfiles>
+                <activeProfile>github-config</activeProfile>
+        </activeProfiles>
