@@ -15,8 +15,8 @@ android {
         applicationId "de.symeda.sormas.app"
         minSdkVersion 19
         targetSdkVersion 23
-        versionCode 3
-        versionName "0.0.2-SNAPSHOT"
+        versionCode buildVersionCode()
+        versionName getVersionName()
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 //        signingConfig signingConfigs.config
     }
@@ -54,6 +54,7 @@ configurations.all {
     }
 }
 
+ext.sormasVersion = getVersionName()
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     // https://mvnrepository.com/artifact/com.googlecode/openbeans
@@ -64,7 +65,7 @@ dependencies {
     compile 'com.j256.ormlite:ormlite-core:4.48'
     compile 'com.j256.ormlite:ormlite-android:4.48'
     compile 'javax.persistence:persistence-api:1.0.2'
-    compile 'de.symeda.sormas:sormas-api:0.0.2-SNAPSHOT'
+    compile "de.symeda.sormas:sormas-api:$sormasVersion"
     compile 'com.google.android.gms:play-services-analytics:10.0.1'
     compile 'com.googlecode:openbeans:1.0'
     testCompile 'junit:junit:4.12'

@@ -1,0 +1,61 @@
+ext {
+
+	/**
+	 * Read the version from Maven POM
+	 */
+	getVersionName = {
+
+		def pom = new XmlSlurper().parse(new File('pom.xml'))
+
+		def localVersion = pom.version
+		def parentVersion = pom.parent.version
+		def resultVersion;
+		if (!localVersion.toString().isEmpty()) {
+			// When base POM is called
+			resultVersion = localVersion;
+		} else {
+			// When app POM is called
+			resultVersion = parentVersion;
+		}
+
+		println 'Extracted POM version is ' + resultVersion
+		resultVersion;
+	}
+
+	/**
+	 * Builds an Android version code from the version of the project.
+	 * This is designed to handle the -SNAPSHOT and -RC format.
+	 *
+	 * I.e. during development the version ends with -SNAPSHOT. As the code stabilizes and release nears
+	 * one or many Release Candidates are tagged. These all end with "-RC1", "-RC2" etc.
+	 * And the final release is without any suffix.
+	 * @return
+	 * @see https://blog.jayway.com/2015/03/11/automatic-versioncode-generation-in-android-gradle/
+	 */
+	buildVersionCode = {
+		// The rules is as follows:
+		// -SNAPSHOT counts as 0
+		// -RC* counts as the RC number, i.e. 1 to 8
+		// final release counts as 9.
+		// Thus you can have 8 Release Candidates, 100 Micro Releases, 1000 Minor Releases
+
+		def versionName = getVersionName().toString()
+
+		def candidate = "9"
+		def (major, minor, patch) = versionName.toLowerCase().replaceAll('-', '').tokenize('.')
+		if (patch.endsWith("snapshot")) {
+			candidate = "0"
+			patch = patch.replaceAll("[^0-9]","")
+		} else {
+			def rc
+			(patch, rc) = patch.tokenize("rc")
+			if (rc) {
+				candidate = rc
+			}
+		}
+
+		(major, minor, patch, candidate) = [major, minor, patch, candidate].collect{it.toInteger()}
+
+		(major * 1000000) + (minor * 1000) + (patch * 10) + candidate;
+	}
+}
