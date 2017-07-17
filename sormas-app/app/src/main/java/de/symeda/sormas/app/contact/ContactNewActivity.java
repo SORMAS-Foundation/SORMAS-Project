@@ -53,6 +53,9 @@ public class ContactNewActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        SormasApplication application = (SormasApplication) getApplication();
+        tracker = application.getDefaultTracker();
+
         Bundle params = getIntent().getExtras();
         caseUuid = params.getString(CaseEditActivity.KEY_CASE_UUID);
 
@@ -68,9 +71,6 @@ public class ContactNewActivity extends AppCompatActivity {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         contactNewForm = new ContactNewForm();
         ft.add(R.id.fragment_frame, contactNewForm).commit();
-
-        SormasApplication application = (SormasApplication) getApplication();
-        tracker = application.getDefaultTracker();
     }
 
     @Override

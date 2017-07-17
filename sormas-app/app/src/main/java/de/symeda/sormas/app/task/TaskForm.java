@@ -18,6 +18,7 @@ import java.util.List;
 import de.symeda.sormas.api.task.TaskHelper;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.app.AbstractSormasActivity;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.caze.Case;
@@ -54,6 +55,7 @@ public class TaskForm extends FormTab {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.task_fragment_layout, container, false);
+
         SormasApplication application = (SormasApplication) getContext().getApplicationContext();
         tracker = application.getDefaultTracker();
 
@@ -89,6 +91,7 @@ public class TaskForm extends FormTab {
                     if(!binding.taskAssigneeReply.getValue().isEmpty()) {
                         try {
                             taskDao.changeTaskStatus(task, TaskStatus.NOT_EXECUTABLE);
+                            ((AbstractSormasActivity)getActivity()).synchronizeChangedData();
                         } catch (DaoException e) {
                             Log.e(getClass().getName(), "Error while trying to update task status", e);
                             Snackbar.make(getActivity().findViewById(R.id.base_layout), R.string.snackbar_task_status, Snackbar.LENGTH_LONG).show();
@@ -113,6 +116,7 @@ public class TaskForm extends FormTab {
                 public void onClick(View v) {
                     try {
                         taskDao.changeTaskStatus(task, TaskStatus.DONE);
+                        ((AbstractSormasActivity)getActivity()).synchronizeChangedData();
                     } catch (DaoException e) {
                         Log.e(getClass().getName(), "Error while trying to update task status", e);
                         Snackbar.make(getActivity().findViewById(R.id.base_layout), R.string.snackbar_task_status, Snackbar.LENGTH_LONG).show();

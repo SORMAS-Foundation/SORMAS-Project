@@ -17,6 +17,7 @@ import com.google.android.gms.analytics.Tracker;
 
 import java.util.Date;
 
+import de.symeda.sormas.app.AbstractSormasActivity;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.common.DaoException;
@@ -34,7 +35,7 @@ import de.symeda.sormas.app.util.SyncCallback;
 /**
  * Created by Stefan Szczesny on 26.10.2016.
  */
-public class TaskEditActivity extends AppCompatActivity {
+public class TaskEditActivity extends AbstractSormasActivity {
 
     private TaskForm taskForm;
 
@@ -45,14 +46,23 @@ public class TaskEditActivity extends AppCompatActivity {
     private Tracker tracker;
 
     @Override
+    public boolean isEditing() {
+        return true;
+    }
+
+    @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setContentView(R.layout.sormas_root_activity_layout);
         super.onCreate(savedInstanceState);
+
+        SormasApplication application = (SormasApplication) getApplication();
+        tracker = application.getDefaultTracker();
+
+        setContentView(R.layout.sormas_root_activity_layout);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);
         if (toolbar != null) {
@@ -62,18 +72,11 @@ public class TaskEditActivity extends AppCompatActivity {
         }
 
         Bundle extras = getIntent().getExtras();
-        if(extras != null) {
+        if (extras != null) {
             if (extras.containsKey(Task.UUID)) {
                 TaskDao taskDao = DatabaseHelper.getTaskDao();
                 Task task = taskDao.queryUuid(extras.getString(Task.UUID));
                 taskDao.markAsRead(task);
-                try {
-                    DatabaseHelper.getTaskDao().saveAndSnapshot(task);
-                } catch (DaoException e) {
-                    Log.e(getClass().getName(), "Error while trying to save task after updating last opened date", e);
-                    Log.e(getClass().getName(), "- root cause: ", ErrorReportingHelper.getRootCause(e));
-                    ErrorReportingHelper.sendCaughtException(tracker, e, task, true);
-                }
             }
             if (extras.containsKey(TasksListFragment.KEY_CASE_UUID)) {
                 parentCaseUuid = (String) extras.get(TasksListFragment.KEY_CASE_UUID);
@@ -91,9 +94,6 @@ public class TaskEditActivity extends AppCompatActivity {
         taskForm = new TaskForm();
         taskForm.setArguments(getIntent().getExtras());
         ft.add(R.id.fragment_frame, taskForm).commit();
-
-        SormasApplication application = (SormasApplication) getApplication();
-        tracker = application.getDefaultTracker();
     }
 
     @Override
@@ -164,6 +164,7 @@ public class TaskEditActivity extends AppCompatActivity {
                     } else {
                         Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_task)), Snackbar.LENGTH_LONG).show();
                     }
+
                 } catch (DaoException e) {
                     Log.e(getClass().getName(), "Error while trying to save task", e);
                     Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_save_error), getResources().getString(R.string.entity_task)), Snackbar.LENGTH_LONG).show();

@@ -47,6 +47,9 @@ public class EventParticipantNewActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        SormasApplication application = (SormasApplication) getApplication();
+        tracker = application.getDefaultTracker();
+
         Bundle params = getIntent().getExtras();
         eventUuid = params.getString(EventEditActivity.KEY_EVENT_UUID);
 
@@ -64,9 +67,6 @@ public class EventParticipantNewActivity extends AppCompatActivity {
         eventParticipantNewPersonForm = new EventParticipantNewPersonForm();
         eventParticipantNewPersonForm.setArguments(params);
         ft.add(R.id.fragment_frame, eventParticipantNewPersonForm).commit();
-
-        SormasApplication application = (SormasApplication) getApplication();
-        tracker = application.getDefaultTracker();
     }
 
     @Override

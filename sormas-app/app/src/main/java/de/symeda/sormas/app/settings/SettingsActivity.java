@@ -25,17 +25,12 @@ public class SettingsActivity extends AbstractEditTabActivity {
 
     private SettingsForm settingsForm;
 
-    private Tracker tracker;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setContentView(R.layout.sormas_root_activity_layout);
 
         super.onCreate(savedInstanceState);
         setTitle(getResources().getString(R.string.main_menu_settings));
-
-        SormasApplication application = (SormasApplication) getApplication();
-        tracker = application.getDefaultTracker();
 
         // setting the fragment_frame
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();

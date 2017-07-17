@@ -169,8 +169,6 @@ public final class RetroProvider {
         }
 
         instance = new RetroProvider(context);
-
-        SynchronizeDataAsync.call(SynchronizeDataAsync.SyncMode.ChangesAndInfrastructure, context, null);
     }
 
     public static void disconnect() {

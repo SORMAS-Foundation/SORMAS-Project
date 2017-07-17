@@ -1,6 +1,7 @@
 package de.symeda.sormas.app.task;
 
 import android.accounts.AuthenticatorException;
+import android.app.ActivityManager;
 import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -13,6 +14,7 @@ import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.text.Html;
 import android.text.TextUtils;
+import android.util.Log;
 
 import org.joda.time.DateTime;
 
@@ -21,6 +23,7 @@ import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.app.AbstractSormasActivity;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
@@ -35,6 +38,7 @@ import de.symeda.sormas.app.backend.task.TaskDao;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.util.Callback;
+import de.symeda.sormas.app.util.SyncCallback;
 
 /**
  * Created by Stefan Szczesny on 15.11.2016.
@@ -61,20 +65,32 @@ public class TaskNotificationService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-        if (!RetroProvider.isConnected()) {
-            try {
-                RetroProvider.connect(getApplicationContext());
-            } catch (AuthenticatorException e) {
-                // do nothing
-            } catch (RetroProvider.ApiVersionException e) {
-                // do nothing
-            } catch (ConnectException e) {
-                // do nothing
-            }
-        }
+        // don't sync, when user is currently editing data
+        AbstractSormasActivity activeActivity = AbstractSormasActivity.getActiveActivity();
+        if (activeActivity == null || !activeActivity.isEditing()) {
 
-        if (RetroProvider.isConnected()) {
-            SynchronizeDataAsync.call(SynchronizeDataAsync.SyncMode.ChangesOnly, this, null);
+            if (!RetroProvider.isConnected()) {
+                try {
+                    RetroProvider.connect(getApplicationContext());
+                } catch (AuthenticatorException e) {
+                    // do nothing
+                } catch (RetroProvider.ApiVersionException e) {
+                    // do nothing
+                } catch (ConnectException e) {
+                    // do nothing
+                }
+            }
+
+            if (RetroProvider.isConnected()) {
+                SynchronizeDataAsync.call(SynchronizeDataAsync.SyncMode.ChangesOnly, this, new SyncCallback() {
+                    @Override
+                    public void call(boolean syncFailed) {
+                        if (syncFailed) {
+                            RetroProvider.disconnect();
+                        }
+                    }
+                });
+            }
         }
 
         return super.onStartCommand(intent, flags, startId);

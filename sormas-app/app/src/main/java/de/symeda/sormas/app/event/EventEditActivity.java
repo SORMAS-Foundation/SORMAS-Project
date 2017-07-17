@@ -51,7 +51,10 @@ public class EventEditActivity extends AbstractEditTabActivity {
     private String eventUuid;
     private String taskUuid;
 
-    private Tracker tracker;
+    @Override
+    public boolean isEditing() {
+        return true;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,9 +74,6 @@ public class EventEditActivity extends AbstractEditTabActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setTitle(getResources().getText(R.string.headline_event) + " - " + ConfigProvider.getUser().getUserRole().toShortString());
         }
-
-        SormasApplication application = (SormasApplication) getApplication();
-        tracker = application.getDefaultTracker();
 
         Bundle params = getIntent().getExtras();
         if(params!=null) {
@@ -285,26 +285,8 @@ public class EventEditActivity extends AbstractEditTabActivity {
                                 Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_alert_telNo, Snackbar.LENGTH_LONG).show();
                             }
                         }
-
                         break;
-//                    case EVENT_PERSONS:
-//                        LocationDao locLocationDao = DatabaseHelper.getLocationDao();
-//                        PersonDao personDao = DatabaseHelper.getPersonDao();
-//
-//                        Person person = (Person)adapter.getData(1);
-//
-//                        if(person.getAddress()!=null) {
-//                            locLocationDao.saveAndSnapshot(person.getAddress());
-//                        }
-//
-//                        DatabaseHelper.getPersonDao().saveAndSnapshot(person);
-//                        Toast.makeText(this, "person "+ DataHelper.getShortUuid(person.getUuid()) +" saved", Toast.LENGTH_SHORT).show();
-//                        break;
-
                 }
-
-//                onResume();
-//                pager.setCurrentItem(currentTab);
 
                 return true;
 

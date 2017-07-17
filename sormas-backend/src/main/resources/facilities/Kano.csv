@@ -1,4 +1,4 @@
-LGA,C,254;Ward,C,254;Settlement,C,254;HF_Name,C,254;HF_Type,C,254;Ownership;Address,C,254;Longitude,N,16,6;Latitude,N,16,6
+LGA;Ward;Settlement;Facility;Type;Ownership;Address;Longitude;Latitude
 Ajingi;Ajingi;Sakalawa;Sakalawa Health Post;Health Post;;Sakalawa Along Balare Road;9,03451;11,93277
 Ajingi;Balare;Tsebarawa;Tsebarawa Health Post;Health Post;;Tsebarawa Cikin Gari;8,94522;12,02396
 Ajingi;Balare;Balare;Balare Dispensery;Health Post;;Balare Town Behind Primary School;8,92815;11,98621

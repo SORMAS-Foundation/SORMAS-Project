@@ -18,8 +18,6 @@ import de.symeda.sormas.app.task.TaskNotificationService;
  */
 
 public class SormasBootstrap extends BroadcastReceiver {
-    private AlarmManager alarmMgr;
-    private PendingIntent alarmIntent;
 
         @Override
         public void onReceive(Context context, Intent intent) {

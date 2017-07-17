@@ -14,6 +14,7 @@ import android.widget.ArrayAdapter;
 import java.util.List;
 
 import de.symeda.sormas.app.AbstractRootTabActivity;
+import de.symeda.sormas.app.AbstractSormasActivity;
 import de.symeda.sormas.app.AbstractTabActivity;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -47,7 +48,7 @@ public class VisitsListFragment extends ListFragment {
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                ((AbstractTabActivity)getActivity()).synchronizeData(SynchronizeDataAsync.SyncMode.ChangesOnly, true, refreshLayout);
+                ((AbstractSormasActivity)getActivity()).synchronizeData(SynchronizeDataAsync.SyncMode.ChangesOnly, true, false, refreshLayout);
             }
         });
 

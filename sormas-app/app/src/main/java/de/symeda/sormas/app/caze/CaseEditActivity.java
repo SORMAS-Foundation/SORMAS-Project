@@ -66,7 +66,10 @@ public class CaseEditActivity extends AbstractEditTabActivity {
     private String taskUuid;
     private Toolbar toolbar;
 
-    private Tracker tracker;
+    @Override
+    public boolean isEditing() {
+        return true;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,9 +89,6 @@ public class CaseEditActivity extends AbstractEditTabActivity {
 
             getSupportActionBar().setTitle(getResources().getText(R.string.headline_case) + " - " + ConfigProvider.getUser().getUserRole().toShortString());
         }
-
-        SormasApplication application = (SormasApplication) getApplication();
-        tracker = application.getDefaultTracker();
 
         Bundle params = getIntent().getExtras();
         if (params != null) {
@@ -277,7 +277,6 @@ public class CaseEditActivity extends AbstractEditTabActivity {
                 Hospitalization hospitalization = (Hospitalization) adapter.getData(CaseEditTabs.HOSPITALIZATION.ordinal());
 
                 // EPI DATA
-                EpiDataDao epiDataDao = DatabaseHelper.getEpiDataDao();
                 EpiData epiData = (EpiData) adapter.getData(CaseEditTabs.EPIDATA.ordinal());
 
                 // CASE_DATA
@@ -328,6 +327,7 @@ public class CaseEditActivity extends AbstractEditTabActivity {
                             });
                         } else {
                             Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_case)), Snackbar.LENGTH_LONG).show();
+                            // next tab
                             try {
                                 pager.setCurrentItem(currentTab + 1);
                             } catch (NullPointerException e) {

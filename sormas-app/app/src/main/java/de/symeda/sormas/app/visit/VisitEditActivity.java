@@ -47,9 +47,11 @@ public class VisitEditActivity extends AbstractEditTabActivity {
 
     private VisitEditPagerAdapter adapter;
     private String contactUuid;
-//    private String visitUuid;
 
-    private Tracker tracker;
+    @Override
+    public boolean isEditing() {
+        return true;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,9 +65,6 @@ public class VisitEditActivity extends AbstractEditTabActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setTitle(getResources().getText(R.string.headline_visit) + " - " + ConfigProvider.getUser().getUserRole().toShortString());
         }
-
-        SormasApplication application = (SormasApplication) getApplication();
-        tracker = application.getDefaultTracker();
 
         Bundle params = getIntent().getExtras();
         adapter = new VisitEditPagerAdapter(getSupportFragmentManager(), params);

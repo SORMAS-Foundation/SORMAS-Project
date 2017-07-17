@@ -15,6 +15,7 @@ import com.google.android.gms.analytics.Tracker;
 
 import java.util.Date;
 
+import de.symeda.sormas.app.AbstractSormasActivity;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.common.DaoException;
@@ -32,18 +33,24 @@ import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.SyncCallback;
 
 
-public class EventParticipantEditActivity extends AppCompatActivity {
+public class EventParticipantEditActivity extends AbstractSormasActivity {
 
     private EventParticipantDataForm eventParticipantTab;
     private PersonEditForm personEditForm;
 
     private String eventParticipantUuid;
 
-    private Tracker tracker;
+    @Override
+    public boolean isEditing() {
+        return true;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        SormasApplication application = (SormasApplication) getApplication();
+        tracker = application.getDefaultTracker();
 
         setContentView(R.layout.event_participant_activity_layout);
 
@@ -84,9 +91,6 @@ public class EventParticipantEditActivity extends AppCompatActivity {
         ft.add(R.id.eventParticipant_person_fragment, personEditForm);
 
         ft.commit();
-
-        SormasApplication application = (SormasApplication) getApplication();
-        tracker = application.getDefaultTracker();
     }
 
     @Override

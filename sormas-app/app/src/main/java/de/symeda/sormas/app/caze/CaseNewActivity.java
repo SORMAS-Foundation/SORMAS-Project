@@ -58,6 +58,9 @@ public class CaseNewActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        SormasApplication application = (SormasApplication) getApplication();
+        tracker = application.getDefaultTracker();
+
         setContentView(R.layout.sormas_root_activity_layout);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);
@@ -79,9 +82,6 @@ public class CaseNewActivity extends AppCompatActivity {
         }
         caseNewForm.setArguments(arguments);
         ft.add(R.id.fragment_frame, caseNewForm).commit();
-
-        SormasApplication application = (SormasApplication) getApplication();
-        tracker = application.getDefaultTracker();
     }
 
     @Override

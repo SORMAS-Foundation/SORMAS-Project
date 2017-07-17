@@ -55,14 +55,16 @@ public class ContactEditActivity extends AbstractEditTabActivity {
     private String contactUuid;
     private String taskUuid;
 
-    private Tracker tracker;
+    @Override
+    public boolean isEditing() {
+        return true;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.case_edit_activity_layout);
-
 
         // This makes sure that the given amount of tabs is kept in memory, which means that
         // Android doesn't call onResume when the tab has no focus which would otherwise lead
@@ -76,9 +78,6 @@ public class ContactEditActivity extends AbstractEditTabActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setTitle(getResources().getText(R.string.headline_contact) + " - " + ConfigProvider.getUser().getUserRole().toShortString());
         }
-
-        SormasApplication application = (SormasApplication) getApplication();
-        tracker = application.getDefaultTracker();
 
         Bundle params = getIntent().getExtras();
         if (params != null) {

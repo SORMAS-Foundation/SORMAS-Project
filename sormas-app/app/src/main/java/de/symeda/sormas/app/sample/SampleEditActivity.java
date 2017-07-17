@@ -19,6 +19,7 @@ import java.util.Date;
 
 import de.symeda.sormas.api.sample.ShipmentStatus;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.app.AbstractSormasActivity;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.common.DaoException;
@@ -36,7 +37,7 @@ import de.symeda.sormas.app.util.SyncCallback;
  * Created by Mate Strysewske on 07.02.2017.
  */
 
-public class SampleEditActivity extends AppCompatActivity {
+public class SampleEditActivity extends AbstractSormasActivity {
 
     public static final String NEW_SAMPLE = "newSample";
     public static final String KEY_SAMPLE_UUID = "sampleUuid";
@@ -46,7 +47,10 @@ public class SampleEditActivity extends AppCompatActivity {
 
     private String sampleUuid;
 
-    private Tracker tracker;
+    @Override
+    public boolean isEditing() {
+        return true;
+    }
 
     @Override
     protected void onNewIntent(Intent intent) {
@@ -62,6 +66,9 @@ public class SampleEditActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        SormasApplication application = (SormasApplication) getApplication();
+        tracker = application.getDefaultTracker();
+
         setContentView(R.layout.sormas_root_activity_layout);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);
@@ -76,9 +83,6 @@ public class SampleEditActivity extends AppCompatActivity {
         sampleTab = new SampleEditForm();
         sampleTab.setArguments(getIntent().getExtras());
         ft.add(R.id.fragment_frame, sampleTab).commit();
-
-        SormasApplication application = (SormasApplication) getApplication();
-        tracker = application.getDefaultTracker();
 
         Bundle params = getIntent().getExtras();
         if (params != null) {
