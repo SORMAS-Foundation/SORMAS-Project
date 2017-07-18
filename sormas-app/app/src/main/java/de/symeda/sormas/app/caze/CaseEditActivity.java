@@ -325,34 +325,13 @@ public class CaseEditActivity extends AbstractEditTabActivity {
                         caze.setEpiData(epiData);
                         caseDao.saveAndSnapshot(caze);
 
-                        if (RetroProvider.isConnected()) {
-                            SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.ChangesOnly,this, new SyncCallback() {
-                                @Override
-                                public void call(boolean syncFailed) {
-                                    // entity has to be reloaded
-                                    reloadTabs();
+                        Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_case)), Snackbar.LENGTH_LONG).show();
 
-                                    if (syncFailed) {
-                                        Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_sync_error_saved), getResources().getString(R.string.entity_case)), Snackbar.LENGTH_LONG).show();
-                                    } else {
-                                        Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_case)), Snackbar.LENGTH_LONG).show();
-                                    }
-
-                                    try {
-                                        pager.setCurrentItem(currentTab + 1);
-                                    } catch (NullPointerException e) {
-                                        pager.setCurrentItem(currentTab);
-                                    }
-                                }
-                            });
-                        } else {
-                            Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_case)), Snackbar.LENGTH_LONG).show();
-                            // next tab
-                            try {
-                                pager.setCurrentItem(currentTab + 1);
-                            } catch (NullPointerException e) {
-                                pager.setCurrentItem(currentTab);
-                            }
+                        // switch to next tab
+                        try {
+                            pager.setCurrentItem(currentTab + 1);
+                        } catch (NullPointerException e) {
+                            pager.setCurrentItem(currentTab);
                         }
                     } catch (DaoException e) {
                         Log.e(getClass().getName(), "Error while trying to save case", e);
