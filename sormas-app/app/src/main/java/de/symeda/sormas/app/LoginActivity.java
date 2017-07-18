@@ -42,7 +42,7 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        // try to connect
+        // try to connect -> validates login data
         if (ConfigProvider.getUsername() != null) {
             try {
                 RetroProvider.connect(getApplicationContext());
@@ -55,17 +55,26 @@ public class LoginActivity extends AppCompatActivity {
             } catch (ConnectException e) {
                 Snackbar.make(findViewById(R.id.base_layout), e.getMessage(), Snackbar.LENGTH_LONG).show();
             }
+        }
 
-            SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.ChangesAndInfrastructure, LoginActivity.this, new SyncCallback() {
-                @Override
-                public void call(boolean syncFailed) {
-                    // already logged in?
-                    if (ConfigProvider.getUser() != null) {
-                        Intent intent = new Intent(LoginActivity.this, EnterPinActivity.class);
-                        startActivity(intent);
+        if (ConfigProvider.getUsername() != null) {
+            // valid login
+            if (ConfigProvider.getUser() == null) {
+                // no user yet? sync...
+                SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.ChangesAndInfrastructure, LoginActivity.this, new SyncCallback() {
+                    @Override
+                    public void call(boolean syncFailed) {
+                        if (ConfigProvider.getUser() != null) {
+                            Intent intent = new Intent(LoginActivity.this, EnterPinActivity.class);
+                            startActivity(intent);
+                        }
                     }
-                }
-            });
+                });
+            }
+            else {
+                Intent intent = new Intent(LoginActivity.this, EnterPinActivity.class);
+                startActivity(intent);
+            }
         }
     }
 

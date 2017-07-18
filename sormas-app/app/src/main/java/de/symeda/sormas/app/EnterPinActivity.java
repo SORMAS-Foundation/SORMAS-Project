@@ -17,7 +17,9 @@ import java.util.regex.Pattern;
 
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.caze.CasesActivity;
+import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.settings.SettingsActivity;
+import de.symeda.sormas.app.util.SyncCallback;
 
 /**
  * Created by Mate Strysewske on 23.06.2017.
@@ -47,6 +49,9 @@ public class EnterPinActivity extends AppCompatActivity {
         getWindow().setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
         );
+
+        // sync...
+        SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.ChangesAndInfrastructure, EnterPinActivity.this, null);
     }
 
     @Override
