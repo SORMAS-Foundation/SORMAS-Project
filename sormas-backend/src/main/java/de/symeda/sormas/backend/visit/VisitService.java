@@ -9,6 +9,8 @@ import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
@@ -18,7 +20,9 @@ import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
+import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
 
 @Stateless
@@ -69,11 +73,15 @@ public class VisitService extends AbstractAdoService<Visit> {
 		Root<Contact> contactRoot = contactPersonSubquery.from(Contact.class);
 		contactPersonSubquery.where(contactService.createUserFilter(cb, visitsQuery, contactRoot, user));
 		contactPersonSubquery.select(contactRoot.get(Contact.PERSON).get(Person.ID));
-		
 		Predicate filter = cb.in(visitRoot.get(Visit.PERSON).get(Person.ID)).value(contactPersonSubquery);
 		// date range
 		if (date != null) {
 			Predicate dateFilter = cb.greaterThan(visitRoot.get(AbstractDomainObject.CHANGE_DATE), date);
+			
+			Join<Visit, Symptoms> symptoms = visitRoot.join(Visit.SYMPTOMS, JoinType.LEFT);
+			dateFilter = cb.or(dateFilter, cb.greaterThan(symptoms.get(AbstractDomainObject.CHANGE_DATE), date));
+			dateFilter = cb.or(dateFilter, cb.greaterThan(symptoms.join(Symptoms.ILLLOCATION, JoinType.LEFT).get(Location.CHANGE_DATE), date));
+
 			filter = cb.and(filter, dateFilter);
 		}
 		visitsQuery.where(filter);
