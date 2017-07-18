@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.google.android.gms.analytics.Tracker;
 
@@ -86,9 +87,8 @@ public class ContactEditActivity extends AbstractEditTabActivity {
             }
             if (params.containsKey(KEY_CONTACT_UUID)) {
                 contactUuid = params.getString(KEY_CONTACT_UUID);
-                Contact contact = DatabaseHelper.getContactDao().queryUuid(contactUuid);
-                DatabaseHelper.getContactDao().markAsRead(contact);
-                DatabaseHelper.getPersonDao().markAsRead(contact.getPerson());
+                Contact initialEntity = DatabaseHelper.getContactDao().queryUuid(contactUuid);
+                DatabaseHelper.getContactDao().markAsRead(initialEntity);
             }
             if (params.containsKey(TaskForm.KEY_TASK_UUID)) {
                 taskUuid = params.getString(TaskForm.KEY_TASK_UUID);
@@ -97,10 +97,29 @@ public class ContactEditActivity extends AbstractEditTabActivity {
                 currentTab = params.getInt(KEY_PAGE);
             }
         }
-        adapter = new ContactEditPagerAdapter(getSupportFragmentManager(), contactUuid);
-        createTabViews(adapter);
 
-        pager.setCurrentItem(currentTab);
+        setAdapter();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        Contact currentEntity = DatabaseHelper.getContactDao().queryUuid(contactUuid);
+        if (currentEntity.isUnreadOrChildUnread()) {
+            // Resetting the adapter will reload the form and therefore also override any unsaved changes
+            setAdapter();
+            final Snackbar snackbar = Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_entity_overridden), getResources().getString(R.string.entity_contact)), Snackbar.LENGTH_INDEFINITE);
+            snackbar.setAction(R.string.snackbar_okay, new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    snackbar.dismiss();
+                }
+            });
+            snackbar.show();
+        }
+
+        DatabaseHelper.getContactDao().markAsRead(currentEntity);
     }
 
     @Override
@@ -302,6 +321,13 @@ public class ContactEditActivity extends AbstractEditTabActivity {
 
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void setAdapter() {
+        adapter = new ContactEditPagerAdapter(getSupportFragmentManager(), contactUuid);
+        createTabViews(adapter);
+
+        pager.setCurrentItem(currentTab);
     }
 
 }

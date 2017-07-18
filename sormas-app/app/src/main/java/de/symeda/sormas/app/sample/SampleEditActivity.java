@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.CheckBox;
 
 import com.google.android.gms.analytics.Tracker;
@@ -47,6 +48,8 @@ public class SampleEditActivity extends AbstractSormasActivity {
 
     private String sampleUuid;
 
+    private Bundle params;
+
     @Override
     public boolean isEditing() {
         return true;
@@ -78,13 +81,7 @@ public class SampleEditActivity extends AbstractSormasActivity {
             getSupportActionBar().setTitle(getResources().getText(R.string.headline_sample) + " - " + ConfigProvider.getUser().getUserRole().toShortString());
         }
 
-        // setting the fragment_frame
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        sampleTab = new SampleEditForm();
-        sampleTab.setArguments(getIntent().getExtras());
-        ft.add(R.id.fragment_frame, sampleTab).commit();
-
-        Bundle params = getIntent().getExtras();
+        params = getIntent().getExtras();
         if (params != null) {
             if (params.containsKey(NEW_SAMPLE)) {
                 getSupportActionBar().setTitle(getResources().getText(R.string.headline_new_sample));
@@ -94,13 +91,35 @@ public class SampleEditActivity extends AbstractSormasActivity {
 
             if (params.containsKey(KEY_SAMPLE_UUID)) {
                 sampleUuid = params.getString(KEY_SAMPLE_UUID);
-                SampleDao sampleDao = DatabaseHelper.getSampleDao();
-                Sample sample = sampleDao.queryUuid(sampleUuid);
-                sampleDao.markAsRead(sample);
+                Sample initialEntity = DatabaseHelper.getSampleDao().queryUuid(sampleUuid);
+                DatabaseHelper.getSampleDao().markAsRead(initialEntity);
             }
         }
 
-        sampleTab.onResume();
+        setAdapter();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (sampleUuid != null) {
+            Sample currentEntity = DatabaseHelper.getSampleDao().queryUuid(sampleUuid);
+            if (currentEntity.isUnreadOrChildUnread()) {
+                // Resetting the adapter will reload the form and therefore also override any unsaved changes
+                setAdapter();
+                final Snackbar snackbar = Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_entity_overridden), getResources().getString(R.string.entity_sample)), Snackbar.LENGTH_INDEFINITE);
+                snackbar.setAction(R.string.snackbar_okay, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        snackbar.dismiss();
+                    }
+                });
+                snackbar.show();
+            }
+
+            DatabaseHelper.getSampleDao().markAsRead(currentEntity);
+        }
     }
 
     @Override
@@ -228,6 +247,13 @@ public class SampleEditActivity extends AbstractSormasActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void setAdapter() {
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        sampleTab = new SampleEditForm();
+        sampleTab.setArguments(params);
+        ft.replace(R.id.fragment_frame, sampleTab).commit();
     }
 
 }

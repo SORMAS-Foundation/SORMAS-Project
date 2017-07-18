@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.LinearLayout;
 
 import com.google.android.gms.analytics.Tracker;
@@ -94,8 +95,8 @@ public class CaseEditActivity extends AbstractEditTabActivity {
         if (params != null) {
             if (params.containsKey(KEY_CASE_UUID)) {
                 caseUuid = params.getString(KEY_CASE_UUID);
-                Case caze = DatabaseHelper.getCaseDao().queryUuid(caseUuid);
-                DatabaseHelper.getCaseDao().markAsRead(caze);
+                Case initialEntity = DatabaseHelper.getCaseDao().queryUuid(caseUuid);
+                DatabaseHelper.getCaseDao().markAsRead(initialEntity);
             }
             if (params.containsKey(TaskForm.KEY_TASK_UUID)) {
                 taskUuid = params.getString(TaskForm.KEY_TASK_UUID);
@@ -107,10 +108,29 @@ public class CaseEditActivity extends AbstractEditTabActivity {
                 getSupportActionBar().setSubtitle(params.getString(CASE_SUBTITLE));
             }
         }
-        adapter = new CaseEditPagerAdapter(getSupportFragmentManager(), caseUuid);
-        createTabViews(adapter);
 
-        pager.setCurrentItem(currentTab);
+        setAdapter();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        Case currentEntity = DatabaseHelper.getCaseDao().queryUuid(caseUuid);
+        if (currentEntity.isUnreadOrChildUnread()) {
+            // Resetting the adapter will reload the form and therefore also override any unsaved changes
+            setAdapter();
+            final Snackbar snackbar = Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_entity_overridden), getResources().getString(R.string.entity_case)), Snackbar.LENGTH_INDEFINITE);
+            snackbar.setAction(R.string.snackbar_okay, new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    snackbar.dismiss();
+                }
+            });
+            snackbar.show();
+        }
+
+        DatabaseHelper.getCaseDao().markAsRead(currentEntity);
     }
 
     @Override
@@ -379,6 +399,13 @@ public class CaseEditActivity extends AbstractEditTabActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void setAdapter() {
+        adapter = new CaseEditPagerAdapter(getSupportFragmentManager(), caseUuid);
+        createTabViews(adapter);
+
+        pager.setCurrentItem(currentTab);
     }
 
 }

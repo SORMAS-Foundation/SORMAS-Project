@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.google.android.gms.analytics.Tracker;
 
@@ -88,8 +89,8 @@ public class EventEditActivity extends AbstractEditTabActivity {
 
             if (params.containsKey(KEY_EVENT_UUID)) {
                 eventUuid = params.getString(KEY_EVENT_UUID);
-                Event event = DatabaseHelper.getEventDao().queryUuid(eventUuid);
-                DatabaseHelper.getEventDao().markAsRead(event);
+                Event initialEntity = DatabaseHelper.getEventDao().queryUuid(eventUuid);
+                DatabaseHelper.getEventDao().markAsRead(initialEntity);
             }
             if (params.containsKey(TaskForm.KEY_TASK_UUID)) {
                 taskUuid = params.getString(TaskForm.KEY_TASK_UUID);
@@ -98,10 +99,31 @@ public class EventEditActivity extends AbstractEditTabActivity {
                 currentTab = params.getInt(KEY_PAGE);
             }
         }
-        adapter = new EventEditPagerAdapter(getSupportFragmentManager(), eventUuid);
-        createTabViews(adapter);
 
-        pager.setCurrentItem(currentTab);
+        setAdapter();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (eventUuid != null) {
+            Event currentEntity = DatabaseHelper.getEventDao().queryUuid(eventUuid);
+            if (currentEntity.isUnreadOrChildUnread()) {
+                // Resetting the adapter will reload the form and therefore also override any unsaved changes
+                setAdapter();
+                final Snackbar snackbar = Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_entity_overridden), getResources().getString(R.string.entity_alert)), Snackbar.LENGTH_INDEFINITE);
+                snackbar.setAction(R.string.snackbar_okay, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        snackbar.dismiss();
+                    }
+                });
+                snackbar.show();
+            }
+
+            DatabaseHelper.getEventDao().markAsRead(currentEntity);
+        }
     }
 
     @Override
@@ -309,5 +331,11 @@ public class EventEditActivity extends AbstractEditTabActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    private void setAdapter() {
+        adapter = new EventEditPagerAdapter(getSupportFragmentManager(), eventUuid);
+        createTabViews(adapter);
+
+        pager.setCurrentItem(currentTab);
+    }
 
 }

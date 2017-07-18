@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.google.android.gms.analytics.Tracker;
 
@@ -39,11 +40,14 @@ public class TaskEditActivity extends AbstractSormasActivity {
 
     private TaskForm taskForm;
 
+    private String taskUuid;
     private String parentCaseUuid;
     private String parentContactUuid;
     private String parentEventUuid;
 
     private Tracker tracker;
+
+    private Bundle extras;
 
     @Override
     public boolean isEditing() {
@@ -71,12 +75,12 @@ public class TaskEditActivity extends AbstractSormasActivity {
             getSupportActionBar().setTitle(getResources().getText(R.string.headline_task) + " - " + ConfigProvider.getUser().getUserRole().toShortString());
         }
 
-        Bundle extras = getIntent().getExtras();
+        extras = getIntent().getExtras();
         if (extras != null) {
             if (extras.containsKey(Task.UUID)) {
-                TaskDao taskDao = DatabaseHelper.getTaskDao();
-                Task task = taskDao.queryUuid(extras.getString(Task.UUID));
-                taskDao.markAsRead(task);
+                taskUuid = (String) extras.get(Task.UUID);
+                Task initialEntity = DatabaseHelper.getTaskDao().queryUuid(taskUuid);
+                DatabaseHelper.getTaskDao().markAsRead(initialEntity);
             }
             if (extras.containsKey(TasksListFragment.KEY_CASE_UUID)) {
                 parentCaseUuid = (String) extras.get(TasksListFragment.KEY_CASE_UUID);
@@ -89,17 +93,29 @@ public class TaskEditActivity extends AbstractSormasActivity {
             }
         }
 
-        // setting the fragment_frame
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        taskForm = new TaskForm();
-        taskForm.setArguments(getIntent().getExtras());
-        ft.add(R.id.fragment_frame, taskForm).commit();
+        setAdapter();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         taskForm.onResume();
+
+        Task currentEntity = DatabaseHelper.getTaskDao().queryUuid(taskUuid);
+        if (currentEntity.isUnreadOrChildUnread()) {
+            // Resetting the adapter will reload the form and therefore also override any unsaved changes
+            setAdapter();
+            final Snackbar snackbar = Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_entity_overridden), getResources().getString(R.string.entity_task)), Snackbar.LENGTH_INDEFINITE);
+            snackbar.setAction(R.string.snackbar_okay, new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    snackbar.dismiss();
+                }
+            });
+            snackbar.show();
+        }
+
+        DatabaseHelper.getTaskDao().markAsRead(currentEntity);
     }
 
     @Override
@@ -173,6 +189,13 @@ public class TaskEditActivity extends AbstractSormasActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void setAdapter() {
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        taskForm = new TaskForm();
+        taskForm.setArguments(extras);
+        ft.replace(R.id.fragment_frame, taskForm).commit();
     }
 
 }

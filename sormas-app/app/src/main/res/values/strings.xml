@@ -220,6 +220,8 @@
     <string name="snackbar_pin_changed">PIN has been successfully changed.</string>
     <string name="snackbar_sync_conflict">Synchronization conflicts detected. Please check the Sync Log to review them.</string>
     <string name="snackbar_open_synclog">Open Sync Log</string>
+    <string name="snackbar_entity_overridden">%1$s refreshed. Unsaved changes have been discarded.</string>
+    <string name="snackbar_okay">Okay</string>
 
     <string name="entity_case">Case</string>
     <string name="entity_contact">Contact</string>

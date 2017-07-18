@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.google.android.gms.analytics.Tracker;
 
@@ -40,6 +41,8 @@ public class EventParticipantEditActivity extends AbstractSormasActivity {
 
     private String eventParticipantUuid;
 
+    private Bundle params;
+
     @Override
     public boolean isEditing() {
         return true;
@@ -61,44 +64,37 @@ public class EventParticipantEditActivity extends AbstractSormasActivity {
             getSupportActionBar().setTitle(getResources().getText(R.string.headline_eventParticipant) + " - " + ConfigProvider.getUser().getUserRole().toShortString());
         }
 
-        // setting the base_layout
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-
-        EventParticipant eventParticipant = null;
-
-        Bundle params = getIntent().getExtras();
+        params = getIntent().getExtras();
         if(params!=null) {
             if(params.containsKey(EventParticipant.UUID)) {
                 eventParticipantUuid = params.getString(EventParticipant.UUID);
+                EventParticipant initialEntity = DatabaseHelper.getEventParticipantDao().queryUuid(eventParticipantUuid);
+                DatabaseHelper.getEventParticipantDao().markAsRead(initialEntity);
             }
         }
 
-        eventParticipantTab = new EventParticipantDataForm();
-        eventParticipantTab.setArguments(params);
-        ft.add(R.id.eventParticipant_fragment, eventParticipantTab);
-
-        personEditForm = new PersonEditForm();
-        // load person from eventParticipant and give it to personEditForm
-        Bundle personEditBundle = new Bundle();
-        EventParticipantDao dao = DatabaseHelper.getEventParticipantDao();
-        eventParticipant = dao.queryUuid(eventParticipantUuid);
-        dao.markAsRead(eventParticipant);
-        DatabaseHelper.getPersonDao().markAsRead(eventParticipant.getPerson());
-
-        personEditBundle.putString(Person.UUID, eventParticipant.getPerson().getUuid());
-
-        personEditForm.setArguments(personEditBundle);
-        ft.add(R.id.eventParticipant_person_fragment, personEditForm);
-
-        ft.commit();
+        setAdapter();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
 
-//        eventParticipantTab.onResume();
-//        personEditForm.onResume();
+        EventParticipant currentEntity = DatabaseHelper.getEventParticipantDao().queryUuid(eventParticipantUuid);
+        if (currentEntity.isUnreadOrChildUnread()) {
+            // Resetting the adapter will reload the form and therefore also override any unsaved changes
+            setAdapter();
+            final Snackbar snackbar = Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_entity_overridden), getResources().getString(R.string.entity_alert_person)), Snackbar.LENGTH_INDEFINITE);
+            snackbar.setAction(R.string.snackbar_okay, new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    snackbar.dismiss();
+                }
+            });
+            snackbar.show();
+        }
+
+        DatabaseHelper.getEventParticipantDao().markAsRead(currentEntity);
     }
 
     @Override
@@ -197,4 +193,25 @@ public class EventParticipantEditActivity extends AbstractSormasActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
+    private void setAdapter() {
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        eventParticipantTab = new EventParticipantDataForm();
+        eventParticipantTab.setArguments(params);
+        ft.replace(R.id.eventParticipant_fragment, eventParticipantTab);
+
+        personEditForm = new PersonEditForm();
+        // load person from eventParticipant and give it to personEditForm
+        Bundle personEditBundle = new Bundle();
+        EventParticipantDao dao = DatabaseHelper.getEventParticipantDao();
+        EventParticipant eventParticipant = dao.queryUuid(eventParticipantUuid);
+
+        personEditBundle.putString(Person.UUID, eventParticipant.getPerson().getUuid());
+
+        personEditForm.setArguments(personEditBundle);
+        ft.replace(R.id.eventParticipant_person_fragment, personEditForm);
+
+        ft.commit();
+    }
+
 }
