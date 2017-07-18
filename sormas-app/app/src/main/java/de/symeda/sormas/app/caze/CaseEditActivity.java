@@ -120,6 +120,7 @@ public class CaseEditActivity extends AbstractEditTabActivity {
         if (currentEntity.isUnreadOrChildUnread()) {
             // Resetting the adapter will reload the form and therefore also override any unsaved changes
             setAdapter();
+
             final Snackbar snackbar = Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_entity_overridden), getResources().getString(R.string.entity_case)), Snackbar.LENGTH_INDEFINITE);
             snackbar.setAction(R.string.snackbar_okay, new View.OnClickListener() {
                 @Override

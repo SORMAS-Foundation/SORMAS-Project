@@ -265,22 +265,10 @@ public class ContactEditActivity extends AbstractEditTabActivity {
                         personDao.saveAndSnapshot(person);
                         contactDao.saveAndSnapshot(contact);
 
-                        if (RetroProvider.isConnected()) {
-                            SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.ChangesOnly, this, new SyncCallback() {
-                                @Override
-                                public void call(boolean syncFailed) {
-                                    reloadTabs();
-                                    pager.setCurrentItem(currentTab);
-                                    if (syncFailed) {
-                                        Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_sync_error_saved), getResources().getString(R.string.entity_contact)), Snackbar.LENGTH_LONG).show();
-                                    } else {
-                                        Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_contact)), Snackbar.LENGTH_LONG).show();
-                                    }
-                                }
-                            });
-                        } else {
-                            Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_contact)), Snackbar.LENGTH_LONG).show();
-                        }
+                        reloadTabs();
+                        pager.setCurrentItem(currentTab);
+                        Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_contact)), Snackbar.LENGTH_LONG).show();
+
                     } catch (DaoException e) {
                         Log.e(getClass().getName(), "Error while trying to saveAndSnapshot contact", e);
                         Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_error), getResources().getString(R.string.entity_contact)), Snackbar.LENGTH_LONG).show();
