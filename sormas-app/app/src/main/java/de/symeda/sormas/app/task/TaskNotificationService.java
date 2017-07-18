@@ -22,6 +22,7 @@ import java.net.ConnectException;
 import java.util.Date;
 import java.util.List;
 
+import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.AbstractSormasActivity;
 import de.symeda.sormas.app.R;
@@ -31,6 +32,8 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.contact.ContactDao;
+import de.symeda.sormas.app.backend.event.Event;
+import de.symeda.sormas.app.backend.event.EventDao;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.backend.task.Task;
@@ -111,6 +114,7 @@ public class TaskNotificationService extends Service {
 
         CaseDao caseDAO = DatabaseHelper.getCaseDao();
         ContactDao contactDAO = DatabaseHelper.getContactDao();
+        EventDao eventDAO = DatabaseHelper.getEventDao();
         PersonDao personDAO = DatabaseHelper.getPersonDao();
 
         for (Task task:taskList) {
@@ -119,33 +123,32 @@ public class TaskNotificationService extends Service {
 
             Case caze = null;
             Contact contact = null;
-            if(task.getCaze() != null) {
-                caze = caseDAO.queryForId(task.getCaze().getId());
+            Event event = null;
+            StringBuilder content = new StringBuilder();
+            switch (task.getTaskContext()) {
+                case CASE:
+                    caze = caseDAO.queryForId(task.getCaze().getId());
+                    content.append("<b>").append(caze.toString()).append("</b><br/>");
+                    break;
+                case CONTACT:
+                    contact = contactDAO.queryForId(task.getContact().getId());
+                    content.append("<b>").append(contact.toString()).append("</b><br/>");
+                    break;
+                case EVENT:
+                    event = eventDAO.queryForId(task.getEvent().getId());
+                    content.append("<b>").append(event.toString()).append("</b><br/>");
+                    break;
+                case GENERAL:
+                    break;
+                default:
+                    continue;
             }
-            else if(task.getContact() != null) {
-                contact = contactDAO.queryForId(task.getContact().getId());
-            }
-            else {
-                continue;
-            }
-
-            Person person = caze != null ? personDAO.queryForId(caze.getPerson().getId()) : contact != null ? personDAO.queryForId(contact.getPerson().getId()) : null;
 
             // Just for your information: The issue here was that the second argument of the getActivity call
             // was set to 0, which leads to previous intents to be recycled; passing the task's ID instead
             // makes sure that a new intent with the right task behind it is created
             PendingIntent pi = PendingIntent.getActivity(context, task.getId().intValue(), notificationIntent, 0);
             Resources r = context.getResources();
-
-            StringBuilder content = new StringBuilder();
-            if(caze != null) {
-                content.append("<b>").append(person.toString())
-                        .append(" (").append(DataHelper.getShortUuid(caze.getUuid())).append(")</b><br/>");
-            }
-            if(contact != null) {
-                content.append("<b>").append(person.toString())
-                        .append(" (").append(DataHelper.getShortUuid(contact.getUuid())).append(")</b><br/>");
-            }
 
             if (!TextUtils.isEmpty(task.getCreatorComment())) {
                 content.append(task.getCreatorComment());
