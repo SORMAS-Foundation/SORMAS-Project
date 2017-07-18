@@ -343,7 +343,7 @@ public final class ConfigProvider {
                     }
 
                     if (instance.serverRestUrl == null) {
-                        setServerRestUrl("https://nigeria.sormas.org/sormas-rest/");
+                        setServerRestUrl("https://sormas.org.ng/sormas-rest/");
                     }
                 }
             }

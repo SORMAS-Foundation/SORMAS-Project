@@ -8,6 +8,7 @@ import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import java.net.ConnectException;
 
@@ -40,8 +41,18 @@ public class SettingsForm extends FormTab {
                 dropData();
             }
         });
+        binding.configDropData.setVisibility(View.GONE);
 
         return binding.getRoot();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        boolean hasUser = ConfigProvider.getUser() != null;
+        binding.configChangePIN.setVisibility(hasUser ? View.VISIBLE : View.GONE);
+        binding.configSyncLog.setVisibility(hasUser ? View.VISIBLE : View.GONE);
     }
 
     /**

@@ -41,8 +41,6 @@ public class ErrorReportingHelper {
      *                              make sure that there is no sensitive data transferred!
      */
     public static void sendCaughtException(Tracker tracker, Exception e, AbstractDomainObject entity, boolean fatal, String... additionalInformation) {
-        // SocketTimeoutExceptions should not be shown in Google Analytics
-        if (e instanceof SocketTimeoutException) return;
 
         tracker.send(new HitBuilders.ExceptionBuilder()
                         .setDescription(buildErrorReportDescription(e, entity, additionalInformation))

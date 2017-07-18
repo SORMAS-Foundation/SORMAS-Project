@@ -20,6 +20,7 @@ import com.google.gson.JsonSerializer;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.ConnectException;
+import java.net.SocketTimeoutException;
 import java.util.Date;
 import java.util.concurrent.ExecutionException;
 
@@ -28,7 +29,9 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import okhttp3.Credentials;
 import okhttp3.Interceptor;
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
@@ -98,7 +101,6 @@ public final class RetroProvider {
         }
 
         retrofit = new Retrofit.Builder()
-                //.baseUrl("http://10.0.2.2:6080/sormas-rest") // localhost - SSL would need certificate
                 .baseUrl(ConfigProvider.getServerRestUrl())
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .client(httpClient.build())
@@ -118,16 +120,17 @@ public final class RetroProvider {
                     try {
                         return versionCall.execute();
                     } catch (IOException e) {
-                        throw new RuntimeException(e);
+                        // wrap the exception message inside a response object
+                        return Response.error(500, ResponseBody.create(MediaType.parse("text/plain"), e.getMessage()));
                     }
                 }
             };
             versionResponse = asyncTask.execute().get();
 
         } catch (InterruptedException e) {
-            throw new ApiVersionException(e);
+            throw new ConnectException(e.getMessage());
         } catch (ExecutionException e) {
-            throw new ApiVersionException(e);
+            throw new ConnectException(e.getMessage());
         }
 
         if (versionResponse.isSuccessful()) {
