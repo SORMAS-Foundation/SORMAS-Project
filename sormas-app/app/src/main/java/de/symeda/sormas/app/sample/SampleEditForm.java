@@ -118,7 +118,7 @@ public class SampleEditForm extends FormTab {
 
         FieldHelper.initSpinnerField(binding.sampleSuggestedTypeOfTest, SampleTestType.class);
 
-        final List laboratories = DataUtils.toItems(DatabaseHelper.getFacilityDao().getByType(FacilityType.LABORATORY));
+        final List laboratories = DataUtils.toItems(DatabaseHelper.getFacilityDao().getByType(FacilityType.LABORATORY, false));
         FieldHelper.initSpinnerField(binding.sampleLab, laboratories);
         binding.sampleReceivedDate.initialize(this);
         binding.sampleReceivedDate.setEnabled(false);

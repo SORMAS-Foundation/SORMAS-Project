@@ -241,7 +241,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	    		occupationFacility.removeAllItems();
 	    		CommunityReferenceDto communityDto = (CommunityReferenceDto)e.getProperty().getValue();
 	    		if(communityDto != null) {
-	    			occupationFacility.addItems(FacadeProvider.getFacilityFacade().getAllByCommunity(communityDto));
+	    			occupationFacility.addItems(FacadeProvider.getFacilityFacade().getAllByCommunity(communityDto, false));
 	    		}
     		}
     	});
@@ -398,7 +398,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	   	facilityDistrict.select(facility.getDistrict());
 	   	facilityCommunity.addItems(FacadeProvider.getCommunityFacade().getAllByDistrict(facility.getDistrict().getUuid()));
 	   	facilityCommunity.select(facility.getCommunity());
-	   	occupationFacility.addItems(FacadeProvider.getFacilityFacade().getAllByCommunity(facility.getCommunity()));
+	   	occupationFacility.addItems(FacadeProvider.getFacilityFacade().getAllByCommunity(facility.getCommunity(), false));
 	   	
 	   	facilityFieldsInitialized = true;
 	}

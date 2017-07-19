@@ -15,6 +15,7 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
+import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -56,7 +57,7 @@ public class CaseEditDataForm extends FormTab {
         final List emptyList = new ArrayList<>();
         final List districtsByRegion = DataUtils.toItems(caze.getRegion() != null ? DatabaseHelper.getDistrictDao().getByRegion(caze.getRegion()) : DataUtils.toItems(emptyList), true);
         final List communitiesByDistrict = DataUtils.toItems(caze.getDistrict() != null ? DatabaseHelper.getCommunityDao().getByDistrict(caze.getDistrict()) : DataUtils.toItems(emptyList), true);
-        final List facilitiesByCommunity = DataUtils.toItems(caze.getCommunity() != null ? DatabaseHelper.getFacilityDao().getByCommunity(caze.getCommunity()) : DataUtils.toItems(emptyList), true);
+        final List facilitiesByCommunity = DataUtils.toItems(caze.getCommunity() != null ? DatabaseHelper.getFacilityDao().getByCommunity(caze.getCommunity(), true) : DataUtils.toItems(emptyList), true);
 
         FieldHelper.initRegionSpinnerField(binding.caseDataRegion, new AdapterView.OnItemSelectedListener() {
             @Override
@@ -106,7 +107,7 @@ public class CaseEditDataForm extends FormTab {
                 if(spinnerField != null) {
                     List<Facility> facilityList = emptyList;
                     if(selectedValue != null) {
-                        facilityList = DatabaseHelper.getFacilityDao().getByCommunity((Community)selectedValue);
+                        facilityList = DatabaseHelper.getFacilityDao().getByCommunity((Community)selectedValue, true);
                     }
                     spinnerField.setAdapterAndValue(binding.caseDataHealthFacility.getValue(), DataUtils.toItems(facilityList));
                 }
@@ -155,6 +156,18 @@ public class CaseEditDataForm extends FormTab {
         if (binding.caseDataPregnant.getVisibility() == View.GONE && binding.caseDataMeaslesVaccination.getVisibility() == View.GONE) {
             binding.caseMedicalInformationHeadline.setVisibility(View.GONE);
         }
+
+        binding.caseDataHealthFacility.addValueChangedListener(new PropertyField.ValueChangeListener() {
+            @Override
+            public void onChange(PropertyField field) {
+                Facility selectedFacility = (Facility) binding.caseDataHealthFacility.getValue();
+                if (selectedFacility != null && selectedFacility.getUuid().equals(FacilityDto.OTHER_FACILITY_UUID)) {
+                    binding.caseDataFacilityDetails.setVisibility(View.VISIBLE);
+                } else {
+                    binding.caseDataFacilityDetails.setVisibility(View.GONE);
+                }
+            }
+        });
 
         return binding.getRoot();
     }

@@ -35,7 +35,7 @@ import de.symeda.sormas.backend.util.MockDataGenerator;
 @RunAs(Permission._SYSTEM_ROLE)
 @TransactionManagement(TransactionManagementType.CONTAINER)
 public class StartupShutdownService {
-
+	
 	@EJB
 	private UserService userService;
 	@EJB
@@ -131,11 +131,20 @@ public class StartupShutdownService {
 				facilityService.persist(facility);
 			}
 		}
+		
+		
+		if (facilityService.getByUuid(facilityService.getOtherFacilityUuid()) == null) {
+			// Add 'Other' health facility with a constant UUID that is not associated with a specific region
+			Facility otherFacility = new Facility();
+			otherFacility.setName("Other");
+			otherFacility.setUuid(facilityService.getOtherFacilityUuid());
+			facilityService.persist(otherFacility);
+		}
 	}
 	
 	private void initLaboratoriesMockData() {
 		
-		if (facilityService.getAllByFacilityType(FacilityType.LABORATORY).isEmpty()) {
+		if (facilityService.getAllByFacilityType(FacilityType.LABORATORY, false).isEmpty()) {
 			List<Region> regions = regionService.getAll();
 			List<Facility> labs = InfrastructureDataImporter.importLaboratories(regions);
 			for (Facility lab : labs) {

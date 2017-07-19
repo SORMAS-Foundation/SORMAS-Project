@@ -1527,3 +1527,7 @@ ALTER TABLE visit_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (49, 'data history for future reporting (postgres temporal tables) #170');
 
+-- 2017-07-19 other health facility description for cases #238
+ALTER TABLE cases ADD COLUMN healthfacilitydetails varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (50, 'other health facility description for cases #238');

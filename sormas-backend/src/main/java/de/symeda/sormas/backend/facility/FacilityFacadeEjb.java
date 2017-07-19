@@ -34,10 +34,10 @@ public class FacilityFacadeEjb implements FacilityFacade {
 
 	
 	@Override
-	public List<FacilityReferenceDto> getAllByCommunity(CommunityReferenceDto communityRef) {
+	public List<FacilityReferenceDto> getAllByCommunity(CommunityReferenceDto communityRef, boolean includeOthers) {
 		
 		Community community = communityService.getByUuid(communityRef.getUuid());
-		List<Facility> facilities = service.getAllByCommunity(community);
+		List<Facility> facilities = service.getAllByCommunity(community, includeOthers);
 		
 		return facilities.stream()
 				.map(f -> toReferenceDto(f))
@@ -45,9 +45,9 @@ public class FacilityFacadeEjb implements FacilityFacade {
 	}
 	
 	@Override
-	public List<FacilityReferenceDto> getAllByDistrict(DistrictReferenceDto districtRef) {
+	public List<FacilityReferenceDto> getAllByDistrict(DistrictReferenceDto districtRef, boolean includeOthers) {
     	District district = districtService.getByUuid(districtRef.getUuid());
-		List<Facility> facilities = service.getAllByDistrict(district);
+		List<Facility> facilities = service.getAllByDistrict(district, includeOthers);
 		
 		return facilities.stream()
 				.map(f -> toReferenceDto(f))
@@ -56,7 +56,7 @@ public class FacilityFacadeEjb implements FacilityFacade {
 
 	@Override
 	public List<FacilityReferenceDto> getAllLaboratories() {
-		List<Facility> laboratories = service.getAllByFacilityType(FacilityType.LABORATORY);
+		List<Facility> laboratories = service.getAllByFacilityType(FacilityType.LABORATORY, false);
 		
 		return laboratories.stream()
 				.map(l -> toReferenceDto(l))

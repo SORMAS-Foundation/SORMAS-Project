@@ -15,6 +15,8 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.Vaccination;
+import de.symeda.sormas.api.facility.FacilityDto;
+import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
@@ -31,7 +33,7 @@ import de.symeda.sormas.ui.utils.LayoutUtil;
 
 @SuppressWarnings("serial")
 public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
-	
+
 	private static final String MEDICAL_INFORMATION_LOC = "medicalInformationLoc";
 	private static final String REPORT_INFO_LOC = "reportInfoLoc";
 	
@@ -45,7 +47,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		    				LayoutUtil.fluidRowLocs(CaseDataDto.UUID, REPORT_INFO_LOC) +
 		    				LayoutUtil.fluidRowLocs(CaseDataDto.EPID_NUMBER, CaseDataDto.DISEASE) +
 		    				LayoutUtil.fluidRowLocs(CaseDataDto.REGION, CaseDataDto.DISTRICT) +
-				    		LayoutUtil.fluidRowLocs(CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY))
+				    		LayoutUtil.fluidRowLocs(CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY) +
+		    				LayoutUtil.fluidRowLocs("", CaseDataDto.HEALTH_FACILITY_DETAILS))
 		    )+
 			LayoutUtil.loc(MEDICAL_INFORMATION_LOC) +
 			LayoutUtil.fluidRow(
@@ -81,6 +84,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
     	addField(CaseDataDto.CASE_CLASSIFICATION, OptionGroup.class);
     	addField(CaseDataDto.INVESTIGATION_STATUS, OptionGroup.class);
     	addField(CaseDataDto.DISEASE, NativeSelect.class);
+    	TextField healthFacilityDetails = addField(CaseDataDto.HEALTH_FACILITY_DETAILS, TextField.class);
     	
     	ComboBox region = addField(CaseDataDto.REGION, ComboBox.class);
     	ComboBox district = addField(CaseDataDto.DISTRICT, ComboBox.class);
@@ -105,7 +109,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
     		facility.removeAllItems();
     		CommunityReferenceDto communityDto = (CommunityReferenceDto)e.getProperty().getValue();
     		if (communityDto != null) {
-    			facility.addItems(FacadeProvider.getFacilityFacade().getAllByCommunity(communityDto));
+    			facility.addItems(FacadeProvider.getFacilityFacade().getAllByCommunity(communityDto, true));
     		}
     	});
 		region.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
@@ -166,6 +170,15 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		getContent().addComponent(reportInfoLabel, REPORT_INFO_LOC);
 		addValueChangeListener(e -> {
 			updateReportInfo();
+		});
+		
+		facility.addValueChangeListener(e -> {
+			boolean visibleAndRequired = ((FacilityReferenceDto) facility.getValue()).getUuid().equals(FacilityDto.OTHER_FACILITY_UUID);
+			healthFacilityDetails.setVisible(visibleAndRequired);
+			healthFacilityDetails.setRequired(visibleAndRequired);
+			if (!visibleAndRequired) {
+				healthFacilityDetails.clear();
+			}
 		});
 	}
     

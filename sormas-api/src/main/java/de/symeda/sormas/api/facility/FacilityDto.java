@@ -9,6 +9,7 @@ public class FacilityDto extends FacilityReferenceDto {
 	private static final long serialVersionUID = -7987228795475507196L;
 
 	public static final String I18N_PREFIX = "Facility";
+	public static final String OTHER_FACILITY_UUID = "SORMAS-CONSTID-OTHERS-FACILITY";
 	
 	private String name;
 	private RegionReferenceDto region;

@@ -6,6 +6,8 @@ import com.vaadin.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.facility.FacilityDto;
+import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -25,7 +27,8 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 					LayoutUtil.fluidRowLocs(CaseDataDto.DISEASE, ""),
 					LayoutUtil.fluidRowLocs(FIRST_NAME, LAST_NAME),
 					LayoutUtil.fluidRowLocs(CaseDataDto.REGION, CaseDataDto.DISTRICT),
-					LayoutUtil.fluidRowLocs(CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY)
+					LayoutUtil.fluidRowLocs(CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY),
+					LayoutUtil.fluidRowLocs("", CaseDataDto.HEALTH_FACILITY_DETAILS)
 					);
 
     public CaseCreateForm() {
@@ -47,6 +50,9 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
     	ComboBox community = addField(CaseDataDto.COMMUNITY, ComboBox.class);
     	ComboBox facility = addField(CaseDataDto.HEALTH_FACILITY, ComboBox.class);
     	
+    	TextField facilityDetails = addField(CaseDataDto.HEALTH_FACILITY_DETAILS, TextField.class);
+    	facilityDetails.setVisible(false);
+    	
     	region.addValueChangeListener(e -> {
     		district.removeAllItems();
     		RegionReferenceDto regionDto = (RegionReferenceDto)e.getProperty().getValue();
@@ -65,13 +71,22 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
     		facility.removeAllItems();
     		CommunityReferenceDto communityDto = (CommunityReferenceDto)e.getProperty().getValue();
     		if (communityDto != null) {
-    			facility.addItems(FacadeProvider.getFacilityFacade().getAllByCommunity(communityDto));
+    			facility.addItems(FacadeProvider.getFacilityFacade().getAllByCommunity(communityDto, true));
     		}
     	});
 		region.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
 
     	setRequired(true, FIRST_NAME, LAST_NAME, CaseDataDto.DISEASE, 
     			CaseDataDto.REGION, CaseDataDto.DISTRICT, CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY);
+    	
+    	facility.addValueChangeListener(e -> {
+			boolean visibleAndRequired = ((FacilityReferenceDto) facility.getValue()).getUuid().equals(FacilityDto.OTHER_FACILITY_UUID);
+			facilityDetails.setVisible(visibleAndRequired);
+			facilityDetails.setRequired(visibleAndRequired);
+			if (!visibleAndRequired) {
+				facilityDetails.clear();
+			}
+		});
     }
     
     public String getPersonFirstName() {

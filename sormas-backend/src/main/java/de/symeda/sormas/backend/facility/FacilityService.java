@@ -19,52 +19,77 @@ import de.symeda.sormas.backend.user.User;
 @Stateless
 @LocalBean
 public class FacilityService extends AbstractAdoService<Facility> {
+
+	private final String OTHER_FACILITY_UUID = "SORMAS-CONSTID-OTHERS-FACILITY";
 	
 	public FacilityService() {
 		super(Facility.class);
 	}
 	
-	public List<Facility> getAllByCommunity(Community community) {
+	public List<Facility> getAllByCommunity(Community community, boolean includeOther) {
 		
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Facility> cq = cb.createQuery(getElementClass());
 		Root<Facility> from = cq.from(getElementClass());
 		
 		cq.where(cb.equal(from.get(Facility.COMMUNITY), community));
-		
 		cq.orderBy(cb.asc(from.get(Facility.NAME)));
 
-		return em.createQuery(cq).getResultList();
+		List<Facility> facilities = em.createQuery(cq).getResultList();
+		
+		if (includeOther) {
+			cq.where(cb.equal(from.get(Facility.UUID), OTHER_FACILITY_UUID));
+			facilities.add(0, em.createQuery(cq).getSingleResult());
+		}
+		
+		return facilities;
 	}
 	
-	public List<Facility> getAllByDistrict(District district) {
+	public List<Facility> getAllByDistrict(District district, boolean includeOther) {
 		
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Facility> cq = cb.createQuery(getElementClass());
 		Root<Facility> from = cq.from(getElementClass());
 		
 		cq.where(cb.equal(from.get(Facility.DISTRICT), district));
-		
 		cq.orderBy(cb.asc(from.get(Facility.NAME)));
 
-		return em.createQuery(cq).getResultList();
+		List<Facility> facilities = em.createQuery(cq).getResultList();
+		
+		if (includeOther) {
+			cq.where(cb.equal(from.get(Facility.UUID), OTHER_FACILITY_UUID));
+			facilities.add(0, em.createQuery(cq).getSingleResult());
+		}
+		
+		return facilities;
 	}
 	
-	public List<Facility> getAllByFacilityType(FacilityType type) {
+	public List<Facility> getAllByFacilityType(FacilityType type, boolean includeOther) {
 		
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Facility> cq = cb.createQuery(getElementClass());
 		Root<Facility> from = cq.from(getElementClass());
 		
 		cq.where(cb.equal(from.get(Facility.TYPE), type));
-		
 		cq.orderBy(cb.asc(from.get(Facility.NAME)));
 
-		return em.createQuery(cq).getResultList();
+		List<Facility> facilities = em.createQuery(cq).getResultList();
+		
+		if (includeOther) {
+			cq.where(cb.equal(from.get(Facility.UUID), OTHER_FACILITY_UUID));
+			facilities.add(0, em.createQuery(cq).getSingleResult());
+		}
+		
+		return facilities;
 	}
 
 	@Override
 	protected Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Facility, Facility> from, User user) {
 		throw new UnsupportedOperationException();
 	}
+
+	public String getOtherFacilityUuid() {
+		return OTHER_FACILITY_UUID;
+	}
+	
 }

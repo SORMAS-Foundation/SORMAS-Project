@@ -60,7 +60,7 @@ public class CaseNewForm extends FormTab {
         final List emptyList = new ArrayList<>();
         final List districtsByRegion = DataUtils.toItems(caze.getRegion() != null ? DatabaseHelper.getDistrictDao().getByRegion(caze.getRegion()) : DataUtils.toItems(emptyList), true);
         final List communitiesByDistrict = DataUtils.toItems(caze.getDistrict() != null ? DatabaseHelper.getCommunityDao().getByDistrict(caze.getDistrict()) : DataUtils.toItems(emptyList), true);
-        final List facilitiesByCommunity = DataUtils.toItems(caze.getCommunity() != null ? DatabaseHelper.getFacilityDao().getByCommunity(caze.getCommunity()) : DataUtils.toItems(emptyList), true);
+        final List facilitiesByCommunity = DataUtils.toItems(caze.getCommunity() != null ? DatabaseHelper.getFacilityDao().getByCommunity(caze.getCommunity(), true) : DataUtils.toItems(emptyList), true);
 
         FieldHelper.initRegionSpinnerField(binding.caseDataRegion, new AdapterView.OnItemSelectedListener() {
             @Override
@@ -110,7 +110,7 @@ public class CaseNewForm extends FormTab {
                 if(spinnerField != null) {
                     List<Facility> facilityList = emptyList;
                     if(selectedValue != null) {
-                        facilityList = DatabaseHelper.getFacilityDao().getByCommunity((Community)selectedValue);
+                        facilityList = DatabaseHelper.getFacilityDao().getByCommunity((Community)selectedValue, true);
                     }
                     spinnerField.setAdapterAndValue(binding.caseDataHealthFacility.getValue(), DataUtils.toItems(facilityList));
                 }

@@ -10,17 +10,20 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.MarginInfo;
+import com.vaadin.shared.ui.grid.HeightMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
@@ -28,11 +31,13 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.highcharts.HighChart;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 @SuppressWarnings("serial")
 public class DashboardView extends AbstractView {
@@ -311,35 +316,69 @@ public class DashboardView extends AbstractView {
         mapLayout.addComponent(mapComponent);
         mapLayout.setExpandRatio(mapComponent, 1);
         
-        HorizontalLayout legendLayout = new HorizontalLayout();
-        legendLayout.addStyleName(CssStyles.VSPACETOP3);
-        legendLayout.setSizeUndefined();
-        legendLayout.setSpacing(true);
-        
-        Image iconGrey = new Image(null, new ThemeResource("mapicons/grey-dot-small.png"));
-        Image iconYellow = new Image(null, new ThemeResource("mapicons/yellow-dot-small.png"));
-        Image iconOrange = new Image(null, new ThemeResource("mapicons/orange-dot-small.png"));
-        Image iconRed = new Image(null, new ThemeResource("mapicons/red-dot-small.png"));
-        iconGrey.setWidth(16.5f, Unit.PIXELS);
-        iconGrey.setHeight(22.5f, Unit.PIXELS);
-        iconYellow.setWidth(16.5f, Unit.PIXELS);
-        iconYellow.setHeight(22.5f, Unit.PIXELS);
-        iconOrange.setWidth(16.5f, Unit.PIXELS);
-        iconOrange.setHeight(22.5f, Unit.PIXELS);
-        iconRed.setWidth(16.5f, Unit.PIXELS);
-        iconRed.setHeight(22.5f, Unit.PIXELS);
-        
-        legendLayout.addComponent(iconGrey);
-        legendLayout.addComponent(new Label(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, NOT_YET_CLASSIFIED)));
-        legendLayout.addComponent(iconYellow);
-        legendLayout.addComponent(new Label(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, SUSPECT)));
-        legendLayout.addComponent(iconOrange);
-        legendLayout.addComponent(new Label(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, PROBABLE)));
-        legendLayout.addComponent(iconRed);
-        legendLayout.addComponent(new Label(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, CONFIRMED)));
-        mapLayout.addComponent(legendLayout);
+        HorizontalLayout mapFooterLayout = new HorizontalLayout();
+        {
+			mapFooterLayout.setWidth(100, Unit.PERCENTAGE);
+			mapFooterLayout.setSpacing(true);
+			mapFooterLayout.addStyleName(CssStyles.VSPACETOP3);
+			
+			HorizontalLayout legendLayout = new HorizontalLayout();
+	        legendLayout.setWidth(100, Unit.PERCENTAGE);
+	        legendLayout.setSpacing(true);
+
+	        HorizontalLayout legendEntry = createLegendEntry("mapicons/grey-dot-small.png", I18nProperties.getPrefixFieldCaption(I18N_PREFIX, NOT_YET_CLASSIFIED));
+	        legendLayout.addComponent(legendEntry);
+	        legendLayout.setComponentAlignment(legendEntry, Alignment.MIDDLE_LEFT);
+	        legendLayout.setExpandRatio(legendEntry, 0);
+	        legendEntry = createLegendEntry("mapicons/yellow-dot-small.png", I18nProperties.getPrefixFieldCaption(I18N_PREFIX, SUSPECT));
+	        legendLayout.addComponent(legendEntry);
+	        legendLayout.setComponentAlignment(legendEntry, Alignment.MIDDLE_LEFT);
+	        legendLayout.setExpandRatio(legendEntry, 0);
+	        legendEntry = createLegendEntry("mapicons/orange-dot-small.png", I18nProperties.getPrefixFieldCaption(I18N_PREFIX, PROBABLE));
+	        legendLayout.addComponent(legendEntry);
+	        legendLayout.setComponentAlignment(legendEntry, Alignment.MIDDLE_LEFT);
+	        legendLayout.setExpandRatio(legendEntry, 0);
+	        legendEntry = createLegendEntry("mapicons/red-dot-small.png", I18nProperties.getPrefixFieldCaption(I18N_PREFIX, CONFIRMED));
+	        legendLayout.addComponent(legendEntry);
+	        legendLayout.setComponentAlignment(legendEntry, Alignment.MIDDLE_LEFT);
+	        legendLayout.setExpandRatio(legendEntry, 1);
+	        mapFooterLayout.addComponent(legendLayout);
+	        
+	        Button otherFacilitiesButton = new Button("Other health facilities");
+	        otherFacilitiesButton.addStyleName(ValoTheme.BUTTON_LINK);
+	        otherFacilitiesButton.addClickListener(e -> {
+	        	VerticalLayout layout = new VerticalLayout();
+            	Window window = VaadinUiUtil.showPopupWindow(layout);
+            	FacilityDto facility = FacadeProvider.getFacilityFacade().getByUuid(FacilityDto.OTHER_FACILITY_UUID);
+            	CasePopupGrid caseGrid = new CasePopupGrid(window, facility, mapComponent);
+            	caseGrid.setHeightMode(HeightMode.ROW);
+            	layout.addComponent(caseGrid);
+            	layout.setMargin(true);
+            	window.setCaption("Cases in other health facilities");
+	        });
+	        mapFooterLayout.addComponent(otherFacilitiesButton);
+	        mapFooterLayout.setComponentAlignment(otherFacilitiesButton, Alignment.MIDDLE_RIGHT);
+	        mapFooterLayout.setExpandRatio(legendLayout, 1);
+        }
+        mapLayout.addComponent(mapFooterLayout);
         
 		return mapLayout;
+	}
+
+	private HorizontalLayout createLegendEntry(String iconThemeResource, String labelCaption) {
+		HorizontalLayout entry = new HorizontalLayout();
+		entry.setSizeUndefined();
+		Image icon = new Image(null, new ThemeResource(iconThemeResource));
+		icon.setWidth(16.5f, Unit.PIXELS);
+		icon.setHeight(22.5f, Unit.PIXELS);
+		entry.addComponent(icon);
+		Label spacer = new Label();
+		spacer.setWidth(4, Unit.PIXELS);
+		entry.addComponent(spacer);
+		Label label = new Label(labelCaption);
+		label.setSizeUndefined();
+		entry.addComponent(label);
+		return entry;
 	}
 	
 	private void refreshDashboard() {

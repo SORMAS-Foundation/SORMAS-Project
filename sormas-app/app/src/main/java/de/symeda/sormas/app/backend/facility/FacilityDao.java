@@ -8,6 +8,7 @@ import com.j256.ormlite.stmt.QueryBuilder;
 import java.sql.SQLException;
 import java.util.List;
 
+import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -36,22 +37,30 @@ public class FacilityDao extends AbstractAdoDao<Facility> {
         return Facility.TABLE_NAME;
     }
 
-    public List<Facility> getByCommunity(Community community) {
+    public List<Facility> getByCommunity(Community community, boolean includeOthers) {
         try {
             QueryBuilder<Facility, Long> facilityQb = this.queryBuilder();
             facilityQb.where().eq("community_id", community);
-            return facilityQb.query();
+            List<Facility> facilities = facilityQb.query();
+            if (includeOthers) {
+                facilities.add(0, facilityQb.where().eq("uuid", FacilityDto.OTHER_FACILITY_UUID).queryForFirst());
+            }
+            return facilities;
         } catch (SQLException e) {
             Log.e(getTableName(), "Could not perform getByCommunity on Facility");
             throw new RuntimeException(e);
         }
     }
 
-    public List<Facility> getByType(FacilityType type) {
+    public List<Facility> getByType(FacilityType type, boolean includeOthers) {
         try {
             QueryBuilder<Facility, Long> facilityQb = this.queryBuilder();
             facilityQb.where().eq("type", type);
-            return facilityQb.query();
+            List<Facility> facilities = facilityQb.query();
+            if (includeOthers) {
+                facilities.add(0, facilityQb.where().eq("uuid", FacilityDto.OTHER_FACILITY_UUID).queryForFirst());
+            }
+            return facilities;
         } catch (SQLException e) {
             Log.e(getTableName(), "Could not perform getByType on Facility");
             throw new RuntimeException(e);
