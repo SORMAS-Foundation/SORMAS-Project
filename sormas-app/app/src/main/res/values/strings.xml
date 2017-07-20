@@ -8,7 +8,6 @@
     <string name="main_menu_samples">Samples</string>
     <string name="main_menu_settings">Settings</string>
     <string name="main_menu_sync_all">Synchronize</string>
-    <string name="main_menu_logout">Logout</string>
 
 
     <string name="drawer_open">Open navigation drawer</string>
@@ -34,6 +33,7 @@
     <string name="action_create">Create</string>
     <string name="action_delete">Delete</string>
     <string name="action_clearAll">Clear all</string>
+    <string name="action_logout">Logout</string>
     <string name="action_setEmptyToNo">Set cleared to No</string>
     <string name="action_createCaseFromContact">Create a new case for this contact</string>
     <string name="action_send">Send</string>

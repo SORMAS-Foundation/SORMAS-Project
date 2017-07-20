@@ -13,6 +13,7 @@ import com.google.android.gms.analytics.Tracker;
 
 import de.symeda.sormas.app.AbstractEditTabActivity;
 import de.symeda.sormas.app.EnterPinActivity;
+import de.symeda.sormas.app.LoginActivity;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
@@ -89,6 +90,13 @@ public class SettingsActivity extends AbstractEditTabActivity {
     public void openSyncLog(View view) {
         SyncLogDialog syncLogDialog = new SyncLogDialog(this);
         syncLogDialog.show(this);
+    }
+
+    public void logout(View view) {
+        ConfigProvider.clearUsernameAndPassword();
+        ConfigProvider.clearPin();
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
     }
 
     public void changePIN(View view) {

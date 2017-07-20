@@ -63,6 +63,13 @@
                 android:text="@string/action_open_syncLog"
                 android:onClick="openSyncLog"/>
 
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/config_logout"
+                android:text="@string/action_logout"
+                android:onClick="logout"/>
+
             <ProgressBar
                 android:id="@+id/config_progressBar"
                 android:visibility="gone"
