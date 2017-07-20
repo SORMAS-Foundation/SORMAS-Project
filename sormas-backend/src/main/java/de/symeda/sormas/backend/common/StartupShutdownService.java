@@ -92,6 +92,8 @@ public class StartupShutdownService {
 
 		List<Region> regions = regionService.getAll();
 		
+		// TODO just go through all files in directory
+		
 		if (!regions.stream().anyMatch(r -> "Abia".equals(r.getName()))) {
 			importDataForRegion(InfrastructureDataImporter.importRegion("Abia"));
 		}
@@ -116,7 +118,7 @@ public class StartupShutdownService {
 		if (!regions.stream().anyMatch(r -> "Borno".equals(r.getName()))) {
 			importDataForRegion(InfrastructureDataImporter.importRegion("Borno"));
 		}
-		if (!regions.stream().anyMatch(r -> "Cross river".equals(r.getName()))) {
+		if (!regions.stream().anyMatch(r -> "Cross River".equals(r.getName()))) {
 			importDataForRegion(InfrastructureDataImporter.importRegion("Cross River"));
 		}
 		if (!regions.stream().anyMatch(r -> "Delta".equals(r.getName()))) {
@@ -151,6 +153,9 @@ public class StartupShutdownService {
 		}
 		if (!regions.stream().anyMatch(r -> "Kano".equals(r.getName()))) {
 			importDataForRegion(InfrastructureDataImporter.importRegion("Kano"));
+		}
+		if (!regions.stream().anyMatch(r -> "Katsina".equals(r.getName()))) {
+			importDataForRegion(InfrastructureDataImporter.importRegion("Katsina"));
 		}
 		if (!regions.stream().anyMatch(r -> "Kebbi".equals(r.getName()))) {
 			importDataForRegion(InfrastructureDataImporter.importRegion("Kebbi"));
