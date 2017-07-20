@@ -23,6 +23,7 @@ import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 import java.util.Date;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.app.R;
@@ -94,6 +95,7 @@ public final class RetroProvider {
         AuthenticationInterceptor interceptor = new AuthenticationInterceptor(authToken);
 
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+        httpClient.readTimeout(5*60, TimeUnit.SECONDS); // for infrastructure data - actually 30 seconds should be enough...
         // adds "Accept-Encoding: gzip" by default
         httpClient.addInterceptor(interceptor);
         for (Interceptor additionalInterceptor : additionalInterceptors) {
@@ -150,7 +152,13 @@ public final class RetroProvider {
                 case 404:
                     throw new ConnectException(String.format(context.getResources().getString(R.string.snackbar_http_404), ConfigProvider.getServerRestUrl()));
                 default:
-                    throw new ConnectException(versionResponse.toString());
+                    String error;
+                    try {
+                        error = versionResponse.errorBody().string();
+                    } catch (IOException e) {
+                        error = versionResponse.raw().toString();
+                    }
+                    throw new ConnectException(error);
             }
         }
     }

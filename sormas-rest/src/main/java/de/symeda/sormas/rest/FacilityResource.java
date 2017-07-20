@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
-import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -24,8 +23,8 @@ import de.symeda.sormas.api.facility.FacilityDto;
 @RolesAllowed("USER")
 public class FacilityResource {
 
-	@GET @Path("/all/{since}")
-	public List<FacilityDto> getAll(@PathParam("since") long since) {
-		return FacadeProvider.getFacilityFacade().getAllAfter(new Date(since));
+	@GET @Path("/region/{regionUuid}/{since}")
+	public List<FacilityDto> getAllByRegion(@PathParam("regionUuid") String regionUuid, @PathParam("since") long since) {
+		return FacadeProvider.getFacilityFacade().getAllByRegionAfter(regionUuid, new Date(since));
 	}
 }

@@ -1,5 +1,6 @@
 package de.symeda.sormas.backend.facility;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.ejb.LocalBean;
@@ -12,8 +13,10 @@ import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
+import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
 
 @Stateless
@@ -62,6 +65,22 @@ public class FacilityService extends AbstractAdoService<Facility> {
 		}
 		
 		return facilities;
+	}
+	
+	public List<Facility> getAllByRegionAfter(Region region, Date date) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Facility> cq = cb.createQuery(getElementClass());
+		Root<Facility> from = cq.from(getElementClass());
+		
+		Predicate filter = cb.equal(from.get(Facility.REGION), region);
+		if (date != null) {
+			filter = cb.and(filter, cb.greaterThan(from.get(AbstractDomainObject.CHANGE_DATE), date));
+		}
+		cq.where(filter);
+		cq.orderBy(cb.asc(from.get(Facility.NAME)));
+
+		return em.createQuery(cq).getResultList();
 	}
 	
 	public List<Facility> getAllByFacilityType(FacilityType type, boolean includeOther) {

@@ -19,7 +19,9 @@ import de.symeda.sormas.backend.region.CommunityService;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb;
 import de.symeda.sormas.backend.region.DistrictService;
+import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionFacadeEjb;
+import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.util.DtoHelper;
 
 @Stateless(name = "FacilityFacade")
@@ -31,6 +33,8 @@ public class FacilityFacadeEjb implements FacilityFacade {
 	private CommunityService communityService;
 	@EJB
 	private DistrictService districtService;
+	@EJB
+	private RegionService regionService;
 
 	
 	@Override
@@ -71,8 +75,10 @@ public class FacilityFacadeEjb implements FacilityFacade {
 	}
 	
 	@Override
-	public List<FacilityDto> getAllAfter(Date date) {
-		return service.getAllAfter(date).stream()
+	public List<FacilityDto> getAllByRegionAfter(String regionUuid, Date date) {
+    	Region region = regionService.getByUuid(regionUuid);
+    	List<Facility> facilities = service.getAllByRegionAfter(region, date);
+		return facilities.stream()
 			.map(c -> toDto(c))
 			.collect(Collectors.toList());
 	}
