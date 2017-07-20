@@ -165,6 +165,7 @@ public class CaseEditDataForm extends FormTab {
                     binding.caseDataFacilityDetails.setVisibility(View.VISIBLE);
                 } else {
                     binding.caseDataFacilityDetails.setVisibility(View.GONE);
+                    binding.caseDataFacilityDetails.setValue(null);
                 }
             }
         });

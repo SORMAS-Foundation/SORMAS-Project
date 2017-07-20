@@ -185,6 +185,7 @@
     <string name="snackbar_case_firstName">Please enter the first name of the case person.</string>
     <string name="snackbar_case_lastName">Please enter the last name of the case person.</string>
     <string name="snackbar_case_facility">Please enter the health facility.</string>
+    <string name="snackbar_case_facility_details">Please enter the name and description of the health facility.</string>
     <string name="snackbar_contact_last_contact_date">Please specify the date of last contact.</string>
     <string name="snackbar_contact_proximity">Please specify the contact proximity.</string>
     <string name="snackbar_contact_firstName">Please enter the first name of the contact person.</string>

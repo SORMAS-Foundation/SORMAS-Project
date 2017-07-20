@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.caze.Case;
@@ -26,6 +27,7 @@ import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.component.FieldHelper;
+import de.symeda.sormas.app.component.PropertyField;
 import de.symeda.sormas.app.component.SpinnerField;
 import de.symeda.sormas.app.databinding.CaseNewFragmentLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
@@ -131,6 +133,19 @@ public class CaseNewForm extends FormTab {
             binding.getCaze().setPerson(person);
             binding.getCaze().setDisease(disease);
         }
+
+        binding.caseDataHealthFacility.addValueChangedListener(new PropertyField.ValueChangeListener() {
+            @Override
+            public void onChange(PropertyField field) {
+                Facility selectedFacility = (Facility) binding.caseDataHealthFacility.getValue();
+                if (selectedFacility != null && selectedFacility.getUuid().equals(FacilityDto.OTHER_FACILITY_UUID)) {
+                    binding.caseDataFacilityDetails.setVisibility(View.VISIBLE);
+                } else {
+                    binding.caseDataFacilityDetails.setVisibility(View.GONE);
+                    binding.caseDataFacilityDetails.setValue(null);
+                }
+            }
+        });
 
         return binding.getRoot();
     }

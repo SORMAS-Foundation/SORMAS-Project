@@ -22,6 +22,7 @@ import com.google.android.gms.analytics.Tracker;
 import java.util.Date;
 import java.util.List;
 
+import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.caze.Case;
@@ -307,6 +308,8 @@ public class CaseEditActivity extends AbstractEditTabActivity {
                 boolean firstNameReq = person.getFirstName() == null || person.getFirstName().isEmpty();
                 boolean lastNameReq = person.getLastName() == null || person.getLastName().isEmpty();
                 boolean facilityReq = caze.getHealthFacility() == null;
+                boolean facilityDetailsReq = caze.getHealthFacility().getUuid().equals(FacilityDto.OTHER_FACILITY_UUID) &&
+                        (caze.getHealthFacilityDetails() == null || caze.getHealthFacilityDetails().isEmpty());
 
                 try {
                     symptomsEditForm.validateCaseData(symptoms);
@@ -315,7 +318,7 @@ public class CaseEditActivity extends AbstractEditTabActivity {
                     return true;
                 }
 
-                boolean validData = !diseaseReq && !firstNameReq && !lastNameReq && !facilityReq;
+                boolean validData = !diseaseReq && !firstNameReq && !lastNameReq && !facilityReq && !facilityDetailsReq;
 
                 if (validData) {
                     try {
@@ -349,6 +352,8 @@ public class CaseEditActivity extends AbstractEditTabActivity {
                         Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_case_lastName, Snackbar.LENGTH_LONG).show();
                     } else if (facilityReq) {
                         Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_case_facility, Snackbar.LENGTH_LONG).show();
+                    } else if (facilityDetailsReq) {
+                        Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_case_facility_details, Snackbar.LENGTH_LONG).show();
                     }
                 }
 
