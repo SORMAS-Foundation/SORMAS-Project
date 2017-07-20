@@ -53,6 +53,7 @@ public class SettingsForm extends FormTab {
         boolean hasUser = ConfigProvider.getUser() != null;
         binding.configChangePIN.setVisibility(hasUser ? View.VISIBLE : View.GONE);
         binding.configSyncLog.setVisibility(hasUser ? View.VISIBLE : View.GONE);
+        binding.configLogout.setVisibility(hasUser ? View.VISIBLE : View.GONE);
     }
 
     /**
