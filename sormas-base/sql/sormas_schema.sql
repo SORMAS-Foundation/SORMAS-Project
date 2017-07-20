@@ -1531,3 +1531,30 @@ INSERT INTO schema_version (version_number, comment) VALUES (49, 'data history f
 ALTER TABLE cases ADD COLUMN healthfacilitydetails varchar(512);
 
 INSERT INTO schema_version (version_number, comment) VALUES (50, 'other health facility description for cases #238');
+
+-- 2017-07-20 Database wipe for new infrastructure data #237
+BEGIN;
+DELETE FROM task;
+DELETE FROM sampletest;
+DELETE FROM samples;
+DELETE FROM visit;
+DELETE FROM contact;
+DELETE FROM eventparticipant;
+DELETE FROM events;
+DELETE FROM cases;
+DELETE FROM symptoms;
+DELETE FROM person;
+DELETE FROM previoushospitalization;
+DELETE FROM hospitalization;
+DELETE FROM epidataburial;
+DELETE FROM epidatagathering;
+DELETE FROM epidatatravel;
+DELETE FROM epidata;
+DELETE FROM userroles;
+DELETE FROM users;
+DELETE FROM location;
+DELETE FROM facility;
+DELETE FROM community;
+DELETE FROM district;
+DELETE FROM region;
+COMMIT;

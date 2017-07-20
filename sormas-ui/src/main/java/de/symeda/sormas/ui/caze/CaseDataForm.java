@@ -173,7 +173,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		});
 		
 		facility.addValueChangeListener(e -> {
-			boolean visibleAndRequired = ((FacilityReferenceDto) facility.getValue()).getUuid().equals(FacilityDto.OTHER_FACILITY_UUID);
+			boolean visibleAndRequired = facility.getValue() != null && ((FacilityReferenceDto) facility.getValue()).getUuid().equals(FacilityDto.OTHER_FACILITY_UUID);
 			healthFacilityDetails.setVisible(visibleAndRequired);
 			healthFacilityDetails.setRequired(visibleAndRequired);
 			if (!visibleAndRequired) {
