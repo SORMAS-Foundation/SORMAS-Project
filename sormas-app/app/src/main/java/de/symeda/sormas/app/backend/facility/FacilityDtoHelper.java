@@ -48,6 +48,10 @@ public class FacilityDtoHelper extends AdoDtoHelper<Facility, FacilityDto> {
         return RetroProvider.getFacilityFacade().pullAllByRegionSince(region.getUuid(), since);
     }
 
+    protected Call<List<FacilityDto>> pullAllWithoutRegionSince(long since) {
+        return RetroProvider.getFacilityFacade().pullAllWithoutRegionSince(since);
+    }
+
     @Override
     protected Call<Integer> pushAll(List<FacilityDto> facilityDtos) {
         throw new UnsupportedOperationException("Entity is infrastructure");
@@ -76,6 +80,13 @@ public class FacilityDtoHelper extends AdoDtoHelper<Facility, FacilityDto> {
                 }
                 handlePullResponse(markAsRead, dao, dtoCall.execute());
             }
+
+            // Pull 'Other' health facility which has no region set
+            Call<List<FacilityDto>> dtoCall = pullAllWithoutRegionSince(maxModifiedTime);
+            if (dtoCall == null) {
+                return;
+            }
+            handlePullResponse(markAsRead, dao, dtoCall.execute());
 
         } catch (RuntimeException e) {
             Log.e(getClass().getName(), "Exception thrown when trying to pull entities");

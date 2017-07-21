@@ -18,6 +18,7 @@ public interface FacilityFacade {
     List<FacilityReferenceDto> getAllLaboratories();
 
 	List<FacilityDto> getAllByRegionAfter(String regionUuid, Date date);
+	List<FacilityDto> getAllWithoutRegionAfter(Date date);
 	
 	FacilityDto getByUuid(String uuid);
 }

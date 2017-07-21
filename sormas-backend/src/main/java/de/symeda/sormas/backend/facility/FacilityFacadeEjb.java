@@ -84,6 +84,14 @@ public class FacilityFacadeEjb implements FacilityFacade {
 	}
 	
 	@Override
+	public List<FacilityDto> getAllWithoutRegionAfter(Date date) {
+		List<Facility> facilities = service.getAllWithoutRegionAfter(date);
+		return facilities.stream()
+				.map(c -> toDto(c))
+				.collect(Collectors.toList());
+	}
+	
+	@Override
 	public FacilityDto getByUuid(String uuid) {
 		return toDto(service.getByUuid(uuid));
 	}

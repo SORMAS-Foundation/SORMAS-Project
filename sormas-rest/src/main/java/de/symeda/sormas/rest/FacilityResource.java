@@ -27,4 +27,10 @@ public class FacilityResource {
 	public List<FacilityDto> getAllByRegion(@PathParam("regionUuid") String regionUuid, @PathParam("since") long since) {
 		return FacadeProvider.getFacilityFacade().getAllByRegionAfter(regionUuid, new Date(since));
 	}
+	
+	@GET @Path("/no-region/{since}")
+	public List<FacilityDto> getAllWithoutRegion(@PathParam("since") long since) {
+		return FacadeProvider.getFacilityFacade().getAllWithoutRegionAfter(new Date(since));
+	}
+	
 }

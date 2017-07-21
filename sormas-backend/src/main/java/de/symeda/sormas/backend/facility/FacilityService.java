@@ -83,6 +83,22 @@ public class FacilityService extends AbstractAdoService<Facility> {
 		return em.createQuery(cq).getResultList();
 	}
 	
+	public List<Facility> getAllWithoutRegionAfter(Date date) {
+		
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Facility> cq = cb.createQuery(getElementClass());
+		Root<Facility> from = cq.from(getElementClass());
+		
+		Predicate filter = cb.isNull(from.get(Facility.REGION));
+		if (date != null) {
+			filter = cb.and(filter, cb.greaterThan(from.get(AbstractDomainObject.CHANGE_DATE), date));
+		}
+		cq.where(filter);
+		cq.orderBy(cb.asc(from.get(Facility.NAME)));
+		
+		return em.createQuery(cq).getResultList();
+	}
+	
 	public List<Facility> getAllByFacilityType(FacilityType type, boolean includeOther) {
 		
 		CriteriaBuilder cb = em.getCriteriaBuilder();

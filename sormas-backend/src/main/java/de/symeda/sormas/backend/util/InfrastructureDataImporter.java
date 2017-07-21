@@ -90,6 +90,8 @@ public final class InfrastructureDataImporter {
 					}
 				}
 			}
+			
+			stream.close();
 		} catch (IOException e) {
 			throw new IllegalArgumentException("Exception while reading resource file: " + resourceFileName, e);
 		}
@@ -188,6 +190,8 @@ public final class InfrastructureDataImporter {
 				
 				result.add(facility);				
 			}
+			
+			stream.close();
 		} catch (IOException e) {
 			throw new IllegalArgumentException("Exception while reading resource file: " + resourceFileName, e);
 		}
@@ -229,6 +233,8 @@ public final class InfrastructureDataImporter {
 				facility.setCity(cityName);
 				result.add(facility);				
 			}
+			
+			stream.close();
 		} catch (IOException e) {
 			logger.info(e.getMessage(), e);
 			e.printStackTrace();
