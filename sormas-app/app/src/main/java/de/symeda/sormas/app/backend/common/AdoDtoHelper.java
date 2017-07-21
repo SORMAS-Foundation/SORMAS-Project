@@ -61,34 +61,37 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
             if (dtoCall == null) {
                 return;
             }
+            handlePullResponse(markAsRead, dao, dtoCall.execute());
 
-            Response<List<DTO>> response = dtoCall.execute();
-            if (!response.isSuccessful()) {
-                throw new ConnectException("Pulling changes from server did not work: " + response.errorBody().string());
-            }
-
-            final List<DTO> result = response.body();
-            if (result != null && result.size() > 0) {
-                preparePulledResult(result);
-                dao.callBatchTasks(new Callable<Void>() {
-                    public Void call() throws Exception {
-                        boolean empty = dao.countOf() == 0;
-                        for (DTO dto : result) {
-                            ADO source = fillOrCreateFromDto(null, dto);
-                            source = dao.mergeOrCreate(source);
-							if (markAsRead) {
-								dao.markAsRead(source);
-							}
-                        }
-                        return null;
-                    }
-                });
-
-                Log.d(dao.getTableName(), "Pulled: " + result.size());
-            }
         } catch (RuntimeException e) {
             Log.e(getClass().getName(), "Exception thrown when trying to pull entities");
             throw new DaoException(e);
+        }
+    }
+
+    protected void handlePullResponse(final boolean markAsRead, final AbstractAdoDao<ADO> dao, Response<List<DTO>> response) throws IOException {
+        if (!response.isSuccessful()) {
+            throw new ConnectException("Pulling changes from server did not work: " + response.errorBody().string());
+        }
+
+        final List<DTO> result = response.body();
+        if (result != null && result.size() > 0) {
+            preparePulledResult(result);
+            dao.callBatchTasks(new Callable<Void>() {
+                public Void call() throws Exception {
+                    boolean empty = dao.countOf() == 0;
+                    for (DTO dto : result) {
+                        ADO source = fillOrCreateFromDto(null, dto);
+                        source = dao.mergeOrCreate(source);
+                        if (markAsRead) {
+                            dao.markAsRead(source);
+                        }
+                    }
+                    return null;
+                }
+            });
+
+            Log.d(dao.getTableName(), "Pulled: " + result.size());
         }
     }
 

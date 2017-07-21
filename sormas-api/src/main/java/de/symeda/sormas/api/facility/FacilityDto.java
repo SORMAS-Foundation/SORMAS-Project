@@ -1,5 +1,7 @@
 package de.symeda.sormas.api.facility;
 
+import javax.xml.bind.annotation.XmlTransient;
+
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -9,6 +11,7 @@ public class FacilityDto extends FacilityReferenceDto {
 	private static final long serialVersionUID = -7987228795475507196L;
 
 	public static final String I18N_PREFIX = "Facility";
+	public static final String OTHER_FACILITY_UUID = "SORMAS-CONSTID-OTHERS-FACILITY";
 	
 	private String name;
 	private RegionReferenceDto region;
@@ -27,6 +30,7 @@ public class FacilityDto extends FacilityReferenceDto {
 		this.name = name;
 	}
 
+	@XmlTransient
 	public RegionReferenceDto getRegion() {
 		return region;
 	}
@@ -34,6 +38,7 @@ public class FacilityDto extends FacilityReferenceDto {
 		this.region = region;
 	}
 	
+	@XmlTransient
 	public DistrictReferenceDto getDistrict() {
 		return district;
 	}

@@ -18,7 +18,9 @@ import java.net.ConnectException;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.caze.CasesActivity;
 import de.symeda.sormas.app.rest.RetroProvider;
+import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.settings.SettingsActivity;
+import de.symeda.sormas.app.util.SyncCallback;
 
 /**
  * Created by Mate Strysewske on 16.05.2017.
@@ -30,16 +32,17 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.user_login_activity_layout);
 
         SormasApplication application = (SormasApplication) getApplication();
         tracker = application.getDefaultTracker();
+
+        setContentView(R.layout.user_login_activity_layout);
 
         if (!ConfigProvider.ensureDeviceEncryption(LoginActivity.this)) {
             return;
         }
 
-        // try to connect
+        // try to connect -> validates login data
         if (ConfigProvider.getUsername() != null) {
             try {
                 RetroProvider.connect(getApplicationContext());
@@ -54,10 +57,24 @@ public class LoginActivity extends AppCompatActivity {
             }
         }
 
-        // already logged in?
-        if (ConfigProvider.getUser() != null) {
-            Intent intent = new Intent(this, EnterPinActivity.class);
-            startActivity(intent);
+        if (ConfigProvider.getUsername() != null) {
+            // valid login
+            if (ConfigProvider.getUser() == null) {
+                // no user yet? sync...
+                SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.ChangesAndInfrastructure, LoginActivity.this, new SyncCallback() {
+                    @Override
+                    public void call(boolean syncFailed) {
+                        if (ConfigProvider.getUser() != null) {
+                            Intent intent = new Intent(LoginActivity.this, EnterPinActivity.class);
+                            startActivity(intent);
+                        }
+                    }
+                });
+            }
+            else {
+                Intent intent = new Intent(LoginActivity.this, EnterPinActivity.class);
+                startActivity(intent);
+            }
         }
     }
 
@@ -84,10 +101,16 @@ public class LoginActivity extends AppCompatActivity {
                 Snackbar.make(findViewById(R.id.base_layout), e.getMessage(), Snackbar.LENGTH_LONG).show();
             }
 
-            if (RetroProvider.isConnected()) {
-                Intent intent = new Intent(this, EnterPinActivity.class);
-                startActivity(intent);
-            }
+            SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.ChangesAndInfrastructure, LoginActivity.this, new SyncCallback() {
+                @Override
+                public void call(boolean syncFailed) {
+                    // logged in?
+                    if (ConfigProvider.getUser() != null) {
+                        Intent intent = new Intent(LoginActivity.this, EnterPinActivity.class);
+                        startActivity(intent);
+                    }
+                }
+            });
         }
     }
 

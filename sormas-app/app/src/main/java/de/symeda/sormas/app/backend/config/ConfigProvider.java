@@ -343,7 +343,7 @@ public final class ConfigProvider {
                     }
 
                     if (instance.serverRestUrl == null) {
-                        setServerRestUrl("https://sormas.symeda.de/sormas-rest/");
+                        setServerRestUrl("https://sormas.org.ng/sormas-rest/");
                     }
                 }
             }

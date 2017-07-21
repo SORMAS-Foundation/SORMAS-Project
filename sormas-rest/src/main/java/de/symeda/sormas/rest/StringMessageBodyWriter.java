@@ -13,7 +13,7 @@ import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
 @Provider
-@Produces({"text/plain", "application/json"})
+@Produces(MediaType.APPLICATION_JSON)
 public class StringMessageBodyWriter implements MessageBodyWriter<String>{
 
 	@Override

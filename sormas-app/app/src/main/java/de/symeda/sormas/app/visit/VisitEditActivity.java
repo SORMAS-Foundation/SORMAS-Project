@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.LinearLayout;
 
 import com.google.android.gms.analytics.Tracker;
@@ -47,9 +48,14 @@ public class VisitEditActivity extends AbstractEditTabActivity {
 
     private VisitEditPagerAdapter adapter;
     private String contactUuid;
-//    private String visitUuid;
+    private String visitUuid;
 
-    private Tracker tracker;
+    private Bundle params;
+
+    @Override
+    public boolean isEditing() {
+        return true;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,18 +70,12 @@ public class VisitEditActivity extends AbstractEditTabActivity {
             getSupportActionBar().setTitle(getResources().getText(R.string.headline_visit) + " - " + ConfigProvider.getUser().getUserRole().toShortString());
         }
 
-        SormasApplication application = (SormasApplication) getApplication();
-        tracker = application.getDefaultTracker();
-
-        Bundle params = getIntent().getExtras();
-        adapter = new VisitEditPagerAdapter(getSupportFragmentManager(), params);
-        createTabViews(adapter);
+        params = getIntent().getExtras();
 
         if (params != null && params.containsKey(Visit.UUID)) {
-            String visitUuid = params.getString(Visit.UUID);
-            VisitDao visitDao = DatabaseHelper.getVisitDao();
-            Visit visit = visitDao.queryUuid(visitUuid);
-            visitDao.markAsRead(visit);
+            visitUuid = params.getString(Visit.UUID);
+            Visit initialEntity = DatabaseHelper.getVisitDao().queryUuid(visitUuid);
+            DatabaseHelper.getVisitDao().markAsRead(initialEntity);
         }
         if (params != null && params.containsKey(KEY_PAGE)) {
             currentTab = params.getInt(KEY_PAGE);
@@ -83,7 +83,31 @@ public class VisitEditActivity extends AbstractEditTabActivity {
         if (params != null && params.containsKey(KEY_CONTACT_UUID)) {
             this.contactUuid = (String) params.get(KEY_CONTACT_UUID);
         }
-        pager.setCurrentItem(currentTab);
+
+        setAdapter();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (visitUuid != null) {
+            Visit currentEntity = DatabaseHelper.getVisitDao().queryUuid(visitUuid);
+            if (currentEntity.isUnreadOrChildUnread()) {
+                // Resetting the adapter will reload the form and therefore also override any unsaved changes
+                setAdapter();
+                final Snackbar snackbar = Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_entity_overridden), getResources().getString(R.string.entity_visit)), Snackbar.LENGTH_INDEFINITE);
+                snackbar.setAction(R.string.snackbar_okay, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        snackbar.dismiss();
+                    }
+                });
+                snackbar.show();
+            }
+
+            DatabaseHelper.getVisitDao().markAsRead(currentEntity);
+        }
     }
 
     @Override
@@ -226,4 +250,11 @@ public class VisitEditActivity extends AbstractEditTabActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
+    private void setAdapter() {
+        adapter = new VisitEditPagerAdapter(getSupportFragmentManager(), params);
+        createTabViews(adapter);
+        pager.setCurrentItem(currentTab);
+    }
+
 }

@@ -47,6 +47,7 @@ public class Case extends AbstractDomainObject {
 	public static final String PERSON = "person";
 	public static final String DISEASE = "disease";
 	public static final String HEALTH_FACILITY = "healthFacility";
+	public static final String HEALTH_FACILITY_DETAILS = "healthFacilityDetails";
 	public static final String REPORTING_USER = "reportingUser";
 	public static final String REPORT_DATE = "reportDate";
 	public static final String INVESTIGATED_DATE = "investigatedDate";
@@ -78,6 +79,7 @@ public class Case extends AbstractDomainObject {
 	private District district;
 	private Community community;
 	private Facility healthFacility;
+	private String healthFacilityDetails;
 	
 	private User reportingUser;
 	private Date reportDate;
@@ -218,6 +220,14 @@ public class Case extends AbstractDomainObject {
 	}
 	public void setHealthFacility(Facility healthFacility) {
 		this.healthFacility = healthFacility;
+	}
+	
+	@Column(length = 512)
+	public String getHealthFacilityDetails() {
+		return healthFacilityDetails;
+	}
+	public void setHealthFacilityDetails(String healthFacilityDetails) {
+		this.healthFacilityDetails = healthFacilityDetails;
 	}
 	
 	@ManyToOne(cascade = {})

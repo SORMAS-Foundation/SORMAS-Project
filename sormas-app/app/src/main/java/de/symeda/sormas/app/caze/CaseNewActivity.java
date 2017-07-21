@@ -20,6 +20,7 @@ import java.util.List;
 
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
@@ -58,6 +59,9 @@ public class CaseNewActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        SormasApplication application = (SormasApplication) getApplication();
+        tracker = application.getDefaultTracker();
+
         setContentView(R.layout.sormas_root_activity_layout);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);
@@ -79,9 +83,6 @@ public class CaseNewActivity extends AppCompatActivity {
         }
         caseNewForm.setArguments(arguments);
         ft.add(R.id.fragment_frame, caseNewForm).commit();
-
-        SormasApplication application = (SormasApplication) getApplication();
-        tracker = application.getDefaultTracker();
     }
 
     @Override
@@ -124,8 +125,10 @@ public class CaseNewActivity extends AppCompatActivity {
                 boolean firstNameReq = caze.getPerson().getFirstName() == null || caze.getPerson().getFirstName().isEmpty();
                 boolean lastNameReq = caze.getPerson().getLastName() == null || caze.getPerson().getLastName().isEmpty();
                 boolean facilityReq = caze.getHealthFacility() == null;
+                boolean facilityDetailsReq = caze.getHealthFacility().getUuid().equals(FacilityDto.OTHER_FACILITY_UUID) &&
+                        (caze.getHealthFacilityDetails() == null || caze.getHealthFacilityDetails().isEmpty());
 
-                boolean validData = !diseaseReq && !firstNameReq && !lastNameReq && !facilityReq;
+                boolean validData = !diseaseReq && !firstNameReq && !lastNameReq && !facilityReq && !facilityDetailsReq;
 
                 if (validData) {
                     try {
@@ -173,6 +176,8 @@ public class CaseNewActivity extends AppCompatActivity {
                         Snackbar.make(findViewById(R.id.fragment_frame), R.string.snackbar_case_lastName, Snackbar.LENGTH_LONG).show();
                     } else if (facilityReq) {
                         Snackbar.make(findViewById(R.id.fragment_frame), R.string.snackbar_case_facility, Snackbar.LENGTH_LONG).show();
+                    } else if (facilityDetailsReq) {
+                        Snackbar.make(findViewById(R.id.fragment_frame), R.string.snackbar_case_facility_details, Snackbar.LENGTH_LONG).show();
                     }
                 }
         }

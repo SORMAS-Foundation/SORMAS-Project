@@ -1,13 +1,14 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>de.symeda.sormas</groupId>
 		<artifactId>sormas-base</artifactId>
-		<version>0.0.1</version>
+		<version>0.1.0</version>
 		<relativePath>../sormas-base</relativePath>
 	</parent>
+
 	<artifactId>sormas-ear</artifactId>
+	<name>${project.artifactId}</name>
 	<packaging>ear</packaging>
 
 	<properties>
@@ -18,7 +19,7 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>de.symeda.sormas</groupId>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>sormas-backend</artifactId>
 			<version>${project.version}</version>
 			<type>ejb</type>
@@ -50,5 +51,4 @@
 		<finalName>${project.artifactId}</finalName>
 	</build>
 
-	<name>${project.artifactId}</name>
 </project>

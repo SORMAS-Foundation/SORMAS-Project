@@ -8,6 +8,7 @@ import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -36,6 +37,8 @@ public class EventService extends AbstractAdoService<Event> {
 
 		if (date != null) {
 			Predicate dateFilter = cb.greaterThan(from.get(AbstractDomainObject.CHANGE_DATE), date);
+			Join<Event, Location> address = from.join(Event.EVENT_LOCATION);
+			dateFilter = cb.or(dateFilter, cb.greaterThan(address.get(AbstractDomainObject.CHANGE_DATE), date));
 			if(filter != null) {
 				filter = cb.and(filter, dateFilter);
 			} else {

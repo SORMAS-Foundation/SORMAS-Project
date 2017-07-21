@@ -13,11 +13,12 @@ public interface FacilityFacade {
 
 	List<FacilityReferenceDto> getAll();
 	
-    List<FacilityReferenceDto> getAllByCommunity(CommunityReferenceDto community);
-    List<FacilityReferenceDto> getAllByDistrict(DistrictReferenceDto district);
+    List<FacilityReferenceDto> getAllByCommunity(CommunityReferenceDto community, boolean includeOthers);
+    List<FacilityReferenceDto> getAllByDistrict(DistrictReferenceDto district, boolean includeOthers);
     List<FacilityReferenceDto> getAllLaboratories();
 
-	List<FacilityDto> getAllAfter(Date date);
+	List<FacilityDto> getAllByRegionAfter(String regionUuid, Date date);
+	List<FacilityDto> getAllWithoutRegionAfter(Date date);
 	
 	FacilityDto getByUuid(String uuid);
 }

@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<!DOCTYPE project>
+<project name="sormas-app" basedir="." default="3-collect" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+
+	<import file="../sormas-base/build-artifact.xml" />
+
+	<property name="maven.artifactId" value="sormas-app" />
+	<property name="file.suffix" value="apk" />
+	<property name="target.dir" value="./app/build/outputs/apk" />
+	<property name="copy.path" value="../deploy/android" />
+
+</project>

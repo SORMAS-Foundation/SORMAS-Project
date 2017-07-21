@@ -38,6 +38,7 @@ public class TaskDao extends AbstractAdoDao<Task> {
     }
 
     public void changeTaskStatus(Task task, TaskStatus targetStatus) throws DaoException {
+        task = queryForId(task.getId());
         task.setTaskStatus(targetStatus);
         task.setStatusChangeDate(new Date());
         saveAndSnapshot(task);

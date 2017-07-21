@@ -12,7 +12,10 @@ import retrofit2.http.Path;
  */
 public interface FacilityFacadeRetro {
 
-    @GET("facilities/all/{since}")
-    Call<List<FacilityDto>> pullAllSince(@Path("since") long since);
+    @GET("facilities/region/{regionUuid}/{since}")
+    Call<List<FacilityDto>> pullAllByRegionSince(@Path("regionUuid") String regionUUid, @Path("since") long since);
+
+    @GET("facilities/general/{since}")
+    Call<List<FacilityDto>> pullAllWithoutRegionSince(@Path("since") long since);
 
 }

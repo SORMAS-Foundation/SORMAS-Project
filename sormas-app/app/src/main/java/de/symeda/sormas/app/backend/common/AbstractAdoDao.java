@@ -115,8 +115,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
     public List<ADO> queryForAll(String orderBy, boolean ascending) {
         try {
             QueryBuilder builder = queryBuilder();
-            Where where = builder.where();
-            where.and().eq(AbstractDomainObject.SNAPSHOT, false).query();
+            builder.where().eq(AbstractDomainObject.SNAPSHOT, false).query();
             return builder.orderBy(orderBy, ascending).query();
         } catch (SQLException | IllegalArgumentException e) {
             Log.e(getTableName(), "Could not perform queryForAll");

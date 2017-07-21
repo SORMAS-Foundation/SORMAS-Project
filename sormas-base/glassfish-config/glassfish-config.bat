@@ -1,4 +1,4 @@
-
+﻿
 REM  Requirements:
 REM  * Payara 4.1.1 installed
 REM  * Database created
@@ -10,7 +10,8 @@ REM ------ Config BEGIN ------
 REM GLASSFISH
 set GLASSFISH_HOME=\srv\payara-172\glassfish
 set DOMAIN_NAME=sormas
-set DOMAIN_DIR=\srv\domains\%DOMAIN_NAME%
+set DOMAINS_HOME=\srv\domains
+set DOMAIN_DIR=%DOMAINS_HOME%\%DOMAIN_NAME%
 set LOG_HOME=\var\log\glassfish\sormas
 set PORT_BASE=6000
 set PORT_ADMIN=6048
@@ -37,14 +38,14 @@ REM placholder for synching with sh script
 REM patching gf-modules
 REM -- removing old versions
 
-del %GLASSFISH_HOME%\modules\jboss-logging.jar
+REM del %GLASSFISH_HOME%\modules\jboss-logging.jar
 
 REM -- placing new versions
-copy /Y .\gf-modules\*.jar %GLASSFISH_HOME%\modules
+REM copy /Y .\gf-modules\*.jar %GLASSFISH_HOME%\modules
 
 REM setting ASADMIN_CALL and creating domain
 set ASADMIN=CALL %GLASSFISH_HOME%\bin\asadmin --port %PORT_ADMIN%
-CALL %GLASSFISH_HOME%/bin/asadmin create-domain --portbase %PORT_BASE% %DOMAIN_NAME%
+CALL %GLASSFISH_HOME%/bin/asadmin create-domain --domaindir %DOMAINS_HOME% --portbase %PORT_BASE% %DOMAIN_NAME%
 
 Echo Press [Enter] to continue...
 PAUSE >nul
@@ -65,7 +66,7 @@ ECHO %DOMAIN_NAME%Realm { org.wamblee.glassfish.auth.FlexibleJdbcLoginModule req
 
 REM placholder for synching with sh script
 
-CALL %GLASSFISH_HOME%/bin/asadmin start-domain %DOMAIN_NAME%
+CALL %GLASSFISH_HOME%/bin/asadmin start-domain --domaindir %DOMAINS_HOME% %DOMAIN_NAME%
 Echo Press [Enter] to continue...
 PAUSE >nul
 
@@ -78,7 +79,7 @@ REM Pool for audit log
 %ASADMIN% create-jdbc-resource --connectionpoolid %DOMAIN_NAME%AuditlogPool jdbc/AuditlogPool
 
 REM User datasource without pool (flexible jdbc realm seems to keep connections in cache)
-%ASADMIN% create-jdbc-connection-pool --restype javax.sql.DataSource --datasourceclassname org.postgresql.ds.PGSimpleDataSource --isconnectvalidatereq true --validationmethod custom-validation --validationclassname org.glassfish.api.jdbc.validation.PostgresConnectionValidation --property "portNumber=%DB_PORT%:databaseName=%DB_NAME%:serverName=%DB_SERVER%:user=%DB_USER%:password=%DB_PW%" %DOMAIN_NAME%UsersDataPool
+%ASADMIN% create-jdbc-connection-pool --restype javax.sql.DataSource --datasourceclassname org.postgresql.ds.PGSimpleDataSource --isconnectvalidatereq true --nontransactionalconnections true --validationmethod custom-validation --validationclassname org.glassfish.api.jdbc.validation.PostgresConnectionValidation --property "portNumber=%DB_PORT%:databaseName=%DB_NAME%:serverName=%DB_SERVER%:user=%DB_USER%:password=%DB_PW%" %DOMAIN_NAME%UsersDataPool
 %ASADMIN% create-jdbc-resource --connectionpoolid %DOMAIN_NAME%UsersDataPool jdbc/%DOMAIN_NAME%UsersDataPool
 
 Echo Press [Enter] to continue...
@@ -153,12 +154,12 @@ REM Echo Press [Enter] to continue...
 REM PAUSE >nul
 
 
-CALL %GLASSFISH_HOME%/bin/asadmin stop-domain %DOMAIN_NAME%
+CALL %GLASSFISH_HOME%/bin/asadmin stop-domain --domaindir %DOMAINS_HOME% %DOMAIN_NAME%
 
 Echo Press [Enter] to restart server now. Cancel with STRG+C
 PAUSE >nul
 
-CALL %GLASSFISH_HOME%/bin/asadmin start-domain %DOMAIN_NAME%
+CALL %GLASSFISH_HOME%/bin/asadmin start-domain --domaindir %DOMAINS_HOME% %DOMAIN_NAME%
 
 Echo Checklist
 Echo   - logback.xml installed?

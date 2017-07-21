@@ -173,7 +173,9 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
             @Override
             public void call(boolean syncFailed) {
                 progressDialog.dismiss();
-                callback.call(syncFailed);
+                if (callback != null) {
+                    callback.call(syncFailed);
+                }
             }
         });
     }
@@ -184,9 +186,8 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
             @Override
             protected void onPostExecute(Void aVoid) {
                 if (callback != null) {
-                    callback.call(this.syncFailed);
+                    callback.call(syncFailed);
                 }
-                this.syncFailed = false;
                 if (context != null) {
                     TaskNotificationService.doTaskNotification(context);
                 }

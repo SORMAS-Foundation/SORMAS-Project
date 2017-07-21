@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.LinearLayout;
 
 import com.google.android.gms.analytics.Tracker;
@@ -21,6 +22,7 @@ import com.google.android.gms.analytics.Tracker;
 import java.util.Date;
 import java.util.List;
 
+import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.caze.Case;
@@ -66,7 +68,10 @@ public class CaseEditActivity extends AbstractEditTabActivity {
     private String taskUuid;
     private Toolbar toolbar;
 
-    private Tracker tracker;
+    @Override
+    public boolean isEditing() {
+        return true;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,15 +92,12 @@ public class CaseEditActivity extends AbstractEditTabActivity {
             getSupportActionBar().setTitle(getResources().getText(R.string.headline_case) + " - " + ConfigProvider.getUser().getUserRole().toShortString());
         }
 
-        SormasApplication application = (SormasApplication) getApplication();
-        tracker = application.getDefaultTracker();
-
         Bundle params = getIntent().getExtras();
         if (params != null) {
             if (params.containsKey(KEY_CASE_UUID)) {
                 caseUuid = params.getString(KEY_CASE_UUID);
-                Case caze = DatabaseHelper.getCaseDao().queryUuid(caseUuid);
-                DatabaseHelper.getCaseDao().markAsRead(caze);
+                Case initialEntity = DatabaseHelper.getCaseDao().queryUuid(caseUuid);
+                DatabaseHelper.getCaseDao().markAsRead(initialEntity);
             }
             if (params.containsKey(TaskForm.KEY_TASK_UUID)) {
                 taskUuid = params.getString(TaskForm.KEY_TASK_UUID);
@@ -107,10 +109,30 @@ public class CaseEditActivity extends AbstractEditTabActivity {
                 getSupportActionBar().setSubtitle(params.getString(CASE_SUBTITLE));
             }
         }
-        adapter = new CaseEditPagerAdapter(getSupportFragmentManager(), caseUuid);
-        createTabViews(adapter);
 
-        pager.setCurrentItem(currentTab);
+        setAdapter();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        Case currentEntity = DatabaseHelper.getCaseDao().queryUuid(caseUuid);
+        if (currentEntity.isUnreadOrChildUnread()) {
+            // Resetting the adapter will reload the form and therefore also override any unsaved changes
+            setAdapter();
+
+            final Snackbar snackbar = Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_entity_overridden), getResources().getString(R.string.entity_case)), Snackbar.LENGTH_INDEFINITE);
+            snackbar.setAction(R.string.snackbar_okay, new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    snackbar.dismiss();
+                }
+            });
+            snackbar.show();
+        }
+
+        DatabaseHelper.getCaseDao().markAsRead(currentEntity);
     }
 
     @Override
@@ -277,7 +299,6 @@ public class CaseEditActivity extends AbstractEditTabActivity {
                 Hospitalization hospitalization = (Hospitalization) adapter.getData(CaseEditTabs.HOSPITALIZATION.ordinal());
 
                 // EPI DATA
-                EpiDataDao epiDataDao = DatabaseHelper.getEpiDataDao();
                 EpiData epiData = (EpiData) adapter.getData(CaseEditTabs.EPIDATA.ordinal());
 
                 // CASE_DATA
@@ -287,6 +308,8 @@ public class CaseEditActivity extends AbstractEditTabActivity {
                 boolean firstNameReq = person.getFirstName() == null || person.getFirstName().isEmpty();
                 boolean lastNameReq = person.getLastName() == null || person.getLastName().isEmpty();
                 boolean facilityReq = caze.getHealthFacility() == null;
+                boolean facilityDetailsReq = caze.getHealthFacility().getUuid().equals(FacilityDto.OTHER_FACILITY_UUID) &&
+                        (caze.getHealthFacilityDetails() == null || caze.getHealthFacilityDetails().isEmpty());
 
                 try {
                     symptomsEditForm.validateCaseData(symptoms);
@@ -295,7 +318,7 @@ public class CaseEditActivity extends AbstractEditTabActivity {
                     return true;
                 }
 
-                boolean validData = !diseaseReq && !firstNameReq && !lastNameReq && !facilityReq;
+                boolean validData = !diseaseReq && !firstNameReq && !lastNameReq && !facilityReq && !facilityDetailsReq;
 
                 if (validData) {
                     try {
@@ -306,33 +329,13 @@ public class CaseEditActivity extends AbstractEditTabActivity {
                         caze.setEpiData(epiData);
                         caseDao.saveAndSnapshot(caze);
 
-                        if (RetroProvider.isConnected()) {
-                            SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.ChangesOnly,this, new SyncCallback() {
-                                @Override
-                                public void call(boolean syncFailed) {
-                                    // entity has to be reloaded
-                                    reloadTabs();
+                        Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_case)), Snackbar.LENGTH_LONG).show();
 
-                                    if (syncFailed) {
-                                        Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_sync_error_saved), getResources().getString(R.string.entity_case)), Snackbar.LENGTH_LONG).show();
-                                    } else {
-                                        Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_case)), Snackbar.LENGTH_LONG).show();
-                                    }
-
-                                    try {
-                                        pager.setCurrentItem(currentTab + 1);
-                                    } catch (NullPointerException e) {
-                                        pager.setCurrentItem(currentTab);
-                                    }
-                                }
-                            });
-                        } else {
-                            Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_case)), Snackbar.LENGTH_LONG).show();
-                            try {
-                                pager.setCurrentItem(currentTab + 1);
-                            } catch (NullPointerException e) {
-                                pager.setCurrentItem(currentTab);
-                            }
+                        // switch to next tab
+                        try {
+                            pager.setCurrentItem(currentTab + 1);
+                        } catch (NullPointerException e) {
+                            pager.setCurrentItem(currentTab);
                         }
                     } catch (DaoException e) {
                         Log.e(getClass().getName(), "Error while trying to save case", e);
@@ -349,6 +352,8 @@ public class CaseEditActivity extends AbstractEditTabActivity {
                         Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_case_lastName, Snackbar.LENGTH_LONG).show();
                     } else if (facilityReq) {
                         Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_case_facility, Snackbar.LENGTH_LONG).show();
+                    } else if (facilityDetailsReq) {
+                        Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_case_facility_details, Snackbar.LENGTH_LONG).show();
                     }
                 }
 
@@ -379,6 +384,13 @@ public class CaseEditActivity extends AbstractEditTabActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void setAdapter() {
+        adapter = new CaseEditPagerAdapter(getSupportFragmentManager(), caseUuid);
+        createTabViews(adapter);
+
+        pager.setCurrentItem(currentTab);
     }
 
 }

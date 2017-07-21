@@ -1,6 +1,7 @@
 package de.symeda.sormas.app.task;
 
 import android.accounts.AuthenticatorException;
+import android.app.ActivityManager;
 import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -13,6 +14,7 @@ import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.text.Html;
 import android.text.TextUtils;
+import android.util.Log;
 
 import org.joda.time.DateTime;
 
@@ -20,7 +22,9 @@ import java.net.ConnectException;
 import java.util.Date;
 import java.util.List;
 
+import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.app.AbstractSormasActivity;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
@@ -28,6 +32,8 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.contact.ContactDao;
+import de.symeda.sormas.app.backend.event.Event;
+import de.symeda.sormas.app.backend.event.EventDao;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.backend.task.Task;
@@ -35,6 +41,7 @@ import de.symeda.sormas.app.backend.task.TaskDao;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.util.Callback;
+import de.symeda.sormas.app.util.SyncCallback;
 
 /**
  * Created by Stefan Szczesny on 15.11.2016.
@@ -61,20 +68,32 @@ public class TaskNotificationService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-        if (!RetroProvider.isConnected()) {
-            try {
-                RetroProvider.connect(getApplicationContext());
-            } catch (AuthenticatorException e) {
-                // do nothing
-            } catch (RetroProvider.ApiVersionException e) {
-                // do nothing
-            } catch (ConnectException e) {
-                // do nothing
-            }
-        }
+        // don't sync, when user is currently editing data
+        AbstractSormasActivity activeActivity = AbstractSormasActivity.getActiveActivity();
+        if (activeActivity == null || !activeActivity.isEditing()) {
 
-        if (RetroProvider.isConnected()) {
-            SynchronizeDataAsync.call(SynchronizeDataAsync.SyncMode.ChangesOnly, this, null);
+            if (!RetroProvider.isConnected()) {
+                try {
+                    RetroProvider.connect(getApplicationContext());
+                } catch (AuthenticatorException e) {
+                    // do nothing
+                } catch (RetroProvider.ApiVersionException e) {
+                    // do nothing
+                } catch (ConnectException e) {
+                    // do nothing
+                }
+            }
+
+            if (RetroProvider.isConnected()) {
+                SynchronizeDataAsync.call(SynchronizeDataAsync.SyncMode.ChangesOnly, this, new SyncCallback() {
+                    @Override
+                    public void call(boolean syncFailed) {
+                        if (syncFailed) {
+                            RetroProvider.disconnect();
+                        }
+                    }
+                });
+            }
         }
 
         return super.onStartCommand(intent, flags, startId);
@@ -95,6 +114,7 @@ public class TaskNotificationService extends Service {
 
         CaseDao caseDAO = DatabaseHelper.getCaseDao();
         ContactDao contactDAO = DatabaseHelper.getContactDao();
+        EventDao eventDAO = DatabaseHelper.getEventDao();
         PersonDao personDAO = DatabaseHelper.getPersonDao();
 
         for (Task task:taskList) {
@@ -103,33 +123,32 @@ public class TaskNotificationService extends Service {
 
             Case caze = null;
             Contact contact = null;
-            if(task.getCaze() != null) {
-                caze = caseDAO.queryForId(task.getCaze().getId());
+            Event event = null;
+            StringBuilder content = new StringBuilder();
+            switch (task.getTaskContext()) {
+                case CASE:
+                    caze = caseDAO.queryForId(task.getCaze().getId());
+                    content.append("<b>").append(caze.toString()).append("</b><br/>");
+                    break;
+                case CONTACT:
+                    contact = contactDAO.queryForId(task.getContact().getId());
+                    content.append("<b>").append(contact.toString()).append("</b><br/>");
+                    break;
+                case EVENT:
+                    event = eventDAO.queryForId(task.getEvent().getId());
+                    content.append("<b>").append(event.toString()).append("</b><br/>");
+                    break;
+                case GENERAL:
+                    break;
+                default:
+                    continue;
             }
-            else if(task.getContact() != null) {
-                contact = contactDAO.queryForId(task.getContact().getId());
-            }
-            else {
-                continue;
-            }
-
-            Person person = caze != null ? personDAO.queryForId(caze.getPerson().getId()) : contact != null ? personDAO.queryForId(contact.getPerson().getId()) : null;
 
             // Just for your information: The issue here was that the second argument of the getActivity call
             // was set to 0, which leads to previous intents to be recycled; passing the task's ID instead
             // makes sure that a new intent with the right task behind it is created
             PendingIntent pi = PendingIntent.getActivity(context, task.getId().intValue(), notificationIntent, 0);
             Resources r = context.getResources();
-
-            StringBuilder content = new StringBuilder();
-            if(caze != null) {
-                content.append("<b>").append(person.toString())
-                        .append(" (").append(DataHelper.getShortUuid(caze.getUuid())).append(")</b><br/>");
-            }
-            if(contact != null) {
-                content.append("<b>").append(person.toString())
-                        .append(" (").append(DataHelper.getShortUuid(contact.getUuid())).append(")</b><br/>");
-            }
 
             if (!TextUtils.isEmpty(task.getCreatorComment())) {
                 content.append(task.getCreatorComment());

@@ -13,6 +13,7 @@ import com.google.android.gms.analytics.Tracker;
 
 import de.symeda.sormas.app.AbstractEditTabActivity;
 import de.symeda.sormas.app.EnterPinActivity;
+import de.symeda.sormas.app.LoginActivity;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
@@ -25,17 +26,12 @@ public class SettingsActivity extends AbstractEditTabActivity {
 
     private SettingsForm settingsForm;
 
-    private Tracker tracker;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setContentView(R.layout.sormas_root_activity_layout);
 
         super.onCreate(savedInstanceState);
         setTitle(getResources().getString(R.string.main_menu_settings));
-
-        SormasApplication application = (SormasApplication) getApplication();
-        tracker = application.getDefaultTracker();
 
         // setting the fragment_frame
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
@@ -94,6 +90,13 @@ public class SettingsActivity extends AbstractEditTabActivity {
     public void openSyncLog(View view) {
         SyncLogDialog syncLogDialog = new SyncLogDialog(this);
         syncLogDialog.show(this);
+    }
+
+    public void logout(View view) {
+        ConfigProvider.clearUsernameAndPassword();
+        ConfigProvider.clearPin();
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
     }
 
     public void changePIN(View view) {

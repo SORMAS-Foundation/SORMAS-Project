@@ -13,3 +13,5 @@
 deploy
 /sormas-base/build.properties
 /sormas-ui/bin
+
+sormas-ui/src/main/webapp/VAADIN/themes/sormastheme/addons.scss

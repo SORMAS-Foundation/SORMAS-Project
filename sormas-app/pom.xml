@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<parent>
+		<artifactId>sormas-base</artifactId>
+		<groupId>de.symeda.sormas</groupId>
+		<version>0.1.0</version>
+		<relativePath>../sormas-base</relativePath>
+	</parent>
+	<modelVersion>4.0.0</modelVersion>
+
+	<artifactId>sormas-app</artifactId>
+	<name>sormas-app</name>
+	<packaging>pom</packaging>
+
+	<properties>
+		<android.manifestFile>${project.basedir}/app/src/main/AndroidManifest.xml</android.manifestFile>
+		<gradle.version>3.3</gradle.version>
+		<maven.compiler.source>1.7</maven.compiler.source>
+		<maven.compiler.target>1.7</maven.compiler.target>
+	</properties>
+
+	<dependencies>
+
+	</dependencies>
+
+	<build>
+
+		<plugins>
+			<plugin>
+				<groupId>org.fortasoft</groupId>
+				<artifactId>gradle-maven-plugin</artifactId>
+				<version>1.0.8</version>
+
+				<configuration>
+					<gradleVersion>${gradle.version}</gradleVersion>
+					<tasks>
+						<task>build</task>
+					</tasks>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>compile</phase>
+						<goals>
+							<goal>invoke</goal>
+						</goals>
+					</execution>
+				</executions>
+				<dependencies>
+					<dependency>
+						<groupId>org.gradle</groupId>
+						<artifactId>gradle-tooling-api</artifactId>
+						<version>${gradle.version}</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+		</plugins>
+
+	</build>
+
+</project>

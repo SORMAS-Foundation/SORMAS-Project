@@ -8,7 +8,6 @@
     <string name="main_menu_samples">Samples</string>
     <string name="main_menu_settings">Settings</string>
     <string name="main_menu_sync_all">Synchronize</string>
-    <string name="main_menu_logout">Logout</string>
 
 
     <string name="drawer_open">Open navigation drawer</string>
@@ -34,6 +33,7 @@
     <string name="action_create">Create</string>
     <string name="action_delete">Delete</string>
     <string name="action_clearAll">Clear all</string>
+    <string name="action_logout">Logout</string>
     <string name="action_setEmptyToNo">Set cleared to No</string>
     <string name="action_createCaseFromContact">Create a new case for this contact</string>
     <string name="action_send">Send</string>
@@ -185,6 +185,7 @@
     <string name="snackbar_case_firstName">Please enter the first name of the case person.</string>
     <string name="snackbar_case_lastName">Please enter the last name of the case person.</string>
     <string name="snackbar_case_facility">Please enter the health facility.</string>
+    <string name="snackbar_case_facility_details">Please enter the name and description of the health facility.</string>
     <string name="snackbar_contact_last_contact_date">Please specify the date of last contact.</string>
     <string name="snackbar_contact_proximity">Please specify the contact proximity.</string>
     <string name="snackbar_contact_firstName">Please enter the first name of the contact person.</string>
@@ -220,6 +221,8 @@
     <string name="snackbar_pin_changed">PIN has been successfully changed.</string>
     <string name="snackbar_sync_conflict">Synchronization conflicts detected. Please check the Sync Log to review them.</string>
     <string name="snackbar_open_synclog">Open Sync Log</string>
+    <string name="snackbar_entity_overridden">%1$s refreshed. Unsaved changes have been discarded.</string>
+    <string name="snackbar_okay">Okay</string>
 
     <string name="entity_case">Case</string>
     <string name="entity_contact">Contact</string>

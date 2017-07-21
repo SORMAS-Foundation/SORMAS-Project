@@ -12,11 +12,13 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.google.android.gms.analytics.Tracker;
 
 import java.util.Date;
 
+import de.symeda.sormas.app.AbstractSormasActivity;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.common.DaoException;
@@ -34,15 +36,23 @@ import de.symeda.sormas.app.util.SyncCallback;
 /**
  * Created by Stefan Szczesny on 26.10.2016.
  */
-public class TaskEditActivity extends AppCompatActivity {
+public class TaskEditActivity extends AbstractSormasActivity {
 
     private TaskForm taskForm;
 
+    private String taskUuid;
     private String parentCaseUuid;
     private String parentContactUuid;
     private String parentEventUuid;
 
     private Tracker tracker;
+
+    private Bundle extras;
+
+    @Override
+    public boolean isEditing() {
+        return true;
+    }
 
     @Override
     protected void onNewIntent(Intent intent) {
@@ -51,8 +61,12 @@ public class TaskEditActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setContentView(R.layout.sormas_root_activity_layout);
         super.onCreate(savedInstanceState);
+
+        SormasApplication application = (SormasApplication) getApplication();
+        tracker = application.getDefaultTracker();
+
+        setContentView(R.layout.sormas_root_activity_layout);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);
         if (toolbar != null) {
@@ -61,19 +75,12 @@ public class TaskEditActivity extends AppCompatActivity {
             getSupportActionBar().setTitle(getResources().getText(R.string.headline_task) + " - " + ConfigProvider.getUser().getUserRole().toShortString());
         }
 
-        Bundle extras = getIntent().getExtras();
-        if(extras != null) {
+        extras = getIntent().getExtras();
+        if (extras != null) {
             if (extras.containsKey(Task.UUID)) {
-                TaskDao taskDao = DatabaseHelper.getTaskDao();
-                Task task = taskDao.queryUuid(extras.getString(Task.UUID));
-                taskDao.markAsRead(task);
-                try {
-                    DatabaseHelper.getTaskDao().saveAndSnapshot(task);
-                } catch (DaoException e) {
-                    Log.e(getClass().getName(), "Error while trying to save task after updating last opened date", e);
-                    Log.e(getClass().getName(), "- root cause: ", ErrorReportingHelper.getRootCause(e));
-                    ErrorReportingHelper.sendCaughtException(tracker, e, task, true);
-                }
+                taskUuid = (String) extras.get(Task.UUID);
+                Task initialEntity = DatabaseHelper.getTaskDao().queryUuid(taskUuid);
+                DatabaseHelper.getTaskDao().markAsRead(initialEntity);
             }
             if (extras.containsKey(TasksListFragment.KEY_CASE_UUID)) {
                 parentCaseUuid = (String) extras.get(TasksListFragment.KEY_CASE_UUID);
@@ -86,20 +93,29 @@ public class TaskEditActivity extends AppCompatActivity {
             }
         }
 
-        // setting the fragment_frame
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        taskForm = new TaskForm();
-        taskForm.setArguments(getIntent().getExtras());
-        ft.add(R.id.fragment_frame, taskForm).commit();
-
-        SormasApplication application = (SormasApplication) getApplication();
-        tracker = application.getDefaultTracker();
+        setAdapter();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         taskForm.onResume();
+
+        Task currentEntity = DatabaseHelper.getTaskDao().queryUuid(taskUuid);
+        if (currentEntity.isUnreadOrChildUnread()) {
+            // Resetting the adapter will reload the form and therefore also override any unsaved changes
+            setAdapter();
+            final Snackbar snackbar = Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_entity_overridden), getResources().getString(R.string.entity_task)), Snackbar.LENGTH_INDEFINITE);
+            snackbar.setAction(R.string.snackbar_okay, new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    snackbar.dismiss();
+                }
+            });
+            snackbar.show();
+        }
+
+        DatabaseHelper.getTaskDao().markAsRead(currentEntity);
     }
 
     @Override
@@ -164,6 +180,7 @@ public class TaskEditActivity extends AppCompatActivity {
                     } else {
                         Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_task)), Snackbar.LENGTH_LONG).show();
                     }
+
                 } catch (DaoException e) {
                     Log.e(getClass().getName(), "Error while trying to save task", e);
                     Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_save_error), getResources().getString(R.string.entity_task)), Snackbar.LENGTH_LONG).show();
@@ -172,6 +189,13 @@ public class TaskEditActivity extends AppCompatActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void setAdapter() {
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        taskForm = new TaskForm();
+        taskForm.setArguments(extras);
+        ft.replace(R.id.fragment_frame, taskForm).commit();
     }
 
 }

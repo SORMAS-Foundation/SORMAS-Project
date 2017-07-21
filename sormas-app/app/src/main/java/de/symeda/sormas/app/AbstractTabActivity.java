@@ -13,6 +13,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
+import com.google.android.gms.analytics.Tracker;
+
 import java.net.ConnectException;
 
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -24,29 +26,13 @@ import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.util.SlidingTabLayout;
 import de.symeda.sormas.app.util.SyncCallback;
 
-public abstract class AbstractTabActivity extends AppCompatActivity {
+public abstract class AbstractTabActivity extends AbstractSormasActivity {
 
     public static final String KEY_PAGE = "page";
 
     protected ViewPager pager;
     protected SlidingTabLayout tabs;
     protected int currentTab = 0;
-
-    protected boolean isUserNeeded() {
-        return true;
-    }
-
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);
-        if (toolbar != null) {
-            setSupportActionBar(toolbar);
-            getSupportActionBar().setHomeButtonEnabled(true);
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
-    }
 
     protected void createTabViews(FragmentStatePagerAdapter adapter) {
         // Assigning ViewPager View and setting the adapter
@@ -89,116 +75,4 @@ public abstract class AbstractTabActivity extends AppCompatActivity {
     public void reloadTabs() {
         createTabViews((FragmentStatePagerAdapter) pager.getAdapter());
     }
-
-
-    public void synchronizeCompleteData() {
-        synchronizeData(SynchronizeDataAsync.SyncMode.Complete, true, (SwipeRefreshLayout) findViewById(R.id.swiperefresh));
-    }
-
-    public void synchronizeChangedData() {
-        synchronizeData(SynchronizeDataAsync.SyncMode.ChangesOnly, true, (SwipeRefreshLayout) findViewById(R.id.swiperefresh));
-    }
-
-    public void synchronizeData(SynchronizeDataAsync.SyncMode syncMode, final boolean showResultSnackbar, final SwipeRefreshLayout swipeRefreshLayout) {
-
-        if (swipeRefreshLayout != null) {
-            swipeRefreshLayout.setRefreshing(true);
-        }
-
-        final SyncLogDao syncLogDao = DatabaseHelper.getSyncLogDao();
-        final long syncLogCountBefore = syncLogDao.countOf();
-
-        if (!RetroProvider.isConnected()) {
-            try {
-                RetroProvider.connect(getApplicationContext());
-            } catch (AuthenticatorException e) {
-                if (showResultSnackbar) {
-                    Snackbar.make(findViewById(android.R.id.content), e.getMessage(), Snackbar.LENGTH_LONG).show();
-                }
-                // switch to LoginActivity is done below
-            } catch (RetroProvider.ApiVersionException e) {
-                if (showResultSnackbar) {
-                    Snackbar.make(findViewById(android.R.id.content), e.getMessage(), Snackbar.LENGTH_LONG).show();
-                }
-            } catch (ConnectException e) {
-                if (showResultSnackbar) {
-                    Snackbar.make(findViewById(android.R.id.content), e.getMessage(), Snackbar.LENGTH_LONG).show();
-                }
-            }
-        }
-
-        if (isUserNeeded() && ConfigProvider.getUser() == null) {
-            if (swipeRefreshLayout != null) {
-                swipeRefreshLayout.setRefreshing(false);
-            }
-            Intent intent = new Intent(this, LoginActivity.class);
-            startActivity(intent);
-            return;
-        }
-
-        if (RetroProvider.isConnected()) {
-
-            SynchronizeDataAsync.call(syncMode, getApplicationContext(), new SyncCallback() {
-                @Override
-                public void call(boolean syncFailed) {
-
-                    if (swipeRefreshLayout != null) {
-                        swipeRefreshLayout.setRefreshing(false);
-                    }
-
-                    if (getSupportFragmentManager().getFragments() != null) {
-                        for (Fragment fragment : getSupportFragmentManager().getFragments()) {
-                            if (fragment != null && fragment.isVisible()) {
-                                fragment.onResume();
-                            }
-                        }
-                    }
-
-                    long syncLogCountAfter = syncLogDao.countOf();
-
-                    if (showResultSnackbar) {
-                        if (!syncFailed) {
-                            if (syncLogCountAfter > syncLogCountBefore) {
-                                showConflictSnackbar();
-                            } else {
-                                Snackbar.make(findViewById(android.R.id.content), R.string.snackbar_sync_success, Snackbar.LENGTH_LONG).show();
-                            }
-                        } else {
-                            Snackbar.make(findViewById(android.R.id.content), R.string.snackbar_sync_error, Snackbar.LENGTH_LONG).show();
-                        }
-                    } else {
-                        if (syncLogCountAfter > syncLogCountBefore) {
-                            showConflictSnackbar();
-                        }
-                    }
-                }
-            });
-        }
-        else {
-            if (swipeRefreshLayout != null) {
-                swipeRefreshLayout.setRefreshing(false);
-            }
-
-            if (showResultSnackbar) {
-                Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_no_connection, Snackbar.LENGTH_LONG).show();
-            }
-        }
-    }
-
-    private void showConflictSnackbar() {
-        Snackbar snackbar = Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_sync_conflict, Snackbar.LENGTH_LONG);
-        snackbar.setAction(R.string.snackbar_open_synclog, new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                openSyncLog();
-            }
-        });
-        snackbar.show();
-    }
-
-    private void openSyncLog() {
-        SyncLogDialog syncLogDialog = new SyncLogDialog(this);
-        syncLogDialog.show(this);
-    }
-
 }

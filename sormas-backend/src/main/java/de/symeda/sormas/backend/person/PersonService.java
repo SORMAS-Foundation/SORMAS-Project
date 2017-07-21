@@ -105,21 +105,21 @@ public class PersonService extends AbstractAdoService<Person> {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		
 		// persons by LGA
-		CriteriaQuery<Person> lgaQuery = cb.createQuery(Person.class);
-		Root<Person> lgaRoot = lgaQuery.from(Person.class);
-		Join<Person, Location> address = lgaRoot.join(Person.ADDRESS);
+		CriteriaQuery<Person> personsQuery = cb.createQuery(Person.class);
+		Root<Person> personsRoot = personsQuery.from(Person.class);
+		Join<Person, Location> address = personsRoot.join(Person.ADDRESS);
 		Predicate lgaFilter = cb.equal(address.get(Location.DISTRICT), user.getDistrict());
 		// date range
 		if (date != null) {
-			Predicate dateFilter = cb.greaterThan(address.get(AbstractDomainObject.CHANGE_DATE), date);
+			Predicate dateFilter = createDateFilter(cb, personsRoot, date);
 			if (lgaFilter != null) {
 				lgaFilter = cb.and(lgaFilter, dateFilter);
 			} else {
 				lgaFilter = dateFilter;
 			}
 		}
-		lgaQuery.where(lgaFilter);
-		List<Person> lgaResultList = em.createQuery(lgaQuery).getResultList();
+		personsQuery.where(lgaFilter);
+		List<Person> lgaResultList = em.createQuery(personsQuery).getResultList();
 		
 		// persons by case
 		CriteriaQuery<Person> casePersonsQuery = cb.createQuery(Person.class);

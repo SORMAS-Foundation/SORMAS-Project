@@ -77,6 +77,9 @@ public class Case extends AbstractDomainObject {
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
 	private Facility healthFacility;
 
+    @Column(length=512)
+    private String healthFacilityDetails;
+
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private Symptoms symptoms;
 
@@ -86,7 +89,6 @@ public class Case extends AbstractDomainObject {
 	private Date reportDate;
 	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
 	private Date investigatedDate;
-
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 1)
 	private User surveillanceOfficer;
@@ -193,7 +195,14 @@ public class Case extends AbstractDomainObject {
 		this.healthFacility = healthFacility;
 	}
 
-	public Symptoms getSymptoms() {
+    public String getHealthFacilityDetails() {
+        return healthFacilityDetails;
+    }
+    public void setHealthFacilityDetails(String healthFacilityDetails) {
+        this.healthFacilityDetails = healthFacilityDetails;
+    }
+
+    public Symptoms getSymptoms() {
 		return symptoms;
 	}
 	public void setSymptoms(Symptoms symptoms) {

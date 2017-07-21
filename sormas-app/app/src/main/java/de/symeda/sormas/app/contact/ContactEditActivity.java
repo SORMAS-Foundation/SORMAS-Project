@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.google.android.gms.analytics.Tracker;
 
@@ -55,14 +56,16 @@ public class ContactEditActivity extends AbstractEditTabActivity {
     private String contactUuid;
     private String taskUuid;
 
-    private Tracker tracker;
+    @Override
+    public boolean isEditing() {
+        return true;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.case_edit_activity_layout);
-
 
         // This makes sure that the given amount of tabs is kept in memory, which means that
         // Android doesn't call onResume when the tab has no focus which would otherwise lead
@@ -77,9 +80,6 @@ public class ContactEditActivity extends AbstractEditTabActivity {
             getSupportActionBar().setTitle(getResources().getText(R.string.headline_contact) + " - " + ConfigProvider.getUser().getUserRole().toShortString());
         }
 
-        SormasApplication application = (SormasApplication) getApplication();
-        tracker = application.getDefaultTracker();
-
         Bundle params = getIntent().getExtras();
         if (params != null) {
             if (params.containsKey(KEY_CASE_UUID)) {
@@ -87,9 +87,8 @@ public class ContactEditActivity extends AbstractEditTabActivity {
             }
             if (params.containsKey(KEY_CONTACT_UUID)) {
                 contactUuid = params.getString(KEY_CONTACT_UUID);
-                Contact contact = DatabaseHelper.getContactDao().queryUuid(contactUuid);
-                DatabaseHelper.getContactDao().markAsRead(contact);
-                DatabaseHelper.getPersonDao().markAsRead(contact.getPerson());
+                Contact initialEntity = DatabaseHelper.getContactDao().queryUuid(contactUuid);
+                DatabaseHelper.getContactDao().markAsRead(initialEntity);
             }
             if (params.containsKey(TaskForm.KEY_TASK_UUID)) {
                 taskUuid = params.getString(TaskForm.KEY_TASK_UUID);
@@ -98,10 +97,29 @@ public class ContactEditActivity extends AbstractEditTabActivity {
                 currentTab = params.getInt(KEY_PAGE);
             }
         }
-        adapter = new ContactEditPagerAdapter(getSupportFragmentManager(), contactUuid);
-        createTabViews(adapter);
 
-        pager.setCurrentItem(currentTab);
+        setAdapter();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        Contact currentEntity = DatabaseHelper.getContactDao().queryUuid(contactUuid);
+        if (currentEntity.isUnreadOrChildUnread()) {
+            // Resetting the adapter will reload the form and therefore also override any unsaved changes
+            setAdapter();
+            final Snackbar snackbar = Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_entity_overridden), getResources().getString(R.string.entity_contact)), Snackbar.LENGTH_INDEFINITE);
+            snackbar.setAction(R.string.snackbar_okay, new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    snackbar.dismiss();
+                }
+            });
+            snackbar.show();
+        }
+
+        DatabaseHelper.getContactDao().markAsRead(currentEntity);
     }
 
     @Override
@@ -247,22 +265,10 @@ public class ContactEditActivity extends AbstractEditTabActivity {
                         personDao.saveAndSnapshot(person);
                         contactDao.saveAndSnapshot(contact);
 
-                        if (RetroProvider.isConnected()) {
-                            SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.ChangesOnly, this, new SyncCallback() {
-                                @Override
-                                public void call(boolean syncFailed) {
-                                    reloadTabs();
-                                    pager.setCurrentItem(currentTab);
-                                    if (syncFailed) {
-                                        Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_sync_error_saved), getResources().getString(R.string.entity_contact)), Snackbar.LENGTH_LONG).show();
-                                    } else {
-                                        Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_contact)), Snackbar.LENGTH_LONG).show();
-                                    }
-                                }
-                            });
-                        } else {
-                            Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_contact)), Snackbar.LENGTH_LONG).show();
-                        }
+                        reloadTabs();
+                        pager.setCurrentItem(currentTab);
+                        Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_contact)), Snackbar.LENGTH_LONG).show();
+
                     } catch (DaoException e) {
                         Log.e(getClass().getName(), "Error while trying to saveAndSnapshot contact", e);
                         Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_error), getResources().getString(R.string.entity_contact)), Snackbar.LENGTH_LONG).show();
@@ -303,6 +309,13 @@ public class ContactEditActivity extends AbstractEditTabActivity {
 
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void setAdapter() {
+        adapter = new ContactEditPagerAdapter(getSupportFragmentManager(), contactUuid);
+        createTabViews(adapter);
+
+        pager.setCurrentItem(currentTab);
     }
 
 }

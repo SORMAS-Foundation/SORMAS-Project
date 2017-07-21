@@ -30,6 +30,6 @@ public class CommunityDao extends AbstractAdoDao<Community> {
     }
 
     public List<Community> getByDistrict(District district) {
-        return queryForEq("district_id", district);
+        return queryForEq(Community.DISTRICT+"_id", district, Community.NAME, true);
     }
 }

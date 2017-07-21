@@ -53,8 +53,7 @@ public abstract class AbstractRootTabActivity extends AbstractTabActivity {
                 getResources().getString(R.string.main_menu_events),
                 getResources().getString(R.string.main_menu_samples),
                 getResources().getString(R.string.main_menu_settings),
-                getResources().getString(R.string.main_menu_sync_all),
-                getResources().getString(R.string.main_menu_logout) + " (" + ConfigProvider.getUsername() + ")"
+                getResources().getString(R.string.main_menu_sync_all)
         };
 
         menuDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -92,7 +91,7 @@ public abstract class AbstractRootTabActivity extends AbstractTabActivity {
             }
         }
 
-        synchronizeData(SynchronizeDataAsync.SyncMode.ChangesOnly, false, null);
+        synchronizeData(SynchronizeDataAsync.SyncMode.ChangesOnly, false, false, null);
     }
 
     @Override
@@ -183,13 +182,6 @@ public abstract class AbstractRootTabActivity extends AbstractTabActivity {
         startActivity(intent);
     }
 
-    public void logout() {
-        ConfigProvider.clearUsernameAndPassword();
-        ConfigProvider.clearPin();
-        Intent intent = new Intent(this, LoginActivity.class);
-        startActivity(intent);
-    }
-
     /**
      * Swaps fragments in the main content view
      */
@@ -219,9 +211,6 @@ public abstract class AbstractRootTabActivity extends AbstractTabActivity {
                 synchronizeCompleteData();
                 // don't keep this button selected
                 menuDrawerList.clearChoices();
-                break;
-            case 7:
-                logout();
                 break;
             default:
                 throw new IndexOutOfBoundsException("No action defined for menu entry: " + position);

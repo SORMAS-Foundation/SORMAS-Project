@@ -6,6 +6,7 @@ import com.google.android.gms.analytics.Tracker;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.net.SocketTimeoutException;
 
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
@@ -40,6 +41,7 @@ public class ErrorReportingHelper {
      *                              make sure that there is no sensitive data transferred!
      */
     public static void sendCaughtException(Tracker tracker, Exception e, AbstractDomainObject entity, boolean fatal, String... additionalInformation) {
+
         tracker.send(new HitBuilders.ExceptionBuilder()
                         .setDescription(buildErrorReportDescription(e, entity, additionalInformation))
                         .setFatal(fatal)

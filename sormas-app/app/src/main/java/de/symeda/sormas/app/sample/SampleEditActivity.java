@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.CheckBox;
 
 import com.google.android.gms.analytics.Tracker;
@@ -19,6 +20,7 @@ import java.util.Date;
 
 import de.symeda.sormas.api.sample.ShipmentStatus;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.app.AbstractSormasActivity;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.common.DaoException;
@@ -36,7 +38,7 @@ import de.symeda.sormas.app.util.SyncCallback;
  * Created by Mate Strysewske on 07.02.2017.
  */
 
-public class SampleEditActivity extends AppCompatActivity {
+public class SampleEditActivity extends AbstractSormasActivity {
 
     public static final String NEW_SAMPLE = "newSample";
     public static final String KEY_SAMPLE_UUID = "sampleUuid";
@@ -46,7 +48,12 @@ public class SampleEditActivity extends AppCompatActivity {
 
     private String sampleUuid;
 
-    private Tracker tracker;
+    private Bundle params;
+
+    @Override
+    public boolean isEditing() {
+        return true;
+    }
 
     @Override
     protected void onNewIntent(Intent intent) {
@@ -62,6 +69,9 @@ public class SampleEditActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        SormasApplication application = (SormasApplication) getApplication();
+        tracker = application.getDefaultTracker();
+
         setContentView(R.layout.sormas_root_activity_layout);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);
@@ -71,16 +81,7 @@ public class SampleEditActivity extends AppCompatActivity {
             getSupportActionBar().setTitle(getResources().getText(R.string.headline_sample) + " - " + ConfigProvider.getUser().getUserRole().toShortString());
         }
 
-        // setting the fragment_frame
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        sampleTab = new SampleEditForm();
-        sampleTab.setArguments(getIntent().getExtras());
-        ft.add(R.id.fragment_frame, sampleTab).commit();
-
-        SormasApplication application = (SormasApplication) getApplication();
-        tracker = application.getDefaultTracker();
-
-        Bundle params = getIntent().getExtras();
+        params = getIntent().getExtras();
         if (params != null) {
             if (params.containsKey(NEW_SAMPLE)) {
                 getSupportActionBar().setTitle(getResources().getText(R.string.headline_new_sample));
@@ -90,13 +91,35 @@ public class SampleEditActivity extends AppCompatActivity {
 
             if (params.containsKey(KEY_SAMPLE_UUID)) {
                 sampleUuid = params.getString(KEY_SAMPLE_UUID);
-                SampleDao sampleDao = DatabaseHelper.getSampleDao();
-                Sample sample = sampleDao.queryUuid(sampleUuid);
-                sampleDao.markAsRead(sample);
+                Sample initialEntity = DatabaseHelper.getSampleDao().queryUuid(sampleUuid);
+                DatabaseHelper.getSampleDao().markAsRead(initialEntity);
             }
         }
 
-        sampleTab.onResume();
+        setAdapter();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (sampleUuid != null) {
+            Sample currentEntity = DatabaseHelper.getSampleDao().queryUuid(sampleUuid);
+            if (currentEntity.isUnreadOrChildUnread()) {
+                // Resetting the adapter will reload the form and therefore also override any unsaved changes
+                setAdapter();
+                final Snackbar snackbar = Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_entity_overridden), getResources().getString(R.string.entity_sample)), Snackbar.LENGTH_INDEFINITE);
+                snackbar.setAction(R.string.snackbar_okay, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        snackbar.dismiss();
+                    }
+                });
+                snackbar.show();
+            }
+
+            DatabaseHelper.getSampleDao().markAsRead(currentEntity);
+        }
     }
 
     @Override
@@ -224,6 +247,13 @@ public class SampleEditActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void setAdapter() {
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        sampleTab = new SampleEditForm();
+        sampleTab.setArguments(params);
+        ft.replace(R.id.fragment_frame, sampleTab).commit();
     }
 
 }

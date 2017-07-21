@@ -3,39 +3,29 @@
     <parent>
         <artifactId>sormas-base</artifactId>
         <groupId>de.symeda.sormas</groupId>
-        <version>0.0.1</version>
+        <version>0.1.0</version>
         <relativePath>../sormas-base</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>sormas-widgetset</artifactId>
-    <name>sormas-widgetset</name>
+	<name>${project.artifactId}</name>
 
     <dependencies>
-        <!-- Versions for these are configured in the parent POM -->
-        <!-- <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-			<groupId>javax</groupId>
-			<artifactId>javaee-web-api</artifactId>
-		</dependency> -->
+
 		<dependency>
-            <groupId>com.vaadin</groupId>
-            <artifactId>vaadin-client</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.vaadin</groupId>
-            <artifactId>vaadin-client-compiler</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-		   <groupId>com.vaadin.tapio</groupId>
-		   <artifactId>googlemaps</artifactId>
+			<groupId>com.vaadin</groupId>
+			<artifactId>vaadin-client</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.vaadin</groupId>
+			<artifactId>vaadin-client-compiler</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.vaadin.tapio</groupId>
+			<artifactId>googlemaps</artifactId>
+		</dependency>
+
     </dependencies>
 
     <build>

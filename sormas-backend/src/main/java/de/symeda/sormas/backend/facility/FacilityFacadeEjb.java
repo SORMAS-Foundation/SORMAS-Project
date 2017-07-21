@@ -19,7 +19,9 @@ import de.symeda.sormas.backend.region.CommunityService;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb;
 import de.symeda.sormas.backend.region.DistrictService;
+import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionFacadeEjb;
+import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.util.DtoHelper;
 
 @Stateless(name = "FacilityFacade")
@@ -31,13 +33,15 @@ public class FacilityFacadeEjb implements FacilityFacade {
 	private CommunityService communityService;
 	@EJB
 	private DistrictService districtService;
+	@EJB
+	private RegionService regionService;
 
 	
 	@Override
-	public List<FacilityReferenceDto> getAllByCommunity(CommunityReferenceDto communityRef) {
+	public List<FacilityReferenceDto> getAllByCommunity(CommunityReferenceDto communityRef, boolean includeOthers) {
 		
 		Community community = communityService.getByUuid(communityRef.getUuid());
-		List<Facility> facilities = service.getAllByCommunity(community);
+		List<Facility> facilities = service.getAllByCommunity(community, includeOthers);
 		
 		return facilities.stream()
 				.map(f -> toReferenceDto(f))
@@ -45,9 +49,9 @@ public class FacilityFacadeEjb implements FacilityFacade {
 	}
 	
 	@Override
-	public List<FacilityReferenceDto> getAllByDistrict(DistrictReferenceDto districtRef) {
+	public List<FacilityReferenceDto> getAllByDistrict(DistrictReferenceDto districtRef, boolean includeOthers) {
     	District district = districtService.getByUuid(districtRef.getUuid());
-		List<Facility> facilities = service.getAllByDistrict(district);
+		List<Facility> facilities = service.getAllByDistrict(district, includeOthers);
 		
 		return facilities.stream()
 				.map(f -> toReferenceDto(f))
@@ -56,7 +60,7 @@ public class FacilityFacadeEjb implements FacilityFacade {
 
 	@Override
 	public List<FacilityReferenceDto> getAllLaboratories() {
-		List<Facility> laboratories = service.getAllByFacilityType(FacilityType.LABORATORY);
+		List<Facility> laboratories = service.getAllByFacilityType(FacilityType.LABORATORY, false);
 		
 		return laboratories.stream()
 				.map(l -> toReferenceDto(l))
@@ -71,10 +75,20 @@ public class FacilityFacadeEjb implements FacilityFacade {
 	}
 	
 	@Override
-	public List<FacilityDto> getAllAfter(Date date) {
-		return service.getAllAfter(date).stream()
+	public List<FacilityDto> getAllByRegionAfter(String regionUuid, Date date) {
+    	Region region = regionService.getByUuid(regionUuid);
+    	List<Facility> facilities = service.getAllByRegionAfter(region, date);
+		return facilities.stream()
 			.map(c -> toDto(c))
 			.collect(Collectors.toList());
+	}
+	
+	@Override
+	public List<FacilityDto> getAllWithoutRegionAfter(Date date) {
+		List<Facility> facilities = service.getAllWithoutRegionAfter(date);
+		return facilities.stream()
+				.map(c -> toDto(c))
+				.collect(Collectors.toList());
 	}
 	
 	@Override

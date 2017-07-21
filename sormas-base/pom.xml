@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>de.symeda.sormas</groupId>
 	<artifactId>sormas-base</artifactId>
 	<packaging>pom</packaging>
-	<version>0.0.1</version>
+	<version>0.1.0</version>
 
 	<prerequisites>
 		<maven>3.0</maven>
@@ -18,6 +17,7 @@
 		<vaadin.version.warning>TODO: Remove bootstrap.js in widgetset</vaadin.version.warning>
 		<vaadin.version>7.7.6</vaadin.version> 
 		<vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
+		<jersey.version>2.22.1</jersey.version>
 		<jetty.plugin.version>9.2.3.v20140905</jetty.plugin.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -59,18 +59,13 @@
 				<scope>test</scope>
 			</dependency>
 
+			<!-- Java EE -->
+
 			<dependency>
 				<groupId>javax.servlet</groupId>
 				<artifactId>javax.servlet-api</artifactId>
 				<version>3.0.1</version>
 				<scope>provided</scope>
-			</dependency>
-			<dependency>
-				<groupId>com.vaadin</groupId>
-				<artifactId>vaadin-bom</artifactId>
-				<version>${vaadin.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
 			</dependency>
 			<dependency>
 				<groupId>javax</groupId>
@@ -84,14 +79,51 @@
 				<scope>provided</scope>
 				<version>7.0</version>
 			</dependency>
-			
+
+			<!-- compile dependencies -->
+
 			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-lang3</artifactId>
 				<version>3.4</version>
 			</dependency>
-			
+
+			<dependency>
+				<groupId>joda-time</groupId>
+				<artifactId>joda-time</artifactId>
+				<version>2.9.4</version>
+			</dependency>	
+
+			<dependency>
+				<groupId>javax.validation</groupId>
+				<artifactId>validation-api</artifactId>
+				<version>1.1.0.Final</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.hibernate</groupId>
+				<artifactId>hibernate-validator</artifactId>
+				<version>5.1.0.CR1</version>
+				<!-- Bean validation implementation -->
+			</dependency>
+
+			<!-- glassfish-modules -->
+
+			<dependency>
+			    <groupId>org.glassfish.jersey.containers</groupId>
+			    <artifactId>jersey-container-servlet</artifactId>
+			    <version>${jersey.version}</version>
+			    <scope>provided</scope>
+			</dependency>
+			<dependency>
+			    <groupId>org.glassfish.jersey.media</groupId>
+			    <artifactId>jersey-media-json-jackson</artifactId>
+			    <version>${jersey.version}</version>
+			    <scope>provided</scope>
+			</dependency>
+
 			<!-- serverlibs -->
+
 			<dependency>
 				<groupId>org.postgresql</groupId>
 				<artifactId>postgresql</artifactId>
@@ -112,7 +144,7 @@
 				<classifier>all</classifier>
 				<scope>provided</scope>
 			</dependency>
-			
+
 			<!-- bundles -->
 
 			<dependency>
@@ -143,23 +175,52 @@
 				<version>${logback.version}</version>
 				<scope>runtime</scope>
 			</dependency>
-
 			<dependency>
 				<groupId>ch.qos.logback</groupId>
 				<artifactId>logback-classic</artifactId>
 				<version>${logback.version}</version>
 				<scope>runtime</scope>
 			</dependency>
-			
-			<!-- glassfish modules -->
-						
-			<!-- Vaadin Addons -->			
+
+			<!-- Vaadin -->
+
+			<dependency>
+				<groupId>com.vaadin</groupId>
+				<artifactId>vaadin-bom</artifactId>
+				<version>${vaadin.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.vaadin</groupId>
+				<artifactId>vaadin-client</artifactId>
+				<version>${vaadin.version}</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.vaadin</groupId>
+				<artifactId>vaadin-client-compiler</artifactId>
+				<version>${vaadin.version}</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.vaadin</groupId>
+				<artifactId>vaadin-server</artifactId>
+				<version>${vaadin.version}</version>
+			</dependency>
+			<dependency>
+			<groupId>com.vaadin</groupId>
+				<artifactId>vaadin-themes</artifactId>
+				<version>${vaadin.version}</version>
+				<scope>provided</scope>
+			</dependency>
+
 			<dependency>
 			   <groupId>com.vaadin.tapio</groupId>
 			   <artifactId>googlemaps</artifactId>
 			   <version>1.3.4</version>
 			</dependency>
-			
+
 		</dependencies>
 	</dependencyManagement>
 
@@ -169,7 +230,6 @@
 		<dependency>
 			<groupId>org.hamcrest</groupId>
 			<artifactId>hamcrest-core</artifactId>
-			<scope>test</scope>
 		</dependency>
 
 		<dependency>
@@ -222,6 +282,14 @@
 			<plugins>
 
 				<plugin>
+					<artifactId>maven-javadoc-plugin</artifactId>
+					<configuration>
+						<!-- Deactivate javadoc validation (active by default since Java 1.8) -->
+						<additionalparam>-Xdoclint:none</additionalparam>
+					</configuration>
+				</plugin>
+
+				<plugin>
 					<groupId>org.jacoco</groupId>
 					<artifactId>jacoco-maven-plugin</artifactId>
 					<version>0.7.7.201606060606</version>
@@ -260,6 +328,11 @@
 						</execution>
 
 					</executions>
+				</plugin>
+
+				<plugin>
+					<artifactId>maven-deploy-plugin</artifactId>
+					<version>2.8.2</version>
 				</plugin>
 
 				<plugin>
@@ -337,6 +410,30 @@
 					<artifactId>maven-source-plugin</artifactId>
 					<version>2.4</version>
 				</plugin>
+
+				<plugin>
+					<groupId>external.atlassian.jgitflow</groupId>
+					<artifactId>jgitflow-maven-plugin</artifactId>
+					<version>1.0-m5.1</version>
+					<configuration>
+						<flowInitContext>
+							<masterBranchName>master</masterBranchName>
+							<developBranchName>development</developBranchName>
+							<featureBranchPrefix>feature-</featureBranchPrefix>
+							<releaseBranchPrefix>release-</releaseBranchPrefix>
+							<hotfixBranchPrefix>hotfix-</hotfixBranchPrefix>
+							<versionTagPrefix>releases/version-</versionTagPrefix>
+						</flowInitContext>
+						<username>${github.sormas.user}</username>
+						<password>${github.sormas.password}</password>
+						<scmCommentPrefix>[GITFLOW]</scmCommentPrefix>
+						<pushReleases>true</pushReleases>
+						<noDeploy>true</noDeploy>
+						<autoVersionSubmodules>true</autoVersionSubmodules>
+						<updateDependencies>true</updateDependencies>
+					</configuration>
+				</plugin>
+
 			</plugins>
 		</pluginManagement>
 	</build>
@@ -386,6 +483,27 @@
 				</pluginRepository>
 			</pluginRepositories>
 		</profile>
+
+		<profile>
+			<!-- Profile to build also the app -->
+			<id>with-app</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<modules>
+				<module>../sormas-app</module>
+			</modules>
+		</profile>
+
+		<profile>
+			<id>with-dep-poms</id>
+			<modules>
+				<module>./dependencies/bundles.pom</module>
+				<module>./dependencies/gf-modules.pom</module>
+				<module>./dependencies/serverlibs.pom</module>
+			</modules>
+		</profile>
+
 	</profiles>
 
 	<modules>

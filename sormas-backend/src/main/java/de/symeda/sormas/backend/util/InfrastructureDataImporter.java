@@ -90,6 +90,8 @@ public final class InfrastructureDataImporter {
 					}
 				}
 			}
+			
+			stream.close();
 		} catch (IOException e) {
 			throw new IllegalArgumentException("Exception while reading resource file: " + resourceFileName, e);
 		}
@@ -127,11 +129,11 @@ public final class InfrastructureDataImporter {
 				String communityName = columns[1];
 				String cityName = columns[2];
 				String facilityName = columns[3];
-				String facilityTypeString = columns.length >= 4 ? columns[4] : "";
-				String ownershipString = columns.length >= 5 ? columns[5] : "";
-				// String address = columns.length >= 6 ? columns[6] : "";
-				String longitudeString = columns.length >= 7 ? columns[7] : "";
-				String latitudeString = columns.length >= 8 ? columns[8] : "";
+				String facilityTypeString = columns.length > 4 ? columns[4] : "";
+				String ownershipString = columns.length > 5 ? columns[5] : "";
+				// String address = columns.length > 6 ? columns[6] : "";
+				String longitudeString = columns.length > 7 ? columns[7] : "";
+				String latitudeString = columns.length > 8 ? columns[8] : "";
 				
 				if (district == null || !districtName.equals(district.getName())) {
 					district = null;
@@ -188,6 +190,8 @@ public final class InfrastructureDataImporter {
 				
 				result.add(facility);				
 			}
+			
+			stream.close();
 		} catch (IOException e) {
 			throw new IllegalArgumentException("Exception while reading resource file: " + resourceFileName, e);
 		}
@@ -229,6 +233,8 @@ public final class InfrastructureDataImporter {
 				facility.setCity(cityName);
 				result.add(facility);				
 			}
+			
+			stream.close();
 		} catch (IOException e) {
 			logger.info(e.getMessage(), e);
 			e.printStackTrace();

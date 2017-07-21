@@ -97,7 +97,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
     		associatedOfficer.removeAllItems();
     		DistrictReferenceDto districtDto = (DistrictReferenceDto)e.getProperty().getValue();
     		if (districtDto != null) {
-    			healthFacility.addItems(FacadeProvider.getFacilityFacade().getAllByDistrict(districtDto));
+    			healthFacility.addItems(FacadeProvider.getFacilityFacade().getAllByDistrict(districtDto, false));
     	    	associatedOfficer.addItems(FacadeProvider.getUserFacade().getAssignableUsersByDistrict(
     	    			districtDto, false, UserRole.SURVEILLANCE_OFFICER));
     		}
