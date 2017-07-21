@@ -115,6 +115,14 @@ For information on what libs are used see pom.xml in sormas-base project: https:
 When you are using SORMAS in a production environment you should use a http server like Apache 2 instead of putting the payara server in the first line.
 Here are some things that you should do to configure the apache server as proxy:
 
+* Activate all needed modules
+
+		a2enmod ssl
+		a2enmod rewrite
+		a2enmod proxy
+		a2enmod proxy_http
+		a2enmod headers
+* create a new site /etc/apache2/sites-available/your.sormas.server.url.conf (e.g. sormas.org.conf)
 * Force SSL secured connections: redirect from http to https
 
 		<VirtualHost *:80>
