@@ -28,6 +28,6 @@ public class DistrictDao extends AbstractAdoDao<District> {
     }
 
     public List<District> getByRegion(Region region) {
-        return queryForEq("region_id", region);
+        return queryForEq(District.REGION+"_id", region, District.NAME, true);
     }
 }

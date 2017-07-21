@@ -11,6 +11,7 @@ import de.symeda.sormas.app.backend.facility.FacilityDao;
 import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.backend.region.CommunityDao;
 import de.symeda.sormas.app.backend.region.DistrictDao;
+import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.backend.region.RegionDao;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.Item;
@@ -51,7 +52,7 @@ public class FieldHelper {
 
     public static SpinnerField initRegionSpinnerField(SpinnerField spinnerField, final AdapterView.OnItemSelectedListener ...moreListeners) {
         RegionDao regionDao = DatabaseHelper.getRegionDao();
-        List<Item> items = DataUtils.toItems(regionDao.queryForAll());
+        List<Item> items = DataUtils.toItems(regionDao.queryForAll(Region.NAME, true));
         spinnerField.initialize(items, moreListeners);
         return spinnerField;
     }
