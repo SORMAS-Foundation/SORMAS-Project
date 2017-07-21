@@ -40,22 +40,29 @@ For information on what libs are used see pom.xml in sormas-base project: https:
 * ``cp ./bundles/* /opt/domains/sormas/autodeploy/bundles/``
 
 #### Database
-Remember to create a backup of the database (see above)
+* Create a database backup directory (if not already done)
+    * ``mkdir /root/deploy/sormas/backup``
+    * ``sudo chown postgres:postgres /root/deploy/sormas/backup``
+* Create a backup of the database
+    * ``cd /root/deploy/sormas/backup``
+    * ``sudo -u postgres pg_dump -Fc -b sormas_db >  "sormas_db_"`date +"%Y-%m-%d_%H-%M-%S"`".dump"``
+    * ``cd /root/deploy/sormas/$(date +%F)``	
 * Find out current schema version of database:
     * ``sudo -u postgres psql sormas_db``
     * ``SELECT * from schema_version ORDER BY version_number DESC LIMIT 1;``
     * ``\q``
-* Edit sql/sormas_schema.sql 
+* **Edit sql/sormas_schema.sql**
     * ``Remove everything until after the INSERT with the read schema version``
     * ``Surround the remaining with BEGIN; and COMMIT;``
 * Update the Database schema: ``sudo -u postgres psql sormas_db < sql/sormas_schema.sql``
+* If something goes wrong, restorte the database using ``sudo -u postgres pg_restore -Fc -d sormas_db < sormas_db_....``
 
 #### Web Applications
 * ``service payara-sormas start``
 * ``cd /root/deploy/sormas/$(date +%F) (just to make sure you're in the right directory)``
 * ``cp apps/*.ear /opt/domains/sormas/autodeploy/``
 * ``cp apps/*.war /opt/domains/sormas/autodeploy/``
-* ``cp *.apk /var/www/sormas/downloads/``
+* ``cp android/*.apk /var/www/sormas/downloads/``
 
 #### Final Steps
 
@@ -108,7 +115,31 @@ Remember to create a backup of the database (see above)
 When you are using SORMAS in a production environment you should use a http server like Apache 2 instead of putting the payara server in the first line.
 Here are some things that you should do to configure the apache server as proxy:
 
-* Force SSL secured connections (redirect from http to https)
+* Force SSL secured connections: redirect from http to https
+
+		<VirtualHost *:80>
+			ServerName your.sormas.server.url
+			RewriteEngine On
+			RewriteCond %{HTTPS} !=on
+			RewriteRule ^/(.*) https://your.sormas.server.url/$1 [R,L]
+		</VirtualHost>
+		<IfModule mod_ssl.c>
+		<VirtualHost *:443>
+			ServerName your.sormas.server.url
+			...
+		</VirtualHost>
+		</IfModule>
+* Configure Logging:
+
+        ErrorLog /var/log/apache2/error.log
+        LogLevel warn
+        CustomLog /var/log/apache2/access.log combined
+* SSL key config
+
+        SSLEngine on
+        SSLCertificateFile    /etc/ssl/certs/your.sormas.server.url.crt
+        SSLCertificateKeyFile /etc/ssl/private/your.sormas.server.url.key
+        SSLCertificateChainFile /etc/ssl/certs/your.sormas.server.url.ca-bundle
 * Add a proxy pass to the local port:
 
 		ProxyRequests Off
@@ -126,6 +157,11 @@ Here are some things that you should do to configure the apache server as proxy:
                 AddOutputFilterByType DEFLATE application/javascript application/x-javascript
                 DeflateCompressionLevel 1
         </IfModule></code>
+
+* Provide the android apk
+
+        Options -Indexes
+        Alias "/download/app-debug.apk" "/var/www/sormas/downloads/app-debug.apk"
 
 
 ## Development Environment
