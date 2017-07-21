@@ -15,7 +15,7 @@ public interface FacilityFacadeRetro {
     @GET("facilities/region/{regionUuid}/{since}")
     Call<List<FacilityDto>> pullAllByRegionSince(@Path("regionUuid") String regionUUid, @Path("since") long since);
 
-    @GET("facilities/no-region/{since}")
+    @GET("facilities/general/{since}")
     Call<List<FacilityDto>> pullAllWithoutRegionSince(@Path("since") long since);
 
 }
