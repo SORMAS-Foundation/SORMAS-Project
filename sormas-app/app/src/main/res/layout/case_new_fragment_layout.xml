@@ -36,7 +36,7 @@
                 android:layout_height="match_parent"
                 android:paddingTop="@dimen/field_padding"
                 android:paddingBottom="@dimen/field_padding"
-                android:nextFocusForward="@+id/eventParticipant_lastName"
+                android:nextFocusForward="@+id/caseData_lastName"
                 android:value="@={caze.person.firstName}"/>
 
             <de.symeda.sormas.app.component.TextField
