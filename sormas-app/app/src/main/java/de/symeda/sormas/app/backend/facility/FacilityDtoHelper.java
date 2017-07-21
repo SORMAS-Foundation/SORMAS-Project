@@ -121,19 +121,31 @@ public class FacilityDtoHelper extends AdoDtoHelper<Facility, FacilityDto> {
         }
     }
 
+    private Community lastCommunity = null;
+    private District lastDistrict = null;
+    private Region lastRegion = null;
+
     @Override
     public void fillInnerFromDto(Facility target, FacilityDto source) {
 
         target.setName(source.getName());
 
-        Community community = DatabaseHelper.getCommunityDao().getByReferenceDto(source.getCommunity());
-        target.setCommunity(community);
-        if (community != null) {
-            District district = DatabaseHelper.getDistrictDao().queryForId(community.getDistrict().getId());
-            target.setDistrict(district);
-            Region region = DatabaseHelper.getRegionDao().queryForId(district.getRegion().getId());
-            target.setRegion(region);
+        if (source.getCommunity() != null) {
+            // keep a cache to improve performance
+            if (lastCommunity == null || !lastCommunity.getUuid().equals(source.getCommunity().getUuid())) {
+                lastCommunity = DatabaseHelper.getCommunityDao().getByReferenceDto(source.getCommunity());
+            }
+            target.setCommunity(lastCommunity);
+            if (lastDistrict == null || !lastDistrict.getId().equals(lastCommunity.getDistrict().getId())) {
+                lastDistrict = DatabaseHelper.getDistrictDao().queryForId(lastCommunity.getDistrict().getId());
+            }
+            target.setDistrict(lastDistrict);
+            if (lastRegion == null || !lastRegion.getId().equals(lastDistrict.getRegion().getId())) {
+                lastRegion = DatabaseHelper.getRegionDao().queryForId(lastDistrict.getRegion().getId());
+            }
+            target.setRegion(lastRegion);
         } else {
+            target.setCommunity(null);
             target.setDistrict(null);
             target.setRegion(null);
         }
