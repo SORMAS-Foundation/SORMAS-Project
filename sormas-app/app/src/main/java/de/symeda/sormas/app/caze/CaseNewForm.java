@@ -155,4 +155,8 @@ public class CaseNewForm extends FormTab {
         return binding.getCaze();
     }
 
+    public CaseNewFragmentLayoutBinding getBinding() {
+        return binding;
+    }
+
 }

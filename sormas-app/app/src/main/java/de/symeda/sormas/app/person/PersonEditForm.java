@@ -55,7 +55,7 @@ import de.symeda.sormas.app.util.Consumer;
  */
 public class PersonEditForm extends FormTab {
 
-    PersonEditFragmentLayoutBinding binding;
+    private PersonEditFragmentLayoutBinding binding;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -389,6 +389,10 @@ public class PersonEditForm extends FormTab {
             approximateAgeTextField.setEnabled(true);
             approximateAgeTypeField.setEnabled(true);
         }
+    }
+
+    public PersonEditFragmentLayoutBinding getBinding() {
+        return binding;
     }
 
     @Override

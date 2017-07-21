@@ -234,4 +234,18 @@
 
     <string name="alert_encryption">SORMAS requires device encryption to be activated on your device to ensure data security.\n\nPlease note that you cannot use the application as long as device encryption is disabled.</string>
 
+    <string name="validation_case_disease">Please select the disease for this case.</string>
+    <string name="validation_person_first_name">Please enter the person\'s first name.</string>
+    <string name="validation_person_last_name">Please enter the person\'s last name.</string>
+    <string name="validation_community">Please select a ward.</string>
+    <string name="validation_district">Please select an LGA.</string>
+    <string name="validation_region">Please select a state.</string>
+    <string name="validation_health_facility">Please select a health facility.</string>
+    <string name="validation_health_facility_details">Please enter the name and description of the health facility.</string>
+    <string name="validation_symptoms_onset_date">Please specify the date of initial symptom onset.</string>
+    <string name="validation_symptoms_onset_symptom">Please specify the initial onset symptom.</string>
+    <string name="validation_symptoms_symptom">Please specify a state for this symptom.</string>
+    <string name="validation_symptoms_other_hemorrhagic">Please enter the additional hemorrhagic symptoms.</string>
+    <string name="validation_symptoms_other_clinical">Please enter the additional clinical symptoms.</string>
+
 </resources>

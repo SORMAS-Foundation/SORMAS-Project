@@ -396,4 +396,8 @@ public class SymptomsEditForm extends FormTab {
         return binding.getSymptoms();
     }
 
+    public CaseSymptomsFragmentLayoutBinding getBinding() {
+        return binding;
+    }
+
 }

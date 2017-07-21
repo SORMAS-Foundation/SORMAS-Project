@@ -3,7 +3,6 @@ package de.symeda.sormas.app.caze;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.NavUtils;
@@ -17,14 +16,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 
-import com.google.android.gms.analytics.Tracker;
-
-import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.common.DaoException;
@@ -33,7 +28,6 @@ import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.contact.ContactDao;
 import de.symeda.sormas.app.backend.epidata.EpiData;
-import de.symeda.sormas.app.backend.epidata.EpiDataDao;
 import de.symeda.sormas.app.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.app.backend.location.LocationDao;
 import de.symeda.sormas.app.backend.person.Person;
@@ -48,15 +42,19 @@ import de.symeda.sormas.app.component.HelpDialog;
 import de.symeda.sormas.app.component.UserReportDialog;
 import de.symeda.sormas.app.contact.ContactNewActivity;
 import de.symeda.sormas.app.contact.ContactsListFragment;
-import de.symeda.sormas.app.rest.RetroProvider;
-import de.symeda.sormas.app.rest.SynchronizeDataAsync;
+import de.symeda.sormas.app.databinding.CaseDataFragmentLayoutBinding;
+import de.symeda.sormas.app.databinding.CaseSymptomsFragmentLayoutBinding;
+import de.symeda.sormas.app.databinding.PersonEditFragmentLayoutBinding;
+import de.symeda.sormas.app.person.PersonEditForm;
 import de.symeda.sormas.app.sample.SampleEditActivity;
 import de.symeda.sormas.app.sample.SamplesListFragment;
 import de.symeda.sormas.app.task.TaskForm;
 import de.symeda.sormas.app.task.TasksListFragment;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
-import de.symeda.sormas.app.util.SyncCallback;
 import de.symeda.sormas.app.util.ValidationFailedException;
+import de.symeda.sormas.app.validation.CaseValidator;
+import de.symeda.sormas.app.validation.PersonValidator;
+import de.symeda.sormas.app.validation.SymptomsValidator;
 
 public class CaseEditActivity extends AbstractEditTabActivity {
 
@@ -304,57 +302,54 @@ public class CaseEditActivity extends AbstractEditTabActivity {
                 // CASE_DATA
                 caze = (Case) adapter.getData(CaseEditTabs.CASE_DATA.ordinal());
 
-                boolean diseaseReq = caze.getDisease() == null;
-                boolean firstNameReq = person.getFirstName() == null || person.getFirstName().isEmpty();
-                boolean lastNameReq = person.getLastName() == null || person.getLastName().isEmpty();
-                boolean facilityReq = caze.getHealthFacility() == null;
-                boolean facilityDetailsReq = caze.getHealthFacility().getUuid().equals(FacilityDto.OTHER_FACILITY_UUID) &&
-                        (caze.getHealthFacilityDetails() == null || caze.getHealthFacilityDetails().isEmpty());
+                // Validations have to be processed from last tab to first to make sure that the user will be re-directed
+                // to the first tab with a validation error
+                CaseDataFragmentLayoutBinding caseDataBinding = ((CaseEditDataForm)adapter.getTabByPosition(CaseEditTabs.CASE_DATA.ordinal())).getBinding();
+                PersonEditFragmentLayoutBinding personBinding =  ((PersonEditForm)adapter.getTabByPosition(CaseEditTabs.PATIENT.ordinal())).getBinding();
+                CaseSymptomsFragmentLayoutBinding symptomsBinding = ((SymptomsEditForm)adapter.getTabByPosition(CaseEditTabs.SYMPTOMS.ordinal())).getBinding();
 
-                try {
-                    symptomsEditForm.validateCaseData(symptoms);
-                } catch(ValidationFailedException e) {
-                    Snackbar.make(findViewById(R.id.base_layout), e.getMessage(), Snackbar.LENGTH_LONG).show();
+                CaseValidator.clearErrorsForCaseData(caseDataBinding);
+                PersonValidator.clearErrors(personBinding);
+                SymptomsValidator.clearErrors(symptomsBinding);
+
+                int validationErrorTab = -1;
+
+                if (!SymptomsValidator.validateCaseSymptoms(symptoms, symptomsBinding)) {
+                    validationErrorTab = CaseEditTabs.SYMPTOMS.ordinal();
+                }
+                if (!PersonValidator.validatePersonData(person, personBinding)) {
+                    validationErrorTab = CaseEditTabs.PATIENT.ordinal();
+                }
+                if (!CaseValidator.validateCaseData(caze, caseDataBinding)) {
+                    validationErrorTab = CaseEditTabs.CASE_DATA.ordinal();
+                }
+
+                if (validationErrorTab >= 0) {
+                    pager.setCurrentItem(validationErrorTab);
                     return true;
                 }
 
-                boolean validData = !diseaseReq && !firstNameReq && !lastNameReq && !facilityReq && !facilityDetailsReq;
+                try {
+                    personDao.saveAndSnapshot(person);
+                    caze.setPerson(person); // we aren't sure why, but this is needed, otherwise the person will be overriden when first saved
+                    caze.setSymptoms(symptoms);
+                    caze.setHospitalization(hospitalization);
+                    caze.setEpiData(epiData);
+                    caseDao.saveAndSnapshot(caze);
 
-                if (validData) {
+                    Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_case)), Snackbar.LENGTH_LONG).show();
+
+                    // switch to next tab
                     try {
-                        personDao.saveAndSnapshot(person);
-                        caze.setPerson(person); // we aren't sure why, but this is needed, otherwise the person will be overriden when first saved
-                        caze.setSymptoms(symptoms);
-                        caze.setHospitalization(hospitalization);
-                        caze.setEpiData(epiData);
-                        caseDao.saveAndSnapshot(caze);
-
-                        Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_case)), Snackbar.LENGTH_LONG).show();
-
-                        // switch to next tab
-                        try {
-                            pager.setCurrentItem(currentTab + 1);
-                        } catch (NullPointerException e) {
-                            pager.setCurrentItem(currentTab);
-                        }
-                    } catch (DaoException e) {
-                        Log.e(getClass().getName(), "Error while trying to save case", e);
-						Log.e(getClass().getName(), "- root cause: ", ErrorReportingHelper.getRootCause(e));
-                        Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_error), getResources().getString(R.string.entity_case)), Snackbar.LENGTH_LONG).show();
-                        ErrorReportingHelper.sendCaughtException(tracker, e, caze, true);
+                        pager.setCurrentItem(currentTab + 1);
+                    } catch (NullPointerException e) {
+                        pager.setCurrentItem(currentTab);
                     }
-                } else {
-                    if (diseaseReq) {
-                        Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_case_disease, Snackbar.LENGTH_LONG).show();
-                    } else if (firstNameReq) {
-                        Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_case_firstName, Snackbar.LENGTH_LONG).show();
-                    } else if (lastNameReq) {
-                        Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_case_lastName, Snackbar.LENGTH_LONG).show();
-                    } else if (facilityReq) {
-                        Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_case_facility, Snackbar.LENGTH_LONG).show();
-                    } else if (facilityDetailsReq) {
-                        Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_case_facility_details, Snackbar.LENGTH_LONG).show();
-                    }
+                } catch (DaoException e) {
+                    Log.e(getClass().getName(), "Error while trying to save case", e);
+                    Log.e(getClass().getName(), "- root cause: ", ErrorReportingHelper.getRootCause(e));
+                    Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_error), getResources().getString(R.string.entity_case)), Snackbar.LENGTH_LONG).show();
+                    ErrorReportingHelper.sendCaughtException(tracker, e, caze, true);
                 }
 
                 return true;

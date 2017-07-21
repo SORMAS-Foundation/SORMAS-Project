@@ -2,6 +2,7 @@ package de.symeda.sormas.app.component;
 
 import android.app.Activity;
 import android.content.Context;
+import android.text.Html;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -20,6 +21,7 @@ public abstract class PropertyField<T> extends LinearLayout {
     protected TextView caption;
 
     private ArrayList<ValueChangeListener> valueChangedListeners;
+    private boolean showRequiredHint;
 
     public PropertyField(Context context) {
         super(context);
@@ -39,6 +41,25 @@ public abstract class PropertyField<T> extends LinearLayout {
     public String getDescription() {
         String captionPropertyId = getFieldCaptionPropertyId();
         return I18nProperties.getFieldDescription(captionPropertyId);
+    }
+
+    public void setError(String errorText) {
+        caption.requestFocus();
+        caption.setError(errorText);
+    }
+
+    public void setRequiredHint(boolean showHint) {
+        String captionText = caption.getText().toString();
+        String hintText = " <font color='red'>*</font>";
+        if (showHint) {
+            caption.setText(Html.fromHtml(captionText + hintText), TextView.BufferType.SPANNABLE);
+        } else {
+            if (showRequiredHint) {
+                caption.setText(captionText.substring(0, captionText.indexOf(hintText)));
+            }
+        }
+
+        showRequiredHint = showHint;
     }
 
     public abstract void setValue(T value);

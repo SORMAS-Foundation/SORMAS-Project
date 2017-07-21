@@ -188,4 +188,7 @@ public class CaseEditDataForm extends FormTab {
         }
     }
 
+    public CaseDataFragmentLayoutBinding getBinding() {
+        return binding;
+    }
 }
