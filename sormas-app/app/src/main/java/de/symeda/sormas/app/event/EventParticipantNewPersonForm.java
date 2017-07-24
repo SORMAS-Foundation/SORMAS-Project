@@ -39,4 +39,8 @@ public class EventParticipantNewPersonForm extends FormTab {
         return binding.getEventParticipant();
     }
 
+    public EventParticipantNewFragmentLayoutBinding getBinding() {
+        return binding;
+    }
+
 }

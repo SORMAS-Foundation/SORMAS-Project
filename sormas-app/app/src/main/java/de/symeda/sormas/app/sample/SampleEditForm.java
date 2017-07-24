@@ -158,4 +158,8 @@ public class SampleEditForm extends FormTab {
         return binding.getSample();
     }
 
+    public SampleDataFragmentLayoutBinding getBinding() {
+        return binding;
+    }
+
 }

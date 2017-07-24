@@ -34,12 +34,14 @@ import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.task.TaskDao;
 import de.symeda.sormas.app.component.UserReportDialog;
+import de.symeda.sormas.app.databinding.EventDataFragmentLayoutBinding;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.task.TaskForm;
 import de.symeda.sormas.app.task.TasksListFragment;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.SyncCallback;
+import de.symeda.sormas.app.validation.EventValidator;
 
 
 public class EventEditActivity extends AbstractEditTabActivity {
@@ -241,72 +243,47 @@ public class EventEditActivity extends AbstractEditTabActivity {
                 switch(tab) {
                     // contact data tab
                     case EVENT_DATA:
-                        // check required fields
-                        boolean eventTypeReq = event.getEventType()==null;
-                        boolean eventDescReq = event.getEventDesc()==null || event.getEventDesc().isEmpty();
-                        boolean eventDateReq = event.getEventDate()==null;
-                        boolean typeOfPlaceReq = event.getTypeOfPlace()==null;
-                        boolean typeOfPlaceTextReq = !typeOfPlaceReq && event.getTypeOfPlace().equals(TypeOfPlace.OTHER);
-                        boolean eventSrcFirstNameReq = event.getSrcFirstName()==null || event.getSrcFirstName().isEmpty();
-                        boolean eventSrcLastNameReq = event.getSrcLastName()==null || event.getSrcLastName().isEmpty();
-                        boolean eventSrcTelNoReq = event.getSrcTelNo()==null || event.getSrcTelNo().isEmpty();
+                        // Validation
+                        EventDataFragmentLayoutBinding binding = ((EventEditDataForm)adapter.getTabByPosition(EventEditTabs.EVENT_DATA.ordinal())).getBinding();
+                        EventValidator.clearErrorsForEventData(binding);
 
-                        boolean validData = !eventTypeReq
-                                && !eventDescReq
-                                && !eventDateReq
-                                && !typeOfPlaceReq
-                                && !typeOfPlaceTextReq
-                                && !eventSrcFirstNameReq
-                                && !eventSrcLastNameReq
-                                && !eventSrcTelNoReq;
+                        int validationErrorTab = -1;
 
-                        if(validData) {
-                            try {
-
-                                EventDao eventDao = DatabaseHelper.getEventDao();
-                                eventDao.saveAndSnapshot(event);
-
-                                if (RetroProvider.isConnected()) {
-                                    SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.ChangesOnly, this, new SyncCallback() {
-                                        @Override
-                                        public void call(boolean syncFailed) {
-                                            if (syncFailed) {
-                                                Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_sync_error_saved), getResources().getString(R.string.entity_alert)), Snackbar.LENGTH_LONG).show();
-                                            } else {
-                                                Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_alert)), Snackbar.LENGTH_LONG).show();
-                                            }
-                                            finish();
-                                        }
-                                    });
-                                } else {
-                                    Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_alert)), Snackbar.LENGTH_LONG).show();
-                                    finish();
-                                }
-                            } catch (DaoException e) {
-                                Log.e(getClass().getName(), "Error while trying to save alert", e);
-                                Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_error), getResources().getString(R.string.entity_alert)), Snackbar.LENGTH_LONG).show();
-                                ErrorReportingHelper.sendCaughtException(tracker, e, event, true);
-                            }
-
-                        } else {
-                            if(eventTypeReq) {
-                                Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_alert_type, Snackbar.LENGTH_LONG).show();
-                            } else if (eventDescReq) {
-                                Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_alert_description, Snackbar.LENGTH_LONG).show();
-                            } else if (eventDateReq) {
-                                Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_alert_date, Snackbar.LENGTH_LONG).show();
-                            } else if (typeOfPlaceReq) {
-                                Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_alert_place, Snackbar.LENGTH_LONG).show();
-                            } else if (typeOfPlaceTextReq) {
-                                Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_alert_place_text, Snackbar.LENGTH_LONG).show();
-                            } else if (eventSrcFirstNameReq) {
-                                Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_alert_firstName, Snackbar.LENGTH_LONG).show();
-                            } else if (eventSrcLastNameReq) {
-                                Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_alert_lastName, Snackbar.LENGTH_LONG).show();
-                            } else if (eventSrcTelNoReq) {
-                                Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_alert_telNo, Snackbar.LENGTH_LONG).show();
-                            }
+                        if (!EventValidator.validateEventData(event, binding)) {
+                            validationErrorTab = EventEditTabs.EVENT_DATA.ordinal();
                         }
+
+                        if (validationErrorTab >= 0) {
+                            pager.setCurrentItem(validationErrorTab);
+                            return true;
+                        }
+
+                        try {
+                            EventDao eventDao = DatabaseHelper.getEventDao();
+                            eventDao.saveAndSnapshot(event);
+
+                            if (RetroProvider.isConnected()) {
+                                SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.ChangesOnly, this, new SyncCallback() {
+                                    @Override
+                                    public void call(boolean syncFailed) {
+                                        if (syncFailed) {
+                                            Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_sync_error_saved), getResources().getString(R.string.entity_alert)), Snackbar.LENGTH_LONG).show();
+                                        } else {
+                                            Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_alert)), Snackbar.LENGTH_LONG).show();
+                                        }
+                                        finish();
+                                    }
+                                });
+                            } else {
+                                Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_alert)), Snackbar.LENGTH_LONG).show();
+                                finish();
+                            }
+                        } catch (DaoException e) {
+                            Log.e(getClass().getName(), "Error while trying to save alert", e);
+                            Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_error), getResources().getString(R.string.entity_alert)), Snackbar.LENGTH_LONG).show();
+                            ErrorReportingHelper.sendCaughtException(tracker, e, event, true);
+                        }
+
                         break;
                 }
 

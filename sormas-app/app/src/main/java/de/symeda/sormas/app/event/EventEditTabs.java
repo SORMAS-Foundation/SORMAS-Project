@@ -10,7 +10,11 @@ public enum EventEditTabs {
 	EVENT_PERSONS,
 	EVENT_TASKS
 	;
-	
+
+	public static EventEditTabs fromInt(int x) {
+		return EventEditTabs.values()[x];
+	}
+
 	public String toString() {
 		return I18nProperties.getFieldCaption(EventDto.I18N_PREFIX+"."+this.name());
 	};

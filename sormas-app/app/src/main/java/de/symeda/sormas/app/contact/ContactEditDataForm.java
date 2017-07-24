@@ -116,4 +116,8 @@ public class ContactEditDataForm extends FormTab {
         return binding.getContact();
     }
 
+    public ContactDataFragmentLayoutBinding getBinding() {
+        return binding;
+    }
+
 }

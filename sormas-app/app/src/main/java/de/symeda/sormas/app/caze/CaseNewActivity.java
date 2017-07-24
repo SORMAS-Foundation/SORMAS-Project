@@ -123,10 +123,9 @@ public class CaseNewActivity extends AppCompatActivity {
             case R.id.action_save:
                 final Case caze = caseNewForm.getData();
 
+                // Validation
                 CaseNewFragmentLayoutBinding binding = caseNewForm.getBinding();
-
                 CaseValidator.clearErrorsForNewCase(binding);
-
                 if (!CaseValidator.validateNewCase(caze, binding)) {
                     return true;
                 }

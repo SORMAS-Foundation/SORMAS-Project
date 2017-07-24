@@ -58,4 +58,8 @@ public class VisitEditDataForm extends FormTab {
         return binding.getVisit();
     }
 
+    public VisitDataFragmentLayoutBinding getBinding() {
+        return binding;
+    }
+
 }

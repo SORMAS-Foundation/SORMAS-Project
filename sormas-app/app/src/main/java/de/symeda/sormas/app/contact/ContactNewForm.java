@@ -56,4 +56,8 @@ public class ContactNewForm extends FormTab {
         return binding.getContact();
     }
 
+    public ContactNewFragmentLayoutBinding getBinding() {
+        return binding;
+    }
+
 }

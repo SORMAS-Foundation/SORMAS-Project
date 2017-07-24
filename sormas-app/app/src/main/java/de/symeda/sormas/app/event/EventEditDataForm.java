@@ -99,4 +99,8 @@ public class EventEditDataForm extends FormTab {
         }
     }
 
+    public EventDataFragmentLayoutBinding getBinding() {
+        return binding;
+    }
+
 }

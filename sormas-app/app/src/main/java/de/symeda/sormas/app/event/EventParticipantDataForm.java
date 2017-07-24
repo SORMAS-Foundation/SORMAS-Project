@@ -48,4 +48,8 @@ public class EventParticipantDataForm extends FormTab {
     public AbstractDomainObject getData() {
         return binding.getEventParticipant();
     }
+
+    public EventParticipantFragmentLayoutBinding getBinding() {
+        return binding;
+    }
 }

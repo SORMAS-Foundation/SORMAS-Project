@@ -9,6 +9,7 @@ import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.person.PersonEditForm;
 import de.symeda.sormas.app.task.TasksListFragment;
+import de.symeda.sormas.app.util.FormTab;
 
 /**
  * Created by Stefan Szczesny on 02.11.2016.
@@ -85,5 +86,14 @@ public class EventEditPagerAdapter extends FragmentStatePagerAdapter {
 //                break;
         }
         return ado;
+    }
+
+    public FormTab getTabByPosition(int position) {
+        EventEditTabs tab = EventEditTabs.fromInt(position);
+        switch (tab) {
+            case EVENT_DATA:
+                return eventEditDataForm;
+        }
+        return null;
     }
 }

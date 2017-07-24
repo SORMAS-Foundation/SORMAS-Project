@@ -35,12 +35,17 @@ import de.symeda.sormas.app.backend.task.TaskDao;
 import de.symeda.sormas.app.backend.visit.Visit;
 import de.symeda.sormas.app.backend.visit.VisitDao;
 import de.symeda.sormas.app.component.UserReportDialog;
+import de.symeda.sormas.app.databinding.ContactDataFragmentLayoutBinding;
+import de.symeda.sormas.app.databinding.PersonEditFragmentLayoutBinding;
+import de.symeda.sormas.app.person.PersonEditForm;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.task.TaskForm;
 import de.symeda.sormas.app.task.TasksListFragment;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.SyncCallback;
+import de.symeda.sormas.app.validation.ContactValidator;
+import de.symeda.sormas.app.validation.PersonValidator;
 import de.symeda.sormas.app.visit.VisitEditActivity;
 import de.symeda.sormas.app.visit.VisitEditDataForm;
 import de.symeda.sormas.app.visit.VisitsListFragment;
@@ -244,49 +249,49 @@ public class ContactEditActivity extends AbstractEditTabActivity {
             case R.id.action_save:
                 ContactDao contactDao = DatabaseHelper.getContactDao();
 
-                boolean lastContactDateReq = contact.getLastContactDate() == null || contact.getLastContactDate().getTime() > contact.getReportDateTime().getTime();
-                boolean proximityReq = contact.getContactProximity() == null;
-                boolean firstNameReq = person.getFirstName().isEmpty();
-                boolean lastNameReq = person.getLastName().isEmpty();
-                boolean relationReq = contact.getRelationToCase() == null;
+                // Validation
+                ContactDataFragmentLayoutBinding contactDataBinding = ((ContactEditDataForm)adapter.getTabByPosition(ContactEditTabs.CONTACT_DATA.ordinal())).getBinding();
+                PersonEditFragmentLayoutBinding personBinding = ((PersonEditForm)adapter.getTabByPosition(ContactEditTabs.PERSON.ordinal())).getBinding();
 
-                boolean validData = !lastContactDateReq && !proximityReq && !firstNameReq && !lastNameReq && !relationReq;
+                ContactValidator.clearErrorsForContactData(contactDataBinding);
+                PersonValidator.clearErrors(personBinding);
 
-                if (validData) {
-                    try {
+                int validationErrorTab = -1;
 
-                        if (contact.getRelationToCase() == ContactRelation.SAME_HOUSEHOLD && person.getAddress().isEmptyLocation()) {
-                            person.getAddress().setRegion(contact.getCaze().getRegion());
-                            person.getAddress().setDistrict(contact.getCaze().getDistrict());
-                            person.getAddress().setCommunity(contact.getCaze().getCommunity());
-                        }
-
-                        PersonDao personDao = DatabaseHelper.getPersonDao();
-                        personDao.saveAndSnapshot(person);
-                        contactDao.saveAndSnapshot(contact);
-
-                        reloadTabs();
-                        pager.setCurrentItem(currentTab);
-                        Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_contact)), Snackbar.LENGTH_LONG).show();
-
-                    } catch (DaoException e) {
-                        Log.e(getClass().getName(), "Error while trying to saveAndSnapshot contact", e);
-                        Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_error), getResources().getString(R.string.entity_contact)), Snackbar.LENGTH_LONG).show();
-                        ErrorReportingHelper.sendCaughtException(tracker, e, contact, true);
-                    }
-                } else {
-                    if (lastContactDateReq) {
-                        Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_contact_last_contact_date, Snackbar.LENGTH_LONG).show();
-                    } else if (proximityReq) {
-                        Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_contact_proximity, Snackbar.LENGTH_LONG).show();
-                    } else if (firstNameReq) {
-                        Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_contact_firstName, Snackbar.LENGTH_LONG).show();
-                    } else if (lastNameReq) {
-                        Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_contact_lastName, Snackbar.LENGTH_LONG).show();
-                    } else if (relationReq) {
-                        Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_contact_relation, Snackbar.LENGTH_LONG).show();
-                    }
+                if (!PersonValidator.validatePersonData(person, personBinding)) {
+                    validationErrorTab = ContactEditTabs.PERSON.ordinal();
                 }
+                if (!ContactValidator.validateContactData(contact, contactDataBinding)) {
+                    validationErrorTab = ContactEditTabs.CONTACT_DATA.ordinal();
+                }
+
+                if (validationErrorTab >= 0) {
+                    pager.setCurrentItem(validationErrorTab);
+                    return true;
+                }
+
+                try {
+
+                    if (contact.getRelationToCase() == ContactRelation.SAME_HOUSEHOLD && person.getAddress().isEmptyLocation()) {
+                        person.getAddress().setRegion(contact.getCaze().getRegion());
+                        person.getAddress().setDistrict(contact.getCaze().getDistrict());
+                        person.getAddress().setCommunity(contact.getCaze().getCommunity());
+                    }
+
+                    PersonDao personDao = DatabaseHelper.getPersonDao();
+                    personDao.saveAndSnapshot(person);
+                    contactDao.saveAndSnapshot(contact);
+
+                    reloadTabs();
+                    pager.setCurrentItem(currentTab);
+                    Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_contact)), Snackbar.LENGTH_LONG).show();
+
+                } catch (DaoException e) {
+                    Log.e(getClass().getName(), "Error while trying to saveAndSnapshot contact", e);
+                    Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_error), getResources().getString(R.string.entity_contact)), Snackbar.LENGTH_LONG).show();
+                    ErrorReportingHelper.sendCaughtException(tracker, e, contact, true);
+                }
+
                 return true;
 
             // Add button
