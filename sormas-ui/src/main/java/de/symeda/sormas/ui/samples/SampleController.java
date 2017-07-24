@@ -54,7 +54,7 @@ public class SampleController {
 		editView.addCommitListener(new CommitListener() {
 			@Override
 			public void onCommit() {
-				if(createForm.getFieldGroup().isValid()) {
+				if( !createForm.getFieldGroup().isModified()) {
 					SampleDto dto = createForm.getValue();
 					FacadeProvider.getSampleFacade().saveSample(dto);
 					grid.reload();
@@ -75,7 +75,7 @@ public class SampleController {
 		editView.addCommitListener(new CommitListener() {
 			@Override
 			public void onCommit() {
-				if(form.getFieldGroup().isValid()) {
+				if (!form.getFieldGroup().isModified()) {
 					SampleDto dto = form.getValue();
 					dto = sf.saveSample(dto);
 					Notification.show("Sample data saved", Type.WARNING_MESSAGE);

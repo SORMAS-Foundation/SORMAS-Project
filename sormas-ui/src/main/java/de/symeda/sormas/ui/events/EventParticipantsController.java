@@ -39,7 +39,7 @@ public class EventParticipantsController {
 		createComponent.addCommitListener(new CommitListener() {
 			@Override
 			public void onCommit() {
-				if (createForm.getFieldGroup().isValid()) {
+				if (!createForm.getFieldGroup().isModified()) {
 					final EventParticipantDto dto = createForm.getValue();
 					
 					ControllerProvider.getPersonController().selectOrCreatePerson(
@@ -67,7 +67,7 @@ public class EventParticipantsController {
 		editView.addCommitListener(new CommitListener() {
 			@Override
 			public void onCommit() {
-				if(editForm.getFieldGroup().isValid()) {
+				if(!editForm.getFieldGroup().isModified()) {
 					EventParticipantDto dto = editForm.getValue();
 					personFacade.savePerson(dto.getPerson());
 					dto = eventParticipantFacade.saveEventParticipant(dto);

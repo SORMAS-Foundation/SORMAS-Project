@@ -174,7 +174,7 @@ public class CaseController {
         editView.addCommitListener(new CommitListener() {
         	@Override
         	public void onCommit() {
-        		if (createForm.getFieldGroup().isValid()) {
+        		if (!createForm.getFieldGroup().isModified()) {
         			final CaseDataDto dto = createForm.getValue();
         			
         			if (contact != null) {
@@ -215,7 +215,7 @@ public class CaseController {
         editView.addCommitListener(new CommitListener() {
         	@Override
         	public void onCommit() {
-        		if (caseEditForm.getFieldGroup().isValid()) {
+        		if (!caseEditForm.getFieldGroup().isModified()) {
         			CaseDataDto cazeDto = caseEditForm.getValue();
         			cazeDto = cf.saveCase(cazeDto);
         			Notification.show("Case data saved", Type.WARNING_MESSAGE);
@@ -240,7 +240,7 @@ public class CaseController {
         	
         	@Override
         	public void onCommit() {
-        		if (symptomsForm.getFieldGroup().isValid()) {
+        		if (!symptomsForm.getFieldGroup().isModified()) {
         			SymptomsDto dto = symptomsForm.getValue();
         			sf.saveSymptoms(dto);
         			Notification.show("Case symptoms saved", Type.WARNING_MESSAGE);
@@ -262,7 +262,7 @@ public class CaseController {
 		editView.addCommitListener(new CommitListener() {
 			@Override
 			public void onCommit() {
-				if (hospitalizationForm.getFieldGroup().isValid()) {
+				if (!hospitalizationForm.getFieldGroup().isModified()) {
 					HospitalizationDto dto = hospitalizationForm.getValue();
 					hf.saveHospitalization(dto);
 					Notification.show("Case hospitalization saved", Type.WARNING_MESSAGE);
@@ -284,7 +284,7 @@ public class CaseController {
 		editView.addCommitListener(new CommitListener() {
 			@Override
 			public void onCommit() {
-				if (epiDataForm.getFieldGroup().isValid()) {
+				if (!epiDataForm.getFieldGroup().isModified()) {
 					EpiDataDto dto = epiDataForm.getValue();
 					edf.saveEpiData(dto);
 					Notification.show("Case epidemiological data saved", Type.WARNING_MESSAGE);

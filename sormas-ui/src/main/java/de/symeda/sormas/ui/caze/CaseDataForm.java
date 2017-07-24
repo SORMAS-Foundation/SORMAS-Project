@@ -80,7 +80,12 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
     	}
     	
     	addField(CaseDataDto.UUID, TextField.class);
-    	addField(CaseDataDto.EPID_NUMBER, TextField.class);
+    	
+    	TextField epidField = addField(CaseDataDto.EPID_NUMBER, TextField.class);
+    	// TODO #230 add EPID-number validator
+    	//epidField.addValidator(new StringLengthValidator("Too short", 6, 8, false));
+    	epidField.setInvalidCommitted(true);
+    	
     	addField(CaseDataDto.CASE_CLASSIFICATION, OptionGroup.class);
     	addField(CaseDataDto.INVESTIGATION_STATUS, OptionGroup.class);
     	addField(CaseDataDto.DISEASE, NativeSelect.class);

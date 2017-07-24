@@ -81,7 +81,7 @@ public class UserController {
         editView.addCommitListener(new CommitListener() {
         	@Override
         	public void onCommit() {
-        		if (userEditForm.getFieldGroup().isValid()) {
+        		if (!userEditForm.getFieldGroup().isModified()) {
         			UserDto dto = userEditForm.getValue();
         			uf.saveUser(dto);
         			refreshView();
@@ -112,7 +112,7 @@ public class UserController {
         editView.addCommitListener(new CommitListener() {
         	@Override
         	public void onCommit() {
-        		if (createForm.getFieldGroup().isValid()) {
+        		if (!createForm.getFieldGroup().isModified()) {
         			UserDto dto = createForm.getValue();
         			uf.saveUser(dto);
         			refreshView();
