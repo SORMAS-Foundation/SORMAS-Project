@@ -1530,8 +1530,6 @@ INSERT INTO schema_version (version_number, comment) VALUES (49, 'data history f
 -- 2017-07-19 other health facility description for cases #238
 ALTER TABLE cases ADD COLUMN healthfacilitydetails varchar(512);
 
-INSERT INTO schema_version (version_number, comment) VALUES (50, 'other health facility description for cases #238');
-
 -- 2017-07-20 Database wipe for new infrastructure data #237
 BEGIN;
 DELETE FROM task;
@@ -1558,3 +1556,10 @@ DELETE FROM community;
 DELETE FROM district;
 DELETE FROM region;
 COMMIT;
+
+INSERT INTO schema_version (version_number, comment) VALUES (50, 'other health facility description for cases #238');
+
+-- 2015-07-25 fix wrong ending in LGA names of state Oyo. Will not be sent to mobile devices unless reinstalled
+UPDATE public.district SET name=replace(name,' LGA', '') WHERE name ~ ' LGA$';
+INSERT INTO schema_version (version_number, comment) VALUES (51, 'Fix Oyo LGA names #230');
+
