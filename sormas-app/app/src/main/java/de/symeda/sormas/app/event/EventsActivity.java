@@ -93,8 +93,7 @@ public class EventsActivity extends AbstractRootTabActivity {
     }
 
     public void showNewEventView() {
-        Intent intent = new Intent(this, EventEditActivity.class);
-        intent.putExtra(EventEditActivity.NEW_EVENT, true);
+        Intent intent = new Intent(this, EventNewActivity.class);
         startActivity(intent);
     }
 }

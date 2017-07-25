@@ -46,7 +46,6 @@ import de.symeda.sormas.app.validation.EventValidator;
 
 public class EventEditActivity extends AbstractEditTabActivity {
 
-    public static final String NEW_EVENT = "newEvent";
     public static final String KEY_EVENT_UUID = "eventUuid";
     public static final String KEY_PAGE = "page";
 
@@ -80,15 +79,6 @@ public class EventEditActivity extends AbstractEditTabActivity {
 
         Bundle params = getIntent().getExtras();
         if(params!=null) {
-
-            // setting title
-            if (params.containsKey(NEW_EVENT)) {
-                getSupportActionBar().setTitle(getResources().getText(R.string.headline_new_event) + " - " + ConfigProvider.getUser().getUserRole().toShortString());
-            }
-            else {
-                getSupportActionBar().setTitle(getResources().getText(R.string.headline_event) + " - " + ConfigProvider.getUser().getUserRole().toShortString());
-            }
-
             if (params.containsKey(KEY_EVENT_UUID)) {
                 eventUuid = params.getString(KEY_EVENT_UUID);
                 Event initialEntity = DatabaseHelper.getEventDao().queryUuid(eventUuid);
