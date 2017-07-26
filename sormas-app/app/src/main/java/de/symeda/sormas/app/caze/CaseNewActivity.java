@@ -15,6 +15,7 @@ import android.view.MenuItem;
 
 import com.google.android.gms.analytics.Tracker;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -195,6 +196,10 @@ public class CaseNewActivity extends AppCompatActivity {
             caze.setSurveillanceOfficer(user.getAssociatedOfficer());
         }
         caze.setReportDate(new Date());
+
+        Calendar calendar = Calendar.getInstance();
+        String year = String.valueOf(calendar.get(Calendar.YEAR)).substring(2);
+        caze.setEpidNumber(caze.getDistrict().getEpidCode() + "-" + year + "-");
 
         CaseDao caseDao = DatabaseHelper.getCaseDao();
         caseDao.saveAndSnapshot(caze);

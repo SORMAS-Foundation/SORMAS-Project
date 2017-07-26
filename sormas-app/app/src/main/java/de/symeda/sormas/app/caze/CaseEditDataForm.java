@@ -170,6 +170,19 @@ public class CaseEditDataForm extends FormTab {
             }
         });
 
+        binding.caseDataEpidNumber.addValueChangedListener(new PropertyField.ValueChangeListener() {
+            @Override
+            public void onChange(PropertyField field) {
+                String value = (String) field.getValue();
+                if (value.matches(DataHelper.getEpidNumberRegexp())) {
+                    field.setError(null);
+                } else {
+                    field.setError(DatabaseHelper.getContext().getResources().getString(R.string.validation_soft_case_epid_number));
+                    field.clearFocus();
+                }
+            }
+        });
+
         return binding.getRoot();
     }
 

@@ -9,6 +9,7 @@ import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -241,5 +242,27 @@ public final class InfrastructureDataImporter {
 		}
 		
 		return result;
+	}
+	
+	public static void importEpidCodesForDistricts(List<District> districts) {
+		InputStream stream = MockDataGenerator.class.getResourceAsStream("/epid-codes.csv");
+		BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+		
+		try {
+			while (reader.ready()) {
+				String line = reader.readLine();
+				String[] columns = line.split(";");
+				
+				Optional<District> district = districts.stream()
+						.filter(d -> d.getRegion().getName().equals(columns[3]) && d.getName().equals(columns[5]))
+						.findFirst();
+				
+				district.ifPresent(d -> d.setEpidCode(columns[0] + "-" + columns[1] + "-" + columns[2]));
+			}			
+			
+			stream.close();
+		} catch (IOException e) {
+			throw new IllegalArgumentException("Exception while reading resource file: epid-codes.csv", e);
+		}
 	}
 }

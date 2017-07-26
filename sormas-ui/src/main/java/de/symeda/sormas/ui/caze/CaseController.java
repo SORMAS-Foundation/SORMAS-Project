@@ -1,5 +1,6 @@
 package de.symeda.sormas.ui.caze;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -176,6 +177,10 @@ public class CaseController {
         	public void onCommit() {
         		if (!createForm.getFieldGroup().isModified()) {
         			final CaseDataDto dto = createForm.getValue();
+        			// Generate EPID number prefix
+    	    		Calendar calendar = Calendar.getInstance();
+    	    		String year = String.valueOf(calendar.get(Calendar.YEAR)).substring(2);
+        			dto.setEpidNumber(FacadeProvider.getDistrictFacade().getDistrictByUuid(dto.getDistrict().getUuid()).getEpidCode() + "-" + year + "-");
         			
         			if (contact != null) {
         				// automatically change the contact classification to "converted"

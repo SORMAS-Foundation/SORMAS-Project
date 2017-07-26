@@ -39,7 +39,6 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 
     @Override
 	protected void addFields() {
-
     	addField(CaseDataDto.DISEASE, NativeSelect.class);
     	
     	addCustomField(FIRST_NAME, String.class, TextField.class);

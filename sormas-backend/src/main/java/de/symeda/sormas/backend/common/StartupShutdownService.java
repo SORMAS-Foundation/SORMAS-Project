@@ -1,6 +1,7 @@
 package de.symeda.sormas.backend.common;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -35,7 +36,7 @@ import de.symeda.sormas.backend.util.MockDataGenerator;
 @RunAs(Permission._SYSTEM_ROLE)
 @TransactionManagement(TransactionManagementType.CONTAINER)
 public class StartupShutdownService {
-	
+
 	@EJB
 	private UserService userService;
 	@EJB
@@ -50,27 +51,30 @@ public class StartupShutdownService {
 	private CommunityService communityService;
 	@EJB
 	private FacilityService facilityService;
-	
+
 	@PostConstruct
 	public void startup() {
 		importRegionAndFacilityData();
+		importEpidCodes();
 		initLaboratoriesMockData();
 		initUserMockData();
 	}
 
 	private void initUserMockData() {
 		if (userService.getAll().isEmpty()) {
-			
+
 			Region region = regionService.getAll().get(0);
 
 			User admin = MockDataGenerator.createUser(UserRole.ADMIN, "ad", "min", "sadmin");
 			userService.persist(admin);
 
-			User surveillanceSupervisor = MockDataGenerator.createUser(UserRole.SURVEILLANCE_SUPERVISOR, "Sunkanmi", "Sesay", "Sunkanmi");
+			User surveillanceSupervisor = MockDataGenerator.createUser(UserRole.SURVEILLANCE_SUPERVISOR, "Sunkanmi",
+					"Sesay", "Sunkanmi");
 			surveillanceSupervisor.setRegion(region);
 			userService.persist(surveillanceSupervisor);
 
-			User surveillanceOfficer = MockDataGenerator.createUser(UserRole.SURVEILLANCE_OFFICER, "Sanaa", "Obasanjo", "Sanaa");
+			User surveillanceOfficer = MockDataGenerator.createUser(UserRole.SURVEILLANCE_OFFICER, "Sanaa", "Obasanjo",
+					"Sanaa");
 			surveillanceOfficer.setRegion(region);
 			userService.persist(surveillanceOfficer);
 
@@ -79,7 +83,7 @@ public class StartupShutdownService {
 			informant.setAssociatedOfficer(surveillanceOfficer);
 			userService.persist(informant);
 		}
-		
+
 		User supervisor = userService.getByUserName(UserHelper.getSuggestedUsername("Sunkanmi", "Sesay"));
 		if (!supervisor.getUserRoles().contains(UserRole.CONTACT_SUPERVISOR)
 				|| !supervisor.getUserRoles().contains(UserRole.CASE_SUPERVISOR)) {
@@ -91,9 +95,9 @@ public class StartupShutdownService {
 	private void importRegionAndFacilityData() {
 
 		List<Region> regions = regionService.getAll();
-		
+
 		// TODO just go through all files in directory
-		
+
 		if (!regions.stream().anyMatch(r -> "Abia".equals(r.getName()))) {
 			importDataForRegion(InfrastructureDataImporter.importRegion("Abia"));
 		}
@@ -205,16 +209,32 @@ public class StartupShutdownService {
 		if (!regions.stream().anyMatch(r -> "Zamfara".equals(r.getName()))) {
 			importDataForRegion(InfrastructureDataImporter.importRegion("Zamfara"));
 		}
-		
+
 		if (facilityService.getByUuid(facilityService.getOtherFacilityUuid()) == null) {
-			// Add 'Other' health facility with a constant UUID that is not associated with a specific region
+			// Add 'Other' health facility with a constant UUID that is not
+			// associated with a specific region
 			Facility otherFacility = new Facility();
 			otherFacility.setName("Other");
 			otherFacility.setUuid(facilityService.getOtherFacilityUuid());
 			facilityService.persist(otherFacility);
 		}
 	}
-	
+
+	private void importEpidCodes() {
+		List<District> districts = districtService.getAll();
+		List<District> districtsWithoutCode = districts.stream()
+				.filter(d -> d.getEpidCode() == null)
+				.collect(Collectors.toList());
+		
+		// Import the EPID codes
+		InfrastructureDataImporter.importEpidCodesForDistricts(districtsWithoutCode);
+		
+		// Refresh the updated database instances
+		for (District district : districtsWithoutCode) {
+			districtService.ensurePersisted(district);
+		}
+	}
+
 	private void importDataForRegion(Region region) {
 		for (District district : region.getDistricts()) {
 			for (Community community : district.getCommunities()) {
@@ -223,7 +243,7 @@ public class StartupShutdownService {
 			districtService.persist(district);
 		}
 		regionService.persist(region);
-		
+
 		List<Facility> facilities = InfrastructureDataImporter.importFacilities(region);
 		for (Facility facility : facilities) {
 			if (facility.getDistrict() == null) {
@@ -232,9 +252,9 @@ public class StartupShutdownService {
 			facilityService.persist(facility);
 		}
 	}
-	
+
 	private void initLaboratoriesMockData() {
-		
+
 		if (facilityService.getAllByFacilityType(FacilityType.LABORATORY, false).isEmpty()) {
 			List<Region> regions = regionService.getAll();
 			List<Facility> labs = InfrastructureDataImporter.importLaboratories(regions);

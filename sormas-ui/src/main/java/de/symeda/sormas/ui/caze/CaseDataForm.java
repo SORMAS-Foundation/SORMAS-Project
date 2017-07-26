@@ -1,8 +1,10 @@
 package de.symeda.sormas.ui.caze;
 
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 
+import com.vaadin.data.validator.RegexpValidator;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Label;
@@ -24,6 +26,7 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.Diseases.DiseasesConfiguration;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
@@ -82,8 +85,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
     	addField(CaseDataDto.UUID, TextField.class);
     	
     	TextField epidField = addField(CaseDataDto.EPID_NUMBER, TextField.class);
-    	// TODO #230 add EPID-number validator
-    	//epidField.addValidator(new StringLengthValidator("Too short", 6, 8, false));
+    	epidField.addValidator(new RegexpValidator(DataHelper.getEpidNumberRegexp(), true, 
+    			"The EPID number does not match the required pattern. You may still save the case and enter the correct number later."));
     	epidField.setInvalidCommitted(true);
     	
     	addField(CaseDataDto.CASE_CLASSIFICATION, OptionGroup.class);
@@ -173,6 +176,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		reportInfoLabel.setContentMode(ContentMode.HTML);
 		reportInfoLabel.setCaption(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, REPORT_INFO_LOC));
 		getContent().addComponent(reportInfoLabel, REPORT_INFO_LOC);
+		
 		addValueChangeListener(e -> {
 			updateReportInfo();
 		});
