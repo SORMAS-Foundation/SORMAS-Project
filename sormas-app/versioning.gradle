@@ -19,7 +19,7 @@ ext {
 		}
 
 		println 'Extracted POM version is ' + resultVersion
-		resultVersion;
+		resultVersion.toString();
 	}
 
 	/**
@@ -39,7 +39,7 @@ ext {
 		// final release counts as 9.
 		// Thus you can have 8 Release Candidates, 100 Micro Releases, 1000 Minor Releases
 
-		def versionName = getVersionName().toString()
+		def versionName = getVersionName()
 
 		def candidate = "9"
 		def (major, minor, patch) = versionName.toLowerCase().replaceAll('-', '').tokenize('.')
