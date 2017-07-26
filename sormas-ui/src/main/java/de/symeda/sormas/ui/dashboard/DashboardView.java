@@ -17,7 +17,6 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
@@ -74,6 +73,7 @@ public class DashboardView extends AbstractView {
 	public static final String CASE_MAP = "caseMap";
 	public static final String EXPAND = "expand";
 	public static final String COLLAPSE = "collapse";
+	public static final String APPLY = "apply";
 	
 	private VerticalLayout mapLayout;
 	private MapComponent mapComponent;
@@ -140,10 +140,6 @@ public class DashboardView extends AbstractView {
         dateFromFilter.setValue(DateHelper.subtractDays(c.getTime(), 28));
         dateFromFilter.setCaption(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, FROM));
         dateFromFilter.setDateFormat(DateHelper.getShortDateFormat().toPattern());
-        dateFromFilter.addValueChangeListener(e -> {
-        	fromDate = dateFromFilter.getValue();
-        	refreshDashboard();
-        });
         filterLayout.addComponent(dateFromFilter);
         fromDate = dateFromFilter.getValue();
         
@@ -153,10 +149,6 @@ public class DashboardView extends AbstractView {
         dateToFilter.setValue(c.getTime());
         dateToFilter.setCaption(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, TO));
         dateToFilter.setDateFormat(DateHelper.getShortDateFormat().toPattern());
-        dateToFilter.addValueChangeListener(e -> {
-        	toDate = dateToFilter.getValue();
-        	refreshDashboard();
-        });
         filterLayout.addComponent(dateToFilter);
         toDate = dateToFilter.getValue();
         
@@ -164,13 +156,22 @@ public class DashboardView extends AbstractView {
         diseaseFilter.setWidth(200, Unit.PIXELS);
         diseaseFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, DISEASE));
         diseaseFilter.addItems((Object[])Disease.values());
-        diseaseFilter.addValueChangeListener(e -> {
-        	disease = (Disease) diseaseFilter.getValue();
-        	refreshDashboard();
-        });
         diseaseFilter.setCaption(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, DISEASE));
         filterLayout.addComponent(diseaseFilter);
         disease = (Disease) diseaseFilter.getValue();
+        
+        Button applyButton = new Button(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, APPLY));
+        applyButton.addClickListener(new ClickListener() {
+			@Override
+			public void buttonClick(ClickEvent event) {
+				fromDate = dateFromFilter.getValue();
+				toDate = dateToFilter.getValue();
+				disease = (Disease) diseaseFilter.getValue();
+				refreshDashboard();
+			}
+        });
+        applyButton.addStyleName(CssStyles.FORCE_CAPTION_21);
+        filterLayout.addComponent(applyButton);
         
         return filterLayout;
 	}
