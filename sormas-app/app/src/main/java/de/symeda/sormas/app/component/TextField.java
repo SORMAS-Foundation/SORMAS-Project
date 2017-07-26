@@ -139,7 +139,7 @@ public class TextField extends PropertyField<String> implements TextFieldInterfa
         caption.setEnabled(enabled);
     }
 
-    @BindingAdapter("app:integer")
+    @BindingAdapter("integer")
     public static void setInteger(TextField textField, Integer integer) {
         if (integer != null) {
             textField.setValue(integer.toString());

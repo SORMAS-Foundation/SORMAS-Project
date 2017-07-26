@@ -137,37 +137,37 @@ public class LabelField extends PropertyField<String> {
         caption.setEnabled(enabled);
     }
 
-    @BindingAdapter("app:enum")
+    @BindingAdapter("enum")
     public static void setEnumForLabel(LabelField labelField, Enum e) {
         labelField.setValue(e!=null?e.toString():null);
     }
 
-    @BindingAdapter("app:short_uuid")
+    @BindingAdapter("short_uuid")
     public static void setShortUuidForLabel(LabelField labelField, String uuid){
         labelField.setValue(DataHelper.getShortUuid(uuid));
     }
 
-    @BindingAdapter("app:date")
+    @BindingAdapter("date")
     public static void setDateForLabel(LabelField labelField, Date date) {
         labelField.setValue(DateHelper.formatDate(date));
     }
 
-    @BindingAdapter("app:dateTime")
+    @BindingAdapter("dateTime")
     public static void setDateTimeForLabel(LabelField labelField, Date date) {
         labelField.setValue(DateHelper.formatDateTime(date));
     }
 
-    @BindingAdapter("app:user")
+    @BindingAdapter("user")
     public static void setUserForLabel(LabelField labelField, User user) {
         labelField.setValue(user!=null?user.toString():null);
     }
 
-    @BindingAdapter("app:personLabel")
+    @BindingAdapter("personLabel")
     public static void setPerson(LabelField labelField, Person person) {
         labelField.setValue(person!=null?person.toString():null);
     }
 
-    @BindingAdapter("app:personAgeSexLabel")
+    @BindingAdapter("personAgeSexLabel")
     public static void setPersonBirthdate(LabelField labelField, Person person) {
         String value = "";
         if(person!=null) {
@@ -183,51 +183,51 @@ public class LabelField extends PropertyField<String> {
         labelField.setValue(value);
     }
 
-    @BindingAdapter("app:caze")
+    @BindingAdapter("caze")
     public static void setCazeForLabel(LabelField labelField, Case caze) {
         labelField.setValue(caze!=null?caze.toString():null);
     }
 
-    @BindingAdapter("app:contact")
+    @BindingAdapter("contact")
     public static void setContactForLabel(LabelField labelField, Contact contact) {
         labelField.setValue(contact!=null?contact.toString():null);
     }
 
-    @BindingAdapter("app:event")
+    @BindingAdapter("event")
     public static void setEventForLabel(LabelField labelField, Event event) {
         labelField.setValue(event!=null?event.toString():null);
     }
 
-    @BindingAdapter("app:cazeAndLocation")
+    @BindingAdapter("cazeAndLocation")
     public static void setCazeAndLocationForLabel(LabelField labelField, Case caze) {
         labelField.setValue(caze!=null?caze.toString() + (caze.getPerson() != null && caze.getPerson().getAddress() != null ? "\n" + caze.getPerson().getAddress().toString() : ""):null);
     }
 
-    @BindingAdapter("app:contactAndLocation")
+    @BindingAdapter("contactAndLocation")
     public static void setContactAndLocationForLabel(LabelField labelField, Contact contact) {
         labelField.setValue(contact!=null?contact.toString() + (contact.getPerson() != null && contact.getPerson().getAddress() != null ? "\n" + contact.getPerson().getAddress().toString() : ""):null);
     }
 
-    @BindingAdapter("app:eventAndLocation")
+    @BindingAdapter("eventAndLocation")
     public static void setEventAndLocationForLabel(LabelField labelField, Event event) {
         labelField.setValue(event!=null?event.toString() + (event.getEventLocation() != null ? "\n" + event.getEventLocation().toString() : ""):null);
     }
 
-    @BindingAdapter("app:sampleTypeOfTest")
+    @BindingAdapter("sampleTypeOfTest")
     public static void setSampleTypeOfTest(LabelField labelField, String sampleUuid) {
         Sample sample = DatabaseHelper.getSampleDao().queryUuid(sampleUuid);
         SampleTest mostRecentTest = DatabaseHelper.getSampleTestDao().queryMostRecentBySample(sample);
         labelField.setValue(mostRecentTest != null ? mostRecentTest.getTestType().toString() : "");
     }
 
-    @BindingAdapter("app:sampleTestResult")
+    @BindingAdapter("sampleTestResult")
     public static void setSampleTestResult(LabelField labelField, String sampleUuid) {
         Sample sample = DatabaseHelper.getSampleDao().queryUuid(sampleUuid);
         SampleTest mostRecentTest = DatabaseHelper.getSampleTestDao().queryMostRecentBySample(sample);
         labelField.setValue(mostRecentTest != null ? mostRecentTest.getTestResult().toString() : "");
     }
 
-    @BindingAdapter("app:location")
+    @BindingAdapter("location")
     public static void setLocationForLabel(LabelField labelField, Location location) {
         if(location == null || location.toString().isEmpty()) {
             labelField.setValue(labelField.getContext().getString(R.string.label_enter_location));
