@@ -1,7 +1,6 @@
 package de.symeda.sormas.ui.caze;
 
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.List;
 
 import com.vaadin.data.validator.RegexpValidator;
@@ -29,6 +28,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.Diseases.DiseasesConfiguration;
+import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -147,7 +147,10 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
     	setRequired(true, CaseDataDto.CASE_CLASSIFICATION, CaseDataDto.INVESTIGATION_STATUS,
     			CaseDataDto.REGION, CaseDataDto.DISTRICT, CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY);
 
-    	setReadOnly(true, CaseDataDto.UUID, CaseDataDto.DISEASE, CaseDataDto.INVESTIGATION_STATUS);
+    	setReadOnly(true, CaseDataDto.UUID, CaseDataDto.INVESTIGATION_STATUS);
+    	if (!UserRole.isSupervisor(LoginHelper.getCurrentUserRoles())) {
+    		setReadOnly(true, CaseDataDto.DISEASE);
+    	}
     	
     	Sex personSex = person.getSex();
     	if (personSex != Sex.FEMALE) {
@@ -157,8 +160,13 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
     	boolean visible = DiseasesConfiguration.isDefinedOrMissing(CaseDataDto.class, CaseDataDto.MEASLES_VACCINATION, disease);
 		setVisible(visible, CaseDataDto.MEASLES_VACCINATION);
 		
-		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.MEASLES_DOSES, CaseDataDto.MEASLES_VACCINATION_INFO_SOURCE), 
-				CaseDataDto.MEASLES_VACCINATION, Arrays.asList(Vaccination.VACCINATED), true);
+		if (visible) {
+			FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.MEASLES_DOSES, CaseDataDto.MEASLES_VACCINATION_INFO_SOURCE), 
+					CaseDataDto.MEASLES_VACCINATION, Arrays.asList(Vaccination.VACCINATED), true);
+		} else {
+			getField(CaseDataDto.MEASLES_VACCINATION).setValue(null);
+			setVisible(false, CaseDataDto.MEASLES_DOSES, CaseDataDto.MEASLES_VACCINATION_INFO_SOURCE);
+		}
 		
 		List<String> medicalInformationFields = Arrays.asList(CaseDataDto.PREGNANT, CaseDataDto.MEASLES_VACCINATION);
 		

@@ -1,5 +1,13 @@
 package de.symeda.sormas.app.backend.caze;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+import android.content.res.Resources;
+import android.support.v4.app.NotificationCompat;
+import android.text.Html;
 import android.util.Log;
 
 import com.j256.ormlite.dao.Dao;
@@ -10,6 +18,7 @@ import java.sql.SQLException;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -21,6 +30,7 @@ import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.backend.visit.Visit;
+import de.symeda.sormas.app.caze.CaseEditActivity;
 import de.symeda.sormas.app.util.DataUtils;
 
 public class CaseDao extends AbstractAdoDao<Case> {
@@ -117,5 +127,37 @@ public class CaseDao extends AbstractAdoDao<Case> {
     public void markAsRead(Case caze) {
         super.markAsRead(caze);
         DatabaseHelper.getPersonDao().markAsRead(caze.getPerson());
+    }
+
+    @Override
+    public Case mergeOrCreate(Case source) throws DaoException {
+        Case currentCase = queryUuid(source.getUuid());
+        Case mergedCase = super.mergeOrCreate(source);
+        if (currentCase != null && mergedCase != null && currentCase.getDisease() != mergedCase.getDisease()) {
+            Context context = DatabaseHelper.getContext();
+
+            Intent notificationIntent = new Intent(context, CaseEditActivity.class);
+            notificationIntent.putExtra(CaseEditActivity.KEY_CASE_UUID, mergedCase.getUuid());
+
+            StringBuilder content = new StringBuilder();
+            content.append("<b>").append(mergedCase.toString()).append("</b><br/>");
+
+            PendingIntent pi = PendingIntent.getActivity(context, mergedCase.getId().intValue(), notificationIntent, 0);
+            Resources r = context.getResources();
+
+            Notification notification = new NotificationCompat.Builder(context)
+                    .setTicker(r.getString(R.string.headline_case_notification))
+                    .setSmallIcon(R.mipmap.ic_launcher)
+                    .setContentTitle(r.getString(R.string.headline_case_notification))
+                    .setStyle(new NotificationCompat.BigTextStyle().bigText(Html.fromHtml(content.toString())))
+                    .setContentIntent(pi)
+                    .setAutoCancel(true)
+                    .build();
+
+            NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            int notificationId = mergedCase.getId().intValue();
+            notificationManager.notify(notificationId, notification);
+        }
+        return mergedCase;
     }
 }

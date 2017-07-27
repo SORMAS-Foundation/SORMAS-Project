@@ -15,6 +15,8 @@ public interface ContactFacade {
 	List<ContactDto> getAllContactsAfter(Date date, String userUuid);
 	
 	List<ContactDto> getFollowUpBetween(Date fromDate, Date toDate, Disease disease, String userUuid);
+	
+	List<ContactDto> getAllByCase(CaseReferenceDto caseRef);
 
 	List<ContactIndexDto> getIndexList(String userUuid);
 

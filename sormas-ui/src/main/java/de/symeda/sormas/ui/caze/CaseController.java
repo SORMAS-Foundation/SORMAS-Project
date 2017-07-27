@@ -6,8 +6,19 @@ import java.util.List;
 
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
+import com.vaadin.server.Sizeable.Unit;
+import com.vaadin.shared.ui.MarginInfo;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
@@ -18,6 +29,7 @@ import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactFacade;
+import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.EpiDataFacade;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
@@ -221,10 +233,59 @@ public class CaseController {
         	@Override
         	public void onCommit() {
         		if (!caseEditForm.getFieldGroup().isModified()) {
-        			CaseDataDto cazeDto = caseEditForm.getValue();
-        			cazeDto = cf.saveCase(cazeDto);
-        			Notification.show("Case data saved", Type.WARNING_MESSAGE);
-        			navigateToData(cazeDto.getUuid());
+        			final CaseDataDto cazeDto = caseEditForm.getValue();
+        			CaseDataDto cazeInDatabase = findCase(caseUuid);
+        			
+        			if (cazeDto.getDisease() != cazeInDatabase.getDisease()) {
+        				VerticalLayout layout = new VerticalLayout();
+        				Window window = VaadinUiUtil.showPopupWindow(layout);
+        				Label popupText = new Label("Are you sure you want to change the disease of this case?");
+        			
+        				HorizontalLayout buttonsPanel = new HorizontalLayout();
+        				buttonsPanel.setMargin(new MarginInfo(true, false, false, false));
+        				buttonsPanel.setWidth(100, Unit.PERCENTAGE);
+
+        				Button noButton = new Button("no");
+        				noButton.addStyleName(ValoTheme.BUTTON_LINK);
+        				noButton.addClickListener(new ClickListener() {
+        					private static final long serialVersionUID = 1L;
+							@Override
+							public void buttonClick(ClickEvent event) {
+								window.close();
+							}
+        				});
+        				buttonsPanel.addComponent(noButton);
+        				buttonsPanel.setComponentAlignment(noButton,
+        						Alignment.BOTTOM_RIGHT);
+        				buttonsPanel.setExpandRatio(noButton, 1);
+
+        				Button yesButton = new Button("yes");
+        				yesButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+        				yesButton.addClickListener(new ClickListener() {
+        					private static final long serialVersionUID = 1L;
+        					@Override
+        					public void buttonClick(ClickEvent event) {
+        						window.close();
+        	        			saveCase(cazeDto);
+        	        			
+        						// Save all contacts for this case to trigger follow-up duration recalculation
+        						for (ContactDto contact : FacadeProvider.getContactFacade().getAllByCase(FacadeProvider.getCaseFacade().getReferenceByUuid(caze.getUuid()))) {
+        							FacadeProvider.getContactFacade().saveContact(contact);
+        						}
+        					}
+        				});
+        				buttonsPanel.addComponent(yesButton);
+        				buttonsPanel
+        						.setComponentAlignment(yesButton, Alignment.BOTTOM_RIGHT);
+        				buttonsPanel.setExpandRatio(yesButton, 0);
+        				
+        				layout.addComponent(popupText);
+        				layout.addComponent(buttonsPanel);
+        				layout.setMargin(true);
+        				window.setCaption("Confirm Disease Change");
+        			} else {
+	        			saveCase(cazeDto);
+        			}
         		}
         	}
         });
@@ -299,6 +360,12 @@ public class CaseController {
 		});
 		
 		return editView;
+	}
+	
+	private void saveCase(CaseDataDto cazeDto) {
+		cazeDto = cf.saveCase(cazeDto);
+		Notification.show("Case data saved", Type.WARNING_MESSAGE);
+		navigateToData(cazeDto.getUuid());
 	}
 	
 }

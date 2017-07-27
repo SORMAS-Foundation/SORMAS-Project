@@ -84,7 +84,8 @@
     <string name="headline_sample_data">Sample data</string>
     <string name="headline_new_sample">Create new sample</string>
     <string name="headline_sample_test">Recent test</string>
-    <string name="headline_task_notification">check sormas task</string>
+    <string name="headline_task_notification">Check sormas task</string>
+    <string name="headline_case_notification">Case disease has changed</string>
     <string name="headline_new_contact">Create new contact</string>
     <string name="headline_contact">Contact</string>
     <string name="headline_source_case">Source case</string>
