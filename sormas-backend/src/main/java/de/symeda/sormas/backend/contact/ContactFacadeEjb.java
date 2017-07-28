@@ -135,7 +135,7 @@ public class ContactFacadeEjb implements ContactFacade {
 	public ContactDto saveContact(ContactDto dto) {
 		Contact entity = fromDto(dto);
 		contactService.ensurePersisted(entity);
-		contactService.updateFollowUpUntil(entity);
+		contactService.updateFollowUpUntilAndStatus(entity);
 		return toDto(entity);
 	}
 	

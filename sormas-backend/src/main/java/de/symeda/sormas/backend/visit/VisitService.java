@@ -1,11 +1,13 @@
 package de.symeda.sormas.backend.visit;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
@@ -25,6 +27,7 @@ import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.util.DateHelper8;
 
 @Stateless
 @LocalBean
@@ -133,7 +136,7 @@ public class VisitService extends AbstractAdoService<Visit> {
 		return resultList;
 	}
 	
-	public Visit getLastVisitByPerson(Person person, Disease disease, Date maxDate) {
+	public Visit getLastVisitByPerson(Person person, Disease disease, LocalDate maxDate) {
 		
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Visit> cq = cb.createQuery(getElementClass());
@@ -146,15 +149,19 @@ public class VisitService extends AbstractAdoService<Visit> {
 		filter = cb.and(filter, cb.equal(from.get(Visit.DISEASE), disease));
 		
 		// before or equal date
-		Predicate dateFilter = cb.lessThanOrEqualTo(from.get(Visit.VISIT_DATE_TIME), maxDate);
+		Predicate dateFilter = cb.lessThan(from.get(Visit.VISIT_DATE_TIME), DateHelper8.toDate(maxDate.plusDays(1)));
 		filter = cb.and(filter, dateFilter);
 
 		cq.where(filter);
 		cq.orderBy(cb.desc(from.get(Visit.VISIT_DATE_TIME)));
 
-		Visit result = em.createQuery(cq).getSingleResult();
-		return result;
-
+		try {
+			Visit result = em.createQuery(cq).getSingleResult();
+			return result;
+		} 
+		catch (NoResultException ex) {
+			return null;
+		}
 	}
 	
 	public List<Visit> getAllByPerson(Person person) {

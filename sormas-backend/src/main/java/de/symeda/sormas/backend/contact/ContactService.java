@@ -1,5 +1,6 @@
 package de.symeda.sormas.backend.contact;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -14,8 +15,6 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import org.joda.time.LocalDate;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.visit.VisitStatus;
@@ -25,6 +24,7 @@ import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.util.DateHelper8;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitService;
 
@@ -151,7 +151,8 @@ public class ContactService extends AbstractAdoService<Contact> {
 	 *   If the last visit was not cooperative and happened at the last date of contact tracing, we need to do an additional visit.</li>
 	 * </ul>
 	 */
-	public void updateFollowUpUntil(Contact contact) {
+	public void updateFollowUpUntilAndStatus(Contact contact) {
+		
 		Disease disease = contact.getCaze().getDisease();
 		int followUpDuration = getFollowUpDuration(disease);
 
@@ -159,17 +160,18 @@ public class ContactService extends AbstractAdoService<Contact> {
 			contact.setFollowUpUntil(null);
 			contact.setFollowUpStatus(FollowUpStatus.NO_FOLLOW_UP);
 		} else {
-			LocalDate beginDate = new LocalDate(contact.getReportDateTime());
+			LocalDate beginDate = DateHelper8.toLocalDate(contact.getReportDateTime());
 			LocalDate untilDate = beginDate.plusDays(followUpDuration);
 			
+			Visit lastVisit = null;
 			boolean additionalVisitNeeded;
 			do {
 				additionalVisitNeeded = false;
-				Visit lastVisit = visitService.getLastVisitByPerson(contact.getPerson(), disease, untilDate.toDate());
+				lastVisit = visitService.getLastVisitByPerson(contact.getPerson(), disease, untilDate);
 				if (lastVisit != null) {
 					// if the last visit was not cooperative and happened at the last date of contact tracing ..
 					if (lastVisit.getVisitStatus() != VisitStatus.COOPERATIVE
-					 && new LocalDate(lastVisit.getVisitDateTime()).equals(untilDate)) {
+					 && DateHelper8.toLocalDate(lastVisit.getVisitDateTime()).isEqual(untilDate)) {
 						// .. we need to do an additional visit
 						additionalVisitNeeded = true;
 						untilDate = untilDate.plusDays(1);
@@ -177,8 +179,13 @@ public class ContactService extends AbstractAdoService<Contact> {
 				}
 			} while (additionalVisitNeeded);
 
-			contact.setFollowUpUntil(untilDate.toDate());
-			contact.setFollowUpStatus(FollowUpStatus.FOLLOW_UP);
+			contact.setFollowUpUntil(DateHelper8.toDate(untilDate));
+			// completed or still follow up?
+			if (lastVisit != null && DateHelper8.toLocalDate(lastVisit.getVisitDateTime()).isEqual(untilDate)) {
+				contact.setFollowUpStatus(FollowUpStatus.COMPLETED);
+			} else {
+				contact.setFollowUpStatus(FollowUpStatus.FOLLOW_UP);	
+			}
 		}
 		
 		ensurePersisted(contact);
@@ -188,11 +195,11 @@ public class ContactService extends AbstractAdoService<Contact> {
 	 * Should be used whenever a new visit is created or the status or date of a visit changes.
 	 * Makes sure the follow-up until date of all related contacts is updated.
 	 */
-	public void updateFollowUpUntilByVisit(Visit visit) {
+	public void updateFollowUpUntilAndStatusByVisit(Visit visit) {
 		
 		List<Contact> contacts = getByPersonAndDisease(visit.getPerson(), visit.getDisease());
 		for (Contact contact : contacts) {
-			updateFollowUpUntil(contact);
+			updateFollowUpUntilAndStatus(contact);
 		}
 	}	
 
