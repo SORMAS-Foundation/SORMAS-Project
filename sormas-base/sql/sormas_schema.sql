@@ -1564,7 +1564,7 @@ UPDATE public.district SET name=replace(name,' LGA', '') WHERE name ~ ' LGA$';
 INSERT INTO schema_version (version_number, comment) VALUES (51, 'Fix Oyo LGA names #230');
 
 -- 2017-07-25 Country, state and LGA codes #230
-ALTER TABLE district ADD COLUMN epidcode varchar(512);
+ALTER TABLE district ADD COLUMN epidcode varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (52, 'Country, state and LGA codes');
 

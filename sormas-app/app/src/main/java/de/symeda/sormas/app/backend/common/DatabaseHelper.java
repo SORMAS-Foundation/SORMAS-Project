@@ -72,7 +72,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// name of the database file for your application -- change to something appropriate for your app
 	private static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	private static final int DATABASE_VERSION = 91;
+	private static final int DATABASE_VERSION = 92;
 
 	private static DatabaseHelper instance = null;
 	public static void init(Context context) {
@@ -189,41 +189,70 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 */
 	@Override
 	public void onUpgrade(SQLiteDatabase db, ConnectionSource connectionSource, int oldVersion, int newVersion) {
-		try {
-			Log.i(DatabaseHelper.class.getName(), "onUpgrade");
-			TableUtils.dropTable(connectionSource, Case.class, true);
-			TableUtils.dropTable(connectionSource, Person.class, true);
-			TableUtils.dropTable(connectionSource, Location.class, true);
-			TableUtils.dropTable(connectionSource, Region.class, true);
-			TableUtils.dropTable(connectionSource, District.class, true);
-			TableUtils.dropTable(connectionSource, Community.class, true);
-			TableUtils.dropTable(connectionSource, Facility.class, true);
-			TableUtils.dropTable(connectionSource, User.class, true);
-			TableUtils.dropTable(connectionSource, Symptoms.class, true);
-			TableUtils.dropTable(connectionSource, Task.class, true);
-			TableUtils.dropTable(connectionSource, Contact.class, true);
-			TableUtils.dropTable(connectionSource, Visit.class, true);
-			TableUtils.dropTable(connectionSource, Event.class, true);
-			TableUtils.dropTable(connectionSource, Sample.class, true);
-			TableUtils.dropTable(connectionSource, SampleTest.class, true);
-			TableUtils.dropTable(connectionSource, EventParticipant.class, true);
-			TableUtils.dropTable(connectionSource, Hospitalization.class, true);
-			TableUtils.dropTable(connectionSource, PreviousHospitalization.class, true);
-			TableUtils.dropTable(connectionSource, EpiData.class, true);
-			TableUtils.dropTable(connectionSource, EpiDataBurial.class, true);
-			TableUtils.dropTable(connectionSource, EpiDataGathering.class, true);
-			TableUtils.dropTable(connectionSource, EpiDataTravel.class, true);
-			TableUtils.dropTable(connectionSource, SyncLog.class, true);
 
-			if (oldVersion < 30) {
-				TableUtils.dropTable(connectionSource, Config.class, true);
-			}
-			// after we drop the old databases, we create the new ones
-			onCreate(db, connectionSource);
-		} catch (SQLException e) {
-			Log.e(DatabaseHelper.class.getName(), "Can't drop databases", e);
-			throw new RuntimeException(e);
+		if (oldVersion < 91) {
+			upgradeFromUnupgradableVersion(db, connectionSource, oldVersion);
+			return;
 		}
+
+		// see http://ormlite.com/javadoc/ormlite-core/doc-files/ormlite_4.html#Upgrading-Schema
+		// IMPORTANT: table and column names are CASE SENSITIVE!
+		int currentVersion = oldVersion;
+		try {
+			switch (oldVersion) {
+				case 91:
+					currentVersion = 91;
+					getDao(District.class).executeRaw("ALTER TABLE district ADD COLUMN epidCode varchar(255);");
+
+
+					// ATTENTION: break should only be done after last version
+					break;
+				default:
+					db.endTransaction();
+					throw new IllegalStateException(
+							"onUpgrade() with unknown oldVersion " + oldVersion);
+			}
+		} catch (Exception ex) {
+			throw new RuntimeException("Database upgrade failed for version " + currentVersion + ": " + ex.getMessage(), ex);
+		}
+	}
+
+	private void upgradeFromUnupgradableVersion(SQLiteDatabase db, ConnectionSource connectionSource, int oldVersion) {
+		try {
+            Log.i(DatabaseHelper.class.getName(), "onUpgrade");
+            TableUtils.dropTable(connectionSource, Case.class, true);
+            TableUtils.dropTable(connectionSource, Person.class, true);
+            TableUtils.dropTable(connectionSource, Location.class, true);
+            TableUtils.dropTable(connectionSource, Region.class, true);
+            TableUtils.dropTable(connectionSource, District.class, true);
+            TableUtils.dropTable(connectionSource, Community.class, true);
+            TableUtils.dropTable(connectionSource, Facility.class, true);
+            TableUtils.dropTable(connectionSource, User.class, true);
+            TableUtils.dropTable(connectionSource, Symptoms.class, true);
+            TableUtils.dropTable(connectionSource, Task.class, true);
+            TableUtils.dropTable(connectionSource, Contact.class, true);
+            TableUtils.dropTable(connectionSource, Visit.class, true);
+            TableUtils.dropTable(connectionSource, Event.class, true);
+            TableUtils.dropTable(connectionSource, Sample.class, true);
+            TableUtils.dropTable(connectionSource, SampleTest.class, true);
+            TableUtils.dropTable(connectionSource, EventParticipant.class, true);
+            TableUtils.dropTable(connectionSource, Hospitalization.class, true);
+            TableUtils.dropTable(connectionSource, PreviousHospitalization.class, true);
+            TableUtils.dropTable(connectionSource, EpiData.class, true);
+            TableUtils.dropTable(connectionSource, EpiDataBurial.class, true);
+            TableUtils.dropTable(connectionSource, EpiDataGathering.class, true);
+            TableUtils.dropTable(connectionSource, EpiDataTravel.class, true);
+            TableUtils.dropTable(connectionSource, SyncLog.class, true);
+
+            if (oldVersion < 30) {
+                TableUtils.dropTable(connectionSource, Config.class, true);
+            }
+            // after we drop the old databases, we create the new ones
+            onCreate(db, connectionSource);
+        } catch (SQLException e) {
+            Log.e(DatabaseHelper.class.getName(), "Can't drop databases", e);
+            throw new RuntimeException(e);
+        }
 	}
 
 	public <ADO extends AbstractDomainObject> AbstractAdoDao<ADO> getAdoDaoInner(Class<ADO> type) {
