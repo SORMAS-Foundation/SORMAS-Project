@@ -40,6 +40,29 @@
 			<artifactId>joda-time</artifactId>
 		</dependency>
 
+		<!-- Testing -->
+
+		<dependency>
+		    <groupId>org.eclipse.persistence</groupId>
+    		<artifactId>org.eclipse.persistence.jpa</artifactId>
+		</dependency>
+
+		<dependency>
+		    <groupId>org.hibernate</groupId>
+    		<artifactId>hibernate-validator</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+		</dependency>
+			
+	    <dependency>
+	      	<groupId>info.novatec</groupId>
+	      	<artifactId>bean-test</artifactId>
+	    </dependency>
+	    
+    
     </dependencies>
 
     <build>
