@@ -21,8 +21,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
-import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DoneListener;
-import de.symeda.sormas.ui.utils.ConfirmationComponent;
+import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.ResetPasswordListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class UserController {
@@ -77,6 +76,12 @@ public class UserController {
     	UserDto userDto = FacadeProvider.getUserFacade().getByUuid(userUuid);
         userEditForm.setValue(userDto);
         final CommitDiscardWrapperComponent<UserEditForm> editView = new CommitDiscardWrapperComponent<UserEditForm>(userEditForm, userEditForm.getFieldGroup());
+        editView.addResetPasswordListener(new ResetPasswordListener() {
+        	@Override
+			public void onResetPassword() {
+        		makeNewPassword(userUuid);
+        	}
+        });
         
         editView.addCommitListener(new CommitListener() {
         	@Override
@@ -114,8 +119,9 @@ public class UserController {
         	public void onCommit() {
         		if (!createForm.getFieldGroup().isModified()) {
         			UserDto dto = createForm.getValue();
-        			uf.saveUser(dto);
+        			dto = uf.saveUser(dto);
         			refreshView();
+        			makeNewPassword(dto.getUuid());
         		}
         	}
         });
@@ -125,31 +131,6 @@ public class UserController {
 	public boolean isLoginUnique(String uuid, String userName) {
 		return uf.isLoginUnique(uuid, userName);
 	}
-
-	public void confirmNewPassword(String userUuid) {
-		final ConfirmationComponent newPasswortComponent = new ConfirmationComponent(false) {
-			private static final long serialVersionUID = 1L;
-			@Override
-			protected void onConfirm() {
-				makeNewPassword(userUuid);
-			}
-
-			@Override
-			protected void onCancel() {
-			}
-		};
-		newPasswortComponent.getConfirmButton().setCaption("Really update password?");
-		newPasswortComponent.getCancelButton().setCaption("Cancel");
-		Window popupWindow = VaadinUiUtil.showPopupWindow(newPasswortComponent);
-		
-		newPasswortComponent.addDoneListener(new DoneListener() {
-			public void onDone() {
-				popupWindow.close();
-			}
-		});
-		popupWindow.setCaption("Update password");
-		newPasswortComponent.setMargin(true);    	
-    }
 	
 	public void makeNewPassword(String userUuid) {
 		String newPassword = uf.resetPassword(userUuid);
@@ -158,7 +139,7 @@ public class UserController {
 		layout.addComponent(new Label("Please copy this password, it is shown only once."));
 		layout.addComponent(new Label("<h2>"+newPassword+"</h2>", ContentMode.HTML));
 		Window popupWindow = VaadinUiUtil.showPopupWindow(layout);
-		popupWindow.setCaption("Update password");
+		popupWindow.setCaption("New password");
 		layout.setMargin(true);    	
 	}
 	
