@@ -26,12 +26,15 @@ public class PasswordHelper {
 			switch (ch) {
 			case 'I':
 				continue;
+			case 'O':
+				continue;
 			default:
 				PASSWORD_CHARS[i++] = ch;
 			}
 		}
-		for (char ch = '0'; ch <= '9'; ch++)
+		for (char ch = '2'; ch <= '9'; ch++) {
 			PASSWORD_CHARS[i++] = ch;
+		}
 	}
 
 	private static final Charset UTF8_CHARSET;
