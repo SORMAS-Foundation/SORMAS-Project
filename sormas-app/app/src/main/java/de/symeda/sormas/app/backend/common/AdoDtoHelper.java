@@ -71,7 +71,7 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 
     protected void handlePullResponse(final boolean markAsRead, final AbstractAdoDao<ADO> dao, Response<List<DTO>> response) throws IOException {
         if (!response.isSuccessful()) {
-            throw new ConnectException("Pulling changes from server did not work: " + response.errorBody().string());
+            Log.e(getClass().getName(), "Pulling changes from server did not work: " + response.errorBody().string());
         }
 
         final List<DTO> result = response.body();

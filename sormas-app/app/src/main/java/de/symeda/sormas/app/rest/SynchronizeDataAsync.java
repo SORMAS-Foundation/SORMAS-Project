@@ -53,6 +53,10 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
     @Override
     protected Void doInBackground(Void... params) {
+        if (!RetroProvider.isConnected()) {
+            return null;
+        }
+
         try {
 
             switch (syncMode) {
