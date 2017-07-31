@@ -48,6 +48,10 @@ public abstract class PropertyField<T> extends LinearLayout {
         caption.setError(errorText);
     }
 
+    public void setErrorWithoutFocus(String errorText) {
+        caption.setError(errorText);
+    }
+
     public void setRequiredHint(boolean showHint) {
         String captionText = caption.getText().toString();
         String hintText = " <font color='red'>*</font>";

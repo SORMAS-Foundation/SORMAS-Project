@@ -78,7 +78,7 @@ public class FacilityService extends AbstractAdoService<Facility> {
 			filter = cb.and(filter, cb.greaterThan(from.get(AbstractDomainObject.CHANGE_DATE), date));
 		}
 		cq.where(filter);
-		// order by district, community so the app can do while reading the data
+		// order by district, community so the app can do caching while reading the data
 		cq.orderBy(cb.asc(from.get(Facility.DISTRICT)), cb.asc(from.get(Facility.COMMUNITY)), cb.asc(from.get(Facility.NAME)));
 
 		return em.createQuery(cq).getResultList();

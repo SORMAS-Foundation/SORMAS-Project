@@ -175,10 +175,9 @@ public class CaseEditDataForm extends FormTab {
             public void onChange(PropertyField field) {
                 String value = (String) field.getValue();
                 if (value.matches(DataHelper.getEpidNumberRegexp())) {
-                    field.setError(null);
+                    field.setErrorWithoutFocus(null);
                 } else {
-                    field.setError(DatabaseHelper.getContext().getResources().getString(R.string.validation_soft_case_epid_number));
-                    field.clearFocus();
+                    field.setErrorWithoutFocus(DatabaseHelper.getContext().getResources().getString(R.string.validation_soft_case_epid_number));
                 }
             }
         });
