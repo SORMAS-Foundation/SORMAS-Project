@@ -36,6 +36,7 @@ public class RegionDtoHelper extends AdoDtoHelper<Region, RegionDto> {
     @Override
     public void fillInnerFromDto(Region ado, RegionDto dto) {
         ado.setName(dto.getName());
+        ado.setEpidCode(dto.getEpidCode());
     }
 
     @Override

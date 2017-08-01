@@ -29,12 +29,13 @@ import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactFacade;
-import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.EpiDataFacade;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationFacade;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.region.DistrictDto;
+import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsFacade;
 import de.symeda.sormas.api.user.UserDto;
@@ -192,7 +193,9 @@ public class CaseController {
         			// Generate EPID number prefix
     	    		Calendar calendar = Calendar.getInstance();
     	    		String year = String.valueOf(calendar.get(Calendar.YEAR)).substring(2);
-        			dto.setEpidNumber(FacadeProvider.getDistrictFacade().getDistrictByUuid(dto.getDistrict().getUuid()).getEpidCode() + "-" + year + "-");
+    	    		RegionDto region = FacadeProvider.getRegionFacade().getRegionByUuid(dto.getRegion().getUuid());
+    	    		DistrictDto district = FacadeProvider.getDistrictFacade().getDistrictByUuid(dto.getDistrict().getUuid());
+    	    		dto.setEpidNumber(CaseDataDto.COUNTRY_EPID_CODE + "-" + region.getEpidCode() + "-" + district.getEpidCode() + "-" + year + "-");
         			
         			if (contact != null) {
         				// automatically change the contact classification to "converted"

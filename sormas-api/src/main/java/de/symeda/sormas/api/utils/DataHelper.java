@@ -108,7 +108,7 @@ public final class DataHelper {
 	}
 	
 	public static String getEpidNumberRegexp() {
-		return "\\w{3}-\\w{3}-\\w{3}-\\d{2}-.+";
+		return "\\w{3}-\\w{3}-\\w{3}-\\d{2}-[A-Za-z0-9]+";
 	}
 	
 }

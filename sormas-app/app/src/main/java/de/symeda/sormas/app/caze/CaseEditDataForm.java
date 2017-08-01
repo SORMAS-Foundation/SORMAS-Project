@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -88,6 +89,13 @@ public class CaseEditDataForm extends FormTab {
                     List<Community> communityList = emptyList;
                     if(selectedValue != null) {
                         communityList = DatabaseHelper.getCommunityDao().getByDistrict((District)selectedValue);
+                        String epidNumber = binding.caseDataEpidNumber.getValue();
+                        if (epidNumber.trim().isEmpty() || !epidNumber.matches(DataHelper.getEpidNumberRegexp())) {
+                            Calendar calendar = Calendar.getInstance();
+                            String year = String.valueOf(calendar.get(Calendar.YEAR)).substring(2);
+                            binding.caseDataEpidNumber.setValue(CaseDataDto.COUNTRY_EPID_CODE + "-" + ((Region) binding.caseDataRegion.getValue()).getEpidCode()
+                                    + "-" + ((District) binding.caseDataDistrict.getValue()).getEpidCode() + "-" + year + "-");
+                        }
                     }
                     spinnerField.setAdapterAndValue(binding.caseDataCommunity.getValue(), DataUtils.toItems(communityList));
                 }
@@ -170,17 +178,23 @@ public class CaseEditDataForm extends FormTab {
             }
         });
 
-        binding.caseDataEpidNumber.addValueChangedListener(new PropertyField.ValueChangeListener() {
-            @Override
-            public void onChange(PropertyField field) {
-                String value = (String) field.getValue();
-                if (value.matches(DataHelper.getEpidNumberRegexp())) {
-                    field.setErrorWithoutFocus(null);
-                } else {
-                    field.setErrorWithoutFocus(DatabaseHelper.getContext().getResources().getString(R.string.validation_soft_case_epid_number));
+        if (ConfigProvider.getUser().getUserRole() != UserRole.INFORMANT) {
+            binding.caseDataEpidNumber.addValueChangedListener(new PropertyField.ValueChangeListener() {
+                @Override
+                public void onChange(PropertyField field) {
+                    String value = (String) field.getValue();
+                    if (value.trim().isEmpty()) {
+                        field.setErrorWithoutFocus(DatabaseHelper.getContext().getResources().getString(R.string.validation_soft_case_epid_number_empty));
+                    } else if (value.matches(DataHelper.getEpidNumberRegexp())) {
+                        field.setErrorWithoutFocus(null);
+                    } else {
+                        field.setErrorWithoutFocus(DatabaseHelper.getContext().getResources().getString(R.string.validation_soft_case_epid_number));
+                    }
                 }
-            }
-        });
+            });
+        } else {
+            binding.caseDataEpidNumber.setEnabled(false);
+        }
 
         return binding.getRoot();
     }

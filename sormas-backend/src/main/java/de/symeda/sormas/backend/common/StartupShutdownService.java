@@ -221,16 +221,18 @@ public class StartupShutdownService {
 	}
 
 	private void importEpidCodes() {
-		List<District> districts = districtService.getAll();
-		List<District> districtsWithoutCode = districts.stream()
-				.filter(d -> d.getEpidCode() == null)
-				.collect(Collectors.toList());
+		List<Region> regions = regionService.getAllWithoutEpidCode();
+		List<District> districts = districtService.getAllWithoutEpidCode();
 		
 		// Import the EPID codes
-		InfrastructureDataImporter.importEpidCodesForDistricts(districtsWithoutCode);
+		InfrastructureDataImporter.importEpidCodes(regions, districts);
 		
 		// Refresh the updated database instances
-		for (District district : districtsWithoutCode) {
+		for (Region region : regions) {
+			regionService.ensurePersisted(region);
+		}
+		
+		for (District district : districts) {
 			districtService.ensurePersisted(district);
 		}
 	}

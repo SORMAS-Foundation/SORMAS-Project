@@ -22,9 +22,13 @@ public class Region extends AbstractDomainObject {
 	public static final String I18N_PREFIX = "Region";
 
 	public static final String NAME = "name";
+	public static final String EPID_CODE = "epidCode";
 
 	@Column
 	private String name;
+
+	@Column
+	private String epidCode;
 
 	public String getName() {
 		return name;
@@ -32,7 +36,14 @@ public class Region extends AbstractDomainObject {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
+	public String getEpidCode() {
+		return epidCode;
+	}
+	public void setEpidCode(String epidCode) {
+		this.epidCode = epidCode;
+	}
+
 	@Override
 	public String toString() {
 		return getName();

@@ -11,4 +11,6 @@ public interface RegionFacade {
     List<RegionReferenceDto> getAllAsReference();
 
 	List<RegionDto> getAllAfter(Date date);
+	
+	RegionDto getRegionByUuid(String uuid);
 }

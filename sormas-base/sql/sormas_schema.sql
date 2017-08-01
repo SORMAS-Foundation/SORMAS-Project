@@ -1573,3 +1573,11 @@ INSERT INTO schema_version (version_number, comment) VALUES (52, 'Country, state
 UPDATE district SET epidcode = null;
 
 INSERT INTO schema_version (version_number, comment) VALUES (53, 'Update EPID codes');
+
+-- 2017-07-31 Split EPID code #230
+ALTER TABLE region ADD COLUMN epidcode varchar(255);
+UPDATE public.district SET epidcode=substr(epidcode, 9);
+UPDATE public.district SET changedate=now();
+UPDATE public.region SET changedate=now();
+
+INSERT INTO schema_version (version_number, comment) VALUES (54, 'Split EPID code');

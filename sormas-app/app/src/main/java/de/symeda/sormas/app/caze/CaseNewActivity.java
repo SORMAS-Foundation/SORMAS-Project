@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.user.UserRole;
@@ -199,7 +200,7 @@ public class CaseNewActivity extends AppCompatActivity {
 
         Calendar calendar = Calendar.getInstance();
         String year = String.valueOf(calendar.get(Calendar.YEAR)).substring(2);
-        caze.setEpidNumber(caze.getDistrict().getEpidCode() + "-" + year + "-");
+        caze.setEpidNumber(CaseDataDto.COUNTRY_EPID_CODE + "-" + caze.getRegion().getEpidCode() + "-" + caze.getDistrict().getEpidCode() + "-" + year + "-");
 
         CaseDao caseDao = DatabaseHelper.getCaseDao();
         caseDao.saveAndSnapshot(caze);

@@ -1,9 +1,11 @@
 package de.symeda.sormas.ui.caze;
 
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 
 import com.vaadin.data.validator.RegexpValidator;
+import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Label;
@@ -21,7 +23,9 @@ import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
+import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
@@ -87,6 +91,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
     	TextField epidField = addField(CaseDataDto.EPID_NUMBER, TextField.class);
     	epidField.addValidator(new RegexpValidator(DataHelper.getEpidNumberRegexp(), true, 
     			"The EPID number does not match the required pattern. You may still save the case and enter the correct number later."));
+    	epidField.addValidator(new StringLengthValidator("An EPID number has to be provided. You may still save the case and enter the correct number later.", 1, null, false));
     	epidField.setInvalidCommitted(true);
     	
     	addField(CaseDataDto.CASE_CLASSIFICATION, OptionGroup.class);
@@ -108,9 +113,16 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
     	});
     	district.addValueChangeListener(e -> {
     		community.removeAllItems();
-    		DistrictReferenceDto districtDto = (DistrictReferenceDto)e.getProperty().getValue();
-    		if (districtDto != null) {
-    			community.addItems(FacadeProvider.getCommunityFacade().getAllByDistrict(districtDto.getUuid()));
+    		DistrictReferenceDto districtReferenceDto = (DistrictReferenceDto)e.getProperty().getValue();
+    		if (districtReferenceDto != null) {
+    			community.addItems(FacadeProvider.getCommunityFacade().getAllByDistrict(districtReferenceDto.getUuid()));
+    			if (!epidField.isValid()) {
+	    			RegionDto regionDto = FacadeProvider.getRegionFacade().getRegionByUuid(((RegionReferenceDto) region.getValue()).getUuid());
+	    			DistrictDto districtDto = FacadeProvider.getDistrictFacade().getDistrictByUuid(districtReferenceDto.getUuid());
+		    		Calendar calendar = Calendar.getInstance();
+		    		String year = String.valueOf(calendar.get(Calendar.YEAR)).substring(2);
+	    			epidField.setValue(CaseDataDto.COUNTRY_EPID_CODE + "-" + regionDto.getEpidCode() + "-" + districtDto.getEpidCode() + "-" + year + "-");
+    			}
     		}
     	});
     	community.addValueChangeListener(e -> {

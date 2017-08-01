@@ -271,5 +271,6 @@
     <string name="validation_visit_status">Please select the visit status.</string>
 
     <string name="validation_soft_case_epid_number">The EPID number does not match the required pattern. You may still save the case and enter the correct number later.</string>
+    <string name="validation_soft_case_epid_number_empty">An EPID number has to be provided. You may still save the case and enter the correct number later.</string>
 
 </resources>
