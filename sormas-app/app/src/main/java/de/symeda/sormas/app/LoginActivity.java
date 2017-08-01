@@ -94,6 +94,7 @@ public class LoginActivity extends AppCompatActivity {
             try {
                 RetroProvider.connect(getApplicationContext());
             } catch (AuthenticatorException e) {
+                // clearing login data is done below
                 Snackbar.make(findViewById(R.id.base_layout), e.getMessage(), Snackbar.LENGTH_LONG).show();
             } catch (RetroProvider.ApiVersionException e) {
                 Snackbar.make(findViewById(R.id.base_layout), e.getMessage(), Snackbar.LENGTH_LONG).show();
@@ -101,16 +102,21 @@ public class LoginActivity extends AppCompatActivity {
                 Snackbar.make(findViewById(R.id.base_layout), e.getMessage(), Snackbar.LENGTH_LONG).show();
             }
 
-            SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.ChangesAndInfrastructure, LoginActivity.this, new SyncCallback() {
-                @Override
-                public void call(boolean syncFailed) {
-                    // logged in?
-                    if (ConfigProvider.getUser() != null) {
-                        Intent intent = new Intent(LoginActivity.this, EnterPinActivity.class);
-                        startActivity(intent);
+            if (!RetroProvider.isConnected()) {
+                // we HAVE to be connected now. Otherwise reset the authentication data
+                ConfigProvider.clearUsernameAndPassword();
+            } else {
+                SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.ChangesAndInfrastructure, LoginActivity.this, new SyncCallback() {
+                    @Override
+                    public void call(boolean syncFailed) {
+                        // logged in?
+                        if (ConfigProvider.getUser() != null) {
+                            Intent intent = new Intent(LoginActivity.this, EnterPinActivity.class);
+                            startActivity(intent);
+                        }
                     }
-                }
-            });
+                });
+            }
         }
     }
 

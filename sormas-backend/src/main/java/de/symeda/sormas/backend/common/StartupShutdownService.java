@@ -62,6 +62,9 @@ public class StartupShutdownService {
 		if (userService.getAll().isEmpty()) {
 
 			Region region = regionService.getAll().get(0);
+			District district = region.getDistricts().get(0);
+			Community community = district.getCommunities().get(0);
+			Facility facility = facilityService.getHealthFacilitiesByCommunity(community, false).get(0);
 
 			User admin = MockDataGenerator.createUser(UserRole.ADMIN, "ad", "min", "sadmin");
 			userService.persist(admin);
@@ -74,10 +77,13 @@ public class StartupShutdownService {
 			User surveillanceOfficer = MockDataGenerator.createUser(UserRole.SURVEILLANCE_OFFICER, "Sanaa", "Obasanjo",
 					"Sanaa");
 			surveillanceOfficer.setRegion(region);
+			surveillanceOfficer.setDistrict(district);
 			userService.persist(surveillanceOfficer);
 
 			User informant = MockDataGenerator.createUser(UserRole.INFORMANT, "Sangodele", "Ibori", "Sango");
 			informant.setRegion(region);
+			informant.setDistrict(district);
+			informant.setHealthFacility(facility);
 			informant.setAssociatedOfficer(surveillanceOfficer);
 			userService.persist(informant);
 		}
