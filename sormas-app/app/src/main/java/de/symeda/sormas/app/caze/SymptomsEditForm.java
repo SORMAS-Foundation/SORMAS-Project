@@ -259,9 +259,16 @@ public class SymptomsEditForm extends FormTab {
                 @Override
                 public void onChange(PropertyField field) {
                     if (field.getValue() == SymptomState.YES) {
-                        adapter.remove(adapter.getItem(adapter.getCount()));
-                        adapter.add(new Item(field.getCaption(), field.getCaption()));
-                        adapter.add(new Item("Select entry", null));
+                        Item item = new Item(field.getCaption(), field.getCaption());
+                        // Workaround for Android bug (see https://issuetracker.google.com/issues/36910520)
+                        // Only continue when the item is not in the list yet, otherwise it will be added again
+                        // when calling clearAll
+                        if (binding.symptomsOnsetSymptom1.getPositionOf(item) == -1) {
+                            adapter.remove(adapter.getItem(adapter.getCount()));
+                            adapter.add(item);
+                            adapter.add(new Item("Select entry", null));
+                        }
+
                     } else {
                         Item item = new Item(field.getCaption(), field.getCaption());
                         if (binding.symptomsOnsetSymptom1.getPositionOf(item) != -1) {

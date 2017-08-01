@@ -308,6 +308,10 @@ public class CaseEditActivity extends AbstractEditTabActivity {
                 PersonEditFragmentLayoutBinding personBinding =  ((PersonEditForm)adapter.getTabByPosition(CaseEditTabs.PATIENT.ordinal())).getBinding();
                 CaseSymptomsFragmentLayoutBinding symptomsBinding = ((SymptomsEditForm)adapter.getTabByPosition(CaseEditTabs.SYMPTOMS.ordinal())).getBinding();
 
+                // Necessary because the entry could've been automatically set, in which case the setValue method of the
+                // custom field has not been called
+                symptoms.setOnsetSymptom((String) symptomsBinding.symptomsOnsetSymptom1.getValue());
+
                 CaseValidator.clearErrorsForCaseData(caseDataBinding);
                 PersonValidator.clearErrors(personBinding);
                 SymptomsValidator.clearErrors(symptomsBinding);

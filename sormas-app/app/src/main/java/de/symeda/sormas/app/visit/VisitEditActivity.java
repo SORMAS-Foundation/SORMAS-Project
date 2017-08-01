@@ -185,6 +185,10 @@ public class VisitEditActivity extends AbstractEditTabActivity {
                 VisitDataFragmentLayoutBinding visitDataBinding = ((VisitEditDataForm)adapter.getTabByPosition(VisitEditTabs.VISIT_DATA.ordinal())).getBinding();
                 CaseSymptomsFragmentLayoutBinding symptomsBinding = symptomsEditForm.getBinding();
 
+                // Necessary because the entry could've been automatically set, in which case the setValue method of the
+                // custom field has not been called
+                symptoms.setOnsetSymptom((String) symptomsBinding.symptomsOnsetSymptom1.getValue());
+
                 VisitValidator.clearErrorsForVisitData(visitDataBinding);
                 SymptomsValidator.clearErrors(symptomsBinding);
 
