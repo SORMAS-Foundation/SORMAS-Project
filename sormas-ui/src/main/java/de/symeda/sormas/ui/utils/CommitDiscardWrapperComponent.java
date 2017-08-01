@@ -17,7 +17,6 @@ import com.vaadin.event.FieldEvents;
 import com.vaadin.event.FieldEvents.FocusListener;
 import com.vaadin.event.FieldEvents.FocusNotifier;
 import com.vaadin.event.ShortcutAction.KeyCode;
-import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Page;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -32,7 +31,6 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.RichTextArea;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
 
@@ -56,16 +54,11 @@ public class CommitDiscardWrapperComponent<C extends Component> extends
 	public static interface DeleteListener {
 		void onDelete();
 	}
-	
-	public static interface ResetPasswordListener {
-		void onResetPassword();
-	}
 
 	private transient List<CommitListener> commitListeners = new ArrayList<>();
 	private transient List<DiscardListener> discardListeners = new ArrayList<>();
 	private transient List<DoneListener> doneListeners = new ArrayList<>();
 	private transient List<DeleteListener> deleteListeners = new ArrayList<>();
-	private transient List<ResetPasswordListener> resetPasswordListeners = new ArrayList<>();
 	// only to check if it's set
 	private transient CommitListener primaryCommitListener;
 
@@ -80,9 +73,6 @@ public class CommitDiscardWrapperComponent<C extends Component> extends
 
 	private Button deleteButton;
 	private ConfirmationComponent deleteConfirmationComponent;
-
-	private Button resetPasswordButton;
-	private ConfirmationComponent resetPasswordConfirmationComponent;
 
 	private boolean commited = false;
 
@@ -372,40 +362,6 @@ public class CommitDiscardWrapperComponent<C extends Component> extends
 
 		return deleteButton;
 	}
-	
-	/**
-	 * By calling this method, a button to reset the password of a user is created, but not shown.
-	 * To achieve this, addPasswordResetListener() has to be called.
-	 */
-	public Button getResetPasswordButton() {
-		if (resetPasswordButton == null) {
-			resetPasswordButton = new Button(null, FontAwesome.UNLOCK_ALT);
-			resetPasswordButton.setCaption("create new password");
-			resetPasswordButton.addStyleName(ValoTheme.BUTTON_LINK);
-			resetPasswordButton.addClickListener(new ClickListener() {
-				private static final long serialVersionUID = 1L;
-				@Override
-				public void buttonClick(ClickEvent event) {
-					Window popupWindow = VaadinUiUtil.showPopupWindow(getResetPasswordConfirmationComponent());
-					getResetPasswordConfirmationComponent().addDoneListener(new DoneListener() {
-						public void onDone() {
-							popupWindow.close();
-						}
-					});
-					getResetPasswordConfirmationComponent().getCancelButton().addClickListener(new ClickListener() {
-						private static final long serialVersionUID = 1L;
-						@Override
-						public void buttonClick(ClickEvent event) {
-							popupWindow.close();
-						}
-					});
-					popupWindow.setCaption("Update password");
-				}
-			});
-		}
-		
-		return resetPasswordButton;
-	}
 
 	/**
 	 * Durch das Aufrufen dieser Methode wird beim Löschen eine Bestätigung angefordert.
@@ -435,28 +391,6 @@ public class CommitDiscardWrapperComponent<C extends Component> extends
 					"Really delete?");
 		}
 		return deleteConfirmationComponent;
-	}
-	
-	public ConfirmationComponent getResetPasswordConfirmationComponent() {
-		if (resetPasswordConfirmationComponent == null) {
-			resetPasswordConfirmationComponent = new ConfirmationComponent(false) {
-				private static final long serialVersionUID = 1L;
-				@Override
-				protected void onConfirm() {
-					onResetPassword();
-					onDone();
-					buttonsPanel.replaceComponent(this, getResetPasswordButton());
-				}
-				
-				@Override
-				protected void onCancel() {
-				}
-			};
-			resetPasswordConfirmationComponent.getConfirmButton().setCaption("Really update password?");
-			resetPasswordConfirmationComponent.getCancelButton().setCaption("Cancel");
-			resetPasswordConfirmationComponent.setMargin(true);
-		}
-		return resetPasswordConfirmationComponent;
 	}
 
 	@Override
@@ -688,36 +622,6 @@ public class CommitDiscardWrapperComponent<C extends Component> extends
 		for (DeleteListener listener : deleteListeners)
 			listener.onDelete();
 	}
-	
-	/**
-	 * Adds a listener to reset the password of a user
-	 * and adds a button to the button panel.
-	 */
-	public void addResetPasswordListener(ResetPasswordListener listener) {
-		if (resetPasswordListeners.isEmpty()) {
-			buttonsPanel.addComponent(getResetPasswordButton(), 0);
-		}
-		if (!resetPasswordListeners.contains(listener)) {
-			resetPasswordListeners.add(listener);
-		}
-	}
-	
-	public boolean hasResetPasswordListener() {
-		return !resetPasswordListeners.isEmpty();
-	}
-	
-	public void removeResetPasswordListener(ResetPasswordListener listener) {
-		resetPasswordListeners.remove(listener);
-		if (resetPasswordListeners.isEmpty()) {
-			buttonsPanel.removeComponent(getResetPasswordButton());
-		}
-	}
-	
-	private void onResetPassword() {
-		for (ResetPasswordListener listener : resetPasswordListeners) {
-			listener.onResetPassword();
-		}
-	}
 
 	@Override
 	public void setReadOnly(boolean readOnly) {
@@ -763,7 +667,6 @@ public class CommitDiscardWrapperComponent<C extends Component> extends
 			return notifier + "[" + getKeyCode() + "] =>" + button.getCaption();
 		}
 	}
-
 	
 	public static class CommitRuntimeException extends RuntimeException {
 		private static final long serialVersionUID = 1L;
