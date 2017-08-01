@@ -10,7 +10,7 @@ import de.symeda.sormas.app.databinding.PersonEditFragmentLayoutBinding;
 /**
  * Created by Mate Strysewske on 21.07.2017.
  */
-public class PersonValidator {
+public final class PersonValidator {
 
     public static void clearErrors(PersonEditFragmentLayoutBinding binding) {
         binding.personFirstName.setError(null);

@@ -1,7 +1,6 @@
 package de.symeda.sormas.backend.common;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -12,7 +11,6 @@ import javax.ejb.Startup;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 
-import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.user.UserHelper;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.caze.CaseService;
@@ -257,7 +255,7 @@ public class StartupShutdownService {
 
 	private void initLaboratoriesMockData() {
 
-		if (facilityService.getAllByFacilityType(FacilityType.LABORATORY, false).isEmpty()) {
+		if (facilityService.getAllLaboratories().isEmpty()) {
 			List<Region> regions = regionService.getAll();
 			List<Facility> labs = InfrastructureDataImporter.importLaboratories(regions);
 			for (Facility lab : labs) {

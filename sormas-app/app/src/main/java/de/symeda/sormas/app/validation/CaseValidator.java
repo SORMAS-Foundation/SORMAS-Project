@@ -12,7 +12,7 @@ import de.symeda.sormas.app.databinding.CaseNewFragmentLayoutBinding;
 /**
  * Created by Mate Strysewske on 20.07.2017.
  */
-public class CaseValidator {
+public final class CaseValidator {
 
     public static void clearErrorsForCaseData(CaseDataFragmentLayoutBinding binding) {
         binding.caseDataDisease.setError(null);

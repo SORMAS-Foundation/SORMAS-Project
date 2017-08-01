@@ -11,7 +11,7 @@ import de.symeda.sormas.app.databinding.ContactNewFragmentLayoutBinding;
 /**
  * Created by Mate Strysewske on 24.07.2017.
  */
-public class ContactValidator {
+public final class ContactValidator {
 
     public static void clearErrorsForContactData(ContactDataFragmentLayoutBinding binding) {
         binding.contactRelationToCase.setError(null);

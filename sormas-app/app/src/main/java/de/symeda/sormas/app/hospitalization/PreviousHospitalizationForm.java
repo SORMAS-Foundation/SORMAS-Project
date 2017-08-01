@@ -21,7 +21,6 @@ import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.component.AbstractFormDialogFragment;
 import de.symeda.sormas.app.component.FieldHelper;
-import de.symeda.sormas.app.component.PropertyField;
 import de.symeda.sormas.app.component.SpinnerField;
 import de.symeda.sormas.app.databinding.PreviousHospitalizationEditFragmentLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
@@ -108,7 +107,7 @@ public class PreviousHospitalizationForm extends AbstractFormDialogFragment<Prev
                 if (spinnerField != null) {
                     List<Facility> facilityList = emptyList;
                     if (selectedValue != null) {
-                        facilityList = DatabaseHelper.getFacilityDao().getByCommunity((Community) selectedValue, false);
+                        facilityList = DatabaseHelper.getFacilityDao().getHealthFacilitiesByCommunity((Community) selectedValue, false);
                     }
                     spinnerField.setAdapterAndValue(binding.prevHospHealthFacility.getValue(), DataUtils.toItems(facilityList));
                 }
@@ -121,7 +120,7 @@ public class PreviousHospitalizationForm extends AbstractFormDialogFragment<Prev
         List facilityList = new ArrayList<>();
         if (facility != null) {
             binding.prevHospFacilityCommunity.setValue(facility.getCommunity());
-            facilityList = DataUtils.toItems(DatabaseHelper.getFacilityDao().getByCommunity(facility.getCommunity(), false));
+            facilityList = DataUtils.toItems(DatabaseHelper.getFacilityDao().getHealthFacilitiesByCommunity(facility.getCommunity(), false));
         }
 
         FieldHelper.initSpinnerField(binding.prevHospHealthFacility, facilityList);

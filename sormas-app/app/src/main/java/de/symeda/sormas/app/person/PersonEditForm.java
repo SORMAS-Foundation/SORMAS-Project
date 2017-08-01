@@ -292,7 +292,7 @@ public class PersonEditForm extends FormTab {
                 if (spinnerField != null) {
                     List<Facility> facilityList = emptyList;
                     if (selectedValue != null) {
-                        facilityList = DatabaseHelper.getFacilityDao().getByCommunity((Community) selectedValue, false);
+                        facilityList = DatabaseHelper.getFacilityDao().getHealthFacilitiesByCommunity((Community) selectedValue, false);
                     }
                     spinnerField.setAdapterAndValue(binding.personOccupationFacility.getValue(), DataUtils.toItems(facilityList));
                 }
@@ -305,7 +305,7 @@ public class PersonEditForm extends FormTab {
         List facilityList = new ArrayList<>();
         if (facility != null) {
             binding.personFacilityCommunity.setValue(facility.getCommunity());
-            facilityList = DataUtils.toItems(DatabaseHelper.getFacilityDao().getByCommunity(facility.getCommunity(), false));
+            facilityList = DataUtils.toItems(DatabaseHelper.getFacilityDao().getHealthFacilitiesByCommunity(facility.getCommunity(), false));
         }
 
         FieldHelper.initSpinnerField(binding.personOccupationFacility, facilityList);

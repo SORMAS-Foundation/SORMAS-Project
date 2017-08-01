@@ -13,7 +13,7 @@ import de.symeda.sormas.app.databinding.VisitDataFragmentLayoutBinding;
  * Created by Mate Strysewske on 24.07.2017.
  */
 
-public class VisitValidator {
+public final class VisitValidator {
 
     public static void clearErrorsForVisitData(VisitDataFragmentLayoutBinding binding) {
         binding.visitVisitDateTime.setError(null);

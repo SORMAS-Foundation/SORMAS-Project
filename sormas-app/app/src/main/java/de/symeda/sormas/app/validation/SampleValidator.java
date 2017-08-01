@@ -13,7 +13,7 @@ import de.symeda.sormas.app.databinding.SampleDataFragmentLayoutBinding;
  * Created by Mate Strysewske on 24.07.2017.
  */
 
-public class SampleValidator {
+public final class SampleValidator {
 
     public static void clearErrorsForSampleData(SampleDataFragmentLayoutBinding binding) {
         binding.sampleDateTime.setError(null);

@@ -363,9 +363,15 @@ public class DashboardView extends AbstractView {
 				VerticalLayout layout = new VerticalLayout();
 				Window window = VaadinUiUtil.showPopupWindow(layout);
 				FacilityDto facility = FacadeProvider.getFacilityFacade().getByUuid(FacilityDto.OTHER_FACILITY_UUID);
-				CasePopupGrid caseGrid = new CasePopupGrid(window, facility, mapComponent);
-				caseGrid.setHeightMode(HeightMode.ROW);
-				layout.addComponent(caseGrid);
+				List<CaseDataDto> casesForFacility = mapComponent.getCasesForFacility(facility);
+				if (casesForFacility == null || casesForFacility.isEmpty()) {
+					Label noCasesLabel = new Label("There are no cases in other health facilities.");
+					layout.addComponent(noCasesLabel);
+				} else {
+					CasePopupGrid caseGrid = new CasePopupGrid(window, facility, mapComponent);
+					caseGrid.setHeightMode(HeightMode.ROW);
+					layout.addComponent(caseGrid);
+				}
 				layout.setMargin(true);
 				window.setCaption("Cases in other health facilities");
 			});

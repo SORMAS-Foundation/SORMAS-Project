@@ -18,7 +18,7 @@ import de.symeda.sormas.app.databinding.CaseSymptomsFragmentLayoutBinding;
 /**
  * Created by Mate Strysewske on 21.07.2017.
  */
-public class SymptomsValidator {
+public final class SymptomsValidator {
 
     public static void clearErrors(CaseSymptomsFragmentLayoutBinding binding) {
         List<SymptomStateField> nonConditionalSymptoms = Arrays.asList(binding.symptomsFever, binding.symptomsVomiting,

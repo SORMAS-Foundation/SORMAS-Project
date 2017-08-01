@@ -29,39 +29,43 @@ public class FacilityService extends AbstractAdoService<Facility> {
 		super(Facility.class);
 	}
 	
-	public List<Facility> getAllByCommunity(Community community, boolean includeOther) {
+	public List<Facility> getHealthFacilitiesByCommunity(Community community, boolean includeOther) {
 		
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Facility> cq = cb.createQuery(getElementClass());
 		Root<Facility> from = cq.from(getElementClass());
-		
-		cq.where(cb.equal(from.get(Facility.COMMUNITY), community));
+
+		Predicate filter = cb.or(cb.notEqual(from.get(Facility.TYPE), FacilityType.LABORATORY), cb.isNull(from.get(Facility.TYPE)));
+		filter = cb.and(filter, cb.equal(from.get(Facility.COMMUNITY), community));
+		cq.where(filter);
+		cq.distinct(true);
 		cq.orderBy(cb.asc(from.get(Facility.NAME)));
 
 		List<Facility> facilities = em.createQuery(cq).getResultList();
 		
-		if (includeOther) {
-			cq.where(cb.equal(from.get(Facility.UUID), OTHER_FACILITY_UUID));
-			facilities.add(0, em.createQuery(cq).getSingleResult());
+		if (includeOther) {			
+			facilities.add(0, getByUuid(OTHER_FACILITY_UUID));
 		}
 		
 		return facilities;
 	}
 	
-	public List<Facility> getAllByDistrict(District district, boolean includeOther) {
+	public List<Facility> getHealthFacilitiesByDistrict(District district, boolean includeOther) {
 		
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Facility> cq = cb.createQuery(getElementClass());
 		Root<Facility> from = cq.from(getElementClass());
-		
-		cq.where(cb.equal(from.get(Facility.DISTRICT), district));
+
+		Predicate filter = cb.or(cb.notEqual(from.get(Facility.TYPE), FacilityType.LABORATORY), cb.isNull(from.get(Facility.TYPE)));
+		filter = cb.and(filter, cb.equal(from.get(Facility.DISTRICT), district));
+		cq.where(filter);
+		cq.distinct(true);
 		cq.orderBy(cb.asc(from.get(Facility.NAME)));
 
 		List<Facility> facilities = em.createQuery(cq).getResultList();
 		
 		if (includeOther) {
-			cq.where(cb.equal(from.get(Facility.UUID), OTHER_FACILITY_UUID));
-			facilities.add(0, em.createQuery(cq).getSingleResult());
+			facilities.add(0, getByUuid(OTHER_FACILITY_UUID));
 		}
 		
 		return facilities;
@@ -100,21 +104,16 @@ public class FacilityService extends AbstractAdoService<Facility> {
 		return em.createQuery(cq).getResultList();
 	}
 	
-	public List<Facility> getAllByFacilityType(FacilityType type, boolean includeOther) {
+	public List<Facility> getAllLaboratories() {
 		
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Facility> cq = cb.createQuery(getElementClass());
 		Root<Facility> from = cq.from(getElementClass());
 		
-		cq.where(cb.equal(from.get(Facility.TYPE), type));
+		cq.where(cb.equal(from.get(Facility.TYPE), FacilityType.LABORATORY));
 		cq.orderBy(cb.asc(from.get(Facility.NAME)));
 
 		List<Facility> facilities = em.createQuery(cq).getResultList();
-		
-		if (includeOther) {
-			cq.where(cb.equal(from.get(Facility.UUID), OTHER_FACILITY_UUID));
-			facilities.add(0, em.createQuery(cq).getSingleResult());
-		}
 		
 		return facilities;
 	}

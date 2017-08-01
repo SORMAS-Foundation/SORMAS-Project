@@ -11,7 +11,7 @@ import de.symeda.sormas.app.databinding.EventDataFragmentLayoutBinding;
 /**
  * Created by Mate Strysewske on 24.07.2017.
  */
-public class EventValidator {
+public final class EventValidator {
 
     public static void clearErrorsForEventData(EventDataFragmentLayoutBinding binding) {
         binding.eventEventType.setError(null);

@@ -11,7 +11,7 @@ import de.symeda.sormas.app.databinding.EventParticipantNewFragmentLayoutBinding
 /**
  * Created by Mate Strysewske on 24.07.2017.
  */
-public class EventParticipantValidator {
+public final class EventParticipantValidator {
 
     public static void clearErrorsForEventParticipantData(EventParticipantFragmentLayoutBinding binding) {
         binding.eventParticipantInvolvementDescription.setError(null);
