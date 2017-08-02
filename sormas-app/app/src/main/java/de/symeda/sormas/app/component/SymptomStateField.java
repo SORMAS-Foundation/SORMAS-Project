@@ -7,6 +7,7 @@ import android.databinding.InverseBindingListener;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -120,4 +121,10 @@ public class SymptomStateField extends PropertyField<SymptomState> {
             radioGroup.getChildAt(i).setEnabled(enabled);
         }
     }
+
+    @Override
+    protected void requestFocusForContentView(View nextView) {
+        ((SymptomStateField) nextView).radioGroup.requestFocus();
+    }
+
 }

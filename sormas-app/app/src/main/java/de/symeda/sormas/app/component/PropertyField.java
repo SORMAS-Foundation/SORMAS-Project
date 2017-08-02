@@ -135,6 +135,8 @@ public abstract class PropertyField<T> extends LinearLayout {
         return captionPropertyId;
     }
 
+    protected abstract void requestFocusForContentView(View nextView);
+
     public interface ValueChangeListener {
         void onChange(PropertyField field);
     }

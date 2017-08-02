@@ -11,6 +11,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.TextView;
 
 import java.util.Calendar;
@@ -236,6 +237,11 @@ public class LabelField extends PropertyField<String> {
             labelField.setValue(location.toString());
             labelField.setTextColor(Color.BLACK);
         }
+    }
+
+    @Override
+    protected void requestFocusForContentView(View nextView) {
+        ((LabelField) nextView).textContent.requestFocus();
     }
 
 }
