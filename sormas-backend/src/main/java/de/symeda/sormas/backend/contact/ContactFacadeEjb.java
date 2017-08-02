@@ -140,6 +140,13 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 	
 	@Override
+	public ContactDto updateFollowUpUntilAndStatus(ContactDto dto) {
+		Contact entity = fromDto(dto);
+		contactService.updateFollowUpUntilAndStatus(entity);
+		return toDto(entity);
+	}
+	
+	@Override
 	public List<ContactReferenceDto> getSelectableContacts(UserReferenceDto userRef) {
 		User user = userService.getByReferenceDto(userRef);
 		return contactService.getAllAfter(null, user).stream()

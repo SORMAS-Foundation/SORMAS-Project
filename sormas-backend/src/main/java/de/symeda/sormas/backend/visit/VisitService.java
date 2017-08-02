@@ -8,6 +8,7 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
@@ -159,7 +160,7 @@ public class VisitService extends AbstractAdoService<Visit> {
 			Visit result = em.createQuery(cq).getSingleResult();
 			return result;
 		} 
-		catch (NoResultException ex) {
+		catch (NoResultException | NonUniqueResultException ex) {
 			return null;
 		}
 	}

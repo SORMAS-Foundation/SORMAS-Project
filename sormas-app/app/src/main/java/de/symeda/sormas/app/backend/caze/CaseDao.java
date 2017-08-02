@@ -133,6 +133,8 @@ public class CaseDao extends AbstractAdoDao<Case> {
     public Case mergeOrCreate(Case source) throws DaoException {
         Case currentCase = queryUuid(source.getUuid());
         Case mergedCase = super.mergeOrCreate(source);
+
+        // Build and send a notification when the disease has changed
         if (currentCase != null && mergedCase != null && currentCase.getDisease() != mergedCase.getDisease()) {
             Context context = DatabaseHelper.getContext();
 

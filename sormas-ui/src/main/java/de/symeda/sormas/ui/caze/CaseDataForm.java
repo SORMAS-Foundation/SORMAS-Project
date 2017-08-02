@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
+import com.vaadin.data.Property;
 import com.vaadin.data.validator.RegexpValidator;
 import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.shared.ui.label.ContentMode;
@@ -12,6 +13,9 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.CloseEvent;
+import com.vaadin.ui.Window.CloseListener;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
@@ -34,9 +38,12 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.Diseases.DiseasesConfiguration;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
+import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DoneListener;
+import de.symeda.sormas.ui.utils.ConfirmationComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
+import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 @SuppressWarnings("serial")
 public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
@@ -96,7 +103,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
     	
     	addField(CaseDataDto.CASE_CLASSIFICATION, OptionGroup.class);
     	addField(CaseDataDto.INVESTIGATION_STATUS, OptionGroup.class);
-    	addField(CaseDataDto.DISEASE, NativeSelect.class);
+    	NativeSelect diseaseField = addField(CaseDataDto.DISEASE, NativeSelect.class);
     	TextField healthFacilityDetails = addField(CaseDataDto.HEALTH_FACILITY_DETAILS, TextField.class);
     	
     	ComboBox region = addField(CaseDataDto.REGION, ComboBox.class);
@@ -199,6 +206,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		
 		addValueChangeListener(e -> {
 			updateReportInfo();
+			diseaseField.addValueChangeListener(new DiseaseChangeListener(diseaseField, getValue().getDisease()));
 		});
 		
 		facility.addValueChangeListener(e -> {
@@ -222,5 +230,60 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	@Override 
 	protected String createHtmlLayout() {
 		 return HTML_LAYOUT;
+	}
+	
+	private static class DiseaseChangeListener implements ValueChangeListener {
+		
+		private NativeSelect diseaseField;
+		private Disease currentDisease;
+		
+		DiseaseChangeListener(NativeSelect diseaseField, Disease currentDisease) {
+			this.diseaseField = diseaseField;
+			this.currentDisease = currentDisease;
+		}
+		
+		@Override
+		public void valueChange(Property.ValueChangeEvent e) {
+			
+			if (diseaseField.getValue() != currentDisease) {
+				ConfirmationComponent confirmDiseaseChangeComponent = getConfirmDiseaseChangeComponent(diseaseField, currentDisease);
+				Window popupWindow = VaadinUiUtil.showPopupWindow(confirmDiseaseChangeComponent);
+				CloseListener closeListener = new CloseListener() {
+					@Override
+					public void windowClose(CloseEvent e) {
+						diseaseField.setValue(currentDisease);
+					}
+				};
+				popupWindow.addCloseListener(closeListener);
+				confirmDiseaseChangeComponent.addDoneListener(new DoneListener() {
+					public void onDone() {
+						diseaseField.removeValueChangeListener(DiseaseChangeListener.this);
+						popupWindow.removeCloseListener(closeListener);
+						popupWindow.close();
+					}
+				});
+				popupWindow.setCaption("Change case disease");       
+			}
+		}
+		
+		private ConfirmationComponent getConfirmDiseaseChangeComponent(NativeSelect diseaseField, Disease currentDisease) {
+			ConfirmationComponent confirmDiseaseChangeComponent = new ConfirmationComponent(false) {
+				private static final long serialVersionUID = 1L;
+				@Override
+				protected void onConfirm() {
+					onDone();
+				}
+				@Override
+				protected void onCancel() {
+					diseaseField.setValue(currentDisease);
+					onDone();
+				}
+			};
+			confirmDiseaseChangeComponent.getConfirmButton().setCaption("Really change case disease?");
+			confirmDiseaseChangeComponent.getCancelButton().setCaption("Cancel");
+			confirmDiseaseChangeComponent.setMargin(true);
+			return confirmDiseaseChangeComponent;
+		}
+		
 	}
 }

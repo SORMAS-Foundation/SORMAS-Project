@@ -26,6 +26,8 @@ public interface ContactFacade {
     
 	ContactDto saveContact(ContactDto dto);
 	
+	ContactDto updateFollowUpUntilAndStatus(ContactDto dto);
+	
 	List<ContactReferenceDto> getSelectableContacts(UserReferenceDto user);
 
 	ContactReferenceDto getReferenceByUuid(String uuid);
