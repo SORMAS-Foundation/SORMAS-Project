@@ -170,7 +170,7 @@
     <string name="snackbar_sync_error">Synchronization failed. Please try again later.</string>
     <string name="snackbar_sync_error_saved">%1$s has been saved, but could not be synchronized.</string>
     <string name="snackbar_sync_error_created">%1$s has been created, but could not be synchronized.</string>
-    <string name="snackbar_no_connection">You are not connected to the SORMAS server.</string>
+    <string name="snackbar_no_connection">You are not connected to the internet.</string>
     <string name="snackbar_http_401">Could not authenticate. Please check your username and password.</string>
     <string name="snackbar_http_403">You do not have the needed permissions. Please contact the support.</string>
     <string name="snackbar_http_404">Could not find a SORMAS server at \'%s\'</string>
