@@ -29,10 +29,12 @@ import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.backend.sample.SampleDao;
 import de.symeda.sormas.app.component.UserReportDialog;
+import de.symeda.sormas.app.databinding.SampleDataFragmentLayoutBinding;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.SyncCallback;
+import de.symeda.sormas.app.validation.SampleValidator;
 
 /**
  * Created by Mate Strysewske on 07.02.2017.
@@ -186,61 +188,37 @@ public class SampleEditActivity extends AbstractSormasActivity {
                     sample.setReportDateTime(new Date());
                 }
 
-                // check required fields
-                boolean sampleDateTimeReq = sample.getSampleDateTime() == null;
-                boolean sampleMaterialReq = sample.getSampleMaterial() == null;
-                boolean sampleMaterialTextReq = sample.getSampleMaterial() != null && sample.getSampleMaterialText() == null;
-                boolean shipmentStatusReq = sample.getShipmentStatus() == null;
-                boolean shipmentDateReq = sample.getShipmentStatus() != null && sample.getShipmentStatus() != ShipmentStatus.NOT_SHIPPED && sample.getShipmentDate() == null;
-                boolean sampleLabReq = sample.getLab() == null;
+                // Validation
+                SampleDataFragmentLayoutBinding binding = sampleTab.getBinding();
+                SampleValidator.clearErrorsForSampleData(binding);
+                if (!SampleValidator.validateSampleData(sample, binding)) {
+                    return true;
+                }
 
-                boolean validData = !sampleDateTimeReq
-                        && !sampleMaterialReq
-                        && !sampleMaterialTextReq
-                        && !shipmentStatusReq
-                        && !shipmentDateReq
-                        && !sampleLabReq;
+                try {
+                    sampleDao.saveAndSnapshot(sample);
+                    Snackbar.make(findViewById(R.id.fragment_frame), "Sample " + DataHelper.getShortUuid(sample.getUuid()) + " saved", Snackbar.LENGTH_LONG).show();
 
-                if (validData) {
-                    try {
-                        sampleDao.saveAndSnapshot(sample);
-                        Snackbar.make(findViewById(R.id.fragment_frame), "Sample " + DataHelper.getShortUuid(sample.getUuid()) + " saved", Snackbar.LENGTH_LONG).show();
-
-                        if (RetroProvider.isConnected()) {
-                            SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.ChangesOnly, this, new SyncCallback() {
-                                @Override
-                                public void call(boolean syncFailed) {
-                                    if (syncFailed) {
-                                        Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_sync_error_saved), getResources().getString(R.string.entity_sample)), Snackbar.LENGTH_LONG).show();
-                                    } else {
-                                        Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_sample)), Snackbar.LENGTH_LONG).show();
-                                    }
-                                    finish();
+                    if (RetroProvider.isConnected()) {
+                        SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.ChangesOnly, this, new SyncCallback() {
+                            @Override
+                            public void call(boolean syncFailed) {
+                                if (syncFailed) {
+                                    Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_sync_error_saved), getResources().getString(R.string.entity_sample)), Snackbar.LENGTH_LONG).show();
+                                } else {
+                                    Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_sample)), Snackbar.LENGTH_LONG).show();
                                 }
-                            });
-                        } else {
-                            Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_sample)), Snackbar.LENGTH_LONG).show();
-                            finish();
-                        }
-                    } catch (DaoException e) {
-                        Log.e(getClass().getName(), "Error while trying to save sample", e);
-                        Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_save_error), getResources().getString(R.string.entity_sample)), Snackbar.LENGTH_LONG).show();
-                        ErrorReportingHelper.sendCaughtException(tracker, e, sample, true);
+                                finish();
+                            }
+                        });
+                    } else {
+                        Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_sample)), Snackbar.LENGTH_LONG).show();
+                        finish();
                     }
-                } else {
-                    if (sampleDateTimeReq) {
-                        Snackbar.make(findViewById(R.id.fragment_frame), R.string.snackbar_sample_datetime, Snackbar.LENGTH_LONG).show();
-                    } else if (sampleMaterialReq) {
-                        Snackbar.make(findViewById(R.id.fragment_frame), R.string.snackbar_sample_material, Snackbar.LENGTH_LONG).show();
-                    } else if (sampleMaterialTextReq) {
-                        Snackbar.make(findViewById(R.id.fragment_frame), R.string.snackbar_sample_material_text, Snackbar.LENGTH_LONG).show();
-                    } else if (sampleLabReq) {
-                        Snackbar.make(findViewById(R.id.fragment_frame), R.string.snackbar_sample_lab, Snackbar.LENGTH_LONG).show();
-                    } else if (shipmentStatusReq) {
-                        Snackbar.make(findViewById(R.id.fragment_frame), R.string.snackbar_sample_shipment_status, Snackbar.LENGTH_LONG).show();
-                    } else if (shipmentDateReq) {
-                        Snackbar.make(findViewById(R.id.fragment_frame), R.string.snackbar_sample_shipment_date, Snackbar.LENGTH_LONG).show();
-                    }
+                } catch (DaoException e) {
+                    Log.e(getClass().getName(), "Error while trying to save sample", e);
+                    Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_save_error), getResources().getString(R.string.entity_sample)), Snackbar.LENGTH_LONG).show();
+                    ErrorReportingHelper.sendCaughtException(tracker, e, sample, true);
                 }
 
                 return true;

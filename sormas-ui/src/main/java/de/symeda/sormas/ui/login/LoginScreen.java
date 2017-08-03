@@ -51,7 +51,7 @@ public class LoginScreen extends CssLayout {
     	LoginForm loginForm = new LoginForm();
     	
     	loginForm.addLoginListener(event -> {
-    		login(event.getLoginParameter("username"), event.getLoginParameter("password"));
+    		login(event.getLoginParameter("username").trim(), event.getLoginParameter("password"));
     	});
 
         loginForm.addStyleName("login-form");

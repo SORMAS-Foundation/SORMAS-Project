@@ -222,4 +222,9 @@ public class ListField<FieldClass extends AbstractDomainObject> extends Property
         return values;
     }
 
+    @Override
+    protected void requestFocusForContentView(View nextView) {
+        ((ListField) nextView).listView.requestFocus();
+    }
+
 }

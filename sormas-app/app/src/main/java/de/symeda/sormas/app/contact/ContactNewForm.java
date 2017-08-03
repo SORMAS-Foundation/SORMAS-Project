@@ -21,6 +21,7 @@ import de.symeda.sormas.app.component.FieldHelper;
 import de.symeda.sormas.app.databinding.ContactNewFragmentLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.FormTab;
+import de.symeda.sormas.app.validation.ContactValidator;
 
 /**
  * Created by Stefan Szczesny on 02.11.2016.
@@ -47,6 +48,8 @@ public class ContactNewForm extends FormTab {
 
         FieldHelper.initSpinnerField(binding.contactRelationToCase, ContactRelation.class);
 
+        ContactValidator.setRequiredHintsForNewContact(binding);
+
         return binding.getRoot();
 
     }
@@ -54,6 +57,10 @@ public class ContactNewForm extends FormTab {
     @Override
     public Contact getData() {
         return binding.getContact();
+    }
+
+    public ContactNewFragmentLayoutBinding getBinding() {
+        return binding;
     }
 
 }

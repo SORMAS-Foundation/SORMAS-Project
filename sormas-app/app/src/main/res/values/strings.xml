@@ -84,7 +84,8 @@
     <string name="headline_sample_data">Sample data</string>
     <string name="headline_new_sample">Create new sample</string>
     <string name="headline_sample_test">Recent test</string>
-    <string name="headline_task_notification">check sormas task</string>
+    <string name="headline_task_notification">Check sormas task</string>
+    <string name="headline_case_notification">Case disease has changed</string>
     <string name="headline_new_contact">Create new contact</string>
     <string name="headline_contact">Contact</string>
     <string name="headline_source_case">Source case</string>
@@ -169,7 +170,7 @@
     <string name="snackbar_sync_error">Synchronization failed. Please try again later.</string>
     <string name="snackbar_sync_error_saved">%1$s has been saved, but could not be synchronized.</string>
     <string name="snackbar_sync_error_created">%1$s has been created, but could not be synchronized.</string>
-    <string name="snackbar_no_connection">You are not connected to the SORMAS server.</string>
+    <string name="snackbar_no_connection">You are not connected to the internet.</string>
     <string name="snackbar_http_401">Could not authenticate. Please check your username and password.</string>
     <string name="snackbar_http_403">You do not have the needed permissions. Please contact the support.</string>
     <string name="snackbar_http_404">Could not find a SORMAS server at \'%s\'</string>
@@ -202,10 +203,6 @@
     <string name="snackbar_alert_person_description">Please enter an involvement description for the alert person.</string>
     <string name="snackbar_alert_person_firstName">Please enter the first name of the alert person.</string>
     <string name="snackbar_alert_person_lastName">Please enter the last name of the alert person.</string>
-    <string name="snackbar_visit_10_days_before">The visit cannot be more than 10 days before the last contact date.</string>
-    <string name="snackbar_visit_10_days_after">The visit cannot be more than 10 days after the end of the follow-up duration.</string>
-    <string name="snackbar_visit_date_time">Please specify the date and time of the visit.</string>
-    <string name="snackbar_visit_status">Please specify the visit status.</string>
     <string name="snackbar_no_more_entries">There are no more entries to display.</string>
     <string name="snackbar_select_create_person">Please select a person or click \'Create\' to create a new one.</string>
     <string name="snackbar_person_first_last_name">Please enter a first and last name for the new person.</string>
@@ -221,7 +218,7 @@
     <string name="snackbar_pin_changed">PIN has been successfully changed.</string>
     <string name="snackbar_sync_conflict">Synchronization conflicts detected. Please check the Sync Log to review them.</string>
     <string name="snackbar_open_synclog">Open Sync Log</string>
-    <string name="snackbar_entity_overridden">%1$s refreshed. Unsaved changes have been discarded.</string>
+    <string name="snackbar_entity_overridden">%1$s refreshed. Unsaved changes discarded.</string>
     <string name="snackbar_okay">Okay</string>
 
     <string name="entity_case">Case</string>
@@ -233,5 +230,47 @@
     <string name="entity_task">Task</string>
 
     <string name="alert_encryption">SORMAS requires device encryption to be activated on your device to ensure data security.\n\nPlease note that you cannot use the application as long as device encryption is disabled.</string>
+
+    <string name="validation_case_disease">Please select the disease for this case.</string>
+    <string name="validation_person_first_name">Please enter the person\'s first name.</string>
+    <string name="validation_person_last_name">Please enter the person\'s last name.</string>
+    <string name="validation_community">Please select a ward.</string>
+    <string name="validation_district">Please select an LGA.</string>
+    <string name="validation_region">Please select a state.</string>
+    <string name="validation_health_facility">Please select a health facility.</string>
+    <string name="validation_health_facility_details">Please enter the name and description of the health facility.</string>
+    <string name="validation_symptoms_onset_date">Please enter the date of initial symptom onset.</string>
+    <string name="validation_symptoms_onset_symptom">Please select the initial onset symptom.</string>
+    <string name="validation_symptoms_symptom">Please select a state for this symptom.</string>
+    <string name="validation_symptoms_other_hemorrhagic">Please enter the additional hemorrhagic symptoms.</string>
+    <string name="validation_symptoms_other_clinical">Please enter the additional clinical symptoms.</string>
+    <string name="validation_symptoms_temperature">Please select the person\'s temperature.</string>
+    <string name="validation_symptoms_temperature_source">Please select the temperature source.</string>
+    <string name="validation_symptoms_fever">Temperature is in fever range. Fever should be set to \'Yes\'.</string>
+    <string name="validation_contact_relation">Please select the relation to the case.</string>
+    <string name="validation_contact_proximity">Please select the contact proximity.</string>
+    <string name="validation_contact_last_date">Please enter a valid last contact date.</string>
+    <string name="validation_event_type">Please select the type of alert.</string>
+    <string name="validation_event_description">Please enter a description for the alert.</string>
+    <string name="validation_event_date">Please enter the alert date.</string>
+    <string name="validation_event_type_of_place">Please select the type of place.</string>
+    <string name="validation_event_type_of_place_details">Please describe the type of place.</string>
+    <string name="validation_event_src_first_name">Please enter the first name of the alert source.</string>
+    <string name="validation_event_src_last_name">Please enter the last name of the alert source.</string>
+    <string name="validation_event_src_tel_no">Please enter the telephone number of the alert source.</string>
+    <string name="validation_event_participant_involvement_desc">Please enter an involvement description.</string>
+    <string name="validation_sample_date_time">Please enter the date and time when the sample has been taken.</string>
+    <string name="validation_sample_material">Please select the sample material.</string>
+    <string name="validation_sample_material_details">Please describe the sample material.</string>
+    <string name="validation_sample_shipment_status">Please select the shipment status.</string>
+    <string name="validation_sample_shipment_date">Please enter the shipment date.</string>
+    <string name="validation_sample_lab">Please select the laboratory.</string>
+    <string name="validation_visit_10_days_before">The visit cannot be more than 10 days before the last contact date.</string>
+    <string name="validation_visit_10_days_after">The visit cannot be more than 10 days after the end of the follow-up duration.</string>
+    <string name="validation_visit_date_time">Please enter the date and time of the visit.</string>
+    <string name="validation_visit_status">Please select the visit status.</string>
+
+    <string name="validation_soft_case_epid_number">The EPID number does not match the required pattern. You may still save the case and enter the correct number later.</string>
+    <string name="validation_soft_case_epid_number_empty">An EPID number has to be provided. You may still save the case and enter the correct number later.</string>
 
 </resources>

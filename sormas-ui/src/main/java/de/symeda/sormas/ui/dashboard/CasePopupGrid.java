@@ -78,10 +78,14 @@ public class CasePopupGrid extends Grid {
         });
         
         setColumns(CaseDataDto.UUID, DISEASE_SHORT, CaseDataDto.CASE_CLASSIFICATION, FIRST_NAME,
-        		LAST_NAME, CaseDataDto.REPORT_DATE);
+        		LAST_NAME, CaseDataDto.REPORT_DATE, CaseDataDto.HEALTH_FACILITY_DETAILS);
         
         getColumn(CaseDataDto.UUID).setRenderer(new UuidRenderer());
         getColumn(CaseDataDto.REPORT_DATE).setRenderer(new DateRenderer(DateHelper.getDateTimeFormat()));
+        
+        if (!facility.getUuid().equals(FacilityDto.OTHER_FACILITY_UUID)) {
+        	getColumn(CaseDataDto.HEALTH_FACILITY_DETAILS).setHidden(true);
+        }
         
         for (Column column : getColumns()) {
         	column.setHeaderCaption(I18nProperties.getPrefixFieldCaption(

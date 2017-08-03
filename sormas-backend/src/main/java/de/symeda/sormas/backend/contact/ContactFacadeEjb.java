@@ -19,7 +19,6 @@ import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
-import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.caze.Case;
@@ -89,6 +88,15 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 	
 	@Override
+	public List<ContactDto> getAllByCase(CaseReferenceDto caseRef) {
+		Case caze = caseService.getByReferenceDto(caseRef);
+		
+		return contactService.getAllByCase(caze).stream()
+				.map(c -> toDto(c))
+				.collect(Collectors.toList());
+	}
+	
+	@Override
 	public List<ContactIndexDto> getIndexList(String userUuid) {
 		
 		User user = userService.getByUuid(userUuid);
@@ -126,8 +134,15 @@ public class ContactFacadeEjb implements ContactFacade {
 	@Override
 	public ContactDto saveContact(ContactDto dto) {
 		Contact entity = fromDto(dto);
-		updateFollowUpUntil(entity);
 		contactService.ensurePersisted(entity);
+		contactService.updateFollowUpUntilAndStatus(entity);
+		return toDto(entity);
+	}
+	
+	@Override
+	public ContactDto updateFollowUpUntilAndStatus(ContactDto dto) {
+		Contact entity = fromDto(dto);
+		contactService.updateFollowUpUntilAndStatus(entity);
 		return toDto(entity);
 	}
 	
@@ -244,42 +259,4 @@ public class ContactFacadeEjb implements ContactFacade {
 		
 		return target;
 	}
-	
-	private int getFollowUpDuration(Disease disease) {
-		switch (disease) {
-		case EVD:
-		case CHOLERA:
-			return 21;
-		case AVIAN_INFLUENCA:
-			return 17;
-		case LASSA:
-			return 6;
-		default:
-			return 0;
-		}
-	}
-	
-	/**
-	 * Calculates and sets the follow-up until date and status of the contact.
-	 * <ul>
-	 * <li>Disease with no follow-up: Leave empty and set follow-up status to "No follow-up"</li>
-	 * <li>Others: Use follow-up duration of the disease. Reference for calculation is the reporting date 
-	 *   (since this is always later than the last contact date and we can't be sure the last contact date is correct)
-	 *   TODO include day of last visit rule</li>
-	 * </ul>
-	 */
-	private void updateFollowUpUntil(Contact contact) {
-		Disease disease = contact.getCaze().getDisease();
-		int followUpDuration = getFollowUpDuration(disease);
-
-		if (followUpDuration == 0) {
-			contact.setFollowUpUntil(null);
-			contact.setFollowUpStatus(FollowUpStatus.NO_FOLLOW_UP);
-		} else {
-			LocalDate beginDate = new LocalDate(contact.getReportDateTime());
-			contact.setFollowUpUntil(beginDate.plusDays(followUpDuration).toDate());
-			contact.setFollowUpStatus(FollowUpStatus.FOLLOW_UP);
-		}
-	}
-	
 }

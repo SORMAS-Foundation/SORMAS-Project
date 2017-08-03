@@ -30,7 +30,7 @@ public class SampleTestController {
 		editView.addCommitListener(new CommitListener() {
 			@Override
 			public void onCommit() {
-				if(createForm.getFieldGroup().isValid()) {
+				if (!createForm.getFieldGroup().isModified()) {
 					SampleTestDto dto = createForm.getValue();
 					stf.saveSampleTest(dto);
 					grid.reload();
@@ -52,7 +52,7 @@ public class SampleTestController {
 		editView.addCommitListener(new CommitListener() {
 			@Override
 			public void onCommit() {
-				if(form.getFieldGroup().isValid()) {
+				if (!form.getFieldGroup().isModified()) {
 					SampleTestDto dto = form.getValue();
 					stf.saveSampleTest(dto);
 					grid.reload();

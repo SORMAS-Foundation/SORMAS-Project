@@ -21,6 +21,7 @@ import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.databinding.EventParticipantFragmentLayoutBinding;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.FormTab;
+import de.symeda.sormas.app.validation.EventParticipantValidator;
 
 public class EventParticipantDataForm extends FormTab {
 
@@ -41,11 +42,18 @@ public class EventParticipantDataForm extends FormTab {
         if (eventParticipant == null) {
             eventParticipant = eventParticipantDao.create();
         }
+
+        EventParticipantValidator.setRequiredHintsForEventParticipantData(binding);
+
         binding.setEventParticipant(eventParticipant);
     }
 
     @Override
     public AbstractDomainObject getData() {
         return binding.getEventParticipant();
+    }
+
+    public EventParticipantFragmentLayoutBinding getBinding() {
+        return binding;
     }
 }

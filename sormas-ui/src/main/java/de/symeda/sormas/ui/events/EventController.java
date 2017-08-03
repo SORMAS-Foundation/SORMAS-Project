@@ -76,7 +76,7 @@ public class EventController {
 		editView.addCommitListener(new CommitListener() {
 			@Override
 			public void onCommit() {
-				if(eventCreateForm.getFieldGroup().isValid()) {
+				if(!eventCreateForm.getFieldGroup().isModified()) {
 					EventDto dto = eventCreateForm.getValue();
 					ef.saveEvent(dto);
 					Notification.show("New alert created", Type.WARNING_MESSAGE);
@@ -97,7 +97,7 @@ public class EventController {
 		editView.addCommitListener(new CommitListener() {
 			@Override
 			public void onCommit() {
-				if(eventEditForm.getFieldGroup().isValid()) {
+				if(!eventEditForm.getFieldGroup().isModified()) {
 					EventDto eventDto = eventEditForm.getValue();
 					eventDto = ef.saveEvent(eventDto);
 					Notification.show("Alert data saved", Type.WARNING_MESSAGE);

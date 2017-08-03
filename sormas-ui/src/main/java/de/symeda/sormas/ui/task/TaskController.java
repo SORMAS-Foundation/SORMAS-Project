@@ -54,7 +54,7 @@ public class TaskController {
         editView.addCommitListener(new CommitListener() {
         	@Override
         	public void onCommit() {
-        		if (createForm.getFieldGroup().isValid()) {
+        		if (!createForm.getFieldGroup().isModified()) {
         			TaskDto dto = createForm.getValue();
         			FacadeProvider.getTaskFacade().saveTask(dto);
         			grid.reload();
@@ -76,7 +76,7 @@ public class TaskController {
         editView.addCommitListener(new CommitListener() {
         	@Override
         	public void onCommit() {
-        		if (form.getFieldGroup().isValid()) {
+        		if (!form.getFieldGroup().isModified()) {
         			TaskDto dto = form.getValue();
         			FacadeProvider.getTaskFacade().saveTask(dto);
         			grid.reload();

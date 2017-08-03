@@ -3,7 +3,7 @@
     <parent>
         <artifactId>sormas-base</artifactId>
         <groupId>de.symeda.sormas</groupId>
-        <version>0.1.0</version>
+        <version>0.2.0</version>
         <relativePath>../sormas-base</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -40,6 +40,29 @@
 			<artifactId>joda-time</artifactId>
 		</dependency>
 
+		<!-- Testing -->
+
+		<dependency>
+		    <groupId>org.eclipse.persistence</groupId>
+    		<artifactId>org.eclipse.persistence.jpa</artifactId>
+		</dependency>
+
+		<dependency>
+		    <groupId>org.hibernate</groupId>
+    		<artifactId>hibernate-validator</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+		</dependency>
+			
+	    <dependency>
+	      	<groupId>info.novatec</groupId>
+	      	<artifactId>bean-test</artifactId>
+	    </dependency>
+	    
+    
     </dependencies>
 
     <build>

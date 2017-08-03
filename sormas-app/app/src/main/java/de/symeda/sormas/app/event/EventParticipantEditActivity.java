@@ -27,11 +27,15 @@ import de.symeda.sormas.app.backend.event.EventParticipantDao;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.component.UserReportDialog;
+import de.symeda.sormas.app.databinding.EventParticipantFragmentLayoutBinding;
+import de.symeda.sormas.app.databinding.PersonEditFragmentLayoutBinding;
 import de.symeda.sormas.app.person.PersonEditForm;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.SyncCallback;
+import de.symeda.sormas.app.validation.EventParticipantValidator;
+import de.symeda.sormas.app.validation.PersonValidator;
 
 
 public class EventParticipantEditActivity extends AbstractSormasActivity {
@@ -142,51 +146,53 @@ public class EventParticipantEditActivity extends AbstractSormasActivity {
                 eventParticipant = (EventParticipant) eventParticipantTab.getData();
                 Person person = (Person) personEditForm.getData();
 
-                boolean eventParticipantDescReq =  eventParticipant.getInvolvementDescription()==null||eventParticipant.getInvolvementDescription().isEmpty();
-                boolean eventParticipantFirstNameReq =  person.getFirstName()==null||person.getFirstName().isEmpty();
-                boolean eventParticipantLastNameReq =  person.getLastName()==null||person.getLastName().isEmpty();
+                // Validation
+                EventParticipantFragmentLayoutBinding eventParticipantBinding = eventParticipantTab.getBinding();
+                PersonEditFragmentLayoutBinding personBinding = personEditForm.getBinding();
 
-                boolean validData = !eventParticipantDescReq
-                        && !eventParticipantFirstNameReq
-                        && !eventParticipantLastNameReq;
+                EventParticipantValidator.clearErrorsForEventParticipantData(eventParticipantBinding);
+                PersonValidator.clearErrors(personBinding);
 
-                if (validData) {
-                    try {
-                        PersonDao personDao = DatabaseHelper.getPersonDao();
-                        EventParticipantDao eventParticipantDao = DatabaseHelper.getEventParticipantDao();
-                        personDao.saveAndSnapshot(person);
-                        eventParticipant.setPerson(person);
-                        eventParticipantDao.saveAndSnapshot(eventParticipant);
+                boolean validationError = false;
 
-                        if (RetroProvider.isConnected()) {
-                            SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.ChangesOnly, this, new SyncCallback() {
-                                @Override
-                                public void call(boolean syncFailed) {
-                                    if (syncFailed) {
-                                        Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_sync_error_saved), getResources().getString(R.string.entity_alert_person)), Snackbar.LENGTH_LONG).show();
-                                    } else {
-                                        Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_alert_person)), Snackbar.LENGTH_LONG).show();
-                                    }
-                                    finish();
+                if (!PersonValidator.validatePersonData(person, personBinding)) {
+                    validationError = true;
+                }
+                if (!EventParticipantValidator.validateEventParticipantData(eventParticipant, eventParticipantBinding)) {
+                    validationError = true;
+                }
+
+                if (validationError) {
+                    return true;
+                }
+
+                try {
+                    PersonDao personDao = DatabaseHelper.getPersonDao();
+                    EventParticipantDao eventParticipantDao = DatabaseHelper.getEventParticipantDao();
+                    personDao.saveAndSnapshot(person);
+                    eventParticipant.setPerson(person);
+                    eventParticipantDao.saveAndSnapshot(eventParticipant);
+
+                    if (RetroProvider.isConnected()) {
+                        SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.ChangesOnly, this, new SyncCallback() {
+                            @Override
+                            public void call(boolean syncFailed) {
+                                if (syncFailed) {
+                                    Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_sync_error_saved), getResources().getString(R.string.entity_alert_person)), Snackbar.LENGTH_LONG).show();
+                                } else {
+                                    Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_alert_person)), Snackbar.LENGTH_LONG).show();
                                 }
-                            });
-                        } else {
-                            Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_alert_person)), Snackbar.LENGTH_LONG).show();
-                            finish();
-                        }
-                    } catch (DaoException e) {
-                        Log.e(getClass().getName(), "Error while trying to save alert person", e);
-                        Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_error), getResources().getString(R.string.entity_alert_person)), Snackbar.LENGTH_LONG).show();
-                        ErrorReportingHelper.sendCaughtException(tracker, e, eventParticipant, true);
+                                finish();
+                            }
+                        });
+                    } else {
+                        Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_alert_person)), Snackbar.LENGTH_LONG).show();
+                        finish();
                     }
-                } else {
-                    if (eventParticipantDescReq) {
-                        Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_alert_person_description, Snackbar.LENGTH_LONG).show();
-                    } else if (eventParticipantFirstNameReq) {
-                        Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_alert_person_firstName, Snackbar.LENGTH_LONG).show();
-                    } else if (eventParticipantLastNameReq) {
-                        Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_alert_person_lastName, Snackbar.LENGTH_LONG).show();
-                    }
+                } catch (DaoException e) {
+                    Log.e(getClass().getName(), "Error while trying to save alert person", e);
+                    Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_error), getResources().getString(R.string.entity_alert_person)), Snackbar.LENGTH_LONG).show();
+                    ErrorReportingHelper.sendCaughtException(tracker, e, eventParticipant, true);
                 }
 
                 return true;

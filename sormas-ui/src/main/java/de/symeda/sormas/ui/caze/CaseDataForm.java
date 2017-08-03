@@ -1,14 +1,21 @@
 package de.symeda.sormas.ui.caze;
 
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 
+import com.vaadin.data.Property;
+import com.vaadin.data.validator.RegexpValidator;
+import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.CloseEvent;
+import com.vaadin.ui.Window.CloseListener;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
@@ -20,16 +27,23 @@ import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
+import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.Diseases.DiseasesConfiguration;
+import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
+import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DoneListener;
+import de.symeda.sormas.ui.utils.ConfirmationComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
+import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 @SuppressWarnings("serial")
 public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
@@ -80,10 +94,16 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
     	}
     	
     	addField(CaseDataDto.UUID, TextField.class);
-    	addField(CaseDataDto.EPID_NUMBER, TextField.class);
+    	
+    	TextField epidField = addField(CaseDataDto.EPID_NUMBER, TextField.class);
+    	epidField.addValidator(new RegexpValidator(DataHelper.getEpidNumberRegexp(), true, 
+    			"The EPID number does not match the required pattern. You may still save the case and enter the correct number later."));
+    	epidField.addValidator(new StringLengthValidator("An EPID number has to be provided. You may still save the case and enter the correct number later.", 1, null, false));
+    	epidField.setInvalidCommitted(true);
+    	
     	addField(CaseDataDto.CASE_CLASSIFICATION, OptionGroup.class);
     	addField(CaseDataDto.INVESTIGATION_STATUS, OptionGroup.class);
-    	addField(CaseDataDto.DISEASE, NativeSelect.class);
+    	NativeSelect diseaseField = addField(CaseDataDto.DISEASE, NativeSelect.class);
     	TextField healthFacilityDetails = addField(CaseDataDto.HEALTH_FACILITY_DETAILS, TextField.class);
     	
     	ComboBox region = addField(CaseDataDto.REGION, ComboBox.class);
@@ -100,16 +120,23 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
     	});
     	district.addValueChangeListener(e -> {
     		community.removeAllItems();
-    		DistrictReferenceDto districtDto = (DistrictReferenceDto)e.getProperty().getValue();
-    		if (districtDto != null) {
-    			community.addItems(FacadeProvider.getCommunityFacade().getAllByDistrict(districtDto.getUuid()));
+    		DistrictReferenceDto districtReferenceDto = (DistrictReferenceDto)e.getProperty().getValue();
+    		if (districtReferenceDto != null) {
+    			community.addItems(FacadeProvider.getCommunityFacade().getAllByDistrict(districtReferenceDto.getUuid()));
+    			if (!epidField.isValid()) {
+	    			RegionDto regionDto = FacadeProvider.getRegionFacade().getRegionByUuid(((RegionReferenceDto) region.getValue()).getUuid());
+	    			DistrictDto districtDto = FacadeProvider.getDistrictFacade().getDistrictByUuid(districtReferenceDto.getUuid());
+		    		Calendar calendar = Calendar.getInstance();
+		    		String year = String.valueOf(calendar.get(Calendar.YEAR)).substring(2);
+	    			epidField.setValue(CaseDataDto.COUNTRY_EPID_CODE + "-" + regionDto.getEpidCode() + "-" + districtDto.getEpidCode() + "-" + year + "-");
+    			}
     		}
     	});
     	community.addValueChangeListener(e -> {
     		facility.removeAllItems();
     		CommunityReferenceDto communityDto = (CommunityReferenceDto)e.getProperty().getValue();
     		if (communityDto != null) {
-    			facility.addItems(FacadeProvider.getFacilityFacade().getAllByCommunity(communityDto, true));
+    			facility.addItems(FacadeProvider.getFacilityFacade().getHealthFacilitiesByCommunity(communityDto, true));
     		}
     	});
 		region.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
@@ -139,7 +166,10 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
     	setRequired(true, CaseDataDto.CASE_CLASSIFICATION, CaseDataDto.INVESTIGATION_STATUS,
     			CaseDataDto.REGION, CaseDataDto.DISTRICT, CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY);
 
-    	setReadOnly(true, CaseDataDto.UUID, CaseDataDto.DISEASE, CaseDataDto.INVESTIGATION_STATUS);
+    	setReadOnly(true, CaseDataDto.UUID, CaseDataDto.INVESTIGATION_STATUS);
+    	if (!UserRole.isSupervisor(LoginHelper.getCurrentUserRoles())) {
+    		setReadOnly(true, CaseDataDto.DISEASE);
+    	}
     	
     	Sex personSex = person.getSex();
     	if (personSex != Sex.FEMALE) {
@@ -149,8 +179,13 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
     	boolean visible = DiseasesConfiguration.isDefinedOrMissing(CaseDataDto.class, CaseDataDto.MEASLES_VACCINATION, disease);
 		setVisible(visible, CaseDataDto.MEASLES_VACCINATION);
 		
-		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.MEASLES_DOSES, CaseDataDto.MEASLES_VACCINATION_INFO_SOURCE), 
-				CaseDataDto.MEASLES_VACCINATION, Arrays.asList(Vaccination.VACCINATED), true);
+		if (visible) {
+			FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.MEASLES_DOSES, CaseDataDto.MEASLES_VACCINATION_INFO_SOURCE), 
+					CaseDataDto.MEASLES_VACCINATION, Arrays.asList(Vaccination.VACCINATED), true);
+		} else {
+			getField(CaseDataDto.MEASLES_VACCINATION).setValue(null);
+			setVisible(false, CaseDataDto.MEASLES_DOSES, CaseDataDto.MEASLES_VACCINATION_INFO_SOURCE);
+		}
 		
 		List<String> medicalInformationFields = Arrays.asList(CaseDataDto.PREGNANT, CaseDataDto.MEASLES_VACCINATION);
 		
@@ -168,8 +203,10 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		reportInfoLabel.setContentMode(ContentMode.HTML);
 		reportInfoLabel.setCaption(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, REPORT_INFO_LOC));
 		getContent().addComponent(reportInfoLabel, REPORT_INFO_LOC);
+		
 		addValueChangeListener(e -> {
 			updateReportInfo();
+			diseaseField.addValueChangeListener(new DiseaseChangeListener(diseaseField, getValue().getDisease()));
 		});
 		
 		facility.addValueChangeListener(e -> {
@@ -193,5 +230,60 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	@Override 
 	protected String createHtmlLayout() {
 		 return HTML_LAYOUT;
+	}
+	
+	private static class DiseaseChangeListener implements ValueChangeListener {
+		
+		private NativeSelect diseaseField;
+		private Disease currentDisease;
+		
+		DiseaseChangeListener(NativeSelect diseaseField, Disease currentDisease) {
+			this.diseaseField = diseaseField;
+			this.currentDisease = currentDisease;
+		}
+		
+		@Override
+		public void valueChange(Property.ValueChangeEvent e) {
+			
+			if (diseaseField.getValue() != currentDisease) {
+				ConfirmationComponent confirmDiseaseChangeComponent = getConfirmDiseaseChangeComponent(diseaseField, currentDisease);
+				Window popupWindow = VaadinUiUtil.showPopupWindow(confirmDiseaseChangeComponent);
+				CloseListener closeListener = new CloseListener() {
+					@Override
+					public void windowClose(CloseEvent e) {
+						diseaseField.setValue(currentDisease);
+					}
+				};
+				popupWindow.addCloseListener(closeListener);
+				confirmDiseaseChangeComponent.addDoneListener(new DoneListener() {
+					public void onDone() {
+						diseaseField.removeValueChangeListener(DiseaseChangeListener.this);
+						popupWindow.removeCloseListener(closeListener);
+						popupWindow.close();
+					}
+				});
+				popupWindow.setCaption("Change case disease");       
+			}
+		}
+		
+		private ConfirmationComponent getConfirmDiseaseChangeComponent(NativeSelect diseaseField, Disease currentDisease) {
+			ConfirmationComponent confirmDiseaseChangeComponent = new ConfirmationComponent(false) {
+				private static final long serialVersionUID = 1L;
+				@Override
+				protected void onConfirm() {
+					onDone();
+				}
+				@Override
+				protected void onCancel() {
+					diseaseField.setValue(currentDisease);
+					onDone();
+				}
+			};
+			confirmDiseaseChangeComponent.getConfirmButton().setCaption("Really change case disease?");
+			confirmDiseaseChangeComponent.getCancelButton().setCaption("Cancel");
+			confirmDiseaseChangeComponent.setMargin(true);
+			return confirmDiseaseChangeComponent;
+		}
+		
 	}
 }

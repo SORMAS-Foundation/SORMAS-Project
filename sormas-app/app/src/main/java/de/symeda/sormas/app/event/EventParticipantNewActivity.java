@@ -29,11 +29,13 @@ import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.component.SelectOrCreatePersonDialogBuilder;
 import de.symeda.sormas.app.component.UserReportDialog;
+import de.symeda.sormas.app.databinding.EventParticipantNewFragmentLayoutBinding;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.SyncCallback;
+import de.symeda.sormas.app.validation.EventParticipantValidator;
 
 public class EventParticipantNewActivity extends AppCompatActivity {
 
@@ -106,55 +108,43 @@ public class EventParticipantNewActivity extends AppCompatActivity {
             case R.id.action_save:
                 final EventParticipant eventParticipant = eventParticipantNewPersonForm.getData();
 
-                boolean eventParticipantDescReq =  eventParticipant.getInvolvementDescription()==null||eventParticipant.getInvolvementDescription().isEmpty();
-                boolean eventParticipantFirstNameReq =  eventParticipant.getPerson().getFirstName()==null||eventParticipant.getPerson().getFirstName().isEmpty();
-                boolean eventParticipantLastNameReq =  eventParticipant.getPerson().getLastName()==null||eventParticipant.getPerson().getLastName().isEmpty();
+                // Validation
+                EventParticipantNewFragmentLayoutBinding binding = eventParticipantNewPersonForm.getBinding();
+                EventParticipantValidator.clearErrorsForNewEventParticipant(binding);
+                if (!EventParticipantValidator.validateNewEvent(eventParticipant, binding)) {
+                    return true;
+                }
 
-                boolean validData = !eventParticipantDescReq
-                        && !eventParticipantFirstNameReq
-                        && !eventParticipantLastNameReq;
+                try {
+                    List<Person> existingPersons = DatabaseHelper.getPersonDao().getAllByName(eventParticipant.getPerson().getFirstName(), eventParticipant.getPerson().getLastName());
+                    if (existingPersons.size() > 0) {
 
-                if(validData) {
-                    try {
-                        List<Person> existingPersons = DatabaseHelper.getPersonDao().getAllByName(eventParticipant.getPerson().getFirstName(), eventParticipant.getPerson().getLastName());
-                        if (existingPersons.size() > 0) {
-
-                            AlertDialog.Builder dialogBuilder = new SelectOrCreatePersonDialogBuilder(this, eventParticipant.getPerson(), existingPersons, new Consumer() {
-                                @Override
-                                public void accept(Object parameter) {
-                                    if (parameter instanceof Person) {
-                                        try {
-                                            eventParticipant.setPerson((Person) parameter);
-                                            savePersonAndEventParticipant(eventParticipant);
-                                        } catch (DaoException e) {
-                                            Log.e(getClass().getName(), "Error while trying to create alert person", e);
-                                            Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_create_error), getResources().getString(R.string.entity_alert_person)), Snackbar.LENGTH_LONG).show();
-                                            ErrorReportingHelper.sendCaughtException(tracker, e, null, true);
-                                        }
+                        AlertDialog.Builder dialogBuilder = new SelectOrCreatePersonDialogBuilder(this, eventParticipant.getPerson(), existingPersons, new Consumer() {
+                            @Override
+                            public void accept(Object parameter) {
+                                if (parameter instanceof Person) {
+                                    try {
+                                        eventParticipant.setPerson((Person) parameter);
+                                        savePersonAndEventParticipant(eventParticipant);
+                                    } catch (DaoException e) {
+                                        Log.e(getClass().getName(), "Error while trying to create alert person", e);
+                                        Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_create_error), getResources().getString(R.string.entity_alert_person)), Snackbar.LENGTH_LONG).show();
+                                        ErrorReportingHelper.sendCaughtException(tracker, e, null, true);
                                     }
                                 }
-                            });
-                            AlertDialog newPersonDialog = dialogBuilder.create();
-                            newPersonDialog.show();
-                            ((SelectOrCreatePersonDialogBuilder) dialogBuilder).setButtonListeners(newPersonDialog, this);
+                            }
+                        });
+                        AlertDialog newPersonDialog = dialogBuilder.create();
+                        newPersonDialog.show();
+                        ((SelectOrCreatePersonDialogBuilder) dialogBuilder).setButtonListeners(newPersonDialog, this);
 
-                        } else {
-                            savePersonAndEventParticipant(eventParticipant);
-                        }
-                    } catch (DaoException e) {
-                        Log.e(getClass().getName(), "Error while trying to create alert person", e);
-                        Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_create_error), getResources().getString(R.string.entity_alert_person)), Snackbar.LENGTH_LONG).show();
-                        ErrorReportingHelper.sendCaughtException(tracker, e, null, true);
+                    } else {
+                        savePersonAndEventParticipant(eventParticipant);
                     }
-                }
-                else {
-                    if (eventParticipantDescReq) {
-                        Snackbar.make(findViewById(R.id.fragment_frame), R.string.snackbar_alert_person_description, Snackbar.LENGTH_LONG).show();
-                    } else if (eventParticipantFirstNameReq) {
-                        Snackbar.make(findViewById(R.id.fragment_frame), R.string.snackbar_alert_person_firstName, Snackbar.LENGTH_LONG).show();
-                    } else if (eventParticipantLastNameReq) {
-                        Snackbar.make(findViewById(R.id.fragment_frame), R.string.snackbar_alert_person_lastName, Snackbar.LENGTH_LONG).show();
-                    }
+                } catch (DaoException e) {
+                    Log.e(getClass().getName(), "Error while trying to create alert person", e);
+                    Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_create_error), getResources().getString(R.string.entity_alert_person)), Snackbar.LENGTH_LONG).show();
+                    ErrorReportingHelper.sendCaughtException(tracker, e, null, true);
                 }
 
                 return true;
@@ -166,7 +156,7 @@ public class EventParticipantNewActivity extends AppCompatActivity {
 
     private void savePersonAndEventParticipant(final EventParticipant eventParticipant) throws DaoException {
 
-		// save the person
+        // save the person
         PersonDao personDao = DatabaseHelper.getPersonDao();
         personDao.saveAndSnapshot(eventParticipant.getPerson());
         // set the given event

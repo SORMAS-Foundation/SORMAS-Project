@@ -36,7 +36,7 @@ public class VisitController {
         editView.addCommitListener(new CommitListener() {
         	@Override
         	public void onCommit() {
-        		if (editForm.getFieldGroup().isValid()) {
+        		if (!editForm.getFieldGroup().isModified()) {
         			VisitDto dto = editForm.getValue();
         			dto = FacadeProvider.getVisitFacade().saveVisit(dto);
         			if (doneConsumer != null) {
@@ -61,7 +61,7 @@ public class VisitController {
         editView.addCommitListener(new CommitListener() {
         	@Override
         	public void onCommit() {
-        		if (createForm.getFieldGroup().isValid()) {
+        		if (!createForm.getFieldGroup().isModified()) {
         			VisitDto dto = createForm.getValue();
         			dto = FacadeProvider.getVisitFacade().saveVisit(dto);
         			if (doneConsumer != null) {

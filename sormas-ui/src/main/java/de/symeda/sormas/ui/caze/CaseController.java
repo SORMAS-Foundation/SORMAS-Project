@@ -1,5 +1,6 @@
 package de.symeda.sormas.ui.caze;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -22,6 +23,8 @@ import de.symeda.sormas.api.epidata.EpiDataFacade;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationFacade;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.region.DistrictDto;
+import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsFacade;
 import de.symeda.sormas.api.user.UserDto;
@@ -174,8 +177,14 @@ public class CaseController {
         editView.addCommitListener(new CommitListener() {
         	@Override
         	public void onCommit() {
-        		if (createForm.getFieldGroup().isValid()) {
+        		if (!createForm.getFieldGroup().isModified()) {
         			final CaseDataDto dto = createForm.getValue();
+        			// Generate EPID number prefix
+    	    		Calendar calendar = Calendar.getInstance();
+    	    		String year = String.valueOf(calendar.get(Calendar.YEAR)).substring(2);
+    	    		RegionDto region = FacadeProvider.getRegionFacade().getRegionByUuid(dto.getRegion().getUuid());
+    	    		DistrictDto district = FacadeProvider.getDistrictFacade().getDistrictByUuid(dto.getDistrict().getUuid());
+    	    		dto.setEpidNumber(CaseDataDto.COUNTRY_EPID_CODE + "-" + region.getEpidCode() + "-" + district.getEpidCode() + "-" + year + "-");
         			
         			if (contact != null) {
         				// automatically change the contact classification to "converted"
@@ -215,11 +224,16 @@ public class CaseController {
         editView.addCommitListener(new CommitListener() {
         	@Override
         	public void onCommit() {
-        		if (caseEditForm.getFieldGroup().isValid()) {
-        			CaseDataDto cazeDto = caseEditForm.getValue();
-        			cazeDto = cf.saveCase(cazeDto);
-        			Notification.show("Case data saved", Type.WARNING_MESSAGE);
-        			navigateToData(cazeDto.getUuid());
+        		if (!caseEditForm.getFieldGroup().isModified()) {
+        			final CaseDataDto cazeDto = caseEditForm.getValue();       
+        			final CaseDataDto currentCazeDto = findCase(cazeDto.getUuid());
+        			saveCase(cazeDto);
+        			
+        			if (cazeDto.getDisease() != currentCazeDto.getDisease()) {
+        				for (ContactDto contact : FacadeProvider.getContactFacade().getAllByCase(FacadeProvider.getCaseFacade().getReferenceByUuid(cazeDto.getUuid()))) {
+							FacadeProvider.getContactFacade().updateFollowUpUntilAndStatus(contact);
+						}
+        			}
         		}
         	}
         });
@@ -240,7 +254,7 @@ public class CaseController {
         	
         	@Override
         	public void onCommit() {
-        		if (symptomsForm.getFieldGroup().isValid()) {
+        		if (!symptomsForm.getFieldGroup().isModified()) {
         			SymptomsDto dto = symptomsForm.getValue();
         			sf.saveSymptoms(dto);
         			Notification.show("Case symptoms saved", Type.WARNING_MESSAGE);
@@ -262,7 +276,7 @@ public class CaseController {
 		editView.addCommitListener(new CommitListener() {
 			@Override
 			public void onCommit() {
-				if (hospitalizationForm.getFieldGroup().isValid()) {
+				if (!hospitalizationForm.getFieldGroup().isModified()) {
 					HospitalizationDto dto = hospitalizationForm.getValue();
 					hf.saveHospitalization(dto);
 					Notification.show("Case hospitalization saved", Type.WARNING_MESSAGE);
@@ -284,7 +298,7 @@ public class CaseController {
 		editView.addCommitListener(new CommitListener() {
 			@Override
 			public void onCommit() {
-				if (epiDataForm.getFieldGroup().isValid()) {
+				if (!epiDataForm.getFieldGroup().isModified()) {
 					EpiDataDto dto = epiDataForm.getValue();
 					edf.saveEpiData(dto);
 					Notification.show("Case epidemiological data saved", Type.WARNING_MESSAGE);
@@ -294,6 +308,12 @@ public class CaseController {
 		});
 		
 		return editView;
+	}
+	
+	private void saveCase(CaseDataDto cazeDto) {
+		cazeDto = cf.saveCase(cazeDto);
+		Notification.show("Case data saved", Type.WARNING_MESSAGE);
+		navigateToData(cazeDto.getUuid());
 	}
 	
 }

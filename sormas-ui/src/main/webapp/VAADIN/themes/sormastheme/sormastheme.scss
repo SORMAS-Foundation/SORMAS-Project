@@ -219,6 +219,9 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
   .force-caption {
 	margin-top: 1.5em;
   }
+  .force-caption-21 {
+  	margin-top: 21px;
+  }
   .no-margin, .h1.no-margin, .h2.no-margin, .h3.no-margin, .h4.no-margin, .h5.no-margin, .v-checkbox.no-margin label {
   	margin: 0;
   }

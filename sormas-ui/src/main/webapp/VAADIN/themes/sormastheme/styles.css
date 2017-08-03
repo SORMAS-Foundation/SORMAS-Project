@@ -13172,6 +13172,10 @@ div.v-layout.v-horizontal.v-widget {
 	margin-top: 1.5em;
 }
 
+.sormastheme .force-caption-21 {
+	margin-top: 21px;
+}
+
 .sormastheme .no-margin, .sormastheme .h1.no-margin, .sormastheme .h2.no-margin, .sormastheme .h3.no-margin, .sormastheme .h4.no-margin, .sormastheme .h5.no-margin, .sormastheme .v-checkbox.no-margin label {
 	margin: 0;
 }

@@ -102,6 +102,7 @@ public class VisitFacadeEjb implements VisitFacade {
 	public VisitDto saveVisit(VisitDto dto) {
 		Visit entity = fromDto(dto);
 		visitService.ensurePersisted(entity);
+		contactService.updateFollowUpUntilAndStatusByVisit(entity);
 		return toDto(entity);
 	}
 

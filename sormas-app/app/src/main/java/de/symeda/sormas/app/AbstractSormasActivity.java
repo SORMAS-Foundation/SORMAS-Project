@@ -95,21 +95,26 @@ public abstract class AbstractSormasActivity extends AppCompatActivity {
         final SyncLogDao syncLogDao = DatabaseHelper.getSyncLogDao();
         final long syncLogCountBefore = syncLogDao.countOf();
 
+        String errorMessage = "";
+
         if (!RetroProvider.isConnected()) {
             try {
                 RetroProvider.connect(getApplicationContext());
             } catch (AuthenticatorException e) {
                 if (showResultSnackbar) {
                     Snackbar.make(findViewById(android.R.id.content), e.getMessage(), Snackbar.LENGTH_LONG).show();
+                    errorMessage = e.getMessage();
                 }
                 // switch to LoginActivity is done below
             } catch (RetroProvider.ApiVersionException e) {
                 if (showResultSnackbar) {
                     Snackbar.make(findViewById(android.R.id.content), e.getMessage(), Snackbar.LENGTH_LONG).show();
+                    errorMessage = e.getMessage();
                 }
             } catch (ConnectException e) {
                 if (showResultSnackbar) {
                     Snackbar.make(findViewById(android.R.id.content), e.getMessage(), Snackbar.LENGTH_LONG).show();
+                    errorMessage = e.getMessage();
                 }
             }
         }
@@ -178,7 +183,7 @@ public abstract class AbstractSormasActivity extends AppCompatActivity {
             }
 
             if (showResultSnackbar) {
-                Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_no_connection, Snackbar.LENGTH_LONG).show();
+                Snackbar.make(findViewById(android.R.id.content), errorMessage, Snackbar.LENGTH_LONG).show();
             }
         }
     }

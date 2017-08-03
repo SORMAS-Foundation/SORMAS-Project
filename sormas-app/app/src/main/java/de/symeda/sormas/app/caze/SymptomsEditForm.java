@@ -40,6 +40,7 @@ import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.FormTab;
 import de.symeda.sormas.app.util.Item;
 import de.symeda.sormas.app.util.ValidationFailedException;
+import de.symeda.sormas.app.validation.SymptomsValidator;
 
 
 /**
@@ -51,9 +52,12 @@ public class SymptomsEditForm extends FormTab {
 
     public static final String NEW_SYMPTOMS = "newSymptoms";
     public static final String FOR_VISIT = "forVisit";
+    public static final String VISIT_COOPERATIVE = "visitCooperative";
     private CaseSymptomsFragmentLayoutBinding binding;
     private List<SymptomStateField> nonConditionalSymptoms;
     private List<SymptomStateField> conditionalBleedingSymptoms;
+
+    private boolean listenersForRequiredCalled;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -112,7 +116,6 @@ public class SymptomsEditForm extends FormTab {
         toggleUnexplainedBleedingFields();
         visibilityOtherHemorrhagicSymptoms();
         visibilityOtherNonHemorrhagicSymptoms();
-
         visibilityDisease(disease);
 
         nonConditionalSymptoms = Arrays.asList(binding.symptomsFever, binding.symptomsVomiting,
@@ -191,106 +194,9 @@ public class SymptomsEditForm extends FormTab {
     @Override
     public void onResume() {
         super.onResume();
+
         // @TODO: Workaround, find a better solution. Remove autofocus on first field.
         getView().requestFocus();
-    }
-
-    /**
-     * Validates the entered information with respect to the visit status. Returns a String
-     * with the most important error message (because returning a simple boolean would mean
-     * that the respective Activity does not know what caused the validation error.
-     */
-    public boolean validateVisitData(Symptoms symptoms, boolean isCooperative) throws ValidationFailedException {
-        if(isCooperative) {
-            if(isAnyNonConditionalSymptomSetTo(null)) {
-                throw new ValidationFailedException("Not saved. Please specify the symptom states for all symptoms.");
-            }
-            if(symptoms.getTemperature() == null || symptoms.getTemperatureSource() == null) {
-                throw new ValidationFailedException("Not saved. Please specify a temperature and a temperature source.");
-            }
-            if(isAnyNonConditionalSymptomSetTo(SymptomState.YES)) {
-                if(symptoms.getOnsetDate() == null) {
-                    throw new ValidationFailedException("Not saved. Please specify the date of initial symptom onset.");
-                }
-                if(symptoms.getOnsetSymptom() == null) {
-                    throw new ValidationFailedException("Not saved. Please specify the initial onset symptom.");
-                }
-            }
-        }
-        if(symptoms.getTemperature() != null && symptoms.getTemperature().compareTo(38.0F) >= 0 &&
-                symptoms.getFever() != SymptomState.YES) {
-            throw new ValidationFailedException(
-                    "Not saved. Temperature is in fever range. Please make sure that the fever field is set to 'Yes'.");
-        }
-
-        return validateGeneralData(symptoms);
-    }
-
-    /**
-     * Validates the entered information. Returns a String with the most important error message
-     * (because returning a simple boolean would mean that the respective Activity does not know
-     * what caused the validation error.
-     */
-    public boolean validateCaseData(Symptoms symptoms) throws ValidationFailedException {
-        if(isAnyNonConditionalSymptomSetTo(SymptomState.YES)) {
-            if(symptoms.getOnsetDate() == null) {
-                throw new ValidationFailedException("Not saved. Please specify the date of initial symptom onset.");
-            }
-            if(symptoms.getOnsetSymptom() == null) {
-                throw new ValidationFailedException("Not saved. Please specify the initial onset symptom.");
-            }
-        }
-
-        return validateGeneralData(symptoms);
-    }
-
-    /**
-     * Handles all validations that are not specific to a visit or case.
-     */
-    private boolean validateGeneralData(Symptoms symptoms) throws ValidationFailedException {
-        if(symptoms.getUnexplainedBleeding() == SymptomState.YES) {
-            if(isAnyConditionalBleedingSymptomSetTo(null)) {
-                throw new ValidationFailedException("Not saved. Please specify the states for all conditional bleeding symptoms.");
-            }
-        }
-        if(symptoms.getOtherHemorrhagicSymptoms() == SymptomState.YES &&
-                (symptoms.getOtherHemorrhagicSymptomsText() == null || symptoms.getOtherHemorrhagicSymptomsText().isEmpty())) {
-            throw new ValidationFailedException("Not saved. Please specify the additional hemorrhagic symptoms.");
-        }
-        if(symptoms.getOtherNonHemorrhagicSymptoms() == SymptomState.YES &&
-                (symptoms.getOtherNonHemorrhagicSymptomsText() == null || symptoms.getOtherNonHemorrhagicSymptomsText().isEmpty())) {
-            throw new ValidationFailedException("Not saved. Please specify the additional clinical symptoms.");
-        }
-
-        return true;
-    }
-
-    /**
-     * Returns true if there is any visible non-conditional symptom set to the given symptom state
-     * or null, in which case true is returned if any symptom state is not set
-     */
-    private boolean isAnyNonConditionalSymptomSetTo(SymptomState reqSymptomState) {
-        for(SymptomStateField field : nonConditionalSymptoms) {
-            if(field.getVisibility() == View.VISIBLE && field.getValue() == reqSymptomState) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Returns true if there is any visible conditional bleeding symptom set to the given symptom state
-     * or null, in which case true is returned if any symptom state is not set
-     */
-    private boolean isAnyConditionalBleedingSymptomSetTo(SymptomState reqSymptomState) {
-        for(SymptomStateField field : conditionalBleedingSymptoms) {
-            if(field.getVisibility() == View.VISIBLE && field.getValue() == reqSymptomState) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     private void visibilityDisease(Disease disease) {
@@ -357,9 +263,15 @@ public class SymptomsEditForm extends FormTab {
                 @Override
                 public void onChange(PropertyField field) {
                     if (field.getValue() == SymptomState.YES) {
-                        adapter.remove(adapter.getItem(adapter.getCount()));
-                        adapter.add(new Item(field.getCaption(), field.getCaption()));
-                        adapter.add(new Item("Select entry", null));
+                        Item item = new Item(field.getCaption(), field.getCaption());
+                        // Workaround for Android bug (see https://issuetracker.google.com/issues/36910520)
+                        // Only continue when the item is not in the list yet, otherwise it will be added again
+                        // when calling clearAll
+                        if (binding.symptomsOnsetSymptom1.getPositionOf(item) == -1) {
+                            adapter.remove(adapter.getItem(adapter.getCount()));
+                            adapter.add(item);
+                            adapter.add(new Item("Select entry", null));
+                        }
                     } else {
                         Item item = new Item(field.getCaption(), field.getCaption());
                         if (binding.symptomsOnsetSymptom1.getPositionOf(item) != -1) {
@@ -376,9 +288,15 @@ public class SymptomsEditForm extends FormTab {
                 @Override
                 public void onChange(PropertyField field) {
                     if (field.getValue() == SymptomState.YES) {
-                        adapter.remove(adapter.getItem(adapter.getCount()));
-                        adapter.add(new Item(field.getCaption(), field.getCaption()));
-                        adapter.add(new Item("Select entry", null));
+                        Item item = new Item(field.getCaption(), field.getCaption());
+                        // Workaround for Android bug (see https://issuetracker.google.com/issues/36910520)
+                        // Only continue when the item is not in the list yet, otherwise it will be added again
+                        // when calling clearAll
+                        if (binding.symptomsOnsetSymptom1.getPositionOf(item) == -1) {
+                            adapter.remove(adapter.getItem(adapter.getCount()));
+                            adapter.add(item);
+                            adapter.add(new Item("Select entry", null));
+                        }
                     } else {
                         Item item = new Item(field.getCaption(), field.getCaption());
                         if (binding.symptomsOnsetSymptom1.getPositionOf(item) != -1) {
@@ -394,6 +312,10 @@ public class SymptomsEditForm extends FormTab {
     @Override
     public AbstractDomainObject getData() {
         return binding.getSymptoms();
+    }
+
+    public CaseSymptomsFragmentLayoutBinding getBinding() {
+        return binding;
     }
 
 }

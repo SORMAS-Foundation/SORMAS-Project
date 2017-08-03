@@ -10,7 +10,6 @@ import javax.ejb.Stateless;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityFacade;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.backend.region.Community;
@@ -38,10 +37,10 @@ public class FacilityFacadeEjb implements FacilityFacade {
 
 	
 	@Override
-	public List<FacilityReferenceDto> getAllByCommunity(CommunityReferenceDto communityRef, boolean includeOthers) {
+	public List<FacilityReferenceDto> getHealthFacilitiesByCommunity(CommunityReferenceDto communityRef, boolean includeOthers) {
 		
 		Community community = communityService.getByUuid(communityRef.getUuid());
-		List<Facility> facilities = service.getAllByCommunity(community, includeOthers);
+		List<Facility> facilities = service.getHealthFacilitiesByCommunity(community, includeOthers);
 		
 		return facilities.stream()
 				.map(f -> toReferenceDto(f))
@@ -49,9 +48,9 @@ public class FacilityFacadeEjb implements FacilityFacade {
 	}
 	
 	@Override
-	public List<FacilityReferenceDto> getAllByDistrict(DistrictReferenceDto districtRef, boolean includeOthers) {
+	public List<FacilityReferenceDto> getHealthFacilitiesByDistrict(DistrictReferenceDto districtRef, boolean includeOthers) {
     	District district = districtService.getByUuid(districtRef.getUuid());
-		List<Facility> facilities = service.getAllByDistrict(district, includeOthers);
+		List<Facility> facilities = service.getHealthFacilitiesByDistrict(district, includeOthers);
 		
 		return facilities.stream()
 				.map(f -> toReferenceDto(f))
@@ -60,7 +59,7 @@ public class FacilityFacadeEjb implements FacilityFacade {
 
 	@Override
 	public List<FacilityReferenceDto> getAllLaboratories() {
-		List<Facility> laboratories = service.getAllByFacilityType(FacilityType.LABORATORY, false);
+		List<Facility> laboratories = service.getAllLaboratories();
 		
 		return laboratories.stream()
 				.map(l -> toReferenceDto(l))

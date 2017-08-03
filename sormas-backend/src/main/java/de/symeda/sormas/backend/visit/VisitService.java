@@ -1,11 +1,14 @@
 package de.symeda.sormas.backend.visit;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
@@ -15,6 +18,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -24,6 +28,7 @@ import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.util.DateHelper8;
 
 @Stateless
 @LocalBean
@@ -130,6 +135,34 @@ public class VisitService extends AbstractAdoService<Visit> {
 
 		List<Visit> resultList = em.createQuery(cq).getResultList();
 		return resultList;
+	}
+	
+	public Visit getLastVisitByPerson(Person person, Disease disease, LocalDate maxDate) {
+		
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Visit> cq = cb.createQuery(getElementClass());
+		Root<Visit> from = cq.from(getElementClass());
+
+		// all of the person
+		Predicate filter = cb.equal(from.get(Visit.PERSON), person);
+
+		// only disease relevant
+		filter = cb.and(filter, cb.equal(from.get(Visit.DISEASE), disease));
+		
+		// before or equal date
+		Predicate dateFilter = cb.lessThan(from.get(Visit.VISIT_DATE_TIME), DateHelper8.toDate(maxDate.plusDays(1)));
+		filter = cb.and(filter, dateFilter);
+
+		cq.where(filter);
+		cq.orderBy(cb.desc(from.get(Visit.VISIT_DATE_TIME)));
+
+		try {
+			Visit result = em.createQuery(cq).getSingleResult();
+			return result;
+		} 
+		catch (NoResultException | NonUniqueResultException ex) {
+			return null;
+		}
 	}
 	
 	public List<Visit> getAllByPerson(Person person) {

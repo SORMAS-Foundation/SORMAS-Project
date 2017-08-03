@@ -25,10 +25,14 @@ public class District extends AbstractDomainObject {
 	public static final String I18N_PREFIX = "District";
 
 	public static final String NAME = "name";
+	public static final String EPID_CODE = "epidCode";
 	public static final String REGION = "region";
 
 	@Column
 	private String name;
+
+	@Column
+	private String epidCode;
 
 	@ManyToOne(cascade = CascadeType.REFRESH, optional = false)
 	@JoinColumn(nullable = false)
@@ -40,7 +44,15 @@ public class District extends AbstractDomainObject {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
+	public String getEpidCode() {
+		return epidCode;
+	}
+
+	public void setEpidCode(String epidCode) {
+		this.epidCode = epidCode;
+	}
+
 	public Region getRegion() {
 		return region;
 	}

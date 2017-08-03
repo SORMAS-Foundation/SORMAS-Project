@@ -91,7 +91,7 @@ public class PersonController {
         editComponent.addCommitListener(new CommitListener() {
         	@Override
         	public void onCommit() {
-        		if (createForm.getFieldGroup().isValid()) {
+        		if (!createForm.getFieldGroup().isModified()) {
         			PersonReferenceDto dto = createForm.getValue();
         			personFacade.savePerson(dto);
         		}
@@ -118,7 +118,7 @@ public class PersonController {
         	
         	@Override
         	public void onCommit() {
-        		if (editForm.getFieldGroup().isValid()) {
+        		if (!editForm.getFieldGroup().isModified()) {
         			PersonDto dto = editForm.getValue();
         			personFacade.savePerson(dto);
         			Notification.show("Person data saved", Type.WARNING_MESSAGE);

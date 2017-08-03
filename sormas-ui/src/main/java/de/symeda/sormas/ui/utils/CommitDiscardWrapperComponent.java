@@ -667,7 +667,6 @@ public class CommitDiscardWrapperComponent<C extends Component> extends
 			return notifier + "[" + getKeyCode() + "] =>" + button.getCaption();
 		}
 	}
-
 	
 	public static class CommitRuntimeException extends RuntimeException {
 		private static final long serialVersionUID = 1L;

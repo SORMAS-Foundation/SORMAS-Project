@@ -9,6 +9,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/text_caption"
+            android:focusable="true"
+            android:clickable="true"
+            android:focusableInTouchMode="true"
             android:textSize="@dimen/field_caption_size"
             android:layout_marginBottom="@dimen/field_caption_margin_bottom"
             android:layout_marginLeft="@dimen/field_caption_margin_left" />

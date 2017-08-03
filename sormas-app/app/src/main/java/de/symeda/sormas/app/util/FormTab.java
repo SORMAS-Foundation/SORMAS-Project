@@ -56,7 +56,7 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
         ft.detach(this).attach(this).commit();
     }
 
-    @BindingAdapter("app:sampleShipped")
+    @BindingAdapter("sampleShipped")
     public static void setShipmentStatus(CheckBox checkBox, ShipmentStatus shipmentStatus) {
         checkBox.setChecked(true);
     }

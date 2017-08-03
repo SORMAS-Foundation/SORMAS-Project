@@ -7,6 +7,7 @@ public class DistrictDto extends DistrictReferenceDto {
 	public static final String I18N_PREFIX = "District";
 
 	private String name;
+	private String epidCode;
 	private RegionReferenceDto region;
 	
 	public String getName() {
@@ -14,6 +15,13 @@ public class DistrictDto extends DistrictReferenceDto {
 	}
 	public void setName(String name) {
 		this.name = name;
+	}
+	
+	public String getEpidCode() {
+		return epidCode;
+	}
+	public void setEpidCode(String epidCode) {
+		this.epidCode = epidCode;
 	}
 	
 	public RegionReferenceDto getRegion() {

@@ -139,7 +139,7 @@ public class TextField extends PropertyField<String> implements TextFieldInterfa
         caption.setEnabled(enabled);
     }
 
-    @BindingAdapter("app:integer")
+    @BindingAdapter("integer")
     public static void setInteger(TextField textField, Integer integer) {
         if (integer != null) {
             textField.setValue(integer.toString());
@@ -160,11 +160,15 @@ public class TextField extends PropertyField<String> implements TextFieldInterfa
                     if(id != View.NO_ID) {
                         View nextView = v.getRootView().findViewById(id);
                         if(nextView.getVisibility() == VISIBLE) {
-                            nextView.requestFocus();
                             if (!(nextView instanceof TextField)) {
+                                if (nextView instanceof PropertyField) {
+                                    ((PropertyField) nextView).requestFocusForContentView(nextView);
+                                } else {
+                                    nextView.requestFocus();
+                                }
                                 hideKeyboard(v);
                             } else {
-                                ((TextField) nextView).setCursorToRight();
+                                requestFocusForContentView(nextView);
                             }
                         } else {
                             hideKeyboard(v);
@@ -179,5 +183,11 @@ public class TextField extends PropertyField<String> implements TextFieldInterfa
                 }
             }
         });
+    }
+
+    @Override
+    protected void requestFocusForContentView(View nextView) {
+        ((TextField) nextView).textContent.requestFocus();
+        ((TextField) nextView).setCursorToRight();
     }
 }

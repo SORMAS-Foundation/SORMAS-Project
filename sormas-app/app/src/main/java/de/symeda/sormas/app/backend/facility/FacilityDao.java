@@ -29,19 +29,23 @@ public class FacilityDao extends AbstractAdoDao<Facility> {
         return Facility.TABLE_NAME;
     }
 
-    public List<Facility> getByCommunity(Community community, boolean includeOthers) {
+    public List<Facility> getHealthFacilitiesByCommunity(Community community, boolean includeOthers) {
         List<Facility> facilities = queryForEq(Facility.COMMUNITY + "_id", community, Facility.NAME, true);
+        for (Facility facility : facilities) {
+            if (facility.getType() == FacilityType.LABORATORY) {
+                facilities.remove(facility);
+            }
+        }
+
         if (includeOthers) {
             facilities.add(0, queryUuid(FacilityDto.OTHER_FACILITY_UUID));
         }
+
         return facilities;
     }
 
-    public List<Facility> getByType(FacilityType type, boolean includeOthers) {
-        List<Facility> facilities = queryForEq(Facility.TYPE, type, Facility.NAME, true);
-        if (includeOthers) {
-            facilities.add(0, queryUuid(FacilityDto.OTHER_FACILITY_UUID));
-        }
+    public List<Facility> getLaboratories() {
+        List<Facility> facilities = queryForEq(Facility.TYPE, FacilityType.LABORATORY, Facility.NAME, true);
         return facilities;
     }
 }

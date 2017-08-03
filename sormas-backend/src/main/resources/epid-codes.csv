@@ -1,0 +1,775 @@
+AMAPCODE;AMPA State;AMAP LGA;State;LGA;LGA from Facilities
+NIE;ABS;EZA;Abia;Aba North;Aba North
+NIE;ABS;ABA;Abia;Aba South;Aba South
+NIE;ABS;ACH;Abia;Arochukwu;Arochukwu
+NIE;ABS;BND;Abia;Bende;Bende
+NIE;ABS;KWU;Abia;Ikwuano;Ikwuano
+NIE;ABS;KPU;Abia;Isiala-Ngwa North;Isiala-Ngwa North
+NIE;ABS;MBA;Abia;Isiala-Ngwa South;Isiala-Ngwa South
+NIE;ABS;MBL;Abia;Isuikwuato;Isuikwuato
+NIE;ABS;NGK;Abia;Obi Nwga;Obi Nwga
+NIE;ABS;HAF;Abia;Ohafia;Ohafia
+NIE;ABS;SSM;Abia;Osisioma Ngwa;Osisioma Ngwa
+NIE;ABS;GWB;Abia;Ugwunagbo;Ugwunagbo
+NIE;ABS;KEK;Abia;Ukwa East;Ukwa East
+NIE;ABS;KKE;Abia;Ukwa West;Ukwa West
+NIE;ABS;UMA;Abia;Umuahia North;Umuahia North
+NIE;ABS;APR;Abia;Umuahia South;Umuahia South
+NIE;ABS;UNC;Abia;Umu-Nneochi;Umu-Nneochi
+NIE;ADS;DSA;Adamawa;Demsa;Demsa
+NIE;ADS;FUR;Adamawa;Fufore;Fufore
+NIE;ADS;GAN;Adamawa;Ganye;Ganye
+NIE;ADS;GRE;Adamawa;Girie;Girei
+NIE;ADS;GMB;Adamawa;Gombi;Gombi
+NIE;ADS;GUY;Adamawa;Guyuk;Guyuk
+NIE;ADS;HNG;Adamawa;Hong;Hong
+NIE;ADS;JAD;Adamawa;Jada;Jada
+NIE;ADS;LMR;Adamawa;Larmurde;Lamurde
+NIE;ADS;MDG;Adamawa;Madagali;Madagali
+NIE;ADS;MAH;Adamawa;Maiha;Maiha
+NIE;ADS;MWA;Adamawa;Mayo-Belwa;Mayo-Belwa
+NIE;ADS;MCH;Adamawa;Michika;Michika
+NIE;ADS;MUB;Adamawa;Mubi North;Mubi North
+NIE;ADS;GYL;Adamawa;Mubi South;Mubi South
+NIE;ADS;NUM;Adamawa;Numan;Numan
+NIE;ADS;SHG;Adamawa;Shelleng;Shelleng
+NIE;ADS;SNG;Adamawa;Song;Song
+NIE;ADS;TNG;Adamawa;Teungo;Toungo
+NIE;ADS;YLN;Adamawa;Yola North;Yola North
+NIE;ADS;YLA;Adamawa;Yola South;Yola South
+NIE;AKS;ABK;Akwa-Ibom;Abak;Abak
+NIE;AKS;KRT;Akwa-Ibom;Eastern Obolo;Eastern Obolo
+NIE;AKS;KET;Akwa-Ibom;Eket;Eket
+NIE;AKS;AUQ;Akwa-Ibom;Esit Eket;Esit Eket
+NIE;AKS;AFH;Akwa-Ibom;Essien Udim;Essien Udim
+NIE;AKS;AEE;Akwa-Ibom;Etim Ekpo;Etim Ekpo
+NIE;AKS;ETN;Akwa-Ibom;Etinan;Etinan
+NIE;AKS;PNG;Akwa-Ibom;Ibeno;Ibeno
+NIE;AKS;NGD;Akwa-Ibom;Ibesikpo Asutan;Ibesikpo Asutan
+NIE;AKS;BMT;Akwa-Ibom;Ibiono Ibom;Ibiono Ibom
+NIE;AKS;NYA;Akwa-Ibom;Ika;Ika
+NIE;AKS;KKN;Akwa-Ibom;Ikono;Ikono
+NIE;AKS;KTS;Akwa-Ibom;Ikot Abasi;Ikot Abasi
+NIE;AKS;KTE;Akwa-Ibom;Ikot Ekpene;Ikot Ekpene
+NIE;AKS;DRK;Akwa-Ibom;Ini;Ini
+NIE;AKS;TTU;Akwa-Ibom;Itu;Itu
+NIE;AKS;ENW;Akwa-Ibom;Mbo;Mbo
+NIE;AKS;MKP;Akwa-Ibom;Mkpat Enin;Mkpat Enin
+NIE;AKS;AED;Akwa-Ibom;Nsit Atai;Nsit Atai
+NIE;AKS;AFG;Akwa-Ibom;Nsit Ibom;Nsit Ibom
+NIE;AKS;KTD;Akwa-Ibom;Nsit Ubium;Nsit Ubium
+NIE;AKS;NTE;Akwa-Ibom;Obot Akara;Obot Akara
+NIE;AKS;KPD;Akwa-Ibom;Okobo;Okobo
+NIE;AKS;ABT;Akwa-Ibom;Onna;Onna
+NIE;AKS;RNN;Akwa-Ibom;Oron;Oron
+NIE;AKS;KTM;Akwa-Ibom;Oruk Anam;Oruk Anam
+NIE;AKS;BYF;Akwa-Ibom;Udung Uko;Udung Uko
+NIE;AKS;KPK;Akwa-Ibom;Ukanafun;Ukanafun
+NIE;AKS;DUU;Akwa-Ibom;Uruan;Uruan
+NIE;AKS;UFG;Akwa-Ibom;Urue Offong/Oruko;Urue Offong/Oruko
+NIE;AKS;DYY;Akwa-Ibom;Uyo;Uyo
+NIE;ANS;AGU;Anambra;Aguata;Aguata
+NIE;ANS;AAH;Anambra;Anambra East;Anambra East
+NIE;ANS;NZM;Anambra;Anambra West;Anambra West
+NIE;ANS;NEN;Anambra;Anaocha;Anaocha
+NIE;ANS;ACA;Anambra;Awka North;Awka North
+NIE;ANS;AWK;Anambra;Awka South;Awka South
+NIE;ANS;NKK;Anambra;Ayamelum;Ayamelum
+NIE;ANS;KPP;Anambra;Dunukofia;Dunukofia
+NIE;ANS;ZBL;Anambra;Ekwusigo;Ekwusigo
+NIE;ANS;GDD;Anambra;Idemili North;Idemili North
+NIE;ANS;JJT;Anambra;Idemili South;Idemili South
+NIE;ANS;HAL;Anambra;Ihiala;Ihiala
+NIE;ANS;ABN;Anambra;Njikoka;Njikoka
+NIE;ANS;NNE;Anambra;Nnewi North;Nnewi North
+NIE;ANS;UKP;Anambra;Nnewi South;Nnewi South
+NIE;ANS;ATN;Anambra;Ogbaru;Ogbaru
+NIE;ANS;NSH;Anambra;Onitsha North;Onitsha North
+NIE;ANS;FGG;Anambra;Onitsha South;Onitsha South
+NIE;ANS;AJL;Anambra;Orumba North;Orumba North
+NIE;ANS;UMZ;Anambra;Orumba South;Orumba South
+NIE;ANS;HTE;Anambra;Oyi;Oyi
+NIE;BAS;ALK;Bauchi;Alkaleri;Alkaleri
+NIE;BAS;BAU;Bauchi;Bauchi;Bauchi
+NIE;BAS;BGR;Bauchi;Bogoro;Bogoro
+NIE;BAS;DBM;Bauchi;Damban;Dambam
+NIE;BAS;DRZ;Bauchi;Darazo;Darazo
+NIE;BAS;DAS;Bauchi;Dass;Dass
+NIE;BAS;GAM;Bauchi;Gamawa;Gamawa
+NIE;BAS;GJW;Bauchi;Ganjuwa;Ganjuwa
+NIE;BAS;GYD;Bauchi;Giade;Giade
+NIE;BAS;TSG;Bauchi;Itas/Gadau;Itas/Gadau
+NIE;BAS;JMA;Bauchi;Jama'are;Jama'are
+NIE;BAS;KTG;Bauchi;Katagum;Katagum
+NIE;BAS;KRF;Bauchi;Kirfi;Kirfi
+NIE;BAS;MSA;Bauchi;Misau;Misau
+NIE;BAS;NNG;Bauchi;Ningi;Ningi
+NIE;BAS;SHR;Bauchi;Shira;Shira
+NIE;BAS;TFB;Bauchi;Tafawa-Balewa;Tafawa-Balewa
+NIE;BAS;TRR;Bauchi;Toro;Toro
+NIE;BAS;WRJ;Bauchi;Warji;Warji
+NIE;BAS;ZAK;Bauchi;Zaki;Zaki
+NIE;BYS;BRS;Bayelsa;Brass;Brass
+NIE;BYS;KMR;Bayelsa;Ekeremor;Ekeremor
+NIE;BYS;KMK;Bayelsa;Kolokuma/Opokuma;Kolokuma/Opokuma
+NIE;BYS;NEM;Bayelsa;Nembe;Nembe
+NIE;BYS;GBB;Bayelsa;Ogbia;Ogbia
+NIE;BYS;SAG;Bayelsa;Sagbama;Sagbama
+NIE;BYS;SPR;Bayelsa;Southern Ijaw;Southern Ijaw
+NIE;BYS;YEN;Bayelsa;Yenegoa;Yenagoa
+NIE;BNS;GMU;Benue;Ado;Ado
+NIE;BNS;GTU;Benue;Agatu;Agatu
+NIE;BNS;GKP;Benue;Apa;Apa
+NIE;BNS;BKB;Benue;Bukuru;Buruku
+NIE;BNS;GBK;Benue;Gboko;Gboko
+NIE;BNS;YGJ;Benue;Guma;Guma
+NIE;BNS;ALD;Benue;Gwer East;Gwer East
+NIE;BNS;NAK;Benue;Gwer West;Gwer West
+NIE;BNS;KAL;Benue;Katsina-Ala;Katsina-Ala
+NIE;BNS;TSE;Benue;Konshisha;Konshisha
+NIE;BNS;WDP;Benue;Kwande;Kwande
+NIE;BNS;GBG;Benue;Logo;Logo
+NIE;BNS;MKD;Benue;Markurdi;Makurdi
+NIE;BNS;BRT;Benue;Obi;Obi
+NIE;BNS;BGT;Benue;Ogbadibo;Ogbadibo
+NIE;BNS;DKP;Benue;Ohimini;Ohimini
+NIE;BNS;JUX;Benue;Oju;Oju
+NIE;BNS;PKG;Benue;Okpokwu;Okpokwu
+NIE;BNS;TKP;Benue;Oturkpo;Otukpo
+NIE;BNS;WNN;Benue;Tarka;Tarka
+NIE;BNS;UKM;Benue;Ukum;Ukum
+NIE;BNS;SEL;Benue;Ushongo;Ushongo
+NIE;BNS;VDY;Benue;Vandeikya;Vandeikya
+NIE;BOS;ADM;Borno;Abadam;Abadam
+NIE;BOS;ASU;Borno;Askira/Uba;Askira/Uba
+NIE;BOS;BAM;Borno;Bama;Bama
+NIE;BOS;BAY;Borno;Bayo;Bayo
+NIE;BOS;BBU;Borno;Biu;Biu
+NIE;BOS;CBK;Borno;Chibok;Chibok
+NIE;BOS;DAM;Borno;Damboa;Damboa
+NIE;BOS;DKW;Borno;Dikwa;Dikwa
+NIE;BOS;GUB;Borno;Gubio;Gubio
+NIE;BOS;GBL;Borno;Guzamala;Guzamala
+NIE;BOS;GZA;Borno;Gwoza;Gwoza
+NIE;BOS;HWL;Borno;Hawul;Hawul
+NIE;BOS;JRE;Borno;Jere;Jere
+NIE;BOS;KGG;Borno;Kaga;Kaga
+NIE;BOS;KBG;Borno;Kala/Balge;Kala/Balge
+NIE;BOS;KDG;Borno;Konduga;Konduga
+NIE;BOS;KWA;Borno;Kukawa;Kukawa
+NIE;BOS;KWY;Borno;Kwaya Kusar;Kwaya Kusar
+NIE;BOS;MAF;Borno;Mafa;Mafa
+NIE;BOS;MGM;Borno;Magumeri;Magumeri
+NIE;BOS;MAG;Borno;Maiduguri;Maiduguri
+NIE;BOS;MAR;Borno;Marte;Marte
+NIE;BOS;MBR;Borno;Mobbar;Mobbar
+NIE;BOS;MNG;Borno;Monguno;Monguno
+NIE;BOS;NGL;Borno;Ngala;Ngala
+NIE;BOS;NGZ;Borno;Nganzai;Nganzai
+NIE;BOS;SHN;Borno;Shani;Shani
+NIE;CRS;TGD;Cross River;Abi;Abi
+NIE;CRS;KAM;Cross River;Akamkpa;Akamkpa
+NIE;CRS;KTA;Cross River;Akpabuyo;Akpabuyo
+NIE;CRS;BKS;Cross River;Bakassi;Bakassi
+NIE;CRS;ABE;Cross River;Bekwarra;Bekwarra
+NIE;CRS;AKP;Cross River;Biase;Biase
+NIE;CRS;BJE;Cross River;Boki;Boki
+NIE;CRS;CAL;Cross River;Calabar Municipal;Calabar Municipal
+NIE;CRS;ANA;Cross River;Calabar South;Calabar South
+NIE;CRS;EFE;Cross River;Etung;Etung
+NIE;CRS;KMM;Cross River;Ikom;Ikom
+NIE;CRS;BNS;Cross River;Obanliku;Obanliku
+NIE;CRS;BRA;Cross River;Obubra;Obubra
+NIE;CRS;UDU;Cross River;Obudu;Obudu
+NIE;CRS;DUK;Cross River;Odukpani;Odukpani
+NIE;CRS;GGJ;Cross River;Ogoja;Ogoja
+NIE;CRS;GEP;Cross River;Yakurr;Yakurr
+NIE;CRS;CKK;Cross River;Yala;Yala
+NIE;DTS;SLK;Delta;Aniocha North;Aniocha North
+NIE;DTS;GWK;Delta;Aniocha South;Aniocha South
+NIE;DTS;BMA;Delta;Bomadi;Bomadi
+NIE;DTS;BUR;Delta;Burutu;Burutu
+NIE;DTS;SKL;Delta;Ethiope East;Ethiope East
+NIE;DTS;GRA;Delta;Ethiope West;Ethiope West
+NIE;DTS;AYB;Delta;Ika North East;Ika North East
+NIE;DTS;AGB;Delta;Ika South;Ika South
+NIE;DTS;DSZ;Delta;Isoko North;Isoko North
+NIE;DTS;LEH;Delta;Isoko South;Isoko South
+NIE;DTS;ABH;Delta;Ndokwa East;Ndokwa East
+NIE;DTS;KWC;Delta;Ndokwa West;Ndokwa West
+NIE;DTS;KPE;Delta;Okpe;Okpe
+NIE;DTS;AKU;Delta;Oshimili North;Oshimili North
+NIE;DTS;ASB;Delta;Oshimili South;Oshimili South
+NIE;DTS;PTN;Delta;Patani;Patani
+NIE;DTS;SAP;Delta;Sapele;Sapele
+NIE;DTS;ALA;Delta;Udu;Udu
+NIE;DTS;UGH;Delta;Ughelli North;Ughelli North
+NIE;DTS;JRT;Delta;Ughelli South;Ughelli South
+NIE;DTS;BKW;Delta;Ukwuani;Ukwuani
+NIE;DTS;EFR;Delta;Uvwie;Uvwie
+NIE;DTS;KLK;Delta;Warri North;Warri North
+NIE;DTS;WWR;Delta;Warri South;Warri South
+NIE;DTS;WRC;Delta;Warri South-West;Warri South West
+NIE;EBS;AKL;Ebonyi;Abakaliki;Abakaliki
+NIE;EBS;AFK;Ebonyi;Afikpo North;Afikpo North
+NIE;EBS;EDA;Ebonyi;Afikpo South;Afikpo South
+NIE;EBS;UGB;Ebonyi;Ebonyi;Ebonyi
+NIE;EBS;EBJ;Ebonyi;Ezza North;Ezza North
+NIE;EBS;NKE;Ebonyi;Ezza South;Ezza South
+NIE;EBS;CHR;Ebonyi;Ikwo;Ikwo
+NIE;EBS;ZLL;Ebonyi;Ishielu;Ishielu
+NIE;EBS;SKA;Ebonyi;Ivo;Ivo
+NIE;EBS;BKL;Ebonyi;Izzi;Izzi
+NIE;EBS;BZR;Ebonyi;Ohaozara;Ohaozara
+NIE;EBS;HKW;Ebonyi;Ohaukwu;Ohaukwu
+NIE;EBS;NCA;Ebonyi;Onicha;Onicha
+NIE;EDS;GAR;Edo;Akoko-Edo;Akoko-Edo
+NIE;EDS;USL;Edo;Egor;Egor
+NIE;EDS;RRU;Edo;Esan Central;Esan Central
+NIE;EDS;URM;Edo;Esan North-East;Esan North-East
+NIE;EDS;UBJ;Edo;Esan South-East;Esan South-East
+NIE;EDS;EKP;Edo;Esan West;Esan West
+NIE;EDS;FUG;Edo;Etsako Central;Etsako Central
+NIE;EDS;AGD;Edo;Etsako East;Etsako East
+NIE;EDS;AUC;Edo;Etsako West;Etsako West
+NIE;EDS;GUE;Edo;Iguegben;Igueben
+NIE;EDS;DGE;Edo;Ikpoba-Okha;Ikpoba-Okha
+NIE;EDS;BEN;Edo;Oredo;Oredo
+NIE;EDS;ABD;Edo;Orhionmwon;Orhionmwon
+NIE;EDS;AKA;Edo;Ovia North-East;Ovia North-East
+NIE;EDS;GBZ;Edo;Ovia South-West;Ovia South-West
+NIE;EDS;AFZ;Edo;Owan East;Owan East
+NIE;EDS;SGD;Edo;Owan West;Owan West
+NIE;EDS;EHR;Edo;Uhunmwonde;Uhunmwonde
+NIE;EKS;ADK;Ekiti;Ado-Ekiti;Ado Ekiti
+NIE;EKS;EFY;Ekiti;Efon;Efon
+NIE;EKS;MUE;Ekiti;Ekiti East;Ekiti East
+NIE;EKS;LAW;Ekiti;Ekiti South-West;Ekiti South West
+NIE;EKS;AMK;Ekiti;Ekiti West;Ekiti West
+NIE;EKS;EMR;Ekiti;Emure;Emure
+NIE;EKS;DEA;Ekiti;Gbonyin;Aiyekire (Gbonyin)
+NIE;EKS;DEK;Ekiti;Ido-Osi;Ido-Osi
+NIE;EKS;JER;Ekiti;Ijero;Ijero
+NIE;EKS;KER;Ekiti;Ikere;Ikere
+NIE;EKS;KLE;Ekiti;Ikole;Ikole
+NIE;EKS;YEK;Ekiti;Ilejemeje;Ilejemeje
+NIE;EKS;GED;Ekiti;Irepodun/Ifelodun;Irepodun/Ifelodun
+NIE;EKS;SSE;Ekiti;Ise/Orun;Ise/Orun
+NIE;EKS;TUN;Ekiti;Moba;Moba
+NIE;EKS;YEE;Ekiti;Oye;Oye
+NIE;ENS;DBR;Enugu;Aninri;Aninri
+NIE;ENS;AWG;Enugu;Awgu;Awgu
+NIE;ENS;NKW;Enugu;Enugu East;Enugu East
+NIE;ENS;ENU;Enugu;Enugu North;Enugu North
+NIE;ENS;UWN;Enugu;Enugu South;Enugu South
+NIE;ENS;AGW;Enugu;Ezeagu;Ezeagu
+NIE;ENS;GBO;Enugu;Igbo-Etiti;Igbo-Etiti
+NIE;ENS;ENZ;Enugu;Igbo-Eze-North;Igbo-Eze North
+NIE;ENS;BBG;Enugu;Igbo-Eze-South;Igbo-Eze South
+NIE;ENS;KEM;Enugu;Isi-Uzo;Isi-Uzo
+NIE;ENS;MGL;Enugu;Nkanu East;Nkanu East
+NIE;ENS;AGN;Enugu;Nkanu West;Nkanu West
+NIE;ENS;NSK;Enugu;Nsukka;Nsukka
+NIE;ENS;JRV;Enugu;Oji-River;Oji River
+NIE;ENS;BLF;Enugu;Udenu;Udenu
+NIE;ENS;UDD;Enugu;Udi;Udi
+NIE;ENS;UMU;Enugu;Uzo-Uwani;Uzo-Uwani
+NIE;FCT;ABJ;FCT;Abaji;Abaji
+NIE;FCT;BWR;FCT;Bwari;Bwari
+NIE;FCT;GWA;FCT;Gwagwalada;Gwagwalada
+NIE;FCT;KUJ;FCT;Kuje;Kuje
+NIE;FCT;KWL;FCT;Kwali;Kwali
+NIE;FCT;ABC;FCT;Municipal Area Council;Abuja Municipal
+NIE;GMS;AKK;Gombe;Akko;Akko
+NIE;GMS;BLG;Gombe;Balanga;Balanga
+NIE;GMS;BLR;Gombe;Billiri;Billiri
+NIE;GMS;DKU;Gombe;Dukku;Dukku
+NIE;GMS;FKY;Gombe;Funakaye;Funakaye
+NIE;GMS;GME;Gombe;Gombe;Gombe
+NIE;GMS;KLT;Gombe;Kaltungo;Kaltungo
+NIE;GMS;KWM;Gombe;Kwami;Kwami
+NIE;GMS;NFD;Gombe;Nafada;Nafada
+NIE;GMS;SHM;Gombe;Shomgom;Shongom
+NIE;GMS;YDB;Gombe;Yamaltu/Deba;Yamaltu/Deba
+NIE;IMS;ABB;Imo;Aboh-Mbaise;Aboh-Mbaise
+NIE;IMS;AFR;Imo;Ahiazu-Mbaise;Ahiazu-Mbaise
+NIE;IMS;EHM;Imo;Ehime -Mbano;Ehime-Mbano
+NIE;IMS;ETU;Imo;Ezinihitte;Ezinihitte-Mbaise
+NIE;IMS;URU;Imo;Ideato North;Ideato North
+NIE;IMS;DFB;Imo;Ideato South;Ideato South
+NIE;IMS;IHI;Imo;Ihitte/Uboma;Ihitte/Uboma
+NIE;IMS;KED;Imo;Ikeduru;Ikeduru
+NIE;IMS;UML;Imo;Isiala Mbano;Isiala Mbano
+NIE;IMS;UMD;Imo;Isu;Isu
+NIE;IMS;NWA;Imo;Mbatoli;Mbatoli
+NIE;IMS;NGN;Imo;Ngor-Okpala;Ngor-Okpala
+NIE;IMS;NSA;Imo;Njaba;Njaba
+NIE;IMS;NKR;Imo;Nkwerre;Nkwerre
+NIE;IMS;AMG;Imo;Nwangele;Nwangele
+NIE;IMS;TTK;Imo;Obowo;Obowo
+NIE;IMS;GUA;Imo;Oguta;Oguta
+NIE;IMS;EBM;Imo;Ohaji/Egbema;Ohaji/Egbema
+NIE;IMS;KGE;Imo;Okigwe;Okigwe
+NIE;IMS;RLU;Imo;Orlu;Orlu
+NIE;IMS;AWD;Imo;Orsu;Orsu
+NIE;IMS;MGD;Imo;Oru East;Oru East
+NIE;IMS;NGB;Imo;Oru West;Oru West
+NIE;IMS;WER;Imo;Owerri Municipal;Owerri Municipal
+NIE;IMS;RRT;Imo;Owerri North;Owerri North
+NIE;IMS;UMG;Imo;Owerri West;Owerri West
+NIE;IMS;KWE;Imo;Unuimo;Onuimo
+NIE;JIS;AUY;Jigawa;Auyo;Auyo
+NIE;JIS;BBR;Jigawa;Babura;Babura
+NIE;JIS;BNW;Jigawa;Biriniwa;Birnin Kudu
+NIE;JIS;BKD;Jigawa;Birnin Kudu;Birniwa
+NIE;JIS;BUJ;Jigawa;Buji;Buji
+NIE;JIS;DUT;Jigawa;Dutse;Dutse
+NIE;JIS;GGW;Jigawa;Gagarawa;Gagarawa
+NIE;JIS;GRK;Jigawa;Garki;Garki
+NIE;JIS;GML;Jigawa;Gumel;Gumel
+NIE;JIS;GRR;Jigawa;Guri;Guri
+NIE;JIS;GRM;Jigawa;Gwaram;Gwaram
+NIE;JIS;GWW;Jigawa;Gwiwa;Gwiwa
+NIE;JIS;HJA;Jigawa;Hadejia;Hadejia
+NIE;JIS;JHN;Jigawa;Jahun;Jahun
+NIE;JIS;KHS;Jigawa;Kafin Hausa;Kafin Hausa
+NIE;JIS;KGM;Jigawa;Kaugama;Kaugama
+NIE;JIS;KZR;Jigawa;Kazaure;Kazaure
+NIE;JIS;KKM;Jigawa;Kiri Kasama;Kiri Kasamma
+NIE;JIS;KYW;Jigawa;kiyawa;Kiyawa
+NIE;JIS;MGR;Jigawa;Maigatari;Maigatari
+NIE;JIS;MMR;Jigawa;Malam Maduri;Malam Madori
+NIE;JIS;MGA;Jigawa;Miga;Miga
+NIE;JIS;RNG;Jigawa;Ringim;Ringim
+NIE;JIS;RRN;Jigawa;Roni;Roni
+NIE;JIS;STK;Jigawa;Sule Tankakar;Sule-Tankarkar
+NIE;JIS;TAR;Jigawa;Taura;Taura
+NIE;JIS;YKS;Jigawa;Yankwashi;Yankwashi
+NIE;KDS;BNG;Kaduna;Birnin Gwari;Birnin Gwari
+NIE;KDS;KJM;Kaduna;Chikun;Chikun
+NIE;KDS;GKW;Kaduna;Giwa;Giwa
+NIE;KDS;TRK;Kaduna;Igabi;Igabi
+NIE;KDS;KAR;Kaduna;Ikara;Ikara
+NIE;KDS;KWB;Kaduna;Jaba;Jaba
+NIE;KDS;KAF;Kaduna;Jema'a;Jema'a
+NIE;KDS;KCH;Kaduna;Kachia;Kachia
+NIE;KDS;DKA;Kaduna;Kaduna North;Kaduna North
+NIE;KDS;MKA;Kaduna;kaduna South;Kaduna South
+NIE;KDS;KGK;Kaduna;Kagarko;Kagarko
+NIE;KDS;KJR;Kaduna;Kajuru;Kajuru
+NIE;KDS;KRA;Kaduna;Kaura;Kaura
+NIE;KDS;KRU;Kaduna;Kauru;Kauru
+NIE;KDS;ANC;Kaduna;Kuban;Kubau
+NIE;KDS;HKY;Kaduna;Kudan;Kudan
+NIE;KDS;SNK;Kaduna;Lere;Lere
+NIE;KDS;MKR;Kaduna;Makarfi;Makarfi
+NIE;KDS;SBG;Kaduna;Sabon Gari;Sabon Gari
+NIE;KDS;GWT;Kaduna;Sanga;Sanga
+NIE;KDS;MGN;Kaduna;Soba;Soba
+NIE;KDS;ZKW;Kaduna;Zangon Kataf;Zangon Kataf
+NIE;KDS;ZAR;Kaduna;Zaria;Zaria
+NIE;KNS;AJG;Kano;Ajingi;Ajingi
+NIE;KNS;ABS;Kano;Albasu;Albasu
+NIE;KNS;BGW;Kano;Bagwai;Bagwai
+NIE;KNS;BBJ;Kano;Bebeji;Bebeji
+NIE;KNS;BCH;Kano;Bichi;Bichi
+NIE;KNS;BNK;Kano;Bunkure;Bunkure
+NIE;KNS;DAL;Kano;Dala;Dala
+NIE;KNS;DBT;Kano;Dambatta;Danbatta
+NIE;KNS;DKD;Kano;Dawakin Kudu;Dawakin Kudu
+NIE;KNS;DTF;Kano;Dawakin Tofa;Dawakin Tofa
+NIE;KNS;DGW;Kano;Doguwa;Doguwa
+NIE;KNS;FGE;Kano;Fagge;Fagge
+NIE;KNS;GSW;Kano;Gabasawa;Gabasawa
+NIE;KNS;GAK;Kano;Garko;Garko
+NIE;KNS;GNM;Kano;Garum Mallam;Garum Mallam
+NIE;KNS;GYA;Kano;Gaya;Gaya
+NIE;KNS;GZW;Kano;Gezawa;Gezawa
+NIE;KNS;GWL;Kano;Gwale;Gwale
+NIE;KNS;GRZ;Kano;Gwarzo;Gwarzo
+NIE;KNS;KBK;Kano;Kabo;Kabo
+NIE;KNS;KMC;Kano;Kano Municipal;Kano Municipal
+NIE;KNS;KRY;Kano;Karaye;Karaye
+NIE;KNS;KBY;Kano;Kibiya;Kibiya
+NIE;KNS;KKU;Kano;Kiru;Kiru
+NIE;KNS;KBT;Kano;Kumbotso;Kumbotso
+NIE;KNS;KNC;Kano;Kunchi;Kunchi
+NIE;KNS;KUR;Kano;Kura;Kura
+NIE;KNS;MDB;Kano;Madobi;Madobi
+NIE;KNS;MKK;Kano;Makoda;Makoda
+NIE;KNS;MJB;Kano;Minjibir;Minjibir
+NIE;KNS;NSR;Kano;Nassarawa;Nassarawa
+NIE;KNS;RAN;Kano;Rano;Rano
+NIE;KNS;RMG;Kano;Rimin Gado;Rimin Gado
+NIE;KNS;RGG;Kano;Rogo;Rogo
+NIE;KNS;SNN;Kano;Shanono;Shanono
+NIE;KNS;SML;Kano;Sumaila;Sumaila
+NIE;KNS;TAK;Kano;Takai;Takai
+NIE;KNS;TRN;Kano;Tarauni;Tarauni
+NIE;KNS;TFA;Kano;Tofa;Tofa
+NIE;KNS;TYW;Kano;Tsanyawa;Tsanyawa
+NIE;KNS;TWD;Kano;Tudun Wada;Tudun Wada
+NIE;KNS;UGG;Kano;Ungongo;Ungogo
+NIE;KNS;WRA;Kano;Warawa;Warawa
+NIE;KNS;WDL;Kano;Wudil;Wudil
+NIE;KTS;BKR;Katsina;Bakori;Bakori
+NIE;KTS;BAT;Katsina;Batagarawa;Batagarawa
+NIE;KTS;BTR;Katsina;Batsari;Batsari
+NIE;KTS;BRE;Katsina;Baure;Baure
+NIE;KTS;BDW;Katsina;Bindawa;Bindawa
+NIE;KTS;CRC;Katsina;Charanchi;Charanchi
+NIE;KTS;DMS;Katsina;Dan Musa;Dan Musa
+NIE;KTS;DDM;Katsina;Dandume;Dandume
+NIE;KTS;DJA;Katsina;Danja;Danja
+NIE;KTS;DRA;Katsina;Daura;Daura
+NIE;KTS;DTS;Katsina;Dutsi;Dutsi
+NIE;KTS;DTM;Katsina;Dutsin Ma;Dutsin-Ma
+NIE;KTS;FSK;Katsina;Faskari;Faskari
+NIE;KTS;FTA;Katsina;Funtua;Funtua
+NIE;KTS;NGW;Katsina;Ingawa;Ingawa
+NIE;KTS;JBY;Katsina;Jibia;Jibia
+NIE;KTS;KFR;Katsina;Kafur;Kafur
+NIE;KTS;KAT;Katsina;kaita;Kaita
+NIE;KTS;KKR;Katsina;Kankara;Kankara
+NIE;KTS;KNK;Katsina;Kankia;Kankia
+NIE;KTS;KTN;Katsina;Katsina;Katsina
+NIE;KTS;KUF;Katsina;Kurfi;Kurfi
+NIE;KTS;KSD;Katsina;Kusada;Kusada
+NIE;KTS;MDW;Katsina;Mai'Adua;Mai'Adua
+NIE;KTS;MLF;Katsina;Malumfashi;Malumfashi
+NIE;KTS;MAN;Katsina;Mani;Mani
+NIE;KTS;MSH;Katsina;Mashi;Mashi
+NIE;KTS;MTZ;Katsina;Matazu;Matazu
+NIE;KTS;MSW;Katsina;Musawa;Musawa
+NIE;KTS;RMY;Katsina;Rimi;Rimi
+NIE;KTS;SBA;Katsina;Sabuwa;Sabuwa
+NIE;KTS;SFN;Katsina;Safana;Safana
+NIE;KTS;SDM;Katsina;Sandamu;Sandamu
+NIE;KTS;ZNG;Katsina;Zango;Zango
+NIE;KBS;ALR;Kebbi;Aleiro;Aleiro
+NIE;KBS;KGW;Kebbi;Arewa Dandi;Arewa
+NIE;KBS;ARG;Kebbi;Argungu;Argungu
+NIE;KBS;AUG;Kebbi;Augie;Augie
+NIE;KBS;BGD;Kebbi;Bagudo;Bagudo
+NIE;KBS;BRK;Kebbi;Birnin Kebbi;Birnin Kebbi
+NIE;KBS;BNZ;Kebbi;Bunza;Bunza
+NIE;KBS;KMB;Kebbi;Dandi;Dandi
+NIE;KBS;MHT;Kebbi;Fakai;Fakai
+NIE;KBS;GWN;Kebbi;Gwandu;Gwandu
+NIE;KBS;JEG;Kebbi;Jega;Jega
+NIE;KBS;KLG;Kebbi;Kalgo;Kalgo
+NIE;KBS;BES;Kebbi;Koko/Besse;Koko/Besse
+NIE;KBS;MYM;Kebbi;Maiyama;Maiyama
+NIE;KBS;WRR;Kebbi;Ngaski;Ngaski
+NIE;KBS;DRD;Kebbi;Sakaba;Sakaba
+NIE;KBS;SNA;Kebbi;Shanga;Shanga
+NIE;KBS;DKG;Kebbi;Suru;Suru
+NIE;KBS;RBH;Kebbi;Wasagu/Danko;Danko/Wasagu
+NIE;KBS;YLW;Kebbi;Yauri;Yauri
+NIE;KBS;ZUR;Kebbi;Zuru;Zuru
+NIE;KGS;DAV;Kogi;Adavi;Adavi
+NIE;KGS;AJA;Kogi;Ajaokuta;Ajaokuta
+NIE;KGS;KPA;Kogi;Ankpa;Ankpa
+NIE;KGS;BAS;Kogi;Bassa;Bassa
+NIE;KGS;KNA;Kogi;Dekina;Dekina
+NIE;KGS;NDG;Kogi;Ibaji;Ibaji
+NIE;KGS;DAH;Kogi;Idah;Idah
+NIE;KGS;AJK;Kogi;Igalamela-Odolu;Igalamela-Odolu
+NIE;KGS;JMU;Kogi;Ijumu;Ijumu
+NIE;KGS;KAB;Kogi;Kabba/Bunu;Kabba/Bunu
+NIE;KGS;KKF;Kogi;Kogi;Kogi
+NIE;KGS;LKJ;Kogi;Lokoja;Lokoja
+NIE;KGS;MPA;Kogi;Mopa-Muro;Mopa-Muro
+NIE;KGS;KFU;Kogi;Ofu;Ofu
+NIE;KGS;KPF;Kogi;Ogori/Magongo;Ogori/Magongo
+NIE;KGS;KKH;Kogi;Okehi;Okehi
+NIE;KGS;KNE;Kogi;Okene;Okene
+NIE;KGS;LAM;Kogi;Olamaboro;Olamaboro
+NIE;KGS;BJK;Kogi;Omala;Omala
+NIE;KGS;SAN;Kogi;Yagba East;Yagba East
+NIE;KGS;ERE;Kogi;Yagba West;Yagba West
+NIE;KWS;AFN;Kwara;Asa;Asa
+NIE;KWS;KSB;Kwara;Baruten;Baruten
+NIE;KWS;LAF;Kwara;Edu;Edu
+NIE;KWS;ARP;Kwara;Ekiti;Ekiti
+NIE;KWS;SHA;Kwara;Ifelodun;Ifelodun
+NIE;KWS;KEY;Kwara;Ilorin East;Ilorin East
+NIE;KWS;FUF;Kwara;Ilorin South;Ilorin South
+NIE;KWS;LRN;Kwara;Ilorin West;Ilorin West
+NIE;KWS;MUN;Kwara;Irepodun;Irepodun
+NIE;KWS;WSN;Kwara;Isin;Isin
+NIE;KWS;KMA;Kwara;Kaiama;Kaiama
+NIE;KWS;BDU;Kwara;Moro;Moro
+NIE;KWS;FFA;Kwara;Offa;Offa
+NIE;KWS;LFF;Kwara;Oke Ero;Oke-Ero
+NIE;KWS;LEM;Kwara;Oyun;Oyun
+NIE;KWS;PTG;Kwara;Pategi;Pategi
+NIE;LAS;GGE;Lagos;Agege;Agege
+NIE;LAS;AGL;Lagos;Ajeromi/Ifelodun;Ajeromi/Ifelodun
+NIE;LAS;KTU;Lagos;Alimosho;Alimosho
+NIE;LAS;FST;Lagos;Amuwo Odofin;Amuwo Odofin
+NIE;LAS;APP;Lagos;Apapa;Apapa
+NIE;LAS;BDG;Lagos;Badagry;Badagry
+NIE;LAS;EPE;Lagos;Epe;Epe
+NIE;LAS;EKY;Lagos;Eti Osa;Eti-Osa
+NIE;LAS;AKD;Lagos;Ibeju Lekki;Ibeju Lekki
+NIE;LAS;FKJ;Lagos;Ifako/Ijaye;Ifako/Ijaye
+NIE;LAS;KJA;Lagos;Ikeja;Ikeja
+NIE;LAS;KRD;Lagos;Ikorodu;Ikorodu
+NIE;LAS;KSF;Lagos;Kosofe;Kosofe
+NIE;LAS;AAA;Lagos;Lagos Island;Lagos Island
+NIE;LAS;LND;Lagos;Lagos Mainland;Lagos Mainland
+NIE;LAS;MUS;Lagos;Mushin;Mushin
+NIE;LAS;JJJ;Lagos;Ojo;Ojo
+NIE;LAS;LSD;Lagos;Oshodi/Isolo;Oshodi/Isolo
+NIE;LAS;SMK;Lagos;Shomolu;Shomolu
+NIE;LAS;LSR;Lagos;Surulere;Surulere
+NIE;NAS;AKW;Nasarawa;Akwanga;Akwanga
+NIE;NAS;AWE;Nasarawa;Awe;Awe
+NIE;NAS;DMA;Nasarawa;Doma;Doma
+NIE;NAS;KRV;Nasarawa;Karu;Karu
+NIE;NAS;KEN;Nasarawa;Keana;Keana
+NIE;NAS;KEF;Nasarawa;Keffi;Keffi
+NIE;NAS;GRU;Nasarawa;Kokona;Kokona
+NIE;NAS;LFA;Nasarawa;Lafia;Lafia
+NIE;NAS;NSW;Nasarawa;Nasarawa;Nasarawa
+NIE;NAS;NEG;Nasarawa;Nasarawa Egon;Nasarawa Eggon
+NIE;NAS;NBB;Nasarawa;Obi;Obi
+NIE;NAS;NTT;Nasarawa;Toto;Toto
+NIE;NAS;WAM;Nasarawa;Wamba;Wamba
+NIE;NIS;AGA;Niger;Agaie;Agaie
+NIE;NIS;AGR;Niger;Agwara;Agwara
+NIE;NIS;BDA;Niger;Bida;Bida
+NIE;NIS;NBS;Niger;Borgu;Borgu
+NIE;NIS;MAK;Niger;Bosso;Bosso
+NIE;NIS;MNA;Niger;Chanchaga;Chanchaga
+NIE;NIS;ENG;Niger;Edati;Edati
+NIE;NIS;LMU;Niger;Gbako;Gbako
+NIE;NIS;GWU;Niger;Gurara;Gurara
+NIE;NIS;KHA;Niger;Katcha;Katcha
+NIE;NIS;KNT;Niger;Kontagora;Kontagora
+NIE;NIS;LAP;Niger;Lapai;Lapai
+NIE;NIS;KUG;Niger;Lavun;Lavun
+NIE;NIS;NAS;Niger;Magama;Magama
+NIE;NIS;BMG;Niger;Mariga;Mariga
+NIE;NIS;MSG;Niger;Mashegu;Mashegu
+NIE;NIS;MKW;Niger;Mokwa;Mokwa
+NIE;NIS;SRP;Niger;Muya;Muya
+NIE;NIS;PAK;Niger;Paikoro;Paikoro
+NIE;NIS;KAG;Niger;Rafi;Rafi
+NIE;NIS;RJA;Niger;Rijau;Rijau
+NIE;NIS;KUT;Niger;Shiroro;Shiroro
+NIE;NIS;SUL;Niger;Suleja;Suleja
+NIE;NIS;WSE;Niger;Tafa;Tafa
+NIE;NIS;WSH;Niger;Wushishi;Wushishi
+NIE;OGS;AKM;Ogun;Abeokuta North;Abeokuta North
+NIE;OGS;AAB;Ogun;Abeokuta South;Abeokuta South
+NIE;OGS;TTD;Ogun;Ado Odo/Ota;Ado Odo/Ota
+NIE;OGS;AYE;Ogun;Egbado North;Yewa North
+NIE;OGS;LAR;Ogun;Egbado South;Yewa South
+NIE;OGS;TRE;Ogun;Ewekoro;Ewekoro
+NIE;OGS;FFF;Ogun;Ifo;Ifo
+NIE;OGS;GBE;Ogun;Ijebu East;Ijebu East
+NIE;OGS;JGB;Ogun;Ijebu North;Ijebu North
+NIE;OGS;SRA;Ogun;Ijebu North East;Ijebu North East
+NIE;OGS;JBD;Ogun;Ijebu ode;Ijebu ode
+NIE;OGS;KNN;Ogun;Ikenne;Ikenne
+NIE;OGS;MEK;Ogun;Imeko Afon;Imeko Afon
+NIE;OGS;PKA;Ogun;Ipokia;Ipokia
+NIE;OGS;WDE;Ogun;Obafemi Owode;Obafemi-Owode
+NIE;OGS;EDE;Ogun;Odeda;Odeda
+NIE;OGS;DGB;Ogun;Odogbolu;Odogbolu
+NIE;OGS;ABG;Ogun;Ogun waterside;Ogun Waterside
+NIE;OGS;TTN;Ogun;Remo North;Remo North
+NIE;OGS;SGM;Ogun;Shagamu;Shagamu
+NIE;ODS;KAK;Ondo;Akoko North East;Akoko North East
+NIE;ODS;ANG;Ondo;Akoko North West;Akoko North West
+NIE;ODS;KAA;Ondo;Akoko South East;Akoko South East
+NIE;ODS;SUA;Ondo;Akoko South West;Akoko South West
+NIE;ODS;JTA;Ondo;Akure North;Akure North
+NIE;ODS;AKR;Ondo;Akure South;Akure South
+NIE;ODS;GKB;Ondo;Ese Odo;Ese Odo
+NIE;ODS;WEN;Ondo;Idanre;Idanre
+NIE;ODS;FGB;Ondo;Ifedore;Ifedore
+NIE;ODS;GBA;Ondo;Ilaje;Ilaje
+NIE;ODS;LEL;Ondo;Ile Oluji/Okeigbo;Ile-Oluji-Okeigbo
+NIE;ODS;REL;Ondo;Irele;Irele
+NIE;ODS;REE;Ondo;Odigbo;Odigbo
+NIE;ODS;KTP;Ondo;Okitipupa;Okitipupa
+NIE;ODS;BDR;Ondo;Ondo East;Ondo East
+NIE;ODS;NND;Ondo;Ondo West;Ondo West
+NIE;ODS;FFN;Ondo;Ose;Ose
+NIE;ODS;WWW;Ondo;Owo;Owo
+NIE;OSS;GBN;Osun;Aiyedade;Aiyedaade
+NIE;OSS;LGB;Osun;Aiyedire;Aiyedire
+NIE;OSS;PRN;Osun;Atakunmosa East;Atakunmosa East
+NIE;OSS;SSU;Osun;Atakunmosa West;Atakunmosa West
+NIE;OSS;TAN;Osun;Boluwaduro;Boluwaduro
+NIE;OSS;RGB;Osun;Boripe;Boripe
+NIE;OSS;EDT;Osun;Ede North;Ede North
+NIE;OSS;EDE;Osun;Ede South;Ede South
+NIE;OSS;AAW;Osun;Egbedore;Egbedore
+NIE;OSS;EJG;Osun;Ejigbo;Ejigbo
+NIE;OSS;FFE;Osun;Ife Central;Ife Central
+NIE;OSS;FEE;Osun;Ife East;Ife East
+NIE;OSS;PMD;Osun;Ife North;Ife North
+NIE;OSS;FTD;Osun;Ife South;Ife South
+NIE;OSS;FDY;Osun;Ifedayo;Ifedayo
+NIE;OSS;KNR;Osun;Ifelodun;Ifelodun
+NIE;OSS;LRG;Osun;Ila;Ila
+NIE;OSS;LES;Osun;Ilesha East;Ilesha East
+NIE;OSS;LEW;Osun;Ilesha West;Ilesha West
+NIE;OSS;RLG;Osun;Irepodun;Irepodun
+NIE;OSS;KRE;Osun;Irewole;Irewole
+NIE;OSS;APM;Osun;Isokan;Isokan
+NIE;OSS;WWD;Osun;Iwo;Iwo
+NIE;OSS;BKN;Osun;Obokun;Obokun
+NIE;OSS;DTN;Osun;Odo Otin;Odo-Otin
+NIE;OSS;BDS;Osun;Ola oluwa;Ola-Oluwa
+NIE;OSS;GNN;Osun;Olorunda;Olorunda
+NIE;OSS;JJS;Osun;Oriade;Oriade
+NIE;OSS;FNN;Osun;Orolu;Orolu
+NIE;OSS;SGB;Osun;Osogbo;Osogbo
+NIE;OYS;JBL;Oyo;Afijio;Afijio
+NIE;OYS;MNY;Oyo;Akinyele;Akinyele
+NIE;OYS;FMT;Oyo;Atiba;Atiba
+NIE;OYS;TDE;Oyo;Atisbo;Atisbo
+NIE;OYS;EGB;Oyo;Egbeda;Egbeda
+NIE;OYS;BDJ;Oyo;Ibadan North;Ibadan North
+NIE;OYS;AGG;Oyo;Ibadan North East;Ibadan North East
+NIE;OYS;NRK;Oyo;Ibadan North West;Ibadan North West
+NIE;OYS;MAP;Oyo;Ibadan South East;Ibadan South East
+NIE;OYS;LUY;Oyo;Ibadan South West;Ibadan South West
+NIE;OYS;GBR;Oyo;Ibarapa Central;Ibarapa Central
+NIE;OYS;RUW;Oyo;Ibarapa East;Ibarapa East
+NIE;OYS;AYT;Oyo;Ibarapa North;Ibarapa North
+NIE;OYS;DDA;Oyo;Ido;Ido
+NIE;OYS;KSH;Oyo;Irepo;Irepo
+NIE;OYS;SEY;Oyo;Iseyin;Iseyin
+NIE;OYS;TUT;Oyo;Itesiwaju;Itesiwaju
+NIE;OYS;WEL;Oyo;Iwajowa;Iwajowa
+NIE;OYS;KEH;Oyo;Kajola;Kajola
+NIE;OYS;YNF;Oyo;Lagelu;Lagelu
+NIE;OYS;KNH;Oyo;Ogbomosho North;Ogbomosho North
+NIE;OYS;AME;Oyo;Ogbomosho South;Ogbomosho South
+NIE;OYS;AJW;Oyo;Ogo Oluwa;Ogo Oluwa
+NIE;OYS;GBY;Oyo;Olorunsogo;Olorunsogo
+NIE;OYS;YRE;Oyo;Oluyole;Oluyole
+NIE;OYS;AKN;Oyo;Ona ara;Ona Ara
+NIE;OYS;GBH;Oyo;Orelope;Orelope
+NIE;OYS;KKY;Oyo;Ori Ire;Ori Ire
+NIE;OYS;YYY;Oyo;Oyo East;Oyo East
+NIE;OYS;JND;Oyo;Oyo West;Oyo West
+NIE;OYS;GMD;Oyo;Saki East;Saki East
+NIE;OYS;SHK;Oyo;Saki West;Saki West
+NIE;OYS;RSD;Oyo;Surulere;Surulere
+NIE;PLS;BLD;Plateau;Barkin Ladi;Barkin Ladi
+NIE;PLS;BSA;Plateau;Bassa;Bassa
+NIE;PLS;BKK;Plateau;Bokkos;Bokkos
+NIE;PLS;ANW;Plateau;Jos East;Jos East
+NIE;PLS;JJN;Plateau;Jos North;Jos North
+NIE;PLS;BUU;Plateau;Jos South;Jos South
+NIE;PLS;DNG;Plateau;Kanam;Kanam
+NIE;PLS;KWK;Plateau;Kanke;Kanke
+NIE;PLS;LGT;Plateau;Langtang North;Langtang North
+NIE;PLS;MBD;Plateau;Langtang South;Langtang South
+NIE;PLS;MGU;Plateau;Mangu;Mangu
+NIE;PLS;TNK;Plateau;Mikang;Mikang
+NIE;PLS;PKN;Plateau;Pankshin;Pankshin
+NIE;PLS;QAP;Plateau;Qua'an Pan;Qua'an Pan
+NIE;PLS;RYM;Plateau;Riyom;Riyom
+NIE;PLS;SHD;Plateau;Shendam;Shendam
+NIE;PLS;WAS;Plateau;Wase;Wase
+NIE;RVS;ABU;Rivers;Abua/Odual;Abua/Odual
+NIE;RVS;AHD;Rivers;Ahoada East;Ahoada East
+NIE;RVS;KNM;Rivers;Ahoada West;Ahoada West
+NIE;RVS;ABM;Rivers;Akuku Toru;Akuku Toru
+NIE;RVS;NDN;Rivers;Andoni;Andoni
+NIE;RVS;BGM;Rivers;Asari-Toru;Asari-Toru
+NIE;RVS;BNY;Rivers;Bonny;Bonny
+NIE;RVS;DEG;Rivers;Degema;Degema
+NIE;RVS;NCH;Rivers;Eleme;Eleme
+NIE;RVS;MHA;Rivers;Emuoha;Emuoha
+NIE;RVS;KHE;Rivers;Etche;Etche
+NIE;RVS;KPR;Rivers;Gokana;Gokana
+NIE;RVS;SKP;Rivers;Ikwerre;Ikwerre
+NIE;RVS;BRR;Rivers;Khana;Khana
+NIE;RVS;RUM;Rivers;Obio/Akpor;Obio/Akpor
+NIE;RVS;RGM;Rivers;Ogba/Egbema/Ndoni;Ogba/Egbema/Ndoni
+NIE;RVS;GGU;Rivers;Ogu Bolo;Ogu/Bolo
+NIE;RVS;KRK;Rivers;Okrika;Okrika
+NIE;RVS;BER;Rivers;Omumma;Omumma
+NIE;RVS;PBT;Rivers;Opobo/Nkoro;Opobo/Nkoro
+NIE;RVS;AFM;Rivers;Oyigbo;Oyigbo
+NIE;RVS;PHC;Rivers;Port-Harcourt;Port-Harcourt
+NIE;RVS;SKN;Rivers;Tai;Tai
+NIE;SOS;BNJ;Sokoto;Binji;Binji
+NIE;SOS;BDN;Sokoto;Bodinga;Bodinga
+NIE;SOS;DGS;Sokoto;Dange-Shuni;Dange-Shuni
+NIE;SOS;GAD;Sokoto;Gada;Gada
+NIE;SOS;GRY;Sokoto;Goronyo;Goronyo
+NIE;SOS;BLE;Sokoto;Gudu;Gudu
+NIE;SOS;GWD;Sokoto;Gwadabawa;Gwadabawa
+NIE;SOS;LLA;Sokoto;Illela;Illela
+NIE;SOS;SAA;Sokoto;Isa;Isa
+NIE;SOS;KBE;Sokoto;Kebbe;Kebbe
+NIE;SOS;KWR;Sokoto;Kware;Kware
+NIE;SOS;RBA;Sokoto;Rabah;Rabah
+NIE;SOS;SBN;Sokoto;Sabon Birni;Sabon Birni
+NIE;SOS;SGR;Sokoto;Shagari;Shagari
+NIE;SOS;SLM;Sokoto;Silame;Silame
+NIE;SOS;SKK;Sokoto;Sokoto North;Sokoto North
+NIE;SOS;SRZ;Sokoto;Sokoto South;Sokoto South
+NIE;SOS;TBW;Sokoto;Tambuwal;Tambuwal
+NIE;SOS;TGZ;Sokoto;Tangaza;Tangaza
+NIE;SOS;TRT;Sokoto;Tureta;Tureta
+NIE;SOS;WMK;Sokoto;Wamako;Wamako
+NIE;SOS;WRN;Sokoto;Wurno;Wurno
+NIE;SOS;YYB;Sokoto;Yabo;Yabo
+NIE;TRS;ARD;Taraba;Ardo-Kola;Ardo-Kola
+NIE;TRS;BAL;Taraba;Bali;Bali
+NIE;TRS;DGA;Taraba;Donga;Donga
+NIE;TRS;GKA;Taraba;Gashaka;Gashaka
+NIE;TRS;GAS;Taraba;Gassol;Gassol
+NIE;TRS;BBB;Taraba;Ibi;Ibi
+NIE;TRS;JAL;Taraba;Jalingo;Jalingo
+NIE;TRS;KLD;Taraba;Karim Lamido;Karim-Lamido
+NIE;TRS;KRM;Taraba;Kurmi;Kurmi
+NIE;TRS;LAU;Taraba;Lau;Lau
+NIE;TRS;SDA;Taraba;Sardauna;Sardauna
+NIE;TRS;TTM;Taraba;Takum;Takum
+NIE;TRS;USS;Taraba;Ussa;Ussa
+NIE;TRS;WKR;Taraba;Wukari;Wukari
+NIE;TRS;YRR;Taraba;Yorro;Yorro
+NIE;TRS;TZG;Taraba;Zing;Zing
+NIE;YBS;GSH;Yobe;Barde;Bade
+NIE;YBS;DPH;Yobe;Borsari;Bursari
+NIE;YBS;DTR;Yobe;Damaturu;Damaturu
+NIE;YBS;FKA;Yobe;Fika;Fika
+NIE;YBS;FUN;Yobe;Fune;Fune
+NIE;YBS;GDM;Yobe;Geidam;Geidam
+NIE;YBS;GJB;Yobe;Gujba;Gujba
+NIE;YBS;GLN;Yobe;Gulani;Gulani
+NIE;YBS;JAK;Yobe;Jakusko;Jakusko
+NIE;YBS;KRS;Yobe;Karasuwa;Karasuwa
+NIE;YBS;MCN;Yobe;Machina;Machina
+NIE;YBS;NNR;Yobe;Nangere;Nangere
+NIE;YBS;NGU;Yobe;Nguru;Nguru
+NIE;YBS;PKM;Yobe;Potiskum;Potiskum
+NIE;YBS;TMW;Yobe;Tarmua;Tarmuwa
+NIE;YBS;YUN;Yobe;Yunusari;Yunusari
+NIE;YBS;YSF;Yobe;Yusufari;Yusufari
+NIE;ZAS;ANK;Zamfara;Anka;Anka
+NIE;ZAS;BKA;Zamfara;Bakura;Bakura
+NIE;ZAS;BMJ;Zamfara;Birnin Magaji/Kiyaw;Birnin Magaji
+NIE;ZAS;BKM;Zamfara;Bukkuyum;Bukkuyum
+NIE;ZAS;BUG;Zamfara;Bungudu;Bungudu
+NIE;ZAS;GMM;Zamfara;Gummi;Gummi
+NIE;ZAS;GUS;Zamfara;Gusau;Gusau
+NIE;ZAS;KRN;Zamfara;Kaura Namoda;Kaura Namoda
+NIE;ZAS;MRD;Zamfara;Maradun;Maradun
+NIE;ZAS;MRR;Zamfara;Maru;Maru
+NIE;ZAS;SKF;Zamfara;Shinkafi;Shinkafi
+NIE;ZAS;TMA;Zamfara;Talata Mafara;Talata Mafara
+NIE;ZAS;TSF;Zamfara;Tsafe;Tsafe
+NIE;ZAS;ZRM;Zamfara;Zurmi;Zurmi

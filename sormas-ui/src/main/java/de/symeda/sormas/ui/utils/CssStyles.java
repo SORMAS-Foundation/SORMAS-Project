@@ -69,6 +69,7 @@ public final class CssStyles {
 	 * Stellt sicher, dass CM-Checkboxen dieselbe Höhe wie Textfelder etc. haben
 	 */
 	public static final String FORCE_CAPTION = "force-caption";
+	public static final String FORCE_CAPTION_21 = "force-caption-21";
 	public static final String CAPTION_HIDDEN = "caption-hidden";
 
 	public static final String FONT_CROSSED = "font-crossed";

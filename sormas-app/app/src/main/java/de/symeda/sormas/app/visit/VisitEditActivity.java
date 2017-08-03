@@ -12,19 +12,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 
-import com.google.android.gms.analytics.Tracker;
-
-import java.util.Date;
-
-import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
-import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.visit.Visit;
 import de.symeda.sormas.app.backend.visit.VisitDao;
@@ -32,11 +24,14 @@ import de.symeda.sormas.app.caze.SymptomsEditForm;
 import de.symeda.sormas.app.AbstractEditTabActivity;
 import de.symeda.sormas.app.component.HelpDialog;
 import de.symeda.sormas.app.component.UserReportDialog;
+import de.symeda.sormas.app.databinding.CaseSymptomsFragmentLayoutBinding;
+import de.symeda.sormas.app.databinding.VisitDataFragmentLayoutBinding;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.SyncCallback;
-import de.symeda.sormas.app.util.ValidationFailedException;
+import de.symeda.sormas.app.validation.SymptomsValidator;
+import de.symeda.sormas.app.validation.VisitValidator;
 
 
 public class VisitEditActivity extends AbstractEditTabActivity {
@@ -176,73 +171,58 @@ public class VisitEditActivity extends AbstractEditTabActivity {
                 visit = (Visit) adapter.getData(VisitEditTabs.VISIT_DATA.ordinal());
                 Symptoms symptoms = (Symptoms)adapter.getData(VisitEditTabs.SYMPTOMS.ordinal());
                 SymptomsEditForm symptomsEditForm = (SymptomsEditForm) adapter.getTabByPosition(VisitEditTabs.SYMPTOMS.ordinal());
-
                 Contact contact = DatabaseHelper.getContactDao().queryUuid(contactUuid);
-                if (visit.getVisitDateTime().before(contact.getLastContactDate()) &&
-                        DateHelper.getDaysBetween(visit.getVisitDateTime(), contact.getLastContactDate()) > 10) {
-                    Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_visit_10_days_before, Snackbar.LENGTH_LONG).show();
-                    return true;
+
+                VisitDataFragmentLayoutBinding visitDataBinding = ((VisitEditDataForm)adapter.getTabByPosition(VisitEditTabs.VISIT_DATA.ordinal())).getBinding();
+                CaseSymptomsFragmentLayoutBinding symptomsBinding = symptomsEditForm.getBinding();
+
+                // Necessary because the entry could've been automatically set, in which case the setValue method of the
+                // custom field has not been called
+                symptoms.setOnsetSymptom((String) symptomsBinding.symptomsOnsetSymptom1.getValue());
+
+                VisitValidator.clearErrorsForVisitData(visitDataBinding);
+                SymptomsValidator.clearErrorsForSymptoms(symptomsBinding);
+
+                int validationErrorTab = -1;
+
+                if (!SymptomsValidator.validateVisitSymptoms(visit, symptoms, symptomsBinding)) {
+                    validationErrorTab = VisitEditTabs.SYMPTOMS.ordinal();
+                }
+                if (!VisitValidator.validateVisitData(visit, contact, visitDataBinding)) {
+                    validationErrorTab = VisitEditTabs.VISIT_DATA.ordinal();
                 }
 
-                if (contact.getFollowUpUntil() != null && visit.getVisitDateTime().after(contact.getFollowUpUntil()) &&
-                        DateHelper.getDaysBetween(contact.getFollowUpUntil(), visit.getVisitDateTime()) > 10) {
-                    Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_visit_10_days_after, Snackbar.LENGTH_LONG).show();
+                if (validationErrorTab >= 0) {
+                    pager.setCurrentItem(validationErrorTab);
                     return true;
                 }
 
                 try {
-                    symptomsEditForm.validateVisitData(symptoms, visit.getVisitStatus() == VisitStatus.COOPERATIVE);
-                } catch (ValidationFailedException e) {
-                    Snackbar.make(findViewById(R.id.base_layout), e.getMessage(), Snackbar.LENGTH_LONG).show();
+                    visit.setSymptoms(symptoms);
+                    visit.setVisitUser(ConfigProvider.getUser());
+                    VisitDao visitDao = DatabaseHelper.getVisitDao();
+                    visitDao.saveAndSnapshot(visit);
 
-                    // if any symptomsfield is required, change pager to symptoms tab
-                    if (currentTab != VisitEditTabs.SYMPTOMS.ordinal()) {
-                        pager.setCurrentItem(VisitEditTabs.SYMPTOMS.ordinal());
-                    }
-                    return true;
-                }
-
-                boolean dateTimeReq = visit.getVisitDateTime() == null;
-                boolean visitStatusReq = visit.getVisitStatus() == null;
-
-                boolean isValid = !dateTimeReq && !visitStatusReq;
-
-                // method returns a String, null means that there is no error message and thus
-                // the data is valid
-                if (isValid) {
-                    try {
-						visit.setSymptoms(symptoms);
-						visit.setVisitUser(ConfigProvider.getUser());
-                        VisitDao visitDao = DatabaseHelper.getVisitDao();
-						visitDao.saveAndSnapshot(visit);
-
-                        if (RetroProvider.isConnected()) {
-                            SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.ChangesOnly, this, new SyncCallback() {
-                                @Override
-                                public void call(boolean syncFailed) {
-                                    if (syncFailed) {
-                                        Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_sync_error_saved), getResources().getString(R.string.entity_visit)), Snackbar.LENGTH_LONG).show();
-                                    } else {
-                                        Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_visit)), Snackbar.LENGTH_LONG).show();
-                                    }
-                                    finish();
+                    if (RetroProvider.isConnected()) {
+                        SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.ChangesOnly, this, new SyncCallback() {
+                            @Override
+                            public void call(boolean syncFailed) {
+                                if (syncFailed) {
+                                    Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_sync_error_saved), getResources().getString(R.string.entity_visit)), Snackbar.LENGTH_LONG).show();
+                                } else {
+                                    Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_visit)), Snackbar.LENGTH_LONG).show();
                                 }
-                            });
-                        } else {
-                            Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_visit)), Snackbar.LENGTH_LONG).show();
-                            finish();
-                        }
-                    } catch (DaoException e) {
-                        Log.e(getClass().getName(), "Error while trying to save visit", e);
-                        Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_error), getResources().getString(R.string.entity_visit)), Snackbar.LENGTH_LONG).show();
-                        ErrorReportingHelper.sendCaughtException(tracker, e, visit, true);
+                                finish();
+                            }
+                        });
+                    } else {
+                        Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_visit)), Snackbar.LENGTH_LONG).show();
+                        finish();
                     }
-                } else {
-                    if (dateTimeReq) {
-                        Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_visit_date_time, Snackbar.LENGTH_LONG).show();
-                    } else if (visitStatusReq) {
-                        Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_visit_status, Snackbar.LENGTH_LONG).show();
-                    }
+                } catch (DaoException e) {
+                    Log.e(getClass().getName(), "Error while trying to save visit", e);
+                    Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_error), getResources().getString(R.string.entity_visit)), Snackbar.LENGTH_LONG).show();
+                    ErrorReportingHelper.sendCaughtException(tracker, e, visit, true);
                 }
 
                 return true;

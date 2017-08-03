@@ -1,6 +1,5 @@
 package de.symeda.sormas.backend.caze;
 
-import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -165,22 +164,11 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	@Override
 	public CaseDataDto saveCase(CaseDataDto dto) {
-		
+
 		Case caze = fromCaseDataDto(dto);
 		caseService.ensurePersisted(caze);
 		
 		updateCaseInvestigationProcess(caze);
-		
-		return toCaseDataDto(caze);
-	}
-	
-	@Override
-	public CaseDataDto createCase(String personUuid, CaseDataDto caseDto) {
-		Person person = personService.getByUuid(personUuid);
-		
-		Case caze = fromCaseDataDto(caseDto);
-		caze.setPerson(person);
-		caseService.ensurePersisted(caze);
 		
 		return toCaseDataDto(caze);
 	}
@@ -199,9 +187,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (target == null) {
 			target = new Case();
 			target.setUuid(source.getUuid());
-			if (source.getCreationDate() != null) {
-				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
-			}
+			target.setReportDate(new Date());
+			// TODO set target.setReportingUser(user); from sesssion context
 		}
 		DtoHelper.validateDto(source, target);
 				

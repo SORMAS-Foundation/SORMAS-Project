@@ -29,6 +29,7 @@ import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.FormTab;
 import de.symeda.sormas.app.util.Consumer;
+import de.symeda.sormas.app.validation.EventValidator;
 
 public class EventEditDataForm extends FormTab {
 
@@ -38,15 +39,19 @@ public class EventEditDataForm extends FormTab {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.event_data_fragment_layout, container, false);
 
-        final String eventUuid = getArguments().getString(Event.UUID);
-        final EventDao eventDao = DatabaseHelper.getEventDao();
-        Event event = null;
+        String eventUuid = null;
+        if (getArguments() != null) {
+            eventUuid = getArguments().getString(Event.UUID);
+        }
+
+        Event event;
 
         if (eventUuid==null) {
             // create a new event for empty uuid
             event = DatabaseHelper.getEventDao().create();
         } else {
             // open the given event
+            final EventDao eventDao = DatabaseHelper.getEventDao();
             event = eventDao.queryUuid(eventUuid);
         }
 
@@ -78,6 +83,8 @@ public class EventEditDataForm extends FormTab {
         // init fields
         toggleTypeOfPlaceTextField();
 
+        EventValidator.setRequiredHintsForEventData(binding);
+
         return binding.getRoot();
     }
 
@@ -97,6 +104,10 @@ public class EventEditDataForm extends FormTab {
             binding.eventTypeOfPlaceTxt.setValue(null);
             setFieldGone(binding.eventTypeOfPlaceTxt);
         }
+    }
+
+    public EventDataFragmentLayoutBinding getBinding() {
+        return binding;
     }
 
 }

@@ -260,7 +260,6 @@ public class CaseService extends AbstractAdoService<Case> {
 			Case result = em.createQuery(cq).getSingleResult();
 			return result;
 		} catch (NoResultException e) {
-			logger.info(e.getMessage(), e);
 			return null;
 		}
 	}	

@@ -153,7 +153,7 @@ public class CaseEditPagerAdapter extends FragmentStatePagerAdapter {
 
     public FormTab getTabByPosition(int position) {
         CaseEditTabs tab = CaseEditTabs.fromInt(position);
-        switch(tab) {
+        switch (tab) {
             case CASE_DATA:
                 return caseEditDataForm;
             case PATIENT:

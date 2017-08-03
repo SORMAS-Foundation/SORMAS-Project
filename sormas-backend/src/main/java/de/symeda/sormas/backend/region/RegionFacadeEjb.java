@@ -32,6 +32,11 @@ public class RegionFacadeEjb implements RegionFacade {
 			.collect(Collectors.toList());
 	}
 	
+	@Override
+	public RegionDto getRegionByUuid(String uuid) {
+		return toDto(service.getByUuid(uuid));
+	}
+	
 	public static RegionReferenceDto toReferenceDto(Region entity) {
 		if (entity == null) {
 			return null;
@@ -49,6 +54,7 @@ public class RegionFacadeEjb implements RegionFacade {
 		DtoHelper.fillReferenceDto(dto, entity);
 		
 		dto.setName(entity.getName());
+		dto.setEpidCode(entity.getEpidCode());
 
 		return dto;
 	}

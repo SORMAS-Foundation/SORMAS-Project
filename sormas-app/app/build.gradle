@@ -1,5 +1,7 @@
 apply plugin: 'com.android.application'
 
+ext.sormasVersion = getVersionName()
+
 android {
 //    signingConfigs {
 //        config {
@@ -16,7 +18,7 @@ android {
         minSdkVersion 19
         targetSdkVersion 23
         versionCode buildVersionCode()
-        versionName getVersionName()
+        versionName "$sormasVersion"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 //        signingConfig signingConfigs.config
     }
@@ -54,7 +56,6 @@ configurations.all {
     }
 }
 
-ext.sormasVersion = getVersionName()
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     // https://mvnrepository.com/artifact/com.googlecode/openbeans

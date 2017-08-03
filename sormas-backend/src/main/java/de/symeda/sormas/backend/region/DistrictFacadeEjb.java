@@ -37,6 +37,11 @@ public class DistrictFacadeEjb implements DistrictFacade {
 			.collect(Collectors.toList());
 	}
 	
+	@Override
+	public DistrictDto getDistrictByUuid(String uuid) {
+		return toDto(service.getByUuid(uuid));
+	}
+	
 	public static DistrictReferenceDto toReferenceDto(District entity) {
 		if (entity == null) {
 			return null;
@@ -54,6 +59,7 @@ public class DistrictFacadeEjb implements DistrictFacade {
 		DtoHelper.fillReferenceDto(dto, entity);
 		
 		dto.setName(entity.getName());
+		dto.setEpidCode(entity.getEpidCode());
 		dto.setRegion(RegionFacadeEjb.toReferenceDto(entity.getRegion()));
 
 		return dto;

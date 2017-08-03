@@ -22,8 +22,8 @@ public abstract class AbstractDomainObject implements Serializable, Cloneable, H
 
 	private static final long serialVersionUID = 3957437214306161226L;
 
-	private static final String SEQ_JPA_NAME = "Entity_seq";
-	private static final String SEQ_SQL_NAME = "entity_seq";
+	private static final String SEQ_GEN_NAME = "ENTITY_SEQ_GEN";
+	private static final String SEQ_SQL_NAME = "ENTITY_SEQ";
 
 	public static final String ID = "id";
 	public static final String UUID = "uuid";
@@ -45,8 +45,8 @@ public abstract class AbstractDomainObject implements Serializable, Cloneable, H
 	}
 
 	@Id
-	@SequenceGenerator(name = SEQ_JPA_NAME, allocationSize = 1, sequenceName = SEQ_SQL_NAME)
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = SEQ_JPA_NAME)
+	@SequenceGenerator(name = SEQ_GEN_NAME, allocationSize = 1, sequenceName = SEQ_SQL_NAME)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = SEQ_GEN_NAME)
 	public Long getId() {
 		return id;
 	}

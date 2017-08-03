@@ -108,7 +108,7 @@ public class ContactController {
         createComponent.addCommitListener(new CommitListener() {
         	@Override
         	public void onCommit() {
-        		if (createForm.getFieldGroup().isValid()) {
+        		if (!createForm.getFieldGroup().isModified()) {
         			final ContactDto dto = createForm.getValue();
         			
         			ControllerProvider.getPersonController().selectOrCreatePerson(
@@ -153,7 +153,7 @@ public class ContactController {
         editComponent.addCommitListener(new CommitListener() {
         	@Override
         	public void onCommit() {
-        		if (editForm.getFieldGroup().isValid()) {
+        		if (!editForm.getFieldGroup().isModified()) {
         			ContactDto dto = editForm.getValue();
         			
         			// set the contact person's address to the one of the case when it is currently empty and

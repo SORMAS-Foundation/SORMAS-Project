@@ -82,7 +82,7 @@ public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHo
     			healthFacility.removeAllItems();
 	    		CommunityReferenceDto communityDto = (CommunityReferenceDto)e.getProperty().getValue();
 	    		if(communityDto != null) {
-	    			healthFacility.addItems(FacadeProvider.getFacilityFacade().getAllByCommunity(communityDto, false));
+	    			healthFacility.addItems(FacadeProvider.getFacilityFacade().getHealthFacilitiesByCommunity(communityDto, false));
 	    		}
     		}
     	});
@@ -120,7 +120,7 @@ public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHo
 	   	facilityDistrict.select(facility.getDistrict());
 	   	facilityCommunity.addItems(FacadeProvider.getCommunityFacade().getAllByDistrict(facility.getDistrict().getUuid()));
 	   	facilityCommunity.select(facility.getCommunity());
-	   	healthFacility.addItems(FacadeProvider.getFacilityFacade().getAllByCommunity(facility.getCommunity(), false));
+	   	healthFacility.addItems(FacadeProvider.getFacilityFacade().getHealthFacilitiesByCommunity(facility.getCommunity(), false));
 	   	
 	   	facilityFieldsInitialized = true;
 	}

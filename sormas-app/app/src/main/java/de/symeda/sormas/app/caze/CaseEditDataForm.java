@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -37,6 +38,7 @@ import de.symeda.sormas.app.component.SpinnerField;
 import de.symeda.sormas.app.databinding.CaseDataFragmentLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.FormTab;
+import de.symeda.sormas.app.validation.CaseValidator;
 
 /**
  * Created by Stefan Szczesny on 27.07.2016.
@@ -57,7 +59,7 @@ public class CaseEditDataForm extends FormTab {
         final List emptyList = new ArrayList<>();
         final List districtsByRegion = DataUtils.toItems(caze.getRegion() != null ? DatabaseHelper.getDistrictDao().getByRegion(caze.getRegion()) : DataUtils.toItems(emptyList), true);
         final List communitiesByDistrict = DataUtils.toItems(caze.getDistrict() != null ? DatabaseHelper.getCommunityDao().getByDistrict(caze.getDistrict()) : DataUtils.toItems(emptyList), true);
-        final List facilitiesByCommunity = DataUtils.toItems(caze.getCommunity() != null ? DatabaseHelper.getFacilityDao().getByCommunity(caze.getCommunity(), true) : DataUtils.toItems(emptyList), true);
+        final List facilitiesByCommunity = DataUtils.toItems(caze.getCommunity() != null ? DatabaseHelper.getFacilityDao().getHealthFacilitiesByCommunity(caze.getCommunity(), true) : DataUtils.toItems(emptyList), true);
 
         FieldHelper.initRegionSpinnerField(binding.caseDataRegion, new AdapterView.OnItemSelectedListener() {
             @Override
@@ -88,6 +90,13 @@ public class CaseEditDataForm extends FormTab {
                     List<Community> communityList = emptyList;
                     if(selectedValue != null) {
                         communityList = DatabaseHelper.getCommunityDao().getByDistrict((District)selectedValue);
+                        String epidNumber = binding.caseDataEpidNumber.getValue();
+                        if (epidNumber.trim().isEmpty() || !epidNumber.matches(DataHelper.getEpidNumberRegexp())) {
+                            Calendar calendar = Calendar.getInstance();
+                            String year = String.valueOf(calendar.get(Calendar.YEAR)).substring(2);
+                            binding.caseDataEpidNumber.setValue(CaseDataDto.COUNTRY_EPID_CODE + "-" + ((Region) binding.caseDataRegion.getValue()).getEpidCode()
+                                    + "-" + ((District) binding.caseDataDistrict.getValue()).getEpidCode() + "-" + year + "-");
+                        }
                     }
                     spinnerField.setAdapterAndValue(binding.caseDataCommunity.getValue(), DataUtils.toItems(communityList));
                 }
@@ -107,7 +116,7 @@ public class CaseEditDataForm extends FormTab {
                 if(spinnerField != null) {
                     List<Facility> facilityList = emptyList;
                     if(selectedValue != null) {
-                        facilityList = DatabaseHelper.getFacilityDao().getByCommunity((Community)selectedValue, true);
+                        facilityList = DatabaseHelper.getFacilityDao().getHealthFacilitiesByCommunity((Community)selectedValue, true);
                     }
                     spinnerField.setAdapterAndValue(binding.caseDataHealthFacility.getValue(), DataUtils.toItems(facilityList));
                 }
@@ -170,6 +179,26 @@ public class CaseEditDataForm extends FormTab {
             }
         });
 
+        if (ConfigProvider.getUser().getUserRole() != UserRole.INFORMANT) {
+            binding.caseDataEpidNumber.addValueChangedListener(new PropertyField.ValueChangeListener() {
+                @Override
+                public void onChange(PropertyField field) {
+                    String value = (String) field.getValue();
+                    if (value.trim().isEmpty()) {
+                        field.setErrorWithoutFocus(DatabaseHelper.getContext().getResources().getString(R.string.validation_soft_case_epid_number_empty));
+                    } else if (value.matches(DataHelper.getEpidNumberRegexp())) {
+                        field.clearError();
+                    } else {
+                        field.setErrorWithoutFocus(DatabaseHelper.getContext().getResources().getString(R.string.validation_soft_case_epid_number));
+                    }
+                }
+            });
+        } else {
+            binding.caseDataEpidNumber.setEnabled(false);
+        }
+
+        CaseValidator.setRequiredHintsForCaseData(binding);
+
         return binding.getRoot();
     }
 
@@ -188,4 +217,7 @@ public class CaseEditDataForm extends FormTab {
         }
     }
 
+    public CaseDataFragmentLayoutBinding getBinding() {
+        return binding;
+    }
 }

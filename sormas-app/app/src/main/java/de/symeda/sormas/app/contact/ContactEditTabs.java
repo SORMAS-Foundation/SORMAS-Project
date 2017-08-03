@@ -9,7 +9,11 @@ public enum ContactEditTabs {
 	VISITS,
 	TASKS
 	;
-	
+
+	public static ContactEditTabs fromInt(int x) {
+		return ContactEditTabs.values()[x];
+	}
+
 	public String toString() {
 		return I18nProperties.getFieldCaption(ContactDto.I18N_PREFIX+"."+this.name());
 	};

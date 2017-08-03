@@ -19,10 +19,12 @@ public class District extends AbstractDomainObject {
 
 	public static final String NAME = "name";
 	public static final String REGION = "region";
+	public static final String EPID_CODE = "epidCode";
 	public static final String COMMUNITIES = "communities";
 	
 	private String name;
 	private Region region;
+	private String epidCode;
 	private List<Community> communities;
 	
 	public String getName() {
@@ -41,6 +43,13 @@ public class District extends AbstractDomainObject {
 		this.region = region;
 	}
 
+	public String getEpidCode() {
+		return epidCode;
+	}
+	public void setEpidCode(String epidCode) {
+		this.epidCode = epidCode;
+	}
+	
 	@OneToMany(mappedBy = Community.DISTRICT, cascade = {}, fetch = FetchType.LAZY)
 	@OrderBy(District.NAME)
 	public List<Community> getCommunities() {

@@ -15,10 +15,12 @@ import android.view.MenuItem;
 
 import com.google.android.gms.analytics.Tracker;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.user.UserRole;
@@ -35,11 +37,13 @@ import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.SelectOrCreatePersonDialogBuilder;
 import de.symeda.sormas.app.component.UserReportDialog;
+import de.symeda.sormas.app.databinding.CaseNewFragmentLayoutBinding;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.SyncCallback;
+import de.symeda.sormas.app.validation.CaseValidator;
 
 
 /**
@@ -121,65 +125,49 @@ public class CaseNewActivity extends AppCompatActivity {
             case R.id.action_save:
                 final Case caze = caseNewForm.getData();
 
-                boolean diseaseReq = caze.getDisease() == null;
-                boolean firstNameReq = caze.getPerson().getFirstName() == null || caze.getPerson().getFirstName().isEmpty();
-                boolean lastNameReq = caze.getPerson().getLastName() == null || caze.getPerson().getLastName().isEmpty();
-                boolean facilityReq = caze.getHealthFacility() == null;
-                boolean facilityDetailsReq = caze.getHealthFacility().getUuid().equals(FacilityDto.OTHER_FACILITY_UUID) &&
-                        (caze.getHealthFacilityDetails() == null || caze.getHealthFacilityDetails().isEmpty());
+                // Validation
+                CaseNewFragmentLayoutBinding binding = caseNewForm.getBinding();
+                CaseValidator.clearErrorsForNewCase(binding);
+                if (!CaseValidator.validateNewCase(caze, binding)) {
+                    return true;
+                }
 
-                boolean validData = !diseaseReq && !firstNameReq && !lastNameReq && !facilityReq && !facilityDetailsReq;
-
-                if (validData) {
-                    try {
-                        Bundle params = getIntent().getExtras();
-                        if (params != null && params.containsKey(CONTACT)) {
-                            savePersonAndCase(caze);
-                        } else {
-                            List<Person> existingPersons = DatabaseHelper.getPersonDao().getAllByName(caze.getPerson().getFirstName(), caze.getPerson().getLastName());
-                            if (existingPersons.size() > 0) {
-                                AlertDialog.Builder dialogBuilder = new SelectOrCreatePersonDialogBuilder(this, caze.getPerson(), existingPersons, new Consumer() {
-                                    @Override
-                                    public void accept(Object parameter) {
-                                        if (parameter instanceof Person) {
-                                            try {
-                                                caze.setPerson((Person) parameter);
-                                                savePersonAndCase(caze);
-                                            } catch (DaoException e) {
-                                                Log.e(getClass().getName(), "Error while trying to create case", e);
-                                                Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_create_error), getResources().getString(R.string.entity_case)), Snackbar.LENGTH_LONG).show();
-                                                ErrorReportingHelper.sendCaughtException(tracker, e, null, true);
-                                            }
+                try {
+                    Bundle params = getIntent().getExtras();
+                    if (params != null && params.containsKey(CONTACT)) {
+                        savePersonAndCase(caze);
+                    } else {
+                        List<Person> existingPersons = DatabaseHelper.getPersonDao().getAllByName(caze.getPerson().getFirstName(), caze.getPerson().getLastName());
+                        if (existingPersons.size() > 0) {
+                            AlertDialog.Builder dialogBuilder = new SelectOrCreatePersonDialogBuilder(this, caze.getPerson(), existingPersons, new Consumer() {
+                                @Override
+                                public void accept(Object parameter) {
+                                    if (parameter instanceof Person) {
+                                        try {
+                                            caze.setPerson((Person) parameter);
+                                            savePersonAndCase(caze);
+                                        } catch (DaoException e) {
+                                            Log.e(getClass().getName(), "Error while trying to create case", e);
+                                            Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_create_error), getResources().getString(R.string.entity_case)), Snackbar.LENGTH_LONG).show();
+                                            ErrorReportingHelper.sendCaughtException(tracker, e, null, true);
                                         }
                                     }
-                                });
-                                AlertDialog newPersonDialog = dialogBuilder.create();
-                                newPersonDialog.show();
-                                ((SelectOrCreatePersonDialogBuilder) dialogBuilder).setButtonListeners(newPersonDialog, this);
-                            } else {
-                                savePersonAndCase(caze);
-                            }
+                                }
+                            });
+                            AlertDialog newPersonDialog = dialogBuilder.create();
+                            newPersonDialog.show();
+                            ((SelectOrCreatePersonDialogBuilder) dialogBuilder).setButtonListeners(newPersonDialog, this);
+                        } else {
+                            savePersonAndCase(caze);
                         }
-                    } catch (DaoException e) {
-                        Log.e(getClass().getName(), "Error while trying to create case", e);
-                        Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_create_error), getResources().getString(R.string.entity_case)), Snackbar.LENGTH_LONG).show();
-                        ErrorReportingHelper.sendCaughtException(tracker, e, null, true);
                     }
-
-                    return true;
-                } else {
-                    if (diseaseReq) {
-                        Snackbar.make(findViewById(R.id.fragment_frame), R.string.snackbar_case_disease, Snackbar.LENGTH_LONG).show();
-                    } else if (firstNameReq) {
-                        Snackbar.make(findViewById(R.id.fragment_frame), R.string.snackbar_case_firstName, Snackbar.LENGTH_LONG).show();
-                    } else if (lastNameReq) {
-                        Snackbar.make(findViewById(R.id.fragment_frame), R.string.snackbar_case_lastName, Snackbar.LENGTH_LONG).show();
-                    } else if (facilityReq) {
-                        Snackbar.make(findViewById(R.id.fragment_frame), R.string.snackbar_case_facility, Snackbar.LENGTH_LONG).show();
-                    } else if (facilityDetailsReq) {
-                        Snackbar.make(findViewById(R.id.fragment_frame), R.string.snackbar_case_facility_details, Snackbar.LENGTH_LONG).show();
-                    }
+                } catch (DaoException e) {
+                    Log.e(getClass().getName(), "Error while trying to create case", e);
+                    Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_create_error), getResources().getString(R.string.entity_case)), Snackbar.LENGTH_LONG).show();
+                    ErrorReportingHelper.sendCaughtException(tracker, e, null, true);
                 }
+
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -209,6 +197,10 @@ public class CaseNewActivity extends AppCompatActivity {
             caze.setSurveillanceOfficer(user.getAssociatedOfficer());
         }
         caze.setReportDate(new Date());
+
+        Calendar calendar = Calendar.getInstance();
+        String year = String.valueOf(calendar.get(Calendar.YEAR)).substring(2);
+        caze.setEpidNumber(CaseDataDto.COUNTRY_EPID_CODE + "-" + caze.getRegion().getEpidCode() + "-" + caze.getDistrict().getEpidCode() + "-" + year + "-");
 
         CaseDao caseDao = DatabaseHelper.getCaseDao();
         caseDao.saveAndSnapshot(caze);

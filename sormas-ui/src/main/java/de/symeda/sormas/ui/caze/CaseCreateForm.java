@@ -39,7 +39,6 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 
     @Override
 	protected void addFields() {
-
     	addField(CaseDataDto.DISEASE, NativeSelect.class);
     	
     	addCustomField(FIRST_NAME, String.class, TextField.class);
@@ -71,7 +70,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
     		facility.removeAllItems();
     		CommunityReferenceDto communityDto = (CommunityReferenceDto)e.getProperty().getValue();
     		if (communityDto != null) {
-    			facility.addItems(FacadeProvider.getFacilityFacade().getAllByCommunity(communityDto, true));
+    			facility.addItems(FacadeProvider.getFacilityFacade().getHealthFacilitiesByCommunity(communityDto, true));
     		}
     	});
 		region.addItems(FacadeProvider.getRegionFacade().getAllAsReference());

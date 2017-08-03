@@ -6,6 +6,7 @@ import android.databinding.InverseBindingAdapter;
 import android.databinding.InverseBindingListener;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -115,4 +116,10 @@ public class YesNoUnknownField extends PropertyField<YesNoUnknown> {
             radioGroup.getChildAt(i).setEnabled(enabled);
         }
     }
+
+    @Override
+    protected void requestFocusForContentView(View nextView) {
+        ((YesNoUnknownField) nextView).radioGroup.requestFocus();
+    }
+
 }

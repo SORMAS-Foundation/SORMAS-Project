@@ -12,6 +12,7 @@ import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.person.PersonEditForm;
 import de.symeda.sormas.app.task.TasksListFragment;
+import de.symeda.sormas.app.util.FormTab;
 import de.symeda.sormas.app.visit.VisitsListFragment;
 
 /**
@@ -100,5 +101,16 @@ public class ContactEditPagerAdapter extends FragmentStatePagerAdapter {
                 break;
         }
         return ado;
+    }
+
+    public FormTab getTabByPosition(int position) {
+        ContactEditTabs tab = ContactEditTabs.fromInt(position);
+        switch (tab) {
+            case CONTACT_DATA:
+                return contactEditDataForm;
+            case PERSON:
+                return personEditForm;
+        }
+        return null;
     }
 }

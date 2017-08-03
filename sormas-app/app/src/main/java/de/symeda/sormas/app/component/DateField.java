@@ -177,4 +177,9 @@ public class DateField extends PropertyField<Date> implements DateFieldInterface
         caption.setEnabled(enabled);
     }
 
+    @Override
+    protected void requestFocusForContentView(View nextView) {
+        ((DateField) nextView).dateContent.requestFocus();
+    }
+
 }

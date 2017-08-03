@@ -150,4 +150,9 @@ public class RadioGroupField extends PropertyField<Object>  {
         radioGroupElements.clear();
     }
 
+    @Override
+    protected void requestFocusForContentView(View nextView) {
+        ((RadioGroupField) nextView).radioGroup.requestFocus();
+    }
+
 }

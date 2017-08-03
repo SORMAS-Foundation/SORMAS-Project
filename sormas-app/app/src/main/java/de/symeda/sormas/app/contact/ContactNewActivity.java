@@ -32,11 +32,13 @@ import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.caze.CaseEditActivity;
 import de.symeda.sormas.app.component.SelectOrCreatePersonDialogBuilder;
 import de.symeda.sormas.app.component.UserReportDialog;
+import de.symeda.sormas.app.databinding.ContactNewFragmentLayoutBinding;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.SyncCallback;
+import de.symeda.sormas.app.validation.ContactValidator;
 
 
 /**
@@ -116,56 +118,41 @@ public class ContactNewActivity extends AppCompatActivity {
                 contact.setReportDateTime(new Date());
                 contact.setCaze(DatabaseHelper.getCaseDao().queryUuid(caseUuid));
 
-                boolean lastContactDateReq = contact.getLastContactDate() == null || contact.getLastContactDate().getTime() > contact.getReportDateTime().getTime();
-                boolean proximityReq = contact.getContactProximity() == null;
-                boolean firstNameReq = contact.getPerson().getFirstName().isEmpty();
-                boolean lastNameReq = contact.getPerson().getLastName().isEmpty();
-                boolean relationReq = contact.getRelationToCase() == null;
+                // Validation
+                ContactNewFragmentLayoutBinding binding = contactNewForm.getBinding();
+                ContactValidator.clearErrorsForNewContact(binding);
+                if (!ContactValidator.validateNewContact(contact, binding)) {
+                    return true;
+                }
 
-                boolean validData = !lastContactDateReq && !proximityReq && !firstNameReq && !lastNameReq && !relationReq;
-
-                if (validData) {
-                    try {
-                        List<Person> existingPersons = DatabaseHelper.getPersonDao().getAllByName(contact.getPerson().getFirstName(), contact.getPerson().getLastName());
-                        if (existingPersons.size() > 0) {
-                            AlertDialog.Builder dialogBuilder = new SelectOrCreatePersonDialogBuilder(this, contact.getPerson(), existingPersons, new Consumer() {
-                                @Override
-                                public void accept(Object parameter) {
-                                    if (parameter instanceof Person) {
-                                        try {
-                                            contact.setPerson((Person) parameter);
-                                            savePersonAndContact(contact);
-                                        } catch (DaoException e) {
-                                            Log.e(getClass().getName(), "Error while trying to create contact", e);
-                                            Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_create_error), getResources().getString(R.string.entity_contact)), Snackbar.LENGTH_LONG).show();
-                                            ErrorReportingHelper.sendCaughtException(tracker, e, null, true);
-                                        }
+                try {
+                    List<Person> existingPersons = DatabaseHelper.getPersonDao().getAllByName(contact.getPerson().getFirstName(), contact.getPerson().getLastName());
+                    if (existingPersons.size() > 0) {
+                        AlertDialog.Builder dialogBuilder = new SelectOrCreatePersonDialogBuilder(this, contact.getPerson(), existingPersons, new Consumer() {
+                            @Override
+                            public void accept(Object parameter) {
+                                if (parameter instanceof Person) {
+                                    try {
+                                        contact.setPerson((Person) parameter);
+                                        savePersonAndContact(contact);
+                                    } catch (DaoException e) {
+                                        Log.e(getClass().getName(), "Error while trying to create contact", e);
+                                        Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_create_error), getResources().getString(R.string.entity_contact)), Snackbar.LENGTH_LONG).show();
+                                        ErrorReportingHelper.sendCaughtException(tracker, e, null, true);
                                     }
                                 }
-                            });
-                            AlertDialog newPersonDialog = dialogBuilder.create();
-                            newPersonDialog.show();
-                            ((SelectOrCreatePersonDialogBuilder) dialogBuilder).setButtonListeners(newPersonDialog, this);
-                        } else {
-                            savePersonAndContact(contact);
-                        }
-                    } catch (DaoException e) {
-                        Log.e(getClass().getName(), "Error while trying to create contact", e);
-                        Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_create_error), getResources().getString(R.string.entity_contact)), Snackbar.LENGTH_LONG).show();
-                        ErrorReportingHelper.sendCaughtException(tracker, e, null, true);
+                            }
+                        });
+                        AlertDialog newPersonDialog = dialogBuilder.create();
+                        newPersonDialog.show();
+                        ((SelectOrCreatePersonDialogBuilder) dialogBuilder).setButtonListeners(newPersonDialog, this);
+                    } else {
+                        savePersonAndContact(contact);
                     }
-                } else {
-                    if (lastContactDateReq) {
-                        Snackbar.make(findViewById(R.id.fragment_frame), R.string.snackbar_contact_last_contact_date, Snackbar.LENGTH_LONG).show();
-                    } else if (proximityReq) {
-                        Snackbar.make(findViewById(R.id.fragment_frame), R.string.snackbar_contact_proximity, Snackbar.LENGTH_LONG).show();
-                    } else if (firstNameReq) {
-                        Snackbar.make(findViewById(R.id.fragment_frame), R.string.snackbar_contact_firstName, Snackbar.LENGTH_LONG).show();
-                    } else if (lastNameReq) {
-                        Snackbar.make(findViewById(R.id.fragment_frame), R.string.snackbar_contact_lastName, Snackbar.LENGTH_LONG).show();
-                    } else if (relationReq) {
-                        Snackbar.make(findViewById(R.id.fragment_frame), R.string.snackbar_contact_relation, Snackbar.LENGTH_LONG).show();
-                    }
+                } catch (DaoException e) {
+                    Log.e(getClass().getName(), "Error while trying to create contact", e);
+                    Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_create_error), getResources().getString(R.string.entity_contact)), Snackbar.LENGTH_LONG).show();
+                    ErrorReportingHelper.sendCaughtException(tracker, e, null, true);
                 }
 
                 return true;

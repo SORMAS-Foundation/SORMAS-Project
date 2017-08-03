@@ -1530,8 +1530,6 @@ INSERT INTO schema_version (version_number, comment) VALUES (49, 'data history f
 -- 2017-07-19 other health facility description for cases #238
 ALTER TABLE cases ADD COLUMN healthfacilitydetails varchar(512);
 
-INSERT INTO schema_version (version_number, comment) VALUES (50, 'other health facility description for cases #238');
-
 -- 2017-07-20 Database wipe for new infrastructure data #237
 BEGIN;
 DELETE FROM task;
@@ -1558,3 +1556,28 @@ DELETE FROM community;
 DELETE FROM district;
 DELETE FROM region;
 COMMIT;
+
+INSERT INTO schema_version (version_number, comment) VALUES (50, 'other health facility description for cases #238');
+
+-- 2015-07-25 fix wrong ending in LGA names of state Oyo. Will not be sent to mobile devices unless reinstalled
+UPDATE public.district SET name=replace(name,' LGA', '') WHERE name ~ ' LGA$';
+INSERT INTO schema_version (version_number, comment) VALUES (51, 'Fix Oyo LGA names #230');
+
+-- 2017-07-25 Country, state and LGA codes #230
+ALTER TABLE district ADD COLUMN epidcode varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (52, 'Country, state and LGA codes');
+
+-- 2017-07-26 Update EPID codes #230
+
+UPDATE district SET epidcode = null;
+
+INSERT INTO schema_version (version_number, comment) VALUES (53, 'Update EPID codes');
+
+-- 2017-07-31 Split EPID code #230
+ALTER TABLE region ADD COLUMN epidcode varchar(255);
+UPDATE public.district SET epidcode=substr(epidcode, 9);
+UPDATE public.district SET changedate=now();
+UPDATE public.region SET changedate=now();
+
+INSERT INTO schema_version (version_number, comment) VALUES (54, 'Split EPID code');

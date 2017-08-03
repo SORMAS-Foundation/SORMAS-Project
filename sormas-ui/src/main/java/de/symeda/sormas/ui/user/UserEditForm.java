@@ -3,13 +3,10 @@ package de.symeda.sormas.ui.user;
 import java.util.Set;
 
 import com.vaadin.data.Validator;
-import com.vaadin.server.FontAwesome;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TextField;
-import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -27,8 +24,6 @@ import de.symeda.sormas.ui.utils.LayoutUtil;
 @SuppressWarnings("serial")
 public class UserEditForm extends AbstractEditForm<UserDto> {
 	
-	private static final String NEW_PASSWORD = "newPassword";
-	
     private static final String HTML_LAYOUT = 
     		LayoutUtil.h3(CssStyles.VSPACE3, "Person data")+
 			LayoutUtil.divCss(CssStyles.VSPACE2,
@@ -44,8 +39,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 					LayoutUtil.fluidRowLocs(UserDto.ACTIVE),
 					LayoutUtil.fluidRowLocs(UserDto.USER_NAME, UserDto.USER_ROLES),
 					LayoutUtil.fluidRowLocs(UserDto.REGION, UserDto.DISTRICT),
-					LayoutUtil.fluidRowLocs(UserDto.HEALTH_FACILITY, UserDto.ASSOCIATED_OFFICER, UserDto.LABORATORY),
-					LayoutUtil.fluidRowLocs(NEW_PASSWORD)
+					LayoutUtil.fluidRowLocs(UserDto.HEALTH_FACILITY, UserDto.ASSOCIATED_OFFICER, UserDto.LABORATORY)
 					);
 
     public UserEditForm() {
@@ -71,12 +65,6 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
     	userRoles.setMultiSelect(true);
     	userRoles.addItems(UserRole.getAssignableRoles(LoginHelper.getCurrentUserRoles()));
     	
-    	Button newPasswordButton = new Button(null, FontAwesome.UNLOCK_ALT);
-    	newPasswordButton.setCaption("Create new password");
-    	newPasswordButton.addStyleName(ValoTheme.BUTTON_LINK);
-    	newPasswordButton.addClickListener(e -> newPasswordClicked());
-    	getContent().addComponent(newPasswordButton, NEW_PASSWORD);
-
     	ComboBox region = addField(UserDto.REGION, ComboBox.class);
 
     	ComboBox district = addField(UserDto.DISTRICT, ComboBox.class);
@@ -97,7 +85,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
     		associatedOfficer.removeAllItems();
     		DistrictReferenceDto districtDto = (DistrictReferenceDto)e.getProperty().getValue();
     		if (districtDto != null) {
-    			healthFacility.addItems(FacadeProvider.getFacilityFacade().getAllByDistrict(districtDto, false));
+    			healthFacility.addItems(FacadeProvider.getFacilityFacade().getHealthFacilitiesByDistrict(districtDto, false));
     	    	associatedOfficer.addItems(FacadeProvider.getUserFacade().getAssignableUsersByDistrict(
     	    			districtDto, false, UserRole.SURVEILLANCE_OFFICER));
     		}
@@ -167,11 +155,6 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
     		district.clear();
     	}
     }
-    
-	private void newPasswordClicked() {
-		UserDto dto = getValue();
-		ControllerProvider.getUserController().confirmNewPassword(dto.getUuid());
-	}
 
 	private void suggestUserName() {
 		TextField fnField = (TextField)getFieldGroup().getField(UserDto.FIRST_NAME);

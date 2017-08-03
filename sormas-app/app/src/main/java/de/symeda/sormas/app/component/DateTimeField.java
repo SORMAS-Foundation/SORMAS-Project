@@ -249,4 +249,9 @@ public class DateTimeField extends PropertyField<Date> implements DateFieldInter
         caption.setEnabled(enabled);
     }
 
+    @Override
+    protected void requestFocusForContentView(View nextView) {
+        ((DateTimeField) nextView).dateContent.requestFocus();
+    }
+
 }

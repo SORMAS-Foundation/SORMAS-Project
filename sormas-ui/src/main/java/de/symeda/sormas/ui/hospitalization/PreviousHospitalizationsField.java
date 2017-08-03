@@ -124,7 +124,7 @@ public class PreviousHospitalizationsField extends AbstractTableField<PreviousHo
 
 			@Override
 			public void onCommit() {
-				if (editForm.getFieldGroup().isValid()) {
+				if (!editForm.getFieldGroup().isModified()) {
 					commitCallback.accept(editForm.getValue());
 				}
 			}

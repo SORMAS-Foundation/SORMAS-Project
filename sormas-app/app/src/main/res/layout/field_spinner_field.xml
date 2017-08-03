@@ -10,6 +10,9 @@
             android:layout_height="wrap_content"
             android:id="@+id/spinner_caption"
             android:textSize="@dimen/field_caption_size"
+            android:focusable="true"
+            android:clickable="true"
+            android:focusableInTouchMode="true"
             android:layout_marginBottom="@dimen/field_caption_margin_bottom"
             android:layout_marginLeft="@dimen/field_caption_margin_left" />
         <Spinner

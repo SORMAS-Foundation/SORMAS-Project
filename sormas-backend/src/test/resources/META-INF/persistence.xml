@@ -1,0 +1,51 @@
+<persistence xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd"
+	version="2.1">
+
+	<persistence-unit name="beanTestPU" transaction-type="RESOURCE_LOCAL">
+
+		<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+
+		<class>de.symeda.sormas.backend.caze.Case</class>
+		<class>de.symeda.sormas.backend.common.AbstractDomainObject</class>
+		<class>de.symeda.sormas.backend.contact.Contact</class>
+		<class>de.symeda.sormas.backend.facility.Facility</class>
+		<class>de.symeda.sormas.backend.location.Location</class>
+		<class>de.symeda.sormas.backend.person.Person</class>
+		<class>de.symeda.sormas.backend.region.Community</class>
+		<class>de.symeda.sormas.backend.region.District</class>
+		<class>de.symeda.sormas.backend.region.Region</class>
+		<class>de.symeda.sormas.backend.symptoms.Symptoms</class>
+		<class>de.symeda.sormas.backend.task.Task</class>
+		<class>de.symeda.sormas.backend.user.User</class>
+		<class>de.symeda.sormas.backend.visit.Visit</class>
+		<class>de.symeda.sormas.backend.event.Event</class>
+		<class>de.symeda.sormas.backend.event.EventParticipant</class>
+		<class>de.symeda.sormas.backend.sample.Sample</class>
+		<class>de.symeda.sormas.backend.sample.SampleTest</class>
+		<class>de.symeda.sormas.backend.hospitalization.Hospitalization</class>
+		<class>de.symeda.sormas.backend.hospitalization.PreviousHospitalization</class>
+		<class>de.symeda.sormas.backend.epidata.EpiData</class>
+		<class>de.symeda.sormas.backend.epidata.EpiDataBurial</class>
+		<class>de.symeda.sormas.backend.epidata.EpiDataGathering</class>
+		<class>de.symeda.sormas.backend.epidata.EpiDataTravel</class>
+
+		<exclude-unlisted-classes>true</exclude-unlisted-classes>
+
+		<shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
+		<validation-mode>CALLBACK</validation-mode>
+		<properties>
+			<property name="javax.persistence.jdbc.driver" value="org.h2.Driver" />
+			<property name="javax.persistence.jdbc.url" value="jdbc:h2:mem:.;MODE=PostgreSQL" />
+
+			<property name="eclipselink.ddl-generation" value="drop-and-create-tables" /> 
+			<!-- 			
+			<property name="eclipselink.target-database" value="org.eclipse.persistence.platform.database.PostgreSQLPlatform"/>		
+			<property name="eclipselink.ddl-generation.output-mode" value="sql-script" />
+		    <property name="eclipselink.application-location" value="D:/workspaces/SORMAS" />
+		    <property name="eclipselink.create-ddl-jdbc-file-name" value="create.sql"/>			
+			<property name="eclipselink.target-database" value="PostgreSQL" /> 
+			 -->
+		</properties>
+	</persistence-unit>
+</persistence>

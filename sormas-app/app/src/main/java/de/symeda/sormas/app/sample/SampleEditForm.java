@@ -13,7 +13,6 @@ import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SampleSource;
 import de.symeda.sormas.api.sample.SampleTestType;
@@ -31,6 +30,7 @@ import de.symeda.sormas.app.databinding.SampleDataFragmentLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.FormTab;
 import de.symeda.sormas.app.util.Item;
+import de.symeda.sormas.app.validation.SampleValidator;
 
 /**
  * Created by Mate Strysewske on 07.02.2017.
@@ -118,7 +118,7 @@ public class SampleEditForm extends FormTab {
 
         FieldHelper.initSpinnerField(binding.sampleSuggestedTypeOfTest, SampleTestType.class);
 
-        final List laboratories = DataUtils.toItems(DatabaseHelper.getFacilityDao().getByType(FacilityType.LABORATORY, false));
+        final List laboratories = DataUtils.toItems(DatabaseHelper.getFacilityDao().getLaboratories());
         FieldHelper.initSpinnerField(binding.sampleLab, laboratories);
         binding.sampleReceivedDate.initialize(this);
         binding.sampleReceivedDate.setEnabled(false);
@@ -150,12 +150,18 @@ public class SampleEditForm extends FormTab {
             binding.recentTestLayout.setVisibility(View.GONE);
         }
 
+        SampleValidator.setRequiredHintsForSampleData(binding);
+
         return binding.getRoot();
     }
 
     @Override
     public AbstractDomainObject getData() {
         return binding.getSample();
+    }
+
+    public SampleDataFragmentLayoutBinding getBinding() {
+        return binding;
     }
 
 }

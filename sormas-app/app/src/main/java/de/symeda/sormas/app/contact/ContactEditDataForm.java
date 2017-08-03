@@ -28,6 +28,7 @@ import de.symeda.sormas.app.component.LabelField;
 import de.symeda.sormas.app.databinding.ContactDataFragmentLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.FormTab;
+import de.symeda.sormas.app.validation.ContactValidator;
 
 /**
  * Created by Stefan Szczesny on 02.11.2016.
@@ -74,6 +75,8 @@ public class ContactEditDataForm extends FormTab {
             binding.contactCreateCase.setVisibility(View.GONE);
         }
 
+        ContactValidator.setRequiredHintsForContactData(binding);
+
         return binding.getRoot();
     }
 
@@ -114,6 +117,10 @@ public class ContactEditDataForm extends FormTab {
     @Override
     public AbstractDomainObject getData() {
         return binding.getContact();
+    }
+
+    public ContactDataFragmentLayoutBinding getBinding() {
+        return binding;
     }
 
 }

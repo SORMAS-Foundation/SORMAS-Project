@@ -49,13 +49,14 @@ import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.FormTab;
 import de.symeda.sormas.app.util.Item;
 import de.symeda.sormas.app.util.Consumer;
+import de.symeda.sormas.app.validation.PersonValidator;
 
 /**
  * Created by Stefan Szczesny on 27.07.2016.
  */
 public class PersonEditForm extends FormTab {
 
-    PersonEditFragmentLayoutBinding binding;
+    private PersonEditFragmentLayoutBinding binding;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -172,6 +173,8 @@ public class PersonEditForm extends FormTab {
 
         binding.personApproximate1Age.setInputType(InputType.TYPE_CLASS_NUMBER);
         binding.personPhone.setInputType(InputType.TYPE_CLASS_PHONE);
+
+        PersonValidator.setRequiredHintsForPersonData(binding);
 
         return binding.getRoot();
     }
@@ -292,7 +295,7 @@ public class PersonEditForm extends FormTab {
                 if (spinnerField != null) {
                     List<Facility> facilityList = emptyList;
                     if (selectedValue != null) {
-                        facilityList = DatabaseHelper.getFacilityDao().getByCommunity((Community) selectedValue, false);
+                        facilityList = DatabaseHelper.getFacilityDao().getHealthFacilitiesByCommunity((Community) selectedValue, false);
                     }
                     spinnerField.setAdapterAndValue(binding.personOccupationFacility.getValue(), DataUtils.toItems(facilityList));
                 }
@@ -305,7 +308,7 @@ public class PersonEditForm extends FormTab {
         List facilityList = new ArrayList<>();
         if (facility != null) {
             binding.personFacilityCommunity.setValue(facility.getCommunity());
-            facilityList = DataUtils.toItems(DatabaseHelper.getFacilityDao().getByCommunity(facility.getCommunity(), false));
+            facilityList = DataUtils.toItems(DatabaseHelper.getFacilityDao().getHealthFacilitiesByCommunity(facility.getCommunity(), false));
         }
 
         FieldHelper.initSpinnerField(binding.personOccupationFacility, facilityList);
@@ -389,6 +392,10 @@ public class PersonEditForm extends FormTab {
             approximateAgeTextField.setEnabled(true);
             approximateAgeTypeField.setEnabled(true);
         }
+    }
+
+    public PersonEditFragmentLayoutBinding getBinding() {
+        return binding;
     }
 
     @Override

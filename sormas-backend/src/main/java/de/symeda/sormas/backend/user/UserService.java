@@ -154,6 +154,7 @@ public class UserService extends AbstractAdoService<User> {
 		String password = PasswordHelper.createPass(12);
 		user.setSeed(PasswordHelper.createPass(16));
 		user.setPassword(PasswordHelper.encodePassword(password, user.getSeed()));
+		ensurePersisted(user);
 
 		return password;
 	}
