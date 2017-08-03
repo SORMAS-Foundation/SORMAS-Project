@@ -18,7 +18,6 @@ import android.widget.LinearLayout;
 
 import java.util.List;
 
-import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
@@ -51,7 +50,6 @@ import de.symeda.sormas.app.sample.SamplesListFragment;
 import de.symeda.sormas.app.task.TaskForm;
 import de.symeda.sormas.app.task.TasksListFragment;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
-import de.symeda.sormas.app.util.ValidationFailedException;
 import de.symeda.sormas.app.validation.CaseValidator;
 import de.symeda.sormas.app.validation.PersonValidator;
 import de.symeda.sormas.app.validation.SymptomsValidator;
@@ -314,7 +312,7 @@ public class CaseEditActivity extends AbstractEditTabActivity {
 
                 CaseValidator.clearErrorsForCaseData(caseDataBinding);
                 PersonValidator.clearErrors(personBinding);
-                SymptomsValidator.clearErrors(symptomsBinding);
+                SymptomsValidator.clearErrorsForSymptoms(symptomsBinding);
 
                 int validationErrorTab = -1;
 

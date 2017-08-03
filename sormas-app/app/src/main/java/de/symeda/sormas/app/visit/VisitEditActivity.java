@@ -12,19 +12,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 
-import com.google.android.gms.analytics.Tracker;
-
-import java.util.Date;
-
-import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
-import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.visit.Visit;
 import de.symeda.sormas.app.backend.visit.VisitDao;
@@ -38,7 +30,6 @@ import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.SyncCallback;
-import de.symeda.sormas.app.util.ValidationFailedException;
 import de.symeda.sormas.app.validation.SymptomsValidator;
 import de.symeda.sormas.app.validation.VisitValidator;
 
@@ -190,7 +181,7 @@ public class VisitEditActivity extends AbstractEditTabActivity {
                 symptoms.setOnsetSymptom((String) symptomsBinding.symptomsOnsetSymptom1.getValue());
 
                 VisitValidator.clearErrorsForVisitData(visitDataBinding);
-                SymptomsValidator.clearErrors(symptomsBinding);
+                SymptomsValidator.clearErrorsForSymptoms(symptomsBinding);
 
                 int validationErrorTab = -1;
 

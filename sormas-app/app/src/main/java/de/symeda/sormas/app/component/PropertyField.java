@@ -12,6 +12,8 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 
 /**
  * Created by Martin Wahnschaffe on 08.11.2016.
@@ -52,6 +54,11 @@ public abstract class PropertyField<T> extends LinearLayout {
         caption.setError(errorText);
     }
 
+    public void clearError() {
+        caption.setError(null);
+        caption.clearFocus();
+    }
+
     public void setRequiredHint(boolean showHint) {
         String captionText = caption.getText().toString();
         String hintText = " <font color='red'>*</font>";
@@ -59,7 +66,7 @@ public abstract class PropertyField<T> extends LinearLayout {
             caption.setText(Html.fromHtml(captionText + hintText), TextView.BufferType.SPANNABLE);
         } else {
             if (showRequiredHint) {
-                caption.setText(captionText.substring(0, captionText.indexOf(hintText)));
+                caption.setText(captionText.substring(0, captionText.length() - 2));
             }
         }
 
@@ -77,18 +84,37 @@ public abstract class PropertyField<T> extends LinearLayout {
     }
 
     public void addCaptionOnClickListener() {
-        if(getDescription() != null && !getDescription().isEmpty()) {
-            if (caption != null) {
-                caption.setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        HelpDialog helpDialog = new HelpDialog(getContext());
-                        helpDialog.setMessage(getDescription());
-                        helpDialog.show();
+        caption.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (caption != null) {
+                    if (getDescription() != null && !getDescription().isEmpty()) {
+                            HelpDialog helpDialog = new HelpDialog(getContext());
+                            helpDialog.setMessage(getDescription());
+                            helpDialog.show();
+                        }
                     }
-                });
-            }
-        }
+
+                    if (caption.getError() != null) {
+                        caption.clearFocus();
+                    }
+                }
+        });
+
+//        if(getDescription() != null && !getDescription().isEmpty()) {
+//            if (caption != null) {
+//                caption.setOnClickListener(new OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        HelpDialog helpDialog = new HelpDialog(getContext());
+//                        helpDialog.setMessage(getDescription());
+//                        helpDialog.show();
+//                    }
+//                });
+//            }
+//        }
+//
+//        }
     }
 
     public void addCaptionHintIfDescription() {

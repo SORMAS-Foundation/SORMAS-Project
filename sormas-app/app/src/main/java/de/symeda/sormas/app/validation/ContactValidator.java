@@ -2,9 +2,13 @@ package de.symeda.sormas.app.validation;
 
 import android.content.res.Resources;
 
+import java.util.Arrays;
+import java.util.List;
+
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
+import de.symeda.sormas.app.component.PropertyField;
 import de.symeda.sormas.app.databinding.ContactDataFragmentLayoutBinding;
 import de.symeda.sormas.app.databinding.ContactNewFragmentLayoutBinding;
 
@@ -12,20 +16,6 @@ import de.symeda.sormas.app.databinding.ContactNewFragmentLayoutBinding;
  * Created by Mate Strysewske on 24.07.2017.
  */
 public final class ContactValidator {
-
-    public static void clearErrorsForContactData(ContactDataFragmentLayoutBinding binding) {
-        binding.contactRelationToCase.setError(null);
-        binding.contactContactProximity.setError(null);
-        binding.contactLastContactDate.setError(null);
-    }
-
-    public static void clearErrorsForNewContact(ContactNewFragmentLayoutBinding binding) {
-        binding.contactRelationToCase.setError(null);
-        binding.contactContactProximity.setError(null);
-        binding.contactLastContactDate.setError(null);
-        binding.contactPersonFirstName.setError(null);
-        binding.contactPersonLastName.setError(null);
-    }
 
     public static boolean validateContactData(Contact contact, ContactDataFragmentLayoutBinding binding) {
         Resources resources = DatabaseHelper.getContext().getResources();
@@ -89,6 +79,40 @@ public final class ContactValidator {
         }
 
         return success;
+    }
+
+    public static void clearErrorsForContactData(ContactDataFragmentLayoutBinding binding) {
+        for (PropertyField field : getContactDataFields(binding)) {
+            field.clearError();
+        }
+    }
+
+    public static void clearErrorsForNewContact(ContactNewFragmentLayoutBinding binding) {
+        for (PropertyField field : getNewContactFields(binding)) {
+            field.clearError();
+        }
+    }
+
+    public static void setRequiredHintsForContactData(ContactDataFragmentLayoutBinding binding) {
+        for (PropertyField field : getContactDataFields(binding)) {
+            field.setRequiredHint(true);
+        }
+    }
+
+    public static void setRequiredHintsForNewContact(ContactNewFragmentLayoutBinding binding) {
+        for (PropertyField field : getNewContactFields(binding)) {
+            field.setRequiredHint(true);
+        }
+    }
+
+    private static final List<PropertyField<?>> getContactDataFields(ContactDataFragmentLayoutBinding binding) {
+        return Arrays.asList(binding.contactRelationToCase, binding.contactContactProximity,
+                binding.contactLastContactDate);
+    }
+
+    private static final List<PropertyField<?>> getNewContactFields(ContactNewFragmentLayoutBinding binding) {
+        return Arrays.asList(binding.contactRelationToCase, binding.contactContactProximity, binding.contactLastContactDate,
+                binding.contactPersonFirstName, binding.contactPersonLastName);
     }
 
 }

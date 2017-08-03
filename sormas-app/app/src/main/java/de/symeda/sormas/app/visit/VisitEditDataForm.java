@@ -20,6 +20,7 @@ import de.symeda.sormas.app.backend.visit.Visit;
 import de.symeda.sormas.app.databinding.VisitDataFragmentLayoutBinding;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.FormTab;
+import de.symeda.sormas.app.validation.VisitValidator;
 
 public class VisitEditDataForm extends FormTab {
 
@@ -49,6 +50,8 @@ public class VisitEditDataForm extends FormTab {
 
         binding.visitVisitDateTime.initialize(this);
         binding.visitVisitStatus.initialize(VisitStatus.class);
+
+        VisitValidator.setRequiredHintsForVisitData(binding);
 
         return binding.getRoot();
     }

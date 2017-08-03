@@ -2,27 +2,20 @@ package de.symeda.sormas.app.validation;
 
 import android.content.res.Resources;
 
+import java.util.Arrays;
+import java.util.List;
+
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.event.Event;
+import de.symeda.sormas.app.component.PropertyField;
 import de.symeda.sormas.app.databinding.EventDataFragmentLayoutBinding;
 
 /**
  * Created by Mate Strysewske on 24.07.2017.
  */
 public final class EventValidator {
-
-    public static void clearErrorsForEventData(EventDataFragmentLayoutBinding binding) {
-        binding.eventEventType.setError(null);
-        binding.eventEventDesc.setError(null);
-        binding.eventEventDate.setError(null);
-        binding.eventTypeOfPlace.setError(null);
-        binding.eventTypeOfPlaceTxt.setError(null);
-        binding.eventSrcFirstName.setError(null);
-        binding.eventSrcLastName.setError(null);
-        binding.eventSrcTelNo.setError(null);
-    }
 
     public static boolean validateEventData(Event event, EventDataFragmentLayoutBinding binding) {
         Resources resources = DatabaseHelper.getContext().getResources();
@@ -79,6 +72,24 @@ public final class EventValidator {
         }
 
         return success;
+    }
+
+    public static void clearErrorsForEventData(EventDataFragmentLayoutBinding binding) {
+        for (PropertyField field : getEventDataFields(binding)) {
+            field.clearError();
+        }
+    }
+
+    public static void setRequiredHintsForEventData(EventDataFragmentLayoutBinding binding) {
+        for (PropertyField field : getEventDataFields(binding)) {
+            field.setRequiredHint(true);
+        }
+    }
+
+    private static final List<PropertyField<?>> getEventDataFields(EventDataFragmentLayoutBinding binding) {
+        return Arrays.asList(binding.eventEventType, binding.eventEventDesc, binding.eventEventDate,
+                binding.eventTypeOfPlace, binding.eventTypeOfPlaceTxt, binding.eventSrcFirstName,
+                binding.eventSrcLastName, binding.eventSrcTelNo);
     }
 
 }

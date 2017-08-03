@@ -49,6 +49,7 @@ import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.FormTab;
 import de.symeda.sormas.app.util.Item;
 import de.symeda.sormas.app.util.Consumer;
+import de.symeda.sormas.app.validation.PersonValidator;
 
 /**
  * Created by Stefan Szczesny on 27.07.2016.
@@ -172,6 +173,8 @@ public class PersonEditForm extends FormTab {
 
         binding.personApproximate1Age.setInputType(InputType.TYPE_CLASS_NUMBER);
         binding.personPhone.setInputType(InputType.TYPE_CLASS_PHONE);
+
+        PersonValidator.setRequiredHintsForPersonData(binding);
 
         return binding.getRoot();
     }

@@ -30,6 +30,7 @@ import de.symeda.sormas.app.databinding.SampleDataFragmentLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.FormTab;
 import de.symeda.sormas.app.util.Item;
+import de.symeda.sormas.app.validation.SampleValidator;
 
 /**
  * Created by Mate Strysewske on 07.02.2017.
@@ -148,6 +149,8 @@ public class SampleEditForm extends FormTab {
         } else {
             binding.recentTestLayout.setVisibility(View.GONE);
         }
+
+        SampleValidator.setRequiredHintsForSampleData(binding);
 
         return binding.getRoot();
     }

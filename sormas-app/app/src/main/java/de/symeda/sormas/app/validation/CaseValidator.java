@@ -2,10 +2,14 @@ package de.symeda.sormas.app.validation;
 
 import android.content.res.Resources;
 
+import java.util.Arrays;
+import java.util.List;
+
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.component.PropertyField;
 import de.symeda.sormas.app.databinding.CaseDataFragmentLayoutBinding;
 import de.symeda.sormas.app.databinding.CaseNewFragmentLayoutBinding;
 
@@ -13,23 +17,6 @@ import de.symeda.sormas.app.databinding.CaseNewFragmentLayoutBinding;
  * Created by Mate Strysewske on 20.07.2017.
  */
 public final class CaseValidator {
-
-    public static void clearErrorsForCaseData(CaseDataFragmentLayoutBinding binding) {
-        binding.caseDataDisease.setError(null);
-        binding.caseDataHealthFacility.setError(null);
-        binding.caseDataFacilityDetails.setError(null);
-    }
-
-    public static void clearErrorsForNewCase(CaseNewFragmentLayoutBinding binding) {
-        binding.caseDataFirstName.setError(null);
-        binding.caseDataLastName.setError(null);
-        binding.caseDataDisease.setError(null);
-        binding.caseDataRegion.setError(null);
-        binding.caseDataDistrict.setError(null);
-        binding.caseDataCommunity.setError(null);
-        binding.caseDataHealthFacility.setError(null);
-        binding.caseDataFacilityDetails.setError(null);
-    }
 
     /**
      * Validates whether the Case Data entered are valid. Fields should be processed from bottom to top according to
@@ -53,9 +40,21 @@ public final class CaseValidator {
             }
         }
 
-        // Disease
-        if (caze.getDisease() == null) {
-            binding.caseDataDisease.setError(resources.getString(R.string.validation_case_disease));
+        // Community/Ward
+        if (caze.getCommunity() == null) {
+            binding.caseDataCommunity.setError(resources.getString(R.string.validation_community));
+            success = false;
+        }
+
+        // District/LGA
+        if (caze.getDistrict() == null) {
+            binding.caseDataDistrict.setError(resources.getString(R.string.validation_district));
+            success = false;
+        }
+
+        // Region/State
+        if (caze.getRegion() == null) {
+            binding.caseDataRegion.setError(resources.getString(R.string.validation_region));
             success = false;
         }
 
@@ -117,6 +116,43 @@ public final class CaseValidator {
         }
 
         return success;
+    }
+
+    public static void clearErrorsForCaseData(CaseDataFragmentLayoutBinding binding) {
+        for (PropertyField field : getCaseDataFields(binding)) {
+            field.clearError();
+        }
+    }
+
+    public static void clearErrorsForNewCase(CaseNewFragmentLayoutBinding binding) {
+        for (PropertyField field : getNewCaseFields(binding)) {
+            field.clearError();
+        }
+    }
+
+    public static void setRequiredHintsForCaseData(CaseDataFragmentLayoutBinding binding) {
+        for (PropertyField field : getCaseDataFields(binding)) {
+            if (field != binding.caseDataDisease) {
+                field.setRequiredHint(true);
+            }
+        }
+    }
+
+    public static void setRequiredHintsForNewCase(CaseNewFragmentLayoutBinding binding) {
+        for (PropertyField field : getNewCaseFields(binding)) {
+            field.setRequiredHint(true);
+        }
+    }
+
+    private static final List<PropertyField<?>> getCaseDataFields(CaseDataFragmentLayoutBinding binding) {
+        return Arrays.asList(binding.caseDataRegion, binding.caseDataDistrict, binding.caseDataCommunity,
+                binding.caseDataHealthFacility, binding.caseDataFacilityDetails);
+    }
+
+    private static final List<PropertyField<?>> getNewCaseFields(CaseNewFragmentLayoutBinding binding) {
+        return Arrays.asList(binding.caseDataFirstName, binding.caseDataLastName, binding.caseDataDisease,
+                binding.caseDataRegion, binding.caseDataDistrict, binding.caseDataCommunity,
+                binding.caseDataHealthFacility, binding.caseDataFacilityDetails);
     }
 
 }

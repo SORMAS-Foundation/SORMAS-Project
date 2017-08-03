@@ -38,6 +38,7 @@ import de.symeda.sormas.app.component.SpinnerField;
 import de.symeda.sormas.app.databinding.CaseDataFragmentLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.FormTab;
+import de.symeda.sormas.app.validation.CaseValidator;
 
 /**
  * Created by Stefan Szczesny on 27.07.2016.
@@ -186,7 +187,7 @@ public class CaseEditDataForm extends FormTab {
                     if (value.trim().isEmpty()) {
                         field.setErrorWithoutFocus(DatabaseHelper.getContext().getResources().getString(R.string.validation_soft_case_epid_number_empty));
                     } else if (value.matches(DataHelper.getEpidNumberRegexp())) {
-                        field.setErrorWithoutFocus(null);
+                        field.clearError();
                     } else {
                         field.setErrorWithoutFocus(DatabaseHelper.getContext().getResources().getString(R.string.validation_soft_case_epid_number));
                     }
@@ -195,6 +196,8 @@ public class CaseEditDataForm extends FormTab {
         } else {
             binding.caseDataEpidNumber.setEnabled(false);
         }
+
+        CaseValidator.setRequiredHintsForCaseData(binding);
 
         return binding.getRoot();
     }

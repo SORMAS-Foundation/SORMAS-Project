@@ -5,6 +5,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
+import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
@@ -53,6 +54,8 @@ public class VisitEditPagerAdapter extends FragmentStatePagerAdapter {
                     symptomsEditBundle.putSerializable(Visit.DISEASE, contact.getCaze().getDisease());
                     symptomsEditBundle.putBoolean(SymptomsEditForm.NEW_SYMPTOMS, true);
                     symptomsEditBundle.putBoolean(SymptomsEditForm.FOR_VISIT, true);
+                    symptomsEditBundle.putBoolean(SymptomsEditForm.VISIT_COOPERATIVE,
+                            visitEditDataForm.getBinding().visitVisitStatus.getValue() == VisitStatus.COOPERATIVE);
                 }
                 // edit symptoms for given visit
                 else {
@@ -61,6 +64,8 @@ public class VisitEditPagerAdapter extends FragmentStatePagerAdapter {
                     symptomsEditBundle.putString(Symptoms.UUID, visit.getSymptoms().getUuid());
                     symptomsEditBundle.putSerializable(Visit.DISEASE, visit.getDisease());
                     symptomsEditBundle.putBoolean(SymptomsEditForm.FOR_VISIT, true);
+                    symptomsEditBundle.putBoolean(SymptomsEditForm.VISIT_COOPERATIVE,
+                            visit.getVisitStatus() == VisitStatus.COOPERATIVE);
                 }
 
                 symptomsEditForm.setArguments(symptomsEditBundle);

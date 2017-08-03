@@ -40,6 +40,7 @@ import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.FormTab;
 import de.symeda.sormas.app.util.Item;
 import de.symeda.sormas.app.util.ValidationFailedException;
+import de.symeda.sormas.app.validation.SymptomsValidator;
 
 
 /**
@@ -51,9 +52,12 @@ public class SymptomsEditForm extends FormTab {
 
     public static final String NEW_SYMPTOMS = "newSymptoms";
     public static final String FOR_VISIT = "forVisit";
+    public static final String VISIT_COOPERATIVE = "visitCooperative";
     private CaseSymptomsFragmentLayoutBinding binding;
     private List<SymptomStateField> nonConditionalSymptoms;
     private List<SymptomStateField> conditionalBleedingSymptoms;
+
+    private boolean listenersForRequiredCalled;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -112,7 +116,6 @@ public class SymptomsEditForm extends FormTab {
         toggleUnexplainedBleedingFields();
         visibilityOtherHemorrhagicSymptoms();
         visibilityOtherNonHemorrhagicSymptoms();
-
         visibilityDisease(disease);
 
         nonConditionalSymptoms = Arrays.asList(binding.symptomsFever, binding.symptomsVomiting,
@@ -191,6 +194,7 @@ public class SymptomsEditForm extends FormTab {
     @Override
     public void onResume() {
         super.onResume();
+
         // @TODO: Workaround, find a better solution. Remove autofocus on first field.
         getView().requestFocus();
     }
@@ -268,7 +272,6 @@ public class SymptomsEditForm extends FormTab {
                             adapter.add(item);
                             adapter.add(new Item("Select entry", null));
                         }
-
                     } else {
                         Item item = new Item(field.getCaption(), field.getCaption());
                         if (binding.symptomsOnsetSymptom1.getPositionOf(item) != -1) {
@@ -285,9 +288,15 @@ public class SymptomsEditForm extends FormTab {
                 @Override
                 public void onChange(PropertyField field) {
                     if (field.getValue() == SymptomState.YES) {
-                        adapter.remove(adapter.getItem(adapter.getCount()));
-                        adapter.add(new Item(field.getCaption(), field.getCaption()));
-                        adapter.add(new Item("Select entry", null));
+                        Item item = new Item(field.getCaption(), field.getCaption());
+                        // Workaround for Android bug (see https://issuetracker.google.com/issues/36910520)
+                        // Only continue when the item is not in the list yet, otherwise it will be added again
+                        // when calling clearAll
+                        if (binding.symptomsOnsetSymptom1.getPositionOf(item) == -1) {
+                            adapter.remove(adapter.getItem(adapter.getCount()));
+                            adapter.add(item);
+                            adapter.add(new Item("Select entry", null));
+                        }
                     } else {
                         Item item = new Item(field.getCaption(), field.getCaption());
                         if (binding.symptomsOnsetSymptom1.getPositionOf(item) != -1) {

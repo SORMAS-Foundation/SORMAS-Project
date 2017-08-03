@@ -2,11 +2,15 @@ package de.symeda.sormas.app.validation;
 
 import android.content.res.Resources;
 
+import java.util.Arrays;
+import java.util.List;
+
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.ShipmentStatus;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.sample.Sample;
+import de.symeda.sormas.app.component.PropertyField;
 import de.symeda.sormas.app.databinding.SampleDataFragmentLayoutBinding;
 
 /**
@@ -15,30 +19,16 @@ import de.symeda.sormas.app.databinding.SampleDataFragmentLayoutBinding;
 
 public final class SampleValidator {
 
-    public static void clearErrorsForSampleData(SampleDataFragmentLayoutBinding binding) {
-        binding.sampleDateTime.setError(null);
-        binding.sampleMaterial.setError(null);
-        binding.sampleMaterialText.setError(null);
-        binding.sampleShipmentStatus.setError(null);
-        binding.sampleShipmentDate.setError(null);
-        binding.sampleLab.setError(null);
-    }
-
     public static boolean validateSampleData(Sample sample, SampleDataFragmentLayoutBinding binding) {
         Resources resources = DatabaseHelper.getContext().getResources();
 
         boolean success = true;
 
         // Shipment status
-        if (sample.getShipmentStatus() == null) {
-            binding.sampleShipmentStatus.setError(resources.getString(R.string.validation_sample_shipment_status));
-            success = false;
-        } else {
-            if (!sample.getShipmentStatus().equals(ShipmentStatus.NOT_SHIPPED)) {
-                if (sample.getShipmentDate() == null) {
-                    binding.sampleShipmentDate.setError(resources.getString(R.string.validation_sample_shipment_date));
-                    success = false;
-                }
+        if (!sample.getShipmentStatus().equals(ShipmentStatus.NOT_SHIPPED)) {
+            if (sample.getShipmentDate() == null) {
+                binding.sampleShipmentDate.setError(resources.getString(R.string.validation_sample_shipment_date));
+                success = false;
             }
         }
 
@@ -68,6 +58,23 @@ public final class SampleValidator {
         }
 
         return success;
+    }
+
+    public static void clearErrorsForSampleData(SampleDataFragmentLayoutBinding binding) {
+        for (PropertyField field : getSampleDataFields(binding)) {
+            field.clearError();
+        }
+    }
+
+    public static void setRequiredHintsForSampleData(SampleDataFragmentLayoutBinding binding) {
+        for (PropertyField field : getSampleDataFields(binding)) {
+            field.setRequiredHint(true);
+        }
+    }
+
+    private static final List<PropertyField<?>> getSampleDataFields(SampleDataFragmentLayoutBinding binding) {
+        return Arrays.asList(binding.sampleDateTime, binding.sampleMaterial, binding.sampleMaterialText,
+                binding.sampleShipmentDate, binding.sampleLab);
     }
 
 }

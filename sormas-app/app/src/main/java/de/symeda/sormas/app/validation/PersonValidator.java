@@ -2,20 +2,20 @@ package de.symeda.sormas.app.validation;
 
 import android.content.res.Resources;
 
+import java.util.Arrays;
+import java.util.List;
+
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.component.PropertyField;
+import de.symeda.sormas.app.component.TextField;
 import de.symeda.sormas.app.databinding.PersonEditFragmentLayoutBinding;
 
 /**
  * Created by Mate Strysewske on 21.07.2017.
  */
 public final class PersonValidator {
-
-    public static void clearErrors(PersonEditFragmentLayoutBinding binding) {
-        binding.personFirstName.setError(null);
-        binding.personLastName.setError(null);
-    }
 
     public static boolean validatePersonData(Person person, PersonEditFragmentLayoutBinding binding) {
         Resources resources = DatabaseHelper.getContext().getResources();
@@ -35,6 +35,22 @@ public final class PersonValidator {
         }
 
         return success;
+    }
+
+    public static void clearErrors(PersonEditFragmentLayoutBinding binding) {
+        for (PropertyField field : getPersonDataFields(binding)) {
+            field.clearError();
+        }
+    }
+
+    public static void setRequiredHintsForPersonData(PersonEditFragmentLayoutBinding binding) {
+        for (PropertyField field : getPersonDataFields(binding)) {
+            field.setRequiredHint(true);
+        }
+    }
+
+    private static final List<TextField> getPersonDataFields(PersonEditFragmentLayoutBinding binding) {
+        return Arrays.asList(binding.personFirstName, binding.personLastName);
     }
 
 }

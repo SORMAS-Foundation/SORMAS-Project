@@ -29,6 +29,7 @@ import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.FormTab;
 import de.symeda.sormas.app.util.Consumer;
+import de.symeda.sormas.app.validation.EventValidator;
 
 public class EventEditDataForm extends FormTab {
 
@@ -81,6 +82,8 @@ public class EventEditDataForm extends FormTab {
 
         // init fields
         toggleTypeOfPlaceTextField();
+
+        EventValidator.setRequiredHintsForEventData(binding);
 
         return binding.getRoot();
     }

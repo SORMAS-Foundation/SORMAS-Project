@@ -13,6 +13,7 @@ import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.databinding.EventParticipantNewFragmentLayoutBinding;
 import de.symeda.sormas.app.util.FormTab;
+import de.symeda.sormas.app.validation.EventParticipantValidator;
 
 /**
  * Created by Stefan Szczesny on 02.11.2016.
@@ -30,6 +31,9 @@ public class EventParticipantNewPersonForm extends FormTab {
 
         binding = DataBindingUtil.inflate(inflater, R.layout.event_participant_new_fragment_layout, container, false);
         binding.setEventParticipant(eventParticipant);
+
+        EventParticipantValidator.setRequiredHintsForNewEventParticipant(binding);
+
         return binding.getRoot();
 
     }

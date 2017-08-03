@@ -27,6 +27,7 @@ import de.symeda.sormas.app.component.SpinnerField;
 import de.symeda.sormas.app.databinding.CaseNewFragmentLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.FormTab;
+import de.symeda.sormas.app.validation.CaseValidator;
 
 public class CaseNewForm extends FormTab {
 
@@ -140,6 +141,8 @@ public class CaseNewForm extends FormTab {
                 }
             }
         });
+
+        CaseValidator.setRequiredHintsForNewCase(binding);
 
         return binding.getRoot();
     }
