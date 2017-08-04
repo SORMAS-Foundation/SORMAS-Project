@@ -3,6 +3,7 @@ package de.symeda.sormas.app.visit;
 import android.app.AlertDialog;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.util.Log;
@@ -12,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -23,6 +25,7 @@ import de.symeda.sormas.app.backend.visit.VisitDao;
 import de.symeda.sormas.app.caze.SymptomsEditForm;
 import de.symeda.sormas.app.AbstractEditTabActivity;
 import de.symeda.sormas.app.component.HelpDialog;
+import de.symeda.sormas.app.component.PropertyField;
 import de.symeda.sormas.app.component.UserReportDialog;
 import de.symeda.sormas.app.databinding.CaseSymptomsFragmentLayoutBinding;
 import de.symeda.sormas.app.databinding.VisitDataFragmentLayoutBinding;
@@ -123,7 +126,7 @@ public class VisitEditActivity extends AbstractEditTabActivity {
 
             case SYMPTOMS:
                 updateActionBarGroups(menu, true, false, true, false, true);
-                break;
+            break;
 
         }
 
@@ -229,6 +232,11 @@ public class VisitEditActivity extends AbstractEditTabActivity {
 
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void notifyVisitStatusChange(boolean cooperative) {
+        SymptomsEditForm symptomsEditForm = (SymptomsEditForm) adapter.getTabByPosition(VisitEditTabs.SYMPTOMS.ordinal());
+        symptomsEditForm.changeVisitCooperative(cooperative);
     }
 
     private void setAdapter() {

@@ -226,7 +226,8 @@ public final class SymptomsValidator {
 
     private static List<PropertyField<?>> getOtherSymptomsFields(CaseSymptomsFragmentLayoutBinding binding) {
         return Arrays.asList(binding.symptomsOnsetDate, binding.symptomsOnsetSymptom1,
-                binding.symptomsOther1HemorrhagicSymptomsText, binding.symptomsOther1NonHemorrhagicSymptomsText);
+                binding.symptomsOther1HemorrhagicSymptomsText, binding.symptomsOther1NonHemorrhagicSymptomsText,
+                binding.symptomsTemperature, binding.symptomsTemperatureSource);
     }
 
     /**

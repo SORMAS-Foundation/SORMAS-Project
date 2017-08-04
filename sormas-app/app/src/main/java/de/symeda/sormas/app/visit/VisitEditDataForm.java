@@ -17,6 +17,7 @@ import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.visit.Visit;
+import de.symeda.sormas.app.component.PropertyField;
 import de.symeda.sormas.app.databinding.VisitDataFragmentLayoutBinding;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.FormTab;
@@ -50,6 +51,12 @@ public class VisitEditDataForm extends FormTab {
 
         binding.visitVisitDateTime.initialize(this);
         binding.visitVisitStatus.initialize(VisitStatus.class);
+        binding.visitVisitStatus.addValueChangedListener(new PropertyField.ValueChangeListener() {
+            @Override
+            public void onChange(PropertyField field) {
+                ((VisitEditActivity) VisitEditDataForm.this.getActivity()).notifyVisitStatusChange(field.getValue() == VisitStatus.COOPERATIVE);
+            }
+        });
 
         VisitValidator.setRequiredHintsForVisitData(binding);
 

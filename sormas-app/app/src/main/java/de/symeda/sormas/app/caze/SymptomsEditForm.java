@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 
@@ -41,6 +42,7 @@ import de.symeda.sormas.app.util.FormTab;
 import de.symeda.sormas.app.util.Item;
 import de.symeda.sormas.app.util.ValidationFailedException;
 import de.symeda.sormas.app.validation.SymptomsValidator;
+import de.symeda.sormas.app.visit.VisitEditDataForm;
 
 
 /**
@@ -53,11 +55,13 @@ public class SymptomsEditForm extends FormTab {
     public static final String NEW_SYMPTOMS = "newSymptoms";
     public static final String FOR_VISIT = "forVisit";
     public static final String VISIT_COOPERATIVE = "visitCooperative";
+
     private CaseSymptomsFragmentLayoutBinding binding;
     private List<SymptomStateField> nonConditionalSymptoms;
     private List<SymptomStateField> conditionalBleedingSymptoms;
 
-    private boolean listenersForRequiredCalled;
+    private boolean forVisit;
+    private boolean visitCooperative;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -76,6 +80,13 @@ public class SymptomsEditForm extends FormTab {
         else {
             String symptomsUuid = getArguments().getString(Symptoms.UUID);
             symptoms = DatabaseHelper.getSymptomsDao().queryUuid(symptomsUuid);
+        }
+
+        if (getArguments().getBoolean(FOR_VISIT)) {
+            forVisit = true;
+            if (getArguments().getBoolean(VISIT_COOPERATIVE)) {
+                visitCooperative = true;
+            }
         }
 
         binding.setSymptoms(symptoms);
@@ -97,18 +108,33 @@ public class SymptomsEditForm extends FormTab {
             @Override
             public void onChange(PropertyField field) {
                 toggleUnexplainedBleedingFields();
+                if (forVisit) {
+                    SymptomsValidator.setRequiredHintsForVisitSymptoms(visitCooperative, binding);
+                } else {
+                    SymptomsValidator.setRequiredHintsForCaseSymptoms(binding);
+                }
             }
         });
         binding.symptomsOtherHemorrhagicSymptoms.addValueChangedListener(new PropertyField.ValueChangeListener() {
             @Override
             public void onChange(PropertyField field) {
                 visibilityOtherHemorrhagicSymptoms();
+                if (forVisit) {
+                    SymptomsValidator.setRequiredHintsForVisitSymptoms(visitCooperative, binding);
+                } else {
+                    SymptomsValidator.setRequiredHintsForCaseSymptoms(binding);
+                }
             }
         });
         binding.symptomsOtherNonHemorrhagicSymptoms.addValueChangedListener(new PropertyField.ValueChangeListener() {
             @Override
             public void onChange(PropertyField field) {
                 visibilityOtherNonHemorrhagicSymptoms();
+                if (forVisit) {
+                    SymptomsValidator.setRequiredHintsForVisitSymptoms(visitCooperative, binding);
+                } else {
+                    SymptomsValidator.setRequiredHintsForCaseSymptoms(binding);
+                }
             }
         });
 
@@ -149,6 +175,12 @@ public class SymptomsEditForm extends FormTab {
                 for (SymptomStateField symptom : conditionalBleedingSymptoms) {
                     symptom.setValue(null);
                 }
+
+                if (forVisit) {
+                    SymptomsValidator.setRequiredHintsForVisitSymptoms(visitCooperative, binding);
+                } else {
+                    SymptomsValidator.setRequiredHintsForCaseSymptoms(binding);
+                }
             }
         });
 
@@ -166,10 +198,16 @@ public class SymptomsEditForm extends FormTab {
                         symptom.setValue(SymptomState.NO);
                     }
                 }
+
+                if (forVisit) {
+                    SymptomsValidator.setRequiredHintsForVisitSymptoms(visitCooperative, binding);
+                } else {
+                    SymptomsValidator.setRequiredHintsForCaseSymptoms(binding);
+                }
             }
         });
 
-        if (!getArguments().getBoolean(FOR_VISIT)) {
+        if (!forVisit) {
             binding.symptomsIllLocationLayout.setVisibility(View.VISIBLE);
             // ==================== IllLocation ===============
             LocationDialog.addLocationField(getActivity(), symptoms.getIllLocation(), binding.symptomsIllLocation, binding.formCpBtnAddress, new Consumer() {
@@ -184,9 +222,34 @@ public class SymptomsEditForm extends FormTab {
 
             binding.symptomsIllLocationFrom.initialize(this);
             binding.symptomsIllLocationTo.initialize(this);
+            SymptomsValidator.setRequiredHintsForCaseSymptoms(binding);
         } else {
             binding.symptomsIllLocationLayout.setVisibility(View.GONE);
+            SymptomsValidator.setRequiredHintsForVisitSymptoms(visitCooperative, binding);
         }
+
+        // Add listeners to symptom state fields; OnWindowFocusChangeListener is used to make sure that these
+        // listeners aren't called when the view is being built.
+        binding.caseSymptomsForm.getViewTreeObserver().addOnWindowFocusChangeListener(
+                new ViewTreeObserver.OnWindowFocusChangeListener() {
+            @Override
+            public void onWindowFocusChanged(boolean b) {
+                binding.caseSymptomsForm.getViewTreeObserver().removeOnWindowFocusChangeListener(this);
+                for (SymptomStateField symptom : nonConditionalSymptoms) {
+                    symptom.addValueChangedListener(new PropertyField.ValueChangeListener() {
+                        @Override
+                        public void onChange(PropertyField field) {
+                            if (forVisit) {
+                                SymptomsValidator.setRequiredHintsForVisitSymptoms(visitCooperative, binding);
+                            } else {
+                                SymptomsValidator.setRequiredHintsForCaseSymptoms(binding);
+                            }
+                        }
+                    });
+                }
+            }
+        });
+
         //view.requestFocus();
         return view;
     }
@@ -316,6 +379,11 @@ public class SymptomsEditForm extends FormTab {
 
     public CaseSymptomsFragmentLayoutBinding getBinding() {
         return binding;
+    }
+
+    public void changeVisitCooperative(boolean cooperative) {
+        visitCooperative = cooperative;
+        SymptomsValidator.setRequiredHintsForVisitSymptoms(visitCooperative, binding);
     }
 
 }
