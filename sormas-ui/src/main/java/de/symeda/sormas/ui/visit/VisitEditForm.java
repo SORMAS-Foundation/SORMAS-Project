@@ -26,6 +26,7 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
     
     private final Disease disease;
     private final ContactDto contact;
+    private SymptomsForm symptomsForm;
 
     public VisitEditForm(Disease disease, ContactDto contact) {
         super(VisitDto.class, VisitDto.I18N_PREFIX);
@@ -57,7 +58,7 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
     	addField(VisitDto.VISIT_STATUS, OptionGroup.class);
     	addField(VisitDto.VISIT_REMARKS, TextField.class);
     	
-    	SymptomsForm symptomsForm = new SymptomsForm(disease, false);
+    	symptomsForm = new SymptomsForm(disease, false);
 		getFieldGroup().bind(symptomsForm, VisitDto.SYMPTOMS);
 		getContent().addComponent(symptomsForm, VisitDto.SYMPTOMS);
     	
@@ -85,4 +86,9 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
 	protected String createHtmlLayout() {
 		 return HTML_LAYOUT;
 	}
+
+	public SymptomsForm getSymptomsForm() {
+		return symptomsForm;
+	}
+	
 }

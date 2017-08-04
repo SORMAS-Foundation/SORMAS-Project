@@ -54,8 +54,6 @@ public class VisitEditPagerAdapter extends FragmentStatePagerAdapter {
                     symptomsEditBundle.putSerializable(Visit.DISEASE, contact.getCaze().getDisease());
                     symptomsEditBundle.putBoolean(SymptomsEditForm.NEW_SYMPTOMS, true);
                     symptomsEditBundle.putBoolean(SymptomsEditForm.FOR_VISIT, true);
-                    symptomsEditBundle.putBoolean(SymptomsEditForm.VISIT_COOPERATIVE,
-                            visitEditDataForm.getBinding().visitVisitStatus.getValue() == VisitStatus.COOPERATIVE);
                 }
                 // edit symptoms for given visit
                 else {

@@ -72,7 +72,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// name of the database file for your application -- change to something appropriate for your app
 	private static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	private static final int DATABASE_VERSION = 93;
+	private static final int DATABASE_VERSION = 94;
 
 	private static DatabaseHelper instance = null;
 	public static void init(Context context) {
@@ -206,6 +206,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				case 92:
 					currentVersion = 92;
 					getDao(District.class).executeRaw("ALTER TABLE region ADD COLUMN epidCode varchar(255);");
+				case 93:
+					currentVersion = 93;
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN symptomatic boolean;");
 
 					// ATTENTION: break should only be done after last version
 					break;

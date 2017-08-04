@@ -224,6 +224,11 @@ public final class SymptomsValidator {
                 binding.symptomsSkinBruising1, binding.symptomsBloodUrine, binding.symptomsOtherHemorrhagicSymptoms);
     }
 
+    public static boolean isSymptomatic(CaseSymptomsFragmentLayoutBinding binding) {
+        return isAnySymptomSetTo(SymptomState.YES, getNonConditionalSymptoms(binding)) ||
+                (binding.symptomsTemperature.getValue() != null && (Float) binding.symptomsTemperature.getValue() >= 38.0f);
+    }
+
     private static List<PropertyField<?>> getOtherSymptomsFields(CaseSymptomsFragmentLayoutBinding binding) {
         return Arrays.asList(binding.symptomsOnsetDate, binding.symptomsOnsetSymptom1,
                 binding.symptomsOther1HemorrhagicSymptomsText, binding.symptomsOther1NonHemorrhagicSymptomsText,
