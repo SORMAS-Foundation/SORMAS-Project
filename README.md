@@ -28,16 +28,16 @@ All commands mentioned are linux commands.
 
 #### Domain Libraries
 For information on what libs are used see pom.xml in sormas-base project: https://git.symeda/sormas/sormas/blob/development/sormas-base/pom.xml
-* stop server: ``service payara-sormas stop``
-* ``rm /opt/domains/sormas/lib/*.jar``
-* ``cp ./serverlibs/* /opt/domains/sormas/lib/``
+* stop server (from pajara41/glassfish/bin: ``./stopserv``
+* ``rm /opt/payara41/glassfish/domains/sormas/lib/*.jar``
+* ``cp ./serverlibs/* opt/payara41/glassfish/domains/sormas/lib/``
 
 #### OSGi Bundles
-* ``rm /opt/domains/sormas/autodeploy/bundles/*.jar``
-* ``rm /opt/domains/sormas/autodeploy/.autodeploystatus/*``
-* ``rm -r /opt/domains/sormas/osgi-cache/felix``
-* ``rm -r /opt/domains/sormas/generated/``
-* ``cp ./bundles/* /opt/domains/sormas/autodeploy/bundles/``
+* ``rm opt/payara41/glassfish/domains/sormas/autodeploy/bundles/*.jar``
+* ``rm opt/payara41/glassfish/domains/sormas/autodeploy/.autodeploystatus/*``
+* ``rm -r opt/payara41/glassfish/domains/sormas/osgi-cache/felix``
+* ``rm -r opt/payara41/glassfish/domains/sormas/generated/``
+* ``cp ./bundles/* opt/payara41/glassfish/domains/sormas/autodeploy/bundles/``
 
 #### Database
 * Create a database backup directory (if not already done)
