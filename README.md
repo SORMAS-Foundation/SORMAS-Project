@@ -23,8 +23,8 @@ All commands mentioned are linux commands.
 
 #### Undeployment
 .. while server domain is running
-* ``rm /opt/domains/sormas/autodeploy/*.war``
-* ``rm /opt/domains/sormas/autodeploy/*.ear``
+* ``rm /opt/payara41/glassfish/domains/sormas/autodeploy/*.war``
+* ``rm /opt/payara41/glassfish/domains/sormas/autodeploy/*.ear``
 
 #### Domain Libraries
 For information on what libs are used see pom.xml in sormas-base project: https://git.symeda/sormas/sormas/blob/development/sormas-base/pom.xml
