@@ -30,7 +30,7 @@ All commands mentioned are linux commands.
 For information on what libs are used see pom.xml in sormas-base project: https://git.symeda/sormas/sormas/blob/development/sormas-base/pom.xml
 * stop server (from pajara41/glassfish/bin: ``./stopserv``
 * ``rm /opt/payara41/glassfish/domains/sormas/lib/*.jar``
-*(root@localhost:~/deploy/sormas/2017-08-04/deploy/serverlibs#) ``cp ./serverlibs/* opt/payara41/glassfish/domains/sormas/lib/``
+* ``cp ./serverlibs/* opt/payara41/glassfish/domains/sormas/lib/``
 
 #### OSGi Bundles
 * ``rm opt/payara41/glassfish/domains/sormas/autodeploy/bundles/*.jar``
