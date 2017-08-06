@@ -36,8 +36,8 @@ For information on what libs are used see pom.xml in sormas-base project: https:
 * ``rm /opt/payara41/glassfish/domains/sormas/autodeploy/bundles/*.jar``
 * ``rm /opt/payara41/glassfish/domains/sormas/autodeploy/.autodeploystatus/*``
 * ``rm -r /opt/payara41/glassfish/domains/sormas/osgi-cache/felix``
-* ``rm -r opt/payara41/glassfish/domains/sormas/generated/``
-* ``cp ./bundles/* opt/payara41/glassfish/domains/sormas/autodeploy/bundles/``
+* ``rm -r /opt/payara41/glassfish/domains/sormas/generated/``
+* ``cp ./bundles/* /opt/payara41/glassfish/domains/sormas/autodeploy/bundles/``
 
 #### Database
 * Create a database backup directory (if not already done)
