@@ -60,8 +60,8 @@ For information on what libs are used see pom.xml in sormas-base project: https:
 #### Web Applications
 * ``service payara-sormas start``
 * ``cd /root/deploy/sormas/$(date +%F) (just to make sure you're in the right directory)``
-* ``cp apps/*.ear /opt/domains/sormas/autodeploy/``
-* ``cp apps/*.war /opt/domains/sormas/autodeploy/``
+* ``cp apps/*.ear /opt/payara41/glassfish/domains/sormas/autodeploy/``
+* ``cp apps/*.war /opt/payara41/glassfish/domains/sormas/autodeploy/``
 * ``cp android/*.apk /var/www/sormas/downloads/``
 
 #### Final Steps
