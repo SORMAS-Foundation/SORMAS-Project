@@ -23,21 +23,21 @@ All commands mentioned are linux commands.
 
 #### Undeployment
 .. while server domain is running
-* ``rm /opt/payara41/glassfish/domains/sormas/autodeploy/*.war``
-* ``rm /opt/payara41/glassfish/domains/sormas/autodeploy/*.ear``
+* ``rm /opt/domains/sormas/autodeploy/*.war``
+* ``rm /opt/domains/sormas/autodeploy/*.ear``
 
 #### Domain Libraries
 For information on what libs are used see pom.xml in sormas-base project: https://git.symeda/sormas/sormas/blob/development/sormas-base/pom.xml
-* stop server (from pajara41/glassfish/bin: ``./stopserv``
-* ``rm /opt/payara41/glassfish/domains/sormas/lib/*.jar``
-* ``cp serverlibs/* opt/payara41/glassfish/domains/sormas/lib/.``
+* stop server: ``service payara-sormas stop``
+* ``rm /opt/domains/sormas/lib/*.jar``
+* ``cp ./serverlibs/* /opt/domains/sormas/lib/``
 
 #### OSGi Bundles
-* ``rm /opt/payara41/glassfish/domains/sormas/autodeploy/bundles/*.jar``
-* ``rm /opt/payara41/glassfish/domains/sormas/autodeploy/.autodeploystatus/*``
-* ``rm -r /opt/payara41/glassfish/domains/sormas/osgi-cache/felix``
-* ``rm -r /opt/payara41/glassfish/domains/sormas/generated/``
-* ``cp ./bundles/* /opt/payara41/glassfish/domains/sormas/autodeploy/bundles/``
+* ``rm /opt/domains/sormas/autodeploy/bundles/*.jar``
+* ``rm /opt/domains/sormas/autodeploy/.autodeploystatus/*``
+* ``rm -r /opt/domains/sormas/osgi-cache/felix``
+* ``rm -r /opt/domains/sormas/generated/``
+* ``cp ./bundles/* /opt/domains/sormas/autodeploy/bundles/``
 
 #### Database
 * Create a database backup directory (if not already done)
@@ -60,8 +60,8 @@ For information on what libs are used see pom.xml in sormas-base project: https:
 #### Web Applications
 * ``service payara-sormas start``
 * ``cd /root/deploy/sormas/$(date +%F) (just to make sure you're in the right directory)``
-* ``cp apps/*.ear /opt/payara41/glassfish/domains/sormas/autodeploy/``
-* ``cp apps/*.war /opt/payara41/glassfish/domains/sormas/autodeploy/``
+* ``cp apps/*.ear /opt/domains/sormas/autodeploy/``
+* ``cp apps/*.war /opt/domains/sormas/autodeploy/``
 * ``cp android/*.apk /var/www/sormas/downloads/``
 
 #### Final Steps
