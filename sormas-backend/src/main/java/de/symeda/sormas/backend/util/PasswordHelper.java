@@ -6,17 +6,18 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
+import javax.validation.ValidationException;
+
 public class PasswordHelper {
 
-//	private static Logger logger = LoggerFactory
-//			.getLogger(PasswordHelper.class);
-
-	private static final char[] PASSWORD_CHARS = new char[25 + 25 + 10];
+	private static final char[] PASSWORD_CHARS = new char[26-2 + 26-3 + 8];
 	static {
 		int i = 0;
 		for (char ch = 'a'; ch <= 'z'; ch++) {
 			switch (ch) {
 			case 'l':
+				continue;
+			case 'v':
 				continue;
 			default:
 				PASSWORD_CHARS[i++] = ch;
@@ -26,14 +27,20 @@ public class PasswordHelper {
 			switch (ch) {
 			case 'I':
 				continue;
-//			case 'O':
-//				continue;
+			case 'O':
+				continue;
+			case 'V':
+				continue;
 			default:
 				PASSWORD_CHARS[i++] = ch;
 			}
 		}
-		for (char ch = '0'; ch <= '9'; ch++) {
+		for (char ch = '2'; ch <= '9'; ch++) {
 			PASSWORD_CHARS[i++] = ch;
+		}
+		
+		if (i != PASSWORD_CHARS.length) {
+			throw new ValidationException("Size of password char array does not match defined values.");
 		}
 	}
 
