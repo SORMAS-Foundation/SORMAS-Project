@@ -6,6 +6,7 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
@@ -69,6 +70,25 @@ public class SampleService extends AbstractAdoService<Sample> {
 		
 		List<Sample> resultList = em.createQuery(cq).getResultList();
 		return resultList;
+	}
+	
+	/**
+	 * Returns the sample that refers to the sample identified by the sampleUuid.
+	 * 
+	 * @param sampleUuid The UUID of the sample to get the referral for.
+	 * @return The sample that refers to this sample, or null if none is found.
+	 */
+	public Sample getReferredFrom(String sampleUuid) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Sample> cq = cb.createQuery(getElementClass());
+		Root<Sample> from = cq.from(getElementClass());
+		
+		cq.where(cb.equal(from.get(Sample.REFERRED_TO), getByUuid(sampleUuid)));
+		try {
+			return em.createQuery(cq).getSingleResult();
+		} catch (NoResultException e) {
+			return null;
+		}
 	}
 	
 	/**

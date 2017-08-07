@@ -49,6 +49,7 @@ public class Sample extends AbstractDomainObject {
 	public static final String COMMENT = "comment";
 	public static final String SAMPLE_SOURCE = "sampleSource";
 	public static final String SUGGESTED_TYPE_OF_TEST = "suggestedTypeOfTest";
+	public static final String REFERRED_TO = "referredTo";
 	
 	private Case associatedCase;
 	private String sampleCode;
@@ -69,6 +70,7 @@ public class Sample extends AbstractDomainObject {
 	private String comment;
 	private SampleSource sampleSource;
 	private SampleTestType suggestedTypeOfTest;
+	private Sample referredTo;
 	
 	private List<SampleTest> sampleTests;
 	
@@ -237,6 +239,15 @@ public class Sample extends AbstractDomainObject {
 	}
 	public void setSuggestedTypeOfTest(SampleTestType suggestedTypeOfTest) {
 		this.suggestedTypeOfTest = suggestedTypeOfTest;
+	}
+
+	@ManyToOne(cascade = {})
+	@JoinColumn(nullable = true)
+	public Sample getReferredTo() {
+		return referredTo;
+	}
+	public void setReferredTo(Sample referredTo) {
+		this.referredTo = referredTo;
 	}
 	
 	@Override

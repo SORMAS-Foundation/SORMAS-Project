@@ -118,6 +118,11 @@ public class SampleFacadeEjb implements SampleFacade {
 				.collect(Collectors.toList());
 	}
 	
+	@Override
+	public SampleReferenceDto getReferredFrom(String sampleUuid) {
+		return toReferenceDto(sampleService.getReferredFrom(sampleUuid));
+	}
+	
 	public Sample fromSampleDto(@NotNull SampleDto source) {
 		
 		Sample target = sampleService.getByUuid(source.getUuid());
@@ -149,6 +154,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		target.setComment(source.getComment());
 		target.setSampleSource(source.getSampleSource());
 		target.setSuggestedTypeOfTest(source.getSuggestedTypeOfTest());
+		target.setReferredTo(sampleService.getByReferenceDto(source.getReferredTo()));
 		
 		return target;
 	}
@@ -179,6 +185,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		target.setComment(source.getComment());
 		target.setSampleSource(source.getSampleSource());
 		target.setSuggestedTypeOfTest(source.getSuggestedTypeOfTest());
+		target.setReferredTo(SampleFacadeEjb.toReferenceDto(source.getReferredTo()));
 		
 		return target;
 	}

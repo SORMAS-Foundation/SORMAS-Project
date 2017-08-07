@@ -31,6 +31,7 @@ public class SampleDto extends SampleReferenceDto {
 	public static final String COMMENT = "comment";
 	public static final String SAMPLE_SOURCE = "sampleSource";
 	public static final String SUGGESTED_TYPE_OF_TEST = "suggestedTypeOfTest";
+	public static final String REFERRED_TO = "referredTo";
 	
 	private CaseReferenceDto associatedCase;
 	private String sampleCode;
@@ -51,6 +52,7 @@ public class SampleDto extends SampleReferenceDto {
 	private String comment;
 	private SampleSource sampleSource;
 	private SampleTestType suggestedTypeOfTest;
+	private SampleReferenceDto referredTo;
 	
 	public CaseReferenceDto getAssociatedCase() {
 		return associatedCase;
@@ -165,6 +167,12 @@ public class SampleDto extends SampleReferenceDto {
 	}
 	public void setSuggestedTypeOfTest(SampleTestType suggestedTypeOfTest) {
 		this.suggestedTypeOfTest = suggestedTypeOfTest;
+	}
+	public SampleReferenceDto getReferredTo() {
+		return referredTo;
+	}
+	public void setReferredTo(SampleReferenceDto referredTo) {
+		this.referredTo = referredTo;
 	}
 	
 }

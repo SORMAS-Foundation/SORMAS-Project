@@ -8,6 +8,7 @@ import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Label;
@@ -15,6 +16,7 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -77,6 +79,27 @@ public class SampleController {
 		VaadinUiUtil.showModalPopupWindow(editView, "Create new sample");
 	}
 	
+	public void createReferral(SampleDto sample) {
+		SampleCreateForm createForm = new SampleCreateForm();
+		createForm.setValue(sample);
+		final CommitDiscardWrapperComponent<SampleCreateForm> createView = new CommitDiscardWrapperComponent<SampleCreateForm>(createForm, createForm.getFieldGroup());
+		
+		createView.addCommitListener(new CommitListener() {
+			@Override
+			public void onCommit() {
+				if (!createForm.getFieldGroup().isModified()) {
+					SampleDto newSample = createForm.getValue();
+					FacadeProvider.getSampleFacade().saveSample(newSample);
+					sample.setReferredTo(FacadeProvider.getSampleFacade().getReferenceByUuid(newSample.getUuid()));
+					FacadeProvider.getSampleFacade().saveSample(sample);
+					navigateToData(newSample.getUuid());
+				}
+			}
+		});
+		
+		VaadinUiUtil.showModalPopupWindow(createView, "Refer sample to another laboratory");
+	}
+	
 	public CommitDiscardWrapperComponent<SampleEditForm> getSampleEditComponent(final String sampleUuid) {
 		SampleEditForm form = new SampleEditForm();
 		form.setWidth(form.getWidth() * 10/12, Unit.PIXELS);
@@ -100,6 +123,19 @@ public class SampleController {
 				}
 			}
 		});
+		
+		Button referToOtherLabButton = new Button("Refer to another laboratory");
+		referToOtherLabButton.addStyleName(ValoTheme.BUTTON_LINK);
+		referToOtherLabButton.addClickListener(new ClickListener() {
+			private static final long serialVersionUID = 1L;
+			@Override
+			public void buttonClick(ClickEvent event) {
+				createReferral(dto);
+			}
+		});
+		
+		editView.getButtonsPanel().addComponentAsFirst(referToOtherLabButton);
+		editView.getButtonsPanel().setComponentAlignment(referToOtherLabButton, Alignment.BOTTOM_LEFT);
 		
 		return editView;
 	}

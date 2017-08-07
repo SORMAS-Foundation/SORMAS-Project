@@ -99,6 +99,9 @@ public class Sample extends AbstractDomainObject {
     @Enumerated(EnumType.STRING)
     private SampleTestType suggestedTypeOfTest;
 
+    @DatabaseField(foreign = true, foreignAutoRefresh = true)
+    private Sample referredTo;
+
     public Case getAssociatedCase() {
         return associatedCase;
     }
@@ -249,6 +252,14 @@ public class Sample extends AbstractDomainObject {
 
     public void setSuggestedTypeOfTest(SampleTestType suggestedTypeOfTest) {
         this.suggestedTypeOfTest = suggestedTypeOfTest;
+    }
+
+    public Sample getReferredTo() {
+        return referredTo;
+    }
+
+    public void setReferredTo(Sample referredTo) {
+        this.referredTo = referredTo;
     }
 
     @Override

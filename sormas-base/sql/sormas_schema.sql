@@ -1586,3 +1586,9 @@ INSERT INTO schema_version (version_number, comment) VALUES (54, 'Split EPID cod
 ALTER TABLE cases DROP COLUMN contactofficer_id;
 
 INSERT INTO schema_version (version_number, comment) VALUES (55, 'Remove contact officer from case');
+
+-- 2017-08-07 Add referredTo field to sample #255
+ALTER TABLE samples ADD COLUMN referredto_id bigint;
+ALTER TABLE samples ADD CONSTRAINT fk_samples_referredto_id FOREIGN KEY (referredto_id) REFERENCES samples (id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (56, 'Add referredTo field to sample');
