@@ -46,8 +46,8 @@ public abstract class PropertyField<T> extends LinearLayout {
     }
 
     public void setError(String errorText) {
-        caption.requestFocus();
         caption.setError(errorText);
+        caption.requestFocus();
     }
 
     public void setErrorWithoutFocus(String errorText) {
@@ -84,21 +84,28 @@ public abstract class PropertyField<T> extends LinearLayout {
     }
 
     public void addCaptionOnClickListener() {
+        caption.setOnFocusChangeListener(new OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if (caption != null && b) {
+                    if (caption.getError() == null && getDescription() != null && !getDescription().isEmpty()) {
+                        HelpDialog helpDialog = new HelpDialog(getContext());
+                        helpDialog.setMessage(getDescription());
+                        helpDialog.show();
+                    }
+                }
+            }
+        });
+
         caption.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (caption != null) {
-                    if (getDescription() != null && !getDescription().isEmpty()) {
-                            HelpDialog helpDialog = new HelpDialog(getContext());
-                            helpDialog.setMessage(getDescription());
-                            helpDialog.show();
-                        }
-                    }
-
                     if (caption.getError() != null) {
                         caption.clearFocus();
                     }
                 }
+            }
         });
 
 //        if(getDescription() != null && !getDescription().isEmpty()) {
