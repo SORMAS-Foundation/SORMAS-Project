@@ -2,23 +2,27 @@ package de.symeda.sormas.ui.task;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
+import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskHelper;
 import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.task.TaskStatus;
+import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
+import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DiscardListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class TaskController {
@@ -63,6 +67,35 @@ public class TaskController {
         });
 
         VaadinUiUtil.showModalPopupWindow(editView, "Create new task");   
+	}
+	
+	public void createAfterSample(TaskContext context, ReferenceDto entityRef, SampleDto sample, Consumer<SampleDto> callback) {
+		TaskEditForm createForm = new TaskEditForm();
+		TaskDto taskDto = createNewTask(context, entityRef);
+		taskDto.setTaskType(TaskType.SAMPLE_COLLECTION);
+		taskDto.setCreatorComment(sample.getNoTestPossibleReason());
+		taskDto.setAssigneeUser(sample.getReportingUser());
+		createForm.setValue(taskDto);
+		
+		final CommitDiscardWrapperComponent<TaskEditForm> createView = new CommitDiscardWrapperComponent<TaskEditForm>(createForm, createForm.getFieldGroup());
+		createView.addCommitListener(new CommitListener() {
+			@Override
+			public void onCommit() {
+				if (!createForm.getFieldGroup().isModified()) {
+					TaskDto dto = createForm.getValue();
+					FacadeProvider.getTaskFacade().saveTask(dto);
+					callback.accept(sample);
+				}
+			}
+		});
+		createView.addDiscardListener(new DiscardListener() {
+			@Override
+			public void onDiscard() {
+				callback.accept(sample);
+			}
+		});
+		
+		VaadinUiUtil.showModalPopupWindow(createView, "Create new task");
 	}
 
 	public void edit(TaskDto dto, TaskGrid grid) {

@@ -2,23 +2,35 @@ package de.symeda.sormas.ui.samples;
 
 import java.util.Date;
 import java.util.List;
+import java.util.function.Consumer;
 
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Sizeable.Unit;
+import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleFacade;
 import de.symeda.sormas.api.sample.SampleIndexDto;
+import de.symeda.sormas.api.sample.SpecimenCondition;
+import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
+import de.symeda.sormas.ui.utils.ConfirmationComponent;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class SampleController {
@@ -77,9 +89,57 @@ public class SampleController {
 			public void onCommit() {
 				if (!form.getFieldGroup().isModified()) {
 					SampleDto dto = form.getValue();
-					dto = sf.saveSample(dto);
-					Notification.show("Sample data saved", Type.WARNING_MESSAGE);
-					navigateToData(dto.getUuid());
+					SampleDto originalDto = sf.getSampleByUuid(dto.getUuid());
+					
+					if (dto.getSpecimenCondition() != originalDto.getSpecimenCondition() &&
+							dto.getSpecimenCondition() == SpecimenCondition.NOT_ADEQUATE) {
+						VerticalLayout test = new VerticalLayout();
+						test.setMargin(true);
+						
+						ConfirmationComponent requestTaskComponent = buildRequestTaskComponent();
+						
+						Label description = new Label("You have set the specimen condition to not adequate.<br/>Do you want to create a new sample collection task?");
+						description.setContentMode(ContentMode.HTML);
+						description.setWidth(100, Unit.PERCENTAGE);
+						test.addComponent(description);
+						test.addComponent(requestTaskComponent);
+						test.setComponentAlignment(requestTaskComponent, Alignment.BOTTOM_RIGHT);
+						test.setSizeUndefined();
+						test.setSpacing(true);
+						
+						Window popupWindow = VaadinUiUtil.showPopupWindow(test);
+						popupWindow.setSizeUndefined();
+						popupWindow.setCaption("Create new task?");
+						requestTaskComponent.getConfirmButton().addClickListener(new ClickListener() {
+							private static final long serialVersionUID = 1L;
+							@Override
+							public void buttonClick(ClickEvent event) {
+								popupWindow.close();
+								sf.saveSample(dto);
+								ControllerProvider.getTaskController().createAfterSample(TaskContext.CASE, dto.getAssociatedCase(), dto, new Consumer<SampleDto>() {
+									@Override
+									public void accept(SampleDto result) {
+										Notification.show("Sample data saved", Type.WARNING_MESSAGE);
+										navigateToData(dto.getUuid());
+									}
+								});
+							}
+						});
+						requestTaskComponent.getCancelButton().addClickListener(new ClickListener() {
+							private static final long serialVersionUID = 1L;
+							@Override
+							public void buttonClick(ClickEvent event) {
+								popupWindow.close();
+								sf.saveSample(dto);
+								Notification.show("Sample data saved", Type.WARNING_MESSAGE);
+								navigateToData(dto.getUuid());
+							}
+						});
+					} else {
+						sf.saveSample(dto);
+						Notification.show("Sample data saved", Type.WARNING_MESSAGE);
+						navigateToData(dto.getUuid());
+					}
 				}
 			}
 		});
@@ -96,6 +156,21 @@ public class SampleController {
 		
 		return sample;
 		
+	}
+	
+	private ConfirmationComponent buildRequestTaskComponent() {
+		ConfirmationComponent requestTaskComponent = new ConfirmationComponent(false) {
+			private static final long serialVersionUID = 1L;
+			@Override
+			protected void onConfirm() {
+			}
+			@Override
+			protected void onCancel() {
+			}
+		};
+		requestTaskComponent.getConfirmButton().setCaption("Yes");
+		requestTaskComponent.getCancelButton().setCaption("No");
+		return requestTaskComponent;
 	}
 
 }
