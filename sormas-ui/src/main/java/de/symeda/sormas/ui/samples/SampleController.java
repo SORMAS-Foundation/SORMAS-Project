@@ -93,58 +93,58 @@ public class SampleController {
 					
 					if (dto.getSpecimenCondition() != originalDto.getSpecimenCondition() &&
 							dto.getSpecimenCondition() == SpecimenCondition.NOT_ADEQUATE) {
-						VerticalLayout test = new VerticalLayout();
-						test.setMargin(true);
-						
-						ConfirmationComponent requestTaskComponent = buildRequestTaskComponent();
-						
-						Label description = new Label("You have set the specimen condition to not adequate.<br/>Do you want to create a new sample collection task?");
-						description.setContentMode(ContentMode.HTML);
-						description.setWidth(100, Unit.PERCENTAGE);
-						test.addComponent(description);
-						test.addComponent(requestTaskComponent);
-						test.setComponentAlignment(requestTaskComponent, Alignment.BOTTOM_RIGHT);
-						test.setSizeUndefined();
-						test.setSpacing(true);
-						
-						Window popupWindow = VaadinUiUtil.showPopupWindow(test);
-						popupWindow.setSizeUndefined();
-						popupWindow.setCaption("Create new task?");
-						requestTaskComponent.getConfirmButton().addClickListener(new ClickListener() {
-							private static final long serialVersionUID = 1L;
-							@Override
-							public void buttonClick(ClickEvent event) {
-								popupWindow.close();
-								sf.saveSample(dto);
-								ControllerProvider.getTaskController().createAfterSample(TaskContext.CASE, dto.getAssociatedCase(), dto, new Consumer<SampleDto>() {
-									@Override
-									public void accept(SampleDto result) {
-										Notification.show("Sample data saved", Type.WARNING_MESSAGE);
-										navigateToData(dto.getUuid());
-									}
-								});
-							}
-						});
-						requestTaskComponent.getCancelButton().addClickListener(new ClickListener() {
-							private static final long serialVersionUID = 1L;
-							@Override
-							public void buttonClick(ClickEvent event) {
-								popupWindow.close();
-								sf.saveSample(dto);
-								Notification.show("Sample data saved", Type.WARNING_MESSAGE);
-								navigateToData(dto.getUuid());
-							}
-						});
+						buildRequestTaskComponent(dto);
 					} else {
-						sf.saveSample(dto);
-						Notification.show("Sample data saved", Type.WARNING_MESSAGE);
-						navigateToData(dto.getUuid());
+						saveSample(dto);
 					}
 				}
 			}
 		});
 		
 		return editView;
+	}
+	
+	private void buildRequestTaskComponent(SampleDto dto) {
+		VerticalLayout test = new VerticalLayout();
+		test.setMargin(true);
+		
+		ConfirmationComponent requestTaskComponent = buildRequestTaskComponent();
+		
+		Label description = new Label("You have set the specimen condition to not adequate.<br/>Do you want to create a new sample collection task?");
+		description.setContentMode(ContentMode.HTML);
+		description.setWidth(100, Unit.PERCENTAGE);
+		test.addComponent(description);
+		test.addComponent(requestTaskComponent);
+		test.setComponentAlignment(requestTaskComponent, Alignment.BOTTOM_RIGHT);
+		test.setSizeUndefined();
+		test.setSpacing(true);
+		
+		Window popupWindow = VaadinUiUtil.showPopupWindow(test);
+		popupWindow.setSizeUndefined();
+		popupWindow.setCaption("Create new task?");
+		requestTaskComponent.getConfirmButton().addClickListener(new ClickListener() {
+			private static final long serialVersionUID = 1L;
+			@Override
+			public void buttonClick(ClickEvent event) {
+				popupWindow.close();
+				sf.saveSample(dto);
+				ControllerProvider.getTaskController().createAfterSample(TaskContext.CASE, dto.getAssociatedCase(), dto, new Consumer<SampleDto>() {
+					@Override
+					public void accept(SampleDto result) {
+						Notification.show("Sample data saved", Type.WARNING_MESSAGE);
+						navigateToData(dto.getUuid());
+					}
+				});
+			}
+		});
+		requestTaskComponent.getCancelButton().addClickListener(new ClickListener() {
+			private static final long serialVersionUID = 1L;
+			@Override
+			public void buttonClick(ClickEvent event) {
+				popupWindow.close();
+				saveSample(dto);
+			}
+		});
 	}
 	
 	private SampleDto createNewSample(CaseReferenceDto caseRef) {
@@ -171,6 +171,12 @@ public class SampleController {
 		requestTaskComponent.getConfirmButton().setCaption("Yes");
 		requestTaskComponent.getCancelButton().setCaption("No");
 		return requestTaskComponent;
+	}
+	
+	private void saveSample(SampleDto sampleDto) {
+		sf.saveSample(sampleDto);
+		Notification.show("Sample data saved", Type.WARNING_MESSAGE);
+		navigateToData(sampleDto.getUuid());
 	}
 
 }
