@@ -62,17 +62,14 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		    				LayoutUtil.fluidRowLocs(CaseDataDto.EPID_NUMBER, CaseDataDto.DISEASE) +
 		    				LayoutUtil.fluidRowLocs(CaseDataDto.REGION, CaseDataDto.DISTRICT) +
 				    		LayoutUtil.fluidRowLocs(CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY) +
-		    				LayoutUtil.fluidRowLocs("", CaseDataDto.HEALTH_FACILITY_DETAILS))
+		    				LayoutUtil.fluidRowLocs("", CaseDataDto.HEALTH_FACILITY_DETAILS) +
+		    				LayoutUtil.fluidRowLocs(CaseDataDto.SURVEILLANCE_OFFICER, ""))
 		    )+
 			LayoutUtil.loc(MEDICAL_INFORMATION_LOC) +
 			LayoutUtil.fluidRow(
 					LayoutUtil.fluidRowLocs(CaseDataDto.PREGNANT, "") +
 					LayoutUtil.fluidRowLocs(CaseDataDto.MEASLES_VACCINATION, CaseDataDto.MEASLES_DOSES) +
 					LayoutUtil.fluidRowLocs(CaseDataDto.MEASLES_VACCINATION_INFO_SOURCE, "")
-			)+
-    		LayoutUtil.h3(CssStyles.VSPACE3, "Responsible users")+
-    		LayoutUtil.divCss(CssStyles.VSPACE2, 
-    				LayoutUtil.fluidRowLocs(CaseDataDto.SURVEILLANCE_OFFICER, CaseDataDto.CONTACT_OFFICER)
 			);
     	
 
@@ -143,19 +140,14 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 		ComboBox surveillanceOfficerField = addField(CaseDataDto.SURVEILLANCE_OFFICER, ComboBox.class);
 		surveillanceOfficerField.setNullSelectionAllowed(true);
-		ComboBox contactOfficerField = addField(CaseDataDto.CONTACT_OFFICER, ComboBox.class);
-		contactOfficerField.setNullSelectionAllowed(true);
 		
 		district.addValueChangeListener(e -> {
 			List<UserReferenceDto> assignableSurveillanceOfficers = FacadeProvider.getUserFacade().getAssignableUsersByDistrict((DistrictReferenceDto) district.getValue(), false, UserRole.SURVEILLANCE_OFFICER);
-			List<UserReferenceDto> assignableContactOfficers = FacadeProvider.getUserFacade().getAssignableUsersByDistrict((DistrictReferenceDto) district.getValue(), false, UserRole.CONTACT_OFFICER);
 			
 			surveillanceOfficerField.removeAllItems();
 			surveillanceOfficerField.select(0);
 			surveillanceOfficerField.addItems(assignableSurveillanceOfficers);
-			contactOfficerField.removeAllItems();
 			surveillanceOfficerField.select(0);
-			contactOfficerField.addItems(assignableContactOfficers);
 		});
     	
 		addField(CaseDataDto.PREGNANT, OptionGroup.class);

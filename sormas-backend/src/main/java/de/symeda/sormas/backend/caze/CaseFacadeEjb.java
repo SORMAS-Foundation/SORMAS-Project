@@ -209,7 +209,6 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		target.setSurveillanceOfficer(userService.getByReferenceDto(source.getSurveillanceOfficer()));
 		target.setCaseOfficer(userService.getByReferenceDto(source.getCaseOfficer()));
-		target.setContactOfficer(userService.getByReferenceDto(source.getContactOfficer()));
 		target.setSymptoms(symptomsFacade.fromDto(source.getSymptoms()));
 		
 		target.setPregnant(source.getPregnant());
@@ -257,7 +256,6 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		target.setSurveillanceOfficer(UserFacadeEjb.toReferenceDto(source.getSurveillanceOfficer()));
 		target.setCaseOfficer(UserFacadeEjb.toReferenceDto(source.getCaseOfficer()));
-		target.setContactOfficer(UserFacadeEjb.toReferenceDto(source.getContactOfficer()));
 		target.setSymptoms(SymptomsFacadeEjb.toDto(source.getSymptoms()));
 		
 		target.setPregnant(source.getPregnant());

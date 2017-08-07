@@ -1581,3 +1581,8 @@ UPDATE public.district SET changedate=now();
 UPDATE public.region SET changedate=now();
 
 INSERT INTO schema_version (version_number, comment) VALUES (54, 'Split EPID code');
+
+-- 2017-08-07 Remove contact officer from case #267
+ALTER TABLE cases DROP COLUMN contactofficer_id;
+
+INSERT INTO schema_version (version_number, comment) VALUES (55, 'Remove contact officer from case');

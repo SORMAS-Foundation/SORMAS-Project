@@ -37,7 +37,6 @@ public class CaseDataDto extends CaseReferenceDto {
 	public static final String INVESTIGATED_DATE = "investigatedDate";
 	public static final String SURVEILLANCE_OFFICER = "surveillanceOfficer";
 	public static final String CASE_OFFICER = "caseOfficer";
-	public static final String CONTACT_OFFICER = "contactOfficer";
 	public static final String SYMPTOMS = "symptoms";
 	public static final String HOSPITALIZATION = "hospitalization";
 	public static final String EPI_DATA = "epiData";
@@ -77,7 +76,6 @@ public class CaseDataDto extends CaseReferenceDto {
 
 	private UserReferenceDto surveillanceOfficer;
 	private UserReferenceDto caseOfficer;
-	private UserReferenceDto contactOfficer;
 	
 	public CaseClassification getCaseClassification() {
 		return caseClassification;
@@ -157,14 +155,6 @@ public class CaseDataDto extends CaseReferenceDto {
 
 	public void setCaseOfficer(UserReferenceDto caseOfficer) {
 		this.caseOfficer = caseOfficer;
-	}
-
-	public UserReferenceDto getContactOfficer() {
-		return contactOfficer;
-	}
-
-	public void setContactOfficer(UserReferenceDto contactOfficer) {
-		this.contactOfficer = contactOfficer;
 	}
 
 	public SymptomsDto getSymptoms() {

@@ -72,7 +72,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// name of the database file for your application -- change to something appropriate for your app
 	private static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	private static final int DATABASE_VERSION = 94;
+	private static final int DATABASE_VERSION = 95;
 
 	private static DatabaseHelper instance = null;
 	public static void init(Context context) {
@@ -209,6 +209,22 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				case 93:
 					currentVersion = 93;
 					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN symptomatic boolean;");
+				case 94:
+					currentVersion = 94;
+					String columnsString = "caseClassification, caseOfficer_id, community_id, description," +
+							"disease, district_id, epiData_id, epidNumber, healthFacility_id, healthFacilityDetails, hospitalization_id," +
+							"investigatedDate, investigationStatus, measlesDoses, measlesVaccination, measlesVaccinationInfoSource, person_id," +
+							"pregnant, region_id, reportDate, reportingUser_id, surveillanceOfficer_id, symptoms_id, changeDate, creationDate," +
+							"id, lastOpenedDate, localChangeDate, modified, snapshot, uuid";
+
+					getDao(Case.class).executeRaw(
+							"CREATE TEMPORARY TABLE cases_backup(" + columnsString + ");" +
+							"INSERT INTO cases_backup SELECT " + columnsString + " FROM cases;" +
+							"DROP TABLE cases;" +
+							"CREATE TABLE cases(" + columnsString + ");" +
+							"INSERT INTO cases SELECT " + columnsString + " FROM cases_backup;" +
+							"DROP TABLE cases_backup;"
+					);
 
 					// ATTENTION: break should only be done after last version
 					break;
