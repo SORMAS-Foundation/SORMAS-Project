@@ -12,10 +12,12 @@ import javax.ejb.Stateless;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskHelper;
 import de.symeda.sormas.api.task.TaskPriority;
@@ -164,11 +166,18 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	@Override
 	public CaseDataDto saveCase(CaseDataDto dto) {
-
+		Disease currentDisease = caseService.getByUuid(dto.getUuid()).getDisease();		
 		Case caze = fromCaseDataDto(dto);
-		caseService.ensurePersisted(caze);
 		
+		caseService.ensurePersisted(caze);
 		updateCaseInvestigationProcess(caze);
+
+		// Update follow-up until and status of all contacts of this case if the disease has changed
+		if (caze.getDisease() != currentDisease) {
+			for (ContactDto contact : FacadeProvider.getContactFacade().getAllByCase(getReferenceByUuid(caze.getUuid()))) {
+				FacadeProvider.getContactFacade().updateFollowUpUntilAndStatus(contact);
+			}
+		}
 		
 		return toCaseDataDto(caze);
 	}
