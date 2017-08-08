@@ -1,6 +1,5 @@
 package de.symeda.sormas.ui.visit;
 
-import java.util.Arrays;
 import java.util.Date;
 import java.util.function.Consumer;
 
@@ -11,14 +10,12 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
-import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitReferenceDto;
 import de.symeda.sormas.ui.login.LoginHelper;
-import de.symeda.sormas.ui.symptoms.SymptomsForm;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -41,9 +38,6 @@ public class VisitController {
         	public void onCommit() {
         		if (!editForm.getFieldGroup().isModified()) {
         			VisitDto dto = editForm.getValue();
-        			SymptomsForm symptomsForm = editForm.getSymptomsForm();
-        			dto.getSymptoms().setSymptomatic(symptomsForm.isAnySymptomSetToYes(symptomsForm.getFieldGroup(), 
-        					symptomsForm.getUnconditionalSymptomFieldIds(), Arrays.asList(SymptomState.YES)));
         			dto = FacadeProvider.getVisitFacade().saveVisit(dto);
         			if (doneConsumer != null) {
         				doneConsumer.accept(dto);
@@ -69,9 +63,6 @@ public class VisitController {
         	public void onCommit() {
         		if (!createForm.getFieldGroup().isModified()) {
         			VisitDto dto = createForm.getValue();
-        			SymptomsForm symptomsForm = createForm.getSymptomsForm();
-        			dto.getSymptoms().setSymptomatic(symptomsForm.isAnySymptomSetToYes(symptomsForm.getFieldGroup(), 
-        					symptomsForm.getUnconditionalSymptomFieldIds(), Arrays.asList(SymptomState.YES)));
         			dto = FacadeProvider.getVisitFacade().saveVisit(dto);
         			if (doneConsumer != null) {
         				doneConsumer.accept(dto);

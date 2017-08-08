@@ -1,6 +1,5 @@
 package de.symeda.sormas.ui.caze;
 
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -26,7 +25,6 @@ import de.symeda.sormas.api.hospitalization.HospitalizationFacade;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.RegionDto;
-import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsFacade;
 import de.symeda.sormas.api.user.UserDto;
@@ -258,8 +256,6 @@ public class CaseController {
         	public void onCommit() {
         		if (!symptomsForm.getFieldGroup().isModified()) {
         			SymptomsDto dto = symptomsForm.getValue();
-        			dto.setSymptomatic(symptomsForm.isAnySymptomSetToYes(symptomsForm.getFieldGroup(), 
-        					symptomsForm.getUnconditionalSymptomFieldIds(), Arrays.asList(SymptomState.YES)));
         			sf.saveSymptoms(dto);
         			Notification.show("Case symptoms saved", Type.WARNING_MESSAGE);
         			navigateToSymptoms(caseUuid);

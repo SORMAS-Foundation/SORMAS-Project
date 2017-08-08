@@ -8,6 +8,7 @@ import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsFacade;
+import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -171,6 +172,7 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 
 	@Override
 	public SymptomsDto saveSymptoms(SymptomsDto dto) {
+		SymptomsHelper.updateIsSymptomatic(dto);
 		Symptoms ado = fromDto(dto);
 		service.ensurePersisted(ado);
 		return toDto(ado);	

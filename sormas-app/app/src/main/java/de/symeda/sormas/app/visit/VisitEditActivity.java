@@ -201,7 +201,7 @@ public class VisitEditActivity extends AbstractEditTabActivity {
                 }
 
                 try {
-                    symptoms.setSymptomatic(SymptomsValidator.isSymptomatic(symptomsBinding));
+                    DatabaseHelper.getSymptomsDao().updateIsSymptomatic(symptoms);
                     visit.setSymptoms(symptoms);
                     visit.setVisitUser(ConfigProvider.getUser());
                     VisitDao visitDao = DatabaseHelper.getVisitDao();

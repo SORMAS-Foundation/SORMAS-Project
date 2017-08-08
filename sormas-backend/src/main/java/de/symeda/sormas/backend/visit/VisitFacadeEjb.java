@@ -12,6 +12,7 @@ import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitFacade;
 import de.symeda.sormas.api.visit.VisitReferenceDto;
@@ -100,6 +101,7 @@ public class VisitFacadeEjb implements VisitFacade {
 	
 	@Override
 	public VisitDto saveVisit(VisitDto dto) {
+		SymptomsHelper.updateIsSymptomatic(dto.getSymptoms());
 		Visit entity = fromDto(dto);
 		visitService.ensurePersisted(entity);
 		contactService.updateFollowUpUntilAndStatusByVisit(entity);
