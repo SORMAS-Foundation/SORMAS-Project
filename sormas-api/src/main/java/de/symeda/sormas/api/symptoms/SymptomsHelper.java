@@ -19,7 +19,11 @@ public final class SymptomsHelper {
     }
     
     public static void updateIsSymptomatic(SymptomsDto dto) {
-    	if (dto.getTemperature() >= 38.0f) {
+    	if (dto == null) {
+    		return;
+    	}
+    	
+    	if (dto.getTemperature() != null && dto.getTemperature() >= 38.0f) {
     		dto.setSymptomatic(true);
     		return;
     	}

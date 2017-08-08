@@ -166,14 +166,19 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	@Override
 	public CaseDataDto saveCase(CaseDataDto dto) {
-		Disease currentDisease = caseService.getByUuid(dto.getUuid()).getDisease();		
+		Case currentCaze = caseService.getByUuid(dto.getUuid());
+		Disease currentDisease = null;
+		if (currentCaze != null) {
+			currentDisease = currentCaze.getDisease();
+		}
+		
 		Case caze = fromCaseDataDto(dto);
 		
 		caseService.ensurePersisted(caze);
 		updateCaseInvestigationProcess(caze);
 
 		// Update follow-up until and status of all contacts of this case if the disease has changed
-		if (caze.getDisease() != currentDisease) {
+		if (currentDisease != null && caze.getDisease() != currentDisease) {
 			for (ContactDto contact : FacadeProvider.getContactFacade().getAllByCase(getReferenceByUuid(caze.getUuid()))) {
 				FacadeProvider.getContactFacade().updateFollowUpUntilAndStatus(contact);
 			}
