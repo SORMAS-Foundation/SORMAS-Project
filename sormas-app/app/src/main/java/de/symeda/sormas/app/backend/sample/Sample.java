@@ -105,7 +105,7 @@ public class Sample extends AbstractDomainObject {
     private boolean received;
 
     @DatabaseField(defaultValue = "", canBeNull = false)
-    private String unusedVarcharNotNull1;
+    private String shipmentStatus;
 
     public Case getAssociatedCase() {
         return associatedCase;

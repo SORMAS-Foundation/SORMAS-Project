@@ -117,7 +117,7 @@ public class Case extends AbstractDomainObject {
 	private EpiData epiData;
 
 	@Column
-	private String unusedVarchar1;
+	private Long contactOfficer_id;
 
 	public Person getPerson() {
 		return person;

@@ -211,7 +211,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN symptomatic boolean;");
 				case 94:
 					currentVersion = 94;
-					getDao(Case.class).executeRaw("ALTER TABLE cases RENAME COLUMN contactOfficer_id TO unusedVarchar1;");
+					// nothing
 				case 95:
 					currentVersion = 95;
 					getDao(Sample.class).executeRaw("ALTER TABLE samples ADD COLUMN referredTo_id bigint REFERENCES samples(id);");
@@ -223,7 +223,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					getDao(Sample.class).executeRaw("UPDATE samples SET received='true' WHERE shipmentStatus = 'RECEIVED' OR shipmentStatus = 'REFERRED_OTHER_LAB';");
 					getDao(Sample.class).executeRaw("UPDATE samples SET shipped='false' WHERE shipmentStatus = 'NOT_SHIPPED';");
 					getDao(Sample.class).executeRaw("UPDATE samples SET received='false' WHERE shipmentStatus = 'NOT_SHIPPED' OR shipmentStatus = 'SHIPPED';");
-					getDao(Sample.class).executeRaw("ALTER TABLE samples RENAME COLUMN shipmentStatus TO unusedVarcharNotNull1;");
+
 
 					// ATTENTION: break should only be done after last version
 					break;
