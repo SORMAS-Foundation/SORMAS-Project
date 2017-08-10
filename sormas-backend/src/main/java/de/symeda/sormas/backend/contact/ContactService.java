@@ -14,6 +14,7 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.contact.FollowUpStatus;
@@ -85,30 +86,33 @@ public class ContactService extends AbstractAdoService<Contact> {
 		return resultList;
 	}
 	
-	public List<Contact> getFollowUpBetween(Date fromDate, Date toDate, Disease disease, User user) {
+	/**
+	 * 
+	 * @param fromDate inclusive 
+	 * @param toDate exclusive
+	 * @param disease optional
+	 * @param user optional
+	 * @return
+	 */
+	public List<Contact> getFollowUpBetween(@NotNull Date fromDate, @NotNull Date toDate, Disease disease, User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Contact> cq = cb.createQuery(getElementClass());
 		Root<Contact> from = cq.from(getElementClass());
 		
-		Predicate filter = createUserFilter(cb, cq, from, user);
-		Predicate followUpFilter = cb.isNotNull(from.get(Contact.FOLLOW_UP_UNTIL));
-		followUpFilter = cb.and(followUpFilter, cb.greaterThanOrEqualTo(from.get(Contact.FOLLOW_UP_UNTIL), fromDate));
-		followUpFilter = cb.and(followUpFilter, cb.lessThanOrEqualTo(from.get(Contact.LAST_CONTACT_DATE), toDate));
+		Predicate filter = cb.isNotNull(from.get(Contact.FOLLOW_UP_UNTIL));
+		filter = cb.and(filter, cb.greaterThanOrEqualTo(from.get(Contact.FOLLOW_UP_UNTIL), fromDate));
+		filter = cb.and(filter, cb.lessThan(from.get(Contact.LAST_CONTACT_DATE), toDate));
+
+		if (user != null) {
+			filter = cb.and(filter, createUserFilter(cb, cq, from, user));
+		} 
 		
-		if (filter != null) {
-			filter = cb.and(filter, followUpFilter);
-		} else {
-			filter = followUpFilter;
-		}
-		
-		if (filter != null && disease != null) {
+		if (disease != null) {
 			Join<Contact, Case> caze = from.join(Contact.CAZE);
 			filter = cb.and(filter, cb.equal(caze.get(Case.DISEASE), disease));
 		}
 		
-		if (filter != null) {
-			cq.where(filter);
-		}
+		cq.where(filter);
 		
 		List<Contact> resultList = em.createQuery(cq).getResultList();
 		return resultList;

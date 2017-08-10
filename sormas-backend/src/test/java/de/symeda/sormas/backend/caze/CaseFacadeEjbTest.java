@@ -26,7 +26,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
-import de.symeda.sormas.backend.contact.ContactFacadeEjb;
+import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 import de.symeda.sormas.backend.util.DateHelper8;
@@ -49,7 +49,7 @@ public class CaseFacadeEjbTest extends BaseBeanTest {
 		UserFacade userFacade = getBean(UserFacadeEjbLocal.class);
 		CaseFacade caseFacade = getBean(CaseFacadeEjbLocal.class);
 		PersonFacade personFacade = getBean(PersonFacadeEjb.class);
-		ContactFacade contactFacade = getBean(ContactFacadeEjb.class);
+		ContactFacade contactFacade = getBean(ContactFacadeEjbLocal.class);
 		
 		// TODO handle user creation at a central place
 		UserDto user = new UserDto();

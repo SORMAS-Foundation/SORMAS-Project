@@ -13,6 +13,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
@@ -132,8 +133,12 @@ public class TaskService extends AbstractAdoService<Task> {
 		if (taskCriteria.getContact() != null) {
 			filter = and(cb, filter, cb.equal(from.get(Task.CONTACT), taskCriteria.getContact()));
 		}
-		if(taskCriteria.getEvent() != null) {
+		if (taskCriteria.getEvent() != null) {
 			filter = and(cb, filter, cb.equal(from.get(Task.EVENT), taskCriteria.getEvent()));
+		}
+		if (taskCriteria.getDueDateFrom() != null && taskCriteria.getDueDateTo() != null) {
+			filter = cb.and(filter, cb.greaterThanOrEqualTo(from.get(Task.DUE_DATE), taskCriteria.getDueDateFrom()));
+			filter = cb.and(filter, cb.lessThan(from.get(Task.DUE_DATE), taskCriteria.getDueDateTo()));
 		}
 		return filter;
 	}
@@ -158,5 +163,13 @@ public class TaskService extends AbstractAdoService<Task> {
 			return additional;
 		}
 		return cb.or(existing, additional);
+	}
+
+	public Task buildTask(User creatorUser) {
+		Task task = new Task();
+		task.setCreatorUser(creatorUser);
+		task.setPriority(TaskPriority.NORMAL);
+    	task.setTaskStatus(TaskStatus.PENDING);
+		return task;
 	}
 }

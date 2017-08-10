@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Before;
@@ -21,6 +22,10 @@ import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
+import de.symeda.sormas.api.task.TaskDto;
+import de.symeda.sormas.api.task.TaskFacade;
+import de.symeda.sormas.api.task.TaskStatus;
+import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserFacade;
 import de.symeda.sormas.api.user.UserRole;
@@ -30,7 +35,9 @@ import de.symeda.sormas.api.visit.VisitFacade;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
+import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
+import de.symeda.sormas.backend.task.TaskFacadeEjb;
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 import de.symeda.sormas.backend.util.DateHelper8;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb;
@@ -51,7 +58,7 @@ public class ContactFacadeEjbTest extends BaseBeanTest  {
  
 		// TODO create provider for facades (probably best to add a SormasBeanTest class)
 		UserFacade userFacade = getBean(UserFacadeEjbLocal.class);
-		ContactFacade contactFacade = getBean(ContactFacadeEjb.class);
+		ContactFacade contactFacade = getBean(ContactFacadeEjbLocal.class);
 		PersonFacade personFacade = getBean(PersonFacadeEjb.class);
 		CaseFacade caseFacade = getBean(CaseFacadeEjbLocal.class);
 		VisitFacade visitFacade = getBean(VisitFacadeEjb.class);
@@ -121,5 +128,73 @@ public class ContactFacadeEjbTest extends BaseBeanTest  {
 		contact = contactFacade.getContactByUuid(contact.getUuid());
 		assertEquals(FollowUpStatus.COMPLETED, contact.getFollowUpStatus());
 		assertEquals(LocalDate.now().plusDays(21), DateHelper8.toLocalDate(contact.getFollowUpUntil()));
+	}
+	
+	@Test
+	public void testGenerateContactFollowUpTasks() {
+ 
+		// TODO create provider for facades (probably best to add a SormasBeanTest class)
+		UserFacade userFacade = getBean(UserFacadeEjbLocal.class);
+		ContactFacade contactFacade = getBean(ContactFacadeEjbLocal.class);
+		PersonFacade personFacade = getBean(PersonFacadeEjb.class);
+		CaseFacade caseFacade = getBean(CaseFacadeEjbLocal.class);
+		TaskFacade taskFacade = getBean(TaskFacadeEjb.class);
+		
+		// TODO handle user creation at a central place
+    	UserDto user = new UserDto();
+    	user.setUuid(DataHelper.createUuid());
+		user.setFirstName("Admin");
+		user.setLastName("Symeda");
+		user.setUserName("AdminSymeda");
+		user.setUserRoles(new HashSet<UserRole>(Arrays.asList(UserRole.SURVEILLANCE_SUPERVISOR)));
+		user = userFacade.saveUser(user);
+		
+		// TODO add create method to PersonFacde
+		PersonDto cazePerson = new PersonDto();
+		cazePerson.setUuid(DataHelper.createUuid());
+		cazePerson.setFirstName("Tim");
+		cazePerson.setLastName("Kunsen");
+		cazePerson = personFacade.savePerson(cazePerson);
+
+		// TODO add create method to CaseFacade that takes a person
+		CaseDataDto caze = new CaseDataDto();
+		caze.setPerson(cazePerson);
+		caze.setReportDate(new Date());
+		caze.setReportingUser(user);
+		caze.setDisease(Disease.EVD);
+		caze.setCaseClassification(CaseClassification.PROBABLE);
+		caze.setInvestigationStatus(InvestigationStatus.PENDING);
+		caze = caseFacade.saveCase(caze);
+		
+		PersonDto contactPerson = new PersonDto();
+		cazePerson.setUuid(DataHelper.createUuid());
+		contactPerson.setFirstName("Steff");
+		contactPerson.setLastName("Hansen");
+		contactPerson = personFacade.savePerson(contactPerson);
+		
+		ContactDto contact = new ContactDto();
+		contact.setUuid(DataHelper.createUuid());
+		contact.setReportDateTime(new Date());
+		contact.setReportingUser(user);
+		contact.setContactOfficer(user);
+		contact.setPerson(contactPerson);
+		contact.setCaze(caze);
+		contact.setLastContactDate(new Date());
+		contact = contactFacade.saveContact(contact);
+
+		contactFacade.generateContactFollowUpTasks();
+		
+		// task should have been generated
+		List<TaskDto> tasks = taskFacade.getAllByContact(contact);
+		assertEquals(1, tasks.size());
+		TaskDto task = tasks.get(0);
+		assertEquals(TaskType.CONTACT_FOLLOW_UP, task.getTaskType());
+		assertEquals(TaskStatus.PENDING, task.getTaskStatus());
+		assertEquals(LocalDate.now(), DateHelper8.toLocalDate(task.getDueDate()));
+
+		// task should not be generated multiple times 
+		contactFacade.generateContactFollowUpTasks();
+		tasks = taskFacade.getAllByContact(contact);
+		assertEquals(1, tasks.size());
 	}
 }

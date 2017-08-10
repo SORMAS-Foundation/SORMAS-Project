@@ -1,5 +1,7 @@
 package de.symeda.sormas.backend.task;
 
+import java.util.Date;
+
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.backend.caze.Case;
@@ -15,6 +17,8 @@ public class TaskCriteria {
 	private Case caze;
 	private Contact contact;
 	private Event event;
+	private Date dueDateFrom;
+	private Date dueDateTo;
 	
 	public TaskStatus[] getTaskStatuses() {
 		return taskStatuses;
@@ -59,5 +63,15 @@ public class TaskCriteria {
 		this.event = event;
 		return this;
 	}
-	
+	public Date getDueDateFrom() {
+		return dueDateFrom;
+	}
+	public Date getDueDateTo() {
+		return dueDateTo;
+	}
+	public TaskCriteria dueDateBetween(Date dueDateFrom, Date dueDateTo) {
+		this.dueDateFrom = dueDateFrom;
+		this.dueDateTo = dueDateTo;
+		return this;
+	}
 }

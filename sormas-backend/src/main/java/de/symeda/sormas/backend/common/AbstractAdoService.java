@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
-import javax.annotation.security.DeclareRoles;
 import javax.ejb.SessionContext;
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
@@ -19,7 +18,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.ReferenceDto;
-import de.symeda.sormas.backend.user.Permission;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.ModelConstants;
 
@@ -28,7 +27,6 @@ import de.symeda.sormas.backend.util.ModelConstants;
  * @param <ADO>
  */
 public abstract class AbstractAdoService<ADO extends AbstractDomainObject> implements AdoService<ADO> {
-
 
 	@Resource
 	private SessionContext context;
@@ -156,34 +154,25 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 	}
 
 	/**
-	 * <u>Achtung:</u> Für korrekte Funktion muss die aufrufende Klasse {@link Permission#_SYSTEM_ROLE} in {@link DeclareRoles} definiert
-	 * haben.
-	 * 
-	 * @return {@code true}, wenn das System selbst der ausführende Benutzer ist.
+	 * @return {@code true}, if the system itself is the executing user.
 	 */
 	protected boolean isSystem() {
-		return context.isCallerInRole(Permission._SYSTEM_ROLE);
+		return context.isCallerInRole(UserRole._SYSTEM);
 	}
 
 	/**
-	 * <u>Achtung:</u> Für korrekte Funktion muss die aufrufende Klasse {@link Permission#_ADMIN} in {@link DeclareRoles} definiert
-	 * haben.
-	 * 
-	 * @return {@code true}, wenn der ausführende Benutzer {@link Permission#ADMIN} hat.
+	 * @return {@code true}, if the executing user is {@link UserRole#ADMIN}.
 	 */
 	protected boolean isAdmin() {
-		return hasPermission(Permission.ADMIN);
+		return hasUserRole(UserRole.ADMIN);
 	}
 
 	/**
-	 * <u>Achtung:</u> Für korrekte Funktion muss die aufrufende Klasse die entsprechende Permission in {@link DeclareRoles} definiert
-	 * haben.
-	 * 
 	 * @param permission
-	 * @return {@code true}, wenn der ausführende Benutzer die angegebene {@code permission} hat.
+	 * @return {@code true}, if the executing user is {@code userRole}.
 	 */
-	protected boolean hasPermission(Permission permission) {
-		return context.isCallerInRole(permission.name());
+	protected boolean hasUserRole(UserRole userRole) {
+		return context.isCallerInRole(userRole.name());
 	}
 
 	protected Timestamp requestTransactionDate() {
