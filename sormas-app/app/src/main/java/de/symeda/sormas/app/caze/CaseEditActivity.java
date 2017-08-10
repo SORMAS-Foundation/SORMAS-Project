@@ -92,8 +92,6 @@ public class CaseEditActivity extends AbstractEditTabActivity {
         if (params != null) {
             if (params.containsKey(KEY_CASE_UUID)) {
                 caseUuid = params.getString(KEY_CASE_UUID);
-                Case initialEntity = DatabaseHelper.getCaseDao().queryUuid(caseUuid);
-                DatabaseHelper.getCaseDao().markAsRead(initialEntity);
             }
             if (params.containsKey(TaskForm.KEY_TASK_UUID)) {
                 taskUuid = params.getString(TaskForm.KEY_TASK_UUID);
@@ -127,8 +125,6 @@ public class CaseEditActivity extends AbstractEditTabActivity {
             });
             snackbar.show();
         }
-
-        DatabaseHelper.getCaseDao().markAsRead(currentEntity);
     }
 
     @Override

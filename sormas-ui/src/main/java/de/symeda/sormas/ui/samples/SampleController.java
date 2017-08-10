@@ -36,35 +36,35 @@ import de.symeda.sormas.ui.utils.ConfirmationComponent;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class SampleController {
-	
+
 	private SampleFacade sf = FacadeProvider.getSampleFacade();
-	
+
 	public SampleController() { }
-	
+
 	public List<SampleIndexDto> getAllSamples() {
 		UserDto user = LoginHelper.getCurrentUser();
 		return FacadeProvider.getSampleFacade().getIndexList(user.getUuid());
 	}
-	
+
 	public List<SampleIndexDto> getSamplesByCase(CaseReferenceDto caseRef) {
 		return FacadeProvider.getSampleFacade().getIndexListByCase(caseRef);
 	}
-	
+
 	public void registerViews(Navigator navigator) {
 		navigator.addView(SamplesView.VIEW_NAME, SamplesView.class);
 		navigator.addView(SampleDataView.VIEW_NAME, SampleDataView.class);
 	}
-	
+
 	public void navigateToData(String sampleUuid) {
 		String navigationState = SampleDataView.VIEW_NAME + "/" + sampleUuid;
 		SormasUI.get().getNavigator().navigateTo(navigationState);
 	}
-	
+
 	public void create(CaseReferenceDto caseRef, SampleGrid grid) {
 		SampleCreateForm createForm = new SampleCreateForm();
 		createForm.setValue(createNewSample(caseRef));
 		final CommitDiscardWrapperComponent<SampleCreateForm> editView = new CommitDiscardWrapperComponent<SampleCreateForm>(createForm, createForm.getFieldGroup());
-		
+
 		editView.addCommitListener(new CommitListener() {
 			@Override
 			public void onCommit() {
@@ -75,15 +75,15 @@ public class SampleController {
 				}
 			}
 		});
-		
+
 		VaadinUiUtil.showModalPopupWindow(editView, "Create new sample");
 	}
-	
+
 	public void createReferral(SampleDto sample) {
 		SampleCreateForm createForm = new SampleCreateForm();
 		createForm.setValue(sample);
 		final CommitDiscardWrapperComponent<SampleCreateForm> createView = new CommitDiscardWrapperComponent<SampleCreateForm>(createForm, createForm.getFieldGroup());
-		
+
 		createView.addCommitListener(new CommitListener() {
 			@Override
 			public void onCommit() {
@@ -96,34 +96,34 @@ public class SampleController {
 				}
 			}
 		});
-		
+
 		VaadinUiUtil.showModalPopupWindow(createView, "Refer sample to another laboratory");
 	}
-	
+
 	public CommitDiscardWrapperComponent<SampleEditForm> getSampleEditComponent(final String sampleUuid) {
 		SampleEditForm form = new SampleEditForm();
 		form.setWidth(form.getWidth() * 10/12, Unit.PIXELS);
 		SampleDto dto = sf.getSampleByUuid(sampleUuid);
 		form.setValue(dto);
 		final CommitDiscardWrapperComponent<SampleEditForm> editView = new CommitDiscardWrapperComponent<SampleEditForm>(form, form.getFieldGroup());
-		
+
 		editView.addCommitListener(new CommitListener() {
 			@Override
 			public void onCommit() {
 				if (!form.getFieldGroup().isModified()) {
 					SampleDto dto = form.getValue();
 					SampleDto originalDto = sf.getSampleByUuid(dto.getUuid());
-					
+
 					if (dto.getSpecimenCondition() != originalDto.getSpecimenCondition() &&
 							dto.getSpecimenCondition() == SpecimenCondition.NOT_ADEQUATE) {
-						buildRequestTaskComponent(dto);
+						buildRequestTaskComponent(dto, form);
 					} else {
-						saveSample(dto);
+						saveSampleWithNotification(dto, form);
 					}
 				}
 			}
 		});
-		
+
 		Button referToOtherLabButton = new Button("Refer to another laboratory");
 		referToOtherLabButton.addStyleName(ValoTheme.BUTTON_LINK);
 		referToOtherLabButton.addClickListener(new ClickListener() {
@@ -133,19 +133,19 @@ public class SampleController {
 				createReferral(dto);
 			}
 		});
-		
+
 		editView.getButtonsPanel().addComponentAsFirst(referToOtherLabButton);
 		editView.getButtonsPanel().setComponentAlignment(referToOtherLabButton, Alignment.BOTTOM_LEFT);
-		
+
 		return editView;
 	}
-	
-	private void buildRequestTaskComponent(SampleDto dto) {
+
+	private void buildRequestTaskComponent(SampleDto dto, SampleEditForm form) {
 		VerticalLayout test = new VerticalLayout();
 		test.setMargin(true);
-		
+
 		ConfirmationComponent requestTaskComponent = buildRequestTaskComponent();
-		
+
 		Label description = new Label("You have set the specimen condition to not adequate.<br/>Do you want to create a new sample collection task?");
 		description.setContentMode(ContentMode.HTML);
 		description.setWidth(100, Unit.PERCENTAGE);
@@ -154,7 +154,7 @@ public class SampleController {
 		test.setComponentAlignment(requestTaskComponent, Alignment.BOTTOM_RIGHT);
 		test.setSizeUndefined();
 		test.setSpacing(true);
-		
+
 		Window popupWindow = VaadinUiUtil.showPopupWindow(test);
 		popupWindow.setSizeUndefined();
 		popupWindow.setCaption("Create new task?");
@@ -178,22 +178,22 @@ public class SampleController {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				popupWindow.close();
-				saveSample(dto);
+				saveSampleWithNotification(dto, form);
 			}
 		});
 	}
-	
+
 	private SampleDto createNewSample(CaseReferenceDto caseRef) {
 		SampleDto sample = new SampleDto();
 		sample.setUuid(DataHelper.createUuid());
 		sample.setAssociatedCase(caseRef);
 		sample.setReportingUser(LoginHelper.getCurrentUserAsReference());
 		sample.setReportDateTime(new Date());
-		
+
 		return sample;
-		
+
 	}
-	
+
 	private ConfirmationComponent buildRequestTaskComponent() {
 		ConfirmationComponent requestTaskComponent = new ConfirmationComponent(false) {
 			private static final long serialVersionUID = 1L;
@@ -208,11 +208,15 @@ public class SampleController {
 		requestTaskComponent.getCancelButton().setCaption("No");
 		return requestTaskComponent;
 	}
-	
-	private void saveSample(SampleDto sampleDto) {
-		sf.saveSample(sampleDto);
+
+	private void saveSampleWithNotification(SampleDto sampleDto, SampleEditForm form) {
+		saveSample(sampleDto, form);
 		Notification.show("Sample data saved", Type.WARNING_MESSAGE);
 		navigateToData(sampleDto.getUuid());
+	}
+
+	private void saveSample(SampleDto sampleDto, SampleEditForm form) {
+		sf.saveSample(sampleDto);
 	}
 
 }

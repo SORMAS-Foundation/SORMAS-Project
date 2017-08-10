@@ -22,7 +22,6 @@ public class SampleDto extends SampleReferenceDto {
 	public static final String SAMPLE_MATERIAL_TEXT = "sampleMaterialText";
 	public static final String LAB = "lab";
 	public static final String OTHER_LAB = "otherLab";
-	public static final String SHIPMENT_STATUS = "shipmentStatus";
 	public static final String SHIPMENT_DATE = "shipmentDate";
 	public static final String SHIPMENT_DETAILS = "shipmentDetails";
 	public static final String RECEIVED_DATE = "receivedDate";
@@ -32,6 +31,8 @@ public class SampleDto extends SampleReferenceDto {
 	public static final String SAMPLE_SOURCE = "sampleSource";
 	public static final String SUGGESTED_TYPE_OF_TEST = "suggestedTypeOfTest";
 	public static final String REFERRED_TO = "referredTo";
+	public static final String SHIPPED = "shipped";
+	public static final String RECEIVED = "received";
 	
 	private CaseReferenceDto associatedCase;
 	private String sampleCode;
@@ -43,7 +44,6 @@ public class SampleDto extends SampleReferenceDto {
 	private String sampleMaterialText;
 	private FacilityReferenceDto lab;
 	private FacilityReferenceDto otherLab;
-	private ShipmentStatus shipmentStatus;
 	private Date shipmentDate;
 	private String shipmentDetails;
 	private Date receivedDate;
@@ -53,6 +53,8 @@ public class SampleDto extends SampleReferenceDto {
 	private SampleSource sampleSource;
 	private SampleTestType suggestedTypeOfTest;
 	private SampleReferenceDto referredTo;
+	private boolean shipped;
+	private boolean received;
 	
 	public CaseReferenceDto getAssociatedCase() {
 		return associatedCase;
@@ -114,12 +116,6 @@ public class SampleDto extends SampleReferenceDto {
 	public void setOtherLab(FacilityReferenceDto otherLab) {
 		this.otherLab = otherLab;
 	}
-	public ShipmentStatus getShipmentStatus() {
-		return shipmentStatus;
-	}
-	public void setShipmentStatus(ShipmentStatus shipmentStatus) {
-		this.shipmentStatus = shipmentStatus;
-	}
 	public Date getShipmentDate() {
 		return shipmentDate;
 	}
@@ -173,6 +169,18 @@ public class SampleDto extends SampleReferenceDto {
 	}
 	public void setReferredTo(SampleReferenceDto referredTo) {
 		this.referredTo = referredTo;
+	}
+	public boolean isShipped() {
+		return shipped;
+	}
+	public void setShipped(boolean shipped) {
+		this.shipped = shipped;
+	}
+	public boolean isReceived() {
+		return received;
+	}
+	public void setReceived(boolean received) {
+		this.received = received;
 	}
 	
 }

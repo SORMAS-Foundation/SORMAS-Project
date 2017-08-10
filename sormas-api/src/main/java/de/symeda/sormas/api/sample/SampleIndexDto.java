@@ -18,7 +18,6 @@ public class SampleIndexDto extends SampleReferenceDto {
 	public static final String DISEASE = "disease";
 	public static final String SAMPLE_CODE = "sampleCode";
 	public static final String LAB_SAMPLE_ID = "labSampleID";
-	public static final String SHIPMENT_STATUS = "shipmentStatus";
 	public static final String LGA = "lga";
 	public static final String SHIPMENT_DATE = "shipmentDate";
 	public static final String RECEIVED_DATE = "receivedDate";
@@ -29,12 +28,14 @@ public class SampleIndexDto extends SampleReferenceDto {
 	public static final String TEST_RESULT = "testResult";
 	public static final String SPECIMEN_CONDITION = "specimenCondition";
 	public static final String NO_TEST_POSSIBLE_REASON = "noTestPossibleReason";
+	public static final String REFERRED_TO = "referredTo";
+	public static final String SHIPPED = "shipped";
+	public static final String RECEIVED = "received";
 	
 	private CaseReferenceDto associatedCase;
 	private Disease disease;
 	private String sampleCode;
 	private String labSampleID;
-	private ShipmentStatus shipmentStatus;
 	private DistrictReferenceDto lga;
 	private Date shipmentDate;
 	private Date receivedDate;
@@ -45,6 +46,9 @@ public class SampleIndexDto extends SampleReferenceDto {
 	private SampleTestResultType testResult;
 	private SpecimenCondition specimenCondition;
 	private String noTestPossibleReason;
+	private SampleReferenceDto referredTo;
+	private boolean shipped;
+	private boolean received;
 	
 	public CaseReferenceDto getAssociatedCase() {
 		return associatedCase;
@@ -69,12 +73,6 @@ public class SampleIndexDto extends SampleReferenceDto {
 	}
 	public void setLabSampleID(String labSampleID) {
 		this.labSampleID = labSampleID;
-	}
-	public ShipmentStatus getShipmentStatus() {
-		return shipmentStatus;
-	}
-	public void setShipmentStatus(ShipmentStatus shipmentStatus) {
-		this.shipmentStatus = shipmentStatus;
 	}
 	public DistrictReferenceDto getLga() {
 		return lga;
@@ -135,6 +133,24 @@ public class SampleIndexDto extends SampleReferenceDto {
 	}
 	public void setNoTestPossibleReason(String noTestPossibleReason) {
 		this.noTestPossibleReason = noTestPossibleReason;
+	}	
+	public SampleReferenceDto getReferredTo() {
+		return referredTo;
+	}
+	public void setReferredTo(SampleReferenceDto referredTo) {
+		this.referredTo = referredTo;
+	}
+	public boolean isShipped() {
+		return shipped;
+	}
+	public void setShipped(boolean shipped) {
+		this.shipped = shipped;
+	}
+	public boolean isReceived() {
+		return received;
+	}
+	public void setReceived(boolean received) {
+		this.received = received;
 	}
 	
 }

@@ -57,7 +57,6 @@ public class SampleDtoHelper extends AdoDtoHelper<Sample, SampleDto> {
         target.setSampleDateTime(source.getSampleDateTime());
         target.setSampleMaterial(source.getSampleMaterial());
         target.setSampleMaterialText(source.getSampleMaterialText());
-        target.setShipmentStatus(source.getShipmentStatus());
         target.setShipmentDate(source.getShipmentDate());
         target.setShipmentDetails(source.getShipmentDetails());
         target.setReceivedDate(source.getReceivedDate());
@@ -67,6 +66,8 @@ public class SampleDtoHelper extends AdoDtoHelper<Sample, SampleDto> {
         target.setSampleSource(source.getSampleSource());
         target.setSuggestedTypeOfTest(source.getSuggestedTypeOfTest());
         target.setReferredTo(DatabaseHelper.getSampleDao().getByReferenceDto(source.getReferredTo()));
+        target.setShipped(source.isShipped());
+        target.setReceived(source.isReceived());
     }
 
     @Override
@@ -112,7 +113,6 @@ public class SampleDtoHelper extends AdoDtoHelper<Sample, SampleDto> {
         dto.setReportDateTime(ado.getReportDateTime());
         dto.setSampleMaterial(ado.getSampleMaterial());
         dto.setSampleMaterialText(ado.getSampleMaterialText());
-        dto.setShipmentStatus(ado.getShipmentStatus());
         dto.setShipmentDate(ado.getShipmentDate());
         dto.setShipmentDetails(ado.getShipmentDetails());
         dto.setReceivedDate(ado.getReceivedDate());
@@ -121,6 +121,8 @@ public class SampleDtoHelper extends AdoDtoHelper<Sample, SampleDto> {
         dto.setComment(ado.getComment());
         dto.setSampleSource(ado.getSampleSource());
         dto.setSuggestedTypeOfTest(ado.getSuggestedTypeOfTest());
+        dto.setShipped(ado.isShipped());
+        dto.setReceived(ado.isReceived());
     }
 
     public static SampleReferenceDto toReferenceDto(Sample ado) {

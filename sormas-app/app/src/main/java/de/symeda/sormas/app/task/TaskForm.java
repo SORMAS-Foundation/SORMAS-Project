@@ -61,7 +61,9 @@ public class TaskForm extends FormTab {
 
         final String taskUuid = (String) getArguments().getString(Task.UUID);
         final TaskDao taskDao = DatabaseHelper.getTaskDao();
-        final Task task = taskDao.queryUuid(taskUuid);
+        Task initialTask = taskDao.queryUuid(taskUuid);
+        DatabaseHelper.getTaskDao().markAsRead(initialTask);
+        final Task task = taskDao.queryForId(initialTask.getId());
 
         binding.setTask(task);
         super.onResume();

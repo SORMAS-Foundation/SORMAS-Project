@@ -145,7 +145,6 @@ public class SampleFacadeEjb implements SampleFacade {
 		target.setSampleMaterialText(source.getSampleMaterialText());
 		target.setLab(facilityService.getByReferenceDto(source.getLab()));
 		target.setOtherLab(facilityService.getByReferenceDto(source.getOtherLab()));
-		target.setShipmentStatus(source.getShipmentStatus());
 		target.setShipmentDate(source.getShipmentDate());
 		target.setShipmentDetails(source.getShipmentDetails());
 		target.setReceivedDate(source.getReceivedDate());
@@ -155,6 +154,8 @@ public class SampleFacadeEjb implements SampleFacade {
 		target.setSampleSource(source.getSampleSource());
 		target.setSuggestedTypeOfTest(source.getSuggestedTypeOfTest());
 		target.setReferredTo(sampleService.getByReferenceDto(source.getReferredTo()));
+		target.setShipped(source.isShipped());
+		target.setReceived(source.isReceived());
 		
 		return target;
 	}
@@ -176,7 +177,6 @@ public class SampleFacadeEjb implements SampleFacade {
 		target.setSampleMaterialText(source.getSampleMaterialText());
 		target.setLab(FacilityFacadeEjb.toReferenceDto(source.getLab()));
 		target.setOtherLab(FacilityFacadeEjb.toReferenceDto(source.getOtherLab()));
-		target.setShipmentStatus(source.getShipmentStatus());
 		target.setShipmentDate(source.getShipmentDate());
 		target.setShipmentDetails(source.getShipmentDetails());
 		target.setReceivedDate(source.getReceivedDate());
@@ -186,6 +186,8 @@ public class SampleFacadeEjb implements SampleFacade {
 		target.setSampleSource(source.getSampleSource());
 		target.setSuggestedTypeOfTest(source.getSuggestedTypeOfTest());
 		target.setReferredTo(SampleFacadeEjb.toReferenceDto(source.getReferredTo()));
+		target.setShipped(source.isShipped());
+		target.setReceived(source.isReceived());
 		
 		return target;
 	}
@@ -213,11 +215,13 @@ public class SampleFacadeEjb implements SampleFacade {
 		target.setShipmentDate(source.getShipmentDate());
 		target.setReceivedDate(source.getReceivedDate());
 		target.setSampleMaterial(source.getSampleMaterial());
-		target.setShipmentStatus(source.getShipmentStatus());
 		target.setLab(FacilityFacadeEjb.toReferenceDto(source.getLab()));
 		target.setSpecimenCondition(source.getSpecimenCondition());
 		target.setNoTestPossibleReason(source.getNoTestPossibleReason());
 		target.setLga(DistrictFacadeEjb.toReferenceDto(source.getAssociatedCase().getDistrict()));
+		target.setReferredTo(SampleFacadeEjb.toReferenceDto(source.getReferredTo()));
+		target.setShipped(source.isShipped());
+		target.setReceived(source.isReceived());
 		
 		SampleTest latestSampleTest = null;
 		for(SampleTest sampleTest : source.getSampleTests()) {

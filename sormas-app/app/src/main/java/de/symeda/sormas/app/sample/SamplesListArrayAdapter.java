@@ -51,7 +51,15 @@ public class SamplesListArrayAdapter extends ArrayAdapter<Sample> {
         disease.setText(sample.getAssociatedCase().getDisease().toShortString());
 
         TextView shipmentStatus = (TextView) convertView.findViewById(R.id.sample_shipment_status_li);
-        shipmentStatus.setText(sample.getShipmentStatus().toString());
+        if (sample.getReferredTo() != null) {
+            shipmentStatus.setText(R.string.sample_referred);
+        } else if (sample.isReceived()) {
+            shipmentStatus.setText(R.string.sample_received);
+        } else if (sample.isShipped()) {
+            shipmentStatus.setText(R.string.sample_shipped);
+        } else {
+            shipmentStatus.setText(R.string.sample_not_shipped);
+        }
 
         TextView casePerson = (TextView) convertView.findViewById(R.id.sample_case_person_li);
         casePerson.setText(sample.getAssociatedCase().getPerson().toString());

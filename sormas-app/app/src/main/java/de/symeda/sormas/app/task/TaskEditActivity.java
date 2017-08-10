@@ -79,8 +79,6 @@ public class TaskEditActivity extends AbstractSormasActivity {
         if (extras != null) {
             if (extras.containsKey(Task.UUID)) {
                 taskUuid = (String) extras.get(Task.UUID);
-                Task initialEntity = DatabaseHelper.getTaskDao().queryUuid(taskUuid);
-                DatabaseHelper.getTaskDao().markAsRead(initialEntity);
             }
             if (extras.containsKey(TasksListFragment.KEY_CASE_UUID)) {
                 parentCaseUuid = (String) extras.get(TasksListFragment.KEY_CASE_UUID);
@@ -114,8 +112,6 @@ public class TaskEditActivity extends AbstractSormasActivity {
             });
             snackbar.show();
         }
-
-        DatabaseHelper.getTaskDao().markAsRead(currentEntity);
     }
 
     @Override

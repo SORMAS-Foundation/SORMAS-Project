@@ -5,20 +5,15 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.CheckBox;
-
-import com.google.android.gms.analytics.Tracker;
 
 import java.util.Date;
 
-import de.symeda.sormas.api.sample.ShipmentStatus;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.AbstractSormasActivity;
 import de.symeda.sormas.app.R;
@@ -93,8 +88,6 @@ public class SampleEditActivity extends AbstractSormasActivity {
 
             if (params.containsKey(KEY_SAMPLE_UUID)) {
                 sampleUuid = params.getString(KEY_SAMPLE_UUID);
-                Sample initialEntity = DatabaseHelper.getSampleDao().queryUuid(sampleUuid);
-                DatabaseHelper.getSampleDao().markAsRead(initialEntity);
             }
         }
 
@@ -119,8 +112,6 @@ public class SampleEditActivity extends AbstractSormasActivity {
                 });
                 snackbar.show();
             }
-
-            DatabaseHelper.getSampleDao().markAsRead(currentEntity);
         }
     }
 
@@ -171,15 +162,6 @@ public class SampleEditActivity extends AbstractSormasActivity {
             case R.id.action_save:
                 SampleDao sampleDao = DatabaseHelper.getSampleDao();
                 sample = (Sample) sampleTab.getData();
-                CheckBox shipped = (CheckBox) findViewById(R.id.sample_shipmentStatus);
-                if (shipped.isEnabled()) {
-                    if (shipped.isChecked()) {
-                        sample.setShipmentStatus(ShipmentStatus.SHIPPED);
-                    } else {
-                        sample.setShipmentStatus(ShipmentStatus.NOT_SHIPPED);
-                        sample.setShipmentDate(null);
-                    }
-                }
 
                 if (sample.getReportingUser() == null) {
                     sample.setReportingUser(ConfigProvider.getUser());

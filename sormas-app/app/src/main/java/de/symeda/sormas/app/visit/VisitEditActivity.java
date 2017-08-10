@@ -72,8 +72,6 @@ public class VisitEditActivity extends AbstractEditTabActivity {
 
         if (params != null && params.containsKey(Visit.UUID)) {
             visitUuid = params.getString(Visit.UUID);
-            Visit initialEntity = DatabaseHelper.getVisitDao().queryUuid(visitUuid);
-            DatabaseHelper.getVisitDao().markAsRead(initialEntity);
         }
         if (params != null && params.containsKey(KEY_PAGE)) {
             currentTab = params.getInt(KEY_PAGE);
@@ -103,8 +101,6 @@ public class VisitEditActivity extends AbstractEditTabActivity {
                 });
                 snackbar.show();
             }
-
-            DatabaseHelper.getVisitDao().markAsRead(currentEntity);
         }
     }
 

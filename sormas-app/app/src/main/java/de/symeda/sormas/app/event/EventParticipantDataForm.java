@@ -42,6 +42,8 @@ public class EventParticipantDataForm extends FormTab {
         if (eventParticipant == null) {
             eventParticipant = eventParticipantDao.create();
         }
+        DatabaseHelper.getEventParticipantDao().markAsRead(eventParticipant);
+        eventParticipant = eventParticipantDao.queryForId(eventParticipant.getId());
 
         EventParticipantValidator.setRequiredHintsForEventParticipantData(binding);
 

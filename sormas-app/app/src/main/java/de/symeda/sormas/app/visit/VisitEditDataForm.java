@@ -45,6 +45,8 @@ public class VisitEditDataForm extends FormTab {
         else {
             final String visitUuid = getArguments().getString(Visit.UUID);
             visit = DatabaseHelper.getVisitDao().queryUuid(visitUuid);
+            DatabaseHelper.getVisitDao().markAsRead(visit);
+            visit = DatabaseHelper.getVisitDao().queryForId(visit.getId());
         }
 
         binding.setVisit(visit);

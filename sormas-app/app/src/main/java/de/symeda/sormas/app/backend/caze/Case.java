@@ -116,6 +116,9 @@ public class Case extends AbstractDomainObject {
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private EpiData epiData;
 
+	@Column
+	private String unusedVarchar1;
+
 	public Person getPerson() {
 		return person;
 	}

@@ -9,6 +9,7 @@ import com.vaadin.data.util.GeneratedPropertyContainer;
 import com.vaadin.data.util.MethodProperty;
 import com.vaadin.data.util.PropertyValueGenerator;
 import com.vaadin.data.util.filter.Compare.Equal;
+import com.vaadin.data.util.filter.Not;
 import com.vaadin.data.util.filter.Or;
 import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.ui.Grid;
@@ -20,12 +21,12 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.sample.SampleIndexDto;
-import de.symeda.sormas.api.sample.ShipmentStatus;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.login.LoginHelper;
+import de.symeda.sormas.ui.utils.BooleanRenderer;
 
 @SuppressWarnings("serial")
 public class SampleGrid extends Grid {
@@ -74,12 +75,14 @@ public class SampleGrid extends Grid {
 			}
         });
 		
-		setColumns(SampleIndexDto.SAMPLE_CODE, SampleIndexDto.LAB_SAMPLE_ID, SampleIndexDto.SHIPMENT_STATUS, SampleIndexDto.ASSOCIATED_CASE, DISEASE_SHORT,
-				SampleIndexDto.LGA, SampleIndexDto.SHIPMENT_DATE, SampleIndexDto.RECEIVED_DATE, SampleIndexDto.LAB, SampleIndexDto.SAMPLE_MATERIAL,
-				SampleIndexDto.LAB_USER, SampleIndexDto.TEST_TYPE, TEST_RESULT_GEN);
+		setColumns(SampleIndexDto.SAMPLE_CODE, SampleIndexDto.LAB_SAMPLE_ID, SampleIndexDto.ASSOCIATED_CASE, DISEASE_SHORT,
+				SampleIndexDto.LGA, SampleIndexDto.SHIPPED, SampleIndexDto.RECEIVED, SampleIndexDto.SHIPMENT_DATE, SampleIndexDto.RECEIVED_DATE, SampleIndexDto.LAB,
+				SampleIndexDto.SAMPLE_MATERIAL, SampleIndexDto.LAB_USER, SampleIndexDto.TEST_TYPE, TEST_RESULT_GEN);
 		
 		getColumn(SampleIndexDto.SHIPMENT_DATE).setRenderer(new DateRenderer(DateHelper.getDateFormat()));
 		getColumn(SampleIndexDto.RECEIVED_DATE).setRenderer(new DateRenderer(DateHelper.getDateFormat()));
+		getColumn(SampleIndexDto.SHIPPED).setRenderer(new BooleanRenderer());
+		getColumn(SampleIndexDto.RECEIVED).setRenderer(new BooleanRenderer());
 		getColumn(SampleIndexDto.LAB).setMaximumWidth(200);
 		
 		for(Column column : getColumns()) {
@@ -104,17 +107,42 @@ public class SampleGrid extends Grid {
 		removeColumn(SampleIndexDto.ASSOCIATED_CASE);
 		removeColumn(DISEASE_SHORT);
 		removeColumn(SampleIndexDto.LGA);
-		setShipmentStatusFilter(null);
 		this.caseRef = caseRef;
 		reload();
 	}
 	
-	public void setShipmentStatusFilter(ShipmentStatus shipmentStatus) {
-		getContainer().removeContainerFilters(SampleIndexDto.SHIPMENT_STATUS);
-		if(shipmentStatus != null) {
-			Equal filter = new Equal(SampleIndexDto.SHIPMENT_STATUS, shipmentStatus);
-			getContainer().addContainerFilter(filter);
-		}
+	public void filterForNotShipped() {
+		cleanShipmentFilters();
+		Equal shippedFilter = new Equal(SampleIndexDto.SHIPPED, false);
+		Equal receivedFilter = new Equal(SampleIndexDto.RECEIVED, false);
+		Equal referredFilter = new Equal(SampleIndexDto.REFERRED_TO, null);
+		getContainer().addContainerFilter(shippedFilter);
+		getContainer().addContainerFilter(receivedFilter);
+		getContainer().addContainerFilter(referredFilter);
+	}
+	
+	public void filterForShipped() {
+		cleanShipmentFilters();
+		Equal shippedFilter = new Equal(SampleIndexDto.SHIPPED, true);
+		Equal receivedFilter = new Equal(SampleIndexDto.RECEIVED, false);
+		Equal referredFilter = new Equal(SampleIndexDto.REFERRED_TO, null);
+		getContainer().addContainerFilter(shippedFilter);
+		getContainer().addContainerFilter(receivedFilter);
+		getContainer().addContainerFilter(referredFilter);
+	}
+	
+	public void filterForReceived() {
+		cleanShipmentFilters();
+		Equal receivedFilter = new Equal(SampleIndexDto.RECEIVED, true);
+		Equal referredFilter = new Equal(SampleIndexDto.REFERRED_TO, null);
+		getContainer().addContainerFilter(receivedFilter);
+		getContainer().addContainerFilter(referredFilter);
+	}
+	
+	public void filterForReferred() {
+		cleanShipmentFilters();
+		Not referredFilter = new Not(new Equal(SampleIndexDto.REFERRED_TO, null));
+		getContainer().addContainerFilter(referredFilter);
 	}
 	
 	public void setDistrictFilter(DistrictReferenceDto district) {
@@ -182,6 +210,12 @@ public class SampleGrid extends Grid {
 
 	public void remove(SampleIndexDto sample) {
 		getContainer().removeItem(sample);
+	}
+	
+	public void cleanShipmentFilters() {
+		getContainer().removeContainerFilters(SampleIndexDto.SHIPPED);
+		getContainer().removeContainerFilters(SampleIndexDto.RECEIVED);
+		getContainer().removeContainerFilters(SampleIndexDto.REFERRED_TO);
 	}
 	
 }

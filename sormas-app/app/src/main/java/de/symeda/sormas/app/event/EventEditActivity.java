@@ -81,8 +81,6 @@ public class EventEditActivity extends AbstractEditTabActivity {
         if(params!=null) {
             if (params.containsKey(KEY_EVENT_UUID)) {
                 eventUuid = params.getString(KEY_EVENT_UUID);
-                Event initialEntity = DatabaseHelper.getEventDao().queryUuid(eventUuid);
-                DatabaseHelper.getEventDao().markAsRead(initialEntity);
             }
             if (params.containsKey(TaskForm.KEY_TASK_UUID)) {
                 taskUuid = params.getString(TaskForm.KEY_TASK_UUID);
@@ -113,8 +111,6 @@ public class EventEditActivity extends AbstractEditTabActivity {
                 });
                 snackbar.show();
             }
-
-            DatabaseHelper.getEventDao().markAsRead(currentEntity);
         }
     }
 

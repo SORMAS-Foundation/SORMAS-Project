@@ -92,8 +92,6 @@ public class ContactEditActivity extends AbstractEditTabActivity {
             }
             if (params.containsKey(KEY_CONTACT_UUID)) {
                 contactUuid = params.getString(KEY_CONTACT_UUID);
-                Contact initialEntity = DatabaseHelper.getContactDao().queryUuid(contactUuid);
-                DatabaseHelper.getContactDao().markAsRead(initialEntity);
             }
             if (params.containsKey(TaskForm.KEY_TASK_UUID)) {
                 taskUuid = params.getString(TaskForm.KEY_TASK_UUID);
@@ -123,8 +121,6 @@ public class ContactEditActivity extends AbstractEditTabActivity {
             });
             snackbar.show();
         }
-
-        DatabaseHelper.getContactDao().markAsRead(currentEntity);
     }
 
     @Override

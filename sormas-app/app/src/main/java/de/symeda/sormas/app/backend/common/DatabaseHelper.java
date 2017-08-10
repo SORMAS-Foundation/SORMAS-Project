@@ -72,7 +72,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// name of the database file for your application -- change to something appropriate for your app
 	private static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	private static final int DATABASE_VERSION = 96;
+	private static final int DATABASE_VERSION = 97;
 
 	private static DatabaseHelper instance = null;
 	public static void init(Context context) {
@@ -211,23 +211,19 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN symptomatic boolean;");
 				case 94:
 					currentVersion = 94;
-					String columnsString = "caseClassification, caseOfficer_id, community_id, description," +
-							"disease, district_id, epiData_id, epidNumber, healthFacility_id, healthFacilityDetails, hospitalization_id," +
-							"investigatedDate, investigationStatus, measlesDoses, measlesVaccination, measlesVaccinationInfoSource, person_id," +
-							"pregnant, region_id, reportDate, reportingUser_id, surveillanceOfficer_id, symptoms_id, changeDate, creationDate," +
-							"id, lastOpenedDate, localChangeDate, modified, snapshot, uuid";
-
-					getDao(Case.class).executeRaw(
-							"CREATE TEMPORARY TABLE cases_backup(" + columnsString + ");" +
-							"INSERT INTO cases_backup SELECT " + columnsString + " FROM cases;" +
-							"DROP TABLE cases;" +
-							"CREATE TABLE cases(" + columnsString + ");" +
-							"INSERT INTO cases SELECT " + columnsString + " FROM cases_backup;" +
-							"DROP TABLE cases_backup;"
-					);
+					getDao(Case.class).executeRaw("ALTER TABLE cases RENAME COLUMN contactOfficer_id TO unusedVarchar1;");
 				case 95:
 					currentVersion = 95;
 					getDao(Sample.class).executeRaw("ALTER TABLE samples ADD COLUMN referredTo_id bigint REFERENCES samples(id);");
+				case 96:
+					currentVersion = 96;
+					getDao(Sample.class).executeRaw("ALTER TABLE samples ADD COLUMN shipped boolean;");
+					getDao(Sample.class).executeRaw("ALTER TABLE samples ADD COLUMN received boolean;");
+					getDao(Sample.class).executeRaw("UPDATE samples SET shipped='true' WHERE shipmentStatus = 'SHIPPED' OR shipmentStatus = 'RECEIVED' OR shipmentStatus = 'REFERRED_OTHER_LAB';");
+					getDao(Sample.class).executeRaw("UPDATE samples SET received='true' WHERE shipmentStatus = 'RECEIVED' OR shipmentStatus = 'REFERRED_OTHER_LAB';");
+					getDao(Sample.class).executeRaw("UPDATE samples SET shipped='false' WHERE shipmentStatus = 'NOT_SHIPPED';");
+					getDao(Sample.class).executeRaw("UPDATE samples SET received='false' WHERE shipmentStatus = 'NOT_SHIPPED' OR shipmentStatus = 'SHIPPED';");
+					getDao(Sample.class).executeRaw("ALTER TABLE samples RENAME COLUMN shipmentStatus TO unusedVarcharNotNull1;");
 
 					// ATTENTION: break should only be done after last version
 					break;
@@ -492,6 +488,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	public static Context getContext() {
 		return instance.context;
+	}
+
+	public static <D extends Dao<T, ?>, T> D dummeMethode(Class<T> clazz) throws SQLException {
+		return instance.getDao(clazz);
 	}
 
 }

@@ -72,8 +72,6 @@ public class EventParticipantEditActivity extends AbstractSormasActivity {
         if(params!=null) {
             if(params.containsKey(EventParticipant.UUID)) {
                 eventParticipantUuid = params.getString(EventParticipant.UUID);
-                EventParticipant initialEntity = DatabaseHelper.getEventParticipantDao().queryUuid(eventParticipantUuid);
-                DatabaseHelper.getEventParticipantDao().markAsRead(initialEntity);
             }
         }
 
@@ -97,8 +95,6 @@ public class EventParticipantEditActivity extends AbstractSormasActivity {
             });
             snackbar.show();
         }
-
-        DatabaseHelper.getEventParticipantDao().markAsRead(currentEntity);
     }
 
     @Override

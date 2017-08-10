@@ -891,6 +891,19 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
         }
     }
 
+    public List<ADO> queryForNotNull(String fieldName) {
+        try {
+            QueryBuilder builder = queryBuilder();
+            Where where = builder.where();
+            where.isNotNull(fieldName);
+            where.and().eq(AbstractDomainObject.SNAPSHOT, false).query();
+            return builder.query();
+        } catch (SQLException e) {
+            Log.e(getTableName(), "queryForNotNull threw exception on: " + fieldName, e);
+            throw new RuntimeException(e);
+        }
+    }
+
     /**
      * @see Dao#queryBuilder()
      */
