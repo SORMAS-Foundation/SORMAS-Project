@@ -25,6 +25,7 @@ import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb.EpiDataFacadeEjbLocal;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
@@ -81,6 +82,8 @@ public class CaseFacadeEjb implements CaseFacade {
 	private HospitalizationFacadeEjbLocal hospitalizationFacade;
 	@EJB
 	private EpiDataFacadeEjbLocal epiDataFacade;
+	@EJB
+	private ContactFacadeEjbLocal contactFacade;
 	
 	@Override
 	public List<CaseDataDto> getAllCasesAfter(Date date, String userUuid) {
@@ -179,8 +182,8 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		// Update follow-up until and status of all contacts of this case if the disease has changed
 		if (currentDisease != null && caze.getDisease() != currentDisease) {
-			for (ContactDto contact : FacadeProvider.getContactFacade().getAllByCase(getReferenceByUuid(caze.getUuid()))) {
-				FacadeProvider.getContactFacade().updateFollowUpUntilAndStatus(contact);
+			for (ContactDto contact : contactFacade.getAllByCase(getReferenceByUuid(caze.getUuid()))) {
+				contactFacade.updateFollowUpUntilAndStatus(contact);
 			}
 		}
 		
