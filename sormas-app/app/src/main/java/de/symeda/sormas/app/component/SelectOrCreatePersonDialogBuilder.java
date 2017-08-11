@@ -130,7 +130,7 @@ public class SelectOrCreatePersonDialogBuilder extends AlertDialog.Builder {
             }
         });
 
-        // create a new person with the entered details (displays an error if the details are incomplete)
+        // build a new person with the entered details (displays an error if the details are incomplete)
         dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

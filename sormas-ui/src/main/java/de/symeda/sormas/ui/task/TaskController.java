@@ -69,7 +69,7 @@ public class TaskController {
         VaadinUiUtil.showModalPopupWindow(editView, "Create new task");   
 	}
 	
-	public void createAfterSample(TaskContext context, ReferenceDto entityRef, SampleDto sample, Consumer<SampleDto> callback) {
+	public void createSampleCollectionTask(TaskContext context, ReferenceDto entityRef, SampleDto sample) {
 		TaskEditForm createForm = new TaskEditForm();
 		TaskDto taskDto = createNewTask(context, entityRef);
 		taskDto.setTaskType(TaskType.SAMPLE_COLLECTION);
@@ -84,14 +84,7 @@ public class TaskController {
 				if (!createForm.getFieldGroup().isModified()) {
 					TaskDto dto = createForm.getValue();
 					FacadeProvider.getTaskFacade().saveTask(dto);
-					callback.accept(sample);
 				}
-			}
-		});
-		createView.addDiscardListener(new DiscardListener() {
-			@Override
-			public void onDiscard() {
-				callback.accept(sample);
 			}
 		});
 		

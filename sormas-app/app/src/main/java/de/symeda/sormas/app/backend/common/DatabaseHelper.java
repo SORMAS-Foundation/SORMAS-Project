@@ -146,7 +146,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	}
 
 	/**
-	 * This is called when the database is first created. Usually you should call createTable statements here to create
+	 * This is called when the database is first created. Usually you should call createTable statements here to build
 	 * the tables that will store your data.
 	 */
 	@Override
@@ -178,7 +178,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.createTable(connectionSource, EpiDataTravel.class);
 			TableUtils.createTable(connectionSource, SyncLog.class);
 		} catch (SQLException e) {
-			Log.e(DatabaseHelper.class.getName(), "Can't create database", e);
+			Log.e(DatabaseHelper.class.getName(), "Can't build database", e);
 			throw new RuntimeException(e);
 		}
 	}
@@ -266,7 +266,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
             if (oldVersion < 30) {
                 TableUtils.dropTable(connectionSource, Config.class, true);
             }
-            // after we drop the old databases, we create the new ones
+            // after we drop the old databases, we build the new ones
             onCreate(db, connectionSource);
         } catch (SQLException e) {
             Log.e(DatabaseHelper.class.getName(), "Can't drop databases", e);
@@ -278,7 +278,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 		if (!adoDaos.containsKey(type)) {
 
-			// create dao
+			// build dao
 			AbstractAdoDao<ADO> dao;
 			Dao<ADO, Long> innerDao;
 
@@ -336,7 +336,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				adoDaos.put(type, dao);
 
 			} catch (SQLException e) {
-				Log.e(DatabaseHelper.class.getName(), "Can't create dao", e);
+				Log.e(DatabaseHelper.class.getName(), "Can't build dao", e);
 				throw new RuntimeException(e);
 			}
 		}
@@ -361,7 +361,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					try {
 						instance.configDao = new ConfigDao((Dao<Config, String>) instance.getDao(Config.class));
 					} catch (SQLException e) {
-						Log.e(DatabaseHelper.class.getName(), "Can't create ConfigDao", e);
+						Log.e(DatabaseHelper.class.getName(), "Can't build ConfigDao", e);
 						throw new RuntimeException(e);
 					}
 				}
@@ -377,7 +377,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					try {
 						instance.syncLogDao = new SyncLogDao((Dao<SyncLog, Long>) instance.getDao(SyncLog.class));
 					} catch (SQLException e) {
-						Log.e(DatabaseHelper.class.getName(), "Can't create SyncLogDao", e);
+						Log.e(DatabaseHelper.class.getName(), "Can't build SyncLogDao", e);
 						throw new RuntimeException(e);
 					}
 				}

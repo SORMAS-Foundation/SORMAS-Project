@@ -25,8 +25,8 @@ public class EventParticipantNewPersonForm extends FormTab {
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        Person person = DatabaseHelper.getPersonDao().create();
-        eventParticipant = DatabaseHelper.getEventParticipantDao().create();
+        Person person = DatabaseHelper.getPersonDao().build();
+        eventParticipant = DatabaseHelper.getEventParticipantDao().build();
         eventParticipant.setPerson(person);
 
         binding = DataBindingUtil.inflate(inflater, R.layout.event_participant_new_fragment_layout, container, false);

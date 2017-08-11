@@ -92,6 +92,8 @@ public class CaseEditActivity extends AbstractEditTabActivity {
         if (params != null) {
             if (params.containsKey(KEY_CASE_UUID)) {
                 caseUuid = params.getString(KEY_CASE_UUID);
+                Case initialEntity = DatabaseHelper.getCaseDao().queryUuid(caseUuid);
+                DatabaseHelper.getCaseDao().markAsRead(initialEntity);
             }
             if (params.containsKey(TaskForm.KEY_TASK_UUID)) {
                 taskUuid = params.getString(TaskForm.KEY_TASK_UUID);
@@ -114,6 +116,7 @@ public class CaseEditActivity extends AbstractEditTabActivity {
         Case currentEntity = DatabaseHelper.getCaseDao().queryUuid(caseUuid);
         if (currentEntity.isUnreadOrChildUnread()) {
             // Resetting the adapter will reload the form and therefore also override any unsaved changes
+            DatabaseHelper.getCaseDao().markAsRead(currentEntity);
             setAdapter();
 
             final Snackbar snackbar = Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_entity_overridden), getResources().getString(R.string.entity_case)), Snackbar.LENGTH_INDEFINITE);
@@ -330,7 +333,6 @@ public class CaseEditActivity extends AbstractEditTabActivity {
                 try {
                     personDao.saveAndSnapshot(person);
                     caze.setPerson(person); // we aren't sure why, but this is needed, otherwise the person will be overriden when first saved
-                    DatabaseHelper.getSymptomsDao().updateIsSymptomatic(symptoms);
                     caze.setSymptoms(symptoms);
                     caze.setHospitalization(hospitalization);
                     caze.setEpiData(epiData);

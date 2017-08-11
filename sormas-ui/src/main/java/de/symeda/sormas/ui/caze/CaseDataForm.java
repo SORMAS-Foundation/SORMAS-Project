@@ -8,6 +8,8 @@ import com.vaadin.data.Property;
 import com.vaadin.data.validator.RegexpValidator;
 import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.NativeSelect;
@@ -238,7 +240,21 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		public void valueChange(Property.ValueChangeEvent e) {
 			
 			if (diseaseField.getValue() != currentDisease) {
-				ConfirmationComponent confirmDiseaseChangeComponent = getConfirmDiseaseChangeComponent(diseaseField, currentDisease);
+				ConfirmationComponent confirmDiseaseChangeComponent = new ConfirmationComponent(false) {
+					private static final long serialVersionUID = 1L;
+					@Override
+					protected void onConfirm() {
+						diseaseField.removeValueChangeListener(DiseaseChangeListener.this);
+					}
+					@Override
+					protected void onCancel() {
+						diseaseField.setValue(currentDisease);
+					}
+				};
+				confirmDiseaseChangeComponent.getConfirmButton().setCaption("Really change case disease?");
+				confirmDiseaseChangeComponent.getCancelButton().setCaption("Cancel");
+				confirmDiseaseChangeComponent.setMargin(true);
+				
 				Window popupWindow = VaadinUiUtil.showPopupWindow(confirmDiseaseChangeComponent);
 				CloseListener closeListener = new CloseListener() {
 					@Override
@@ -249,7 +265,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				popupWindow.addCloseListener(closeListener);
 				confirmDiseaseChangeComponent.addDoneListener(new DoneListener() {
 					public void onDone() {
-						diseaseField.removeValueChangeListener(DiseaseChangeListener.this);
 						popupWindow.removeCloseListener(closeListener);
 						popupWindow.close();
 					}
@@ -257,25 +272,5 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				popupWindow.setCaption("Change case disease");       
 			}
 		}
-		
-		private ConfirmationComponent getConfirmDiseaseChangeComponent(NativeSelect diseaseField, Disease currentDisease) {
-			ConfirmationComponent confirmDiseaseChangeComponent = new ConfirmationComponent(false) {
-				private static final long serialVersionUID = 1L;
-				@Override
-				protected void onConfirm() {
-					onDone();
-				}
-				@Override
-				protected void onCancel() {
-					diseaseField.setValue(currentDisease);
-					onDone();
-				}
-			};
-			confirmDiseaseChangeComponent.getConfirmButton().setCaption("Really change case disease?");
-			confirmDiseaseChangeComponent.getCancelButton().setCaption("Cancel");
-			confirmDiseaseChangeComponent.setMargin(true);
-			return confirmDiseaseChangeComponent;
-		}
-		
 	}
 }

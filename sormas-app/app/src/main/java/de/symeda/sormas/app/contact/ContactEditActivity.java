@@ -294,7 +294,7 @@ public class ContactEditActivity extends AbstractEditTabActivity {
             case R.id.action_add:
                 switch (tab) {
                     case VISITS:
-                        // only contact officer is allowd to create visits
+                        // only contact officer is allowd to build visits
 //                        if(UserRole.CONTACT_OFFICER.equals(ConfigProvider.getUser().getUserRoleName())) {
                         Bundle visitBundle = new Bundle();
                         visitBundle.putString(KEY_CONTACT_UUID, contactUuid);

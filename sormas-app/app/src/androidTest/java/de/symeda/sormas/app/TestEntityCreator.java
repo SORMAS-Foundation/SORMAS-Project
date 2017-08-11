@@ -1,7 +1,5 @@
 package de.symeda.sormas.app;
 
-import android.provider.ContactsContract;
-
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
@@ -13,7 +11,6 @@ import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SampleTestResultType;
 import de.symeda.sormas.api.sample.SampleTestType;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -43,7 +40,7 @@ import de.symeda.sormas.app.backend.visit.Visit;
 public class TestEntityCreator {
 
     public static Person createPerson(String firstName, String lastName) {
-        Person person = DatabaseHelper.getPersonDao().create();
+        Person person = DatabaseHelper.getPersonDao().build();
         person.setFirstName(firstName);
         person.setLastName(lastName);
 
@@ -66,7 +63,7 @@ public class TestEntityCreator {
         CaseClassification caseClassification = CaseClassification.SUSPECT;
         InvestigationStatus investigationStatus = InvestigationStatus.PENDING;
 
-        Case caze = DatabaseHelper.getCaseDao().create(createPerson("Salomon", "Kalou"));
+        Case caze = DatabaseHelper.getCaseDao().build(createPerson("Salomon", "Kalou"));
         caze.setDisease(disease);
         caze.setRegion(region);
         caze.setDistrict(district);
@@ -89,7 +86,7 @@ public class TestEntityCreator {
         Person person = createPerson("Thierry", "Henry");
         Case caze = createCase();
 
-        Contact contact = DatabaseHelper.getContactDao().create();
+        Contact contact = DatabaseHelper.getContactDao().build();
         contact.setPerson(person);
         contact.setCaze(caze);
 
@@ -112,7 +109,7 @@ public class TestEntityCreator {
         String srcLastName = "Mpenza";
         String srcTelNo = "0150123123123";
 
-        Event event = DatabaseHelper.getEventDao().create();
+        Event event = DatabaseHelper.getEventDao().build();
         event.setEventType(eventType);
         event.setEventDesc(eventDesc);
         event.setEventDate(eventDate);
@@ -137,7 +134,7 @@ public class TestEntityCreator {
         Facility lab = DatabaseHelper.getFacilityDao().queryForAll().get(0);
         SampleMaterial material = SampleMaterial.BLOOD;
 
-        Sample sample = DatabaseHelper.getSampleDao().create(caze);
+        Sample sample = DatabaseHelper.getSampleDao().build(caze);
         sample.setSampleDateTime(sampleDateTime);
         sample.setLab(lab);
         sample.setSampleMaterial(material);
@@ -153,7 +150,7 @@ public class TestEntityCreator {
     }
 
     public static PreviousHospitalization createPreviousHospitalization(Case caze) {
-        PreviousHospitalization prevHosp = DatabaseHelper.getPreviousHospitalizationDao().create();
+        PreviousHospitalization prevHosp = DatabaseHelper.getPreviousHospitalizationDao().build();
         prevHosp.setHospitalization(caze.getHospitalization());
 
         try {
@@ -167,7 +164,7 @@ public class TestEntityCreator {
     }
 
     public static EpiDataBurial createEpiDataBurial(Case caze) {
-        EpiDataBurial burial = DatabaseHelper.getEpiDataBurialDao().create();
+        EpiDataBurial burial = DatabaseHelper.getEpiDataBurialDao().build();
         burial.setEpiData(caze.getEpiData());
 
         try {
@@ -181,7 +178,7 @@ public class TestEntityCreator {
     }
 
     public static EpiDataGathering createEpiDataGathering(Case caze) {
-        EpiDataGathering gathering = DatabaseHelper.getEpiDataGatheringDao().create();
+        EpiDataGathering gathering = DatabaseHelper.getEpiDataGatheringDao().build();
         gathering.setEpiData(caze.getEpiData());
 
         try {
@@ -195,7 +192,7 @@ public class TestEntityCreator {
     }
 
     public static EpiDataTravel createEpiDataTravel(Case caze) {
-        EpiDataTravel travel = DatabaseHelper.getEpiDataTravelDao().create();
+        EpiDataTravel travel = DatabaseHelper.getEpiDataTravelDao().build();
         travel.setEpiData(caze.getEpiData());
 
         try {
@@ -209,9 +206,9 @@ public class TestEntityCreator {
     }
 
     public static Visit createVisit(Contact contact) throws DaoException {
-        Visit visit = DatabaseHelper.getVisitDao().create(contact.getUuid());
-        Symptoms symptoms = DatabaseHelper.getSymptomsDao().create();
-        Location illLocation = DatabaseHelper.getLocationDao().create();
+        Visit visit = DatabaseHelper.getVisitDao().build(contact.getUuid());
+        Symptoms symptoms = DatabaseHelper.getSymptomsDao().build();
+        Location illLocation = DatabaseHelper.getLocationDao().build();
         symptoms.setIllLocation(illLocation);
         visit.setSymptoms(symptoms);
         visit.setVisitUser(ConfigProvider.getUser());
@@ -225,7 +222,7 @@ public class TestEntityCreator {
     public static EventParticipant createEventParticipant(Event event) {
         Person person = createPerson("Demba", "Ba");
 
-        EventParticipant eventParticipant = DatabaseHelper.getEventParticipantDao().create();
+        EventParticipant eventParticipant = DatabaseHelper.getEventParticipantDao().build();
         eventParticipant.setEvent(event);
         eventParticipant.setPerson(person);
 
@@ -244,7 +241,7 @@ public class TestEntityCreator {
         SampleTestResultType sampleTestResultType = SampleTestResultType.NEGATIVE;
         Date sampleTestDateTime = new Date();
 
-        SampleTest sampleTest = DatabaseHelper.getSampleTestDao().create();
+        SampleTest sampleTest = DatabaseHelper.getSampleTestDao().build();
         sampleTest.setSample(sample);
         sampleTest.setTestType(sampleTestType);
         sampleTest.setTestResult(sampleTestResultType);

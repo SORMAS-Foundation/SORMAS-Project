@@ -103,6 +103,10 @@ public abstract class PropertyField<T> extends LinearLayout {
                 if (caption != null) {
                     if (caption.getError() != null) {
                         caption.clearFocus();
+                    } else if (getDescription() != null && !getDescription().isEmpty()) {
+                        HelpDialog helpDialog = new HelpDialog(getContext());
+                        helpDialog.setMessage(getDescription());
+                        helpDialog.show();
                     }
                 }
             }

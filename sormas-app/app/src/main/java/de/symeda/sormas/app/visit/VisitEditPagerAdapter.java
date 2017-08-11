@@ -47,7 +47,7 @@ public class VisitEditPagerAdapter extends FragmentStatePagerAdapter {
                 symptomsEditForm = new SymptomsEditForm();
 
                 Bundle symptomsEditBundle = new Bundle();
-                // create new symptoms for new visit
+                // build new symptoms for new visit
                 if(visitEditBundle.getBoolean(VisitEditDataForm.NEW_VISIT)) {
                     String keyContactUuid = visitEditBundle.getString(VisitEditDataForm.KEY_CONTACT_UUID);
                     Contact contact = DatabaseHelper.getContactDao().queryUuid(keyContactUuid);

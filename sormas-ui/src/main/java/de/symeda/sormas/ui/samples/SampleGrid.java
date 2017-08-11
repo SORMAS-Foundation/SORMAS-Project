@@ -112,7 +112,7 @@ public class SampleGrid extends Grid {
 	}
 	
 	public void filterForNotShipped() {
-		cleanShipmentFilters();
+		clearShipmentFilters();
 		Equal shippedFilter = new Equal(SampleIndexDto.SHIPPED, false);
 		Equal receivedFilter = new Equal(SampleIndexDto.RECEIVED, false);
 		Equal referredFilter = new Equal(SampleIndexDto.REFERRED_TO, null);
@@ -122,7 +122,7 @@ public class SampleGrid extends Grid {
 	}
 	
 	public void filterForShipped() {
-		cleanShipmentFilters();
+		clearShipmentFilters();
 		Equal shippedFilter = new Equal(SampleIndexDto.SHIPPED, true);
 		Equal receivedFilter = new Equal(SampleIndexDto.RECEIVED, false);
 		Equal referredFilter = new Equal(SampleIndexDto.REFERRED_TO, null);
@@ -132,7 +132,7 @@ public class SampleGrid extends Grid {
 	}
 	
 	public void filterForReceived() {
-		cleanShipmentFilters();
+		clearShipmentFilters();
 		Equal receivedFilter = new Equal(SampleIndexDto.RECEIVED, true);
 		Equal referredFilter = new Equal(SampleIndexDto.REFERRED_TO, null);
 		getContainer().addContainerFilter(receivedFilter);
@@ -140,7 +140,7 @@ public class SampleGrid extends Grid {
 	}
 	
 	public void filterForReferred() {
-		cleanShipmentFilters();
+		clearShipmentFilters();
 		Not referredFilter = new Not(new Equal(SampleIndexDto.REFERRED_TO, null));
 		getContainer().addContainerFilter(referredFilter);
 	}
@@ -212,7 +212,7 @@ public class SampleGrid extends Grid {
 		getContainer().removeItem(sample);
 	}
 	
-	public void cleanShipmentFilters() {
+	public void clearShipmentFilters() {
 		getContainer().removeContainerFilters(SampleIndexDto.SHIPPED);
 		getContainer().removeContainerFilters(SampleIndexDto.RECEIVED);
 		getContainer().removeContainerFilters(SampleIndexDto.REFERRED_TO);

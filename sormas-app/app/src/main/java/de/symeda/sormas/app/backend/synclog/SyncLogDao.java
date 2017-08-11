@@ -88,7 +88,7 @@ public class SyncLogDao {
         try {
             return dao.create(data);
         } catch (SQLException e) {
-            Log.e(getClass().getName(), "create threw exception on: " + data, e);
+            Log.e(getClass().getName(), "build threw exception on: " + data, e);
             throw new RuntimeException(e);
         }
     }

@@ -2,7 +2,6 @@ package de.symeda.sormas.ui.samples;
 
 import java.util.Date;
 import java.util.List;
-import java.util.function.Consumer;
 
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Sizeable.Unit;
@@ -118,12 +117,14 @@ public class SampleController {
 				if (!form.getFieldGroup().isModified()) {
 					SampleDto dto = form.getValue();
 					SampleDto originalDto = sf.getSampleByUuid(dto.getUuid());
+					sf.saveSample(dto);
+					navigateToData(dto.getUuid());
 
 					if (dto.getSpecimenCondition() != originalDto.getSpecimenCondition() &&
 							dto.getSpecimenCondition() == SpecimenCondition.NOT_ADEQUATE) {
-						buildRequestTaskComponent(dto, form);
+						requestSampleCollectionTaskCreation(dto, form);
 					} else {
-						saveSampleWithNotification(dto, form);
+						Notification.show("Sample data saved", Type.WARNING_MESSAGE);
 					}
 				}
 			}
@@ -159,22 +160,22 @@ public class SampleController {
 		return editView;
 	}
 
-	private void buildRequestTaskComponent(SampleDto dto, SampleEditForm form) {
-		VerticalLayout test = new VerticalLayout();
-		test.setMargin(true);
+	private void requestSampleCollectionTaskCreation(SampleDto dto, SampleEditForm form) {
+		VerticalLayout layout = new VerticalLayout();
+		layout.setMargin(true);
 
 		ConfirmationComponent requestTaskComponent = buildRequestTaskComponent();
 
 		Label description = new Label("You have set the specimen condition to not adequate.<br/>Do you want to create a new sample collection task?");
 		description.setContentMode(ContentMode.HTML);
 		description.setWidth(100, Unit.PERCENTAGE);
-		test.addComponent(description);
-		test.addComponent(requestTaskComponent);
-		test.setComponentAlignment(requestTaskComponent, Alignment.BOTTOM_RIGHT);
-		test.setSizeUndefined();
-		test.setSpacing(true);
+		layout.addComponent(description);
+		layout.addComponent(requestTaskComponent);
+		layout.setComponentAlignment(requestTaskComponent, Alignment.BOTTOM_RIGHT);
+		layout.setSizeUndefined();
+		layout.setSpacing(true);
 
-		Window popupWindow = VaadinUiUtil.showPopupWindow(test);
+		Window popupWindow = VaadinUiUtil.showPopupWindow(layout);
 		popupWindow.setSizeUndefined();
 		popupWindow.setCaption("Create new task?");
 		requestTaskComponent.getConfirmButton().addClickListener(new ClickListener() {
@@ -182,14 +183,7 @@ public class SampleController {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				popupWindow.close();
-				sf.saveSample(dto);
-				ControllerProvider.getTaskController().createAfterSample(TaskContext.CASE, dto.getAssociatedCase(), dto, new Consumer<SampleDto>() {
-					@Override
-					public void accept(SampleDto result) {
-						Notification.show("Sample data saved", Type.WARNING_MESSAGE);
-						navigateToData(dto.getUuid());
-					}
-				});
+				ControllerProvider.getTaskController().createSampleCollectionTask(TaskContext.CASE, dto.getAssociatedCase(), dto);
 			}
 		});
 		requestTaskComponent.getCancelButton().addClickListener(new ClickListener() {
@@ -197,7 +191,6 @@ public class SampleController {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				popupWindow.close();
-				saveSampleWithNotification(dto, form);
 			}
 		});
 	}
@@ -226,16 +219,6 @@ public class SampleController {
 		requestTaskComponent.getConfirmButton().setCaption("Yes");
 		requestTaskComponent.getCancelButton().setCaption("No");
 		return requestTaskComponent;
-	}
-
-	private void saveSampleWithNotification(SampleDto sampleDto, SampleEditForm form) {
-		saveSample(sampleDto, form);
-		Notification.show("Sample data saved", Type.WARNING_MESSAGE);
-		navigateToData(sampleDto.getUuid());
-	}
-
-	private void saveSample(SampleDto sampleDto, SampleEditForm form) {
-		sf.saveSample(sampleDto);
 	}
 
 }

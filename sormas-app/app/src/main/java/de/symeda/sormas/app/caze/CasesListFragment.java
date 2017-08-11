@@ -79,7 +79,7 @@ public class CasesListFragment extends ListFragment {
 
         CasesListArrayAdapter adapter = new CasesListArrayAdapter(
                 this.getActivity(),                       // Context for the activity.
-                R.layout.cases_list_item);    // Layout to use (create)
+                R.layout.cases_list_item);    // Layout to use (build)
 
         setListAdapter(adapter);
         getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {

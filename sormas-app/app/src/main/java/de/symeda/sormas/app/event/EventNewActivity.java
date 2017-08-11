@@ -131,7 +131,7 @@ public class EventNewActivity extends AppCompatActivity {
                         finish();
                     }
                 } catch (DaoException e) {
-                    Log.e(getClass().getName(), "Error while trying to create alert", e);
+                    Log.e(getClass().getName(), "Error while trying to build alert", e);
                     Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_error), getResources().getString(R.string.entity_alert)), Snackbar.LENGTH_LONG).show();
                     ErrorReportingHelper.sendCaughtException(tracker, e, event, true);
                 }

@@ -14,12 +14,6 @@ import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
-import de.symeda.sormas.app.backend.event.Event;
-import de.symeda.sormas.app.backend.person.Person;
-import de.symeda.sormas.app.backend.region.District;
-import de.symeda.sormas.app.backend.region.Region;
-
-import static android.R.attr.value;
 
 /**
  * Created by Stefan Szczesny on 29.11.2016.
@@ -59,9 +53,9 @@ public class ContactDao extends AbstractAdoDao<Contact> {
     }
 
     @Override
-    public Contact create() {
+    public Contact build() {
 
-        Contact contact = super.create();
+        Contact contact = super.build();
 
         contact.setReportDateTime(new Date());
         contact.setReportingUser(ConfigProvider.getUser());

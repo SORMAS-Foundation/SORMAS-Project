@@ -101,7 +101,7 @@ public class Visit extends AbstractDomainObject {
 	}
 
 	/**
-	 * return the symptoms, if null create new in service layer
+	 * return the symptoms, if null build new in service layer
 	 * @return
      */
 	public Symptoms getSymptoms() {

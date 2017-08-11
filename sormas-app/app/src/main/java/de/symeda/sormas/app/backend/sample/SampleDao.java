@@ -27,12 +27,12 @@ public class SampleDao extends AbstractAdoDao<Sample> {
     }
 
     @Override
-    public Sample create() {
+    public Sample build() {
         throw new UnsupportedOperationException();
     }
 
-    public Sample create(Case associatedCase) {
-        Sample sample = super.create();
+    public Sample build(Case associatedCase) {
+        Sample sample = super.build();
         sample.setAssociatedCase(associatedCase);
         sample.setReportDateTime(new Date());
         sample.setReportingUser(ConfigProvider.getUser());

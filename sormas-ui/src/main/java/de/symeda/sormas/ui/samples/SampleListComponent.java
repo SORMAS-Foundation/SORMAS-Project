@@ -82,7 +82,7 @@ public class SampleListComponent extends AbstractView {
 
 		HorizontalLayout buttonFilterLayout = new HorizontalLayout();
 		{
-			Button statusAll = new Button("all", e -> grid.cleanShipmentFilters());
+			Button statusAll = new Button("all", e -> grid.clearShipmentFilters());
 			statusAll.setStyleName(ValoTheme.BUTTON_LINK);
 			buttonFilterLayout.addComponent(statusAll);
 			
@@ -119,7 +119,7 @@ public class SampleListComponent extends AbstractView {
 
 		HorizontalLayout buttonFilterLayout = new HorizontalLayout();
 		{
-			Button statusAll = new Button("all", e -> grid.cleanShipmentFilters());
+			Button statusAll = new Button("all", e -> grid.clearShipmentFilters());
 			statusAll.setStyleName(ValoTheme.BUTTON_LINK);
 			buttonFilterLayout.addComponent(statusAll);
 

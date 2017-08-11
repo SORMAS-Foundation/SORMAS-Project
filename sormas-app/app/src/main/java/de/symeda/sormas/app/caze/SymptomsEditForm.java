@@ -10,8 +10,6 @@ import android.view.ViewTreeObserver;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 
-import com.google.android.gms.analytics.Tracker;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -23,11 +21,9 @@ import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.symptoms.TemperatureSource;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.component.FieldHelper;
@@ -36,13 +32,9 @@ import de.symeda.sormas.app.component.PropertyField;
 import de.symeda.sormas.app.component.SymptomStateField;
 import de.symeda.sormas.app.databinding.CaseSymptomsFragmentLayoutBinding;
 import de.symeda.sormas.app.util.Consumer;
-import de.symeda.sormas.app.util.DataUtils;
-import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.FormTab;
 import de.symeda.sormas.app.util.Item;
-import de.symeda.sormas.app.util.ValidationFailedException;
 import de.symeda.sormas.app.validation.SymptomsValidator;
-import de.symeda.sormas.app.visit.VisitEditDataForm;
 
 
 /**
@@ -72,9 +64,9 @@ public class SymptomsEditForm extends FormTab {
 
         final Disease disease = (Disease) getArguments().getSerializable(Case.DISEASE);
 
-        // create a new visit from contact data
+        // build a new visit from contact data
         if(getArguments().getBoolean(NEW_SYMPTOMS)) {
-            symptoms = DatabaseHelper.getSymptomsDao().create();
+            symptoms = DatabaseHelper.getSymptomsDao().build();
         }
         // open the given visit
         else {

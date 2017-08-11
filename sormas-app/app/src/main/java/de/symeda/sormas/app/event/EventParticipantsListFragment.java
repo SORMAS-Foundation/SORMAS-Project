@@ -60,7 +60,7 @@ public class EventParticipantsListFragment extends ListFragment {
 
         EventParticipantsListArrayAdapter adapter = new EventParticipantsListArrayAdapter(
                 this.getActivity(),             // Context for the activity.
-                R.layout.event_participants_list_item);     // Layout to use (create)
+                R.layout.event_participants_list_item);     // Layout to use (build)
 
         setListAdapter(adapter);
         getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {

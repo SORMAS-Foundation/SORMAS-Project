@@ -54,8 +54,6 @@ public class CaseEditDataForm extends FormTab {
         final String caseUuid = (String) getArguments().getString(Case.UUID);
         final CaseDao caseDao = DatabaseHelper.getCaseDao();
         Case caze = caseDao.queryUuid(caseUuid);
-        DatabaseHelper.getCaseDao().markAsRead(caze);
-        caze = caseDao.queryForId(caze.getId());
         binding.setCaze(caze);
 
         final List emptyList = new ArrayList<>();

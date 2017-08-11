@@ -147,7 +147,7 @@ public class CaseNewActivity extends AppCompatActivity {
                                             caze.setPerson((Person) parameter);
                                             savePersonAndCase(caze);
                                         } catch (DaoException e) {
-                                            Log.e(getClass().getName(), "Error while trying to create case", e);
+                                            Log.e(getClass().getName(), "Error while trying to build case", e);
                                             Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_create_error), getResources().getString(R.string.entity_case)), Snackbar.LENGTH_LONG).show();
                                             ErrorReportingHelper.sendCaughtException(tracker, e, null, true);
                                         }
@@ -162,7 +162,7 @@ public class CaseNewActivity extends AppCompatActivity {
                         }
                     }
                 } catch (DaoException e) {
-                    Log.e(getClass().getName(), "Error while trying to create case", e);
+                    Log.e(getClass().getName(), "Error while trying to build case", e);
                     Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_create_error), getResources().getString(R.string.entity_case)), Snackbar.LENGTH_LONG).show();
                     ErrorReportingHelper.sendCaughtException(tracker, e, null, true);
                 }

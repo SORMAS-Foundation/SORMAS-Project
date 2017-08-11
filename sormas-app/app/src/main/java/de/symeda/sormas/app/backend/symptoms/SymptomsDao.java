@@ -37,4 +37,10 @@ public class SymptomsDao extends AbstractAdoDao<Symptoms> {
         symptoms.setSymptomatic(symptomsDto.getSymptomatic());
     }
 
+    @Override
+    public Symptoms saveAndSnapshot(Symptoms symptoms) throws DaoException {
+        updateIsSymptomatic(symptoms);
+        return super.saveAndSnapshot(symptoms);
+    }
+
 }
