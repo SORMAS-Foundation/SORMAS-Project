@@ -15,7 +15,7 @@ public class CronService {
 	@EJB
 	private ContactFacadeEjbLocal contactFacade;
 	
-	@Schedule(hour = "17", minute = "30", second = "0", persistent=false)
+	@Schedule(hour = "4", minute = "00", second = "0", persistent=false)
     public void runEveryNight() {
 		
 		contactFacade.generateContactFollowUpTasks();
