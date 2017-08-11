@@ -474,7 +474,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		return (EpiDataTravelDao) getAdoDao(EpiDataTravel.class);
 	}
 
-
 	/**
 	 * Close the database connections and clear any cached DAOs.
 	 */
@@ -488,10 +487,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	public static Context getContext() {
 		return instance.context;
-	}
-
-	public static <D extends Dao<T, ?>, T> D dummeMethode(Class<T> clazz) throws SQLException {
-		return instance.getDao(clazz);
 	}
 
 }
