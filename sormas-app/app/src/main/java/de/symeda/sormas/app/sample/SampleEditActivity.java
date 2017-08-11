@@ -88,6 +88,8 @@ public class SampleEditActivity extends AbstractSormasActivity {
 
             if (params.containsKey(KEY_SAMPLE_UUID)) {
                 sampleUuid = params.getString(KEY_SAMPLE_UUID);
+                Sample initialEntity = DatabaseHelper.getSampleDao().queryUuid(sampleUuid);
+                DatabaseHelper.getSampleDao().markAsRead(initialEntity);
             }
         }
 
@@ -102,6 +104,7 @@ public class SampleEditActivity extends AbstractSormasActivity {
             Sample currentEntity = DatabaseHelper.getSampleDao().queryUuid(sampleUuid);
             if (currentEntity.isUnreadOrChildUnread()) {
                 // Resetting the adapter will reload the form and therefore also override any unsaved changes
+                DatabaseHelper.getSampleDao().markAsRead(currentEntity);
                 setAdapter();
                 final Snackbar snackbar = Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_entity_overridden), getResources().getString(R.string.entity_sample)), Snackbar.LENGTH_INDEFINITE);
                 snackbar.setAction(R.string.snackbar_okay, new View.OnClickListener() {

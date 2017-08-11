@@ -72,6 +72,8 @@ public class VisitEditActivity extends AbstractEditTabActivity {
 
         if (params != null && params.containsKey(Visit.UUID)) {
             visitUuid = params.getString(Visit.UUID);
+            Visit initialEntity = DatabaseHelper.getVisitDao().queryUuid(visitUuid);
+            DatabaseHelper.getVisitDao().markAsRead(initialEntity);
         }
         if (params != null && params.containsKey(KEY_PAGE)) {
             currentTab = params.getInt(KEY_PAGE);
@@ -91,6 +93,7 @@ public class VisitEditActivity extends AbstractEditTabActivity {
             Visit currentEntity = DatabaseHelper.getVisitDao().queryUuid(visitUuid);
             if (currentEntity.isUnreadOrChildUnread()) {
                 // Resetting the adapter will reload the form and therefore also override any unsaved changes
+                DatabaseHelper.getVisitDao().markAsRead(currentEntity);
                 setAdapter();
                 final Snackbar snackbar = Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_entity_overridden), getResources().getString(R.string.entity_visit)), Snackbar.LENGTH_INDEFINITE);
                 snackbar.setAction(R.string.snackbar_okay, new View.OnClickListener() {

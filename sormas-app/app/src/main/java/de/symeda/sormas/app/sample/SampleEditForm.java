@@ -58,8 +58,6 @@ public class SampleEditForm extends FormTab {
             sample = DatabaseHelper.getSampleDao().build(associatedCase);
         } else {
             sample = sampleDao.queryUuid(sampleUuid);
-            DatabaseHelper.getSampleDao().markAsRead(sample);
-            sample = sampleDao.queryForId(sample.getId());
         }
 
         binding.setSample(sample);

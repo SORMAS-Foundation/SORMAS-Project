@@ -46,8 +46,6 @@ public class EventEditDataForm extends FormTab {
             // open the given event
             final EventDao eventDao = DatabaseHelper.getEventDao();
             event = eventDao.queryUuid(eventUuid);
-            DatabaseHelper.getEventDao().markAsRead(event);
-            event = eventDao.queryForId(event.getId());
         }
 
         binding.setEvent(event);

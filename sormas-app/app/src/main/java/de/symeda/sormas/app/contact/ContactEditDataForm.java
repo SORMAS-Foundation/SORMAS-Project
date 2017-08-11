@@ -44,8 +44,6 @@ public class ContactEditDataForm extends FormTab {
         final String contactUuid = (String) getArguments().getString(Contact.UUID);
         final ContactDao contactDao = DatabaseHelper.getContactDao();
         Contact contact = contactDao.queryUuid(contactUuid);
-        DatabaseHelper.getContactDao().markAsRead(contact);
-        contact = contactDao.queryForId(contact.getId());
         binding.setContact(contact);
 
         binding.contactLastContactDate.initialize(this);
