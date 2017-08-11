@@ -10,6 +10,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
@@ -233,7 +234,7 @@ public class Sample extends AbstractDomainObject {
 		this.suggestedTypeOfTest = suggestedTypeOfTest;
 	}
 
-	@ManyToOne(cascade = {})
+	@OneToOne(cascade = {})
 	@JoinColumn(nullable = true)
 	public Sample getReferredTo() {
 		return referredTo;

@@ -143,6 +143,7 @@
     <string name="sample_shipped">Shipped</string>
     <string name="sample_received">Received</string>
     <string name="sample_referred">Referred to another laboratory</string>
+    <string name="sample_referred_to">Referred to</string>
 
     <string name="inadequate_specimen_cond">Specimen condition not adequate</string>
     <string name="no_recent_test">Sample has not been tested yet</string>

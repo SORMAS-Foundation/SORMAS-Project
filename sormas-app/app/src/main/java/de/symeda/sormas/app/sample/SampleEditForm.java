@@ -1,8 +1,11 @@
 package de.symeda.sormas.app.sample;
 
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -137,6 +140,25 @@ public class SampleEditForm extends FormTab {
                 } else {
                     binding.sampleNoRecentTestText.setVisibility(View.VISIBLE);
                 }
+            }
+        }
+
+        // only show referred to field when there is a referred sample
+        if (sampleUuid != null) {
+            if (binding.getSample().getReferredTo() != null) {
+                final Sample referredSample = binding.getSample().getReferredTo();
+                binding.sampleReferredTo.setVisibility(View.VISIBLE);
+                binding.sampleReferredTo.setText(getActivity().getResources().getString(R.string.sample_referred_to) + " " + referredSample.getLab().toString() + " " + "\u279D");
+                binding.sampleReferredTo.setPaintFlags(binding.sampleReferredTo.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+                binding.sampleReferredTo.setTextColor(ContextCompat.getColor(getContext(), R.color.colorPrimary));
+                binding.sampleReferredTo.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent(getActivity(), SampleEditActivity.class);
+                        intent.putExtra(SampleEditActivity.KEY_SAMPLE_UUID, referredSample.getUuid());
+                        startActivity(intent);
+                    }
+                });
             }
         }
 

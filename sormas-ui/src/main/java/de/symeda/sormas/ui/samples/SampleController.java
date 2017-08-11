@@ -81,7 +81,12 @@ public class SampleController {
 
 	public void createReferral(SampleDto sample) {
 		SampleCreateForm createForm = new SampleCreateForm();
-		createForm.setValue(sample);
+		SampleDto referralSample = createNewSample(sample.getAssociatedCase());
+		referralSample.setSampleDateTime(sample.getSampleDateTime());
+		referralSample.setSampleCode(sample.getSampleCode());
+		referralSample.setSampleMaterial(sample.getSampleMaterial());
+		referralSample.setSuggestedTypeOfTest(sample.getSuggestedTypeOfTest());
+		createForm.setValue(referralSample);
 		final CommitDiscardWrapperComponent<SampleCreateForm> createView = new CommitDiscardWrapperComponent<SampleCreateForm>(createForm, createForm.getFieldGroup());
 
 		createView.addCommitListener(new CommitListener() {
@@ -124,18 +129,32 @@ public class SampleController {
 			}
 		});
 
-		Button referToOtherLabButton = new Button("Refer to another laboratory");
-		referToOtherLabButton.addStyleName(ValoTheme.BUTTON_LINK);
-		referToOtherLabButton.addClickListener(new ClickListener() {
-			private static final long serialVersionUID = 1L;
-			@Override
-			public void buttonClick(ClickEvent event) {
-				createReferral(dto);
-			}
-		});
+		// Initialize 'Refer to another laboratory' button or link to referred sample
+		Button referOrLinkToOtherLabButton = new Button();
+		referOrLinkToOtherLabButton.addStyleName(ValoTheme.BUTTON_LINK);
+		if (dto.getReferredTo() == null) {
+			referOrLinkToOtherLabButton.setCaption("Refer to another laboratory");
+			referOrLinkToOtherLabButton.addClickListener(new ClickListener() {
+				private static final long serialVersionUID = 1L;
+				@Override
+				public void buttonClick(ClickEvent event) {
+					createReferral(dto);
+				}
+			});
+		} else {
+			SampleDto referredDto = FacadeProvider.getSampleFacade().getSampleByUuid(dto.getReferredTo().getUuid());
+			referOrLinkToOtherLabButton.setCaption("Referred to " + referredDto.getLab().toString());
+			referOrLinkToOtherLabButton.addClickListener(new ClickListener() {
+				private static final long serialVersionUID = 1L;
+				@Override
+				public void buttonClick(ClickEvent event) {
+					navigateToData(dto.getReferredTo().getUuid());
+				}
+			});
+		}
 
-		editView.getButtonsPanel().addComponentAsFirst(referToOtherLabButton);
-		editView.getButtonsPanel().setComponentAlignment(referToOtherLabButton, Alignment.BOTTOM_LEFT);
+		editView.getButtonsPanel().addComponentAsFirst(referOrLinkToOtherLabButton);
+		editView.getButtonsPanel().setComponentAlignment(referOrLinkToOtherLabButton, Alignment.BOTTOM_LEFT);
 
 		return editView;
 	}

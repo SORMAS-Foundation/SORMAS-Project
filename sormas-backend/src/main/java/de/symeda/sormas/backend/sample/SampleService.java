@@ -95,11 +95,11 @@ public class SampleService extends AbstractAdoService<Sample> {
 	 * @see /sormas-backend/doc/UserDataAccess.md
 	 */
 	@Override
+	@SuppressWarnings("unchecked")
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Sample,Sample> samplePath, User user) {
 		// whoever created the case the sample is associated with or is assigned to it
 		// is allowed to access it
 		Path<Case> casePath = samplePath.get(Sample.ASSOCIATED_CASE);
-		@SuppressWarnings("unchecked")
 		Predicate filter = caseService.createUserFilter(cb, cq, (From<Case,Case>)casePath, user);
 		
 		// user that reported it is not able to access it. Otherwise they would also need to access the case
@@ -109,10 +109,9 @@ public class SampleService extends AbstractAdoService<Sample> {
 		if(user.getUserRoles().contains(UserRole.LAB_USER)) {
 			if(user.getLaboratory() != null) {
 				filter = cb.or(filter, cb.equal(samplePath.get(Sample.LAB), user.getLaboratory()));
-				filter = cb.or(filter, cb.equal(samplePath.get(Sample.OTHER_LAB), user.getLaboratory()));
 			}
-		}	
-	
+		}
+		
 		return filter;
 	}
 		

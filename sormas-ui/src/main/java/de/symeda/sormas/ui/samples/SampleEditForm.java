@@ -3,20 +3,25 @@ package de.symeda.sormas.ui.samples;
 import java.util.Arrays;
 import java.util.Date;
 
+import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
+import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -124,11 +129,25 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 				}
 			});
 			
-			// Initialize report information
+			// Initialize referral and report information
+			VerticalLayout reportInfoLayout = new VerticalLayout();
+			
 			String reportInfoText = "Reported on " + DateHelper.formatDateTime(getValue().getReportDateTime()) + " by " + getValue().getReportingUser().toString();
 			Label reportInfoLabel = new Label(reportInfoText);
 			reportInfoLabel.setEnabled(false);
-			getContent().addComponent(reportInfoLabel, REPORT_INFORMATION_LOC);
+			reportInfoLayout.addComponent(reportInfoLabel);
+			
+			SampleReferenceDto referredFromRef = FacadeProvider.getSampleFacade().getReferredFrom(getValue().getUuid());
+			if (referredFromRef != null) {
+				SampleDto referredFrom = FacadeProvider.getSampleFacade().getSampleByUuid(referredFromRef.getUuid());
+				Button referredButton = new Button("Referred from " + referredFrom.getLab().toString());
+				referredButton.addStyleName(ValoTheme.BUTTON_LINK);
+				referredButton.addStyleName(CssStyles.NO_MARGIN);
+				referredButton.addClickListener(s -> ControllerProvider.getSampleController().navigateToData(referredFrom.getUuid()));
+				reportInfoLayout.addComponent(referredButton);
+			}
+			
+			getContent().addComponent(reportInfoLayout, REPORT_INFORMATION_LOC);
 		});
 	}
 

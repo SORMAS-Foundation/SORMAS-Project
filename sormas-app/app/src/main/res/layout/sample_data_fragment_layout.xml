@@ -241,6 +241,14 @@
 
             </LinearLayout>
 
+            <TextView
+                android:id="@+id/sample_referredTo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="30dp"
+                android:paddingBottom="@dimen/field_padding"
+                android:visibility="gone"/>
+
             <LinearLayout
                 android:id="@+id/recent_test_layout"
                 android:orientation="vertical"
