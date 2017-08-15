@@ -18,6 +18,7 @@
             android:launchMode="singleTop"></activity>
         <activity
             android:name=".caze.CaseEditActivity"
+            android:screenOrientation="portrait"
             android:parentActivityName=".caze.CasesActivity">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
@@ -27,6 +28,7 @@
         </activity>
         <activity
             android:name=".caze.CaseNewActivity"
+            android:screenOrientation="portrait"
             android:parentActivityName=".caze.CasesActivity">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
@@ -36,9 +38,11 @@
         </activity>
         <activity
             android:name=".settings.SettingsActivity"
+            android:screenOrientation="portrait"
             android:launchMode="singleTop"></activity>
         <activity
             android:name=".LoginActivity"
+            android:screenOrientation="portrait"
             android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -47,6 +51,7 @@
         </activity>
         <activity
             android:name=".EnterPinActivity"
+            android:screenOrientation="portrait"
             android:launchMode="singleTop"
             android:windowSoftInputMode="stateVisible">
         </activity>
@@ -55,6 +60,7 @@
             android:launchMode="singleTop" />
         <activity
             android:name=".task.TaskEditActivity"
+            android:screenOrientation="portrait"
             android:launchMode="singleTop"
             android:parentActivityName=".task.TasksActivity">
 
@@ -68,6 +74,7 @@
             android:launchMode="singleTop" />
         <activity
             android:name=".contact.ContactNewActivity"
+            android:screenOrientation="portrait"
             android:parentActivityName=".contact.ContactsActivity">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
@@ -77,6 +84,7 @@
         </activity>
         <activity
             android:name=".contact.ContactEditActivity"
+            android:screenOrientation="portrait"
             android:parentActivityName=".contact.ContactsActivity">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
@@ -86,6 +94,7 @@
         </activity>
         <activity
             android:name=".visit.VisitEditActivity"
+            android:screenOrientation="portrait"
             android:parentActivityName=".contact.ContactEditActivity">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
@@ -98,6 +107,7 @@
             android:launchMode="singleTop" />
         <activity
             android:name=".event.EventEditActivity"
+            android:screenOrientation="portrait"
             android:parentActivityName=".event.EventsActivity">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
@@ -107,6 +117,7 @@
         </activity>
         <activity
             android:name=".event.EventNewActivity"
+            android:screenOrientation="portrait"
             android:parentActivityName=".event.EventsActivity">
 
             <meta-data
@@ -115,6 +126,7 @@
         </activity>
         <activity
             android:name=".event.EventParticipantEditActivity"
+            android:screenOrientation="portrait"
             android:parentActivityName=".event.EventEditActivity">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
@@ -124,6 +136,7 @@
         </activity>
         <activity
             android:name=".event.EventParticipantNewActivity"
+            android:screenOrientation="portrait"
             android:noHistory="true"
             android:parentActivityName=".event.EventEditActivity">
 
@@ -137,6 +150,7 @@
             android:launchMode="singleTop" />
         <activity
             android:name=".sample.SampleEditActivity"
+            android:screenOrientation="portrait"
             android:parentActivityName=".sample.SamplesActivity">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->

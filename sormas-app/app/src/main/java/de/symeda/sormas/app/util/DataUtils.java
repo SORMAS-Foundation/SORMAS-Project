@@ -60,8 +60,10 @@ public class DataUtils {
         if (withNull) {
             listOut.add(new Item<E>("", null));
         }
-        for (E listInEntry : listIn) {
-            listOut.add(new Item<E>(String.valueOf(listInEntry), listInEntry));
+        if (listIn != null) {
+            for (E listInEntry : listIn) {
+                listOut.add(new Item<E>(String.valueOf(listInEntry), listInEntry));
+            }
         }
         return listOut;
     }

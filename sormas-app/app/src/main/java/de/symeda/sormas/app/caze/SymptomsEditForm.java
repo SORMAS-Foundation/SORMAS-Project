@@ -3,6 +3,7 @@ package de.symeda.sormas.app.caze;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,6 +33,7 @@ import de.symeda.sormas.app.component.PropertyField;
 import de.symeda.sormas.app.component.SymptomStateField;
 import de.symeda.sormas.app.databinding.CaseSymptomsFragmentLayoutBinding;
 import de.symeda.sormas.app.util.Consumer;
+import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.FormTab;
 import de.symeda.sormas.app.util.Item;
 import de.symeda.sormas.app.validation.SymptomsValidator;
@@ -152,9 +154,7 @@ public class SymptomsEditForm extends FormTab {
                 binding.symptomsDigestedBloodVomit, binding.symptomsCoughingBlood, binding.symptomsBleedingVagina,
                 binding.symptomsSkinBruising1, binding.symptomsBloodUrine, binding.symptomsOtherHemorrhagicSymptoms);
 
-        List<Item> onsetSymptoms = new ArrayList<>();
-        onsetSymptoms.add(new Item("",null));
-        FieldHelper.initSpinnerField(binding.symptomsOnsetSymptom1, onsetSymptoms);
+        FieldHelper.initSpinnerField(binding.symptomsOnsetSymptom1, DataUtils.toItems(null, true));
         addListenerForOnsetSymptom();
 
         Button clearAllBtn = binding.symptomsClearAll;
@@ -317,21 +317,15 @@ public class SymptomsEditForm extends FormTab {
             symptom.addValueChangedListener(new PropertyField.ValueChangeListener() {
                 @Override
                 public void onChange(PropertyField field) {
+                    Item item = new Item(field.getCaption(), field.getCaption());
+                    int position = binding.symptomsOnsetSymptom1.getPositionOf(item);
                     if (field.getValue() == SymptomState.YES) {
-                        Item item = new Item(field.getCaption(), field.getCaption());
-                        // Workaround for Android bug (see https://issuetracker.google.com/issues/36910520)
-                        // Only continue when the item is not in the list yet, otherwise it will be added again
-                        // when calling clearAll
-                        if (binding.symptomsOnsetSymptom1.getPositionOf(item) == -1) {
-                            adapter.remove(adapter.getItem(adapter.getCount()));
+                        if (position == -1) {
                             adapter.add(item);
-                            adapter.add(new Item("Select entry", null));
                         }
                     } else {
-                        Item item = new Item(field.getCaption(), field.getCaption());
-                        if (binding.symptomsOnsetSymptom1.getPositionOf(item) != -1) {
-                            adapter.remove((Item) binding.symptomsOnsetSymptom1.getItemAtPosition(
-                                    binding.symptomsOnsetSymptom1.getPositionOf(new Item(field.getCaption(), field.getCaption()))));
+                        if (position != -1) {
+                            adapter.remove(adapter.getItem(position));
                         }
                     }
                 }
@@ -342,21 +336,15 @@ public class SymptomsEditForm extends FormTab {
             symptom.addValueChangedListener(new PropertyField.ValueChangeListener() {
                 @Override
                 public void onChange(PropertyField field) {
+                    Item item = new Item(field.getCaption(), field.getCaption());
+                    int position = binding.symptomsOnsetSymptom1.getPositionOf(item);
                     if (field.getValue() == SymptomState.YES) {
-                        Item item = new Item(field.getCaption(), field.getCaption());
-                        // Workaround for Android bug (see https://issuetracker.google.com/issues/36910520)
-                        // Only continue when the item is not in the list yet, otherwise it will be added again
-                        // when calling clearAll
-                        if (binding.symptomsOnsetSymptom1.getPositionOf(item) == -1) {
-                            adapter.remove(adapter.getItem(adapter.getCount()));
+                        if (position == -1) {
                             adapter.add(item);
-                            adapter.add(new Item("Select entry", null));
                         }
                     } else {
-                        Item item = new Item(field.getCaption(), field.getCaption());
-                        if (binding.symptomsOnsetSymptom1.getPositionOf(item) != -1) {
-                            adapter.remove((Item) binding.symptomsOnsetSymptom1.getItemAtPosition(
-                                    binding.symptomsOnsetSymptom1.getPositionOf(new Item(field.getCaption(), field.getCaption()))));
+                        if (position != -1) {
+                            adapter.remove(adapter.getItem(position));
                         }
                     }
                 }

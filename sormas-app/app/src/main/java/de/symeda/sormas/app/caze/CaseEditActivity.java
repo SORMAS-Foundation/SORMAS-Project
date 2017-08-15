@@ -198,7 +198,7 @@ public class CaseEditActivity extends AbstractEditTabActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         setCurrentTab(pager.getCurrentItem());
         CaseEditTabs tab = CaseEditTabs.values()[currentTab];
-        Case caze = (Case) adapter.getData(CaseEditTabs.CASE_DATA.ordinal());
+        Case caze = (Case) getData(CaseEditTabs.CASE_DATA.ordinal());
         CaseDao caseDao = DatabaseHelper.getCaseDao();
         switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button
@@ -284,25 +284,27 @@ public class CaseEditActivity extends AbstractEditTabActivity {
                 // PATIENT
                 LocationDao locLocationDao = DatabaseHelper.getLocationDao();
                 PersonDao personDao = DatabaseHelper.getPersonDao();
-                Person person = (Person) adapter.getData(CaseEditTabs.PATIENT.ordinal());
+                Person person = (Person) getData(CaseEditTabs.PATIENT.ordinal());
 
                 // SYMPTOMS
-                Symptoms symptoms = (Symptoms) adapter.getData(CaseEditTabs.SYMPTOMS.ordinal());
+                Symptoms symptoms = (Symptoms) getData(CaseEditTabs.SYMPTOMS.ordinal());
 
                 // HOSPITALIZATION
-                Hospitalization hospitalization = (Hospitalization) adapter.getData(CaseEditTabs.HOSPITALIZATION.ordinal());
+                Hospitalization hospitalization = (Hospitalization) getData(CaseEditTabs.HOSPITALIZATION.ordinal());
 
                 // EPI DATA
-                EpiData epiData = (EpiData) adapter.getData(CaseEditTabs.EPIDATA.ordinal());
+                EpiData epiData = (EpiData) getData(CaseEditTabs.EPIDATA.ordinal());
 
                 // CASE_DATA
-                caze = (Case) adapter.getData(CaseEditTabs.CASE_DATA.ordinal());
+                caze = (Case) getData(CaseEditTabs.CASE_DATA.ordinal());
 
                 // Validations have to be processed from last tab to first to make sure that the user will be re-directed
                 // to the first tab with a validation error
-                CaseDataFragmentLayoutBinding caseDataBinding = ((CaseEditDataForm)adapter.getTabByPosition(CaseEditTabs.CASE_DATA.ordinal())).getBinding();
-                PersonEditFragmentLayoutBinding personBinding =  ((PersonEditForm)adapter.getTabByPosition(CaseEditTabs.PATIENT.ordinal())).getBinding();
-                CaseSymptomsFragmentLayoutBinding symptomsBinding = ((SymptomsEditForm)adapter.getTabByPosition(CaseEditTabs.SYMPTOMS.ordinal())).getBinding();
+
+
+                CaseDataFragmentLayoutBinding caseDataBinding = ((CaseEditDataForm)getTabByPosition(CaseEditTabs.CASE_DATA.ordinal())).getBinding();
+                PersonEditFragmentLayoutBinding personBinding =  ((PersonEditForm)getTabByPosition(CaseEditTabs.PATIENT.ordinal())).getBinding();
+                CaseSymptomsFragmentLayoutBinding symptomsBinding = ((SymptomsEditForm)getTabByPosition(CaseEditTabs.SYMPTOMS.ordinal())).getBinding();
 
                 // Necessary because the entry could've been automatically set, in which case the setValue method of the
                 // custom field has not been called

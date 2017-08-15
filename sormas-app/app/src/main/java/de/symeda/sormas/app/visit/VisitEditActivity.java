@@ -160,7 +160,7 @@ public class VisitEditActivity extends AbstractEditTabActivity {
 
             // Report problem button
             case R.id.action_report:
-                Visit visit = (Visit) adapter.getData(VisitEditTabs.VISIT_DATA.ordinal());
+                Visit visit = (Visit) getData(VisitEditTabs.VISIT_DATA.ordinal());
 
                 UserReportDialog userReportDialog = new UserReportDialog(this, this.getClass().getSimpleName() + ":" + tab.toString(), visit.getUuid());
                 AlertDialog dialog = userReportDialog.create();
@@ -170,12 +170,12 @@ public class VisitEditActivity extends AbstractEditTabActivity {
 
             // Save button
             case R.id.action_save:
-                visit = (Visit) adapter.getData(VisitEditTabs.VISIT_DATA.ordinal());
-                Symptoms symptoms = (Symptoms)adapter.getData(VisitEditTabs.SYMPTOMS.ordinal());
-                SymptomsEditForm symptomsEditForm = (SymptomsEditForm) adapter.getTabByPosition(VisitEditTabs.SYMPTOMS.ordinal());
+                visit = (Visit) getData(VisitEditTabs.VISIT_DATA.ordinal());
+                Symptoms symptoms = (Symptoms)getData(VisitEditTabs.SYMPTOMS.ordinal());
+                SymptomsEditForm symptomsEditForm = (SymptomsEditForm) getTabByPosition(VisitEditTabs.SYMPTOMS.ordinal());
                 Contact contact = DatabaseHelper.getContactDao().queryUuid(contactUuid);
 
-                VisitDataFragmentLayoutBinding visitDataBinding = ((VisitEditDataForm)adapter.getTabByPosition(VisitEditTabs.VISIT_DATA.ordinal())).getBinding();
+                VisitDataFragmentLayoutBinding visitDataBinding = ((VisitEditDataForm)getTabByPosition(VisitEditTabs.VISIT_DATA.ordinal())).getBinding();
                 CaseSymptomsFragmentLayoutBinding symptomsBinding = symptomsEditForm.getBinding();
 
                 // Necessary because the entry could've been automatically set, in which case the setValue method of the
@@ -234,7 +234,7 @@ public class VisitEditActivity extends AbstractEditTabActivity {
     }
 
     public void notifyVisitStatusChange(boolean cooperative) {
-        SymptomsEditForm symptomsEditForm = (SymptomsEditForm) adapter.getTabByPosition(VisitEditTabs.SYMPTOMS.ordinal());
+        SymptomsEditForm symptomsEditForm = (SymptomsEditForm) getTabByPosition(VisitEditTabs.SYMPTOMS.ordinal());
         symptomsEditForm.changeVisitCooperative(cooperative);
     }
 

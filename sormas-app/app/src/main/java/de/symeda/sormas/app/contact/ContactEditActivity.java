@@ -186,8 +186,8 @@ public class ContactEditActivity extends AbstractEditTabActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         currentTab = pager.getCurrentItem();
         ContactEditTabs tab = ContactEditTabs.values()[currentTab];
-        Contact contact = (Contact) adapter.getData(ContactEditTabs.CONTACT_DATA.ordinal());
-        Person person = (Person) adapter.getData(ContactEditTabs.PERSON.ordinal());
+        Contact contact = (Contact) getData(ContactEditTabs.CONTACT_DATA.ordinal());
+        Person person = (Person) getData(ContactEditTabs.PERSON.ordinal());
 
         switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button
@@ -249,8 +249,8 @@ public class ContactEditActivity extends AbstractEditTabActivity {
                 ContactDao contactDao = DatabaseHelper.getContactDao();
 
                 // Validation
-                ContactDataFragmentLayoutBinding contactDataBinding = ((ContactEditDataForm)adapter.getTabByPosition(ContactEditTabs.CONTACT_DATA.ordinal())).getBinding();
-                PersonEditFragmentLayoutBinding personBinding = ((PersonEditForm)adapter.getTabByPosition(ContactEditTabs.PERSON.ordinal())).getBinding();
+                ContactDataFragmentLayoutBinding contactDataBinding = ((ContactEditDataForm)getTabByPosition(ContactEditTabs.CONTACT_DATA.ordinal())).getBinding();
+                PersonEditFragmentLayoutBinding personBinding = ((PersonEditForm)getTabByPosition(ContactEditTabs.PERSON.ordinal())).getBinding();
 
                 ContactValidator.clearErrorsForContactData(contactDataBinding);
                 PersonValidator.clearErrors(personBinding);

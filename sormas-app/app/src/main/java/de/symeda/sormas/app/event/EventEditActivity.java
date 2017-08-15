@@ -168,7 +168,7 @@ public class EventEditActivity extends AbstractEditTabActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         currentTab = pager.getCurrentItem();
         EventEditTabs tab = EventEditTabs.values()[currentTab];
-        Event event = (Event) adapter.getData(EventEditTabs.EVENT_DATA.ordinal());
+        Event event = (Event) getData(EventEditTabs.EVENT_DATA.ordinal());
 
         switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button
@@ -233,7 +233,7 @@ public class EventEditActivity extends AbstractEditTabActivity {
                     // contact data tab
                     case EVENT_DATA:
                         // Validation
-                        EventDataFragmentLayoutBinding binding = ((EventEditDataForm)adapter.getTabByPosition(EventEditTabs.EVENT_DATA.ordinal())).getBinding();
+                        EventDataFragmentLayoutBinding binding = ((EventEditDataForm)getTabByPosition(EventEditTabs.EVENT_DATA.ordinal())).getBinding();
                         EventValidator.clearErrorsForEventData(binding);
 
                         int validationErrorTab = -1;
