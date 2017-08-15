@@ -3,7 +3,6 @@ package de.symeda.sormas.app.caze;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ListFragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
@@ -15,14 +14,11 @@ import android.widget.ArrayAdapter;
 import java.util.List;
 
 import de.symeda.sormas.api.caze.InvestigationStatus;
-import de.symeda.sormas.app.AbstractRootTabActivity;
 import de.symeda.sormas.app.AbstractTabActivity;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
-import de.symeda.sormas.app.util.SyncCallback;
 
 /**
  * Created by Martin on 13.08.2016.
@@ -55,8 +51,8 @@ public class CasesListFragment extends ListFragment {
         listAdapter.addAll(cases);
 
         if (listAdapter.getCount() == 0) {
-            this.getView().findViewById(R.id.empty_list_hint).setVisibility(View.VISIBLE);
             this.getView().findViewById(android.R.id.list).setVisibility(View.GONE);
+            this.getView().findViewById(R.id.empty_list_hint).setVisibility(View.VISIBLE);
         } else {
             this.getView().findViewById(R.id.empty_list_hint).setVisibility(View.GONE);
             this.getView().findViewById(android.R.id.list).setVisibility(View.VISIBLE);
