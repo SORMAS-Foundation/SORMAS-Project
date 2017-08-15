@@ -44,7 +44,7 @@
     <EditText
         android:id="@+id/login_user"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/field_height"
+        android:layout_height="wrap_content"
         android:maxLines="1"
         android:inputType="text"
         android:layout_marginBottom="24dp"
@@ -58,7 +58,7 @@
     <EditText
         android:id="@+id/login_password"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/field_height"
+        android:layout_height="wrap_content"
         android:inputType="textPassword"
         android:layout_marginBottom="24dp"/>
 
