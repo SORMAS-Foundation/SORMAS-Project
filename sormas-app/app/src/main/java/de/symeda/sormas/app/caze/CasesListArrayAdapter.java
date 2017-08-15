@@ -65,9 +65,8 @@ public class CasesListArrayAdapter extends ArrayAdapter<Case> {
         TextView caseStatus = (TextView) convertView.findViewById(R.id.cli_case_satus);
         if (!(ConfigProvider.getUser().getUserRole() == UserRole.INFORMANT && caze.getCaseClassification() == CaseClassification.NOT_CLASSIFIED)) {
             caseStatus.setText(caze.getCaseClassification() != null ? caze.getCaseClassification().toString() : null);
-            caseStatus.setVisibility(View.VISIBLE);
         } else {
-            caseStatus.setVisibility(View.GONE);
+            caseStatus.setText("");
         }
 
         TextView person = (TextView) convertView.findViewById(R.id.cli_person);
