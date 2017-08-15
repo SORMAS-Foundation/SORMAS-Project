@@ -53,7 +53,6 @@ public class Case extends AbstractDomainObject {
 	public static final String INVESTIGATED_DATE = "investigatedDate";
 	public static final String SURVEILLANCE_OFFICER = "surveillanceOfficer";
 	public static final String CASE_OFFICER = "caseOfficer";
-	public static final String CONTACT_OFFICER = "contactOfficer";
 	public static final String SYMPTOMS = "symptoms";
 	public static final String TASKS = "tasks";
 	public static final String REGION = "region";
@@ -93,7 +92,6 @@ public class Case extends AbstractDomainObject {
 	
 	private User surveillanceOfficer;
 	private User caseOfficer;
-	private User contactOfficer;
 	
 	private Symptoms symptoms;
 	
@@ -244,14 +242,6 @@ public class Case extends AbstractDomainObject {
 	}
 	public void setCaseOfficer(User caseOfficer) {
 		this.caseOfficer = caseOfficer;
-	}
-
-	@ManyToOne(cascade = {})
-	public User getContactOfficer() {
-		return contactOfficer;
-	}
-	public void setContactOfficer(User contactOfficer) {
-		this.contactOfficer = contactOfficer;
 	}
 
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)

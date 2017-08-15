@@ -5,20 +5,15 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.CheckBox;
-
-import com.google.android.gms.analytics.Tracker;
 
 import java.util.Date;
 
-import de.symeda.sormas.api.sample.ShipmentStatus;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.AbstractSormasActivity;
 import de.symeda.sormas.app.R;
@@ -109,6 +104,7 @@ public class SampleEditActivity extends AbstractSormasActivity {
             Sample currentEntity = DatabaseHelper.getSampleDao().queryUuid(sampleUuid);
             if (currentEntity.isUnreadOrChildUnread()) {
                 // Resetting the adapter will reload the form and therefore also override any unsaved changes
+                DatabaseHelper.getSampleDao().markAsRead(currentEntity);
                 setAdapter();
                 final Snackbar snackbar = Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_entity_overridden), getResources().getString(R.string.entity_sample)), Snackbar.LENGTH_INDEFINITE);
                 snackbar.setAction(R.string.snackbar_okay, new View.OnClickListener() {
@@ -119,8 +115,6 @@ public class SampleEditActivity extends AbstractSormasActivity {
                 });
                 snackbar.show();
             }
-
-            DatabaseHelper.getSampleDao().markAsRead(currentEntity);
         }
     }
 
@@ -171,15 +165,6 @@ public class SampleEditActivity extends AbstractSormasActivity {
             case R.id.action_save:
                 SampleDao sampleDao = DatabaseHelper.getSampleDao();
                 sample = (Sample) sampleTab.getData();
-                CheckBox shipped = (CheckBox) findViewById(R.id.sample_shipmentStatus);
-                if (shipped.isEnabled()) {
-                    if (shipped.isChecked()) {
-                        sample.setShipmentStatus(ShipmentStatus.SHIPPED);
-                    } else {
-                        sample.setShipmentStatus(ShipmentStatus.NOT_SHIPPED);
-                        sample.setShipmentDate(null);
-                    }
-                }
 
                 if (sample.getReportingUser() == null) {
                     sample.setReportingUser(ConfigProvider.getUser());

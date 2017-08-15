@@ -10,6 +10,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
@@ -17,7 +18,6 @@ import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SampleSource;
 import de.symeda.sormas.api.sample.SampleTestType;
-import de.symeda.sormas.api.sample.ShipmentStatus;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.Case;
@@ -41,7 +41,6 @@ public class Sample extends AbstractDomainObject {
 	public static final String SAMPLE_MATERIAL_TEXT = "sampleMaterialText";
 	public static final String LAB = "lab";
 	public static final String OTHER_LAB = "otherLab";
-	public static final String SHIPMENT_STATUS = "shipmentStatus";
 	public static final String SHIPMENT_DATE = "shipmentDate";
 	public static final String SHIPMENT_DETAILS = "shipmentDetails";
 	public static final String RECEIVED_DATE = "receivedDate";
@@ -49,6 +48,9 @@ public class Sample extends AbstractDomainObject {
 	public static final String COMMENT = "comment";
 	public static final String SAMPLE_SOURCE = "sampleSource";
 	public static final String SUGGESTED_TYPE_OF_TEST = "suggestedTypeOfTest";
+	public static final String REFERRED_TO = "referredTo";
+	public static final String SHIPPED = "shipped";
+	public static final String RECEIVED = "received";
 	
 	private Case associatedCase;
 	private String sampleCode;
@@ -60,7 +62,6 @@ public class Sample extends AbstractDomainObject {
 	private String sampleMaterialText;
 	private Facility lab;
 	private Facility otherLab;
-	private ShipmentStatus shipmentStatus;
 	private Date shipmentDate;
 	private String shipmentDetails;
 	private Date receivedDate;
@@ -69,6 +70,9 @@ public class Sample extends AbstractDomainObject {
 	private String comment;
 	private SampleSource sampleSource;
 	private SampleTestType suggestedTypeOfTest;
+	private Sample referredTo;
+	private boolean shipped;
+	private boolean received;
 	
 	private List<SampleTest> sampleTests;
 	
@@ -158,15 +162,6 @@ public class Sample extends AbstractDomainObject {
 		this.otherLab = otherLab;
 	}
 	
-	@Enumerated(EnumType.STRING)
-	@Column(nullable=false)
-	public ShipmentStatus getShipmentStatus() {
-		return shipmentStatus;
-	}
-	public void setShipmentStatus(ShipmentStatus shipmentStatus) {
-		this.shipmentStatus = shipmentStatus;
-	}
-	
 	@Temporal(TemporalType.TIMESTAMP)
 	public Date getShipmentDate() {
 		return shipmentDate;
@@ -238,6 +233,31 @@ public class Sample extends AbstractDomainObject {
 	public void setSuggestedTypeOfTest(SampleTestType suggestedTypeOfTest) {
 		this.suggestedTypeOfTest = suggestedTypeOfTest;
 	}
+
+	@OneToOne(cascade = {})
+	@JoinColumn(nullable = true)
+	public Sample getReferredTo() {
+		return referredTo;
+	}
+	public void setReferredTo(Sample referredTo) {
+		this.referredTo = referredTo;
+	}
+	
+	@Column
+	public boolean isShipped() {
+		return shipped;
+	}
+	public void setShipped(boolean shipped) {
+		this.shipped = shipped;
+	}
+	
+	@Column
+	public boolean isReceived() {
+		return received;
+	}
+	public void setReceived(boolean received) {
+		this.received = received;
+	}
 	
 	@Override
 	public String toString() {
@@ -245,5 +265,6 @@ public class Sample extends AbstractDomainObject {
 		String sampleString = materialString.isEmpty() ? "Sample" : "sample";
 		return materialString + " " + sampleString + " for case " + DataHelper.getShortUuid(associatedCase.getUuid());
 	}
+	
 	
 }

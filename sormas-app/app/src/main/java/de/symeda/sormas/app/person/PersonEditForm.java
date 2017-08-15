@@ -80,7 +80,7 @@ public class PersonEditForm extends FormTab {
             public void onNothingSelected(AdapterView<?> parent) {
             }
         });
-        FieldHelper.initMonthSpinnerField(binding.personBirthdateMM, DataUtils.toItems(DateHelper.getMonthsInYear(),true), new AdapterView.OnItemSelectedListener() {
+        FieldHelper.initSpinnerField(binding.personBirthdateMM, DataUtils.getMonthItems(), new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 updateApproximateAgeField();

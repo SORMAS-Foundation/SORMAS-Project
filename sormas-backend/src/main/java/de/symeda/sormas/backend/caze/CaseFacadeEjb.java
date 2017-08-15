@@ -12,10 +12,12 @@ import javax.ejb.Stateless;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskHelper;
 import de.symeda.sormas.api.task.TaskPriority;
@@ -23,6 +25,7 @@ import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb.EpiDataFacadeEjbLocal;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
@@ -79,6 +82,8 @@ public class CaseFacadeEjb implements CaseFacade {
 	private HospitalizationFacadeEjbLocal hospitalizationFacade;
 	@EJB
 	private EpiDataFacadeEjbLocal epiDataFacade;
+	@EJB
+	private ContactFacadeEjbLocal contactFacade;
 	
 	@Override
 	public List<CaseDataDto> getAllCasesAfter(Date date, String userUuid) {
@@ -164,11 +169,23 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	@Override
 	public CaseDataDto saveCase(CaseDataDto dto) {
-
-		Case caze = fromCaseDataDto(dto);
-		caseService.ensurePersisted(caze);
+		Case currentCaze = caseService.getByUuid(dto.getUuid());
+		Disease currentDisease = null;
+		if (currentCaze != null) {
+			currentDisease = currentCaze.getDisease();
+		}
 		
+		Case caze = fromCaseDataDto(dto);
+		
+		caseService.ensurePersisted(caze);
 		updateCaseInvestigationProcess(caze);
+
+		// Update follow-up until and status of all contacts of this case if the disease has changed
+		if (currentDisease != null && caze.getDisease() != currentDisease) {
+			for (ContactDto contact : contactFacade.getAllByCase(getReferenceByUuid(caze.getUuid()))) {
+				contactFacade.updateFollowUpUntilAndStatus(contact);
+			}
+		}
 		
 		return toCaseDataDto(caze);
 	}
@@ -209,7 +226,6 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		target.setSurveillanceOfficer(userService.getByReferenceDto(source.getSurveillanceOfficer()));
 		target.setCaseOfficer(userService.getByReferenceDto(source.getCaseOfficer()));
-		target.setContactOfficer(userService.getByReferenceDto(source.getContactOfficer()));
 		target.setSymptoms(symptomsFacade.fromDto(source.getSymptoms()));
 		
 		target.setPregnant(source.getPregnant());
@@ -257,7 +273,6 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		target.setSurveillanceOfficer(UserFacadeEjb.toReferenceDto(source.getSurveillanceOfficer()));
 		target.setCaseOfficer(UserFacadeEjb.toReferenceDto(source.getCaseOfficer()));
-		target.setContactOfficer(UserFacadeEjb.toReferenceDto(source.getContactOfficer()));
 		target.setSymptoms(SymptomsFacadeEjb.toDto(source.getSymptoms()));
 		
 		target.setPregnant(source.getPregnant());

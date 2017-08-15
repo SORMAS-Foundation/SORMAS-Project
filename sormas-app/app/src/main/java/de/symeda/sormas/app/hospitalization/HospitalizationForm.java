@@ -7,15 +7,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.android.gms.analytics.Tracker;
-
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.app.backend.hospitalization.PreviousHospitalization;
 import de.symeda.sormas.app.component.LabelField;
@@ -23,8 +19,6 @@ import de.symeda.sormas.app.component.ListField;
 import de.symeda.sormas.app.component.PropertyField;
 import de.symeda.sormas.app.databinding.CaseHospitalizationFragmentLayoutBinding;
 import de.symeda.sormas.app.util.Consumer;
-import de.symeda.sormas.app.util.DataUtils;
-import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.FormTab;
 
 public class HospitalizationForm extends FormTab {
@@ -64,7 +58,7 @@ public class HospitalizationForm extends FormTab {
                     @Override
                     public void accept(Object prevHosp) {
                         if (prevHosp == null) {
-                            prevHosp = DatabaseHelper.getPreviousHospitalizationDao().create();
+                            prevHosp = DatabaseHelper.getPreviousHospitalizationDao().build();
                         }
                         PreviousHospitalizationForm previousHospitalizationForm = new PreviousHospitalizationForm();
                         previousHospitalizationForm.initialize(

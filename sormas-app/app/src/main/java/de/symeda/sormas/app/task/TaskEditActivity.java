@@ -104,6 +104,7 @@ public class TaskEditActivity extends AbstractSormasActivity {
         Task currentEntity = DatabaseHelper.getTaskDao().queryUuid(taskUuid);
         if (currentEntity.isUnreadOrChildUnread()) {
             // Resetting the adapter will reload the form and therefore also override any unsaved changes
+            DatabaseHelper.getTaskDao().markAsRead(currentEntity);
             setAdapter();
             final Snackbar snackbar = Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_entity_overridden), getResources().getString(R.string.entity_task)), Snackbar.LENGTH_INDEFINITE);
             snackbar.setAction(R.string.snackbar_okay, new View.OnClickListener() {
@@ -114,8 +115,6 @@ public class TaskEditActivity extends AbstractSormasActivity {
             });
             snackbar.show();
         }
-
-        DatabaseHelper.getTaskDao().markAsRead(currentEntity);
     }
 
     @Override

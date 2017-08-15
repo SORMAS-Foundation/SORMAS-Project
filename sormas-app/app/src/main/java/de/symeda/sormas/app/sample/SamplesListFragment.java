@@ -2,7 +2,6 @@ package de.symeda.sormas.app.sample;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ListFragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
@@ -14,17 +13,13 @@ import android.widget.ArrayAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.symeda.sormas.api.sample.ShipmentStatus;
-import de.symeda.sormas.app.AbstractRootTabActivity;
 import de.symeda.sormas.app.AbstractTabActivity;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.sample.Sample;
-import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
-import de.symeda.sormas.app.util.SyncCallback;
 
 /**
  * Created by Mate Strysewske on 06.02.2017.
@@ -51,7 +46,36 @@ public class SamplesListFragment extends ListFragment {
         Bundle arguments = getArguments();
         if (arguments.containsKey(ARG_FILTER_STATUS)) {
             ShipmentStatus filterStatus = (ShipmentStatus)arguments.getSerializable(ARG_FILTER_STATUS);
-            samples = DatabaseHelper.getSampleDao().queryForEq(Sample.SHIPMENT_STATUS, filterStatus);
+            if (filterStatus == ShipmentStatus.NOT_SHIPPED) {
+                samples = DatabaseHelper.getSampleDao().queryForEq(Sample.SHIPPED, false);
+                List<Sample> samplesToRemove = new ArrayList<>();
+                for (Sample sample : samples) {
+                    if (sample.isReceived() || sample.getReferredTo() != null) {
+                        samplesToRemove.add(sample);
+                    }
+                }
+                samples.removeAll(samplesToRemove);
+            } else if (filterStatus == ShipmentStatus.SHIPPED) {
+                samples = DatabaseHelper.getSampleDao().queryForEq(Sample.SHIPPED, true);
+                List<Sample> samplesToRemove = new ArrayList<>();
+                for (Sample sample : samples) {
+                    if (sample.isReceived() || sample.getReferredTo() != null) {
+                        samplesToRemove.add(sample);
+                    }
+                }
+                samples.removeAll(samplesToRemove);
+            } else if (filterStatus == ShipmentStatus.RECEIVED) {
+                samples = DatabaseHelper.getSampleDao().queryForEq(Sample.RECEIVED, true);
+                List<Sample> samplesToRemove = new ArrayList<>();
+                for (Sample sample : samples) {
+                    if (sample.getReferredTo() != null) {
+                        samplesToRemove.add(sample);
+                    }
+                }
+                samples.removeAll(samplesToRemove);
+            } else {
+                samples = DatabaseHelper.getSampleDao().queryForNotNull(Sample.REFERRED_TO + "_id");
+            }
         } else {
             if(arguments.containsKey(KEY_CASE_UUID)) {
                 parentCaseUuid = (String) arguments.get(KEY_CASE_UUID);

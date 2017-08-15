@@ -226,14 +226,7 @@ public class CaseController {
         	public void onCommit() {
         		if (!caseEditForm.getFieldGroup().isModified()) {
         			final CaseDataDto cazeDto = caseEditForm.getValue();       
-        			final CaseDataDto currentCazeDto = findCase(cazeDto.getUuid());
         			saveCase(cazeDto);
-        			
-        			if (cazeDto.getDisease() != currentCazeDto.getDisease()) {
-        				for (ContactDto contact : FacadeProvider.getContactFacade().getAllByCase(FacadeProvider.getCaseFacade().getReferenceByUuid(cazeDto.getUuid()))) {
-							FacadeProvider.getContactFacade().updateFollowUpUntilAndStatus(contact);
-						}
-        			}
         		}
         	}
         });

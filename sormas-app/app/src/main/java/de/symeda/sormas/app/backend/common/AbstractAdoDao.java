@@ -186,7 +186,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
             ADO snapshot;
             boolean snapshotNeeded = ado.getId() != null && !ado.isModified();
             if (snapshotNeeded) {
-                // we need to create a snapshot of the unmodified version, so we can use it for comparison when merging
+                // we need to build a snapshot of the unmodified version, so we can use it for comparison when merging
                 snapshot = queryForId(ado.getId());
                 snapshot.setId(null);
                 snapshot.setSnapshot(true);
@@ -233,7 +233,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
             }
 
             if (ado.getId() == null) {
-                // create the new entity and take note that it has been create in the app (modified)
+                // build the new entity and take note that it has been build in the app (modified)
                 ado.setModified(true);
                 create(ado);
             }
@@ -259,7 +259,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
                     ado.setModified(true);
                     update(ado);
 
-                    // now really create the cloneCascading
+                    // now really build the cloneCascading
                     create(snapshot);
                 }
             }
@@ -326,7 +326,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
             ADO snapshot;
             boolean snapshotNeeded = !ado.isModified();
             if (snapshotNeeded) {
-                // we need to create a cloneCascading of the unmodified version, so we can use it for comparison when merging
+                // we need to build a cloneCascading of the unmodified version, so we can use it for comparison when merging
                 snapshot = queryForId(ado.getId());
                 snapshot.setId(null);
                 snapshot.setSnapshot(true);
@@ -772,7 +772,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
         return update((ADO)ado);
     }
 
-    public ADO create() {
+    public ADO build() {
         try {
             ADO ado = getAdoClass().newInstance();
             ado.setUuid(DataHelper.createUuid());
@@ -780,7 +780,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
             ado.setCreationDate(now);
             ado.setChangeDate(now);
 
-            // create all embedded entities
+            // build all embedded entities
 
             // ignore parent property
             EmbeddedAdo annotation = ado.getClass().getAnnotation(EmbeddedAdo.class);
@@ -794,8 +794,8 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
                 if (parentProperty.equals(property.getName()))
                     continue;
 
-                // create embedded
-                AbstractDomainObject embeddedAdo = DatabaseHelper.getAdoDao((Class<AbstractDomainObject>)property.getPropertyType()).create();
+                // build embedded
+                AbstractDomainObject embeddedAdo = DatabaseHelper.getAdoDao((Class<AbstractDomainObject>)property.getPropertyType()).build();
 
                 if (embeddedAdo == null) {
                     throw new IllegalArgumentException("No embedded entity was created for " + property.getName());
@@ -891,6 +891,19 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
         }
     }
 
+    public List<ADO> queryForNotNull(String fieldName) {
+        try {
+            QueryBuilder builder = queryBuilder();
+            Where where = builder.where();
+            where.isNotNull(fieldName);
+            where.and().eq(AbstractDomainObject.SNAPSHOT, false).query();
+            return builder.query();
+        } catch (SQLException e) {
+            Log.e(getTableName(), "queryForNotNull threw exception on: " + fieldName, e);
+            throw new RuntimeException(e);
+        }
+    }
+
     /**
      * @see Dao#queryBuilder()
      */
@@ -905,7 +918,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
         try {
             return dao.create(data);
         } catch (SQLException e) {
-            Log.e(getTableName(), "create threw exception on: " + data, e);
+            Log.e(getTableName(), "build threw exception on: " + data, e);
             throw new RuntimeException(e);
         }
     }

@@ -102,11 +102,16 @@ public final class FieldHelper {
 		});
 	}
 	
-	@SuppressWarnings("rawtypes")
 	public static void setRequiredWhen(FieldGroup fieldGroup, Object sourcePropertyId,
 			List<Object> targetPropertyIds, final List<Object> sourceValues) {
 		
-		Field sourceField = fieldGroup.getField(sourcePropertyId);
+		setRequiredWhen(fieldGroup, fieldGroup.getField(sourcePropertyId), targetPropertyIds, sourceValues);
+	}
+	
+	@SuppressWarnings("rawtypes")
+	public static void setRequiredWhen(FieldGroup fieldGroup, Field sourceField,
+			List<Object> targetPropertyIds, final List<Object> sourceValues) {
+		
 		if(sourceField instanceof AbstractField<?>) {
 			((AbstractField) sourceField).setImmediate(true);
 		}
@@ -159,6 +164,42 @@ public final class FieldHelper {
 				Field targetField = fieldGroup.getField(targetPropertyId);
 				if(Diseases.DiseasesConfiguration.isDefined(SymptomsDto.class, (String) targetPropertyId, disease)) {
 					targetField.setRequired(required);
+				}
+			}
+		});
+	}
+	
+	/**
+	 * Sets the target fields to enabled when the source field has a value that's contained
+	 * in the sourceValues list.
+	 */
+	@SuppressWarnings("rawtypes")
+	public static void setEnabledWhen(FieldGroup fieldGroup, Field sourceField, final List<Object> sourceValues,
+			List<Object> targetPropertyIds, boolean clearOnDisabled) {
+		
+		if (sourceField instanceof AbstractField<?>) {
+			((AbstractField) sourceField).setImmediate(true);
+		}
+		
+		// initialize
+		{
+			boolean enabled = sourceValues.contains(sourceField.getValue());
+			for (Object targetPropertyId : targetPropertyIds) {
+				Field targetField = fieldGroup.getField(targetPropertyId);
+				targetField.setEnabled(enabled);
+				if (!enabled && clearOnDisabled) {
+					targetField.clear();
+				}
+			}
+		}
+		
+		sourceField.addValueChangeListener(event -> {
+			boolean enabled = sourceValues.contains(event.getProperty().getValue());
+			for (Object targetPropertyId : targetPropertyIds) {
+				Field targetField = fieldGroup.getField(targetPropertyId);
+				targetField.setEnabled(enabled);
+				if (!enabled && clearOnDisabled) {
+					targetField.clear();
 				}
 			}
 		});

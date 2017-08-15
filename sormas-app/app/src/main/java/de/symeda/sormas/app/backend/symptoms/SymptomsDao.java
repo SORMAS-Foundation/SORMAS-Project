@@ -4,6 +4,8 @@ import com.j256.ormlite.dao.Dao;
 
 import java.sql.SQLException;
 
+import de.symeda.sormas.api.symptoms.SymptomsDto;
+import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -26,4 +28,24 @@ public class SymptomsDao extends AbstractAdoDao<Symptoms> {
     public String getTableName() {
         return Symptoms.TABLE_NAME;
     }
+
+    public void updateIsSymptomatic(Symptoms symptoms) {
+        SymptomsDtoHelper symptomsDtoHelper = new SymptomsDtoHelper();
+        SymptomsDto symptomsDto = new SymptomsDto();
+        symptomsDtoHelper.fillInnerFromAdo(symptomsDto, symptoms);
+        SymptomsHelper.updateIsSymptomatic(symptomsDto);
+        symptoms.setSymptomatic(symptomsDto.getSymptomatic());
+    }
+
+    @Override
+    public Symptoms saveAndSnapshot(Symptoms symptoms) throws DaoException {
+        // If new symptoms are created, updateIsSymptomatic has to be called after the initial save
+        if (symptoms.getId() == null) {
+            super.saveAndSnapshot(symptoms);
+            updateIsSymptomatic(symptoms);
+        }
+
+        return super.saveAndSnapshot(symptoms);
+    }
+
 }

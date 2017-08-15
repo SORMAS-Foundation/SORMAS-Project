@@ -89,7 +89,7 @@
                     android:layout_weight="0.5"
                     android:paddingTop="@dimen/field_padding"
                     android:paddingBottom="@dimen/field_padding"
-                    android:nextFocusForward="@+id/sample_comment"
+                    android:nextFocusForward="@+id/sample_suggestedTypeOfTest"
                     android:value="@={sample.sampleMaterialText}"/>
 
             </LinearLayout>
@@ -101,15 +101,6 @@
                 android:layout_weight="0.5"
                 android:paddingBottom="@dimen/field_padding"
                 android:value="@={sample.sampleSource}"/>
-
-            <de.symeda.sormas.app.component.TextField
-                android:id="@+id/sample_comment"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="@dimen/field_padding"
-                android:paddingBottom="@dimen/field_padding"
-                android:nextFocusForward="@+id/sample_lab"
-                android:value="@={sample.comment}"/>
 
             <de.symeda.sormas.app.component.SpinnerField
                 android:id="@+id/sample_suggestedTypeOfTest"
@@ -131,7 +122,8 @@
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -139,23 +131,13 @@
                     android:layout_weight="0.5"
                     android:orientation="vertical">
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:textSize="@dimen/field_caption_size"
-                        android:layout_marginBottom="@dimen/field_caption_margin_bottom"
-                        android:layout_marginLeft="@dimen/field_caption_margin_left"
-                        android:text="@string/sample_shipmentStatus"
-                        android:labelFor="@+id/sample_shipmentStatus"/>
-
-                    <CheckBox
-                        android:id="@+id/sample_shipmentStatus"
+                    <de.symeda.sormas.app.component.CheckBoxField
+                        android:id="@+id/sample_shipped"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:paddingTop="@dimen/field_padding"
                         android:paddingBottom="@dimen/field_padding"
-                        android:text="@string/sample_shipped"
-                        android:textSize="@dimen/field_caption_size" />
+                        android:value="@={sample.shipped}"/>
 
                 </LinearLayout>
 
@@ -178,37 +160,101 @@
                 android:paddingBottom="@dimen/field_padding"
                 android:value="@={sample.shipmentDetails}"/>
 
-            <LinearLayout
-                android:orientation="horizontal"
+            <de.symeda.sormas.app.component.TextField
+                android:id="@+id/sample_comment"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:paddingTop="20dp"
+                android:paddingBottom="@dimen/field_padding"
+                android:nextFocusForward="@+id/sample_lab"
+                android:value="@={sample.comment}"/>
 
-                <de.symeda.sormas.app.component.DateField
-                    android:id="@+id/sample_receivedDate"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.5"
-                    android:paddingTop="@dimen/field_padding"
-                    android:paddingBottom="@dimen/field_padding"
-                    android:value="@={sample.receivedDate}"/>
+            <LinearLayout
+                android:id="@+id/sample_received_layout"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone">
 
-                <de.symeda.sormas.app.component.TextField
-                    android:id="@+id/sample_labSampleID"
-                    android:layout_width="match_parent"
+                <TextView
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:paddingTop="@dimen/field_padding"
-                    android:paddingBottom="@dimen/field_padding"
-                    android:layout_weight="0.5"
-                    android:nextFocusForward="@+id/sample_dateTime"
-                    android:value="@={sample.labSampleID}"/>
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:text="@string/headline_sample_received"
+                    android:id="@+id/sample_received_headline"
+                    android:textColor="@android:color/tab_indicator_text"
+                    android:textSize="@dimen/abc_text_size_body_1_material"
+                    android:textStyle="bold"
+                    android:paddingTop="30dp"
+                    android:paddingBottom="10dp" />
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <de.symeda.sormas.app.component.DateField
+                        android:id="@+id/sample_receivedDate"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.5"
+                        android:paddingTop="@dimen/field_padding"
+                        android:paddingBottom="@dimen/field_padding"
+                        android:value="@={sample.receivedDate}"/>
+
+                    <de.symeda.sormas.app.component.LabelField
+                        android:id="@+id/sample_labSampleID"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="@dimen/field_padding"
+                        android:paddingBottom="@dimen/field_padding"
+                        android:layout_weight="0.5"
+                        android:nextFocusForward="@+id/sample_dateTime"
+                        android:value="@={sample.labSampleID}"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <de.symeda.sormas.app.component.SpinnerField
+                        android:id="@+id/sample_specimenCondition"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.5"
+                        android:paddingTop="@dimen/field_padding"
+                        android:paddingBottom="@dimen/field_padding"
+                        android:value="@={sample.specimenCondition}"/>
+
+                    <de.symeda.sormas.app.component.LabelField
+                        android:id="@+id/sample_noTestPossibleReason"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.5"
+                        android:paddingTop="@dimen/field_padding"
+                        android:paddingBottom="@dimen/field_padding"
+                        android:value="@={sample.noTestPossibleReason}"/>
+
+                </LinearLayout>
 
             </LinearLayout>
+
+            <TextView
+                android:id="@+id/sample_referredTo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="30dp"
+                android:paddingBottom="@dimen/field_padding"
+                android:visibility="gone"/>
 
             <LinearLayout
                 android:id="@+id/recent_test_layout"
                 android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:visibility="gone">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -222,26 +268,6 @@
                     android:paddingTop="30dp"
                     android:paddingBottom="10dp" />
 
-                <!-- If noTestPossible is set to yes -->
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/inadequate_specimen_cond"
-                    android:id="@+id/sample_no_test_possible_text"
-                    android:textColor="@android:color/tab_indicator_text"
-                    android:textSize="@dimen/field_caption_size"
-                    android:paddingBottom="10dp" />
-
-                <de.symeda.sormas.app.component.LabelField
-                    android:id="@+id/sample_noTestPossibleReason"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.5"
-                    android:paddingTop="@dimen/field_padding"
-                    android:paddingBottom="@dimen/field_padding"
-                    android:value="@={sample.noTestPossibleReason}"/>
-
                 <!-- If a recent test exists -->
 
                 <de.symeda.sormas.app.component.LabelField
@@ -251,7 +277,8 @@
                     android:layout_weight="0.5"
                     android:paddingTop="@dimen/field_padding"
                     android:paddingBottom="@dimen/field_padding"
-                    app:sampleTypeOfTest="@{sample.uuid}"/>
+                    app:sampleTypeOfTest="@{sample.uuid}"
+                    android:visibility="gone"/>
 
                 <de.symeda.sormas.app.component.LabelField
                     android:id="@+id/sample_testResult"
@@ -260,7 +287,8 @@
                     android:layout_weight="0.5"
                     android:paddingTop="@dimen/field_padding"
                     android:paddingBottom="@dimen/field_padding"
-                    app:sampleTestResult="@{sample.uuid}"/>
+                    app:sampleTestResult="@{sample.uuid}"
+                    android:visibility="gone"/>
 
                 <!-- If there is no recent test -->
 
@@ -271,7 +299,8 @@
                     android:id="@+id/sample_no_recent_test_text"
                     android:textColor="@android:color/tab_indicator_text"
                     android:textSize="@dimen/field_caption_size"
-                    android:paddingBottom="10dp" />
+                    android:paddingBottom="10dp"
+                    android:visibility="gone" />
 
             </LinearLayout>
 

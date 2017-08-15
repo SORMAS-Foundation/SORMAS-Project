@@ -103,6 +103,7 @@ public class EventEditActivity extends AbstractEditTabActivity {
             Event currentEntity = DatabaseHelper.getEventDao().queryUuid(eventUuid);
             if (currentEntity.isUnreadOrChildUnread()) {
                 // Resetting the adapter will reload the form and therefore also override any unsaved changes
+                DatabaseHelper.getEventDao().markAsRead(currentEntity);
                 setAdapter();
                 final Snackbar snackbar = Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_entity_overridden), getResources().getString(R.string.entity_alert)), Snackbar.LENGTH_INDEFINITE);
                 snackbar.setAction(R.string.snackbar_okay, new View.OnClickListener() {
@@ -113,8 +114,6 @@ public class EventEditActivity extends AbstractEditTabActivity {
                 });
                 snackbar.show();
             }
-
-            DatabaseHelper.getEventDao().markAsRead(currentEntity);
         }
     }
 
@@ -169,7 +168,7 @@ public class EventEditActivity extends AbstractEditTabActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         currentTab = pager.getCurrentItem();
         EventEditTabs tab = EventEditTabs.values()[currentTab];
-        Event event = (Event) adapter.getData(EventEditTabs.EVENT_DATA.ordinal());
+        Event event = (Event) getData(EventEditTabs.EVENT_DATA.ordinal());
 
         switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button
@@ -234,7 +233,7 @@ public class EventEditActivity extends AbstractEditTabActivity {
                     // contact data tab
                     case EVENT_DATA:
                         // Validation
-                        EventDataFragmentLayoutBinding binding = ((EventEditDataForm)adapter.getTabByPosition(EventEditTabs.EVENT_DATA.ordinal())).getBinding();
+                        EventDataFragmentLayoutBinding binding = ((EventEditDataForm)getTabByPosition(EventEditTabs.EVENT_DATA.ordinal())).getBinding();
                         EventValidator.clearErrorsForEventData(binding);
 
                         int validationErrorTab = -1;

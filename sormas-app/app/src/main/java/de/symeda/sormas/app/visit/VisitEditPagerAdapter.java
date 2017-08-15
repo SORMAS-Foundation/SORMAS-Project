@@ -21,9 +21,6 @@ import de.symeda.sormas.app.util.FormTab;
 public class VisitEditPagerAdapter extends FragmentStatePagerAdapter {
 
     private Bundle visitEditBundle;
-    private VisitEditDataForm visitEditDataForm;
-    private SymptomsEditForm symptomsEditForm;
-
 
     // Build a Constructor and assign the passed Values to appropriate values in the class
     public VisitEditPagerAdapter(FragmentManager fm, Bundle visitBundle) {
@@ -38,24 +35,21 @@ public class VisitEditPagerAdapter extends FragmentStatePagerAdapter {
         VisitEditTabs tab = VisitEditTabs.values()[position];
         switch (tab) {
             case VISIT_DATA:
-                visitEditDataForm = new VisitEditDataForm();
-                visitEditDataForm.setArguments(visitEditBundle);
-                frag = visitEditDataForm;
+                frag = new VisitEditDataForm();
+                frag.setArguments(visitEditBundle);
                 break;
 
             case SYMPTOMS:
-                symptomsEditForm = new SymptomsEditForm();
+                frag = new SymptomsEditForm();
 
                 Bundle symptomsEditBundle = new Bundle();
-                // create new symptoms for new visit
+                // build new symptoms for new visit
                 if(visitEditBundle.getBoolean(VisitEditDataForm.NEW_VISIT)) {
                     String keyContactUuid = visitEditBundle.getString(VisitEditDataForm.KEY_CONTACT_UUID);
                     Contact contact = DatabaseHelper.getContactDao().queryUuid(keyContactUuid);
                     symptomsEditBundle.putSerializable(Visit.DISEASE, contact.getCaze().getDisease());
                     symptomsEditBundle.putBoolean(SymptomsEditForm.NEW_SYMPTOMS, true);
                     symptomsEditBundle.putBoolean(SymptomsEditForm.FOR_VISIT, true);
-                    symptomsEditBundle.putBoolean(SymptomsEditForm.VISIT_COOPERATIVE,
-                            visitEditDataForm.getBinding().visitVisitStatus.getValue() == VisitStatus.COOPERATIVE);
                 }
                 // edit symptoms for given visit
                 else {
@@ -68,8 +62,7 @@ public class VisitEditPagerAdapter extends FragmentStatePagerAdapter {
                             visit.getVisitStatus() == VisitStatus.COOPERATIVE);
                 }
 
-                symptomsEditForm.setArguments(symptomsEditBundle);
-                frag = symptomsEditForm;
+                frag.setArguments(symptomsEditBundle);
                 break;
         }
         return frag;
@@ -85,30 +78,5 @@ public class VisitEditPagerAdapter extends FragmentStatePagerAdapter {
     @Override
     public int getCount() {
         return VisitEditTabs.values().length;
-    }
-
-    public AbstractDomainObject getData(int position) {
-        VisitEditTabs tab = VisitEditTabs.values()[position];
-        AbstractDomainObject ado = null;
-        switch (tab) {
-            case VISIT_DATA:
-                ado= visitEditDataForm.getData();
-                break;
-            case SYMPTOMS:
-                ado = symptomsEditForm.getData();
-                break;
-        }
-        return ado;
-    }
-
-    public FormTab getTabByPosition(int position) {
-        VisitEditTabs tab = VisitEditTabs.values()[position];
-        switch(tab) {
-            case VISIT_DATA:
-                return visitEditDataForm;
-            case SYMPTOMS:
-                return symptomsEditForm;
-        }
-        return null;
     }
 }

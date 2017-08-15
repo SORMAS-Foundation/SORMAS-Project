@@ -24,6 +24,19 @@ public enum UserRole {
 	LAB_USER(false, false),
 	;
 	
+	public static final String _SYSTEM = "SYSTEM";
+	public static final String _USER = "USER";
+	public static final String _ADMIN = "ADMIN";
+	public static final String _SURVEILLANCE_SUPERVISOR = "SURVEILLANCE_SUPERVISOR";
+	public static final String _SURVEILLANCE_OFFICER = "SURVEILLANCE_OFFICER";
+	public static final String _INFORMANT = "INFORMANT";
+	public static final String _CASE_SUPERVISOR = "CASE_SUPERVISOR";
+	public static final String _CASE_OFFICER = "CASE_OFFICER";
+	public static final String _CONTACT_SUPERVISOR = "CONTACT_SUPERVISOR";
+	public static final String _CONTACT_OFFICER = "CONTACT_OFFICER";
+	public static final String _RUMOR_MANAGER = "RUMOR_MANAGER";
+	public static final String _LAB_USER = "LAB_USER";
+	
 	private final boolean supervisor;
 	private final boolean officer;
 	

@@ -17,12 +17,15 @@ import com.google.android.gms.analytics.Tracker;
 
 import java.net.ConnectException;
 
+import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.synclog.SyncLogDao;
+import de.symeda.sormas.app.caze.CaseEditTabs;
 import de.symeda.sormas.app.component.SyncLogDialog;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
+import de.symeda.sormas.app.util.FormTab;
 import de.symeda.sormas.app.util.SlidingTabLayout;
 import de.symeda.sormas.app.util.SyncCallback;
 
@@ -66,6 +69,23 @@ public abstract class AbstractTabActivity extends AbstractSormasActivity {
                 invalidateOptionsMenu();
             }
         });
+    }
+
+
+    public AbstractDomainObject getData(int position) {
+        FormTab tab = getTabByPosition(position);
+        if (tab != null) {
+            return tab.getData();
+        }
+        return null;
+    }
+
+    public FormTab getTabByPosition(int position) {
+        Object item = pager.getAdapter().instantiateItem(pager, position);
+        if (item instanceof FormTab) {
+            return (FormTab)item;
+        }
+        return null;
     }
 
     public void setCurrentTab(int currentTab) {

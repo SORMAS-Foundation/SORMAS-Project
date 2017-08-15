@@ -23,8 +23,6 @@ import de.symeda.sormas.app.visit.VisitsListFragment;
 public class ContactEditPagerAdapter extends FragmentStatePagerAdapter {
 
     private Bundle contactEditBundle; // this contactEditBundle contains the uuids
-    private ContactEditDataForm contactEditDataForm;
-    private PersonEditForm personEditForm;
 
 
     // Build a Constructor and assign the passed Values to appropriate values in the class
@@ -41,21 +39,18 @@ public class ContactEditPagerAdapter extends FragmentStatePagerAdapter {
         ContactEditTabs tab = ContactEditTabs.values()[position];
         switch (tab) {
             case CONTACT_DATA:
-                contactEditDataForm = new ContactEditDataForm();
-                contactEditDataForm.setArguments(contactEditBundle);
-                frag = contactEditDataForm;
+                frag = new ContactEditDataForm();
+                frag.setArguments(contactEditBundle);
                 break;
 
             case PERSON:
-                personEditForm = new PersonEditForm();
+                frag = new PersonEditForm();
 
                 Bundle personEditBundle = new Bundle();
                 Contact contact = DatabaseHelper.getContactDao().queryUuid(contactEditBundle.getString(Contact.UUID));
                 personEditBundle.putString(Person.UUID, contact.getPerson().getUuid());
                 personEditBundle.putSerializable(Case.DISEASE, contact.getCaze().getDisease());
-
-                personEditForm.setArguments(personEditBundle);
-                frag = personEditForm;
+                frag.setArguments(personEditBundle);
                 break;
 
             case VISITS:
@@ -84,33 +79,5 @@ public class ContactEditPagerAdapter extends FragmentStatePagerAdapter {
     @Override
     public int getCount() {
         return ContactEditTabs.values().length;
-    }
-
-    public AbstractDomainObject getData(int position) {
-        ContactEditTabs tab = ContactEditTabs.values()[position];
-        AbstractDomainObject ado = null;
-        switch (tab) {
-            case CONTACT_DATA:
-                ado= contactEditDataForm.getData();
-                break;
-            case PERSON:
-                ado = personEditForm.getData();
-                break;
-            case VISITS:
-                ado = null;
-                break;
-        }
-        return ado;
-    }
-
-    public FormTab getTabByPosition(int position) {
-        ContactEditTabs tab = ContactEditTabs.fromInt(position);
-        switch (tab) {
-            case CONTACT_DATA:
-                return contactEditDataForm;
-            case PERSON:
-                return personEditForm;
-        }
-        return null;
     }
 }

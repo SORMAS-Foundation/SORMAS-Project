@@ -23,7 +23,7 @@ import de.symeda.sormas.app.util.Item;
  * Created by Mate Strysewske on 07.12.2016.
  */
 
-public class RadioGroupField extends PropertyField<Object>  {
+public class RadioGroupField extends PropertyField<Object> {
 
     public static final String SHOW_CAPTION = "showCaption";
 

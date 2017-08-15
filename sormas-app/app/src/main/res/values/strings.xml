@@ -84,6 +84,7 @@
     <string name="headline_sample_data">Sample data</string>
     <string name="headline_new_sample">Create new sample</string>
     <string name="headline_sample_test">Recent test</string>
+    <string name="headline_sample_received">Received</string>
     <string name="headline_task_notification">Check sormas task</string>
     <string name="headline_case_notification">Case disease has changed</string>
     <string name="headline_new_contact">Create new contact</string>
@@ -138,10 +139,14 @@
     <string name="label_body_not_touched">Body not touched</string>
 
     <string name="sample_shipmentStatus">Shipment status</string>
+    <string name="sample_not_shipped">Not shipped</string>
     <string name="sample_shipped">Shipped</string>
+    <string name="sample_received">Received</string>
+    <string name="sample_referred">Referred to another laboratory</string>
+    <string name="sample_referred_to">Referred to</string>
 
     <string name="inadequate_specimen_cond">Specimen condition not adequate</string>
-    <string name="no_recent_test">No test yet</string>
+    <string name="no_recent_test">Sample has not been tested yet</string>
     <string name="isolated">isolated</string>
 
     <string name="empty_list_hint">Add a new entry by pressing the "+" symbol in the top right.</string>

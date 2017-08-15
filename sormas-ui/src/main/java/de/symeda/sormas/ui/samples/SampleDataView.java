@@ -7,7 +7,6 @@ import com.vaadin.ui.HorizontalLayout;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.sample.SampleDto;
-import de.symeda.sormas.api.sample.ShipmentStatus;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.caze.CaseInfoLayout;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -39,7 +38,7 @@ public class SampleDataView extends AbstractSampleView {
     	layout.addComponent(caseInfoLayout);
     	addComponent(layout);
     	
-		if (sampleDto.getShipmentStatus() != ShipmentStatus.NOT_SHIPPED && sampleDto.getShipmentStatus() != ShipmentStatus.SHIPPED) {
+		if (sampleDto.isReceived()) {
 			SampleTestsComponent sampleTestsComponent = new SampleTestsComponent(getSampleRef());
 			sampleTestsComponent.addStyleName(CssStyles.SUBLIST_MARGIN);
 			addComponent(sampleTestsComponent);

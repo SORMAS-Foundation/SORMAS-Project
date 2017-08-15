@@ -23,15 +23,10 @@ import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
-import de.symeda.sormas.app.backend.epidata.EpiData;
-import de.symeda.sormas.app.backend.hospitalization.Hospitalization;
-import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.user.User;
-import de.symeda.sormas.app.backend.visit.Visit;
 import de.symeda.sormas.app.caze.CaseEditActivity;
-import de.symeda.sormas.app.util.DataUtils;
 
 public class CaseDao extends AbstractAdoDao<Case> {
 
@@ -73,7 +68,7 @@ public class CaseDao extends AbstractAdoDao<Case> {
         return date;
     }
 
-    // TODO #69 create some date filter for finding the right case (this is implemented in CaseService.java too)
+    // TODO #69 build some date filter for finding the right case (this is implemented in CaseService.java too)
     public Case getByPersonAndDisease(Person person, Disease disease) {
         try {
             QueryBuilder builder = queryBuilder();
@@ -91,25 +86,25 @@ public class CaseDao extends AbstractAdoDao<Case> {
     }
 
     @Override
-    public Case create() {
-        throw new UnsupportedOperationException("Use create(Person) instead");
+    public Case build() {
+        throw new UnsupportedOperationException("Use build(Person) instead");
     }
 
-    public Case create(Person person) {
-        Case caze = super.create();
+    public Case build(Person person) {
+        Case caze = super.build();
         caze.setPerson(person);
 
         caze.setReportDate(new Date());
         caze.setReportingUser(ConfigProvider.getUser());
 
         // Symptoms
-        caze.setSymptoms(DatabaseHelper.getSymptomsDao().create());
+        caze.setSymptoms(DatabaseHelper.getSymptomsDao().build());
 
         // Hospitalization
-        caze.setHospitalization(DatabaseHelper.getHospitalizationDao().create());
+        caze.setHospitalization(DatabaseHelper.getHospitalizationDao().build());
 
         // Epi Data
-        caze.setEpiData(DatabaseHelper.getEpiDataDao().create());
+        caze.setEpiData(DatabaseHelper.getEpiDataDao().build());
 
         // Location
         User currentUser = ConfigProvider.getUser();
@@ -162,4 +157,5 @@ public class CaseDao extends AbstractAdoDao<Case> {
         }
         return mergedCase;
     }
+
 }

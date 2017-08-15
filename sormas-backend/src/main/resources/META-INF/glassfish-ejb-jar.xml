@@ -13,8 +13,8 @@
 
 	<!-- SYSTEM ROLE -->
 	<security-role-mapping>
-		<role-name>SYSTEM_ROLE</role-name>
-		<principal-name>SYSTEM_ROLE</principal-name>
+		<role-name>SYSTEM</role-name>
+		<principal-name>SYSTEM</principal-name>
 	</security-role-mapping>
 
 	<enterprise-beans></enterprise-beans>

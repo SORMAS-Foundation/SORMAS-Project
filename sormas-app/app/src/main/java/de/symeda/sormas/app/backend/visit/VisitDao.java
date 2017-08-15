@@ -85,7 +85,7 @@ public class VisitDao extends AbstractAdoDao<Visit> {
     }
 
     @Override
-    public Visit create() {
+    public Visit build() {
         throw new UnsupportedOperationException();
     }
 
@@ -97,9 +97,9 @@ public class VisitDao extends AbstractAdoDao<Visit> {
      * @throws InstantiationException
      */
     @NonNull
-    public Visit create(String contactUuid) {
+    public Visit build(String contactUuid) {
         Contact contact = DatabaseHelper.getContactDao().queryUuid(contactUuid);
-        Visit visit = super.create();
+        Visit visit = super.build();
         visit.setPerson(contact.getPerson());
         visit.setDisease(contact.getCaze().getDisease());
         visit.setVisitDateTime(new Date());

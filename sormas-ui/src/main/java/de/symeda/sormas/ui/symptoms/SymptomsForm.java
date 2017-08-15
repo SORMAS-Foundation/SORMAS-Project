@@ -332,7 +332,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 	 * @return
 	 */
 	@SuppressWarnings("rawtypes")
-	private boolean isAnySymptomSetToYes(FieldGroup fieldGroup, List<Object> sourcePropertyIds, 
+	public boolean isAnySymptomSetToYes(FieldGroup fieldGroup, List<Object> sourcePropertyIds, 
 			List<Object> sourceValues) {
 
 		for(Object sourcePropertyId : sourcePropertyIds) {
@@ -361,5 +361,9 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 				}
 			});
 		}
+	}
+	
+	public List<Object> getUnconditionalSymptomFieldIds() {
+		return unconditionalSymptomFieldIds;
 	}
 }

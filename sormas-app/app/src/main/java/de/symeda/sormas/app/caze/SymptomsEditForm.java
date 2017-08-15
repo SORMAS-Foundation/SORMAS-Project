@@ -3,13 +3,13 @@ package de.symeda.sormas.app.caze;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-
-import com.google.android.gms.analytics.Tracker;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,11 +22,9 @@ import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.symptoms.TemperatureSource;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.component.FieldHelper;
@@ -36,10 +34,8 @@ import de.symeda.sormas.app.component.SymptomStateField;
 import de.symeda.sormas.app.databinding.CaseSymptomsFragmentLayoutBinding;
 import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.DataUtils;
-import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.FormTab;
 import de.symeda.sormas.app.util.Item;
-import de.symeda.sormas.app.util.ValidationFailedException;
 import de.symeda.sormas.app.validation.SymptomsValidator;
 
 
@@ -53,11 +49,13 @@ public class SymptomsEditForm extends FormTab {
     public static final String NEW_SYMPTOMS = "newSymptoms";
     public static final String FOR_VISIT = "forVisit";
     public static final String VISIT_COOPERATIVE = "visitCooperative";
+
     private CaseSymptomsFragmentLayoutBinding binding;
     private List<SymptomStateField> nonConditionalSymptoms;
     private List<SymptomStateField> conditionalBleedingSymptoms;
 
-    private boolean listenersForRequiredCalled;
+    private boolean forVisit;
+    private boolean visitCooperative;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -68,14 +66,21 @@ public class SymptomsEditForm extends FormTab {
 
         final Disease disease = (Disease) getArguments().getSerializable(Case.DISEASE);
 
-        // create a new visit from contact data
+        // build a new visit from contact data
         if(getArguments().getBoolean(NEW_SYMPTOMS)) {
-            symptoms = DatabaseHelper.getSymptomsDao().create();
+            symptoms = DatabaseHelper.getSymptomsDao().build();
         }
         // open the given visit
         else {
             String symptomsUuid = getArguments().getString(Symptoms.UUID);
             symptoms = DatabaseHelper.getSymptomsDao().queryUuid(symptomsUuid);
+        }
+
+        if (getArguments().getBoolean(FOR_VISIT)) {
+            forVisit = true;
+            if (getArguments().getBoolean(VISIT_COOPERATIVE)) {
+                visitCooperative = true;
+            }
         }
 
         binding.setSymptoms(symptoms);
@@ -97,18 +102,33 @@ public class SymptomsEditForm extends FormTab {
             @Override
             public void onChange(PropertyField field) {
                 toggleUnexplainedBleedingFields();
+                if (forVisit) {
+                    SymptomsValidator.setRequiredHintsForVisitSymptoms(visitCooperative, binding);
+                } else {
+                    SymptomsValidator.setRequiredHintsForCaseSymptoms(binding);
+                }
             }
         });
         binding.symptomsOtherHemorrhagicSymptoms.addValueChangedListener(new PropertyField.ValueChangeListener() {
             @Override
             public void onChange(PropertyField field) {
                 visibilityOtherHemorrhagicSymptoms();
+                if (forVisit) {
+                    SymptomsValidator.setRequiredHintsForVisitSymptoms(visitCooperative, binding);
+                } else {
+                    SymptomsValidator.setRequiredHintsForCaseSymptoms(binding);
+                }
             }
         });
         binding.symptomsOtherNonHemorrhagicSymptoms.addValueChangedListener(new PropertyField.ValueChangeListener() {
             @Override
             public void onChange(PropertyField field) {
                 visibilityOtherNonHemorrhagicSymptoms();
+                if (forVisit) {
+                    SymptomsValidator.setRequiredHintsForVisitSymptoms(visitCooperative, binding);
+                } else {
+                    SymptomsValidator.setRequiredHintsForCaseSymptoms(binding);
+                }
             }
         });
 
@@ -134,9 +154,7 @@ public class SymptomsEditForm extends FormTab {
                 binding.symptomsDigestedBloodVomit, binding.symptomsCoughingBlood, binding.symptomsBleedingVagina,
                 binding.symptomsSkinBruising1, binding.symptomsBloodUrine, binding.symptomsOtherHemorrhagicSymptoms);
 
-        List<Item> onsetSymptoms = new ArrayList<>();
-        onsetSymptoms.add(new Item("",null));
-        FieldHelper.initOnsetSymptomSpinnerField(binding.symptomsOnsetSymptom1, onsetSymptoms);
+        FieldHelper.initSpinnerField(binding.symptomsOnsetSymptom1, DataUtils.toItems(null, true));
         addListenerForOnsetSymptom();
 
         Button clearAllBtn = binding.symptomsClearAll;
@@ -148,6 +166,12 @@ public class SymptomsEditForm extends FormTab {
                 }
                 for (SymptomStateField symptom : conditionalBleedingSymptoms) {
                     symptom.setValue(null);
+                }
+
+                if (forVisit) {
+                    SymptomsValidator.setRequiredHintsForVisitSymptoms(visitCooperative, binding);
+                } else {
+                    SymptomsValidator.setRequiredHintsForCaseSymptoms(binding);
                 }
             }
         });
@@ -166,10 +190,16 @@ public class SymptomsEditForm extends FormTab {
                         symptom.setValue(SymptomState.NO);
                     }
                 }
+
+                if (forVisit) {
+                    SymptomsValidator.setRequiredHintsForVisitSymptoms(visitCooperative, binding);
+                } else {
+                    SymptomsValidator.setRequiredHintsForCaseSymptoms(binding);
+                }
             }
         });
 
-        if (!getArguments().getBoolean(FOR_VISIT)) {
+        if (!forVisit) {
             binding.symptomsIllLocationLayout.setVisibility(View.VISIBLE);
             // ==================== IllLocation ===============
             LocationDialog.addLocationField(getActivity(), symptoms.getIllLocation(), binding.symptomsIllLocation, binding.formCpBtnAddress, new Consumer() {
@@ -184,9 +214,34 @@ public class SymptomsEditForm extends FormTab {
 
             binding.symptomsIllLocationFrom.initialize(this);
             binding.symptomsIllLocationTo.initialize(this);
+            SymptomsValidator.setRequiredHintsForCaseSymptoms(binding);
         } else {
             binding.symptomsIllLocationLayout.setVisibility(View.GONE);
+            SymptomsValidator.setRequiredHintsForVisitSymptoms(visitCooperative, binding);
         }
+
+        // Add listeners to symptom state fields; OnWindowFocusChangeListener is used to make sure that these
+        // listeners aren't called when the view is being built.
+        binding.caseSymptomsForm.getViewTreeObserver().addOnWindowFocusChangeListener(
+                new ViewTreeObserver.OnWindowFocusChangeListener() {
+            @Override
+            public void onWindowFocusChanged(boolean b) {
+                binding.caseSymptomsForm.getViewTreeObserver().removeOnWindowFocusChangeListener(this);
+                for (SymptomStateField symptom : nonConditionalSymptoms) {
+                    symptom.addValueChangedListener(new PropertyField.ValueChangeListener() {
+                        @Override
+                        public void onChange(PropertyField field) {
+                            if (forVisit) {
+                                SymptomsValidator.setRequiredHintsForVisitSymptoms(visitCooperative, binding);
+                            } else {
+                                SymptomsValidator.setRequiredHintsForCaseSymptoms(binding);
+                            }
+                        }
+                    });
+                }
+            }
+        });
+
         //view.requestFocus();
         return view;
     }
@@ -262,21 +317,15 @@ public class SymptomsEditForm extends FormTab {
             symptom.addValueChangedListener(new PropertyField.ValueChangeListener() {
                 @Override
                 public void onChange(PropertyField field) {
+                    Item item = new Item(field.getCaption(), field.getCaption());
+                    int position = binding.symptomsOnsetSymptom1.getPositionOf(item);
                     if (field.getValue() == SymptomState.YES) {
-                        Item item = new Item(field.getCaption(), field.getCaption());
-                        // Workaround for Android bug (see https://issuetracker.google.com/issues/36910520)
-                        // Only continue when the item is not in the list yet, otherwise it will be added again
-                        // when calling clearAll
-                        if (binding.symptomsOnsetSymptom1.getPositionOf(item) == -1) {
-                            adapter.remove(adapter.getItem(adapter.getCount()));
+                        if (position == -1) {
                             adapter.add(item);
-                            adapter.add(new Item("Select entry", null));
                         }
                     } else {
-                        Item item = new Item(field.getCaption(), field.getCaption());
-                        if (binding.symptomsOnsetSymptom1.getPositionOf(item) != -1) {
-                            adapter.remove((Item) binding.symptomsOnsetSymptom1.getItemAtPosition(
-                                    binding.symptomsOnsetSymptom1.getPositionOf(new Item(field.getCaption(), field.getCaption()))));
+                        if (position != -1) {
+                            adapter.remove(adapter.getItem(position));
                         }
                     }
                 }
@@ -287,21 +336,15 @@ public class SymptomsEditForm extends FormTab {
             symptom.addValueChangedListener(new PropertyField.ValueChangeListener() {
                 @Override
                 public void onChange(PropertyField field) {
+                    Item item = new Item(field.getCaption(), field.getCaption());
+                    int position = binding.symptomsOnsetSymptom1.getPositionOf(item);
                     if (field.getValue() == SymptomState.YES) {
-                        Item item = new Item(field.getCaption(), field.getCaption());
-                        // Workaround for Android bug (see https://issuetracker.google.com/issues/36910520)
-                        // Only continue when the item is not in the list yet, otherwise it will be added again
-                        // when calling clearAll
-                        if (binding.symptomsOnsetSymptom1.getPositionOf(item) == -1) {
-                            adapter.remove(adapter.getItem(adapter.getCount()));
+                        if (position == -1) {
                             adapter.add(item);
-                            adapter.add(new Item("Select entry", null));
                         }
                     } else {
-                        Item item = new Item(field.getCaption(), field.getCaption());
-                        if (binding.symptomsOnsetSymptom1.getPositionOf(item) != -1) {
-                            adapter.remove((Item) binding.symptomsOnsetSymptom1.getItemAtPosition(
-                                    binding.symptomsOnsetSymptom1.getPositionOf(new Item(field.getCaption(), field.getCaption()))));
+                        if (position != -1) {
+                            adapter.remove(adapter.getItem(position));
                         }
                     }
                 }
@@ -316,6 +359,11 @@ public class SymptomsEditForm extends FormTab {
 
     public CaseSymptomsFragmentLayoutBinding getBinding() {
         return binding;
+    }
+
+    public void changeVisitCooperative(boolean cooperative) {
+        visitCooperative = cooperative;
+        SymptomsValidator.setRequiredHintsForVisitSymptoms(visitCooperative, binding);
     }
 
 }

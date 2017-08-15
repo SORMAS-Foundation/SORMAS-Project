@@ -2,6 +2,7 @@ package de.symeda.sormas.app.settings;
 
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.database.SQLException;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.view.Menu;
@@ -16,6 +17,9 @@ import de.symeda.sormas.app.EnterPinActivity;
 import de.symeda.sormas.app.LoginActivity;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
+import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.caze.CaseDao;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.AbstractRootTabActivity;
 import de.symeda.sormas.app.component.SyncLogDialog;

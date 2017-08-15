@@ -14,9 +14,7 @@ import javax.persistence.Enumerated;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SampleSource;
 import de.symeda.sormas.api.sample.SampleTestType;
-import de.symeda.sormas.api.sample.ShipmentStatus;
 import de.symeda.sormas.api.sample.SpecimenCondition;
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
@@ -36,9 +34,11 @@ public class Sample extends AbstractDomainObject {
     public static final String TABLE_NAME = "samples";
     public static final String I18N_PREFIX = "Sample";
 
-    public static final String SHIPMENT_STATUS = "shipmentStatus";
     public static final String SAMPLE_DATE_TIME = "sampleDateTime";
     public static final String ASSOCIATED_CASE = "associatedCase";
+    public static final String REFERRED_TO = "referredTo";
+    public static final String SHIPPED = "shipped";
+    public static final String RECEIVED = "received";
 
     @DatabaseField(foreign = true, foreignAutoRefresh = true, canBeNull = false)
     private Case associatedCase;
@@ -71,10 +71,6 @@ public class Sample extends AbstractDomainObject {
     @DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
     private Facility otherLab;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private ShipmentStatus shipmentStatus;
-
     @DatabaseField(dataType = DataType.DATE_LONG)
     private Date shipmentDate;
 
@@ -98,6 +94,18 @@ public class Sample extends AbstractDomainObject {
 
     @Enumerated(EnumType.STRING)
     private SampleTestType suggestedTypeOfTest;
+
+    @DatabaseField(foreign = true, foreignAutoRefresh = true)
+    private Sample referredTo;
+
+    @DatabaseField
+    private boolean shipped;
+
+    @DatabaseField
+    private boolean received;
+
+    @DatabaseField(defaultValue = "", canBeNull = false)
+    private String shipmentStatus;
 
     public Case getAssociatedCase() {
         return associatedCase;
@@ -179,14 +187,6 @@ public class Sample extends AbstractDomainObject {
         this.otherLab = otherLab;
     }
 
-    public ShipmentStatus getShipmentStatus() {
-        return shipmentStatus;
-    }
-
-    public void setShipmentStatus(ShipmentStatus shipmentStatus) {
-        this.shipmentStatus = shipmentStatus;
-    }
-
     public Date getShipmentDate() {
         return shipmentDate;
     }
@@ -249,6 +249,30 @@ public class Sample extends AbstractDomainObject {
 
     public void setSuggestedTypeOfTest(SampleTestType suggestedTypeOfTest) {
         this.suggestedTypeOfTest = suggestedTypeOfTest;
+    }
+
+    public Sample getReferredTo() {
+        return referredTo;
+    }
+
+    public void setReferredTo(Sample referredTo) {
+        this.referredTo = referredTo;
+    }
+
+    public boolean isShipped() {
+        return shipped;
+    }
+
+    public void setShipped(boolean shipped) {
+        this.shipped = shipped;
+    }
+
+    public boolean isReceived() {
+        return received;
+    }
+
+    public void setReceived(boolean received) {
+        this.received = received;
     }
 
     @Override

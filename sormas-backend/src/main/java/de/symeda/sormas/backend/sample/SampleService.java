@@ -6,6 +6,7 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
@@ -72,14 +73,33 @@ public class SampleService extends AbstractAdoService<Sample> {
 	}
 	
 	/**
+	 * Returns the sample that refers to the sample identified by the sampleUuid.
+	 * 
+	 * @param sampleUuid The UUID of the sample to get the referral for.
+	 * @return The sample that refers to this sample, or null if none is found.
+	 */
+	public Sample getReferredFrom(String sampleUuid) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Sample> cq = cb.createQuery(getElementClass());
+		Root<Sample> from = cq.from(getElementClass());
+		
+		cq.where(cb.equal(from.get(Sample.REFERRED_TO), getByUuid(sampleUuid)));
+		try {
+			return em.createQuery(cq).getSingleResult();
+		} catch (NoResultException e) {
+			return null;
+		}
+	}
+	
+	/**
 	 * @see /sormas-backend/doc/UserDataAccess.md
 	 */
 	@Override
+	@SuppressWarnings("unchecked")
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Sample,Sample> samplePath, User user) {
 		// whoever created the case the sample is associated with or is assigned to it
 		// is allowed to access it
 		Path<Case> casePath = samplePath.get(Sample.ASSOCIATED_CASE);
-		@SuppressWarnings("unchecked")
 		Predicate filter = caseService.createUserFilter(cb, cq, (From<Case,Case>)casePath, user);
 		
 		// user that reported it is not able to access it. Otherwise they would also need to access the case
@@ -89,10 +109,9 @@ public class SampleService extends AbstractAdoService<Sample> {
 		if(user.getUserRoles().contains(UserRole.LAB_USER)) {
 			if(user.getLaboratory() != null) {
 				filter = cb.or(filter, cb.equal(samplePath.get(Sample.LAB), user.getLaboratory()));
-				filter = cb.or(filter, cb.equal(samplePath.get(Sample.OTHER_LAB), user.getLaboratory()));
 			}
-		}	
-	
+		}
+		
 		return filter;
 	}
 		

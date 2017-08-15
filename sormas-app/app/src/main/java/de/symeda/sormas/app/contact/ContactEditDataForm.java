@@ -43,7 +43,7 @@ public class ContactEditDataForm extends FormTab {
 
         final String contactUuid = (String) getArguments().getString(Contact.UUID);
         final ContactDao contactDao = DatabaseHelper.getContactDao();
-        final Contact contact = contactDao.queryUuid(contactUuid);
+        Contact contact = contactDao.queryUuid(contactUuid);
         binding.setContact(contact);
 
         binding.contactLastContactDate.initialize(this);

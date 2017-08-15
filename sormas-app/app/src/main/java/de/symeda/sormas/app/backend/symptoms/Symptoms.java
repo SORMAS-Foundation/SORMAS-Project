@@ -33,6 +33,7 @@ public class Symptoms extends AbstractDomainObject {
 	private String onsetSymptom;
 	@Column(length = 255)
 	private String symptomsComments;
+	@DatabaseField
 	private Boolean symptomatic;
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 2)

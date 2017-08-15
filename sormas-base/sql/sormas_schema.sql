@@ -1581,3 +1581,27 @@ UPDATE public.district SET changedate=now();
 UPDATE public.region SET changedate=now();
 
 INSERT INTO schema_version (version_number, comment) VALUES (54, 'Split EPID code');
+
+-- 2017-08-07 Remove contact officer from case #267
+ALTER TABLE cases DROP COLUMN contactofficer_id;
+
+INSERT INTO schema_version (version_number, comment) VALUES (55, 'Remove contact officer from case');
+
+-- 2017-08-07 Add referredTo field to sample #255
+ALTER TABLE samples ADD COLUMN referredto_id bigint;
+ALTER TABLE samples ADD CONSTRAINT fk_samples_referredto_id FOREIGN KEY (referredto_id) REFERENCES samples (id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (56, 'Add referredTo field to sample');
+
+-- 2017-08-10 Replace ShipmentStatus with shipped and received booleans #229
+ALTER TABLE samples ADD COLUMN shipped boolean;
+ALTER TABLE samples ADD COLUMN received boolean;
+UPDATE samples SET shipped=true WHERE shipmentstatus = 'SHIPPED' OR shipmentstatus = 'RECEIVED' OR shipmentstatus = 'REFERRED_OTHER_LAB';
+UPDATE samples SET received=true WHERE shipmentstatus = 'RECEIVED' OR shipmentstatus = 'REFERRED_OTHER_LAB';
+UPDATE samples SET shipped=false WHERE shipmentstatus = 'NOT_SHIPPED';
+UPDATE samples SET received=false WHERE shipmentstatus = 'NOT_SHIPPED' OR shipmentstatus = 'SHIPPED';
+ALTER TABLE samples DROP COLUMN shipmentstatus;
+ALTER TABLE samples_history DROP COLUMN shipmentstatus;
+ALTER TABLE cases_history DROP COLUMN contactofficer_id;
+
+INSERT INTO schema_version (version_number, comment) VALUES (57, 'Replace ShipmentStatus with shipped and received booleans');

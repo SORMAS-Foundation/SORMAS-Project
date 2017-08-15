@@ -23,6 +23,8 @@ public interface SampleFacade {
 	SampleDto saveSample(SampleDto dto);
 	
 	SampleReferenceDto getReferenceByUuid(String uuid);
+	
+	SampleReferenceDto getReferredFrom(String sampleUuid);
 
 	List<String> getAllUuids(String userUuid);
 

@@ -8,6 +8,8 @@ import com.vaadin.data.Property;
 import com.vaadin.data.validator.RegexpValidator;
 import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.NativeSelect;
@@ -62,17 +64,14 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		    				LayoutUtil.fluidRowLocs(CaseDataDto.EPID_NUMBER, CaseDataDto.DISEASE) +
 		    				LayoutUtil.fluidRowLocs(CaseDataDto.REGION, CaseDataDto.DISTRICT) +
 				    		LayoutUtil.fluidRowLocs(CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY) +
-		    				LayoutUtil.fluidRowLocs("", CaseDataDto.HEALTH_FACILITY_DETAILS))
+		    				LayoutUtil.fluidRowLocs("", CaseDataDto.HEALTH_FACILITY_DETAILS) +
+		    				LayoutUtil.fluidRowLocs(CaseDataDto.SURVEILLANCE_OFFICER, ""))
 		    )+
 			LayoutUtil.loc(MEDICAL_INFORMATION_LOC) +
 			LayoutUtil.fluidRow(
 					LayoutUtil.fluidRowLocs(CaseDataDto.PREGNANT, "") +
 					LayoutUtil.fluidRowLocs(CaseDataDto.MEASLES_VACCINATION, CaseDataDto.MEASLES_DOSES) +
 					LayoutUtil.fluidRowLocs(CaseDataDto.MEASLES_VACCINATION_INFO_SOURCE, "")
-			)+
-    		LayoutUtil.h3(CssStyles.VSPACE3, "Responsible users")+
-    		LayoutUtil.divCss(CssStyles.VSPACE2, 
-    				LayoutUtil.fluidRowLocs(CaseDataDto.SURVEILLANCE_OFFICER, CaseDataDto.CONTACT_OFFICER)
 			);
     	
 
@@ -143,19 +142,14 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 		ComboBox surveillanceOfficerField = addField(CaseDataDto.SURVEILLANCE_OFFICER, ComboBox.class);
 		surveillanceOfficerField.setNullSelectionAllowed(true);
-		ComboBox contactOfficerField = addField(CaseDataDto.CONTACT_OFFICER, ComboBox.class);
-		contactOfficerField.setNullSelectionAllowed(true);
 		
 		district.addValueChangeListener(e -> {
 			List<UserReferenceDto> assignableSurveillanceOfficers = FacadeProvider.getUserFacade().getAssignableUsersByDistrict((DistrictReferenceDto) district.getValue(), false, UserRole.SURVEILLANCE_OFFICER);
-			List<UserReferenceDto> assignableContactOfficers = FacadeProvider.getUserFacade().getAssignableUsersByDistrict((DistrictReferenceDto) district.getValue(), false, UserRole.CONTACT_OFFICER);
 			
 			surveillanceOfficerField.removeAllItems();
 			surveillanceOfficerField.select(0);
 			surveillanceOfficerField.addItems(assignableSurveillanceOfficers);
-			contactOfficerField.removeAllItems();
 			surveillanceOfficerField.select(0);
-			contactOfficerField.addItems(assignableContactOfficers);
 		});
     	
 		addField(CaseDataDto.PREGNANT, OptionGroup.class);
@@ -246,7 +240,21 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		public void valueChange(Property.ValueChangeEvent e) {
 			
 			if (diseaseField.getValue() != currentDisease) {
-				ConfirmationComponent confirmDiseaseChangeComponent = getConfirmDiseaseChangeComponent(diseaseField, currentDisease);
+				ConfirmationComponent confirmDiseaseChangeComponent = new ConfirmationComponent(false) {
+					private static final long serialVersionUID = 1L;
+					@Override
+					protected void onConfirm() {
+						diseaseField.removeValueChangeListener(DiseaseChangeListener.this);
+					}
+					@Override
+					protected void onCancel() {
+						diseaseField.setValue(currentDisease);
+					}
+				};
+				confirmDiseaseChangeComponent.getConfirmButton().setCaption("Really change case disease?");
+				confirmDiseaseChangeComponent.getCancelButton().setCaption("Cancel");
+				confirmDiseaseChangeComponent.setMargin(true);
+				
 				Window popupWindow = VaadinUiUtil.showPopupWindow(confirmDiseaseChangeComponent);
 				CloseListener closeListener = new CloseListener() {
 					@Override
@@ -257,7 +265,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				popupWindow.addCloseListener(closeListener);
 				confirmDiseaseChangeComponent.addDoneListener(new DoneListener() {
 					public void onDone() {
-						diseaseField.removeValueChangeListener(DiseaseChangeListener.this);
 						popupWindow.removeCloseListener(closeListener);
 						popupWindow.close();
 					}
@@ -265,25 +272,5 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				popupWindow.setCaption("Change case disease");       
 			}
 		}
-		
-		private ConfirmationComponent getConfirmDiseaseChangeComponent(NativeSelect diseaseField, Disease currentDisease) {
-			ConfirmationComponent confirmDiseaseChangeComponent = new ConfirmationComponent(false) {
-				private static final long serialVersionUID = 1L;
-				@Override
-				protected void onConfirm() {
-					onDone();
-				}
-				@Override
-				protected void onCancel() {
-					diseaseField.setValue(currentDisease);
-					onDone();
-				}
-			};
-			confirmDiseaseChangeComponent.getConfirmButton().setCaption("Really change case disease?");
-			confirmDiseaseChangeComponent.getCancelButton().setCaption("Cancel");
-			confirmDiseaseChangeComponent.setMargin(true);
-			return confirmDiseaseChangeComponent;
-		}
-		
 	}
 }

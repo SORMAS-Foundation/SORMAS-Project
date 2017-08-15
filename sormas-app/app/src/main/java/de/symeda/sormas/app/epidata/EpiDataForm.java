@@ -7,22 +7,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.android.gms.analytics.Tracker;
-
-import java.util.Arrays;
-import java.util.List;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.WaterSource;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.epidata.EpiData;
 import de.symeda.sormas.app.backend.epidata.EpiDataBurial;
 import de.symeda.sormas.app.backend.epidata.EpiDataGathering;
@@ -32,8 +25,6 @@ import de.symeda.sormas.app.component.ListField;
 import de.symeda.sormas.app.component.PropertyField;
 import de.symeda.sormas.app.databinding.CaseEpidataFragmentLayoutBinding;
 import de.symeda.sormas.app.util.Consumer;
-import de.symeda.sormas.app.util.DataUtils;
-import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.FormTab;
 
 /**
@@ -69,7 +60,7 @@ public class EpiDataForm extends FormTab {
                     @Override
                     public void accept(Object burial) {
                         if (burial == null) {
-                            burial = DatabaseHelper.getEpiDataBurialDao().create();
+                            burial = DatabaseHelper.getEpiDataBurialDao().build();
                         }
                         EpiDataBurialForm burialTab = new EpiDataBurialForm();
                         burialTab.initialize(
@@ -110,7 +101,7 @@ public class EpiDataForm extends FormTab {
                     @Override
                     public void accept(Object gathering) {
                         if (gathering == null) {
-                            gathering = DatabaseHelper.getEpiDataGatheringDao().create();
+                            gathering = DatabaseHelper.getEpiDataGatheringDao().build();
                         }
                         EpiDataGatheringForm gatheringTab = new EpiDataGatheringForm();
                         gatheringTab.initialize(
@@ -151,7 +142,7 @@ public class EpiDataForm extends FormTab {
                     @Override
                     public void accept(Object travel) {
                         if (travel == null) {
-                            travel = DatabaseHelper.getEpiDataTravelDao().create();
+                            travel = DatabaseHelper.getEpiDataTravelDao().build();
                         }
                         EpiDataTravelForm travelTab = new EpiDataTravelForm();
                         travelTab.initialize(

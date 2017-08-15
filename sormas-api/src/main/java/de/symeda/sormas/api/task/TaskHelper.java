@@ -35,6 +35,8 @@ public final class TaskHelper {
 		}		
 		else if (UserRole.INFORMANT.equals(userRole)) {
 			switch (currentStatus) {
+			case PENDING:
+				return Arrays.asList(TaskStatus.DONE, TaskStatus.NOT_EXECUTABLE);
 			default:
 				return Collections.emptyList();
 			}

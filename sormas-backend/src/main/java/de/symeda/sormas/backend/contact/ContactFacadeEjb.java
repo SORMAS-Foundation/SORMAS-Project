@@ -1,17 +1,22 @@
 package de.symeda.sormas.backend.contact;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
+import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.validation.ValidationException;
 import javax.validation.constraints.NotNull;
 
-import org.joda.time.LocalDate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -19,7 +24,10 @@ import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.task.TaskContext;
+import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
@@ -27,9 +35,14 @@ import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb;
+import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.task.Task;
+import de.symeda.sormas.backend.task.TaskCriteria;
+import de.symeda.sormas.backend.task.TaskService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
+import de.symeda.sormas.backend.util.DateHelper8;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitService;
@@ -37,6 +50,8 @@ import de.symeda.sormas.backend.visit.VisitService;
 @Stateless(name = "ContactFacade")
 public class ContactFacadeEjb implements ContactFacade {
 	
+	private final Logger logger = LoggerFactory.getLogger(getClass());
+
 	@EJB
 	private ContactService contactService;	
 	@EJB
@@ -47,6 +62,8 @@ public class ContactFacadeEjb implements ContactFacade {
 	private UserService userService;
 	@EJB
 	private VisitService visitService;
+	@EJB
+	private TaskService taskService;
 
 	@Override
 	public List<String> getAllUuids(String userUuid) {
@@ -173,7 +190,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setReportDateTime(source.getReportDateTime());
 		
 		// use only date, not time
-		target.setLastContactDate(new LocalDate(source.getLastContactDate()).toDate());
+		target.setLastContactDate(DateHelper8.toDate(DateHelper8.toLocalDate(source.getLastContactDate())));
 		if (target.getLastContactDate() != null && target.getLastContactDate().after(target.getReportDateTime())) {
 			throw new ValidationException(Contact.LAST_CONTACT_DATE + " has to be before " + Contact.REPORT_DATE_TIME);
 		}
@@ -258,5 +275,59 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setNumberOfMissedVisits(numberOfMissedVisits);
 		
 		return target;
+	}
+	
+	@RolesAllowed(UserRole._SYSTEM)
+	public void generateContactFollowUpTasks() {
+		
+		// get all contacts that are followed up
+		LocalDateTime fromDateTime = LocalDate.now().atStartOfDay();
+		LocalDateTime toDateTime = fromDateTime.plusDays(1);
+		List<Contact> contacts = contactService.getFollowUpBetween(DateHelper8.toDate(fromDateTime), DateHelper8.toDate(toDateTime), null, null);
+
+		for (Contact contact : contacts) {
+			// find already existing tasks
+			TaskCriteria taskCriteria = new TaskCriteria()
+					.contactEquals(contact)
+					.taskTypeEquals(TaskType.CONTACT_FOLLOW_UP)
+					.dueDateBetween(DateHelper8.toDate(fromDateTime), DateHelper8.toDate(toDateTime));
+			List<Task> tasks = taskService.findBy(taskCriteria);
+			
+			if (tasks.isEmpty()) {
+				// none found -> create the task
+				Task task = taskService.buildTask(null);
+				task.setTaskContext(TaskContext.CONTACT);
+				task.setContact(contact);
+				task.setTaskType(TaskType.CONTACT_FOLLOW_UP);
+				task.setSuggestedStart(DateHelper8.toDate(fromDateTime));
+				task.setDueDate(DateHelper8.toDate(toDateTime.minusMinutes(1)));
+				// assign responsible user
+				if (contact.getContactOfficer() != null) {
+					// A. contact officer
+					task.setAssigneeUser(contact.getContactOfficer());
+				} else {
+					// use region where contact person lifes
+					Region region = contact.getPerson().getAddress().getRegion();
+					if (region == null) {
+						// fallback: use region of related caze
+						region = contact.getCaze().getRegion();
+					}
+					// B. contact supervisor
+					List<User> users = userService.getAllByRegionAndUserRoles(region, UserRole.CONTACT_SUPERVISOR);
+					if (!users.isEmpty()) {
+						task.setAssigneeUser(users.get(0));
+					} else {
+						logger.warn("Could not assign responsible user to contact follow-up task: " + task.getUuid());
+					}
+				}
+				taskService.ensurePersisted(task);
+			}
+		}
+	}
+
+	
+	@LocalBean
+	@Stateless
+	public static class ContactFacadeEjbLocal extends ContactFacadeEjb {
 	}
 }

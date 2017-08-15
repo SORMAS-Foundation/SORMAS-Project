@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import de.symeda.sormas.api.sample.SampleMaterial;
-import de.symeda.sormas.api.sample.ShipmentStatus;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.sample.Sample;
@@ -24,8 +23,8 @@ public final class SampleValidator {
 
         boolean success = true;
 
-        // Shipment status
-        if (!sample.getShipmentStatus().equals(ShipmentStatus.NOT_SHIPPED)) {
+        // Shipped
+        if (sample.isShipped()) {
             if (sample.getShipmentDate() == null) {
                 binding.sampleShipmentDate.setError(resources.getString(R.string.validation_sample_shipment_date));
                 success = false;

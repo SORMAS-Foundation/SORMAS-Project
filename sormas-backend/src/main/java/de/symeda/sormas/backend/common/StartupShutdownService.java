@@ -23,7 +23,6 @@ import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionService;
-import de.symeda.sormas.backend.user.Permission;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.InfrastructureDataImporter;
@@ -31,7 +30,7 @@ import de.symeda.sormas.backend.util.MockDataGenerator;
 
 @Singleton(name = "StartupShutdownService")
 @Startup
-@RunAs(Permission._SYSTEM_ROLE)
+@RunAs(UserRole._SYSTEM)
 @TransactionManagement(TransactionManagementType.CONTAINER)
 public class StartupShutdownService {
 

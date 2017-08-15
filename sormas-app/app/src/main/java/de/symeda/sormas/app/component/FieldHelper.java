@@ -40,16 +40,6 @@ public class FieldHelper {
         return spinnerField;
     }
 
-    public static SpinnerField initOnsetSymptomSpinnerField(SpinnerField spinnerField, List<Item> items) {
-        spinnerField.initializeForOnsetSymptom(items);
-        return spinnerField;
-    }
-
-    public static SpinnerField initMonthSpinnerField(SpinnerField spinnerField, List<Item> items, final AdapterView.OnItemSelectedListener ...moreListeners) {
-        spinnerField.initializeForMonth(items, moreListeners);
-        return spinnerField;
-    }
-
     public static SpinnerField initRegionSpinnerField(SpinnerField spinnerField, final AdapterView.OnItemSelectedListener ...moreListeners) {
         RegionDao regionDao = DatabaseHelper.getRegionDao();
         List<Item> items = DataUtils.toItems(regionDao.queryForAll(Region.NAME, true));

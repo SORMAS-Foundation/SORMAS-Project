@@ -120,7 +120,7 @@ public class TasksListFragment extends ListFragment {
 
         TasksListArrayAdapter adapter = new TasksListArrayAdapter(
                 this.getActivity(),           // Context for the activity.
-                R.layout.tasks_list_item);    // Layout to use (create)
+                R.layout.tasks_list_item);    // Layout to use (build)
 
         setListAdapter(adapter);
         getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {

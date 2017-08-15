@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.Month;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
@@ -44,13 +46,24 @@ public class DataUtils {
         return toItems(listIn, true);
     }
 
+    public static List<Item> getMonthItems() {
+        List<Item> listOut = new ArrayList<>();
+        listOut.add(new Item<Integer>("", null));
+        for (Month month : Month.values()) {
+            listOut.add(new Item<Integer>(I18nProperties.getEnumCaption(month), month.ordinal()));
+        }
+        return listOut;
+    }
+
     public static <E> List<Item> toItems(List<E> listIn, boolean withNull) {
         List<Item> listOut = new ArrayList<>();
         if (withNull) {
             listOut.add(new Item<E>("", null));
         }
-        for (E listInEntry : listIn) {
-            listOut.add(new Item<E>(String.valueOf(listInEntry), listInEntry));
+        if (listIn != null) {
+            for (E listInEntry : listIn) {
+                listOut.add(new Item<E>(String.valueOf(listInEntry), listInEntry));
+            }
         }
         return listOut;
     }

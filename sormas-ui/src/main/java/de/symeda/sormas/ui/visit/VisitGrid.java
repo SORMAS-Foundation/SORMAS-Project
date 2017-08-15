@@ -16,6 +16,7 @@ import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.utils.BooleanRenderer;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 @SuppressWarnings("serial")
@@ -43,10 +44,11 @@ public class VisitGrid extends Grid {
         setContainerDataSource(editContainer);
 
         setColumns(EDIT_BTN_ID, VisitDto.VISIT_DATE_TIME, VisitDto.VISIT_STATUS, VisitDto.VISIT_REMARKS, 
-        		VisitDto.DISEASE, SYMPTOMS_SYMPTOMATIC, SYMPTOMS_TEMPERATURE
-        		);
+        		VisitDto.DISEASE, SYMPTOMS_SYMPTOMATIC, SYMPTOMS_TEMPERATURE);
+        
         getColumn(EDIT_BTN_ID).setRenderer(new HtmlRenderer());
         getColumn(EDIT_BTN_ID).setWidth(60);
+        getColumn(SYMPTOMS_SYMPTOMATIC).setRenderer(new BooleanRenderer());
 
         getColumn(VisitDto.VISIT_DATE_TIME).setRenderer(new DateRenderer(DateHelper.getDateTimeFormat()));
         

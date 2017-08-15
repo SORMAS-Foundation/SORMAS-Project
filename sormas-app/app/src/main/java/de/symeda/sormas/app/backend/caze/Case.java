@@ -94,8 +94,6 @@ public class Case extends AbstractDomainObject {
 	private User surveillanceOfficer;
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 1)
 	private User caseOfficer;
-	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 1)
-	private User contactOfficer;
 
 	@Enumerated(EnumType.STRING)
 	private YesNoUnknown pregnant;
@@ -117,6 +115,9 @@ public class Case extends AbstractDomainObject {
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private EpiData epiData;
+
+	@Column
+	private Long contactOfficer_id;
 
 	public Person getPerson() {
 		return person;
@@ -221,13 +222,6 @@ public class Case extends AbstractDomainObject {
 	}
 	public void setCaseOfficer(User caseOfficer) {
 		this.caseOfficer = caseOfficer;
-	}
-
-	public User getContactOfficer() {
-		return contactOfficer;
-	}
-	public void setContactOfficer(User contactOfficer) {
-		this.contactOfficer = contactOfficer;
 	}
 
 	public InvestigationStatus getInvestigationStatus() {

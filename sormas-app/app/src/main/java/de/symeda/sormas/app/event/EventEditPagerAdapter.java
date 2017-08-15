@@ -19,8 +19,6 @@ import de.symeda.sormas.app.util.FormTab;
 public class EventEditPagerAdapter extends FragmentStatePagerAdapter {
 
     private Bundle eventEditBundle; // this bundle contains the uuids
-    private EventEditDataForm eventEditDataForm;
-    private PersonEditForm personEditForm;
 
     // Build a Constructor and assign the passed Values to appropriate values in the class
     public EventEditPagerAdapter(FragmentManager fm, String eventUuid) {
@@ -36,9 +34,8 @@ public class EventEditPagerAdapter extends FragmentStatePagerAdapter {
         EventEditTabs tab = EventEditTabs.values()[position];
         switch (tab) {
             case EVENT_DATA:
-                eventEditDataForm = new EventEditDataForm();
-                eventEditDataForm.setArguments(eventEditBundle);
-                frag = eventEditDataForm;
+                frag = new EventEditDataForm();
+                frag.setArguments(eventEditBundle);
                 break;
 
             case EVENT_PERSONS:
@@ -72,28 +69,5 @@ public class EventEditPagerAdapter extends FragmentStatePagerAdapter {
         } else {
             return 1; // this is a hotfix to make sure that the event persons tab is not displayed when creating a new event and should be replaced asap
         }
-    }
-
-    public AbstractDomainObject getData(int position) {
-        EventEditTabs tab = EventEditTabs.values()[position];
-        AbstractDomainObject ado = null;
-        switch (tab) {
-            case EVENT_DATA:
-                ado= eventEditDataForm.getData();
-                break;
-//            case EVENT_PERSONS:
-//                ado = personEditForm.getData();
-//                break;
-        }
-        return ado;
-    }
-
-    public FormTab getTabByPosition(int position) {
-        EventEditTabs tab = EventEditTabs.fromInt(position);
-        switch (tab) {
-            case EVENT_DATA:
-                return eventEditDataForm;
-        }
-        return null;
     }
 }

@@ -7,12 +7,8 @@ import java.util.Date;
 
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
-import de.symeda.sormas.app.backend.common.DaoException;
-import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.location.Location;
-import de.symeda.sormas.app.backend.person.Person;
-import de.symeda.sormas.app.util.DataUtils;
 
 public class EventDao extends AbstractAdoDao<Event> {
 
@@ -46,9 +42,9 @@ public class EventDao extends AbstractAdoDao<Event> {
     }
 
     @Override
-    public Event create() {
+    public Event build() {
 
-        Event event = super.create();
+        Event event = super.build();
 
         event.setReportDateTime(new Date());
         event.setReportingUser(ConfigProvider.getUser());

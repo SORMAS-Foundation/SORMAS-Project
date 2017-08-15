@@ -33,4 +33,6 @@ public interface ContactFacade {
 	ContactReferenceDto getReferenceByUuid(String uuid);
 
 	List<String> getAllUuids(String userUuid);
+
+	void generateContactFollowUpTasks();
 }

@@ -188,7 +188,6 @@ public class CaseService extends AbstractAdoService<Case> {
 		// whoever created the case or is assigned to it is allowed to access it
 		Predicate filter = cb.equal(casePath.get(Case.REPORTING_USER), user);
 		filter = cb.or(filter, cb.equal(casePath.get(Case.SURVEILLANCE_OFFICER), user));
-		filter = cb.or(filter, cb.equal(casePath.get(Case.CONTACT_OFFICER), user));
 		filter = cb.or(filter, cb.equal(casePath.get(Case.CASE_OFFICER), user));
 		
 		// allow case access based on user role

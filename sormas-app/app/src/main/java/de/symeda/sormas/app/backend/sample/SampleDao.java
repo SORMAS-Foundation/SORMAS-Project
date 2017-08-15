@@ -1,21 +1,15 @@
 package de.symeda.sormas.app.backend.sample;
 
 import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.dao.RuntimeExceptionDao;
-import com.j256.ormlite.logger.Log;
-import com.j256.ormlite.logger.Logger;
-import com.j256.ormlite.logger.LoggerFactory;
 
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
-import de.symeda.sormas.api.sample.ShipmentStatus;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
-import de.symeda.sormas.app.util.DataUtils;
 
 /**
  * Created by Mate Strysewske on 06.02.2017.
@@ -33,16 +27,15 @@ public class SampleDao extends AbstractAdoDao<Sample> {
     }
 
     @Override
-    public Sample create() {
+    public Sample build() {
         throw new UnsupportedOperationException();
     }
 
-    public Sample create(Case associatedCase) {
-        Sample sample = super.create();
+    public Sample build(Case associatedCase) {
+        Sample sample = super.build();
         sample.setAssociatedCase(associatedCase);
         sample.setReportDateTime(new Date());
         sample.setReportingUser(ConfigProvider.getUser());
-        sample.setShipmentStatus(ShipmentStatus.NOT_SHIPPED);
         return sample;
     }
 

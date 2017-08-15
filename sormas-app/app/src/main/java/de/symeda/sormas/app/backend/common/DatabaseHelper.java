@@ -72,7 +72,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// name of the database file for your application -- change to something appropriate for your app
 	private static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	private static final int DATABASE_VERSION = 93;
+	private static final int DATABASE_VERSION = 97;
 
 	private static DatabaseHelper instance = null;
 	public static void init(Context context) {
@@ -146,7 +146,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	}
 
 	/**
-	 * This is called when the database is first created. Usually you should call createTable statements here to create
+	 * This is called when the database is first created. Usually you should call createTable statements here to build
 	 * the tables that will store your data.
 	 */
 	@Override
@@ -178,7 +178,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.createTable(connectionSource, EpiDataTravel.class);
 			TableUtils.createTable(connectionSource, SyncLog.class);
 		} catch (SQLException e) {
-			Log.e(DatabaseHelper.class.getName(), "Can't create database", e);
+			Log.e(DatabaseHelper.class.getName(), "Can't build database", e);
 			throw new RuntimeException(e);
 		}
 	}
@@ -206,6 +206,24 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				case 92:
 					currentVersion = 92;
 					getDao(District.class).executeRaw("ALTER TABLE region ADD COLUMN epidCode varchar(255);");
+				case 93:
+					currentVersion = 93;
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN symptomatic boolean;");
+				case 94:
+					currentVersion = 94;
+					// nothing
+				case 95:
+					currentVersion = 95;
+					getDao(Sample.class).executeRaw("ALTER TABLE samples ADD COLUMN referredTo_id bigint REFERENCES samples(id);");
+				case 96:
+					currentVersion = 96;
+					getDao(Sample.class).executeRaw("ALTER TABLE samples ADD COLUMN shipped boolean;");
+					getDao(Sample.class).executeRaw("ALTER TABLE samples ADD COLUMN received boolean;");
+					getDao(Sample.class).executeRaw("UPDATE samples SET shipped='true' WHERE shipmentStatus = 'SHIPPED' OR shipmentStatus = 'RECEIVED' OR shipmentStatus = 'REFERRED_OTHER_LAB';");
+					getDao(Sample.class).executeRaw("UPDATE samples SET received='true' WHERE shipmentStatus = 'RECEIVED' OR shipmentStatus = 'REFERRED_OTHER_LAB';");
+					getDao(Sample.class).executeRaw("UPDATE samples SET shipped='false' WHERE shipmentStatus = 'NOT_SHIPPED';");
+					getDao(Sample.class).executeRaw("UPDATE samples SET received='false' WHERE shipmentStatus = 'NOT_SHIPPED' OR shipmentStatus = 'SHIPPED';");
+
 
 					// ATTENTION: break should only be done after last version
 					break;
@@ -248,7 +266,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
             if (oldVersion < 30) {
                 TableUtils.dropTable(connectionSource, Config.class, true);
             }
-            // after we drop the old databases, we create the new ones
+            // after we drop the old databases, we build the new ones
             onCreate(db, connectionSource);
         } catch (SQLException e) {
             Log.e(DatabaseHelper.class.getName(), "Can't drop databases", e);
@@ -260,7 +278,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 		if (!adoDaos.containsKey(type)) {
 
-			// create dao
+			// build dao
 			AbstractAdoDao<ADO> dao;
 			Dao<ADO, Long> innerDao;
 
@@ -318,7 +336,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				adoDaos.put(type, dao);
 
 			} catch (SQLException e) {
-				Log.e(DatabaseHelper.class.getName(), "Can't create dao", e);
+				Log.e(DatabaseHelper.class.getName(), "Can't build dao", e);
 				throw new RuntimeException(e);
 			}
 		}
@@ -343,7 +361,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					try {
 						instance.configDao = new ConfigDao((Dao<Config, String>) instance.getDao(Config.class));
 					} catch (SQLException e) {
-						Log.e(DatabaseHelper.class.getName(), "Can't create ConfigDao", e);
+						Log.e(DatabaseHelper.class.getName(), "Can't build ConfigDao", e);
 						throw new RuntimeException(e);
 					}
 				}
@@ -359,7 +377,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					try {
 						instance.syncLogDao = new SyncLogDao((Dao<SyncLog, Long>) instance.getDao(SyncLog.class));
 					} catch (SQLException e) {
-						Log.e(DatabaseHelper.class.getName(), "Can't create SyncLogDao", e);
+						Log.e(DatabaseHelper.class.getName(), "Can't build SyncLogDao", e);
 						throw new RuntimeException(e);
 					}
 				}
@@ -455,7 +473,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static EpiDataTravelDao getEpiDataTravelDao() {
 		return (EpiDataTravelDao) getAdoDao(EpiDataTravel.class);
 	}
-
 
 	/**
 	 * Close the database connections and clear any cached DAOs.

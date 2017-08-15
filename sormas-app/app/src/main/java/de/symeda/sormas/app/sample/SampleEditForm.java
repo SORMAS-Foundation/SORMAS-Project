@@ -1,8 +1,11 @@
 package de.symeda.sormas.app.sample;
 
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,12 +19,12 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SampleSource;
 import de.symeda.sormas.api.sample.SampleTestType;
-import de.symeda.sormas.api.sample.ShipmentStatus;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.backend.sample.SampleDao;
 import de.symeda.sormas.app.backend.sample.SampleTest;
@@ -52,30 +55,21 @@ public class SampleEditForm extends FormTab {
         if (sampleUuid == null) {
             final String caseUuid = getArguments().getString(SampleEditActivity.KEY_CASE_UUID);
             final Case associatedCase = DatabaseHelper.getCaseDao().queryUuid(caseUuid);
-            sample = DatabaseHelper.getSampleDao().create(associatedCase);
+            sample = DatabaseHelper.getSampleDao().build(associatedCase);
         } else {
             sample = sampleDao.queryUuid(sampleUuid);
         }
 
         binding.setSample(sample);
 
-        ShipmentStatus shipmentStatus = binding.getSample().getShipmentStatus();
-        if (shipmentStatus == ShipmentStatus.NOT_SHIPPED) {
-            binding.sampleShipmentStatus.setChecked(false);
-            binding.sampleShipmentDate.setVisibility(View.INVISIBLE);
-            binding.sampleShipmentDetails.setVisibility(View.GONE);
-        } else if (shipmentStatus == ShipmentStatus.SHIPPED) {
-            binding.sampleShipmentStatus.setChecked(true);
-        } else {
-            binding.sampleShipmentStatus.setChecked(true);
-            binding.sampleShipmentStatus.setText(binding.getSample().getShipmentStatus().toString());
-            binding.sampleShipmentStatus.setEnabled(false);
-            binding.sampleShipmentDate.setEnabled(false);
-        }
-
         binding.sampleShipmentDate.initialize(this);
 
-        binding.sampleShipmentStatus.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        // Visibility initialization of shipment details
+        if (!binding.sampleShipped.getValue()) {
+            binding.sampleShipmentDate.setVisibility(View.GONE);
+            binding.sampleShipmentDetails.setVisibility(View.GONE);
+        }
+        binding.sampleShipped.setAdditionalListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
@@ -83,7 +77,7 @@ public class SampleEditForm extends FormTab {
                     binding.sampleShipmentDetails.setVisibility(View.VISIBLE);
                     binding.sampleShipmentDate.setValue(new Date());
                 } else {
-                    binding.sampleShipmentDate.setVisibility(View.INVISIBLE);
+                    binding.sampleShipmentDate.setVisibility(View.GONE);
                     binding.sampleShipmentDetails.setVisibility(View.GONE);
                 }
             }
@@ -120,37 +114,68 @@ public class SampleEditForm extends FormTab {
 
         final List laboratories = DataUtils.toItems(DatabaseHelper.getFacilityDao().getLaboratories());
         FieldHelper.initSpinnerField(binding.sampleLab, laboratories);
+
+        // only show received fields when sample has been received
         binding.sampleReceivedDate.initialize(this);
         binding.sampleReceivedDate.setEnabled(false);
-        binding.sampleLabSampleID.setEnabled(false);
-        if (binding.getSample().getShipmentStatus() != ShipmentStatus.RECEIVED) {
-            binding.sampleReceivedDate.setVisibility(View.GONE);
-            binding.sampleLabSampleID.setVisibility(View.GONE);
+        FieldHelper.initSpinnerField(binding.sampleSpecimenCondition, SpecimenCondition.class);
+        binding.sampleSpecimenCondition.setEnabled(false);
+        if (sampleUuid != null) {
+            if (binding.getSample().isReceived()) {
+                binding.sampleReceivedLayout.setVisibility(View.VISIBLE);
+            }
         }
 
         // recent test should only be displayed when an existing sample is viewed, not
         // when a new one is created
         if (sampleUuid != null) {
-            if (binding.getSample().getSpecimenCondition() == SpecimenCondition.NOT_ADEQUATE) {
-                binding.sampleTypeOfTest.setVisibility(View.GONE);
-                binding.sampleTestResult.setVisibility(View.GONE);
-                binding.sampleNoRecentTestText.setVisibility(View.GONE);
-            } else {
+            if (binding.getSample().getSpecimenCondition() != SpecimenCondition.NOT_ADEQUATE) {
+                binding.recentTestLayout.setVisibility(View.VISIBLE);
                 SampleTest mostRecentTest = DatabaseHelper.getSampleTestDao().queryMostRecentBySample(binding.getSample());
-                binding.sampleNoTestPossibleText.setVisibility(View.GONE);
-                binding.sampleNoTestPossibleReason.setVisibility(View.GONE);
                 if (mostRecentTest != null) {
-                    binding.sampleNoRecentTestText.setVisibility(View.GONE);
+                    binding.sampleTypeOfTest.setVisibility(View.VISIBLE);
+                    binding.sampleTestResult.setVisibility(View.VISIBLE);
                 } else {
-                    binding.sampleTypeOfTest.setVisibility(View.GONE);
-                    binding.sampleTestResult.setVisibility(View.GONE);
+                    binding.sampleNoRecentTestText.setVisibility(View.VISIBLE);
                 }
             }
-        } else {
-            binding.recentTestLayout.setVisibility(View.GONE);
+        }
+
+        // only show referred to field when there is a referred sample
+        if (sampleUuid != null) {
+            if (binding.getSample().getReferredTo() != null) {
+                final Sample referredSample = binding.getSample().getReferredTo();
+                binding.sampleReferredTo.setVisibility(View.VISIBLE);
+                binding.sampleReferredTo.setText(getActivity().getResources().getString(R.string.sample_referred_to) + " " + referredSample.getLab().toString() + " " + "\u279D");
+                binding.sampleReferredTo.setPaintFlags(binding.sampleReferredTo.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+                binding.sampleReferredTo.setTextColor(ContextCompat.getColor(getContext(), R.color.colorPrimary));
+                binding.sampleReferredTo.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent(getActivity(), SampleEditActivity.class);
+                        intent.putExtra(SampleEditActivity.KEY_SAMPLE_UUID, referredSample.getUuid());
+                        startActivity(intent);
+                    }
+                });
+            }
         }
 
         SampleValidator.setRequiredHintsForSampleData(binding);
+
+        if (sampleUuid != null) {
+            if (!ConfigProvider.getUser().getUuid().equals(binding.getSample().getReportingUser().getUuid())) {
+                binding.sampleSampleCode.setEnabled(false);
+                binding.sampleDateTime.setEnabled(false);
+                binding.sampleMaterial.setEnabled(false);
+                binding.sampleMaterialText.setEnabled(false);
+                binding.sampleSuggestedTypeOfTest.setEnabled(false);
+                binding.sampleLab.setEnabled(false);
+                binding.sampleSampleCode.setEnabled(false);
+                binding.sampleShipped.setEnabled(false);
+                binding.sampleShipmentDate.setEnabled(false);
+                binding.sampleShipmentDetails.setEnabled(false);
+            }
+        }
 
         return binding.getRoot();
     }

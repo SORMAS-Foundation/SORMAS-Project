@@ -127,7 +127,7 @@ public class EventParticipantNewActivity extends AppCompatActivity {
                                         eventParticipant.setPerson((Person) parameter);
                                         savePersonAndEventParticipant(eventParticipant);
                                     } catch (DaoException e) {
-                                        Log.e(getClass().getName(), "Error while trying to create alert person", e);
+                                        Log.e(getClass().getName(), "Error while trying to build alert person", e);
                                         Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_create_error), getResources().getString(R.string.entity_alert_person)), Snackbar.LENGTH_LONG).show();
                                         ErrorReportingHelper.sendCaughtException(tracker, e, null, true);
                                     }
@@ -142,7 +142,7 @@ public class EventParticipantNewActivity extends AppCompatActivity {
                         savePersonAndEventParticipant(eventParticipant);
                     }
                 } catch (DaoException e) {
-                    Log.e(getClass().getName(), "Error while trying to create alert person", e);
+                    Log.e(getClass().getName(), "Error while trying to build alert person", e);
                     Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_create_error), getResources().getString(R.string.entity_alert_person)), Snackbar.LENGTH_LONG).show();
                     ErrorReportingHelper.sendCaughtException(tracker, e, null, true);
                 }

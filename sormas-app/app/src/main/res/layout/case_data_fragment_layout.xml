@@ -230,38 +230,14 @@
                 android:paddingBottom="@dimen/field_padding"
                 android:value="@={caze.measlesVaccinationInfoSource}"/>
 
-            <!-- ============= RESPONSIBLE ============= -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="@string/headline_responsible"
-                android:textColor="@android:color/tab_indicator_text"
-                android:textSize="@dimen/abc_text_size_body_1_material"
-                android:textStyle="bold"
-                android:paddingTop="30dp"
-                android:paddingBottom="10dp" />
-
-            <LinearLayout
-                android:orientation="horizontal"
+            <de.symeda.sormas.app.component.LabelField
+                android:id="@+id/caseData_surveillanceOfficer"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <de.symeda.sormas.app.component.LabelField
-                    android:id="@+id/caseData_surveillanceOfficer"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.5"
-                    android:paddingTop="@dimen/field_padding"
-                    android:paddingBottom="@dimen/field_padding"
-                    app:user="@{caze.surveillanceOfficer}"/>
-
-                <LinearLayout android:orientation="vertical"
-                    android:layout_width="match_parent" android:layout_height="wrap_content"
-                    android:layout_weight="0.5" android:paddingTop="@dimen/field_padding" android:paddingBottom="@dimen/field_padding">
-                </LinearLayout>
-
-            </LinearLayout>
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:paddingTop="30dp"
+                android:paddingBottom="@dimen/field_padding"
+                app:user="@{caze.surveillanceOfficer}"/>
 
         </LinearLayout>
 

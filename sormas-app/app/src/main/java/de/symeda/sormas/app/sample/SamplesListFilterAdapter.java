@@ -5,9 +5,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
-import de.symeda.sormas.api.sample.ShipmentStatus;
-import de.symeda.sormas.app.event.EventsListFragment;
-
 /**
  * Created by Mate Strysewske on 06.02.2017.
  */

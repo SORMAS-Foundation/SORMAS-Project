@@ -113,6 +113,7 @@ public class ContactEditActivity extends AbstractEditTabActivity {
         Contact currentEntity = DatabaseHelper.getContactDao().queryUuid(contactUuid);
         if (currentEntity.isUnreadOrChildUnread()) {
             // Resetting the adapter will reload the form and therefore also override any unsaved changes
+            DatabaseHelper.getContactDao().markAsRead(currentEntity);
             setAdapter();
             final Snackbar snackbar = Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_entity_overridden), getResources().getString(R.string.entity_contact)), Snackbar.LENGTH_INDEFINITE);
             snackbar.setAction(R.string.snackbar_okay, new View.OnClickListener() {
@@ -123,8 +124,6 @@ public class ContactEditActivity extends AbstractEditTabActivity {
             });
             snackbar.show();
         }
-
-        DatabaseHelper.getContactDao().markAsRead(currentEntity);
     }
 
     @Override
@@ -187,8 +186,8 @@ public class ContactEditActivity extends AbstractEditTabActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         currentTab = pager.getCurrentItem();
         ContactEditTabs tab = ContactEditTabs.values()[currentTab];
-        Contact contact = (Contact) adapter.getData(ContactEditTabs.CONTACT_DATA.ordinal());
-        Person person = (Person) adapter.getData(ContactEditTabs.PERSON.ordinal());
+        Contact contact = (Contact) getData(ContactEditTabs.CONTACT_DATA.ordinal());
+        Person person = (Person) getData(ContactEditTabs.PERSON.ordinal());
 
         switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button
@@ -250,8 +249,8 @@ public class ContactEditActivity extends AbstractEditTabActivity {
                 ContactDao contactDao = DatabaseHelper.getContactDao();
 
                 // Validation
-                ContactDataFragmentLayoutBinding contactDataBinding = ((ContactEditDataForm)adapter.getTabByPosition(ContactEditTabs.CONTACT_DATA.ordinal())).getBinding();
-                PersonEditFragmentLayoutBinding personBinding = ((PersonEditForm)adapter.getTabByPosition(ContactEditTabs.PERSON.ordinal())).getBinding();
+                ContactDataFragmentLayoutBinding contactDataBinding = ((ContactEditDataForm)getTabByPosition(ContactEditTabs.CONTACT_DATA.ordinal())).getBinding();
+                PersonEditFragmentLayoutBinding personBinding = ((PersonEditForm)getTabByPosition(ContactEditTabs.PERSON.ordinal())).getBinding();
 
                 ContactValidator.clearErrorsForContactData(contactDataBinding);
                 PersonValidator.clearErrors(personBinding);
@@ -298,7 +297,7 @@ public class ContactEditActivity extends AbstractEditTabActivity {
             case R.id.action_add:
                 switch (tab) {
                     case VISITS:
-                        // only contact officer is allowd to create visits
+                        // only contact officer is allowd to build visits
 //                        if(UserRole.CONTACT_OFFICER.equals(ConfigProvider.getUser().getUserRoleName())) {
                         Bundle visitBundle = new Bundle();
                         visitBundle.putString(KEY_CONTACT_UUID, contactUuid);

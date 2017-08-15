@@ -17,7 +17,7 @@
             android:layout_marginLeft="@dimen/field_caption_margin_left" />
         <EditText
             android:layout_width="match_parent"
-            android:layout_height="@dimen/field_height"
+            android:layout_height="wrap_content"
             android:inputType="text"
             android:hint="Enter value"
             android:textColorHint="@color/colorLightGrey"

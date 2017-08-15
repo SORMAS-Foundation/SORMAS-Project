@@ -136,7 +136,7 @@ public class ContactNewActivity extends AppCompatActivity {
                                         contact.setPerson((Person) parameter);
                                         savePersonAndContact(contact);
                                     } catch (DaoException e) {
-                                        Log.e(getClass().getName(), "Error while trying to create contact", e);
+                                        Log.e(getClass().getName(), "Error while trying to build contact", e);
                                         Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_create_error), getResources().getString(R.string.entity_contact)), Snackbar.LENGTH_LONG).show();
                                         ErrorReportingHelper.sendCaughtException(tracker, e, null, true);
                                     }
@@ -150,7 +150,7 @@ public class ContactNewActivity extends AppCompatActivity {
                         savePersonAndContact(contact);
                     }
                 } catch (DaoException e) {
-                    Log.e(getClass().getName(), "Error while trying to create contact", e);
+                    Log.e(getClass().getName(), "Error while trying to build contact", e);
                     Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_create_error), getResources().getString(R.string.entity_contact)), Snackbar.LENGTH_LONG).show();
                     ErrorReportingHelper.sendCaughtException(tracker, e, null, true);
                 }

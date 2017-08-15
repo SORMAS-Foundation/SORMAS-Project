@@ -3,6 +3,7 @@ package de.symeda.sormas.app.visit;
 import android.app.AlertDialog;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.util.Log;
@@ -12,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -23,6 +25,7 @@ import de.symeda.sormas.app.backend.visit.VisitDao;
 import de.symeda.sormas.app.caze.SymptomsEditForm;
 import de.symeda.sormas.app.AbstractEditTabActivity;
 import de.symeda.sormas.app.component.HelpDialog;
+import de.symeda.sormas.app.component.PropertyField;
 import de.symeda.sormas.app.component.UserReportDialog;
 import de.symeda.sormas.app.databinding.CaseSymptomsFragmentLayoutBinding;
 import de.symeda.sormas.app.databinding.VisitDataFragmentLayoutBinding;
@@ -90,6 +93,7 @@ public class VisitEditActivity extends AbstractEditTabActivity {
             Visit currentEntity = DatabaseHelper.getVisitDao().queryUuid(visitUuid);
             if (currentEntity.isUnreadOrChildUnread()) {
                 // Resetting the adapter will reload the form and therefore also override any unsaved changes
+                DatabaseHelper.getVisitDao().markAsRead(currentEntity);
                 setAdapter();
                 final Snackbar snackbar = Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_entity_overridden), getResources().getString(R.string.entity_visit)), Snackbar.LENGTH_INDEFINITE);
                 snackbar.setAction(R.string.snackbar_okay, new View.OnClickListener() {
@@ -100,8 +104,6 @@ public class VisitEditActivity extends AbstractEditTabActivity {
                 });
                 snackbar.show();
             }
-
-            DatabaseHelper.getVisitDao().markAsRead(currentEntity);
         }
     }
 
@@ -123,7 +125,7 @@ public class VisitEditActivity extends AbstractEditTabActivity {
 
             case SYMPTOMS:
                 updateActionBarGroups(menu, true, false, true, false, true);
-                break;
+            break;
 
         }
 
@@ -158,7 +160,7 @@ public class VisitEditActivity extends AbstractEditTabActivity {
 
             // Report problem button
             case R.id.action_report:
-                Visit visit = (Visit) adapter.getData(VisitEditTabs.VISIT_DATA.ordinal());
+                Visit visit = (Visit) getData(VisitEditTabs.VISIT_DATA.ordinal());
 
                 UserReportDialog userReportDialog = new UserReportDialog(this, this.getClass().getSimpleName() + ":" + tab.toString(), visit.getUuid());
                 AlertDialog dialog = userReportDialog.create();
@@ -168,12 +170,12 @@ public class VisitEditActivity extends AbstractEditTabActivity {
 
             // Save button
             case R.id.action_save:
-                visit = (Visit) adapter.getData(VisitEditTabs.VISIT_DATA.ordinal());
-                Symptoms symptoms = (Symptoms)adapter.getData(VisitEditTabs.SYMPTOMS.ordinal());
-                SymptomsEditForm symptomsEditForm = (SymptomsEditForm) adapter.getTabByPosition(VisitEditTabs.SYMPTOMS.ordinal());
+                visit = (Visit) getData(VisitEditTabs.VISIT_DATA.ordinal());
+                Symptoms symptoms = (Symptoms)getData(VisitEditTabs.SYMPTOMS.ordinal());
+                SymptomsEditForm symptomsEditForm = (SymptomsEditForm) getTabByPosition(VisitEditTabs.SYMPTOMS.ordinal());
                 Contact contact = DatabaseHelper.getContactDao().queryUuid(contactUuid);
 
-                VisitDataFragmentLayoutBinding visitDataBinding = ((VisitEditDataForm)adapter.getTabByPosition(VisitEditTabs.VISIT_DATA.ordinal())).getBinding();
+                VisitDataFragmentLayoutBinding visitDataBinding = ((VisitEditDataForm)getTabByPosition(VisitEditTabs.VISIT_DATA.ordinal())).getBinding();
                 CaseSymptomsFragmentLayoutBinding symptomsBinding = symptomsEditForm.getBinding();
 
                 // Necessary because the entry could've been automatically set, in which case the setValue method of the
@@ -229,6 +231,11 @@ public class VisitEditActivity extends AbstractEditTabActivity {
 
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void notifyVisitStatusChange(boolean cooperative) {
+        SymptomsEditForm symptomsEditForm = (SymptomsEditForm) getTabByPosition(VisitEditTabs.SYMPTOMS.ordinal());
+        symptomsEditForm.changeVisitCooperative(cooperative);
     }
 
     private void setAdapter() {

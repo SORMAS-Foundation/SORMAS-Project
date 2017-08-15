@@ -6,20 +6,14 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
-
-import com.google.android.gms.analytics.Tracker;
 
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.event.EventParticipantDao;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.databinding.EventParticipantFragmentLayoutBinding;
-import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.FormTab;
 import de.symeda.sormas.app.validation.EventParticipantValidator;
 
@@ -40,7 +34,7 @@ public class EventParticipantDataForm extends FormTab {
         EventParticipantDao eventParticipantDao = DatabaseHelper.getEventParticipantDao();
         EventParticipant eventParticipant = eventParticipantDao.queryUuid(personUuid);
         if (eventParticipant == null) {
-            eventParticipant = eventParticipantDao.create();
+            eventParticipant = eventParticipantDao.build();
         }
 
         EventParticipantValidator.setRequiredHintsForEventParticipantData(binding);

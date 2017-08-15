@@ -87,6 +87,7 @@ public class EventParticipantEditActivity extends AbstractSormasActivity {
         EventParticipant currentEntity = DatabaseHelper.getEventParticipantDao().queryUuid(eventParticipantUuid);
         if (currentEntity.isUnreadOrChildUnread()) {
             // Resetting the adapter will reload the form and therefore also override any unsaved changes
+            DatabaseHelper.getEventParticipantDao().markAsRead(currentEntity);
             setAdapter();
             final Snackbar snackbar = Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_entity_overridden), getResources().getString(R.string.entity_alert_person)), Snackbar.LENGTH_INDEFINITE);
             snackbar.setAction(R.string.snackbar_okay, new View.OnClickListener() {
@@ -97,8 +98,6 @@ public class EventParticipantEditActivity extends AbstractSormasActivity {
             });
             snackbar.show();
         }
-
-        DatabaseHelper.getEventParticipantDao().markAsRead(currentEntity);
     }
 
     @Override
