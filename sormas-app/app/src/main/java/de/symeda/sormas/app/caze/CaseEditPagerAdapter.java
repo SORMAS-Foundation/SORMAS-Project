@@ -27,7 +27,6 @@ import de.symeda.sormas.app.util.FormTab;
 
 public class CaseEditPagerAdapter extends FragmentStatePagerAdapter {
 
-    private CharSequence titles[]; // This will Store the titles of the Tabs which are Going to be passed when ViewPagerAdapter is created
     private Bundle caseEditBundle; // this bundle contains the uuids
     private CaseEditDataForm caseEditDataForm;
     private PersonEditForm personEditForm;
@@ -43,7 +42,7 @@ public class CaseEditPagerAdapter extends FragmentStatePagerAdapter {
         caseEditBundle.putString(Case.UUID, caseUuid);
     }
 
-    //This method return the fragment for the every position in the View Pager
+    // This method return the fragment for the every position in the View Pager
     @Override
     public Fragment getItem(int position) {
         Fragment frag = null;

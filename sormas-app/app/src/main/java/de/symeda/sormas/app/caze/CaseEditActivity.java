@@ -288,7 +288,6 @@ public class CaseEditActivity extends AbstractEditTabActivity {
 
                 // SYMPTOMS
                 Symptoms symptoms = (Symptoms) adapter.getData(CaseEditTabs.SYMPTOMS.ordinal());
-                SymptomsEditForm symptomsEditForm = (SymptomsEditForm) adapter.getTabByPosition(CaseEditTabs.SYMPTOMS.ordinal());
 
                 // HOSPITALIZATION
                 Hospitalization hospitalization = (Hospitalization) adapter.getData(CaseEditTabs.HOSPITALIZATION.ordinal());

@@ -8,6 +8,7 @@ import android.databinding.InverseBindingAdapter;
 import android.databinding.InverseBindingListener;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
@@ -101,18 +102,6 @@ public class SpinnerField extends PropertyField<Object> implements SpinnerFieldI
         spinnerFieldListener.registerListener(listener);
     }
 
-    public Spinner getSpinnerElement() {
-        return spinnerElement;
-    }
-
-//    public void setOnItemSelectedListener(OnItemSelectedListener listener) {
-//        spinnerElement.setOnItemSelectedListener(listener);
-//    }
-//
-//    public OnItemSelectedListener getOnItemSelectedListener() {
-//        return spinnerElement.getOnItemSelectedListener();
-//    }
-
     public void setSpinnerAdapter(List<Item> items) {
         ArrayAdapter<Item> adapter = new ArrayAdapter<Item>(
                 getContext(),
@@ -122,111 +111,21 @@ public class SpinnerField extends PropertyField<Object> implements SpinnerFieldI
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
                 View v = super.getView(position, convertView, parent);
-                if (position == getCount()) {
-                    ((TextView) v.findViewById(android.R.id.text1)).setText("");
-                    ((TextView) v.findViewById(android.R.id.text1)).setHint(getItem(getCount()).getKey());
-                    ((TextView) v.findViewById(android.R.id.text1)).setHintTextColor(Color.LTGRAY);
+                TextView textView = (TextView) v.findViewById(android.R.id.text1);
+                if (textView != null && (textView.getText() == null || textView.getText().length() == 0)) {
+                    textView.setHint(this.getContext().getString(R.string.hint_select_entry));
+                    textView.setHintTextColor(Color.LTGRAY);
                 }
-
                 return v;
             }
-
-            @Override
-            public int getCount() {
-                return super.getCount() - 1;
-            }
-        };
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        adapter.add(new Item(this.getContext().getString(R.string.hint_select_entry), null));
-        spinnerElement.setAdapter(adapter);
-        spinnerElement.setSelection(adapter.getCount());
-    }
-
-    public void setOnsetSymptomSpinnerAdapter(List<Item> items) {
-        ArrayAdapter<Item> adapter = new ArrayAdapter<Item>(
-                getContext(),
-                android.R.layout.simple_spinner_item,
-                items) {
-
-            @Override
-            public View getView(int position, View convertView, ViewGroup parent) {
-                View v = super.getView(position, convertView, parent);
-                if (position == getCount()) {
-                    ((TextView) v.findViewById(android.R.id.text1)).setText("");
-                    ((TextView) v.findViewById(android.R.id.text1)).setHint(getItem(getCount()).getKey());
-                    ((TextView) v.findViewById(android.R.id.text1)).setHintTextColor(Color.LTGRAY);
-                }
-
-                return v;
-            }
-             @Override
-             public int getCount() {
-                        return super.getCount() - 1;
-                    }
         };
 
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        adapter.add(new Item(this.getContext().getString(R.string.hint_select_entry), null));
         spinnerElement.setAdapter(adapter);
-        spinnerElement.setSelection(adapter.getCount());
-    }
-
-    public void setMonthSpinnerAdapter(List<Item> items) {
-        ArrayAdapter<Item> adapter = new ArrayAdapter<Item>(
-                getContext(),
-                android.R.layout.simple_spinner_item,
-                items) {
-
-            @Override
-            public View getView(int position, View convertView, ViewGroup parent) {
-                View v = super.getView(position, convertView, parent);
-                if (position == getCount()) {
-                    ((TextView) v.findViewById(android.R.id.text1)).setText("");
-                    ((TextView) v.findViewById(android.R.id.text1)).setHint(getItem(getCount()).getKey());
-                    ((TextView) v.findViewById(android.R.id.text1)).setHintTextColor(Color.LTGRAY);
-                } else if (position > 0) {
-                    TextView tv = ((TextView) v);
-                    tv.setText(I18nProperties.getEnumCaption(Month.values()[position - 1]));
-                }
-
-                return v;
-            }
-
-            @Override
-            public View getDropDownView(int position, View convertView, ViewGroup parent) {
-                View v = super.getDropDownView(position, convertView, parent);
-                if (position > 0 && position < getCount()) {
-                    TextView tv = ((TextView) v);
-                    tv.setText(I18nProperties.getEnumCaption(Month.values()[position - 1]));
-                }
-
-                return v;
-            }
-
-            @Override
-            public int getCount() {
-                return super.getCount() - 1;
-            }
-        };
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        adapter.add(new Item(this.getContext().getString(R.string.hint_select_entry), null));
-        spinnerElement.setAdapter(adapter);
-        spinnerElement.setSelection(adapter.getCount());
     }
 
     public void initialize(List<Item> items, final AdapterView.OnItemSelectedListener[] moreListeners) {
         this.setSpinnerAdapter(items);
-        for (AdapterView.OnItemSelectedListener listener : moreListeners) {
-            this.registerListener(listener);
-        }
-    }
-
-    public void initializeForOnsetSymptom(List<Item> items) {
-        this.setOnsetSymptomSpinnerAdapter(items);
-    }
-
-    public void initializeForMonth(List<Item> items, final AdapterView.OnItemSelectedListener[] moreListeners) {
-        this.setMonthSpinnerAdapter(items);
         for (AdapterView.OnItemSelectedListener listener : moreListeners) {
             this.registerListener(listener);
         }
@@ -281,16 +180,16 @@ public class SpinnerField extends PropertyField<Object> implements SpinnerFieldI
         spinnerElement.setOnFocusChangeListener(new OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                if(hasFocus) {
-                    if (spinnerElement.getSelectedItemPosition() == spinnerElement.getAdapter().getCount()) {
+                if (hasFocus) {
+                    if (getValue() == null) {
                         spinnerElement.setSelection(indexOnOpen);
                     }
                     InputMethodManager inputMethodManager = (InputMethodManager) getContext().getSystemService(Activity.INPUT_METHOD_SERVICE);
                     inputMethodManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
-                    spinnerElement.performClick();
-                } else {
-                    if (spinnerElement.getSelectedItemPosition() == 0) {
-                        spinnerElement.setSelection(spinnerElement.getAdapter().getCount());
+
+                    if (spinnerElement.isShown()) {
+                        // open selection slider
+                        spinnerElement.performClick();
                     }
                 }
             }
@@ -327,17 +226,13 @@ public class SpinnerField extends PropertyField<Object> implements SpinnerFieldI
         return -1;
     }
 
-    public void selectLastEntry() {
-        spinnerElement.setSelection(spinnerElement.getCount());
-    }
-
     public Item getSelectedItem() {
         return (Item) spinnerElement.getSelectedItem();
     }
 
     private void setSelectedItem(Object selectedItem) {
         if (selectedItem == null) {
-            spinnerElement.setSelection(spinnerElement.getAdapter().getCount());
+            spinnerElement.setSelection(-1);
         } else {
             for (int i = 0; i < spinnerElement.getAdapter().getCount(); i++) {
                 if (selectedItem.equals(((Item) spinnerElement.getAdapter().getItem(i)).getValue())) {
@@ -352,5 +247,4 @@ public class SpinnerField extends PropertyField<Object> implements SpinnerFieldI
     protected void requestFocusForContentView(View nextView) {
         ((SpinnerField) nextView).spinnerElement.requestFocus();
     }
-
 }

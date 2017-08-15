@@ -154,7 +154,7 @@ public class SymptomsEditForm extends FormTab {
 
         List<Item> onsetSymptoms = new ArrayList<>();
         onsetSymptoms.add(new Item("",null));
-        FieldHelper.initOnsetSymptomSpinnerField(binding.symptomsOnsetSymptom1, onsetSymptoms);
+        FieldHelper.initSpinnerField(binding.symptomsOnsetSymptom1, onsetSymptoms);
         addListenerForOnsetSymptom();
 
         Button clearAllBtn = binding.symptomsClearAll;
