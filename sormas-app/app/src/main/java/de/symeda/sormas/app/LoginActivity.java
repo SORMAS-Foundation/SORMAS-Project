@@ -42,6 +42,11 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
+        // Checks whether GPS is enabled and initializes the location tracking
+        if (!ConfigProvider.ensureGPSEnabled(LoginActivity.this)) {
+            return;
+        }
+
         // try to connect -> validates login data
         if (ConfigProvider.getUsername() != null) {
             try {

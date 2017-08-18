@@ -26,6 +26,8 @@ public class ContactDto extends ContactReferenceDto {
 	public static final String CONTACT_OFFICER = "contactOfficer";
 	public static final String DESCRIPTION = "description";
 	public static final String RELATION_TO_CASE = "relationToCase";
+	public static final String REPORT_LAT = "reportLat";
+	public static final String REPORT_LON = "reportLon";
 	
 	private PersonReferenceDto person;
 	private CaseReferenceDto caze;
@@ -41,6 +43,8 @@ public class ContactDto extends ContactReferenceDto {
 	private UserReferenceDto contactOfficer;
 	private String description;
 	private ContactRelation relationToCase;
+	private Float reportLat;
+	private Float reportLon;
 	
 	public PersonReferenceDto getPerson() {
 		return person;
@@ -114,6 +118,18 @@ public class ContactDto extends ContactReferenceDto {
 	}
 	public void setRelationToCase(ContactRelation relationToCase) {
 		this.relationToCase = relationToCase;
+	}
+	public Float getReportLat() {
+		return reportLat;
+	}
+	public void setReportLat(Float reportLat) {
+		this.reportLat = reportLat;
+	}
+	public Float getReportLon() {
+		return reportLon;
+	}
+	public void setReportLon(Float reportLon) {
+		this.reportLon = reportLon;
 	}
 	
 }

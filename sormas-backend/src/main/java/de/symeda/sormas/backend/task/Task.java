@@ -42,6 +42,8 @@ public class Task extends AbstractDomainObject {
 	public static final String TASK_CONTEXT = "taskContext";
 	public static final String TASK_STATUS = "taskStatus";
 	public static final String TASK_TYPE = "taskType";
+	public static final String CLOSED_LAT = "closedLat";
+	public static final String CLOSED_LON = "closedLon";
 	
 	private TaskContext taskContext;
 	private Case caze;
@@ -60,6 +62,9 @@ public class Task extends AbstractDomainObject {
 	private String creatorComment;
 	private User assigneeUser;
 	private String assigneeReply;
+	
+	private Float closedLat;
+	private Float closedLon;
 	
 	@Enumerated(EnumType.STRING)
 	public TaskContext getTaskContext() {
@@ -179,6 +184,22 @@ public class Task extends AbstractDomainObject {
 	}
 	public void setSuggestedStart(Date suggestedStart) {
 		this.suggestedStart = suggestedStart;
+	}
+
+	@Column(columnDefinition = "float8")
+	public Float getClosedLat() {
+		return closedLat;
+	}
+	public void setClosedLat(Float closedLat) {
+		this.closedLat = closedLat;
+	}
+
+	@Column(columnDefinition = "float8")
+	public Float getClosedLon() {
+		return closedLon;
+	}
+	public void setClosedLon(Float closedLon) {
+		this.closedLon = closedLon;
 	}
 	
 }

@@ -12,7 +12,6 @@ import javax.ejb.Stateless;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -234,6 +233,9 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setMeaslesVaccinationInfoSource(source.getMeaslesVaccinationInfoSource());
 		
 		target.setEpidNumber(source.getEpidNumber());
+		
+		target.setReportLat(source.getReportLat());
+		target.setReportLon(source.getReportLon());
 
 		return target;
 	}
@@ -281,6 +283,9 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setMeaslesVaccinationInfoSource(source.getMeaslesVaccinationInfoSource());
 		
 		target.setEpidNumber(source.getEpidNumber());
+
+		target.setReportLat(source.getReportLat());
+		target.setReportLon(source.getReportLon());
 		
 		return target;
 	}

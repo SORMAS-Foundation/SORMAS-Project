@@ -37,6 +37,7 @@ import javax.security.auth.x500.X500Principal;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.user.User;
+import de.symeda.sormas.app.util.LocationService;
 
 /**
  * Created by Martin Wahnschaffe on 10.08.2016.
@@ -89,6 +90,37 @@ public final class ConfigProvider {
             AlertDialog.Builder builder = new AlertDialog.Builder(activity);
             builder.setCancelable(false);
             builder.setMessage(R.string.alert_encryption);
+            AlertDialog dialog = builder.create();
+            dialog.setButton(AlertDialog.BUTTON_POSITIVE, activity.getString(R.string.action_ok),
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Activity finishActivity = activity;
+                            do {
+                                finishActivity.finish();
+                                finishActivity = finishActivity.getParent();
+                            } while (finishActivity != null);
+                        }
+                    });
+            dialog.show();
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * If the app is not allowed to access the phone's location or GPS is disabled on startup,
+     * show a non-cancelable alert that blocks app usage
+     * @param activity
+     * @return
+     */
+    public static boolean ensureGPSEnabled(final Activity activity) {
+
+        LocationService locationService = LocationService.getLocationService(activity);
+        if (!locationService.hasGPSEnabled(activity)) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+            builder.setCancelable(false);
+            builder.setMessage(R.string.alert_gps);
             AlertDialog dialog = builder.create();
             dialog.setButton(AlertDialog.BUTTON_POSITIVE, activity.getString(R.string.action_ok),
                     new DialogInterface.OnClickListener() {

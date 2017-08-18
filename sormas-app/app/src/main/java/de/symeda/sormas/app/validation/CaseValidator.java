@@ -38,6 +38,12 @@ public final class CaseValidator {
                     success = false;
                 }
             }
+            if (caze.getHealthFacility().getUuid().equals(FacilityDto.NONE_FACILITY_UUID)) {
+                if (caze.getHealthFacilityDetails() == null || caze.getHealthFacilityDetails().trim().isEmpty()) {
+                    binding.caseDataFacilityDetails.setError(resources.getString(R.string.validation_none_health_facility_details));
+                    success = false;
+                }
+            }
         }
 
         // Community/Ward
@@ -74,6 +80,12 @@ public final class CaseValidator {
             if (caze.getHealthFacility().getUuid().equals(FacilityDto.OTHER_FACILITY_UUID)) {
                 if (caze.getHealthFacilityDetails() == null || caze.getHealthFacilityDetails().trim().isEmpty()) {
                     binding.caseDataFacilityDetails.setError(resources.getString(R.string.validation_health_facility_details));
+                    success = false;
+                }
+            }
+            if (caze.getHealthFacility().getUuid().equals(FacilityDto.NONE_FACILITY_UUID)) {
+                if (caze.getHealthFacilityDetails() == null || caze.getHealthFacilityDetails().trim().isEmpty()) {
+                    binding.caseDataFacilityDetails.setError(resources.getString(R.string.validation_none_health_facility_details));
                     success = false;
                 }
             }

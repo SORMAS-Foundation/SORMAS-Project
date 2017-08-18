@@ -65,6 +65,8 @@ public class Case extends AbstractDomainObject {
 	public static final String MEASLES_DOSES = "measlesDoses";
 	public static final String MEASLES_VACCINATION_INFO_SOURCE = "measlesVaccinationInfoSource";
 	public static final String EPID_NUMBER = "epidNumber";
+	public static final String REPORT_LAT = "reportLat";
+	public static final String REPORT_LON = "reportLon";
 
 	private Person person;
 	private String description;
@@ -101,6 +103,9 @@ public class Case extends AbstractDomainObject {
 	private VaccinationInfoSource measlesVaccinationInfoSource;
 	
 	private String epidNumber;
+	
+	private Float reportLat;
+	private Float reportLon;
 	
 	private List<Task> tasks;
 	
@@ -366,4 +371,21 @@ public class Case extends AbstractDomainObject {
 	public void setInvestigationStatus(InvestigationStatus investigationStatus) {
 		this.investigationStatus = investigationStatus;
 	}
+
+	@Column(columnDefinition = "float8")
+	public Float getReportLat() {
+		return reportLat;
+	}
+	public void setReportLat(Float reportLat) {
+		this.reportLat = reportLat;
+	}
+	
+	@Column(columnDefinition = "float8")
+	public Float getReportLon() {
+		return reportLon;
+	}
+	public void setReportLon(Float reportLon) {
+		this.reportLon = reportLon;
+	}
+	
 }

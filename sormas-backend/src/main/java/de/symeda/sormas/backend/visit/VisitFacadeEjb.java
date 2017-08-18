@@ -127,6 +127,9 @@ public class VisitFacadeEjb implements VisitFacade {
 		target.setVisitRemarks(source.getVisitRemarks());
 		target.setVisitStatus(source.getVisitStatus());
 		target.setVisitUser(userService.getByReferenceDto(source.getVisitUser()));
+
+		target.setReportLat(source.getReportLat());
+		target.setReportLon(source.getReportLon());
 		
 		return target;
 	}
@@ -154,6 +157,9 @@ public class VisitFacadeEjb implements VisitFacade {
 		target.setVisitRemarks(source.getVisitRemarks());
 		target.setVisitStatus(source.getVisitStatus());
 		target.setVisitUser(UserFacadeEjb.toReferenceDto(source.getVisitUser()));
+
+		target.setReportLat(source.getReportLat());
+		target.setReportLon(source.getReportLon());
 		
 		return target;
 	}

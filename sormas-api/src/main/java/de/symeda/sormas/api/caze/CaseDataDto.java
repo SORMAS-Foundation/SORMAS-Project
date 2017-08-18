@@ -32,6 +32,7 @@ public class CaseDataDto extends CaseReferenceDto {
 	public static final String COMMUNITY = "community";
 	public static final String HEALTH_FACILITY = "healthFacility";
 	public static final String HEALTH_FACILITY_DETAILS = "healthFacilityDetails";
+	public static final String NONE_HEALTH_FACILITY_DETAILS = "noneHealthFacilityDetails";
 	public static final String REPORTING_USER = "reportingUser";
 	public static final String REPORT_DATE = "reportDate";
 	public static final String INVESTIGATED_DATE = "investigatedDate";
@@ -45,6 +46,8 @@ public class CaseDataDto extends CaseReferenceDto {
 	public static final String MEASLES_DOSES = "measlesDoses";
 	public static final String MEASLES_VACCINATION_INFO_SOURCE = "measlesVaccinationInfoSource";
 	public static final String EPID_NUMBER = "epidNumber";
+	public static final String REPORT_LAT = "reportLat";
+	public static final String REPORT_LON = "reportLon";
 	
 	private PersonReferenceDto person;
 	private CaseClassification caseClassification;
@@ -76,6 +79,9 @@ public class CaseDataDto extends CaseReferenceDto {
 
 	private UserReferenceDto surveillanceOfficer;
 	private UserReferenceDto caseOfficer;
+	
+	private Float reportLat;
+	private Float reportLon;
 	
 	public CaseClassification getCaseClassification() {
 		return caseClassification;
@@ -251,6 +257,22 @@ public class CaseDataDto extends CaseReferenceDto {
 	
 	public void setEpidNumber(String epidNumber) {
 		this.epidNumber = epidNumber;
+	}
+
+	public Float getReportLat() {
+		return reportLat;
+	}
+
+	public void setReportLat(Float reportLat) {
+		this.reportLat = reportLat;
+	}
+
+	public Float getReportLon() {
+		return reportLon;
+	}
+
+	public void setReportLon(Float reportLon) {
+		this.reportLon = reportLon;
 	}
 
 }

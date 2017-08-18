@@ -5,6 +5,7 @@ import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
@@ -79,12 +80,28 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
     			CaseDataDto.REGION, CaseDataDto.DISTRICT, CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY);
     	
     	facility.addValueChangeListener(e -> {
-			boolean visibleAndRequired = facility.getValue() != null && ((FacilityReferenceDto) facility.getValue()).getUuid().equals(FacilityDto.OTHER_FACILITY_UUID);
-			facilityDetails.setVisible(visibleAndRequired);
-			facilityDetails.setRequired(visibleAndRequired);
-			if (!visibleAndRequired) {
+    		if (facility.getValue() != null) {
+				boolean otherHealthFacility = ((FacilityReferenceDto) facility.getValue()).getUuid().equals(FacilityDto.OTHER_FACILITY_UUID);
+				boolean noneHealthFacility = ((FacilityReferenceDto) facility.getValue()).getUuid().equals(FacilityDto.NONE_FACILITY_UUID);
+				boolean visibleAndRequired = otherHealthFacility || noneHealthFacility;
+				
+				facilityDetails.setVisible(visibleAndRequired);
+				facilityDetails.setRequired(visibleAndRequired);
+
+				if (otherHealthFacility) {
+					facilityDetails.setCaption(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY_DETAILS));
+				}
+				if (noneHealthFacility) {
+					facilityDetails.setCaption(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.NONE_HEALTH_FACILITY_DETAILS));
+				}
+				if (!visibleAndRequired) {
+					facilityDetails.clear();
+				}
+			} else {
+				facilityDetails.setVisible(false);
+				facilityDetails.setRequired(false);
 				facilityDetails.clear();
-			}
+			}	
 		});
     }
     

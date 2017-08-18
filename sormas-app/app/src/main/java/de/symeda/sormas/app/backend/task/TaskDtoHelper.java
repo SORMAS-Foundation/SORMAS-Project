@@ -59,6 +59,9 @@ public class TaskDtoHelper extends AdoDtoHelper<Task, TaskDto> {
         target.setCreatorComment(source.getCreatorComment());
         target.setAssigneeUser(DatabaseHelper.getUserDao().getByReferenceDto(source.getAssigneeUser()));
         target.setAssigneeReply(source.getAssigneeReply());
+
+        target.setClosedLat(source.getClosedLat());
+        target.setClosedLon(source.getClosedLon());
     }
 
     @Override
@@ -105,5 +108,8 @@ public class TaskDtoHelper extends AdoDtoHelper<Task, TaskDto> {
             dto.setAssigneeUser(null);
         }
         dto.setAssigneeReply(ado.getAssigneeReply());
+
+        dto.setClosedLat(ado.getClosedLat());
+        dto.setClosedLon(ado.getClosedLon());
     }
 }

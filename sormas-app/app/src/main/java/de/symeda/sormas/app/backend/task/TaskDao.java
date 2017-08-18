@@ -1,5 +1,7 @@
 package de.symeda.sormas.app.backend.task;
 
+import android.location.Location;
+
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
@@ -14,9 +16,11 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DaoException;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.event.Event;
+import de.symeda.sormas.app.util.LocationService;
 
 /**
  * Created by Stefan Szczesny on 24.10.2016.
@@ -41,6 +45,17 @@ public class TaskDao extends AbstractAdoDao<Task> {
         task = queryForId(task.getId());
         task.setTaskStatus(targetStatus);
         task.setStatusChangeDate(new Date());
+
+        LocationService locationService = LocationService.getLocationService(DatabaseHelper.getContext());
+        Location location = locationService.getLocation();
+        if (location != null) {
+            // Use the geo-coordinates of the current location object if it's not older than 15 minutes
+            if (new Date().getTime() <= location.getTime() + (1000 * 60 * 15)) {
+                task.setClosedLat((float) location.getLatitude());
+                task.setClosedLon((float) location.getLongitude());
+            }
+        }
+
         saveAndSnapshot(task);
     }
 

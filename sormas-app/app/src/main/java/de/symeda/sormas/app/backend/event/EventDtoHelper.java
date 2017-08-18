@@ -60,6 +60,9 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
         target.setSrcTelNo(source.getSrcTelNo());
         target.setSrcEmail(source.getSrcEmail());
         target.setDisease(source.getDisease());
+
+        target.setReportLat(source.getReportLat());
+        target.setReportLon(source.getReportLon());
     }
 
     @Override
@@ -100,6 +103,9 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
         }
 
         dto.setTypeOfPlaceText(ado.getTypeOfPlaceText());
+
+        dto.setReportLat(ado.getReportLat());
+        dto.setReportLon(ado.getReportLon());
     }
 
     public static EventReferenceDto toReferenceDto(Event ado) {

@@ -235,6 +235,7 @@
     <string name="entity_task">Task</string>
 
     <string name="alert_encryption">SORMAS requires device encryption to be activated on your device to ensure data security.\n\nPlease note that you cannot use the application as long as device encryption is disabled.</string>
+    <string name="alert_gps">SORMAS needs GPS access for certain tasks like case creation.\n\nPlease note that you cannot use the application as long as it is not granted the according permissions or GPS is turned off.</string>
 
     <string name="validation_case_disease">Please select the disease for this case.</string>
     <string name="validation_person_first_name">Please enter the person\'s first name.</string>
@@ -244,6 +245,7 @@
     <string name="validation_region">Please select a state.</string>
     <string name="validation_health_facility">Please select a health facility.</string>
     <string name="validation_health_facility_details">Please enter the name and description of the health facility.</string>
+    <string name="validation_none_health_facility_details">Please enter a description for the place the case has been reported at.</string>
     <string name="validation_symptoms_onset_date">Please enter the date of initial symptom onset.</string>
     <string name="validation_symptoms_onset_symptom">Please select the initial onset symptom.</string>
     <string name="validation_symptoms_symptom">Please select a state for this symptom.</string>

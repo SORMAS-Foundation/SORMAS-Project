@@ -85,6 +85,9 @@ public class TaskFacadeEjb implements TaskFacade {
 		target.setTaskStatus(source.getTaskStatus());
 		target.setTaskType(source.getTaskType());
 		
+		target.setClosedLat(source.getClosedLat());
+		target.setClosedLon(source.getClosedLon());
+		
 		target.setTaskContext(source.getTaskContext());
 		if (source.getTaskContext() != null) {
 			switch (source.getTaskContext()) {
@@ -148,6 +151,9 @@ public class TaskFacadeEjb implements TaskFacade {
 		a.setCaze(CaseFacadeEjb.toReferenceDto(b.getCaze()));
 		a.setContact(ContactFacadeEjb.toReferenceDto(b.getContact()));
 		a.setEvent(EventFacadeEjb.toReferenceDto(b.getEvent()));
+		
+		a.setClosedLat(b.getClosedLat());
+		a.setClosedLon(b.getClosedLon());
 
 		return a;
 	}

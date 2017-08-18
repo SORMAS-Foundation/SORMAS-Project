@@ -62,6 +62,9 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
         target.setFollowUpUntil(source.getFollowUpUntil());
 
         target.setDescription(source.getDescription());
+
+        target.setReportLat(source.getReportLat());
+        target.setReportLon(source.getReportLon());
     }
 
     @Override
@@ -101,6 +104,9 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
             dto.setContactOfficer(null);
         }
         dto.setDescription(ado.getDescription());
+
+        dto.setReportLat(ado.getReportLat());
+        dto.setReportLon(ado.getReportLon());
     }
 
     public static ContactReferenceDto toReferenceDto(Contact ado) {

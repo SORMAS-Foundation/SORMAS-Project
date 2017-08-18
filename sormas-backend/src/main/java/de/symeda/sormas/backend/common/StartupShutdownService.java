@@ -11,6 +11,7 @@ import javax.ejb.Startup;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 
+import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.user.UserHelper;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.caze.CaseService;
@@ -213,13 +214,22 @@ public class StartupShutdownService {
 			importDataForRegion(InfrastructureDataImporter.importRegion("Zamfara"));
 		}
 
-		if (facilityService.getByUuid(facilityService.getOtherFacilityUuid()) == null) {
-			// Add 'Other' health facility with a constant UUID that is not
-			// associated with a specific region
+		// Add 'Other' health facility with a constant UUID that is not
+		// associated with a specific region
+		if (facilityService.getByUuid(FacilityDto.OTHER_FACILITY_UUID) == null) {
 			Facility otherFacility = new Facility();
 			otherFacility.setName("Other");
-			otherFacility.setUuid(facilityService.getOtherFacilityUuid());
+			otherFacility.setUuid(FacilityDto.OTHER_FACILITY_UUID);
 			facilityService.persist(otherFacility);
+		}
+
+		// Add 'None' health facility with a constant UUID that is not
+		// associated with a specific region
+		if (facilityService.getByUuid(FacilityDto.NONE_FACILITY_UUID) == null) {
+			Facility noneFacility = new Facility();
+			noneFacility.setName("None");
+			noneFacility.setUuid(FacilityDto.NONE_FACILITY_UUID);
+			facilityService.persist(noneFacility);
 		}
 	}
 

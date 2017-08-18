@@ -6,6 +6,9 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.location.Location;
+import android.location.LocationListener;
+import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.text.Html;
 import android.util.Log;
@@ -27,6 +30,7 @@ import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.caze.CaseEditActivity;
+import de.symeda.sormas.app.util.LocationService;
 
 public class CaseDao extends AbstractAdoDao<Case> {
 
@@ -156,6 +160,24 @@ public class CaseDao extends AbstractAdoDao<Case> {
             notificationManager.notify(notificationId, notification);
         }
         return mergedCase;
+    }
+
+    @Override
+    public Case saveAndSnapshot(final Case caze) throws DaoException {
+        // If a new case is created, use the last available location to update its report latitude and longitude
+        if (caze.getId() == null) {
+            LocationService locationService = LocationService.getLocationService(DatabaseHelper.getContext());
+            Location location = locationService.getLocation();
+            if (location != null) {
+                // Use the geo-coordinates of the current location object if it's not older than 15 minutes
+                if (new Date().getTime() <= location.getTime() + (1000 * 60 * 15)) {
+                    caze.setReportLat((float) location.getLatitude());
+                    caze.setReportLon((float) location.getLongitude());
+                }
+            }
+        }
+
+        return super.saveAndSnapshot(caze);
     }
 
 }

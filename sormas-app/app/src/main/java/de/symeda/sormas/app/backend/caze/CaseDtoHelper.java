@@ -93,6 +93,9 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
         target.setMeaslesDoses(source.getMeaslesDoses());
         target.setMeaslesVaccinationInfoSource(source.getMeaslesVaccinationInfoSource());
         target.setEpidNumber(source.getEpidNumber());
+
+        target.setReportLat(source.getReportLat());
+        target.setReportLon(source.getReportLon());
     }
 
     @Override
@@ -180,6 +183,9 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
         target.setMeaslesDoses(source.getMeaslesDoses());
         target.setMeaslesVaccinationInfoSource(source.getMeaslesVaccinationInfoSource());
         target.setEpidNumber(source.getEpidNumber());
+
+        target.setReportLat(source.getReportLat());
+        target.setReportLon(source.getReportLon());
     }
 
     public static CaseReferenceDto toReferenceDto(Case ado) {

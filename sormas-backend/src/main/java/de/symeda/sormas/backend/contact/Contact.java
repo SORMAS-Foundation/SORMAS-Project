@@ -43,6 +43,8 @@ public class Contact extends AbstractDomainObject {
 	public static final String DESCRIPTION = "description";
 	public static final String TASKS = "tasks";
 	public static final String RELATION_TO_CASE = "relationToCase";
+	public static final String REPORT_LAT = "reportLat";
+	public static final String REPORT_LON = "reportLon";
 	
 	private Person person;
 	private Case caze;
@@ -56,6 +58,8 @@ public class Contact extends AbstractDomainObject {
 	private User contactOfficer;
 	private String description;
 	private ContactRelation relationToCase;
+	private Float reportLat;
+	private Float reportLon;
 	
 	private List<Task> tasks;
 	
@@ -184,6 +188,22 @@ public class Contact extends AbstractDomainObject {
 	}
 	public void setTasks(List<Task> tasks) {
 		this.tasks = tasks;
+	}
+
+	@Column(columnDefinition = "float8")
+	public Float getReportLat() {
+		return reportLat;
+	}
+	public void setReportLat(Float reportLat) {
+		this.reportLat = reportLat;
+	}
+	
+	@Column(columnDefinition = "float8")
+	public Float getReportLon() {
+		return reportLon;
+	}
+	public void setReportLon(Float reportLon) {
+		this.reportLon = reportLon;
 	}
 	
 }

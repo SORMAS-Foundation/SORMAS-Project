@@ -1605,3 +1605,17 @@ ALTER TABLE samples_history DROP COLUMN shipmentstatus;
 ALTER TABLE cases_history DROP COLUMN contactofficer_id;
 
 INSERT INTO schema_version (version_number, comment) VALUES (57, 'Replace ShipmentStatus with shipped and received booleans');
+
+-- 2017-08-16 Add GEO tags to cases, contacts, events, visits and tasks #86
+ALTER TABLE cases ADD COLUMN reportlat double precision;
+ALTER TABLE cases ADD COLUMN reportlon double precision;
+ALTER TABLE contact ADD COLUMN reportlat double precision;
+ALTER TABLE contact ADD COLUMN reportlon double precision;
+ALTER TABLE events ADD COLUMN reportlat double precision;
+ALTER TABLE events ADD COLUMN reportlon double precision;
+ALTER TABLE visit ADD COLUMN reportlat double precision;
+ALTER TABLE visit ADD COLUMN reportlon double precision;
+ALTER TABLE task ADD COLUMN closedlat double precision;
+ALTER TABLE task ADD COLUMN closedlon double precision;
+
+INSERT INTO schema_version (version_number, comment) VALUES (58, 'Add GEO tags to cases, contacts, events, visits and tasks');

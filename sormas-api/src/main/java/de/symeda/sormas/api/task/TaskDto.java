@@ -31,6 +31,8 @@ public class TaskDto extends DataTransferObject {
 	public static final String TASK_STATUS = "taskStatus";
 	public static final String TASK_TYPE = "taskType";
 	public static final String CONTEXT_REFERENCE = "contextReference";
+	public static final String CLOSED_LAT = "closedLat";
+	public static final String CLOSED_LON = "closedLon";
 
 	private TaskContext taskContext;
 	private CaseReferenceDto caze;
@@ -50,6 +52,8 @@ public class TaskDto extends DataTransferObject {
 	private UserReferenceDto assigneeUser;
 	private String assigneeReply;
 	
+	private Float closedLat;
+	private Float closedLon;
 
 	public TaskContext getTaskContext() {
 		return taskContext;
@@ -141,6 +145,18 @@ public class TaskDto extends DataTransferObject {
 	}
 	public void setPriority(TaskPriority priority) {
 		this.priority = priority;
+	}
+	public Float getClosedLat() {
+		return closedLat;
+	}
+	public void setClosedLat(Float closedLat) {
+		this.closedLat = closedLat;
+	}
+	public Float getClosedLon() {
+		return closedLon;
+	}
+	public void setClosedLon(Float closedLon) {
+		this.closedLon = closedLon;
 	}
 	
 	public ReferenceDto getContextReference() {

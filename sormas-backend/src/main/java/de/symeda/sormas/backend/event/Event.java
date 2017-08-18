@@ -49,6 +49,8 @@ public class Event extends AbstractDomainObject {
 	public static final String SURVEILLANCE_OFFICER = "surveillanceOfficer";
 	public static final String TYPE_OF_PLACE_TEXT = "typeOfPlaceText";
 	public static final String TASKS = "tasks";
+	public static final String REPORT_LAT = "reportLat";
+	public static final String REPORT_LON = "reportLon";
 	
 	private EventType eventType;
 	private EventStatus eventStatus;
@@ -66,6 +68,8 @@ public class Event extends AbstractDomainObject {
 	private Disease disease;
 	private User surveillanceOfficer;
 	private String typeOfPlaceText;
+	private Float reportLat;
+	private Float reportLon;
 
 	private List<Task> tasks;
 	
@@ -227,6 +231,22 @@ public class Event extends AbstractDomainObject {
 	
 	public void setTasks(List<Task> tasks) {
 		this.tasks = tasks;
+	}
+
+	@Column(columnDefinition = "float8")
+	public Float getReportLat() {
+		return reportLat;
+	}
+	public void setReportLat(Float reportLat) {
+		this.reportLat = reportLat;
+	}
+	
+	@Column(columnDefinition = "float8")
+	public Float getReportLon() {
+		return reportLon;
+	}
+	public void setReportLon(Float reportLon) {
+		this.reportLon = reportLon;
 	}
 	
 	@Override

@@ -81,6 +81,12 @@ public class Contact extends AbstractDomainObject {
 
 	@Enumerated(EnumType.STRING)
 	private ContactRelation relationToCase;
+
+	@Column(columnDefinition = "float8")
+	private Float reportLat;
+
+	@Column(columnDefinition = "float8")
+	private Float reportLon;
 	
 	public Person getPerson() {
 		return person;
@@ -164,6 +170,22 @@ public class Contact extends AbstractDomainObject {
 	}
 	public void setRelationToCase(ContactRelation relationToCase) {
 		this.relationToCase = relationToCase;
+	}
+
+	public Float getReportLat() {
+		return reportLat;
+	}
+
+	public void setReportLat(Float reportLat) {
+		this.reportLat = reportLat;
+	}
+
+	public Float getReportLon() {
+		return reportLon;
+	}
+
+	public void setReportLon(Float reportLon) {
+		this.reportLon = reportLon;
 	}
 
 	@Override

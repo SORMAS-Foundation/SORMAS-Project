@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.Vaccination;
@@ -170,8 +171,22 @@ public class CaseEditDataForm extends FormTab {
             @Override
             public void onChange(PropertyField field) {
                 Facility selectedFacility = (Facility) binding.caseDataHealthFacility.getValue();
-                if (selectedFacility != null && selectedFacility.getUuid().equals(FacilityDto.OTHER_FACILITY_UUID)) {
-                    binding.caseDataFacilityDetails.setVisibility(View.VISIBLE);
+                if (selectedFacility != null) {
+                    boolean otherHealthFacility = selectedFacility.getUuid().equals(FacilityDto.OTHER_FACILITY_UUID);
+                    boolean noneHealthFacility = selectedFacility.getUuid().equals(FacilityDto.NONE_FACILITY_UUID);
+
+                    if (otherHealthFacility) {
+                        binding.caseDataFacilityDetails.setVisibility(View.VISIBLE);
+                        binding.caseDataFacilityDetails.setCaption(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY_DETAILS));
+                        binding.caseDataFacilityDetails.setRequiredHint(true);
+                    } else if (noneHealthFacility) {
+                        binding.caseDataFacilityDetails.setVisibility(View.VISIBLE);
+                        binding.caseDataFacilityDetails.setCaption(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.NONE_HEALTH_FACILITY_DETAILS));
+                        binding.caseDataFacilityDetails.setRequiredHint(true);
+                    } else {
+                        binding.caseDataFacilityDetails.setVisibility(View.GONE);
+                        binding.caseDataFacilityDetails.setValue(null);
+                    }
                 } else {
                     binding.caseDataFacilityDetails.setVisibility(View.GONE);
                     binding.caseDataFacilityDetails.setValue(null);

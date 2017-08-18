@@ -94,6 +94,12 @@ public class Event extends AbstractDomainObject {
 	@Column(length=512)
 	private String typeOfPlaceText;
 
+	@Column(columnDefinition = "float8")
+	private Float reportLat;
+
+	@Column(columnDefinition = "float8")
+	private Float reportLon;
+
 	public EventType getEventType() {
 		return eventType;
 	}
@@ -201,7 +207,22 @@ public class Event extends AbstractDomainObject {
 	public void setTypeOfPlaceText(String typeOfPlaceText) {
 		this.typeOfPlaceText = typeOfPlaceText;
 	}
-	
+
+	public Float getReportLat() {
+		return reportLat;
+	}
+
+	public void setReportLat(Float reportLat) {
+		this.reportLat = reportLat;
+	}
+
+	public Float getReportLon() {
+		return reportLon;
+	}
+
+	public void setReportLon(Float reportLon) {
+		this.reportLon = reportLon;
+	}
 
 	@Override
 	public String toString() {

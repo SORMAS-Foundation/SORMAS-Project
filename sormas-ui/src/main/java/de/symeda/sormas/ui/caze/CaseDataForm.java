@@ -8,8 +8,6 @@ import com.vaadin.data.Property;
 import com.vaadin.data.validator.RegexpValidator;
 import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.NativeSelect;
@@ -204,12 +202,28 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		});
 		
 		facility.addValueChangeListener(e -> {
-			boolean visibleAndRequired = facility.getValue() != null && ((FacilityReferenceDto) facility.getValue()).getUuid().equals(FacilityDto.OTHER_FACILITY_UUID);
-			healthFacilityDetails.setVisible(visibleAndRequired);
-			healthFacilityDetails.setRequired(visibleAndRequired);
-			if (!visibleAndRequired) {
+			if (facility.getValue() != null) {
+				boolean otherHealthFacility = ((FacilityReferenceDto) facility.getValue()).getUuid().equals(FacilityDto.OTHER_FACILITY_UUID);
+				boolean noneHealthFacility = ((FacilityReferenceDto) facility.getValue()).getUuid().equals(FacilityDto.NONE_FACILITY_UUID);
+				boolean visibleAndRequired = otherHealthFacility || noneHealthFacility;
+				
+				healthFacilityDetails.setVisible(visibleAndRequired);
+				healthFacilityDetails.setRequired(visibleAndRequired);
+
+				if (otherHealthFacility) {
+					healthFacilityDetails.setCaption(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY_DETAILS));
+				}
+				if (noneHealthFacility) {
+					healthFacilityDetails.setCaption(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.NONE_HEALTH_FACILITY_DETAILS));
+				}
+				if (!visibleAndRequired) {
+					healthFacilityDetails.clear();
+				}
+			} else {
+				healthFacilityDetails.setVisible(false);
+				healthFacilityDetails.setRequired(false);
 				healthFacilityDetails.clear();
-			}
+			}			
 		});
 	}
     

@@ -72,7 +72,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// name of the database file for your application -- change to something appropriate for your app
 	private static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	private static final int DATABASE_VERSION = 97;
+	private static final int DATABASE_VERSION = 98;
 
 	private static DatabaseHelper instance = null;
 	public static void init(Context context) {
@@ -223,6 +223,18 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					getDao(Sample.class).executeRaw("UPDATE samples SET received='true' WHERE shipmentStatus = 'RECEIVED' OR shipmentStatus = 'REFERRED_OTHER_LAB';");
 					getDao(Sample.class).executeRaw("UPDATE samples SET shipped='false' WHERE shipmentStatus = 'NOT_SHIPPED';");
 					getDao(Sample.class).executeRaw("UPDATE samples SET received='false' WHERE shipmentStatus = 'NOT_SHIPPED' OR shipmentStatus = 'SHIPPED';");
+				case 97:
+					currentVersion = 97;
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN reportLat float8;");
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN reportLon float8;");
+					getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN reportLat float8;");
+					getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN reportLon float8;");
+					getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN reportLat float8;");
+					getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN reportLon float8;");
+					getDao(Visit.class).executeRaw("ALTER TABLE visits ADD COLUMN reportLat float8;");
+					getDao(Visit.class).executeRaw("ALTER TABLE visits ADD COLUMN reportLon float8;");
+					getDao(Task.class).executeRaw("ALTER TABLE tasks ADD COLUMN closedLat float8;");
+					getDao(Task.class).executeRaw("ALTER TABLE tasks ADD COLUMN closedLon float8;");
 
 
 					// ATTENTION: break should only be done after last version

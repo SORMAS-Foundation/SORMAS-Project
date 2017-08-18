@@ -125,6 +125,9 @@ public class EventFacadeEjb implements EventFacade {
 		target.setDisease(source.getDisease());
 		target.setSurveillanceOfficer(userService.getByReferenceDto(source.getSurveillanceOfficer()));
 		target.setTypeOfPlaceText(source.getTypeOfPlaceText());
+
+		target.setReportLat(source.getReportLat());
+		target.setReportLon(source.getReportLon());
 		
 		return target;
 	}
@@ -161,6 +164,9 @@ public class EventFacadeEjb implements EventFacade {
 		target.setDisease(source.getDisease());
 		target.setSurveillanceOfficer(UserFacadeEjb.toReferenceDto(source.getSurveillanceOfficer()));
 		target.setTypeOfPlaceText(source.getTypeOfPlaceText());
+
+		target.setReportLat(source.getReportLat());
+		target.setReportLon(source.getReportLon());
 		
 		return target;
 	}

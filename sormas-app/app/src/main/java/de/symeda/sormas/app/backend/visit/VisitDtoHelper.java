@@ -51,6 +51,9 @@ public class VisitDtoHelper extends AdoDtoHelper<Visit, VisitDto> {
         target.setVisitRemarks(source.getVisitRemarks());
         target.setVisitStatus(source.getVisitStatus());
         target.setVisitUser(DatabaseHelper.getUserDao().getByReferenceDto(source.getVisitUser()));
+
+        target.setReportLat(source.getReportLat());
+        target.setReportLon(source.getReportLon());
     }
 
     @Override
@@ -83,5 +86,8 @@ public class VisitDtoHelper extends AdoDtoHelper<Visit, VisitDto> {
         } else {
             dto.setVisitUser(null);
         }
+
+        dto.setReportLat(ado.getReportLat());
+        dto.setReportLon(ado.getReportLon());
     }
 }

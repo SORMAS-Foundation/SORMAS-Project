@@ -7,8 +7,11 @@ import java.util.Date;
 
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
+import de.symeda.sormas.app.backend.common.DaoException;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.location.Location;
+import de.symeda.sormas.app.util.LocationService;
 
 public class EventDao extends AbstractAdoDao<Event> {
 
@@ -54,5 +57,22 @@ public class EventDao extends AbstractAdoDao<Event> {
         return event;
     }
 
+    @Override
+    public Event saveAndSnapshot(final Event event) throws DaoException {
+        // If a new event is created, use the last available location to update its report latitude and longitude
+        if (event.getId() == null) {
+            LocationService locationService = LocationService.getLocationService(DatabaseHelper.getContext());
+            android.location.Location location = locationService.getLocation();
+            if (location != null) {
+                // Use the geo-coordinates of the current location object if it's not older than 15 minutes
+                if (new Date().getTime() <= location.getTime() + (1000 * 60 * 15)) {
+                    event.setReportLat((float) location.getLatitude());
+                    event.setReportLon((float) location.getLongitude());
+                }
+            }
+        }
+
+        return super.saveAndSnapshot(event);
+    }
 
 }

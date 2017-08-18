@@ -12,6 +12,7 @@ public class FacilityDto extends FacilityReferenceDto {
 
 	public static final String I18N_PREFIX = "Facility";
 	public static final String OTHER_FACILITY_UUID = "SORMAS-CONSTID-OTHERS-FACILITY";
+	public static final String NONE_FACILITY_UUID = "SORMAS-CONSTID-ISNONE-FACILITY";
 	
 	private String name;
 	private RegionReferenceDto region;

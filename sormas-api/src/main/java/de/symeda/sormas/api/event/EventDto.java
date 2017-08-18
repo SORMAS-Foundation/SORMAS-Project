@@ -28,6 +28,8 @@ public class EventDto extends EventReferenceDto {
 	public static final String DISEASE = "disease";
 	public static final String SURVEILLANCE_OFFICER = "surveillanceOfficer";
 	public static final String TYPE_OF_PLACE_TEXT = "typeOfPlaceText";
+	public static final String REPORT_LAT = "reportLat";
+	public static final String REPORT_LON = "reportLon";
 	
 	private EventType eventType;
 	private EventStatus eventStatus;
@@ -44,6 +46,8 @@ public class EventDto extends EventReferenceDto {
 	private Disease disease;
 	private UserReferenceDto surveillanceOfficer;
 	private String typeOfPlaceText;
+	private Float reportLat;
+	private Float reportLon;
 	
 	public EventType getEventType() {
 		return eventType;
@@ -161,6 +165,22 @@ public class EventDto extends EventReferenceDto {
 	
 	public void setTypeOfPlaceText(String typeOfPlaceText) {
 		this.typeOfPlaceText = typeOfPlaceText;
+	}
+
+	public Float getReportLat() {
+		return reportLat;
+	}
+
+	public void setReportLat(Float reportLat) {
+		this.reportLat = reportLat;
+	}
+
+	public Float getReportLon() {
+		return reportLon;
+	}
+
+	public void setReportLon(Float reportLon) {
+		this.reportLon = reportLon;
 	}
 
 }

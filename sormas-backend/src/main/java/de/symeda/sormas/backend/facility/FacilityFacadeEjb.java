@@ -37,10 +37,10 @@ public class FacilityFacadeEjb implements FacilityFacade {
 
 	
 	@Override
-	public List<FacilityReferenceDto> getHealthFacilitiesByCommunity(CommunityReferenceDto communityRef, boolean includeOthers) {
+	public List<FacilityReferenceDto> getHealthFacilitiesByCommunity(CommunityReferenceDto communityRef, boolean includeStaticFacilities) {
 		
 		Community community = communityService.getByUuid(communityRef.getUuid());
-		List<Facility> facilities = service.getHealthFacilitiesByCommunity(community, includeOthers);
+		List<Facility> facilities = service.getHealthFacilitiesByCommunity(community, includeStaticFacilities);
 		
 		return facilities.stream()
 				.map(f -> toReferenceDto(f))
@@ -48,9 +48,9 @@ public class FacilityFacadeEjb implements FacilityFacade {
 	}
 	
 	@Override
-	public List<FacilityReferenceDto> getHealthFacilitiesByDistrict(DistrictReferenceDto districtRef, boolean includeOthers) {
+	public List<FacilityReferenceDto> getHealthFacilitiesByDistrict(DistrictReferenceDto districtRef, boolean includeStaticFacilities) {
     	District district = districtService.getByUuid(districtRef.getUuid());
-		List<Facility> facilities = service.getHealthFacilitiesByDistrict(district, includeOthers);
+		List<Facility> facilities = service.getHealthFacilitiesByDistrict(district, includeStaticFacilities);
 		
 		return facilities.stream()
 				.map(f -> toReferenceDto(f))
