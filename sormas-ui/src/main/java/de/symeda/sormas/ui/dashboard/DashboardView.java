@@ -30,7 +30,6 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.highcharts.HighChart;
 import de.symeda.sormas.ui.login.LoginHelper;
@@ -357,26 +356,25 @@ public class DashboardView extends AbstractView {
 			legendLayout.setExpandRatio(legendEntry, 1);
 			mapFooterLayout.addComponent(legendLayout);
 
-			Button otherFacilitiesButton = new Button("Other health facilities");
-			otherFacilitiesButton.addStyleName(ValoTheme.BUTTON_LINK);
-			otherFacilitiesButton.addClickListener(e -> {
+			Button noGPSButton = new Button("Facilities without GPS tag");
+			noGPSButton.addStyleName(ValoTheme.BUTTON_LINK);
+			noGPSButton.addClickListener(e -> {
 				VerticalLayout layout = new VerticalLayout();
 				Window window = VaadinUiUtil.showPopupWindow(layout);
-				FacilityDto facility = FacadeProvider.getFacilityFacade().getByUuid(FacilityDto.OTHER_FACILITY_UUID);
-				List<CaseDataDto> casesForFacility = mapComponent.getCasesForFacility(facility);
-				if (casesForFacility == null || casesForFacility.isEmpty()) {
-					Label noCasesLabel = new Label("There are no cases in other health facilities.");
+				List<CaseDataDto> casesWithoutGPSTag = mapComponent.getCasesWithoutGPSTag();
+				if (casesWithoutGPSTag == null || casesWithoutGPSTag.isEmpty()) {
+					Label noCasesLabel = new Label("There are no cases without a GPS tag.");
 					layout.addComponent(noCasesLabel);
 				} else {
-					CasePopupGrid caseGrid = new CasePopupGrid(window, facility, mapComponent);
+					CasePopupGrid caseGrid = new CasePopupGrid(window, null, mapComponent);
 					caseGrid.setHeightMode(HeightMode.ROW);
 					layout.addComponent(caseGrid);
 				}
 				layout.setMargin(true);
-				window.setCaption("Cases in other health facilities");
+				window.setCaption("Cases without GPS tag");
 			});
-			mapFooterLayout.addComponent(otherFacilitiesButton);
-			mapFooterLayout.setComponentAlignment(otherFacilitiesButton, Alignment.MIDDLE_RIGHT);
+			mapFooterLayout.addComponent(noGPSButton);
+			mapFooterLayout.setComponentAlignment(noGPSButton, Alignment.MIDDLE_RIGHT);
 			mapFooterLayout.setExpandRatio(legendLayout, 1);
 		}
 		mapLayout.addComponent(mapFooterLayout);
@@ -421,10 +419,10 @@ public class DashboardView extends AbstractView {
 
 		// If the "use date filter for map" check box is not checked, use a list of all cases irrespective of the dates instead
 		if (useDateFilterForMap == true) {
-			mapComponent.showFacilities(cases);
+			mapComponent.showMarkers(cases);
 		} else {
 			List<CaseDataDto> casesForMap = FacadeProvider.getCaseFacade().getAllCasesByDiseaseAfter(null, disease, userUuid);
-			mapComponent.showFacilities(casesForMap);
+			mapComponent.showMarkers(casesForMap);
 		}
 	}
 

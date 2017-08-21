@@ -83,7 +83,7 @@ public class CasePopupGrid extends Grid {
         getColumn(CaseDataDto.UUID).setRenderer(new UuidRenderer());
         getColumn(CaseDataDto.REPORT_DATE).setRenderer(new DateRenderer(DateHelper.getDateTimeFormat()));
         
-        if (!facility.getUuid().equals(FacilityDto.OTHER_FACILITY_UUID)) {
+        if (facility == null || !facility.getUuid().equals(FacilityDto.OTHER_FACILITY_UUID)) {
         	getColumn(CaseDataDto.HEALTH_FACILITY_DETAILS).setHidden(true);
         }
         
@@ -109,7 +109,14 @@ public class CasePopupGrid extends Grid {
 	
 	public void reload() {
 		getContainer().removeAllItems();
-		List<CaseDataDto> cases = mapComponent.getCasesForFacility(facility);
+		
+		List<CaseDataDto> cases;
+		if (facility != null) {
+			cases = mapComponent.getCasesForFacility(facility);
+		} else {
+			cases = mapComponent.getCasesWithoutGPSTag();
+		}
+		
         getContainer().addAll(cases);
         this.setHeightByRows(cases.size());
     }

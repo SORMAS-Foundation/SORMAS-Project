@@ -38,8 +38,8 @@ public class FacilityDao extends AbstractAdoDao<Facility> {
         }
 
         if (includeStaticFacilities) {
-            facilities.add(0, queryUuid(FacilityDto.NONE_FACILITY_UUID));
-            facilities.add(0, queryUuid(FacilityDto.OTHER_FACILITY_UUID));
+            facilities.add(queryUuid(FacilityDto.OTHER_FACILITY_UUID));
+            facilities.add(queryUuid(FacilityDto.NONE_FACILITY_UUID));
         }
 
         return facilities;

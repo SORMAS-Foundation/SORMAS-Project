@@ -19,6 +19,7 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -35,7 +36,9 @@ public class MapComponent extends VerticalLayout {
 	private final LatLon centerOyo = new LatLon(8.110803, 3.625342);
 	
 	private final HashMap<GoogleMapMarker, FacilityDto> facilityMarkers = new HashMap<GoogleMapMarker, FacilityDto>();
+	private final HashMap<GoogleMapMarker, CaseDataDto> caseMarkers = new HashMap<GoogleMapMarker, CaseDataDto>();
 	private final HashMap<FacilityDto, List<CaseDataDto>> facilities = new HashMap<>();
+	private final List<CaseDataDto> mapCases = new ArrayList<>();
     
     public MapComponent() {    	
 		map = new GoogleMap("AIzaSyAaJpN8a_NhEU-02-t5uVi02cAaZtKafkw", null, null);
@@ -56,25 +59,36 @@ public class MapComponent extends VerticalLayout {
         map.addMarkerClickListener(new MarkerClickListener() {
             @Override
             public void markerClicked(GoogleMapMarker clickedMarker) {
-            	VerticalLayout layout = new VerticalLayout();
-            	Window window = VaadinUiUtil.showPopupWindow(layout);
             	FacilityDto facility = facilityMarkers.get(clickedMarker);
-            	CasePopupGrid caseGrid = new CasePopupGrid(window, facility, mapComponent);
-            	caseGrid.setHeightMode(HeightMode.ROW);
-            	layout.addComponent(caseGrid);
-            	layout.setMargin(true);
-            	window.setCaption("Cases in " + facilityMarkers.get(clickedMarker).getCaption());
+            	CaseDataDto caze = caseMarkers.get(clickedMarker);
+            	
+            	if (facility != null) {
+                	VerticalLayout layout = new VerticalLayout();
+                	Window window = VaadinUiUtil.showPopupWindow(layout);
+                	CasePopupGrid caseGrid = new CasePopupGrid(window, facility, mapComponent);
+                	caseGrid.setHeightMode(HeightMode.ROW);
+                	layout.addComponent(caseGrid);
+                	layout.setMargin(true);
+                	window.setCaption("Cases in " + facilityMarkers.get(clickedMarker).getCaption());
+            	} else if (caze != null) {
+            		ControllerProvider.getCaseController().navigateToData(caze.getUuid());
+            	}
             }
         });
     }
     
-    public void showFacilities(List<CaseDataDto> cases) {
+    public void showMarkers(List<CaseDataDto> cases) {
     	// clear old markers
-    	for (GoogleMapMarker caseMarker : facilityMarkers.keySet()) {
-			map.removeMarker(caseMarker);
+    	for (GoogleMapMarker facilityMarker : facilityMarkers.keySet()) {
+			map.removeMarker(facilityMarker);
 		}
+    	for (GoogleMapMarker caseMarker : caseMarkers.keySet()) {
+    		map.removeMarker(caseMarker);
+    	}
     	facilityMarkers.clear();
+    	caseMarkers.clear();
     	facilities.clear();
+    	mapCases.clear();
     	
     	// collect cases for health facilities
     	for (CaseDataDto caze : cases) {
@@ -83,6 +97,11 @@ public class MapComponent extends VerticalLayout {
     			continue;
     		if (caze.getHealthFacility() == null)
     			continue;
+    		if (caze.getHealthFacility().getUuid().equals(FacilityDto.NONE_FACILITY_UUID) ||
+    				caze.getHealthFacility().getUuid().equals(FacilityDto.OTHER_FACILITY_UUID)) {
+    			mapCases.add(caze);
+    			continue;
+    		}
     		
     		FacilityDto facility = FacadeProvider.getFacilityFacade().getByUuid(caze.getHealthFacility().getUuid());
     		if (facilities.get(facility) == null) {
@@ -137,6 +156,30 @@ public class MapComponent extends VerticalLayout {
     		facilityMarkers.put(marker, facility);
     		map.addMarker(marker);
     	}
+    	
+    	for (CaseDataDto caze : mapCases) {
+    		if (caze.getReportLat() == null || caze.getReportLon() == null) {
+    			continue;
+    		}
+    		
+    		LatLon latLon = new LatLon(caze.getReportLat(), caze.getReportLon());
+    		MapIcon icon;
+    		
+    		if (caze.getCaseClassification() == CaseClassification.CONFIRMED) {
+    			icon = MapIcon.RED_CIRCLE;
+    		} else if (caze.getCaseClassification() == CaseClassification.PROBABLE) {
+    			icon = MapIcon.ORANGE_CIRCLE;
+    		} else if (caze.getCaseClassification() == CaseClassification.SUSPECT) {
+    			icon = MapIcon.YELLOW_CIRCLE;
+    		} else {
+    			icon = MapIcon.GREY_CIRCLE;
+    		}
+    		
+    		GoogleMapMarker marker = new GoogleMapMarker(caze.toString(), latLon, false, icon.getUrl());
+    		marker.setId(caze.getUuid().hashCode());
+    		caseMarkers.put(marker, caze);
+    		map.addMarker(marker);
+    	}
     }
     
     public enum MapIcon {
@@ -160,7 +203,11 @@ public class MapComponent extends VerticalLayout {
     	GREY_DOT("grey-dot"),
     	GREY_DOT_SMALL("grey-dot-small"),
     	GREY_DOT_LARGE("grey-dot-large"),
-    	GREY_DOT_VERY_LARGE("grey-dot-very-large")
+    	GREY_DOT_VERY_LARGE("grey-dot-very-large"),
+    	RED_CIRCLE("red-circle"),
+    	ORANGE_CIRCLE("orange-circle"),
+    	YELLOW_CIRCLE("yellow-circle"),
+    	GREY_CIRCLE("grey-circle")
     	;
     	
     	private final String imgName;
@@ -176,5 +223,17 @@ public class MapComponent extends VerticalLayout {
     
     public List<CaseDataDto> getCasesForFacility(FacilityDto facility) {
     	return facilities.get(facility);
+    }
+    
+    public List<CaseDataDto> getCasesWithoutGPSTag() {
+    	List<CaseDataDto> casesWithoutGPSTag = new ArrayList<>();
+    	
+    	for (CaseDataDto caze : mapCases) {
+    		if (caze.getReportLat() == null || caze.getReportLon() == null) {
+    			casesWithoutGPSTag.add(caze);
+    		}
+    	}
+    	
+    	return casesWithoutGPSTag;
     }
 }

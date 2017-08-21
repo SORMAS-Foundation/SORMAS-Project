@@ -43,8 +43,8 @@ public class FacilityService extends AbstractAdoService<Facility> {
 		List<Facility> facilities = em.createQuery(cq).getResultList();
 		
 		if (includeStaticFacilities) {			
-			facilities.add(0, getByUuid(FacilityDto.NONE_FACILITY_UUID));
-			facilities.add(0, getByUuid(FacilityDto.OTHER_FACILITY_UUID));
+			facilities.add(getByUuid(FacilityDto.OTHER_FACILITY_UUID));
+			facilities.add(getByUuid(FacilityDto.NONE_FACILITY_UUID));
 		}
 		
 		return facilities;
@@ -65,8 +65,8 @@ public class FacilityService extends AbstractAdoService<Facility> {
 		List<Facility> facilities = em.createQuery(cq).getResultList();
 		
 		if (includeStaticFacilities) {
-			facilities.add(0, getByUuid(FacilityDto.NONE_FACILITY_UUID));
-			facilities.add(0, getByUuid(FacilityDto.OTHER_FACILITY_UUID));
+			facilities.add(getByUuid(FacilityDto.OTHER_FACILITY_UUID));
+			facilities.add(getByUuid(FacilityDto.NONE_FACILITY_UUID));
 		}
 		
 		return facilities;
