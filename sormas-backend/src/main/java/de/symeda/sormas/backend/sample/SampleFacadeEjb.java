@@ -144,7 +144,6 @@ public class SampleFacadeEjb implements SampleFacade {
 		target.setSampleMaterial(source.getSampleMaterial());
 		target.setSampleMaterialText(source.getSampleMaterialText());
 		target.setLab(facilityService.getByReferenceDto(source.getLab()));
-		target.setOtherLab(facilityService.getByReferenceDto(source.getOtherLab()));
 		target.setShipmentDate(source.getShipmentDate());
 		target.setShipmentDetails(source.getShipmentDetails());
 		target.setReceivedDate(source.getReceivedDate());
@@ -176,7 +175,6 @@ public class SampleFacadeEjb implements SampleFacade {
 		target.setSampleMaterial(source.getSampleMaterial());
 		target.setSampleMaterialText(source.getSampleMaterialText());
 		target.setLab(FacilityFacadeEjb.toReferenceDto(source.getLab()));
-		target.setOtherLab(FacilityFacadeEjb.toReferenceDto(source.getOtherLab()));
 		target.setShipmentDate(source.getShipmentDate());
 		target.setShipmentDetails(source.getShipmentDetails());
 		target.setReceivedDate(source.getReceivedDate());

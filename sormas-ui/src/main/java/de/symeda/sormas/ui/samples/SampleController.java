@@ -1,6 +1,5 @@
 package de.symeda.sormas.ui.samples;
 
-import java.util.Date;
 import java.util.List;
 
 import com.vaadin.navigator.Navigator;
@@ -25,7 +24,6 @@ import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.login.LoginHelper;
@@ -61,7 +59,7 @@ public class SampleController {
 
 	public void create(CaseReferenceDto caseRef, SampleGrid grid) {
 		SampleCreateForm createForm = new SampleCreateForm();
-		createForm.setValue(createNewSample(caseRef));
+		createForm.setValue(SampleDto.buildSample(LoginHelper.getCurrentUserAsReference(), caseRef));
 		final CommitDiscardWrapperComponent<SampleCreateForm> editView = new CommitDiscardWrapperComponent<SampleCreateForm>(createForm, createForm.getFieldGroup());
 
 		editView.addCommitListener(new CommitListener() {
@@ -80,11 +78,7 @@ public class SampleController {
 
 	public void createReferral(SampleDto sample) {
 		SampleCreateForm createForm = new SampleCreateForm();
-		SampleDto referralSample = createNewSample(sample.getAssociatedCase());
-		referralSample.setSampleDateTime(sample.getSampleDateTime());
-		referralSample.setSampleCode(sample.getSampleCode());
-		referralSample.setSampleMaterial(sample.getSampleMaterial());
-		referralSample.setSuggestedTypeOfTest(sample.getSuggestedTypeOfTest());
+		SampleDto referralSample = SampleDto.buildReferralSample(LoginHelper.getCurrentUserAsReference(), sample);
 		createForm.setValue(referralSample);
 		final CommitDiscardWrapperComponent<SampleCreateForm> createView = new CommitDiscardWrapperComponent<SampleCreateForm>(createForm, createForm.getFieldGroup());
 
@@ -193,17 +187,6 @@ public class SampleController {
 				popupWindow.close();
 			}
 		});
-	}
-
-	private SampleDto createNewSample(CaseReferenceDto caseRef) {
-		SampleDto sample = new SampleDto();
-		sample.setUuid(DataHelper.createUuid());
-		sample.setAssociatedCase(caseRef);
-		sample.setReportingUser(LoginHelper.getCurrentUserAsReference());
-		sample.setReportDateTime(new Date());
-
-		return sample;
-
 	}
 
 	private ConfirmationComponent buildRequestTaskComponent() {

@@ -9,9 +9,6 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 
 public class VisitDto extends VisitReferenceDto {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -441664767075414789L;
 
 	public static final String I18N_PREFIX = "Visit";
