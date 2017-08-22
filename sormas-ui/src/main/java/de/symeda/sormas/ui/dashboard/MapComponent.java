@@ -129,10 +129,10 @@ public class MapComponent extends VerticalLayout {
     		}
     		
     		if (classificationSet.contains(CaseClassification.CONFIRMED)) {
-    			if (numberOfCases >= MARKER_VERY_LARGE_SIZE) icon = MapIcon.RED_DOT_VERY_LARGE;
-    			else if (numberOfCases >= MARKER_LARGE_SIZE) icon = MapIcon.RED_DOT_LARGE;
-    			else if (numberOfCases >= MARKER_NORMAL_SIZE) icon = MapIcon.RED_DOT;
-    			else icon = MapIcon.RED_DOT_SMALL;
+    			if (numberOfCases >= MARKER_VERY_LARGE_SIZE) icon = MapIcon.RED_HOUSE_VERY_LARGE;
+    			else if (numberOfCases >= MARKER_LARGE_SIZE) icon = MapIcon.RED_HOUSE_LARGE;
+    			else if (numberOfCases >= MARKER_NORMAL_SIZE) icon = MapIcon.RED_HOUSE;
+    			else icon = MapIcon.RED_HOUSE_SMALL;
     		} else if (classificationSet.contains(CaseClassification.PROBABLE)) {
     			if (numberOfCases >= MARKER_VERY_LARGE_SIZE) icon = MapIcon.ORANGE_DOT_VERY_LARGE;
     			else if (numberOfCases >= MARKER_LARGE_SIZE) icon = MapIcon.ORANGE_DOT_LARGE;
@@ -166,7 +166,7 @@ public class MapComponent extends VerticalLayout {
     		MapIcon icon;
     		
     		if (caze.getCaseClassification() == CaseClassification.CONFIRMED) {
-    			icon = MapIcon.RED_CIRCLE;
+    			icon = MapIcon.RED_DOT;
     		} else if (caze.getCaseClassification() == CaseClassification.PROBABLE) {
     			icon = MapIcon.ORANGE_CIRCLE;
     		} else if (caze.getCaseClassification() == CaseClassification.SUSPECT) {
@@ -187,6 +187,10 @@ public class MapComponent extends VerticalLayout {
     	RED_DOT_SMALL("red-dot-small"),
     	RED_DOT_LARGE("red-dot-large"),
     	RED_DOT_VERY_LARGE("red-dot-very-large"),
+    	RED_HOUSE("red-house"),
+    	RED_HOUSE_SMALL("red-house-small"),
+    	RED_HOUSE_LARGE("red-house-large"),
+    	RED_HOUSE_VERY_LARGE("red-house-very-large"),
     	GREEN_DOT("green-dot"),
     	BLUE_DOT("blue-dot"),
     	LIGHT_BLUE_DOT("ltblue-dot"),

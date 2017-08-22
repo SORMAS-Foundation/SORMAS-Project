@@ -14,8 +14,11 @@
    viewBox="0 0 120.48955 280.52761"
    id="svg2"
    version="1.1"
-   inkscape:version="0.91 r13725"
-   sodipodi:docname="templateAll.svg">
+   inkscape:version="0.48.5 r10040"
+   sodipodi:docname="templateAll.svg"
+   inkscape:export-filename="D:\workspaces\SORMAS\sormas-ui\src\main\webapp\VAADIN\themes\sormastheme\mapicons\templateAll.png"
+   inkscape:export-xdpi="180.22397"
+   inkscape:export-ydpi="180.22397">
   <defs
      id="defs4">
     <filter
@@ -226,6 +229,38 @@
          stdDeviation="1.1921431"
          id="feGaussianBlur5197-5-8" />
     </filter>
+    <filter
+       style="color-interpolation-filters:sRGB;"
+       inkscape:label="Drop Shadow"
+       id="filter3986">
+      <feFlood
+         flood-opacity="1"
+         flood-color="rgb(0,0,0)"
+         result="flood"
+         id="feFlood3988" />
+      <feComposite
+         in="flood"
+         in2="SourceGraphic"
+         operator="in"
+         result="composite1"
+         id="feComposite3990" />
+      <feGaussianBlur
+         in="composite"
+         stdDeviation="1"
+         result="blur"
+         id="feGaussianBlur3992" />
+      <feOffset
+         dx="0"
+         dy="0"
+         result="offset"
+         id="feOffset3994" />
+      <feComposite
+         in="SourceGraphic"
+         in2="offset"
+         operator="over"
+         result="composite2"
+         id="feComposite3996" />
+    </filter>
   </defs>
   <sodipodi:namedview
      id="base"
@@ -235,8 +270,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="4"
-     inkscape:cx="17.087698"
-     inkscape:cy="49.583058"
+     inkscape:cx="-30.787302"
+     inkscape:cy="209.58306"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -244,11 +279,16 @@
      fit-margin-left="0"
      fit-margin-right="0"
      fit-margin-bottom="0"
-     inkscape:window-width="1842"
-     inkscape:window-height="1057"
-     inkscape:window-x="70"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     inkscape:window-x="-8"
      inkscape:window-y="-8"
-     inkscape:window-maximized="1" />
+     inkscape:window-maximized="1"
+     inkscape:snap-global="true">
+    <inkscape:grid
+       type="xygrid"
+       id="grid3066" />
+  </sodipodi:namedview>
   <metadata
      id="metadata7">
     <rdf:RDF>
@@ -426,7 +466,8 @@
        id="path4401"
        d="m 432.33335,428.82649 c -8.8366,0 -16.00001,7.1634 -16.00001,16 0,2.842 0.7632,5.5 2.06241,7.812 0.2158,0.384 0.44199,0.762 0.6876,1.126 l 13.25,23.062 13.24999,-23.062 c 0.20401,-0.302 0.38001,-0.622 0.562,-0.938 l 0.126,-0.188 c 1.29801,-2.312 2.06201,-4.97 2.06201,-7.812 0,-8.8366 -7.164,-16 -16,-16 z m 0,8 c 4.418,0 7.99999,3.5818 7.99999,8 0,4.418 -3.58199,8 -7.99999,8 -4.4182,0 -8,-3.582 -8,-8 0,-4.4182 3.5818,-8 8,-8 z"
        inkscape:connector-curvature="0"
-       style="fill:#e74c3c;stroke:#860d00;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+       style="fill:#e74c3c;stroke:#860d00;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       sodipodi:nodetypes="ssccccccsssssss" />
     <path
        inkscape:export-ydpi="90"
        inkscape:export-xdpi="90"
@@ -594,5 +635,13 @@
        style="fill:#860d00;fill-opacity:1"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90" />
+    <path
+       style="fill:#e74c3c;fill-opacity:1;stroke:#860d00;stroke-width:0.99661016000000002;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;filter:url(#filter3986)"
+       d="m 307.11419,474.73211 -16.0297,-24.28162 0,-16.18775 16.0297,-8.09387 16.0297,8.09387 0,16.18775 z"
+       id="path3064"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="ccccccc"
+       inkscape:export-xdpi="180"
+       inkscape:export-ydpi="180" />
   </g>
 </svg>
