@@ -47,14 +47,19 @@ For information on what libs are used see pom.xml in sormas-base project: https:
     * ``cd /root/deploy/sormas/backup``
     * ``sudo -u postgres pg_dump -Fc -b sormas_db >  "sormas_db_"`date +"%Y-%m-%d_%H-%M-%S"`".dump"``
     * ``cd /root/deploy/sormas/$(date +%F)``	
-* Find out current schema version of database:
-    * ``sudo -u postgres psql sormas_db``
-    * ``SELECT * from schema_version ORDER BY version_number DESC LIMIT 1;``
-    * ``\q``
-* **Edit sql/sormas_schema.sql**
-    * ``Remove everything until after the INSERT with the read schema version``
-    * ``Surround the remaining with BEGIN; and COMMIT;``
-* Update the Database schema: ``sudo -u postgres psql sormas_db < sql/sormas_schema.sql``
+* Update the database schema
+    * make the schema update script executable: ``chmod +x sql/database-update.sh``
+    * execute the update script: ``sql/database-update.sh``
+    * confirm schema update by pressing enter when asked
+* Alternative: Manual database update
+    * Find out current schema version of database:
+        * ``sudo -u postgres psql sormas_db``
+        * ``SELECT * from schema_version ORDER BY version_number DESC LIMIT 1;``
+        * ``\q``
+    * Edit sql/sormas_schema.sql
+        * ``Remove everything until after the INSERT with the read schema version``
+        * ``Surround the remaining with BEGIN; and COMMIT;``
+    * Update the Database schema: ``sudo -u postgres psql sormas_db < sql/sormas_schema.sql``
 * If something goes wrong, restorte the database using ``sudo -u postgres pg_restore -Fc -d sormas_db < sormas_db_....``
 
 #### Web Applications
