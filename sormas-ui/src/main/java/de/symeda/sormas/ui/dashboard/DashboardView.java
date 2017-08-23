@@ -338,25 +338,25 @@ public class DashboardView extends AbstractView {
 			legendLayout.setWidth(100, Unit.PERCENTAGE);
 			legendLayout.setSpacing(true);
 
-			HorizontalLayout legendEntry = createLegendEntry("mapicons/grey-dot-small.png", I18nProperties.getPrefixFieldCaption(I18N_PREFIX, NOT_YET_CLASSIFIED));
+			HorizontalLayout legendEntry = createLegendEntry("mapicons/grey-house-small.png", I18nProperties.getPrefixFieldCaption(I18N_PREFIX, NOT_YET_CLASSIFIED));
 			legendLayout.addComponent(legendEntry);
 			legendLayout.setComponentAlignment(legendEntry, Alignment.MIDDLE_LEFT);
 			legendLayout.setExpandRatio(legendEntry, 0);
-			legendEntry = createLegendEntry("mapicons/yellow-dot-small.png", I18nProperties.getPrefixFieldCaption(I18N_PREFIX, SUSPECT));
+			legendEntry = createLegendEntry("mapicons/yellow-house-small.png", I18nProperties.getPrefixFieldCaption(I18N_PREFIX, SUSPECT));
 			legendLayout.addComponent(legendEntry);
 			legendLayout.setComponentAlignment(legendEntry, Alignment.MIDDLE_LEFT);
 			legendLayout.setExpandRatio(legendEntry, 0);
-			legendEntry = createLegendEntry("mapicons/orange-dot-small.png", I18nProperties.getPrefixFieldCaption(I18N_PREFIX, PROBABLE));
+			legendEntry = createLegendEntry("mapicons/orange-house-small.png", I18nProperties.getPrefixFieldCaption(I18N_PREFIX, PROBABLE));
 			legendLayout.addComponent(legendEntry);
 			legendLayout.setComponentAlignment(legendEntry, Alignment.MIDDLE_LEFT);
 			legendLayout.setExpandRatio(legendEntry, 0);
-			legendEntry = createLegendEntry("mapicons/red-dot-small.png", I18nProperties.getPrefixFieldCaption(I18N_PREFIX, CONFIRMED));
+			legendEntry = createLegendEntry("mapicons/red-house-small.png", I18nProperties.getPrefixFieldCaption(I18N_PREFIX, CONFIRMED));
 			legendLayout.addComponent(legendEntry);
 			legendLayout.setComponentAlignment(legendEntry, Alignment.MIDDLE_LEFT);
 			legendLayout.setExpandRatio(legendEntry, 1);
 			mapFooterLayout.addComponent(legendLayout);
 
-			Button noGPSButton = new Button("Facilities without GPS tag");
+			Button noGPSButton = new Button("Cases without GPS tag");
 			noGPSButton.addStyleName(ValoTheme.BUTTON_LINK);
 			noGPSButton.addClickListener(e -> {
 				VerticalLayout layout = new VerticalLayout();

@@ -1619,3 +1619,18 @@ ALTER TABLE task ADD COLUMN closedlat double precision;
 ALTER TABLE task ADD COLUMN closedlon double precision;
 
 INSERT INTO schema_version (version_number, comment) VALUES (58, 'Add GEO tags to cases, contacts, events, visits and tasks');
+
+-- 2017-08-16 Add GEO tags to cases, contacts, events, visits and tasks #86
+ALTER TABLE cases_history ADD COLUMN reportlat double precision;
+ALTER TABLE cases_history ADD COLUMN reportlon double precision;
+ALTER TABLE contact_history ADD COLUMN reportlat double precision;
+ALTER TABLE contact_history ADD COLUMN reportlon double precision;
+ALTER TABLE events_history ADD COLUMN reportlat double precision;
+ALTER TABLE events_history ADD COLUMN reportlon double precision;
+ALTER TABLE visit_history ADD COLUMN reportlat double precision;
+ALTER TABLE visit_history ADD COLUMN reportlon double precision;
+ALTER TABLE task_history ADD COLUMN closedlat double precision;
+ALTER TABLE task_history ADD COLUMN closedlon double precision;
+
+INSERT INTO schema_version (version_number, comment) VALUES (59, 'Add GEO tags to history tables of cases, contacts, events, visits and tasks');
+

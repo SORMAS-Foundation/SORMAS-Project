@@ -134,20 +134,20 @@ public class MapComponent extends VerticalLayout {
     			else if (numberOfCases >= MARKER_NORMAL_SIZE) icon = MapIcon.RED_HOUSE;
     			else icon = MapIcon.RED_HOUSE_SMALL;
     		} else if (classificationSet.contains(CaseClassification.PROBABLE)) {
-    			if (numberOfCases >= MARKER_VERY_LARGE_SIZE) icon = MapIcon.ORANGE_DOT_VERY_LARGE;
-    			else if (numberOfCases >= MARKER_LARGE_SIZE) icon = MapIcon.ORANGE_DOT_LARGE;
-    			else if (numberOfCases >= MARKER_NORMAL_SIZE) icon = MapIcon.ORANGE_DOT;
-    			else icon = MapIcon.ORANGE_DOT_SMALL;
+    			if (numberOfCases >= MARKER_VERY_LARGE_SIZE) icon = MapIcon.ORANGE_HOUSE_VERY_LARGE;
+    			else if (numberOfCases >= MARKER_LARGE_SIZE) icon = MapIcon.ORANGE_HOUSE_LARGE;
+    			else if (numberOfCases >= MARKER_NORMAL_SIZE) icon = MapIcon.ORANGE_HOUSE;
+    			else icon = MapIcon.ORANGE_HOUSE_SMALL;
     		} else if (classificationSet.contains(CaseClassification.SUSPECT)) {
-    			if (numberOfCases >= MARKER_VERY_LARGE_SIZE) icon = MapIcon.YELLOW_DOT_VERY_LARGE;
-    			else if (numberOfCases >= MARKER_LARGE_SIZE) icon = MapIcon.YELLOW_DOT_LARGE;
-    			else if (numberOfCases >= MARKER_NORMAL_SIZE) icon = MapIcon.YELLOW_DOT;
-    			else icon = MapIcon.YELLOW_DOT_SMALL;
+    			if (numberOfCases >= MARKER_VERY_LARGE_SIZE) icon = MapIcon.YELLOW_HOUSE_VERY_LARGE;
+    			else if (numberOfCases >= MARKER_LARGE_SIZE) icon = MapIcon.YELLOW_HOUSE_LARGE;
+    			else if (numberOfCases >= MARKER_NORMAL_SIZE) icon = MapIcon.YELLOW_HOUSE;
+    			else icon = MapIcon.YELLOW_HOUSE_SMALL;
     		} else {
-    			if (numberOfCases >= MARKER_VERY_LARGE_SIZE) icon = MapIcon.GREY_DOT_VERY_LARGE;
-    			else if (numberOfCases >= MARKER_LARGE_SIZE) icon = MapIcon.GREY_DOT_LARGE;
-    			else if (numberOfCases >= MARKER_NORMAL_SIZE) icon = MapIcon.GREY_DOT;
-    			else icon = MapIcon.GREY_DOT_SMALL;
+    			if (numberOfCases >= MARKER_VERY_LARGE_SIZE) icon = MapIcon.GREY_HOUSE_VERY_LARGE;
+    			else if (numberOfCases >= MARKER_LARGE_SIZE) icon = MapIcon.GREY_HOUSE_LARGE;
+    			else if (numberOfCases >= MARKER_NORMAL_SIZE) icon = MapIcon.GREY_HOUSE;
+    			else icon = MapIcon.GREY_HOUSE_SMALL;
     		}
     		
     		// create and place the marker
@@ -166,13 +166,13 @@ public class MapComponent extends VerticalLayout {
     		MapIcon icon;
     		
     		if (caze.getCaseClassification() == CaseClassification.CONFIRMED) {
-    			icon = MapIcon.RED_DOT;
+    			icon = MapIcon.RED_DOT_SMALL;
     		} else if (caze.getCaseClassification() == CaseClassification.PROBABLE) {
-    			icon = MapIcon.ORANGE_CIRCLE;
+    			icon = MapIcon.ORANGE_DOT_SMALL;
     		} else if (caze.getCaseClassification() == CaseClassification.SUSPECT) {
-    			icon = MapIcon.YELLOW_CIRCLE;
+    			icon = MapIcon.YELLOW_DOT_SMALL;
     		} else {
-    			icon = MapIcon.GREY_CIRCLE;
+    			icon = MapIcon.GREY_DOT_SMALL;
     		}
     		
     		GoogleMapMarker marker = new GoogleMapMarker(caze.toString(), latLon, false, icon.getUrl());
@@ -191,27 +191,30 @@ public class MapComponent extends VerticalLayout {
     	RED_HOUSE_SMALL("red-house-small"),
     	RED_HOUSE_LARGE("red-house-large"),
     	RED_HOUSE_VERY_LARGE("red-house-very-large"),
-    	GREEN_DOT("green-dot"),
-    	BLUE_DOT("blue-dot"),
-    	LIGHT_BLUE_DOT("ltblue-dot"),
     	YELLOW_DOT("yellow-dot"),
     	YELLOW_DOT_SMALL("yellow-dot-small"),
     	YELLOW_DOT_LARGE("yellow-dot-large"),
     	YELLOW_DOT_VERY_LARGE("yellow-dot-very-large"),
+    	YELLOW_HOUSE("yellow-dot"),
+    	YELLOW_HOUSE_SMALL("yellow-house-small"),
+    	YELLOW_HOUSE_LARGE("yellow-house-large"),
+    	YELLOW_HOUSE_VERY_LARGE("yellow-house-very-large"),
     	ORANGE_DOT("orange-dot"),
     	ORANGE_DOT_SMALL("orange-dot-small"),
     	ORANGE_DOT_LARGE("orange-dot-large"),
     	ORANGE_DOT_VERY_LARGE("orange-dot-very-large"),
-    	PINK_DOT("pink-dot"),
-    	PURPLE_DOT("purple-dot"),
+    	ORANGE_HOUSE("orange-house"),
+    	ORANGE_HOUSE_SMALL("orange-house-small"),
+    	ORANGE_HOUSE_LARGE("orange-house-large"),
+    	ORANGE_HOUSE_VERY_LARGE("orange-house-very-large"),
     	GREY_DOT("grey-dot"),
     	GREY_DOT_SMALL("grey-dot-small"),
     	GREY_DOT_LARGE("grey-dot-large"),
     	GREY_DOT_VERY_LARGE("grey-dot-very-large"),
-    	RED_CIRCLE("red-circle"),
-    	ORANGE_CIRCLE("orange-circle"),
-    	YELLOW_CIRCLE("yellow-circle"),
-    	GREY_CIRCLE("grey-circle")
+    	GREY_HOUSE("grey-house"),
+    	GREY_HOUSE_SMALL("grey-house-small"),
+    	GREY_HOUSE_LARGE("grey-house-large"),
+    	GREY_HOUSE_VERY_LARGE("grey-house-very-large"),
     	;
     	
     	private final String imgName;
