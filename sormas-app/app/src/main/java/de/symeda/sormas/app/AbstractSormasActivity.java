@@ -25,6 +25,7 @@ import de.symeda.sormas.app.backend.synclog.SyncLogDao;
 import de.symeda.sormas.app.component.SyncLogDialog;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
+import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.SlidingTabLayout;
 import de.symeda.sormas.app.util.SyncCallback;
 
@@ -78,15 +79,20 @@ public abstract class AbstractSormasActivity extends AppCompatActivity {
 
     public void synchronizeCompleteData() {
         SwipeRefreshLayout refreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
-        synchronizeData(SynchronizeDataAsync.SyncMode.Complete, true, refreshLayout == null, refreshLayout);
+        synchronizeData(SynchronizeDataAsync.SyncMode.Complete, true, refreshLayout == null, refreshLayout, null);
     }
 
     public void synchronizeChangedData() {
         SwipeRefreshLayout refreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
-        synchronizeData(SynchronizeDataAsync.SyncMode.ChangesOnly, true, refreshLayout == null, refreshLayout);
+        synchronizeData(SynchronizeDataAsync.SyncMode.ChangesOnly, true, refreshLayout == null, refreshLayout, null);
     }
 
-    public void synchronizeData(SynchronizeDataAsync.SyncMode syncMode, final boolean showResultSnackbar, final boolean showProgressDialog, final SwipeRefreshLayout swipeRefreshLayout) {
+    public void synchronizeChangedData(Callback callback) {
+        SwipeRefreshLayout refreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
+        synchronizeData(SynchronizeDataAsync.SyncMode.ChangesOnly, true, refreshLayout == null, refreshLayout, callback);
+    }
+
+    public void synchronizeData(SynchronizeDataAsync.SyncMode syncMode, final boolean showResultSnackbar, final boolean showProgressDialog, final SwipeRefreshLayout swipeRefreshLayout, final Callback callback) {
 
         if (swipeRefreshLayout != null) {
             swipeRefreshLayout.setRefreshing(true);
@@ -173,6 +179,10 @@ public abstract class AbstractSormasActivity extends AppCompatActivity {
                         if (syncLogCountAfter > syncLogCountBefore) {
                             showConflictSnackbar();
                         }
+                    }
+
+                    if (callback != null) {
+                        callback.call();
                     }
                 }
             });
