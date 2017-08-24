@@ -127,16 +127,22 @@ public class TaskNotificationService extends Service {
             StringBuilder content = new StringBuilder();
             switch (task.getTaskContext()) {
                 case CASE:
-                    caze = caseDAO.queryForId(task.getCaze().getId());
-                    content.append("<b>").append(caze.toString()).append("</b><br/>");
+                    if (task.getCaze() != null) {
+                        caze = caseDAO.queryForId(task.getCaze().getId());
+                        content.append("<b>").append(caze.toString()).append("</b><br/>");
+                    }
                     break;
                 case CONTACT:
-                    contact = contactDAO.queryForId(task.getContact().getId());
-                    content.append("<b>").append(contact.toString()).append("</b><br/>");
+                    if (task.getContact() != null) {
+                        contact = contactDAO.queryForId(task.getContact().getId());
+                        content.append("<b>").append(contact.toString()).append("</b><br/>");
+                    }
                     break;
                 case EVENT:
-                    event = eventDAO.queryForId(task.getEvent().getId());
-                    content.append("<b>").append(event.toString()).append("</b><br/>");
+                    if (task.getEvent() != null) {
+                        event = eventDAO.queryForId(task.getEvent().getId());
+                        content.append("<b>").append(event.toString()).append("</b><br/>");
+                    }
                     break;
                 case GENERAL:
                     break;
