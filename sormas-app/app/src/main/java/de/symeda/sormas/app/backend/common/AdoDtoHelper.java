@@ -40,16 +40,15 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 
     protected void preparePulledResult(List<DTO> result) { }
 
-    public void synchronizeEntities()
+    /**
+     * @return another pull needed?
+     */
+    public boolean pullAndPushEntities()
             throws DaoException, SQLException, IOException {
 
         pullEntities(false);
 
-        boolean anotherPullNeeded = pushEntities();
-
-        if (anotherPullNeeded) {
-            pullEntities(true);
-        }
+        return pushEntities();
     }
 
     public void pullEntities(final boolean markAsRead) throws DaoException, SQLException, IOException {

@@ -102,15 +102,44 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
     private void synchronizeChangedData() throws DaoException, SQLException, IOException {
 
-        new PersonDtoHelper().synchronizeEntities();
-        new EventDtoHelper().synchronizeEntities();
-        new EventParticipantDtoHelper().synchronizeEntities();
-        new CaseDtoHelper().synchronizeEntities();
-        new SampleDtoHelper().synchronizeEntities();
-        new SampleTestDtoHelper().synchronizeEntities();
-        new ContactDtoHelper().synchronizeEntities();
-        new VisitDtoHelper().synchronizeEntities();
-        new TaskDtoHelper().synchronizeEntities();
+        PersonDtoHelper personDtoHelper = new PersonDtoHelper();
+        EventDtoHelper eventDtoHelper = new EventDtoHelper();
+        EventParticipantDtoHelper eventParticipantDtoHelper = new EventParticipantDtoHelper();
+        CaseDtoHelper caseDtoHelper = new CaseDtoHelper();
+        SampleDtoHelper sampleDtoHelper = new SampleDtoHelper();
+        SampleTestDtoHelper sampleTestDtoHelper = new SampleTestDtoHelper();
+        ContactDtoHelper contactDtoHelper = new ContactDtoHelper();
+        VisitDtoHelper visitDtoHelper = new VisitDtoHelper();
+        TaskDtoHelper taskDtoHelper = new TaskDtoHelper();
+
+        boolean personsNeedPull = personDtoHelper.pullAndPushEntities();
+        boolean eventsNeedPull = eventDtoHelper.pullAndPushEntities();
+        boolean eventParticipantsNeedPull = eventParticipantDtoHelper.pullAndPushEntities();
+        boolean casesNeedPull = caseDtoHelper.pullAndPushEntities();
+        boolean samplesNeedPull = sampleDtoHelper.pullAndPushEntities();
+        boolean sampleTestsNeedPull = sampleTestDtoHelper.pullAndPushEntities();
+        boolean contactsNeedPull = contactDtoHelper.pullAndPushEntities();
+        boolean visitsNeedPull = visitDtoHelper.pullAndPushEntities();
+        boolean tasksNeedPull = taskDtoHelper.pullAndPushEntities();
+
+        if (personsNeedPull)
+            personDtoHelper.pullEntities(true);
+        if (eventsNeedPull)
+            eventDtoHelper.pullEntities(true);
+        if (eventParticipantsNeedPull)
+            eventParticipantDtoHelper.pullEntities(true);
+        if (casesNeedPull)
+            caseDtoHelper.pullEntities(true);
+        if (samplesNeedPull)
+            sampleDtoHelper.pullEntities(true);
+        if (sampleTestsNeedPull)
+            sampleTestDtoHelper.pullEntities(true);
+        if (contactsNeedPull)
+            contactDtoHelper.pullEntities(true);
+        if (visitsNeedPull)
+            visitDtoHelper.pullEntities(true);
+        if (tasksNeedPull)
+            taskDtoHelper.pullEntities(true);
     }
 
     private void pullInfrastructure() throws DaoException, SQLException, IOException {

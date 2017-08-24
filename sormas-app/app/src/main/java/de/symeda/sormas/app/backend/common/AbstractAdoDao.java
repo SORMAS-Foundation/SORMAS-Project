@@ -776,9 +776,8 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
         try {
             ADO ado = getAdoClass().newInstance();
             ado.setUuid(DataHelper.createUuid());
-            Date now = new Date();
-            ado.setCreationDate(now);
-            ado.setChangeDate(now);
+            ado.setCreationDate(new Date()); // now
+            ado.setChangeDate(new Date(0)); // minimum, becuase this has to be set by the server
 
             // build all embedded entities
 
