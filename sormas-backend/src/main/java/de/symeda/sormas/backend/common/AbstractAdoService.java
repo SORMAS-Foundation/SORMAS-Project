@@ -48,6 +48,15 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 	protected Object clone() throws CloneNotSupportedException {
 		throw new CloneNotSupportedException();
 	}
+	
+	public long count() {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<ADO> from = cq.from(getElementClass());
+		cq.select(cb.count(from));
+		long count = em.createQuery(cq).getSingleResult();
+		return count;
+	}
 
 	@Override
 	public List<ADO> getAll() {

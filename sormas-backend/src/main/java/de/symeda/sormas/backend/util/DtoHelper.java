@@ -8,7 +8,7 @@ public final class DtoHelper {
 	
 	public static void validateDto(DataTransferObject dto, AbstractDomainObject entity) {
 		if (entity.getChangeDate() != null 
-				&& dto.getChangeDate().getTime() + 1000 < entity.getChangeDate().getTime()) {
+				&& (dto.getChangeDate() == null || dto.getChangeDate().getTime() + 1000 < entity.getChangeDate().getTime())) {
 			// some inaccuracy is ok, because of the rest conversion 
 			throw new UnsupportedOperationException("Dto is older than existing entity: " + entity.getUuid());
 		}

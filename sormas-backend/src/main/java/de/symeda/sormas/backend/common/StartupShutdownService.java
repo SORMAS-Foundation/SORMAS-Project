@@ -11,12 +11,20 @@ import javax.ejb.Startup;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 
+import org.apache.commons.lang3.time.DateUtils;
+
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.user.UserHelper;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.epidata.EpiData;
+import de.symeda.sormas.backend.epidata.EpiDataService;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.facility.FacilityService;
+import de.symeda.sormas.backend.hospitalization.Hospitalization;
+import de.symeda.sormas.backend.location.Location;
+import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.CommunityService;
@@ -24,6 +32,8 @@ import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionService;
+import de.symeda.sormas.backend.symptoms.Symptoms;
+import de.symeda.sormas.backend.symptoms.SymptomsService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.InfrastructureDataImporter;
@@ -40,6 +50,10 @@ public class StartupShutdownService {
 	@EJB
 	private CaseService caseService;
 	@EJB
+	private EpiDataService epiDataService;
+	@EJB
+	private SymptomsService symptomsService;
+	@EJB
 	private PersonService personService;
 	@EJB
 	private RegionService regionService;
@@ -52,10 +66,39 @@ public class StartupShutdownService {
 
 	@PostConstruct
 	public void startup() {
+		
 		importRegionAndFacilityData();
+		
 		importEpidCodes();
+		
 		initLaboratoriesMockData();
+		
 		initUserMockData();
+		
+		// TODO enable/disable via config?
+		fixMissingEntities();
+	}
+
+	private void fixMissingEntities() {
+		
+		// don't do this when heuristically everything looks fine
+		if (caseService.count() == epiDataService.count()) {
+			return;
+		}
+		
+		List<Case> cases = caseService.getAll();
+		for (Case caze : cases) {
+			Person person = caze.getPerson();
+			if (person.getAddress().getId() == null) 
+				person.setAddress(new Location());
+			if (caze.getSymptoms().getId() == null)
+				caze.setSymptoms(new Symptoms());
+			if (caze.getHospitalization().getId() == null)
+				caze.setHospitalization(new Hospitalization());
+			if (caze.getEpiData().getId() == null)
+				caze.setEpiData(new EpiData());
+			caseService.persist(caze);
+		}
 	}
 
 	private void initUserMockData() {
