@@ -98,8 +98,6 @@ public class SampleGrid extends Grid {
 		} else {
 			removeColumn(SampleIndexDto.RECEIVED_DATE);
 		}
-		
-		reload();
 	}
 	
 	public SampleGrid(CaseReferenceDto caseRef) {
@@ -108,7 +106,6 @@ public class SampleGrid extends Grid {
 		removeColumn(DISEASE_SHORT);
 		removeColumn(SampleIndexDto.LGA);
 		this.caseRef = caseRef;
-		reload();
 	}
 	
 	public void filterForNotShipped() {

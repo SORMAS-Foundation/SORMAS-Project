@@ -33,9 +33,11 @@ public class CaseDataView extends AbstractCaseView {
     	TaskListComponent taskListComponent = new TaskListComponent(TaskContext.CASE, getCaseRef());
     	taskListComponent.addStyleName(CssStyles.SUBLIST_MARGIN);
     	addComponent(taskListComponent);
+    	taskListComponent.enter(event);
     	
     	SampleListComponent sampleListComponent = new SampleListComponent(getCaseRef());
     	sampleListComponent.addStyleName(CssStyles.SUBLIST_MARGIN_SMALL);
     	addComponent(sampleListComponent);
+    	sampleListComponent.enter(event);
     }
 }

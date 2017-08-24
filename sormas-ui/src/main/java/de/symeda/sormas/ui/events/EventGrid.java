@@ -94,8 +94,6 @@ public class EventGrid extends Grid {
 		
 		addItemClickListener(e -> ControllerProvider.getEventController().navigateToData(
 				((EventDto)e.getItemId()).getUuid()));
-		
-		reload();
 	}
 	
 	public void setStatusFilter(EventStatus eventStatus) {

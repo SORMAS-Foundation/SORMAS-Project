@@ -52,19 +52,20 @@ public class SormasUI extends UI {
             setContent(new LoginScreen(new LoginListener() {
                 @Override
                 public void loginSuccessful() {
-                    showMainView();
+                    initMainScreen();
+                    // open view
+                    getNavigator().navigateTo(getNavigator().getState());
                 }
             }));
             
         } else {
-            showMainView();
+            initMainScreen();
         }
     }
 
-    protected void showMainView() {
+    protected void initMainScreen() {
         addStyleName(ValoTheme.UI_WITH_MENU);
         setContent(new MainScreen(SormasUI.this));
-        getNavigator().navigateTo(getNavigator().getState());
     }
 
     public static SormasUI get() {

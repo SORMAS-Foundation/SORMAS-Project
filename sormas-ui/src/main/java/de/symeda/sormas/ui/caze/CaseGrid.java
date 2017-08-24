@@ -107,8 +107,6 @@ public class CaseGrid extends Grid {
         
         addItemClickListener(e -> ControllerProvider.getCaseController().navigateToData(
         		((CaseDataDto)e.getItemId()).getUuid()));
-        
-        reload();
 	}
 	
     /**

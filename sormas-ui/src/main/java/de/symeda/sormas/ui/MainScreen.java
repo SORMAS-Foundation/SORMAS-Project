@@ -23,6 +23,7 @@ import de.symeda.sormas.ui.user.UsersView;
  */
 @SuppressWarnings("serial")
 public class MainScreen extends HorizontalLayout {
+	
     private Menu menu;
 
     public MainScreen(SormasUI ui) {
