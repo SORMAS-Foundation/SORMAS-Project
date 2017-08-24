@@ -17,6 +17,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import de.symeda.auditlog.api.Audited;
+import de.symeda.auditlog.api.AuditedIgnore;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.InvestigationStatus;
@@ -250,6 +251,7 @@ public class Case extends AbstractDomainObject {
 	}
 
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@AuditedIgnore
 	public Symptoms getSymptoms() {
 		if (symptoms == null) {
 			symptoms = new Symptoms();
@@ -287,6 +289,7 @@ public class Case extends AbstractDomainObject {
 	// It's necessary to do a lazy fetch here because having three eager fetching one to one relations
 	// produces an error where two non-xa connections are opened
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@AuditedIgnore
 	public Hospitalization getHospitalization() {
 		if (hospitalization == null) {
 			hospitalization = new Hospitalization();
@@ -300,6 +303,7 @@ public class Case extends AbstractDomainObject {
 	// It's necessary to do a lazy fetch here because having three eager fetching one to one relations
 	// produces an error where two non-xa connections are opened
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@AuditedIgnore
 	public EpiData getEpiData() {
 		if(epiData == null) {
 			epiData = new EpiData();

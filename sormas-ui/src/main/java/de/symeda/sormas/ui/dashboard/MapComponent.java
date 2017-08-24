@@ -18,6 +18,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.facility.FacilityDto;
+import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.login.LoginHelper;
@@ -37,7 +38,7 @@ public class MapComponent extends VerticalLayout {
 	
 	private final HashMap<GoogleMapMarker, FacilityDto> facilityMarkers = new HashMap<GoogleMapMarker, FacilityDto>();
 	private final HashMap<GoogleMapMarker, CaseDataDto> caseMarkers = new HashMap<GoogleMapMarker, CaseDataDto>();
-	private final HashMap<FacilityDto, List<CaseDataDto>> facilities = new HashMap<>();
+	private final HashMap<FacilityReferenceDto, List<CaseDataDto>> facilities = new HashMap<>();
 	private final List<CaseDataDto> mapCases = new ArrayList<>();
     
     public MapComponent() {    	
@@ -103,7 +104,7 @@ public class MapComponent extends VerticalLayout {
     			continue;
     		}
     		
-    		FacilityDto facility = FacadeProvider.getFacilityFacade().getByUuid(caze.getHealthFacility().getUuid());
+    		FacilityReferenceDto facility = caze.getHealthFacility();
     		if (facilities.get(facility) == null) {
     			facilities.put(facility, new ArrayList<CaseDataDto>());
     		}
@@ -111,7 +112,9 @@ public class MapComponent extends VerticalLayout {
     	}
     	
     	// create markers for all facilities with cases
-    	for (FacilityDto facility : facilities.keySet()) {
+    	for (FacilityReferenceDto facilityReference : facilities.keySet()) {
+    		
+    		FacilityDto facility = FacadeProvider.getFacilityFacade().getByUuid(facilityReference.getUuid());
     		
     		if (facility.getLatitude() == null || facility.getLongitude() == null) {
     			continue;

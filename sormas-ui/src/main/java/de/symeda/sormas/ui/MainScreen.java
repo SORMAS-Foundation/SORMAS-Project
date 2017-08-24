@@ -42,16 +42,16 @@ public class MainScreen extends HorizontalLayout {
         ControllerProvider.getSampleController().registerViews(navigator);
         
         menu = new Menu(navigator);
-        menu.addView(new DashboardView(), DashboardView.VIEW_NAME, "Dashboard", FontAwesome.DASHBOARD);
-        menu.addView(new TasksView(), TasksView.VIEW_NAME, "Tasks", FontAwesome.TASKS);
+        menu.addView(DashboardView.class, DashboardView.VIEW_NAME, "Dashboard", FontAwesome.DASHBOARD);
+        menu.addView(TasksView.class, TasksView.VIEW_NAME, "Tasks", FontAwesome.TASKS);
         if (!LoginHelper.getCurrentUser().getUserRoles().contains(UserRole.LAB_USER)) {
-        	menu.addView(new CasesView(), CasesView.VIEW_NAME, "Cases", FontAwesome.EDIT);
-	        menu.addView(new ContactsView(), ContactsView.VIEW_NAME, "Contacts", FontAwesome.HAND_PAPER_O);
-	        menu.addView(new EventsView(), EventsView.VIEW_NAME, "Alerts", FontAwesome.PHONE);
+        	menu.addView(CasesView.class, CasesView.VIEW_NAME, "Cases", FontAwesome.EDIT);
+	        menu.addView(ContactsView.class, ContactsView.VIEW_NAME, "Contacts", FontAwesome.HAND_PAPER_O);
+	        menu.addView(EventsView.class, EventsView.VIEW_NAME, "Alerts", FontAwesome.PHONE);
         }
-        menu.addView(new SamplesView(), SamplesView.VIEW_NAME, "Samples", FontAwesome.DATABASE);
-        menu.addView(new UsersView(), UsersView.VIEW_NAME, "Users", FontAwesome.USERS);
-        menu.addView(new AboutView(), AboutView.VIEW_NAME, "About", FontAwesome.INFO_CIRCLE);
+        menu.addView(SamplesView.class, SamplesView.VIEW_NAME, "Samples", FontAwesome.DATABASE);
+        menu.addView(UsersView.class, UsersView.VIEW_NAME, "Users", FontAwesome.USERS);
+        menu.addView(AboutView.class, AboutView.VIEW_NAME, "About", FontAwesome.INFO_CIRCLE);
         
         navigator.addViewChangeListener(viewChangeListener);        
         

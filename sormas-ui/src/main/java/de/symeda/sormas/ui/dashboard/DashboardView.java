@@ -91,9 +91,6 @@ public class DashboardView extends AbstractView {
 		setSizeFull();
 		addStyleName("crud-view");
 
-		// Initialize case list with the pre-selected data
-		cases = FacadeProvider.getCaseFacade().getAllCasesBetween(fromDate, toDate, disease, LoginHelper.getCurrentUser().getUuid());
-
 		VerticalLayout dashboardLayout = new VerticalLayout();
 		dashboardLayout.setSpacing(false);
 		dashboardLayout.setSizeFull();
