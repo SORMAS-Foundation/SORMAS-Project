@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:descendantFocusability="beforeDescendants">
+
+    <data>
+        <variable name="caze" type="de.symeda.sormas.app.backend.caze.Case"/>
+    </data>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="10dp"
+        android:theme="@style/AppTheme"
+        android:focusable="true"
+        android:focusableInTouchMode="true">
+
+        <de.symeda.sormas.app.component.SpinnerField
+            android:id="@+id/caseData_region"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/field_padding"
+            android:paddingBottom="@dimen/field_padding"
+            android:nextFocusForward="@+id/caseData_district"
+            android:value="@={caze.region}"/>
+
+        <de.symeda.sormas.app.component.SpinnerField
+            android:id="@+id/caseData_district"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/field_padding"
+            android:paddingBottom="@dimen/field_padding"
+            android:nextFocusForward="@+id/caseData_community"
+            android:value="@={caze.district}"/>
+
+        <de.symeda.sormas.app.component.SpinnerField
+            android:id="@+id/caseData_community"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/field_padding"
+            android:paddingBottom="@dimen/field_padding"
+            android:nextFocusForward="@+id/caseData_facility"
+            android:value="@={caze.community}"/>
+
+        <de.symeda.sormas.app.component.SpinnerField
+            android:id="@+id/caseData_healthFacility"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/field_padding"
+            android:paddingBottom="@dimen/field_padding"
+            android:nextFocusForward="@+id/caseData_facilityDetails"
+            android:value="@={caze.healthFacility}"/>
+
+        <de.symeda.sormas.app.component.TextField
+            android:id="@+id/caseData_facilityDetails"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/field_padding"
+            android:paddingBottom="@dimen/field_padding"
+            android:value="@={caze.healthFacilityDetails}"/>
+
+    </LinearLayout>
+</layout>

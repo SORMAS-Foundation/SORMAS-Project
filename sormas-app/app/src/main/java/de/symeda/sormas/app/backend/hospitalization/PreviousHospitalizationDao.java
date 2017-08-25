@@ -8,10 +8,13 @@ import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.epidata.EpiDataTravel;
 
@@ -40,5 +43,28 @@ public class PreviousHospitalizationDao extends AbstractAdoDao<PreviousHospitali
             return querySnapshotsForEq(PreviousHospitalization.HOSPITALIZATION + "_id", hospitalization, PreviousHospitalization.CHANGE_DATE, false);
         }
         return querySnapshotsForEq(PreviousHospitalization.HOSPITALIZATION + "_id", hospitalization, PreviousHospitalization.CHANGE_DATE, false);
+    }
+
+    public PreviousHospitalization buildPreviousHospitalization(Case caze) {
+        PreviousHospitalization previousHospitalization = super.build();
+        Hospitalization hospitalization = caze.getHospitalization();
+
+        if (hospitalization.getAdmissionDate() != null) {
+            previousHospitalization.setAdmissionDate(hospitalization.getAdmissionDate());
+        } else {
+            previousHospitalization.setAdmissionDate(caze.getReportDate());
+        }
+
+        if (hospitalization.getDischargeDate() != null) {
+            previousHospitalization.setDischargeDate(hospitalization.getDischargeDate());
+        } else {
+            previousHospitalization.setDischargeDate(new Date());
+        }
+
+        previousHospitalization.setHealthFacility(caze.getHealthFacility());
+        previousHospitalization.setHospitalization(caze.getHospitalization());
+        previousHospitalization.setIsolated(hospitalization.getIsolated());
+
+        return previousHospitalization;
     }
 }

@@ -300,9 +300,6 @@ public class CaseEditActivity extends AbstractEditTabActivity {
 
                 // Validations have to be processed from last tab to first to make sure that the user will be re-directed
                 // to the first tab with a validation error
-
-
-                CaseDataFragmentLayoutBinding caseDataBinding = ((CaseEditDataForm)getTabByPosition(CaseEditTabs.CASE_DATA.ordinal())).getBinding();
                 PersonEditFragmentLayoutBinding personBinding =  ((PersonEditForm)getTabByPosition(CaseEditTabs.PATIENT.ordinal())).getBinding();
                 CaseSymptomsFragmentLayoutBinding symptomsBinding = ((SymptomsEditForm)getTabByPosition(CaseEditTabs.SYMPTOMS.ordinal())).getBinding();
 
@@ -310,7 +307,6 @@ public class CaseEditActivity extends AbstractEditTabActivity {
                 // custom field has not been called
                 symptoms.setOnsetSymptom((String) symptomsBinding.symptomsOnsetSymptom1.getValue());
 
-                CaseValidator.clearErrorsForCaseData(caseDataBinding);
                 PersonValidator.clearErrors(personBinding);
                 SymptomsValidator.clearErrorsForSymptoms(symptomsBinding);
 
@@ -321,9 +317,6 @@ public class CaseEditActivity extends AbstractEditTabActivity {
                 }
                 if (!PersonValidator.validatePersonData(person, personBinding)) {
                     validationErrorTab = CaseEditTabs.PATIENT.ordinal();
-                }
-                if (!CaseValidator.validateCaseData(caze, caseDataBinding)) {
-                    validationErrorTab = CaseEditTabs.CASE_DATA.ordinal();
                 }
 
                 if (validationErrorTab >= 0) {
@@ -383,7 +376,7 @@ public class CaseEditActivity extends AbstractEditTabActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void setAdapter() {
+    public void setAdapter() {
         adapter = new CaseEditPagerAdapter(getSupportFragmentManager(), caseUuid);
         createTabViews(adapter);
 

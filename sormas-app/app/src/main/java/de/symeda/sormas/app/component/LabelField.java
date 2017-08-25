@@ -26,8 +26,12 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.event.Event;
+import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.backend.region.Community;
+import de.symeda.sormas.app.backend.region.District;
+import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.backend.sample.SampleTest;
 import de.symeda.sormas.app.backend.user.User;
@@ -237,6 +241,26 @@ public class LabelField extends PropertyField<String> {
             labelField.setValue(location.toString());
             labelField.setTextColor(Color.BLACK);
         }
+    }
+
+    @BindingAdapter("region")
+    public static void setRegionForLabel(LabelField labelField, Region region) {
+        labelField.setValue(region!=null?region.toString():"");
+    }
+
+    @BindingAdapter("district")
+    public static void setDistrictForLabel(LabelField labelField, District district) {
+        labelField.setValue(district!=null?district.toString():"");
+    }
+
+    @BindingAdapter("community")
+    public static void setCommunityForLabel(LabelField labelField, Community community) {
+        labelField.setValue(community!=null?community.toString():"");
+    }
+
+    @BindingAdapter("facility")
+    public static void setFacilityForLabel(LabelField labelField, Facility facility) {
+        labelField.setValue(facility!=null?facility.toString():"");
     }
 
     @Override

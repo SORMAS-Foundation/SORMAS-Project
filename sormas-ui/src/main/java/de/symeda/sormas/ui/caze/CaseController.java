@@ -6,8 +6,14 @@ import java.util.List;
 
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
@@ -29,6 +35,7 @@ import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsFacade;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
@@ -230,7 +237,28 @@ public class CaseController {
         		}
         	}
         });
-
+        
+        // Initialize 'Move case to another health facility' button
+        if (LoginHelper.getCurrentUserRoles().contains(UserRole.SURVEILLANCE_SUPERVISOR)) {
+	        Button moveCaseButton = new Button();
+	        moveCaseButton.addStyleName(ValoTheme.BUTTON_LINK);
+	        moveCaseButton.setCaption("Move case to another health facility");
+	        moveCaseButton.addClickListener(new ClickListener() {
+				private static final long serialVersionUID = 1L;
+				@Override
+				public void buttonClick(ClickEvent event) {
+					if (!caseEditForm.getFieldGroup().isModified()) {
+						cf.saveCase(caze);
+					}
+					
+					moveCase(caze);
+				}
+			});
+	        
+	        editView.getButtonsPanel().addComponentAsFirst(moveCaseButton);
+	        editView.getButtonsPanel().setComponentAlignment(moveCaseButton, Alignment.BOTTOM_LEFT);
+        }
+        
         return editView;
     }
 
@@ -301,6 +329,37 @@ public class CaseController {
 		});
 		
 		return editView;
+	}
+	
+	public void moveCase(CaseDataDto caze) {
+		CaseFacilityChangeForm facilityChangeForm = new CaseFacilityChangeForm();
+		facilityChangeForm.setValue(caze);
+		CommitDiscardWrapperComponent<CaseFacilityChangeForm> facilityChangeView = new CommitDiscardWrapperComponent<CaseFacilityChangeForm>(facilityChangeForm, facilityChangeForm.getFieldGroup());
+		facilityChangeView.getCommitButton().setCaption("Move case");
+		facilityChangeView.setMargin(true);
+		
+		Window popupWindow = VaadinUiUtil.showPopupWindow(facilityChangeView);
+		popupWindow.setCaption("Move case to another health facility");
+		
+		facilityChangeView.addCommitListener(new CommitListener() {
+			@Override
+			public void onCommit() {
+				if (!facilityChangeForm.getFieldGroup().isModified()) {
+					CaseDataDto dto = facilityChangeForm.getValue();
+					cf.moveCase(cf.getReferenceByUuid(dto.getUuid()), dto.getCommunity(), dto.getHealthFacility(), dto.getHealthFacilityDetails(), dto.getSurveillanceOfficer());
+					popupWindow.close();
+					Notification.show("Case has been moved to the new facility", Type.WARNING_MESSAGE);
+					navigateToData(caze.getUuid());
+				}
+			}
+		});
+		
+		Button cancelButton = new Button("cancel");
+		cancelButton.setStyleName(ValoTheme.BUTTON_LINK);
+		cancelButton.addClickListener(e -> {
+			popupWindow.close();
+		});
+		facilityChangeView.getButtonsPanel().replaceComponent(facilityChangeView.getDiscardButton(), cancelButton);
 	}
 	
 	private void saveCase(CaseDataDto cazeDto) {

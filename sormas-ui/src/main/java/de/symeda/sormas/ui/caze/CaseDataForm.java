@@ -1,7 +1,6 @@
 package de.symeda.sormas.ui.caze;
 
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.List;
 
 import com.vaadin.data.Property;
@@ -18,7 +17,6 @@ import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.Window.CloseListener;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.Vaccination;
@@ -26,12 +24,6 @@ import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.api.region.CommunityReferenceDto;
-import de.symeda.sormas.api.region.DistrictDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -103,53 +95,14 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
     	NativeSelect diseaseField = addField(CaseDataDto.DISEASE, NativeSelect.class);
     	TextField healthFacilityDetails = addField(CaseDataDto.HEALTH_FACILITY_DETAILS, TextField.class);
     	
-    	ComboBox region = addField(CaseDataDto.REGION, ComboBox.class);
-    	ComboBox district = addField(CaseDataDto.DISTRICT, ComboBox.class);
-    	ComboBox community = addField(CaseDataDto.COMMUNITY, ComboBox.class);
+    	addField(CaseDataDto.REGION, ComboBox.class);
+    	addField(CaseDataDto.DISTRICT, ComboBox.class);
+    	addField(CaseDataDto.COMMUNITY, ComboBox.class);
     	ComboBox facility = addField(CaseDataDto.HEALTH_FACILITY, ComboBox.class);
     	
-    	region.addValueChangeListener(e -> {
-    		district.removeAllItems();
-    		RegionReferenceDto regionDto = (RegionReferenceDto)e.getProperty().getValue();
-    		if (regionDto != null) {
-    			district.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(regionDto.getUuid()));
-    		}
-    	});
-    	district.addValueChangeListener(e -> {
-    		community.removeAllItems();
-    		DistrictReferenceDto districtReferenceDto = (DistrictReferenceDto)e.getProperty().getValue();
-    		if (districtReferenceDto != null) {
-    			community.addItems(FacadeProvider.getCommunityFacade().getAllByDistrict(districtReferenceDto.getUuid()));
-    			if (!epidField.isValid()) {
-	    			RegionDto regionDto = FacadeProvider.getRegionFacade().getRegionByUuid(((RegionReferenceDto) region.getValue()).getUuid());
-	    			DistrictDto districtDto = FacadeProvider.getDistrictFacade().getDistrictByUuid(districtReferenceDto.getUuid());
-		    		Calendar calendar = Calendar.getInstance();
-		    		String year = String.valueOf(calendar.get(Calendar.YEAR)).substring(2);
-	    			epidField.setValue(CaseDataDto.COUNTRY_EPID_CODE + "-" + regionDto.getEpidCode() + "-" + districtDto.getEpidCode() + "-" + year + "-");
-    			}
-    		}
-    	});
-    	community.addValueChangeListener(e -> {
-    		facility.removeAllItems();
-    		CommunityReferenceDto communityDto = (CommunityReferenceDto)e.getProperty().getValue();
-    		if (communityDto != null) {
-    			facility.addItems(FacadeProvider.getFacilityFacade().getHealthFacilitiesByCommunity(communityDto, true));
-    		}
-    	});
-		region.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
-
 		ComboBox surveillanceOfficerField = addField(CaseDataDto.SURVEILLANCE_OFFICER, ComboBox.class);
 		surveillanceOfficerField.setNullSelectionAllowed(true);
 		
-		district.addValueChangeListener(e -> {
-			List<UserReferenceDto> assignableSurveillanceOfficers = FacadeProvider.getUserFacade().getAssignableUsersByDistrict((DistrictReferenceDto) district.getValue(), false, UserRole.SURVEILLANCE_OFFICER);
-			
-			surveillanceOfficerField.removeAllItems();
-			surveillanceOfficerField.select(0);
-			surveillanceOfficerField.addItems(assignableSurveillanceOfficers);
-			surveillanceOfficerField.select(0);
-		});
-    	
 		addField(CaseDataDto.PREGNANT, OptionGroup.class);
 		addField(CaseDataDto.MEASLES_VACCINATION, ComboBox.class);
 		addField(CaseDataDto.MEASLES_DOSES, TextField.class);
@@ -158,7 +111,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
     	setRequired(true, CaseDataDto.CASE_CLASSIFICATION, CaseDataDto.INVESTIGATION_STATUS,
     			CaseDataDto.REGION, CaseDataDto.DISTRICT, CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY);
 
-    	setReadOnly(true, CaseDataDto.UUID, CaseDataDto.INVESTIGATION_STATUS);
+    	setReadOnly(true, CaseDataDto.UUID, CaseDataDto.INVESTIGATION_STATUS, CaseDataDto.REGION,
+    			CaseDataDto.DISTRICT, CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY);
     	if (!UserRole.isSupervisor(LoginHelper.getCurrentUserRoles())) {
     		setReadOnly(true, CaseDataDto.DISEASE);
     	}
@@ -205,10 +159,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			if (facility.getValue() != null) {
 				boolean otherHealthFacility = ((FacilityReferenceDto) facility.getValue()).getUuid().equals(FacilityDto.OTHER_FACILITY_UUID);
 				boolean noneHealthFacility = ((FacilityReferenceDto) facility.getValue()).getUuid().equals(FacilityDto.NONE_FACILITY_UUID);
-				boolean visibleAndRequired = otherHealthFacility || noneHealthFacility;
+				boolean detailsVisible = otherHealthFacility || noneHealthFacility;
 				
-				healthFacilityDetails.setVisible(visibleAndRequired);
-				healthFacilityDetails.setRequired(visibleAndRequired);
+				healthFacilityDetails.setVisible(detailsVisible);
 
 				if (otherHealthFacility) {
 					healthFacilityDetails.setCaption(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY_DETAILS));
@@ -216,12 +169,11 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				if (noneHealthFacility) {
 					healthFacilityDetails.setCaption(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.NONE_HEALTH_FACILITY_DETAILS));
 				}
-				if (!visibleAndRequired) {
+				if (!detailsVisible) {
 					healthFacilityDetails.clear();
 				}
 			} else {
 				healthFacilityDetails.setVisible(false);
-				healthFacilityDetails.setRequired(false);
 				healthFacilityDetails.clear();
 			}			
 		});

@@ -1,9 +1,12 @@
 package de.symeda.sormas.api.hospitalization;
 
 import java.util.Date;
+import java.util.List;
 
 import de.symeda.sormas.api.DataTransferObject;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
 public class PreviousHospitalizationDto extends DataTransferObject {
@@ -58,5 +61,5 @@ public class PreviousHospitalizationDto extends DataTransferObject {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	
+
 }

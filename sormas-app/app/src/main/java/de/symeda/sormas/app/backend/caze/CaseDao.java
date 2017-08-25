@@ -19,15 +19,24 @@ import com.j256.ormlite.stmt.Where;
 
 import java.sql.SQLException;
 import java.util.Date;
+import java.util.List;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.task.TaskStatus;
+import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.backend.region.Community;
+import de.symeda.sormas.app.backend.region.District;
+import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
+import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.caze.CaseEditActivity;
 import de.symeda.sormas.app.util.LocationService;
@@ -117,6 +126,57 @@ public class CaseDao extends AbstractAdoDao<Case> {
         caze.setHealthFacility(currentUser.getHealthFacility());
         if (caze.getHealthFacility() != null) {
             caze.setCommunity(caze.getHealthFacility().getCommunity());
+        }
+
+        return caze;
+    }
+
+    public Case moveCase(Case caseToMove) throws DaoException {
+        Case caze = queryForId(caseToMove.getId());
+
+        Facility facility = caseToMove.getHealthFacility();
+        Community community = caseToMove.getCommunity();
+        District district = caseToMove.getDistrict();
+        Region region = caseToMove.getRegion();
+        String facilityDetails = caseToMove.getHealthFacilityDetails();
+        User surveillanceOfficer = caseToMove.getSurveillanceOfficer();
+
+        if (!caze.getHealthFacility().getUuid().equals(facility.getUuid())) {
+            caze.getHospitalization().getPreviousHospitalizations().add(DatabaseHelper.getPreviousHospitalizationDao().buildPreviousHospitalization(caze));
+            caze.getHospitalization().setHospitalizedPreviously(YesNoUnknown.YES);
+            caze.getHospitalization().setAdmissionDate(null);
+            caze.getHospitalization().setDischargeDate(null);
+            caze.getHospitalization().setIsolated(null);
+        }
+
+        caze.setRegion(region);
+        caze.setDistrict(district);
+        caze.setCommunity(community);
+        caze.setHealthFacility(facility);
+        caze.setHealthFacilityDetails(facilityDetails);
+
+        // TODO assign a new officer if needed
+        caze.setSurveillanceOfficer(surveillanceOfficer);
+
+        saveAndSnapshot(caze);
+
+        for (Task task : DatabaseHelper.getTaskDao().queryByCase(caze)) {
+            if (task.getTaskStatus() != TaskStatus.PENDING) {
+                continue;
+            }
+
+            if (surveillanceOfficer != null) {
+                task.setAssigneeUser(surveillanceOfficer);
+            } else {
+                List<User> supervisors = DatabaseHelper.getUserDao().getByRegionAndRole(region, UserRole.SURVEILLANCE_SUPERVISOR);
+                if (supervisors.size() >= 1) {
+                    task.setAssigneeUser(supervisors.get(0));
+                } else {
+                    task.setAssigneeUser(null);
+                }
+            }
+
+            DatabaseHelper.getTaskDao().saveAndSnapshot(task);
         }
 
         return caze;

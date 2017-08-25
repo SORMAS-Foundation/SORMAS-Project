@@ -11,4 +11,6 @@ public interface CommunityFacade {
     List<CommunityReferenceDto> getAllByDistrict(String districtUuid);
 
 	List<CommunityDto> getAllAfter(Date date);
+	
+	CommunityDto getByUuid(String uuid);
 }
