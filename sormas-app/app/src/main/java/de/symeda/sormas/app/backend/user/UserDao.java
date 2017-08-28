@@ -15,6 +15,7 @@ import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
 
 /**
@@ -52,13 +53,29 @@ public class UserDao extends AbstractAdoDao<User> {
             QueryBuilder builder = queryBuilder();
             Where where = builder.where();
             where.and(
-                    where.eq(User.REGION, region),
+                    where.eq(User.REGION + "_id", region.getId()),
                     where.eq(User.USER_ROLE, role)
             );
 
             return (List<User>) builder.query();
         } catch (SQLException e) {
             Log.e(getTableName(), "Could not perform getByRegionAndRole");
+            throw new RuntimeException(e);
+        }
+    }
+
+    public List<User> getByDistrictAndRole(District district, UserRole role) {
+        try {
+            QueryBuilder builder = queryBuilder();
+            Where where = builder.where();
+            where.and(
+                    where.eq(User.DISTRICT + "_id", district.getId()),
+                    where.eq(User.USER_ROLE, role)
+            );
+
+            return (List<User>) builder.query();
+        } catch (SQLException e) {
+            Log.e(getTableName(), "Could not perform getByDistrictAndRole");
             throw new RuntimeException(e);
         }
     }

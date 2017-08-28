@@ -141,6 +141,7 @@ public class CaseDao extends AbstractAdoDao<Case> {
         String facilityDetails = caseToMove.getHealthFacilityDetails();
         User surveillanceOfficer = caseToMove.getSurveillanceOfficer();
 
+        // If the facility has changed, add a previous hospitalization
         if (!caze.getHealthFacility().getUuid().equals(facility.getUuid())) {
             caze.getHospitalization().getPreviousHospitalizations().add(DatabaseHelper.getPreviousHospitalizationDao().buildPreviousHospitalization(caze));
             caze.getHospitalization().setHospitalizedPreviously(YesNoUnknown.YES);
@@ -149,13 +150,22 @@ public class CaseDao extends AbstractAdoDao<Case> {
             caze.getHospitalization().setIsolated(null);
         }
 
+        // If the district has changed and there is exactly one surveillance officer assigned to that district,
+        // assign them as the new surveillance officer; assign null otherwise
+        if (!caze.getDistrict().getUuid().equals(district.getUuid())) {
+            List<User> districtOfficers = DatabaseHelper.getUserDao().getByDistrictAndRole(district, UserRole.SURVEILLANCE_OFFICER);
+            if (districtOfficers.size() == 1) {
+                surveillanceOfficer = districtOfficers.get(0);
+            } else {
+                surveillanceOfficer = null;
+            }
+        }
+
         caze.setRegion(region);
         caze.setDistrict(district);
         caze.setCommunity(community);
         caze.setHealthFacility(facility);
         caze.setHealthFacilityDetails(facilityDetails);
-
-        // TODO assign a new officer if needed
         caze.setSurveillanceOfficer(surveillanceOfficer);
 
         saveAndSnapshot(caze);
@@ -168,9 +178,13 @@ public class CaseDao extends AbstractAdoDao<Case> {
             if (surveillanceOfficer != null) {
                 task.setAssigneeUser(surveillanceOfficer);
             } else {
-                List<User> supervisors = DatabaseHelper.getUserDao().getByRegionAndRole(region, UserRole.SURVEILLANCE_SUPERVISOR);
-                if (supervisors.size() >= 1) {
-                    task.setAssigneeUser(supervisors.get(0));
+                // TODO roles? what happens when there are no supervisors? assignee user cannot be null
+                List<User> survSupervisors = DatabaseHelper.getUserDao().getByRegionAndRole(region, UserRole.SURVEILLANCE_SUPERVISOR);
+                List<User> caseSupervisors = DatabaseHelper.getUserDao().getByRegionAndRole(region, UserRole.CASE_SUPERVISOR);
+                if (survSupervisors.size() >= 1) {
+                    task.setAssigneeUser(survSupervisors.get(0));
+                } else if (caseSupervisors.size() >= 1) {
+                    task.setAssigneeUser(caseSupervisors.get(0));
                 } else {
                     task.setAssigneeUser(null);
                 }

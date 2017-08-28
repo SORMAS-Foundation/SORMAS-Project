@@ -247,11 +247,10 @@ public class CaseController {
 				private static final long serialVersionUID = 1L;
 				@Override
 				public void buttonClick(ClickEvent event) {
-					if (!caseEditForm.getFieldGroup().isModified()) {
-						cf.saveCase(caze);
-					}
-					
-					moveCase(caze);
+					caseEditForm.commit();
+					CaseDataDto cazeDto = caseEditForm.getValue();
+					cazeDto = cf.saveCase(cazeDto);
+					moveCase(cazeDto);
 				}
 			});
 	        

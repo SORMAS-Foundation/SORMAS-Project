@@ -172,6 +172,7 @@
                 android:paddingTop="10dp"
                 android:paddingBottom="@dimen/field_padding"
                 android:text="@string/case_move"
+                android:onClick="moveCase"
                 android:visibility="gone"/>
 
             <!-- ============= CASE_ADMINISTRATION =============

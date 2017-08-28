@@ -34,8 +34,13 @@ import de.symeda.sormas.app.component.FacilityChangeDialogBuilder;
 import de.symeda.sormas.app.component.FieldHelper;
 import de.symeda.sormas.app.component.PropertyField;
 import de.symeda.sormas.app.databinding.CaseDataFragmentLayoutBinding;
+import de.symeda.sormas.app.databinding.CaseSymptomsFragmentLayoutBinding;
+import de.symeda.sormas.app.databinding.PersonEditFragmentLayoutBinding;
+import de.symeda.sormas.app.person.PersonEditForm;
 import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.FormTab;
+import de.symeda.sormas.app.validation.PersonValidator;
+import de.symeda.sormas.app.validation.SymptomsValidator;
 
 /**
  * Created by Stefan Szczesny on 27.07.2016.
@@ -134,62 +139,7 @@ public class CaseEditDataForm extends FormTab {
             binding.caseDataMove.setVisibility(View.VISIBLE);
             binding.caseDataMove.setPaintFlags(binding.caseDataMove.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
             binding.caseDataMove.setTextColor(ContextCompat.getColor(getContext(), R.color.colorPrimary));
-            binding.caseDataMove.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-
-                }
-            });
         }
-
-        binding.caseDataMove.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // Display warning popup that moving the case will discard all unsaved changes
-                AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-                builder.setPositiveButton(view.getContext().getResources().getText(R.string.action_yes),
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                final Consumer positiveCallback = new Consumer() {
-                                    @Override
-                                    public void accept(Object success) {
-                                        Case updatedCase = DatabaseHelper.getCaseDao().queryUuid(binding.getCaze().getUuid());
-                                        binding.setCaze(updatedCase);
-
-                                        if ((boolean) success) {
-                                            Snackbar.make(CaseEditDataForm.this.getView().findViewById(R.id.base_layout), getResources().getString(R.string.snackbar_case_moved), Snackbar.LENGTH_LONG).show();
-                                        } else {
-                                            Snackbar.make(CaseEditDataForm.this.getView().findViewById(R.id.base_layout), getResources().getString(R.string.snackbar_case_moved_error), Snackbar.LENGTH_LONG).show();
-                                        }
-
-                                        ((CaseEditActivity) CaseEditDataForm.this.getActivity()).setAdapter();
-                                    }
-                                };
-
-                                final FacilityChangeDialogBuilder dialogBuilder = new FacilityChangeDialogBuilder(getActivity(), binding.getCaze(), positiveCallback);
-                                AlertDialog facilityChangeDialog = dialogBuilder.create();
-                                facilityChangeDialog.show();
-                                dialogBuilder.setButtonListeners(facilityChangeDialog, CaseEditDataForm.this.getActivity());
-                            }
-                        }
-                );
-                builder.setNegativeButton(view.getContext().getResources().getText(R.string.action_cancel),
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        }
-                );
-
-                AlertDialog dialog = builder.create();
-                dialog.setCancelable(true);
-                dialog.setTitle(view.getContext().getResources().getText(R.string.headline_reset_PIN).toString());
-                dialog.setMessage(view.getContext().getResources().getText(R.string.infoText_move_case_discard_changes).toString());
-                dialog.show();
-            }
-        });
 
         return binding.getRoot();
     }

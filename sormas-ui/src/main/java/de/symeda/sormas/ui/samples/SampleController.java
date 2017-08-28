@@ -133,7 +133,10 @@ public class SampleController {
 				private static final long serialVersionUID = 1L;
 				@Override
 				public void buttonClick(ClickEvent event) {
-					createReferral(dto);
+					form.commit();
+					SampleDto sampleDto = form.getValue();
+					sampleDto = sf.saveSample(sampleDto);
+					createReferral(sampleDto);
 				}
 			});
 		} else {
