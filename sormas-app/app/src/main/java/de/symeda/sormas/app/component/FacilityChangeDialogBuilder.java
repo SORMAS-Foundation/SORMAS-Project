@@ -36,6 +36,8 @@ import de.symeda.sormas.app.validation.CaseValidator;
  */
 public class FacilityChangeDialogBuilder extends AlertDialog.Builder {
 
+    public static final String NONE_HEALTH_FACILITY_DETAILS = "noneHealthFacilityDetails";
+
     private final MoveCaseFragmentLayoutBinding binding;
     private final Consumer callback;
     private final Tracker tracker;
@@ -138,7 +140,7 @@ public class FacilityChangeDialogBuilder extends AlertDialog.Builder {
                         facilityDetailsField.setCaption(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY_DETAILS));
                     } else if (noneHealthFacility) {
                         facilityDetailsField.setVisibility(View.VISIBLE);
-                        facilityDetailsField.setCaption(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.NONE_HEALTH_FACILITY_DETAILS));
+                        facilityDetailsField.setCaption(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, NONE_HEALTH_FACILITY_DETAILS));
                     } else {
                         facilityDetailsField.setVisibility(View.GONE);
                     }

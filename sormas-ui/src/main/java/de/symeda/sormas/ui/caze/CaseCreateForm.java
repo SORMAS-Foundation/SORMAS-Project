@@ -22,6 +22,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 	
 	private static final String FIRST_NAME = "firstName";
 	private static final String LAST_NAME = "lastName";
+	public static final String NONE_HEALTH_FACILITY_DETAILS = "noneHealthFacilityDetails";
 
     private static final String HTML_LAYOUT = 
 			LayoutUtil.divCss(CssStyles.VSPACE2,
@@ -92,7 +93,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 					facilityDetails.setCaption(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY_DETAILS));
 				}
 				if (noneHealthFacility) {
-					facilityDetails.setCaption(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.NONE_HEALTH_FACILITY_DETAILS));
+					facilityDetails.setCaption(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, NONE_HEALTH_FACILITY_DETAILS));
 				}
 				if (!visibleAndRequired) {
 					facilityDetails.clear();

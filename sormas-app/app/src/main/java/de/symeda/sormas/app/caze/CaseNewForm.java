@@ -33,6 +33,8 @@ import de.symeda.sormas.app.validation.CaseValidator;
 
 public class CaseNewForm extends FormTab {
 
+    public static final String NONE_HEALTH_FACILITY_DETAILS = "noneHealthFacilityDetails";
+
     private Case caze;
     private Person person;
     private Disease disease;
@@ -145,7 +147,7 @@ public class CaseNewForm extends FormTab {
                         binding.caseDataFacilityDetails.setRequiredHint(true);
                     } else if (noneHealthFacility) {
                         binding.caseDataFacilityDetails.setVisibility(View.VISIBLE);
-                        binding.caseDataFacilityDetails.setCaption(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.NONE_HEALTH_FACILITY_DETAILS));
+                        binding.caseDataFacilityDetails.setCaption(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, NONE_HEALTH_FACILITY_DETAILS));
                         binding.caseDataFacilityDetails.setRequiredHint(true);
                     } else {
                         binding.caseDataFacilityDetails.setVisibility(View.GONE);

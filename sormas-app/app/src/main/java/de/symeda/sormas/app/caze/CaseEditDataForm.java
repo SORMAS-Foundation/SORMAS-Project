@@ -47,6 +47,8 @@ import de.symeda.sormas.app.validation.SymptomsValidator;
  */
 public class CaseEditDataForm extends FormTab {
 
+    public static final String NONE_HEALTH_FACILITY_DETAILS = "noneHealthFacilityDetails";
+
     private CaseDataFragmentLayoutBinding binding;
 
     @Override
@@ -107,7 +109,7 @@ public class CaseEditDataForm extends FormTab {
                         binding.caseDataFacilityDetails.setCaption(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY_DETAILS));
                     } else if (noneHealthFacility) {
                         binding.caseDataFacilityDetails.setVisibility(View.VISIBLE);
-                        binding.caseDataFacilityDetails.setCaption(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.NONE_HEALTH_FACILITY_DETAILS));
+                        binding.caseDataFacilityDetails.setCaption(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, NONE_HEALTH_FACILITY_DETAILS));
                     } else {
                         binding.caseDataFacilityDetails.setVisibility(View.GONE);
                     }

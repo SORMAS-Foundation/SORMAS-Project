@@ -21,6 +21,8 @@ import de.symeda.sormas.ui.utils.LayoutUtil;
 @SuppressWarnings("serial")
 public class CaseFacilityChangeForm extends AbstractEditForm<CaseDataDto> {
 
+	public static final String NONE_HEALTH_FACILITY_DETAILS = "noneHealthFacilityDetails";
+	
 	private static final String HTML_LAYOUT = 
 			LayoutUtil.div(
 					LayoutUtil.fluidRowLocs(CaseDataDto.REGION, CaseDataDto.DISTRICT) +
@@ -80,7 +82,7 @@ public class CaseFacilityChangeForm extends AbstractEditForm<CaseDataDto> {
 					facilityDetails.setCaption(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY_DETAILS));
 				}
 				if (noneHealthFacility) {
-					facilityDetails.setCaption(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.NONE_HEALTH_FACILITY_DETAILS));
+					facilityDetails.setCaption(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, NONE_HEALTH_FACILITY_DETAILS));
 				}
 				if (!visibleAndRequired) {
 					facilityDetails.clear();
