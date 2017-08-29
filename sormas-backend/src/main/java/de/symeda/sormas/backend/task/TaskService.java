@@ -18,6 +18,7 @@ import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.user.User;
@@ -132,6 +133,9 @@ public class TaskService extends AbstractAdoService<Task> {
 		}
 		if (taskCriteria.getContact() != null) {
 			filter = and(cb, filter, cb.equal(from.get(Task.CONTACT), taskCriteria.getContact()));
+		}
+		if (taskCriteria.getContactPerson() != null) {
+			filter = and(cb, filter, cb.equal(from.join(Task.CONTACT, JoinType.LEFT).get(Contact.PERSON), taskCriteria.getContactPerson()));
 		}
 		if (taskCriteria.getEvent() != null) {
 			filter = and(cb, filter, cb.equal(from.get(Task.EVENT), taskCriteria.getEvent()));

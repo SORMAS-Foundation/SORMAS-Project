@@ -50,5 +50,6 @@ public class ContactDataView extends AbstractContactView {
     	TaskListComponent taskListComponent = new TaskListComponent(TaskContext.CONTACT, getContactRef());
     	taskListComponent.addStyleName(CssStyles.SUBLIST_MARGIN);
     	addComponent(taskListComponent);
+    	taskListComponent.enter(event);
     }
 }

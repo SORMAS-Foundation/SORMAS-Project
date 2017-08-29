@@ -136,7 +136,7 @@ public class SymptomsEditForm extends FormTab {
         toggleUnexplainedBleedingFields();
         visibilityOtherHemorrhagicSymptoms();
         visibilityOtherNonHemorrhagicSymptoms();
-        visibilityDisease(disease);
+        setVisibilityByDisease(SymptomsDto.class, disease, (ViewGroup)binding.getRoot());
 
         nonConditionalSymptoms = Arrays.asList(binding.symptomsFever, binding.symptomsVomiting,
                 binding.symptomsDiarrhea, binding.symptomsBloodInStool1, binding.symptomsNausea, binding.symptomsAbdominalPain,
@@ -252,17 +252,6 @@ public class SymptomsEditForm extends FormTab {
 
         // @TODO: Workaround, find a better solution. Remove autofocus on first field.
         getView().requestFocus();
-    }
-
-    private void visibilityDisease(Disease disease) {
-        for (int i=0; i<binding.caseSymptomsForm.getChildCount(); i++){
-            View child = binding.caseSymptomsForm.getChildAt(i);
-            if (child instanceof PropertyField) {
-                String propertyId = ((PropertyField)child).getPropertyId();
-                boolean definedOrMissing = Diseases.DiseasesConfiguration.isDefinedOrMissing(SymptomsDto.class, propertyId, disease);
-                child.setVisibility(definedOrMissing ? View.VISIBLE : View.GONE);
-            }
-        }
     }
 
     private void visibilityOtherHemorrhagicSymptoms() {

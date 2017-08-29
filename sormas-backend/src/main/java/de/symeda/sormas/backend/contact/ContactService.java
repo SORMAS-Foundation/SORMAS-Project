@@ -159,10 +159,14 @@ public class ContactService extends AbstractAdoService<Contact> {
 		
 		Disease disease = contact.getCaze().getDisease();
 		int followUpDuration = getFollowUpDuration(disease);
+		boolean changeStatus = contact.getFollowUpStatus() != FollowUpStatus.CANCELED
+				&& contact.getFollowUpStatus() != FollowUpStatus.LOST;
 
 		if (followUpDuration == 0) {
 			contact.setFollowUpUntil(null);
-			contact.setFollowUpStatus(FollowUpStatus.NO_FOLLOW_UP);
+			if (changeStatus) {
+				contact.setFollowUpStatus(FollowUpStatus.NO_FOLLOW_UP);
+			}
 		} else {
 			LocalDate beginDate = DateHelper8.toLocalDate(contact.getReportDateTime());
 			LocalDate untilDate = beginDate.plusDays(followUpDuration);
@@ -184,11 +188,13 @@ public class ContactService extends AbstractAdoService<Contact> {
 			} while (additionalVisitNeeded);
 
 			contact.setFollowUpUntil(DateHelper8.toDate(untilDate));
-			// completed or still follow up?
-			if (lastVisit != null && DateHelper8.toLocalDate(lastVisit.getVisitDateTime()).isEqual(untilDate)) {
-				contact.setFollowUpStatus(FollowUpStatus.COMPLETED);
-			} else {
-				contact.setFollowUpStatus(FollowUpStatus.FOLLOW_UP);	
+			if (changeStatus) {
+				// completed or still follow up?
+				if (lastVisit != null && DateHelper8.toLocalDate(lastVisit.getVisitDateTime()).isEqual(untilDate)) {
+					contact.setFollowUpStatus(FollowUpStatus.COMPLETED);
+				} else {
+					contact.setFollowUpStatus(FollowUpStatus.FOLLOW_UP);	
+				}
 			}
 		}
 		

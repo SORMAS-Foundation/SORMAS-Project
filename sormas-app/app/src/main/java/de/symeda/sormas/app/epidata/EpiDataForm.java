@@ -247,21 +247,10 @@ public class EpiDataForm extends FormTab {
             }
         });
 
-        visibilityDisease(disease);
+        setVisibilityByDisease(EpiDataDto.class, disease, (ViewGroup)binding.getRoot());
         showOrHideHeadlines();
 
         return view;
-    }
-
-    private void visibilityDisease(Disease disease) {
-        for (int i=0; i<binding.caseEpidataForm.getChildCount(); i++){
-            View child = binding.caseEpidataForm.getChildAt(i);
-            if (child instanceof PropertyField) {
-                String propertyId = cropNumbers(((PropertyField)child).getPropertyId());
-                boolean definedOrMissing = Diseases.DiseasesConfiguration.isDefinedOrMissing(EpiDataDto.class, propertyId, disease);
-                child.setVisibility(definedOrMissing ? View.VISIBLE : View.GONE);
-            }
-        }
     }
 
     private void showOrHideHeadlines() {

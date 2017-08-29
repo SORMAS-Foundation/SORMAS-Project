@@ -10,9 +10,11 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
@@ -25,8 +27,8 @@ import de.symeda.sormas.app.caze.CaseEditActivity;
 import de.symeda.sormas.app.caze.CaseNewActivity;
 import de.symeda.sormas.app.component.FieldHelper;
 import de.symeda.sormas.app.component.LabelField;
+import de.symeda.sormas.app.component.PropertyField;
 import de.symeda.sormas.app.databinding.ContactDataFragmentLayoutBinding;
-import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.FormTab;
 import de.symeda.sormas.app.validation.ContactValidator;
 
@@ -75,6 +77,7 @@ public class ContactEditDataForm extends FormTab {
             binding.contactCreateCase.setVisibility(View.GONE);
         }
 
+        setVisibilityByDisease(ContactDto.class, contact.getCaze().getDisease(), (ViewGroup)binding.getRoot());
         ContactValidator.setRequiredHintsForContactData(binding);
 
         return binding.getRoot();

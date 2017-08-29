@@ -22,6 +22,7 @@ public class ContactDto extends ContactReferenceDto {
 	public static final String CONTACT_PROXIMITY = "contactProximity";
 	public static final String CONTACT_CLASSIFICATION = "contactClassification";
 	public static final String FOLLOW_UP_STATUS = "followUpStatus";
+	public static final String FOLLOW_UP_COMMENT = "followUpComment";
 	public static final String FOLLOW_UP_UNTIL = "followUpUntil";
 	public static final String CONTACT_OFFICER = "contactOfficer";
 	public static final String DESCRIPTION = "description";
@@ -38,6 +39,8 @@ public class ContactDto extends ContactReferenceDto {
 	private ContactClassification contactClassification;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.CHOLERA})
 	private FollowUpStatus followUpStatus;
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.CHOLERA})
+	private String followUpComment;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.CHOLERA})
 	private Date followUpUntil;
 	private UserReferenceDto contactOfficer;
@@ -130,6 +133,12 @@ public class ContactDto extends ContactReferenceDto {
 	}
 	public void setReportLon(Float reportLon) {
 		this.reportLon = reportLon;
+	}
+	public String getFollowUpComment() {
+		return followUpComment;
+	}
+	public void setFollowUpComment(String followUpComment) {
+		this.followUpComment = followUpComment;
 	}
 	
 }

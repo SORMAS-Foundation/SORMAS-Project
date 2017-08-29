@@ -1634,3 +1634,8 @@ ALTER TABLE task_history ADD COLUMN closedlon double precision;
 
 INSERT INTO schema_version (version_number, comment) VALUES (59, 'Add GEO tags to history tables of cases, contacts, events, visits and tasks');
 
+-- 2017-08-28 Follow-up comment #70
+ALTER TABLE contact ADD COLUMN followUpComment varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (60, 'Follow-up comment #70');
+

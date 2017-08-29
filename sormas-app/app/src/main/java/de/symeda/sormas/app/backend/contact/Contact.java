@@ -41,6 +41,7 @@ public class Contact extends AbstractDomainObject {
 	public static final String CONTACT_PROXIMITY = "contactProximity";
 	public static final String CONTACT_CLASSIFICATION = "contactClassification";
 	public static final String FOLLOW_UP_STATUS = "followUpStatus";
+	public static final String FOLLOW_UP_COMMENT = "followUpComment";
 	public static final String FOLLOW_UP_UNTIL = "followUpUntil";
 	public static final String CONTACT_OFFICER = "contactOfficer";
 	public static final String DESCRIPTION = "description";
@@ -69,6 +70,9 @@ public class Contact extends AbstractDomainObject {
 
 	@Enumerated(EnumType.STRING)
 	private FollowUpStatus followUpStatus;
+
+	@Column(length=512)
+	private String followUpComment;
 
 	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
 	private Date followUpUntil;
@@ -135,6 +139,15 @@ public class Contact extends AbstractDomainObject {
 	}
 	public void setFollowUpStatus(FollowUpStatus followUpStatus) {
 		this.followUpStatus = followUpStatus;
+	}
+
+
+	public String getFollowUpComment() {
+		return followUpComment;
+	}
+
+	public void setFollowUpComment(String followUpComment) {
+		this.followUpComment = followUpComment;
 	}
 
 	public Date getFollowUpUntil() {

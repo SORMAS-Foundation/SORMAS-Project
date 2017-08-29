@@ -123,16 +123,13 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
     		setVisible(false, CaseDataDto.PREGNANT);
     	}
     	
-    	boolean visible = DiseasesConfiguration.isDefinedOrMissing(CaseDataDto.class, CaseDataDto.MEASLES_VACCINATION, disease);
-		setVisible(visible, CaseDataDto.MEASLES_VACCINATION);
-		
-		if (visible) {
-			FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.MEASLES_DOSES, CaseDataDto.MEASLES_VACCINATION_INFO_SOURCE), 
-					CaseDataDto.MEASLES_VACCINATION, Arrays.asList(Vaccination.VACCINATED), true);
-		} else {
-			getField(CaseDataDto.MEASLES_VACCINATION).setValue(null);
-			setVisible(false, CaseDataDto.MEASLES_DOSES, CaseDataDto.MEASLES_VACCINATION_INFO_SOURCE);
+		for (Object propertyId : getFieldGroup().getBoundPropertyIds()) {
+			boolean visible = DiseasesConfiguration.isDefinedOrMissing(CaseDataDto.class, (String)propertyId, disease);
+			getFieldGroup().getField(propertyId).setVisible(visible);
 		}
+		
+		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.MEASLES_DOSES, CaseDataDto.MEASLES_VACCINATION_INFO_SOURCE), 
+				CaseDataDto.MEASLES_VACCINATION, Arrays.asList(Vaccination.VACCINATED), true);
 		
 		List<String> medicalInformationFields = Arrays.asList(CaseDataDto.PREGNANT, CaseDataDto.MEASLES_VACCINATION);
 		

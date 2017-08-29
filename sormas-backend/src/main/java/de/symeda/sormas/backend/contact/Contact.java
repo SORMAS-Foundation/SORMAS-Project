@@ -38,6 +38,7 @@ public class Contact extends AbstractDomainObject {
 	public static final String CONTACT_PROXIMITY = "contactProximity";
 	public static final String CONTACT_CLASSIFICATION = "contactClassification";
 	public static final String FOLLOW_UP_STATUS = "followUpStatus";
+	public static final String FOLLOW_UP_COMMENT = "followUpComment";
 	public static final String FOLLOW_UP_UNTIL = "followUpUntil";
 	public static final String CONTACT_OFFICER = "contactOfficer";
 	public static final String DESCRIPTION = "description";
@@ -54,6 +55,7 @@ public class Contact extends AbstractDomainObject {
 	private ContactProximity contactProximity;
 	private ContactClassification contactClassification;
 	private FollowUpStatus followUpStatus;
+	private String followUpComment;
 	private Date followUpUntil;
 	private User contactOfficer;
 	private String description;
@@ -205,5 +207,13 @@ public class Contact extends AbstractDomainObject {
 	public void setReportLon(Float reportLon) {
 		this.reportLon = reportLon;
 	}
-	
+
+	@Column(length=512)
+	public String getFollowUpComment() {
+		return followUpComment;
+	}
+
+	public void setFollowUpComment(String followUpComment) {
+		this.followUpComment = followUpComment;
+	}	
 }
