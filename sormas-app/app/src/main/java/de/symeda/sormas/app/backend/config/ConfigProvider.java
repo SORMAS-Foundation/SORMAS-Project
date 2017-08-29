@@ -1,10 +1,12 @@
 package de.symeda.sormas.app.backend.config;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.admin.DevicePolicyManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.security.KeyPairGeneratorSpec;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.Base64;
 import android.util.Log;
@@ -90,37 +92,6 @@ public final class ConfigProvider {
             AlertDialog.Builder builder = new AlertDialog.Builder(activity);
             builder.setCancelable(false);
             builder.setMessage(R.string.alert_encryption);
-            AlertDialog dialog = builder.create();
-            dialog.setButton(AlertDialog.BUTTON_POSITIVE, activity.getString(R.string.action_ok),
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            Activity finishActivity = activity;
-                            do {
-                                finishActivity.finish();
-                                finishActivity = finishActivity.getParent();
-                            } while (finishActivity != null);
-                        }
-                    });
-            dialog.show();
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * If the app is not allowed to access the phone's location or GPS is disabled on startup,
-     * show a non-cancelable alert that blocks app usage
-     * @param activity
-     * @return
-     */
-    public static boolean ensureGPSEnabled(final Activity activity) {
-
-        LocationService locationService = LocationService.getLocationService(activity);
-        if (!locationService.hasGPSEnabled(activity)) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-            builder.setCancelable(false);
-            builder.setMessage(R.string.alert_gps);
             AlertDialog dialog = builder.create();
             dialog.setButton(AlertDialog.BUTTON_POSITIVE, activity.getString(R.string.action_ok),
                     new DialogInterface.OnClickListener() {

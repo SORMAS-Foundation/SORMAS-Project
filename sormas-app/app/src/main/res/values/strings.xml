@@ -49,6 +49,9 @@
     <string name="action_back_to_settings">Back to settings</string>
     <string name="action_yes">Yes</string>
     <string name="action_no">No</string>
+    <string name="action_close_app">Close SORMAS</string>
+    <string name="action_turn_on_gps">Turn On GPS</string>
+    <string name="action_allow_gps_access">Allow GPS Access</string>
 
     <!-- field -->
     <string name="field_yes_no_yes">Yes</string>
@@ -244,7 +247,11 @@
     <string name="entity_task">Task</string>
 
     <string name="alert_encryption">SORMAS requires device encryption to be activated on your device to ensure data security.\n\nPlease note that you cannot use the application as long as device encryption is disabled.</string>
-    <string name="alert_gps">SORMAS needs GPS access for certain tasks like case creation.\n\nPlease note that you cannot use the application as long as it is not granted the according permissions or GPS is turned off.</string>
+    <string name="alert_gps">SORMAS needs access to your GPS location for all of its features to work as intended. Please click on \"Turn On GPS\" to enable the required functionality on your device.</string>
+    <string name="alert_gps_permission">SORMAS needs access to your GPS location for all of its features to work as intended. Please click on \"Allow GPS Access\" to allow SORMAS to access the required functionality on your device.</string>
+
+    <string name="alert_title_gps">Turn On GPS</string>
+    <string name="alert_title_gps_permission">Allow GPS Access</string>
 
     <string name="validation_case_disease">Please select the disease for this case.</string>
     <string name="validation_person_first_name">Please enter the person\'s first name.</string>

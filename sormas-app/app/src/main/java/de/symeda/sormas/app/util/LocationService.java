@@ -33,11 +33,11 @@ public class LocationService {
     }
 
     /**
-     * Checks whether the SORMAS app has the permission to access the phone's location and GPS is turned on.
+     * Checks whether the SORMAS app has the permission to access the phone's location
      * @param context
      * @return
      */
-    public boolean hasGPSEnabled(Context context) {
+    public boolean hasGPSAccess(Context context) {
         if (instance == null) {
             return false;
         }
@@ -46,10 +46,19 @@ public class LocationService {
             return false;
         }
 
-        boolean isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-        boolean isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+        return true;
+    }
 
-        return isGPSEnabled || isNetworkEnabled;
+    /**
+     * Checks whether the phone's GPS is turned on
+     * @return
+     */
+    public boolean hasGPSEnabled() {
+        if (instance == null) {
+            return false;
+        }
+
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
     }
 
     private LocationService(Context context) {
@@ -57,17 +66,14 @@ public class LocationService {
     }
 
     private void initLocationService(Context context) {
+        locationManager = (LocationManager) context.getSystemService(context.LOCATION_SERVICE);
+
         if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION ) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
 
         try {
-            this.locationManager = (LocationManager) context.getSystemService(context.LOCATION_SERVICE);
-
-            boolean isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-            boolean isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-
-            if (!isGPSEnabled && !isNetworkEnabled) {
+            if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
                 return;
             }
 
@@ -87,11 +93,7 @@ public class LocationService {
                 }
             };
 
-            if (isGPSEnabled) {
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_CHANGE, MIN_DISTANCE_CHANGE, locationListener, Looper.getMainLooper());
-            } else {
-                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME_CHANGE, MIN_DISTANCE_CHANGE, locationListener, Looper.getMainLooper());
-            }
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_CHANGE, MIN_DISTANCE_CHANGE, locationListener, Looper.getMainLooper());
         } catch (SecurityException e) {
             Log.e(getClass().getName(), "Error while initializing LocationService", e);
         }
