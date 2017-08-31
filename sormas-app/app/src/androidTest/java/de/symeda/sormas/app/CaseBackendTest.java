@@ -4,13 +4,14 @@ import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
 import org.junit.Before;
-import org.junit.FixMethodOrder;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.MethodSorters;
+
+import java.util.List;
 
 import de.symeda.sormas.api.caze.Vaccination;
+import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.backend.caze.Case;
@@ -20,10 +21,14 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.epidata.EpiData;
 import de.symeda.sormas.app.backend.epidata.EpiDataBurial;
 import de.symeda.sormas.app.backend.hospitalization.Hospitalization;
+import de.symeda.sormas.app.backend.hospitalization.PreviousHospitalization;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.synclog.SyncLogDao;
+import de.symeda.sormas.app.backend.task.Task;
+import de.symeda.sormas.app.backend.task.TaskDao;
+import de.symeda.sormas.app.backend.user.User;
 
 import static junit.framework.Assert.assertEquals;
 import static org.hamcrest.Matchers.is;
@@ -238,6 +243,48 @@ public class CaseBackendTest {
         DatabaseHelper.getPersonDao().mergeOrCreate(mergeCase.getPerson());
 
         assertThat(syncLogDao.countOf(), is(1L));
+    }
+
+    @Test
+    public void shouldUpdateCaseAndAssociatedEntitiesOnMove() {
+        CaseDao caseDao = DatabaseHelper.getCaseDao();
+        Case caze = TestEntityCreator.createCase();
+        User user = DatabaseHelper.getUserDao().queryUuid(TestHelper.USER_UUID);
+
+        TaskDao taskDao = DatabaseHelper.getTaskDao();
+        Task pendingTask = TestEntityCreator.createCaseTask(caze, TaskStatus.PENDING, user);
+        Task doneTask = TestEntityCreator.createCaseTask(caze, TaskStatus.DONE, user);
+
+        caze.setDistrict(DatabaseHelper.getDistrictDao().queryUuid(TestHelper.SECOND_DISTRICT_UUID));
+        caze.setCommunity(DatabaseHelper.getCommunityDao().queryUuid(TestHelper.SECOND_COMMUNITY_UUID));
+        caze.setHealthFacility(DatabaseHelper.getFacilityDao().queryUuid(TestHelper.SECOND_FACILITY_UUID));
+
+        try {
+            caseDao.moveCase(caze);
+        } catch (DaoException e) {
+            throw new RuntimeException();
+        }
+
+        caze = caseDao.queryUuid(caze.getUuid());
+        pendingTask = taskDao.queryUuid(pendingTask.getUuid());
+        doneTask = taskDao.queryUuid(doneTask.getUuid());
+
+        // Case should have the new region, district, community and facility set
+        assertEquals(caze.getRegion().getUuid(), TestHelper.REGION_UUID);
+        assertEquals(caze.getDistrict().getUuid(), TestHelper.SECOND_DISTRICT_UUID);
+        assertEquals(caze.getCommunity().getUuid(), TestHelper.SECOND_COMMUNITY_UUID);
+        assertEquals(caze.getHealthFacility().getUuid(), TestHelper.SECOND_FACILITY_UUID);
+
+        // The case officer should have changed
+        assertEquals(caze.getSurveillanceOfficer().getUuid(), TestHelper.SECOND_USER_UUID);
+
+        // Pending task should have been reassigned to the second user, done task should still be assigned to the first one
+        assertEquals(pendingTask.getAssigneeUser().getUuid(), TestHelper.SECOND_USER_UUID);
+        assertEquals(doneTask.getAssigneeUser().getUuid(), TestHelper.USER_UUID);
+
+        // A previous hospitalization with the former facility should have been created
+        List<PreviousHospitalization> previousHospitalizations = caze.getHospitalization().getPreviousHospitalizations();
+        assertEquals(previousHospitalizations.size(), 1);
     }
 
 }

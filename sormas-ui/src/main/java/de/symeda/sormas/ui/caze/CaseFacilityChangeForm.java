@@ -60,7 +60,11 @@ public class CaseFacilityChangeForm extends AbstractEditForm<CaseDataDto> {
 			List<UserReferenceDto> assignableSurveillanceOfficers = FacadeProvider.getUserFacade().getAssignableUsersByDistrict(districtDto, false, UserRole.SURVEILLANCE_OFFICER);
 			officer.removeAllItems();
 			officer.addItems(assignableSurveillanceOfficers);
-			officer.setValue(null);
+			if (assignableSurveillanceOfficers.size() == 1) {
+				officer.setValue(assignableSurveillanceOfficers.get(0));
+			} else {
+				officer.setValue(null);
+			}
 		});
 		community.addValueChangeListener(e -> {
 			facility.removeAllItems();
