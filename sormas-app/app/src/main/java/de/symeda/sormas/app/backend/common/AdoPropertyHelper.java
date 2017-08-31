@@ -61,7 +61,7 @@ public final class AdoPropertyHelper {
             for (PropertyDescriptor property : getPropertyDescriptors(a.getClass())) {
 
                 // ignore some types and specific properties
-                if (!AdoPropertyHelper.isModifyableProperty(property)
+                if (!AdoPropertyHelper.isModifiableProperty(property)
                         || parentProperty.equals(property.getName())) {
                     continue;
                 }
@@ -156,7 +156,7 @@ public final class AdoPropertyHelper {
         return false;
     }
 
-    public static boolean isModifyableProperty(PropertyDescriptor property) {
+    public static boolean isModifiableProperty(PropertyDescriptor property) {
         // ignore some types and specific properties
         if (AbstractDomainObject.CREATION_DATE.equals(property.getName())
                 || AbstractDomainObject.CHANGE_DATE.equals(property.getName())

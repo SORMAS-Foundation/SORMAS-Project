@@ -447,7 +447,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
             StringBuilder conflictStringBuilder = new StringBuilder();
             for (PropertyDescriptor property : AdoPropertyHelper.getPropertyDescriptors(source.getClass())) {
                 // ignore some types and specific properties
-                if (!AdoPropertyHelper.isModifyableProperty(property)
+                if (!AdoPropertyHelper.isModifiableProperty(property)
                         || parentProperty.equals(property.getName()))
                     continue;
 
@@ -503,6 +503,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
                             conflictStringBuilder.append(DatabaseHelper.getContext().getResources().getString(R.string.synclog_server));
                             conflictStringBuilder.append("</i>");
                             conflictStringBuilder.append(DataHelper.toStringNullable(sourceFieldValue));
+                            conflictStringBuilder.append("<br/>");
                         }
 
                         // update snapshot
