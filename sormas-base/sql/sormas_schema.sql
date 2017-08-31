@@ -1639,3 +1639,8 @@ ALTER TABLE contact ADD COLUMN followUpComment varchar(512);
 
 INSERT INTO schema_version (version_number, comment) VALUES (60, 'Follow-up comment #70');
 
+-- 2017-08-31 Rename 'Other' and 'None' health facilities #261
+UPDATE facility SET name = 'Other health facility' WHERE uuid = 'SORMAS-CONSTID-OTHERS-FACILITY';
+UPDATE facility SET name = 'Not a health facility' WHERE uuid = 'SORMAS-CONSTID-ISNONE-FACILITY';
+
+INSERT INTO schema_version (version_number, comment) VALUES (61, 'Rename "Other" and "None" health facilities');

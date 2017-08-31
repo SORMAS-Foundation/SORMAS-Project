@@ -261,7 +261,7 @@ public class StartupShutdownService {
 		// associated with a specific region
 		if (facilityService.getByUuid(FacilityDto.OTHER_FACILITY_UUID) == null) {
 			Facility otherFacility = new Facility();
-			otherFacility.setName("Other");
+			otherFacility.setName("Other health facility");
 			otherFacility.setUuid(FacilityDto.OTHER_FACILITY_UUID);
 			facilityService.persist(otherFacility);
 		}
@@ -270,7 +270,7 @@ public class StartupShutdownService {
 		// associated with a specific region
 		if (facilityService.getByUuid(FacilityDto.NONE_FACILITY_UUID) == null) {
 			Facility noneFacility = new Facility();
-			noneFacility.setName("None");
+			noneFacility.setName("Not a health facility");
 			noneFacility.setUuid(FacilityDto.NONE_FACILITY_UUID);
 			facilityService.persist(noneFacility);
 		}
