@@ -118,15 +118,15 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
     		setReadOnly(true, CaseDataDto.DISEASE);
     	}
     	
-    	Sex personSex = person.getSex();
-    	if (personSex != Sex.FEMALE) {
-    		setVisible(false, CaseDataDto.PREGNANT);
-    	}
-    	
 		for (Object propertyId : getFieldGroup().getBoundPropertyIds()) {
 			boolean visible = DiseasesConfiguration.isDefinedOrMissing(CaseDataDto.class, (String)propertyId, disease);
 			getFieldGroup().getField(propertyId).setVisible(visible);
 		}
+		
+    	Sex personSex = person.getSex();
+    	if (personSex != Sex.FEMALE) {
+    		setVisible(false, CaseDataDto.PREGNANT);
+    	}
 		
 		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.MEASLES_DOSES, CaseDataDto.MEASLES_VACCINATION_INFO_SOURCE), 
 				CaseDataDto.MEASLES_VACCINATION, Arrays.asList(Vaccination.VACCINATED), true);
