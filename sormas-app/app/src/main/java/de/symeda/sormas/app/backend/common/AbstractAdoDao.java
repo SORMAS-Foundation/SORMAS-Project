@@ -30,14 +30,14 @@ import de.symeda.sormas.app.R;
 
 /**
  * Some methods are copied from {@link com.j256.ormlite.dao.RuntimeExceptionDao}.
- *
+ * <p>
  * Created by Martin Wahnschaffe on 22.07.2016.
  */
 public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 
     private Dao<ADO, Long> dao;
 
-    public AbstractAdoDao(Dao<ADO, Long> innerDao)  {
+    public AbstractAdoDao(Dao<ADO, Long> innerDao) {
         this.dao = innerDao;
     }
 
@@ -45,6 +45,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 
     /**
      * Use querySnapshotByUuid if you want to retrieve the unmodified version in any case.
+     *
      * @param uuid
      * @return The modified version of the entity (if exists) or else the unmodified
      */
@@ -54,14 +55,14 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 
             List<ADO> results = queryBuilder().where().eq(AbstractDomainObject.UUID, uuid)
                     .and().eq(AbstractDomainObject.SNAPSHOT, false).query();
-        if (results.size() == 0) {
-            return null;
-        } else if (results.size() == 1) {
-            return results.get(0);
-        } else {
-            Log.e(getTableName(), "Found multiple results for UUID: " + uuid);
-            throw new NonUniqueResultException("Found multiple results for UUID: " + uuid);
-        }
+            if (results.size() == 0) {
+                return null;
+            } else if (results.size() == 1) {
+                return results.get(0);
+            } else {
+                Log.e(getTableName(), "Found multiple results for UUID: " + uuid);
+                throw new NonUniqueResultException("Found multiple results for UUID: " + uuid);
+            }
         } catch (SQLException e) {
             Log.e(getTableName(), "Could not perform queryUuid");
             throw new RuntimeException(e);
@@ -168,7 +169,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
     }
 
     private AbstractDomainObject saveAndSnapshotWithCast(AbstractDomainObject ado) throws DaoException {
-        return saveAndSnapshot((ADO)ado);
+        return saveAndSnapshot((ADO) ado);
     }
 
     /**
@@ -206,7 +207,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
                 PropertyDescriptor property = propertyIterator.next();
 
                 // get the embedded entity
-                AbstractDomainObject embeddedAdo = (AbstractDomainObject)property.getReadMethod().invoke(ado);
+                AbstractDomainObject embeddedAdo = (AbstractDomainObject) property.getReadMethod().invoke(ado);
 
                 AbstractDomainObject embeddedAdoSnapshot;
                 if (parentProperty.equals(property.getName())) {
@@ -217,8 +218,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 
                     // set reference to parent in snapshot
                     embeddedAdoSnapshot = DatabaseHelper.getAdoDao(embeddedAdo.getClass()).querySnapshotByUuid(embeddedAdo.getUuid());
-                }
-                else {
+                } else {
                     // save it - might return a created snapshot
                     embeddedAdoSnapshot = DatabaseHelper.getAdoDao(embeddedAdo.getClass()).saveAndSnapshotWithCast(embeddedAdo);
                 }
@@ -236,8 +236,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
                 // build the new entity and take note that it has been build in the app (modified)
                 ado.setModified(true);
                 create(ado);
-            }
-            else {
+            } else {
                 if (ado.isModified()) {
 
                     snapshot = querySnapshotByUuid(ado.getUuid());
@@ -304,7 +303,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
     }
 
     private AbstractDomainObject deleteWithSnapshotCast(AbstractDomainObject ado) throws DaoException {
-        return deleteWithSnapshot((ADO)ado);
+        return deleteWithSnapshot((ADO) ado);
     }
 
     /**
@@ -344,7 +343,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
                 PropertyDescriptor property = propertyIterator.next();
 
                 // get the embedded entity
-                AbstractDomainObject embeddedAdo = (AbstractDomainObject)property.getReadMethod().invoke(ado);
+                AbstractDomainObject embeddedAdo = (AbstractDomainObject) property.getReadMethod().invoke(ado);
 
                 AbstractDomainObject embeddedAdoSnapshot;
                 if (parentProperty.equals(property.getName())) {
@@ -355,8 +354,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 
                     // set reference to parent in snapshot
                     embeddedAdoSnapshot = DatabaseHelper.getAdoDao(embeddedAdo.getClass()).querySnapshotByUuid(embeddedAdo.getUuid());
-                }
-                else {
+                } else {
                     // save it - might return a created snapshot
                     embeddedAdoSnapshot = DatabaseHelper.getAdoDao(embeddedAdo.getClass()).deleteWithSnapshotCast(embeddedAdo);
                 }
@@ -387,11 +385,12 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
     }
 
     private AbstractDomainObject mergeOrCreateWithCast(AbstractDomainObject ado) throws DaoException {
-        return mergeOrCreate((ADO)ado);
+        return mergeOrCreate((ADO) ado);
     }
 
     /**
      * Result might be null, when it was previously deleted and didn't have changes
+     *
      * @param source
      * @return
      * @throws DaoException
@@ -420,8 +419,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
                     DatabaseHelper.getSyncLogDao().createWithParentStack(source.toString(), "Recreated because it was modified by someone else.");
                     // recreate the entity and set it to modified, because the list was changed before
                     current.setModified(true);
-                }
-                else {
+                } else {
                     // the entity was delete and the server didn't send changes -> keep the deletion
                     return null;
                 }
@@ -521,8 +519,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
                         collectionProperties = new ArrayList<>();
                     }
                     collectionProperties.add(property);
-                }
-                else {
+                } else {
                     // Other objects are not supported
                     throw new UnsupportedOperationException(property.getPropertyType().getName() + " is not supported as a property type.");
                 }
@@ -552,8 +549,8 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
                 for (PropertyDescriptor property : collectionProperties) {
 
                     // merge all collection elements - do this after saving because elements reference their parent
-                    Collection<AbstractDomainObject> currentCollection = (Collection<AbstractDomainObject>)property.getReadMethod().invoke(current);
-                    Collection<AbstractDomainObject> sourceCollection = (Collection<AbstractDomainObject>)property.getReadMethod().invoke(source);
+                    Collection<AbstractDomainObject> currentCollection = (Collection<AbstractDomainObject>) property.getReadMethod().invoke(current);
+                    Collection<AbstractDomainObject> sourceCollection = (Collection<AbstractDomainObject>) property.getReadMethod().invoke(source);
                     mergeCollection(currentCollection, sourceCollection, current);
                 }
 
@@ -633,11 +630,12 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
     }
 
     private void acceptWithCast(AbstractDomainObject ado) throws DaoException {
-        accept((ADO)ado);
+        accept((ADO) ado);
     }
 
     /**
      * Set a modified entity and its children to unmodified and remove the snapshots
+     *
      * @param ado
      * @throws DaoException
      */
@@ -659,7 +657,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
                 PropertyDescriptor property = propertyIterator.next();
 
                 // accept all collection elements
-                Collection<AbstractDomainObject> sourceCollection = (Collection<AbstractDomainObject>)property.getReadMethod().invoke(ado);
+                Collection<AbstractDomainObject> sourceCollection = (Collection<AbstractDomainObject>) property.getReadMethod().invoke(ado);
                 for (AbstractDomainObject sourceElement : sourceCollection) {
                     DatabaseHelper.getAdoDao(sourceElement.getClass()).acceptWithCast(sourceElement);
                 }
@@ -694,7 +692,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
                 }
 
                 // get the embedded entity
-                AbstractDomainObject embeddedAdo = (AbstractDomainObject)property.getReadMethod().invoke(ado);
+                AbstractDomainObject embeddedAdo = (AbstractDomainObject) property.getReadMethod().invoke(ado);
                 AbstractAdoDao<? extends AbstractDomainObject> adoDao = DatabaseHelper.getAdoDao(embeddedAdo.getClass());
                 embeddedAdo = adoDao.queryForId(embeddedAdo.getId()); // refresh
                 // accept it
@@ -714,7 +712,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
     }
 
     public void deleteCascadeWithCast(AbstractDomainObject ado) {
-        deleteCascade((ADO)ado);
+        deleteCascade((ADO) ado);
     }
 
     public void deleteCascade(ADO ado) {
@@ -735,7 +733,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
                     continue;
 
                 // get embedded
-                AbstractDomainObject embeddedAdo = (AbstractDomainObject)property.getReadMethod().invoke(ado);
+                AbstractDomainObject embeddedAdo = (AbstractDomainObject) property.getReadMethod().invoke(ado);
                 // delete it
                 DatabaseHelper.getAdoDao(embeddedAdo.getClass()).deleteCascadeWithCast(embeddedAdo);
             }
@@ -749,6 +747,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 
     /**
      * Delete all entities (cascading) that are not in the list
+     *
      * @param validUuids
      */
     public void deleteInvalid(List<String> validUuids) {
@@ -770,7 +769,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
     }
 
     public int updateWithCast(AbstractDomainObject ado) {
-        return update((ADO)ado);
+        return update((ADO) ado);
     }
 
     public ADO build() {
@@ -795,7 +794,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
                     continue;
 
                 // build embedded
-                AbstractDomainObject embeddedAdo = DatabaseHelper.getAdoDao((Class<AbstractDomainObject>)property.getPropertyType()).build();
+                AbstractDomainObject embeddedAdo = DatabaseHelper.getAdoDao((Class<AbstractDomainObject>) property.getPropertyType()).build();
 
                 if (embeddedAdo == null) {
                     throw new IllegalArgumentException("No embedded entity was created for " + property.getName());

@@ -7,6 +7,7 @@ import android.util.Log;
 
 import com.google.android.gms.analytics.Tracker;
 
+import java.io.IOException;
 import java.util.List;
 
 import de.symeda.sormas.app.R;
@@ -32,6 +33,8 @@ import de.symeda.sormas.app.backend.visit.VisitDtoHelper;
 import de.symeda.sormas.app.task.TaskNotificationService;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.SyncCallback;
+import retrofit2.Call;
+import retrofit2.Response;
 
 public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
@@ -158,44 +161,57 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         new UserDtoHelper().pullEntities(false);
     }
 
-    private void pullUuidsAndDeleteInvalid() throws java.io.IOException {
+    private void pullUuidsAndDeleteInvalid() throws ServerConnectionException {
         // ATTENTION: Since we are working with UUID lists we have no type safety. Look for typos!
 
         // tasks
-        List<String> uuids = RetroProvider.getTaskFacade().pullUuids().execute().body();
-        DatabaseHelper.getTaskDao().deleteInvalid(uuids);
+        Call<List<String>> call = RetroProvider.getTaskFacade().pullUuids();
+        DatabaseHelper.getTaskDao().deleteInvalid(executeUuidCall(call));
 
         // visits
-        uuids = RetroProvider.getVisitFacade().pullUuids().execute().body();
-        DatabaseHelper.getVisitDao().deleteInvalid(uuids);
+        call = RetroProvider.getVisitFacade().pullUuids();
+        DatabaseHelper.getVisitDao().deleteInvalid(executeUuidCall(call));
 
         // contacts
-        uuids = RetroProvider.getContactFacade().pullUuids().execute().body();
-        DatabaseHelper.getContactDao().deleteInvalid(uuids);
+        call = RetroProvider.getContactFacade().pullUuids();
+        DatabaseHelper.getContactDao().deleteInvalid(executeUuidCall(call));
 
         // sample tests
-        uuids = RetroProvider.getSampleTestFacade().pullUuids().execute().body();
-        DatabaseHelper.getSampleTestDao().deleteInvalid(uuids);
+        call = RetroProvider.getSampleTestFacade().pullUuids();
+        DatabaseHelper.getSampleTestDao().deleteInvalid(executeUuidCall(call));
 
         // samples
-        uuids = RetroProvider.getSampleFacade().pullUuids().execute().body();
-        DatabaseHelper.getSampleDao().deleteInvalid(uuids);
+        call = RetroProvider.getSampleFacade().pullUuids();
+        DatabaseHelper.getSampleDao().deleteInvalid(executeUuidCall(call));
 
         // cases
-        uuids = RetroProvider.getCaseFacade().pullUuids().execute().body();
-        DatabaseHelper.getCaseDao().deleteInvalid(uuids);
+        call = RetroProvider.getCaseFacade().pullUuids();
+        DatabaseHelper.getCaseDao().deleteInvalid(executeUuidCall(call));
 
         // event participants
-        uuids = RetroProvider.getEventParticipantFacade().pullUuids().execute().body();
-        DatabaseHelper.getEventParticipantDao().deleteInvalid(uuids);
+        call = RetroProvider.getEventParticipantFacade().pullUuids();
+        DatabaseHelper.getEventParticipantDao().deleteInvalid(executeUuidCall(call));
 
         // events
-        uuids = RetroProvider.getEventFacade().pullUuids().execute().body();
-        DatabaseHelper.getEventDao().deleteInvalid(uuids);
+        call = RetroProvider.getEventFacade().pullUuids();
+        DatabaseHelper.getEventDao().deleteInvalid(executeUuidCall(call));
 
         // persons
-        uuids = RetroProvider.getPersonFacade().pullUuids().execute().body();
-        DatabaseHelper.getPersonDao().deleteInvalid(uuids);
+        call = RetroProvider.getPersonFacade().pullUuids();
+        DatabaseHelper.getPersonDao().deleteInvalid(executeUuidCall(call));
+    }
+
+    private List<String> executeUuidCall(Call<List<String>> call) throws ServerConnectionException {
+        Response<List<String>> response;
+        try {
+            response = call.execute();
+        } catch (IOException e) {
+            throw new ServerConnectionException(e);
+        }
+        if (!response.isSuccessful()) {
+            throw ServerConnectionException.fromResponse(response);
+        }
+        return response.body();
     }
 
     /**

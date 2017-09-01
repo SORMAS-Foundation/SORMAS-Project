@@ -89,13 +89,7 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 
     protected void handlePullResponse(final boolean markAsRead, final AbstractAdoDao<ADO> dao, Response<List<DTO>> response) throws ServerConnectionException {
         if (!response.isSuccessful()) {
-            String responseErrorBodyString;
-            try {
-                responseErrorBodyString = response.errorBody().string();
-            } catch (IOException e) {
-                responseErrorBodyString = "Exception accessing error body: " + e.getMessage();
-            }
-            throw new ServerConnectionException(responseErrorBodyString);
+            throw ServerConnectionException.fromResponse(response);
         }
 
         final List<DTO> result = response.body();

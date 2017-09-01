@@ -26,7 +26,7 @@ import okhttp3.ResponseBody;
 public class TestEnvironmentInterceptor implements Interceptor {
 
     @Override
-    public Response intercept(Chain chain) throws IOException {
+    public Response intercept(Chain chain) {
         Response response = null;
         String responseString;
         final URI uri = chain.request().url().uri();
