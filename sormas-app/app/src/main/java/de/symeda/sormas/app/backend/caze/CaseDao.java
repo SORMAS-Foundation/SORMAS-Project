@@ -132,7 +132,7 @@ public class CaseDao extends AbstractAdoDao<Case> {
     }
 
     public Case moveCase(Case caseToMove) throws DaoException {
-        Case caze = queryForId(caseToMove.getId());
+        Case caze = queryForIdWithEmbedded(caseToMove.getId());
 
         Facility facility = caseToMove.getHealthFacility();
         Community community = caseToMove.getCommunity();

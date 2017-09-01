@@ -69,6 +69,57 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
         }
     }
 
+    public ADO queryUuidWithEmbedded(String uuid) {
+        ADO result = queryUuid(uuid);
+        initEmbedded(result);
+        return result;
+    }
+
+    public ADO queryForIdWithEmbedded(Long id) {
+        ADO result = queryForId(id);
+        initEmbedded(result);
+        return result;
+    }
+
+    protected void initEmbedded(ADO ado) {
+
+        try {
+            // ignore parent property
+            EmbeddedAdo annotation = ado.getClass().getAnnotation(EmbeddedAdo.class);
+            String parentProperty = annotation != null ? annotation.parentAccessor() : "";
+
+            // go through all embedded entities and saveAndSnapshot them
+            Iterator<PropertyDescriptor> propertyIterator = AdoPropertyHelper.getEmbeddedAdoProperties(ado.getClass());
+            while (propertyIterator.hasNext()) {
+                PropertyDescriptor property = propertyIterator.next();
+
+                // get the embedded entity
+                AbstractDomainObject embeddedAdo = (AbstractDomainObject) property.getReadMethod().invoke(ado);
+
+                if (parentProperty.equals(property.getName())) {
+                    continue;
+                }
+
+                embeddedAdo = DatabaseHelper.getAdoDao(embeddedAdo.getClass()).queryForIdWithEmbedded(embeddedAdo.getId());
+                property.getWriteMethod().invoke(ado, embeddedAdo);
+            }
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * @see Dao#queryForId(Object)
+     */
+    public ADO queryForId(Long id) {
+        try {
+            return dao.queryForId(id);
+        } catch (SQLException e) {
+            Log.e(getTableName(), "queryForId threw exception on: " + id, e);
+            throw new RuntimeException(e);
+        }
+    }
+
     public ADO querySnapshotByUuid(String uuid) {
 
         try {
@@ -845,18 +896,6 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 
     public void markAsReadWithCast(AbstractDomainObject ado) {
         markAsRead((ADO) ado);
-    }
-
-    /**
-     * @see Dao#queryForId(Object)
-     */
-    public ADO queryForId(Long id) {
-        try {
-            return dao.queryForId(id);
-        } catch (SQLException e) {
-            Log.e(getTableName(), "queryForId threw exception on: " + id, e);
-            throw new RuntimeException(e);
-        }
     }
 
     /**

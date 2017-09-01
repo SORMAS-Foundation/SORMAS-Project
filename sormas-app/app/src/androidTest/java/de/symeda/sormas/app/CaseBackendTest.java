@@ -266,7 +266,7 @@ public class CaseBackendTest {
             throw new RuntimeException();
         }
 
-        caze = caseDao.queryUuid(caze.getUuid());
+        caze = caseDao.queryUuidWithEmbedded(caze.getUuid());
         pendingTask = taskDao.queryUuid(pendingTask.getUuid());
         doneTask = taskDao.queryUuid(doneTask.getUuid());
 
@@ -284,9 +284,8 @@ public class CaseBackendTest {
         assertEquals(doneTask.getAssigneeUser().getUuid(), TestHelper.USER_UUID);
 
         // A previous hospitalization with the former facility should have been created
-        Hospitalization hospitalization = DatabaseHelper.getHospitalizationDao().queryUuid(caze.getHospitalization().getUuid());
-        List<PreviousHospitalization> previousHospitalizations = hospitalization.getPreviousHospitalizations();
-        assertEquals(previousHospitalizations.size(), 1);
+        List<PreviousHospitalization> previousHospitalizations = caze.getHospitalization().getPreviousHospitalizations();
+        assertEquals(1, previousHospitalizations.size());
     }
 
 }

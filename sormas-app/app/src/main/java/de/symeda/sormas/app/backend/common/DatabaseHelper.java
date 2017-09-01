@@ -240,10 +240,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					// nothing
 				case 99:
 					currentVersion = 99;
-					// nothing
+					getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN followUpComment varchar(512);");
 				case 100:
 					currentVersion = 100;
-					getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN followUpComment varchar(512);");
+					// nothing
 				case 101:
 					currentVersion = 101;
 					getDao(Facility.class).executeRaw("UPDATE facility SET name = 'Other health facility' WHERE uuid = 'SORMAS-CONSTID-OTHERS-FACILITY'");
