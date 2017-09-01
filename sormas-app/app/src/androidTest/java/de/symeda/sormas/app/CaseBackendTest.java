@@ -21,6 +21,7 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.epidata.EpiData;
 import de.symeda.sormas.app.backend.epidata.EpiDataBurial;
 import de.symeda.sormas.app.backend.hospitalization.Hospitalization;
+import de.symeda.sormas.app.backend.hospitalization.HospitalizationDao;
 import de.symeda.sormas.app.backend.hospitalization.PreviousHospitalization;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.person.Person;
@@ -283,7 +284,8 @@ public class CaseBackendTest {
         assertEquals(doneTask.getAssigneeUser().getUuid(), TestHelper.USER_UUID);
 
         // A previous hospitalization with the former facility should have been created
-        List<PreviousHospitalization> previousHospitalizations = caze.getHospitalization().getPreviousHospitalizations();
+        Hospitalization hospitalization = DatabaseHelper.getHospitalizationDao().queryUuid(caze.getHospitalization().getUuid());
+        List<PreviousHospitalization> previousHospitalizations = hospitalization.getPreviousHospitalizations();
         assertEquals(previousHospitalizations.size(), 1);
     }
 

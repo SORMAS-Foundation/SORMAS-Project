@@ -42,7 +42,7 @@ public class PreviousHospitalizationDao extends AbstractAdoDao<PreviousHospitali
         if (hospitalization.isSnapshot()) {
             return querySnapshotsForEq(PreviousHospitalization.HOSPITALIZATION + "_id", hospitalization, PreviousHospitalization.CHANGE_DATE, false);
         }
-        return querySnapshotsForEq(PreviousHospitalization.HOSPITALIZATION + "_id", hospitalization, PreviousHospitalization.CHANGE_DATE, false);
+        return queryForEq(PreviousHospitalization.HOSPITALIZATION + "_id", hospitalization, PreviousHospitalization.CHANGE_DATE, false);
     }
 
     public PreviousHospitalization buildPreviousHospitalization(Case caze) {
