@@ -53,8 +53,10 @@ public class EpiDataTravelsListArrayAdapter extends ArrayAdapter<EpiDataTravel> 
         TextView period = (TextView) convertView.findViewById(R.id.travel_period_li);
         period.setText(periodString.toString());
 
-        TextView type = (TextView) convertView.findViewById(R.id.travel_type_li);
-        type.setText(travel.getTravelType().toString());
+        if (travel.getTravelType() != null) {
+            TextView type = (TextView) convertView.findViewById(R.id.travel_type_li);
+            type.setText(travel.getTravelType().toString());
+        }
 
         TextView destination = (TextView) convertView.findViewById(R.id.travel_destination_li);
         destination.setText(travel.getTravelDestination());

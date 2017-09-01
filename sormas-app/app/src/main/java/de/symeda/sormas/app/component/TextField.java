@@ -159,7 +159,7 @@ public class TextField extends PropertyField<String> implements TextFieldInterfa
                     int id = getNextFocusForwardId();
                     if(id != View.NO_ID) {
                         View nextView = v.getRootView().findViewById(id);
-                        if(nextView.getVisibility() == VISIBLE) {
+                        if (nextView != null && nextView.getVisibility() == VISIBLE) {
                             if (!(nextView instanceof TextField)) {
                                 if (nextView instanceof PropertyField) {
                                     ((PropertyField) nextView).requestFocusForContentView(nextView);
