@@ -146,7 +146,7 @@ public abstract class AbstractSormasActivity extends AppCompatActivity {
 
             SynchronizeDataAsync.call(syncMode, getApplicationContext(), new SyncCallback() {
                 @Override
-                public void call(boolean syncFailed) {
+                public void call(boolean syncFailed, String syncFailedMessage) {
 
                     if (swipeRefreshLayout != null) {
                         swipeRefreshLayout.setRefreshing(false);
@@ -173,7 +173,7 @@ public abstract class AbstractSormasActivity extends AppCompatActivity {
                                 Snackbar.make(findViewById(android.R.id.content), R.string.snackbar_sync_success, Snackbar.LENGTH_LONG).show();
                             }
                         } else {
-                            Snackbar.make(findViewById(android.R.id.content), R.string.snackbar_sync_error, Snackbar.LENGTH_LONG).show();
+                            Snackbar.make(findViewById(android.R.id.content), syncFailedMessage, Snackbar.LENGTH_LONG).show();
                         }
                     } else {
                         if (syncLogCountAfter > syncLogCountBefore) {

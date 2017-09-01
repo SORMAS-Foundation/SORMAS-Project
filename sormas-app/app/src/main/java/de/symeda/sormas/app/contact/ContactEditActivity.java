@@ -93,6 +93,13 @@ public class ContactEditActivity extends AbstractEditTabActivity {
             if (params.containsKey(KEY_CONTACT_UUID)) {
                 contactUuid = params.getString(KEY_CONTACT_UUID);
                 Contact initialEntity = DatabaseHelper.getContactDao().queryUuid(contactUuid);
+                // If the contact has been removed from the database in the meantime, redirect the user to the contacts overview
+                if (initialEntity == null) {
+                    Intent intent = new Intent(this, ContactsActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
+
                 DatabaseHelper.getContactDao().markAsRead(initialEntity);
             }
             if (params.containsKey(TaskForm.KEY_TASK_UUID)) {
@@ -111,6 +118,13 @@ public class ContactEditActivity extends AbstractEditTabActivity {
         super.onResume();
 
         Contact currentEntity = DatabaseHelper.getContactDao().queryUuid(contactUuid);
+        // If the contact has been removed from the database in the meantime, redirect the user to the contacts overview
+        if (currentEntity == null) {
+            Intent intent = new Intent(this, ContactsActivity.class);
+            startActivity(intent);
+            finish();
+        }
+
         if (currentEntity.isUnreadOrChildUnread()) {
             // Resetting the adapter will reload the form and therefore also override any unsaved changes
             DatabaseHelper.getContactDao().markAsRead(currentEntity);

@@ -186,7 +186,7 @@ public class ContactNewActivity extends AppCompatActivity {
         if (RetroProvider.isConnected()) {
             SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.ChangesOnly, this, new SyncCallback() {
                 @Override
-                public void call(boolean syncFailed) {
+                public void call(boolean syncFailed, String syncFailedMessage) {
                     if (syncFailed) {
                         Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_sync_error_created), getResources().getString(R.string.entity_contact)), Snackbar.LENGTH_LONG).show();
                     } else {

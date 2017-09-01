@@ -77,7 +77,7 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
             } else {
                 SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.ChangesAndInfrastructure, LoginActivity.this, new SyncCallback() {
                     @Override
-                    public void call(boolean syncFailed) {
+                    public void call(boolean syncFailed, String syncFailedMessage) {
                         // logged in?
                         if (ConfigProvider.getUser() != null) {
                             Intent intent = new Intent(LoginActivity.this, EnterPinActivity.class);
@@ -205,7 +205,7 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
                 // no user yet? sync...
                 SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.ChangesAndInfrastructure, LoginActivity.this, new SyncCallback() {
                     @Override
-                    public void call(boolean syncFailed) {
+                    public void call(boolean syncFailed, String syncFailedMessage) {
                         if (ConfigProvider.getUser() != null) {
                             Intent intent = new Intent(LoginActivity.this, EnterPinActivity.class);
                             startActivity(intent);

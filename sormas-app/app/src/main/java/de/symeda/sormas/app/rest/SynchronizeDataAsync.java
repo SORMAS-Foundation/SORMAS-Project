@@ -7,8 +7,6 @@ import android.util.Log;
 
 import com.google.android.gms.analytics.Tracker;
 
-import java.io.IOException;
-import java.sql.SQLException;
 import java.util.List;
 
 import de.symeda.sormas.app.R;
@@ -16,6 +14,8 @@ import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.caze.CaseDtoHelper;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.common.ServerConnectionException;
+import de.symeda.sormas.app.backend.common.SynchronizationException;
 import de.symeda.sormas.app.backend.contact.ContactDtoHelper;
 import de.symeda.sormas.app.backend.event.EventDtoHelper;
 import de.symeda.sormas.app.backend.event.EventParticipantDtoHelper;
@@ -40,6 +40,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
      * as the last callback is called (i.e. the synchronization has been completed/cancelled).
      */
     protected boolean syncFailed;
+    protected String syncFailedMessage;
     protected boolean secondTry;
 
     private final SyncMode syncMode;
@@ -82,6 +83,11 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
                     throw new IllegalArgumentException(syncMode.toString());
             }
 
+        } catch (ServerConnectionException e) {
+            syncFailed = true;
+            syncFailedMessage = DatabaseHelper.getContext().getString(R.string.server_connection_error);
+            RetroProvider.disconnect();
+
         } catch (Exception e) {
 
             Log.e(getClass().getName(), "Error trying to synchronize data", e);
@@ -91,6 +97,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
             if (!secondTry) {
                 secondTry = true;
+                syncFailedMessage = DatabaseHelper.getContext().getString(R.string.sync_error);
                 doInBackground(params);
             } else {
                 syncFailed = true;
@@ -100,7 +107,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         return null;
     }
 
-    private void synchronizeChangedData() throws DaoException, SQLException, IOException {
+    private void synchronizeChangedData() throws DaoException, ServerConnectionException, SynchronizationException {
 
         PersonDtoHelper personDtoHelper = new PersonDtoHelper();
         EventDtoHelper eventDtoHelper = new EventDtoHelper();
@@ -142,7 +149,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
             taskDtoHelper.pullEntities(true);
     }
 
-    private void pullInfrastructure() throws DaoException, SQLException, IOException {
+    private void pullInfrastructure() throws DaoException, ServerConnectionException, SynchronizationException {
 
         new RegionDtoHelper().pullEntities(false);
         new DistrictDtoHelper().pullEntities(false);
@@ -204,10 +211,10 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
         call(syncMode, context, new SyncCallback() {
             @Override
-            public void call(boolean syncFailed) {
+            public void call(boolean syncFailed, String syncFailedMessage) {
                 progressDialog.dismiss();
                 if (callback != null) {
-                    callback.call(syncFailed);
+                    callback.call(syncFailed, syncFailedMessage);
                 }
             }
         });
@@ -219,7 +226,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
             @Override
             protected void onPostExecute(Void aVoid) {
                 if (callback != null) {
-                    callback.call(syncFailed);
+                    callback.call(syncFailed, syncFailedMessage);
                 }
                 if (context != null) {
                     TaskNotificationService.doTaskNotification(context);

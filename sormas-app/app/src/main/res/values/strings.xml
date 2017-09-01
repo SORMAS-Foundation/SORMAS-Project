@@ -177,12 +177,14 @@
     <string name="hint_new_pin">Please choose a new four-digit PIN to authenticate when opening the SORMAS app in the future.</string>
     <string name="hint_new_pin_again">Please enter the new PIN again.</string>
 
+    <string name="sync_error">Synchronization failed. Please try again later.</string>
+    <string name="server_connection_error">Could not connect to SORMAS server. Synchronization canceled. Try again later.</string>
+
     <string name="snackbar_save_success">%1$s saved successfully.</string>
     <string name="snackbar_create_success">%1$s created successfully.</string>
     <string name="snackbar_save_error">%1$s could not be saved because of an internal error.</string>
     <string name="snackbar_create_error">%1$s could not be created because of an internal error.</string>
     <string name="snackbar_sync_success">Synchronization successful.</string>
-    <string name="snackbar_sync_error">Synchronization failed. Please try again later.</string>
     <string name="snackbar_sync_error_saved">%1$s has been saved, but could not be synchronized.</string>
     <string name="snackbar_sync_error_created">%1$s has been created, but could not be synchronized.</string>
     <string name="snackbar_no_connection">You are not connected to the internet.</string>

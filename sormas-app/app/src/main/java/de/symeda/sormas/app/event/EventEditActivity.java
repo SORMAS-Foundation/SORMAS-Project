@@ -82,6 +82,13 @@ public class EventEditActivity extends AbstractEditTabActivity {
             if (params.containsKey(KEY_EVENT_UUID)) {
                 eventUuid = params.getString(KEY_EVENT_UUID);
                 Event initialEntity = DatabaseHelper.getEventDao().queryUuid(eventUuid);
+                // If the event has been removed from the database in the meantime, redirect the user to the events overview
+                if (initialEntity == null) {
+                    Intent intent = new Intent(this, EventsActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
+
                 DatabaseHelper.getEventDao().markAsRead(initialEntity);
             }
             if (params.containsKey(TaskForm.KEY_TASK_UUID)) {
@@ -101,6 +108,13 @@ public class EventEditActivity extends AbstractEditTabActivity {
 
         if (eventUuid != null) {
             Event currentEntity = DatabaseHelper.getEventDao().queryUuid(eventUuid);
+            // If the event has been removed from the database in the meantime, redirect the user to the events overview
+            if (currentEntity == null) {
+                Intent intent = new Intent(this, EventsActivity.class);
+                startActivity(intent);
+                finish();
+            }
+
             if (currentEntity.isUnreadOrChildUnread()) {
                 // Resetting the adapter will reload the form and therefore also override any unsaved changes
                 DatabaseHelper.getEventDao().markAsRead(currentEntity);
@@ -254,7 +268,7 @@ public class EventEditActivity extends AbstractEditTabActivity {
                             if (RetroProvider.isConnected()) {
                                 SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.ChangesOnly, this, new SyncCallback() {
                                     @Override
-                                    public void call(boolean syncFailed) {
+                                    public void call(boolean syncFailed, String syncFailedMessage) {
                                         if (syncFailed) {
                                             Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_sync_error_saved), getResources().getString(R.string.entity_alert)), Snackbar.LENGTH_LONG).show();
                                         } else {

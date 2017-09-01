@@ -95,6 +95,14 @@ public class CaseEditActivity extends AbstractEditTabActivity {
             if (params.containsKey(KEY_CASE_UUID)) {
                 caseUuid = params.getString(KEY_CASE_UUID);
                 Case initialEntity = DatabaseHelper.getCaseDao().queryUuid(caseUuid);
+                // If the case has been removed from the database in the meantime, redirect the user to the cases overview
+                // TODO add Snackbar and test
+                if (initialEntity == null) {
+                    Intent intent = new Intent(this, CasesActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
+
                 DatabaseHelper.getCaseDao().markAsRead(initialEntity);
             }
             if (params.containsKey(TaskForm.KEY_TASK_UUID)) {
@@ -116,6 +124,13 @@ public class CaseEditActivity extends AbstractEditTabActivity {
         super.onResume();
 
         Case currentEntity = DatabaseHelper.getCaseDao().queryUuid(caseUuid);
+        // If the case has been removed from the database in the meantime, redirect the user to the cases overview
+        if (currentEntity == null) {
+            Intent intent = new Intent(this, CasesActivity.class);
+            startActivity(intent);
+            finish();
+        }
+
         if (currentEntity.isUnreadOrChildUnread()) {
             // Resetting the adapter will reload the form and therefore also override any unsaved changes
             DatabaseHelper.getCaseDao().markAsRead(currentEntity);

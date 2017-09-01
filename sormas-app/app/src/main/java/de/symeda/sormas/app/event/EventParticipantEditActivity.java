@@ -1,6 +1,7 @@
 package de.symeda.sormas.app.event;
 
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
@@ -73,6 +74,13 @@ public class EventParticipantEditActivity extends AbstractSormasActivity {
             if(params.containsKey(EventParticipant.UUID)) {
                 eventParticipantUuid = params.getString(EventParticipant.UUID);
                 EventParticipant initialEntity = DatabaseHelper.getEventParticipantDao().queryUuid(eventParticipantUuid);
+                // If the event participant (and thus probably the event) has been removed from the database in the meantime, redirect the user to the events overview
+                if (initialEntity == null) {
+                    Intent intent = new Intent(this, EventsActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
+
                 DatabaseHelper.getEventParticipantDao().markAsRead(initialEntity);
             }
         }
@@ -85,6 +93,13 @@ public class EventParticipantEditActivity extends AbstractSormasActivity {
         super.onResume();
 
         EventParticipant currentEntity = DatabaseHelper.getEventParticipantDao().queryUuid(eventParticipantUuid);
+        // If the event participant (and thus probably the event) has been removed from the database in the meantime, redirect the user to the events overview
+        if (currentEntity == null) {
+            Intent intent = new Intent(this, EventsActivity.class);
+            startActivity(intent);
+            finish();
+        }
+
         if (currentEntity.isUnreadOrChildUnread()) {
             // Resetting the adapter will reload the form and therefore also override any unsaved changes
             DatabaseHelper.getEventParticipantDao().markAsRead(currentEntity);
@@ -175,7 +190,7 @@ public class EventParticipantEditActivity extends AbstractSormasActivity {
                     if (RetroProvider.isConnected()) {
                         SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.ChangesOnly, this, new SyncCallback() {
                             @Override
-                            public void call(boolean syncFailed) {
+                            public void call(boolean syncFailed, String syncFailedMessage) {
                                 if (syncFailed) {
                                     Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_sync_error_saved), getResources().getString(R.string.entity_alert_person)), Snackbar.LENGTH_LONG).show();
                                 } else {
