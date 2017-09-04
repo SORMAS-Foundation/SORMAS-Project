@@ -293,7 +293,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
                     snapshot = querySnapshotByUuid(ado.getUuid());
 
                     if (snapshot != null && !ado.getChangeDate().equals(snapshot.getChangeDate())) {
-                        throw new DaoException("Change date does not match. Looks like sync was done between reading and saving the entity.");
+                        throw new DaoException("Change date does not match. Looks like sync was done between opening and saving the entity.");
                     }
 
                     // just update the existing modified version
@@ -301,7 +301,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
                 } else {
 
                     if (!ado.getChangeDate().equals(snapshot.getChangeDate())) {
-                        throw new DaoException("Change date does not match. Looks like sync was done between reading and saving the entity.");
+                        throw new DaoException("Change date does not match. Looks like sync was done between opening and saving the entity.");
                     }
 
                     // set to modified and update

@@ -418,7 +418,7 @@ public class CaseEditActivity extends AbstractEditTabActivity {
 
         try {
             personDao.saveAndSnapshot(person);
-            caze.setPerson(person); // we aren't sure why, but this is needed, otherwise the person will be overriden when first saved
+            caze.setPerson(person); // we have to set this - otherwise data from the person will be overridden with not fully initialized data
             caze.setSymptoms(symptoms);
             caze.setHospitalization(hospitalization);
             caze.setEpiData(epiData);
