@@ -25,6 +25,7 @@ import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.task.TaskContext;
+import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
@@ -294,42 +295,62 @@ public class ContactFacadeEjb implements ContactFacade {
 		List<Contact> contacts = contactService.getFollowUpBetween(DateHelper8.toDate(fromDateTime), DateHelper8.toDate(toDateTime), null, null);
 
 		for (Contact contact : contacts) {
+			
+			User assignee;
+			// assign responsible user
+			if (contact.getContactOfficer() != null) {
+				// A. contact officer
+				assignee = contact.getContactOfficer();
+			} else {
+				// use region where contact person lifes
+				Region region = contact.getPerson().getAddress().getRegion();
+				if (region == null) {
+					// fallback: use region of related caze
+					region = contact.getCaze().getRegion();
+				}
+				// B. contact supervisor
+				List<User> users = userService.getAllByRegionAndUserRoles(region, UserRole.CONTACT_SUPERVISOR);
+				if (!users.isEmpty()) {
+					assignee = users.get(0);
+				} else {
+					logger.warn("Contact has not contact officer and no region - can't create follow-up task: " + contact.getUuid());
+					continue;
+				}
+			}
+						
 			// find already existing tasks
-			TaskCriteria taskCriteria = new TaskCriteria()
+			TaskCriteria pendingUserTaskCriteria = new TaskCriteria()
+					.contactEquals(contact)
+					.taskTypeEquals(TaskType.CONTACT_FOLLOW_UP)
+					.assigneeUserEquals(assignee)
+					.taskStatusEquals(TaskStatus.PENDING);
+			List<Task> pendingUserTasks = taskService.findBy(pendingUserTaskCriteria);
+			
+			if (!pendingUserTasks.isEmpty()) {
+				// the user still has a pending task for this contact
+				continue;
+			}
+			
+			TaskCriteria dayTaskCriteria = new TaskCriteria()
 					.contactEquals(contact)
 					.taskTypeEquals(TaskType.CONTACT_FOLLOW_UP)
 					.dueDateBetween(DateHelper8.toDate(fromDateTime), DateHelper8.toDate(toDateTime));
-			List<Task> tasks = taskService.findBy(taskCriteria);
+			List<Task> dayTasks = taskService.findBy(dayTaskCriteria);
 			
-			if (tasks.isEmpty()) {
-				// none found -> create the task
-				Task task = taskService.buildTask(null);
-				task.setTaskContext(TaskContext.CONTACT);
-				task.setContact(contact);
-				task.setTaskType(TaskType.CONTACT_FOLLOW_UP);
-				task.setSuggestedStart(DateHelper8.toDate(fromDateTime));
-				task.setDueDate(DateHelper8.toDate(toDateTime.minusMinutes(1)));
-				// assign responsible user
-				if (contact.getContactOfficer() != null) {
-					// A. contact officer
-					task.setAssigneeUser(contact.getContactOfficer());
-				} else {
-					// use region where contact person lifes
-					Region region = contact.getPerson().getAddress().getRegion();
-					if (region == null) {
-						// fallback: use region of related caze
-						region = contact.getCaze().getRegion();
-					}
-					// B. contact supervisor
-					List<User> users = userService.getAllByRegionAndUserRoles(region, UserRole.CONTACT_SUPERVISOR);
-					if (!users.isEmpty()) {
-						task.setAssigneeUser(users.get(0));
-					} else {
-						logger.warn("Could not assign responsible user to contact follow-up task: " + task.getUuid());
-					}
-				}
-				taskService.ensurePersisted(task);
+			if (!dayTasks.isEmpty()) {
+				// there is already a task for the exact day
+				continue;
 			}
+
+			// none found -> create the task
+			Task task = taskService.buildTask(null);
+			task.setTaskContext(TaskContext.CONTACT);
+			task.setContact(contact);
+			task.setTaskType(TaskType.CONTACT_FOLLOW_UP);
+			task.setSuggestedStart(DateHelper8.toDate(fromDateTime));
+			task.setDueDate(DateHelper8.toDate(toDateTime.minusMinutes(1)));
+			task.setAssigneeUser(assignee);
+			taskService.ensurePersisted(task);
 		}
 	}
 

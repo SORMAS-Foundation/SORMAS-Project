@@ -43,6 +43,7 @@ public class ContactDto extends ContactReferenceDto {
 	private String followUpComment;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.CHOLERA})
 	private Date followUpUntil;
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.CHOLERA})
 	private UserReferenceDto contactOfficer;
 	private String description;
 	private ContactRelation relationToCase;
