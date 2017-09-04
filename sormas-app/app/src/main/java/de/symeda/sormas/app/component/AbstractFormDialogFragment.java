@@ -36,14 +36,7 @@ abstract public class AbstractFormDialogFragment<FormClass> extends DialogFragme
         alertDialogBuilder.setView(view);
 
         alertDialogBuilder.setTitle(title);
-        alertDialogBuilder.setPositiveButton(getActivity().getResources().getString(R.string.action_done), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int id) {
-                if (positiveCallback != null) {
-                    positiveCallback.accept(formItem);
-                }
-            }
-        });
+        alertDialogBuilder.setPositiveButton(getActivity().getResources().getString(R.string.action_done), null);
         alertDialogBuilder.setNegativeButton(getActivity().getResources().getString(R.string.action_dimiss), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int id) {
@@ -64,6 +57,19 @@ abstract public class AbstractFormDialogFragment<FormClass> extends DialogFragme
         return alertDialogBuilder.create();
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        AlertDialog dialog = (AlertDialog) getDialog();
+        dialog.getButton(Dialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (positiveCallback != null) {
+                    positiveCallback.accept(formItem);
+                }
+            }
+        });
+    }
 
     // gives all needed config params
     public void initialize(FormClass formItem, final Consumer positiveCallback, final Consumer deleteCallback, String title) {

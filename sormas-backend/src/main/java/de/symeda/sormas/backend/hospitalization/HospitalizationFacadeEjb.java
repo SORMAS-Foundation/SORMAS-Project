@@ -16,6 +16,12 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
+import de.symeda.sormas.backend.region.CommunityFacadeEjb;
+import de.symeda.sormas.backend.region.CommunityService;
+import de.symeda.sormas.backend.region.DistrictFacadeEjb;
+import de.symeda.sormas.backend.region.DistrictService;
+import de.symeda.sormas.backend.region.RegionFacadeEjb;
+import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.util.DtoHelper;
 
 @Stateless(name = "HospitalizationFacade")
@@ -27,6 +33,12 @@ public class HospitalizationFacadeEjb implements HospitalizationFacade {
 	private PreviousHospitalizationService prevHospService;
 	@EJB
 	private CaseService caseService;
+	@EJB
+	private RegionService regionService;
+	@EJB
+	private DistrictService districtService;
+	@EJB
+	private CommunityService communityService;
 	@EJB
 	private FacilityService facilityService;
 	
@@ -102,6 +114,9 @@ public class HospitalizationFacadeEjb implements HospitalizationFacade {
 		
 		target.setAdmissionDate(source.getAdmissionDate());
 		target.setDischargeDate(source.getDischargeDate());
+		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
+		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
+		target.setCommunity(communityService.getByReferenceDto(source.getCommunity()));
 		target.setHealthFacility(facilityService.getByReferenceDto(source.getHealthFacility()));
 		target.setIsolated(source.getIsolated());
 		target.setDescription(source.getDescription());
@@ -151,6 +166,9 @@ public class HospitalizationFacadeEjb implements HospitalizationFacade {
 		
 		target.setAdmissionDate(source.getAdmissionDate());
 		target.setDischargeDate(source.getDischargeDate());
+		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));
+		target.setDistrict(DistrictFacadeEjb.toReferenceDto(source.getDistrict()));
+		target.setCommunity(CommunityFacadeEjb.toReferenceDto(source.getCommunity()));
 		target.setHealthFacility(FacilityFacadeEjb.toReferenceDto(source.getHealthFacility()));
 		target.setIsolated(source.getIsolated());
 		target.setDescription(source.getDescription());

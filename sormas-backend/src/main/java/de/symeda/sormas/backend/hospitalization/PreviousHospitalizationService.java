@@ -30,7 +30,7 @@ public class PreviousHospitalizationService extends AbstractAdoService<PreviousH
 		throw new UnsupportedOperationException();
 	}
 	
-	public PreviousHospitalization buildPreviousHospitalization(Case caze) {
+	public PreviousHospitalization buildPreviousHospitalizationFromHospitalization(Case caze) {
 		PreviousHospitalization previousHospitalization = new PreviousHospitalization();
 		previousHospitalization.setUuid(DataHelper.createUuid());
 		
@@ -48,6 +48,9 @@ public class PreviousHospitalizationService extends AbstractAdoService<PreviousH
 			previousHospitalization.setDischargeDate(new Date());
 		}
 		
+		previousHospitalization.setRegion(caze.getRegion());
+		previousHospitalization.setDistrict(caze.getDistrict());
+		previousHospitalization.setCommunity(caze.getCommunity());
 		previousHospitalization.setHealthFacility(caze.getHealthFacility());
 		previousHospitalization.setHospitalization(caze.getHospitalization());
 		previousHospitalization.setIsolated(hospitalization.getIsolated());

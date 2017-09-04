@@ -217,9 +217,9 @@ public class CaseFacadeEjb implements CaseFacade {
 		// Create a new previous hospitalization object if a new facility is set and reset the
 		// current hospitalization
 		if (!caze.getHealthFacility().getUuid().equals(facility.getUuid())) {
-			caze.getHospitalization().getPreviousHospitalizations().add(previousHospitalizationService.buildPreviousHospitalization(caze));
+			caze.getHospitalization().getPreviousHospitalizations().add(previousHospitalizationService.buildPreviousHospitalizationFromHospitalization(caze));
 			caze.getHospitalization().setHospitalizedPreviously(YesNoUnknown.YES);
-			caze.getHospitalization().setAdmissionDate(null);
+			caze.getHospitalization().setAdmissionDate(new Date());
 			caze.getHospitalization().setDischargeDate(null);
 			caze.getHospitalization().setIsolated(null);
 		}

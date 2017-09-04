@@ -48,28 +48,31 @@
             </LinearLayout>
 
             <de.symeda.sormas.app.component.SpinnerField
-                android:id="@+id/prevHosp_facilityRegion"
+                android:id="@+id/prevHosp_region"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:nextFocusForward="@+id/person_facilityDistrict"
                 android:paddingBottom="@dimen/field_padding"
-                android:paddingTop="@dimen/field_padding" />
+                android:paddingTop="@dimen/field_padding"
+                android:value="@={prevHosp.region}" />
 
             <de.symeda.sormas.app.component.SpinnerField
-                android:id="@+id/prevHosp_facilityDistrict"
+                android:id="@+id/prevHosp_district"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:nextFocusForward="@+id/person_facilityCommunity"
                 android:paddingBottom="@dimen/field_padding"
-                android:paddingTop="@dimen/field_padding" />
+                android:paddingTop="@dimen/field_padding"
+                android:value="@={prevHosp.district}" />
 
             <de.symeda.sormas.app.component.SpinnerField
-                android:id="@+id/prevHosp_facilityCommunity"
+                android:id="@+id/prevHosp_community"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:nextFocusForward="@+id/person_occupationFacility"
                 android:paddingBottom="@dimen/field_padding"
-                android:paddingTop="@dimen/field_padding" />
+                android:paddingTop="@dimen/field_padding"
+                android:value="@={prevHosp.community}" />
 
             <de.symeda.sormas.app.component.SpinnerField
                 android:id="@+id/prevHosp_healthFacility"

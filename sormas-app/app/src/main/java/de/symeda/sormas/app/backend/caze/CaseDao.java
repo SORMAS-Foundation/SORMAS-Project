@@ -7,8 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.location.Location;
-import android.location.LocationListener;
-import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.text.Html;
 import android.util.Log;
@@ -143,9 +141,9 @@ public class CaseDao extends AbstractAdoDao<Case> {
 
         // If the facility has changed, add a previous hospitalization
         if (!caze.getHealthFacility().getUuid().equals(facility.getUuid())) {
-            caze.getHospitalization().getPreviousHospitalizations().add(DatabaseHelper.getPreviousHospitalizationDao().buildPreviousHospitalization(caze));
+            caze.getHospitalization().getPreviousHospitalizations().add(DatabaseHelper.getPreviousHospitalizationDao().buildPreviousHospitalizationFromHospitalization(caze));
             caze.getHospitalization().setHospitalizedPreviously(YesNoUnknown.YES);
-            caze.getHospitalization().setAdmissionDate(null);
+            caze.getHospitalization().setAdmissionDate(new Date());
             caze.getHospitalization().setDischargeDate(null);
             caze.getHospitalization().setIsolated(null);
         }

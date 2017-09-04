@@ -20,6 +20,7 @@ import de.symeda.sormas.app.component.PropertyField;
 import de.symeda.sormas.app.databinding.CaseHospitalizationFragmentLayoutBinding;
 import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.FormTab;
+import de.symeda.sormas.app.validation.PreviousHospitalizationValidator;
 
 public class HospitalizationForm extends FormTab {
 
@@ -60,19 +61,21 @@ public class HospitalizationForm extends FormTab {
                         if (prevHosp == null) {
                             prevHosp = DatabaseHelper.getPreviousHospitalizationDao().build();
                         }
-                        PreviousHospitalizationForm previousHospitalizationForm = new PreviousHospitalizationForm();
+                        final PreviousHospitalizationForm previousHospitalizationForm = new PreviousHospitalizationForm();
                         previousHospitalizationForm.initialize(
                                 (PreviousHospitalization) prevHosp,
                                 new Consumer() {
                                     @Override
                                     public void accept(Object prevHospDialog) {
-                                        binding.hospitalizationPreviousHospitalizations.setValue(
-                                                ListField.updateList(
-                                                        binding.hospitalizationPreviousHospitalizations.getValue(),
-                                                        (PreviousHospitalization) prevHospDialog
-                                                )
-                                        );
-
+                                        if (PreviousHospitalizationValidator.validatePreviousHospitalizationData(previousHospitalizationForm.getBinding())) {
+                                            binding.hospitalizationPreviousHospitalizations.setValue(
+                                                    ListField.updateList(
+                                                            binding.hospitalizationPreviousHospitalizations.getValue(),
+                                                            (PreviousHospitalization) prevHospDialog
+                                                    )
+                                            );
+                                            previousHospitalizationForm.dismiss();
+                                        }
                                     }
                                 }, new Consumer() {
                                     @Override

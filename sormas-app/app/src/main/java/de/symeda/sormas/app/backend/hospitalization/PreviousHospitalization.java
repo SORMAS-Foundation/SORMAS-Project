@@ -16,6 +16,9 @@ import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.EmbeddedAdo;
 import de.symeda.sormas.app.backend.facility.Facility;
+import de.symeda.sormas.app.backend.region.Community;
+import de.symeda.sormas.app.backend.region.District;
+import de.symeda.sormas.app.backend.region.Region;
 
 /**
  * Created by Mate Strysewske on 22.02.2017.
@@ -37,6 +40,15 @@ public class PreviousHospitalization extends AbstractDomainObject {
 
     @DatabaseField(dataType = DataType.DATE_LONG)
     private Date dischargeDate;
+
+    @DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
+    private Region region;
+
+    @DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
+    private District district;
+
+    @DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
+    private Community community;
 
     @DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
     private Facility healthFacility;
@@ -64,6 +76,30 @@ public class PreviousHospitalization extends AbstractDomainObject {
 
     public void setDischargeDate(Date dischargeDate) {
         this.dischargeDate = dischargeDate;
+    }
+
+    public Region getRegion() {
+        return region;
+    }
+
+    public void setRegion(Region region) {
+        this.region = region;
+    }
+
+    public District getDistrict() {
+        return district;
+    }
+
+    public void setDistrict(District district) {
+        this.district = district;
+    }
+
+    public Community getCommunity() {
+        return community;
+    }
+
+    public void setCommunity(Community community) {
+        this.community = community;
     }
 
     public Facility getHealthFacility() {

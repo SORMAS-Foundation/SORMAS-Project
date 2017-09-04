@@ -15,6 +15,9 @@ import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.facility.Facility;
+import de.symeda.sormas.backend.region.Community;
+import de.symeda.sormas.backend.region.District;
+import de.symeda.sormas.backend.region.Region;
 
 @Entity(name="previoushospitalization")
 @Audited
@@ -24,6 +27,9 @@ public class PreviousHospitalization extends AbstractDomainObject {
 
 	public static final String ADMISSION_DATE = "admissionDate";
 	public static final String DISCHARGE_DATE = "dischargeDate";
+	public static final String REGION = "region";
+	public static final String DISTRICT = "district";
+	public static final String COMMUNITY = "community";
 	public static final String HEALTH_FACILIY = "healthFacility";
 	public static final String ISOLATED = "isolated";
 	public static final String DESCRIPTION = "description";
@@ -31,6 +37,9 @@ public class PreviousHospitalization extends AbstractDomainObject {
 	
 	private Date admissionDate;
 	private Date dischargeDate;
+	private Region region;
+	private District district;
+	private Community community;
 	private Facility healthFacility;
 	private YesNoUnknown isolated;
 	private String description;
@@ -50,6 +59,30 @@ public class PreviousHospitalization extends AbstractDomainObject {
 	}
 	public void setDischargeDate(Date dischargeDate) {
 		this.dischargeDate = dischargeDate;
+	}
+
+	@ManyToOne(cascade = {})
+	public Region getRegion() {
+		return region;
+	}
+	public void setRegion(Region region) {
+		this.region = region;
+	}
+	
+	@ManyToOne(cascade = {})
+	public District getDistrict() {
+		return district;
+	}
+	public void setDistrict(District district) {
+		this.district = district;
+	}
+	
+	@ManyToOne(cascade = {})
+	public Community getCommunity() {
+		return community;
+	}
+	public void setCommunity(Community community) {
+		this.community = community;
 	}
 	
 	@ManyToOne(cascade = {})

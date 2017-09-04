@@ -24,6 +24,7 @@ import de.symeda.sormas.app.component.FieldHelper;
 import de.symeda.sormas.app.component.SpinnerField;
 import de.symeda.sormas.app.databinding.PreviousHospitalizationEditFragmentLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
+import de.symeda.sormas.app.validation.PreviousHospitalizationValidator;
 
 
 public class PreviousHospitalizationForm extends AbstractFormDialogFragment<PreviousHospitalization> {
@@ -45,23 +46,26 @@ public class PreviousHospitalizationForm extends AbstractFormDialogFragment<Prev
         binding.prevHospAdmissionDate.initialize(this);
         binding.prevHospDischargeDate.initialize(this);
 
-        initFacilityFields(binding.getPrevHosp().getHealthFacility());
+        initFacilityFields(binding.getPrevHosp());
     }
 
-    private void initFacilityFields(Facility facility) {
+    private void initFacilityFields(PreviousHospitalization prevHosp) {
 
         final List emptyList = new ArrayList<>();
+        final List districtsByRegion = DataUtils.toItems(prevHosp.getRegion() != null ? DatabaseHelper.getDistrictDao().getByRegion(prevHosp.getRegion()) : DataUtils.toItems(emptyList), true);
+        final List communitiesByDistrict = DataUtils.toItems(prevHosp.getDistrict() != null ? DatabaseHelper.getCommunityDao().getByDistrict(prevHosp.getDistrict()) : DataUtils.toItems(emptyList), true);
+        final List facilitiesByCommunity = DataUtils.toItems(prevHosp.getCommunity() != null ? DatabaseHelper.getFacilityDao().getHealthFacilitiesByCommunity(prevHosp.getCommunity(), true) : DataUtils.toItems(emptyList), true);
 
-        FieldHelper.initRegionSpinnerField(binding.prevHospFacilityRegion, new AdapterView.OnItemSelectedListener() {
+        FieldHelper.initRegionSpinnerField(binding.prevHospRegion, new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Object selectedValue = binding.prevHospFacilityRegion.getValue();
-                if(binding.prevHospFacilityDistrict != null) {
+                Object selectedValue = binding.prevHospRegion.getValue();
+                if(binding.prevHospDistrict != null) {
                     List<District> districtList = emptyList;
                     if(selectedValue != null) {
                         districtList = DatabaseHelper.getDistrictDao().getByRegion((Region)selectedValue);
                     }
-                    binding.prevHospFacilityDistrict.setAdapterAndValue(binding.prevHospFacilityDistrict.getValue(), DataUtils.toItems(districtList));
+                    binding.prevHospDistrict.setAdapterAndValue(binding.prevHospDistrict.getValue(), DataUtils.toItems(districtList));
                 }
             }
             @Override
@@ -69,22 +73,16 @@ public class PreviousHospitalizationForm extends AbstractFormDialogFragment<Prev
             }
         });
 
-        List districtList = new ArrayList<>();
-        if (facility != null) {
-            binding.prevHospFacilityRegion.setValue(facility.getRegion());
-            districtList = DataUtils.toItems(DatabaseHelper.getDistrictDao().getByRegion(facility.getRegion()));
-        }
-
-        FieldHelper.initSpinnerField(binding.prevHospFacilityDistrict, districtList, new AdapterView.OnItemSelectedListener() {
+        FieldHelper.initSpinnerField(binding.prevHospDistrict, districtsByRegion, new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Object selectedValue = binding.prevHospFacilityDistrict.getValue();
-                if(binding.prevHospFacilityCommunity != null) {
+                Object selectedValue = binding.prevHospDistrict.getValue();
+                if(binding.prevHospCommunity != null) {
                     List<Community> communityList = emptyList;
                     if(selectedValue != null) {
                         communityList = DatabaseHelper.getCommunityDao().getByDistrict((District)selectedValue);
                     }
-                    binding.prevHospFacilityCommunity.setAdapterAndValue(binding.prevHospFacilityCommunity.getValue(), DataUtils.toItems(communityList));
+                    binding.prevHospCommunity.setAdapterAndValue(binding.prevHospCommunity.getValue(), DataUtils.toItems(communityList));
                 }
             }
             @Override
@@ -92,22 +90,16 @@ public class PreviousHospitalizationForm extends AbstractFormDialogFragment<Prev
             }
         });
 
-        List communityList = new ArrayList<>();
-        if(facility != null) {
-            binding.prevHospFacilityDistrict.setValue(facility.getDistrict());
-            communityList = DataUtils.toItems(DatabaseHelper.getCommunityDao().getByDistrict(facility.getDistrict()));
-        }
-
-        FieldHelper.initSpinnerField(binding.prevHospFacilityCommunity, communityList, new AdapterView.OnItemSelectedListener() {
+        FieldHelper.initSpinnerField(binding.prevHospCommunity, communitiesByDistrict, new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
                 SpinnerField spinnerField = binding.prevHospHealthFacility;
-                Object selectedValue = binding.prevHospFacilityCommunity.getValue();
+                Object selectedValue = binding.prevHospCommunity.getValue();
                 if (spinnerField != null) {
                     List<Facility> facilityList = emptyList;
                     if (selectedValue != null) {
-                        facilityList = DatabaseHelper.getFacilityDao().getHealthFacilitiesByCommunity((Community) selectedValue, false);
+                        facilityList = DatabaseHelper.getFacilityDao().getHealthFacilitiesByCommunity((Community) selectedValue, true);
                     }
                     spinnerField.setAdapterAndValue(binding.prevHospHealthFacility.getValue(), DataUtils.toItems(facilityList));
                 }
@@ -116,18 +108,13 @@ public class PreviousHospitalizationForm extends AbstractFormDialogFragment<Prev
             public void onNothingSelected(AdapterView<?> parent) {
             }
         });
+        FieldHelper.initSpinnerField(binding.prevHospHealthFacility, facilitiesByCommunity);
 
-        List facilityList = new ArrayList<>();
-        if (facility != null) {
-            binding.prevHospFacilityCommunity.setValue(facility.getCommunity());
-            facilityList = DataUtils.toItems(DatabaseHelper.getFacilityDao().getHealthFacilitiesByCommunity(facility.getCommunity(), false));
-        }
+        PreviousHospitalizationValidator.setRequiredHintsForPreviousHospitalization(binding);
+    }
 
-        FieldHelper.initSpinnerField(binding.prevHospHealthFacility, facilityList);
-
-        if (facility != null) {
-            binding.prevHospHealthFacility.setValue(facility);
-        }
+    public PreviousHospitalizationEditFragmentLayoutBinding getBinding() {
+        return binding;
     }
 
     @Override

@@ -1644,3 +1644,26 @@ UPDATE facility SET name = 'Other health facility' WHERE uuid = 'SORMAS-CONSTID-
 UPDATE facility SET name = 'Not a health facility' WHERE uuid = 'SORMAS-CONSTID-ISNONE-FACILITY';
 
 INSERT INTO schema_version (version_number, comment) VALUES (61, 'Rename "Other" and "None" health facilities');
+
+-- 2017-09-04 RDC for Previous Hospitalizations #104
+ALTER TABLE previoushospitalization ADD COLUMN region_id bigint;
+ALTER TABLE previoushospitalization ADD COLUMN district_id bigint;
+ALTER TABLE previoushospitalization ADD COLUMN community_id bigint;
+
+ALTER TABLE previoushospitalization ADD CONSTRAINT fk_previoushospitalization_region_id FOREIGN KEY (region_id) REFERENCES region (id);
+ALTER TABLE previoushospitalization ADD CONSTRAINT fk_previoushospitalization_district_id FOREIGN KEY (district_id) REFERENCES district (id);
+ALTER TABLE previoushospitalization ADD CONSTRAINT fk_previoushospitalization_community_id FOREIGN KEY (community_id) REFERENCES community (id);
+
+ALTER TABLE previoushospitalization_history ADD COLUMN region_id bigint;
+ALTER TABLE previoushospitalization_history ADD COLUMN district_id bigint;
+ALTER TABLE previoushospitalization_history ADD COLUMN community_id bigint;
+
+UPDATE previoushospitalization SET region_id = (SELECT region_id FROM facility WHERE facility.id = previoushospitalization.healthfacility_id);
+UPDATE previoushospitalization SET district_id = (SELECT district_id FROM facility WHERE facility.id = previoushospitalization.healthfacility_id);
+UPDATE previoushospitalization SET community_id = (SELECT community_id FROM facility WHERE facility.id = previoushospitalization.healthfacility_id);
+-- Set region, district and community to the values of the case for 'Other' and 'None' health facilities
+UPDATE previoushospitalization SET region_id = (SELECT region_id FROM cases WHERE cases.hospitalization_id = previoushospitalization.hospitalization_id) WHERE region_id IS NULL;
+UPDATE previoushospitalization SET district_id = (SELECT district_id FROM cases WHERE cases.hospitalization_id = previoushospitalization.hospitalization_id) WHERE district_id IS NULL;
+UPDATE previoushospitalization SET community_id = (SELECT community_id FROM cases WHERE cases.hospitalization_id = previoushospitalization.hospitalization_id) WHERE community_id IS NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (62, 'RDC for Previous Hospitalizations');

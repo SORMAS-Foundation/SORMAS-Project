@@ -72,7 +72,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// name of the database file for your application -- change to something appropriate for your app
 	private static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	private static final int DATABASE_VERSION = 102;
+	private static final int DATABASE_VERSION = 103;
 
 	private static DatabaseHelper instance = null;
 	public static void init(Context context) {
@@ -248,6 +248,21 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					currentVersion = 101;
 					getDao(Facility.class).executeRaw("UPDATE facility SET name = 'Other health facility' WHERE uuid = 'SORMAS-CONSTID-OTHERS-FACILITY'");
 					getDao(Facility.class).executeRaw("UPDATE facility SET name = 'Not a health facility' WHERE uuid = 'SORMAS-CONSTID-ISNONE-FACILITY'");
+				case 102:
+					currentVersion = 102;
+					getDao(PreviousHospitalization.class).executeRaw("ALTER TABLE previoushospitalizations ADD COLUMN region_id bigint REFERENCES region (id);");
+					getDao(PreviousHospitalization.class).executeRaw("ALTER TABLE previoushospitalizations ADD COLUMN district_id bigint REFERENCES district (id);");
+					getDao(PreviousHospitalization.class).executeRaw("ALTER TABLE previoushospitalizations ADD COLUMN community_id bigint REFERENCES community (id);");
+//					getDao(PreviousHospitalization.class).executeRaw("ALTER TABLE previoushospitalizations ADD CONSTRAINT fk_previoushospitalizations_region_id FOREIGN KEY (region_id) ");
+//					getDao(PreviousHospitalization.class).executeRaw("ALTER TABLE previoushospitalizations ADD CONSTRAINT fk_previoushospitalizations_district_id FOREIGN KEY (district_id) REFERENCES district (id);");
+//					getDao(PreviousHospitalization.class).executeRaw("ALTER TABLE previoushospitalizations ADD CONSTRAINT fk_previoushospitalizations_community_id FOREIGN KEY (community_id) REFERENCES community (id);");
+					getDao(PreviousHospitalization.class).executeRaw("UPDATE previoushospitalizations SET region_id = (SELECT region_id FROM facility WHERE facility.id = previoushospitalizations.healthfacility_id);");
+					getDao(PreviousHospitalization.class).executeRaw("UPDATE previoushospitalizations SET district_id = (SELECT district_id FROM facility WHERE facility.id = previoushospitalizations.healthfacility_id);");
+					getDao(PreviousHospitalization.class).executeRaw("UPDATE previoushospitalizations SET community_id = (SELECT community_id FROM facility WHERE facility.id = previoushospitalizations.healthfacility_id);");
+					// Set region, district and community to the values of the case for 'Other' and 'None' health facilities
+					getDao(PreviousHospitalization.class).executeRaw("UPDATE previoushospitalizations SET region_id = (SELECT region_id FROM cases WHERE cases.hospitalization_id = previoushospitalizations.hospitalization_id) WHERE region_id IS NULL;");
+					getDao(PreviousHospitalization.class).executeRaw("UPDATE previoushospitalizations SET district_id = (SELECT district_id FROM cases WHERE cases.hospitalization_id = previoushospitalizations.hospitalization_id) WHERE district_id IS NULL;");
+					getDao(PreviousHospitalization.class).executeRaw("UPDATE previoushospitalizations SET community_id = (SELECT community_id FROM cases WHERE cases.hospitalization_id = previoushospitalizations.hospitalization_id) WHERE community_id IS NULL;");
 
 					// ATTENTION: break should only be done after last version
 					break;

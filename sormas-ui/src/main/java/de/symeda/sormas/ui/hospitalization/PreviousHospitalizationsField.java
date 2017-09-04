@@ -4,10 +4,7 @@ import java.util.function.Consumer;
 
 import com.vaadin.ui.Table;
 
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
-import de.symeda.sormas.api.facility.FacilityDto;
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.caze.AbstractTableField;
@@ -49,12 +46,7 @@ public class PreviousHospitalizationsField extends AbstractTableField<PreviousHo
 			@Override
 			public Object generateCell(Table source, Object itemId, Object columnId) {
 				PreviousHospitalizationDto prevHospitalization = (PreviousHospitalizationDto) itemId;
-				FacilityReferenceDto facilityRef = prevHospitalization.getHealthFacility();
-				if (facilityRef != null) {
-					FacilityDto facilityDto = FacadeProvider.getFacilityFacade().getByUuid(facilityRef.getUuid());
-					return facilityDto.getCommunity();
-				}
-				return null;
+				return prevHospitalization.getCommunity();
 			}
 		});
 
@@ -62,12 +54,7 @@ public class PreviousHospitalizationsField extends AbstractTableField<PreviousHo
 			@Override
 			public Object generateCell(Table source, Object itemId, Object columnId) {
 				PreviousHospitalizationDto prevHospitalization = (PreviousHospitalizationDto) itemId;
-				FacilityReferenceDto facilityRef = prevHospitalization.getHealthFacility();
-				if (facilityRef != null) {
-					FacilityDto facilityDto = FacadeProvider.getFacilityFacade().getByUuid(facilityRef.getUuid());
-					return facilityDto.getDistrict();
-				}
-				return null;
+				return prevHospitalization.getDistrict();
 			}
 		});
 
