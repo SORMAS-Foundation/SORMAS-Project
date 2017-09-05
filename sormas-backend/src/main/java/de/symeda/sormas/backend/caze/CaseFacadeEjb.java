@@ -12,11 +12,13 @@ import javax.ejb.Stateless;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.task.TaskContext;
@@ -183,7 +185,20 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (currentCaze != null) {
 			currentDisease = currentCaze.getDisease();
 		}
-
+		
+		// If the case is new and the geo coordinates of the case's health facility are null, set its coordinates to the
+		// case's report coordinates, if available
+		FacilityReferenceDto facilityRef = dto.getHealthFacility();
+		Facility facility = facilityService.getByReferenceDto(facilityRef);
+		if (currentCaze == null && facility.getUuid() != FacilityDto.OTHER_FACILITY_UUID && facility.getUuid() != FacilityDto.NONE_FACILITY_UUID
+				&& (facility.getLatitude() == null || facility.getLongitude() == null)) {
+			if (dto.getReportLat() != null && dto.getReportLon() != null) {
+				facility.setLatitude(dto.getReportLat());
+				facility.setLongitude(dto.getReportLon());
+				facilityService.ensurePersisted(facility);
+			}
+		}
+				
 		Case caze = fromDto(dto);
 
 		caseService.ensurePersisted(caze);
