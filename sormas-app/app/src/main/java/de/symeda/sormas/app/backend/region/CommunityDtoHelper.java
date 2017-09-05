@@ -45,6 +45,11 @@ public class CommunityDtoHelper extends AdoDtoHelper<Community, CommunityDto> {
     }
 
     @Override
+    protected Call<List<CommunityDto>> pullByUuids(List<String> uuids) {
+        throw new UnsupportedOperationException("Entity is infrastructure");
+    }
+
+    @Override
     protected Call<Integer> pushAll(List<CommunityDto> communityDtos) {
         throw new UnsupportedOperationException("Entity is infrastructure");
     }

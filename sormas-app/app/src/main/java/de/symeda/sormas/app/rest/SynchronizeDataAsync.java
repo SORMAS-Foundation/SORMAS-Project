@@ -66,20 +66,20 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
             switch (syncMode) {
                 case ChangesOnly:
                     if (secondTry) {
-                        pullUuidsAndDeleteInvalid();
+                        pullMissingAndDeleteInvalid();
                     }
                     synchronizeChangedData();
                     break;
                 case ChangesAndInfrastructure:
                     pullInfrastructure();
                     if (secondTry) {
-                        pullUuidsAndDeleteInvalid();
+                        pullMissingAndDeleteInvalid();
                     }
                     synchronizeChangedData();
                     break;
                 case Complete:
                     pullInfrastructure();
-                    pullUuidsAndDeleteInvalid();
+                    pullMissingAndDeleteInvalid();
                     synchronizeChangedData();
                     break;
                 default:
@@ -93,17 +93,21 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
         } catch (Exception e) {
 
-            Log.e(getClass().getName(), "Error trying to synchronize data", e);
-            SormasApplication application = (SormasApplication) context.getApplicationContext();
-            Tracker tracker = application.getDefaultTracker();
-            ErrorReportingHelper.sendCaughtException(tracker, e, null, true);
-
             if (!secondTry) {
+
+                Log.e(getClass().getName(), "Error first try synchronizing data", e);
+
                 secondTry = true;
-                syncFailedMessage = DatabaseHelper.getContext().getString(R.string.sync_error);
                 doInBackground(params);
             } else {
+
+                Log.e(getClass().getName(), "Error second try synchronizing data", e);
+                SormasApplication application = (SormasApplication) context.getApplicationContext();
+                Tracker tracker = application.getDefaultTracker();
+                ErrorReportingHelper.sendCaughtException(tracker, e, null, true);
+
                 syncFailed = true;
+                syncFailedMessage = DatabaseHelper.getContext().getString(R.string.sync_error);
                 RetroProvider.disconnect();
             }
         }
@@ -161,44 +165,49 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         new UserDtoHelper().pullEntities(false);
     }
 
-    private void pullUuidsAndDeleteInvalid() throws ServerConnectionException {
+    private void pullMissingAndDeleteInvalid() throws ServerConnectionException {
         // ATTENTION: Since we are working with UUID lists we have no type safety. Look for typos!
 
+
+        Log.d(SynchronizeDataAsync.class.getSimpleName(), "pullMissingAndDeleteInvalid");
+
         // tasks
-        Call<List<String>> call = RetroProvider.getTaskFacade().pullUuids();
-        DatabaseHelper.getTaskDao().deleteInvalid(executeUuidCall(call));
-
+        List<String> taskUuids = executeUuidCall(RetroProvider.getTaskFacade().pullUuids());
+        DatabaseHelper.getTaskDao().deleteInvalid(taskUuids);
         // visits
-        call = RetroProvider.getVisitFacade().pullUuids();
-        DatabaseHelper.getVisitDao().deleteInvalid(executeUuidCall(call));
-
+        List<String> visitUuids = executeUuidCall(RetroProvider.getVisitFacade().pullUuids());
+        DatabaseHelper.getVisitDao().deleteInvalid(visitUuids);
         // contacts
-        call = RetroProvider.getContactFacade().pullUuids();
-        DatabaseHelper.getContactDao().deleteInvalid(executeUuidCall(call));
-
+        List<String> contactUuids = executeUuidCall(RetroProvider.getContactFacade().pullUuids());
+        DatabaseHelper.getContactDao().deleteInvalid(contactUuids);
         // sample tests
-        call = RetroProvider.getSampleTestFacade().pullUuids();
-        DatabaseHelper.getSampleTestDao().deleteInvalid(executeUuidCall(call));
-
+        List<String> sampleTestUuids = executeUuidCall(RetroProvider.getSampleTestFacade().pullUuids());
+        DatabaseHelper.getSampleTestDao().deleteInvalid(sampleTestUuids);
         // samples
-        call = RetroProvider.getSampleFacade().pullUuids();
-        DatabaseHelper.getSampleDao().deleteInvalid(executeUuidCall(call));
-
+        List<String> sampleUuids = executeUuidCall(RetroProvider.getSampleFacade().pullUuids());
+        DatabaseHelper.getSampleDao().deleteInvalid(sampleUuids);
         // cases
-        call = RetroProvider.getCaseFacade().pullUuids();
-        DatabaseHelper.getCaseDao().deleteInvalid(executeUuidCall(call));
-
+        List<String> caseUuids = executeUuidCall(RetroProvider.getCaseFacade().pullUuids());
+        DatabaseHelper.getCaseDao().deleteInvalid(caseUuids);
         // event participants
-        call = RetroProvider.getEventParticipantFacade().pullUuids();
-        DatabaseHelper.getEventParticipantDao().deleteInvalid(executeUuidCall(call));
-
+        List<String> eventParticipantUuids = executeUuidCall(RetroProvider.getEventParticipantFacade().pullUuids());
+        DatabaseHelper.getEventParticipantDao().deleteInvalid(eventParticipantUuids);
         // events
-        call = RetroProvider.getEventFacade().pullUuids();
-        DatabaseHelper.getEventDao().deleteInvalid(executeUuidCall(call));
-
+        List<String> eventUuids = executeUuidCall(RetroProvider.getEventFacade().pullUuids());
+        DatabaseHelper.getEventDao().deleteInvalid(eventUuids);
         // persons
-        call = RetroProvider.getPersonFacade().pullUuids();
-        DatabaseHelper.getPersonDao().deleteInvalid(executeUuidCall(call));
+        List<String> personUuids = executeUuidCall(RetroProvider.getPersonFacade().pullUuids());
+        DatabaseHelper.getPersonDao().deleteInvalid(personUuids);
+
+        new PersonDtoHelper().pullMissing(personUuids);
+        new EventDtoHelper().pullMissing(eventUuids);
+        new EventParticipantDtoHelper().pullMissing(eventParticipantUuids);
+        new CaseDtoHelper().pullMissing(caseUuids);
+        new SampleDtoHelper().pullMissing(sampleUuids);
+        new SampleTestDtoHelper().pullMissing(sampleTestUuids);
+        new ContactDtoHelper().pullMissing(contactUuids);
+        new VisitDtoHelper().pullMissing(visitUuids);
+        new TaskDtoHelper().pullMissing(taskUuids);
     }
 
     private List<String> executeUuidCall(Call<List<String>> call) throws ServerConnectionException {

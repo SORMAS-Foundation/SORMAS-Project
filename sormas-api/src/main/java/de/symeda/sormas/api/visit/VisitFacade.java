@@ -24,4 +24,6 @@ public interface VisitFacade {
 	List<VisitDto> getAllByContact(ContactReferenceDto contactRef);
 
 	List<String> getAllUuids(String userUuid);
+
+	List<VisitDto> getByUuids(List<String> uuids);
 }

@@ -34,7 +34,7 @@ public class RegionService extends AbstractAdoService<Region> {
 
 	@Override
 	protected Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Region, Region> from, User user) {
-		// A user should not directly query for this
-		throw new UnsupportedOperationException();
+		// no fitler by user needed
+		return null;
 	}
 }

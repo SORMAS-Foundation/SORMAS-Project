@@ -93,6 +93,14 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 	
 	@Override
+	public List<ContactDto> getByUuids(List<String> uuids) {
+		return contactService.getByUuids(uuids)
+				.stream()
+				.map(c -> toDto(c))
+				.collect(Collectors.toList());
+	}
+
+	@Override
 	public List<ContactDto> getFollowUpBetween(Date fromDate, Date toDate, Disease disease, String userUuid) {
 		User user = userService.getByUuid(userUuid);
 		

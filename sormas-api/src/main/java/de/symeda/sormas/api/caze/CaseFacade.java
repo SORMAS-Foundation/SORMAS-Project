@@ -15,7 +15,7 @@ public interface CaseFacade {
 
 	List<CaseDataDto> getAllCasesAfter(Date date, String userUuid);
 	
-	List<CaseDataDto> getAllCasesByDiseaseAfter(Date date, Disease disease, String userUuid);
+	List<CaseDataDto> getAllCasesByDisease(Disease disease, String userUuid);
 	
 	List<CaseDataDto> getAllCasesBetween(Date fromDate, Date toDate, Disease disease, String userUuid);
 
@@ -34,4 +34,6 @@ public interface CaseFacade {
 	List<String> getAllUuids(String userUuid);
 	
 	CaseDataDto moveCase(CaseReferenceDto caze, CommunityReferenceDto community, FacilityReferenceDto facility, String facilityDetails, UserReferenceDto surveillanceOfficer);
+
+	List<CaseDataDto> getByUuids(List<String> uuids);
 }

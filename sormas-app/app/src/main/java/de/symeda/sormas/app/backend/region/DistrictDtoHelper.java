@@ -33,6 +33,11 @@ public class DistrictDtoHelper extends AdoDtoHelper<District, DistrictDto> {
     }
 
     @Override
+    protected Call<List<DistrictDto>> pullByUuids(List<String> uuids) {
+        throw new UnsupportedOperationException("Entity is infrastructure");
+    }
+
+    @Override
     protected Call<Integer> pushAll(List<DistrictDto> districtDtos) {
         throw new UnsupportedOperationException("Entity is infrastructure");
     }

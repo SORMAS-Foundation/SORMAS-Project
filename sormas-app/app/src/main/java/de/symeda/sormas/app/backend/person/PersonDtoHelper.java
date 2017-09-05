@@ -4,6 +4,7 @@ import java.util.List;
 
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.facility.Facility;
@@ -31,6 +32,11 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
     @Override
     protected Call<List<PersonDto>> pullAllSince(long since) {
         return RetroProvider.getPersonFacade().pullAllSince(since);
+    }
+
+    @Override
+    protected Call<List<PersonDto>> pullByUuids(List<String> uuids) {
+        return RetroProvider.getPersonFacade().pullByUuids(uuids);
     }
 
     @Override

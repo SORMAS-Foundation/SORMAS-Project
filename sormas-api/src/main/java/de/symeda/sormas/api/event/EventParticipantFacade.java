@@ -18,5 +18,7 @@ public interface EventParticipantFacade {
 
 	List<String> getAllUuids(String userUuid);
 
+	List<EventParticipantDto> getByUuids(List<String> uuids);
+
 	
 }

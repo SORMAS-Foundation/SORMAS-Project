@@ -53,7 +53,7 @@ public class SampleFacadeEjb implements SampleFacade {
 	}	
 	
 	@Override
-	public List<SampleDto> getAllSamplesAfter(Date date, String userUuid) {
+	public List<SampleDto> getAllAfter(Date date, String userUuid) {
 		User user = userService.getByUuid(userUuid);
 		
 		if(user == null) {
@@ -61,10 +61,18 @@ public class SampleFacadeEjb implements SampleFacade {
 		}
 		
 		return sampleService.getAllAfter(date, user).stream()
-				.map(e -> toSampleDto(e))
+				.map(e -> toDto(e))
 				.collect(Collectors.toList());
 	}
 	
+	@Override
+	public List<SampleDto> getByUuids(List<String> uuids) {
+		return sampleService.getByUuids(uuids)
+				.stream()
+				.map(c -> toDto(c))
+				.collect(Collectors.toList());
+	}
+
 	@Override
 	public List<SampleDto> getAllByCase(CaseReferenceDto caseRef) {
 		if(caseRef == null) {
@@ -74,21 +82,21 @@ public class SampleFacadeEjb implements SampleFacade {
 		Case caze = caseService.getByUuid(caseRef.getUuid());
 		
 		return sampleService.getAllByCase(caze).stream()
-				.map(s -> toSampleDto(s))
+				.map(s -> toDto(s))
 				.collect(Collectors.toList());
 	}
 
 	@Override
 	public SampleDto getSampleByUuid(String uuid) {
-		return toSampleDto(sampleService.getByUuid(uuid));
+		return toDto(sampleService.getByUuid(uuid));
 	}
 
 	@Override
 	public SampleDto saveSample(SampleDto dto) {
-		Sample sample = fromSampleDto(dto);
+		Sample sample = fromDto(dto);
 		sampleService.ensurePersisted(sample);
 		
-		return toSampleDto(sample);
+		return toDto(sample);
 	}
 	
 	@Override
@@ -123,7 +131,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		return toReferenceDto(sampleService.getReferredFrom(sampleUuid));
 	}
 	
-	public Sample fromSampleDto(@NotNull SampleDto source) {
+	public Sample fromDto(@NotNull SampleDto source) {
 		
 		Sample target = sampleService.getByUuid(source.getUuid());
 		if(target == null) {
@@ -159,7 +167,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		return target;
 	}
 	
-	public static SampleDto toSampleDto(Sample source) {
+	public static SampleDto toDto(Sample source) {
 		if(source == null) {
 			return null;
 		}

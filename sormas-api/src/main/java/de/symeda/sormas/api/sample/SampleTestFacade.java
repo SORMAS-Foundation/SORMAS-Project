@@ -8,7 +8,7 @@ import javax.ejb.Remote;
 @Remote
 public interface SampleTestFacade {
 
-	List<SampleTestDto> getAllSampleTestsAfter(Date date, String userUuid);
+	List<SampleTestDto> getAllAfter(Date date, String userUuid);
 	
 	List<SampleTestDto> getAllBySample(SampleReferenceDto sampleRef);
 	
@@ -17,4 +17,6 @@ public interface SampleTestFacade {
 	SampleTestDto saveSampleTest(SampleTestDto dto);
 
 	List<String> getAllUuids(String userUuid);
+
+	List<SampleTestDto> getByUuids(List<String> uuids);
 }

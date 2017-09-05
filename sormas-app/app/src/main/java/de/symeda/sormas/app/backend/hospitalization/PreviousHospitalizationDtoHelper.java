@@ -38,6 +38,11 @@ public class PreviousHospitalizationDtoHelper extends AdoDtoHelper<PreviousHospi
     }
 
     @Override
+    protected Call<List<PreviousHospitalizationDto>> pullByUuids(List<String> uuids) {
+        throw new UnsupportedOperationException("Entity is embedded");
+    }
+
+    @Override
     protected Call<Integer> pushAll(List<PreviousHospitalizationDto> previousHospitalizationDtos) {
         throw new UnsupportedOperationException("Entity is embedded");
     }

@@ -14,7 +14,6 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.backend.common.AbstractAdoService;
-import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.user.User;
 
 @Stateless
@@ -34,52 +33,16 @@ public class EventParticipantService extends AbstractAdoService<EventParticipant
 		Root<EventParticipant> from = cq.from(getElementClass());
 		
 		Predicate filter = cb.equal(from.get(EventParticipant.EVENT), event);
-		
-		if(date != null) {
-			Predicate dateFilter = cb.greaterThan(from.get(AbstractDomainObject.CHANGE_DATE), date);
-			if(filter != null) {
-				filter = cb.and(filter, dateFilter);
-			} else {
-				filter = dateFilter;
-			}
+		if (date != null) {
+			filter = cb.and(filter, createDateFilter(cb, cq, from, date));
 		}
-		
-		if(filter != null) {
-			cq.where(filter);
-		}
-		
+		cq.where(filter);		
 		cq.orderBy(cb.desc(from.get(EventParticipant.CREATION_DATE)));
 		
 		List<EventParticipant> resultList = em.createQuery(cq).getResultList();
 		return resultList;
 	}
-	
-	public List<EventParticipant> getAllAfter(Date date, User user) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<EventParticipant> cq = cb.createQuery(getElementClass());
-		Root<EventParticipant> from = cq.from(getElementClass());
-		
-		Predicate filter = createUserFilter(cb, cq, from, user);
-		
-		if(date != null) {
-			Predicate dateFilter = cb.greaterThan(from.get(AbstractDomainObject.CHANGE_DATE), date);
-			if (filter != null) {
-				filter = cb.and(filter, dateFilter);
-			} else {
-				filter = dateFilter;
-			}
-		}
-		
-		if (filter != null) {
-			cq.where(filter);
-		}
-		
-		cq.orderBy(cb.desc(from.get(EventParticipant.CREATION_DATE)));
-		
-		List<EventParticipant> resultList = em.createQuery(cq).getResultList();
-		return resultList;
-	}
-	
+
 	/**
 	 * @see /sormas-backend/doc/UserDataAccess.md
 	 */
@@ -90,5 +53,4 @@ public class EventParticipantService extends AbstractAdoService<EventParticipant
 	
 		return filter;
 	}
-	
 }

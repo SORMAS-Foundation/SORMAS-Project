@@ -1,6 +1,5 @@
 package de.symeda.sormas.backend.sample;
 
-import java.util.Date;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -14,7 +13,6 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.backend.common.AbstractAdoService;
-import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.user.User;
 
 @Stateless
@@ -26,32 +24,6 @@ public class SampleTestService extends AbstractAdoService<SampleTest> {
 	
 	public SampleTestService() {
 		super(SampleTest.class);
-	}
-	
-	public List<SampleTest> getAllAfter(Date date, User user) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<SampleTest> cq = cb.createQuery(getElementClass());
-		Root<SampleTest> from = cq.from(getElementClass());
-		
-		Predicate filter = createUserFilter(cb, cq, from, user);
-		
-		if(date != null) {
-			Predicate dateFilter = cb.greaterThan(from.get(AbstractDomainObject.CHANGE_DATE), date);
-			if(filter != null) {
-				filter = cb.and(filter, dateFilter);
-			} else {
-				filter = dateFilter;
-			}
-		}
-		
-		if(filter != null) {
-			cq.where(filter);
-		}
-		
-		cq.orderBy(cb.desc(from.get(SampleTest.TEST_DATE_TIME)));
-		
-		List<SampleTest> resultList = em.createQuery(cq).getResultList();
-		return resultList;
 	}
 	
 	public List<SampleTest> getAllBySample(Sample sample) {
@@ -70,7 +42,8 @@ public class SampleTestService extends AbstractAdoService<SampleTest> {
 	
 	/**
 	 * @see /sormas-backend/doc/UserDataAccess.md
-	 */
+	 */	
+	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<SampleTest,SampleTest> sampleTestPath, User user) {
 		// whoever created the sample the sample test is associated with is allowed to access it
 		Path<Sample> samplePath = sampleTestPath.get(SampleTest.SAMPLE);
@@ -79,5 +52,4 @@ public class SampleTestService extends AbstractAdoService<SampleTest> {
 	
 		return filter;
 	}
-	
 }

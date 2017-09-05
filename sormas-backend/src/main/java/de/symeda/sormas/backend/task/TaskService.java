@@ -1,6 +1,5 @@
 package de.symeda.sormas.backend.task;
 
-import java.util.Date;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -17,7 +16,6 @@ import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
-import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.EventService;
@@ -36,28 +34,6 @@ public class TaskService extends AbstractAdoService<Task> {
 
 	public TaskService() {
 		super(Task.class);
-	}
-	
-	/**
-	 * @return ordered by priority, suggested start
-	 */
-	public List<Task> getAllAfter(Date date, User user) {
-
-		// TODO get user from session?
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Task> cq = cb.createQuery(getElementClass());
-		Root<Task> from = cq.from(getElementClass());
-
-		Predicate filter = createUserFilter(cb, cq, from, user);
-		if (date != null) {
-			filter = cb.and(filter, cb.greaterThan(from.get(AbstractDomainObject.CHANGE_DATE), date));
-		}
-		cq.where(filter);
-		cq.orderBy(cb.asc(from.get(Task.PRIORITY)), cb.asc(from.get(Task.SUGGESTED_START)), cb.asc(from.get(AbstractDomainObject.ID)));
-
-		List<Task> resultList = em.createQuery(cq).getResultList();
-		return resultList;
 	}
 	
 	/**

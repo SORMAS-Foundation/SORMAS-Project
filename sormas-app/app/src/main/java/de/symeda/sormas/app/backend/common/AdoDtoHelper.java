@@ -1,30 +1,20 @@
 package de.symeda.sormas.app.backend.common;
 
-import android.content.Intent;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.j256.ormlite.logger.Logger;
 import com.j256.ormlite.logger.LoggerFactory;
 
 import java.io.IOException;
-import java.net.ConnectException;
-import java.net.NoRouteToHostException;
-import java.net.SocketException;
-import java.net.SocketTimeoutException;
-import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-import javax.net.ssl.SSLException;
-import javax.net.ssl.SSLHandshakeException;
-
 import de.symeda.sormas.api.DataTransferObject;
 import de.symeda.sormas.api.ReferenceDto;
-import de.symeda.sormas.app.backend.synclog.SyncLogDao;
+import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.util.DataUtils;
 import retrofit2.Call;
 import retrofit2.Response;
@@ -41,6 +31,13 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
     protected abstract Class<DTO> getDtoClass();
 
     protected abstract Call<List<DTO>> pullAllSince(long since);
+
+    /**
+     * Explicitly pull missing entities.
+     * This is needed, because entities are synced based on user access rights and these might change
+     * e.g. when the district or region of a case is changed.
+     */
+    protected abstract Call<List<DTO>> pullByUuids(List<String> uuids);
 
     protected abstract Call<Integer> pushAll(List<DTO> dtos);
 
@@ -170,6 +167,25 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
         } catch (RuntimeException e) {
             Log.e(getClass().getName(), "Exception thrown when trying to push entities");
             throw new DaoException(e);
+        }
+    }
+
+
+
+    public void pullMissing(List<String> uuids) throws ServerConnectionException {
+
+        final AbstractAdoDao<ADO> dao = DatabaseHelper.getAdoDao(getAdoClass());
+        uuids = dao.filterMissing(uuids);
+
+        if (!uuids.isEmpty()) {
+            Response<List<DTO>> response;
+            try {
+                response = pullByUuids(uuids).execute();
+            } catch (IOException e) {
+                throw new ServerConnectionException(e);
+            }
+
+            handlePullResponse(false, dao, response);
         }
     }
 

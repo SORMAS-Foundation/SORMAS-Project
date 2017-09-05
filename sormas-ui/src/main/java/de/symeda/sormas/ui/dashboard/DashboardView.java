@@ -418,7 +418,7 @@ public class DashboardView extends AbstractView {
 		if (useDateFilterForMap == true) {
 			mapComponent.showMarkers(cases);
 		} else {
-			List<CaseDataDto> casesForMap = FacadeProvider.getCaseFacade().getAllCasesByDiseaseAfter(null, disease, userUuid);
+			List<CaseDataDto> casesForMap = FacadeProvider.getCaseFacade().getAllCasesByDisease(disease, userUuid);
 			mapComponent.showMarkers(casesForMap);
 		}
 	}

@@ -22,7 +22,6 @@ import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
-import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.DateHelper8;
@@ -52,34 +51,6 @@ public class ContactService extends AbstractAdoService<Contact> {
 		Root<Contact> from = cq.from(getElementClass());
 
 		cq.where(cb.equal(from.get(Contact.CAZE), caze));
-		cq.orderBy(cb.desc(from.get(Contact.REPORT_DATE_TIME)));
-
-		List<Contact> resultList = em.createQuery(cq).getResultList();
-		return resultList;
-	}
-	
-	public List<Contact> getAllAfter(Date date, User user) {
-
-		// TODO get user from session?
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Contact> cq = cb.createQuery(getElementClass());
-		Root<Contact> from = cq.from(getElementClass());
-
-		Predicate filter = createUserFilter(cb, cq, from, user);
-				
-		if (date != null) {
-			Predicate dateFilter = cb.greaterThan(from.get(AbstractDomainObject.CHANGE_DATE), date);
-			if (filter != null) {
-				filter = cb.and(filter, dateFilter);
-			} else {
-				filter = dateFilter;
-			}
-		}
-
-		if (filter != null) {
-			cq.where(filter);
-		}
 		cq.orderBy(cb.desc(from.get(Contact.REPORT_DATE_TIME)));
 
 		List<Contact> resultList = em.createQuery(cq).getResultList();
@@ -217,6 +188,7 @@ public class ContactService extends AbstractAdoService<Contact> {
 	/**
 	 * @see /sormas-backend/doc/UserDataAccess.md
 	 */
+	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Contact, Contact> contactPath, User user) {
 		
 		Predicate userFilter = caseService.createUserFilter(cb, cq, contactPath.join(Contact.CAZE, JoinType.LEFT), user);

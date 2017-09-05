@@ -45,6 +45,11 @@ public class FacilityDtoHelper extends AdoDtoHelper<Facility, FacilityDto> {
         throw new UnsupportedOperationException("Use pullAllByRegionSince");
     }
 
+    @Override
+    protected Call<List<FacilityDto>> pullByUuids(List<String> uuids) {
+        throw new UnsupportedOperationException("Entity is infrastructure");
+    }
+
     protected Call<List<FacilityDto>> pullAllByRegionSince(Region region, long since) {
         return RetroProvider.getFacilityFacade().pullAllByRegionSince(region.getUuid(), since);
     }

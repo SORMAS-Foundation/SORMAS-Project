@@ -25,4 +25,6 @@ public interface EventFacade {
 
 	List<String> getAllUuids(String userUuid);
 
+	List<EventDto> getByUuids(List<String> uuids);
+
 }

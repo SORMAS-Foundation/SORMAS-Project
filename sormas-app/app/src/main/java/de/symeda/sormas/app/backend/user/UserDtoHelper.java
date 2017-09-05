@@ -37,8 +37,12 @@ public class UserDtoHelper extends AdoDtoHelper<User, UserDto> {
     }
 
     @Override
+    protected Call<List<UserDto>> pullByUuids(List<String> uuids) {
+        throw new UnsupportedOperationException("Not relevant - all user's are pulled anyway");
+    }
+
+    @Override
     protected Call<Integer> pushAll(List<UserDto> userDtos) {
-        // TODO
         throw new UnsupportedOperationException("Can't change users in app");
     }
 

@@ -33,6 +33,11 @@ public class EpiDataTravelDtoHelper extends AdoDtoHelper<EpiDataTravel, EpiDataT
     }
 
     @Override
+    protected Call<List<EpiDataTravelDto>> pullByUuids(List<String> uuids) {
+        throw new UnsupportedOperationException("Entity is embedded");
+    }
+
+    @Override
     protected Call<Integer> pushAll(List<EpiDataTravelDto> epiDataTravelDtos) {
         throw new UnsupportedOperationException("Entity is embedded");
     }

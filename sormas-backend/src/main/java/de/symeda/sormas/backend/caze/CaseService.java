@@ -50,76 +50,13 @@ public class CaseService extends AbstractAdoService<Case> {
 		caze.setPerson(person);
 		return caze;
 	}
-	
-	public List<Case> getAllAfter(Date date, User user) {
 
+	public List<Case> getAllByDisease(Disease disease, User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Case> cq = cb.createQuery(getElementClass());
 		Root<Case> from = cq.from(getElementClass());
 
 		Predicate filter = createUserFilter(cb, cq, from, user);
-		
-		if (date != null) {
-			Predicate dateFilter = cb.greaterThan(from.get(AbstractDomainObject.CHANGE_DATE), date);
-			
-			Join<Case, Symptoms> symptoms = from.join(Case.SYMPTOMS, JoinType.LEFT);
-			dateFilter = cb.or(dateFilter, cb.greaterThan(symptoms.get(AbstractDomainObject.CHANGE_DATE), date));
-			dateFilter = cb.or(dateFilter, cb.greaterThan(symptoms.join(Symptoms.ILLLOCATION, JoinType.LEFT).get(Location.CHANGE_DATE), date));
-			
-			Join<Case, Hospitalization> hospitalization = from.join(Case.HOSPITALIZATION, JoinType.LEFT);
-			dateFilter = cb.or(dateFilter, cb.greaterThan(hospitalization.get(AbstractDomainObject.CHANGE_DATE), date));
-			
-			Join<Hospitalization, PreviousHospitalization> previousHospitalization 
-				= hospitalization.join(Hospitalization.PREVIOUS_HOSPITALIZATIONS, JoinType.LEFT);
-			dateFilter = cb.or(dateFilter, cb.greaterThan(previousHospitalization.get(AbstractDomainObject.CHANGE_DATE), date));
-			
-			Join<Case, EpiData> epiData = from.join(Case.EPI_DATA, JoinType.LEFT);
-			dateFilter = cb.or(dateFilter, cb.greaterThan(epiData.get(AbstractDomainObject.CHANGE_DATE), date));
-			
-			Join<EpiData, EpiDataTravel> epiDataTravels = epiData.join(EpiData.TRAVELS, JoinType.LEFT);
-			dateFilter = cb.or(dateFilter, cb.greaterThan(epiDataTravels.get(AbstractDomainObject.CHANGE_DATE), date));
-			
-			Join<EpiData, EpiDataBurial> epiDataBurials = epiData.join(EpiData.BURIALS, JoinType.LEFT);
-			dateFilter = cb.or(dateFilter, cb.greaterThan(epiDataBurials.get(AbstractDomainObject.CHANGE_DATE), date));
-			dateFilter = cb.or(dateFilter, cb.greaterThan(epiDataBurials.join(EpiDataBurial.BURIAL_ADDRESS, JoinType.LEFT).get(Location.CHANGE_DATE), date));
-			
-			Join<EpiData, EpiDataGathering> epiDataGatherings = epiData.join(EpiData.GATHERINGS, JoinType.LEFT);
-			dateFilter = cb.or(dateFilter, cb.greaterThan(epiDataGatherings.get(AbstractDomainObject.CHANGE_DATE), date));
-			dateFilter = cb.or(dateFilter, cb.greaterThan(epiDataGatherings.join(EpiDataGathering.GATHERING_ADDRESS, JoinType.LEFT).get(Location.CHANGE_DATE), date));
-			
-			if (filter != null) {
-				filter = cb.and(filter, dateFilter);
-			} else {
-				filter = dateFilter;
-			}
-		}
-
-		if (filter != null) {
-			cq.where(filter);
-		}
-		cq.orderBy(cb.desc(from.get(Case.REPORT_DATE)));
-		cq.distinct(true);
-
-		List<Case> resultList = em.createQuery(cq).getResultList();
-		return resultList;
-	}
-
-
-	public List<Case> getAllByDiseaseAfter(Date date, Disease disease, User user) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Case> cq = cb.createQuery(getElementClass());
-		Root<Case> from = cq.from(getElementClass());
-
-		Predicate filter = createUserFilter(cb, cq, from, user);
-		
-		if (date != null) {
-			Predicate dateFilter = createDateFilter(cb, from, date);
-			if (filter != null) {
-				filter = cb.and(filter, dateFilter);
-			} else {
-				filter = dateFilter;
-			}
-		}
 		
 		if (filter != null && disease != null) {
 			filter = cb.and(filter, cb.equal(from.get(Case.DISEASE), disease));
@@ -133,17 +70,6 @@ public class CaseService extends AbstractAdoService<Case> {
 
 		List<Case> resultList = em.createQuery(cq).getResultList();
 		return resultList;
-	}
-
-	public Predicate createDateFilter(CriteriaBuilder cb, Root<Case> from, Date date) {
-		Predicate dateFilter = cb.greaterThan(from.get(AbstractDomainObject.CHANGE_DATE), date);
-		Join<Case, Symptoms> symptoms = from.join(Case.SYMPTOMS);
-		dateFilter = cb.or(dateFilter, cb.greaterThan(symptoms.get(AbstractDomainObject.CHANGE_DATE), date));
-		Join<Case, Hospitalization> hospitalization = from.join(Case.HOSPITALIZATION);
-		dateFilter = cb.or(dateFilter, cb.greaterThan(hospitalization.get(AbstractDomainObject.CHANGE_DATE), date));
-		Join<Case, EpiData> epiData = from.join(Case.EPI_DATA);
-		dateFilter = cb.or(dateFilter, cb.greaterThan(epiData.get(AbstractDomainObject.CHANGE_DATE), date));
-		return dateFilter;
 	}
 	
 	public List<Case> getAllBetween(Date fromDate, Date toDate, Disease disease, User user) {
@@ -174,11 +100,12 @@ public class CaseService extends AbstractAdoService<Case> {
 		cq.distinct(true);
 		List<Case> resultList = em.createQuery(cq).getResultList();
 		return resultList;
-	}
+	}	
 
 	/**
 	 * @see /sormas-backend/doc/UserDataAccess.md
 	 */
+	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Case,Case> casePath, User user) {
 		// whoever created the case or is assigned to it is allowed to access it
 		Predicate filter = cb.equal(casePath.get(Case.REPORTING_USER), user);
@@ -230,7 +157,39 @@ public class CaseService extends AbstractAdoService<Case> {
 		return filter;
 	}
 	
-	 
+	@Override
+	public Predicate createDateFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Case,Case> casePath, Date date) {
+		
+		Predicate dateFilter = cb.greaterThan(casePath.get(Case.CHANGE_DATE), date);
+		
+		Join<Case, Symptoms> symptoms = casePath.join(Case.SYMPTOMS, JoinType.LEFT);
+		dateFilter = cb.or(dateFilter, cb.greaterThan(symptoms.get(AbstractDomainObject.CHANGE_DATE), date));
+		dateFilter = cb.or(dateFilter, cb.greaterThan(symptoms.join(Symptoms.ILLLOCATION, JoinType.LEFT).get(Location.CHANGE_DATE), date));
+		
+		Join<Case, Hospitalization> hospitalization = casePath.join(Case.HOSPITALIZATION, JoinType.LEFT);
+		dateFilter = cb.or(dateFilter, cb.greaterThan(hospitalization.get(AbstractDomainObject.CHANGE_DATE), date));
+		
+		Join<Hospitalization, PreviousHospitalization> previousHospitalization 
+			= hospitalization.join(Hospitalization.PREVIOUS_HOSPITALIZATIONS, JoinType.LEFT);
+		dateFilter = cb.or(dateFilter, cb.greaterThan(previousHospitalization.get(AbstractDomainObject.CHANGE_DATE), date));
+		
+		Join<Case, EpiData> epiData = casePath.join(Case.EPI_DATA, JoinType.LEFT);
+		dateFilter = cb.or(dateFilter, cb.greaterThan(epiData.get(AbstractDomainObject.CHANGE_DATE), date));
+		
+		Join<EpiData, EpiDataTravel> epiDataTravels = epiData.join(EpiData.TRAVELS, JoinType.LEFT);
+		dateFilter = cb.or(dateFilter, cb.greaterThan(epiDataTravels.get(AbstractDomainObject.CHANGE_DATE), date));
+		
+		Join<EpiData, EpiDataBurial> epiDataBurials = epiData.join(EpiData.BURIALS, JoinType.LEFT);
+		dateFilter = cb.or(dateFilter, cb.greaterThan(epiDataBurials.get(AbstractDomainObject.CHANGE_DATE), date));
+		dateFilter = cb.or(dateFilter, cb.greaterThan(epiDataBurials.join(EpiDataBurial.BURIAL_ADDRESS, JoinType.LEFT).get(Location.CHANGE_DATE), date));
+		
+		Join<EpiData, EpiDataGathering> epiDataGatherings = epiData.join(EpiData.GATHERINGS, JoinType.LEFT);
+		dateFilter = cb.or(dateFilter, cb.greaterThan(epiDataGatherings.get(AbstractDomainObject.CHANGE_DATE), date));
+		dateFilter = cb.or(dateFilter, cb.greaterThan(epiDataGatherings.join(EpiDataGathering.GATHERING_ADDRESS, JoinType.LEFT).get(Location.CHANGE_DATE), date));
+	
+		return dateFilter;
+	}
+
 	// TODO #69 create some date filter for finding the right case (this is implemented in CaseDao.java too)
 	public Case getByPersonAndDisease(Disease disease, Person person, User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();

@@ -10,6 +10,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.SecurityContext;
@@ -39,6 +40,14 @@ public class VisitResource {
 		return result;
 	}
 	
+	@GET
+	@Path("/query")
+	public List<VisitDto> getByUuids(@Context SecurityContext sc, @QueryParam("uuids") List<String> uuids) {
+
+		List<VisitDto> result = FacadeProvider.getVisitFacade().getByUuids(uuids); 
+		return result;
+	}
+		
 	@POST 
 	@Path("/push")
 	public Integer postVisits(List<VisitDto> dtos) {

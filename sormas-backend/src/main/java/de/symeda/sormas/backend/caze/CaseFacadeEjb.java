@@ -103,7 +103,15 @@ public class CaseFacadeEjb implements CaseFacade {
 			return Collections.emptyList();
 		}
 
-		return caseService.getAllAfter(date, user).stream().map(c -> toCaseDataDto(c)).collect(Collectors.toList());
+		return caseService.getAllAfter(date, user).stream().map(c -> toDto(c)).collect(Collectors.toList());
+	}
+	
+	@Override
+	public List<CaseDataDto> getByUuids(List<String> uuids) {
+		return caseService.getByUuids(uuids)
+				.stream()
+				.map(c -> toDto(c))
+				.collect(Collectors.toList());
 	}
 
 	@Override
@@ -119,14 +127,14 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
-	public List<CaseDataDto> getAllCasesByDiseaseAfter(Date date, Disease disease, String userUuid) {
+	public List<CaseDataDto> getAllCasesByDisease(Disease disease, String userUuid) {
 		User user = userService.getByUuid(userUuid);
 
 		if (user == null) {
 			return Collections.emptyList();
 		}
 
-		return caseService.getAllByDiseaseAfter(date, disease, user).stream().map(c -> toCaseDataDto(c))
+		return caseService.getAllByDisease( disease, user).stream().map(c -> toDto(c))
 				.collect(Collectors.toList());
 	}
 
@@ -138,7 +146,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			return Collections.emptyList();
 		}
 
-		return caseService.getAllBetween(fromDate, toDate, disease, user).stream().map(c -> toCaseDataDto(c))
+		return caseService.getAllBetween(fromDate, toDate, disease, user).stream().map(c -> toDto(c))
 				.collect(Collectors.toList());
 	}
 
@@ -160,7 +168,7 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	@Override
 	public CaseDataDto getCaseDataByUuid(String uuid) {
-		return toCaseDataDto(caseService.getByUuid(uuid));
+		return toDto(caseService.getByUuid(uuid));
 	}
 
 	@Override
@@ -176,7 +184,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			currentDisease = currentCaze.getDisease();
 		}
 
-		Case caze = fromCaseDataDto(dto);
+		Case caze = fromDto(dto);
 
 		caseService.ensurePersisted(caze);
 		updateCaseInvestigationProcess(caze);
@@ -189,7 +197,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			}
 		}
 
-		return toCaseDataDto(caze);
+		return toDto(caze);
 	}
 
 	@Override
@@ -197,13 +205,13 @@ public class CaseFacadeEjb implements CaseFacade {
 		Person person = personService.getByUuid(personUuid);
 		User user = userService.getByUuid(userUuid);
 
-		return toCaseDataDto(caseService.getByPersonAndDisease(disease, person, user));
+		return toDto(caseService.getByPersonAndDisease(disease, person, user));
 	}
 
 	@Override
 	public CaseDataDto moveCase(CaseReferenceDto cazeRef, CommunityReferenceDto communityDto, FacilityReferenceDto facilityDto, String facilityDetails,
 			UserReferenceDto officerDto) {
-		Case caze = fromCaseDataDto(getCaseDataByUuid(cazeRef.getUuid()));
+		Case caze = fromDto(getCaseDataByUuid(cazeRef.getUuid()));
 
 		Community community = communityService.getByUuid(communityDto.getUuid());
 		District district = community.getDistrict();
@@ -254,10 +262,10 @@ public class CaseFacadeEjb implements CaseFacade {
 			taskService.ensurePersisted(task);
 		}
 		
-		return toCaseDataDto(caze);
+		return toDto(caze);
 	}
 
-	public Case fromCaseDataDto(@NotNull CaseDataDto source) {
+	public Case fromDto(@NotNull CaseDataDto source) {
 
 		Case target = caseService.getByUuid(source.getUuid());
 		if (target == null) {
@@ -309,7 +317,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		return dto;
 	}
 
-	public static CaseDataDto toCaseDataDto(Case source) {
+	public static CaseDataDto toDto(Case source) {
 		if (source == null) {
 			return null;
 		}

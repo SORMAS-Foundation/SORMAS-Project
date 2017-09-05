@@ -14,7 +14,6 @@ import javax.persistence.criteria.Root;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.backend.common.AbstractAdoService;
-import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
@@ -80,7 +79,7 @@ public class FacilityService extends AbstractAdoService<Facility> {
 		
 		Predicate filter = cb.equal(from.get(Facility.REGION), region);
 		if (date != null) {
-			filter = cb.and(filter, cb.greaterThan(from.get(AbstractDomainObject.CHANGE_DATE), date));
+			filter = cb.and(filter, createDateFilter(cb, cq, from, date));
 		}
 		cq.where(filter);
 		// order by district, community so the app can do caching while reading the data
@@ -97,7 +96,7 @@ public class FacilityService extends AbstractAdoService<Facility> {
 		
 		Predicate filter = cb.isNull(from.get(Facility.REGION));
 		if (date != null) {
-			filter = cb.and(filter, cb.greaterThan(from.get(AbstractDomainObject.CHANGE_DATE), date));
+			filter = cb.and(filter, createDateFilter(cb, cq, from, date));
 		}
 		cq.where(filter);
 		cq.orderBy(cb.asc(from.get(Facility.NAME)));
@@ -122,7 +121,8 @@ public class FacilityService extends AbstractAdoService<Facility> {
 	@SuppressWarnings("rawtypes")
 	@Override
 	protected Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Facility, Facility> from, User user) {
-		throw new UnsupportedOperationException();
+		// no fitler by user needed
+		return null;
 	}
 	
 }

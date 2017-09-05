@@ -32,8 +32,8 @@ import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
-import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.user.UserService;
+import de.symeda.sormas.backend.util.DtoHelper;
 
 @Stateless(name = "TaskFacade")
 public class TaskFacadeEjb implements TaskFacade {
@@ -238,6 +238,14 @@ public class TaskFacadeEjb implements TaskFacade {
 				.collect(Collectors.toList());
 	}
 	
+	@Override
+	public List<TaskDto> getByUuids(List<String> uuids) {
+		return taskService.getByUuids(uuids)
+				.stream()
+				.map(c -> toDto(c))
+				.collect(Collectors.toList());
+	}
+
 	@Override
 	public List<TaskDto> getAllPendingByCase(CaseDataDto caseDataDto) {
 		if(caseDataDto == null) {

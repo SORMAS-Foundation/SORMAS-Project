@@ -35,6 +35,11 @@ public class VisitDtoHelper extends AdoDtoHelper<Visit, VisitDto> {
     }
 
     @Override
+    protected Call<List<VisitDto>> pullByUuids(List<String> uuids) {
+        return RetroProvider.getVisitFacade().pullByUuids(uuids);
+    }
+
+    @Override
     protected Call<Integer> pushAll(List<VisitDto> visitDtos) {
         return RetroProvider.getVisitFacade().pushAll(visitDtos);
     }

@@ -4,6 +4,7 @@ import java.util.List;
 
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDtoHelper;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
@@ -37,6 +38,11 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
     @Override
     protected Call<List<ContactDto>> pullAllSince(long since) {
         return RetroProvider.getContactFacade().pullAllSince(since);
+    }
+
+    @Override
+    protected Call<List<ContactDto>> pullByUuids(List<String> uuids) {
+        return RetroProvider.getContactFacade().pullByUuids(uuids);
     }
 
     @Override

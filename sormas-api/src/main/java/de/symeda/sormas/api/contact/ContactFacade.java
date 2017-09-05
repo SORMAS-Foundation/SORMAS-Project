@@ -35,4 +35,6 @@ public interface ContactFacade {
 	List<String> getAllUuids(String userUuid);
 
 	void generateContactFollowUpTasks();
+
+	List<ContactDto> getByUuids(List<String> uuids);
 }

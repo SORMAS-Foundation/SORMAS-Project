@@ -14,6 +14,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
@@ -814,6 +815,19 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
                 // delete with all embedded entities
                 deleteCascade(invalidEntity);
             }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public List<String> filterMissing(List<String> uuids) {
+        try {
+            GenericRawResults<Object[]> existingUuids = dao.queryRaw("SELECT uuid FROM " + getTableName(), new DataType[]{DataType.STRING});
+            List<String> results = new ArrayList<String>(uuids);
+            for (Object[] existingUuid : existingUuids) {
+                results.remove(existingUuid[0]);
+            }
+            return results;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

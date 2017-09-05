@@ -3,6 +3,7 @@ package de.symeda.sormas.app.backend.event;
 import java.util.List;
 
 import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -34,6 +35,11 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
     @Override
     protected Call<List<EventDto>> pullAllSince(long since) {
         return RetroProvider.getEventFacade().pullAllSince(since);
+    }
+
+    @Override
+    protected Call<List<EventDto>> pullByUuids(List<String> uuids) {
+        return RetroProvider.getEventFacade().pullByUuids(uuids);
     }
 
     @Override

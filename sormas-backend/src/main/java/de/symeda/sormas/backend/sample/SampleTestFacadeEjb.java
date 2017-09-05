@@ -13,6 +13,7 @@ import javax.validation.constraints.NotNull;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SampleTestDto;
 import de.symeda.sormas.api.sample.SampleTestFacade;
+import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.user.User;
@@ -45,7 +46,7 @@ public class SampleTestFacadeEjb implements SampleTestFacade {
 	}	
 	
 	@Override
-	public List<SampleTestDto> getAllSampleTestsAfter(Date date, String userUuid) {
+	public List<SampleTestDto> getAllAfter(Date date, String userUuid) {
 		User user = userService.getByUuid(userUuid);
 		
 		if(user == null) {
@@ -53,7 +54,15 @@ public class SampleTestFacadeEjb implements SampleTestFacade {
 		}
 		
 		return sampleTestService.getAllAfter(date, user).stream()
-				.map(e -> toSampleTestDto(e))
+				.map(e -> toDto(e))
+				.collect(Collectors.toList());
+	}
+		
+	@Override
+	public List<SampleTestDto> getByUuids(List<String> uuids) {
+		return sampleTestService.getByUuids(uuids)
+				.stream()
+				.map(c -> toDto(c))
 				.collect(Collectors.toList());
 	}
 	
@@ -66,24 +75,24 @@ public class SampleTestFacadeEjb implements SampleTestFacade {
 		Sample sample = sampleService.getByUuid(sampleRef.getUuid());
 		
 		return sampleTestService.getAllBySample(sample).stream()
-				.map(s -> toSampleTestDto(s))
+				.map(s -> toDto(s))
 				.collect(Collectors.toList());
 	}
 	
 	@Override
 	public SampleTestDto getByUuid(String uuid) {
-		return toSampleTestDto(sampleTestService.getByUuid(uuid));
+		return toDto(sampleTestService.getByUuid(uuid));
 	}
 	
 	@Override
 	public SampleTestDto saveSampleTest(SampleTestDto dto) {
-		SampleTest sampleTest = fromSampleTestDto(dto);
+		SampleTest sampleTest = fromDto(dto);
 		sampleTestService.ensurePersisted(sampleTest);
 		
-		return toSampleTestDto(sampleTest);
+		return toDto(sampleTest);
 	}
 	
-	public SampleTest fromSampleTestDto(@NotNull SampleTestDto source) {
+	public SampleTest fromDto(@NotNull SampleTestDto source) {
 		
 		SampleTest target = sampleTestService.getByUuid(source.getUuid());
 		if(target == null) {
@@ -108,7 +117,7 @@ public class SampleTestFacadeEjb implements SampleTestFacade {
 		return target;
 	}
 	
-	public SampleTestDto toSampleTestDto(SampleTest source) {
+	public SampleTestDto toDto(SampleTest source) {
 		if(source == null) {
 			return null;
 		}

@@ -1,6 +1,5 @@
 package de.symeda.sormas.backend.sample;
 
-import java.util.Date;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -18,7 +17,6 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
-import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.user.User;
 
 @Stateless
@@ -30,32 +28,6 @@ public class SampleService extends AbstractAdoService<Sample> {
 	
 	public SampleService() {
 		super(Sample.class);
-	}
-	
-	public List<Sample> getAllAfter(Date date, User user) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Sample> cq = cb.createQuery(getElementClass());
-		Root<Sample> from = cq.from(getElementClass());
-		
-		Predicate filter = createUserFilter(cb, cq, from, user);
-		
-		if(date != null) {
-			Predicate dateFilter = cb.greaterThan(from.get(AbstractDomainObject.CHANGE_DATE), date);
-			if(filter != null) {
-				filter = cb.and(filter, dateFilter);
-			} else {
-				filter = dateFilter;
-			}
-		}
-		
-		if(filter != null) {
-			cq.where(filter);
-		}
-		
-		cq.orderBy(cb.desc(from.get(Sample.REPORT_DATE_TIME)));
-		
-		List<Sample> resultList = em.createQuery(cq).getResultList();
-		return resultList;
 	}
 	
 	public List<Sample> getAllByCase(Case caze) {
@@ -114,5 +86,4 @@ public class SampleService extends AbstractAdoService<Sample> {
 		
 		return filter;
 	}
-		
 }
