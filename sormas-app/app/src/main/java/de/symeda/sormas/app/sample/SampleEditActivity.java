@@ -89,6 +89,13 @@ public class SampleEditActivity extends AbstractSormasActivity {
             if (params.containsKey(KEY_SAMPLE_UUID)) {
                 sampleUuid = params.getString(KEY_SAMPLE_UUID);
                 Sample initialEntity = DatabaseHelper.getSampleDao().queryUuid(sampleUuid);
+                // If the sample has been removed from the database in the meantime, redirect the user to the samples overview
+                if (initialEntity == null) {
+                    Intent intent = new Intent(this, SamplesActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
+
                 DatabaseHelper.getSampleDao().markAsRead(initialEntity);
             }
         }
@@ -102,6 +109,13 @@ public class SampleEditActivity extends AbstractSormasActivity {
 
         if (sampleUuid != null) {
             Sample currentEntity = DatabaseHelper.getSampleDao().queryUuid(sampleUuid);
+            // If the sample has been removed from the database in the meantime, redirect the user to the samples overview
+            if (currentEntity == null) {
+                Intent intent = new Intent(this, SamplesActivity.class);
+                startActivity(intent);
+                finish();
+            }
+
             if (currentEntity.isUnreadOrChildUnread()) {
                 // Resetting the adapter will reload the form and therefore also override any unsaved changes
                 DatabaseHelper.getSampleDao().markAsRead(currentEntity);
@@ -187,7 +201,7 @@ public class SampleEditActivity extends AbstractSormasActivity {
                     if (RetroProvider.isConnected()) {
                         SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.ChangesOnly, this, new SyncCallback() {
                             @Override
-                            public void call(boolean syncFailed) {
+                            public void call(boolean syncFailed, String syncFailedMessage) {
                                 if (syncFailed) {
                                     Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_sync_error_saved), getResources().getString(R.string.entity_sample)), Snackbar.LENGTH_LONG).show();
                                 } else {

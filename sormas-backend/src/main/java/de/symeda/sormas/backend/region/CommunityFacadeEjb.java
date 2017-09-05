@@ -32,9 +32,14 @@ public class CommunityFacadeEjb implements CommunityFacade {
 	
 	@Override
 	public List<CommunityDto> getAllAfter(Date date) {
-		return service.getAllAfter(date).stream()
+		return service.getAllAfter(date, null).stream()
 			.map(c -> toDto(c))
 			.collect(Collectors.toList());
+	}
+	
+	@Override
+	public CommunityDto getByUuid(String uuid) {
+		return toDto(service.getByUuid(uuid));
 	}
 	
 	public static CommunityReferenceDto toReferenceDto(Community entity) {

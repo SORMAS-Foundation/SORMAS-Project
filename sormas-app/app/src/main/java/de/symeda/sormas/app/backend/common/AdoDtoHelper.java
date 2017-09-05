@@ -1,15 +1,11 @@
 package de.symeda.sormas.app.backend.common;
 
-import android.content.Intent;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.j256.ormlite.logger.Logger;
 import com.j256.ormlite.logger.LoggerFactory;
 
 import java.io.IOException;
-import java.net.ConnectException;
-import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
@@ -18,7 +14,7 @@ import java.util.concurrent.Callable;
 
 import de.symeda.sormas.api.DataTransferObject;
 import de.symeda.sormas.api.ReferenceDto;
-import de.symeda.sormas.app.backend.synclog.SyncLogDao;
+import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.util.DataUtils;
 import retrofit2.Call;
 import retrofit2.Response;
@@ -31,28 +27,39 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
     private static final Logger logger = LoggerFactory.getLogger(AdoDtoHelper.class);
 
     protected abstract Class<ADO> getAdoClass();
+
     protected abstract Class<DTO> getDtoClass();
+
     protected abstract Call<List<DTO>> pullAllSince(long since);
+
+    /**
+     * Explicitly pull missing entities.
+     * This is needed, because entities are synced based on user access rights and these might change
+     * e.g. when the district or region of a case is changed.
+     */
+    protected abstract Call<List<DTO>> pullByUuids(List<String> uuids);
+
     protected abstract Call<Integer> pushAll(List<DTO> dtos);
 
     protected abstract void fillInnerFromDto(ADO ado, DTO dto);
+
     protected abstract void fillInnerFromAdo(DTO dto, ADO ado);
 
-    protected void preparePulledResult(List<DTO> result) { }
+    protected void preparePulledResult(List<DTO> result) {
+    }
 
-    public void synchronizeEntities()
-            throws DaoException, SQLException, IOException {
+    /**
+     * @return another pull needed?
+     */
+    public boolean pullAndPushEntities()
+            throws DaoException, ServerConnectionException, SynchronizationException {
 
         pullEntities(false);
 
-        boolean anotherPullNeeded = pushEntities();
-
-        if (anotherPullNeeded) {
-            pullEntities(true);
-        }
+        return pushEntities();
     }
 
-    public void pullEntities(final boolean markAsRead) throws DaoException, SQLException, IOException {
+    public void pullEntities(final boolean markAsRead) throws DaoException, ServerConnectionException {
         try {
             final AbstractAdoDao<ADO> dao = DatabaseHelper.getAdoDao(getAdoClass());
 
@@ -61,7 +68,15 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
             if (dtoCall == null) {
                 return;
             }
-            handlePullResponse(markAsRead, dao, dtoCall.execute());
+
+            Response<List<DTO>> response;
+            try {
+                response = dtoCall.execute();
+            } catch (IOException e) {
+                throw new ServerConnectionException(e);
+            }
+
+            handlePullResponse(markAsRead, dao, response);
 
         } catch (RuntimeException e) {
             Log.e(getClass().getName(), "Exception thrown when trying to pull entities");
@@ -69,9 +84,9 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
         }
     }
 
-    protected void handlePullResponse(final boolean markAsRead, final AbstractAdoDao<ADO> dao, Response<List<DTO>> response) throws IOException {
+    protected void handlePullResponse(final boolean markAsRead, final AbstractAdoDao<ADO> dao, Response<List<DTO>> response) throws ServerConnectionException {
         if (!response.isSuccessful()) {
-            Log.e(getClass().getName(), "Pulling changes from server did not work: " + response.errorBody().string());
+            throw ServerConnectionException.fromResponse(response);
         }
 
         final List<DTO> result = response.body();
@@ -98,7 +113,7 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
     /**
      * @return true: another pull is needed, because data has been changed on the server
      */
-    public boolean pushEntities() throws DaoException, IOException {
+    public boolean pushEntities() throws DaoException, ServerConnectionException, SynchronizationException {
         try {
             final AbstractAdoDao<ADO> dao = DatabaseHelper.getAdoDao(getAdoClass());
 
@@ -115,11 +130,23 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
             }
 
             Call<Integer> call = pushAll(modifiedDtos);
-            Response<Integer> response = call.execute();
+            Response<Integer> response;
+            try {
+                response = call.execute();
+            } catch (IOException e) {
+                throw new ServerConnectionException(e);
+            }
+
             if (!response.isSuccessful()) {
-                throw new ConnectException("Pushing changes to server did not work: " + response.errorBody().string());
+                String responseErrorBodyString;
+                try {
+                    responseErrorBodyString = response.errorBody().string();
+                } catch (IOException e) {
+                    responseErrorBodyString = "Exception accessing error body: " + e.getMessage();
+                }
+                throw new SynchronizationException("Pushing changes to server did not work: " + responseErrorBodyString);
             } else if (response.body() != modifiedDtos.size()) {
-                throw new ConnectException("Server responded with wrong count of changed entities: " + response.body() + " - expected: " + modifiedDtos.size());
+                throw new SynchronizationException("Server responded with wrong count of changed entities: " + response.body() + " - expected: " + modifiedDtos.size());
             }
 
             dao.callBatchTasks(new Callable<Void>() {
@@ -143,6 +170,25 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
         }
     }
 
+
+
+    public void pullMissing(List<String> uuids) throws ServerConnectionException {
+
+        final AbstractAdoDao<ADO> dao = DatabaseHelper.getAdoDao(getAdoClass());
+        uuids = dao.filterMissing(uuids);
+
+        if (!uuids.isEmpty()) {
+            Response<List<DTO>> response;
+            try {
+                response = pullByUuids(uuids).execute();
+            } catch (IOException e) {
+                throw new ServerConnectionException(e);
+            }
+
+            handlePullResponse(false, dao, response);
+        }
+    }
+
     public ADO fillOrCreateFromDto(ADO ado, DTO dto) {
         if (dto == null) {
             return null;
@@ -153,8 +199,7 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
                 ado = getAdoClass().newInstance();
                 ado.setCreationDate(dto.getCreationDate());
                 ado.setUuid(dto.getUuid());
-            }
-            else if (!ado.getUuid().equals(dto.getUuid())) {
+            } else if (!ado.getUuid().equals(dto.getUuid())) {
                 throw new RuntimeException("Existing object uuid does not match dto: " + ado.getUuid() + " vs. " + dto.getUuid());
             }
 

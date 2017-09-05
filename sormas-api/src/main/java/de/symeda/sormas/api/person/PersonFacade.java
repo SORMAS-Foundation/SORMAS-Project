@@ -30,4 +30,6 @@ public interface PersonFacade {
     PersonDto savePerson(PersonDto dto);
 
 	List<String> getAllUuids(String userUuid);
+
+	List<PersonDto> getByUuids(List<String> uuids);
 }

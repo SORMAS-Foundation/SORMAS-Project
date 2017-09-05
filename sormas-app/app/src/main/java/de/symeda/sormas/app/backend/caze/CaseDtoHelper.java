@@ -4,6 +4,7 @@ import java.util.List;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
@@ -60,6 +61,11 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
     }
 
     @Override
+    protected Call<List<CaseDataDto>> pullByUuids(List<String> uuids) {
+        return RetroProvider.getCaseFacade().pullByUuids(uuids);
+    }
+
+    @Override
     protected Call<Integer> pushAll(List<CaseDataDto> caseDataDtos) {
         return RetroProvider.getCaseFacade().pushAll(caseDataDtos);
     }
@@ -93,6 +99,9 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
         target.setMeaslesDoses(source.getMeaslesDoses());
         target.setMeaslesVaccinationInfoSource(source.getMeaslesVaccinationInfoSource());
         target.setEpidNumber(source.getEpidNumber());
+
+        target.setReportLat(source.getReportLat());
+        target.setReportLon(source.getReportLon());
     }
 
     @Override
@@ -180,6 +189,9 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
         target.setMeaslesDoses(source.getMeaslesDoses());
         target.setMeaslesVaccinationInfoSource(source.getMeaslesVaccinationInfoSource());
         target.setEpidNumber(source.getEpidNumber());
+
+        target.setReportLat(source.getReportLat());
+        target.setReportLon(source.getReportLon());
     }
 
     public static CaseReferenceDto toReferenceDto(Case ado) {

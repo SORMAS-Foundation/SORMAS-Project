@@ -2,6 +2,7 @@ package de.symeda.sormas.app;
 
 import android.app.Application;
 import android.content.Context;
+import android.location.Location;
 import android.util.Log;
 
 import com.google.android.gms.analytics.ExceptionReporter;
@@ -11,6 +12,7 @@ import com.google.android.gms.analytics.Tracker;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.task.TaskNotificationService;
+import de.symeda.sormas.app.util.LocationService;
 import de.symeda.sormas.app.util.UncaughtExceptionParser;
 
 /**

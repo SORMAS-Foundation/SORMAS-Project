@@ -5,5 +5,5 @@ package de.symeda.sormas.app.util;
  */
 
 public interface SyncCallback {
-    void call(boolean syncFailed);
+    void call(boolean syncFailed, String syncFailedMessage);
 }

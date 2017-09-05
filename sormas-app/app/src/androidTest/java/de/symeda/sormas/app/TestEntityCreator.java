@@ -10,6 +10,11 @@ import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SampleTestResultType;
 import de.symeda.sormas.api.sample.SampleTestType;
+import de.symeda.sormas.api.task.TaskContext;
+import de.symeda.sormas.api.task.TaskDto;
+import de.symeda.sormas.api.task.TaskStatus;
+import de.symeda.sormas.api.task.TaskType;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DaoException;
@@ -31,6 +36,9 @@ import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.backend.sample.SampleTest;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
+import de.symeda.sormas.app.backend.task.Task;
+import de.symeda.sormas.app.backend.task.TaskDtoHelper;
+import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.backend.visit.Visit;
 
 /**
@@ -56,10 +64,10 @@ public class TestEntityCreator {
 
     public static Case createCase() {
         Disease disease = Disease.EVD;
-        Region region = DatabaseHelper.getRegionDao().queryUuid("UTJSQN-36GGNN-OBFACR-57LYSH7I");
-        District district = DatabaseHelper.getDistrictDao().queryUuid("QL2H5V-M4SB23-VXBJ6L-GV6RKN4I");
-        Community community = DatabaseHelper.getCommunityDao().queryUuid("XWOJNR-FLCW6Q-DHYWEL-XN6BCFMI");
-        Facility facility = DatabaseHelper.getFacilityDao().queryUuid("XXYZW2-3PODTL-LMWOB6-ITYGSCCI");
+        Region region = DatabaseHelper.getRegionDao().queryUuid(TestHelper.REGION_UUID);
+        District district = DatabaseHelper.getDistrictDao().queryUuid(TestHelper.DISTRICT_UUID);
+        Community community = DatabaseHelper.getCommunityDao().queryUuid(TestHelper.COMMUNITY_UUID);
+        Facility facility = DatabaseHelper.getFacilityDao().queryUuid(TestHelper.FACILITY_UUID);
         CaseClassification caseClassification = CaseClassification.SUSPECT;
         InvestigationStatus investigationStatus = InvestigationStatus.PENDING;
 
@@ -255,6 +263,28 @@ public class TestEntityCreator {
         }
 
         return DatabaseHelper.getSampleTestDao().queryForId(sampleTest.getId());
+    }
+
+    public static Task createCaseTask(Case caze, TaskStatus taskStatus, User user) {
+        TaskDto taskDto = new TaskDto();
+        Task task = new TaskDtoHelper().fillOrCreateFromDto(null, taskDto);
+        task.setUuid(DataHelper.createUuid());
+        task.setCreationDate(new Date());
+        task.setChangeDate(new Date());
+        task.setTaskContext(TaskContext.CASE);
+        task.setTaskType(TaskType.CASE_INVESTIGATION);
+        task.setTaskStatus(taskStatus);
+        task.setCaze(caze);
+        task.setAssigneeUser(user);
+
+        try {
+            DatabaseHelper.getTaskDao().saveAndSnapshot(task);
+            DatabaseHelper.getTaskDao().accept(task);
+        } catch (DaoException e) {
+            throw new RuntimeException(e);
+        }
+
+        return DatabaseHelper.getTaskDao().queryForId(task.getId());
     }
 
 }

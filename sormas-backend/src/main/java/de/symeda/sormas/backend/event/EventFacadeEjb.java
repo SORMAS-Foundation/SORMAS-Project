@@ -56,8 +56,16 @@ public class EventFacadeEjb implements EventFacade {
 		}
 		
 		return eventService.getAllAfter(date, user).stream()
-			.map(e -> toEventDto(e))
+			.map(e -> toDto(e))
 			.collect(Collectors.toList());
+	}
+		
+	@Override
+	public List<EventDto> getByUuids(List<String> uuids) {
+		return eventService.getByUuids(uuids)
+				.stream()
+				.map(c -> toDto(c))
+				.collect(Collectors.toList());
 	}
 	
 	@Override
@@ -69,13 +77,13 @@ public class EventFacadeEjb implements EventFacade {
 		}
 		
 		return eventService.getAllBetween(fromDate, toDate, disease, user).stream()
-				.map(e -> toEventDto(e))
+				.map(e -> toDto(e))
 				.collect(Collectors.toList());
 	}
 	
 	@Override
 	public EventDto getEventByUuid(String uuid) {
-		return toEventDto(eventService.getByUuid(uuid));
+		return toDto(eventService.getByUuid(uuid));
 	}
 	
 	@Override
@@ -88,7 +96,7 @@ public class EventFacadeEjb implements EventFacade {
 		Event event = fromDto(dto);
 		eventService.ensurePersisted(event);
 		
-		return toEventDto(event);
+		return toDto(event);
 	}
 	
 	@Override
@@ -125,6 +133,9 @@ public class EventFacadeEjb implements EventFacade {
 		target.setDisease(source.getDisease());
 		target.setSurveillanceOfficer(userService.getByReferenceDto(source.getSurveillanceOfficer()));
 		target.setTypeOfPlaceText(source.getTypeOfPlaceText());
+
+		target.setReportLat(source.getReportLat());
+		target.setReportLon(source.getReportLon());
 		
 		return target;
 	}
@@ -139,7 +150,7 @@ public class EventFacadeEjb implements EventFacade {
 		return dto;
 	}
 	
-	public static EventDto toEventDto(Event source) {
+	public static EventDto toDto(Event source) {
 		if(source == null) {
 			return null;
 		}
@@ -161,6 +172,9 @@ public class EventFacadeEjb implements EventFacade {
 		target.setDisease(source.getDisease());
 		target.setSurveillanceOfficer(UserFacadeEjb.toReferenceDto(source.getSurveillanceOfficer()));
 		target.setTypeOfPlaceText(source.getTypeOfPlaceText());
+
+		target.setReportLat(source.getReportLat());
+		target.setReportLon(source.getReportLon());
 		
 		return target;
 	}

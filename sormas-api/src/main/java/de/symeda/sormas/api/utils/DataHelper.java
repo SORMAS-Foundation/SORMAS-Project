@@ -23,7 +23,15 @@ public final class DataHelper {
      * @return a equals b, where a and/or b are allowed to be null
      */
     public static boolean equal(Object a, Object b) {
-    	return a == b || (a != null && a.equals(b));
+    	boolean equal = a == b || (a != null && a.equals(b));
+    	if (a instanceof String) {
+    		equal = equal || (b == null && ((String) a).isEmpty());
+    	}
+    	if (b instanceof String) {
+    		equal = equal || (a == null && ((String) b).isEmpty());
+    	}
+    	
+    	return equal;
     }
     
 	/**

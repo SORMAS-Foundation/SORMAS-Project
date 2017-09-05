@@ -36,7 +36,7 @@ public class DistrictService extends AbstractAdoService<District> {
 	
 	@Override
 	protected Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<District, District> from, User user) {
-		// A user should not directly query for this
-		throw new UnsupportedOperationException();
+		// no fitler by user needed
+		return null;
 	}
 }

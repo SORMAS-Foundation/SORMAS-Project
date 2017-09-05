@@ -1,17 +1,18 @@
 package de.symeda.sormas.app.caze;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.databinding.DataBindingUtil;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-
+import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.Vaccination;
@@ -28,22 +29,25 @@ import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.facility.Facility;
-import de.symeda.sormas.app.backend.region.Community;
-import de.symeda.sormas.app.backend.region.District;
-import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.backend.user.User;
+import de.symeda.sormas.app.component.FacilityChangeDialogBuilder;
 import de.symeda.sormas.app.component.FieldHelper;
 import de.symeda.sormas.app.component.PropertyField;
-import de.symeda.sormas.app.component.SpinnerField;
 import de.symeda.sormas.app.databinding.CaseDataFragmentLayoutBinding;
-import de.symeda.sormas.app.util.DataUtils;
+import de.symeda.sormas.app.databinding.CaseSymptomsFragmentLayoutBinding;
+import de.symeda.sormas.app.databinding.PersonEditFragmentLayoutBinding;
+import de.symeda.sormas.app.person.PersonEditForm;
+import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.FormTab;
-import de.symeda.sormas.app.validation.CaseValidator;
+import de.symeda.sormas.app.validation.PersonValidator;
+import de.symeda.sormas.app.validation.SymptomsValidator;
 
 /**
  * Created by Stefan Szczesny on 27.07.2016.
  */
 public class CaseEditDataForm extends FormTab {
+
+    public static final String NONE_HEALTH_FACILITY_DETAILS = "noneHealthFacilityDetails";
 
     private CaseDataFragmentLayoutBinding binding;
 
@@ -55,80 +59,6 @@ public class CaseEditDataForm extends FormTab {
         final CaseDao caseDao = DatabaseHelper.getCaseDao();
         Case caze = caseDao.queryUuid(caseUuid);
         binding.setCaze(caze);
-
-        final List emptyList = new ArrayList<>();
-        final List districtsByRegion = DataUtils.toItems(caze.getRegion() != null ? DatabaseHelper.getDistrictDao().getByRegion(caze.getRegion()) : DataUtils.toItems(emptyList), true);
-        final List communitiesByDistrict = DataUtils.toItems(caze.getDistrict() != null ? DatabaseHelper.getCommunityDao().getByDistrict(caze.getDistrict()) : DataUtils.toItems(emptyList), true);
-        final List facilitiesByCommunity = DataUtils.toItems(caze.getCommunity() != null ? DatabaseHelper.getFacilityDao().getHealthFacilitiesByCommunity(caze.getCommunity(), true) : DataUtils.toItems(emptyList), true);
-
-        FieldHelper.initRegionSpinnerField(binding.caseDataRegion, new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                SpinnerField districtSpinner = binding.caseDataDistrict;
-                Object selectedValue = binding.caseDataRegion.getValue();
-                if(districtSpinner != null) {
-                    List<District> districtList = emptyList;
-                    if(selectedValue != null) {
-                        districtList = DatabaseHelper.getDistrictDao().getByRegion((Region)selectedValue);
-                    }
-                    districtSpinner.setAdapterAndValue(binding.caseDataDistrict.getValue(), DataUtils.toItems(districtList));
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-
-        FieldHelper.initSpinnerField(binding.caseDataDistrict, districtsByRegion, new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                SpinnerField spinnerField = binding.caseDataCommunity;
-                Object selectedValue = binding.caseDataDistrict.getValue();
-                if(spinnerField != null) {
-                    List<Community> communityList = emptyList;
-                    if(selectedValue != null) {
-                        communityList = DatabaseHelper.getCommunityDao().getByDistrict((District)selectedValue);
-                        String epidNumber = binding.caseDataEpidNumber.getValue();
-                        if (epidNumber.trim().isEmpty() || !epidNumber.matches(DataHelper.getEpidNumberRegexp())) {
-                            Calendar calendar = Calendar.getInstance();
-                            String year = String.valueOf(calendar.get(Calendar.YEAR)).substring(2);
-                            binding.caseDataEpidNumber.setValue(CaseDataDto.COUNTRY_EPID_CODE + "-" + ((Region) binding.caseDataRegion.getValue()).getEpidCode()
-                                    + "-" + ((District) binding.caseDataDistrict.getValue()).getEpidCode() + "-" + year + "-");
-                        }
-                    }
-                    spinnerField.setAdapterAndValue(binding.caseDataCommunity.getValue(), DataUtils.toItems(communityList));
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-
-        FieldHelper.initSpinnerField(binding.caseDataCommunity, communitiesByDistrict, new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                SpinnerField spinnerField = binding.caseDataHealthFacility;
-                Object selectedValue = binding.caseDataCommunity.getValue();
-                if(spinnerField != null) {
-                    List<Facility> facilityList = emptyList;
-                    if(selectedValue != null) {
-                        facilityList = DatabaseHelper.getFacilityDao().getHealthFacilitiesByCommunity((Community)selectedValue, true);
-                    }
-                    spinnerField.setAdapterAndValue(binding.caseDataHealthFacility.getValue(), DataUtils.toItems(facilityList));
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-
-        FieldHelper.initSpinnerField(binding.caseDataHealthFacility, facilitiesByCommunity);
 
         // case classification can only be edited by officers, not informants; additionally,
         // the "Not yet classified" classification is hidden from informants
@@ -169,12 +99,22 @@ public class CaseEditDataForm extends FormTab {
         binding.caseDataHealthFacility.addValueChangedListener(new PropertyField.ValueChangeListener() {
             @Override
             public void onChange(PropertyField field) {
-                Facility selectedFacility = (Facility) binding.caseDataHealthFacility.getValue();
-                if (selectedFacility != null && selectedFacility.getUuid().equals(FacilityDto.OTHER_FACILITY_UUID)) {
-                    binding.caseDataFacilityDetails.setVisibility(View.VISIBLE);
+                Facility selectedFacility = binding.getCaze().getHealthFacility();
+                if (selectedFacility != null) {
+                    boolean otherHealthFacility = selectedFacility.getUuid().equals(FacilityDto.OTHER_FACILITY_UUID);
+                    boolean noneHealthFacility = selectedFacility.getUuid().equals(FacilityDto.NONE_FACILITY_UUID);
+
+                    if (otherHealthFacility) {
+                        binding.caseDataFacilityDetails.setVisibility(View.VISIBLE);
+                        binding.caseDataFacilityDetails.setCaption(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY_DETAILS));
+                    } else if (noneHealthFacility) {
+                        binding.caseDataFacilityDetails.setVisibility(View.VISIBLE);
+                        binding.caseDataFacilityDetails.setCaption(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, NONE_HEALTH_FACILITY_DETAILS));
+                    } else {
+                        binding.caseDataFacilityDetails.setVisibility(View.GONE);
+                    }
                 } else {
                     binding.caseDataFacilityDetails.setVisibility(View.GONE);
-                    binding.caseDataFacilityDetails.setValue(null);
                 }
             }
         });
@@ -197,7 +137,11 @@ public class CaseEditDataForm extends FormTab {
             binding.caseDataEpidNumber.setEnabled(false);
         }
 
-        CaseValidator.setRequiredHintsForCaseData(binding);
+        if (ConfigProvider.getUser().getUserRole() == UserRole.CASE_OFFICER || ConfigProvider.getUser().getUserRole() == UserRole.SURVEILLANCE_OFFICER) {
+            binding.caseDataMove.setVisibility(View.VISIBLE);
+            binding.caseDataMove.setPaintFlags(binding.caseDataMove.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+            binding.caseDataMove.setTextColor(ContextCompat.getColor(getContext(), R.color.colorPrimary));
+        }
 
         return binding.getRoot();
     }

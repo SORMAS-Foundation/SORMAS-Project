@@ -93,6 +93,11 @@ public class Task extends AbstractDomainObject {
 	@Column(length=512)
 	private String assigneeReply;
 
+	@Column(columnDefinition = "float8")
+	private Float closedLat;
+
+	@Column(columnDefinition = "float8")
+	private Float closedLon;
 
 	public TaskContext getTaskContext() {
 		return taskContext;
@@ -213,6 +218,22 @@ public class Task extends AbstractDomainObject {
 	}
 	public void setSuggestedStart(Date suggestedStart) {
 		this.suggestedStart = suggestedStart;
+	}
+
+	public Float getClosedLat() {
+		return closedLat;
+	}
+
+	public void setClosedLat(Float closedLat) {
+		this.closedLat = closedLat;
+	}
+
+	public Float getClosedLon() {
+		return closedLon;
+	}
+
+	public void setClosedLon(Float closedLon) {
+		this.closedLon = closedLon;
 	}
 
 	@Override

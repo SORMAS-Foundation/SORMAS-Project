@@ -32,7 +32,7 @@ public class DistrictFacadeEjb implements DistrictFacade {
 	
 	@Override
 	public List<DistrictDto> getAllAfter(Date date) {
-		return service.getAllAfter(date).stream()
+		return service.getAllAfter(date, null).stream()
 			.map(c -> toDto(c))
 			.collect(Collectors.toList());
 	}

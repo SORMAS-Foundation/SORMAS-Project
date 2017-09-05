@@ -9,9 +9,6 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 
 public class VisitDto extends VisitReferenceDto {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -441664767075414789L;
 
 	public static final String I18N_PREFIX = "Visit";
@@ -23,6 +20,8 @@ public class VisitDto extends VisitReferenceDto {
 	public static final String VISIT_STATUS = "visitStatus";
 	public static final String VISIT_REMARKS = "visitRemarks";
 	public static final String SYMPTOMS = "symptoms";
+	public static final String REPORT_LAT = "reportLat";
+	public static final String REPORT_LON = "reportLon";
 	
 	private PersonReferenceDto person;
 	private Disease disease;
@@ -31,6 +30,8 @@ public class VisitDto extends VisitReferenceDto {
 	private VisitStatus visitStatus;
 	private String visitRemarks;
 	private SymptomsDto symptoms;
+	private Float reportLat;
+	private Float reportLon;
 	
 	public Date getVisitDateTime() {
 		return visitDateTime;
@@ -73,6 +74,18 @@ public class VisitDto extends VisitReferenceDto {
 	}
 	public void setVisitUser(UserReferenceDto visitUser) {
 		this.visitUser = visitUser;
+	}
+	public Float getReportLat() {
+		return reportLat;
+	}
+	public void setReportLat(Float reportLat) {
+		this.reportLat = reportLat;
+	}
+	public Float getReportLon() {
+		return reportLon;
+	}
+	public void setReportLon(Float reportLon) {
+		this.reportLon = reportLon;
 	}
 	
 }

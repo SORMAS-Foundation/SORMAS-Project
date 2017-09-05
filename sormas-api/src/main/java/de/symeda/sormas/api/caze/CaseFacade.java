@@ -6,6 +6,8 @@ import java.util.List;
 import javax.ejb.Remote;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 
 @Remote
@@ -13,7 +15,7 @@ public interface CaseFacade {
 
 	List<CaseDataDto> getAllCasesAfter(Date date, String userUuid);
 	
-	List<CaseDataDto> getAllCasesByDiseaseAfter(Date date, Disease disease, String userUuid);
+	List<CaseDataDto> getAllCasesByDisease(Disease disease, String userUuid);
 	
 	List<CaseDataDto> getAllCasesBetween(Date fromDate, Date toDate, Disease disease, String userUuid);
 
@@ -30,4 +32,8 @@ public interface CaseFacade {
 	CaseDataDto getByPersonAndDisease(String personUuid, Disease disease, String userUuid);
 
 	List<String> getAllUuids(String userUuid);
+	
+	CaseDataDto moveCase(CaseReferenceDto caze, CommunityReferenceDto community, FacilityReferenceDto facility, String facilityDetails, UserReferenceDto surveillanceOfficer);
+
+	List<CaseDataDto> getByUuids(List<String> uuids);
 }

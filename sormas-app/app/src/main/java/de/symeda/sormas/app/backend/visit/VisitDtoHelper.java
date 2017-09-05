@@ -35,6 +35,11 @@ public class VisitDtoHelper extends AdoDtoHelper<Visit, VisitDto> {
     }
 
     @Override
+    protected Call<List<VisitDto>> pullByUuids(List<String> uuids) {
+        return RetroProvider.getVisitFacade().pullByUuids(uuids);
+    }
+
+    @Override
     protected Call<Integer> pushAll(List<VisitDto> visitDtos) {
         return RetroProvider.getVisitFacade().pushAll(visitDtos);
     }
@@ -51,6 +56,9 @@ public class VisitDtoHelper extends AdoDtoHelper<Visit, VisitDto> {
         target.setVisitRemarks(source.getVisitRemarks());
         target.setVisitStatus(source.getVisitStatus());
         target.setVisitUser(DatabaseHelper.getUserDao().getByReferenceDto(source.getVisitUser()));
+
+        target.setReportLat(source.getReportLat());
+        target.setReportLon(source.getReportLon());
     }
 
     @Override
@@ -83,5 +91,8 @@ public class VisitDtoHelper extends AdoDtoHelper<Visit, VisitDto> {
         } else {
             dto.setVisitUser(null);
         }
+
+        dto.setReportLat(ado.getReportLat());
+        dto.setReportLon(ado.getReportLon());
     }
 }

@@ -18,6 +18,7 @@ import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.common.ServerConnectionException;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.rest.RetroProvider;
 import retrofit2.Call;
@@ -44,6 +45,11 @@ public class CommunityDtoHelper extends AdoDtoHelper<Community, CommunityDto> {
     }
 
     @Override
+    protected Call<List<CommunityDto>> pullByUuids(List<String> uuids) {
+        throw new UnsupportedOperationException("Entity is infrastructure");
+    }
+
+    @Override
     protected Call<Integer> pushAll(List<CommunityDto> communityDtos) {
         throw new UnsupportedOperationException("Entity is infrastructure");
     }
@@ -55,9 +61,15 @@ public class CommunityDtoHelper extends AdoDtoHelper<Community, CommunityDto> {
     }
 
     @Override
-    protected void handlePullResponse(final boolean markAsRead, final AbstractAdoDao<Community> dao, Response<List<CommunityDto>> response) throws IOException {
+    protected void handlePullResponse(final boolean markAsRead, final AbstractAdoDao<Community> dao, Response<List<CommunityDto>> response) throws ServerConnectionException {
         if (!response.isSuccessful()) {
-            throw new ConnectException("Pulling changes from server did not work: " + response.errorBody().string());
+            String responseErrorBodyString;
+            try {
+                responseErrorBodyString = response.errorBody().string();
+            } catch (IOException e) {
+                responseErrorBodyString = "Exception accessing error body: " + e.getMessage();
+            }
+            throw new ServerConnectionException(responseErrorBodyString);
         }
 
         final List<CommunityDto> result = response.body();

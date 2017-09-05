@@ -1,6 +1,7 @@
 package de.symeda.sormas.app.visit;
 
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.ViewPager;
@@ -22,6 +23,7 @@ import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.visit.Visit;
 import de.symeda.sormas.app.backend.visit.VisitDao;
+import de.symeda.sormas.app.caze.CasesActivity;
 import de.symeda.sormas.app.caze.SymptomsEditForm;
 import de.symeda.sormas.app.AbstractEditTabActivity;
 import de.symeda.sormas.app.component.HelpDialog;
@@ -73,6 +75,13 @@ public class VisitEditActivity extends AbstractEditTabActivity {
         if (params != null && params.containsKey(Visit.UUID)) {
             visitUuid = params.getString(Visit.UUID);
             Visit initialEntity = DatabaseHelper.getVisitDao().queryUuid(visitUuid);
+            // If the visit (and thus probably the contact/case) has been removed from the database in the meantime, redirect the user to the cases overview
+            if (initialEntity == null) {
+                Intent intent = new Intent(this, CasesActivity.class);
+                startActivity(intent);
+                finish();
+            }
+
             DatabaseHelper.getVisitDao().markAsRead(initialEntity);
         }
         if (params != null && params.containsKey(KEY_PAGE)) {
@@ -91,6 +100,13 @@ public class VisitEditActivity extends AbstractEditTabActivity {
 
         if (visitUuid != null) {
             Visit currentEntity = DatabaseHelper.getVisitDao().queryUuid(visitUuid);
+            // If the visit (and thus probably the contact/case) has been removed from the database in the meantime, redirect the user to the cases overview
+            if (currentEntity == null) {
+                Intent intent = new Intent(this, CasesActivity.class);
+                startActivity(intent);
+                finish();
+            }
+
             if (currentEntity.isUnreadOrChildUnread()) {
                 // Resetting the adapter will reload the form and therefore also override any unsaved changes
                 DatabaseHelper.getVisitDao().markAsRead(currentEntity);
@@ -208,7 +224,7 @@ public class VisitEditActivity extends AbstractEditTabActivity {
                     if (RetroProvider.isConnected()) {
                         SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.ChangesOnly, this, new SyncCallback() {
                             @Override
-                            public void call(boolean syncFailed) {
+                            public void call(boolean syncFailed, String syncFailedMessage) {
                                 if (syncFailed) {
                                     Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_sync_error_saved), getResources().getString(R.string.entity_visit)), Snackbar.LENGTH_LONG).show();
                                 } else {

@@ -79,7 +79,7 @@ public class SettingsForm extends FormTab {
             DatabaseHelper.clearTables(true);
             SynchronizeDataAsync.call(SynchronizeDataAsync.SyncMode.ChangesAndInfrastructure, getContext(), new SyncCallback() {
                 @Override
-                public void call(boolean syncFailed) {
+                public void call(boolean syncFailed, String syncFailedMessage) {
                     SettingsForm.this.onResume();
                     binding.configProgressBar.setVisibility(View.GONE);
                 }

@@ -17,6 +17,7 @@ import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.common.ServerConnectionException;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
@@ -44,6 +45,11 @@ public class FacilityDtoHelper extends AdoDtoHelper<Facility, FacilityDto> {
         throw new UnsupportedOperationException("Use pullAllByRegionSince");
     }
 
+    @Override
+    protected Call<List<FacilityDto>> pullByUuids(List<String> uuids) {
+        throw new UnsupportedOperationException("Entity is infrastructure");
+    }
+
     protected Call<List<FacilityDto>> pullAllByRegionSince(Region region, long since) {
         return RetroProvider.getFacilityFacade().pullAllByRegionSince(region.getUuid(), since);
     }
@@ -65,7 +71,7 @@ public class FacilityDtoHelper extends AdoDtoHelper<Facility, FacilityDto> {
      * @throws IOException
      */
     @Override
-    public void pullEntities(final boolean markAsRead) throws DaoException, SQLException, IOException {
+    public void pullEntities(final boolean markAsRead) throws DaoException, ServerConnectionException {
         try {
             final AbstractAdoDao<Facility> dao = DatabaseHelper.getAdoDao(getAdoClass());
 
@@ -91,13 +97,21 @@ public class FacilityDtoHelper extends AdoDtoHelper<Facility, FacilityDto> {
         } catch (RuntimeException e) {
             Log.e(getClass().getName(), "Exception thrown when trying to pull entities");
             throw new DaoException(e);
+        } catch (IOException e) {
+            throw new ServerConnectionException(e);
         }
     }
 
     @Override
-    protected void handlePullResponse(final boolean markAsRead, final AbstractAdoDao<Facility> dao, Response<List<FacilityDto>> response) throws IOException {
+    protected void handlePullResponse(final boolean markAsRead, final AbstractAdoDao<Facility> dao, Response<List<FacilityDto>> response) {
         if (!response.isSuccessful()) {
-            throw new ConnectException("Pulling changes from server did not work: " + response.errorBody().string());
+            String responseErrorBodyString;
+            try {
+                responseErrorBodyString = response.errorBody().string();
+            } catch (IOException e) {
+                responseErrorBodyString = "Exception accessing error body: " + e.getMessage();
+            }
+            Log.e(getClass().getName(), "Pulling changes from server did not work: " + responseErrorBodyString);
         }
 
         final List<FacilityDto> result = response.body();

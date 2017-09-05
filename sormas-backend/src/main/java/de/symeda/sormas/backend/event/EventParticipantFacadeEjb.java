@@ -45,7 +45,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		}
 		
 		return eventParticipantService.getAllByEventAfter(date, event).stream()
-				.map(e -> toEventParticipantDto(e))
+				.map(e -> toDto(e))
 				.collect(Collectors.toList());
 	}
 	
@@ -71,21 +71,28 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		}
 		
 		return eventParticipantService.getAllAfter(date, user).stream()
-			.map(c -> toEventParticipantDto(c))
+			.map(c -> toDto(c))
 			.collect(Collectors.toList());
 	}
-	
-	
+		
+	@Override
+	public List<EventParticipantDto> getByUuids(List<String> uuids) {
+		return eventParticipantService.getByUuids(uuids)
+				.stream()
+				.map(c -> toDto(c))
+				.collect(Collectors.toList());
+	}
+
 	@Override
 	public EventParticipantDto getEventParticipantByUuid(String uuid) {
-		return toEventParticipantDto(eventParticipantService.getByUuid(uuid));
+		return toDto(eventParticipantService.getByUuid(uuid));
 	}
 	
 	@Override
 	public EventParticipantDto saveEventParticipant(EventParticipantDto dto) {
 		EventParticipant entity = fromDto(dto);
 		eventParticipantService.ensurePersisted(entity);
-		return toEventParticipantDto(entity);
+		return toDto(entity);
 	}
 	
 	public EventParticipant fromDto(@NotNull EventParticipantDto source) {
@@ -117,7 +124,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		return dto;
 	}
 	
-	public static EventParticipantDto toEventParticipantDto(EventParticipant source) {
+	public static EventParticipantDto toDto(EventParticipant source) {
 		if(source == null) {
 			return null;
 		}

@@ -4,6 +4,9 @@ import java.util.Date;
 
 import de.symeda.sormas.api.DataTransferObject;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.region.CommunityReferenceDto;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
 public class PreviousHospitalizationDto extends DataTransferObject {
@@ -14,12 +17,18 @@ public class PreviousHospitalizationDto extends DataTransferObject {
 	
 	public static final String ADMISSION_DATE = "admissionDate";
 	public static final String DISCHARGE_DATE = "dischargeDate";
+	public static final String REGION = "region";
+	public static final String DISTRICT = "district";
+	public static final String COMMUNITY = "community";
 	public static final String HEALTH_FACILITY = "healthFacility";
 	public static final String ISOLATED = "isolated";
 	public static final String DESCRIPTION = "description";
 	
 	private Date admissionDate;
 	private Date dischargeDate;
+	private RegionReferenceDto region;
+	private DistrictReferenceDto district;
+	private CommunityReferenceDto community;
 	private FacilityReferenceDto healthFacility;
 	private YesNoUnknown isolated;
 	private String description;
@@ -36,6 +45,27 @@ public class PreviousHospitalizationDto extends DataTransferObject {
 	}
 	public void setDischargeDate(Date dischargeDate) {
 		this.dischargeDate = dischargeDate;
+	}
+	
+	public RegionReferenceDto getRegion() {
+		return region;
+	}
+	public void setRegion(RegionReferenceDto region) {
+		this.region = region;
+	}
+	
+	public DistrictReferenceDto getDistrict() {
+		return district;
+	}
+	public void setDistrict(DistrictReferenceDto district) {
+		this.district = district;
+	}
+	
+	public CommunityReferenceDto getCommunity() {
+		return community;
+	}
+	public void setCommunity(CommunityReferenceDto community) {
+		this.community = community;
 	}
 	
 	public FacilityReferenceDto getHealthFacility() {
@@ -58,5 +88,5 @@ public class PreviousHospitalizationDto extends DataTransferObject {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	
+
 }

@@ -3,6 +3,11 @@ package de.symeda.sormas.app.util;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
+import android.view.ViewGroup;
+
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.utils.Diseases;
+import de.symeda.sormas.app.component.PropertyField;
 
 public abstract class FormTab extends DialogFragment implements FormFragment {
 
@@ -17,6 +22,20 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
         } else {
             v.setVisibility(View.INVISIBLE);
             v.clearFocus();
+        }
+    }
+
+    protected void setVisibilityByDisease(Class<?> fieldsDtoClazz, Disease disease, ViewGroup viewGroup) {
+        for (int i=0; i<viewGroup.getChildCount(); i++){
+            View child = viewGroup.getChildAt(i);
+            if (child instanceof PropertyField) {
+                String propertyId = ((PropertyField)child).getPropertyId();
+                boolean definedOrMissing = Diseases.DiseasesConfiguration.isDefinedOrMissing(fieldsDtoClazz, propertyId, disease);
+                child.setVisibility(definedOrMissing ? View.VISIBLE : View.GONE);
+            }
+            else if (child instanceof ViewGroup) {
+                setVisibilityByDisease(fieldsDtoClazz, disease, (ViewGroup)child);
+            }
         }
     }
 

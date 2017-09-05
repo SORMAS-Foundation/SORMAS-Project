@@ -57,6 +57,12 @@ public class Visit extends AbstractDomainObject {
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
 	private Symptoms symptoms;
+
+	@Column(columnDefinition = "float8")
+	private Float reportLat;
+
+	@Column(columnDefinition = "float8")
+	private Float reportLon;
 	
 	public Person getPerson() {
 		return person;
@@ -109,6 +115,22 @@ public class Visit extends AbstractDomainObject {
 	}
 	public void setSymptoms(Symptoms symptoms) {
 		this.symptoms = symptoms;
+	}
+
+	public Float getReportLat() {
+		return reportLat;
+	}
+
+	public void setReportLat(Float reportLat) {
+		this.reportLat = reportLat;
+	}
+
+	public Float getReportLon() {
+		return reportLon;
+	}
+
+	public void setReportLon(Float reportLon) {
+		this.reportLon = reportLon;
 	}
 
 	@Override

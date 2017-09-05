@@ -28,34 +28,6 @@ public class EventService extends AbstractAdoService<Event> {
 		super(Event.class);
 	}
 	
-	public List<Event> getAllAfter(Date date, User user) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Event> cq = cb.createQuery(getElementClass());
-		Root<Event> from = cq.from(getElementClass());
-		
-		Predicate filter = createUserFilter(cb, cq, from, user);
-
-		if (date != null) {
-			Predicate dateFilter = cb.greaterThan(from.get(AbstractDomainObject.CHANGE_DATE), date);
-			Join<Event, Location> address = from.join(Event.EVENT_LOCATION);
-			dateFilter = cb.or(dateFilter, cb.greaterThan(address.get(AbstractDomainObject.CHANGE_DATE), date));
-			if(filter != null) {
-				filter = cb.and(filter, dateFilter);
-			} else {
-				filter = dateFilter;
-			}
-		}
-		
-		if (filter != null) {
-			cq.where(filter);
-		}
-		
-		cq.orderBy(cb.desc(from.get(Event.REPORT_DATE_TIME)));
-		
-		List<Event> resultList = em.createQuery(cq).getResultList();
-		return resultList;
-	}
-	
 	public List<Event> getAllBetween(Date fromDate, Date toDate, Disease disease, User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Event> cq = cb.createQuery(getElementClass());
@@ -127,5 +99,15 @@ public class EventService extends AbstractAdoService<Event> {
 		
 		return filter;
 	}
-
+	
+	@Override
+	public Predicate createDateFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Event, Event> eventPath, Date date) {
+		
+		Predicate dateFilter = cb.greaterThan(eventPath.get(AbstractDomainObject.CHANGE_DATE), date);
+		
+		Join<Event, Location> address = eventPath.join(Event.EVENT_LOCATION);
+		dateFilter = cb.or(dateFilter, cb.greaterThan(address.get(AbstractDomainObject.CHANGE_DATE), date));
+		
+		return dateFilter;
+	}
 }

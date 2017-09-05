@@ -40,6 +40,10 @@ public abstract class PropertyField<T> extends LinearLayout {
         return I18nProperties.getFieldCaption(captionPropertyId);
     }
 
+    public void setCaption(String caption) {
+        this.caption.setText(caption);
+    }
+
     public String getDescription() {
         String captionPropertyId = getFieldCaptionPropertyId();
         return I18nProperties.getFieldDescription(captionPropertyId);

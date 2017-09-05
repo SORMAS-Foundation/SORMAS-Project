@@ -5,6 +5,8 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,6 +39,7 @@ import de.symeda.sormas.app.caze.CaseEditActivity;
 import de.symeda.sormas.app.contact.ContactEditActivity;
 import de.symeda.sormas.app.databinding.TaskFragmentLayoutBinding;
 import de.symeda.sormas.app.event.EventEditActivity;
+import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.FormTab;
 
@@ -90,14 +93,19 @@ public class TaskForm extends FormTab {
                 public void onClick(View v) {
                     if(!binding.taskAssigneeReply.getValue().isEmpty()) {
                         try {
+                            taskDao.saveAndSnapshot(binding.getTask());
                             taskDao.changeTaskStatus(task, TaskStatus.NOT_EXECUTABLE);
-                            ((AbstractSormasActivity)getActivity()).synchronizeChangedData();
+                            ((AbstractSormasActivity)getActivity()).synchronizeChangedData(new Callback() {
+                                @Override
+                                public void call() {
+                                    getActivity().finish();
+                                }
+                            });
                         } catch (DaoException e) {
                             Log.e(getClass().getName(), "Error while trying to update task status", e);
                             Snackbar.make(getActivity().findViewById(R.id.base_layout), R.string.snackbar_task_status, Snackbar.LENGTH_LONG).show();
                             ErrorReportingHelper.sendCaughtException(tracker, e, task, true);
                         }
-                        reloadFragment();
                     } else {
                         Snackbar.make(getActivity().findViewById(R.id.base_layout), R.string.snackbar_task_reply, Snackbar.LENGTH_LONG).show();
                     }
@@ -115,14 +123,19 @@ public class TaskForm extends FormTab {
                 @Override
                 public void onClick(View v) {
                     try {
+                        taskDao.saveAndSnapshot(binding.getTask());
                         taskDao.changeTaskStatus(task, TaskStatus.DONE);
-                        ((AbstractSormasActivity)getActivity()).synchronizeChangedData();
+                        ((AbstractSormasActivity)getActivity()).synchronizeChangedData(new Callback() {
+                            @Override
+                            public void call() {
+                                getActivity().finish();
+                            }
+                        });
                     } catch (DaoException e) {
                         Log.e(getClass().getName(), "Error while trying to update task status", e);
                         Snackbar.make(getActivity().findViewById(R.id.base_layout), R.string.snackbar_task_status, Snackbar.LENGTH_LONG).show();
                         ErrorReportingHelper.sendCaughtException(tracker, e, task, true);
                     }
-                    reloadFragment();
                 }
             });
         }

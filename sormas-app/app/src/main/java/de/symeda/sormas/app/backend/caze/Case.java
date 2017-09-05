@@ -119,6 +119,12 @@ public class Case extends AbstractDomainObject {
 	@Column
 	private Long contactOfficer_id;
 
+	@Column(columnDefinition = "float8")
+	private Float reportLat;
+
+	@Column(columnDefinition = "float8")
+	private Float reportLon;
+
 	public Person getPerson() {
 		return person;
 	}
@@ -286,6 +292,22 @@ public class Case extends AbstractDomainObject {
 
 	public void setEpiData(EpiData epiData) {
 		this.epiData = epiData;
+	}
+
+	public Float getReportLat() {
+		return reportLat;
+	}
+
+	public void setReportLat(Float reportLat) {
+		this.reportLat = reportLat;
+	}
+
+	public Float getReportLon() {
+		return reportLon;
+	}
+
+	public void setReportLon(Float reportLon) {
+		this.reportLon = reportLon;
 	}
 
 	@Override

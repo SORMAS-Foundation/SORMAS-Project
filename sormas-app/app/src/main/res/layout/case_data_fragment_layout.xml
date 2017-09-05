@@ -39,7 +39,6 @@
                 android:layout_height="wrap_content"
                 android:paddingTop="@dimen/field_padding"
                 android:paddingBottom="@dimen/field_padding"
-                android:nextFocusForward="@+id/caseData_region"
                 android:value="@={caze.epidNumber}"/>
 
             <LinearLayout
@@ -98,9 +97,8 @@
                     android:paddingTop="@dimen/field_padding"
                     android:paddingBottom="@dimen/field_padding"
                     app:enum="@{caze.investigationStatus}"/>
+
             </LinearLayout>
-
-
 
             <LinearLayout
                 android:orientation="horizontal"
@@ -127,45 +125,55 @@
 
             </LinearLayout>
 
-            <de.symeda.sormas.app.component.SpinnerField
+            <de.symeda.sormas.app.component.LabelField
                 android:id="@+id/caseData_region"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingTop="@dimen/field_padding"
                 android:paddingBottom="@dimen/field_padding"
-                android:value="@={caze.region}"/>
+                app:region="@{caze.region}"/>
 
-            <de.symeda.sormas.app.component.SpinnerField
+            <de.symeda.sormas.app.component.LabelField
                 android:id="@+id/caseData_district"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingTop="@dimen/field_padding"
                 android:paddingBottom="@dimen/field_padding"
-                android:value="@={caze.district}"/>
+                app:district="@{caze.district}"/>
 
-            <de.symeda.sormas.app.component.SpinnerField
+            <de.symeda.sormas.app.component.LabelField
                 android:id="@+id/caseData_community"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingTop="@dimen/field_padding"
                 android:paddingBottom="@dimen/field_padding"
-                android:value="@={caze.community}"/>
+                app:community="@{caze.community}"/>
 
-            <de.symeda.sormas.app.component.SpinnerField
+            <de.symeda.sormas.app.component.LabelField
                 android:id="@+id/caseData_healthFacility"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingTop="@dimen/field_padding"
                 android:paddingBottom="@dimen/field_padding"
-                android:value="@={caze.healthFacility}"/>
+                app:facility="@{caze.healthFacility}"/>
 
-            <de.symeda.sormas.app.component.TextField
+            <de.symeda.sormas.app.component.LabelField
                 android:id="@+id/caseData_facilityDetails"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingTop="@dimen/field_padding"
                 android:paddingBottom="@dimen/field_padding"
                 android:value="@={caze.healthFacilityDetails}"/>
+
+            <TextView
+                android:id="@+id/caseData_move"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="10dp"
+                android:paddingBottom="@dimen/field_padding"
+                android:text="@string/case_move"
+                android:onClick="moveCase"
+                android:visibility="gone"/>
 
             <!-- ============= CASE_ADMINISTRATION =============
             <TextView

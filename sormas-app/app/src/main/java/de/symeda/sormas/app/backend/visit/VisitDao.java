@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.backend.visit;
 
+import android.location.Location;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -14,9 +15,11 @@ import java.util.List;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
+import de.symeda.sormas.app.util.LocationService;
 //import kotlin.NotImplementedError;
 
 public class VisitDao extends AbstractAdoDao<Visit> {
@@ -104,6 +107,24 @@ public class VisitDao extends AbstractAdoDao<Visit> {
         visit.setDisease(contact.getCaze().getDisease());
         visit.setVisitDateTime(new Date());
         return visit;
+    }
+
+    @Override
+    public Visit saveAndSnapshot(final Visit visit) throws DaoException {
+        // If a new visit is created, use the last available location to update its report latitude and longitude
+        if (visit.getId() == null) {
+            LocationService locationService = LocationService.getLocationService(DatabaseHelper.getContext());
+            Location location = locationService.getLocation();
+            if (location != null) {
+                // Use the geo-coordinates of the current location object if it's not older than 15 minutes
+                if (new Date().getTime() <= location.getTime() + (1000 * 60 * 15)) {
+                    visit.setReportLat((float) location.getLatitude());
+                    visit.setReportLon((float) location.getLongitude());
+                }
+            }
+        }
+
+        return super.saveAndSnapshot(visit);
     }
 
 }

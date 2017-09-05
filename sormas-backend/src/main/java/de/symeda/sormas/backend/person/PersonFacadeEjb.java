@@ -110,6 +110,14 @@ public class PersonFacadeEjb implements PersonFacade {
 			.collect(Collectors.toList());
 		return result;
 	}
+			
+	@Override
+	public List<PersonDto> getByUuids(List<String> uuids) {
+		return personService.getByUuids(uuids)
+				.stream()
+				.map(c -> toDto(c))
+				.collect(Collectors.toList());
+	}
 	
 	@Override
 	public List<PersonDto> getDeathsBetween(Date fromDate, Date toDate, Disease disease, String uuid) {

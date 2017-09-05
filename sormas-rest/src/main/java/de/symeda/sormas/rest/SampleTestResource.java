@@ -10,6 +10,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.SecurityContext;
@@ -17,6 +18,7 @@ import javax.ws.rs.core.SecurityContext;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.sample.SampleTestDto;
 import de.symeda.sormas.api.sample.SampleTestFacade;
+import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 
 @Path("/sampletests")
@@ -30,8 +32,16 @@ public class SampleTestResource {
 	public List<SampleTestDto> getAllSampleTests(@Context SecurityContext sc, @PathParam("since") long since) {
 
 		UserReferenceDto userDto = FacadeProvider.getUserFacade().getByUserNameAsReference(sc.getUserPrincipal().getName());
-		List<SampleTestDto> sampleTests = FacadeProvider.getSampleTestFacade().getAllSampleTestsAfter(new Date(since), userDto.getUuid());
+		List<SampleTestDto> sampleTests = FacadeProvider.getSampleTestFacade().getAllAfter(new Date(since), userDto.getUuid());
 		return sampleTests;
+	}
+	
+	@GET
+	@Path("/query")
+	public List<SampleTestDto> getByUuids(@Context SecurityContext sc, @QueryParam("uuids") List<String> uuids) {
+
+		List<SampleTestDto> result = FacadeProvider.getSampleTestFacade().getByUuids(uuids); 
+		return result;
 	}
 	
 	@POST

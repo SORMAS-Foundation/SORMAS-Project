@@ -132,44 +132,47 @@ public class TaskGrid extends Grid implements ItemClickListener {
         
         setSelectionMode(SelectionMode.NONE);        
 		addItemClickListener(this);
-
-        reload();
 	}
 	
 	public TaskGrid(TaskContext context, ReferenceDto entityRef) {
 		this();
 		removeColumn(TaskDto.CONTEXT_REFERENCE);
-		filterTaskStatus(null);
+		filterTaskStatus(null, false);
 		this.taskContext = context;
 		this.entityReference = entityRef;
-		reload();
 	}
 	
-    public void filterAssignee(UserReferenceDto userDto) {
+    public void filterAssignee(UserReferenceDto userDto, boolean reload) {
 		getContainer().removeContainerFilters(TaskDto.ASSIGNEE_USER);
 		if (userDto != null) {
 			Filter filter = new Equal(TaskDto.ASSIGNEE_USER, userDto);  
 	        getContainer().addContainerFilter(filter);
 		}
-    	reload();
+		if (reload) {
+			reload();
+		}
 	}
 
-    public void filterExcludeAssignee(UserReferenceDto userDto) {
+    public void filterExcludeAssignee(UserReferenceDto userDto, boolean reload) {
 		getContainer().removeContainerFilters(TaskDto.ASSIGNEE_USER);
 		if (userDto != null) {
 	    	Filter filter = new Not(new Equal(TaskDto.ASSIGNEE_USER, userDto));  
 	        getContainer().addContainerFilter(filter);
 		}
-    	reload();
+		if (reload) {
+			reload();
+		}
 	}
 
-	public void filterTaskStatus(TaskStatus statusToFilter) {
+	public void filterTaskStatus(TaskStatus statusToFilter, boolean reload) {
     	getContainer().removeContainerFilters(TaskDto.TASK_STATUS);
     	if (statusToFilter != null) {
     		Filter filter = new Equal(TaskDto.TASK_STATUS, statusToFilter);  
 	        getContainer().addContainerFilter(filter);
     	}
-    	reload();
+		if (reload) {
+			reload();
+		}
     }
 
     @SuppressWarnings("unchecked")

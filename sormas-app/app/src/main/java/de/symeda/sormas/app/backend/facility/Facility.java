@@ -12,6 +12,8 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.ManyToOne;
 
+import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.region.Community;
@@ -118,6 +120,13 @@ public class Facility extends AbstractDomainObject {
 
 	@Override
 	public String toString() {
+		if (getUuid().equals(FacilityDto.OTHER_FACILITY_UUID)) {
+			return I18nProperties.getPrefixFieldCaption(FacilityDto.I18N_PREFIX, FacilityDto.OTHER_FACILITY);
+		}
+		if (getUuid().equals(FacilityDto.NONE_FACILITY_UUID)) {
+			return I18nProperties.getPrefixFieldCaption(FacilityDto.I18N_PREFIX, FacilityDto.NO_FACILITY);
+		}
+
 		StringBuilder caption = new StringBuilder();
 		caption.append(name);
 		if (community != null) {

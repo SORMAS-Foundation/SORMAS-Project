@@ -13,6 +13,7 @@ import javax.validation.constraints.NotNull;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
+import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitFacade;
 import de.symeda.sormas.api.visit.VisitReferenceDto;
@@ -67,6 +68,14 @@ public class VisitFacadeEjb implements VisitFacade {
 		return visitService.getAllAfter(date, user).stream()
 			.map(c -> toDto(c))
 			.collect(Collectors.toList());
+	}
+	
+	@Override
+	public List<VisitDto> getByUuids(List<String> uuids) {
+		return visitService.getByUuids(uuids)
+				.stream()
+				.map(c -> toDto(c))
+				.collect(Collectors.toList());
 	}
 	
 	@Override
@@ -127,6 +136,9 @@ public class VisitFacadeEjb implements VisitFacade {
 		target.setVisitRemarks(source.getVisitRemarks());
 		target.setVisitStatus(source.getVisitStatus());
 		target.setVisitUser(userService.getByReferenceDto(source.getVisitUser()));
+
+		target.setReportLat(source.getReportLat());
+		target.setReportLon(source.getReportLon());
 		
 		return target;
 	}
@@ -154,6 +166,9 @@ public class VisitFacadeEjb implements VisitFacade {
 		target.setVisitRemarks(source.getVisitRemarks());
 		target.setVisitStatus(source.getVisitStatus());
 		target.setVisitUser(UserFacadeEjb.toReferenceDto(source.getVisitUser()));
+
+		target.setReportLat(source.getReportLat());
+		target.setReportLon(source.getReportLon());
 		
 		return target;
 	}

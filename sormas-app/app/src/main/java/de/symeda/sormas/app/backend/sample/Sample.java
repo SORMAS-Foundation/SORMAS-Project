@@ -68,9 +68,6 @@ public class Sample extends AbstractDomainObject {
     @DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3, canBeNull = false)
     private Facility lab;
 
-    @DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
-    private Facility otherLab;
-
     @DatabaseField(dataType = DataType.DATE_LONG)
     private Date shipmentDate;
 
@@ -106,6 +103,9 @@ public class Sample extends AbstractDomainObject {
 
     @DatabaseField(defaultValue = "", canBeNull = false)
     private String shipmentStatus;
+
+    @DatabaseField(foreign = true)
+    private Facility otherLab;
 
     public Case getAssociatedCase() {
         return associatedCase;
@@ -177,14 +177,6 @@ public class Sample extends AbstractDomainObject {
 
     public void setLab(Facility lab) {
         this.lab = lab;
-    }
-
-    public Facility getOtherLab() {
-        return otherLab;
-    }
-
-    public void setOtherLab(Facility otherLab) {
-        this.otherLab = otherLab;
     }
 
     public Date getShipmentDate() {

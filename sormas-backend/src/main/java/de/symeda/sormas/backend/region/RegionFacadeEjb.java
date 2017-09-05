@@ -27,7 +27,7 @@ public class RegionFacadeEjb implements RegionFacade {
 	
 	@Override
 	public List<RegionDto> getAllAfter(Date date) {
-		return service.getAllAfter(date).stream()
+		return service.getAllAfter(date, null).stream()
 			.map(c -> toDto(c))
 			.collect(Collectors.toList());
 	}

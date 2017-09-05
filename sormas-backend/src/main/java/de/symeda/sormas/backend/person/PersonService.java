@@ -100,6 +100,7 @@ public class PersonService extends AbstractAdoService<Person> {
 				.collect(Collectors.toList());
 	}
 	
+	@Override
 	public List<Person> getAllAfter(Date date, User user) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -111,12 +112,8 @@ public class PersonService extends AbstractAdoService<Person> {
 		Predicate lgaFilter = cb.equal(address.get(Location.DISTRICT), user.getDistrict());
 		// date range
 		if (date != null) {
-			Predicate dateFilter = createDateFilter(cb, personsRoot, date);
-			if (lgaFilter != null) {
-				lgaFilter = cb.and(lgaFilter, dateFilter);
-			} else {
-				lgaFilter = dateFilter;
-			}
+			Predicate dateFilter = createDateFilter(cb, personsQuery, personsRoot, date);
+			lgaFilter = cb.and(lgaFilter, dateFilter);
 		}
 		personsQuery.where(lgaFilter);
 		List<Person> lgaResultList = em.createQuery(personsQuery).getResultList();
@@ -129,12 +126,8 @@ public class PersonService extends AbstractAdoService<Person> {
 		Predicate casePersonsFilter = caseService.createUserFilter(cb, casePersonsQuery, casePersonsRoot, user);
 		// date range
 		if (date != null) {
-			Predicate dateFilter = createDateFilter(cb, casePersonsSelect, date);
-			if (casePersonsFilter != null) {
-				casePersonsFilter = cb.and(casePersonsFilter, dateFilter);
-			} else {
-				casePersonsFilter = dateFilter;
-			}
+			Predicate dateFilter = createDateFilter(cb, casePersonsQuery, casePersonsSelect, date);
+			casePersonsFilter = cb.and(casePersonsFilter, dateFilter);
 		}
 		casePersonsQuery.where(casePersonsFilter);
 		casePersonsQuery.distinct(true);
@@ -148,12 +141,8 @@ public class PersonService extends AbstractAdoService<Person> {
 		Predicate contactPersonsFilter = contactService.createUserFilter(cb, contactPersonsQuery, contactPersonsRoot, user);
 		// date range
 		if (date != null) {
-			Predicate dateFilter = createDateFilter(cb, contactPersonsSelect, date);
-			if (contactPersonsFilter != null) {
-				contactPersonsFilter = cb.and(contactPersonsFilter, dateFilter);
-			} else {
-				contactPersonsFilter = dateFilter;
-			}
+			Predicate dateFilter = createDateFilter(cb, contactPersonsQuery, contactPersonsSelect, date);
+			contactPersonsFilter = cb.and(contactPersonsFilter, dateFilter);
 		}
 		contactPersonsQuery.where(contactPersonsFilter);
 		contactPersonsQuery.distinct(true);
@@ -167,12 +156,8 @@ public class PersonService extends AbstractAdoService<Person> {
 		Predicate eventPersonsFilter = eventParticipantService.createUserFilter(cb, eventPersonsQuery, eventPersonsRoot, user);
 		// date range
 		if (date != null) {
-			Predicate dateFilter = createDateFilter(cb, eventPersonsSelect, date);
-			if (eventPersonsFilter != null) {
-				eventPersonsFilter = cb.and(eventPersonsFilter, dateFilter);
-			} else {
-				eventPersonsFilter = dateFilter;
-			}
+			Predicate dateFilter = createDateFilter(cb, eventPersonsQuery, eventPersonsSelect, date);
+			eventPersonsFilter = cb.and(eventPersonsFilter, dateFilter);
 		}
 		eventPersonsQuery.where(eventPersonsFilter);
 		eventPersonsQuery.distinct(true);
@@ -181,15 +166,8 @@ public class PersonService extends AbstractAdoService<Person> {
 		return Stream.of(lgaResultList, casePersonsResultList, contactPersonsResultList, eventPersonsResultList)
 				.flatMap(List<Person>::stream)
 				.distinct()
-				.sorted(Comparator.comparing(Person::getId))
+				.sorted(Comparator.comparing(Person::getChangeDate))
 				.collect(Collectors.toList());
-	}
-	
-	public Predicate createDateFilter(CriteriaBuilder cb, From<Person, Person> from, Date date) {
-		Predicate dateFilter = cb.greaterThan(from.get(AbstractDomainObject.CHANGE_DATE), date);
-		Join<Person, Location> address = from.join(Person.ADDRESS);
-		dateFilter = cb.or(dateFilter, cb.greaterThan(address.get(AbstractDomainObject.CHANGE_DATE), date));
-		return dateFilter;
 	}
 	
 	public List<Person> getDeathsBetween(Date fromDate, Date toDate, Disease disease, User user) {
@@ -236,5 +214,13 @@ public class PersonService extends AbstractAdoService<Person> {
 	protected Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Person, Person> from, User user) {
 		// getAllUuids and getAllAfter have custom implementations
 		throw new UnsupportedOperationException();
+	}
+	
+	@Override
+	public Predicate createDateFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Person, Person> from, Date date) {
+		Predicate dateFilter = cb.greaterThan(from.get(AbstractDomainObject.CHANGE_DATE), date);
+		Join<Person, Location> address = from.join(Person.ADDRESS);
+		dateFilter = cb.or(dateFilter, cb.greaterThan(address.get(AbstractDomainObject.CHANGE_DATE), date));
+		return dateFilter;
 	}
 }

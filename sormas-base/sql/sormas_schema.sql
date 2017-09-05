@@ -1605,3 +1605,72 @@ ALTER TABLE samples_history DROP COLUMN shipmentstatus;
 ALTER TABLE cases_history DROP COLUMN contactofficer_id;
 
 INSERT INTO schema_version (version_number, comment) VALUES (57, 'Replace ShipmentStatus with shipped and received booleans');
+
+-- 2017-08-16 Add GEO tags to cases, contacts, events, visits and tasks #86
+ALTER TABLE cases ADD COLUMN reportlat double precision;
+ALTER TABLE cases ADD COLUMN reportlon double precision;
+ALTER TABLE contact ADD COLUMN reportlat double precision;
+ALTER TABLE contact ADD COLUMN reportlon double precision;
+ALTER TABLE events ADD COLUMN reportlat double precision;
+ALTER TABLE events ADD COLUMN reportlon double precision;
+ALTER TABLE visit ADD COLUMN reportlat double precision;
+ALTER TABLE visit ADD COLUMN reportlon double precision;
+ALTER TABLE task ADD COLUMN closedlat double precision;
+ALTER TABLE task ADD COLUMN closedlon double precision;
+
+INSERT INTO schema_version (version_number, comment) VALUES (58, 'Add GEO tags to cases, contacts, events, visits and tasks');
+
+-- 2017-08-16 Add GEO tags to cases, contacts, events, visits and tasks #86
+ALTER TABLE cases_history ADD COLUMN reportlat double precision;
+ALTER TABLE cases_history ADD COLUMN reportlon double precision;
+ALTER TABLE contact_history ADD COLUMN reportlat double precision;
+ALTER TABLE contact_history ADD COLUMN reportlon double precision;
+ALTER TABLE events_history ADD COLUMN reportlat double precision;
+ALTER TABLE events_history ADD COLUMN reportlon double precision;
+ALTER TABLE visit_history ADD COLUMN reportlat double precision;
+ALTER TABLE visit_history ADD COLUMN reportlon double precision;
+ALTER TABLE task_history ADD COLUMN closedlat double precision;
+ALTER TABLE task_history ADD COLUMN closedlon double precision;
+
+INSERT INTO schema_version (version_number, comment) VALUES (59, 'Add GEO tags to history tables of cases, contacts, events, visits and tasks');
+
+-- 2017-08-28 Follow-up comment #70
+ALTER TABLE contact ADD COLUMN followUpComment varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (60, 'Follow-up comment #70');
+
+-- 2017-08-31 Rename 'Other' and 'None' health facilities #261
+UPDATE facility SET name = 'Other health facility' WHERE uuid = 'SORMAS-CONSTID-OTHERS-FACILITY';
+UPDATE facility SET name = 'Not a health facility' WHERE uuid = 'SORMAS-CONSTID-ISNONE-FACILITY';
+
+INSERT INTO schema_version (version_number, comment) VALUES (61, 'Rename "Other" and "None" health facilities');
+
+-- 2017-09-04 RDC for Previous Hospitalizations #104
+ALTER TABLE previoushospitalization ADD COLUMN region_id bigint;
+ALTER TABLE previoushospitalization ADD COLUMN district_id bigint;
+ALTER TABLE previoushospitalization ADD COLUMN community_id bigint;
+
+ALTER TABLE previoushospitalization ADD CONSTRAINT fk_previoushospitalization_region_id FOREIGN KEY (region_id) REFERENCES region (id);
+ALTER TABLE previoushospitalization ADD CONSTRAINT fk_previoushospitalization_district_id FOREIGN KEY (district_id) REFERENCES district (id);
+ALTER TABLE previoushospitalization ADD CONSTRAINT fk_previoushospitalization_community_id FOREIGN KEY (community_id) REFERENCES community (id);
+
+ALTER TABLE previoushospitalization_history ADD COLUMN region_id bigint;
+ALTER TABLE previoushospitalization_history ADD COLUMN district_id bigint;
+ALTER TABLE previoushospitalization_history ADD COLUMN community_id bigint;
+
+UPDATE previoushospitalization SET region_id = (SELECT region_id FROM facility WHERE facility.id = previoushospitalization.healthfacility_id);
+UPDATE previoushospitalization SET district_id = (SELECT district_id FROM facility WHERE facility.id = previoushospitalization.healthfacility_id);
+UPDATE previoushospitalization SET community_id = (SELECT community_id FROM facility WHERE facility.id = previoushospitalization.healthfacility_id);
+-- Set region, district and community to the values of the case for 'Other' and 'None' health facilities
+UPDATE previoushospitalization SET region_id = (SELECT region_id FROM cases WHERE cases.hospitalization_id = previoushospitalization.hospitalization_id) WHERE region_id IS NULL;
+UPDATE previoushospitalization SET district_id = (SELECT district_id FROM cases WHERE cases.hospitalization_id = previoushospitalization.hospitalization_id) WHERE district_id IS NULL;
+UPDATE previoushospitalization SET community_id = (SELECT community_id FROM cases WHERE cases.hospitalization_id = previoushospitalization.hospitalization_id) WHERE community_id IS NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (62, 'RDC for Previous Hospitalizations');
+
+-- 2017-09-05 Generic names for 'Other' and 'None' facilities #261
+UPDATE facility SET name = 'OTHER_FACILITY' WHERE uuid = 'SORMAS-CONSTID-OTHERS-FACILITY';
+UPDATE facility SET name = 'NO_FACILITY' WHERE uuid = 'SORMAS-CONSTID-ISNONE-FACILITY';
+UPDATE public.facility SET changedate=now();
+
+INSERT INTO schema_version (version_number, comment) VALUES (63, 'Generic names for Other and None facilities');

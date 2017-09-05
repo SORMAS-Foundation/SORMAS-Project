@@ -4,6 +4,7 @@ import java.util.List;
 
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
+import de.symeda.sormas.api.sample.SampleTestDto;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDtoHelper;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
@@ -37,6 +38,11 @@ public class SampleDtoHelper extends AdoDtoHelper<Sample, SampleDto> {
     }
 
     @Override
+    protected Call<List<SampleDto>> pullByUuids(List<String> uuids) {
+        return RetroProvider.getSampleFacade().pullByUuids(uuids);
+    }
+
+    @Override
     protected Call<Integer> pushAll(List<SampleDto> sampleDtos) {
         return RetroProvider.getSampleFacade().pushAll(sampleDtos);
     }
@@ -50,7 +56,6 @@ public class SampleDtoHelper extends AdoDtoHelper<Sample, SampleDto> {
         target.setReportDateTime(source.getReportDateTime());
 
         target.setLab(DatabaseHelper.getFacilityDao().getByReferenceDto(source.getLab()));
-        target.setOtherLab(DatabaseHelper.getFacilityDao().getByReferenceDto(source.getOtherLab()));
 
         target.setSampleCode(source.getSampleCode());
         target.setLabSampleID(source.getLabSampleID());
@@ -91,13 +96,6 @@ public class SampleDtoHelper extends AdoDtoHelper<Sample, SampleDto> {
             dto.setLab(FacilityDtoHelper.toReferenceDto(lab));
         } else {
             dto.setLab(null);
-        }
-
-        if(ado.getOtherLab() != null) {
-            Facility otherLab = DatabaseHelper.getFacilityDao().queryForId(ado.getOtherLab().getId());
-            dto.setOtherLab(FacilityDtoHelper.toReferenceDto(otherLab));
-        } else {
-            dto.setOtherLab(null);
         }
 
         if (ado.getReferredTo() != null) {

@@ -4,6 +4,7 @@ import java.util.List;
 
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -29,6 +30,11 @@ public class EventParticipantDtoHelper extends AdoDtoHelper<EventParticipant, Ev
     @Override
     protected Call<List<EventParticipantDto>> pullAllSince(long since) {
         return RetroProvider.getEventParticipantFacade().pullAllSince(since);
+    }
+
+    @Override
+    protected Call<List<EventParticipantDto>> pullByUuids(List<String> uuids) {
+        return RetroProvider.getEventParticipantFacade().pullByUuids(uuids);
     }
 
     @Override

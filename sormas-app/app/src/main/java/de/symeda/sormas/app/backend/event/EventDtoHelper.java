@@ -3,6 +3,7 @@ package de.symeda.sormas.app.backend.event;
 import java.util.List;
 
 import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -37,6 +38,11 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
     }
 
     @Override
+    protected Call<List<EventDto>> pullByUuids(List<String> uuids) {
+        return RetroProvider.getEventFacade().pullByUuids(uuids);
+    }
+
+    @Override
     protected Call<Integer> pushAll(List<EventDto> eventDtos) {
         return RetroProvider.getEventFacade().pushAll(eventDtos);
     }
@@ -60,6 +66,9 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
         target.setSrcTelNo(source.getSrcTelNo());
         target.setSrcEmail(source.getSrcEmail());
         target.setDisease(source.getDisease());
+
+        target.setReportLat(source.getReportLat());
+        target.setReportLon(source.getReportLon());
     }
 
     @Override
@@ -100,6 +109,9 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
         }
 
         dto.setTypeOfPlaceText(ado.getTypeOfPlaceText());
+
+        dto.setReportLat(ado.getReportLat());
+        dto.setReportLon(ado.getReportLon());
     }
 
     public static EventReferenceDto toReferenceDto(Event ado) {

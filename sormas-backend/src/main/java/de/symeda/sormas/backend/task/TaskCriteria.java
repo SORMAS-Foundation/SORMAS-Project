@@ -7,6 +7,7 @@ import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.Event;
+import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.user.User;
 
 public class TaskCriteria {
@@ -16,6 +17,7 @@ public class TaskCriteria {
 	private User assigneeUser;
 	private Case caze;
 	private Contact contact;
+	private Person contactPerson;
 	private Event event;
 	private Date dueDateFrom;
 	private Date dueDateTo;
@@ -54,6 +56,13 @@ public class TaskCriteria {
 	}
 	public TaskCriteria contactEquals(Contact contact) {
 		this.contact = contact;
+		return this;
+	}
+	public Person getContactPerson() {
+		return contactPerson;
+	}
+	public TaskCriteria contactPersonEquals(Person contactPerson) {
+		this.contactPerson = contactPerson;
 		return this;
 	}
 	public Event getEvent() {

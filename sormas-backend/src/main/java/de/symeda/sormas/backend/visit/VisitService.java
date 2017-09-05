@@ -70,30 +70,24 @@ public class VisitService extends AbstractAdoService<Visit> {
 	public List<Visit> getAllAfter(Date date, User user) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Visit> visitsQuery = cb.createQuery(getElementClass());
-		Root<Visit> visitRoot = visitsQuery.from(Visit.class);
+		CriteriaQuery<Visit> cq = cb.createQuery(getElementClass());
+		Root<Visit> visitRoot = cq.from(Visit.class);
 
 		// get all visits of the user's contact's persons
-		Subquery<Integer> contactPersonSubquery = visitsQuery.subquery(Integer.class);
+		Subquery<Integer> contactPersonSubquery = cq.subquery(Integer.class);
 		Root<Contact> contactRoot = contactPersonSubquery.from(Contact.class);
-		contactPersonSubquery.where(contactService.createUserFilter(cb, visitsQuery, contactRoot, user));
+		contactPersonSubquery.where(contactService.createUserFilter(cb, cq, contactRoot, user));
 		contactPersonSubquery.select(contactRoot.get(Contact.PERSON).get(Person.ID));
 		Predicate filter = cb.in(visitRoot.get(Visit.PERSON).get(Person.ID)).value(contactPersonSubquery);
 		// date range
 		if (date != null) {
-			Predicate dateFilter = cb.greaterThan(visitRoot.get(AbstractDomainObject.CHANGE_DATE), date);
-			
-			Join<Visit, Symptoms> symptoms = visitRoot.join(Visit.SYMPTOMS, JoinType.LEFT);
-			dateFilter = cb.or(dateFilter, cb.greaterThan(symptoms.get(AbstractDomainObject.CHANGE_DATE), date));
-			dateFilter = cb.or(dateFilter, cb.greaterThan(symptoms.join(Symptoms.ILLLOCATION, JoinType.LEFT).get(Location.CHANGE_DATE), date));
-
-			filter = cb.and(filter, dateFilter);
+			filter = cb.and(filter, createDateFilter(cb, cq, visitRoot, date));
 		}
-		visitsQuery.where(filter);
-		visitsQuery.distinct(true);
-		visitsQuery.orderBy(cb.asc(visitRoot.get(AbstractDomainObject.ID)));
+		cq.where(filter);
+		cq.distinct(true);
+		cq.orderBy(cb.asc(visitRoot.get(AbstractDomainObject.ID)));
 		
-		List<Visit> resultList = em.createQuery(visitsQuery).getResultList();
+		List<Visit> resultList = em.createQuery(cq).getResultList();
 		return resultList;
 	}
 
@@ -185,5 +179,17 @@ public class VisitService extends AbstractAdoService<Visit> {
 	protected Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Visit, Visit> from, User user) {
 		// getAllUuids and getAllAfter have custom implementations
 		throw new UnsupportedOperationException();
+	}
+	
+	@Override
+	protected Predicate createDateFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Visit,Visit> visitPath, Date date) {
+		
+		Predicate dateFilter = cb.greaterThan(visitPath.get(Visit.CHANGE_DATE), date);
+		
+		Join<Visit, Symptoms> symptoms = visitPath.join(Visit.SYMPTOMS, JoinType.LEFT);
+		dateFilter = cb.or(dateFilter, cb.greaterThan(symptoms.get(AbstractDomainObject.CHANGE_DATE), date));
+		dateFilter = cb.or(dateFilter, cb.greaterThan(symptoms.join(Symptoms.ILLLOCATION, JoinType.LEFT).get(Location.CHANGE_DATE), date));
+		
+		return dateFilter;
 	}
 }

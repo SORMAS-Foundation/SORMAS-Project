@@ -34,6 +34,8 @@ public class Visit extends AbstractDomainObject {
 	public static final String VISIT_STATUS = "visitStatus";
 	public static final String VISIT_REMARKS = "visitRemarks";
 	public static final String SYMPTOMS = "symptoms";
+	public static final String REPORT_LAT = "reportLat";
+	public static final String REPORT_LON = "reportLon";
 	
 	private Person person;
 	private Disease disease;
@@ -42,6 +44,8 @@ public class Visit extends AbstractDomainObject {
 	private VisitStatus visitStatus;
 	private String visitRemarks;
 	private Symptoms symptoms;
+	private Float reportLat;
+	private Float reportLon;
 	
 	@ManyToOne(cascade = {})
 	@JoinColumn(nullable=false)
@@ -103,5 +107,22 @@ public class Visit extends AbstractDomainObject {
 	public void setVisitUser(User visitUser) {
 		this.visitUser = visitUser;
 	}
+
+	@Column(columnDefinition = "float8")
+	public Float getReportLat() {
+		return reportLat;
+	}
+	public void setReportLat(Float reportLat) {
+		this.reportLat = reportLat;
+	}
+	
+	@Column(columnDefinition = "float8")
+	public Float getReportLon() {
+		return reportLon;
+	}
+	public void setReportLon(Float reportLon) {
+		this.reportLon = reportLon;
+	}
+	
 
 }

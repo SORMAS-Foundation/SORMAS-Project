@@ -2,6 +2,7 @@ package de.symeda.sormas.api.facility;
 
 import javax.xml.bind.annotation.XmlTransient;
 
+import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -12,6 +13,9 @@ public class FacilityDto extends FacilityReferenceDto {
 
 	public static final String I18N_PREFIX = "Facility";
 	public static final String OTHER_FACILITY_UUID = "SORMAS-CONSTID-OTHERS-FACILITY";
+	public static final String NONE_FACILITY_UUID = "SORMAS-CONSTID-ISNONE-FACILITY";
+	public static final String OTHER_FACILITY = "OTHER_FACILITY";
+	public static final String NO_FACILITY = "NO_FACILITY";
 	
 	private String name;
 	private RegionReferenceDto region;
@@ -90,6 +94,13 @@ public class FacilityDto extends FacilityReferenceDto {
 	
 	@Override
 	public String toString() {
+		if (getUuid().equals(OTHER_FACILITY_UUID)) {
+			return I18nProperties.getPrefixFieldCaption(I18N_PREFIX, OTHER_FACILITY);
+		}
+		if (getUuid().equals(NONE_FACILITY_UUID)) {
+			return I18nProperties.getPrefixFieldCaption(I18N_PREFIX, NO_FACILITY);
+		}
+		
 		StringBuilder caption = new StringBuilder();
 		caption.append(name);
 		if (community != null) {

@@ -28,6 +28,8 @@ public interface TaskFacade {
 	List<TaskDto> getAllPendingByCase(CaseDataDto caseDataDto);
 
 	List<TaskDto> getAllPendingByContact(ContactIndexDto contactDto);
+
+	List<TaskDto> getByUuids(List<String> uuids);
 	
 	long getPendingTaskCountByCase(CaseDataDto caseDataDto);
 	
@@ -40,5 +42,4 @@ public interface TaskFacade {
 	TaskDto getByUuid(String uuid);
 
 	List<String> getAllUuids(String userUuid);
-
 }

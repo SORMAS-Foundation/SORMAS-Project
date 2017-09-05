@@ -32,8 +32,8 @@ import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
-import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.user.UserService;
+import de.symeda.sormas.backend.util.DtoHelper;
 
 @Stateless(name = "TaskFacade")
 public class TaskFacadeEjb implements TaskFacade {
@@ -84,6 +84,9 @@ public class TaskFacadeEjb implements TaskFacade {
 		}
 		target.setTaskStatus(source.getTaskStatus());
 		target.setTaskType(source.getTaskType());
+		
+		target.setClosedLat(source.getClosedLat());
+		target.setClosedLon(source.getClosedLon());
 		
 		target.setTaskContext(source.getTaskContext());
 		if (source.getTaskContext() != null) {
@@ -148,6 +151,9 @@ public class TaskFacadeEjb implements TaskFacade {
 		a.setCaze(CaseFacadeEjb.toReferenceDto(b.getCaze()));
 		a.setContact(ContactFacadeEjb.toReferenceDto(b.getContact()));
 		a.setEvent(EventFacadeEjb.toReferenceDto(b.getEvent()));
+		
+		a.setClosedLat(b.getClosedLat());
+		a.setClosedLon(b.getClosedLon());
 
 		return a;
 	}
@@ -232,6 +238,14 @@ public class TaskFacadeEjb implements TaskFacade {
 				.collect(Collectors.toList());
 	}
 	
+	@Override
+	public List<TaskDto> getByUuids(List<String> uuids) {
+		return taskService.getByUuids(uuids)
+				.stream()
+				.map(c -> toDto(c))
+				.collect(Collectors.toList());
+	}
+
 	@Override
 	public List<TaskDto> getAllPendingByCase(CaseDataDto caseDataDto) {
 		if(caseDataDto == null) {

@@ -5,6 +5,7 @@ import java.util.Date;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.DataHelper;
 
 public class SampleDto extends SampleReferenceDto {
 
@@ -21,7 +22,6 @@ public class SampleDto extends SampleReferenceDto {
 	public static final String SAMPLE_MATERIAL = "sampleMaterial";
 	public static final String SAMPLE_MATERIAL_TEXT = "sampleMaterialText";
 	public static final String LAB = "lab";
-	public static final String OTHER_LAB = "otherLab";
 	public static final String SHIPMENT_DATE = "shipmentDate";
 	public static final String SHIPMENT_DETAILS = "shipmentDetails";
 	public static final String RECEIVED_DATE = "receivedDate";
@@ -43,7 +43,6 @@ public class SampleDto extends SampleReferenceDto {
 	private SampleMaterial sampleMaterial;
 	private String sampleMaterialText;
 	private FacilityReferenceDto lab;
-	private FacilityReferenceDto otherLab;
 	private Date shipmentDate;
 	private String shipmentDetails;
 	private Date receivedDate;
@@ -110,12 +109,6 @@ public class SampleDto extends SampleReferenceDto {
 	public void setLab(FacilityReferenceDto lab) {
 		this.lab = lab;
 	}
-	public FacilityReferenceDto getOtherLab() {
-		return otherLab;
-	}
-	public void setOtherLab(FacilityReferenceDto otherLab) {
-		this.otherLab = otherLab;
-	}
 	public Date getShipmentDate() {
 		return shipmentDate;
 	}
@@ -181,6 +174,28 @@ public class SampleDto extends SampleReferenceDto {
 	}
 	public void setReceived(boolean received) {
 		this.received = received;
+	}
+	
+	public static SampleDto buildSample(UserReferenceDto userRef, CaseReferenceDto caseRef) {
+		SampleDto sample = new SampleDto();
+		sample.setUuid(DataHelper.createUuid());
+		sample.setAssociatedCase(caseRef);
+		sample.setReportingUser(userRef);
+		sample.setReportDateTime(new Date());
+		
+		return sample;
+	}
+	
+	public static SampleDto buildReferralSample(UserReferenceDto userRef, SampleDto referredSample) {
+		SampleDto sample = buildSample(userRef, referredSample.getAssociatedCase());
+		sample.setSampleDateTime(referredSample.getSampleDateTime());
+		sample.setSampleCode(referredSample.getSampleCode());
+		sample.setSampleMaterial(referredSample.getSampleMaterial());
+		sample.setSampleMaterialText(referredSample.getSampleMaterialText());
+		sample.setSuggestedTypeOfTest(referredSample.getSuggestedTypeOfTest());
+		sample.setSampleSource(referredSample.getSampleSource());
+		
+		return sample;
 	}
 	
 }

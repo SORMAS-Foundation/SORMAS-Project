@@ -62,7 +62,7 @@ public class EpiDataForm extends FormTab {
                         if (burial == null) {
                             burial = DatabaseHelper.getEpiDataBurialDao().build();
                         }
-                        EpiDataBurialForm burialTab = new EpiDataBurialForm();
+                        final EpiDataBurialForm burialTab = new EpiDataBurialForm();
                         burialTab.initialize(
                                 (EpiDataBurial) burial,
                                 new Consumer() {
@@ -74,6 +74,7 @@ public class EpiDataForm extends FormTab {
                                                         (EpiDataBurial) burialDialog
                                                 )
                                         );
+                                        burialTab.dismiss();
                                     }
                                 }, new Consumer() {
                                     @Override
@@ -103,7 +104,7 @@ public class EpiDataForm extends FormTab {
                         if (gathering == null) {
                             gathering = DatabaseHelper.getEpiDataGatheringDao().build();
                         }
-                        EpiDataGatheringForm gatheringTab = new EpiDataGatheringForm();
+                        final EpiDataGatheringForm gatheringTab = new EpiDataGatheringForm();
                         gatheringTab.initialize(
                                 (EpiDataGathering) gathering,
                                 new Consumer() {
@@ -115,6 +116,7 @@ public class EpiDataForm extends FormTab {
                                                         (EpiDataGathering) gatheringDialog
                                                 )
                                         );
+                                        gatheringTab.dismiss();
                                     }
                                 }, new Consumer() {
                                     @Override
@@ -144,7 +146,7 @@ public class EpiDataForm extends FormTab {
                         if (travel == null) {
                             travel = DatabaseHelper.getEpiDataTravelDao().build();
                         }
-                        EpiDataTravelForm travelTab = new EpiDataTravelForm();
+                        final EpiDataTravelForm travelTab = new EpiDataTravelForm();
                         travelTab.initialize(
                                 (EpiDataTravel) travel,
                                 new Consumer() {
@@ -156,6 +158,7 @@ public class EpiDataForm extends FormTab {
                                                         (EpiDataTravel) travelDialog
                                                 )
                                         );
+                                        travelTab.dismiss();
                                     }
                                 }, new Consumer() {
                                     @Override
@@ -247,21 +250,10 @@ public class EpiDataForm extends FormTab {
             }
         });
 
-        visibilityDisease(disease);
+        setVisibilityByDisease(EpiDataDto.class, disease, (ViewGroup)binding.getRoot());
         showOrHideHeadlines();
 
         return view;
-    }
-
-    private void visibilityDisease(Disease disease) {
-        for (int i=0; i<binding.caseEpidataForm.getChildCount(); i++){
-            View child = binding.caseEpidataForm.getChildAt(i);
-            if (child instanceof PropertyField) {
-                String propertyId = cropNumbers(((PropertyField)child).getPropertyId());
-                boolean definedOrMissing = Diseases.DiseasesConfiguration.isDefinedOrMissing(EpiDataDto.class, propertyId, disease);
-                child.setVisibility(definedOrMissing ? View.VISIBLE : View.GONE);
-            }
-        }
     }
 
     private void showOrHideHeadlines() {

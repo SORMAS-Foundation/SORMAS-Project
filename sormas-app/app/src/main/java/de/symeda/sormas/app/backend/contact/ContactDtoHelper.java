@@ -4,6 +4,7 @@ import java.util.List;
 
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDtoHelper;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
@@ -40,6 +41,11 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
     }
 
     @Override
+    protected Call<List<ContactDto>> pullByUuids(List<String> uuids) {
+        return RetroProvider.getContactFacade().pullByUuids(uuids);
+    }
+
+    @Override
     protected Call<Integer> pushAll(List<ContactDto> contactDtos) {
         return RetroProvider.getContactFacade().pushAll(contactDtos);
     }
@@ -59,9 +65,13 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
         target.setContactClassification(source.getContactClassification());
         target.setRelationToCase(source.getRelationToCase());
         target.setFollowUpStatus(source.getFollowUpStatus());
+        target.setFollowUpComment(source.getFollowUpComment());
         target.setFollowUpUntil(source.getFollowUpUntil());
 
         target.setDescription(source.getDescription());
+
+        target.setReportLat(source.getReportLat());
+        target.setReportLon(source.getReportLon());
     }
 
     @Override
@@ -93,6 +103,7 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
         dto.setContactClassification(ado.getContactClassification());
         dto.setRelationToCase(ado.getRelationToCase());
         dto.setFollowUpStatus(ado.getFollowUpStatus());
+        dto.setFollowUpComment(ado.getFollowUpComment());
         dto.setFollowUpUntil(ado.getFollowUpUntil());
         if (ado.getContactOfficer() != null) {
             User user = DatabaseHelper.getUserDao().queryForId(ado.getContactOfficer().getId());
@@ -101,6 +112,9 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
             dto.setContactOfficer(null);
         }
         dto.setDescription(ado.getDescription());
+
+        dto.setReportLat(ado.getReportLat());
+        dto.setReportLon(ado.getReportLon());
     }
 
     public static ContactReferenceDto toReferenceDto(Contact ado) {

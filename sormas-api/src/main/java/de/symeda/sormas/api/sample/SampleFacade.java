@@ -10,7 +10,7 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 @Remote
 public interface SampleFacade {
 
-	List<SampleDto> getAllSamplesAfter(Date date, String userUuid);
+	List<SampleDto> getAllAfter(Date date, String userUuid);
 	
 	List<SampleDto> getAllByCase(CaseReferenceDto caseRef);
 	
@@ -27,5 +27,7 @@ public interface SampleFacade {
 	SampleReferenceDto getReferredFrom(String sampleUuid);
 
 	List<String> getAllUuids(String userUuid);
+
+	List<SampleDto> getByUuids(List<String> uuids);
 
 }

@@ -80,6 +80,13 @@ public class TaskEditActivity extends AbstractSormasActivity {
             if (extras.containsKey(Task.UUID)) {
                 taskUuid = (String) extras.get(Task.UUID);
                 Task initialEntity = DatabaseHelper.getTaskDao().queryUuid(taskUuid);
+                // If the task has been removed from the database in the meantime, redirect the user to the tasks overview
+                if (initialEntity == null) {
+                    Intent intent = new Intent(this, TasksActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
+
                 DatabaseHelper.getTaskDao().markAsRead(initialEntity);
             }
             if (extras.containsKey(TasksListFragment.KEY_CASE_UUID)) {
@@ -102,6 +109,13 @@ public class TaskEditActivity extends AbstractSormasActivity {
         taskForm.onResume();
 
         Task currentEntity = DatabaseHelper.getTaskDao().queryUuid(taskUuid);
+        // If the task has been removed from the database in the meantime, redirect the user to the tasks overview
+        if (currentEntity == null) {
+            Intent intent = new Intent(this, TasksActivity.class);
+            startActivity(intent);
+            finish();
+        }
+
         if (currentEntity.isUnreadOrChildUnread()) {
             // Resetting the adapter will reload the form and therefore also override any unsaved changes
             DatabaseHelper.getTaskDao().markAsRead(currentEntity);
@@ -167,7 +181,7 @@ public class TaskEditActivity extends AbstractSormasActivity {
                     if (RetroProvider.isConnected()) {
                         SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.ChangesOnly, this, new SyncCallback() {
                             @Override
-                            public void call(boolean syncFailed) {
+                            public void call(boolean syncFailed, String syncFailedMessage) {
                                 onResume();
                                 if (syncFailed) {
                                     Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_sync_error_saved), getResources().getString(R.string.entity_task)), Snackbar.LENGTH_LONG).show();

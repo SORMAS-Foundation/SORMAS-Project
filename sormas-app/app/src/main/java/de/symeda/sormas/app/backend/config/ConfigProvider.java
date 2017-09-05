@@ -1,10 +1,12 @@
 package de.symeda.sormas.app.backend.config;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.admin.DevicePolicyManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.security.KeyPairGeneratorSpec;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.Base64;
 import android.util.Log;
@@ -37,6 +39,7 @@ import javax.security.auth.x500.X500Principal;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.user.User;
+import de.symeda.sormas.app.util.LocationService;
 
 /**
  * Created by Martin Wahnschaffe on 10.08.2016.

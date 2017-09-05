@@ -17,6 +17,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import de.symeda.auditlog.api.Audited;
+import de.symeda.auditlog.api.AuditedIgnore;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.InvestigationStatus;
@@ -65,6 +66,8 @@ public class Case extends AbstractDomainObject {
 	public static final String MEASLES_DOSES = "measlesDoses";
 	public static final String MEASLES_VACCINATION_INFO_SOURCE = "measlesVaccinationInfoSource";
 	public static final String EPID_NUMBER = "epidNumber";
+	public static final String REPORT_LAT = "reportLat";
+	public static final String REPORT_LON = "reportLon";
 
 	private Person person;
 	private String description;
@@ -101,6 +104,9 @@ public class Case extends AbstractDomainObject {
 	private VaccinationInfoSource measlesVaccinationInfoSource;
 	
 	private String epidNumber;
+	
+	private Float reportLat;
+	private Float reportLon;
 	
 	private List<Task> tasks;
 	
@@ -245,6 +251,7 @@ public class Case extends AbstractDomainObject {
 	}
 
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@AuditedIgnore
 	public Symptoms getSymptoms() {
 		if (symptoms == null) {
 			symptoms = new Symptoms();
@@ -282,6 +289,7 @@ public class Case extends AbstractDomainObject {
 	// It's necessary to do a lazy fetch here because having three eager fetching one to one relations
 	// produces an error where two non-xa connections are opened
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@AuditedIgnore
 	public Hospitalization getHospitalization() {
 		if (hospitalization == null) {
 			hospitalization = new Hospitalization();
@@ -295,6 +303,7 @@ public class Case extends AbstractDomainObject {
 	// It's necessary to do a lazy fetch here because having three eager fetching one to one relations
 	// produces an error where two non-xa connections are opened
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@AuditedIgnore
 	public EpiData getEpiData() {
 		if(epiData == null) {
 			epiData = new EpiData();
@@ -366,4 +375,21 @@ public class Case extends AbstractDomainObject {
 	public void setInvestigationStatus(InvestigationStatus investigationStatus) {
 		this.investigationStatus = investigationStatus;
 	}
+
+	@Column(columnDefinition = "float8")
+	public Float getReportLat() {
+		return reportLat;
+	}
+	public void setReportLat(Float reportLat) {
+		this.reportLat = reportLat;
+	}
+	
+	@Column(columnDefinition = "float8")
+	public Float getReportLon() {
+		return reportLon;
+	}
+	public void setReportLon(Float reportLon) {
+		this.reportLon = reportLon;
+	}
+	
 }

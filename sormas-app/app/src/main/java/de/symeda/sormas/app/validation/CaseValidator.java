@@ -12,6 +12,7 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.component.PropertyField;
 import de.symeda.sormas.app.databinding.CaseDataFragmentLayoutBinding;
 import de.symeda.sormas.app.databinding.CaseNewFragmentLayoutBinding;
+import de.symeda.sormas.app.databinding.MoveCaseFragmentLayoutBinding;
 
 /**
  * Created by Mate Strysewske on 20.07.2017.
@@ -22,9 +23,10 @@ public final class CaseValidator {
      * Validates whether the Case Data entered are valid. Fields should be processed from bottom to top according to
      * their arrangement in the layout to make sure that the error message popup is displayed for the first invalid field.
      */
-    public static boolean validateCaseData(Case caze, CaseDataFragmentLayoutBinding binding) {
+    public static boolean validateMoveCaseData(MoveCaseFragmentLayoutBinding binding) {
         Resources resources = DatabaseHelper.getContext().getResources();
 
+        Case caze = binding.getCaze();
         boolean success = true;
 
         // Health facility & description
@@ -35,6 +37,12 @@ public final class CaseValidator {
             if (caze.getHealthFacility().getUuid().equals(FacilityDto.OTHER_FACILITY_UUID)) {
                 if (caze.getHealthFacilityDetails() == null || caze.getHealthFacilityDetails().trim().isEmpty()) {
                     binding.caseDataFacilityDetails.setError(resources.getString(R.string.validation_health_facility_details));
+                    success = false;
+                }
+            }
+            if (caze.getHealthFacility().getUuid().equals(FacilityDto.NONE_FACILITY_UUID)) {
+                if (caze.getHealthFacilityDetails() == null || caze.getHealthFacilityDetails().trim().isEmpty()) {
+                    binding.caseDataFacilityDetails.setError(resources.getString(R.string.validation_none_health_facility_details));
                     success = false;
                 }
             }
@@ -74,6 +82,12 @@ public final class CaseValidator {
             if (caze.getHealthFacility().getUuid().equals(FacilityDto.OTHER_FACILITY_UUID)) {
                 if (caze.getHealthFacilityDetails() == null || caze.getHealthFacilityDetails().trim().isEmpty()) {
                     binding.caseDataFacilityDetails.setError(resources.getString(R.string.validation_health_facility_details));
+                    success = false;
+                }
+            }
+            if (caze.getHealthFacility().getUuid().equals(FacilityDto.NONE_FACILITY_UUID)) {
+                if (caze.getHealthFacilityDetails() == null || caze.getHealthFacilityDetails().trim().isEmpty()) {
+                    binding.caseDataFacilityDetails.setError(resources.getString(R.string.validation_none_health_facility_details));
                     success = false;
                 }
             }
@@ -118,8 +132,8 @@ public final class CaseValidator {
         return success;
     }
 
-    public static void clearErrorsForCaseData(CaseDataFragmentLayoutBinding binding) {
-        for (PropertyField field : getCaseDataFields(binding)) {
+    public static void clearErrorsForMoveCaseData(MoveCaseFragmentLayoutBinding binding) {
+        for (PropertyField field : getMoveCaseDataFields(binding)) {
             field.clearError();
         }
     }
@@ -130,11 +144,9 @@ public final class CaseValidator {
         }
     }
 
-    public static void setRequiredHintsForCaseData(CaseDataFragmentLayoutBinding binding) {
-        for (PropertyField field : getCaseDataFields(binding)) {
-            if (field != binding.caseDataDisease) {
-                field.setRequiredHint(true);
-            }
+    public static void setRequiredHintsForMoveCaseData(MoveCaseFragmentLayoutBinding binding) {
+        for (PropertyField field : getMoveCaseDataFields(binding)) {
+            field.setRequiredHint(true);
         }
     }
 
@@ -144,7 +156,7 @@ public final class CaseValidator {
         }
     }
 
-    private static final List<PropertyField<?>> getCaseDataFields(CaseDataFragmentLayoutBinding binding) {
+    private static final List<PropertyField<?>> getMoveCaseDataFields(MoveCaseFragmentLayoutBinding binding) {
         return Arrays.asList(binding.caseDataRegion, binding.caseDataDistrict, binding.caseDataCommunity,
                 binding.caseDataHealthFacility, binding.caseDataFacilityDetails);
     }

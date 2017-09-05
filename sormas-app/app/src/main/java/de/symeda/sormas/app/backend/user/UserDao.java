@@ -9,11 +9,14 @@ import com.j256.ormlite.stmt.Where;
 import java.sql.SQLException;
 import java.util.List;
 
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.backend.region.District;
+import de.symeda.sormas.app.backend.region.Region;
 
 /**
  * Created by Martin Wahnschaffe on 22.07.2016.
@@ -42,6 +45,38 @@ public class UserDao extends AbstractAdoDao<User> {
             return users.get(0);
         } else {
             throw new RuntimeException("Found multiple users for name " + username);
+        }
+    }
+
+    public List<User> getByRegionAndRole(Region region, UserRole role) {
+        try {
+            QueryBuilder builder = queryBuilder();
+            Where where = builder.where();
+            where.and(
+                    where.eq(User.REGION + "_id", region.getId()),
+                    where.eq(User.USER_ROLE, role)
+            );
+
+            return (List<User>) builder.query();
+        } catch (SQLException e) {
+            Log.e(getTableName(), "Could not perform getByRegionAndRole");
+            throw new RuntimeException(e);
+        }
+    }
+
+    public List<User> getByDistrictAndRole(District district, UserRole role) {
+        try {
+            QueryBuilder builder = queryBuilder();
+            Where where = builder.where();
+            where.and(
+                    where.eq(User.DISTRICT + "_id", district.getId()),
+                    where.eq(User.USER_ROLE, role)
+            );
+
+            return (List<User>) builder.query();
+        } catch (SQLException e) {
+            Log.e(getTableName(), "Could not perform getByDistrictAndRole");
+            throw new RuntimeException(e);
         }
     }
 }

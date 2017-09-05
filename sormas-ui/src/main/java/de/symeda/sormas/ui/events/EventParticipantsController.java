@@ -47,9 +47,9 @@ public class EventParticipantsController {
 							person -> {
 								if (person != null) {
 									dto.setPerson(FacadeProvider.getPersonFacade().getPersonByUuid(person.getUuid()));
-									eventParticipantFacade.saveEventParticipant(dto);
+									EventParticipantDto savedDto = eventParticipantFacade.saveEventParticipant(dto);
 									Notification.show("New person created", Type.ASSISTIVE_NOTIFICATION);
-				        			ControllerProvider.getEventParticipantController().editEventParticipant(eventParticipant);
+				        			ControllerProvider.getEventParticipantController().editEventParticipant(savedDto);
 								}
 							});
 				}

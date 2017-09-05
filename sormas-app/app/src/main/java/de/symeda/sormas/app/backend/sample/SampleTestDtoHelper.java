@@ -3,6 +3,7 @@ package de.symeda.sormas.app.backend.sample;
 import java.util.List;
 
 import de.symeda.sormas.api.sample.SampleTestDto;
+import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.rest.RetroProvider;
@@ -27,6 +28,11 @@ public class SampleTestDtoHelper extends AdoDtoHelper<SampleTest, SampleTestDto>
     @Override
     protected Call<List<SampleTestDto>> pullAllSince(long since) {
         return RetroProvider.getSampleTestFacade().pullAllSince(since);
+    }
+
+    @Override
+    protected Call<List<SampleTestDto>> pullByUuids(List<String> uuids) {
+        return RetroProvider.getSampleTestFacade().pullByUuids(uuids);
     }
 
     @Override

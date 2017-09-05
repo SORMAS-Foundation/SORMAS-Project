@@ -88,6 +88,10 @@ public class Hospitalization extends AbstractDomainObject {
         this.hospitalizedPreviously = hospitalizedPreviously;
     }
 
+    /**
+     * NOTE: This is only initialized when the hospitalization is retrieved using {@link HospitalizationDao}
+     * @return
+     */
     public List<PreviousHospitalization> getPreviousHospitalizations() {
         return previousHospitalizations;
     }

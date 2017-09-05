@@ -26,6 +26,7 @@ public class EventDataView extends AbstractEventView {
     	TaskListComponent taskListComponent = new TaskListComponent(TaskContext.EVENT, getEventRef());
     	taskListComponent.addStyleName(CssStyles.SUBLIST_MARGIN);
     	addComponent(taskListComponent);
+    	taskListComponent.enter(event);
 	}
 
 }

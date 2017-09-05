@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.backend.contact;
 
+import android.location.Location;
 import android.util.Log;
 
 import com.j256.ormlite.dao.Dao;
@@ -12,8 +13,10 @@ import java.util.List;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.util.LocationService;
 
 /**
  * Created by Stefan Szczesny on 29.11.2016.
@@ -67,5 +70,23 @@ public class ContactDao extends AbstractAdoDao<Contact> {
     public void markAsRead(Contact contact) {
         super.markAsRead(contact);
         DatabaseHelper.getPersonDao().markAsRead(contact.getPerson());
+    }
+
+    @Override
+    public Contact saveAndSnapshot(final Contact contact) throws DaoException {
+        // If a new contact is created, use the last available location to update its report latitude and longitude
+        if (contact.getId() == null) {
+            LocationService locationService = LocationService.getLocationService(DatabaseHelper.getContext());
+            Location location = locationService.getLocation();
+            if (location != null) {
+                // Use the geo-coordinates of the current location object if it's not older than 15 minutes
+                if (new Date().getTime() <= location.getTime() + (1000 * 60 * 15)) {
+                    contact.setReportLat((float) location.getLatitude());
+                    contact.setReportLon((float) location.getLongitude());
+                }
+            }
+        }
+
+        return super.saveAndSnapshot(contact);
     }
 }

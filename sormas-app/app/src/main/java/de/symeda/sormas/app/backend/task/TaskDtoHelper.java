@@ -35,6 +35,11 @@ public class TaskDtoHelper extends AdoDtoHelper<Task, TaskDto> {
     }
 
     @Override
+    protected Call<List<TaskDto>> pullByUuids(List<String> uuids) {
+        return RetroProvider.getTaskFacade().pullByUuids(uuids);
+    }
+
+    @Override
     protected Call<Integer> pushAll(List<TaskDto> taskDtos) {
         return RetroProvider.getTaskFacade().pushAll(taskDtos);
     }
@@ -59,6 +64,9 @@ public class TaskDtoHelper extends AdoDtoHelper<Task, TaskDto> {
         target.setCreatorComment(source.getCreatorComment());
         target.setAssigneeUser(DatabaseHelper.getUserDao().getByReferenceDto(source.getAssigneeUser()));
         target.setAssigneeReply(source.getAssigneeReply());
+
+        target.setClosedLat(source.getClosedLat());
+        target.setClosedLon(source.getClosedLon());
     }
 
     @Override
@@ -105,5 +113,8 @@ public class TaskDtoHelper extends AdoDtoHelper<Task, TaskDto> {
             dto.setAssigneeUser(null);
         }
         dto.setAssigneeReply(ado.getAssigneeReply());
+
+        dto.setClosedLat(ado.getClosedLat());
+        dto.setClosedLon(ado.getClosedLon());
     }
 }

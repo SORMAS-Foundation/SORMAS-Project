@@ -77,15 +77,15 @@ public class TaskListComponent extends AbstractView {
     	
     	HorizontalLayout buttonFilterLayout = new HorizontalLayout();
     	{
-	    	Button statusAll = new Button("all", e -> grid.filterAssignee(null));
+	    	Button statusAll = new Button("all", e -> grid.filterAssignee(null, true));
 	        statusAll.setStyleName(ValoTheme.BUTTON_LINK);
 	        buttonFilterLayout.addComponent(statusAll);
 	        
-	    	Button statusPossible = new Button("officer tasks", e -> grid.filterExcludeAssignee(LoginHelper.getCurrentUserAsReference()));
+	    	Button statusPossible = new Button("officer tasks", e -> grid.filterExcludeAssignee(LoginHelper.getCurrentUserAsReference(), true));
 	    	statusPossible.setStyleName(ValoTheme.BUTTON_LINK);
 	    	buttonFilterLayout.addComponent(statusPossible);
 	        
-	        Button statusInvestigated = new Button("my tasks", e -> grid.filterAssignee(LoginHelper.getCurrentUserAsReference()));
+	        Button statusInvestigated = new Button("my tasks", e -> grid.filterAssignee(LoginHelper.getCurrentUserAsReference(), true));
 	        statusInvestigated.setStyleName(ValoTheme.BUTTON_LINK);
 	        buttonFilterLayout.addComponent(statusInvestigated);
     	}
@@ -131,12 +131,12 @@ public class TaskListComponent extends AbstractView {
     	HorizontalLayout buttonFilterLayout = new HorizontalLayout();
     	{
             for (TaskStatus status : TaskStatus.values()) {
-    	    	Button statusButton = new Button(status.toString(), e -> grid.filterTaskStatus(status));
+    	    	Button statusButton = new Button(status.toString(), e -> grid.filterTaskStatus(status, true));
     	    	statusButton.setStyleName(ValoTheme.BUTTON_LINK);
     	    	buttonFilterLayout.addComponent(statusButton);
             }
     		
-    		Button statusAll = new Button("all", e -> grid.filterTaskStatus(null));
+    		Button statusAll = new Button("all", e -> grid.filterTaskStatus(null, true));
     		statusAll.setStyleName(ValoTheme.BUTTON_LINK);
     		buttonFilterLayout.addComponent(statusAll);
     	}
@@ -162,10 +162,8 @@ public class TaskListComponent extends AbstractView {
         ComboBox statusFilter = new ComboBox();
         statusFilter.setWidth(200, Unit.PIXELS);
         statusFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(TaskDto.I18N_PREFIX, TaskDto.TASK_STATUS));
-//        statusFilter.addItem("all");
-//        statusFilter.setNullSelectionItemId("all");
         statusFilter.addItems((Object[])TaskStatus.values());
-        statusFilter.addValueChangeListener(e->grid.filterTaskStatus((TaskStatus)e.getProperty().getValue()));
+        statusFilter.addValueChangeListener(e->grid.filterTaskStatus((TaskStatus)e.getProperty().getValue(), true));
         statusFilter.setValue(TaskStatus.PENDING);
         filterLayout.addComponent(statusFilter);
 
