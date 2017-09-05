@@ -1667,3 +1667,10 @@ UPDATE previoushospitalization SET district_id = (SELECT district_id FROM cases 
 UPDATE previoushospitalization SET community_id = (SELECT community_id FROM cases WHERE cases.hospitalization_id = previoushospitalization.hospitalization_id) WHERE community_id IS NULL;
 
 INSERT INTO schema_version (version_number, comment) VALUES (62, 'RDC for Previous Hospitalizations');
+
+-- 2017-09-05 Generic names for 'Other' and 'None' facilities #261
+UPDATE facility SET name = 'OTHER_FACILITY' WHERE uuid = 'SORMAS-CONSTID-OTHERS-FACILITY';
+UPDATE facility SET name = 'NO_FACILITY' WHERE uuid = 'SORMAS-CONSTID-ISNONE-FACILITY';
+UPDATE public.facility SET changedate=now();
+
+INSERT INTO schema_version (version_number, comment) VALUES (63, 'Generic names for Other and None facilities');

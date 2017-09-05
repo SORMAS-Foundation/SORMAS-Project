@@ -11,8 +11,6 @@ import javax.ejb.Startup;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 
-import org.apache.commons.lang3.time.DateUtils;
-
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.user.UserHelper;
 import de.symeda.sormas.api.user.UserRole;
@@ -261,7 +259,7 @@ public class StartupShutdownService {
 		// associated with a specific region
 		if (facilityService.getByUuid(FacilityDto.OTHER_FACILITY_UUID) == null) {
 			Facility otherFacility = new Facility();
-			otherFacility.setName("Other health facility");
+			otherFacility.setName("OTHER_FACILITY");
 			otherFacility.setUuid(FacilityDto.OTHER_FACILITY_UUID);
 			facilityService.persist(otherFacility);
 		}
@@ -270,7 +268,7 @@ public class StartupShutdownService {
 		// associated with a specific region
 		if (facilityService.getByUuid(FacilityDto.NONE_FACILITY_UUID) == null) {
 			Facility noneFacility = new Facility();
-			noneFacility.setName("Not a health facility");
+			noneFacility.setName("NO_FACILITY");
 			noneFacility.setUuid(FacilityDto.NONE_FACILITY_UUID);
 			facilityService.persist(noneFacility);
 		}
