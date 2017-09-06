@@ -61,7 +61,11 @@ public class EventService extends AbstractAdoService<Event> {
 	 */
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Event,Event> eventPath, User user) {
-
+		// National users can access all events in the system
+		if (user.getUserRoles().contains(UserRole.NATIONAL_USER)) {
+			return null;
+		}
+		
 		// whoever created the event or is assigned to it is allowed to access it
 		Predicate filter = cb.equal(eventPath.get(Event.REPORTING_USER), user);
 		filter = cb.or(filter, cb.equal(eventPath.get(Event.SURVEILLANCE_OFFICER), user));

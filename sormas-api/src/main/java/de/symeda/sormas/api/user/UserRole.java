@@ -13,6 +13,7 @@ import de.symeda.sormas.api.I18nProperties;
 public enum UserRole {
 
 	ADMIN(false, false),
+	NATIONAL_USER(false, false),
 	SURVEILLANCE_SUPERVISOR(true, false),
 	SURVEILLANCE_OFFICER(false, true),
 	INFORMANT(false, false),
@@ -27,6 +28,7 @@ public enum UserRole {
 	public static final String _SYSTEM = "SYSTEM";
 	public static final String _USER = "USER";
 	public static final String _ADMIN = "ADMIN";
+	public static final String _NATIONAL_USER = "NATIONAL_USER";
 	public static final String _SURVEILLANCE_SUPERVISOR = "SURVEILLANCE_SUPERVISOR";
 	public static final String _SURVEILLANCE_OFFICER = "SURVEILLANCE_OFFICER";
 	public static final String _INFORMANT = "INFORMANT";
@@ -67,6 +69,9 @@ public enum UserRole {
 			for(UserRole role : UserRole.values()) {
 				collection.add(role);
 			}
+			break;
+		case NATIONAL_USER:
+			// TODO: Define roles the national user can assign/view
 			break;
 		case SURVEILLANCE_SUPERVISOR:
 			collection.add(SURVEILLANCE_OFFICER);
