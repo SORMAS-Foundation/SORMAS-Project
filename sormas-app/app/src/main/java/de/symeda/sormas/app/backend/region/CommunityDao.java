@@ -32,4 +32,22 @@ public class CommunityDao extends AbstractAdoDao<Community> {
     public List<Community> getByDistrict(District district) {
         return queryForEq(Community.DISTRICT+"_id", district, Community.NAME, true);
     }
+
+    @Override
+    public Community saveAndSnapshot(Community source) throws DaoException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Community mergeOrCreate(Community source) throws DaoException {
+        throw new UnsupportedOperationException();
+    }
+
+    public int updateOrCreate(Community data) {
+        if (data.getId() == null) {
+            return create(data);
+        } else {
+            return update(data);
+        }
+    }
 }
