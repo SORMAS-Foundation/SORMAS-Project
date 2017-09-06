@@ -20,6 +20,7 @@ import javax.persistence.criteria.Subquery;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.contact.Contact;
@@ -129,6 +130,47 @@ public class VisitService extends AbstractAdoService<Visit> {
 
 		List<Visit> resultList = em.createQuery(cq).getResultList();
 		return resultList;
+	}
+	
+	public Visit getLastVisitByContact(Contact contact, VisitStatus visitStatus) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Visit> cq = cb.createQuery(getElementClass());
+		Root<Visit> from = cq.from(getElementClass());
+
+		// all of the person
+		Predicate filter = cb.equal(from.get(Visit.PERSON), contact.getPerson());
+
+		// only disease relevant
+		filter = cb.and(filter, cb.equal(from.get(Visit.DISEASE), contact.getCaze().getDisease()));
+		
+		// only visits with the given visit status, if present
+		if (visitStatus != null) {
+			filter = cb.and(filter, cb.equal(from.get(Visit.VISIT_STATUS), visitStatus));
+		}
+		
+		// list all visits between contact date ...
+		// IMPORTANT: This is different than the calculation of "follow-up until", where the date of report is used as reference
+		// We also want to have visits that took place before.
+		if (contact.getLastContactDate() != null) {
+			Predicate dateStartFilter = cb.greaterThan(from.get(Visit.VISIT_DATE_TIME), DateHelper.subtractDays(contact.getLastContactDate(), 10));
+			filter = cb.and(filter, dateStartFilter);
+		} else {
+			// use date of report as fallback
+			Predicate dateStartFilter = cb.greaterThan(from.get(Visit.VISIT_DATE_TIME), contact.getReportDateTime());
+			filter = cb.and(filter, dateStartFilter);
+		}
+
+		// .. and follow-up until
+		if (contact.getFollowUpUntil() != null) {
+			Predicate dateFilter = cb.lessThan(from.get(Visit.VISIT_DATE_TIME), DateHelper.addDays(contact.getFollowUpUntil(), 10));
+			filter = cb.and(filter, dateFilter);
+		}
+
+		cq.where(filter);
+		cq.orderBy(cb.desc(from.get(Visit.VISIT_DATE_TIME)));
+
+		List<Visit> result = em.createQuery(cq).getResultList();
+		return result.size() > 0 ? result.get(0) : null;
 	}
 	
 	public Visit getLastVisitByPerson(Person person, Disease disease, LocalDate maxDate) {

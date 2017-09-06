@@ -30,6 +30,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.highcharts.HighChart;
 import de.symeda.sormas.ui.login.LoginHelper;
@@ -73,6 +74,12 @@ public class DashboardView extends AbstractView {
 	public static final String EXPAND = "expand";
 	public static final String COLLAPSE = "collapse";
 	public static final String APPLY = "apply";
+	public static final String SHOW_CASES = "showCases";
+	public static final String SHOW_CONTACTS = "showContacts";
+	public static final String NO_FOLLOW_UP = "noFollowUp";
+	public static final String VISIT_24_HOURS = "visit24Hours";
+	public static final String VISIT_48_HOURS = "visit48Hours";
+	public static final String VISIT_GT_48_HOURS = "visitGT48Hours";
 
 	private VerticalLayout mapLayout;
 	private MapComponent mapComponent;
@@ -81,11 +88,14 @@ public class DashboardView extends AbstractView {
 	private HighChart epiCurveChart;
 
 	private List<CaseDataDto> cases = new ArrayList<>();
+	private List<ContactDto> contacts = new ArrayList<>();
 
 	private Date fromDate;
 	private Date toDate;
 	private Disease disease;
 	private boolean useDateFilterForMap;
+	private boolean showCases;
+	private boolean showContacts;
 
 	public DashboardView() {
 		setSizeFull();
@@ -264,6 +274,9 @@ public class DashboardView extends AbstractView {
 		mapLayout.setWidth(100, Unit.PERCENTAGE);
 		mapLayout.setHeight(360, Unit.PIXELS);
 
+		mapComponent = new MapComponent();
+		mapComponent.setSizeFull();
+		
 		// Map header
 		HorizontalLayout mapHeaderLayout = new HorizontalLayout();
 		{
@@ -284,6 +297,28 @@ public class DashboardView extends AbstractView {
 			});
 			mapHeaderLayout.addComponent(dateFilterForMap);	        
 			mapHeaderLayout.setComponentAlignment(dateFilterForMap, Alignment.MIDDLE_LEFT);
+			
+			CheckBox showCasesCheckBox = new CheckBox();
+			showCasesCheckBox.addStyleName(CssStyles.NO_MARGIN);
+			showCasesCheckBox.setCaption(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, SHOW_CASES));
+			showCasesCheckBox.addValueChangeListener(e -> {
+				showCases = (boolean) e.getProperty().getValue();
+				refreshMap();
+			});
+			mapHeaderLayout.addComponent(showCasesCheckBox);
+			mapHeaderLayout.setComponentAlignment(showCasesCheckBox, Alignment.MIDDLE_LEFT);
+			showCasesCheckBox.setValue(true);
+			
+			CheckBox showContactsCheckBox = new CheckBox();
+			showContactsCheckBox.addStyleName(CssStyles.NO_MARGIN);
+			showContactsCheckBox.setCaption(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, SHOW_CONTACTS));
+			showContactsCheckBox.addValueChangeListener(e -> {
+				showContacts = (boolean) e.getProperty().getValue();
+				refreshMap();
+			});
+			mapHeaderLayout.addComponent(showContactsCheckBox);
+			mapHeaderLayout.setComponentAlignment(showContactsCheckBox, Alignment.MIDDLE_LEFT);
+			showContactsCheckBox.setValue(true);
 
 			Button expandMap = new Button(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, EXPAND), FontAwesome.EXPAND);
 			expandMap.setStyleName(ValoTheme.BUTTON_LINK);
@@ -320,38 +355,44 @@ public class DashboardView extends AbstractView {
 		mapLayout.addComponent(mapHeaderLayout);
 
 		// Map and map key
-		mapComponent = new MapComponent();
-		mapComponent.setSizeFull();
 		mapLayout.addComponent(mapComponent);
 		mapLayout.setExpandRatio(mapComponent, 1);
 
-		HorizontalLayout mapFooterLayout = new HorizontalLayout();
+		HorizontalLayout mapCaseFooterLayout = new HorizontalLayout();
 		{
-			mapFooterLayout.setWidth(100, Unit.PERCENTAGE);
-			mapFooterLayout.setSpacing(true);
-			mapFooterLayout.addStyleName(CssStyles.VSPACETOP3);
+			mapCaseFooterLayout.setWidth(100, Unit.PERCENTAGE);
+			mapCaseFooterLayout.setSpacing(true);
+			mapCaseFooterLayout.addStyleName(CssStyles.VSPACETOP3);
 
 			HorizontalLayout legendLayout = new HorizontalLayout();
 			legendLayout.setWidth(100, Unit.PERCENTAGE);
-			legendLayout.setSpacing(true);
 
 			HorizontalLayout legendEntry = createLegendEntry("mapicons/grey-house-small.png", I18nProperties.getPrefixFieldCaption(I18N_PREFIX, NOT_YET_CLASSIFIED));
 			legendLayout.addComponent(legendEntry);
 			legendLayout.setComponentAlignment(legendEntry, Alignment.MIDDLE_LEFT);
 			legendLayout.setExpandRatio(legendEntry, 0);
+			Label spacer = new Label();
+			spacer.setWidth(6, Unit.PIXELS);
+			legendLayout.addComponent(spacer);
 			legendEntry = createLegendEntry("mapicons/yellow-house-small.png", I18nProperties.getPrefixFieldCaption(I18N_PREFIX, SUSPECT));
 			legendLayout.addComponent(legendEntry);
 			legendLayout.setComponentAlignment(legendEntry, Alignment.MIDDLE_LEFT);
 			legendLayout.setExpandRatio(legendEntry, 0);
+			spacer = new Label();
+			spacer.setWidth(6, Unit.PIXELS);
+			legendLayout.addComponent(spacer);
 			legendEntry = createLegendEntry("mapicons/orange-house-small.png", I18nProperties.getPrefixFieldCaption(I18N_PREFIX, PROBABLE));
 			legendLayout.addComponent(legendEntry);
 			legendLayout.setComponentAlignment(legendEntry, Alignment.MIDDLE_LEFT);
 			legendLayout.setExpandRatio(legendEntry, 0);
+			spacer = new Label();
+			spacer.setWidth(6, Unit.PIXELS);
+			legendLayout.addComponent(spacer);
 			legendEntry = createLegendEntry("mapicons/red-house-small.png", I18nProperties.getPrefixFieldCaption(I18N_PREFIX, CONFIRMED));
 			legendLayout.addComponent(legendEntry);
 			legendLayout.setComponentAlignment(legendEntry, Alignment.MIDDLE_LEFT);
 			legendLayout.setExpandRatio(legendEntry, 1);
-			mapFooterLayout.addComponent(legendLayout);
+			mapCaseFooterLayout.addComponent(legendLayout);
 
 			Button noGPSButton = new Button("Cases without GPS tag");
 			noGPSButton.addStyleName(ValoTheme.BUTTON_LINK);
@@ -370,11 +411,49 @@ public class DashboardView extends AbstractView {
 				layout.setMargin(true);
 				window.setCaption("Cases without GPS tag");
 			});
-			mapFooterLayout.addComponent(noGPSButton);
-			mapFooterLayout.setComponentAlignment(noGPSButton, Alignment.MIDDLE_RIGHT);
-			mapFooterLayout.setExpandRatio(legendLayout, 1);
+			mapCaseFooterLayout.addComponent(noGPSButton);
+			mapCaseFooterLayout.setComponentAlignment(noGPSButton, Alignment.MIDDLE_RIGHT);
+			mapCaseFooterLayout.setExpandRatio(legendLayout, 1);
 		}
-		mapLayout.addComponent(mapFooterLayout);
+		mapLayout.addComponent(mapCaseFooterLayout);
+		
+		HorizontalLayout mapContactFooterLayout = new HorizontalLayout();
+		{
+			mapContactFooterLayout.setWidth(100, Unit.PERCENTAGE);
+			mapContactFooterLayout.setSpacing(true);
+
+			HorizontalLayout legendLayout = new HorizontalLayout();
+			legendLayout.setWidth(100, Unit.PERCENTAGE);
+
+			HorizontalLayout legendEntry = createLegendEntry("mapicons/grey-contact.png", I18nProperties.getPrefixFieldCaption(I18N_PREFIX, NO_FOLLOW_UP));
+			legendLayout.addComponent(legendEntry);
+			legendLayout.setComponentAlignment(legendEntry, Alignment.MIDDLE_LEFT);
+			legendLayout.setExpandRatio(legendEntry, 0);
+			Label spacer = new Label();
+			spacer.setWidth(6, Unit.PIXELS);
+			legendLayout.addComponent(spacer);
+			legendEntry = createLegendEntry("mapicons/green-contact.png", I18nProperties.getPrefixFieldCaption(I18N_PREFIX, VISIT_24_HOURS));
+			legendLayout.addComponent(legendEntry);
+			legendLayout.setComponentAlignment(legendEntry, Alignment.MIDDLE_LEFT);
+			legendLayout.setExpandRatio(legendEntry, 0);
+			spacer = new Label();
+			spacer.setWidth(6, Unit.PIXELS);
+			legendLayout.addComponent(spacer);
+			legendEntry = createLegendEntry("mapicons/orange-contact.png", I18nProperties.getPrefixFieldCaption(I18N_PREFIX, VISIT_48_HOURS));
+			legendLayout.addComponent(legendEntry);
+			legendLayout.setComponentAlignment(legendEntry, Alignment.MIDDLE_LEFT);
+			legendLayout.setExpandRatio(legendEntry, 0);
+			spacer = new Label();
+			spacer.setWidth(6, Unit.PIXELS);
+			legendLayout.addComponent(spacer);
+			legendEntry = createLegendEntry("mapicons/red-contact.png", I18nProperties.getPrefixFieldCaption(I18N_PREFIX, VISIT_GT_48_HOURS));
+			legendLayout.addComponent(legendEntry);
+			legendLayout.setComponentAlignment(legendEntry, Alignment.MIDDLE_LEFT);
+			legendLayout.setExpandRatio(legendEntry, 1);
+			mapContactFooterLayout.addComponent(legendLayout);
+			mapContactFooterLayout.setExpandRatio(legendLayout, 1);
+		}
+		mapLayout.addComponent(mapContactFooterLayout);
 
 		return mapLayout;
 	}
@@ -383,24 +462,28 @@ public class DashboardView extends AbstractView {
 		HorizontalLayout entry = new HorizontalLayout();
 		entry.setSizeUndefined();
 		Image icon = new Image(null, new ThemeResource(iconThemeResource));
-		icon.setWidth(16.5f, Unit.PIXELS);
-		icon.setHeight(22.5f, Unit.PIXELS);
+		icon.setWidth(12.375f, Unit.PIXELS);
+		icon.setHeight(16.875f, Unit.PIXELS);
 		entry.addComponent(icon);
 		Label spacer = new Label();
 		spacer.setWidth(4, Unit.PIXELS);
 		entry.addComponent(spacer);
 		Label label = new Label(labelCaption);
 		label.setSizeUndefined();
+		label.addStyleName(CssStyles.LABEL_SMALL);
 		entry.addComponent(label);
 		return entry;
 	}
 
 	private void refreshDashboard() {
-		// Update the cases list according to the filters
+		// Update the cases and contacts lists according to the filters
 		String userUuid = LoginHelper.getCurrentUser().getUuid();
 		cases = FacadeProvider.getCaseFacade().getAllCasesBetween(fromDate, toDate, disease, userUuid);
+		for (CaseDataDto caze : cases) {
+			contacts.addAll(FacadeProvider.getContactFacade().getAllByCase(FacadeProvider.getCaseFacade().getReferenceByUuid(caze.getUuid())));
+		}
 
-		// Update cases shown on the map
+		// Update cases and contacts shown on the map
 		refreshMap();
 
 		// Update situation report and epi curve data
@@ -414,12 +497,17 @@ public class DashboardView extends AbstractView {
 	private void refreshMap() {
 		String userUuid = LoginHelper.getCurrentUser().getUuid();
 
-		// If the "use date filter for map" check box is not checked, use a list of all cases irrespective of the dates instead
+		// If the "use date filter for map" check box is not checked, use a list of all cases and contacts irrespective of the dates instead
 		if (useDateFilterForMap == true) {
-			mapComponent.showMarkers(cases);
+			mapComponent.showMarkers(cases, contacts, showCases, showContacts);
 		} else {
 			List<CaseDataDto> casesForMap = FacadeProvider.getCaseFacade().getAllCasesByDisease(disease, userUuid);
-			mapComponent.showMarkers(casesForMap);
+			List<ContactDto> contactsForMap = new ArrayList<>();
+			for (CaseDataDto caze : casesForMap) {
+				contactsForMap.addAll(FacadeProvider.getContactFacade().getAllByCase(FacadeProvider.getCaseFacade().getReferenceByUuid(caze.getUuid())));
+			}
+			
+			mapComponent.showMarkers(casesForMap, contactsForMap, showCases, showContacts);
 		}
 	}
 

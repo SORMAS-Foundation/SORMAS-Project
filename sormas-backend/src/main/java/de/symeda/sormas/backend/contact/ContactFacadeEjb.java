@@ -179,6 +179,18 @@ public class ContactFacadeEjb implements ContactFacade {
 				.map(c -> toReferenceDto(c))
 				.collect(Collectors.toList());
 	}
+	
+	@Override
+	public long getHoursSinceLastCooperativeVisit(ContactDto contactDto, VisitStatus visitStatus) {
+		Contact contact = contactService.getByUuid(contactDto.getUuid());
+		Visit lastVisit = visitService.getLastVisitByContact(contact, visitStatus);
+		if (lastVisit == null) {
+			return -1;
+		}
+		
+		long hoursSinceLastCooperativeVisit = ((new Date().getTime() - lastVisit.getVisitDateTime().getTime()) / 60000) / 60; // difference in hours
+		return hoursSinceLastCooperativeVisit;
+	}
 
 	public Contact fromDto(@NotNull ContactDto source) {
 		
