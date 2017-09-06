@@ -71,7 +71,9 @@ public enum UserRole {
 			}
 			break;
 		case NATIONAL_USER:
-			// TODO: Define roles the national user can assign/view
+			collection.add(SURVEILLANCE_SUPERVISOR);
+			collection.add(CASE_SUPERVISOR);
+			collection.add(CONTACT_SUPERVISOR);
 			break;
 		case SURVEILLANCE_SUPERVISOR:
 			collection.add(SURVEILLANCE_OFFICER);
