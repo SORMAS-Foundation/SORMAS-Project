@@ -899,11 +899,9 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 
                 DatabaseHelper.getAdoDao(embeddedAdo.getClass()).markAsReadWithCast(embeddedAdo);
             } catch (InvocationTargetException e) {
-                Log.e(getClass().getName(), "Error while trying to invoke read method to set last opened dates", e);
-                throw new RuntimeException(e);
+                throw new RuntimeException("Error while trying to invoke read method to set last opened dates", e);
             } catch (IllegalAccessException e) {
-                Log.e(getClass().getName(), "Error while trying to invoke read method to set last opened dates", e);
-                throw new RuntimeException(e);
+                throw new RuntimeException("Error while trying to invoke read method to set last opened dates", e);
             }
         }
     }
@@ -922,7 +920,6 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
             where.eq(AbstractDomainObject.SNAPSHOT, false).query();
             return builder.query();
         } catch (SQLException e) {
-            Log.e(getTableName(), "queryForAll threw exception", e);
             throw new RuntimeException(e);
         }
     }
@@ -938,7 +935,6 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
             where.and().eq(AbstractDomainObject.SNAPSHOT, false).query();
             return builder.query();
         } catch (SQLException e) {
-            Log.e(getTableName(), "queryForEq threw exception on: " + fieldName, e);
             throw new RuntimeException(e);
         }
     }
@@ -951,7 +947,6 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
             where.and().eq(AbstractDomainObject.SNAPSHOT, false).query();
             return builder.query();
         } catch (SQLException e) {
-            Log.e(getTableName(), "queryForNotNull threw exception on: " + fieldName, e);
             throw new RuntimeException(e);
         }
     }
@@ -970,7 +965,6 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
         try {
             return dao.create(data);
         } catch (SQLException e) {
-            Log.e(getTableName(), "build threw exception on: " + data, e);
             throw new RuntimeException(e);
         }
     }
@@ -982,7 +976,6 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
         try {
             return dao.update(data);
         } catch (SQLException e) {
-            Log.e(getTableName(), "update threw exception on: " + data, e);
             throw new RuntimeException(e);
         }
     }
@@ -994,7 +987,6 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
         try {
             return dao.delete(data);
         } catch (SQLException e) {
-            Log.e(getTableName(), "delete threw exception on: " + data, e);
             throw new RuntimeException(e);
         }
     }
@@ -1006,7 +998,6 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
         try {
             return dao.queryRaw(query, columnTypes, arguments);
         } catch (SQLException e) {
-            Log.e(getTableName(), "queryRaw threw exception on: " + query, e);
             throw new RuntimeException(e);
         }
     }
@@ -1018,7 +1009,6 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
         try {
             return dao.callBatchTasks(callable);
         } catch (Exception e) {
-            Log.e(getTableName(), "callBatchTasks threw exception on: " + callable, e);
             throw new RuntimeException(e);
         }
     }
@@ -1030,7 +1020,6 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
         try {
             return dao.countOf();
         } catch (SQLException e) {
-            Log.e(getTableName(), "countOf threw exception", e);
             throw new RuntimeException(e);
         }
     }
