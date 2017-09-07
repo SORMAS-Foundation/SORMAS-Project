@@ -1671,6 +1671,38 @@ INSERT INTO schema_version (version_number, comment) VALUES (62, 'RDC for Previo
 -- 2017-09-05 Generic names for 'Other' and 'None' facilities #261
 UPDATE facility SET name = 'OTHER_FACILITY' WHERE uuid = 'SORMAS-CONSTID-OTHERS-FACILITY';
 UPDATE facility SET name = 'NO_FACILITY' WHERE uuid = 'SORMAS-CONSTID-ISNONE-FACILITY';
-UPDATE public.facility SET changedate=now();
 
 INSERT INTO schema_version (version_number, comment) VALUES (63, 'Generic names for Other and None facilities');
+
+-- 2017-09-06 Weekly Reports and Weekly Report Entries #171
+CREATE TABLE weeklyreport(
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	healthfacility_id bigint not null,
+	informant_id bigint not null,
+	reportdatetime timestamp not null,
+	totalnumberofcases integer not null,
+	primary key(id)
+);
+
+ALTER TABLE weeklyreport OWNER TO sormas_user;
+ALTER TABLE weeklyreport ADD CONSTRAINT fk_weeklyreport_healthfacility_id FOREIGN KEY (healthfacility_id) REFERENCES facility(id);
+ALTER TABLE weeklyreport ADD CONSTRAINT fk_weeklyreport_informant_id FOREIGN KEY (informant_id) REFERENCES users(id);
+
+CREATE TABLE weeklyreportentry(
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	weeklyreport_id bigint not null,
+    disease character varying(255) not null,
+    numberofcases integer not null,
+    primary key(id)
+);
+
+ALTER TABLE weeklyreportentry OWNER TO sormas_user;
+ALTER TABLE weeklyreportentry ADD CONSTRAINT fk_weeklyreportentry_weeklyreport_id FOREIGN KEY (weeklyreport_id) REFERENCES weeklyreport(id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (64, 'Weekly Reports and Weekly Report Entries');
