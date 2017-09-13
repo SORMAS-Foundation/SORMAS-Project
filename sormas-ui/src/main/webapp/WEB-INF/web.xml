@@ -3,7 +3,7 @@
 	xmlns="http://xmlns.jcp.org/xml/ns/javaee"
 	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
 	version="3.1">
-	<display-name>SORMAS Rest Interface</display-name>
+	<display-name>SORMAS Web Interface</display-name>
 
 	<security-role>
 		<role-name>USER</role-name>
@@ -41,7 +41,8 @@
 	<security-role>
         <role-name>NATIONAL_USER</role-name>
     </security-role>
-	
+
+<!-- 	
 	<security-constraint>
 		<display-name>secure all</display-name>
 		<web-resource-collection>
@@ -52,9 +53,5 @@
 			<role-name>USER</role-name>
 		</auth-constraint>
 	</security-constraint>
-	
-	<login-config>
-		<auth-method>BASIC</auth-method>
-		<realm-name>sormasRealm</realm-name>
-	</login-config>
+ -->	
 </web-app>
