@@ -160,6 +160,9 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".sample.SamplesActivity" />
         </activity>
+        <activity
+            android:name=".reports.ReportsActivity"
+            android:launchMode="singleTop" />
 
         <receiver
             android:name=".SormasBootstrap"

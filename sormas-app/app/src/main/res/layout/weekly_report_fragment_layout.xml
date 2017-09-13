@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:descendantFocusability="beforeDescendants"
+    android:id="@+id/base_layout">
+
+    <data>
+        <variable name="caze" type="de.symeda.sormas.app.backend.report.WeeklyReport"/>
+    </data>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="10dp"
+            android:theme="@style/AppTheme"
+            android:focusable="true"
+            android:focusableInTouchMode="true">
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="5dp">
+
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.25"
+                    android:background="@color/colorLightGrey"
+                    android:text="@string/action_show_last_week"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:id="@+id/weekly_report_show_last_week"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginRight="5dp"/>
+
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.25"
+                    android:background="@color/colorLightGrey"
+                    android:text="@string/action_show_this_week"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:id="@+id/weekly_report_show_this_week"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginRight="10dp"/>
+
+                <de.symeda.sormas.app.component.SpinnerField
+                    android:id="@+id/weekly_report_year"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.25"
+                    android:paddingTop="@dimen/field_padding"
+                    android:paddingBottom="@dimen/field_padding"/>
+
+                <de.symeda.sormas.app.component.SpinnerField
+                    android:id="@+id/weekly_report_week"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.25"
+                    android:paddingTop="@dimen/field_padding"
+                    android:paddingBottom="@dimen/field_padding"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="20dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:orientation="horizontal">
+
+                    <de.symeda.sormas.app.component.LabelField
+                        android:id="@+id/weekly_report_start"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.5"
+                        android:paddingTop="@dimen/field_padding"
+                        android:paddingBottom="@dimen/field_padding"/>
+
+                    <de.symeda.sormas.app.component.LabelField
+                        android:id="@+id/weekly_report_end"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.5"
+                        android:paddingTop="@dimen/field_padding"
+                        android:paddingBottom="@dimen/field_padding"/>
+
+                </LinearLayout>
+
+                <de.symeda.sormas.app.component.LabelField
+                    android:id="@+id/weekly_report_report_date"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:paddingTop="@dimen/field_padding"
+                    android:paddingBottom="@dimen/field_padding"/>
+
+            </LinearLayout>
+
+            <!--<TextView-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:textAppearance="?android:attr/textAppearanceLarge"-->
+            <!--android:id="@+id/weekly_report_info"-->
+            <!--android:textColor="@android:color/tab_indicator_text"-->
+            <!--android:textSize="@dimen/abc_text_size_medium_material"-->
+            <!--android:paddingTop="15dp"-->
+            <!--android:paddingBottom="30dp"/>-->
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginBottom="25dp">
+
+                <TableLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:stretchColumns="*"
+                    android:id="@+id/report_table_layout">
+
+                </TableLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:id="@+id/weekly_report_no_report"
+                    android:text="@string/hint_no_weekly_report"
+                    android:textColor="@android:color/tab_indicator_text"
+                    android:layout_gravity="center_horizontal"
+                    android:textSize="@dimen/abc_text_size_medium_material"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="0dp"
+                    android:height="50dp"
+                    android:layout_weight="0.5"
+                    android:background="@color/colorLightGrey"
+                    android:text="@string/action_add_missing_case"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:layout_marginRight="5dp"
+                    android:id="@+id/weekly_report_add_missing"/>
+
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="0dp"
+                    android:height="50dp"
+                    android:layout_weight="0.5"
+                    android:background="@color/colorPrimary"
+                    android:text="@string/action_confirm_report"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:layout_marginLeft="5dp"
+                    android:id="@+id/weekly_report_confirm"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</layout>
