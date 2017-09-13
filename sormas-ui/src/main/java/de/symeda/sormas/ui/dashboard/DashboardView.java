@@ -107,7 +107,7 @@ public class DashboardView extends AbstractView {
 			showRegions = true;
 		} else {
 			showCases = true;
-			showRegions = true;
+			showContacts = true;
 		}
 
 		VerticalLayout dashboardLayout = new VerticalLayout();
