@@ -53,6 +53,10 @@ public class LoginHelper {
     	return principal != null;
     }
     
+	public static boolean isUserInRole(UserRole userRole) {
+		return VaadinServletService.getCurrentServletRequest().isUserInRole(userRole.name());
+	}
+    
     public static String getCurrentUserName() {
     	
 		Principal activeUserPrincipal = VaadinServletService.getCurrentServletRequest().getUserPrincipal();

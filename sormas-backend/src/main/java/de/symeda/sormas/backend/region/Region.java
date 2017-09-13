@@ -17,10 +17,14 @@ public class Region extends AbstractDomainObject {
 	public static final String NAME = "name";
 	public static final String EPID_CODE = "epidCode";
 	public static final String DISTRICTS = "districts";
+	public static final String POPULATION = "population";
+	public static final String GROWTH_RATE = "growthRate";
 	
 	private String name;
 	private String epidCode;
 	private List<District> districts;
+	private Integer population;
+	private Float growthRate;
 	
 	public String getName() {
 		return name;
@@ -48,5 +52,18 @@ public class Region extends AbstractDomainObject {
 	@Override
 	public String toString() {
 		return getName();
+	}
+	
+	public Integer getPopulation() {
+		return population;
+	}
+	public void setPopulation(Integer population) {
+		this.population = population;
+	}
+	public Float getGrowthRate() {
+		return growthRate;
+	}
+	public void setGrowthRate(Float growthRate) {
+		this.growthRate = growthRate;
 	}
 }

@@ -31,6 +31,7 @@ import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.highcharts.HighChart;
 import de.symeda.sormas.ui.login.LoginHelper;
@@ -96,10 +97,18 @@ public class DashboardView extends AbstractView {
 	private boolean useDateFilterForMap;
 	private boolean showCases;
 	private boolean showContacts;
+	private boolean showRegions;
 
 	public DashboardView() {
 		setSizeFull();
 		addStyleName("crud-view");
+		
+		if (LoginHelper.isUserInRole(UserRole.NATIONAL_USER)) {
+			showRegions = true;
+		} else {
+			showCases = true;
+			showRegions = true;
+		}
 
 		VerticalLayout dashboardLayout = new VerticalLayout();
 		dashboardLayout.setSpacing(false);
@@ -301,25 +310,38 @@ public class DashboardView extends AbstractView {
 			CheckBox showCasesCheckBox = new CheckBox();
 			showCasesCheckBox.addStyleName(CssStyles.NO_MARGIN);
 			showCasesCheckBox.setCaption(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, SHOW_CASES));
+			showCasesCheckBox.setValue(showCases);
 			showCasesCheckBox.addValueChangeListener(e -> {
 				showCases = (boolean) e.getProperty().getValue();
 				refreshMap();
 			});
 			mapHeaderLayout.addComponent(showCasesCheckBox);
 			mapHeaderLayout.setComponentAlignment(showCasesCheckBox, Alignment.MIDDLE_LEFT);
-			showCasesCheckBox.setValue(true);
 			
 			CheckBox showContactsCheckBox = new CheckBox();
 			showContactsCheckBox.addStyleName(CssStyles.NO_MARGIN);
 			showContactsCheckBox.setCaption(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, SHOW_CONTACTS));
+			showContactsCheckBox.setValue(showContacts);
 			showContactsCheckBox.addValueChangeListener(e -> {
 				showContacts = (boolean) e.getProperty().getValue();
 				refreshMap();
 			});
 			mapHeaderLayout.addComponent(showContactsCheckBox);
 			mapHeaderLayout.setComponentAlignment(showContactsCheckBox, Alignment.MIDDLE_LEFT);
-			showContactsCheckBox.setValue(true);
 
+			if (LoginHelper.isUserInRole(UserRole.NATIONAL_USER)) {
+				CheckBox showRegionsCheckBox = new CheckBox();
+				showRegionsCheckBox.addStyleName(CssStyles.NO_MARGIN);
+				showRegionsCheckBox.setCaption("Show regions");//I18nProperties.getPrefixFieldCaption(I18N_PREFIX, SHOW_CASES));
+				showRegionsCheckBox.setValue(showRegions);
+				showRegionsCheckBox.addValueChangeListener(e -> {
+					showRegions = (boolean) e.getProperty().getValue();
+					refreshMap();
+				});
+				mapHeaderLayout.addComponent(showRegionsCheckBox);
+				mapHeaderLayout.setComponentAlignment(showRegionsCheckBox, Alignment.MIDDLE_LEFT);
+			}
+			
 			Button expandMap = new Button(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, EXPAND), FontAwesome.EXPAND);
 			expandMap.setStyleName(ValoTheme.BUTTON_LINK);
 			expandMap.addStyleName(CssStyles.NO_MARGIN);   
@@ -495,19 +517,42 @@ public class DashboardView extends AbstractView {
 	}
 
 	private void refreshMap() {
-		String userUuid = LoginHelper.getCurrentUser().getUuid();
 
-		// If the "use date filter for map" check box is not checked, use a list of all cases and contacts irrespective of the dates instead
-		if (useDateFilterForMap == true) {
-			mapComponent.showMarkers(cases, contacts, showCases, showContacts);
-		} else {
-			List<CaseDataDto> casesForMap = FacadeProvider.getCaseFacade().getAllCasesByDisease(disease, userUuid);
-			List<ContactDto> contactsForMap = new ArrayList<>();
-			for (CaseDataDto caze : casesForMap) {
-				contactsForMap.addAll(FacadeProvider.getContactFacade().getAllByCase(FacadeProvider.getCaseFacade().getReferenceByUuid(caze.getUuid())));
+		mapComponent.clearRegionShapes();
+		mapComponent.clearCaseMarkers();
+		mapComponent.clearContactMarkers();
+		
+		if (showRegions) {
+			mapComponent.showRegionsShapes();
+		}
+		
+		if (showCases || showContacts) {
+			List<CaseDataDto> casesForMap;
+			List<ContactDto> contactsForMap;
+
+			// If the "use date filter for map" check box is not checked, use a list of all cases and contacts irrespective of the dates instead
+			if (useDateFilterForMap) {
+				casesForMap = cases;
+				contactsForMap = contacts;
+			} else {
+				String userUuid = LoginHelper.getCurrentUser().getUuid();
+				casesForMap = FacadeProvider.getCaseFacade().getAllCasesByDisease(disease, userUuid);
+				if (showContacts) {
+					contactsForMap = new ArrayList<>();
+					for (CaseDataDto caze : casesForMap) {
+						contactsForMap.addAll(FacadeProvider.getContactFacade().getAllByCase(FacadeProvider.getCaseFacade().getReferenceByUuid(caze.getUuid())));
+					}
+				} else {
+					contactsForMap = null;
+				}
 			}
 			
-			mapComponent.showMarkers(casesForMap, contactsForMap, showCases, showContacts);
+			if (showCases) {
+				mapComponent.showCaseMarkers(casesForMap);
+			}
+			if (showContacts) {
+				mapComponent.showContactMarkers(contactsForMap);
+			}
 		}
 	}
 

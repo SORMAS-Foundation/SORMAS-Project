@@ -1712,3 +1712,10 @@ ALTER TABLE weeklyreport ADD COLUMN year integer not null;
 ALTER TABLE weeklyreport ADD COLUMN epiweek integer not null;
 
 INSERT INTO schema_version (version_number, comment) VALUES (65, 'Year and epi week for Weekly Reports');
+
+-- 2017-09-12 Population for regions #82
+ALTER TABLE region ADD COLUMN population integer;
+ALTER TABLE region ADD COLUMN growthRate real;
+
+INSERT INTO schema_version (version_number, comment) VALUES (66, 'Population for regions #82');
+

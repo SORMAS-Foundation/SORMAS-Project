@@ -21,9 +21,10 @@
 			<groupId>com.vaadin</groupId>
 			<artifactId>vaadin-client-compiler</artifactId>
 		</dependency>
+		
 		<dependency>
-			<groupId>com.vaadin.tapio</groupId>
-			<artifactId>googlemaps</artifactId>
+		   <groupId>com.vaadin.tapio</groupId>
+		   <artifactId>googlemaps</artifactId>
 		</dependency>
 
     </dependencies>

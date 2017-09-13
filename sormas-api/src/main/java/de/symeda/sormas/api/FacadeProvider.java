@@ -13,6 +13,7 @@ import de.symeda.sormas.api.hospitalization.HospitalizationFacade;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.region.CommunityFacade;
 import de.symeda.sormas.api.region.DistrictFacade;
+import de.symeda.sormas.api.region.GeoShapeProvider;
 import de.symeda.sormas.api.region.RegionFacade;
 import de.symeda.sormas.api.report.WeeklyReportEntryFacade;
 import de.symeda.sormas.api.report.WeeklyReportFacade;
@@ -121,6 +122,11 @@ public class FacadeProvider {
 	public static WeeklyReportEntryFacade getWeeklyReportEntryFacade() {
 		return get().lookupEjbRemote(WeeklyReportEntryFacade.class);
 	}
+	
+	public static GeoShapeProvider getGeoShapeProvider() {
+		return get().lookupEjbRemote(GeoShapeProvider.class);
+	}
+	
 
 	@SuppressWarnings("unchecked")
 	public <P> P lookupEjbRemote(Class<P> clazz) {

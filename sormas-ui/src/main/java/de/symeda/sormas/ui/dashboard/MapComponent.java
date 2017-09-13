@@ -1,16 +1,24 @@
 package de.symeda.sormas.ui.dashboard;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.vaadin.shared.ui.grid.HeightMode;
 import com.vaadin.tapio.googlemaps.GoogleMap;
 import com.vaadin.tapio.googlemaps.client.LatLon;
+import com.vaadin.tapio.googlemaps.client.events.MapClickListener;
 import com.vaadin.tapio.googlemaps.client.events.MarkerClickListener;
 import com.vaadin.tapio.googlemaps.client.overlays.GoogleMapMarker;
+import com.vaadin.tapio.googlemaps.client.overlays.GoogleMapPolygon;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
@@ -21,7 +29,11 @@ import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.region.GeoLatLon;
+import de.symeda.sormas.api.region.RegionDataDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.login.LoginHelper;
@@ -29,6 +41,8 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 @SuppressWarnings("serial")
 public class MapComponent extends VerticalLayout {
+
+	final static Logger logger = LoggerFactory.getLogger(MapComponent.class);
 
 	private static final int MARKER_NORMAL_SIZE = 2;
 	private static final int MARKER_LARGE_SIZE = 3;
@@ -39,22 +53,30 @@ public class MapComponent extends VerticalLayout {
 	private final LatLon centerKano = new LatLon(11.5636503, 8.4596675);
 	private final LatLon centerOyo = new LatLon(8.110803, 3.625342);
 	
-	private final HashMap<GoogleMapMarker, FacilityDto> facilityMarkers = new HashMap<GoogleMapMarker, FacilityDto>();
-	private final HashMap<GoogleMapMarker, CaseDataDto> caseMarkers = new HashMap<GoogleMapMarker, CaseDataDto>();
-	private final HashMap<GoogleMapMarker, ContactDto> contactMarkers = new HashMap<GoogleMapMarker, ContactDto>();
-	private final HashMap<FacilityReferenceDto, List<CaseDataDto>> facilities = new HashMap<>();
+	private final HashMap<GoogleMapMarker, FacilityDto> markerCaseFacilities = new HashMap<GoogleMapMarker, FacilityDto>();
+	private final HashMap<GoogleMapMarker, CaseDataDto> markerCases = new HashMap<GoogleMapMarker, CaseDataDto>();
+	private final HashMap<GoogleMapMarker, ContactDto> markerContacts = new HashMap<GoogleMapMarker, ContactDto>();
+	
+	private final HashMap<RegionDataDto, GoogleMapPolygon> regionPolygons = new HashMap<RegionDataDto, GoogleMapPolygon>();
+	
+	private final HashMap<FacilityReferenceDto, List<CaseDataDto>> facilitiesCasesMaps = new HashMap<>();
 	private final List<CaseDataDto> mapCases = new ArrayList<>();
 	private final List<ContactDto> mapContacts = new ArrayList<>();
     
     public MapComponent() {    	
 		map = new GoogleMap("AIzaSyAaJpN8a_NhEU-02-t5uVi02cAaZtKafkw", null, null);
 		
-    	UserDto user = LoginHelper.getCurrentUser();
-    	if (user.getRegion() != null) {
-    		map.setCenter("Oyo".equals(user.getRegion().getCaption()) ? centerOyo : centerKano);
-    	}
+		if (LoginHelper.isUserInRole(UserRole.NATIONAL_USER)) {
+			map.setZoom(6);
+			map.setCenter(new LatLon(9.101718, 7.396517));
+		} else {
+	    	UserDto user = LoginHelper.getCurrentUser();
+	    	if (user.getRegion() != null) {
+	    		map.setCenter("Oyo".equals(user.getRegion().getCaption()) ? centerOyo : centerKano);
+	    	}
+	        map.setZoom(9);
+		}
         
-        map.setZoom(9);
         map.setSizeFull();
         map.setMinZoom(4);
         map.setMaxZoom(16);
@@ -65,9 +87,9 @@ public class MapComponent extends VerticalLayout {
         map.addMarkerClickListener(new MarkerClickListener() {
             @Override
             public void markerClicked(GoogleMapMarker clickedMarker) {
-            	FacilityDto facility = facilityMarkers.get(clickedMarker);
-            	CaseDataDto caze = caseMarkers.get(clickedMarker);
-            	ContactDto contact = contactMarkers.get(clickedMarker);
+            	FacilityDto facility = markerCaseFacilities.get(clickedMarker);
+            	CaseDataDto caze = markerCases.get(clickedMarker);
+            	ContactDto contact = markerContacts.get(clickedMarker);
             	
             	if (facility != null) {
                 	VerticalLayout layout = new VerticalLayout();
@@ -76,7 +98,7 @@ public class MapComponent extends VerticalLayout {
                 	caseGrid.setHeightMode(HeightMode.ROW);
                 	layout.addComponent(caseGrid);
                 	layout.setMargin(true);
-                	window.setCaption("Cases in " + facilityMarkers.get(clickedMarker).getCaption());
+                	window.setCaption("Cases in " + markerCaseFacilities.get(clickedMarker).getCaption());
             	} else if (caze != null) {
             		ControllerProvider.getCaseController().navigateToData(caze.getUuid());
             	} else if (contact != null) {
@@ -84,151 +106,221 @@ public class MapComponent extends VerticalLayout {
             	}
             }
         });
+        
+        map.addMapClickListener(new MapClickListener() {
+			
+			@Override
+			public void mapClicked(LatLon position) {
+				if (regionPolygons.isEmpty())
+					return;
+				
+				RegionReferenceDto regionRef = FacadeProvider.getGeoShapeProvider().getRegionByCoord(new GeoLatLon(position.getLat(), position.getLon()));
+				
+				if (regionRef != null) {
+					GoogleMapPolygon googleMapPolygon = regionPolygons.get(regionRef);
+					googleMapPolygon.setStrokeWeight(3);
+				}				
+			}
+		});
     }
     
-    public void showMarkers(List<CaseDataDto> cases, List<ContactDto> contacts, boolean showCases, boolean showContacts) {
-    	// clear old markers
-    	for (GoogleMapMarker facilityMarker : facilityMarkers.keySet()) {
+    public void clearRegionShapes() {
+    	
+    	for (GoogleMapPolygon regionPolygon : regionPolygons.values()) {
+			map.removePolygonOverlay(regionPolygon);
+		}
+    	regionPolygons.clear();
+    }
+    
+    public void showRegionsShapes() {
+
+    	//map.addStyleName("no-tiles");
+    	
+    	clearRegionShapes();
+    	
+	    List<RegionDataDto> regions = FacadeProvider.getRegionFacade().getAllData();
+	    Map<RegionReferenceDto, Long> caseCountPerRegion = FacadeProvider.getCaseFacade().getCaseCountPerRegion();
+
+	    for (RegionDataDto region : regions) {
+
+	    	RegionReferenceDto regionRef = region.toReferenceDto();
+		    GeoLatLon[][] regionShape = FacadeProvider.getGeoShapeProvider().getRegionShape(regionRef);
+		    
+		    for (GeoLatLon[] regionShapePart : regionShape) {
+		    	
+			    GoogleMapPolygon polygon = new GoogleMapPolygon(
+			    		Arrays.stream(regionShapePart)
+			    		.map(c -> new LatLon(c.getLat(), c.getLon()))
+			    		.collect(Collectors.toList()));
+
+			    long caseCount = caseCountPerRegion.containsKey(regionRef) ? caseCountPerRegion.get(regionRef) : 0;
+			    float incidence = (float)caseCount / (region.getPopulation() / 10000);
+			    polygon.setFillColor("#00AAFF");
+			    polygon.setFillOpacity(incidence * 10);
+			    polygon.setStrokeOpacity(0.5);
+			    		
+			    regionPolygons.put(region, polygon);
+			    map.addPolygonOverlay(polygon);
+		    }
+		}
+    }
+    
+    public void clearCaseMarkers() {
+
+    	for (GoogleMapMarker facilityMarker : markerCaseFacilities.keySet()) {
 			map.removeMarker(facilityMarker);
 		}
-    	for (GoogleMapMarker caseMarker : caseMarkers.keySet()) {
+    	for (GoogleMapMarker caseMarker : markerCases.keySet()) {
     		map.removeMarker(caseMarker);
     	}
-    	for (GoogleMapMarker contactMarker : contactMarkers.keySet()) {
-    		map.removeMarker(contactMarker);
-    	}
-    	facilityMarkers.clear();
-    	caseMarkers.clear();
-    	contactMarkers.clear();
-    	facilities.clear();
+
+    	markerCaseFacilities.clear();
+    	markerCases.clear();
+    	facilitiesCasesMaps.clear();
     	mapCases.clear();
-    	mapContacts.clear();
+    }
+
+
+    public void showCaseMarkers(List<CaseDataDto> cases) {
     	
-    	if (showCases) {
-	    	// collect cases for health facilities
-	    	for (CaseDataDto caze : cases) {
-	    		CaseClassification classification = caze.getCaseClassification();
-	    		if (classification == null || classification == CaseClassification.NO_CASE)
-	    			continue;
-	    		if (caze.getHealthFacility() == null)
-	    			continue;
-	    		if (caze.getHealthFacility().getUuid().equals(FacilityDto.NONE_FACILITY_UUID) ||
-	    				caze.getHealthFacility().getUuid().equals(FacilityDto.OTHER_FACILITY_UUID)) {
-	    			mapCases.add(caze);
-	    			continue;
-	    		}
-	    		
-	    		FacilityReferenceDto facility = caze.getHealthFacility();
-	    		if (facilities.get(facility) == null) {
-	    			facilities.put(facility, new ArrayList<CaseDataDto>());
-	    		}
-	    		facilities.get(facility).add(caze);
-	    	}
-	    	
-	    	// create markers for all facilities with cases
-	    	for (FacilityReferenceDto facilityReference : facilities.keySet()) {
-	    		
-	    		FacilityDto facility = FacadeProvider.getFacilityFacade().getByUuid(facilityReference.getUuid());
-	    		
-	    		if (facility.getLatitude() == null || facility.getLongitude() == null) {
-	    			continue;
-	    		}
-	    		
-	    		LatLon latLon = new LatLon(facility.getLatitude(), facility.getLongitude());
-	    		MapIcon icon;
-	    		
-	    		// colorize the icon by the "strongest" classification type (order as in enum) and set its size depending
-	    		// on the number of cases
-	    		int numberOfCases = facilities.get(facility).size();
-	    		Set<CaseClassification> classificationSet = new HashSet<>();
-	    		for (CaseDataDto caseDto : facilities.get(facility)) {
-	    			classificationSet.add(caseDto.getCaseClassification());
-	    		}
-	    		
-	    		if (classificationSet.contains(CaseClassification.CONFIRMED)) {
-	    			if (numberOfCases >= MARKER_VERY_LARGE_SIZE) icon = MapIcon.RED_HOUSE_VERY_LARGE;
-	    			else if (numberOfCases >= MARKER_LARGE_SIZE) icon = MapIcon.RED_HOUSE_LARGE;
-	    			else if (numberOfCases >= MARKER_NORMAL_SIZE) icon = MapIcon.RED_HOUSE;
-	    			else icon = MapIcon.RED_HOUSE_SMALL;
-	    		} else if (classificationSet.contains(CaseClassification.PROBABLE)) {
-	    			if (numberOfCases >= MARKER_VERY_LARGE_SIZE) icon = MapIcon.ORANGE_HOUSE_VERY_LARGE;
-	    			else if (numberOfCases >= MARKER_LARGE_SIZE) icon = MapIcon.ORANGE_HOUSE_LARGE;
-	    			else if (numberOfCases >= MARKER_NORMAL_SIZE) icon = MapIcon.ORANGE_HOUSE;
-	    			else icon = MapIcon.ORANGE_HOUSE_SMALL;
-	    		} else if (classificationSet.contains(CaseClassification.SUSPECT)) {
-	    			if (numberOfCases >= MARKER_VERY_LARGE_SIZE) icon = MapIcon.YELLOW_HOUSE_VERY_LARGE;
-	    			else if (numberOfCases >= MARKER_LARGE_SIZE) icon = MapIcon.YELLOW_HOUSE_LARGE;
-	    			else if (numberOfCases >= MARKER_NORMAL_SIZE) icon = MapIcon.YELLOW_HOUSE;
-	    			else icon = MapIcon.YELLOW_HOUSE_SMALL;
-	    		} else {
-	    			if (numberOfCases >= MARKER_VERY_LARGE_SIZE) icon = MapIcon.GREY_HOUSE_VERY_LARGE;
-	    			else if (numberOfCases >= MARKER_LARGE_SIZE) icon = MapIcon.GREY_HOUSE_LARGE;
-	    			else if (numberOfCases >= MARKER_NORMAL_SIZE) icon = MapIcon.GREY_HOUSE;
-	    			else icon = MapIcon.GREY_HOUSE_SMALL;
-	    		}
-	    		
-	    		// create and place the marker
-	    		GoogleMapMarker marker = new GoogleMapMarker(facility.toString() + " (" + facilities.get(facility).size() + " case(s))", latLon, false, icon.getUrl());
-	    		marker.setId(facility.getUuid().hashCode());
-	    		facilityMarkers.put(marker, facility);
-	    		map.addMarker(marker);
-	    	}
-	    	
-	    	for (CaseDataDto caze : mapCases) {
-	    		if (caze.getReportLat() == null || caze.getReportLon() == null) {
-	    			continue;
-	    		}
-	    		
-	    		LatLon latLon = new LatLon(caze.getReportLat(), caze.getReportLon());
-	    		MapIcon icon;
-	    		
-	    		if (caze.getCaseClassification() == CaseClassification.CONFIRMED) {
-	    			icon = MapIcon.RED_DOT_SMALL;
-	    		} else if (caze.getCaseClassification() == CaseClassification.PROBABLE) {
-	    			icon = MapIcon.ORANGE_DOT_SMALL;
-	    		} else if (caze.getCaseClassification() == CaseClassification.SUSPECT) {
-	    			icon = MapIcon.YELLOW_DOT_SMALL;
-	    		} else {
-	    			icon = MapIcon.GREY_DOT_SMALL;
-	    		}
-	    		
-	    		GoogleMapMarker marker = new GoogleMapMarker(caze.toString(), latLon, false, icon.getUrl());
-	    		marker.setId(caze.getUuid().hashCode());
-	    		caseMarkers.put(marker, caze);
-	    		map.addMarker(marker);
-	    	}
+    	clearCaseMarkers();
+
+    	// collect cases for health facilities
+    	for (CaseDataDto caze : cases) {
+    		CaseClassification classification = caze.getCaseClassification();
+    		if (classification == null || classification == CaseClassification.NO_CASE)
+    			continue;
+    		if (caze.getHealthFacility() == null)
+    			continue;
+    		if (caze.getHealthFacility().getUuid().equals(FacilityDto.NONE_FACILITY_UUID) ||
+    				caze.getHealthFacility().getUuid().equals(FacilityDto.OTHER_FACILITY_UUID)) {
+    			mapCases.add(caze);
+    			continue;
+    		}
+    		
+    		FacilityReferenceDto facility = caze.getHealthFacility();
+    		if (facilitiesCasesMaps.get(facility) == null) {
+    			facilitiesCasesMaps.put(facility, new ArrayList<CaseDataDto>());
+    		}
+    		facilitiesCasesMaps.get(facility).add(caze);
     	}
     	
-    	if (showContacts) {
-	    	for (ContactDto contact : contacts) {
-	    		if (contact.getReportLat() == null || contact.getReportLon() == null) {
-	    			continue;
-	    		}
-	    		
-	    		LatLon latLon = new LatLon(contact.getReportLat(), contact.getReportLon());
-	    		MapIcon icon;
-	    		
-	    		if (contact.getFollowUpStatus() == FollowUpStatus.NO_FOLLOW_UP) {
-	    			icon = MapIcon.GREY_CONTACT;
-	    		} else {
-	        		long hoursSinceLastCooperativeVisit = FacadeProvider.getContactFacade().getHoursSinceLastCooperativeVisit(contact, VisitStatus.COOPERATIVE);
-	        		if (hoursSinceLastCooperativeVisit < 0 || hoursSinceLastCooperativeVisit > 48) {
-	        			icon = MapIcon.RED_CONTACT;
-	        		} else if (hoursSinceLastCooperativeVisit > 24) {
-	        			icon = MapIcon.ORANGE_CONTACT;
-	        		} else {
-	        			icon = MapIcon.GREEN_CONTACT;
-	        		}
-	        	}
-	    		
-	    		GoogleMapMarker marker = new GoogleMapMarker(contact.toString(), latLon, false, icon.getUrl());
-	    		marker.setId(contact.getUuid().hashCode());
-	    		contactMarkers.put(marker, contact);
-	    		map.addMarker(marker);
-	    	}
+    	// create markers for all facilities with cases
+    	for (FacilityReferenceDto facilityReference : facilitiesCasesMaps.keySet()) {
+    		
+    		FacilityDto facility = FacadeProvider.getFacilityFacade().getByUuid(facilityReference.getUuid());
+    		
+    		if (facility.getLatitude() == null || facility.getLongitude() == null) {
+    			continue;
+    		}
+    		
+    		LatLon latLon = new LatLon(facility.getLatitude(), facility.getLongitude());
+    		MapIcon icon;
+    		
+    		// colorize the icon by the "strongest" classification type (order as in enum) and set its size depending
+    		// on the number of cases
+    		int numberOfCases = facilitiesCasesMaps.get(facility).size();
+    		Set<CaseClassification> classificationSet = new HashSet<>();
+    		for (CaseDataDto caseDto : facilitiesCasesMaps.get(facility)) {
+    			classificationSet.add(caseDto.getCaseClassification());
+    		}
+    		
+    		if (classificationSet.contains(CaseClassification.CONFIRMED)) {
+    			if (numberOfCases >= MARKER_VERY_LARGE_SIZE) icon = MapIcon.RED_HOUSE_VERY_LARGE;
+    			else if (numberOfCases >= MARKER_LARGE_SIZE) icon = MapIcon.RED_HOUSE_LARGE;
+    			else if (numberOfCases >= MARKER_NORMAL_SIZE) icon = MapIcon.RED_HOUSE;
+    			else icon = MapIcon.RED_HOUSE_SMALL;
+    		} else if (classificationSet.contains(CaseClassification.PROBABLE)) {
+    			if (numberOfCases >= MARKER_VERY_LARGE_SIZE) icon = MapIcon.ORANGE_HOUSE_VERY_LARGE;
+    			else if (numberOfCases >= MARKER_LARGE_SIZE) icon = MapIcon.ORANGE_HOUSE_LARGE;
+    			else if (numberOfCases >= MARKER_NORMAL_SIZE) icon = MapIcon.ORANGE_HOUSE;
+    			else icon = MapIcon.ORANGE_HOUSE_SMALL;
+    		} else if (classificationSet.contains(CaseClassification.SUSPECT)) {
+    			if (numberOfCases >= MARKER_VERY_LARGE_SIZE) icon = MapIcon.YELLOW_HOUSE_VERY_LARGE;
+    			else if (numberOfCases >= MARKER_LARGE_SIZE) icon = MapIcon.YELLOW_HOUSE_LARGE;
+    			else if (numberOfCases >= MARKER_NORMAL_SIZE) icon = MapIcon.YELLOW_HOUSE;
+    			else icon = MapIcon.YELLOW_HOUSE_SMALL;
+    		} else {
+    			if (numberOfCases >= MARKER_VERY_LARGE_SIZE) icon = MapIcon.GREY_HOUSE_VERY_LARGE;
+    			else if (numberOfCases >= MARKER_LARGE_SIZE) icon = MapIcon.GREY_HOUSE_LARGE;
+    			else if (numberOfCases >= MARKER_NORMAL_SIZE) icon = MapIcon.GREY_HOUSE;
+    			else icon = MapIcon.GREY_HOUSE_SMALL;
+    		}
+    		
+    		// create and place the marker
+    		GoogleMapMarker marker = new GoogleMapMarker(facility.toString() + " (" + facilitiesCasesMaps.get(facility).size() + " case(s))", latLon, false, icon.getUrl());
+    		marker.setId(facility.getUuid().hashCode());
+    		markerCaseFacilities.put(marker, facility);
+    		map.addMarker(marker);
+    	}
+    	
+    	for (CaseDataDto caze : mapCases) {
+    		if (caze.getReportLat() == null || caze.getReportLon() == null) {
+    			continue;
+    		}
+    		
+    		LatLon latLon = new LatLon(caze.getReportLat(), caze.getReportLon());
+    		MapIcon icon;
+    		
+    		if (caze.getCaseClassification() == CaseClassification.CONFIRMED) {
+    			icon = MapIcon.RED_DOT_SMALL;
+    		} else if (caze.getCaseClassification() == CaseClassification.PROBABLE) {
+    			icon = MapIcon.ORANGE_DOT_SMALL;
+    		} else if (caze.getCaseClassification() == CaseClassification.SUSPECT) {
+    			icon = MapIcon.YELLOW_DOT_SMALL;
+    		} else {
+    			icon = MapIcon.GREY_DOT_SMALL;
+    		}
+    		
+    		GoogleMapMarker marker = new GoogleMapMarker(caze.toString(), latLon, false, icon.getUrl());
+    		marker.setId(caze.getUuid().hashCode());
+    		markerCases.put(marker, caze);
+    		map.addMarker(marker);
     	}
     }
     
+    public void clearContactMarkers() {
+
+    	for (GoogleMapMarker contactMarker : markerContacts.keySet()) {
+    		map.removeMarker(contactMarker);
+    	}
+
+    	markerContacts.clear();
+    	mapContacts.clear();
+    }
+
+    public void showContactMarkers(List<ContactDto> contacts) {
+
+    	clearContactMarkers();
+
+    	for (ContactDto contact : contacts) {
+    		if (contact.getReportLat() == null || contact.getReportLon() == null) {
+    			continue;
+    		}
+    		
+    		LatLon latLon = new LatLon(contact.getReportLat(), contact.getReportLon());
+    		MapIcon icon;
+    		
+    		if (contact.getFollowUpStatus() == FollowUpStatus.NO_FOLLOW_UP) {
+    			icon = MapIcon.GREY_CONTACT;
+    		} else {
+        		long hoursSinceLastCooperativeVisit = FacadeProvider.getContactFacade().getHoursSinceLastCooperativeVisit(contact, VisitStatus.COOPERATIVE);
+        		if (hoursSinceLastCooperativeVisit < 0 || hoursSinceLastCooperativeVisit > 48) {
+        			icon = MapIcon.RED_CONTACT;
+        		} else if (hoursSinceLastCooperativeVisit > 24) {
+        			icon = MapIcon.ORANGE_CONTACT;
+        		} else {
+        			icon = MapIcon.GREEN_CONTACT;
+        		}
+        	}
+    		
+    		GoogleMapMarker marker = new GoogleMapMarker(contact.toString(), latLon, false, icon.getUrl());
+    		marker.setId(contact.getUuid().hashCode());
+    		markerContacts.put(marker, contact);
+    		map.addMarker(marker);
+    	}
+    }
+
     public enum MapIcon {
     	RED_DOT("red-dot"),
     	RED_DOT_SMALL("red-dot-small"),
@@ -280,7 +372,7 @@ public class MapComponent extends VerticalLayout {
     }
     
     public List<CaseDataDto> getCasesForFacility(FacilityDto facility) {
-    	return facilities.get(facility);
+    	return facilitiesCasesMaps.get(facility);
     }
     
     public List<CaseDataDto> getCasesWithoutGPSTag() {

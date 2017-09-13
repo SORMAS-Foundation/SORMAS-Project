@@ -32,6 +32,16 @@ public class RegionService extends AbstractAdoService<Region> {
 		return em.createQuery(cq).getResultList();
 	}
 
+	public List<Region> getAllWithoutPopulationData() {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Region> cq = cb.createQuery(getElementClass());
+		Root<Region> from = cq.from(getElementClass());
+		cq.where(cb.isNull(from.get(Region.POPULATION)));
+		cq.orderBy(cb.asc(from.get(AbstractDomainObject.ID)));
+
+		return em.createQuery(cq).getResultList();
+	}
+
 	@Override
 	protected Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Region, Region> from, User user) {
 		// no fitler by user needed

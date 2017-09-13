@@ -42,11 +42,12 @@
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-themes</artifactId>
         </dependency>
+        
 		<dependency>
-			<groupId>com.vaadin.tapio</groupId>
-			<artifactId>googlemaps</artifactId>
+		   <groupId>com.vaadin.tapio</groupId>
+		   <artifactId>googlemaps</artifactId>
 		</dependency>
-
+	        
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>

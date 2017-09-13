@@ -2,6 +2,8 @@ package de.symeda.sormas.backend.caze;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -17,6 +19,7 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -30,6 +33,8 @@ import de.symeda.sormas.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.backend.hospitalization.PreviousHospitalization;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
 
@@ -101,7 +106,7 @@ public class CaseService extends AbstractAdoService<Case> {
 		List<Case> resultList = em.createQuery(cq).getResultList();
 		return resultList;
 	}	
-
+	
 	/**
 	 * @see /sormas-backend/doc/UserDataAccess.md
 	 */
@@ -221,4 +226,16 @@ public class CaseService extends AbstractAdoService<Case> {
 			return null;
 		}
 	}	
+	
+	public Map<RegionReferenceDto, Long> getCaseCountPerRegion() {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		Root<Case> from = cq.from(getElementClass());
+		cq.groupBy(from.get(Case.REGION));
+		cq.multiselect(from.get(Case.REGION), cb.count(from));
+		List<Object[]> results = em.createQuery(cq).getResultList();
+		Map<RegionReferenceDto, Long> resultMap = results.stream().collect(
+				Collectors.toMap(e -> RegionFacadeEjb.toReferenceDto((Region)e[0]), e -> (Long)e[1]));
+		return resultMap;
+	}
 }
