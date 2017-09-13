@@ -200,4 +200,107 @@ public final class DateHelper {
 		return calendar.getTime();
 	}
 	
+	/**
+	 * Builds and returns a Calendar object that is suited for date calculations with epi weeks.
+	 * The Calendar's date still has to be set after retrieving the object.
+	 * 
+	 * @return
+	 */
+	public static Calendar getEpiCalendar() {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setFirstDayOfWeek(Calendar.MONDAY);
+		calendar.setMinimalDaysInFirstWeek(1);
+		return calendar;
+	}
+	
+	/**
+	 * Returns the epi week of the given date according to the Nigerian epi week system, i.e.
+	 * the week that contains the 1st of January always is the first epi week of the year, even
+	 * if it begins in December.
+	 * 
+	 * @param date The date to calculate the epi week for
+	 * @return The epi week according to the Nigerian epi week system
+	 */
+	public static EpiWeek getEpiWeek(Date date) {
+		Calendar calendar = getEpiCalendar();
+		calendar.setTime(date);
+		return new EpiWeek(calendar.get(Calendar.YEAR), calendar.get(Calendar.WEEK_OF_YEAR));
+	}
+	
+	/**
+	 * Returns the epi week for the week before the given date according to the Nigerian epi week 
+	 * system, i.e. the week that contains the 1st of January always is the first epi week of the 
+	 * year, even if it begins in December.
+	 * 
+	 * @param date The date to calculate the previous epi week for
+	 * @return The previous epi week according to the Nigerian epi week system
+	 */
+	public static EpiWeek getPreviousEpiWeek(Date date) {
+		Calendar calendar = getEpiCalendar();
+		calendar.setTime(subtractDays(date, 7));
+		return new EpiWeek(calendar.get(Calendar.YEAR), calendar.get(Calendar.WEEK_OF_YEAR));
+	}
+	
+	public static EpiWeek getPreviousEpiWeek(EpiWeek epiWeek) {
+		Calendar calendar = getEpiCalendar();
+		calendar.set(epiWeek.getYear(), epiWeek.getWeek(), 1);
+		return getPreviousEpiWeek(calendar.getTime());
+	}
+	
+	/**
+	 * Returns the epi week for the week after the given date according to the Nigerian epi week 
+	 * system, i.e. the week that contains the 1st of January always is the first epi week of the 
+	 * year, even if it begins in December.
+	 * 
+	 * @param date The date to calculate the next epi week for
+	 * @return The next epi week according to the Nigerian epi week system
+	 */
+	public static EpiWeek getNextEpiWeek(Date date) {
+		Calendar calendar = getEpiCalendar();
+		calendar.setTime(addDays(date, 7));
+		return new EpiWeek(calendar.get(Calendar.YEAR), calendar.get(Calendar.WEEK_OF_YEAR));
+	}
+	
+	public static EpiWeek getNextEpiWeek(EpiWeek epiWeek) {
+		Calendar calendar = getEpiCalendar();
+		calendar.set(epiWeek.getYear(), epiWeek.getWeek(), 1);
+		return getNextEpiWeek(calendar.getTime());
+	}
+	
+	/**
+	 * Returns a Date object that is set to Monday of the given epi week.
+	 * 
+	 * @param year The year to get the first day of the epi week for
+	 * @param week The epi week to get the first day for
+	 * @return The first day of the epi week
+	 */
+	public static Date getEpiWeekStart(EpiWeek epiWeek) {
+		Calendar calendar = getEpiCalendar();
+		calendar.set(Calendar.YEAR, epiWeek.getYear());
+		calendar.set(Calendar.WEEK_OF_YEAR, epiWeek.getWeek());
+		calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+		calendar.set(Calendar.HOUR_OF_DAY, 0);
+		calendar.set(Calendar.MINUTE, 0);
+		calendar.set(Calendar.SECOND, 1);
+		return calendar.getTime();
+	}
+	
+	/**
+	 * Returns a Date object that is set to Sunday of the given epi week.
+	 * 
+	 * @param year The year to get the last day of the epi week for
+	 * @param week The epi week to get the last day for
+	 * @return The last day of the epi week
+	 */
+	public static Date getEpiWeekEnd(EpiWeek epiWeek) {
+		Calendar calendar = getEpiCalendar();
+		calendar.set(Calendar.YEAR, epiWeek.getYear());
+		calendar.set(Calendar.WEEK_OF_YEAR, epiWeek.getWeek());
+		calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+		calendar.set(Calendar.HOUR_OF_DAY, 23);
+		calendar.set(Calendar.MINUTE, 59);
+		calendar.set(Calendar.SECOND, 59);
+		return calendar.getTime();
+	}
+	
 }

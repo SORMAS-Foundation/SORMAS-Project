@@ -76,7 +76,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// name of the database file for your application -- change to something appropriate for your app
 	private static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	private static final int DATABASE_VERSION = 105;
+	private static final int DATABASE_VERSION = 106;
 
 	private static DatabaseHelper instance = null;
 	public static void init(Context context) {
@@ -275,7 +275,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				case 104:
 					currentVersion = 104;
 					getDao(WeeklyReport.class).executeRaw("CREATE TABLE weeklyreport(" +
-							"id bigint not null," +
+							"id integer primary key autoincrement," +
 							"uuid varchar(36) not null unique," +
 							"changeDate timestamp not null," +
 							"creationDate timestamp not null," +
@@ -290,7 +290,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 							"primary key(id)" +
 							");");
 					getDao(WeeklyReportEntry.class).executeRaw("CREATE TABLE weeklyreportentry(" +
-							"id bigint not null,\n" +
+							"id integer primary key autoincrement,\n" +
 							"uuid varchar(36) not null unique," +
 							"changeDate timestamp not null," +
 							"creationDate timestamp not null," +
@@ -303,6 +303,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 							"numberOfCases integer not null," +
 							"primary key(id)" +
 							");");
+				case 105:
+					currentVersion = 105;
+					getDao(WeeklyReport.class).executeRaw("ALTER TABLE weeklyreport ADD COLUMN year integer not null;");
+					getDao(WeeklyReport.class).executeRaw("ALTER TABLE weeklyreport ADD COLUMN epiWeek integer not null;");
 
 					// ATTENTION: break should only be done after last version
 					break;

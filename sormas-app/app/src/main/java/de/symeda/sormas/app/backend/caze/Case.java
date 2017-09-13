@@ -47,6 +47,7 @@ public class Case extends AbstractDomainObject {
 	public static final String PERSON = "person";
 	public static final String REPORT_DATE = "reportDate";
 	public static final String SYMPTOMS = "symptoms";
+	public static final String REPORTING_USER = "reportingUser";
 
 	@DatabaseField(foreign = true, foreignAutoRefresh=true, canBeNull = false, maxForeignAutoRefreshLevel = 3)
 	private Person person;

@@ -61,4 +61,9 @@ public class WeeklyReportEntry extends AbstractDomainObject {
         this.numberOfCases = numberOfCases;
     }
 
+    @Override
+    public String getI18nPrefix() {
+        return I18N_PREFIX;
+    }
+
 }

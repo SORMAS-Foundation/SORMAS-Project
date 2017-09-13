@@ -16,12 +16,15 @@ import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 
 import java.sql.SQLException;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
@@ -33,6 +36,7 @@ import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
+import de.symeda.sormas.app.backend.report.WeeklyReport;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.user.User;
@@ -192,6 +196,120 @@ public class CaseDao extends AbstractAdoDao<Case> {
         }
 
         return caze;
+    }
+
+    /**
+     * Returns the number of cases reported by the current user over the course of the given epi week.
+     * If there are reports for the given and next epi week, all cases between the report dates of these
+     * reports will be collected; if one or both of these dates are missing, the start and end of the given
+     * epi week is taken instead, respectively.
+     *
+     * @param epiWeek
+     * @return
+     */
+    public int getNumberOfCasesForEpiWeek(EpiWeek epiWeek) {
+        WeeklyReport epiWeekReport = DatabaseHelper.getWeeklyReportDao().queryForEpiWeek(epiWeek);
+        WeeklyReport previousEpiWeekReport = DatabaseHelper.getWeeklyReportDao().queryForEpiWeek(DateHelper.getPreviousEpiWeek(epiWeek));
+        Date epiWeekStart = DateHelper.getEpiWeekStart(epiWeek);
+        Date epiWeekEnd = DateHelper.getEpiWeekEnd(epiWeek);
+
+        try {
+            QueryBuilder builder = queryBuilder();
+            Where where = builder.where();
+            if (epiWeekReport != null) {
+                if (previousEpiWeekReport != null) {
+                    where.and(
+                            where.eq(Case.REPORTING_USER + "_id", ConfigProvider.getUser()),
+                            where.le(Case.REPORT_DATE, epiWeekReport.getReportDateTime()),
+                            where.ge(Case.REPORT_DATE, previousEpiWeekReport.getReportDateTime())
+                    );
+                } else {
+                    where.and(
+                            where.eq(Case.REPORTING_USER + "_id", ConfigProvider.getUser()),
+                            where.le(Case.REPORT_DATE, epiWeekReport.getReportDateTime()),
+                            where.ge(Case.REPORT_DATE, epiWeekStart)
+                    );
+                }
+            } else {
+                if (previousEpiWeekReport != null) {
+                    where.and(
+                            where.eq(Case.REPORTING_USER + "_id", ConfigProvider.getUser()),
+                            where.le(Case.REPORT_DATE, epiWeekEnd),
+                            where.ge(Case.REPORT_DATE, previousEpiWeekReport.getReportDateTime())
+                    );
+                } else {
+                    where.and(
+                            where.eq(Case.REPORTING_USER + "_id", ConfigProvider.getUser()),
+                            where.le(Case.REPORT_DATE, epiWeekEnd),
+                            where.ge(Case.REPORT_DATE, epiWeekStart)
+                    );
+                }
+            }
+
+            return (int) builder.countOf();
+        } catch (SQLException e) {
+            Log.e(getTableName(), "Could not perform getNumberOfCasesForEpiWeek");
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Returns the number of cases with the given disease reported by the current user over the course of the given epi week.
+     * If there are reports for the given and next epi week, all cases between the report dates of these
+     * reports will be collected; if one or both of these dates are missing, the start and end of the given
+     * epi week is taken instead, respectively.
+     *
+     * @param epiWeek
+     * @return
+     */
+    public int getNumberOfCasesForEpiWeekAndDisease(EpiWeek epiWeek, Disease disease) {
+        WeeklyReport epiWeekReport = DatabaseHelper.getWeeklyReportDao().queryForEpiWeek(epiWeek);
+        WeeklyReport previousEpiWeekReport = DatabaseHelper.getWeeklyReportDao().queryForEpiWeek(DateHelper.getPreviousEpiWeek(epiWeek));
+        Date epiWeekStart = DateHelper.getEpiWeekStart(epiWeek);
+        Date epiWeekEnd = DateHelper.getEpiWeekEnd(epiWeek);
+
+        try {
+            QueryBuilder builder = queryBuilder();
+            Where where = builder.where();
+            if (epiWeekReport != null) {
+                if (previousEpiWeekReport != null) {
+                    where.and(
+                            where.eq(Case.REPORTING_USER + "_id", ConfigProvider.getUser()),
+                            where.eq(Case.DISEASE, disease),
+                            where.le(Case.REPORT_DATE, epiWeekReport.getReportDateTime()),
+                            where.ge(Case.REPORT_DATE, previousEpiWeekReport.getReportDateTime())
+                    );
+                } else {
+                    where.and(
+                            where.eq(Case.REPORTING_USER + "_id", ConfigProvider.getUser()),
+                            where.eq(Case.DISEASE, disease),
+                            where.le(Case.REPORT_DATE, epiWeekReport.getReportDateTime()),
+                            where.ge(Case.REPORT_DATE, epiWeekStart)
+                    );
+                }
+            } else {
+                if (previousEpiWeekReport != null) {
+                    where.and(
+                            where.eq(Case.REPORTING_USER + "_id", ConfigProvider.getUser()),
+                            where.eq(Case.DISEASE, disease),
+                            where.le(Case.REPORT_DATE, epiWeekEnd),
+                            where.ge(Case.REPORT_DATE, previousEpiWeekReport.getReportDateTime())
+                    );
+                } else {
+                    where.and(
+                            where.eq(Case.REPORTING_USER + "_id", ConfigProvider.getUser()),
+                            where.eq(Case.DISEASE, disease),
+                            where.le(Case.REPORT_DATE, epiWeekEnd),
+                            where.ge(Case.REPORT_DATE, epiWeekStart)
+                    );
+                }
+            }
+
+            return (int) builder.countOf();
+        } catch (SQLException e) {
+            Log.e(getTableName(), "Could not perform getNumberOfCasesForEpiWeekAndDisease");
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

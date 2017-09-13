@@ -1706,3 +1706,9 @@ ALTER TABLE weeklyreportentry OWNER TO sormas_user;
 ALTER TABLE weeklyreportentry ADD CONSTRAINT fk_weeklyreportentry_weeklyreport_id FOREIGN KEY (weeklyreport_id) REFERENCES weeklyreport(id);
 
 INSERT INTO schema_version (version_number, comment) VALUES (64, 'Weekly Reports and Weekly Report Entries');
+
+-- 2017-09-12 Year and epi week for Weekly Reports #171
+ALTER TABLE weeklyreport ADD COLUMN year integer not null;
+ALTER TABLE weeklyreport ADD COLUMN epiweek integer not null;
+
+INSERT INTO schema_version (version_number, comment) VALUES (65, 'Year and epi week for Weekly Reports');

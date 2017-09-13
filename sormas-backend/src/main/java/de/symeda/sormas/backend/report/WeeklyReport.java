@@ -24,11 +24,15 @@ public class WeeklyReport extends AbstractDomainObject {
 	public static final String INFORMANT = "informant";
 	public static final String REPORT_DATE_TIME = "reportDateTime";
 	public static final String TOTAL_NUMBER_OF_CASES = "totalNumberOfCases";
+	public static final String YEAR = "year";
+	public static final String EPI_WEEK = "epiWeek";
 
 	private Facility healthFacility;
 	private User informant;
 	private Date reportDateTime;
 	private Integer totalNumberOfCases;
+	private Integer year;
+	private Integer epiWeek;
 	
 	private List<WeeklyReportEntry> reportEntries;
 
@@ -73,6 +77,22 @@ public class WeeklyReport extends AbstractDomainObject {
 	}
 	public void setReportEntries(List<WeeklyReportEntry> reportEntries) {
 		this.reportEntries = reportEntries;
+	}
+
+	@Column(nullable=false)
+	public Integer getYear() {
+		return year;
+	}
+	public void setYear(Integer year) {
+		this.year = year;
+	}
+
+	@Column(nullable=false)
+	public Integer getEpiWeek() {
+		return epiWeek;
+	}
+	public void setEpiWeek(Integer epiWeek) {
+		this.epiWeek = epiWeek;
 	}
 	
 }

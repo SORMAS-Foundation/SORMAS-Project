@@ -29,6 +29,8 @@ public class WeeklyReport extends AbstractDomainObject {
     public static final String INFORMANT = "informant";
     public static final String REPORT_DATE_TIME = "reportDateTime";
     public static final String TOTAL_NUMBER_OF_CASES = "totalNumberOfCases";
+    public static final String YEAR = "year";
+    public static final String EPI_WEEK = "epiWeek";
 
     @DatabaseField(foreign = true, foreignAutoRefresh = true, canBeNull = false, maxForeignAutoRefreshLevel = 3)
     private Facility healthFacility;
@@ -41,6 +43,12 @@ public class WeeklyReport extends AbstractDomainObject {
 
     @Column(nullable = false)
     private Integer totalNumberOfCases;
+
+    @Column(nullable = false)
+    private Integer year;
+
+    @Column(nullable = false)
+    private Integer epiWeek;
 
     public Facility getHealthFacility() {
         return healthFacility;
@@ -72,6 +80,27 @@ public class WeeklyReport extends AbstractDomainObject {
 
     public void setTotalNumberOfCases(Integer totalNumberOfCases) {
         this.totalNumberOfCases = totalNumberOfCases;
+    }
+
+    public Integer getYear() {
+        return year;
+    }
+
+    public void setYear(Integer year) {
+        this.year = year;
+    }
+
+    public Integer getEpiWeek() {
+        return epiWeek;
+    }
+
+    public void setEpiWeek(Integer epiWeek) {
+        this.epiWeek = epiWeek;
+    }
+
+    @Override
+    public String getI18nPrefix() {
+        return I18N_PREFIX;
     }
 
 }

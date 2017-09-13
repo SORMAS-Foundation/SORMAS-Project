@@ -1,11 +1,17 @@
 package de.symeda.sormas.app.backend.report;
 
+import android.util.Log;
+
 import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.Where;
 
 import java.sql.SQLException;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -32,29 +38,55 @@ public class WeeklyReportDao extends AbstractAdoDao<WeeklyReport> {
         return WeeklyReport.TABLE_NAME;
     }
 
-    public WeeklyReport buildForWeek(int week, int year) {
+    @Override
+    public WeeklyReport build() {
+        throw new UnsupportedOperationException("Use build(Date) instead");
+    }
+
+    public WeeklyReport build(EpiWeek epiWeek) {
         WeeklyReport report = super.build();
 
         report.setReportDateTime(new Date());
         User currentUser = ConfigProvider.getUser();
         report.setInformant(currentUser);
         report.setHealthFacility(currentUser.getHealthFacility());
-        //report.setTotalNumberOfCases(??)
+        report.setYear(epiWeek.getYear());
+        report.setEpiWeek(epiWeek.getWeek());
+
+        // We need to use the getPreviousEpiWeek method because the report date of a weekly report will always
+        // be in the week after the epi week the report is built for
+        report.setTotalNumberOfCases(DatabaseHelper.getCaseDao().getNumberOfCasesForEpiWeek(epiWeek));
 
         return report;
     }
 
-    public WeeklyReport createForWeek(int week, int year) throws DaoException {
-        WeeklyReport report = buildForWeek(week, year);
-        report = super.saveAndSnapshot(report);
+    public WeeklyReport create(EpiWeek epiWeek) throws DaoException {
+        WeeklyReport report = build(epiWeek);
+        super.saveAndSnapshot(report);
+        report = DatabaseHelper.getWeeklyReportDao().queryUuid(report.getUuid());
 
         WeeklyReportEntryDao entryDao = DatabaseHelper.getWeeklyReportEntryDao();
         for (Disease disease : Disease.values()) {
-            WeeklyReportEntry entry = entryDao.buildForWeekAndDisease(week, year, disease, report);
-            entryDao.saveAndSnapshot(entry);
+            entryDao.create(epiWeek, disease, report);
         }
 
         return report;
+    }
+
+    public WeeklyReport queryForEpiWeek(EpiWeek epiWeek) {
+        try {
+            QueryBuilder builder = queryBuilder();
+            Where where = builder.where();
+            where.and(
+                    where.eq(WeeklyReport.YEAR, epiWeek.getYear()),
+                    where.ge(WeeklyReport.EPI_WEEK, epiWeek.getWeek())
+            );
+
+            return (WeeklyReport) builder.queryForFirst();
+        } catch (SQLException e) {
+            Log.e(getTableName(), "Could not perform queryForEpiWeek");
+            throw new RuntimeException(e);
+        }
     }
 
 }

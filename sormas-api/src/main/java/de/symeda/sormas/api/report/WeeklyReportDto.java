@@ -15,11 +15,15 @@ public class WeeklyReportDto extends WeeklyReportReferenceDto {
 	public static final String INFORMANT = "informant";
 	public static final String REPORT_DATE_TIME = "reportDateTime";
 	public static final String TOTAL_NUMBER_OF_CASES = "totalNumberOfCases";
+	public static final String YEAR = "year";
+	public static final String EPI_WEEK = "epiWeek";
 	
 	private FacilityReferenceDto healthFacility;
 	private UserReferenceDto informant;
 	private Date reportDateTime;
 	private Integer totalNumberOfCases;
+	private Integer year;
+	private Integer epiWeek;
 	
 	public FacilityReferenceDto getHealthFacility() {
 		return healthFacility;
@@ -47,6 +51,20 @@ public class WeeklyReportDto extends WeeklyReportReferenceDto {
 	}
 	public void setTotalNumberOfCases(Integer totalNumberOfCases) {
 		this.totalNumberOfCases = totalNumberOfCases;
+	}
+	
+	public Integer getYear() {
+		return year;
+	}
+	public void setYear(Integer year) {
+		this.year = year;
+	}
+	
+	public Integer getEpiWeek() {
+		return epiWeek;
+	}
+	public void setEpiWeek(Integer epiWeek) {
+		this.epiWeek = epiWeek;
 	}
 	
 }

@@ -25,6 +25,8 @@ import de.symeda.sormas.app.backend.person.PersonDtoHelper;
 import de.symeda.sormas.app.backend.region.CommunityDtoHelper;
 import de.symeda.sormas.app.backend.region.DistrictDtoHelper;
 import de.symeda.sormas.app.backend.region.RegionDtoHelper;
+import de.symeda.sormas.app.backend.report.WeeklyReportDtoHelper;
+import de.symeda.sormas.app.backend.report.WeeklyReportEntryDtoHelper;
 import de.symeda.sormas.app.backend.sample.SampleDtoHelper;
 import de.symeda.sormas.app.backend.sample.SampleTestDtoHelper;
 import de.symeda.sormas.app.backend.task.TaskDtoHelper;
@@ -125,6 +127,8 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         ContactDtoHelper contactDtoHelper = new ContactDtoHelper();
         VisitDtoHelper visitDtoHelper = new VisitDtoHelper();
         TaskDtoHelper taskDtoHelper = new TaskDtoHelper();
+        WeeklyReportDtoHelper weeklyReportDtoHelper = new WeeklyReportDtoHelper();
+        WeeklyReportEntryDtoHelper weeklyReportEntryDtoHelper = new WeeklyReportEntryDtoHelper();
 
         boolean personsNeedPull = personDtoHelper.pullAndPushEntities();
         boolean eventsNeedPull = eventDtoHelper.pullAndPushEntities();
@@ -135,6 +139,8 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         boolean contactsNeedPull = contactDtoHelper.pullAndPushEntities();
         boolean visitsNeedPull = visitDtoHelper.pullAndPushEntities();
         boolean tasksNeedPull = taskDtoHelper.pullAndPushEntities();
+        boolean weeklyReportsNeedPull = weeklyReportDtoHelper.pullAndPushEntities();
+        boolean weeklyReportEntriesNeedPull = weeklyReportEntryDtoHelper.pullAndPushEntities();
 
         if (personsNeedPull)
             personDtoHelper.pullEntities(true);
@@ -154,6 +160,10 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
             visitDtoHelper.pullEntities(true);
         if (tasksNeedPull)
             taskDtoHelper.pullEntities(true);
+        if (weeklyReportsNeedPull)
+            weeklyReportDtoHelper.pullEntities(true);
+        if (weeklyReportEntriesNeedPull)
+            weeklyReportEntryDtoHelper.pullEntities(true);
     }
 
     private void pullInfrastructure() throws DaoException, ServerConnectionException, SynchronizationException {
@@ -198,6 +208,11 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         // persons
         List<String> personUuids = executeUuidCall(RetroProvider.getPersonFacade().pullUuids());
         DatabaseHelper.getPersonDao().deleteInvalid(personUuids);
+        // weekly reports and entries
+        List<String> weeklyReportUuids = executeUuidCall(RetroProvider.getWeeklyReportFacade().pullUuids());
+        DatabaseHelper.getWeeklyReportDao().deleteInvalid(weeklyReportUuids);
+        List<String> weeklyReportEntryUuids = executeUuidCall(RetroProvider.getWeeklyReportEntryFacade().pullUuids());
+        DatabaseHelper.getWeeklyReportEntryDao().deleteInvalid(weeklyReportEntryUuids);
 
         new PersonDtoHelper().pullMissing(personUuids);
         new EventDtoHelper().pullMissing(eventUuids);
@@ -208,6 +223,8 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         new ContactDtoHelper().pullMissing(contactUuids);
         new VisitDtoHelper().pullMissing(visitUuids);
         new TaskDtoHelper().pullMissing(taskUuids);
+        new WeeklyReportDtoHelper().pullMissing(weeklyReportUuids);
+        new WeeklyReportEntryDtoHelper().pullMissing(weeklyReportEntryUuids);
     }
 
     private List<String> executeUuidCall(Call<List<String>> call) throws ServerConnectionException {

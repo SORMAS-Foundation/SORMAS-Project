@@ -14,6 +14,8 @@ import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.region.CommunityFacade;
 import de.symeda.sormas.api.region.DistrictFacade;
 import de.symeda.sormas.api.region.RegionFacade;
+import de.symeda.sormas.api.report.WeeklyReportEntryFacade;
+import de.symeda.sormas.api.report.WeeklyReportFacade;
 import de.symeda.sormas.api.sample.SampleFacade;
 import de.symeda.sormas.api.sample.SampleTestFacade;
 import de.symeda.sormas.api.symptoms.SymptomsFacade;
@@ -110,6 +112,14 @@ public class FacadeProvider {
 	
 	public static EpiDataFacade getEpiDataFacade() {
 		return get().lookupEjbRemote(EpiDataFacade.class);
+	}
+	
+	public static WeeklyReportFacade getWeeklyReportFacade() {
+		return get().lookupEjbRemote(WeeklyReportFacade.class);
+	}
+	
+	public static WeeklyReportEntryFacade getWeeklyReportEntryFacade() {
+		return get().lookupEjbRemote(WeeklyReportEntryFacade.class);
 	}
 
 	@SuppressWarnings("unchecked")
