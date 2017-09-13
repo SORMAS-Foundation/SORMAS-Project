@@ -186,18 +186,18 @@ public class CaseFacadeEjb implements CaseFacade {
 			currentDisease = currentCaze.getDisease();
 		}
 		
-//		// If the case is new and the geo coordinates of the case's health facility are null, set its coordinates to the
-//		// case's report coordinates, if available
-//		FacilityReferenceDto facilityRef = dto.getHealthFacility();
-//		Facility facility = facilityService.getByReferenceDto(facilityRef);
-//		if (currentCaze == null && facility.getUuid() != FacilityDto.OTHER_FACILITY_UUID && facility.getUuid() != FacilityDto.NONE_FACILITY_UUID
-//				&& (facility.getLatitude() == null || facility.getLongitude() == null)) {
-//			if (dto.getReportLat() != null && dto.getReportLon() != null) {
-//				facility.setLatitude(dto.getReportLat());
-//				facility.setLongitude(dto.getReportLon());
-//				facilityService.ensurePersisted(facility);
-//			}
-//		}
+		// If the case is new and the geo coordinates of the case's health facility are null, set its coordinates to the
+		// case's report coordinates, if available
+		FacilityReferenceDto facilityRef = dto.getHealthFacility();
+		Facility facility = facilityService.getByReferenceDto(facilityRef);
+		if (currentCaze == null && facility.getUuid() != FacilityDto.OTHER_FACILITY_UUID && facility.getUuid() != FacilityDto.NONE_FACILITY_UUID
+				&& (facility.getLatitude() == null || facility.getLongitude() == null)) {
+			if (dto.getReportLat() != null && dto.getReportLon() != null) {
+				facility.setLatitude(dto.getReportLat());
+				facility.setLongitude(dto.getReportLon());
+				facilityService.ensurePersisted(facility);
+			}
+		}
 				
 		Case caze = fromDto(dto);
 
