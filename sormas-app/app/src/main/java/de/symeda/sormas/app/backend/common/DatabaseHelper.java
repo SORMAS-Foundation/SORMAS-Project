@@ -286,11 +286,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 							"healthFacility_id bigint not null REFERENCES facility(id)," +
 							"informant_id bigint not null REFERENCES users(id)," +
 							"reportDateTime timestamp not null," +
-							"totalNumberOfCases integer not null," +
-							"primary key(id)" +
+							"totalNumberOfCases integer not null" +
 							");");
 					getDao(WeeklyReportEntry.class).executeRaw("CREATE TABLE weeklyreportentry(" +
-							"id integer primary key autoincrement,\n" +
+							"id integer primary key autoincrement," +
 							"uuid varchar(36) not null unique," +
 							"changeDate timestamp not null," +
 							"creationDate timestamp not null," +
@@ -300,13 +299,12 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 							"snapshot integer," +
 							"weeklyReport_id bigint not null REFERENCES weeklyreport(id)," +
 							"disease character varying(255) not null," +
-							"numberOfCases integer not null," +
-							"primary key(id)" +
+							"numberOfCases integer not null" +
 							");");
 				case 105:
 					currentVersion = 105;
-					getDao(WeeklyReport.class).executeRaw("ALTER TABLE weeklyreport ADD COLUMN year integer not null;");
-					getDao(WeeklyReport.class).executeRaw("ALTER TABLE weeklyreport ADD COLUMN epiWeek integer not null;");
+					getDao(WeeklyReport.class).executeRaw("ALTER TABLE weeklyreport ADD COLUMN year integer NOT NULL DEFAULT 1900;");
+					getDao(WeeklyReport.class).executeRaw("ALTER TABLE weeklyreport ADD COLUMN epiWeek integer NOT NULL DEFAULT l;");
 
 					// ATTENTION: break should only be done after last version
 					break;
