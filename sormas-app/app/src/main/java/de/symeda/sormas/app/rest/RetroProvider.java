@@ -181,7 +181,12 @@ public final class RetroProvider {
             throw new ConnectException(context.getResources().getString(R.string.snackbar_no_connection));
         }
 
-        instance = new RetroProvider(context);
+        try {
+            instance = new RetroProvider(context);
+        } catch (Exception e){
+            instance = null;
+            throw e;
+        }
     }
 
     public static void disconnect() {
