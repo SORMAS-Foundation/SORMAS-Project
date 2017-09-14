@@ -1719,3 +1719,14 @@ ALTER TABLE region ADD COLUMN growthRate real;
 
 INSERT INTO schema_version (version_number, comment) VALUES (66, 'Population for regions #82');
 
+-- 2017-09-14 Create history table for UserRoles #328
+ALTER TABLE userroles ADD COLUMN sys_period tstzrange;
+UPDATE userroles SET sys_period=tstzrange((SELECT users.creationdate FROM users WHERE users.id = userroles.user_id), null);
+ALTER TABLE userroles ALTER COLUMN sys_period SET NOT NULL;
+CREATE TABLE userroles_history (LIKE userroles);
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE OR DELETE ON userroles
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'userroles_history', true);
+ALTER TABLE userroles_history OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (67, 'Create history table for UserRoles #328');
