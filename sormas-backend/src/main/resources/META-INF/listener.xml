@@ -4,14 +4,11 @@
 
     <persistence-unit-metadata>
         <persistence-unit-defaults>
-        	<!-- Alle Entities für den AuditLog-Listener registrieren -->
-        	<!-- 
+        	<!-- Register all entities for the audit listener -->
             <entity-listeners>
                 <entity-listener class="de.symeda.sormas.backend.auditlog.AuditListenerCdiWrapper"></entity-listener>
             </entity-listeners>
-             -->
         </persistence-unit-defaults>
     </persistence-unit-metadata>
-
 
 </entity-mappings>

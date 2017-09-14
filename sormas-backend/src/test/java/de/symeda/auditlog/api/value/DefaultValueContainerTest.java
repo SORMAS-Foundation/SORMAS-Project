@@ -17,7 +17,7 @@ import java.util.SortedMap;
 import org.junit.Test;
 
 import de.symeda.auditlog.api.sample.CustomEnum;
-import de.symeda.auditlog.api.sample.SimpleEntity;
+import de.symeda.auditlog.api.sample.Entity;
 import de.symeda.sormas.backend.auditlog.AuditLogDateHelper;
 
 public class DefaultValueContainerTest {
@@ -148,8 +148,8 @@ public class DefaultValueContainerTest {
 
 		DefaultValueContainer cut = new DefaultValueContainer();
 
-		cut.put(NULL_KEY, (SimpleEntity) null, value -> value.getUuid());
-		cut.put("presentReference", new SimpleEntity("affe-cafe"), value -> value.getUuid());
+		cut.put(NULL_KEY, (Entity) null, value -> value.getUuid());
+		cut.put("presentReference", new Entity("affe-cafe", false, "test", 2), value -> value.getUuid());
 		assertThat(cut.getAttributes().get(NULL_KEY), is(cut.getNullString()));
 		assertThat(cut.getAttributes().get("presentReference"), is("affe-cafe"));
 	}

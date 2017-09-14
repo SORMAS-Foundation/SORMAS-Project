@@ -15,7 +15,6 @@ import javax.persistence.Embedded;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.LoggerFactory;
 
 import de.symeda.auditlog.api.value.DefaultValueContainer;
 import de.symeda.auditlog.api.value.ValueContainer;
@@ -108,7 +107,7 @@ public class Auditor implements Serializable {
 		if (entity == null) {
 			return false;
 		} else {
-			return entity instanceof AuditedEntity || isClassAudited(entity.getClass());
+			return isClassAudited(entity.getClass());
 		}
 	}
 
@@ -142,16 +141,6 @@ public class Auditor implements Serializable {
 		Audited audited = entity.getClass().getDeclaredAnnotation(Audited.class);
 		if (audited != null) {
 			container = inspectEntity(entity);
-
-			if (entity instanceof AuditedEntity) {
-				LoggerFactory.getLogger(Auditor.class).warn(
-					String.format(
-						"Entity %s is both annotated with @Audited and derives from AuditedEntity. Only the annotations will be considered.",
-						entity.getClass()));
-			}
-
-		} else if (entity instanceof AuditedEntity) {
-			container = ((AuditedEntity) entity).inspectAttributes();
 		} else {
 			throw new IllegalStateException("ValueContainer cannot be created for entity: " + entity);
 		}
