@@ -380,103 +380,140 @@ public class DashboardView extends AbstractView {
 		mapLayout.addComponent(mapComponent);
 		mapLayout.setExpandRatio(mapComponent, 1);
 
-		HorizontalLayout mapCaseFooterLayout = new HorizontalLayout();
-		{
-			mapCaseFooterLayout.setWidth(100, Unit.PERCENTAGE);
-			mapCaseFooterLayout.setSpacing(true);
-			mapCaseFooterLayout.addStyleName(CssStyles.VSPACETOP3);
-
-			HorizontalLayout legendLayout = new HorizontalLayout();
-			legendLayout.setWidth(100, Unit.PERCENTAGE);
-
-			HorizontalLayout legendEntry = createLegendEntry("mapicons/grey-house-small.png", I18nProperties.getPrefixFieldCaption(I18N_PREFIX, NOT_YET_CLASSIFIED));
-			legendLayout.addComponent(legendEntry);
-			legendLayout.setComponentAlignment(legendEntry, Alignment.MIDDLE_LEFT);
-			legendLayout.setExpandRatio(legendEntry, 0);
-			Label spacer = new Label();
-			spacer.setWidth(6, Unit.PIXELS);
-			legendLayout.addComponent(spacer);
-			legendEntry = createLegendEntry("mapicons/yellow-house-small.png", I18nProperties.getPrefixFieldCaption(I18N_PREFIX, SUSPECT));
-			legendLayout.addComponent(legendEntry);
-			legendLayout.setComponentAlignment(legendEntry, Alignment.MIDDLE_LEFT);
-			legendLayout.setExpandRatio(legendEntry, 0);
-			spacer = new Label();
-			spacer.setWidth(6, Unit.PIXELS);
-			legendLayout.addComponent(spacer);
-			legendEntry = createLegendEntry("mapicons/orange-house-small.png", I18nProperties.getPrefixFieldCaption(I18N_PREFIX, PROBABLE));
-			legendLayout.addComponent(legendEntry);
-			legendLayout.setComponentAlignment(legendEntry, Alignment.MIDDLE_LEFT);
-			legendLayout.setExpandRatio(legendEntry, 0);
-			spacer = new Label();
-			spacer.setWidth(6, Unit.PIXELS);
-			legendLayout.addComponent(spacer);
-			legendEntry = createLegendEntry("mapicons/red-house-small.png", I18nProperties.getPrefixFieldCaption(I18N_PREFIX, CONFIRMED));
-			legendLayout.addComponent(legendEntry);
-			legendLayout.setComponentAlignment(legendEntry, Alignment.MIDDLE_LEFT);
-			legendLayout.setExpandRatio(legendEntry, 1);
-			mapCaseFooterLayout.addComponent(legendLayout);
-
-			Button noGPSButton = new Button("Cases without GPS tag");
-			noGPSButton.addStyleName(ValoTheme.BUTTON_LINK);
-			noGPSButton.addClickListener(e -> {
-				VerticalLayout layout = new VerticalLayout();
-				Window window = VaadinUiUtil.showPopupWindow(layout);
-				List<CaseDataDto> casesWithoutGPSTag = mapComponent.getCasesWithoutGPSTag();
-				if (casesWithoutGPSTag == null || casesWithoutGPSTag.isEmpty()) {
-					Label noCasesLabel = new Label("There are no cases without a GPS tag.");
-					layout.addComponent(noCasesLabel);
-				} else {
-					CasePopupGrid caseGrid = new CasePopupGrid(window, null, mapComponent);
-					caseGrid.setHeightMode(HeightMode.ROW);
-					layout.addComponent(caseGrid);
-				}
-				layout.setMargin(true);
-				window.setCaption("Cases without GPS tag");
-			});
-			mapCaseFooterLayout.addComponent(noGPSButton);
-			mapCaseFooterLayout.setComponentAlignment(noGPSButton, Alignment.MIDDLE_RIGHT);
-			mapCaseFooterLayout.setExpandRatio(legendLayout, 1);
+		if (showCases) {
+			HorizontalLayout mapCaseFooterLayout = new HorizontalLayout();
+			{
+				mapCaseFooterLayout.setWidth(100, Unit.PERCENTAGE);
+				mapCaseFooterLayout.setSpacing(true);
+				mapCaseFooterLayout.addStyleName(CssStyles.VSPACETOP3);
+	
+				HorizontalLayout legendLayout = new HorizontalLayout();
+				legendLayout.setWidth(100, Unit.PERCENTAGE);
+	
+				HorizontalLayout legendEntry = createLegendEntry("mapicons/grey-house-small.png", I18nProperties.getPrefixFieldCaption(I18N_PREFIX, NOT_YET_CLASSIFIED));
+				legendLayout.addComponent(legendEntry);
+				legendLayout.setComponentAlignment(legendEntry, Alignment.MIDDLE_LEFT);
+				legendLayout.setExpandRatio(legendEntry, 0);
+				Label spacer = new Label();
+				spacer.setWidth(6, Unit.PIXELS);
+				legendLayout.addComponent(spacer);
+				legendEntry = createLegendEntry("mapicons/yellow-house-small.png", I18nProperties.getPrefixFieldCaption(I18N_PREFIX, SUSPECT));
+				legendLayout.addComponent(legendEntry);
+				legendLayout.setComponentAlignment(legendEntry, Alignment.MIDDLE_LEFT);
+				legendLayout.setExpandRatio(legendEntry, 0);
+				spacer = new Label();
+				spacer.setWidth(6, Unit.PIXELS);
+				legendLayout.addComponent(spacer);
+				legendEntry = createLegendEntry("mapicons/orange-house-small.png", I18nProperties.getPrefixFieldCaption(I18N_PREFIX, PROBABLE));
+				legendLayout.addComponent(legendEntry);
+				legendLayout.setComponentAlignment(legendEntry, Alignment.MIDDLE_LEFT);
+				legendLayout.setExpandRatio(legendEntry, 0);
+				spacer = new Label();
+				spacer.setWidth(6, Unit.PIXELS);
+				legendLayout.addComponent(spacer);
+				legendEntry = createLegendEntry("mapicons/red-house-small.png", I18nProperties.getPrefixFieldCaption(I18N_PREFIX, CONFIRMED));
+				legendLayout.addComponent(legendEntry);
+				legendLayout.setComponentAlignment(legendEntry, Alignment.MIDDLE_LEFT);
+				legendLayout.setExpandRatio(legendEntry, 1);
+				mapCaseFooterLayout.addComponent(legendLayout);
+	
+				Button noGPSButton = new Button("Cases without GPS tag");
+				noGPSButton.addStyleName(ValoTheme.BUTTON_LINK);
+				noGPSButton.addClickListener(e -> {
+					VerticalLayout layout = new VerticalLayout();
+					Window window = VaadinUiUtil.showPopupWindow(layout);
+					List<CaseDataDto> casesWithoutGPSTag = mapComponent.getCasesWithoutGPSTag();
+					if (casesWithoutGPSTag == null || casesWithoutGPSTag.isEmpty()) {
+						Label noCasesLabel = new Label("There are no cases without a GPS tag.");
+						layout.addComponent(noCasesLabel);
+					} else {
+						CasePopupGrid caseGrid = new CasePopupGrid(window, null, mapComponent);
+						caseGrid.setHeightMode(HeightMode.ROW);
+						layout.addComponent(caseGrid);
+					}
+					layout.setMargin(true);
+					window.setCaption("Cases without GPS tag");
+				});
+				mapCaseFooterLayout.addComponent(noGPSButton);
+				mapCaseFooterLayout.setComponentAlignment(noGPSButton, Alignment.MIDDLE_RIGHT);
+				mapCaseFooterLayout.setExpandRatio(legendLayout, 1);
+			}
+			mapLayout.addComponent(mapCaseFooterLayout);
 		}
-		mapLayout.addComponent(mapCaseFooterLayout);
 		
-		HorizontalLayout mapContactFooterLayout = new HorizontalLayout();
-		{
-			mapContactFooterLayout.setWidth(100, Unit.PERCENTAGE);
-			mapContactFooterLayout.setSpacing(true);
-
-			HorizontalLayout legendLayout = new HorizontalLayout();
-			legendLayout.setWidth(100, Unit.PERCENTAGE);
-
-			HorizontalLayout legendEntry = createLegendEntry("mapicons/grey-contact.png", I18nProperties.getPrefixFieldCaption(I18N_PREFIX, NO_FOLLOW_UP));
-			legendLayout.addComponent(legendEntry);
-			legendLayout.setComponentAlignment(legendEntry, Alignment.MIDDLE_LEFT);
-			legendLayout.setExpandRatio(legendEntry, 0);
-			Label spacer = new Label();
-			spacer.setWidth(6, Unit.PIXELS);
-			legendLayout.addComponent(spacer);
-			legendEntry = createLegendEntry("mapicons/green-contact.png", I18nProperties.getPrefixFieldCaption(I18N_PREFIX, VISIT_24_HOURS));
-			legendLayout.addComponent(legendEntry);
-			legendLayout.setComponentAlignment(legendEntry, Alignment.MIDDLE_LEFT);
-			legendLayout.setExpandRatio(legendEntry, 0);
-			spacer = new Label();
-			spacer.setWidth(6, Unit.PIXELS);
-			legendLayout.addComponent(spacer);
-			legendEntry = createLegendEntry("mapicons/orange-contact.png", I18nProperties.getPrefixFieldCaption(I18N_PREFIX, VISIT_48_HOURS));
-			legendLayout.addComponent(legendEntry);
-			legendLayout.setComponentAlignment(legendEntry, Alignment.MIDDLE_LEFT);
-			legendLayout.setExpandRatio(legendEntry, 0);
-			spacer = new Label();
-			spacer.setWidth(6, Unit.PIXELS);
-			legendLayout.addComponent(spacer);
-			legendEntry = createLegendEntry("mapicons/red-contact.png", I18nProperties.getPrefixFieldCaption(I18N_PREFIX, VISIT_GT_48_HOURS));
-			legendLayout.addComponent(legendEntry);
-			legendLayout.setComponentAlignment(legendEntry, Alignment.MIDDLE_LEFT);
-			legendLayout.setExpandRatio(legendEntry, 1);
-			mapContactFooterLayout.addComponent(legendLayout);
-			mapContactFooterLayout.setExpandRatio(legendLayout, 1);
+		if (showContacts) {
+			HorizontalLayout mapContactFooterLayout = new HorizontalLayout();
+			{
+				mapContactFooterLayout.setWidth(100, Unit.PERCENTAGE);
+				mapContactFooterLayout.setSpacing(true);
+	
+				HorizontalLayout legendLayout = new HorizontalLayout();
+				legendLayout.setWidth(100, Unit.PERCENTAGE);
+	
+				HorizontalLayout legendEntry = createLegendEntry("mapicons/grey-contact.png", I18nProperties.getPrefixFieldCaption(I18N_PREFIX, NO_FOLLOW_UP));
+				legendLayout.addComponent(legendEntry);
+				legendLayout.setComponentAlignment(legendEntry, Alignment.MIDDLE_LEFT);
+				legendLayout.setExpandRatio(legendEntry, 0);
+				Label spacer = new Label();
+				spacer.setWidth(6, Unit.PIXELS);
+				legendLayout.addComponent(spacer);
+				legendEntry = createLegendEntry("mapicons/green-contact.png", I18nProperties.getPrefixFieldCaption(I18N_PREFIX, VISIT_24_HOURS));
+				legendLayout.addComponent(legendEntry);
+				legendLayout.setComponentAlignment(legendEntry, Alignment.MIDDLE_LEFT);
+				legendLayout.setExpandRatio(legendEntry, 0);
+				spacer = new Label();
+				spacer.setWidth(6, Unit.PIXELS);
+				legendLayout.addComponent(spacer);
+				legendEntry = createLegendEntry("mapicons/orange-contact.png", I18nProperties.getPrefixFieldCaption(I18N_PREFIX, VISIT_48_HOURS));
+				legendLayout.addComponent(legendEntry);
+				legendLayout.setComponentAlignment(legendEntry, Alignment.MIDDLE_LEFT);
+				legendLayout.setExpandRatio(legendEntry, 0);
+				spacer = new Label();
+				spacer.setWidth(6, Unit.PIXELS);
+				legendLayout.addComponent(spacer);
+				legendEntry = createLegendEntry("mapicons/red-contact.png", I18nProperties.getPrefixFieldCaption(I18N_PREFIX, VISIT_GT_48_HOURS));
+				legendLayout.addComponent(legendEntry);
+				legendLayout.setComponentAlignment(legendEntry, Alignment.MIDDLE_LEFT);
+				legendLayout.setExpandRatio(legendEntry, 1);
+				mapContactFooterLayout.addComponent(legendLayout);
+				mapContactFooterLayout.setExpandRatio(legendLayout, 1);
+			}
+			mapLayout.addComponent(mapContactFooterLayout);
 		}
-		mapLayout.addComponent(mapContactFooterLayout);
 
+		if (showRegions) {
+			HorizontalLayout mapRegionsFooterLayout = new HorizontalLayout();
+			{
+				mapRegionsFooterLayout.setWidth(100, Unit.PERCENTAGE);
+				mapRegionsFooterLayout.setSpacing(true);
+	
+				HorizontalLayout legendLayout = new HorizontalLayout();
+				legendLayout.setWidth(100, Unit.PERCENTAGE);
+	
+				HorizontalLayout legendEntry = createLegendEntry("mapicons/yellow-region-small.png", "<= 0.5 Cases / 10.000");
+				legendLayout.addComponent(legendEntry);
+				legendLayout.setComponentAlignment(legendEntry, Alignment.MIDDLE_LEFT);
+				legendLayout.setExpandRatio(legendEntry, 0);
+				Label spacer = new Label();
+				spacer.setWidth(6, Unit.PIXELS);
+				legendLayout.addComponent(spacer);
+				legendEntry = createLegendEntry("mapicons/orange-region-small.png", "0.6 - 1 Cases / 10.000");
+				legendLayout.addComponent(legendEntry);
+				legendLayout.setComponentAlignment(legendEntry, Alignment.MIDDLE_LEFT);
+				legendLayout.setExpandRatio(legendEntry, 0);
+				spacer = new Label();
+				spacer.setWidth(6, Unit.PIXELS);
+				legendLayout.addComponent(spacer);
+				legendEntry = createLegendEntry("mapicons/red-region-small.png", "> 1 Cases / 10.000");
+				legendLayout.addComponent(legendEntry);
+				legendLayout.setComponentAlignment(legendEntry, Alignment.MIDDLE_LEFT);
+				legendLayout.setExpandRatio(legendEntry, 1);
+				mapRegionsFooterLayout.addComponent(legendLayout);
+				mapRegionsFooterLayout.setExpandRatio(legendLayout, 1);
+			}
+			mapLayout.addComponent(mapRegionsFooterLayout);
+		}
+		
 		return mapLayout;
 	}
 

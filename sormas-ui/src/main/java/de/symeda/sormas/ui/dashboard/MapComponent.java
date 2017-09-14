@@ -153,12 +153,23 @@ public class MapComponent extends VerticalLayout {
 			    		.map(c -> new LatLon(c.getLat(), c.getLon()))
 			    		.collect(Collectors.toList()));
 
+			    polygon.setStrokeOpacity(0.5);
+	    		
 			    long caseCount = caseCountPerRegion.containsKey(regionRef) ? caseCountPerRegion.get(regionRef) : 0;
 			    float incidence = (float)caseCount / (region.getPopulation() / 10000);
-			    polygon.setFillColor("#00AAFF");
-			    polygon.setFillOpacity(incidence * 10);
-			    polygon.setStrokeOpacity(0.5);
-			    		
+			    if (incidence == 0) {
+			    	polygon.setFillOpacity(0);
+			    } else if (incidence <= 0.5f) {
+				    polygon.setFillColor("#FFD800");
+				    polygon.setFillOpacity(0.5);
+			    } else if (incidence <= 1) {
+				    polygon.setFillColor("#FF6A00");
+				    polygon.setFillOpacity(0.5);
+			    } else {
+				    polygon.setFillColor("#FF0000");
+				    polygon.setFillOpacity(0.5);
+			    }
+			    
 			    regionPolygons.put(region, polygon);
 			    map.addPolygonOverlay(polygon);
 		    }
