@@ -7,8 +7,9 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <TextView
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="match_parent"
+        android:layout_weight="0.7"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="@android:color/black"
         android:padding="5dp"
@@ -16,12 +17,13 @@
         android:id="@+id/disease_row"/>
 
     <TextView
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="match_parent"
+        android:layout_weight="0.3"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="@android:color/black"
         android:padding="5dp"
         android:textSize="@dimen/abc_text_size_medium_material"
-        android:id="@+id/case_number_row"/>
+        android:id="@+id/informant_case_number_row"/>
 
 </TableRow>

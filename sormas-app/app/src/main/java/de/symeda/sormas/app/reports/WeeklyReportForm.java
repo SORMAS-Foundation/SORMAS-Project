@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
-import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +23,7 @@ import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.app.R;
@@ -31,8 +31,11 @@ import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.report.WeeklyReport;
 import de.symeda.sormas.app.backend.report.WeeklyReportEntry;
+import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.FieldHelper;
 import de.symeda.sormas.app.component.SpinnerField;
 import de.symeda.sormas.app.databinding.WeeklyReportFragmentLayoutBinding;
@@ -66,7 +69,7 @@ public class WeeklyReportForm extends FormTab {
     public void onResume() {
         super.onResume();
 
-//        binding.weeklyReportInfo.setText(Html.fromHtml(String.format(getResources().getString(R.string.hint_weekly_report_info), "<b>10</b>", "<b>01/01/2001</b>", "<b>07/01/2001</b>")));
+        final User user = ConfigProvider.getUser();
 
         Calendar c = Calendar.getInstance();
         c.setTime(new Date());
@@ -81,7 +84,6 @@ public class WeeklyReportForm extends FormTab {
                 SpinnerField weekSpinner = binding.weeklyReportWeek;
                 Object selectedValue = binding.weeklyReportYear.getValue();
                 if (weekSpinner != null) {
-                    // TODO select week 37 on startup, remove second empty item from list
                     List<Item> weeksList;
                     if (selectedValue != null) {
                         weeksList = DataUtils.toItems(createWeeksList((int) selectedValue));
@@ -100,42 +102,61 @@ public class WeeklyReportForm extends FormTab {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 EpiWeek epiWeek = new EpiWeek((int) binding.weeklyReportYear.getValue(), (int) binding.weeklyReportWeek.getValue());
-                WeeklyReport report = DatabaseHelper.getWeeklyReportDao().queryForEpiWeek(epiWeek);
 
-                if (DateHelper.getEpiWeek(new Date()).equals(epiWeek)) {
-                    binding.weeklyReportAddMissing.setEnabled(false);
-                    binding.weeklyReportConfirm.setEnabled(false);
-                    binding.reportTableLayout.setVisibility(View.VISIBLE);
-                    binding.weeklyReportNoReport.setVisibility(View.GONE);
-                    binding.weeklyReportReportDate.setValue(getActivity().getString(R.string.hint_report_not_submitted));
-                    showPendingReport(epiWeek);
-                } else if (DateHelper.getPreviousEpiWeek(new Date()).equals(epiWeek)) {
-                    binding.reportTableLayout.setVisibility(View.VISIBLE);
-                    binding.weeklyReportNoReport.setVisibility(View.GONE);
-                    if (report == null) {
-                        binding.weeklyReportAddMissing.setEnabled(true);
-                        binding.weeklyReportConfirm.setEnabled(true);
-                        binding.weeklyReportReportDate.setValue(Html.toHtml(Html.fromHtml("<b>" + getActivity().getString(R.string.hint_report_not_submitted) + "</b>")));
-                        showPendingReport(epiWeek);
+                if (user.getUserRole() == UserRole.INFORMANT) {
+                    WeeklyReport report = DatabaseHelper.getWeeklyReportDao().queryForEpiWeek(epiWeek, user);
+
+                    // Epi week shown = this week; table is shown if the report for the last week has been confirmed; no buttons
+                    if (DateHelper.getEpiWeek(new Date()).equals(epiWeek)) {
+                        binding.weeklyReportReportDate.setValue(getActivity().getString(R.string.hint_report_not_yet_submitted));
+
+                        if (DatabaseHelper.getWeeklyReportDao().queryForEpiWeek(DateHelper.getPreviousEpiWeek(epiWeek), user) != null) {
+                            setVisibilityForTable(false);
+                            showPendingReport(epiWeek, user);
+                        } else {
+                            setVisibilityForNoReportHint();
+                        }
+                    // Epi week shown = last week; table is shown, buttons are shown if the report has not been confirmed yet
+                    } else if (DateHelper.getPreviousEpiWeek(new Date()).equals(epiWeek)) {
+                        if (report == null) {
+                            setVisibilityForTable(true);
+                            binding.weeklyReportReportDate.setValue(getActivity().getString(R.string.hint_report_not_yet_submitted));
+                            showPendingReport(epiWeek, user);
+                        } else {
+                            setVisibilityForTable(false);
+                            binding.weeklyReportReportDate.setValue(DateHelper.formatShortDate(report.getReportDateTime()));
+                            showWeeklyReport(report, user);
+                        }
+                    // Epi week shown = any other week; table is shown for dates in the past, 'no data' hint is shown for dates in the future
                     } else {
-                        binding.weeklyReportAddMissing.setEnabled(false);
-                        binding.weeklyReportConfirm.setEnabled(false);
-                        binding.weeklyReportReportDate.setValue(DateHelper.formatShortDate(report.getReportDateTime()));
-                        showWeeklyReport(report);
+                        if (report == null) {
+                            if (DateHelper.isEpiWeekAfter(DateHelper.getEpiWeek(new Date()), epiWeek)) {
+                                setVisibilityForNoData();
+                                binding.weeklyReportReportDate.setValue(null);
+                            } else {
+                                setVisibilityForTable(false);
+                                binding.weeklyReportReportDate.setValue(getActivity().getString(R.string.hint_report_not_submitted));
+                                showPendingReport(epiWeek, user);
+                            }
+                        } else {
+                            setVisibilityForTable(false);
+                            binding.weeklyReportReportDate.setValue(DateHelper.formatShortDate(report.getReportDateTime()));
+                            showWeeklyReport(report, user);
+                        }
                     }
+
+                    binding.weeklyReportReportDate.setCaption("Confirmation date");
+                    binding.weeklyReportAddMissing.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            ((ReportsActivity) getActivity()).showCaseNewView();
+                        }
+                    });
                 } else {
-                    binding.weeklyReportAddMissing.setEnabled(false);
-                    binding.weeklyReportConfirm.setEnabled(false);
-                    if (report == null) {
-                        binding.reportTableLayout.setVisibility(View.GONE);
-                        binding.weeklyReportNoReport.setVisibility(View.VISIBLE);
-                        binding.weeklyReportReportDate.setValue(null);
-                    } else {
-                        binding.reportTableLayout.setVisibility(View.VISIBLE);
-                        binding.weeklyReportNoReport.setVisibility(View.GONE);
-                        binding.weeklyReportReportDate.setValue(DateHelper.formatShortDate(report.getReportDateTime()));
-                        showWeeklyReport(report);
-                    }
+                    setVisibilityForTable(false);
+                    binding.weeklyReportReportDate.setCaption("");
+                    binding.weeklyReportReportDate.setValue(null);
+                    showWeeklyReportOverview(epiWeek, user);
                 }
 
                 binding.weeklyReportStart.setValue(DateHelper.formatShortDate(DateHelper.getEpiWeekStart(epiWeek)));
@@ -218,43 +239,102 @@ public class WeeklyReportForm extends FormTab {
         return weeksList;
     }
 
-    private void addHeaderRow() {
+    private void addHeaderRow(User user) {
         TableLayout tableLayout = (TableLayout) getActivity().findViewById(R.id.report_table_layout);
-        TableRow row = (TableRow) LayoutInflater.from(getContext()).inflate(R.layout.weekly_report_table_header_layout, null);
+        TableRow row;
+        if (user.getUserRole() == UserRole.INFORMANT) {
+            row = (TableRow) LayoutInflater.from(getContext()).inflate(R.layout.weekly_report_informant_table_header_layout, null);
+        } else {
+            row = (TableRow) LayoutInflater.from(getContext()).inflate(R.layout.weekly_report_officer_table_header_layout, null);
+        }
         tableLayout.addView(row);
     }
 
-    private void addTableRow(Disease disease, int numberOfCases, boolean even) {
+    private void addInformantTableRow(Disease disease, int numberOfCases, boolean even) {
         TableLayout tableLayout = (TableLayout) getActivity().findViewById(R.id.report_table_layout);
-        TableRow row = (TableRow) LayoutInflater.from(getContext()).inflate(R.layout.weekly_report_table_row_layout, null);
+        TableRow row = (TableRow) LayoutInflater.from(getContext()).inflate(R.layout.weekly_report_informant_table_row_layout, null);
         TextView diseaseView = (TextView) row.findViewById(R.id.disease_row);
         diseaseView.setText(disease.toString());
         diseaseView.setBackground(even ? ContextCompat.getDrawable(getContext(), R.drawable.table_border) : ContextCompat.getDrawable(getContext(), R.drawable.table_border_light_grey));
-        TextView caseNumberView = (TextView) row.findViewById(R.id.case_number_row);
+        TextView caseNumberView = (TextView) row.findViewById(R.id.informant_case_number_row);
         caseNumberView.setText(String.valueOf(numberOfCases));
         caseNumberView.setBackground(even ? ContextCompat.getDrawable(getContext(), R.drawable.table_border) : ContextCompat.getDrawable(getContext(), R.drawable.table_border_light_grey));
         tableLayout.addView(row);
     }
 
-    private void showPendingReport(EpiWeek epiWeek) {
+    private void addOfficerTableRow(Facility healthFacility, User informant, int numberOfCases, boolean confirmed, boolean even) {
+        TableLayout tableLayout = (TableLayout) getActivity().findViewById(R.id.report_table_layout);
+        TableRow row = (TableRow) LayoutInflater.from(getContext()).inflate(R.layout.weekly_report_officer_table_row_layout, null);
+        TextView facilityInformantView = (TextView) row.findViewById(R.id.facility_informant_row);
+        facilityInformantView.setText(healthFacility.toString() + " | " + informant.toString());
+        facilityInformantView.setBackground(even ? ContextCompat.getDrawable(getContext(), R.drawable.table_border) : ContextCompat.getDrawable(getContext(), R.drawable.table_border_light_grey));
+        TextView caseNumberView = (TextView) row.findViewById(R.id.officer_case_number_row);
+        caseNumberView.setText(String.valueOf(numberOfCases));
+        caseNumberView.setBackground(even ? ContextCompat.getDrawable(getContext(), R.drawable.table_border) : ContextCompat.getDrawable(getContext(), R.drawable.table_border_light_grey));
+        TextView confirmedView = (TextView) row.findViewById(R.id.confirmed_row);
+        confirmedView.setText(confirmed ? getActivity().getString(R.string.action_yes) : getActivity().getString(R.string.action_no));
+        confirmedView.setBackground(even ? ContextCompat.getDrawable(getContext(), R.drawable.table_border) : ContextCompat.getDrawable(getContext(), R.drawable.table_border_light_grey));
+        tableLayout.addView(row);
+    }
+
+    private void showPendingReport(EpiWeek epiWeek, User user) {
         binding.reportTableLayout.removeAllViews();
-        addHeaderRow();
+        addHeaderRow(user);
         int rowNumber = 1;
         for (Disease disease : Disease.values()) {
-            int numberOfCases = DatabaseHelper.getCaseDao().getNumberOfCasesForEpiWeekAndDisease(epiWeek, disease);
-            addTableRow(disease, numberOfCases, rowNumber % 2 == 0);
+            int numberOfCases = DatabaseHelper.getCaseDao().getNumberOfCasesForEpiWeekAndDisease(epiWeek, disease, user);
+            addInformantTableRow(disease, numberOfCases, rowNumber % 2 == 0);
             rowNumber++;
         }
     }
 
-    private void showWeeklyReport(WeeklyReport report) {
+    private void showWeeklyReport(WeeklyReport report, User user) {
         binding.reportTableLayout.removeAllViews();
-        addHeaderRow();
+        addHeaderRow(user);
         int rowNumber = 1;
-        for (WeeklyReportEntry entry : DatabaseHelper.getWeeklyReportEntryDao().getAllByWeeklyReport(report)) {
-            addTableRow(entry.getDisease(), entry.getNumberOfCases(), rowNumber % 2 == 0);
+        if (user.getUserRole() == UserRole.INFORMANT) {
+            for (WeeklyReportEntry entry : DatabaseHelper.getWeeklyReportEntryDao().getAllByWeeklyReport(report)) {
+                addInformantTableRow(entry.getDisease(), entry.getNumberOfCases(), rowNumber % 2 == 0);
+                rowNumber++;
+            }
+        }
+    }
+
+    private void showWeeklyReportOverview(EpiWeek epiWeek, User user) {
+        binding.reportTableLayout.removeAllViews();
+        addHeaderRow(user);
+        int rowNumber = 1;
+        List<User> informants = DatabaseHelper.getUserDao().getByDistrictAndRole(user.getDistrict(), UserRole.INFORMANT, User.HEALTH_FACILITY + "_id");
+        for (User informant : informants) {
+            WeeklyReport report = DatabaseHelper.getWeeklyReportDao().queryForEpiWeek(epiWeek, informant);
+            int numberOfCases = DatabaseHelper.getCaseDao().getNumberOfCasesForEpiWeek(epiWeek, informant);
+            addOfficerTableRow(informant.getHealthFacility(), informant, numberOfCases, report != null, rowNumber % 2 == 0);
             rowNumber++;
         }
+    }
+
+    private void setVisibilityForTable(boolean showButtons) {
+        binding.reportTableLayout.setVisibility(View.VISIBLE);
+        binding.weeklyReportNoReport.setVisibility(View.GONE);
+        binding.weeklyReportNoData.setVisibility(View.GONE);
+        binding.weeklyReportAddMissing.setVisibility(showButtons ? View.VISIBLE : View.GONE);
+        binding.weeklyReportConfirm.setVisibility(showButtons ? View.VISIBLE : View.GONE);
+    }
+
+    private void setVisibilityForNoReportHint() {
+        binding.reportTableLayout.setVisibility(View.GONE);
+        binding.weeklyReportNoReport.setVisibility(View.VISIBLE);
+        binding.weeklyReportNoData.setVisibility(View.GONE);
+        binding.weeklyReportAddMissing.setVisibility(View.GONE);
+        binding.weeklyReportConfirm.setVisibility(View.GONE);
+    }
+
+    private void setVisibilityForNoData() {
+        binding.reportTableLayout.setVisibility(View.GONE);
+        binding.weeklyReportNoReport.setVisibility(View.GONE);
+        binding.weeklyReportNoData.setVisibility(View.VISIBLE);
+        binding.weeklyReportAddMissing.setVisibility(View.GONE);
+        binding.weeklyReportConfirm.setVisibility(View.GONE);
     }
 
     @Override

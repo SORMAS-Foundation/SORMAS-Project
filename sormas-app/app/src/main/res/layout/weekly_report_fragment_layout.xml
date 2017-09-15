@@ -142,6 +142,16 @@
                     android:layout_gravity="center_horizontal"
                     android:textSize="@dimen/abc_text_size_medium_material"/>
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:id="@+id/weekly_report_no_data"
+                    android:text="@string/hint_weekly_report_no_data"
+                    android:textColor="@android:color/tab_indicator_text"
+                    android:layout_gravity="center_horizontal"
+                    android:textSize="@dimen/abc_text_size_medium_material"/>
+
             </LinearLayout>
 
             <LinearLayout

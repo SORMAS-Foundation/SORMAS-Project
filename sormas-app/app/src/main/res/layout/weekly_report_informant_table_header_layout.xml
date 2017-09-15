@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TableRow android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/table_border"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0.7"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Disease"
+        android:textColor="@android:color/black"
+        android:background="@drawable/table_border_grey"
+        android:padding="5dp"
+        android:textSize="@dimen/abc_text_size_medium_material"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0.3"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Cases"
+        android:textColor="@android:color/black"
+        android:background="@drawable/table_border_grey"
+        android:padding="5dp"
+        android:textSize="@dimen/abc_text_size_medium_material"
+        android:textStyle="bold"/>
+
+</TableRow>

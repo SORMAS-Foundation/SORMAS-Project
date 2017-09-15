@@ -111,7 +111,7 @@ public class CaseNewActivity extends AppCompatActivity {
 
             case android.R.id.home:
                 //Home/back button
-                NavUtils.navigateUpFromSameTask(this);
+                finish();
                 return true;
 
             // Report problem button

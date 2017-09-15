@@ -243,7 +243,8 @@ public final class DateHelper {
 	
 	public static EpiWeek getPreviousEpiWeek(EpiWeek epiWeek) {
 		Calendar calendar = getEpiCalendar();
-		calendar.set(epiWeek.getYear(), epiWeek.getWeek(), 1);
+		calendar.set(Calendar.YEAR, epiWeek.getYear());
+		calendar.set(Calendar.WEEK_OF_YEAR, epiWeek.getWeek());
 		return getPreviousEpiWeek(calendar.getTime());
 	}
 	
@@ -263,7 +264,8 @@ public final class DateHelper {
 	
 	public static EpiWeek getNextEpiWeek(EpiWeek epiWeek) {
 		Calendar calendar = getEpiCalendar();
-		calendar.set(epiWeek.getYear(), epiWeek.getWeek(), 1);
+		calendar.set(Calendar.YEAR, epiWeek.getYear());
+		calendar.set(Calendar.WEEK_OF_YEAR, epiWeek.getWeek());
 		return getNextEpiWeek(calendar.getTime());
 	}
 	
@@ -301,6 +303,71 @@ public final class DateHelper {
 		calendar.set(Calendar.MINUTE, 59);
 		calendar.set(Calendar.SECOND, 59);
 		return calendar.getTime();
+	}
+
+	/**
+	 * Calculates whether the second epi week starts on a later date than the first one.
+	 * 
+	 * @param epiWeek The first epi week
+	 * @param anotherEpiWeek The second epi week to check for a later beginning
+	 * @return True if the second epi week is on a later date, false if not
+	 */
+	public static boolean isEpiWeekAfter(EpiWeek epiWeek, EpiWeek anotherEpiWeek) {
+		Calendar calendar = getEpiCalendar();
+		calendar.set(Calendar.YEAR, epiWeek.getYear());
+		calendar.set(Calendar.WEEK_OF_YEAR, epiWeek.getWeek());
+		
+		Calendar secondCalendar = getEpiCalendar();
+		secondCalendar.set(Calendar.YEAR, anotherEpiWeek.getYear());
+		secondCalendar.set(Calendar.WEEK_OF_YEAR, anotherEpiWeek.getWeek());
+		
+		return secondCalendar.getTime().after(calendar.getTime());
+	}
+	
+	/**
+	 * Calculates the start and end dates of the report for the given epi week. 
+	 * 
+	 * @param epiWeek The epi week to calculate the dates for
+	 * @param weeklyReportDate The date of report of the report for the given epi week, or null if none is available
+	 * @param prevWeeklyReportDate The date of report of the report for the week before the given epi week, or null if none is available
+	 * @param nextWeeklyReportDate The date of report of the report for the week after the given epi week, or null if none is available
+	 * @return An array of size 2, containing the start date at index 0 and the end date at index 1
+	 */
+	public static Date[] calculateEpiWeekReportStartAndEnd(EpiWeek epiWeek, Date weeklyReportDate, Date prevWeeklyReportDate, Date nextWeeklyReportDate) {
+		Date epiWeekStart = getEpiWeekStart(epiWeek);
+		Date epiWeekEnd = getEpiWeekEnd(epiWeek);
+		EpiWeek currentEpiWeek = getEpiWeek(new Date());
+		Date[] dates = new Date[2];
+		
+		if (weeklyReportDate != null) {
+			if (prevWeeklyReportDate != null) {
+				dates[0] = prevWeeklyReportDate;
+				dates[1] = weeklyReportDate;
+			} else {
+				dates[0] = epiWeekStart;
+				dates[1] = weeklyReportDate;
+			}
+		} else {
+			if (prevWeeklyReportDate != null) {
+				if (nextWeeklyReportDate != null) {
+					dates[0] = prevWeeklyReportDate;
+					dates[1] = nextWeeklyReportDate;
+				} else {
+					dates[0] = prevWeeklyReportDate;
+					dates[1] = DateHelper.getPreviousEpiWeek(currentEpiWeek).equals(epiWeek) ? new Date() : epiWeekEnd;
+				}
+			} else {				
+				if (nextWeeklyReportDate != null) {
+					dates[0] = epiWeekStart;
+					dates[1] = nextWeeklyReportDate;
+				} else {
+					dates[0] = epiWeekStart;
+					dates[1] = DateHelper.getPreviousEpiWeek(currentEpiWeek).equals(epiWeek) ? new Date() : epiWeekEnd;
+				}
+			}
+		}
+		
+		return dates;
 	}
 	
 }

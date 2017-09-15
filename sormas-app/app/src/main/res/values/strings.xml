@@ -57,6 +57,7 @@
     <string name="action_show_this_week">This Week</string>
     <string name="action_add_missing_case">Add Missing Case</string>
     <string name="action_confirm_report">Confirm Report</string>
+    <string name="action_open_reports">Open Reports</string>
 
     <!-- field -->
     <string name="field_yes_no_yes">Yes</string>
@@ -188,8 +189,10 @@
     <string name="hint_new_pin">Please choose a new four-digit PIN to authenticate when opening the SORMAS app in the future.</string>
     <string name="hint_new_pin_again">Please enter the new PIN again.</string>
     <string name="hint_weekly_report_info">In EPID-week %1$s from %2$s to %3$s, you have reported the following disease cases:</string>
-    <string name="hint_no_weekly_report">You have not submitted a report for this week.</string>
-    <string name="hint_report_not_submitted">Not yet submitted</string>
+    <string name="hint_no_weekly_report">You have not yet confirmed the report for last week.</string>
+    <string name="hint_weekly_report_no_data">No data available for this epi week.</string>
+    <string name="hint_report_not_yet_submitted">Not yet submitted</string>
+    <string name="hint_report_not_submitted">No report submitted</string>
 
     <string name="sync_error">Synchronization failed. Please try again later.</string>
     <string name="server_connection_error">Could not connect to SORMAS server. Synchronization canceled. Try again later.</string>
@@ -269,9 +272,11 @@
     <string name="alert_encryption">SORMAS requires device encryption to be activated on your device to ensure data security.\n\nPlease note that you cannot use the application as long as device encryption is disabled.</string>
     <string name="alert_gps">SORMAS needs access to your GPS location for all of its features to work as intended. Please click on \"Turn On GPS\" to enable the required functionality on your device.</string>
     <string name="alert_gps_permission">SORMAS needs access to your GPS location for all of its features to work as intended. Please click on \"Allow GPS Access\" to allow SORMAS to access the required functionality on your device.</string>
+    <string name="alert_missing_report">You have not confirmed your report for the last epi week. If you want to add a case you\'ve not yet reported for the last epi week, please visit the Reports screen and click on \'Add Missing Case\'. You will have to confirm your report before creating a new case for this week.</string>
 
     <string name="alert_title_gps">Turn On GPS</string>
     <string name="alert_title_gps_permission">Allow GPS Access</string>
+    <string name="alert_title_missing_report">Missing Weekly Report</string>
 
     <string name="validation_case_disease">Please select the disease for this case.</string>
     <string name="validation_person_first_name">Please enter the person\'s first name.</string>

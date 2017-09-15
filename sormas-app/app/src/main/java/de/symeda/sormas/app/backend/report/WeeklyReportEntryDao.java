@@ -55,7 +55,7 @@ public class WeeklyReportEntryDao extends AbstractAdoDao<WeeklyReportEntry> {
 
         entry.setWeeklyReport(report);
         entry.setDisease(disease);
-        entry.setNumberOfCases(DatabaseHelper.getCaseDao().getNumberOfCasesForEpiWeekAndDisease(epiWeek, disease));
+        entry.setNumberOfCases(DatabaseHelper.getCaseDao().getNumberOfCasesForEpiWeekAndDisease(epiWeek, disease, report.getInformant()));
 
         return entry;
     }

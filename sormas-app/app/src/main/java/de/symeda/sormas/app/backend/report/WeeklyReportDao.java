@@ -55,7 +55,7 @@ public class WeeklyReportDao extends AbstractAdoDao<WeeklyReport> {
 
         // We need to use the getPreviousEpiWeek method because the report date of a weekly report will always
         // be in the week after the epi week the report is built for
-        report.setTotalNumberOfCases(DatabaseHelper.getCaseDao().getNumberOfCasesForEpiWeek(epiWeek));
+        report.setTotalNumberOfCases(DatabaseHelper.getCaseDao().getNumberOfCasesForEpiWeek(epiWeek, currentUser));
 
         return report;
     }
@@ -73,13 +73,14 @@ public class WeeklyReportDao extends AbstractAdoDao<WeeklyReport> {
         return report;
     }
 
-    public WeeklyReport queryForEpiWeek(EpiWeek epiWeek) {
+    public WeeklyReport queryForEpiWeek(EpiWeek epiWeek, User informant) {
         try {
             QueryBuilder builder = queryBuilder();
             Where where = builder.where();
             where.and(
                     where.eq(WeeklyReport.YEAR, epiWeek.getYear()),
-                    where.ge(WeeklyReport.EPI_WEEK, epiWeek.getWeek())
+                    where.eq(WeeklyReport.EPI_WEEK, epiWeek.getWeek()),
+                    where.eq(WeeklyReport.INFORMANT + "_id", informant)
             );
 
             return (WeeklyReport) builder.queryForFirst();

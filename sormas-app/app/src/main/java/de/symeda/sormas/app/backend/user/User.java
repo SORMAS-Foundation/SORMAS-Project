@@ -34,6 +34,7 @@ public class User extends AbstractDomainObject {
 	public static final String ADDRESS = "address";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
+	public static final String HEALTH_FACILITY = "healthFacility";
 	public static final String USER_ROLE = "userRole";
 
 	@Column(nullable = false)
