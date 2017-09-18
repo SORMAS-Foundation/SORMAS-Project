@@ -128,7 +128,6 @@ public class TextField extends PropertyField<String> implements TextFieldInterfa
         setOnEditorActionListener();
         caption = (TextView) this.findViewById(R.id.text_caption);
         caption.setText(getCaption());
-        addCaptionHintIfDescription();
         addCaptionOnClickListener();
     }
 

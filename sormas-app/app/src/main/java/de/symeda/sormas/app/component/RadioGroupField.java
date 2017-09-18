@@ -125,7 +125,6 @@ public class RadioGroupField extends PropertyField<Object> {
         else {
             caption.setVisibility(View.GONE);
         }
-        addCaptionHintIfDescription();
         addCaptionOnClickListener();
     }
 

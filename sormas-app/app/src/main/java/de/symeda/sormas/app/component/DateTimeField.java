@@ -237,7 +237,6 @@ public class DateTimeField extends PropertyField<Date> implements DateFieldInter
         });
         caption = (TextView) this.findViewById(R.id.date_caption);
         caption.setText(getCaption());
-        addCaptionHintIfDescription();
         addCaptionOnClickListener();
     }
 
