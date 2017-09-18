@@ -8,7 +8,8 @@ public enum Disease {
 	CHOLERA,
 	MEASLES,
 	YELLOW_FEVER,
-	DENGUE
+	DENGUE,
+	OTHER
 	;
 	
 	public String toString() {

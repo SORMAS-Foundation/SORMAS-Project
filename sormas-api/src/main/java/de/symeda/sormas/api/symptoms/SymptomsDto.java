@@ -84,117 +84,117 @@ public class SymptomsDto extends DataTransferObject {
 	private Date illLocationFrom;
 	private Date illLocationTo;
 	
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.OTHER})
 	private Float temperature;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.OTHER})
 	private TemperatureSource temperatureSource;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.OTHER})
 	private SymptomState fever;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.OTHER})
 	private SymptomState vomiting;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.OTHER})
 	private SymptomState diarrhea;
-	@Diseases({Disease.CHOLERA,Disease.YELLOW_FEVER})
+	@Diseases({Disease.CHOLERA,Disease.YELLOW_FEVER,Disease.OTHER})
 	private SymptomState bloodInStool;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.YELLOW_FEVER,Disease.DENGUE})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.OTHER})
 	private SymptomState nausea;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CHOLERA,Disease.YELLOW_FEVER,Disease.DENGUE})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CHOLERA,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.OTHER})
 	private SymptomState abdominalPain;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.YELLOW_FEVER,Disease.DENGUE})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.OTHER})
 	private SymptomState headache;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.OTHER})
 	private SymptomState musclePain;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.OTHER})
 	private SymptomState fatigueWeakness;
-	@Diseases({Disease.EVD,Disease.LASSA})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.OTHER})
 	private SymptomState unexplainedBleeding;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.YELLOW_FEVER,Disease.DENGUE})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.OTHER})
 	private SymptomState gumsBleeding;
-	@Diseases({Disease.EVD,Disease.LASSA})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.OTHER})
 	private SymptomState injectionSiteBleeding;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.YELLOW_FEVER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.YELLOW_FEVER,Disease.OTHER})
 	private SymptomState noseBleeding;
-	@Diseases({Disease.EVD,Disease.LASSA})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.OTHER})
 	private SymptomState bloodyBlackStool;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.DENGUE})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.DENGUE,Disease.OTHER})
 	private SymptomState redBloodVomit;
-	@Diseases({Disease.EVD,Disease.LASSA})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.OTHER})
 	private SymptomState digestedBloodVomit;
-	@Diseases({Disease.EVD,Disease.LASSA})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.OTHER})
 	private SymptomState coughingBlood;
-	@Diseases({Disease.EVD,Disease.LASSA})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.OTHER})
 	private SymptomState bleedingVagina;
-	@Diseases({Disease.EVD,Disease.LASSA})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.OTHER})
 	private SymptomState skinBruising;
-	@Diseases({Disease.EVD,Disease.LASSA})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.OTHER})
 	private SymptomState bloodUrine;
-	@Diseases({Disease.EVD,Disease.LASSA})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.OTHER})
 	private SymptomState otherHemorrhagicSymptoms;
-	@Diseases({Disease.EVD,Disease.LASSA})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.OTHER})
 	private String otherHemorrhagicSymptomsText;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.MEASLES,Disease.DENGUE})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.MEASLES,Disease.DENGUE,Disease.OTHER})
 	private SymptomState skinRash;
-	@Diseases({Disease.CSM})
+	@Diseases({Disease.CSM,Disease.OTHER})
 	private SymptomState neckStiffness;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.MEASLES})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.MEASLES,Disease.OTHER})
 	private SymptomState soreThroat;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.MEASLES})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.MEASLES,Disease.OTHER})
 	private SymptomState cough;
-	@Diseases({Disease.AVIAN_INFLUENCA,Disease.MEASLES})
+	@Diseases({Disease.AVIAN_INFLUENCA,Disease.MEASLES,Disease.OTHER})
 	private SymptomState runnyNose;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.MEASLES})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.MEASLES,Disease.OTHER})
 	private SymptomState difficultyBreathing;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.OTHER})
 	private SymptomState chestPain;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.OTHER})
 	private SymptomState confusedDisoriented;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.OTHER})
 	private SymptomState seizures;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.OTHER})
 	private SymptomState alteredConsciousness;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.MEASLES})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.MEASLES,Disease.OTHER})
 	private SymptomState conjunctivitis;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.MEASLES,Disease.DENGUE})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.MEASLES,Disease.DENGUE,Disease.OTHER})
 	private SymptomState eyePainLightSensitive;
-	@Diseases({Disease.MEASLES})
+	@Diseases({Disease.MEASLES,Disease.OTHER})
 	private SymptomState kopliksSpots;
-	@Diseases({Disease.EVD,Disease.LASSA})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.OTHER})
 	private SymptomState throbocytopenia;
-	@Diseases({Disease.AVIAN_INFLUENCA,Disease.MEASLES})
+	@Diseases({Disease.AVIAN_INFLUENCA,Disease.MEASLES,Disease.OTHER})
 	private SymptomState otitisMedia;
-	@Diseases({Disease.EVD,Disease.LASSA})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.OTHER})
 	private SymptomState hearingloss;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.CHOLERA})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.CHOLERA,Disease.OTHER})
 	private SymptomState dehydration;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.CSM,Disease.CHOLERA,Disease.YELLOW_FEVER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.CSM,Disease.CHOLERA,Disease.YELLOW_FEVER,Disease.OTHER})
 	private SymptomState anorexiaAppetiteLoss;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.CSM,Disease.CHOLERA})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.CSM,Disease.CHOLERA,Disease.OTHER})
 	private SymptomState refusalFeedorDrink;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.MEASLES,Disease.DENGUE})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.MEASLES,Disease.DENGUE,Disease.OTHER})
 	private SymptomState jointPain;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.OTHER})
 	private SymptomState shock;
-	@Diseases({Disease.EVD})
+	@Diseases({Disease.EVD,Disease.OTHER})
 	private SymptomState hiccups;
-	@Diseases({Disease.YELLOW_FEVER})
+	@Diseases({Disease.YELLOW_FEVER,Disease.OTHER})
 	private SymptomState backache;
-	@Diseases({Disease.YELLOW_FEVER})
+	@Diseases({Disease.YELLOW_FEVER,Disease.OTHER})
 	private SymptomState eyesBleeding;
-	@Diseases({Disease.YELLOW_FEVER})
+	@Diseases({Disease.YELLOW_FEVER,Disease.OTHER})
 	private SymptomState jaundice;
-	@Diseases({Disease.YELLOW_FEVER})
+	@Diseases({Disease.YELLOW_FEVER,Disease.OTHER})
 	private SymptomState darkUrine;
-	@Diseases({Disease.YELLOW_FEVER})
+	@Diseases({Disease.YELLOW_FEVER,Disease.OTHER})
 	private SymptomState stomachBleeding;
-	@Diseases({Disease.DENGUE})
+	@Diseases({Disease.DENGUE,Disease.OTHER})
 	private SymptomState rapidBreathing;
-	@Diseases({Disease.DENGUE})
+	@Diseases({Disease.DENGUE,Disease.OTHER})
 	private SymptomState swollenGlands;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.OTHER})
 	private SymptomState otherNonHemorrhagicSymptoms;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.OTHER})
 	private String otherNonHemorrhagicSymptomsText;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.OTHER})
 	private String symptomsComments;
 
 	public Boolean getSymptomatic() {

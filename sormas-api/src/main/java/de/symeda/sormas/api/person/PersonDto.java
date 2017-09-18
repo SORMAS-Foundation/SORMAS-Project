@@ -50,15 +50,15 @@ public class PersonDto extends PersonReferenceDto {
 	private Integer approximateAge;
 	private ApproximateAgeType approximateAgeType;
 	private Date deathDate;
-	@Diseases({Disease.EVD})
+	@Diseases({Disease.EVD,Disease.OTHER})
 	private DeathPlaceType deathPlaceType;
-	@Diseases({Disease.EVD})
+	@Diseases({Disease.EVD,Disease.OTHER})
 	private String deathPlaceDescription;
-	@Diseases({Disease.EVD})
+	@Diseases({Disease.EVD,Disease.OTHER})
 	private Date burialDate;
-	@Diseases({Disease.EVD})
+	@Diseases({Disease.EVD,Disease.OTHER})
 	private String burialPlaceDescription;
-	@Diseases({Disease.EVD})
+	@Diseases({Disease.EVD,Disease.OTHER})
 	private BurialConductor burialConductor;
 		
 	private String nickname;
