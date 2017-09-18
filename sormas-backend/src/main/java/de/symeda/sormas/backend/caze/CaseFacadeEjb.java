@@ -191,7 +191,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		// case's report coordinates, if available
 		FacilityReferenceDto facilityRef = dto.getHealthFacility();
 		Facility facility = facilityService.getByReferenceDto(facilityRef);
-		if (currentCaze == null && facility.getUuid() != FacilityDto.OTHER_FACILITY_UUID && facility.getUuid() != FacilityDto.NONE_FACILITY_UUID
+		if (currentCaze == null && facility != null && facility.getUuid() != FacilityDto.OTHER_FACILITY_UUID && facility.getUuid() != FacilityDto.NONE_FACILITY_UUID
 				&& (facility.getLatitude() == null || facility.getLongitude() == null)) {
 			if (dto.getReportLat() != null && dto.getReportLon() != null) {
 				facility.setLatitude(dto.getReportLat());
@@ -315,6 +315,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setMeaslesVaccination(source.getMeaslesVaccination());
 		target.setMeaslesDoses(source.getMeaslesDoses());
 		target.setMeaslesVaccinationInfoSource(source.getMeaslesVaccinationInfoSource());
+		target.setYellowFeverVaccination(source.getYellowFeverVaccination());
+		target.setYellowFeverVaccinationInfoSource(source.getYellowFeverVaccinationInfoSource());
 
 		target.setEpidNumber(source.getEpidNumber());
 
@@ -365,6 +367,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setMeaslesVaccination(source.getMeaslesVaccination());
 		target.setMeaslesDoses(source.getMeaslesDoses());
 		target.setMeaslesVaccinationInfoSource(source.getMeaslesVaccinationInfoSource());
+		target.setYellowFeverVaccination(source.getYellowFeverVaccination());
+		target.setYellowFeverVaccinationInfoSource(source.getYellowFeverVaccinationInfoSource());
 
 		target.setEpidNumber(source.getEpidNumber());
 

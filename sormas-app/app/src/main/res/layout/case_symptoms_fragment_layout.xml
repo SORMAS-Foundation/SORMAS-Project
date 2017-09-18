@@ -375,6 +375,48 @@
                 android:layout_height="match_parent"
                 android:value="@={symptoms.hiccups}"/>
 
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_backache"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:value="@={symptoms.backache}"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_eyesBleeding"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:value="@={symptoms.eyesBleeding}"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_jaundice"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:value="@={symptoms.jaundice}"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_darkUrine"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:value="@={symptoms.darkUrine}"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_stomachBleeding"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:value="@={symptoms.stomachBleeding}"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_rapidBreathing"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:value="@={symptoms.rapidBreathing}"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_swollenGlands"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:value="@={symptoms.swollenGlands}"/>
+
             <!-- ============= SYMPTOMS Other non-hemorrhagis clinical symptoms ============= -->
 
             <de.symeda.sormas.app.component.SymptomStateField

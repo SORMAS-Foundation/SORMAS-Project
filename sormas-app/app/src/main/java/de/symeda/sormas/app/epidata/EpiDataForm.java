@@ -178,8 +178,8 @@ public class EpiDataForm extends FormTab {
                 }
         );
 
-        binding.epiData4poultryDate.initialize(this);
-        binding.epiData3wildbirdsDate.initialize(this);
+        binding.epiDataPoultryDate.initialize(this);
+        binding.epiDataWildbirdsDate.initialize(this);
         FieldHelper.initSpinnerField(binding.epiDataWaterSource, WaterSource.class);
 
         binding.epiDataBurialAttended.addValueChangedListener(new PropertyField.ValueChangeListener() {
@@ -206,47 +206,47 @@ public class EpiDataForm extends FormTab {
         binding.epiDataPoultry.addValueChangedListener(new PropertyField.ValueChangeListener() {
             @Override
             public void onChange(PropertyField field) {
-                binding.epiData1poultryDetails.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
-                binding.epiData2poultrySick.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
+                binding.epiDataPoultryDetails.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
+                binding.epiDataPoultrySick.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
             }
         });
 
-        binding.epiData2poultrySick.addValueChangedListener(new PropertyField.ValueChangeListener() {
+        binding.epiDataPoultrySick.addValueChangedListener(new PropertyField.ValueChangeListener() {
             @Override
             public void onChange(PropertyField field) {
-                binding.epiData3poultrySickDetails.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
-                binding.epiData4poultryDate.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
-                binding.epiData5poultryLocation.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
+                binding.epiDataPoultrySickDetails.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
+                binding.epiDataPoultryDate.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
+                binding.epiDataPoultryLocation.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
             }
         });
 
         binding.epiDataOtherAnimals.addValueChangedListener(new PropertyField.ValueChangeListener() {
             @Override
             public void onChange(PropertyField field) {
-                binding.epiData1otherAnimalsDetails.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
+                binding.epiDataOtherAnimalsDetails.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
             }
         });
 
         binding.epiDataWildbirds.addValueChangedListener(new PropertyField.ValueChangeListener() {
             @Override
             public void onChange(PropertyField field) {
-                binding.epiData2wildbirdsDetails.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
-                binding.epiData3wildbirdsDate.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
-                binding.epiData4wildbirdsLocation.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
+                binding.epiDataWildbirdsDetails.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
+                binding.epiDataWildbirdsDate.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
+                binding.epiDataWildbirdsLocation.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
             }
         });
 
         binding.epiDataWaterSource.addValueChangedListener(new PropertyField.ValueChangeListener() {
             @Override
             public void onChange(PropertyField field) {
-                binding.epiData5waterSourceOther.setVisibility(field.getValue() == WaterSource.OTHER ? View.VISIBLE : View.GONE);
+                binding.epiDataWaterSourceOther.setVisibility(field.getValue() == WaterSource.OTHER ? View.VISIBLE : View.GONE);
             }
         });
 
         binding.epiDataWaterBody.addValueChangedListener(new PropertyField.ValueChangeListener() {
             @Override
             public void onChange(PropertyField field) {
-                binding.epiData6waterBodyDetails.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
+                binding.epiDataWaterBodyDetails.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
             }
         });
 
@@ -262,7 +262,7 @@ public class EpiDataForm extends FormTab {
                 binding.epiDataCattle.getVisibility() == View.VISIBLE || binding.epiDataOtherAnimals.getVisibility() == View.VISIBLE ||
                 binding.epiDataWildbirds.getVisibility() == View.VISIBLE || binding.epiDataBirds.getVisibility() == View.VISIBLE ||
                 binding.epiDataPoultryEat.getVisibility() == View.VISIBLE || binding.epiDataPoultry.getVisibility() == View.VISIBLE ||
-                binding.epiData2poultrySick.getVisibility() == View.VISIBLE)) {
+                binding.epiDataPoultrySick.getVisibility() == View.VISIBLE)) {
             binding.epiDataAnimalContacts.setVisibility(View.GONE);
         }
 

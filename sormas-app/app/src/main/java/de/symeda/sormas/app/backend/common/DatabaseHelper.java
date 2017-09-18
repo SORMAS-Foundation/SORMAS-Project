@@ -76,7 +76,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// name of the database file for your application -- change to something appropriate for your app
 	private static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	private static final int DATABASE_VERSION = 106;
+	private static final int DATABASE_VERSION = 107;
 
 	private static DatabaseHelper instance = null;
 	public static void init(Context context) {
@@ -305,6 +305,17 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					currentVersion = 105;
 					getDao(WeeklyReport.class).executeRaw("ALTER TABLE weeklyreport ADD COLUMN year integer NOT NULL DEFAULT 1900;");
 					getDao(WeeklyReport.class).executeRaw("ALTER TABLE weeklyreport ADD COLUMN epiWeek integer NOT NULL DEFAULT l;");
+				case 106:
+					currentVersion = 106;
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN yellowFeverVaccination varchar(255);");
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN yellowFeverVaccinationInfoSource varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN backache varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN eyesBleeding varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN jaundice varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN darkUrine varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN stomachBleeding varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN rapidBreathing varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN swollenGlands varchar(255);");
 
 					// ATTENTION: break should only be done after last version
 					break;

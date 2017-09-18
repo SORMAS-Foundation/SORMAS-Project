@@ -131,6 +131,20 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState shock;
 	@Enumerated(EnumType.STRING)
 	private SymptomState hiccups;
+	@Enumerated(EnumType.STRING)
+	private SymptomState backache;
+	@Enumerated(EnumType.STRING)
+	private SymptomState eyesBleeding;
+	@Enumerated(EnumType.STRING)
+	private SymptomState jaundice;
+	@Enumerated(EnumType.STRING)
+	private SymptomState darkUrine;
+	@Enumerated(EnumType.STRING)
+	private SymptomState stomachBleeding;
+	@Enumerated(EnumType.STRING)
+	private SymptomState rapidBreathing;
+	@Enumerated(EnumType.STRING)
+	private SymptomState swollenGlands;
 
 	@Enumerated(EnumType.STRING)
 	private SymptomState otherHemorrhagicSymptoms;
@@ -539,6 +553,62 @@ public class Symptoms extends AbstractDomainObject {
 
 	public void setAlteredConsciousness(SymptomState alteredConsciousness) {
 		this.alteredConsciousness = alteredConsciousness;
+	}
+
+	public SymptomState getBackache() {
+		return backache;
+	}
+
+	public void setBackache(SymptomState backache) {
+		this.backache = backache;
+	}
+
+	public SymptomState getEyesBleeding() {
+		return eyesBleeding;
+	}
+
+	public void setEyesBleeding(SymptomState eyesBleeding) {
+		this.eyesBleeding = eyesBleeding;
+	}
+
+	public SymptomState getJaundice() {
+		return jaundice;
+	}
+
+	public void setJaundice(SymptomState jaundice) {
+		this.jaundice = jaundice;
+	}
+
+	public SymptomState getDarkUrine() {
+		return darkUrine;
+	}
+
+	public void setDarkUrine(SymptomState darkUrine) {
+		this.darkUrine = darkUrine;
+	}
+
+	public SymptomState getStomachBleeding() {
+		return stomachBleeding;
+	}
+
+	public void setStomachBleeding(SymptomState stomachBleeding) {
+		this.stomachBleeding = stomachBleeding;
+	}
+
+	public SymptomState getRapidBreathing() {
+		return rapidBreathing;
+	}
+
+	public void setRapidBreathing(SymptomState rapidBreathing) {
+		this.rapidBreathing = rapidBreathing;
+	}
+
+	public SymptomState getSwollenGlands() {
+		return swollenGlands;
+	}
+
+	public void setSwollenGlands(SymptomState swollenGlands) {
+		this.swollenGlands = swollenGlands;
 	}
 
 	@Override

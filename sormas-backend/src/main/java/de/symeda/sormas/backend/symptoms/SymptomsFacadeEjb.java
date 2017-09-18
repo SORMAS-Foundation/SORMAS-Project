@@ -94,6 +94,13 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setIllLocation(locationFacade.fromDto(source.getIllLocation()));
 		target.setIllLocationFrom(source.getIllLocationFrom());
 		target.setIllLocationTo(source.getIllLocationTo());
+		target.setBackache(source.getBackache());
+		target.setEyesBleeding(source.getEyesBleeding());
+		target.setJaundice(source.getJaundice());
+		target.setDarkUrine(source.getDarkUrine());
+		target.setStomachBleeding(source.getStomachBleeding());
+		target.setRapidBreathing(source.getRapidBreathing());
+		target.setSwollenGlands(source.getSwollenGlands());
 		
 		return symptoms;
 	}
@@ -166,6 +173,13 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setIllLocation(LocationFacadeEjb.toDto(source.getIllLocation()));
 		target.setIllLocationFrom(source.getIllLocationFrom());
 		target.setIllLocationTo(source.getIllLocationTo());
+		target.setBackache(source.getBackache());
+		target.setEyesBleeding(source.getEyesBleeding());
+		target.setJaundice(source.getJaundice());
+		target.setDarkUrine(source.getDarkUrine());
+		target.setStomachBleeding(source.getStomachBleeding());
+		target.setRapidBreathing(source.getRapidBreathing());
+		target.setSwollenGlands(source.getSwollenGlands());
 		
 		return target;
 	}

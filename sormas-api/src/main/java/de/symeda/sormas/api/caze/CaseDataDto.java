@@ -45,6 +45,8 @@ public class CaseDataDto extends CaseReferenceDto {
 	public static final String MEASLES_VACCINATION = "measlesVaccination";
 	public static final String MEASLES_DOSES = "measlesDoses";
 	public static final String MEASLES_VACCINATION_INFO_SOURCE = "measlesVaccinationInfoSource";
+	public static final String YELLOW_FEVER_VACCINATION = "yellowFeverVaccination";
+	public static final String YELLOW_FEVER_VACCINATION_INFO_SOURCE = "yellowFeverVaccinationInfoSource";
 	public static final String EPID_NUMBER = "epidNumber";
 	public static final String REPORT_LAT = "reportLat";
 	public static final String REPORT_LON = "reportLon";
@@ -74,6 +76,11 @@ public class CaseDataDto extends CaseReferenceDto {
 	private String measlesDoses;
 	@Diseases({Disease.MEASLES})
 	private VaccinationInfoSource measlesVaccinationInfoSource;
+	
+	@Diseases({Disease.YELLOW_FEVER})
+	private Vaccination yellowFeverVaccination;
+	@Diseases({Disease.YELLOW_FEVER})
+	private VaccinationInfoSource yellowFeverVaccinationInfoSource;
 	
 	private String epidNumber;
 
@@ -251,6 +258,22 @@ public class CaseDataDto extends CaseReferenceDto {
 		this.measlesVaccinationInfoSource = measlesVaccinationInfoSource;
 	}
 	
+	public Vaccination getYellowFeverVaccination() {
+		return yellowFeverVaccination;
+	}
+
+	public void setYellowFeverVaccination(Vaccination yellowFeverVaccination) {
+		this.yellowFeverVaccination = yellowFeverVaccination;
+	}
+
+	public VaccinationInfoSource getYellowFeverVaccinationInfoSource() {
+		return yellowFeverVaccinationInfoSource;
+	}
+
+	public void setYellowFeverVaccinationInfoSource(VaccinationInfoSource yellowFeverVaccinationInfoSource) {
+		this.yellowFeverVaccinationInfoSource = yellowFeverVaccinationInfoSource;
+	}
+
 	public String getEpidNumber() {
 		return epidNumber;
 	}

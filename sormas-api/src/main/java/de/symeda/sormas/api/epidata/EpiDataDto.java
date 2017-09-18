@@ -48,9 +48,9 @@ public class EpiDataDto extends DataTransferObject {
 	
 	@Diseases({Disease.EVD,Disease.LASSA})
 	private YesNoUnknown burialAttended;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE})
 	private YesNoUnknown gatheringAttended;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE})
 	private YesNoUnknown traveled;
 	@Diseases({Disease.EVD,Disease.LASSA})
 	private YesNoUnknown rodents;

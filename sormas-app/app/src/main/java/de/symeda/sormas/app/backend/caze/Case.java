@@ -108,6 +108,12 @@ public class Case extends AbstractDomainObject {
 	@Enumerated(EnumType.STRING)
 	private VaccinationInfoSource measlesVaccinationInfoSource;
 
+	@Enumerated(EnumType.STRING)
+	private Vaccination yellowFeverVaccination;
+
+	@Enumerated(EnumType.STRING)
+	private VaccinationInfoSource yellowFeverVaccinationInfoSource;
+
 	@Column(length=512)
 	private String epidNumber;
 
@@ -269,6 +275,22 @@ public class Case extends AbstractDomainObject {
 
 	public void setMeaslesVaccinationInfoSource(VaccinationInfoSource measlesVaccinationInfoSource) {
 		this.measlesVaccinationInfoSource = measlesVaccinationInfoSource;
+	}
+
+	public Vaccination getYellowFeverVaccination() {
+		return yellowFeverVaccination;
+	}
+
+	public void setYellowFeverVaccination(Vaccination yellowFeverVaccination) {
+		this.yellowFeverVaccination = yellowFeverVaccination;
+	}
+
+	public VaccinationInfoSource getYellowFeverVaccinationInfoSource() {
+		return yellowFeverVaccinationInfoSource;
+	}
+
+	public void setYellowFeverVaccinationInfoSource(VaccinationInfoSource yellowFeverVaccinationInfoSource) {
+		this.yellowFeverVaccinationInfoSource = yellowFeverVaccinationInfoSource;
 	}
 
 	public String getEpidNumber() {

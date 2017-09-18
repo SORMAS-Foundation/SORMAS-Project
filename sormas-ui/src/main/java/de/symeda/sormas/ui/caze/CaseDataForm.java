@@ -62,7 +62,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			LayoutUtil.fluidRow(
 					LayoutUtil.fluidRowLocs(CaseDataDto.PREGNANT, "") +
 					LayoutUtil.fluidRowLocs(CaseDataDto.MEASLES_VACCINATION, CaseDataDto.MEASLES_DOSES) +
-					LayoutUtil.fluidRowLocs(CaseDataDto.MEASLES_VACCINATION_INFO_SOURCE, "")
+					LayoutUtil.fluidRowLocs(CaseDataDto.MEASLES_VACCINATION_INFO_SOURCE, "") +
+					LayoutUtil.fluidRowLocs(CaseDataDto.YELLOW_FEVER_VACCINATION, CaseDataDto.YELLOW_FEVER_VACCINATION_INFO_SOURCE)
 			);
     	
 
@@ -108,6 +109,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		addField(CaseDataDto.MEASLES_VACCINATION, ComboBox.class);
 		addField(CaseDataDto.MEASLES_DOSES, TextField.class);
 		addField(CaseDataDto.MEASLES_VACCINATION_INFO_SOURCE, ComboBox.class);
+		addField(CaseDataDto.YELLOW_FEVER_VACCINATION, ComboBox.class);
+		addField(CaseDataDto.YELLOW_FEVER_VACCINATION_INFO_SOURCE, ComboBox.class);
     	
     	setRequired(true, CaseDataDto.CASE_CLASSIFICATION, CaseDataDto.INVESTIGATION_STATUS,
     			CaseDataDto.REGION, CaseDataDto.DISTRICT, CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY);
@@ -131,7 +134,10 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.MEASLES_DOSES, CaseDataDto.MEASLES_VACCINATION_INFO_SOURCE), 
 				CaseDataDto.MEASLES_VACCINATION, Arrays.asList(Vaccination.VACCINATED), true);
 		
-		List<String> medicalInformationFields = Arrays.asList(CaseDataDto.PREGNANT, CaseDataDto.MEASLES_VACCINATION);
+		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.YELLOW_FEVER_VACCINATION_INFO_SOURCE),
+				CaseDataDto.YELLOW_FEVER_VACCINATION, Arrays.asList(Vaccination.VACCINATED), true);
+		
+		List<String> medicalInformationFields = Arrays.asList(CaseDataDto.PREGNANT, CaseDataDto.MEASLES_VACCINATION, CaseDataDto.YELLOW_FEVER_VACCINATION);
 		
 		for (String medicalInformationField : medicalInformationFields) {
 			if (getFieldGroup().getField(medicalInformationField).isVisible()) {

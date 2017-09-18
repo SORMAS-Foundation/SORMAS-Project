@@ -1730,3 +1730,18 @@ FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'userroles_history', tru
 ALTER TABLE userroles_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (67, 'Create history table for UserRoles #328');
+
+-- 2017-09-18 Symptoms for Yellow fever and Dengue #262
+ALTER TABLE symptoms ADD COLUMN backache varchar(255);
+ALTER TABLE symptoms ADD COLUMN eyesbleeding varchar(255);
+ALTER TABLE symptoms ADD COLUMN jaundice varchar(255);
+ALTER TABLE symptoms ADD COLUMN darkurine varchar(255);
+ALTER TABLE symptoms ADD COLUMN stomachbleeding varchar(255);
+ALTER TABLE symptoms ADD COLUMN rapidbreathing varchar(255);
+ALTER TABLE symptoms ADD COLUMN swollenglands varchar(255);
+
+ALTER TABLE cases ADD COLUMN yellowfevervaccination varchar(255);
+ALTER TABLE cases ADD COLUMN yellowfevervaccinationinfosource varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (68, 'Additional data for Yellow fever and Dengue #262');
+
