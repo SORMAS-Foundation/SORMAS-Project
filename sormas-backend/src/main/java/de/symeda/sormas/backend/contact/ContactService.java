@@ -78,7 +78,7 @@ public class ContactService extends AbstractAdoService<Contact> {
 		if (user != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from, user);
 			if (userFilter != null) {
-				filter = cb.and(filter, createUserFilter(cb, cq, from, user));
+				filter = cb.and(filter, userFilter);
 			}
 		} 	
 		
