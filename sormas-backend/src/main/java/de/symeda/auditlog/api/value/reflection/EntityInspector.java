@@ -2,6 +2,7 @@ package de.symeda.auditlog.api.value.reflection;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,12 +68,13 @@ public class EntityInspector {
 			if (clazz.getDeclaredAnnotation(Audited.class) != null) {
 
 				// Only get/is methods are relevant - even if there are no setters (e.g. because they're protected)
-				// in 
 				Method[] methods = clazz.getDeclaredMethods();
 				for (Method method : methods) {
-					for (String prefix : METHOD_PREFIXES) {
-						if (method.getName().startsWith(prefix) && isAudited(method)) {
-							auditedMethods.add(method);
+					if (!Modifier.isStatic(method.getModifiers())) {
+						for (String prefix : METHOD_PREFIXES) {
+							if (method.getName().startsWith(prefix) && isAudited(method)) {
+								auditedMethods.add(method);
+							}
 						}
 					}
 				}
