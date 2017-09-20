@@ -1,6 +1,8 @@
 package de.symeda.sormas.api.utils;
 
-public class EpiWeek {
+import java.io.Serializable;
+
+public class EpiWeek implements Serializable {
 	
 	private final int year;
 	private final int week;

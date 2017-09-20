@@ -12,6 +12,7 @@ import javax.validation.constraints.NotNull;
 import de.symeda.sormas.api.report.WeeklyReportEntryDto;
 import de.symeda.sormas.api.report.WeeklyReportEntryFacade;
 import de.symeda.sormas.api.report.WeeklyReportEntryReferenceDto;
+import de.symeda.sormas.api.report.WeeklyReportReferenceDto;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -65,6 +66,13 @@ public class WeeklyReportEntryFacadeEjb implements WeeklyReportEntryFacade {
 		}
 		
 		return weeklyReportEntryService.getAllUuids(user);
+	}
+	
+	@Override
+	public int getNumberOfNonZeroEntries(WeeklyReportReferenceDto reportRef) {
+		WeeklyReport report = weeklyReportService.getByReferenceDto(reportRef);
+		
+		return (int) weeklyReportEntryService.getNumberOfNonZeroEntries(report);
 	}
 	
 	public WeeklyReportEntry fromDto(@NotNull WeeklyReportEntryDto source) {

@@ -12,6 +12,7 @@ import de.symeda.sormas.ui.contact.ContactsView;
 import de.symeda.sormas.ui.dashboard.DashboardView;
 import de.symeda.sormas.ui.events.EventsView;
 import de.symeda.sormas.ui.login.LoginHelper;
+import de.symeda.sormas.ui.reports.ReportsView;
 import de.symeda.sormas.ui.samples.SamplesView;
 import de.symeda.sormas.ui.task.TasksView;
 import de.symeda.sormas.ui.user.UsersView;
@@ -51,6 +52,7 @@ public class MainScreen extends HorizontalLayout {
 	        menu.addView(EventsView.class, EventsView.VIEW_NAME, "Alerts", FontAwesome.PHONE);
         }
         menu.addView(SamplesView.class, SamplesView.VIEW_NAME, "Samples", FontAwesome.DATABASE);
+//        menu.addView(ReportsView.class, ReportsView.VIEW_NAME, "Reports", FontAwesome.FILE_TEXT);
         menu.addView(UsersView.class, UsersView.VIEW_NAME, "Users", FontAwesome.USERS);
         menu.addView(AboutView.class, AboutView.VIEW_NAME, "About", FontAwesome.INFO_CIRCLE);
         

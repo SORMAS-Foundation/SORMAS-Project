@@ -8,6 +8,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.user.User;
@@ -21,6 +22,17 @@ public class WeeklyReportEntryService extends AbstractAdoService<WeeklyReportEnt
 	
 	public WeeklyReportEntryService() {
 		super(WeeklyReportEntry.class);
+	}
+	
+	public long getNumberOfNonZeroEntries(WeeklyReport report) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<WeeklyReportEntry> from = cq.from(getElementClass());
+		
+		cq.select(cb.count(from));
+		cq.where(cb.equal(from.get(WeeklyReportEntry.WEEKLY_REPORT), report));
+		cq.where(cb.greaterThan(from.get(WeeklyReportEntry.NUMBER_OF_CASES), 0));
+		return em.createQuery(cq).getSingleResult();
 	}
 
 	/**

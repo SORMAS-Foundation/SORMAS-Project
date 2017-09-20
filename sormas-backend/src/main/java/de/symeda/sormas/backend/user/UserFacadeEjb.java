@@ -10,6 +10,7 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
+import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserFacade;
@@ -18,6 +19,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.EventService;
+import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
@@ -117,6 +119,13 @@ public class UserFacadeEjb implements UserFacade {
 		userService.ensurePersisted(user);
 		
 		return toDto(user);
+	}
+	
+	@Override
+	public int getNumberOfInformantsByFacility(FacilityReferenceDto facilityRef) {
+		Facility facility = facilityService.getByReferenceDto(facilityRef);
+		
+		return (int) userService.getNumberOfInformantsByFacility(facility);
 	}
 	
 	public static UserDto toDto(User entity) {

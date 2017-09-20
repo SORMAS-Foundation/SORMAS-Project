@@ -9,11 +9,20 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.report.WeeklyReportDto;
 import de.symeda.sormas.api.report.WeeklyReportFacade;
 import de.symeda.sormas.api.report.WeeklyReportReferenceDto;
+import de.symeda.sormas.api.report.WeeklyReportSummaryDto;
+import de.symeda.sormas.api.utils.EpiWeek;
+import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
+import de.symeda.sormas.backend.region.DistrictService;
+import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
@@ -24,6 +33,10 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 
 	@EJB
 	private WeeklyReportService weeklyReportService;
+	@EJB
+	private RegionService regionService;
+	@EJB
+	private DistrictService districtService;
 	@EJB
 	private FacilityService facilityService;
 	@EJB
@@ -68,6 +81,43 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 		}
 		
 		return weeklyReportService.getAllUuids(user);
+	}
+
+	@Override
+	public List<WeeklyReportSummaryDto> getSummariesPerDistrict(EpiWeek epiWeek) {
+		weeklyReportService.getWeeklyReportSummariesPerDistrict(epiWeek);
+		return null;
+	}
+	
+	@Override
+	public WeeklyReportSummaryDto getSummaryDtoByRegion(RegionReferenceDto regionRef, EpiWeek epiWeek) {
+		List<FacilityReferenceDto> facilities = FacadeProvider.getFacilityFacade().getHealthFacilitiesByRegion(regionRef, false);
+	
+	return buildUIDto(facilities, regionRef, null, epiWeek);
+	}
+	
+	@Override
+	public WeeklyReportSummaryDto getSummaryDtoByDistrict(DistrictReferenceDto districtRef, EpiWeek epiWeek) {
+		List<FacilityReferenceDto> facilities = FacadeProvider.getFacilityFacade().getHealthFacilitiesByDistrict(districtRef, false);
+		
+		return buildUIDto(facilities, null, districtRef, epiWeek);
+	}
+	
+	@Override
+	public int getNumberOfWeeklyReportsByFacility(FacilityReferenceDto facilityRef, EpiWeek epiWeek) {
+		Facility facility = facilityService.getByReferenceDto(facilityRef);
+		
+		return (int) weeklyReportService.getNumberOfWeeklyReportsByFacility(facility, epiWeek);
+	}
+	
+	@Override
+	public List<WeeklyReportReferenceDto> getWeeklyReportsByFacility(FacilityReferenceDto facilityRef, EpiWeek epiWeek) {
+		Facility facility = facilityService.getByReferenceDto(facilityRef);
+		
+		return weeklyReportService.getByFacility(facility, epiWeek)
+				.stream()
+				.map(r -> toReferenceDto(r))
+				.collect(Collectors.toList());
 	}
 	
 	public WeeklyReport fromDto(@NotNull WeeklyReportDto source) {
@@ -114,6 +164,51 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 		target.setEpiWeek(source.getEpiWeek());
 		
 		return target;
+	}
+	
+	private WeeklyReportSummaryDto buildUIDto(List<FacilityReferenceDto> facilities, RegionReferenceDto regionRef, DistrictReferenceDto districtRef, EpiWeek epiWeek) {
+		WeeklyReportSummaryDto dto = new WeeklyReportSummaryDto();
+		int numberOfReports = 0;
+		int numberOfZeroReports = 0;
+		int numberOfMissingReports = 0;
+		for (FacilityReferenceDto facility : facilities) {
+			int numberOfInformants = FacadeProvider.getUserFacade().getNumberOfInformantsByFacility(facility);
+			int numberOfWeeklyReports = getNumberOfWeeklyReportsByFacility(facility, epiWeek);
+			if (numberOfInformants != numberOfWeeklyReports) {
+				numberOfMissingReports++;
+				continue;
+			}
+			
+			List<WeeklyReportReferenceDto> reports = getWeeklyReportsByFacility(facility, epiWeek);
+			int numberOfReportsForFacility = 0;
+			for (WeeklyReportReferenceDto report : reports) {
+				int nonZeroEntries = FacadeProvider.getWeeklyReportEntryFacade().getNumberOfNonZeroEntries(report);
+				if (nonZeroEntries > 0) {
+					numberOfReportsForFacility++;
+					continue;
+				}
+			}
+			
+			if (numberOfReportsForFacility > 0) {
+				numberOfReports++;
+			} else {
+				numberOfZeroReports++;
+			}
+		}
+		
+		dto.setRegion(regionRef);
+		dto.setDistrict(districtRef);
+		dto.setFacilities(facilities.size());
+		dto.setReports(numberOfReports);
+		dto.setZeroReports(numberOfZeroReports);
+		dto.setMissingReports(numberOfMissingReports);
+		
+		int totalReportsCount = numberOfReports + numberOfZeroReports + numberOfMissingReports;
+		dto.setReportsPercentage(100 / totalReportsCount * numberOfReports);
+		dto.setZeroReportsPercentage(100 / totalReportsCount * numberOfZeroReports);
+		dto.setMissingReportsPercentage(100 / totalReportsCount * numberOfMissingReports);
+		
+		return dto;
 	}
 
 }

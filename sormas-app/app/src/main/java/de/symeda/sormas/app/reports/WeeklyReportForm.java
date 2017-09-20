@@ -76,7 +76,7 @@ public class WeeklyReportForm extends FormTab {
 
         final List yearsList = DataUtils.toItems(DateHelper.getYearsToNow());
         yearsList.add(Calendar.getInstance().get(Calendar.YEAR) + 1);
-        final List initialWeeksList = DataUtils.toItems(createWeeksList(Calendar.getInstance().get(Calendar.YEAR)));
+        final List initialWeeksList = DataUtils.toItems(DateHelper.createWeeksList(Calendar.getInstance().get(Calendar.YEAR)));
 
         FieldHelper.initSpinnerField(binding.weeklyReportYear, DataUtils.toItems(DateHelper.getYearsToNow()), new AdapterView.OnItemSelectedListener() {
             @Override
@@ -86,7 +86,7 @@ public class WeeklyReportForm extends FormTab {
                 if (weekSpinner != null) {
                     List<Item> weeksList;
                     if (selectedValue != null) {
-                        weeksList = DataUtils.toItems(createWeeksList((int) selectedValue));
+                        weeksList = DataUtils.toItems(DateHelper.createWeeksList((int) selectedValue));
                     } else {
                         weeksList = Collections.emptyList();
                     }
@@ -227,16 +227,6 @@ public class WeeklyReportForm extends FormTab {
                 }
             }
         });
-    }
-
-    private List createWeeksList(int year) {
-        Calendar calendar = DateHelper.getEpiCalendar();
-        calendar.set(year, 0, 1);
-        List weeksList = new ArrayList<>();
-        for (int week = 1; week <= calendar.getActualMaximum(Calendar.WEEK_OF_YEAR); week++) {
-            weeksList.add(week);
-        }
-        return weeksList;
     }
 
     private void addHeaderRow(User user) {

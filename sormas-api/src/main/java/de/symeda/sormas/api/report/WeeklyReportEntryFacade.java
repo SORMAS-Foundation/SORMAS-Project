@@ -16,4 +16,6 @@ public interface WeeklyReportEntryFacade {
 	
 	List<String> getAllUuids(String userUuid);
 	
+	int getNumberOfNonZeroEntries(WeeklyReportReferenceDto reportRef);
+	
 }

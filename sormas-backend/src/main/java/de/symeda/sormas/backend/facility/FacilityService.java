@@ -71,6 +71,28 @@ public class FacilityService extends AbstractAdoService<Facility> {
 		return facilities;
 	}
 	
+	public List<Facility> getHealthFacilitiesByRegion(Region region, boolean includeStaticFacilities) {
+		
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Facility> cq = cb.createQuery(getElementClass());
+		Root<Facility> from = cq.from(getElementClass());
+
+		Predicate filter = cb.or(cb.notEqual(from.get(Facility.TYPE), FacilityType.LABORATORY), cb.isNull(from.get(Facility.TYPE)));
+		filter = cb.and(filter, cb.equal(from.get(Facility.REGION), region));
+		cq.where(filter);
+		cq.distinct(true);
+		cq.orderBy(cb.asc(from.get(Facility.NAME)));
+
+		List<Facility> facilities = em.createQuery(cq).getResultList();
+		
+		if (includeStaticFacilities) {
+			facilities.add(getByUuid(FacilityDto.OTHER_FACILITY_UUID));
+			facilities.add(getByUuid(FacilityDto.NONE_FACILITY_UUID));
+		}
+		
+		return facilities;
+	}
+	
 	public List<Facility> getAllByRegionAfter(Region region, Date date) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();

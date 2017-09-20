@@ -5,6 +5,11 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
+import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.utils.EpiWeek;
+
 @Remote
 public interface WeeklyReportFacade {
 
@@ -15,5 +20,15 @@ public interface WeeklyReportFacade {
 	WeeklyReportDto saveWeeklyReport(WeeklyReportDto dto);
 	
 	List<String> getAllUuids(String userUuid);
+	
+	WeeklyReportSummaryDto getSummaryDtoByRegion(RegionReferenceDto regionRef, EpiWeek epiWeek);
+	
+	WeeklyReportSummaryDto getSummaryDtoByDistrict(DistrictReferenceDto districtRef, EpiWeek epiWeek);
+	
+	int getNumberOfWeeklyReportsByFacility(FacilityReferenceDto facilityRef, EpiWeek epiWeek);
+	
+	List<WeeklyReportReferenceDto> getWeeklyReportsByFacility(FacilityReferenceDto facilityRef, EpiWeek epiWeek);
+	
+	List<WeeklyReportSummaryDto> getSummariesPerDistrict(EpiWeek epiWeek);
 	
 }

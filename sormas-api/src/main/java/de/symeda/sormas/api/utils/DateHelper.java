@@ -324,6 +324,16 @@ public final class DateHelper {
 		return secondCalendar.getTime().after(calendar.getTime());
 	}
 	
+	public static List<Integer> createWeeksList(int year) {
+        Calendar calendar = getEpiCalendar();
+        calendar.set(year, 0, 1);
+        List<Integer> weeksList = new ArrayList<>();
+        for (int week = 1; week <= calendar.getActualMaximum(Calendar.WEEK_OF_YEAR); week++) {
+            weeksList.add(week);
+        }
+        return weeksList;
+    }
+	
 	/**
 	 * Calculates the start and end dates of the report for the given epi week. 
 	 * 
