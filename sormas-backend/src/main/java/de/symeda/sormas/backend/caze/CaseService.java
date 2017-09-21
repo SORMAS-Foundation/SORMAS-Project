@@ -35,6 +35,8 @@ import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionFacadeEjb;
+import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
 
@@ -44,6 +46,8 @@ public class CaseService extends AbstractAdoService<Case> {
 	
 	@EJB
 	ContactService contactService;
+	@EJB
+	SampleService sampleService;
 	
 	public CaseService() {
 		super(Case.class);
@@ -147,8 +151,17 @@ public class CaseService extends AbstractAdoService<Case> {
 					filter = cb.or(filter, cb.equal(casePath.get(Case.HEALTH_FACILITY), user.getHealthFacility()));
 				}
 				break;
-			default:
+			case LAB_USER:
+				// get all cases based on the user's sample association
+				Subquery<Long> sampleCaseSubquery = cq.subquery(Long.class);
+				Root<Sample> sampleRoot = sampleCaseSubquery.from(Sample.class);
+				sampleCaseSubquery.where(sampleService.createUserFilterWithoutCase(cb, cq, sampleRoot, user));
+				sampleCaseSubquery.select(sampleRoot.get(Sample.ASSOCIATED_CASE).get(Case.ID));
+				filter = cb.in(casePath.get(Case.ID)).value(sampleCaseSubquery);
 				break;
+				
+			default:
+				throw new IllegalArgumentException(userRole.toString());
 			}
 		}
 		
