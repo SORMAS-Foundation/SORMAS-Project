@@ -160,6 +160,17 @@ public class CaseNewForm extends FormTab {
             }
         });
 
+        binding.caseDataDisease.addValueChangedListener(new PropertyField.ValueChangeListener() {
+            @Override
+            public void onChange(PropertyField field) {
+                if (field.getValue() == Disease.OTHER) {
+                    binding.caseDataDiseaseDetails.setVisibility(View.VISIBLE);
+                } else {
+                    binding.caseDataDiseaseDetails.setVisibility(View.GONE);
+                }
+            }
+        });
+
         CaseValidator.setRequiredHintsForNewCase(binding);
 
         return binding.getRoot();

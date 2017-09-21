@@ -1745,3 +1745,8 @@ ALTER TABLE cases ADD COLUMN yellowfevervaccinationinfosource varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (68, 'Additional data for Yellow fever and Dengue #262');
 
+-- 2017-09-21 Disease details field #322
+ALTER TABLE cases ADD COLUMN diseasedetails varchar(512);
+ALTER TABLE events ADD COLUMN diseasedetails varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (69, 'Disease details field #322');

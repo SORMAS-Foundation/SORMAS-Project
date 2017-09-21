@@ -76,6 +76,7 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
         target.setCaseClassification(source.getCaseClassification());
         target.setInvestigationStatus(source.getInvestigationStatus());
         target.setDisease(source.getDisease());
+        target.setDiseaseDetails(source.getDiseaseDetails());
         target.setHealthFacility(DatabaseHelper.getFacilityDao().getByReferenceDto(source.getHealthFacility()));
         target.setHealthFacilityDetails(source.getHealthFacilityDetails());
         target.setPerson(DatabaseHelper.getPersonDao().getByReferenceDto(source.getPerson()));
@@ -113,6 +114,8 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
         target.setInvestigationStatus(source.getInvestigationStatus());
 
         target.setDisease(source.getDisease());
+        target.setDiseaseDetails(source.getDiseaseDetails());
+
         if (source.getHealthFacility() != null) {
             Facility facility = DatabaseHelper.getFacilityDao().queryForId(source.getHealthFacility().getId());
             target.setHealthFacility(FacilityDtoHelper.toReferenceDto(facility));

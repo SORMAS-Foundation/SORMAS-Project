@@ -293,6 +293,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		DtoHelper.validateDto(source, target);
 
 		target.setDisease(source.getDisease());
+		target.setDiseaseDetails(source.getDiseaseDetails());
 		target.setReportDate(source.getReportDate());
 		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
 		target.setPerson(personService.getByReferenceDto(source.getPerson()));
@@ -343,6 +344,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		DtoHelper.fillReferenceDto(target, source);
 
 		target.setDisease(source.getDisease());
+		target.setDiseaseDetails(source.getDiseaseDetails());
 		target.setCaseClassification(source.getCaseClassification());
 		target.setInvestigationStatus(source.getInvestigationStatus());
 		target.setPerson(PersonFacadeEjb.toReferenceDto(source.getPerson()));

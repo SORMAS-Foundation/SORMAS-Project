@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import java.util.Arrays;
 import java.util.List;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
@@ -111,6 +112,12 @@ public final class CaseValidator {
             success = false;
         }
 
+        // Disease details
+        if (caze.getDisease() == Disease.OTHER && caze.getDiseaseDetails().trim().isEmpty()) {
+            binding.caseDataDiseaseDetails.setError(resources.getString(R.string.validation_case_disease_details));
+            success = false;
+        }
+
         // Disease
         if (caze.getDisease() == null) {
             binding.caseDataDisease.setError(resources.getString(R.string.validation_case_disease));
@@ -163,7 +170,7 @@ public final class CaseValidator {
 
     private static final List<PropertyField<?>> getNewCaseFields(CaseNewFragmentLayoutBinding binding) {
         return Arrays.asList(binding.caseDataFirstName, binding.caseDataLastName, binding.caseDataDisease,
-                binding.caseDataRegion, binding.caseDataDistrict, binding.caseDataCommunity,
+                binding.caseDataDiseaseDetails, binding.caseDataRegion, binding.caseDataDistrict, binding.caseDataCommunity,
                 binding.caseDataHealthFacility, binding.caseDataFacilityDetails);
     }
 

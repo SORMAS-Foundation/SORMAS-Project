@@ -46,6 +46,7 @@ public class Event extends AbstractDomainObject {
 	public static final String SRC_TEL_NO = "srcTelNo";
 	public static final String SRC_EMAIL = "srcEmail";
 	public static final String DISEASE = "disease";
+	public static final String DISEASE_DETAILS = "diseaseDetails";
 	public static final String SURVEILLANCE_OFFICER = "surveillanceOfficer";
 	public static final String TYPE_OF_PLACE_TEXT = "typeOfPlaceText";
 	public static final String TASKS = "tasks";
@@ -66,6 +67,7 @@ public class Event extends AbstractDomainObject {
 	private String srcTelNo;
 	private String srcEmail;
 	private Disease disease;
+	private String diseaseDetails;
 	private User surveillanceOfficer;
 	private String typeOfPlaceText;
 	private Float reportLat;
@@ -205,6 +207,15 @@ public class Event extends AbstractDomainObject {
 	public void setDisease(Disease disease) {
 		this.disease = disease;
 	}
+
+	@Column(length=512)
+	public String getDiseaseDetails() {
+		return diseaseDetails;
+	}
+	
+	public void setDiseaseDetails(String diseaseDetails) {
+		this.diseaseDetails = diseaseDetails;
+	}
 	
 	@ManyToOne(cascade = {})
 	public User getSurveillanceOfficer() {
@@ -251,7 +262,7 @@ public class Event extends AbstractDomainObject {
 	
 	@Override
 	public String toString() {
-		String diseaseString = disease == null ? "" : disease.toString();
+		String diseaseString = disease == null ? "" : disease.toString() + (disease == Disease.OTHER ? " (" + diseaseDetails + ")" : "");
 		String eventTypeString = diseaseString.isEmpty() ? eventType.toString() : eventType.toString().toLowerCase();
 		return diseaseString + " " + eventTypeString + " on " + DateHelper.formatDate(eventDate);
 	}

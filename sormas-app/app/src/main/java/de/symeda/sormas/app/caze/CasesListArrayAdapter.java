@@ -54,7 +54,7 @@ public class CasesListArrayAdapter extends ArrayAdapter<Case> {
         TextView disease = (TextView) convertView.findViewById(R.id.cli_disease);
         if(caze.getDisease() != null) {
             String diseaseName = caze.getDisease().getName();
-            disease.setText(Disease.valueOf(diseaseName).toShortString());
+            disease.setText(Disease.valueOf(diseaseName).toShortString() + (caze.getDisease() == Disease.OTHER ? " (" + caze.getDiseaseDetails() + ")" : ""));
         } else {
             disease.setText(null);
         }

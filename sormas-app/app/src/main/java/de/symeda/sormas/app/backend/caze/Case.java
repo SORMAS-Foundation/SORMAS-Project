@@ -58,6 +58,9 @@ public class Case extends AbstractDomainObject {
 	@Enumerated(EnumType.STRING)
 	private Disease disease;
 
+	@Column(length=512)
+	private String diseaseDetails;
+
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	private CaseClassification caseClassification;
@@ -152,7 +155,14 @@ public class Case extends AbstractDomainObject {
 	public void setDisease(Disease disease) {
 		this.disease = disease;
 	}
-	
+
+	public String getDiseaseDetails() {
+		return diseaseDetails;
+	}
+	public void setDiseaseDetails(String diseaseDetails) {
+		this.diseaseDetails = diseaseDetails;
+	}
+
 	public CaseClassification getCaseClassification() {
 		return caseClassification;
 	}

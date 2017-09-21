@@ -5,6 +5,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -45,7 +46,7 @@ public class CaseInfoLayout extends VerticalLayout {
 				I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, PersonDto.SEX));
 		this.addComponent(ageSexLayout);
 
-		addDescLabel(this, caseDto.getDisease(),
+		addDescLabel(this, caseDto.getDisease() + (caseDto.getDisease() == Disease.OTHER ? " (" + caseDto.getDiseaseDetails() + ")" : ""),
 				I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISEASE));
 		addDescLabel(this, caseDto.getCaseClassification(),
 				I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.CASE_CLASSIFICATION));

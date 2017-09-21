@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import java.util.Arrays;
 import java.util.List;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -59,6 +60,12 @@ public final class EventValidator {
             success = false;
         }
 
+        // Disease details
+        if (event.getDisease() == Disease.OTHER) {
+            binding.eventDiseaseDetails.setError(resources.getString(R.string.validation_case_disease_details));
+            success = false;
+        }
+
         // Event description
         if (event.getEventDesc() == null || event.getEventDesc().trim().isEmpty()) {
             binding.eventEventDesc.setError(resources.getString(R.string.validation_event_description));
@@ -89,7 +96,7 @@ public final class EventValidator {
     private static final List<PropertyField<?>> getEventDataFields(EventDataFragmentLayoutBinding binding) {
         return Arrays.asList(binding.eventEventType, binding.eventEventDesc, binding.eventEventDate,
                 binding.eventTypeOfPlace, binding.eventTypeOfPlaceTxt, binding.eventSrcFirstName,
-                binding.eventSrcLastName, binding.eventSrcTelNo);
+                binding.eventSrcLastName, binding.eventSrcTelNo, binding.eventDiseaseDetails);
     }
 
 }

@@ -43,6 +43,7 @@ public class Event extends AbstractDomainObject {
 	public static final String SRC_TEL_NO = "srcTelNo";
 	public static final String SRC_EMAIL = "srcEmail";
 	public static final String DISEASE = "disease";
+	public static final String DISEASE_DETAILS = "diseaseDetails";
 	public static final String SURVEILLANCE_OFFICER = "surveillanceOfficer";
 	public static final String TYPE_OF_PLACE_TEXT = "typeOfPlaceText";
 
@@ -87,6 +88,9 @@ public class Event extends AbstractDomainObject {
 
 	@Enumerated(EnumType.STRING)
 	private Disease disease;
+
+	@Column(length=512)
+	private String diseaseDetails;
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private User surveillanceOfficer;
@@ -193,7 +197,14 @@ public class Event extends AbstractDomainObject {
 	public void setDisease(Disease disease) {
 		this.disease = disease;
 	}
-	
+
+	public String getDiseaseDetails() {
+		return diseaseDetails;
+	}
+	public void setDiseaseDetails(String diseaseDetails) {
+		this.diseaseDetails = diseaseDetails;
+	}
+
 	public User getSurveillanceOfficer() {
 		return surveillanceOfficer;
 	}

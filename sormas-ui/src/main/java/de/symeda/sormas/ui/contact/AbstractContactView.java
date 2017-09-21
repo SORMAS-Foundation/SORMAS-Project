@@ -2,6 +2,7 @@ package de.symeda.sormas.ui.contact;
 
 import com.vaadin.ui.Label;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -35,7 +36,7 @@ public abstract class AbstractContactView extends AbstractSubNavigationView {
 		
 		infoLabel.setValue(contact.toString());
 		CaseDataDto caseData = FacadeProvider.getCaseFacade().getCaseDataByUuid(contact.getCaze().getUuid());
-		infoLabelSub.setValue(caseData.getDisease().toString());
+		infoLabelSub.setValue(caseData.getDisease().toString() + (caseData.getDisease() == Disease.OTHER ? " (" + caseData.getDiseaseDetails() + ")" : ""));
     }
 
 	public ContactReferenceDto getContactRef() {

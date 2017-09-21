@@ -27,6 +27,7 @@ public class CaseDataDto extends CaseReferenceDto {
 	public static final String INVESTIGATION_STATUS = "investigationStatus";
 	public static final String PERSON = "person";
 	public static final String DISEASE = "disease";
+	public static final String DISEASE_DETAILS = "diseaseDetails";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
@@ -55,6 +56,7 @@ public class CaseDataDto extends CaseReferenceDto {
 	private CaseClassification caseClassification;
 	private InvestigationStatus investigationStatus;
 	private Disease disease;
+	private String diseaseDetails;
 	private UserReferenceDto reportingUser;
 	private Date reportDate;
 	private Date investigatedDate;
@@ -112,6 +114,14 @@ public class CaseDataDto extends CaseReferenceDto {
 
 	public void setDisease(Disease disease) {
 		this.disease = disease;
+	}
+	
+	public String getDiseaseDetails() {
+		return diseaseDetails;
+	}
+
+	public void setDiseaseDetails(String diseaseDetails) {
+		this.diseaseDetails = diseaseDetails;
 	}
 
 	public UserReferenceDto getReportingUser() {

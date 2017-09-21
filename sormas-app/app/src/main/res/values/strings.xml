@@ -279,6 +279,7 @@
     <string name="alert_title_missing_report">Missing Weekly Report</string>
 
     <string name="validation_case_disease">Please select the disease for this case.</string>
+    <string name="validation_case_disease_details">Please enter the name of the disease.</string>
     <string name="validation_person_first_name">Please enter the person\'s first name.</string>
     <string name="validation_person_last_name">Please enter the person\'s last name.</string>
     <string name="validation_community">Please select a ward.</string>

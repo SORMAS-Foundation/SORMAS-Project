@@ -12,7 +12,9 @@ import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.location.LocationDto;
@@ -36,7 +38,12 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			LayoutUtil.divCss(CssStyles.VSPACE2,
 					LayoutUtil.fluidRowCss(CssStyles.VSPACE4,
 							LayoutUtil.fluidColumn(12, 0,
-									LayoutUtil.fluidRowLocs(EventDto.UUID, EventDto.EVENT_TYPE, EventDto.DISEASE)
+									LayoutUtil.fluidRowLocs(EventDto.UUID, EventDto.EVENT_TYPE)
+							)
+					) +
+					LayoutUtil.fluidRowCss(CssStyles.VSPACE4,
+							LayoutUtil.fluidColumn(12, 0,
+									LayoutUtil.fluidRowLocs(EventDto.DISEASE, EventDto.DISEASE_DETAILS)
 							)
 					) +
 					LayoutUtil.fluidRowCss(CssStyles.VSPACE4,
@@ -93,6 +100,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		addField(EventDto.UUID, TextField.class);
 		addField(EventDto.EVENT_TYPE, OptionGroup.class);
 		addField(EventDto.DISEASE, ComboBox.class).setNullSelectionAllowed(true);
+		addField(EventDto.DISEASE_DETAILS, TextField.class);
 		addField(EventDto.EVENT_DATE, DateField.class);
 		addField(EventDto.EVENT_STATUS, OptionGroup.class);
 		addField(EventDto.EVENT_DESC, TextArea.class).setRows(2);
@@ -115,6 +123,9 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		
 		FieldHelper.setVisibleWhen(getFieldGroup(), EventDto.TYPE_OF_PLACE_TEXT, EventDto.TYPE_OF_PLACE, Arrays.asList(TypeOfPlace.OTHER), true);
 		setTypeOfPlaceTextRequirement();
+		
+		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(EventDto.DISEASE_DETAILS), EventDto.DISEASE, Arrays.asList(Disease.OTHER), true);
+		FieldHelper.setRequiredWhen(getFieldGroup(), EventDto.DISEASE, Arrays.asList(EventDto.DISEASE_DETAILS), Arrays.asList(Disease.OTHER));
 		
 		setRequired(true, EventDto.EVENT_TYPE, EventDto.EVENT_DATE, EventDto.EVENT_STATUS, EventDto.UUID, EventDto.EVENT_DESC,
 				EventDto.REPORT_DATE_TIME, EventDto.REPORTING_USER, EventDto.TYPE_OF_PLACE, EventDto.SRC_FIRST_NAME,

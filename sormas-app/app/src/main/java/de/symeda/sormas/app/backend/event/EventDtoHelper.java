@@ -66,6 +66,7 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
         target.setSrcTelNo(source.getSrcTelNo());
         target.setSrcEmail(source.getSrcEmail());
         target.setDisease(source.getDisease());
+        target.setDiseaseDetails(source.getDiseaseDetails());
 
         target.setReportLat(source.getReportLat());
         target.setReportLon(source.getReportLon());
@@ -100,6 +101,7 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
         dto.setSrcTelNo(ado.getSrcTelNo());
         dto.setSrcEmail(ado.getSrcEmail());
         dto.setDisease(ado.getDisease());
+        dto.setDiseaseDetails(ado.getDiseaseDetails());
 
         if (ado.getSurveillanceOfficer() != null) {
             User user = DatabaseHelper.getUserDao().queryForId(ado.getSurveillanceOfficer().getId());

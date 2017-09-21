@@ -78,6 +78,18 @@ public class EventEditDataForm extends FormTab {
 
         EventValidator.setRequiredHintsForEventData(binding);
 
+        binding.eventDisease.addValueChangedListener(new PropertyField.ValueChangeListener() {
+            @Override
+            public void onChange(PropertyField field) {
+                if (field.getValue() == Disease.OTHER) {
+                    binding.eventDiseaseDetails.setVisibility(View.VISIBLE);
+                } else {
+                    binding.eventDiseaseDetails.setVisibility(View.GONE);
+                    binding.eventDiseaseDetails.setValue(null);
+                }
+            }
+        });
+
         return binding.getRoot();
     }
 

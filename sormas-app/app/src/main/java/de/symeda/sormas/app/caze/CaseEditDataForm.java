@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -155,6 +156,10 @@ public class CaseEditDataForm extends FormTab {
             binding.caseDataMove.setVisibility(View.VISIBLE);
             binding.caseDataMove.setPaintFlags(binding.caseDataMove.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
             binding.caseDataMove.setTextColor(ContextCompat.getColor(getContext(), R.color.colorPrimary));
+        }
+
+        if (binding.getCaze().getDisease() != Disease.OTHER) {
+            binding.caseDataDiseaseDetails.setVisibility(View.GONE);
         }
 
         return binding.getRoot();
