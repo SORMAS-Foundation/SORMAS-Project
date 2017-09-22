@@ -71,7 +71,7 @@ public class MapComponent extends VerticalLayout {
 		} else {
 	    	UserDto user = LoginHelper.getCurrentUser();
 	    	if (user.getRegion() != null) {
-				GeoLatLon mapCenter = FacadeProvider.getGeoShapeProvider().getCenterOfRegion(LoginHelper.getCurrentUser().getRegion());
+				GeoLatLon mapCenter = FacadeProvider.getGeoShapeProvider().getCenterOfRegion(user.getRegion());
 				map.setCenter(new LatLon(mapCenter.getLon(), mapCenter.getLat()));
 	    	} else {
 				map.setCenter(new LatLon(9.101718, 7.396517));

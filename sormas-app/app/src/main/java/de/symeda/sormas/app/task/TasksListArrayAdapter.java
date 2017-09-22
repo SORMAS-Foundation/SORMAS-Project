@@ -128,9 +128,10 @@ public class TasksListArrayAdapter extends ArrayAdapter<Task> {
 
         ImageView synchronizedIcon = (ImageView) convertView.findViewById(R.id.task_synchronized_li);
         if (task.isModifiedOrChildModified()) {
+            synchronizedIcon.setVisibility(View.VISIBLE);
             synchronizedIcon.setImageResource(R.drawable.ic_cached_black_18dp);
         } else {
-            synchronizedIcon.setImageResource(R.drawable.ic_done_all_black_18dp);
+            synchronizedIcon.setVisibility(View.GONE);
         }
 
         updateUnreadIndicator();

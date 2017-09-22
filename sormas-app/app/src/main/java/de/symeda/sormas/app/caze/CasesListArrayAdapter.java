@@ -80,9 +80,10 @@ public class CasesListArrayAdapter extends ArrayAdapter<Case> {
 
         ImageView synchronizedIcon = (ImageView) convertView.findViewById(R.id.cli_synchronized);
         if (caze.isModifiedOrChildModified()) {
+            synchronizedIcon.setVisibility(View.VISIBLE);
             synchronizedIcon.setImageResource(R.drawable.ic_cached_black_18dp);
         } else {
-            synchronizedIcon.setImageResource(R.drawable.ic_done_all_black_18dp);
+            synchronizedIcon.setVisibility(View.GONE);
         }
 
         updateUnreadIndicator();

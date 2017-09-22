@@ -87,9 +87,10 @@ public class SamplesListArrayAdapter extends ArrayAdapter<Sample> {
 
         ImageView synchronizedIcon = (ImageView) convertView.findViewById(R.id.sample_synchronized_li);
         if (sample.isModifiedOrChildModified()) {
+            synchronizedIcon.setVisibility(View.VISIBLE);
             synchronizedIcon.setImageResource(R.drawable.ic_cached_black_18dp);
         } else {
-            synchronizedIcon.setImageResource(R.drawable.ic_done_all_black_18dp);
+            synchronizedIcon.setVisibility(View.GONE);
         }
 
         updateUnreadIndicator();
