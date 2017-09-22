@@ -1,11 +1,8 @@
 package de.symeda.auditlog.api.value.reflection;
 
-import java.beans.BeanInfo;
-import java.beans.IntrospectionException;
-import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -70,23 +67,20 @@ public class EntityInspector {
 			// Potentially not all classes in the class tree are annotated with @Audited
 			if (clazz.getDeclaredAnnotation(Audited.class) != null) {
 
-				try {
-					// Ignore inherited methods because those will be processed later
-					BeanInfo beanInfo = Introspector.getBeanInfo(clazz, clazz.getSuperclass());
-					
-					// Only get/is methods are relevant - even if there are no setters (e.g. because they're protected)
-					for (PropertyDescriptor property : beanInfo.getPropertyDescriptors()) {
-						Method readMethod = property.getReadMethod();
-						if (readMethod != null && isAudited(readMethod)) {
-							auditedMethods.add(readMethod);
+				// Only get/is methods are relevant - even if there are no setters (e.g. because they're protected)
+				Method[] methods = clazz.getDeclaredMethods();
+				for (Method method : methods) {
+					if (!Modifier.isStatic(method.getModifiers())) {
+						for (String prefix : METHOD_PREFIXES) {
+							if (method.getName().startsWith(prefix) && isAudited(method)) {
+								auditedMethods.add(method);
+							}
 						}
 					}
-				} catch (IntrospectionException e) {
-					throw new AuditlogException(String.format("Error while trying to retrieve the BeanInfo for %s!", clazz.getName()), e);
 				}
 			}
-
-			// Check current class and all super classes up to Object
+			
+			// Check all super classes that are audited
 			auditedMethods.addAll(getAuditedAttributes(clazz.getSuperclass()));
 		}
 

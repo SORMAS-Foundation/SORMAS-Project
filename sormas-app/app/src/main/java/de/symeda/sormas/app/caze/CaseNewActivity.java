@@ -111,7 +111,7 @@ public class CaseNewActivity extends AppCompatActivity {
 
             case android.R.id.home:
                 //Home/back button
-                NavUtils.navigateUpFromSameTask(this);
+                finish();
                 return true;
 
             // Report problem button
@@ -205,22 +205,8 @@ public class CaseNewActivity extends AppCompatActivity {
         CaseDao caseDao = DatabaseHelper.getCaseDao();
         caseDao.saveAndSnapshot(caze);
 
-        if (RetroProvider.isConnected()) {
-            SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.ChangesOnly, this, new SyncCallback() {
-                @Override
-                public void call(boolean syncFailed, String syncFailedMessage) {
-                    if (syncFailed) {
-                        Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_sync_error_created), getResources().getString(R.string.entity_case)), Snackbar.LENGTH_LONG).show();
-                    } else {
-                        Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_create_success), getResources().getString(R.string.entity_case)), Snackbar.LENGTH_LONG).show();
-                    }
-                    showCaseEditView(caze);
-                }
-            });
-        } else {
-            Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_create_success), getResources().getString(R.string.entity_case)), Snackbar.LENGTH_LONG).show();
-            showCaseEditView(caze);
-        }
+        Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_create_success), getResources().getString(R.string.entity_case)), Snackbar.LENGTH_LONG).show();
+        showCaseEditView(caze);
     }
 
 }

@@ -1671,6 +1671,82 @@ INSERT INTO schema_version (version_number, comment) VALUES (62, 'RDC for Previo
 -- 2017-09-05 Generic names for 'Other' and 'None' facilities #261
 UPDATE facility SET name = 'OTHER_FACILITY' WHERE uuid = 'SORMAS-CONSTID-OTHERS-FACILITY';
 UPDATE facility SET name = 'NO_FACILITY' WHERE uuid = 'SORMAS-CONSTID-ISNONE-FACILITY';
-UPDATE public.facility SET changedate=now();
 
 INSERT INTO schema_version (version_number, comment) VALUES (63, 'Generic names for Other and None facilities');
+
+-- 2017-09-06 Weekly Reports and Weekly Report Entries #171
+CREATE TABLE weeklyreport(
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	healthfacility_id bigint not null,
+	informant_id bigint not null,
+	reportdatetime timestamp not null,
+	totalnumberofcases integer not null,
+	primary key(id)
+);
+
+ALTER TABLE weeklyreport OWNER TO sormas_user;
+ALTER TABLE weeklyreport ADD CONSTRAINT fk_weeklyreport_healthfacility_id FOREIGN KEY (healthfacility_id) REFERENCES facility(id);
+ALTER TABLE weeklyreport ADD CONSTRAINT fk_weeklyreport_informant_id FOREIGN KEY (informant_id) REFERENCES users(id);
+
+CREATE TABLE weeklyreportentry(
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	weeklyreport_id bigint not null,
+    disease character varying(255) not null,
+    numberofcases integer not null,
+    primary key(id)
+);
+
+ALTER TABLE weeklyreportentry OWNER TO sormas_user;
+ALTER TABLE weeklyreportentry ADD CONSTRAINT fk_weeklyreportentry_weeklyreport_id FOREIGN KEY (weeklyreport_id) REFERENCES weeklyreport(id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (64, 'Weekly Reports and Weekly Report Entries');
+
+-- 2017-09-12 Year and epi week for Weekly Reports #171
+ALTER TABLE weeklyreport ADD COLUMN year integer not null;
+ALTER TABLE weeklyreport ADD COLUMN epiweek integer not null;
+
+INSERT INTO schema_version (version_number, comment) VALUES (65, 'Year and epi week for Weekly Reports');
+
+-- 2017-09-12 Population for regions #82
+ALTER TABLE region ADD COLUMN population integer;
+ALTER TABLE region ADD COLUMN growthRate real;
+
+INSERT INTO schema_version (version_number, comment) VALUES (66, 'Population for regions #82');
+
+-- 2017-09-14 Create history table for UserRoles #328
+ALTER TABLE userroles ADD COLUMN sys_period tstzrange;
+UPDATE userroles SET sys_period=tstzrange((SELECT users.creationdate FROM users WHERE users.id = userroles.user_id), null);
+ALTER TABLE userroles ALTER COLUMN sys_period SET NOT NULL;
+CREATE TABLE userroles_history (LIKE userroles);
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE OR DELETE ON userroles
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'userroles_history', true);
+ALTER TABLE userroles_history OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (67, 'Create history table for UserRoles #328');
+
+-- 2017-09-18 Symptoms for Yellow fever and Dengue #262
+ALTER TABLE symptoms ADD COLUMN backache varchar(255);
+ALTER TABLE symptoms ADD COLUMN eyesbleeding varchar(255);
+ALTER TABLE symptoms ADD COLUMN jaundice varchar(255);
+ALTER TABLE symptoms ADD COLUMN darkurine varchar(255);
+ALTER TABLE symptoms ADD COLUMN stomachbleeding varchar(255);
+ALTER TABLE symptoms ADD COLUMN rapidbreathing varchar(255);
+ALTER TABLE symptoms ADD COLUMN swollenglands varchar(255);
+
+ALTER TABLE cases ADD COLUMN yellowfevervaccination varchar(255);
+ALTER TABLE cases ADD COLUMN yellowfevervaccinationinfosource varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (68, 'Additional data for Yellow fever and Dengue #262');
+
+-- 2017-09-21 Disease details field #322
+ALTER TABLE cases ADD COLUMN diseasedetails varchar(512);
+ALTER TABLE events ADD COLUMN diseasedetails varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (69, 'Disease details field #322');

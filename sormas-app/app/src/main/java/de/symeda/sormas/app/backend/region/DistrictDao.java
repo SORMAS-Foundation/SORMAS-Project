@@ -30,4 +30,9 @@ public class DistrictDao extends AbstractAdoDao<District> {
     public List<District> getByRegion(Region region) {
         return queryForEq(District.REGION+"_id", region, District.NAME, true);
     }
+
+    @Override
+    public District saveAndSnapshot(District source) throws DaoException {
+        throw new UnsupportedOperationException();
+    }
 }

@@ -66,9 +66,10 @@ public class EventParticipantsListArrayAdapter extends ArrayAdapter<EventPartici
 
         ImageView synchronizedIcon = (ImageView) convertView.findViewById(R.id.eventParticipant_synchronized_li);
         if (eventParticipant.isModifiedOrChildModified()) {
+            synchronizedIcon.setVisibility(View.VISIBLE);
             synchronizedIcon.setImageResource(R.drawable.ic_cached_black_18dp);
         } else {
-            synchronizedIcon.setImageResource(R.drawable.ic_done_all_black_18dp);
+            synchronizedIcon.setVisibility(View.GONE);
         }
 
         updateUnreadIndicator();

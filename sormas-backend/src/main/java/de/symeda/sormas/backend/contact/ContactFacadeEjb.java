@@ -23,6 +23,7 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.contact.ContactIndexDto;
+import de.symeda.sormas.api.contact.ContactMapDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskStatus;
@@ -50,7 +51,7 @@ import de.symeda.sormas.backend.visit.VisitService;
 
 @Stateless(name = "ContactFacade")
 public class ContactFacadeEjb implements ContactFacade {
-	
+
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@EJB
@@ -68,30 +69,30 @@ public class ContactFacadeEjb implements ContactFacade {
 
 	@Override
 	public List<String> getAllUuids(String userUuid) {
-		
+
 		User user = userService.getByUuid(userUuid);
-		
+
 		if (user == null) {
 			return Collections.emptyList();
 		}
-		
+
 		return contactService.getAllUuids(user);
 	}	
-	
+
 	@Override
 	public List<ContactDto> getAllContactsAfter(Date date, String userUuid) {
-		
+
 		User user = userService.getByUuid(userUuid);
-		
+
 		if (user == null) {
 			return Collections.emptyList();
 		}
-		
+
 		return contactService.getAllAfter(date, user).stream()
-			.map(c -> toDto(c))
-			.collect(Collectors.toList());
+				.map(c -> toDto(c))
+				.collect(Collectors.toList());
 	}
-	
+
 	@Override
 	public List<ContactDto> getByUuids(List<String> uuids) {
 		return contactService.getByUuids(uuids)
@@ -103,60 +104,60 @@ public class ContactFacadeEjb implements ContactFacade {
 	@Override
 	public List<ContactDto> getFollowUpBetween(Date fromDate, Date toDate, Disease disease, String userUuid) {
 		User user = userService.getByUuid(userUuid);
-		
+
 		if (user == null) {
 			return Collections.emptyList();
 		}
-		
+
 		return contactService.getFollowUpBetween(fromDate, toDate, disease, user).stream()
 				.map(c -> toDto(c))
 				.collect(Collectors.toList());
 	}
-	
+
 	@Override
 	public List<ContactDto> getAllByCase(CaseReferenceDto caseRef) {
 		Case caze = caseService.getByReferenceDto(caseRef);
-		
+
 		return contactService.getAllByCase(caze).stream()
 				.map(c -> toDto(c))
 				.collect(Collectors.toList());
 	}
-	
+
 	@Override
 	public List<ContactIndexDto> getIndexList(String userUuid) {
-		
+
 		User user = userService.getByUuid(userUuid);
-		
+
 		if (user == null) {
 			return Collections.emptyList();
 		}
-		
+
 		return contactService.getAllAfter(null, user).stream()
-			.map(c -> toIndexDto(c))
-			.collect(Collectors.toList());
+				.map(c -> toIndexDto(c))
+				.collect(Collectors.toList());
 	}
-	
+
 	@Override
 	public List<ContactIndexDto> getIndexListByCase(CaseReferenceDto caseRef) {
-		
+
 		Case caze = caseService.getByReferenceDto(caseRef);
-		
+
 		return contactService.getAllByCase(caze).stream()
-			.map(c -> toIndexDto(c))
-			.collect(Collectors.toList());
+				.map(c -> toIndexDto(c))
+				.collect(Collectors.toList());
 	}
-	
+
 
 	@Override
 	public ContactDto getContactByUuid(String uuid) {
 		return toDto(contactService.getByUuid(uuid));
 	}
-	
+
 	@Override
 	public ContactReferenceDto getReferenceByUuid(String uuid) {
 		return toReferenceDto(contactService.getByUuid(uuid));
 	}
-	
+
 	@Override
 	public ContactDto saveContact(ContactDto dto) {
 		Contact entity = fromDto(dto);
@@ -164,14 +165,14 @@ public class ContactFacadeEjb implements ContactFacade {
 		contactService.updateFollowUpUntilAndStatus(entity);
 		return toDto(entity);
 	}
-	
+
 	@Override
 	public ContactDto updateFollowUpUntilAndStatus(ContactDto dto) {
 		Contact entity = fromDto(dto);
 		contactService.updateFollowUpUntilAndStatus(entity);
 		return toDto(entity);
 	}
-	
+
 	@Override
 	public List<ContactReferenceDto> getSelectableContacts(UserReferenceDto userRef) {
 		User user = userService.getByReferenceDto(userRef);
@@ -180,8 +181,22 @@ public class ContactFacadeEjb implements ContactFacade {
 				.collect(Collectors.toList());
 	}
 
+	@Override
+	public List<ContactMapDto> getMapContacts(Date fromDate, Date toDate, Disease disease, String userUuid) {
+		User user = userService.getByUuid(userUuid);
+
+		if (user == null) {
+			return Collections.emptyList();
+		}
+
+		return contactService.getMapContacts(fromDate, toDate, disease, user)
+				.stream()
+				.map(c -> toMapDto(c, visitService.getLastVisitByContact(c, VisitStatus.COOPERATIVE)))
+				.collect(Collectors.toList());
+	}
+
 	public Contact fromDto(@NotNull ContactDto source) {
-		
+
 		Contact target = contactService.getByUuid(source.getUuid());
 		if (target == null) {
 			target = new Contact();
@@ -194,16 +209,16 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		target.setCaze(caseService.getByReferenceDto(source.getCaze()));
 		target.setPerson(personService.getByReferenceDto(source.getPerson()));
-		
+
 		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
 		target.setReportDateTime(source.getReportDateTime());
-		
+
 		// use only date, not time
 		target.setLastContactDate(DateHelper8.toDate(DateHelper8.toLocalDate(source.getLastContactDate())));
 		if (target.getLastContactDate() != null && target.getLastContactDate().after(target.getReportDateTime())) {
 			throw new ValidationException(Contact.LAST_CONTACT_DATE + " has to be before " + Contact.REPORT_DATE_TIME);
 		}
-		
+
 		target.setContactProximity(source.getContactProximity());
 		target.setContactClassification(source.getContactClassification());
 		target.setFollowUpStatus(source.getFollowUpStatus());
@@ -218,7 +233,7 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		return target;
 	}
-	
+
 	public static ContactReferenceDto toReferenceDto(Contact source) {
 		if (source == null) {
 			return null;
@@ -227,7 +242,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		DtoHelper.fillReferenceDto(target, source);
 		return target;
 	}	
-	
+
 	public static ContactDto toDto(Contact source) {
 		if (source == null) {
 			return null;
@@ -237,10 +252,10 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		target.setCaze(CaseFacadeEjb.toReferenceDto(source.getCaze()));
 		target.setPerson(PersonFacadeEjb.toReferenceDto(source.getPerson()));
-		
+
 		target.setReportingUser(UserFacadeEjb.toReferenceDto(source.getReportingUser()));
 		target.setReportDateTime(source.getReportDateTime());
-		
+
 		target.setLastContactDate(source.getLastContactDate());
 		target.setContactProximity(source.getContactProximity());
 		target.setContactClassification(source.getContactClassification());
@@ -253,10 +268,10 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		target.setReportLat(source.getReportLat());
 		target.setReportLon(source.getReportLon());
-		
+
 		return target;
 	}
-	
+
 	public ContactIndexDto toIndexDto(Contact source) {
 		if (source == null) {
 			return null;
@@ -269,14 +284,14 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setCazePerson(PersonFacadeEjb.toReferenceDto(source.getCaze().getPerson()));
 		target.setCazeDisease(source.getCaze().getDisease());
 		target.setCazeDistrict(DistrictFacadeEjb.toReferenceDto(source.getCaze().getDistrict()));
-		
+
 		target.setLastContactDate(source.getLastContactDate());
 		target.setContactProximity(source.getContactProximity());
 		target.setContactClassification(source.getContactClassification());
 		target.setFollowUpStatus(source.getFollowUpStatus());
 		target.setFollowUpUntil(source.getFollowUpUntil());
 		target.setContactOfficer(UserFacadeEjb.toReferenceDto(source.getContactOfficer()));
-		
+
 		// TODO optimize performance by using count query
 		List<Visit> visits = visitService.getAllByContact(source);
 		int numberOfCooperativeVisits = 0;
@@ -290,20 +305,37 @@ public class ContactFacadeEjb implements ContactFacade {
 		}
 		target.setNumberOfCooperativeVisits(numberOfCooperativeVisits);
 		target.setNumberOfMissedVisits(numberOfMissedVisits);
-		
+
 		return target;
 	}
-	
+
+	public ContactMapDto toMapDto(Contact source, Visit lastVisit) {
+		if (source == null) {
+			return null;
+		}
+
+		ContactMapDto target = new ContactMapDto();
+		DtoHelper.fillReferenceDto(target, source);
+
+		target.setReportLat(source.getReportLat());
+		target.setReportLon(source.getReportLon());
+		if (lastVisit != null) {
+			target.setLastVisitDateTime(lastVisit.getVisitDateTime());
+		}
+
+		return target;
+	}
+
 	@RolesAllowed(UserRole._SYSTEM)
 	public void generateContactFollowUpTasks() {
-		
+
 		// get all contacts that are followed up
 		LocalDateTime fromDateTime = LocalDate.now().atStartOfDay();
 		LocalDateTime toDateTime = fromDateTime.plusDays(1);
 		List<Contact> contacts = contactService.getFollowUpBetween(DateHelper8.toDate(fromDateTime), DateHelper8.toDate(toDateTime), null, null);
 
 		for (Contact contact : contacts) {
-			
+
 			User assignee;
 			// assign responsible user
 			if (contact.getContactOfficer() != null) {
@@ -325,7 +357,7 @@ public class ContactFacadeEjb implements ContactFacade {
 					continue;
 				}
 			}
-						
+
 			// find already existing tasks
 			TaskCriteria pendingUserTaskCriteria = new TaskCriteria()
 					.contactEquals(contact)
@@ -333,18 +365,18 @@ public class ContactFacadeEjb implements ContactFacade {
 					.assigneeUserEquals(assignee)
 					.taskStatusEquals(TaskStatus.PENDING);
 			List<Task> pendingUserTasks = taskService.findBy(pendingUserTaskCriteria);
-			
+
 			if (!pendingUserTasks.isEmpty()) {
 				// the user still has a pending task for this contact
 				continue;
 			}
-			
+
 			TaskCriteria dayTaskCriteria = new TaskCriteria()
 					.contactEquals(contact)
 					.taskTypeEquals(TaskType.CONTACT_FOLLOW_UP)
 					.dueDateBetween(DateHelper8.toDate(fromDateTime), DateHelper8.toDate(toDateTime));
 			List<Task> dayTasks = taskService.findBy(dayTaskCriteria);
-			
+
 			if (!dayTasks.isEmpty()) {
 				// there is already a task for the exact day
 				continue;
@@ -362,7 +394,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		}
 	}
 
-	
+
 	@LocalBean
 	@Stateless
 	public static class ContactFacadeEjbLocal extends ContactFacadeEjb {

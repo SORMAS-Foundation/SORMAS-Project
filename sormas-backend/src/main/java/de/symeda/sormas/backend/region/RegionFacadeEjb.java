@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
+import de.symeda.sormas.api.region.RegionDataDto;
 import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.region.RegionFacade;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -33,6 +34,13 @@ public class RegionFacadeEjb implements RegionFacade {
 	}
 	
 	@Override
+	public List<RegionDataDto> getAllData() {
+		return service.getAll().stream()
+			.map(c -> toDataDto(c))
+			.collect(Collectors.toList());
+	}
+	
+	@Override
 	public RegionDto getRegionByUuid(String uuid) {
 		return toDto(service.getByUuid(uuid));
 	}
@@ -55,6 +63,21 @@ public class RegionFacadeEjb implements RegionFacade {
 		
 		dto.setName(entity.getName());
 		dto.setEpidCode(entity.getEpidCode());
+
+		return dto;
+	}
+	
+	private RegionDataDto toDataDto(Region entity) {
+		if (entity == null) {
+			return null;
+		}
+		RegionDataDto dto = new RegionDataDto();
+		DtoHelper.fillDto(dto, entity);
+		
+		dto.setName(entity.getName());
+		dto.setEpidCode(entity.getEpidCode());
+		dto.setPopulation(entity.getPopulation());
+		dto.setGrowthRate(entity.getGrowthRate());
 
 		return dto;
 	}

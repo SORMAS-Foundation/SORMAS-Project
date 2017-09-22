@@ -1,9 +1,12 @@
 package de.symeda.sormas.ui.caze;
 
+import java.util.Arrays;
+
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.TextField;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -15,6 +18,7 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
 @SuppressWarnings("serial")
@@ -26,7 +30,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 
     private static final String HTML_LAYOUT = 
 			LayoutUtil.divCss(CssStyles.VSPACE2,
-					LayoutUtil.fluidRowLocs(CaseDataDto.DISEASE, ""),
+					LayoutUtil.fluidRowLocs(CaseDataDto.DISEASE, CaseDataDto.DISEASE_DETAILS),
 					LayoutUtil.fluidRowLocs(FIRST_NAME, LAST_NAME),
 					LayoutUtil.fluidRowLocs(CaseDataDto.REGION, CaseDataDto.DISTRICT),
 					LayoutUtil.fluidRowLocs(CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY),
@@ -42,6 +46,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
     @Override
 	protected void addFields() {
     	addField(CaseDataDto.DISEASE, NativeSelect.class);
+    	addField(CaseDataDto.DISEASE_DETAILS, TextField.class);
     	
     	addCustomField(FIRST_NAME, String.class, TextField.class);
     	addCustomField(LAST_NAME, String.class, TextField.class);
@@ -79,7 +84,10 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 
     	setRequired(true, FIRST_NAME, LAST_NAME, CaseDataDto.DISEASE, 
     			CaseDataDto.REGION, CaseDataDto.DISTRICT, CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY);
-    	
+
+		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.DISEASE_DETAILS), CaseDataDto.DISEASE, Arrays.asList(Disease.OTHER), true);
+		FieldHelper.setRequiredWhen(getFieldGroup(), CaseDataDto.DISEASE, Arrays.asList(CaseDataDto.DISEASE_DETAILS), Arrays.asList(Disease.OTHER));
+		
     	facility.addValueChangeListener(e -> {
     		if (facility.getValue() != null) {
 				boolean otherHealthFacility = ((FacilityReferenceDto) facility.getValue()).getUuid().equals(FacilityDto.OTHER_FACILITY_UUID);
@@ -104,6 +112,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 				facilityDetails.clear();
 			}	
 		});
+    	
     }
     
     public String getPersonFirstName() {

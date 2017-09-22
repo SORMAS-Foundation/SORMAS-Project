@@ -14,6 +14,7 @@ import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.task.TaskStatus;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.contact.Contact;
@@ -41,13 +42,27 @@ public class TaskService extends AbstractAdoService<Task> {
 	 */
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Task,Task> taskPath, User user) {
+		// National users can access all tasks in the system
+		if (user.getUserRoles().contains(UserRole.NATIONAL_USER)) {
+			return null;
+		}
+		
 		// whoever created the task or is assigned to it is allowed to access it
 		Predicate filter = cb.equal(taskPath.get(Task.CREATOR_USER), user);
 		filter = cb.or(filter, cb.equal(taskPath.get(Task.ASSIGNEE_USER), user));
 		
-		filter = cb.or(filter, caseService.createUserFilter(cb, cq, taskPath.join(Task.CAZE, JoinType.LEFT), user));
-		filter = cb.or(filter, contactService.createUserFilter(cb, cq, taskPath.join(Task.CONTACT, JoinType.LEFT), user));
-		filter = cb.or(filter, eventService.createUserFilter(cb, cq, taskPath.join(Task.EVENT, JoinType.LEFT), user));
+		Predicate caseFilter = caseService.createUserFilter(cb, cq, taskPath.join(Task.CAZE, JoinType.LEFT), user);
+		if (caseFilter != null) {
+			filter = cb.or(filter, caseFilter);
+		} 
+		Predicate contactFilter = contactService.createUserFilter(cb, cq, taskPath.join(Task.CONTACT, JoinType.LEFT), user);
+		if (contactFilter != null) {
+			filter = cb.or(filter, contactFilter);
+		}
+		Predicate eventFilter = eventService.createUserFilter(cb, cq, taskPath.join(Task.EVENT, JoinType.LEFT), user);
+		if (eventFilter != null) {
+			filter = cb.or(filter, eventFilter);
+		}
 		
 		return filter;
 	}

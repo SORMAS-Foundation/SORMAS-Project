@@ -20,6 +20,7 @@ import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.common.ServerConnectionException;
 import de.symeda.sormas.app.backend.facility.Facility;
+import de.symeda.sormas.app.backend.facility.FacilityDao;
 import de.symeda.sormas.app.rest.RetroProvider;
 import retrofit2.Call;
 import retrofit2.Response;
@@ -54,12 +55,35 @@ public class CommunityDtoHelper extends AdoDtoHelper<Community, CommunityDto> {
         throw new UnsupportedOperationException("Entity is infrastructure");
     }
 
+    // cache of last queried entities
+    private District lastDistrict = null;
+
     @Override
-    public void fillInnerFromDto(Community ado, CommunityDto dto) {
-        ado.setName(dto.getName());
-        ado.setDistrict(DatabaseHelper.getDistrictDao().queryUuid(dto.getDistrict().getUuid()));
+    public void fillInnerFromDto(Community target, CommunityDto source) {
+        target.setName(source.getName());
+
+        if (lastDistrict == null || !lastDistrict.getUuid().equals(source.getDistrict().getUuid())) {
+            lastDistrict = DatabaseHelper.getDistrictDao().getByReferenceDto(source.getDistrict());
+        }
+        target.setDistrict(lastDistrict);
     }
 
+    @Override
+    public void pullEntities(final boolean markAsRead) throws DaoException, ServerConnectionException {
+        databaseWasEmpty = DatabaseHelper.getCommunityDao().countOf() == 0;
+        try {
+            super.pullEntities(markAsRead);
+        } finally {
+            databaseWasEmpty = false;
+        }
+    }
+
+    // performance tweak: only query for existing during pull, when database was not empty
+    private boolean databaseWasEmpty = false;
+
+    /**
+     * Overriden for performance reasons. No merge needed.
+     */
     @Override
     protected void handlePullResponse(final boolean markAsRead, final AbstractAdoDao<Community> dao, Response<List<CommunityDto>> response) throws ServerConnectionException {
         if (!response.isSuccessful()) {
@@ -72,18 +96,24 @@ public class CommunityDtoHelper extends AdoDtoHelper<Community, CommunityDto> {
             throw new ServerConnectionException(responseErrorBodyString);
         }
 
+        final CommunityDao communityDao = (CommunityDao) dao;
+
         final List<CommunityDto> result = response.body();
         if (result != null && result.size() > 0) {
             preparePulledResult(result);
             dao.callBatchTasks(new Callable<Void>() {
                 public Void call() throws Exception {
                     for (CommunityDto dto : result) {
-                        // TODO find a performance friendly way for merging
-                        Community source = fillOrCreateFromDto(null, dto);
-                        if (markAsRead) {
-                            source.setLastOpenedDate(DateHelper.addSeconds(new Date(), 5));
+
+                        Community existing = null;
+                        if (!databaseWasEmpty) {
+                            existing = communityDao.queryUuid(dto.getUuid());
                         }
-                        dao.create(source);
+                        Community existingOrNew = fillOrCreateFromDto(existing, dto);
+                        if (markAsRead) {
+                            existingOrNew.setLastOpenedDate(DateHelper.addSeconds(new Date(), 5));
+                        }
+                        communityDao.updateOrCreate(existingOrNew);
                     }
                     return null;
                 }

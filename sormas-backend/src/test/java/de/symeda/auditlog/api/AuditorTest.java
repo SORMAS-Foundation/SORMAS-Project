@@ -2,6 +2,7 @@ package de.symeda.auditlog.api;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.lessThan;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 
@@ -15,19 +16,18 @@ import java.util.SortedMap;
 
 import org.junit.Test;
 
-import de.symeda.auditlog.api.sample.Entity;
 import de.symeda.auditlog.api.sample.AnonymizedEntity;
 import de.symeda.auditlog.api.sample.BaseEntity;
 import de.symeda.auditlog.api.sample.CollectionEntity;
 import de.symeda.auditlog.api.sample.DemoBooleanFormatter;
+import de.symeda.auditlog.api.sample.Entity;
 import de.symeda.auditlog.api.sample.EntityWithEmbedables;
-import de.symeda.auditlog.api.sample.EntityWithHelperAttributes;
-import de.symeda.auditlog.api.sample.EntityWithIgnoredMethods;
 import de.symeda.auditlog.api.sample.EntityWithEmbedables.FirstEmbeddable;
 import de.symeda.auditlog.api.sample.EntityWithEmbedables.NotAuditedEmbeddable;
+import de.symeda.auditlog.api.sample.EntityWithHelperAttributes;
+import de.symeda.auditlog.api.sample.EntityWithIgnoredMethods;
 import de.symeda.auditlog.api.sample.OverridingFormatterEntity;
 import de.symeda.auditlog.api.sample.SimpleBooleanFlagEntity;
-import de.symeda.auditlog.api.sample.SimpleEntity;
 import de.symeda.auditlog.api.sample.SubClassEntity;
 import de.symeda.auditlog.api.sample.SuperClassEntity;
 import de.symeda.auditlog.api.sample.UnauditedMiddleClassEntity;
@@ -36,48 +36,40 @@ import de.symeda.sormas.backend.auditlog.AuditLogDateHelper;
 
 public class AuditorTest {
 
-	private static final String FIRST_ATTRIBUTE = "firstAttribute";
-	private static final String ID = "Id";
-
 	@Test
 	public void shouldDetectNewEntity() {
 
-		final String entityId = "1";
-		final String firstValue = "someValue";
+		Entity simpleEntity = new Entity("uuid-1", false, "someValue", 2);
+	
+		Auditor auditor = new Auditor();
 
-		AuditedEntity simpleEntity = new SimpleEntity("uuid-1");
-		simpleEntity.inspectAttributes().put(ID, entityId);
-		simpleEntity.inspectAttributes().put(FIRST_ATTRIBUTE, firstValue);
-
-		ChangeEvent changeEvent = new Auditor().detectChanges(simpleEntity);
+		ChangeEvent changeEvent = auditor.detectChanges(simpleEntity);
 		Map<String, String> changes = changeEvent.getNewValues();
-
+	
 		assertThat(changeEvent.getChangeType(), is(ChangeType.CREATE));
-		assertThat(changes.size(), is(2));
-		assertThat(changes.get(ID), is(entityId));
-		assertThat(changes.get(FIRST_ATTRIBUTE), is(firstValue));
+		assertThat(changes.size(), is(3));
+		assertThat(changes.get(Entity.STRING), is("someValue"));
+		assertThat(changes.get(Entity.INTEGER), is("2"));
 	}
 
 	@Test
 	public void shouldDetectChangedEntity() {
+		
+		Entity simpleEntity = new Entity("uuid-1", false, "someValue", 2);
 
-		final String entityId = "1";
-		final String firstValue = "someValue";
-
-		AuditedEntity simpleEntity = new SimpleEntity("uuid-1");
-		simpleEntity.inspectAttributes().put(ID, entityId);
-		simpleEntity.inspectAttributes().put(FIRST_ATTRIBUTE, firstValue);
-
-		final Auditor auditor = new Auditor();
+		Auditor auditor = new Auditor();
 		auditor.register(simpleEntity);
 
-		simpleEntity.inspectAttributes().put(FIRST_ATTRIBUTE, "someChangedValue");
+		simpleEntity.setString("otherValue");
+		simpleEntity.setInteger(3);
+
 		ChangeEvent changeEvent = auditor.detectChanges(simpleEntity);
 		Map<String, String> changes = changeEvent.getNewValues();
 
 		assertThat(changeEvent.getChangeType(), is(ChangeType.UPDATE));
-		assertThat(changes.size(), is(1));
-		assertThat(changes.get(FIRST_ATTRIBUTE), is("someChangedValue"));
+		assertThat(changes.size(), is(2));
+		assertThat(changes.get(Entity.STRING), is("otherValue"));
+		assertThat(changes.get(Entity.INTEGER), is("3"));
 	}
 
 	@Test
@@ -89,28 +81,6 @@ public class AuditorTest {
 		Map<String, String> changes = auditor.detectChanges(null).getNewValues();
 
 		assertThat(changes.size(), is(0));
-	}
-
-	@Test
-	public void shouldDetectAnnotationChanges() {
-
-		Auditor auditor = new Auditor();
-
-		Entity entity = new Entity("uuid-1", false, "changed", 42);
-
-		ValueContainer annotationChanges = auditor.inspectEntity(entity);
-		ValueContainer inspectAttributes = entity.inspectAttributes();
-
-		// compare both variants of the ChangeDetection
-		SortedMap<String, String> comparedAttributes = inspectAttributes.compare(annotationChanges);
-		assertThat(comparedAttributes.size(), is(0));
-
-		// make sure that both variants meet the expectations (and are not simply equally empty)
-		final SortedMap<String, String> annotationAttributes = annotationChanges.getAttributes();
-		assertThat(annotationAttributes.size(), is(3));
-		assertThat(annotationAttributes.get(Entity.FLAG), is(equalTo("false")));
-		assertThat(annotationAttributes.get(Entity.STRING), is(equalTo("changed")));
-		assertThat(annotationAttributes.get(Entity.INTEGER), is(equalTo("42")));
 	}
 
 	@Test
@@ -259,5 +229,31 @@ public class AuditorTest {
 		assertThat(changes.get("firstEmbeddable.integer"), is("4711"));
 		assertThat(changes.get("firstEmbeddable.entity"), is("uuid-2"));
 		assertThat(changes.get("someAttribute"), is("someValue"));
+	}
+	
+	@Test
+	public void testDetectAnnotationChangesFast() {
+ 
+		Auditor auditor = new Auditor();
+ 
+		Entity entity = new Entity("uuid-1", false, "changed", 42);
+ 
+		// Unterschiedliche Initialisierungszeiten ausmerzen, indem inspectEntity einmal vorweg aufgerufen wird.
+		long t0 = System.nanoTime();
+		auditor.inspectEntity(entity);
+		long t1 = System.nanoTime() - t0;
+
+		// Hier ist der relevante Aufruf für den Test
+		ValueContainer annotationChanges = auditor.inspectEntity(entity);
+		long t2 = System.nanoTime() - t0 - t1;
+ 
+		//sicherstellen, dass beide Varianten auch der Erwartung entsprechen (und nicht nur gleich leer sind)
+		final SortedMap<String, String> annotationAttributes = annotationChanges.getAttributes();
+		assertThat(annotationAttributes.size(), is(3));
+		assertThat(annotationAttributes.get(Entity.FLAG), is(equalTo("false")));
+		assertThat(annotationAttributes.get(Entity.STRING), is(equalTo("changed")));
+		assertThat(annotationAttributes.get(Entity.INTEGER), is(equalTo("42")));
+		assertThat(t2, lessThan(250_000L));
+		System.out.println("AuditorTest.testDetectAnnotationChangesFast(): t1= " + t1 + " nanos, t2= " + t2 + " nanos");
 	}
 }

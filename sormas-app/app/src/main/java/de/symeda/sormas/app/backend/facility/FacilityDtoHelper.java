@@ -3,7 +3,6 @@ package de.symeda.sormas.app.backend.facility;
 import android.util.Log;
 
 import java.io.IOException;
-import java.net.ConnectException;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
@@ -11,7 +10,6 @@ import java.util.concurrent.Callable;
 
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
@@ -77,6 +75,7 @@ public class FacilityDtoHelper extends AdoDtoHelper<Facility, FacilityDto> {
 
             Date maxModifiedDate = dao.getLatestChangeDate();
             long maxModifiedTime = maxModifiedDate != null ? maxModifiedDate.getTime() + 1 : 0;
+            databaseWasEmpty = maxModifiedDate == null;
 
             List<Region> regions = DatabaseHelper.getRegionDao().queryForAll();
             for (Region region : regions) {
@@ -99,9 +98,17 @@ public class FacilityDtoHelper extends AdoDtoHelper<Facility, FacilityDto> {
             throw new DaoException(e);
         } catch (IOException e) {
             throw new ServerConnectionException(e);
+        } finally {
+            databaseWasEmpty = false;
         }
     }
 
+    // performance tweak: only query for existing during pull, when database was not empty
+    private boolean databaseWasEmpty = false;
+
+    /**
+     * Overriden for performance reasons. No merge needed.
+     */
     @Override
     protected void handlePullResponse(final boolean markAsRead, final AbstractAdoDao<Facility> dao, Response<List<FacilityDto>> response) {
         if (!response.isSuccessful()) {
@@ -114,18 +121,24 @@ public class FacilityDtoHelper extends AdoDtoHelper<Facility, FacilityDto> {
             Log.e(getClass().getName(), "Pulling changes from server did not work: " + responseErrorBodyString);
         }
 
+        final FacilityDao facilityDao = (FacilityDao) dao;
+
         final List<FacilityDto> result = response.body();
         if (result != null && result.size() > 0) {
             preparePulledResult(result);
-            dao.callBatchTasks(new Callable<Void>() {
+            facilityDao.callBatchTasks(new Callable<Void>() {
                 public Void call() throws Exception {
+
                     for (FacilityDto dto : result) {
-                        // TODO find a performance friendly way for merging
-                        Facility source = fillOrCreateFromDto(null, dto);
-                        if (markAsRead) {
-                            source.setLastOpenedDate(DateHelper.addSeconds(new Date(), 5));
+                        Facility existing = null;
+                        if (!databaseWasEmpty) {
+                            existing = facilityDao.queryUuid(dto.getUuid());
                         }
-                        dao.create(source);
+                        Facility existingOrNew = fillOrCreateFromDto(existing, dto);
+                        if (markAsRead) {
+                            existingOrNew.setLastOpenedDate(DateHelper.addSeconds(new Date(), 5));
+                        }
+                        facilityDao.updateOrCreate(existingOrNew);
                     }
                     return null;
                 }
@@ -135,6 +148,7 @@ public class FacilityDtoHelper extends AdoDtoHelper<Facility, FacilityDto> {
         }
     }
 
+    // cache of last queried entities
     private Community lastCommunity = null;
     private District lastDistrict = null;
     private Region lastRegion = null;

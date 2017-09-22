@@ -99,6 +99,13 @@ public class SymptomsDtoHelper extends AdoDtoHelper<Symptoms, SymptomsDto> {
         a.setIllLocation(locationHelper.fillOrCreateFromDto(a.getIllLocation(), b.getIllLocation()));
         a.setIllLocationFrom(b.getIllLocationFrom());
         a.setIllLocationTo(b.getIllLocationTo());
+        a.setBackache(b.getBackache());
+        a.setEyesBleeding(b.getEyesBleeding());
+        a.setJaundice(b.getJaundice());
+        a.setDarkUrine(b.getDarkUrine());
+        a.setStomachBleeding(b.getStomachBleeding());
+        a.setRapidBreathing(b.getRapidBreathing());
+        a.setSwollenGlands(b.getSwollenGlands());
     }
 
     @Override
@@ -159,5 +166,12 @@ public class SymptomsDtoHelper extends AdoDtoHelper<Symptoms, SymptomsDto> {
         a.setIllLocation(locationHelper.adoToDto(location));
         a.setIllLocationFrom(b.getIllLocationFrom());
         a.setIllLocationTo(b.getIllLocationTo());
+        a.setBackache(b.getBackache());
+        a.setEyesBleeding(b.getEyesBleeding());
+        a.setJaundice(b.getJaundice());
+        a.setDarkUrine(b.getDarkUrine());
+        a.setStomachBleeding(b.getStomachBleeding());
+        a.setRapidBreathing(b.getRapidBreathing());
+        a.setSwollenGlands(b.getSwollenGlands());
     }
 }

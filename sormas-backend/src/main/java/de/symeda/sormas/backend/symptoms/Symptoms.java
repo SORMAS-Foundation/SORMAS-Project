@@ -82,7 +82,14 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState jointPain;
 	private SymptomState shock;
 	private SymptomState hiccups;
-	private SymptomState otherNonHemorrhagicSymptoms;
+	private SymptomState otherNonHemorrhagicSymptoms;	
+	private SymptomState backache;
+	private SymptomState eyesBleeding;
+	private SymptomState jaundice;
+	private SymptomState darkUrine;
+	private SymptomState stomachBleeding;
+	private SymptomState rapidBreathing;
+	private SymptomState swollenGlands;
 	private String otherNonHemorrhagicSymptomsText;
 	private String symptomsComments;
 	
@@ -576,6 +583,69 @@ public class Symptoms extends AbstractDomainObject {
 	@Enumerated(EnumType.STRING)
 	public SymptomState getShock() {
 		return shock;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getBackache() {
+		return backache;
+	}
+
+	public void setBackache(SymptomState backache) {
+		this.backache = backache;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getEyesBleeding() {
+		return eyesBleeding;
+	}
+
+	public void setEyesBleeding(SymptomState eyesBleeding) {
+		this.eyesBleeding = eyesBleeding;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getJaundice() {
+		return jaundice;
+	}
+
+	public void setJaundice(SymptomState jaundice) {
+		this.jaundice = jaundice;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getDarkUrine() {
+		return darkUrine;
+	}
+
+	public void setDarkUrine(SymptomState darkUrine) {
+		this.darkUrine = darkUrine;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getStomachBleeding() {
+		return stomachBleeding;
+	}
+
+	public void setStomachBleeding(SymptomState stomachBleeding) {
+		this.stomachBleeding = stomachBleeding;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getRapidBreathing() {
+		return rapidBreathing;
+	}
+
+	public void setRapidBreathing(SymptomState rapidBreathing) {
+		this.rapidBreathing = rapidBreathing;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getSwollenGlands() {
+		return swollenGlands;
+	}
+
+	public void setSwollenGlands(SymptomState swollenGlands) {
+		this.swollenGlands = swollenGlands;
 	}
 
 	@Column(length = 255)

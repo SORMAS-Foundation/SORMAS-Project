@@ -124,6 +124,15 @@
                 android:nextFocusForward="@+id/event_eventDate"
                 android:value="@={event.disease}"/>
 
+            <de.symeda.sormas.app.component.TextField
+                android:id="@+id/event_diseaseDetails"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingTop="@dimen/field_padding"
+                android:paddingBottom="@dimen/field_padding"
+                android:visibility="gone"
+                android:value="@={event.diseaseDetails}"/>
+
             <de.symeda.sormas.app.component.DateField
                 android:id="@+id/event_eventDate"
                 android:layout_width="match_parent"

@@ -6,7 +6,10 @@ public enum Disease {
 	AVIAN_INFLUENCA,
 	CSM,
 	CHOLERA,
-	MEASLES
+	MEASLES,
+	YELLOW_FEVER,
+	DENGUE,
+	OTHER
 	;
 	
 	public String toString() {

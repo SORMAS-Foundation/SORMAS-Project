@@ -8,6 +8,7 @@ import java.util.List;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
+import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.region.Community;
 
 /**
@@ -48,5 +49,23 @@ public class FacilityDao extends AbstractAdoDao<Facility> {
     public List<Facility> getLaboratories() {
         List<Facility> facilities = queryForEq(Facility.TYPE, FacilityType.LABORATORY, Facility.NAME, true);
         return facilities;
+    }
+
+    @Override
+    public Facility saveAndSnapshot(Facility facility) throws DaoException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Facility mergeOrCreate(Facility source) throws DaoException {
+        throw new UnsupportedOperationException();
+    }
+
+    public int updateOrCreate(Facility data) {
+        if (data.getId() == null) {
+            return create(data);
+        } else {
+            return update(data);
+        }
     }
 }

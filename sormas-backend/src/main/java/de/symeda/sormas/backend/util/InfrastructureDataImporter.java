@@ -6,10 +6,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +30,7 @@ public final class InfrastructureDataImporter {
 	public static Region importRegion(String name) {
 		
 		String resourceFileName = "/facilities/"+name+".csv";
-		InputStream stream = MockDataGenerator.class.getResourceAsStream(resourceFileName);
+		InputStream stream = InfrastructureDataImporter.class.getResourceAsStream(resourceFileName);
 		BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
 		
 		Region region = new Region();
@@ -105,7 +108,7 @@ public final class InfrastructureDataImporter {
 		List<Facility> result = new ArrayList<Facility>();
 		
 		String resourceFileName = "/facilities/"+region.getName()+".csv";
-		InputStream stream = MockDataGenerator.class.getResourceAsStream(resourceFileName);
+		InputStream stream = InfrastructureDataImporter.class.getResourceAsStream(resourceFileName);
 		BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
 
 		DecimalFormat geoCoordFormat = new DecimalFormat();
@@ -204,7 +207,7 @@ public final class InfrastructureDataImporter {
 		
 		List<Facility> result = new ArrayList<Facility>();
 		
-		InputStream stream = MockDataGenerator.class.getResourceAsStream("/facilities/Laboratories.csv");
+		InputStream stream = InfrastructureDataImporter.class.getResourceAsStream("/facilities/Laboratories.csv");
 		BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
 		
 		Region region = null;
@@ -245,31 +248,91 @@ public final class InfrastructureDataImporter {
 	}
 	
 	public static void importEpidCodes(List<Region> regions, List<District> districts) {
-		InputStream stream = MockDataGenerator.class.getResourceAsStream("/epid-codes.csv");
-		BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
-		
 		try {
+			InputStream stream = InfrastructureDataImporter.class.getResourceAsStream("/epid-codes.csv");
+			BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+			reader.readLine(); // header
+			
 			while (reader.ready()) {
 				String line = reader.readLine();
 				String[] columns = line.split(";");
 				
-				Optional<Region> region = regions.stream()
+				Optional<Region> regionResult = regions.stream()
 						.filter(r -> r.getName().equals(columns[3]))
 						.findFirst();
 				
-				region.ifPresent(r -> r.setEpidCode(columns[1]));
+			    if (!regionResult.isPresent()) {
+			    	continue;
+			    }
+			    regionResult.get().setEpidCode(columns[1]);
 				
 				// Region has to be checked again in case there are districts with the same name in different regions
-				Optional<District> district = districts.stream()
+				Optional<District> districtResult = districts.stream()
 						.filter(d -> d.getRegion().getName().equals(columns[3]) && d.getName().equals(columns[5]))
 						.findFirst();
 				
-				district.ifPresent(d -> d.setEpidCode(columns[2]));
+			    if (!districtResult.isPresent()) {
+			    	continue;
+			    }
+			    districtResult.get().setEpidCode(columns[2]);
 			}			
 			
 			stream.close();
 		} catch (IOException e) {
 			throw new IllegalArgumentException("Exception while reading resource file: epid-codes.csv", e);
+		}
+		
+		String regionsWithoutEpidCode = regions.stream().filter(r -> r.getEpidCode() == null)
+			.map(r -> r.getName())
+			.collect(Collectors.joining(", "));
+		if (!regionsWithoutEpidCode.isEmpty()) {
+			logger.warn("Regions without EPID-Code found: " + regionsWithoutEpidCode);
+		}
+		
+		String districtsWithoutEpidCode = districts.stream().filter(d -> d.getEpidCode() == null)
+				.map(d -> d.getName())
+				.collect(Collectors.joining(", "));
+		if (!districtsWithoutEpidCode.isEmpty()) {
+			logger.warn("Districts without EPID-Code found: " + districtsWithoutEpidCode);
+		}
+	}
+
+	public static void importPopulationData(List<Region> regions) {
+		
+		NumberFormat numberFormat = NumberFormat.getInstance(Locale.ENGLISH);
+
+		try {
+			InputStream stream = InfrastructureDataImporter.class.getResourceAsStream("/state-population.csv");
+			BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+			reader.readLine(); // header
+
+			while (reader.ready()) {
+				String line = reader.readLine();
+				String[] columns = line.split(";");
+				
+				Optional<Region> regionResult = regions.stream()
+						.filter(r -> r.getName().equals(columns[0]))
+						.findFirst();
+				
+			    if (!regionResult.isPresent()) {
+			    	continue;
+			    }
+
+				Region region = regionResult.get();
+				region.setPopulation(numberFormat.parse(columns[1]).intValue());
+				region.setGrowthRate(numberFormat.parse(columns[2]).floatValue());
+			}			
+			
+			stream.close();
+		} catch (IOException | ParseException e) {
+			throw new IllegalArgumentException("Exception while reading resource file: state-population.csv", e);
+		}
+		
+		String regionsWithoutPopulatonData = regions.stream().filter(r -> r.getPopulation() == null)
+				.map(r -> r.getName())
+				.collect(Collectors.joining(", "));
+		if (!regionsWithoutPopulatonData.isEmpty()) {
+			logger.warn("Regions without population data found: " + regionsWithoutPopulatonData);
 		}
 	}
 }

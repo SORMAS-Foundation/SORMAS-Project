@@ -120,7 +120,6 @@ public class ListField<FieldClass extends AbstractDomainObject> extends Property
 
         caption = (TextView) this.findViewById(R.id.text_caption);
         caption.setText(getCaption());
-        addCaptionHintIfDescription();
         addCaptionOnClickListener();
 
         addBtn = (ImageButton) this.findViewById(R.id.add_btn);

@@ -2,6 +2,8 @@ package de.symeda.sormas.backend.caze;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -17,6 +19,7 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -30,6 +33,10 @@ import de.symeda.sormas.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.backend.hospitalization.PreviousHospitalization;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.region.RegionFacadeEjb;
+import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
 
@@ -39,6 +46,8 @@ public class CaseService extends AbstractAdoService<Case> {
 	
 	@EJB
 	ContactService contactService;
+	@EJB
+	SampleService sampleService;
 	
 	public CaseService() {
 		super(Case.class);
@@ -72,27 +81,31 @@ public class CaseService extends AbstractAdoService<Case> {
 		return resultList;
 	}
 	
-	public List<Case> getAllBetween(Date fromDate, Date toDate, Disease disease, User user) {
+	public List<Case> getAllBetween(Date onsetFromDate, Date onsetToDate, Disease disease, User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Case> cq = cb.createQuery(getElementClass());
 		Root<Case> from = cq.from(getElementClass());
 		
 		Predicate filter = createUserFilter(cb, cq, from, user);
-		Join<Case, Symptoms> symptoms = from.join(Case.SYMPTOMS);
-		Predicate dateFilter = cb.isNotNull(symptoms.get(Symptoms.ONSET_DATE));
-		dateFilter = cb.and(dateFilter, cb.greaterThanOrEqualTo(symptoms.get(Symptoms.ONSET_DATE), fromDate));
-		dateFilter = cb.and(dateFilter, cb.lessThanOrEqualTo(symptoms.get(Symptoms.ONSET_DATE), toDate));
-		
-		if (filter != null) {
-			filter = cb.and(filter, dateFilter);
-		} else {
+		if (onsetFromDate != null || onsetToDate != null) {
+			Join<Case, Symptoms> symptoms = from.join(Case.SYMPTOMS);
+			Predicate dateFilter = cb.isNotNull(symptoms.get(Symptoms.ONSET_DATE));
+			if (onsetFromDate != null) {
+				dateFilter = cb.and(dateFilter, cb.greaterThanOrEqualTo(symptoms.get(Symptoms.ONSET_DATE), onsetFromDate));
+			}
+			if (onsetToDate != null) {
+				dateFilter = cb.and(dateFilter, cb.lessThanOrEqualTo(symptoms.get(Symptoms.ONSET_DATE), onsetToDate));
+			}
 			filter = dateFilter;
 		}
-		
-		if (filter != null && disease != null) {
-			filter = cb.and(filter, cb.equal(from.get(Case.DISEASE), disease));
-		}
-		
+		if (disease != null) {
+			Predicate diseaseFilter = cb.equal(from.get(Case.DISEASE), disease);
+			if (filter != null) {
+				filter = cb.and(filter, diseaseFilter);
+			} else {
+				filter = diseaseFilter;
+			}
+		}		
 		if (filter != null) {
 			cq.where(filter);
 		}
@@ -101,12 +114,17 @@ public class CaseService extends AbstractAdoService<Case> {
 		List<Case> resultList = em.createQuery(cq).getResultList();
 		return resultList;
 	}	
-
+	
 	/**
 	 * @see /sormas-backend/doc/UserDataAccess.md
 	 */
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Case,Case> casePath, User user) {
+		// National users can access all cases in the system
+		if (user.getUserRoles().contains(UserRole.NATIONAL_USER)) {
+			return null;
+		}
+		
 		// whoever created the case or is assigned to it is allowed to access it
 		Predicate filter = cb.equal(casePath.get(Case.REPORTING_USER), user);
 		filter = cb.or(filter, cb.equal(casePath.get(Case.SURVEILLANCE_OFFICER), user));
@@ -137,8 +155,17 @@ public class CaseService extends AbstractAdoService<Case> {
 					filter = cb.or(filter, cb.equal(casePath.get(Case.HEALTH_FACILITY), user.getHealthFacility()));
 				}
 				break;
-			default:
+			case LAB_USER:
+				// get all cases based on the user's sample association
+				Subquery<Long> sampleCaseSubquery = cq.subquery(Long.class);
+				Root<Sample> sampleRoot = sampleCaseSubquery.from(Sample.class);
+				sampleCaseSubquery.where(sampleService.createUserFilterWithoutCase(cb, cq, sampleRoot, user));
+				sampleCaseSubquery.select(sampleRoot.get(Sample.ASSOCIATED_CASE).get(Case.ID));
+				filter = cb.in(casePath.get(Case.ID)).value(sampleCaseSubquery);
 				break;
+				
+			default:
+				throw new IllegalArgumentException(userRole.toString());
 			}
 		}
 		
@@ -216,4 +243,43 @@ public class CaseService extends AbstractAdoService<Case> {
 			return null;
 		}
 	}	
+	
+	public Map<RegionReferenceDto, Long> getCaseCountPerRegion(Date onsetFromDate, Date onsetToDate, Disease disease) {
+		
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		Root<Case> from = cq.from(getElementClass());
+		
+		Predicate filter = null;		
+		if (onsetFromDate != null || onsetToDate != null) {
+			Join<Case, Symptoms> symptoms = from.join(Case.SYMPTOMS);
+			Predicate dateFilter = cb.isNotNull(symptoms.get(Symptoms.ONSET_DATE));
+			if (onsetFromDate != null) {
+				dateFilter = cb.and(dateFilter, cb.greaterThanOrEqualTo(symptoms.get(Symptoms.ONSET_DATE), onsetFromDate));
+			}
+			if (onsetToDate != null) {
+				dateFilter = cb.and(dateFilter, cb.lessThanOrEqualTo(symptoms.get(Symptoms.ONSET_DATE), onsetToDate));
+			}
+			filter = dateFilter;
+		}
+		if (disease != null) {
+			Predicate diseaseFilter = cb.equal(from.get(Case.DISEASE), disease);
+			if (filter != null) {
+				filter = cb.and(filter, diseaseFilter);
+			} else {
+				filter = diseaseFilter;
+			}
+		}		
+		if (filter != null) {
+			cq.where(filter);
+		}
+		
+		cq.groupBy(from.get(Case.REGION));
+		cq.multiselect(from.get(Case.REGION), cb.count(from));
+		List<Object[]> results = em.createQuery(cq).getResultList();
+		
+		Map<RegionReferenceDto, Long> resultMap = results.stream().collect(
+				Collectors.toMap(e -> RegionFacadeEjb.toReferenceDto((Region)e[0]), e -> (Long)e[1]));
+		return resultMap;
+	}
 }

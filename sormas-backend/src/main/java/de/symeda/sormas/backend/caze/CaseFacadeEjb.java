@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -12,7 +13,6 @@ import javax.ejb.Stateless;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -21,6 +21,7 @@ import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskHelper;
 import de.symeda.sormas.api.task.TaskPriority;
@@ -186,18 +187,18 @@ public class CaseFacadeEjb implements CaseFacade {
 			currentDisease = currentCaze.getDisease();
 		}
 		
-//		// If the case is new and the geo coordinates of the case's health facility are null, set its coordinates to the
-//		// case's report coordinates, if available
-//		FacilityReferenceDto facilityRef = dto.getHealthFacility();
-//		Facility facility = facilityService.getByReferenceDto(facilityRef);
-//		if (currentCaze == null && facility.getUuid() != FacilityDto.OTHER_FACILITY_UUID && facility.getUuid() != FacilityDto.NONE_FACILITY_UUID
-//				&& (facility.getLatitude() == null || facility.getLongitude() == null)) {
-//			if (dto.getReportLat() != null && dto.getReportLon() != null) {
-//				facility.setLatitude(dto.getReportLat());
-//				facility.setLongitude(dto.getReportLon());
-//				facilityService.ensurePersisted(facility);
-//			}
-//		}
+		// If the case is new and the geo coordinates of the case's health facility are null, set its coordinates to the
+		// case's report coordinates, if available
+		FacilityReferenceDto facilityRef = dto.getHealthFacility();
+		Facility facility = facilityService.getByReferenceDto(facilityRef);
+		if (currentCaze == null && facility != null && facility.getUuid() != FacilityDto.OTHER_FACILITY_UUID && facility.getUuid() != FacilityDto.NONE_FACILITY_UUID
+				&& (facility.getLatitude() == null || facility.getLongitude() == null)) {
+			if (dto.getReportLat() != null && dto.getReportLon() != null) {
+				facility.setLatitude(dto.getReportLat());
+				facility.setLongitude(dto.getReportLon());
+				facilityService.ensurePersisted(facility);
+			}
+		}
 				
 		Case caze = fromDto(dto);
 
@@ -292,6 +293,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		DtoHelper.validateDto(source, target);
 
 		target.setDisease(source.getDisease());
+		target.setDiseaseDetails(source.getDiseaseDetails());
 		target.setReportDate(source.getReportDate());
 		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
 		target.setPerson(personService.getByReferenceDto(source.getPerson()));
@@ -314,6 +316,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setMeaslesVaccination(source.getMeaslesVaccination());
 		target.setMeaslesDoses(source.getMeaslesDoses());
 		target.setMeaslesVaccinationInfoSource(source.getMeaslesVaccinationInfoSource());
+		target.setYellowFeverVaccination(source.getYellowFeverVaccination());
+		target.setYellowFeverVaccinationInfoSource(source.getYellowFeverVaccinationInfoSource());
 
 		target.setEpidNumber(source.getEpidNumber());
 
@@ -340,6 +344,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		DtoHelper.fillReferenceDto(target, source);
 
 		target.setDisease(source.getDisease());
+		target.setDiseaseDetails(source.getDiseaseDetails());
 		target.setCaseClassification(source.getCaseClassification());
 		target.setInvestigationStatus(source.getInvestigationStatus());
 		target.setPerson(PersonFacadeEjb.toReferenceDto(source.getPerson()));
@@ -364,6 +369,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setMeaslesVaccination(source.getMeaslesVaccination());
 		target.setMeaslesDoses(source.getMeaslesDoses());
 		target.setMeaslesVaccinationInfoSource(source.getMeaslesVaccinationInfoSource());
+		target.setYellowFeverVaccination(source.getYellowFeverVaccination());
+		target.setYellowFeverVaccinationInfoSource(source.getYellowFeverVaccinationInfoSource());
 
 		target.setEpidNumber(source.getEpidNumber());
 
@@ -457,7 +464,12 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		taskService.ensurePersisted(task);
 	}
-
+	
+	@Override
+	public Map<RegionReferenceDto, Long> getCaseCountPerRegion(Date onsetFromDate, Date onsetToDate, Disease disease) {
+		return caseService.getCaseCountPerRegion(onsetFromDate, onsetToDate, disease);
+	}
+	
 	@LocalBean
 	@Stateless
 	public static class CaseFacadeEjbLocal extends CaseFacadeEjb {

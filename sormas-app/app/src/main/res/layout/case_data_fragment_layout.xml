@@ -33,14 +33,6 @@
                 android:textStyle="bold"
                 android:paddingBottom="10dp" />
 
-            <de.symeda.sormas.app.component.TextField
-                android:id="@+id/caseData_epidNumber"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="@dimen/field_padding"
-                android:paddingBottom="@dimen/field_padding"
-                android:value="@={caze.epidNumber}"/>
-
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
@@ -55,23 +47,14 @@
                     android:paddingBottom="@dimen/field_padding"
                     app:short_uuid="@{caze.uuid}"/>
 
-                <de.symeda.sormas.app.component.LabelField
-                    android:id="@+id/caseData_caseClassification"
+                <de.symeda.sormas.app.component.TextField
+                    android:id="@+id/caseData_epidNumber"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.5"
                     android:paddingTop="@dimen/field_padding"
                     android:paddingBottom="@dimen/field_padding"
-                    app:enum="@{caze.caseClassification}"/>
-
-                <de.symeda.sormas.app.component.SpinnerField
-                    android:id="@+id/caseData_caseOfficerClassification"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.5"
-                    android:paddingTop="@dimen/field_padding"
-                    android:paddingBottom="@dimen/field_padding"
-                    android:value="@={caze.caseClassification}"/>
+                    android:value="@={caze.epidNumber}"/>
 
             </LinearLayout>
 
@@ -90,6 +73,22 @@
                     app:enum="@{caze.disease}"/>
 
                 <de.symeda.sormas.app.component.LabelField
+                    android:id="@+id/caseData_diseaseDetails"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:paddingTop="@dimen/field_padding"
+                    android:paddingBottom="@dimen/field_padding"
+                    android:value="@={caze.diseaseDetails}"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <de.symeda.sormas.app.component.LabelField
                     android:id="@+id/caseData_investigationStatus"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -97,6 +96,24 @@
                     android:paddingTop="@dimen/field_padding"
                     android:paddingBottom="@dimen/field_padding"
                     app:enum="@{caze.investigationStatus}"/>
+
+                <de.symeda.sormas.app.component.LabelField
+                    android:id="@+id/caseData_caseClassification"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:paddingTop="@dimen/field_padding"
+                    android:paddingBottom="@dimen/field_padding"
+                    app:enum="@{caze.caseClassification}"/>
+
+                <de.symeda.sormas.app.component.SpinnerField
+                    android:id="@+id/caseData_caseOfficerClassification"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:paddingTop="@dimen/field_padding"
+                    android:paddingBottom="@dimen/field_padding"
+                    android:value="@={caze.caseClassification}"/>
 
             </LinearLayout>
 
@@ -237,6 +254,22 @@
                 android:paddingTop="@dimen/field_padding"
                 android:paddingBottom="@dimen/field_padding"
                 android:value="@={caze.measlesVaccinationInfoSource}"/>
+
+            <de.symeda.sormas.app.component.SpinnerField
+                android:id="@+id/caseData_yellowFeverVaccination"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/field_padding"
+                android:paddingBottom="@dimen/field_padding"
+                android:value="@={caze.yellowFeverVaccination}"/>
+
+            <de.symeda.sormas.app.component.SpinnerField
+                android:id="@+id/caseData_yellowFeverVaccinationInfoSource"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/field_padding"
+                android:paddingBottom="@dimen/field_padding"
+                android:value="@={caze.yellowFeverVaccinationInfoSource}"/>
 
             <de.symeda.sormas.app.component.LabelField
                 android:id="@+id/caseData_surveillanceOfficer"

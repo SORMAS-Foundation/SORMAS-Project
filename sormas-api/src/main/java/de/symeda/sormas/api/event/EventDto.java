@@ -26,6 +26,7 @@ public class EventDto extends EventReferenceDto {
 	public static final String SRC_TEL_NO = "srcTelNo";
 	public static final String SRC_EMAIL = "srcEmail";
 	public static final String DISEASE = "disease";
+	public static final String DISEASE_DETAILS = "diseaseDetails";
 	public static final String SURVEILLANCE_OFFICER = "surveillanceOfficer";
 	public static final String TYPE_OF_PLACE_TEXT = "typeOfPlaceText";
 	public static final String REPORT_LAT = "reportLat";
@@ -44,6 +45,7 @@ public class EventDto extends EventReferenceDto {
 	private String srcTelNo;
 	private String srcEmail;
 	private Disease disease;
+	private String diseaseDetails;
 	private UserReferenceDto surveillanceOfficer;
 	private String typeOfPlaceText;
 	private Float reportLat;
@@ -149,6 +151,14 @@ public class EventDto extends EventReferenceDto {
 	
 	public void setDisease(Disease disease) {
 		this.disease = disease;
+	}
+	
+	public String getDiseaseDetails() {
+		return diseaseDetails;
+	}
+	
+	public void setDiseaseDetails(String diseaseDetails) {
+		this.diseaseDetails = diseaseDetails;
 	}
 	
 	public UserReferenceDto getSurveillanceOfficer() {

@@ -30,6 +30,8 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.contact.ContactMapDto;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.highcharts.HighChart;
 import de.symeda.sormas.ui.login.LoginHelper;
@@ -37,6 +39,9 @@ import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
+/**
+ * TODO THIS NEEDS A REFACTORING!
+ */
 @SuppressWarnings("serial")
 public class DashboardView extends AbstractView {
 
@@ -73,6 +78,12 @@ public class DashboardView extends AbstractView {
 	public static final String EXPAND = "expand";
 	public static final String COLLAPSE = "collapse";
 	public static final String APPLY = "apply";
+	public static final String SHOW_CASES = "showCases";
+	public static final String SHOW_CONTACTS = "showContacts";
+	public static final String NO_FOLLOW_UP = "noFollowUp";
+	public static final String VISIT_24_HOURS = "visit24Hours";
+	public static final String VISIT_48_HOURS = "visit48Hours";
+	public static final String VISIT_GT_48_HOURS = "visitGT48Hours";
 
 	private VerticalLayout mapLayout;
 	private MapComponent mapComponent;
@@ -81,15 +92,27 @@ public class DashboardView extends AbstractView {
 	private HighChart epiCurveChart;
 
 	private List<CaseDataDto> cases = new ArrayList<>();
+	private List<ContactMapDto> contacts = new ArrayList<>();
 
 	private Date fromDate;
 	private Date toDate;
 	private Disease disease;
 	private boolean useDateFilterForMap;
+	private boolean showCases;
+	private boolean showContacts;
+	private boolean showRegions;
+	private RegionMapVisualization regionMapVisualization = RegionMapVisualization.CASE_COUNT;
 
 	public DashboardView() {
 		setSizeFull();
 		addStyleName("crud-view");
+		
+		if (LoginHelper.isUserInRole(UserRole.NATIONAL_USER)) {
+			showRegions = true;
+		} else {
+			showCases = true;
+			showContacts = true;
+		}
 
 		VerticalLayout dashboardLayout = new VerticalLayout();
 		dashboardLayout.setSpacing(false);
@@ -258,12 +281,18 @@ public class DashboardView extends AbstractView {
 		return layout;
 	}
 
+	/**
+	 * TODO THIS NEEDS A REFACTORING!
+	 */
 	private VerticalLayout createMapLayout(ClickListener expandListener, ClickListener collapseListener) {
 		// Initialize layouts (needs to be done here for the button listener below
 		VerticalLayout mapLayout = new VerticalLayout();
 		mapLayout.setWidth(100, Unit.PERCENTAGE);
 		mapLayout.setHeight(360, Unit.PIXELS);
 
+		mapComponent = new MapComponent();
+		mapComponent.setSizeFull();
+		
 		// Map header
 		HorizontalLayout mapHeaderLayout = new HorizontalLayout();
 		{
@@ -284,7 +313,42 @@ public class DashboardView extends AbstractView {
 			});
 			mapHeaderLayout.addComponent(dateFilterForMap);	        
 			mapHeaderLayout.setComponentAlignment(dateFilterForMap, Alignment.MIDDLE_LEFT);
+			
+			CheckBox showCasesCheckBox = new CheckBox();
+			showCasesCheckBox.addStyleName(CssStyles.NO_MARGIN);
+			showCasesCheckBox.setCaption(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, SHOW_CASES));
+			showCasesCheckBox.setValue(showCases);
+			showCasesCheckBox.addValueChangeListener(e -> {
+				showCases = (boolean) e.getProperty().getValue();
+				refreshMap();
+			});
+			mapHeaderLayout.addComponent(showCasesCheckBox);
+			mapHeaderLayout.setComponentAlignment(showCasesCheckBox, Alignment.MIDDLE_LEFT);
+			
+			CheckBox showContactsCheckBox = new CheckBox();
+			showContactsCheckBox.addStyleName(CssStyles.NO_MARGIN);
+			showContactsCheckBox.setCaption(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, SHOW_CONTACTS));
+			showContactsCheckBox.setValue(showContacts);
+			showContactsCheckBox.addValueChangeListener(e -> {
+				showContacts = (boolean) e.getProperty().getValue();
+				refreshMap();
+			});
+			mapHeaderLayout.addComponent(showContactsCheckBox);
+			mapHeaderLayout.setComponentAlignment(showContactsCheckBox, Alignment.MIDDLE_LEFT);
 
+			if (LoginHelper.isUserInRole(UserRole.NATIONAL_USER)) {
+				CheckBox showRegionsCheckBox = new CheckBox();
+				showRegionsCheckBox.addStyleName(CssStyles.NO_MARGIN);
+				showRegionsCheckBox.setCaption("Show regions");//I18nProperties.getPrefixFieldCaption(I18N_PREFIX, SHOW_CASES));
+				showRegionsCheckBox.setValue(showRegions);
+				showRegionsCheckBox.addValueChangeListener(e -> {
+					showRegions = (boolean) e.getProperty().getValue();
+					refreshMap();
+				});
+				mapHeaderLayout.addComponent(showRegionsCheckBox);
+				mapHeaderLayout.setComponentAlignment(showRegionsCheckBox, Alignment.MIDDLE_LEFT);
+			}
+			
 			Button expandMap = new Button(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, EXPAND), FontAwesome.EXPAND);
 			expandMap.setStyleName(ValoTheme.BUTTON_LINK);
 			expandMap.addStyleName(CssStyles.NO_MARGIN);   
@@ -320,87 +384,214 @@ public class DashboardView extends AbstractView {
 		mapLayout.addComponent(mapHeaderLayout);
 
 		// Map and map key
-		mapComponent = new MapComponent();
-		mapComponent.setSizeFull();
 		mapLayout.addComponent(mapComponent);
 		mapLayout.setExpandRatio(mapComponent, 1);
 
-		HorizontalLayout mapFooterLayout = new HorizontalLayout();
-		{
-			mapFooterLayout.setWidth(100, Unit.PERCENTAGE);
-			mapFooterLayout.setSpacing(true);
-			mapFooterLayout.addStyleName(CssStyles.VSPACETOP3);
-
-			HorizontalLayout legendLayout = new HorizontalLayout();
-			legendLayout.setWidth(100, Unit.PERCENTAGE);
-			legendLayout.setSpacing(true);
-
-			HorizontalLayout legendEntry = createLegendEntry("mapicons/grey-house-small.png", I18nProperties.getPrefixFieldCaption(I18N_PREFIX, NOT_YET_CLASSIFIED));
-			legendLayout.addComponent(legendEntry);
-			legendLayout.setComponentAlignment(legendEntry, Alignment.MIDDLE_LEFT);
-			legendLayout.setExpandRatio(legendEntry, 0);
-			legendEntry = createLegendEntry("mapicons/yellow-house-small.png", I18nProperties.getPrefixFieldCaption(I18N_PREFIX, SUSPECT));
-			legendLayout.addComponent(legendEntry);
-			legendLayout.setComponentAlignment(legendEntry, Alignment.MIDDLE_LEFT);
-			legendLayout.setExpandRatio(legendEntry, 0);
-			legendEntry = createLegendEntry("mapicons/orange-house-small.png", I18nProperties.getPrefixFieldCaption(I18N_PREFIX, PROBABLE));
-			legendLayout.addComponent(legendEntry);
-			legendLayout.setComponentAlignment(legendEntry, Alignment.MIDDLE_LEFT);
-			legendLayout.setExpandRatio(legendEntry, 0);
-			legendEntry = createLegendEntry("mapicons/red-house-small.png", I18nProperties.getPrefixFieldCaption(I18N_PREFIX, CONFIRMED));
-			legendLayout.addComponent(legendEntry);
-			legendLayout.setComponentAlignment(legendEntry, Alignment.MIDDLE_LEFT);
-			legendLayout.setExpandRatio(legendEntry, 1);
-			mapFooterLayout.addComponent(legendLayout);
-
-			Button noGPSButton = new Button("Cases without GPS tag");
-			noGPSButton.addStyleName(ValoTheme.BUTTON_LINK);
-			noGPSButton.addClickListener(e -> {
-				VerticalLayout layout = new VerticalLayout();
-				Window window = VaadinUiUtil.showPopupWindow(layout);
-				List<CaseDataDto> casesWithoutGPSTag = mapComponent.getCasesWithoutGPSTag();
-				if (casesWithoutGPSTag == null || casesWithoutGPSTag.isEmpty()) {
-					Label noCasesLabel = new Label("There are no cases without a GPS tag.");
-					layout.addComponent(noCasesLabel);
-				} else {
-					CasePopupGrid caseGrid = new CasePopupGrid(window, null, mapComponent);
-					caseGrid.setHeightMode(HeightMode.ROW);
-					layout.addComponent(caseGrid);
-				}
-				layout.setMargin(true);
-				window.setCaption("Cases without GPS tag");
-			});
-			mapFooterLayout.addComponent(noGPSButton);
-			mapFooterLayout.setComponentAlignment(noGPSButton, Alignment.MIDDLE_RIGHT);
-			mapFooterLayout.setExpandRatio(legendLayout, 1);
+		if (showCases) {
+			HorizontalLayout mapCaseFooterLayout = new HorizontalLayout();
+			{
+				mapCaseFooterLayout.setWidth(100, Unit.PERCENTAGE);
+				mapCaseFooterLayout.setSpacing(true);
+				mapCaseFooterLayout.addStyleName(CssStyles.VSPACETOP3);
+	
+				HorizontalLayout legendLayout = new HorizontalLayout();
+				legendLayout.setWidth(100, Unit.PERCENTAGE);
+	
+				HorizontalLayout legendEntry = createLegendEntry("mapicons/grey-house-small.png", I18nProperties.getPrefixFieldCaption(I18N_PREFIX, NOT_YET_CLASSIFIED));
+				legendLayout.addComponent(legendEntry);
+				legendLayout.setComponentAlignment(legendEntry, Alignment.MIDDLE_LEFT);
+				legendLayout.setExpandRatio(legendEntry, 0);
+				Label spacer = new Label();
+				spacer.setWidth(6, Unit.PIXELS);
+				legendLayout.addComponent(spacer);
+				legendEntry = createLegendEntry("mapicons/yellow-house-small.png", I18nProperties.getPrefixFieldCaption(I18N_PREFIX, SUSPECT));
+				legendLayout.addComponent(legendEntry);
+				legendLayout.setComponentAlignment(legendEntry, Alignment.MIDDLE_LEFT);
+				legendLayout.setExpandRatio(legendEntry, 0);
+				spacer = new Label();
+				spacer.setWidth(6, Unit.PIXELS);
+				legendLayout.addComponent(spacer);
+				legendEntry = createLegendEntry("mapicons/orange-house-small.png", I18nProperties.getPrefixFieldCaption(I18N_PREFIX, PROBABLE));
+				legendLayout.addComponent(legendEntry);
+				legendLayout.setComponentAlignment(legendEntry, Alignment.MIDDLE_LEFT);
+				legendLayout.setExpandRatio(legendEntry, 0);
+				spacer = new Label();
+				spacer.setWidth(6, Unit.PIXELS);
+				legendLayout.addComponent(spacer);
+				legendEntry = createLegendEntry("mapicons/red-house-small.png", I18nProperties.getPrefixFieldCaption(I18N_PREFIX, CONFIRMED));
+				legendLayout.addComponent(legendEntry);
+				legendLayout.setComponentAlignment(legendEntry, Alignment.MIDDLE_LEFT);
+				legendLayout.setExpandRatio(legendEntry, 1);
+				mapCaseFooterLayout.addComponent(legendLayout);
+	
+				Button noGPSButton = new Button("Cases without GPS tag");
+				noGPSButton.addStyleName(ValoTheme.BUTTON_LINK);
+				noGPSButton.addClickListener(e -> {
+					VerticalLayout layout = new VerticalLayout();
+					Window window = VaadinUiUtil.showPopupWindow(layout);
+					List<CaseDataDto> casesWithoutGPSTag = mapComponent.getCasesWithoutGPSTag();
+					if (casesWithoutGPSTag == null || casesWithoutGPSTag.isEmpty()) {
+						Label noCasesLabel = new Label("There are no cases without a GPS tag.");
+						layout.addComponent(noCasesLabel);
+					} else {
+						CasePopupGrid caseGrid = new CasePopupGrid(window, null, mapComponent);
+						caseGrid.setHeightMode(HeightMode.ROW);
+						layout.addComponent(caseGrid);
+					}
+					layout.setMargin(true);
+					window.setCaption("Cases without GPS tag");
+				});
+				mapCaseFooterLayout.addComponent(noGPSButton);
+				mapCaseFooterLayout.setComponentAlignment(noGPSButton, Alignment.MIDDLE_RIGHT);
+				mapCaseFooterLayout.setExpandRatio(legendLayout, 1);
+			}
+			mapLayout.addComponent(mapCaseFooterLayout);
 		}
-		mapLayout.addComponent(mapFooterLayout);
+		
+		if (showContacts) {
+			HorizontalLayout mapContactFooterLayout = new HorizontalLayout();
+			{
+				mapContactFooterLayout.setWidth(100, Unit.PERCENTAGE);
+				mapContactFooterLayout.setSpacing(true);
+	
+				HorizontalLayout legendLayout = new HorizontalLayout();
+				legendLayout.setWidth(100, Unit.PERCENTAGE);
+	
+				HorizontalLayout legendEntry = createLegendEntry("mapicons/green-contact.png", I18nProperties.getPrefixFieldCaption(I18N_PREFIX, VISIT_24_HOURS));
+				legendLayout.addComponent(legendEntry);
+				legendLayout.setComponentAlignment(legendEntry, Alignment.MIDDLE_LEFT);
+				legendLayout.setExpandRatio(legendEntry, 0);
+				Label spacer = new Label();
+				spacer.setWidth(6, Unit.PIXELS);
+				legendLayout.addComponent(spacer);
+				legendEntry = createLegendEntry("mapicons/orange-contact.png", I18nProperties.getPrefixFieldCaption(I18N_PREFIX, VISIT_48_HOURS));
+				legendLayout.addComponent(legendEntry);
+				legendLayout.setComponentAlignment(legendEntry, Alignment.MIDDLE_LEFT);
+				legendLayout.setExpandRatio(legendEntry, 0);
+				spacer = new Label();
+				spacer.setWidth(6, Unit.PIXELS);
+				legendLayout.addComponent(spacer);
+				legendEntry = createLegendEntry("mapicons/red-contact.png", I18nProperties.getPrefixFieldCaption(I18N_PREFIX, VISIT_GT_48_HOURS));
+				legendLayout.addComponent(legendEntry);
+				legendLayout.setComponentAlignment(legendEntry, Alignment.MIDDLE_LEFT);
+				legendLayout.setExpandRatio(legendEntry, 1);
+				mapContactFooterLayout.addComponent(legendLayout);
+				mapContactFooterLayout.setExpandRatio(legendLayout, 1);
+			}
+			mapLayout.addComponent(mapContactFooterLayout);
+		}
 
+		if (showRegions) {
+			HorizontalLayout mapRegionsFooterLayout = new HorizontalLayout();
+			{
+				mapRegionsFooterLayout.setWidth(100, Unit.PERCENTAGE);
+				mapRegionsFooterLayout.setSpacing(true);
+				
+				HorizontalLayout legendLayout = new HorizontalLayout();
+				legendLayout.setWidth(100, Unit.PERCENTAGE);
+				
+				ComboBox regionMapVisualizationSelect = new ComboBox();
+				regionMapVisualizationSelect.setSizeUndefined();
+				regionMapVisualizationSelect.addItems(RegionMapVisualization.values());
+				regionMapVisualizationSelect.setValue(regionMapVisualization);
+				regionMapVisualizationSelect.setNullSelectionAllowed(false);
+				regionMapVisualizationSelect.addValueChangeListener(event -> {
+					regionMapVisualization = (RegionMapVisualization)event.getProperty().getValue();
+					refreshMap();
+					legendLayout.removeAllComponents();
+					fillRegionMapLegend(legendLayout);
+				});
+				mapRegionsFooterLayout.addComponent(regionMapVisualizationSelect);
+				mapRegionsFooterLayout.setComponentAlignment(regionMapVisualizationSelect, Alignment.MIDDLE_LEFT);
+				mapRegionsFooterLayout.setExpandRatio(regionMapVisualizationSelect, 0);
+					
+				fillRegionMapLegend(legendLayout);
+				
+				mapRegionsFooterLayout.addComponent(legendLayout);
+				mapRegionsFooterLayout.setComponentAlignment(legendLayout, Alignment.MIDDLE_LEFT);
+				mapRegionsFooterLayout.setExpandRatio(legendLayout, 1);
+			}
+			mapLayout.addComponent(mapRegionsFooterLayout);
+		}
+		
 		return mapLayout;
+	}
+
+	private void fillRegionMapLegend(HorizontalLayout legendLayout) {
+		
+		HorizontalLayout legendEntry;
+		switch (regionMapVisualization) {
+		case CASE_COUNT:
+			legendEntry = createLegendEntry("mapicons/yellow-region-small.png", "1 - 5 cases");
+			break;
+		case CASE_INCIDENCE:
+			legendEntry = createLegendEntry("mapicons/yellow-region-small.png", "<= 0.5 cases / 10.000");
+			break;
+		default: throw new IllegalArgumentException(regionMapVisualization.toString());
+		}
+		legendLayout.addComponent(legendEntry);
+		legendLayout.setComponentAlignment(legendEntry, Alignment.MIDDLE_LEFT);
+		legendLayout.setExpandRatio(legendEntry, 0);
+		
+		Label spacer = new Label();
+		spacer.setWidth(6, Unit.PIXELS);
+		legendLayout.addComponent(spacer);
+		
+		switch (regionMapVisualization) {
+		case CASE_COUNT:
+			legendEntry = createLegendEntry("mapicons/orange-region-small.png", "6 - 10 cases");
+			break;
+		case CASE_INCIDENCE:
+			legendEntry = createLegendEntry("mapicons/orange-region-small.png", "0.6 - 1 cases / 10.000");
+			break;
+		default: throw new IllegalArgumentException(regionMapVisualization.toString());
+		}
+		legendLayout.addComponent(legendEntry);
+		legendLayout.setComponentAlignment(legendEntry, Alignment.MIDDLE_LEFT);
+		legendLayout.setExpandRatio(legendEntry, 0);
+		
+		spacer = new Label();
+		spacer.setWidth(6, Unit.PIXELS);
+		legendLayout.addComponent(spacer);
+		
+		switch (regionMapVisualization) {
+		case CASE_COUNT:
+			legendEntry = createLegendEntry("mapicons/red-region-small.png", "> 10 cases");
+			break;
+		case CASE_INCIDENCE:
+			legendEntry = createLegendEntry("mapicons/red-region-small.png", "> 1 cases / 10.000");
+			break;
+		default: throw new IllegalArgumentException(regionMapVisualization.toString());
+		}				
+		legendLayout.addComponent(legendEntry);
+		legendLayout.setComponentAlignment(legendEntry, Alignment.MIDDLE_LEFT);
+		legendLayout.setExpandRatio(legendEntry, 1);
 	}
 
 	private HorizontalLayout createLegendEntry(String iconThemeResource, String labelCaption) {
 		HorizontalLayout entry = new HorizontalLayout();
 		entry.setSizeUndefined();
 		Image icon = new Image(null, new ThemeResource(iconThemeResource));
-		icon.setWidth(16.5f, Unit.PIXELS);
-		icon.setHeight(22.5f, Unit.PIXELS);
+		icon.setWidth(12.375f, Unit.PIXELS);
+		icon.setHeight(16.875f, Unit.PIXELS);
 		entry.addComponent(icon);
 		Label spacer = new Label();
 		spacer.setWidth(4, Unit.PIXELS);
 		entry.addComponent(spacer);
 		Label label = new Label(labelCaption);
 		label.setSizeUndefined();
+		label.addStyleName(CssStyles.LABEL_SMALL);
 		entry.addComponent(label);
 		return entry;
 	}
 
 	private void refreshDashboard() {
-		// Update the cases list according to the filters
+		// Update the cases and contacts lists according to the filters
 		String userUuid = LoginHelper.getCurrentUser().getUuid();
 		cases = FacadeProvider.getCaseFacade().getAllCasesBetween(fromDate, toDate, disease, userUuid);
+		contacts = FacadeProvider.getContactFacade().getMapContacts(fromDate, toDate, disease, userUuid);
 
-		// Update cases shown on the map
+		// Update cases and contacts shown on the map
 		refreshMap();
 
 		// Update situation report and epi curve data
@@ -412,14 +603,40 @@ public class DashboardView extends AbstractView {
 	}
 
 	private void refreshMap() {
-		String userUuid = LoginHelper.getCurrentUser().getUuid();
 
-		// If the "use date filter for map" check box is not checked, use a list of all cases irrespective of the dates instead
-		if (useDateFilterForMap == true) {
-			mapComponent.showMarkers(cases);
-		} else {
-			List<CaseDataDto> casesForMap = FacadeProvider.getCaseFacade().getAllCasesByDisease(disease, userUuid);
-			mapComponent.showMarkers(casesForMap);
+		mapComponent.clearRegionShapes();
+		mapComponent.clearCaseMarkers();
+		mapComponent.clearContactMarkers();
+		
+		if (showRegions) {
+			mapComponent.showRegionsShapes(regionMapVisualization, 
+					useDateFilterForMap ? fromDate : null, useDateFilterForMap ? toDate : null, disease);
+		}
+		
+		if (showCases || showContacts) {
+			List<CaseDataDto> casesForMap;
+			List<ContactMapDto> contactsForMap;
+
+			// If the "use date filter for map" check box is not checked, use a list of all cases and contacts irrespective of the dates instead
+			if (useDateFilterForMap) {
+				casesForMap = cases;
+				contactsForMap = contacts;
+			} else {
+				String userUuid = LoginHelper.getCurrentUser().getUuid();
+				casesForMap = FacadeProvider.getCaseFacade().getAllCasesByDisease(disease, userUuid);
+				if (showContacts) {
+					contactsForMap = FacadeProvider.getContactFacade().getMapContacts(null, null, disease, userUuid);
+				} else {
+					contactsForMap = null;
+				}
+			}
+			
+			if (showCases) {
+				mapComponent.showCaseMarkers(casesForMap);
+			}
+			if (showContacts) {
+				mapComponent.showContactMarkers(contactsForMap);
+			}
 		}
 	}
 

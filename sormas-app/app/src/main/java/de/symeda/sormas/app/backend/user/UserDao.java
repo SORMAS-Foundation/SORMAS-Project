@@ -64,7 +64,7 @@ public class UserDao extends AbstractAdoDao<User> {
         }
     }
 
-    public List<User> getByDistrictAndRole(District district, UserRole role) {
+    public List<User> getByDistrictAndRole(District district, UserRole role, String orderBy) {
         try {
             QueryBuilder builder = queryBuilder();
             Where where = builder.where();
@@ -73,10 +73,11 @@ public class UserDao extends AbstractAdoDao<User> {
                     where.eq(User.USER_ROLE, role)
             );
 
-            return (List<User>) builder.query();
+            return (List<User>) builder.orderBy(orderBy, true).query();
         } catch (SQLException e) {
             Log.e(getTableName(), "Could not perform getByDistrictAndRole");
             throw new RuntimeException(e);
         }
     }
+
 }

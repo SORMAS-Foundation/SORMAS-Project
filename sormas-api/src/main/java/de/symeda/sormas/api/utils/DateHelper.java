@@ -200,4 +200,184 @@ public final class DateHelper {
 		return calendar.getTime();
 	}
 	
+	/**
+	 * Builds and returns a Calendar object that is suited for date calculations with epi weeks.
+	 * The Calendar's date still has to be set after retrieving the object.
+	 * 
+	 * @return
+	 */
+	public static Calendar getEpiCalendar() {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setFirstDayOfWeek(Calendar.MONDAY);
+		calendar.setMinimalDaysInFirstWeek(1);
+		return calendar;
+	}
+	
+	/**
+	 * Returns the epi week of the given date according to the Nigerian epi week system, i.e.
+	 * the week that contains the 1st of January always is the first epi week of the year, even
+	 * if it begins in December.
+	 * 
+	 * @param date The date to calculate the epi week for
+	 * @return The epi week according to the Nigerian epi week system
+	 */
+	public static EpiWeek getEpiWeek(Date date) {
+		Calendar calendar = getEpiCalendar();
+		calendar.setTime(date);
+		return new EpiWeek(calendar.get(Calendar.YEAR), calendar.get(Calendar.WEEK_OF_YEAR));
+	}
+	
+	/**
+	 * Returns the epi week for the week before the given date according to the Nigerian epi week 
+	 * system, i.e. the week that contains the 1st of January always is the first epi week of the 
+	 * year, even if it begins in December.
+	 * 
+	 * @param date The date to calculate the previous epi week for
+	 * @return The previous epi week according to the Nigerian epi week system
+	 */
+	public static EpiWeek getPreviousEpiWeek(Date date) {
+		Calendar calendar = getEpiCalendar();
+		calendar.setTime(subtractDays(date, 7));
+		return new EpiWeek(calendar.get(Calendar.YEAR), calendar.get(Calendar.WEEK_OF_YEAR));
+	}
+	
+	public static EpiWeek getPreviousEpiWeek(EpiWeek epiWeek) {
+		Calendar calendar = getEpiCalendar();
+		calendar.set(Calendar.YEAR, epiWeek.getYear());
+		calendar.set(Calendar.WEEK_OF_YEAR, epiWeek.getWeek());
+		return getPreviousEpiWeek(calendar.getTime());
+	}
+	
+	/**
+	 * Returns the epi week for the week after the given date according to the Nigerian epi week 
+	 * system, i.e. the week that contains the 1st of January always is the first epi week of the 
+	 * year, even if it begins in December.
+	 * 
+	 * @param date The date to calculate the next epi week for
+	 * @return The next epi week according to the Nigerian epi week system
+	 */
+	public static EpiWeek getNextEpiWeek(Date date) {
+		Calendar calendar = getEpiCalendar();
+		calendar.setTime(addDays(date, 7));
+		return new EpiWeek(calendar.get(Calendar.YEAR), calendar.get(Calendar.WEEK_OF_YEAR));
+	}
+	
+	public static EpiWeek getNextEpiWeek(EpiWeek epiWeek) {
+		Calendar calendar = getEpiCalendar();
+		calendar.set(Calendar.YEAR, epiWeek.getYear());
+		calendar.set(Calendar.WEEK_OF_YEAR, epiWeek.getWeek());
+		return getNextEpiWeek(calendar.getTime());
+	}
+	
+	/**
+	 * Returns a Date object that is set to Monday of the given epi week.
+	 * 
+	 * @param year The year to get the first day of the epi week for
+	 * @param week The epi week to get the first day for
+	 * @return The first day of the epi week
+	 */
+	public static Date getEpiWeekStart(EpiWeek epiWeek) {
+		Calendar calendar = getEpiCalendar();
+		calendar.set(Calendar.YEAR, epiWeek.getYear());
+		calendar.set(Calendar.WEEK_OF_YEAR, epiWeek.getWeek());
+		calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+		calendar.set(Calendar.HOUR_OF_DAY, 0);
+		calendar.set(Calendar.MINUTE, 0);
+		calendar.set(Calendar.SECOND, 1);
+		return calendar.getTime();
+	}
+	
+	/**
+	 * Returns a Date object that is set to Sunday of the given epi week.
+	 * 
+	 * @param year The year to get the last day of the epi week for
+	 * @param week The epi week to get the last day for
+	 * @return The last day of the epi week
+	 */
+	public static Date getEpiWeekEnd(EpiWeek epiWeek) {
+		Calendar calendar = getEpiCalendar();
+		calendar.set(Calendar.YEAR, epiWeek.getYear());
+		calendar.set(Calendar.WEEK_OF_YEAR, epiWeek.getWeek());
+		calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+		calendar.set(Calendar.HOUR_OF_DAY, 23);
+		calendar.set(Calendar.MINUTE, 59);
+		calendar.set(Calendar.SECOND, 59);
+		return calendar.getTime();
+	}
+
+	/**
+	 * Calculates whether the second epi week starts on a later date than the first one.
+	 * 
+	 * @param epiWeek The first epi week
+	 * @param anotherEpiWeek The second epi week to check for a later beginning
+	 * @return True if the second epi week is on a later date, false if not
+	 */
+	public static boolean isEpiWeekAfter(EpiWeek epiWeek, EpiWeek anotherEpiWeek) {
+		Calendar calendar = getEpiCalendar();
+		calendar.set(Calendar.YEAR, epiWeek.getYear());
+		calendar.set(Calendar.WEEK_OF_YEAR, epiWeek.getWeek());
+		
+		Calendar secondCalendar = getEpiCalendar();
+		secondCalendar.set(Calendar.YEAR, anotherEpiWeek.getYear());
+		secondCalendar.set(Calendar.WEEK_OF_YEAR, anotherEpiWeek.getWeek());
+		
+		return secondCalendar.getTime().after(calendar.getTime());
+	}
+	
+	public static List<Integer> createWeeksList(int year) {
+        Calendar calendar = getEpiCalendar();
+        calendar.set(year, 0, 1);
+        List<Integer> weeksList = new ArrayList<>();
+        for (int week = 1; week <= calendar.getActualMaximum(Calendar.WEEK_OF_YEAR); week++) {
+            weeksList.add(week);
+        }
+        return weeksList;
+    }
+	
+	/**
+	 * Calculates the start and end dates of the report for the given epi week. 
+	 * 
+	 * @param epiWeek The epi week to calculate the dates for
+	 * @param weeklyReportDate The date of report of the report for the given epi week, or null if none is available
+	 * @param prevWeeklyReportDate The date of report of the report for the week before the given epi week, or null if none is available
+	 * @param nextWeeklyReportDate The date of report of the report for the week after the given epi week, or null if none is available
+	 * @return An array of size 2, containing the start date at index 0 and the end date at index 1
+	 */
+	public static Date[] calculateEpiWeekReportStartAndEnd(EpiWeek epiWeek, Date weeklyReportDate, Date prevWeeklyReportDate, Date nextWeeklyReportDate) {
+		Date epiWeekStart = getEpiWeekStart(epiWeek);
+		Date epiWeekEnd = getEpiWeekEnd(epiWeek);
+		EpiWeek currentEpiWeek = getEpiWeek(new Date());
+		Date[] dates = new Date[2];
+		
+		if (weeklyReportDate != null) {
+			if (prevWeeklyReportDate != null) {
+				dates[0] = prevWeeklyReportDate;
+				dates[1] = weeklyReportDate;
+			} else {
+				dates[0] = epiWeekStart;
+				dates[1] = weeklyReportDate;
+			}
+		} else {
+			if (prevWeeklyReportDate != null) {
+				if (nextWeeklyReportDate != null) {
+					dates[0] = prevWeeklyReportDate;
+					dates[1] = nextWeeklyReportDate;
+				} else {
+					dates[0] = prevWeeklyReportDate;
+					dates[1] = DateHelper.getPreviousEpiWeek(currentEpiWeek).equals(epiWeek) ? new Date() : epiWeekEnd;
+				}
+			} else {				
+				if (nextWeeklyReportDate != null) {
+					dates[0] = epiWeekStart;
+					dates[1] = nextWeeklyReportDate;
+				} else {
+					dates[0] = epiWeekStart;
+					dates[1] = DateHelper.getPreviousEpiWeek(currentEpiWeek).equals(epiWeek) ? new Date() : epiWeekEnd;
+				}
+			}
+		}
+		
+		return dates;
+	}
+	
 }

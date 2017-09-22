@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -75,15 +76,21 @@ public class CaseEditDataForm extends FormTab {
 
         FieldHelper.initSpinnerField(binding.caseDataMeaslesVaccination, Vaccination.class);
         FieldHelper.initSpinnerField(binding.caseDataVaccinationInfoSource, VaccinationInfoSource.class);
+        FieldHelper.initSpinnerField(binding.caseDataYellowFeverVaccination, Vaccination.class);
+        FieldHelper.initSpinnerField(binding.caseDataYellowFeverVaccinationInfoSource, VaccinationInfoSource.class);
 
-        boolean definedOrMissing = Diseases.DiseasesConfiguration.isDefinedOrMissing(CaseDataDto.class, binding.caseDataMeaslesVaccination.getPropertyId(), binding.getCaze().getDisease());
-        binding.caseDataMeaslesVaccination.setVisibility(definedOrMissing ? View.VISIBLE : View.GONE);
+        boolean showMeaslesVaccination = Diseases.DiseasesConfiguration.isDefinedOrMissing(CaseDataDto.class, binding.caseDataMeaslesVaccination.getPropertyId(), binding.getCaze().getDisease());
+        binding.caseDataMeaslesVaccination.setVisibility(showMeaslesVaccination ? View.VISIBLE : View.GONE);
+
+        boolean showYellowFeverVaccination = Diseases.DiseasesConfiguration.isDefinedOrMissing(CaseDataDto.class, binding.caseDataYellowFeverVaccination.getPropertyId(), binding.getCaze().getDisease());
+        binding.caseDataYellowFeverVaccination.setVisibility(showYellowFeverVaccination ? View.VISIBLE : View.GONE);
 
         if (binding.getCaze().getPerson().getSex() != Sex.FEMALE) {
             binding.caseDataPregnant.setVisibility(View.GONE);
         }
 
         toggleMeaslesFields();
+        toggleYellowFeverFields();
 
         binding.caseDataMeaslesVaccination.addValueChangedListener(new PropertyField.ValueChangeListener() {
             @Override
@@ -92,7 +99,15 @@ public class CaseEditDataForm extends FormTab {
             }
         });
 
-        if (binding.caseDataPregnant.getVisibility() == View.GONE && binding.caseDataMeaslesVaccination.getVisibility() == View.GONE) {
+        binding.caseDataYellowFeverVaccination.addValueChangedListener(new PropertyField.ValueChangeListener() {
+            @Override
+            public void onChange(PropertyField field) {
+                toggleYellowFeverFields();
+            }
+        });
+
+        if (binding.caseDataPregnant.getVisibility() == View.GONE && binding.caseDataMeaslesVaccination.getVisibility() == View.GONE &&
+                binding.caseDataYellowFeverVaccination.getVisibility() == View.GONE) {
             binding.caseMedicalInformationHeadline.setVisibility(View.GONE);
         }
 
@@ -143,6 +158,10 @@ public class CaseEditDataForm extends FormTab {
             binding.caseDataMove.setTextColor(ContextCompat.getColor(getContext(), R.color.colorPrimary));
         }
 
+        if (binding.getCaze().getDisease() != Disease.OTHER) {
+            binding.caseDataDiseaseDetails.setVisibility(View.GONE);
+        }
+
         return binding.getRoot();
     }
 
@@ -158,6 +177,14 @@ public class CaseEditDataForm extends FormTab {
         } else {
             binding.caseDataDoses.setVisibility(View.VISIBLE);
             binding.caseDataVaccinationInfoSource.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void toggleYellowFeverFields() {
+        if (binding.caseDataYellowFeverVaccination.getVisibility() != View.VISIBLE || binding.caseDataYellowFeverVaccination.getValue() != Vaccination.VACCINATED) {
+            binding.caseDataYellowFeverVaccinationInfoSource.setVisibility(View.GONE);
+        } else {
+            binding.caseDataYellowFeverVaccinationInfoSource.setVisibility(View.VISIBLE);
         }
     }
 

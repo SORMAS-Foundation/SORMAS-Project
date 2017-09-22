@@ -18,6 +18,7 @@ import javax.persistence.criteria.Root;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.util.PasswordHelper;
@@ -124,6 +125,16 @@ public class UserService extends AbstractAdoService<User> {
 		
 		cq.orderBy(cb.asc(from.get(AbstractDomainObject.ID)));
 		return em.createQuery(cq).getResultList();
+	}
+	
+	public long getNumberOfInformantsByFacility(Facility facility) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<User> from = cq.from(getElementClass());
+		
+		cq.select(cb.count(from));
+		cq.where(cb.equal(from.get(User.HEALTH_FACILITY), facility));
+		return em.createQuery(cq).getSingleResult();
 	}
 
 	public boolean isLoginUnique(String uuid, String userName) {

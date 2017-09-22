@@ -13117,6 +13117,20 @@ div.v-layout.v-horizontal.v-widget {
 	background-color: #fafafa;
 }
 
+.sormastheme .googlemap.no-tiles img {
+	opacity: 0.2;
+	filter: alpha(opacity=20);
+}
+
+.sormastheme .googlemap.no-tiles .gmnoprint img {
+	opacity: inherit;
+	filter: inherit;
+}
+
+.sormastheme .googlemap gm-style {
+	background-color: white;
+}
+
 .sormastheme .valo-content {
 	overflow: auto;
 }

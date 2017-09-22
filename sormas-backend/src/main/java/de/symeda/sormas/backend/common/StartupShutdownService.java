@@ -69,6 +69,8 @@ public class StartupShutdownService {
 		
 		importEpidCodes();
 		
+		importPopulationData();
+		
 		initLaboratoriesMockData();
 		
 		initUserMockData();
@@ -288,6 +290,18 @@ public class StartupShutdownService {
 		
 		for (District district : districts) {
 			districtService.ensurePersisted(district);
+		}
+	}
+	
+	private void importPopulationData() {
+		List<Region> regions = regionService.getAllWithoutPopulationData();
+		
+		// Import the EPID codes
+		InfrastructureDataImporter.importPopulationData(regions);
+		
+		// Refresh the updated database instances
+		for (Region region : regions) {
+			regionService.ensurePersisted(region);
 		}
 	}
 

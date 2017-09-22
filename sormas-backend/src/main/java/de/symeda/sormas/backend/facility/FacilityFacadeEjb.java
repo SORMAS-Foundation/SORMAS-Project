@@ -12,6 +12,7 @@ import de.symeda.sormas.api.facility.FacilityFacade;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb;
 import de.symeda.sormas.backend.region.CommunityService;
@@ -51,6 +52,16 @@ public class FacilityFacadeEjb implements FacilityFacade {
 	public List<FacilityReferenceDto> getHealthFacilitiesByDistrict(DistrictReferenceDto districtRef, boolean includeStaticFacilities) {
     	District district = districtService.getByUuid(districtRef.getUuid());
 		List<Facility> facilities = service.getHealthFacilitiesByDistrict(district, includeStaticFacilities);
+		
+		return facilities.stream()
+				.map(f -> toReferenceDto(f))
+				.collect(Collectors.toList());
+	}
+	
+	@Override
+	public List<FacilityReferenceDto> getHealthFacilitiesByRegion(RegionReferenceDto regionRef, boolean includeStaticFacilities) {
+		Region region = regionService.getByReferenceDto(regionRef);
+		List<Facility> facilities = service.getHealthFacilitiesByRegion(region, includeStaticFacilities);
 		
 		return facilities.stream()
 				.map(f -> toReferenceDto(f))

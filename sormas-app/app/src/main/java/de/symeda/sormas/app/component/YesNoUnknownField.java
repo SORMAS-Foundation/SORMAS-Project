@@ -103,7 +103,6 @@ public class YesNoUnknownField extends PropertyField<YesNoUnknown> {
 
         caption = (TextView) this.findViewById(R.id.radio_caption);
         caption.setText(getCaption());
-        addCaptionHintIfDescription();
         addCaptionOnClickListener();
     }
 

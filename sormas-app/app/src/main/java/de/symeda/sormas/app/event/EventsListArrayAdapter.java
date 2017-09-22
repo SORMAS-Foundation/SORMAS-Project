@@ -47,7 +47,7 @@ public class EventsListArrayAdapter extends ArrayAdapter<Event> {
         TextView disease = (TextView) convertView.findViewById(R.id.eli_disease);
         if(event.getDisease() != null) {
             String diseaseName = event.getDisease().getName();
-            disease.setText(Disease.valueOf(diseaseName).toShortString());
+            disease.setText(Disease.valueOf(diseaseName).toShortString() + (event.getDisease() == Disease.OTHER ? " (" + event.getDiseaseDetails() + ")" : ""));
         } else {
             disease.setText(null);
         }
@@ -65,9 +65,10 @@ public class EventsListArrayAdapter extends ArrayAdapter<Event> {
 
         ImageView synchronizedIcon = (ImageView) convertView.findViewById(R.id.eli_synchronized);
         if (event.isModifiedOrChildModified()) {
+            synchronizedIcon.setVisibility(View.VISIBLE);
             synchronizedIcon.setImageResource(R.drawable.ic_cached_black_18dp);
         } else {
-            synchronizedIcon.setImageResource(R.drawable.ic_done_all_black_18dp);
+            synchronizedIcon.setVisibility(View.GONE);
         }
 
         updateUnreadIndicator();

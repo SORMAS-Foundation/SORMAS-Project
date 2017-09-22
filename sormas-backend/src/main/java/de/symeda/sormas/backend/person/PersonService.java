@@ -127,7 +127,11 @@ public class PersonService extends AbstractAdoService<Person> {
 		// date range
 		if (date != null) {
 			Predicate dateFilter = createDateFilter(cb, casePersonsQuery, casePersonsSelect, date);
-			casePersonsFilter = cb.and(casePersonsFilter, dateFilter);
+			if (casePersonsFilter != null) {
+				casePersonsFilter = cb.and(casePersonsFilter, dateFilter);
+			} else {
+				casePersonsFilter = dateFilter;
+			}
 		}
 		casePersonsQuery.where(casePersonsFilter);
 		casePersonsQuery.distinct(true);

@@ -13,4 +13,7 @@ public interface RegionFacade {
 	List<RegionDto> getAllAfter(Date date);
 	
 	RegionDto getRegionByUuid(String uuid);
+	
+	List<RegionDataDto> getAllData();
+
 }

@@ -60,9 +60,10 @@ public class VisitsListArrayAdapter extends ArrayAdapter<Visit> {
 
         ImageView synchronizedIcon = (ImageView) convertView.findViewById(R.id.visit_synchronized_li);
         if (visit.isModifiedOrChildModified()) {
+            synchronizedIcon.setVisibility(View.VISIBLE);
             synchronizedIcon.setImageResource(R.drawable.ic_cached_black_18dp);
         } else {
-            synchronizedIcon.setImageResource(R.drawable.ic_done_all_black_18dp);
+            synchronizedIcon.setVisibility(View.GONE);
         }
 
         updateUnreadIndicator();

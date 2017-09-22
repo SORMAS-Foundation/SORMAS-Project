@@ -16,12 +16,15 @@ import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 
 import java.sql.SQLException;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
@@ -33,6 +36,7 @@ import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
+import de.symeda.sormas.app.backend.report.WeeklyReport;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.user.User;
@@ -151,7 +155,7 @@ public class CaseDao extends AbstractAdoDao<Case> {
         // If the district has changed and there is exactly one surveillance officer assigned to that district,
         // assign them as the new surveillance officer; assign null otherwise
         if (!caze.getDistrict().getUuid().equals(district.getUuid())) {
-            List<User> districtOfficers = DatabaseHelper.getUserDao().getByDistrictAndRole(district, UserRole.SURVEILLANCE_OFFICER);
+            List<User> districtOfficers = DatabaseHelper.getUserDao().getByDistrictAndRole(district, UserRole.SURVEILLANCE_OFFICER, User.UUID);
             if (districtOfficers.size() == 1) {
                 surveillanceOfficer = districtOfficers.get(0);
             } else {
@@ -192,6 +196,58 @@ public class CaseDao extends AbstractAdoDao<Case> {
         }
 
         return caze;
+    }
+
+    /**
+     * Returns the number of cases reported by the current user over the course of the given epi week.
+     * If there are reports for the given and next epi week, all cases between the report dates of these
+     * reports will be collected; if one or both of these dates are missing, the start and end of the given
+     * epi week is taken instead, respectively.
+     *
+     * @param epiWeek
+     * @return
+     */
+    public int getNumberOfCasesForEpiWeek(EpiWeek epiWeek, User informant) {
+        return getNumberOfCasesForEpiWeekAndDisease(epiWeek, null, informant);
+    }
+
+    /**
+     * Returns the number of cases with the given disease reported by the current user over the course of the given epi week.
+     *
+     * @param epiWeek
+     * @return
+     */
+    public int getNumberOfCasesForEpiWeekAndDisease(EpiWeek epiWeek, Disease disease, User informant) {
+        if (informant.getUserRole() != UserRole.INFORMANT) {
+            throw new UnsupportedOperationException("Can only retrieve the number of reported cases by epi week and disease for Informants.");
+        }
+
+        WeeklyReport epiWeekReport = DatabaseHelper.getWeeklyReportDao().queryForEpiWeek(epiWeek, informant);
+        WeeklyReport previousEpiWeekReport = DatabaseHelper.getWeeklyReportDao().queryForEpiWeek(DateHelper.getPreviousEpiWeek(epiWeek), informant);
+        WeeklyReport nextEpiWeekReport = DatabaseHelper.getWeeklyReportDao().queryForEpiWeek(DateHelper.getNextEpiWeek(epiWeek), informant);
+
+        Date[] dates = DateHelper.calculateEpiWeekReportStartAndEnd(epiWeek, epiWeekReport != null ? epiWeekReport.getReportDateTime() : null,
+                previousEpiWeekReport != null ? previousEpiWeekReport.getReportDateTime() : null,
+                nextEpiWeekReport != null ? nextEpiWeekReport.getReportDateTime() : null);
+
+        try {
+            QueryBuilder builder = queryBuilder();
+            Where where = builder.where();
+            where.and(
+                    where.eq(Case.REPORTING_USER + "_id", informant),
+                    where.ge(Case.REPORT_DATE, dates[0]),
+                    where.le(Case.REPORT_DATE, dates[1])
+            );
+
+            if (disease != null) {
+                where.and(where, where.eq(Case.DISEASE, disease));
+            }
+
+            return (int) builder.countOf();
+        } catch (SQLException e) {
+            Log.e(getTableName(), "Could not perform getNumberOfCasesForEpiWeekAndDisease");
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -248,6 +304,7 @@ public class CaseDao extends AbstractAdoDao<Case> {
                 }
             }
         }
+
 
         return super.saveAndSnapshot(caze);
     }

@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
@@ -48,7 +49,8 @@ public class SamplesListArrayAdapter extends ArrayAdapter<Sample> {
         dateTime.setText(DateHelper.formatDate(sample.getSampleDateTime()));
 
         TextView disease = (TextView) convertView.findViewById(R.id.sample_disease_li);
-        disease.setText(sample.getAssociatedCase().getDisease().toShortString());
+        disease.setText(sample.getAssociatedCase().getDisease().toShortString() +
+                (sample.getAssociatedCase().getDisease() == Disease.OTHER ? " (" + sample.getAssociatedCase().getDiseaseDetails() + ")" : ""));
 
         TextView shipmentStatus = (TextView) convertView.findViewById(R.id.sample_shipment_status_li);
         if (sample.getReferredTo() != null) {
@@ -85,9 +87,10 @@ public class SamplesListArrayAdapter extends ArrayAdapter<Sample> {
 
         ImageView synchronizedIcon = (ImageView) convertView.findViewById(R.id.sample_synchronized_li);
         if (sample.isModifiedOrChildModified()) {
+            synchronizedIcon.setVisibility(View.VISIBLE);
             synchronizedIcon.setImageResource(R.drawable.ic_cached_black_18dp);
         } else {
-            synchronizedIcon.setImageResource(R.drawable.ic_done_all_black_18dp);
+            synchronizedIcon.setVisibility(View.GONE);
         }
 
         updateUnreadIndicator();

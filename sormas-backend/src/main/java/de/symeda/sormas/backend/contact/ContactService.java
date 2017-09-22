@@ -18,6 +18,7 @@ import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
@@ -75,8 +76,11 @@ public class ContactService extends AbstractAdoService<Contact> {
 		filter = cb.and(filter, cb.lessThan(from.get(Contact.LAST_CONTACT_DATE), toDate));
 
 		if (user != null) {
-			filter = cb.and(filter, createUserFilter(cb, cq, from, user));
-		} 
+			Predicate userFilter = createUserFilter(cb, cq, from, user);
+			if (userFilter != null) {
+				filter = cb.and(filter, userFilter);
+			}
+		} 	
 		
 		if (disease != null) {
 			Join<Contact, Case> caze = from.join(Contact.CAZE);
@@ -102,6 +106,33 @@ public class ContactService extends AbstractAdoService<Contact> {
 		List<Contact> result = em.createQuery(cq).getResultList();
 		return result;
 	}	
+	
+	public List<Contact> getMapContacts(Date fromDate, Date toDate, Disease disease, User user) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Contact> cq = cb.createQuery(getElementClass());
+		Root<Contact> from = cq.from(getElementClass());
+		
+		Predicate filter = createUserFilter(cb, cq, from, user);
+		if (fromDate != null || toDate != null) {
+			Predicate dateFilter = cb.isNotNull(from.get(Contact.REPORT_DATE_TIME));
+			if (fromDate != null) {
+				dateFilter = cb.and(dateFilter, cb.greaterThanOrEqualTo(from.get(Contact.REPORT_DATE_TIME), fromDate));
+			}
+			if (toDate != null) {
+				dateFilter = cb.and(dateFilter, cb.lessThanOrEqualTo(from.get(Contact.REPORT_DATE_TIME), toDate));
+			}
+			filter = cb.and(filter, dateFilter);
+		}
+		if (disease != null) {
+			Join<Contact, Case> contactCase = from.join(Contact.CAZE);
+			Predicate diseaseFilter = cb.equal(contactCase.get(Case.DISEASE), disease);
+			filter = cb.and(filter, diseaseFilter);
+		}	
+		// Only retrieve contacts that are currently under follow-up
+		filter = cb.and(filter, cb.equal(from.get(Contact.FOLLOW_UP_STATUS), FollowUpStatus.FOLLOW_UP));
+		cq.where(filter);
+		return em.createQuery(cq).getResultList();
+	}
 
 	public int getFollowUpDuration(Disease disease) {
 		switch (disease) {
@@ -184,19 +215,28 @@ public class ContactService extends AbstractAdoService<Contact> {
 		}
 	}	
 
-
 	/**
 	 * @see /sormas-backend/doc/UserDataAccess.md
 	 */
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Contact, Contact> contactPath, User user) {
-		
+				
 		Predicate userFilter = caseService.createUserFilter(cb, cq, contactPath.join(Contact.CAZE, JoinType.LEFT), user);
-		Predicate filter = cb.or(createUserFilterWithoutCase(cb, cq, contactPath, user), userFilter);
+		Predicate filter;
+		if (userFilter != null) {
+			filter = cb.or(createUserFilterWithoutCase(cb, cq, contactPath, user), userFilter);
+		} else {
+			filter = createUserFilterWithoutCase(cb, cq, contactPath, user);
+		}
 		return filter;
 	}
 	
 	public Predicate createUserFilterWithoutCase(CriteriaBuilder cb, CriteriaQuery cq, From<Contact, Contact> contactPath, User user) {
+		// National users can access all contacts in the system
+		if (user.getUserRoles().contains(UserRole.NATIONAL_USER)) {
+			return null;
+		}
+		
 		// whoever created it or is assigned to it is allowed to access it
 		Predicate filter = cb.equal(contactPath.get(Contact.REPORTING_USER), user);
 		filter = cb.or(filter, cb.equal(contactPath.get(Contact.CONTACT_OFFICER), user));

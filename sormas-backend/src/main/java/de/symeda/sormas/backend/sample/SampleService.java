@@ -69,18 +69,37 @@ public class SampleService extends AbstractAdoService<Sample> {
 	@Override
 	@SuppressWarnings("unchecked")
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Sample,Sample> samplePath, User user) {
+		
+		Predicate filter = createUserFilterWithoutCase(cb, cq, samplePath, user);
+
 		// whoever created the case the sample is associated with or is assigned to it
 		// is allowed to access it
 		Path<Case> casePath = samplePath.get(Sample.ASSOCIATED_CASE);
-		Predicate filter = caseService.createUserFilter(cb, cq, (From<Case,Case>)casePath, user);
 		
+		Predicate caseFilter = caseService.createUserFilter(cb, cq, (From<Case,Case>)casePath, user);
+		if (filter != null) {
+			filter = cb.or(filter, caseFilter);
+		} else {
+			filter = caseFilter;
+		}
+
+		return filter;
+	}
+	
+	public Predicate createUserFilterWithoutCase(CriteriaBuilder cb, CriteriaQuery cq, From<Sample,Sample> samplePath, User user) {
+		
+		Predicate filter = null;
 		// user that reported it is not able to access it. Otherwise they would also need to access the case
-		//filter = cb.or(filter, cb.equal(samplePath.get(Sample.REPORTING_USER), user));
+		//filter = cb.equal(samplePath.get(Sample.REPORTING_USER), user);
 		
 		// lab users can see samples assigned to their laboratory
-		if(user.getUserRoles().contains(UserRole.LAB_USER)) {
+		if (user.getUserRoles().contains(UserRole.LAB_USER)) {
 			if(user.getLaboratory() != null) {
-				filter = cb.or(filter, cb.equal(samplePath.get(Sample.LAB), user.getLaboratory()));
+				if (filter != null) {
+					filter = cb.or(filter, cb.equal(samplePath.get(Sample.LAB), user.getLaboratory()));
+				} else {
+					filter = cb.equal(samplePath.get(Sample.LAB), user.getLaboratory());
+				}
 			}
 		}
 		

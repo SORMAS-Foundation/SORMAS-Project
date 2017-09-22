@@ -53,6 +53,13 @@ public class LoginHelper {
     	return principal != null;
     }
     
+    /**
+     * If this doesn't work as expected make sure the needed roles exist in the web.xml
+     */
+	public static boolean isUserInRole(UserRole userRole) {
+		return VaadinServletService.getCurrentServletRequest().isUserInRole(userRole.name());
+	}
+    
     public static String getCurrentUserName() {
     	
 		Principal activeUserPrincipal = VaadinServletService.getCurrentServletRequest().getUserPrincipal();

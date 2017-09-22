@@ -47,6 +47,7 @@ public class Case extends AbstractDomainObject {
 	public static final String PERSON = "person";
 	public static final String REPORT_DATE = "reportDate";
 	public static final String SYMPTOMS = "symptoms";
+	public static final String REPORTING_USER = "reportingUser";
 
 	@DatabaseField(foreign = true, foreignAutoRefresh=true, canBeNull = false, maxForeignAutoRefreshLevel = 3)
 	private Person person;
@@ -56,6 +57,9 @@ public class Case extends AbstractDomainObject {
 
 	@Enumerated(EnumType.STRING)
 	private Disease disease;
+
+	@Column(length=512)
+	private String diseaseDetails;
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
@@ -107,6 +111,12 @@ public class Case extends AbstractDomainObject {
 	@Enumerated(EnumType.STRING)
 	private VaccinationInfoSource measlesVaccinationInfoSource;
 
+	@Enumerated(EnumType.STRING)
+	private Vaccination yellowFeverVaccination;
+
+	@Enumerated(EnumType.STRING)
+	private VaccinationInfoSource yellowFeverVaccinationInfoSource;
+
 	@Column(length=512)
 	private String epidNumber;
 
@@ -145,7 +155,14 @@ public class Case extends AbstractDomainObject {
 	public void setDisease(Disease disease) {
 		this.disease = disease;
 	}
-	
+
+	public String getDiseaseDetails() {
+		return diseaseDetails;
+	}
+	public void setDiseaseDetails(String diseaseDetails) {
+		this.diseaseDetails = diseaseDetails;
+	}
+
 	public CaseClassification getCaseClassification() {
 		return caseClassification;
 	}
@@ -268,6 +285,22 @@ public class Case extends AbstractDomainObject {
 
 	public void setMeaslesVaccinationInfoSource(VaccinationInfoSource measlesVaccinationInfoSource) {
 		this.measlesVaccinationInfoSource = measlesVaccinationInfoSource;
+	}
+
+	public Vaccination getYellowFeverVaccination() {
+		return yellowFeverVaccination;
+	}
+
+	public void setYellowFeverVaccination(Vaccination yellowFeverVaccination) {
+		this.yellowFeverVaccination = yellowFeverVaccination;
+	}
+
+	public VaccinationInfoSource getYellowFeverVaccinationInfoSource() {
+		return yellowFeverVaccinationInfoSource;
+	}
+
+	public void setYellowFeverVaccinationInfoSource(VaccinationInfoSource yellowFeverVaccinationInfoSource) {
+		this.yellowFeverVaccinationInfoSource = yellowFeverVaccinationInfoSource;
 	}
 
 	public String getEpidNumber() {

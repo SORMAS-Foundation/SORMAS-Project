@@ -63,6 +63,8 @@ public final class RetroProvider {
     private SampleFacadeRetro sampleFacadeRetro;
     private SampleTestFacadeRetro sampleTestFacadeRetro;
     private EventParticipantFacadeRetro eventParticipantFacadeRetro;
+    private WeeklyReportFacadeRetro weeklyReportFacadeRetro;
+    private WeeklyReportEntryFacadeRetro weeklyReportEntryFacadeRetro;
 
     private RetroProvider(Context context, Interceptor... additionalInterceptors) throws ApiVersionException, ConnectException, AuthenticatorException {
 
@@ -179,7 +181,12 @@ public final class RetroProvider {
             throw new ConnectException(context.getResources().getString(R.string.snackbar_no_connection));
         }
 
-        instance = new RetroProvider(context);
+        try {
+            instance = new RetroProvider(context);
+        } catch (Exception e){
+            instance = null;
+            throw e;
+        }
     }
 
     public static void disconnect() {
@@ -342,6 +349,28 @@ public final class RetroProvider {
             }
         }
         return instance.eventParticipantFacadeRetro;
+    }
+
+    public static WeeklyReportFacadeRetro getWeeklyReportFacade() {
+        if (instance.weeklyReportFacadeRetro == null) {
+            synchronized ((RetroProvider.class)) {
+                if (instance.weeklyReportFacadeRetro == null) {
+                    instance.weeklyReportFacadeRetro = instance.retrofit.create(WeeklyReportFacadeRetro.class);
+                }
+            }
+        }
+        return instance.weeklyReportFacadeRetro;
+    }
+
+    public static WeeklyReportEntryFacadeRetro getWeeklyReportEntryFacade() {
+        if (instance.weeklyReportEntryFacadeRetro == null) {
+            synchronized ((RetroProvider.class)) {
+                if (instance.weeklyReportEntryFacadeRetro == null) {
+                    instance.weeklyReportEntryFacadeRetro = instance.retrofit.create(WeeklyReportEntryFacadeRetro.class);
+                }
+            }
+        }
+        return instance.weeklyReportEntryFacadeRetro;
     }
 
     public static class ApiVersionException extends Exception {

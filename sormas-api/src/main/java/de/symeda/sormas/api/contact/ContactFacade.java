@@ -37,4 +37,6 @@ public interface ContactFacade {
 	void generateContactFollowUpTasks();
 
 	List<ContactDto> getByUuids(List<String> uuids);
+	
+	List<ContactMapDto> getMapContacts(Date fromDate, Date toDate, Disease disease, String userUuid);
 }

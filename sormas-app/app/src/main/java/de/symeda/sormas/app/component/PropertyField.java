@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.text.Html;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.LinearLayout;
@@ -88,55 +89,25 @@ public abstract class PropertyField<T> extends LinearLayout {
     }
 
     public void addCaptionOnClickListener() {
-        caption.setOnFocusChangeListener(new OnFocusChangeListener() {
+        caption.setOnTouchListener(new OnTouchListener() {
             @Override
-            public void onFocusChange(View view, boolean b) {
-                if (caption != null && b) {
-                    if (caption.getError() == null && getDescription() != null && !getDescription().isEmpty()) {
-                        HelpDialog helpDialog = new HelpDialog(getContext());
-                        helpDialog.setMessage(getDescription());
-                        helpDialog.show();
-                    }
-                }
-            }
-        });
-
-        caption.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (caption != null) {
+            public boolean onTouch(View v, MotionEvent e) {
+                if (caption != null && e.getAction() == MotionEvent.ACTION_UP) {
                     if (caption.getError() != null) {
-                        caption.clearFocus();
+                        if (caption.isFocused()) {
+                            caption.clearFocus(); // closes error popup
+                            return true;
+                        }
                     } else if (getDescription() != null && !getDescription().isEmpty()) {
                         HelpDialog helpDialog = new HelpDialog(getContext());
                         helpDialog.setMessage(getDescription());
                         helpDialog.show();
+                        return true;
                     }
                 }
+                return false;
             }
         });
-
-//        if(getDescription() != null && !getDescription().isEmpty()) {
-//            if (caption != null) {
-//                caption.setOnClickListener(new OnClickListener() {
-//                    @Override
-//                    public void onClick(View v) {
-//                        HelpDialog helpDialog = new HelpDialog(getContext());
-//                        helpDialog.setMessage(getDescription());
-//                        helpDialog.show();
-//                    }
-//                });
-//            }
-//        }
-//
-//        }
-    }
-
-    public void addCaptionHintIfDescription() {
-//        String description = getDescription();
-//        if(description != null && !description.isEmpty()) {
-//            caption.append(" \uFE56");
-//        }
     }
 
     public void hideKeyboard(View view) {

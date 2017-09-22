@@ -1,6 +1,9 @@
 package de.symeda.sormas.app.caze;
 
+import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -13,13 +16,19 @@ import android.view.MenuItem;
 import java.util.Date;
 import java.util.List;
 
+import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.AbstractRootTabActivity;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.person.PersonDao;
+import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.UserReportDialog;
+import de.symeda.sormas.app.reports.ReportsActivity;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.util.SyncCallback;
@@ -83,7 +92,15 @@ public class CasesActivity extends AbstractRootTabActivity {
                 return true;
 
             case R.id.action_new_case:
-                showCaseNewView();
+                EpiWeek lastEpiWeek = DateHelper.getPreviousEpiWeek(new Date());
+                User user = ConfigProvider.getUser();
+                if (user.getUserRole() == UserRole.INFORMANT && DatabaseHelper.getWeeklyReportDao().queryForEpiWeek(lastEpiWeek, ConfigProvider.getUser()) == null) {
+                    AlertDialog noLastWeeklyReportDialog = buildNoLastWeeklyReportDialog();
+                    noLastWeeklyReportDialog.show();
+                } else {
+                    showCaseNewView();
+                }
+
                 return true;
 
             default:
@@ -91,5 +108,32 @@ public class CasesActivity extends AbstractRootTabActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private AlertDialog buildNoLastWeeklyReportDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.alert_missing_report);
+        builder.setTitle(R.string.alert_title_missing_report);
+        builder.setIcon(R.drawable.ic_info_outline_black_24dp);
+        AlertDialog dialog = builder.create();
+        dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.action_open_reports),
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(CasesActivity.this, ReportsActivity.class);
+                        startActivity(intent);
+                    }
+                }
+        );
+        dialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.action_close),
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                }
+        );
+
+        return dialog;
     }
 }

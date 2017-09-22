@@ -107,7 +107,6 @@ public class I18nProperties {
 		return result;
 	}
 
-
 	private I18nProperties() {
 		fieldCaptionProperties = loadProperties("/fieldCaptions.properties");
 		fieldDescriptionProperties = loadProperties("/fieldDescriptions.properties");

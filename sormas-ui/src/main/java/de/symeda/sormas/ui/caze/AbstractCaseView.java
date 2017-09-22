@@ -2,6 +2,7 @@ package de.symeda.sormas.ui.caze;
 
 import com.vaadin.ui.Label;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -36,7 +37,7 @@ public abstract class AbstractCaseView extends AbstractSubNavigationView {
 		infoLabel.setValue(caseRef.getCaption());
 		
 		CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(params);
-		infoLabelSub.setValue(caseDto.getDisease().toString());
+		infoLabelSub.setValue(caseDto.getDisease().toString() + (caseDto.getDisease() == Disease.OTHER ? " (" + caseDto.getDiseaseDetails() + ")" : ""));
     }
 
 	public CaseReferenceDto getCaseRef() {

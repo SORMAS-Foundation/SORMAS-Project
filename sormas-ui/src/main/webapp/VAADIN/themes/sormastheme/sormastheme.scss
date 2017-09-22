@@ -163,6 +163,19 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
   	background-color: #fafafa;
   }
   
+  /* "hack" to hide map tiles in google maps component */
+  .googlemap.no-tiles img {
+    opacity: 0.2;
+    filter: alpha(opacity=20); /* For IE8 and earlier */
+  } 
+  .googlemap.no-tiles .gmnoprint img {
+    opacity: inherit;    
+    filter: inherit;
+  }
+  .googlemap gm-style {
+    background-color: white;
+  } 
+  
   .valo-content {
   	overflow: auto;
   }

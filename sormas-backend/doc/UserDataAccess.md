@@ -45,3 +45,12 @@ In general synchronization is based on the following rules:
 * all persons of the cases the user can access
 * all persons of the contacts the user can access
 * all persons of the events the user can access
+
+# WeeklyReports
+* whoever created the weekly report
+* national users see all weekly reports in the database
+* supervisors see all weekly reports from facilities in their region
+* officers see all weekly reports from facilities in their district
+
+# WeeklyReportEntries
+* users can see all weekly report entries associated with weekly reports they can access

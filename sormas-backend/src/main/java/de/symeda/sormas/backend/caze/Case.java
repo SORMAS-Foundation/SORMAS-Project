@@ -47,6 +47,7 @@ public class Case extends AbstractDomainObject {
 	public static final String INVESTIGATION_STATUS = "investigationStatus";
 	public static final String PERSON = "person";
 	public static final String DISEASE = "disease";
+	public static final String DISEASE_DETAILS = "diseaseDetails";
 	public static final String HEALTH_FACILITY = "healthFacility";
 	public static final String HEALTH_FACILITY_DETAILS = "healthFacilityDetails";
 	public static final String REPORTING_USER = "reportingUser";
@@ -65,6 +66,8 @@ public class Case extends AbstractDomainObject {
 	public static final String MEASLES_VACCINATION = "measlesVaccination";
 	public static final String MEASLES_DOSES = "measlesDoses";
 	public static final String MEASLES_VACCINATION_INFO_SOURCE = "measlesVaccinationInfoSource";
+	public static final String YELLOW_FEVER_VACCINATION = "yellowFeverVaccination";
+	public static final String YELLOW_FEVER_VACCINATION_INFO_SOURCE = "yellowFeverVaccinationInfoSource";
 	public static final String EPID_NUMBER = "epidNumber";
 	public static final String REPORT_LAT = "reportLat";
 	public static final String REPORT_LON = "reportLon";
@@ -72,6 +75,7 @@ public class Case extends AbstractDomainObject {
 	private Person person;
 	private String description;
 	private Disease disease;
+	private String diseaseDetails;
 	private CaseClassification caseClassification;
 	private InvestigationStatus investigationStatus;
 	private Hospitalization hospitalization;
@@ -103,6 +107,9 @@ public class Case extends AbstractDomainObject {
 	private String measlesDoses;
 	private VaccinationInfoSource measlesVaccinationInfoSource;
 	
+	private Vaccination yellowFeverVaccination;
+	private VaccinationInfoSource yellowFeverVaccinationInfoSource;
+	
 	private String epidNumber;
 	
 	private Float reportLat;
@@ -133,6 +140,15 @@ public class Case extends AbstractDomainObject {
 	}
 	public void setDisease(Disease disease) {
 		this.disease = disease;
+	}
+
+	@Column(length=512)
+	public String getDiseaseDetails() {
+		return diseaseDetails;
+	}
+
+	public void setDiseaseDetails(String diseaseDetails) {
+		this.diseaseDetails = diseaseDetails;
 	}
 	
 	@Enumerated(EnumType.STRING)
@@ -346,6 +362,22 @@ public class Case extends AbstractDomainObject {
 		this.measlesVaccinationInfoSource = measlesVaccinationInfoSource;
 	}
 
+	@Enumerated(EnumType.STRING)
+	public Vaccination getYellowFeverVaccination() {
+		return yellowFeverVaccination;
+	}
+	public void setYellowFeverVaccination(Vaccination yellowFeverVaccination) {
+		this.yellowFeverVaccination = yellowFeverVaccination;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public VaccinationInfoSource getYellowFeverVaccinationInfoSource() {
+		return yellowFeverVaccinationInfoSource;
+	}
+	public void setYellowFeverVaccinationInfoSource(VaccinationInfoSource yellowFeverVaccinationInfoSource) {
+		this.yellowFeverVaccinationInfoSource = yellowFeverVaccinationInfoSource;
+	}
+	
 	@Column(length = 512)
 	public String getEpidNumber() {
 		return epidNumber;

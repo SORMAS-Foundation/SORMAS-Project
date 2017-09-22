@@ -26,6 +26,7 @@ import de.symeda.sormas.app.caze.CasesActivity;
 import de.symeda.sormas.app.component.SyncLogDialog;
 import de.symeda.sormas.app.contact.ContactsActivity;
 import de.symeda.sormas.app.event.EventsActivity;
+import de.symeda.sormas.app.reports.ReportsActivity;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.sample.SamplesActivity;
@@ -52,6 +53,7 @@ public abstract class AbstractRootTabActivity extends AbstractTabActivity {
                 getResources().getString(R.string.main_menu_contacts),
                 getResources().getString(R.string.main_menu_events),
                 getResources().getString(R.string.main_menu_samples),
+                getResources().getString(R.string.main_menu_reports),
                 getResources().getString(R.string.main_menu_settings),
                 getResources().getString(R.string.main_menu_sync_all)
         };
@@ -177,6 +179,11 @@ public abstract class AbstractRootTabActivity extends AbstractTabActivity {
         startActivity(intent);
     }
 
+    public void showReportsView() {
+        Intent intent = new Intent(this, ReportsActivity.class);
+        startActivity(intent);
+    }
+
     public void showSettingsView() {
         Intent intent = new Intent(this, SettingsActivity.class);
         startActivity(intent);
@@ -203,11 +210,14 @@ public abstract class AbstractRootTabActivity extends AbstractTabActivity {
                 showSamplesView();
                 break;
             case 5:
+                showReportsView();
+                break;
+            case 6:
                 showSettingsView();
                 // don't keep this button selected
                 menuDrawerList.clearChoices();
                 break;
-            case 6:
+            case 7:
                 synchronizeCompleteData();
                 // don't keep this button selected
                 menuDrawerList.clearChoices();

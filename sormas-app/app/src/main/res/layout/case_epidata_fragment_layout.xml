@@ -138,7 +138,7 @@
                 android:value="@={epiData.poultry}" />
 
             <de.symeda.sormas.app.component.TextField
-                android:id="@+id/epiData_1poultryDetails"
+                android:id="@+id/epiData_poultryDetails"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingTop="@dimen/field_padding"
@@ -147,14 +147,14 @@
                 android:value="@={epiData.poultryDetails}"/>
 
             <de.symeda.sormas.app.component.YesNoUnknownVerticalField
-                android:id="@+id/epiData_2poultrySick"
+                android:id="@+id/epiData_poultrySick"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="0.5"
                 android:value="@={epiData.poultrySick}" />
 
             <de.symeda.sormas.app.component.TextField
-                android:id="@+id/epiData_3poultrySickDetails"
+                android:id="@+id/epiData_poultrySickDetails"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingTop="@dimen/field_padding"
@@ -163,7 +163,7 @@
                 android:value="@={epiData.poultrySickDetails}"/>
 
             <de.symeda.sormas.app.component.DateField
-                android:id="@+id/epiData_4poultryDate"
+                android:id="@+id/epiData_poultryDate"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.5"
@@ -172,7 +172,7 @@
                 android:value="@={epiData.poultryDate}" />
 
             <de.symeda.sormas.app.component.TextField
-                android:id="@+id/epiData_5poultryLocation"
+                android:id="@+id/epiData_poultryLocation"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingTop="@dimen/field_padding"
@@ -195,7 +195,7 @@
                 android:value="@={epiData.otherAnimals}" />
 
             <de.symeda.sormas.app.component.TextField
-                android:id="@+id/epiData_1otherAnimalsDetails"
+                android:id="@+id/epiData_otherAnimalsDetails"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingTop="@dimen/field_padding"
@@ -211,7 +211,7 @@
                 android:value="@={epiData.wildbirds}" />
 
             <de.symeda.sormas.app.component.TextField
-                android:id="@+id/epiData_2wildbirdsDetails"
+                android:id="@+id/epiData_wildbirdsDetails"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingTop="@dimen/field_padding"
@@ -220,7 +220,7 @@
                 android:value="@={epiData.wildbirdsDetails}"/>
 
             <de.symeda.sormas.app.component.DateField
-                android:id="@+id/epiData_3wildbirdsDate"
+                android:id="@+id/epiData_wildbirdsDate"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.5"
@@ -229,7 +229,7 @@
                 android:value="@={epiData.wildbirdsDate}" />
 
             <de.symeda.sormas.app.component.TextField
-                android:id="@+id/epiData_4wildbirdsLocation"
+                android:id="@+id/epiData_wildbirdsLocation"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingTop="@dimen/field_padding"
@@ -259,7 +259,7 @@
                 android:value="@={epiData.waterSource}"/>
 
             <de.symeda.sormas.app.component.TextField
-                android:id="@+id/epiData_5waterSourceOther"
+                android:id="@+id/epiData_waterSourceOther"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingTop="@dimen/field_padding"
@@ -275,7 +275,7 @@
                 android:value="@={epiData.waterBody}" />
 
             <de.symeda.sormas.app.component.TextField
-                android:id="@+id/epiData_6waterBodyDetails"
+                android:id="@+id/epiData_waterBodyDetails"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingTop="@dimen/field_padding"

@@ -1,14 +1,11 @@
 package de.symeda.auditlog.api.sample;
 
 import de.symeda.auditlog.api.Audited;
-import de.symeda.auditlog.api.AuditedEntity;
 import de.symeda.auditlog.api.AuditedIgnore;
-import de.symeda.auditlog.api.value.DefaultValueContainer;
-import de.symeda.auditlog.api.value.ValueContainer;
-import de.symeda.auditlog.api.value.format.DefaultValueFormatter;
+import de.symeda.auditlog.api.HasUuid;
 
 @Audited
-public class Entity implements AuditedEntity {
+public class Entity implements HasUuid {
 
 	public static final String STRING = "string";
 	public static final String INTEGER = "integer";
@@ -16,17 +13,17 @@ public class Entity implements AuditedEntity {
 
 	private final String uuid;
 
-	private final int integer;
-	private final Boolean flag;
-	private final String string;
+	private int integer;
+	private Boolean flag;
+	private String string;
 
 	public Entity(String uuid, Boolean flag, String string, int integer) {
 
 		this.uuid = uuid;
 
-		this.flag = flag;
-		this.string = string;
-		this.integer = integer;
+		this.setFlag(flag);
+		this.setString(string);
+		this.setInteger(integer);
 	}
 
 	@Override
@@ -48,16 +45,15 @@ public class Entity implements AuditedEntity {
 		return integer;
 	}
 
-	@Override
-	public ValueContainer inspectAttributes() {
-
-		DefaultValueContainer container = new DefaultValueContainer();
-
-		container.put(FLAG, flag, new DefaultValueFormatter());
-		container.put(STRING, string);
-		container.put(INTEGER, integer);
-
-		return container;
+	public void setInteger(int integer) {
+		this.integer = integer;
 	}
 
+	public void setFlag(Boolean flag) {
+		this.flag = flag;
+	}
+
+	public void setString(String string) {
+		this.string = string;
+	}
 }
