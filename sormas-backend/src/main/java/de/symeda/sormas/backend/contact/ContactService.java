@@ -106,6 +106,33 @@ public class ContactService extends AbstractAdoService<Contact> {
 		List<Contact> result = em.createQuery(cq).getResultList();
 		return result;
 	}	
+	
+	public List<Contact> getMapContacts(Date fromDate, Date toDate, Disease disease, User user) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Contact> cq = cb.createQuery(getElementClass());
+		Root<Contact> from = cq.from(getElementClass());
+		
+		Predicate filter = createUserFilter(cb, cq, from, user);
+		if (fromDate != null || toDate != null) {
+			Predicate dateFilter = cb.isNotNull(from.get(Contact.REPORT_DATE_TIME));
+			if (fromDate != null) {
+				dateFilter = cb.and(dateFilter, cb.greaterThanOrEqualTo(from.get(Contact.REPORT_DATE_TIME), fromDate));
+			}
+			if (toDate != null) {
+				dateFilter = cb.and(dateFilter, cb.lessThanOrEqualTo(from.get(Contact.REPORT_DATE_TIME), toDate));
+			}
+			filter = cb.and(filter, dateFilter);
+		}
+		if (disease != null) {
+			Join<Contact, Case> contactCase = from.join(Contact.CAZE);
+			Predicate diseaseFilter = cb.equal(contactCase.get(Case.DISEASE), disease);
+			filter = cb.and(filter, diseaseFilter);
+		}	
+		// Only retrieve contacts that are currently under follow-up
+		filter = cb.and(filter, cb.equal(from.get(Contact.FOLLOW_UP_STATUS), FollowUpStatus.FOLLOW_UP));
+		cq.where(filter);
+		return em.createQuery(cq).getResultList();
+	}
 
 	public int getFollowUpDuration(Disease disease) {
 		switch (disease) {

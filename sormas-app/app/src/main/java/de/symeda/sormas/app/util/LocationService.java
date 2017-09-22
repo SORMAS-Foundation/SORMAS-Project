@@ -94,6 +94,9 @@ public class LocationService {
             };
 
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_CHANGE, MIN_DISTANCE_CHANGE, locationListener, Looper.getMainLooper());
+
+            // Request initial GPS location
+            locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, locationListener, Looper.getMainLooper());
         } catch (SecurityException e) {
             Log.e(getClass().getName(), "Error while initializing LocationService", e);
         }

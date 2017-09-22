@@ -27,8 +27,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.contact.ContactDto;
-import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.contact.ContactMapDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.region.GeoLatLon;
@@ -36,7 +35,6 @@ import de.symeda.sormas.api.region.RegionDataDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -54,13 +52,13 @@ public class MapComponent extends VerticalLayout {
 	
 	private final HashMap<GoogleMapMarker, FacilityDto> markerCaseFacilities = new HashMap<GoogleMapMarker, FacilityDto>();
 	private final HashMap<GoogleMapMarker, CaseDataDto> markerCases = new HashMap<GoogleMapMarker, CaseDataDto>();
-	private final HashMap<GoogleMapMarker, ContactDto> markerContacts = new HashMap<GoogleMapMarker, ContactDto>();
+	private final HashMap<GoogleMapMarker, ContactMapDto> markerContacts = new HashMap<GoogleMapMarker, ContactMapDto>();
 	
 	private final HashMap<RegionDataDto, GoogleMapPolygon> regionPolygons = new HashMap<RegionDataDto, GoogleMapPolygon>();
 	
 	private final HashMap<FacilityReferenceDto, List<CaseDataDto>> facilitiesCasesMaps = new HashMap<>();
 	private final List<CaseDataDto> mapCases = new ArrayList<>();
-	private final List<ContactDto> mapContacts = new ArrayList<>();
+	private final List<ContactMapDto> mapContacts = new ArrayList<>();
     
     public MapComponent() {    	
 		map = new GoogleMap("AIzaSyAaJpN8a_NhEU-02-t5uVi02cAaZtKafkw", null, null);
@@ -91,7 +89,7 @@ public class MapComponent extends VerticalLayout {
             public void markerClicked(GoogleMapMarker clickedMarker) {
             	FacilityDto facility = markerCaseFacilities.get(clickedMarker);
             	CaseDataDto caze = markerCases.get(clickedMarker);
-            	ContactDto contact = markerContacts.get(clickedMarker);
+            	ContactMapDto contact = markerContacts.get(clickedMarker);
             	
             	if (facility != null) {
                 	VerticalLayout layout = new VerticalLayout();
@@ -325,11 +323,11 @@ public class MapComponent extends VerticalLayout {
     	mapContacts.clear();
     }
 
-    public void showContactMarkers(List<ContactDto> contacts) {
+    public void showContactMarkers(List<ContactMapDto> contacts) {
 
     	clearContactMarkers();
 
-    	for (ContactDto contact : contacts) {
+    	for (ContactMapDto contact : contacts) {
     		if (contact.getReportLat() == null || contact.getReportLon() == null) {
     			continue;
     		}
@@ -337,17 +335,15 @@ public class MapComponent extends VerticalLayout {
     		LatLon latLon = new LatLon(contact.getReportLat(), contact.getReportLon());
     		MapIcon icon;
     		
-    		if (contact.getFollowUpStatus() == FollowUpStatus.NO_FOLLOW_UP) {
-    			icon = MapIcon.GREY_CONTACT;
-    		} else {
-        		long hoursSinceLastCooperativeVisit = FacadeProvider.getContactFacade().getHoursSinceLastCooperativeVisit(contact, VisitStatus.COOPERATIVE);
-        		if (hoursSinceLastCooperativeVisit < 0 || hoursSinceLastCooperativeVisit > 48) {
-        			icon = MapIcon.RED_CONTACT;
-        		} else if (hoursSinceLastCooperativeVisit > 24) {
-        			icon = MapIcon.ORANGE_CONTACT;
-        		} else {
-        			icon = MapIcon.GREEN_CONTACT;
-        		}
+    		long currentTime = new Date().getTime();
+    		long visitTime = contact.getLastVisitDateTime() != null ? contact.getLastVisitDateTime().getTime() : 0;
+    		// 1000 ms = 1 second; 3600 seconds = 1 hour
+    		if (currentTime - visitTime >= 1000 * 3600 * 48) {				
+        		icon = MapIcon.RED_CONTACT;
+        	} else if (currentTime - visitTime >= 1000 * 3600 * 24) {
+        		icon = MapIcon.ORANGE_CONTACT;
+        	} else {
+        		icon = MapIcon.GREEN_CONTACT;
         	}
     		
     		GoogleMapMarker marker = new GoogleMapMarker(contact.toString(), latLon, false, icon.getUrl());
@@ -423,15 +419,4 @@ public class MapComponent extends VerticalLayout {
     	return casesWithoutGPSTag;
     }
     
-    public List<ContactDto> getContactsWithoutGPSTag() {
-    	List<ContactDto> contactsWithoutGPSTag = new ArrayList<>();
-    	
-    	for (ContactDto contact : mapContacts) {
-    		if (contact.getReportLat() == null || contact.getReportLon() == null) {
-    			contactsWithoutGPSTag.add(contact);
-    		}
-    	}
-    	
-    	return contactsWithoutGPSTag;
-    }
 }

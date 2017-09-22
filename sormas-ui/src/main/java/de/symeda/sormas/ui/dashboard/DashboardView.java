@@ -30,7 +30,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.contact.ContactMapDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.highcharts.HighChart;
@@ -92,7 +92,7 @@ public class DashboardView extends AbstractView {
 	private HighChart epiCurveChart;
 
 	private List<CaseDataDto> cases = new ArrayList<>();
-	private List<ContactDto> contacts = new ArrayList<>();
+	private List<ContactMapDto> contacts = new ArrayList<>();
 
 	private Date fromDate;
 	private Date toDate;
@@ -457,18 +457,11 @@ public class DashboardView extends AbstractView {
 				HorizontalLayout legendLayout = new HorizontalLayout();
 				legendLayout.setWidth(100, Unit.PERCENTAGE);
 	
-				HorizontalLayout legendEntry = createLegendEntry("mapicons/grey-contact.png", I18nProperties.getPrefixFieldCaption(I18N_PREFIX, NO_FOLLOW_UP));
+				HorizontalLayout legendEntry = createLegendEntry("mapicons/green-contact.png", I18nProperties.getPrefixFieldCaption(I18N_PREFIX, VISIT_24_HOURS));
 				legendLayout.addComponent(legendEntry);
 				legendLayout.setComponentAlignment(legendEntry, Alignment.MIDDLE_LEFT);
 				legendLayout.setExpandRatio(legendEntry, 0);
 				Label spacer = new Label();
-				spacer.setWidth(6, Unit.PIXELS);
-				legendLayout.addComponent(spacer);
-				legendEntry = createLegendEntry("mapicons/green-contact.png", I18nProperties.getPrefixFieldCaption(I18N_PREFIX, VISIT_24_HOURS));
-				legendLayout.addComponent(legendEntry);
-				legendLayout.setComponentAlignment(legendEntry, Alignment.MIDDLE_LEFT);
-				legendLayout.setExpandRatio(legendEntry, 0);
-				spacer = new Label();
 				spacer.setWidth(6, Unit.PIXELS);
 				legendLayout.addComponent(spacer);
 				legendEntry = createLegendEntry("mapicons/orange-contact.png", I18nProperties.getPrefixFieldCaption(I18N_PREFIX, VISIT_48_HOURS));
@@ -596,9 +589,7 @@ public class DashboardView extends AbstractView {
 		// Update the cases and contacts lists according to the filters
 		String userUuid = LoginHelper.getCurrentUser().getUuid();
 		cases = FacadeProvider.getCaseFacade().getAllCasesBetween(fromDate, toDate, disease, userUuid);
-		for (CaseDataDto caze : cases) {
-			contacts.addAll(FacadeProvider.getContactFacade().getAllByCase(FacadeProvider.getCaseFacade().getReferenceByUuid(caze.getUuid())));
-		}
+		contacts = FacadeProvider.getContactFacade().getMapContacts(fromDate, toDate, disease, userUuid);
 
 		// Update cases and contacts shown on the map
 		refreshMap();
@@ -624,7 +615,7 @@ public class DashboardView extends AbstractView {
 		
 		if (showCases || showContacts) {
 			List<CaseDataDto> casesForMap;
-			List<ContactDto> contactsForMap;
+			List<ContactMapDto> contactsForMap;
 
 			// If the "use date filter for map" check box is not checked, use a list of all cases and contacts irrespective of the dates instead
 			if (useDateFilterForMap) {
@@ -634,10 +625,7 @@ public class DashboardView extends AbstractView {
 				String userUuid = LoginHelper.getCurrentUser().getUuid();
 				casesForMap = FacadeProvider.getCaseFacade().getAllCasesByDisease(disease, userUuid);
 				if (showContacts) {
-					contactsForMap = new ArrayList<>();
-					for (CaseDataDto caze : casesForMap) {
-						contactsForMap.addAll(FacadeProvider.getContactFacade().getAllByCase(FacadeProvider.getCaseFacade().getReferenceByUuid(caze.getUuid())));
-					}
+					contactsForMap = FacadeProvider.getContactFacade().getMapContacts(null, null, disease, userUuid);
 				} else {
 					contactsForMap = null;
 				}
