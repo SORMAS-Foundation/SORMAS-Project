@@ -81,27 +81,31 @@ public class CaseService extends AbstractAdoService<Case> {
 		return resultList;
 	}
 	
-	public List<Case> getAllBetween(Date fromDate, Date toDate, Disease disease, User user) {
+	public List<Case> getAllBetween(Date onsetFromDate, Date onsetToDate, Disease disease, User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Case> cq = cb.createQuery(getElementClass());
 		Root<Case> from = cq.from(getElementClass());
 		
 		Predicate filter = createUserFilter(cb, cq, from, user);
-		Join<Case, Symptoms> symptoms = from.join(Case.SYMPTOMS);
-		Predicate dateFilter = cb.isNotNull(symptoms.get(Symptoms.ONSET_DATE));
-		dateFilter = cb.and(dateFilter, cb.greaterThanOrEqualTo(symptoms.get(Symptoms.ONSET_DATE), fromDate));
-		dateFilter = cb.and(dateFilter, cb.lessThanOrEqualTo(symptoms.get(Symptoms.ONSET_DATE), toDate));
-		
-		if (filter != null) {
-			filter = cb.and(filter, dateFilter);
-		} else {
+		if (onsetFromDate != null || onsetToDate != null) {
+			Join<Case, Symptoms> symptoms = from.join(Case.SYMPTOMS);
+			Predicate dateFilter = cb.isNotNull(symptoms.get(Symptoms.ONSET_DATE));
+			if (onsetFromDate != null) {
+				dateFilter = cb.and(dateFilter, cb.greaterThanOrEqualTo(symptoms.get(Symptoms.ONSET_DATE), onsetFromDate));
+			}
+			if (onsetToDate != null) {
+				dateFilter = cb.and(dateFilter, cb.lessThanOrEqualTo(symptoms.get(Symptoms.ONSET_DATE), onsetToDate));
+			}
 			filter = dateFilter;
 		}
-		
-		if (filter != null && disease != null) {
-			filter = cb.and(filter, cb.equal(from.get(Case.DISEASE), disease));
-		}
-		
+		if (disease != null) {
+			Predicate diseaseFilter = cb.equal(from.get(Case.DISEASE), disease);
+			if (filter != null) {
+				filter = cb.and(filter, diseaseFilter);
+			} else {
+				filter = diseaseFilter;
+			}
+		}		
 		if (filter != null) {
 			cq.where(filter);
 		}
@@ -240,13 +244,40 @@ public class CaseService extends AbstractAdoService<Case> {
 		}
 	}	
 	
-	public Map<RegionReferenceDto, Long> getCaseCountPerRegion() {
+	public Map<RegionReferenceDto, Long> getCaseCountPerRegion(Date onsetFromDate, Date onsetToDate, Disease disease) {
+		
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<Case> from = cq.from(getElementClass());
+		
+		Predicate filter = null;		
+		if (onsetFromDate != null || onsetToDate != null) {
+			Join<Case, Symptoms> symptoms = from.join(Case.SYMPTOMS);
+			Predicate dateFilter = cb.isNotNull(symptoms.get(Symptoms.ONSET_DATE));
+			if (onsetFromDate != null) {
+				dateFilter = cb.and(dateFilter, cb.greaterThanOrEqualTo(symptoms.get(Symptoms.ONSET_DATE), onsetFromDate));
+			}
+			if (onsetToDate != null) {
+				dateFilter = cb.and(dateFilter, cb.lessThanOrEqualTo(symptoms.get(Symptoms.ONSET_DATE), onsetToDate));
+			}
+			filter = dateFilter;
+		}
+		if (disease != null) {
+			Predicate diseaseFilter = cb.equal(from.get(Case.DISEASE), disease);
+			if (filter != null) {
+				filter = cb.and(filter, diseaseFilter);
+			} else {
+				filter = diseaseFilter;
+			}
+		}		
+		if (filter != null) {
+			cq.where(filter);
+		}
+		
 		cq.groupBy(from.get(Case.REGION));
 		cq.multiselect(from.get(Case.REGION), cb.count(from));
 		List<Object[]> results = em.createQuery(cq).getResultList();
+		
 		Map<RegionReferenceDto, Long> resultMap = results.stream().collect(
 				Collectors.toMap(e -> RegionFacadeEjb.toReferenceDto((Region)e[0]), e -> (Long)e[1]));
 		return resultMap;

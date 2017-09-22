@@ -39,6 +39,9 @@ import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
+/**
+ * TODO THIS NEEDS A REFACTORING!
+ */
 @SuppressWarnings("serial")
 public class DashboardView extends AbstractView {
 
@@ -98,6 +101,7 @@ public class DashboardView extends AbstractView {
 	private boolean showCases;
 	private boolean showContacts;
 	private boolean showRegions;
+	private RegionMapVisualization regionMapVisualization = RegionMapVisualization.CASE_COUNT;
 
 	public DashboardView() {
 		setSizeFull();
@@ -277,6 +281,9 @@ public class DashboardView extends AbstractView {
 		return layout;
 	}
 
+	/**
+	 * TODO THIS NEEDS A REFACTORING!
+	 */
 	private VerticalLayout createMapLayout(ClickListener expandListener, ClickListener collapseListener) {
 		// Initialize layouts (needs to be done here for the button listener below
 		VerticalLayout mapLayout = new VerticalLayout();
@@ -486,35 +493,86 @@ public class DashboardView extends AbstractView {
 			{
 				mapRegionsFooterLayout.setWidth(100, Unit.PERCENTAGE);
 				mapRegionsFooterLayout.setSpacing(true);
-	
+				
 				HorizontalLayout legendLayout = new HorizontalLayout();
 				legendLayout.setWidth(100, Unit.PERCENTAGE);
-	
-				HorizontalLayout legendEntry = createLegendEntry("mapicons/yellow-region-small.png", "<= 0.5 Cases / 10.000");
-				legendLayout.addComponent(legendEntry);
-				legendLayout.setComponentAlignment(legendEntry, Alignment.MIDDLE_LEFT);
-				legendLayout.setExpandRatio(legendEntry, 0);
-				Label spacer = new Label();
-				spacer.setWidth(6, Unit.PIXELS);
-				legendLayout.addComponent(spacer);
-				legendEntry = createLegendEntry("mapicons/orange-region-small.png", "0.6 - 1 Cases / 10.000");
-				legendLayout.addComponent(legendEntry);
-				legendLayout.setComponentAlignment(legendEntry, Alignment.MIDDLE_LEFT);
-				legendLayout.setExpandRatio(legendEntry, 0);
-				spacer = new Label();
-				spacer.setWidth(6, Unit.PIXELS);
-				legendLayout.addComponent(spacer);
-				legendEntry = createLegendEntry("mapicons/red-region-small.png", "> 1 Cases / 10.000");
-				legendLayout.addComponent(legendEntry);
-				legendLayout.setComponentAlignment(legendEntry, Alignment.MIDDLE_LEFT);
-				legendLayout.setExpandRatio(legendEntry, 1);
+				
+				ComboBox regionMapVisualizationSelect = new ComboBox();
+				regionMapVisualizationSelect.setSizeUndefined();
+				regionMapVisualizationSelect.addItems(RegionMapVisualization.values());
+				regionMapVisualizationSelect.setValue(regionMapVisualization);
+				regionMapVisualizationSelect.setNullSelectionAllowed(false);
+				regionMapVisualizationSelect.addValueChangeListener(event -> {
+					regionMapVisualization = (RegionMapVisualization)event.getProperty().getValue();
+					refreshMap();
+					legendLayout.removeAllComponents();
+					fillRegionMapLegend(legendLayout);
+				});
+				mapRegionsFooterLayout.addComponent(regionMapVisualizationSelect);
+				mapRegionsFooterLayout.setComponentAlignment(regionMapVisualizationSelect, Alignment.MIDDLE_LEFT);
+				mapRegionsFooterLayout.setExpandRatio(regionMapVisualizationSelect, 0);
+					
+				fillRegionMapLegend(legendLayout);
+				
 				mapRegionsFooterLayout.addComponent(legendLayout);
+				mapRegionsFooterLayout.setComponentAlignment(legendLayout, Alignment.MIDDLE_LEFT);
 				mapRegionsFooterLayout.setExpandRatio(legendLayout, 1);
 			}
 			mapLayout.addComponent(mapRegionsFooterLayout);
 		}
 		
 		return mapLayout;
+	}
+
+	private void fillRegionMapLegend(HorizontalLayout legendLayout) {
+		
+		HorizontalLayout legendEntry;
+		switch (regionMapVisualization) {
+		case CASE_COUNT:
+			legendEntry = createLegendEntry("mapicons/yellow-region-small.png", "1 - 5 cases");
+			break;
+		case CASE_INCIDENCE:
+			legendEntry = createLegendEntry("mapicons/yellow-region-small.png", "<= 0.5 cases / 10.000");
+			break;
+		default: throw new IllegalArgumentException(regionMapVisualization.toString());
+		}
+		legendLayout.addComponent(legendEntry);
+		legendLayout.setComponentAlignment(legendEntry, Alignment.MIDDLE_LEFT);
+		legendLayout.setExpandRatio(legendEntry, 0);
+		
+		Label spacer = new Label();
+		spacer.setWidth(6, Unit.PIXELS);
+		legendLayout.addComponent(spacer);
+		
+		switch (regionMapVisualization) {
+		case CASE_COUNT:
+			legendEntry = createLegendEntry("mapicons/orange-region-small.png", "6 - 10 cases");
+			break;
+		case CASE_INCIDENCE:
+			legendEntry = createLegendEntry("mapicons/orange-region-small.png", "0.6 - 1 cases / 10.000");
+			break;
+		default: throw new IllegalArgumentException(regionMapVisualization.toString());
+		}
+		legendLayout.addComponent(legendEntry);
+		legendLayout.setComponentAlignment(legendEntry, Alignment.MIDDLE_LEFT);
+		legendLayout.setExpandRatio(legendEntry, 0);
+		
+		spacer = new Label();
+		spacer.setWidth(6, Unit.PIXELS);
+		legendLayout.addComponent(spacer);
+		
+		switch (regionMapVisualization) {
+		case CASE_COUNT:
+			legendEntry = createLegendEntry("mapicons/red-region-small.png", "> 10 cases");
+			break;
+		case CASE_INCIDENCE:
+			legendEntry = createLegendEntry("mapicons/red-region-small.png", "> 1 cases / 10.000");
+			break;
+		default: throw new IllegalArgumentException(regionMapVisualization.toString());
+		}				
+		legendLayout.addComponent(legendEntry);
+		legendLayout.setComponentAlignment(legendEntry, Alignment.MIDDLE_LEFT);
+		legendLayout.setExpandRatio(legendEntry, 1);
 	}
 
 	private HorizontalLayout createLegendEntry(String iconThemeResource, String labelCaption) {
@@ -560,7 +618,8 @@ public class DashboardView extends AbstractView {
 		mapComponent.clearContactMarkers();
 		
 		if (showRegions) {
-			mapComponent.showRegionsShapes();
+			mapComponent.showRegionsShapes(regionMapVisualization, 
+					useDateFilterForMap ? fromDate : null, useDateFilterForMap ? toDate : null, disease);
 		}
 		
 		if (showCases || showContacts) {

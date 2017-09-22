@@ -2,6 +2,7 @@ package de.symeda.sormas.ui.dashboard;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -22,6 +23,7 @@ import com.vaadin.tapio.googlemaps.client.overlays.GoogleMapPolygon;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -130,16 +132,18 @@ public class MapComponent extends VerticalLayout {
 			map.removePolygonOverlay(regionPolygon);
 		}
     	regionPolygons.clear();
+    	
+    	map.removeStyleName("no-tiles");
     }
     
-    public void showRegionsShapes() {
+    public void showRegionsShapes(RegionMapVisualization regionMapVisualization, Date onsetFromDate, Date onsetToDate, Disease disease) {
 
-    	//map.addStyleName("no-tiles");
-    	
     	clearRegionShapes();
     	
-	    List<RegionDataDto> regions = FacadeProvider.getRegionFacade().getAllData();
-	    Map<RegionReferenceDto, Long> caseCountPerRegion = FacadeProvider.getCaseFacade().getCaseCountPerRegion();
+    	map.addStyleName("no-tiles");
+
+    	List<RegionDataDto> regions = FacadeProvider.getRegionFacade().getAllData();
+	    Map<RegionReferenceDto, Long> caseCountPerRegion = FacadeProvider.getCaseFacade().getCaseCountPerRegion(onsetFromDate, onsetToDate, disease);
 
 	    for (RegionDataDto region : regions) {
 
@@ -156,19 +160,40 @@ public class MapComponent extends VerticalLayout {
 			    polygon.setStrokeOpacity(0.5);
 	    		
 			    long caseCount = caseCountPerRegion.containsKey(regionRef) ? caseCountPerRegion.get(regionRef) : 0;
-			    float incidence = (float)caseCount / (region.getPopulation() / 10000);
-			    if (incidence == 0) {
-			    	polygon.setFillOpacity(0);
-			    } else if (incidence <= 0.5f) {
-				    polygon.setFillColor("#FFD800");
-				    polygon.setFillOpacity(0.5);
-			    } else if (incidence <= 1) {
-				    polygon.setFillColor("#FF6A00");
-				    polygon.setFillOpacity(0.5);
-			    } else {
-				    polygon.setFillColor("#FF0000");
-				    polygon.setFillOpacity(0.5);
-			    }
+			    switch (regionMapVisualization) {
+				case CASE_COUNT:
+				    if (caseCount == 0) {
+				    	polygon.setFillOpacity(0);
+				    } else if (caseCount <= 5) {
+					    polygon.setFillColor("#FFD800");
+					    polygon.setFillOpacity(0.5);
+				    } else if (caseCount <= 10) {
+					    polygon.setFillColor("#FF6A00");
+					    polygon.setFillOpacity(0.5);
+				    } else {
+					    polygon.setFillColor("#FF0000");
+					    polygon.setFillOpacity(0.5);
+				    }
+					break;
+				case CASE_INCIDENCE:
+				    float incidence = (float)caseCount / (region.getPopulation() / 10000);
+				    if (incidence == 0) {
+				    	polygon.setFillOpacity(0);
+				    } else if (incidence <= 0.5f) {
+					    polygon.setFillColor("#FFD800");
+					    polygon.setFillOpacity(0.5);
+				    } else if (incidence <= 1) {
+					    polygon.setFillColor("#FF6A00");
+					    polygon.setFillOpacity(0.5);
+				    } else {
+					    polygon.setFillColor("#FF0000");
+					    polygon.setFillOpacity(0.5);
+				    }
+					break;
+
+				default:
+					throw new IllegalArgumentException(regionMapVisualization.toString());
+				}
 			    
 			    regionPolygons.put(region, polygon);
 			    map.addPolygonOverlay(polygon);

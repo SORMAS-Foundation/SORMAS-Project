@@ -319,7 +319,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				case 107:
 					currentVersion = 107;
 					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN diseaseDetails varchar(512);");
-					getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMNN diseaseDetails varchar(512);");
+					getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN diseaseDetails varchar(512);");
 
 					// ATTENTION: break should only be done after last version
 					break;

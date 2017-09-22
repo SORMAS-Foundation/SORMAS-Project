@@ -13118,11 +13118,17 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormastheme .googlemap.no-tiles img {
-	visibility: hidden;
+	opacity: 0.2;
+	filter: alpha(opacity=20);
 }
 
 .sormastheme .googlemap.no-tiles .gmnoprint img {
-	visibility: inherit;
+	opacity: inherit;
+	filter: inherit;
+}
+
+.sormastheme .googlemap gm-style {
+	background-color: white;
 }
 
 .sormastheme .valo-content {

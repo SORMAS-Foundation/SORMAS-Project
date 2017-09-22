@@ -466,8 +466,8 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 	
 	@Override
-	public Map<RegionReferenceDto, Long> getCaseCountPerRegion() {
-		return caseService.getCaseCountPerRegion();
+	public Map<RegionReferenceDto, Long> getCaseCountPerRegion(Date onsetFromDate, Date onsetToDate, Disease disease) {
+		return caseService.getCaseCountPerRegion(onsetFromDate, onsetToDate, disease);
 	}
 	
 	@LocalBean

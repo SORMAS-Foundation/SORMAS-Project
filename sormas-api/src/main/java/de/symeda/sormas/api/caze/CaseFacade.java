@@ -39,5 +39,10 @@ public interface CaseFacade {
 
 	List<CaseDataDto> getByUuids(List<String> uuids);
 
-	Map<RegionReferenceDto, Long> getCaseCountPerRegion();
+	/**
+	 * @param onsetFromDate optional
+	 * @param onsetToDate optional
+	 * @param disease optional
+	 */
+	Map<RegionReferenceDto, Long> getCaseCountPerRegion(Date onsetFromDate, Date onsetToDate, Disease disease);
 }
