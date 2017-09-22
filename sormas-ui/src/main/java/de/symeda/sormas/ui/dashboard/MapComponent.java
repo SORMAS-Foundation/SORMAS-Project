@@ -52,9 +52,6 @@ public class MapComponent extends VerticalLayout {
 	
 	private final GoogleMap map;
 	
-	private final LatLon centerKano = new LatLon(11.5636503, 8.4596675);
-	private final LatLon centerOyo = new LatLon(8.110803, 3.625342);
-	
 	private final HashMap<GoogleMapMarker, FacilityDto> markerCaseFacilities = new HashMap<GoogleMapMarker, FacilityDto>();
 	private final HashMap<GoogleMapMarker, CaseDataDto> markerCases = new HashMap<GoogleMapMarker, CaseDataDto>();
 	private final HashMap<GoogleMapMarker, ContactDto> markerContacts = new HashMap<GoogleMapMarker, ContactDto>();
@@ -74,7 +71,10 @@ public class MapComponent extends VerticalLayout {
 		} else {
 	    	UserDto user = LoginHelper.getCurrentUser();
 	    	if (user.getRegion() != null) {
-	    		map.setCenter("Oyo".equals(user.getRegion().getCaption()) ? centerOyo : centerKano);
+				GeoLatLon mapCenter = FacadeProvider.getGeoShapeProvider().getCenterOfRegion(LoginHelper.getCurrentUser().getRegion());
+				map.setCenter(new LatLon(mapCenter.getLon(), mapCenter.getLat()));
+	    	} else {
+				map.setCenter(new LatLon(9.101718, 7.396517));
 	    	}
 	        map.setZoom(9);
 		}

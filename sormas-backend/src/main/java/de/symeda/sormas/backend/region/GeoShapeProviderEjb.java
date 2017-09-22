@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.MultiPolygon;
+import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -51,6 +52,11 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 			}
 		}
 		return null;
+	}
+	
+	public GeoLatLon getCenterOfRegion(RegionReferenceDto region) {
+		Point polygonCenter = regionMultiPolygons.get(region).getCentroid();
+		return new GeoLatLon(polygonCenter.getX(), polygonCenter.getY());
 	}
 
 	@PostConstruct
