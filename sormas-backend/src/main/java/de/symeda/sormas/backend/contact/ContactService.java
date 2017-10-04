@@ -121,7 +121,11 @@ public class ContactService extends AbstractAdoService<Contact> {
 			if (toDate != null) {
 				dateFilter = cb.and(dateFilter, cb.lessThanOrEqualTo(from.get(Contact.REPORT_DATE_TIME), toDate));
 			}
-			filter = cb.and(filter, dateFilter);
+			if (filter != null) {
+				filter = cb.and(filter, dateFilter);
+			} else {
+				filter = dateFilter;
+			}
 		}
 		if (disease != null) {
 			Join<Contact, Case> contactCase = from.join(Contact.CAZE);
@@ -129,7 +133,11 @@ public class ContactService extends AbstractAdoService<Contact> {
 			filter = cb.and(filter, diseaseFilter);
 		}	
 		// Only retrieve contacts that are currently under follow-up
-		filter = cb.and(filter, cb.equal(from.get(Contact.FOLLOW_UP_STATUS), FollowUpStatus.FOLLOW_UP));
+		if (filter != null) {
+			filter = cb.and(filter, cb.equal(from.get(Contact.FOLLOW_UP_STATUS), FollowUpStatus.FOLLOW_UP));
+		} else {
+			filter = cb.equal(from.get(Contact.FOLLOW_UP_STATUS), FollowUpStatus.FOLLOW_UP);
+		}
 		cq.where(filter);
 		return em.createQuery(cq).getResultList();
 	}

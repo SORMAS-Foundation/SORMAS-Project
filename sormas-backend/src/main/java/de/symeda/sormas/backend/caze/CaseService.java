@@ -163,6 +163,8 @@ public class CaseService extends AbstractAdoService<Case> {
 				sampleCaseSubquery.select(sampleRoot.get(Sample.ASSOCIATED_CASE).get(Case.ID));
 				filter = cb.in(casePath.get(Case.ID)).value(sampleCaseSubquery);
 				break;
+			case ADMIN:
+				break;
 				
 			default:
 				throw new IllegalArgumentException(userRole.toString());
