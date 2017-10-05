@@ -15,14 +15,17 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.facility.FacilityDto;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
+import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.FieldHelper;
 import de.symeda.sormas.app.component.PropertyField;
 import de.symeda.sormas.app.component.SpinnerField;
@@ -172,6 +175,16 @@ public class CaseNewForm extends FormTab {
         });
 
         CaseValidator.setRequiredHintsForNewCase(binding);
+
+        binding.caseDataRegion.setEnabled(false);
+        binding.caseDataDistrict.setEnabled(false);
+        User user = ConfigProvider.getUser();
+        if (user.getUserRole() == UserRole.SURVEILLANCE_OFFICER ||
+                user.getUserRole() == UserRole.CASE_OFFICER) {
+            binding.caseDataCommunity.setEnabled(true);
+        } else {
+            binding.caseDataCommunity.setEnabled(false);
+        }
 
         return binding.getRoot();
     }
