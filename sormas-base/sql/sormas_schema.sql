@@ -1750,3 +1750,13 @@ ALTER TABLE cases ADD COLUMN diseasedetails varchar(512);
 ALTER TABLE events ADD COLUMN diseasedetails varchar(512);
 
 INSERT INTO schema_version (version_number, comment) VALUES (69, 'Disease details field #322');
+
+-- 2017-09-25 IllLoction removed from symptoms #347
+ALTER TABLE symptoms DROP COLUMN illlocation_id;
+ALTER TABLE symptoms DROP COLUMN illlocationfrom;
+ALTER TABLE symptoms DROP COLUMN illlocationto;
+ALTER TABLE symptoms_history DROP COLUMN illlocation_id;
+ALTER TABLE symptoms_history DROP COLUMN illlocationfrom;
+ALTER TABLE symptoms_history DROP COLUMN illlocationto;
+
+INSERT INTO schema_version (version_number, comment) VALUES (70, 'IllLocation removed from symptoms #347');

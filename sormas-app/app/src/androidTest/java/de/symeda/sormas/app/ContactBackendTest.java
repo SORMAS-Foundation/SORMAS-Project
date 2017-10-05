@@ -85,11 +85,9 @@ public class ContactBackendTest {
         mergeVisit.setPerson((Person) visit.getPerson().clone());
         mergeVisit.getPerson().setAddress((Location) visit.getPerson().getAddress().clone());
         mergeVisit.setSymptoms((Symptoms) visit.getSymptoms().clone());
-        mergeVisit.getSymptoms().setIllLocation((Location) visit.getSymptoms().getIllLocation().clone());
         mergeVisit.setId(null);
         mergeVisit.getPerson().getAddress().setId(null);
         mergeVisit.getSymptoms().setId(null);
-        mergeVisit.getSymptoms().getIllLocation().setId(null);
 
         mergeVisit.setVisitStatus(VisitStatus.COOPERATIVE);
 

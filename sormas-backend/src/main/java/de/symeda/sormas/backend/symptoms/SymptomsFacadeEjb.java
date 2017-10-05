@@ -9,8 +9,6 @@ import javax.ejb.Stateless;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsFacade;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
-import de.symeda.sormas.backend.location.LocationFacadeEjb;
-import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
 import de.symeda.sormas.backend.util.DtoHelper;
 
 @Stateless(name = "SymptomsFacade")
@@ -18,8 +16,6 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 	
 	@EJB
 	private SymptomsService service;
-	@EJB
-	private LocationFacadeEjbLocal locationFacade;
 
 	public Symptoms fromDto(SymptomsDto dto) {		
 		if (dto == null) {
@@ -91,9 +87,6 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setThrobocytopenia(source.getThrobocytopenia());
 		target.setUnexplainedBleeding(source.getUnexplainedBleeding());
 		target.setVomiting(source.getVomiting());
-		target.setIllLocation(locationFacade.fromDto(source.getIllLocation()));
-		target.setIllLocationFrom(source.getIllLocationFrom());
-		target.setIllLocationTo(source.getIllLocationTo());
 		target.setBackache(source.getBackache());
 		target.setEyesBleeding(source.getEyesBleeding());
 		target.setJaundice(source.getJaundice());
@@ -170,9 +163,6 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setThrobocytopenia(source.getThrobocytopenia());
 		target.setUnexplainedBleeding(source.getUnexplainedBleeding());
 		target.setVomiting(source.getVomiting());
-		target.setIllLocation(LocationFacadeEjb.toDto(source.getIllLocation()));
-		target.setIllLocationFrom(source.getIllLocationFrom());
-		target.setIllLocationTo(source.getIllLocationTo());
 		target.setBackache(source.getBackache());
 		target.setEyesBleeding(source.getEyesBleeding());
 		target.setJaundice(source.getJaundice());

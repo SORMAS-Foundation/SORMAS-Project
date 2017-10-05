@@ -202,23 +202,8 @@ public class SymptomsEditForm extends FormTab {
         });
 
         if (!forVisit) {
-            binding.symptomsIllLocationLayout.setVisibility(View.VISIBLE);
-            // ==================== IllLocation ===============
-            LocationDialog.addLocationField(getActivity(), symptoms.getIllLocation(), binding.symptomsIllLocation, binding.formCpBtnAddress, new Consumer() {
-                @Override
-                public void accept(Object parameter) {
-                    if (parameter instanceof Location) {
-                        binding.symptomsIllLocation.setValue(parameter.toString());
-                        binding.getSymptoms().setIllLocation(((Location) parameter));
-                    }
-                }
-            });
-
-            binding.symptomsIllLocationFrom.initialize(this);
-            binding.symptomsIllLocationTo.initialize(this);
             SymptomsValidator.setRequiredHintsForCaseSymptoms(binding);
         } else {
-            binding.symptomsIllLocationLayout.setVisibility(View.GONE);
             SymptomsValidator.setRequiredHintsForVisitSymptoms(visitCooperative, binding);
         }
 

@@ -265,7 +265,7 @@ public class CaseController {
     	
         CaseDataDto caseDataDto = findCase(caseUuid);
 
-    	SymptomsForm symptomsForm = new SymptomsForm(caseDataDto.getDisease(), true);
+    	SymptomsForm symptomsForm = new SymptomsForm(caseDataDto.getDisease());
         symptomsForm.setValue(caseDataDto.getSymptoms());
     	symptomsForm.initializeSymptomRequirementsForCase();
         final CommitDiscardWrapperComponent<SymptomsForm> editView = new CommitDiscardWrapperComponent<SymptomsForm>(symptomsForm, symptomsForm.getFieldGroup());

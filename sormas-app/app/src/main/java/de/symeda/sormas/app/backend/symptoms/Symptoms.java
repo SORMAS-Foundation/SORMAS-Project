@@ -36,11 +36,11 @@ public class Symptoms extends AbstractDomainObject {
 	@DatabaseField
 	private Boolean symptomatic;
 
-	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 2)
+	@DatabaseField(foreign = true)
 	private Location illLocation;
-	@DatabaseField(dataType = DataType.DATE_LONG)
+	@DatabaseField
 	private Date illLocationFrom;
-	@DatabaseField(dataType = DataType.DATE_LONG)
+	@DatabaseField
 	private Date illLocationTo;
 
 	@Column(columnDefinition = "float8")
@@ -175,30 +175,6 @@ public class Symptoms extends AbstractDomainObject {
 	}
 	public void setTemperatureSource(TemperatureSource temperatureSource) {
 		this.temperatureSource = temperatureSource;
-	}
-
-	public Location getIllLocation() {
-		return illLocation;
-	}
-
-	public void setIllLocation(Location illLocation) {
-		this.illLocation = illLocation;
-	}
-
-	public Date getIllLocationFrom() {
-		return illLocationFrom;
-	}
-
-	public void setIllLocationFrom(Date illLocationFrom) {
-		this.illLocationFrom = illLocationFrom;
-	}
-
-	public Date getIllLocationTo() {
-		return illLocationTo;
-	}
-
-	public void setIllLocationTo(Date illLocationTo) {
-		this.illLocationTo = illLocationTo;
 	}
 
 	public SymptomState getFever() {

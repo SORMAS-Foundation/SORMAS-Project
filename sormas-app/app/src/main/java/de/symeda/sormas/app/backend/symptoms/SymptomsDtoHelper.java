@@ -96,9 +96,6 @@ public class SymptomsDtoHelper extends AdoDtoHelper<Symptoms, SymptomsDto> {
         a.setThrobocytopenia(b.getThrobocytopenia());
         a.setUnexplainedBleeding(b.getUnexplainedBleeding());
         a.setVomiting(b.getVomiting());
-        a.setIllLocation(locationHelper.fillOrCreateFromDto(a.getIllLocation(), b.getIllLocation()));
-        a.setIllLocationFrom(b.getIllLocationFrom());
-        a.setIllLocationTo(b.getIllLocationTo());
         a.setBackache(b.getBackache());
         a.setEyesBleeding(b.getEyesBleeding());
         a.setJaundice(b.getJaundice());
@@ -162,10 +159,6 @@ public class SymptomsDtoHelper extends AdoDtoHelper<Symptoms, SymptomsDto> {
         a.setThrobocytopenia(b.getThrobocytopenia());
         a.setUnexplainedBleeding(b.getUnexplainedBleeding());
         a.setVomiting(b.getVomiting());
-        Location location = DatabaseHelper.getLocationDao().queryForId(b.getIllLocation().getId());
-        a.setIllLocation(locationHelper.adoToDto(location));
-        a.setIllLocationFrom(b.getIllLocationFrom());
-        a.setIllLocationTo(b.getIllLocationTo());
         a.setBackache(b.getBackache());
         a.setEyesBleeding(b.getEyesBleeding());
         a.setJaundice(b.getJaundice());

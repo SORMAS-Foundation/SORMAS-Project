@@ -230,7 +230,6 @@ public class VisitService extends AbstractAdoService<Visit> {
 		
 		Join<Visit, Symptoms> symptoms = visitPath.join(Visit.SYMPTOMS, JoinType.LEFT);
 		dateFilter = cb.or(dateFilter, cb.greaterThan(symptoms.get(AbstractDomainObject.CHANGE_DATE), date));
-		dateFilter = cb.or(dateFilter, cb.greaterThan(symptoms.join(Symptoms.ILLLOCATION, JoinType.LEFT).get(Location.CHANGE_DATE), date));
 		
 		return dateFilter;
 	}

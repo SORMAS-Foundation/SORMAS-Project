@@ -193,7 +193,6 @@ public class CaseService extends AbstractAdoService<Case> {
 		
 		Join<Case, Symptoms> symptoms = casePath.join(Case.SYMPTOMS, JoinType.LEFT);
 		dateFilter = cb.or(dateFilter, cb.greaterThan(symptoms.get(AbstractDomainObject.CHANGE_DATE), date));
-		dateFilter = cb.or(dateFilter, cb.greaterThan(symptoms.join(Symptoms.ILLLOCATION, JoinType.LEFT).get(Location.CHANGE_DATE), date));
 		
 		Join<Case, Hospitalization> hospitalization = casePath.join(Case.HOSPITALIZATION, JoinType.LEFT);
 		dateFilter = cb.or(dateFilter, cb.greaterThan(hospitalization.get(AbstractDomainObject.CHANGE_DATE), date));

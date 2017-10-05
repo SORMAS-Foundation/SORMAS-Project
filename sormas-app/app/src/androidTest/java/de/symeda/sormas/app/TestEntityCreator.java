@@ -216,8 +216,6 @@ public class TestEntityCreator {
     public static Visit createVisit(Contact contact) throws DaoException {
         Visit visit = DatabaseHelper.getVisitDao().build(contact.getUuid());
         Symptoms symptoms = DatabaseHelper.getSymptomsDao().build();
-        Location illLocation = DatabaseHelper.getLocationDao().build();
-        symptoms.setIllLocation(illLocation);
         visit.setSymptoms(symptoms);
         visit.setVisitUser(ConfigProvider.getUser());
 

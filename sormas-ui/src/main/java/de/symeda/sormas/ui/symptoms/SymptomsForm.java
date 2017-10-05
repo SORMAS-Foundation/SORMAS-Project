@@ -7,7 +7,6 @@ import java.util.stream.Stream;
 
 import com.vaadin.data.Validator;
 import com.vaadin.data.fieldgroup.FieldGroup;
-import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -16,7 +15,6 @@ import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -27,7 +25,6 @@ import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.utils.Diseases.DiseasesConfiguration;
 import de.symeda.sormas.api.visit.VisitStatus;
-import de.symeda.sormas.ui.location.LocationForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -37,8 +34,6 @@ import de.symeda.sormas.ui.utils.LayoutUtil;
 public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 
 	private static final String BUTTONS_LOC = "buttonsLoc";
-	private static final String ILLLOCATION_LOC = "illLocationLoc";
-	private static final String STAY_PERIOD_LOC = "stayPeriodLoc";
 
 	private static final String HTML_LAYOUT = LayoutUtil.h3(CssStyles.VSPACE3, "Clinical Signs and Symptoms")
 			+ LayoutUtil.divCss(CssStyles.VSPACE3,
@@ -73,23 +68,15 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 									SymptomsDto.OTHER_NON_HEMORRHAGIC_SYMPTOMS, SymptomsDto.OTHER_NON_HEMORRHAGIC_SYMPTOMS_TEXT)
 							+ LayoutUtil.locsCss(CssStyles.VSPACE3,
 									SymptomsDto.SYMPTOMS_COMMENTS))
-						)
-			+ LayoutUtil.loc(ILLLOCATION_LOC)
-			+ LayoutUtil.divCss(CssStyles.VSPACE3,
-					LayoutUtil.fluidRowLocs(SymptomsDto.ILLLOCATION))
-			+ LayoutUtil.loc(STAY_PERIOD_LOC)
-			+ LayoutUtil.divCss(CssStyles.VSPACE3,
-					LayoutUtil.fluidRowLocs(SymptomsDto.ILLLOCATION_FROM, SymptomsDto.ILLLOCATION_TO));
+						);
 
 	private final Disease disease;
-	private final boolean showIllLocation;
 	private transient List<Object> unconditionalSymptomFieldIds;
 	private List<Object> conditionalBleedingSymptomFieldIds;
 
-	public SymptomsForm(Disease disease, boolean showIllLocation) {
+	public SymptomsForm(Disease disease) {
 		super(SymptomsDto.class, SymptomsDto.I18N_PREFIX);
 		this.disease = disease;
-		this.showIllLocation = showIllLocation;
 		if (disease == null) {
 			throw new IllegalArgumentException("disease cannot be null");
 		}
@@ -125,20 +112,6 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 				SymptomsDto.BLEEDING_VAGINA, SymptomsDto.SKIN_BRUISING, SymptomsDto.BLOOD_URINE);
 		addFields(SymptomsDto.OTHER_HEMORRHAGIC_SYMPTOMS, SymptomsDto.OTHER_HEMORRHAGIC_SYMPTOMS_TEXT, SymptomsDto.OTHER_NON_HEMORRHAGIC_SYMPTOMS,
 				SymptomsDto.OTHER_NON_HEMORRHAGIC_SYMPTOMS_TEXT);
-
-		if (showIllLocation) {
-			String illLocationCaptionLayout = LayoutUtil.h3(CssStyles.VSPACE3, "Location Where Person Became Symptomatic");
-			Label illLocationCaptionLabel = new Label(illLocationCaptionLayout);
-			illLocationCaptionLabel.setContentMode(ContentMode.HTML);
-			getContent().addComponent(illLocationCaptionLabel, ILLLOCATION_LOC);
-	    	addField(SymptomsDto.ILLLOCATION, LocationForm.class).setCaption(null);
-	    	String stayPeriodCaptionLayout = LayoutUtil.h3(CssStyles.VSPACE3, "Time Period of Stay");
-	    	Label stayPeriodCaptionLabel = new Label(stayPeriodCaptionLayout);
-	    	stayPeriodCaptionLabel.setContentMode(ContentMode.HTML);
-	    	getContent().addComponent(stayPeriodCaptionLabel, STAY_PERIOD_LOC);
-	    	addField(SymptomsDto.ILLLOCATION_FROM);
-	    	addField(SymptomsDto.ILLLOCATION_TO);
-		}
 		
 		//		getFieldGroup().getField(SymptomsDto.OTHER_HEMORRHAGIC_SYMPTOMS_TEXT).setCaption(null);
 		//		getFieldGroup().getField(SymptomsDto.OTHER_NON_HEMORRHAGIC_SYMPTOMS_TEXT).setCaption(null);
