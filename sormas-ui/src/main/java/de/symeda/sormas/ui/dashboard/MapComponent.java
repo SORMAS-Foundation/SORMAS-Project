@@ -36,6 +36,7 @@ import de.symeda.sormas.api.region.RegionDataDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -327,33 +328,53 @@ public class MapComponent extends VerticalLayout {
     public void showContactMarkers(List<ContactMapDto> contacts, boolean showConfirmed, boolean showUnconfirmed) {
 
     	clearContactMarkers();
-
+    	
     	for (ContactMapDto contact : contacts) {
-    		if (contact.getReportLat() == null || contact.getReportLon() == null) {
+    		VisitDto visit = null;
+    		boolean noContactCoordinates = true;
+    		boolean noVisitCoordinates = true;
+    		
+    		// Don't show a marker for contacts that don't have geo coordinates or geo coordinates for their last visit
+    		noContactCoordinates = contact.getReportLat() == null || contact.getReportLon() == null;
+    		if (contact.getLastVisit() != null) {
+    			visit = FacadeProvider.getVisitFacade().getVisitByUuid(contact.getLastVisit().getUuid());
+    			noVisitCoordinates = visit.getReportLat() == null || visit.getReportLon() == null;
+    		}
+    		if (noContactCoordinates && noVisitCoordinates) {
     			continue;
     		}
     		
+    		// Don't show a marker for contacts that are filtered out
     		if (!showUnconfirmed && contact.getContactClassification() == ContactClassification.POSSIBLE) {
     			continue;
     		}
-    		
     		if (!showConfirmed && contact.getContactClassification() != ContactClassification.POSSIBLE) {
     			continue;
     		}
     		
-    		LatLon latLon = new LatLon(contact.getReportLat(), contact.getReportLon());
+    		
+    		LatLon latLon;
+    		if (!noVisitCoordinates) {
+    			latLon = new LatLon(visit.getReportLat(), visit.getReportLon());
+    		} else {
+    			latLon = new LatLon(contact.getReportLat(), contact.getReportLon());
+    		}
     		MapIcon icon;
     		
     		long currentTime = new Date().getTime();
-    		long visitTime = contact.getLastVisitDateTime() != null ? contact.getLastVisitDateTime().getTime() : 0;
-    		// 1000 ms = 1 second; 3600 seconds = 1 hour
-    		if (currentTime - visitTime >= 1000 * 3600 * 48) {				
-        		icon = MapIcon.RED_CONTACT;
-        	} else if (currentTime - visitTime >= 1000 * 3600 * 24) {
-        		icon = MapIcon.ORANGE_CONTACT;
-        	} else {
-        		icon = MapIcon.GREEN_CONTACT;
-        	}
+    		if (visit != null) {
+    			long visitTime = visit.getVisitDateTime() != null ? visit.getVisitDateTime().getTime() : 0;
+	    		// 1000 ms = 1 second; 3600 seconds = 1 hour
+	    		if (currentTime - visitTime >= 1000 * 3600 * 48) {				
+	        		icon = MapIcon.RED_CONTACT;
+	        	} else if (currentTime - visitTime >= 1000 * 3600 * 24) {
+	        		icon = MapIcon.ORANGE_CONTACT;
+	        	} else {
+	        		icon = MapIcon.GREEN_CONTACT;
+	        	}
+    		} else {
+    			icon = MapIcon.RED_CONTACT;
+    		}
     		
     		GoogleMapMarker marker = new GoogleMapMarker(contact.toString(), latLon, false, icon.getUrl());
     		marker.setId(contact.getUuid().hashCode());

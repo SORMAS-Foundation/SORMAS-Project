@@ -1,6 +1,6 @@
 package de.symeda.sormas.api.contact;
 
-import java.util.Date;
+import de.symeda.sormas.api.visit.VisitReferenceDto;
 
 public class ContactMapDto extends ContactReferenceDto {
 	
@@ -8,21 +8,21 @@ public class ContactMapDto extends ContactReferenceDto {
 	
 	public static final String I18N_PREFIX = "Contact";
 	
-	public static final String LAST_VISIT_DATE_TIME = "lastVisitDateTime";
+	public static final String LAST_VISIT = "lastVisit";
 	public static final String CONTACT_CLASSIFICATION = "contactClassification";
 	public static final String REPORT_LAT = "reportLat";
 	public static final String REPORT_LON = "reportLon";
 	
-	private Date lastVisitDateTime;
+	private VisitReferenceDto lastVisit;
 	private ContactClassification contactClassification;
 	private Float reportLat;
 	private Float reportLon;
 	
-	public Date getLastVisitDateTime() {
-		return lastVisitDateTime;
+	public VisitReferenceDto getLastVisit() {
+		return lastVisit;
 	}
-	public void setLastVisitDateTime(Date lastVisitDateTime) {
-		this.lastVisitDateTime = lastVisitDateTime;
+	public void setLastVisit(VisitReferenceDto lastVisit) {
+		this.lastVisit = lastVisit;
 	}
 		
 	public ContactClassification getContactClassification() {

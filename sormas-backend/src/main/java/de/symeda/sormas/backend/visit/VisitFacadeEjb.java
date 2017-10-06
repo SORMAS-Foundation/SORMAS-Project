@@ -142,7 +142,7 @@ public class VisitFacadeEjb implements VisitFacade {
 		return target;
 	}
 	
-	public VisitReferenceDto toReferenceDto(Visit source) {
+	public static VisitReferenceDto toReferenceDto(Visit source) {
 		if (source == null) {
 			return null;
 		}

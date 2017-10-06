@@ -47,6 +47,7 @@ import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DateHelper8;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.visit.Visit;
+import de.symeda.sormas.backend.visit.VisitFacadeEjb;
 import de.symeda.sormas.backend.visit.VisitService;
 
 @Stateless(name = "ContactFacade")
@@ -320,8 +321,9 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setReportLat(source.getReportLat());
 		target.setReportLon(source.getReportLon());
 		target.setContactClassification(source.getContactClassification());
+		
 		if (lastVisit != null) {
-			target.setLastVisitDateTime(lastVisit.getVisitDateTime());
+			target.setLastVisit(VisitFacadeEjb.toReferenceDto(lastVisit));
 		}
 
 		return target;
