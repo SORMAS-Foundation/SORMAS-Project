@@ -48,6 +48,11 @@
 		   <artifactId>googlemaps</artifactId>
 		</dependency>
 	        
+	    <dependency>
+		   <groupId>org.vaadin.addons</groupId>
+		   <artifactId>popupbutton</artifactId>
+		</dependency>
+	        
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>

@@ -319,6 +319,7 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		target.setReportLat(source.getReportLat());
 		target.setReportLon(source.getReportLon());
+		target.setContactClassification(source.getContactClassification());
 		if (lastVisit != null) {
 			target.setLastVisitDateTime(lastVisit.getVisitDateTime());
 		}

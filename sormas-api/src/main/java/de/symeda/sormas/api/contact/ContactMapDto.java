@@ -9,10 +9,12 @@ public class ContactMapDto extends ContactReferenceDto {
 	public static final String I18N_PREFIX = "Contact";
 	
 	public static final String LAST_VISIT_DATE_TIME = "lastVisitDateTime";
+	public static final String CONTACT_CLASSIFICATION = "contactClassification";
 	public static final String REPORT_LAT = "reportLat";
 	public static final String REPORT_LON = "reportLon";
 	
 	private Date lastVisitDateTime;
+	private ContactClassification contactClassification;
 	private Float reportLat;
 	private Float reportLon;
 	
@@ -21,6 +23,13 @@ public class ContactMapDto extends ContactReferenceDto {
 	}
 	public void setLastVisitDateTime(Date lastVisitDateTime) {
 		this.lastVisitDateTime = lastVisitDateTime;
+	}
+		
+	public ContactClassification getContactClassification() {
+		return contactClassification;
+	}
+	public void setContactClassification(ContactClassification contactClassification) {
+		this.contactClassification = contactClassification;
 	}
 	
 	public Float getReportLat() {

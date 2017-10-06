@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.vaadin.hene.popupbutton.PopupButton;
+
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.ThemeResource;
@@ -80,6 +82,8 @@ public class DashboardView extends AbstractView {
 	public static final String APPLY = "apply";
 	public static final String SHOW_CASES = "showCases";
 	public static final String SHOW_CONTACTS = "showContacts";
+	public static final String SHOW_CONFIRMED_CONTACTS = "showConfirmedContacts";
+	public static final String SHOW_UNCONFIRMED_CONTACTS = "showUnconfirmedContacts";
 	public static final String NO_FOLLOW_UP = "noFollowUp";
 	public static final String VISIT_24_HOURS = "visit24Hours";
 	public static final String VISIT_48_HOURS = "visit48Hours";
@@ -100,6 +104,8 @@ public class DashboardView extends AbstractView {
 	private boolean useDateFilterForMap;
 	private boolean showCases;
 	private boolean showContacts;
+	private boolean showConfirmedContacts;
+	private boolean showUnconfirmedContacts;
 	private boolean showRegions;
 	private RegionMapVisualization regionMapVisualization = RegionMapVisualization.CASE_COUNT;
 
@@ -112,6 +118,8 @@ public class DashboardView extends AbstractView {
 		} else {
 			showCases = true;
 			showContacts = true;
+			showConfirmedContacts = true;
+			showUnconfirmedContacts = true;
 		}
 
 		VerticalLayout dashboardLayout = new VerticalLayout();
@@ -203,7 +211,7 @@ public class DashboardView extends AbstractView {
 		disease = (Disease) diseaseFilter.getValue();
 
 		filterLayout.addComponent(applyButton);
-
+		
 		return filterLayout;
 	}
 
@@ -303,51 +311,90 @@ public class DashboardView extends AbstractView {
 			caseMapLabel.setSizeUndefined();
 			CssStyles.style(caseMapLabel, CssStyles.H3);
 			mapHeaderLayout.addComponent(caseMapLabel);
+			mapHeaderLayout.setComponentAlignment(caseMapLabel, Alignment.TOP_LEFT);
 
-			CheckBox dateFilterForMap = new CheckBox();
-			dateFilterForMap.addStyleName(CssStyles.NO_MARGIN);
-			dateFilterForMap.setCaption(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, DATE_FILTER_FOR_MAP));
-			dateFilterForMap.addValueChangeListener(e -> {
-				useDateFilterForMap = dateFilterForMap.getValue();
-				refreshMap();
-			});
-			mapHeaderLayout.addComponent(dateFilterForMap);	        
-			mapHeaderLayout.setComponentAlignment(dateFilterForMap, Alignment.MIDDLE_LEFT);
+			PopupButton popupButton = new PopupButton("Filters");
 			
-			CheckBox showCasesCheckBox = new CheckBox();
-			showCasesCheckBox.addStyleName(CssStyles.NO_MARGIN);
-			showCasesCheckBox.setCaption(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, SHOW_CASES));
-			showCasesCheckBox.setValue(showCases);
-			showCasesCheckBox.addValueChangeListener(e -> {
-				showCases = (boolean) e.getProperty().getValue();
-				refreshMap();
-			});
-			mapHeaderLayout.addComponent(showCasesCheckBox);
-			mapHeaderLayout.setComponentAlignment(showCasesCheckBox, Alignment.MIDDLE_LEFT);
+			VerticalLayout popupLayout = new VerticalLayout();
+			popupLayout.setMargin(true);
+			popupButton.setContent(popupLayout);
 			
-			CheckBox showContactsCheckBox = new CheckBox();
-			showContactsCheckBox.addStyleName(CssStyles.NO_MARGIN);
-			showContactsCheckBox.setCaption(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, SHOW_CONTACTS));
-			showContactsCheckBox.setValue(showContacts);
-			showContactsCheckBox.addValueChangeListener(e -> {
-				showContacts = (boolean) e.getProperty().getValue();
-				refreshMap();
-			});
-			mapHeaderLayout.addComponent(showContactsCheckBox);
-			mapHeaderLayout.setComponentAlignment(showContactsCheckBox, Alignment.MIDDLE_LEFT);
-
-			if (LoginHelper.isUserInRole(UserRole.NATIONAL_USER)) {
-				CheckBox showRegionsCheckBox = new CheckBox();
-				showRegionsCheckBox.addStyleName(CssStyles.NO_MARGIN);
-				showRegionsCheckBox.setCaption("Show regions");//I18nProperties.getPrefixFieldCaption(I18N_PREFIX, SHOW_CASES));
-				showRegionsCheckBox.setValue(showRegions);
-				showRegionsCheckBox.addValueChangeListener(e -> {
-					showRegions = (boolean) e.getProperty().getValue();
-					refreshMap();
+			// Add check boxes and apply button to popupLayout
+			{
+				CheckBox dateFilterForMap = new CheckBox();
+				dateFilterForMap.addStyleName(CssStyles.NO_MARGIN);
+				dateFilterForMap.setCaption(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, DATE_FILTER_FOR_MAP));
+				dateFilterForMap.addValueChangeListener(e -> {
+					useDateFilterForMap = dateFilterForMap.getValue();
 				});
-				mapHeaderLayout.addComponent(showRegionsCheckBox);
-				mapHeaderLayout.setComponentAlignment(showRegionsCheckBox, Alignment.MIDDLE_LEFT);
+				popupLayout.addComponent(dateFilterForMap);	        
+				
+				CheckBox showCasesCheckBox = new CheckBox();
+				showCasesCheckBox.addStyleName(CssStyles.NO_MARGIN);
+				showCasesCheckBox.setCaption(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, SHOW_CASES));
+				showCasesCheckBox.setValue(showCases);
+				showCasesCheckBox.addValueChangeListener(e -> {
+					showCases = (boolean) e.getProperty().getValue();
+				});
+				popupLayout.addComponent(showCasesCheckBox);
+
+				CheckBox showConfirmedContactsCheckBox = new CheckBox();
+				CheckBox showUnconfirmedContactsCheckBox = new CheckBox();
+				
+				CheckBox showContactsCheckBox = new CheckBox();
+				showContactsCheckBox.addStyleName(CssStyles.NO_MARGIN);
+				showContactsCheckBox.setCaption(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, SHOW_CONTACTS));
+				showContactsCheckBox.setValue(showContacts);
+				showContactsCheckBox.addValueChangeListener(e -> {
+					showContacts = (boolean) e.getProperty().getValue();
+					showConfirmedContactsCheckBox.setVisible(showContacts);
+					showConfirmedContactsCheckBox.setValue(true);
+					showUnconfirmedContactsCheckBox.setVisible(showContacts);
+					showUnconfirmedContactsCheckBox.setValue(true);
+				});
+				popupLayout.addComponent(showContactsCheckBox);
+				
+				showConfirmedContactsCheckBox.addStyleName(CssStyles.NO_MARGIN);
+				showConfirmedContactsCheckBox.setCaption(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, SHOW_CONFIRMED_CONTACTS));
+				showConfirmedContactsCheckBox.setValue(showConfirmedContacts);
+				showConfirmedContactsCheckBox.addValueChangeListener(e -> {
+					showConfirmedContacts = (boolean) e.getProperty().getValue();
+				});
+				popupLayout.addComponent(showConfirmedContactsCheckBox);	 
+				
+				showUnconfirmedContactsCheckBox.addStyleName(CssStyles.NO_MARGIN);
+				showUnconfirmedContactsCheckBox.setCaption(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, SHOW_UNCONFIRMED_CONTACTS));
+				showUnconfirmedContactsCheckBox.setValue(showUnconfirmedContacts);
+				showUnconfirmedContactsCheckBox.addValueChangeListener(e -> {
+					showUnconfirmedContacts = (boolean) e.getProperty().getValue();
+				});
+				popupLayout.addComponent(showUnconfirmedContactsCheckBox);	
+
+				if (LoginHelper.isUserInRole(UserRole.NATIONAL_USER)) {
+					CheckBox showRegionsCheckBox = new CheckBox();
+					showRegionsCheckBox.addStyleName(CssStyles.NO_MARGIN);
+					showRegionsCheckBox.setCaption("Show regions");
+					showRegionsCheckBox.setValue(showRegions);
+					showRegionsCheckBox.addValueChangeListener(e -> {
+						showRegions = (boolean) e.getProperty().getValue();
+					});
+					popupLayout.addComponent(showRegionsCheckBox);
+				}
+				
+				Button applyButton = new Button(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, APPLY));
+				applyButton.addStyleName(CssStyles.VSPACETOP4);
+				applyButton.addClickListener(new ClickListener() {
+					@Override
+					public void buttonClick(ClickEvent event) {
+						popupButton.setPopupVisible(false);
+						refreshMap();
+					}
+				});
+				popupLayout.addComponent(applyButton);	
 			}
+			
+			mapHeaderLayout.addComponent(popupButton);
+			mapHeaderLayout.setComponentAlignment(popupButton, Alignment.MIDDLE_LEFT);
 			
 			Button expandMap = new Button(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, EXPAND), FontAwesome.EXPAND);
 			expandMap.setStyleName(ValoTheme.BUTTON_LINK);
@@ -381,6 +428,7 @@ public class DashboardView extends AbstractView {
 			mapHeaderLayout.setComponentAlignment(expandMap, Alignment.MIDDLE_RIGHT);
 			mapHeaderLayout.setExpandRatio(expandMap, 1);
 		}
+		
 		mapLayout.addComponent(mapHeaderLayout);
 
 		// Map and map key
@@ -635,7 +683,7 @@ public class DashboardView extends AbstractView {
 				mapComponent.showCaseMarkers(casesForMap);
 			}
 			if (showContacts) {
-				mapComponent.showContactMarkers(contactsForMap);
+				mapComponent.showContactMarkers(contactsForMap, showConfirmedContacts, showUnconfirmedContacts);
 			}
 		}
 	}

@@ -27,6 +27,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactMapDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
@@ -323,12 +324,20 @@ public class MapComponent extends VerticalLayout {
     	mapContacts.clear();
     }
 
-    public void showContactMarkers(List<ContactMapDto> contacts) {
+    public void showContactMarkers(List<ContactMapDto> contacts, boolean showConfirmed, boolean showUnconfirmed) {
 
     	clearContactMarkers();
 
     	for (ContactMapDto contact : contacts) {
     		if (contact.getReportLat() == null || contact.getReportLon() == null) {
+    			continue;
+    		}
+    		
+    		if (!showUnconfirmed && contact.getContactClassification() == ContactClassification.POSSIBLE) {
+    			continue;
+    		}
+    		
+    		if (!showConfirmed && contact.getContactClassification() != ContactClassification.POSSIBLE) {
     			continue;
     		}
     		

@@ -11,4 +11,6 @@
     
 
     <inherits name="com.vaadin.tapio.googlemaps.Widgetset" />
+
+    <inherits name="org.vaadin.hene.popupbutton.widgetset.PopupbuttonWidgetset" />
 </module>
