@@ -59,7 +59,6 @@ import de.symeda.sormas.app.validation.SymptomsValidator;
 public class CaseEditActivity extends AbstractEditTabActivity {
 
     public static final String KEY_CASE_UUID = "caseUuid";
-    public static final String CASE_SUBTITLE = "caseSubtitle";
 
     private CaseEditPagerAdapter adapter;
     private String caseUuid;
@@ -103,6 +102,10 @@ public class CaseEditActivity extends AbstractEditTabActivity {
                     finish();
                 }
 
+                if (toolbar != null) {
+                    getSupportActionBar().setSubtitle(initialEntity.toString());
+                }
+
                 DatabaseHelper.getCaseDao().markAsRead(initialEntity);
             }
             if (params.containsKey(TaskForm.KEY_TASK_UUID)) {
@@ -110,9 +113,6 @@ public class CaseEditActivity extends AbstractEditTabActivity {
             }
             if (params.containsKey(KEY_PAGE)) {
                 currentTab = params.getInt(KEY_PAGE);
-            }
-            if (params.containsKey(CASE_SUBTITLE) && toolbar != null) {
-                getSupportActionBar().setSubtitle(params.getString(CASE_SUBTITLE));
             }
         }
 

@@ -93,7 +93,6 @@ public class CasesListFragment extends ListFragment {
     public void showCaseEditView(Case caze) {
         Intent intent = new Intent(getActivity(), CaseEditActivity.class);
         intent.putExtra(CaseEditActivity.KEY_CASE_UUID, caze.getUuid());
-        intent.putExtra(CaseEditActivity.CASE_SUBTITLE, caze.toString());
         startActivity(intent);
     }
 }
