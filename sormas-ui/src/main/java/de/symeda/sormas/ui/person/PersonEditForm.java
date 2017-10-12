@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
@@ -32,7 +33,7 @@ import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.Diseases.DiseasesConfiguration;
-import de.symeda.sormas.ui.location.LocationForm;
+import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.LayoutUtil;
@@ -65,9 +66,9 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
     						CssStyles.VSPACE4,
     						LayoutUtil.oneOfTwoCol(
     								LayoutUtil.fluidRowCss(null,
-    										LayoutUtil.oneOfThreeCol(LayoutUtil.loc(PersonDto.BIRTH_DATE_DD)),
+    										LayoutUtil.oneOfThreeCol(LayoutUtil.loc(PersonDto.BIRTH_DATE_YYYY)),
     										LayoutUtil.oneOfThreeCol(LayoutUtil.loc(PersonDto.BIRTH_DATE_MM)),
-    										LayoutUtil.oneOfThreeCol(LayoutUtil.loc(PersonDto.BIRTH_DATE_YYYY))
+    										LayoutUtil.oneOfThreeCol(LayoutUtil.loc(PersonDto.BIRTH_DATE_DD))
     								)
     								
     						),
@@ -75,33 +76,26 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
     				),
     				LayoutUtil.fluidRowCss(
     						CssStyles.VSPACE4,
-    						LayoutUtil.oneOfThreeCol(LayoutUtil.loc(PersonDto.SEX)),
-    						LayoutUtil.oneOfThreeCol(LayoutUtil.loc(PersonDto.PRESENT_CONDITION)),
-							LayoutUtil.oneOfThreeCol(LayoutUtil.loc(PersonDto.DEATH_DATE))
+    						LayoutUtil.oneOfTwoCol(LayoutUtil.loc(PersonDto.SEX)),
+    						LayoutUtil.oneOfTwoCol(LayoutUtil.loc(PersonDto.PRESENT_CONDITION))
     				),
     				LayoutUtil.fluidRowCss(
     						CssStyles.VSPACE4,
-    						LayoutUtil.oneOfThreeCol(LayoutUtil.loc(PersonDto.DEATH_PLACE_TYPE)),
-    						LayoutUtil.twoOfThreeCol(LayoutUtil.loc(PersonDto.DEATH_PLACE_DESCRIPTION))
+							LayoutUtil.oneOfFourCol(LayoutUtil.loc(PersonDto.DEATH_DATE)),
+    						LayoutUtil.oneOfFourCol(LayoutUtil.loc(PersonDto.DEATH_PLACE_TYPE)),
+    						LayoutUtil.oneOfTwoCol(LayoutUtil.loc(PersonDto.DEATH_PLACE_DESCRIPTION))
     				),
     				LayoutUtil.fluidRowCss(
     						CssStyles.VSPACE4,
-    						LayoutUtil.oneOfThreeCol(LayoutUtil.loc(PersonDto.BURIAL_DATE)),
-    						LayoutUtil.twoOfThreeCol(LayoutUtil.loc(PersonDto.BURIAL_PLACE_DESCRIPTION))
-    				),
-    				LayoutUtil.fluidRowCss(
-    						CssStyles.VSPACE4, 
-    						LayoutUtil.oneOfTwoCol(LayoutUtil.loc(PersonDto.BURIAL_CONDUCTOR))
+    						LayoutUtil.oneOfFourCol(LayoutUtil.loc(PersonDto.BURIAL_DATE)),
+    						LayoutUtil.oneOfFourCol(LayoutUtil.loc(PersonDto.BURIAL_CONDUCTOR)),
+    						LayoutUtil.oneOfTwoCol(LayoutUtil.loc(PersonDto.BURIAL_PLACE_DESCRIPTION))
     				),
     				LayoutUtil.fluidRowCss(
 						CssStyles.VSPACE4,
 						LayoutUtil.oneOfTwoCol(LayoutUtil.loc(PersonDto.PHONE)),
 						LayoutUtil.oneOfTwoCol(LayoutUtil.loc(PersonDto.PHONE_OWNER))
 					)) +
-    		LayoutUtil.h3(CssStyles.VSPACE3, "Permanent residence of person")+
-    		LayoutUtil.div(
-    				LayoutUtil.fluidRowLocsCss(CssStyles.VSPACE4, PersonDto.ADDRESS)
-				)+
     		LayoutUtil.h3(CssStyles.VSPACE3, "Occupation")+
     		LayoutUtil.div(
     				LayoutUtil.fluidRowCss(
@@ -116,7 +110,11 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
     					LayoutUtil.oneOfFourCol(LayoutUtil.loc(FACILITY_COMMUNITY)),
     					LayoutUtil.oneOfFourCol(LayoutUtil.loc(PersonDto.OCCUPATION_FACILITY))
     				)
-    		);
+    		) +
+			LayoutUtil.h3(CssStyles.VSPACE3, "Permanent residence of person")+
+			LayoutUtil.div(
+					LayoutUtil.fluidRowLocsCss(CssStyles.VSPACE4, PersonDto.ADDRESS)
+			);
 
     public PersonEditForm(Disease disease) {
     	super(PersonDto.class, PersonDto.I18N_PREFIX);
@@ -127,24 +125,25 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	protected void addFields() {
     	addField(PersonDto.FIRST_NAME, TextField.class);
     	addField(PersonDto.LAST_NAME, TextField.class);
-    	addField(PersonDto.SEX, NativeSelect.class);
+    	addField(PersonDto.SEX, ComboBox.class);
     	addField(PersonDto.NICKNAME, TextField.class);
     	addField(PersonDto.MOTHERS_MAIDEN_NAME, TextField.class);
     	
-    	addField(PersonDto.PRESENT_CONDITION, NativeSelect.class);
-    	NativeSelect days = addField(PersonDto.BIRTH_DATE_DD, NativeSelect.class);
-    	days.setCaption(I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, "birthdate"));
+    	addField(PersonDto.PRESENT_CONDITION, ComboBox.class);
+    	ComboBox days = addField(PersonDto.BIRTH_DATE_DD, ComboBox.class);
     	// @TODO: Done for nullselection Bug, fixed in Vaadin 7.7.3
     	days.setNullSelectionAllowed(true);
     	days.setNullSelectionItemId("");
     	days.addItems(DateHelper.getDaysInMonth());
-    	NativeSelect months = addField(PersonDto.BIRTH_DATE_MM, NativeSelect.class);
+    	ComboBox months = addField(PersonDto.BIRTH_DATE_MM, ComboBox.class);
     	// @TODO: Done for nullselection Bug, fixed in Vaadin 7.7.3
     	months.setNullSelectionAllowed(true);
     	months.setNullSelectionItemId("");
     	months.addItems(DateHelper.getMonthsInYear());
+    	months.setPageLength(12);
     	setItemCaptionsForMonths(months);
-    	NativeSelect years = addField(PersonDto.BIRTH_DATE_YYYY, NativeSelect.class);
+    	ComboBox years = addField(PersonDto.BIRTH_DATE_YYYY, ComboBox.class);
+    	years.setCaption(I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, "birthdate"));
     	// @TODO: Done for nullselection Bug, fixed in Vaadin 7.7.3
     	years.setNullSelectionAllowed(true);
     	years.setNullSelectionItemId("");
@@ -152,7 +151,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		years.setItemCaptionMode(ItemCaptionMode.ID_TOSTRING);
     	addField(PersonDto.DEATH_DATE, DateField.class);
     	addField(PersonDto.APPROXIMATE_AGE, TextField.class);
-    	addField(PersonDto.APPROXIMATE_AGE_TYPE, NativeSelect.class);
+    	addField(PersonDto.APPROXIMATE_AGE_TYPE, ComboBox.class);
     	
     	NativeSelect deathPlaceType = addField(PersonDto.DEATH_PLACE_TYPE, NativeSelect.class);
     	deathPlaceType.setNullSelectionAllowed(true);
@@ -161,7 +160,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
     	TextField burialPlaceDesc = addField(PersonDto.BURIAL_PLACE_DESCRIPTION, TextField.class);
     	addField(PersonDto.BURIAL_CONDUCTOR, NativeSelect.class);
     	
-    	addField(PersonDto.ADDRESS, LocationForm.class).setCaption(null);
+    	addField(PersonDto.ADDRESS, LocationEditForm.class).setCaption(null);
     	addField(PersonDto.PHONE, TextField.class);
     	addField(PersonDto.PHONE_OWNER, TextField.class);
 
@@ -291,15 +290,15 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 					(Date) getFieldGroup().getField(PersonDto.DEATH_DATE).getValue()
 					);
 			
-			TextField textField = (TextField)getFieldGroup().getField(PersonDto.APPROXIMATE_AGE);
-			textField.setReadOnly(false);
-			textField.setValue(pair.getElement0()!=null?String.valueOf(pair.getElement0()):null);
-			textField.setReadOnly(true);
+			TextField approximateAgeField = (TextField)getFieldGroup().getField(PersonDto.APPROXIMATE_AGE);
+			approximateAgeField.setReadOnly(false);
+			approximateAgeField.setValue(pair.getElement0()!=null?String.valueOf(pair.getElement0()):null);
+			approximateAgeField.setReadOnly(true);
 			
-			NativeSelect nativeSelect = (NativeSelect)getFieldGroup().getField(PersonDto.APPROXIMATE_AGE_TYPE);
-			nativeSelect.setReadOnly(false);
-			nativeSelect.setValue(String.valueOf(pair.getElement1()));
-			nativeSelect.setReadOnly(true);
+			AbstractSelect approximateAgeTypeSelect = (AbstractSelect)getFieldGroup().getField(PersonDto.APPROXIMATE_AGE_TYPE);
+			approximateAgeTypeSelect.setReadOnly(false);
+			approximateAgeTypeSelect.setValue(String.valueOf(pair.getElement1()));
+			approximateAgeTypeSelect.setReadOnly(true);
 		}
 	}
 	
@@ -426,7 +425,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		}
 	}
 	
-	private void setItemCaptionsForMonths(NativeSelect months) {
+	private void setItemCaptionsForMonths(AbstractSelect months) {
 		months.setItemCaption(1, I18nProperties.getEnumCaption(Month.JANUARY));
 		months.setItemCaption(2, I18nProperties.getEnumCaption(Month.FEBRUARY));
 		months.setItemCaption(3, I18nProperties.getEnumCaption(Month.MARCH));

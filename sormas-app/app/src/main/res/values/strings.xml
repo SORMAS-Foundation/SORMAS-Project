@@ -140,7 +140,7 @@
     <!-- forms -->
     <string name="case_move">Move case to another health facility \u279D</string>
 
-    <string name="form_p_date_of_birth">Date of birth (day / month / year)</string>
+    <string name="form_p_date_of_birth">Date of birth (year / month / day)</string>
 
     <string name="form_username">Username</string>
     <string name="form_password">Password</string>

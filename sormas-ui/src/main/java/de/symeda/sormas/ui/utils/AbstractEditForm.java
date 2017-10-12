@@ -13,6 +13,7 @@ import com.vaadin.data.util.BeanItem;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.AbstractTextField;
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
 import com.vaadin.ui.CustomLayout;
@@ -29,7 +30,7 @@ import de.symeda.sormas.ui.epidata.EpiDataBurialsField;
 import de.symeda.sormas.ui.epidata.EpiDataGatheringsField;
 import de.symeda.sormas.ui.epidata.EpiDataTravelsField;
 import de.symeda.sormas.ui.hospitalization.PreviousHospitalizationsField;
-import de.symeda.sormas.ui.location.LocationForm;
+import de.symeda.sormas.ui.location.LocationEditForm;
 
 @SuppressWarnings("serial")
 public abstract class AbstractEditForm <DTO extends DataTransferObject> extends CustomField<DTO> {// implements DtoEditForm<DTO> {
@@ -73,7 +74,7 @@ public abstract class AbstractEditForm <DTO extends DataTransferObject> extends 
 						return (T) field;
 					} else {
 						if (!AbstractSelect.class.isAssignableFrom(fieldType)) {
-							fieldType = (Class<T>) NativeSelect.class;
+							fieldType = (Class<T>) ComboBox.class;
 						}
 						T field = super.createField(type, fieldType);
 						if (OptionGroup.class.isAssignableFrom(fieldType)) {
@@ -85,8 +86,8 @@ public abstract class AbstractEditForm <DTO extends DataTransferObject> extends 
 				else if (AbstractSelect.class.isAssignableFrom(fieldType)) {
 					return (T) createCompatibleSelect((Class<? extends AbstractSelect>) fieldType);
 				} 
-				else if (LocationForm.class.isAssignableFrom(fieldType)) {
-					return (T) new LocationForm();
+				else if (LocationEditForm.class.isAssignableFrom(fieldType)) {
+					return (T) new LocationEditForm();
 				} 
 				else if (DateTimeField.class.isAssignableFrom(fieldType)) {
 					return (T) new DateTimeField();

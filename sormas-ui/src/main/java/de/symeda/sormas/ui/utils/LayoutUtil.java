@@ -85,19 +85,19 @@ public class LayoutUtil {
 	}
 
 	public static String h1(String cssClasses, String content) {
-		return element("h1", cssClasses, content);
+		return element("h1", cssClasses, span(content));
 	}
 
 	public static String h2(String cssClasses, String content) {
-		return element("h2", cssClasses, content);
+		return element("h2", cssClasses, span(content));
 	}
 
 	public static String h3(String cssClasses, String content) {
-		return element("h3", cssClasses, content);
+		return element("h3", cssClasses, span(content));
 	}
 
 	public static String h4(String cssClasses, String content) {
-		return element("h4", cssClasses, content);
+		return element("h4", cssClasses, span(content));
 	}
 
 	public static String strong(String cssClasses, String content) {

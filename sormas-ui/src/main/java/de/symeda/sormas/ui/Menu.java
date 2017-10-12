@@ -48,13 +48,13 @@ public class Menu extends CssLayout {
 
         // header of the menu
         final HorizontalLayout top = new HorizontalLayout();
-        top.setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
+        top.setDefaultComponentAlignment(Alignment.TOP_CENTER);
         top.addStyleName(ValoTheme.MENU_TITLE);
         top.setSpacing(true);
         Label title = new Label("SORMAS");
-        title.addStyleName(ValoTheme.LABEL_H3);
         title.setSizeUndefined();
         Image image = new Image(null, new ThemeResource("img/sormas-logo.png"));
+        image.setHeight(32, Unit.PIXELS);
         image.setStyleName("logo");
         image.addStyleName(CssStyles.CURSOR_LINK);
         image.addClickListener(new com.vaadin.event.MouseEvents.ClickListener() {

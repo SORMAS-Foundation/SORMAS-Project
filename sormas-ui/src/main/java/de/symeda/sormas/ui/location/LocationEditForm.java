@@ -12,7 +12,7 @@ import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
 @SuppressWarnings("serial")
-public class LocationForm extends AbstractEditForm<LocationDto> {
+public class LocationEditForm extends AbstractEditForm<LocationDto> {
 
     private static final String HTML_LAYOUT = 
     		LayoutUtil.div(
@@ -20,7 +20,7 @@ public class LocationForm extends AbstractEditForm<LocationDto> {
     				LayoutUtil.fluidRowLocs(LocationDto.REGION, LocationDto.DISTRICT, LocationDto.COMMUNITY, LocationDto.CITY)
     			);
 
-    public LocationForm() {
+    public LocationEditForm() {
     	super(LocationDto.class, LocationDto.I18N_PREFIX);
     }
     

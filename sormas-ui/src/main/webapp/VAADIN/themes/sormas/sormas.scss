@@ -2,20 +2,31 @@
 
 // Global variable overrides. Must be declared before importing Valo.
 // For more information, see: https://vaadin.com/book/-/page/themes.valo.html
-// Example variants can be copy/pasted from https://vaadin.com/wiki/-/wiki/Main/Valo+Examples
+// Example variants can be copy/pasted from https://vaadin.com/docs/v8/framework/articles/ValoExamples.html
+// See also https://vaadin.com/api/valo/
 
 $v-luminance-threshold: 180 !default;
 
-$editor-background-color: #3b3f42 !default;
-$valo-menu-background-color: $editor-background-color !default;
-
-$v-focus-color: rgb(96, 160, 234) !default;
+$v-background-color: #ffffff !default;
+$v-font-color: #394C5B !default;
+$v-focus-color: #CDD8EC !default;
 $v-error-indicator-color: #eb2977 !default;
 $v-friendly-color: rgb(54, 185, 85);
 
-$v-font-size: 15px !default;
+$v-font-size: 12px !default;
 $v-font-weight: 400 !default;
+$v-font-weight--header: 400 !default;
+$v-font-size--h3: 16px;
+
+$v-link-font-color: #1565A2;
+
 $v-unit-size: 32px !default;
+$v-gradient: false;
+
+$v-border: 2px solid $v-selection-color;
+$v-caption-font-weight: 600 !default; 
+
+$valo-menu-background-color: #6691C4 !default;
 
 $login-info-width: 300px !default;
 $login-info-opacity: 0.7 !default;
@@ -24,6 +35,7 @@ $login-background-color: $editor-background-color !default;
 $login-background-image: "img/login-bg.png" !default;
 
 $editor-shadow: 0 0 10px 10px rgba(0,0,0,.1) !default;
+$editor-background-color: #6691C4 !default;
 $editor-embed-background-color: darken($editor-background-color, 5%) !default;
 $editor-raised-background-color: lighten($editor-background-color, 10%) !default;
 $editor-caption-font-color: valo-font-color($editor-background-color, 0.5) !default;
@@ -35,73 +47,116 @@ $v-layout-margin-left: $v-layout-margin-top !default;
 $v-layout-spacing-vertical: round($v-unit-size / 1.8) !default;
 $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
 
-
 @import "../valo/valo.scss";
 
+@import "valo-components/valo-menu.scss";
 
-@mixin sormastheme {
+@import "views/login.scss";
+
+
+@function valo-font-color ($bg-color, $contrast: $v-font-color-contrast) {
+  @return #374B5A;
+}
+
+@mixin sormas {
   @include valo;
+  @include sormas-valo-menu;
 
-  .valo-menu {
-    font-size: 16px;
+  @include login;
+
+  .valo-content {
+  	overflow: auto;
   }
-  .valo-menu-item {
-    padding-top: 8px;
+  
+  .v-caption {
+    text-transform: uppercase;
+	display: block;
+    padding-bottom: 0.1em;
+  }
+  .v-caption.v-caption-caption-hidden {
+    display: none;
+  }
+  
+  .v-panel {
+    border: none;
+    box-shadow: none;
+    border-radius: 0;
+  }
+  
+  .v-button {
+    text-transform: uppercase;
+  }
+  
+  .v-filterselect [class$="button"] {
+    border-left: none;
+    
+    &::before {
+      color: $v-font-color;
+    }
   }
 
-  // login screen - for small screens, see below
-  .login-screen {
-    background: #EFF5FC;
-
-    @if $login-background-image {
-      background-image: url(#{$login-background-image});
-	  background-size: 960px;
-	  background-repeat: no-repeat;
-      background-position: 50% 50%;
+  .v-datefield [class$="button"] {
+    border-right: none;
+    
+    &::before {
+      color: $v-font-color;
     }
-
-    width: 100%;
-    height: 100%;
-
-    .login-form {
-      @include valo-panel-style;
-      border: none;
-      padding: $v-layout-margin;
-      @include valo-animate-in-fade($duration: 1s);
-	  margin-right: 50%;
-	  margin-bottom: 10%;      
+  }
+  
+  .v-radiobutton {
+    margin: 4px 0 4px -2px !important;
+    padding: 0 !important;
+    border: $v-border;
+    border-radius: 0;
+    font-size: 11px;
+    text-transform: uppercase;
+      
+    &:first-child {
+      border-radius: 4px 0 0 4px; 
     }
-
-    .login-information {
-      display: inline-block;
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: $login-info-width;
-      height: 100%;
-      background: $v-selection-color; // For IE8
-      background-color: rgba($v-selection-color, $login-info-opacity);
-      padding: $v-layout-margin;
-      color: valo-font-color($v-selection-color, 0.9);
-      @include animation(valo-animate-in-fade 1s 1s backwards);
-
-      h1 {
-        color: inherit;
+    &:last-child {
+      border-radius: 0 4px 4px 0; 
+    }
+    
+    :root & > input {
+      display: none;
+	  
+      & ~ label {
+        margin-bottom: 0;
+        padding: 3px 12px;
       }
-    }
+    
+	  &:checked ~ label {
+        background: $v-selection-color;
+      }
 
-    .centering-layout {
-      display: inline-block;
-      width: 100%;
-      height: 100%;
-      padding-left: $login-info-width;
-
-      .v-slot {
-        height: 100%;
+      & ~ label:before,
+      & ~ label:after {
+        content: none;
       }
     }
   }
   
+  h3 {
+    margin-bottom: 16px;
+  
+    &::before {
+      background: #EEF2F8;
+      content: "";
+      display: block;
+      position: relative;
+      top: 15px;
+      height: 2px;
+      width: 100%;
+    }
+  
+    span {
+      background: #FFF;
+      position: relative;
+      padding-right: 8px;
+    }
+  }   
+
   .v-grid-header th {
     font-size: 12px;
   }
@@ -176,14 +231,6 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
     background-color: white;
   } 
   
-  .valo-content {
-  	overflow: auto;
-  }
-  
-  .v-caption {
-    padding-bottom: 0.1em;
-  }
-  
   .v-widget.v-textfield, .v-widget.v-textarea, .v-widget.v-select, .v-widget.v-datefield,
   .v-widget.v-filterselect {
   	margin-bottom: 10px;
@@ -192,9 +239,10 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
   .v-caption-row-optiongroup {
   	float: left;
   	padding-top: 7px;
-  	height: 22px;
-  	padding-bottom: 1px;
   	margin-bottom: -30px;
+    font-weight: 500;
+    font-size: 12px;
+  	text-transform: none;
   }
 
   .v-select-optiongroup-row-optiongroup {
@@ -206,13 +254,6 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
   	display: inline-block;
   }
   
-  .v-panel {
-  	background: inherit;
-    border: medium none;
-    border-radius: 0;
-    box-shadow: none;
-  }
-
   // makes the CRUD view keep the sidebar editor within the view as sidebar is absolutely positioned
   .crud-view {
   	position: relative;
@@ -220,13 +261,6 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
     .filter-textfield {
       width: round($v-unit-size * 9);
     }
-  }
-  
-  .v-caption {
-	display: block;
-  }
-  .v-caption.v-caption-caption-hidden {
-    display: none;
   }
   
   .force-caption {

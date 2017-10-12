@@ -15,7 +15,7 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserHelper;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.location.LocationForm;
+import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -56,7 +56,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
     	addField(UserDto.USER_EMAIL, TextField.class);
     	addField(UserDto.PHONE, TextField.class);
     	
-    	addField(UserDto.ADDRESS, LocationForm.class).setCaption(null);
+    	addField(UserDto.ADDRESS, LocationEditForm.class).setCaption(null);
     	
     	addField(UserDto.ACTIVE, CheckBox.class);
     	addField(UserDto.USER_NAME, TextField.class);

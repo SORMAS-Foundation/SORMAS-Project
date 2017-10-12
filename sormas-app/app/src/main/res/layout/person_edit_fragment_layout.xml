@@ -82,25 +82,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <de.symeda.sormas.app.component.SpinnerField
-                    android:id="@+id/person_birthdateDD"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.33"
-                    android:paddingTop="@dimen/field_padding"
-                    android:paddingBottom="@dimen/field_padding"
-                    android:nextFocusForward="@+id/person_birthdateMM"
-                    android:value="@={person.birthdateDD}"/>
-
-                <de.symeda.sormas.app.component.SpinnerField
-                    android:id="@+id/person_birthdateMM"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.33"
-                    android:paddingTop="@dimen/field_padding"
-                    android:paddingBottom="@dimen/field_padding"
-                    android:nextFocusForward="@+id/person_birthdateYYYY"
-                    android:value="@={person.birthdateMM}"/>
 
                 <de.symeda.sormas.app.component.SpinnerField
                     android:id="@+id/person_birthdateYYYY"
@@ -109,9 +90,28 @@
                     android:layout_weight="0.33"
                     android:paddingTop="@dimen/field_padding"
                     android:paddingBottom="@dimen/field_padding"
-                    android:nextFocusForward="@+id/person_approximate1Age"
+                    android:nextFocusForward="@+id/person_birthdateMM"
                     android:value="@={person.birthdateYYYY}"/>
 
+                <de.symeda.sormas.app.component.SpinnerField
+                    android:id="@+id/person_birthdateMM"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.33"
+                    android:paddingTop="@dimen/field_padding"
+                    android:paddingBottom="@dimen/field_padding"
+                    android:nextFocusForward="@+id/person_birthdateDD"
+                    android:value="@={person.birthdateMM}"/>
+
+                <de.symeda.sormas.app.component.SpinnerField
+                    android:id="@+id/person_birthdateDD"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.33"
+                    android:paddingTop="@dimen/field_padding"
+                    android:paddingBottom="@dimen/field_padding"
+                    android:nextFocusForward="@+id/person_approximate1Age"
+                    android:value="@={person.birthdateDD}"/>
             </LinearLayout>
 
             <LinearLayout

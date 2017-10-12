@@ -226,26 +226,6 @@ textarea {
   }
 }
 
-body {
-  margin: 0;
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-size: 14px;
-  line-height: 20px;
-  color: #333333;
-  background-color: #ffffff;
-}
-
-a {
-  color: #0088cc;
-  text-decoration: none;
-}
-
-a:hover,
-a:focus {
-  color: #005580;
-  text-decoration: underline;
-}
-
 .img-rounded {
   -webkit-border-radius: 6px;
      -moz-border-radius: 6px;
@@ -1057,23 +1037,6 @@ legend small {
   color: #999999;
 }
 */
-
-label,
-input,
-button,
-select,
-textarea {
-  font-size: 14px;
-  font-weight: normal;
-  line-height: 20px;
-}
-
-input,
-button,
-select,
-textarea {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-}
 
 label {
   display: block;

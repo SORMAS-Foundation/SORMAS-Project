@@ -21,7 +21,7 @@ import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.ui.location.LocationForm;
+import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateTimeField;
@@ -104,9 +104,9 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		addField(EventDto.EVENT_DATE, DateField.class);
 		addField(EventDto.EVENT_STATUS, OptionGroup.class);
 		addField(EventDto.EVENT_DESC, TextArea.class).setRows(2);
-		addField(EventDto.EVENT_LOCATION, LocationForm.class).setCaption(null);
+		addField(EventDto.EVENT_LOCATION, LocationEditForm.class).setCaption(null);
 
-		LocationForm locationForm = (LocationForm) getFieldGroup().getField(EventDto.EVENT_LOCATION);
+		LocationEditForm locationForm = (LocationEditForm) getFieldGroup().getField(EventDto.EVENT_LOCATION);
 		ComboBox districtField = (ComboBox) locationForm.getFieldGroup().getField(LocationDto.DISTRICT);
 		ComboBox surveillanceOfficerField = addField(EventDto.SURVEILLANCE_OFFICER, ComboBox.class);
 		

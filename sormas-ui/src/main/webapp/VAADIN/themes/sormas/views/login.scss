@@ -1,0 +1,55 @@
+
+@mixin login {
+	  // login screen - for small screens, see below
+  .login-screen {
+    background: #EFF5FC;
+
+    @if $login-background-image {
+      background-image: url(#{$login-background-image});
+	  background-size: 960px;
+	  background-repeat: no-repeat;
+      background-position: 50% 50%;
+    }
+
+    width: 100%;
+    height: 100%;
+
+    .login-form {
+      @include valo-panel-style;
+      border: none;
+      padding: $v-layout-margin;
+      @include valo-animate-in-fade($duration: 1s);
+	  margin-right: 50%;
+	  margin-bottom: 10%;      
+    }
+
+    .login-information {
+      display: inline-block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: $login-info-width;
+      height: 100%;
+      background: $v-selection-color; // For IE8
+      background-color: rgba($v-selection-color, $login-info-opacity);
+      padding: $v-layout-margin;
+      color: valo-font-color($v-selection-color, 0.9);
+      @include animation(valo-animate-in-fade 1s 1s backwards);
+
+      h1 {
+        color: inherit;
+      }
+    }
+
+    .centering-layout {
+      display: inline-block;
+      width: 100%;
+      height: 100%;
+      padding-left: $login-info-width;
+
+      .v-slot {
+        height: 100%;
+      }
+    }
+  }
+}
