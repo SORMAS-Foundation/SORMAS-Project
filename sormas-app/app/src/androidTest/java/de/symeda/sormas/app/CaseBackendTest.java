@@ -48,7 +48,7 @@ public class CaseBackendTest {
 
     @Before
     public void initTest() {
-        TestHelper.initTestEnvironment();
+        TestHelper.initTestEnvironment(false);
     }
 
     @Test

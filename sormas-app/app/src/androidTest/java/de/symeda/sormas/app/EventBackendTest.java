@@ -34,13 +34,11 @@ public class EventBackendTest {
 
     @Before
     public void initTest() {
-        TestHelper.initTestEnvironment();
+        TestHelper.initTestEnvironment(false);
     }
 
     @Test
     public void shouldCreateEvent() {
-        TestHelper.initTestEnvironment();
-
         assertThat(DatabaseHelper.getEventDao().queryForAll().size(), is(0));
         TestEntityCreator.createEvent();
 

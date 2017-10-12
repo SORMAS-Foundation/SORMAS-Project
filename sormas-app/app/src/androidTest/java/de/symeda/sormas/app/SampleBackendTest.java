@@ -36,13 +36,11 @@ public class SampleBackendTest {
 
     @Before
     public void initTest() {
-        TestHelper.initTestEnvironment();
+        TestHelper.initTestEnvironment(false);
     }
 
     @Test
     public void shouldCreateSample() {
-        TestHelper.initTestEnvironment();
-
         assertThat(DatabaseHelper.getSampleDao().queryForAll().size(), is(0));
         TestEntityCreator.createSample();
 

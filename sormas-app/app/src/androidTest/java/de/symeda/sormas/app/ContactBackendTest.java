@@ -34,13 +34,11 @@ public class ContactBackendTest {
 
     @Before
     public void initTest() {
-        TestHelper.initTestEnvironment();
+        TestHelper.initTestEnvironment(false);
     }
 
     @Test
     public void shouldCreateContact() {
-        TestHelper.initTestEnvironment();
-
         assertThat(DatabaseHelper.getContactDao().queryForAll().size(), is(0));
         TestEntityCreator.createContact();
 

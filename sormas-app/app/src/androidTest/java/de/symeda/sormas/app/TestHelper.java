@@ -33,8 +33,9 @@ public class TestHelper {
     public static final String SECOND_FACILITY_UUID = "F2F2F2-F2F2F2-F2F2F2-F2F2F2F2";
     public static final String USER_UUID = "0123456789";
     public static final String SECOND_USER_UUID = "0987654321";
+    public static final String INFORMANT_USER_UUID = "0192837465";
 
-    public static void initTestEnvironment() {
+    public static void initTestEnvironment(boolean setInformantAsActiveUser) {
         // Initialize a testing context to not operate on the actual database
         RenamingDelegatingContext context = new RenamingDelegatingContext(InstrumentationRegistry.getTargetContext(), "test_");
         // Make sure that no database/user is still set from the last run
@@ -45,10 +46,10 @@ public class TestHelper {
         ConfigProvider.init(context);
 
         insertInfrastructureData();
-        insertUsers();
+        insertUsers(setInformantAsActiveUser);
     }
 
-    private static void insertUsers() {
+    private static void insertUsers(boolean setInformantAsActiveUser) {
         // Create user and set username and password
         User user = new User();
         user.setUserName("SanaObas");
@@ -60,8 +61,10 @@ public class TestHelper {
         user.setChangeDate(new Date());
         user.setUuid(USER_UUID);
         DatabaseHelper.getUserDao().create(user);
-        ConfigProvider.setUsernameAndPassword("SanaObas", "TestPassword");
-        ConfigProvider.setServerRestUrl("http://this-is-a-test-url-that-hopefully-doesnt-exist.com");
+        if (!setInformantAsActiveUser) {
+            ConfigProvider.setUsernameAndPassword("SanaObas", "TestPassword");
+            ConfigProvider.setServerRestUrl("http://this-is-a-test-url-that-hopefully-doesnt-exist.com");
+        }
 
         // Create a second user with a specific region and district
         User secondUser = new User();
@@ -76,6 +79,25 @@ public class TestHelper {
         secondUser.setRegion(DatabaseHelper.getRegionDao().queryUuid(REGION_UUID));
         secondUser.setDistrict(DatabaseHelper.getDistrictDao().queryUuid(SECOND_DISTRICT_UUID));
         DatabaseHelper.getUserDao().create(secondUser);
+
+        // Create an informant
+        User informant = new User();
+        informant.setUserName("InfoUser");
+        informant.setAktiv(true);
+        informant.setFirstName("Info");
+        informant.setLastName("User");
+        informant.setUserRole(UserRole.INFORMANT);
+        informant.setCreationDate(new Date());
+        informant.setChangeDate(new Date());
+        informant.setUuid(INFORMANT_USER_UUID);
+        informant.setRegion(DatabaseHelper.getRegionDao().queryUuid(REGION_UUID));
+        informant.setDistrict(DatabaseHelper.getDistrictDao().queryUuid(DISTRICT_UUID));
+        informant.setHealthFacility(DatabaseHelper.getFacilityDao().queryUuid(FACILITY_UUID));
+        DatabaseHelper.getUserDao().create(informant);
+        if (setInformantAsActiveUser) {
+            ConfigProvider.setUsernameAndPassword("InfoUser", "TestPassword");
+            ConfigProvider.setServerRestUrl("http://this-is-a-test-url-that-hopefully-doesnt-exist.com");
+        }
     }
 
     private static void insertInfrastructureData() {
