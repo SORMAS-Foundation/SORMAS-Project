@@ -20,6 +20,8 @@ import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.region.CommunityFacade;
 import de.symeda.sormas.api.region.DistrictFacade;
 import de.symeda.sormas.api.region.RegionFacade;
+import de.symeda.sormas.api.report.WeeklyReportDto;
+import de.symeda.sormas.api.report.WeeklyReportFacade;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskFacade;
@@ -50,6 +52,7 @@ public class TestDataCreator extends BaseBeanTest {
 	private final ContactFacade contactFacade;
 	private final TaskFacade taskFacade;
 	private final VisitFacade visitFacade;
+	private final WeeklyReportFacade weeklyReportFacade;
 	private final RegionFacade regionFacade;
 	private final DistrictFacade districtFacade;
 	private final CommunityFacade communityFacade;
@@ -61,8 +64,8 @@ public class TestDataCreator extends BaseBeanTest {
 	private final FacilityService facilityService;
 
 	public TestDataCreator(UserFacade userFacade, PersonFacade personFacade, CaseFacade caseFacade,
-			ContactFacade contactFacade, TaskFacade taskFacade, VisitFacade visitFacade, RegionFacade regionFacade,
-			DistrictFacade districtFacade, CommunityFacade communityFacade, FacilityFacade facilityFacade,
+			ContactFacade contactFacade, TaskFacade taskFacade, VisitFacade visitFacade, WeeklyReportFacade weeklyReportFacade,
+			RegionFacade regionFacade, DistrictFacade districtFacade, CommunityFacade communityFacade, FacilityFacade facilityFacade,
 			RegionService regionService, DistrictService districtService, CommunityService communityService,
 			FacilityService facilityService) {
 		this.userFacade = userFacade;
@@ -71,6 +74,7 @@ public class TestDataCreator extends BaseBeanTest {
 		this.contactFacade = contactFacade;
 		this.taskFacade = taskFacade;
 		this.visitFacade = visitFacade;
+		this.weeklyReportFacade = weeklyReportFacade;
 		this.regionFacade = regionFacade;
 		this.districtFacade = districtFacade;
 		this.communityFacade = communityFacade;
@@ -82,7 +86,7 @@ public class TestDataCreator extends BaseBeanTest {
 	}
 	
 	@Test
-	public UserDto createUser(String regionUuid, String districtUuid, String firstName, String lastName, UserRole... roles) {
+	public UserDto createUser(String regionUuid, String districtUuid, String facilityUuid, String firstName, String lastName, UserRole... roles) {
 		UserDto user = new UserDto();
 		user.setUuid(DataHelper.createUuid());
 		user.setFirstName(firstName);
@@ -91,6 +95,7 @@ public class TestDataCreator extends BaseBeanTest {
 		user.setUserRoles(new HashSet<UserRole>(Arrays.asList(roles)));
 		user.setRegion(regionFacade.getRegionByUuid(regionUuid));
 		user.setDistrict(districtFacade.getDistrictByUuid(districtUuid));
+		user.setHealthFacility(facilityFacade.getByUuid(facilityUuid));
 		user = userFacade.saveUser(user);
 		
 		return user;
@@ -181,24 +186,65 @@ public class TestDataCreator extends BaseBeanTest {
 	}
 	
 	@Test
+	public WeeklyReportDto createWeeklyReport(String facilityUuid, UserDto informant, Date reportDateTime, int epiWeek, int year, int numberOfCases) {
+		WeeklyReportDto report = new WeeklyReportDto();
+		report.setUuid(DataHelper.createUuid());
+		report.setHealthFacility(facilityFacade.getByUuid(facilityUuid));
+		report.setInformant(informant);
+		report.setReportDateTime(reportDateTime);
+		report.setEpiWeek(epiWeek);
+		report.setYear(year);
+		report.setTotalNumberOfCases(numberOfCases);
+		
+		report = weeklyReportFacade.saveWeeklyReport(report);
+		
+		return report;
+	}
+	
+	@Test
 	public RDCF createRDCF(String regionName, String districtName, String communityName, String facilityName) {
+		Region region = createRegion(regionName);
+		District district = createDistrict(districtName, region);
+		Community community = createCommunity(communityName, district);
+		Facility facility = createFacility(facilityName, region, district, community);
+
+		return new RDCF(region, district, community, facility);
+	}
+	
+	@Test 
+	public Region createRegion(String regionName) {
 		Region region = new Region();
 		region.setUuid(DataHelper.createUuid());
 		region.setName(regionName);
 		regionService.persist(region);
 		
+		return region;
+	}
+	
+	@Test
+	public District createDistrict(String districtName, Region region) {
 		District district = new District();
 		district.setUuid(DataHelper.createUuid());
 		district.setName(districtName);
 		district.setRegion(region);
 		districtService.persist(district);
 		
+		return district;
+	}
+	
+	@Test
+	public Community createCommunity(String communityName, District district) {
 		Community community = new Community();
 		community.setUuid(DataHelper.createUuid());
 		community.setName(communityName);
 		community.setDistrict(district);
 		communityService.persist(community);
 		
+		return community;
+	}
+	
+	@Test
+	public Facility createFacility(String facilityName, Region region, District district, Community community) {
 		Facility facility = new Facility();
 		facility.setUuid(DataHelper.createUuid());
 		facility.setName(facilityName);
@@ -208,7 +254,7 @@ public class TestDataCreator extends BaseBeanTest {
 		facility.setRegion(region);
 		facilityService.persist(facility);
 		
-		return new RDCF(region, district, community, facility);
+		return facility;
 	}
 	
 	public class RDCF {

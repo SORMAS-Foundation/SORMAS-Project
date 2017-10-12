@@ -42,6 +42,11 @@ public class DistrictFacadeEjb implements DistrictFacade {
 		return toDto(service.getByUuid(uuid));
 	}
 	
+	@Override
+	public DistrictReferenceDto getDistrictReferenceByUuid(String uuid) {
+		return toReferenceDto(service.getByUuid(uuid));
+	}
+	
 	public static DistrictReferenceDto toReferenceDto(District entity) {
 		if (entity == null) {
 			return null;

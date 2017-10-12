@@ -12,6 +12,7 @@ import com.vaadin.data.util.filter.Compare.Equal;
 import com.vaadin.data.util.filter.Not;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
+import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.renderers.DateRenderer;
 import com.vaadin.ui.renderers.HtmlRenderer;
@@ -95,7 +96,7 @@ public class TaskGrid extends Grid implements ItemClickListener {
 
         BeanItemContainer<TaskDto> container = new BeanItemContainer<TaskDto>(TaskDto.class);
 		GeneratedPropertyContainer editContainer = new GeneratedPropertyContainer(container);
-        VaadinUiUtil.addEditColumn(editContainer, EDIT_BTN_ID);
+        VaadinUiUtil.addIconColumn(editContainer, EDIT_BTN_ID, FontAwesome.PENCIL_SQUARE);
         setContainerDataSource(editContainer);
 
         setColumns(EDIT_BTN_ID, TaskDto.CONTEXT_REFERENCE, TaskDto.TASK_TYPE,  TaskDto.PRIORITY,

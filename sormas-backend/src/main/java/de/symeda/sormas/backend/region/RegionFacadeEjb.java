@@ -45,6 +45,11 @@ public class RegionFacadeEjb implements RegionFacade {
 		return toDto(service.getByUuid(uuid));
 	}
 	
+	@Override
+	public RegionReferenceDto getRegionReferenceByUuid(String uuid) {
+		return toReferenceDto(service.getByUuid(uuid));
+	}
+	
 	public static RegionReferenceDto toReferenceDto(Region entity) {
 		if (entity == null) {
 			return null;

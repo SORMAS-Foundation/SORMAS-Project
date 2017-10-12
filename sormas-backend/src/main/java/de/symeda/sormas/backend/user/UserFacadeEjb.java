@@ -72,6 +72,15 @@ public class UserFacadeEjb implements UserFacade {
 				.map(f -> toReferenceDto(f))
 				.collect(Collectors.toList());
 	}
+	
+	@Override
+	public List<UserReferenceDto> getForWeeklyReportDetails(DistrictReferenceDto districtRef) {
+		District district = districtService.getByReferenceDto(districtRef);
+		
+		return userService.getForWeeklyReportDetails(district).stream()
+				.map(u -> toReferenceDto(u))
+				.collect(Collectors.toList());
+	}
 
 	@Override
 	public List<UserDto> getAll(UserRole... roles) {

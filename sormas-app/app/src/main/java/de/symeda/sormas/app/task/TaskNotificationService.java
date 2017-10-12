@@ -163,7 +163,7 @@ public class TaskNotificationService extends Service {
             Notification notification = new NotificationCompat.Builder(context)
                     .setTicker(r.getString(R.string.headline_task_notification))
                     .setSmallIcon(R.mipmap.ic_launcher)
-                    .setContentTitle(task.getTaskType().toString() + " (" + (caze != null ? caze.getDisease().toShortString() : contact != null ? contact.getCaze().getDisease().toShortString() : "") + ")")
+                    .setContentTitle(task.getTaskType().toString() + (caze != null ? " (" + caze.getDisease().toShortString() + ")" : contact != null ? " (" + contact.getCaze().getDisease().toShortString() + ")" : ""))
                     .setStyle(new NotificationCompat.BigTextStyle().bigText(Html.fromHtml(content.toString())))
                     .setContentIntent(pi)
                     .setAutoCancel(true)

@@ -16,6 +16,7 @@ public class FacilityDto extends FacilityReferenceDto {
 	public static final String NONE_FACILITY_UUID = "SORMAS-CONSTID-ISNONE-FACILITY";
 	public static final String OTHER_FACILITY = "OTHER_FACILITY";
 	public static final String NO_FACILITY = "NO_FACILITY";
+	public static final String NAME = "name";
 	
 	private String name;
 	private RegionReferenceDto region;

@@ -1,11 +1,15 @@
 package de.symeda.sormas.backend.report;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
+import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.validation.constraints.NotNull;
 
@@ -17,15 +21,26 @@ import de.symeda.sormas.api.report.WeeklyReportDto;
 import de.symeda.sormas.api.report.WeeklyReportFacade;
 import de.symeda.sormas.api.report.WeeklyReportReferenceDto;
 import de.symeda.sormas.api.report.WeeklyReportSummaryDto;
+import de.symeda.sormas.api.task.TaskContext;
+import de.symeda.sormas.api.task.TaskStatus;
+import de.symeda.sormas.api.task.TaskType;
+import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.region.DistrictService;
+import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionService;
+import de.symeda.sormas.backend.task.Task;
+import de.symeda.sormas.backend.task.TaskCriteria;
+import de.symeda.sormas.backend.task.TaskService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
+import de.symeda.sormas.backend.util.DateHelper8;
 import de.symeda.sormas.backend.util.DtoHelper;
 
 @Stateless(name = "WeeklyReportFacade")
@@ -41,6 +56,8 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 	private FacilityService facilityService;
 	@EJB
 	private UserService userService;	
+	@EJB
+	private TaskService taskService;
 	
 	@Override
 	public List<WeeklyReportDto> getAllWeeklyReportsAfter(Date date, String userUuid) {
@@ -65,6 +82,11 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 	}
 	
 	@Override
+	public WeeklyReportDto getByUuid(String uuid) {
+		return toDto(weeklyReportService.getByUuid(uuid));
+	}
+	
+	@Override
 	public WeeklyReportDto saveWeeklyReport(WeeklyReportDto dto) {
 		WeeklyReport report = fromDto(dto);
 		weeklyReportService.ensurePersisted(report);
@@ -84,23 +106,29 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 	}
 
 	@Override
-	public List<WeeklyReportSummaryDto> getSummariesPerDistrict(EpiWeek epiWeek) {
-		weeklyReportService.getWeeklyReportSummariesPerDistrict(epiWeek);
-		return null;
+	public List<WeeklyReportSummaryDto> getSummariesPerRegion(EpiWeek epiWeek) {
+		return weeklyReportService.getWeeklyReportSummariesPerRegion(epiWeek);
+	}
+	
+	@Override
+	public List<WeeklyReportSummaryDto> getSummariesPerDistrict(RegionReferenceDto regionRef, EpiWeek epiWeek) {
+		Region region = regionService.getByReferenceDto(regionRef);
+		
+		return weeklyReportService.getWeeklyReportSummariesPerDistrict(region, epiWeek);
 	}
 	
 	@Override
 	public WeeklyReportSummaryDto getSummaryDtoByRegion(RegionReferenceDto regionRef, EpiWeek epiWeek) {
 		List<FacilityReferenceDto> facilities = FacadeProvider.getFacilityFacade().getHealthFacilitiesByRegion(regionRef, false);
 	
-	return buildUIDto(facilities, regionRef, null, epiWeek);
+		return buildSummaryDto(facilities, regionRef, null, epiWeek);
 	}
 	
 	@Override
 	public WeeklyReportSummaryDto getSummaryDtoByDistrict(DistrictReferenceDto districtRef, EpiWeek epiWeek) {
 		List<FacilityReferenceDto> facilities = FacadeProvider.getFacilityFacade().getHealthFacilitiesByDistrict(districtRef, false);
 		
-		return buildUIDto(facilities, null, districtRef, epiWeek);
+		return buildSummaryDto(facilities, null, districtRef, epiWeek);
 	}
 	
 	@Override
@@ -118,6 +146,13 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 				.stream()
 				.map(r -> toReferenceDto(r))
 				.collect(Collectors.toList());
+	}
+	
+	@Override
+	public WeeklyReportReferenceDto getByEpiWeekAndUser(EpiWeek epiWeek, UserReferenceDto userRef) {
+		User user = userService.getByReferenceDto(userRef);
+		
+		return toReferenceDto(weeklyReportService.getByEpiWeekAndUser(epiWeek, user));
 	}
 	
 	public WeeklyReport fromDto(@NotNull WeeklyReportDto source) {
@@ -166,7 +201,7 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 		return target;
 	}
 	
-	private WeeklyReportSummaryDto buildUIDto(List<FacilityReferenceDto> facilities, RegionReferenceDto regionRef, DistrictReferenceDto districtRef, EpiWeek epiWeek) {
+	private WeeklyReportSummaryDto buildSummaryDto(List<FacilityReferenceDto> facilities, RegionReferenceDto regionRef, DistrictReferenceDto districtRef, EpiWeek epiWeek) {
 		WeeklyReportSummaryDto dto = new WeeklyReportSummaryDto();
 		int numberOfReports = 0;
 		int numberOfZeroReports = 0;
@@ -209,6 +244,49 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 		dto.setMissingReportsPercentage(100 / totalReportsCount * numberOfMissingReports);
 		
 		return dto;
+	}
+	
+	@RolesAllowed(UserRole._SYSTEM)
+	public void generateSubmitWeeklyReportTasks() {
+		List<User> informants = userService.getAllByRegionAndUserRoles(null, UserRole.INFORMANT);
+		EpiWeek prevEpiWeek = DateHelper.getPreviousEpiWeek(new Date());
+		
+		for (User user : informants) {
+			WeeklyReport report = weeklyReportService.getByEpiWeekAndUser(prevEpiWeek, user);
+			
+			if (report != null) {
+				// A Weekly Report for last week has been found, so there is no need to create a task
+				continue;
+			} else {
+				TaskCriteria pendingUserTaskCriteria = new TaskCriteria()
+						.taskTypeEquals(TaskType.WEEKLY_REPORT_GENERATION)
+						.assigneeUserEquals(user)
+						.taskStatusEquals(TaskStatus.PENDING);
+				List<Task> existingTasks = taskService.findBy(pendingUserTaskCriteria);
+				
+				if (!existingTasks.isEmpty()) {
+					// There is already a task for generating the Weekly Report for last week
+					continue;
+				}
+				
+				// Create the task
+				LocalDateTime fromDateTime = LocalDate.now().atStartOfDay();
+				LocalDateTime toDateTime = fromDateTime.plusDays(1);
+				
+				Task task = taskService.buildTask(null);
+				task.setTaskContext(TaskContext.GENERAL);
+				task.setTaskType(TaskType.WEEKLY_REPORT_GENERATION);
+				task.setSuggestedStart(DateHelper8.toDate(fromDateTime));
+				task.setDueDate(DateHelper8.toDate(toDateTime.minusMinutes(1)));
+				task.setAssigneeUser(user);
+				taskService.ensurePersisted(task);
+			}
+		}
+	}
+	
+	@LocalBean
+	@Stateless
+	public static class WeeklyReportFacadeEjbLocal extends WeeklyReportFacadeEjb {
 	}
 
 }

@@ -6,6 +6,7 @@ import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.GeneratedPropertyContainer;
 import com.vaadin.data.util.PropertyValueGenerator;
+import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
@@ -41,7 +42,7 @@ public class EventParticipantsGrid extends Grid {
 		
 		BeanItemContainer<EventParticipantDto> container = new BeanItemContainer<EventParticipantDto>(EventParticipantDto.class);
 		GeneratedPropertyContainer generatedContainer = new GeneratedPropertyContainer(container);
-        VaadinUiUtil.addEditColumn(generatedContainer, EDIT_BTN_ID);
+        VaadinUiUtil.addIconColumn(generatedContainer, EDIT_BTN_ID, FontAwesome.PENCIL_SQUARE);
 		setContainerDataSource(generatedContainer);
 		
 		generatedContainer.addGeneratedProperty(PERSON_UUID, new PropertyValueGenerator<String>() {

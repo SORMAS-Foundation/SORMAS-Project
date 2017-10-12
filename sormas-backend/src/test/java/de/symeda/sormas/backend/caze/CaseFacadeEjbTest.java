@@ -42,6 +42,7 @@ import de.symeda.sormas.backend.region.DistrictFacadeEjb;
 import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.region.RegionService;
+import de.symeda.sormas.backend.report.WeeklyReportFacadeEjb.WeeklyReportFacadeEjbLocal;
 import de.symeda.sormas.backend.task.TaskFacadeEjb;
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 import de.symeda.sormas.backend.util.DateHelper8;
@@ -66,7 +67,7 @@ public class CaseFacadeEjbTest extends BaseBeanTest {
 		TestDataCreator creator = createTestDataCreator();
 	
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(user, cazePerson, Disease.EVD, CaseClassification.PROBABLE,
 				InvestigationStatus.PENDING, new Date(), rdcf);
@@ -97,11 +98,11 @@ public class CaseFacadeEjbTest extends BaseBeanTest {
 		TestDataCreator creator = createTestDataCreator();
 		
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(user, cazePerson, Disease.EVD, CaseClassification.PROBABLE,
 				InvestigationStatus.PENDING, new Date(), rdcf);
-		UserDto caseOfficer = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), "Case", "Officer", UserRole.CASE_OFFICER);
+		UserDto caseOfficer = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Case", "Officer", UserRole.CASE_OFFICER);
 		TaskDto pendingTask = creator.createTask(TaskContext.CASE, TaskType.CASE_INVESTIGATION, TaskStatus.PENDING, caze, null, user);
 		TaskDto doneTask = creator.createTask(TaskContext.CASE, TaskType.CASE_INVESTIGATION, TaskStatus.DONE, caze, null, user);
 		
@@ -130,8 +131,8 @@ public class CaseFacadeEjbTest extends BaseBeanTest {
 	private TestDataCreator createTestDataCreator() {
 		return new TestDataCreator(getBean(UserFacadeEjbLocal.class), getBean(PersonFacadeEjb.class),
 				getBean(CaseFacadeEjbLocal.class), getBean(ContactFacadeEjbLocal.class), getBean(TaskFacadeEjb.class),
-				getBean(VisitFacadeEjb.class), getBean(RegionFacadeEjb.class), getBean(DistrictFacadeEjb.class), getBean(CommunityFacadeEjb.class), 
-				getBean(FacilityFacadeEjb.class), getBean(RegionService.class), getBean(DistrictService.class),
+				getBean(VisitFacadeEjb.class), getBean(WeeklyReportFacadeEjbLocal.class), getBean(RegionFacadeEjb.class), getBean(DistrictFacadeEjb.class), 
+				getBean(CommunityFacadeEjb.class), getBean(FacilityFacadeEjb.class), getBean(RegionService.class), getBean(DistrictService.class),
 				getBean(CommunityService.class), getBean(FacilityService.class));
 	}
 

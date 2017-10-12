@@ -3,10 +3,9 @@ package de.symeda.sormas.ui.reports;
 import java.util.Date;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.shared.ui.grid.HeightMode;
 import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.NativeSelect;
@@ -33,6 +32,7 @@ public class ReportsView extends AbstractView {
 		addStyleName("crud-view");
 		
 		grid = new WeeklyReportGrid();
+		grid.setHeightMode(HeightMode.UNDEFINED);
 		
 		gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createTopBar());

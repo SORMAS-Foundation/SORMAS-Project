@@ -40,15 +40,13 @@ public class VaadinUiUtil {
 		
 		return popupWindow;
 	}
-
-
+	
 	@SuppressWarnings("serial")
-	public static void addEditColumn(GeneratedPropertyContainer editContainer, String editPropertyId) {
-		// edit button
-        editContainer.addGeneratedProperty(editPropertyId, new PropertyValueGenerator<String>() {
+	public static void addIconColumn(GeneratedPropertyContainer container, String iconPropertyId, FontAwesome fontAwesomeIcon) {
+		container.addGeneratedProperty(iconPropertyId, new PropertyValueGenerator<String>() {
 			@Override
 			public String getValue(Item item, Object itemId, Object propertyId) {
-				return FontAwesome.PENCIL_SQUARE.getHtml();
+				return fontAwesomeIcon.getHtml();
 			}
 			@Override
 			public Class<String> getType() {

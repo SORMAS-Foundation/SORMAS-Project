@@ -65,6 +65,7 @@ public class TaskDao extends AbstractAdoDao<Task> {
      * 2. due date within range
      * 3. localChangeDate within range, not modified (-> has been updated on server) and suggested start before end of range
      * Ordered by priority, then due date - oldes (most due) first
+     * Typically, the range is the interval between two notification polls (e.g. 2 minutes)
      * @return
      */
     public List<Task> queryMyPendingForNotification(Date rangeStart, Date rangeEnd) {
@@ -86,6 +87,7 @@ public class TaskDao extends AbstractAdoDao<Task> {
                             where.and(
                                     where.between(Task.LOCAL_CHANGE_DATE, rangeStart, rangeEnd),
                                     where.eq(Task.MODIFIED, false),
+                                    where.raw(Task.LAST_OPENED_DATE + " < " + Task.LOCAL_CHANGE_DATE),
                                     where.le(Task.SUGGESTED_START, rangeEnd)
                             )
                     )

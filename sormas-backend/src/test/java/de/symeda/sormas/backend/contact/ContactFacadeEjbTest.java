@@ -13,19 +13,16 @@ import org.junit.Test;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskFacade;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserFacade;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitFacade;
@@ -44,6 +41,7 @@ import de.symeda.sormas.backend.region.DistrictFacadeEjb;
 import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.region.RegionService;
+import de.symeda.sormas.backend.report.WeeklyReportFacadeEjb.WeeklyReportFacadeEjbLocal;
 import de.symeda.sormas.backend.task.TaskFacadeEjb;
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 import de.symeda.sormas.backend.util.DateHelper8;
@@ -68,7 +66,8 @@ public class ContactFacadeEjbTest extends BaseBeanTest  {
 		TestDataCreator creator = createTestDataCreator();
 		
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid()
+				,"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(user, cazePerson, Disease.EVD, CaseClassification.PROBABLE,
 				InvestigationStatus.PENDING, new Date(), rdcf);
@@ -96,16 +95,13 @@ public class ContactFacadeEjbTest extends BaseBeanTest  {
 	
 	@Test
 	public void testGenerateContactFollowUpTasks() {
-		UserFacade userFacade = getBean(UserFacadeEjbLocal.class);
 		ContactFacade contactFacade = getBean(ContactFacadeEjbLocal.class);
-		PersonFacade personFacade = getBean(PersonFacadeEjb.class);
-		CaseFacade caseFacade = getBean(CaseFacadeEjbLocal.class);
 		TaskFacade taskFacade = getBean(TaskFacadeEjb.class);
 		
 		TestDataCreator creator = createTestDataCreator();
 		
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(user, cazePerson, Disease.EVD, CaseClassification.PROBABLE,
 				InvestigationStatus.PENDING, new Date(), rdcf);
@@ -131,8 +127,8 @@ public class ContactFacadeEjbTest extends BaseBeanTest  {
 	private TestDataCreator createTestDataCreator() {
 		return new TestDataCreator(getBean(UserFacadeEjbLocal.class), getBean(PersonFacadeEjb.class),
 				getBean(CaseFacadeEjbLocal.class), getBean(ContactFacadeEjbLocal.class), getBean(TaskFacadeEjb.class),
-				getBean(VisitFacadeEjb.class), getBean(RegionFacadeEjb.class), getBean(DistrictFacadeEjb.class), getBean(CommunityFacadeEjb.class), 
-				getBean(FacilityFacadeEjb.class), getBean(RegionService.class), getBean(DistrictService.class),
+				getBean(VisitFacadeEjb.class), getBean(WeeklyReportFacadeEjbLocal.class), getBean(RegionFacadeEjb.class), getBean(DistrictFacadeEjb.class), 
+				getBean(CommunityFacadeEjb.class), getBean(FacilityFacadeEjb.class), getBean(RegionService.class), getBean(DistrictService.class),
 				getBean(CommunityService.class), getBean(FacilityService.class));
 	}
 	
