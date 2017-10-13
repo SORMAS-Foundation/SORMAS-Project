@@ -4,11 +4,12 @@ import java.util.Date;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.shared.ui.grid.HeightMode;
+import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.utils.DateHelper;
@@ -24,8 +25,8 @@ public class ReportsView extends AbstractView {
 	
 	private WeeklyReportGrid grid;
 	private VerticalLayout gridLayout;
-	private NativeSelect yearFilter;
-	private NativeSelect epiWeekFilter;
+	private AbstractSelect yearFilter;
+	private AbstractSelect epiWeekFilter;
 	
 	public ReportsView() {
 		setSizeFull();
@@ -68,7 +69,7 @@ public class ReportsView extends AbstractView {
 		int year = prevEpiWeek.getYear();
 		int week = prevEpiWeek.getWeek();
 		
-		yearFilter = new NativeSelect();
+		yearFilter = new ComboBox();
 		yearFilter.setWidth(200, Unit.PIXELS);
 		yearFilter.addItems(DateHelper.getYearsToNow());
 		yearFilter.select(year);
@@ -76,7 +77,7 @@ public class ReportsView extends AbstractView {
 		yearFilter.setItemCaptionMode(ItemCaptionMode.ID_TOSTRING);
 		filterLayout.addComponent(yearFilter);
 		
-		epiWeekFilter = new NativeSelect();
+		epiWeekFilter = new ComboBox();
 		epiWeekFilter.setWidth(200, Unit.PIXELS);
 		epiWeekFilter.addItems(DateHelper.createWeeksList(year));
 		epiWeekFilter.select(week);

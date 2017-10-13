@@ -1,6 +1,4 @@
-@import "font-awesome.min.css";
-
-@import "bootstrap-reduced.css";
+@import "bootstrap-grid.min.css";
 
 @import "general.css";
 
@@ -12847,7 +12845,7 @@ div.v-layout.v-horizontal.v-widget {
 	font-weight: bold;
 	font-size: 32px;
 	line-height: 32px;
-	font-family: Source Sans Pro;
+	font-family: "Source Sans Pro";
 	letter-spacing: -1px;
 	border-bottom: 3px solid #E10002;
 }
@@ -12973,7 +12971,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-radiobutton {
-	margin: 4px 0 4px -2px !important;
+	margin: 0 0 10px -2px !important;
 	padding: 0 !important;
 	border: 2px solid #CDD8EC;
 	border-radius: 0;
@@ -12983,6 +12981,7 @@ div.v-layout.v-horizontal.v-widget {
 
 .sormas .v-radiobutton:first-child {
 	border-radius: 4px 0 0 4px;
+	margin-left: 0 !important;
 }
 
 .sormas .v-radiobutton:last-child {
@@ -12995,7 +12994,9 @@ div.v-layout.v-horizontal.v-widget {
 
 :root .sormas .v-radiobutton > input ~ label {
 	margin-bottom: 0;
-	padding: 3px 12px;
+	padding: 4px 8px;
+	height: 28px;
+	line-height: 20px;
 }
 
 :root .sormas .v-radiobutton > input:checked ~ label {

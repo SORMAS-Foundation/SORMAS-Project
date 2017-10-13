@@ -19,7 +19,6 @@ import com.vaadin.ui.CustomField;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.Field;
-import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.OptionGroup;
 
 import de.symeda.sormas.api.DataTransferObject;

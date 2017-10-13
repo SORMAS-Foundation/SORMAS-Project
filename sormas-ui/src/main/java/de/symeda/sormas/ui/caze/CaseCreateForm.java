@@ -3,7 +3,6 @@ package de.symeda.sormas.ui.caze;
 import java.util.Arrays;
 
 import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
@@ -45,7 +44,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 
     @Override
 	protected void addFields() {
-    	addField(CaseDataDto.DISEASE, NativeSelect.class);
+    	addField(CaseDataDto.DISEASE, ComboBox.class);
     	addField(CaseDataDto.DISEASE_DETAILS, TextField.class);
     	
     	addCustomField(FIRST_NAME, String.class, TextField.class);

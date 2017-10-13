@@ -429,7 +429,7 @@ public class MapComponent extends VerticalLayout {
     	}
 		
 		public String getUrl() {
-			return "VAADIN/themes/sormastheme/mapicons/" + imgName + ".png";
+			return "VAADIN/themes/sormas/mapicons/" + imgName + ".png";
 		};
     }
     

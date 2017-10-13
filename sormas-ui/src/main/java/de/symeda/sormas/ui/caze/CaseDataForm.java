@@ -7,9 +7,9 @@ import com.vaadin.data.Property;
 import com.vaadin.data.validator.RegexpValidator;
 import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.Window;
@@ -95,7 +95,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
     	
     	addField(CaseDataDto.CASE_CLASSIFICATION, OptionGroup.class);
     	addField(CaseDataDto.INVESTIGATION_STATUS, OptionGroup.class);
-    	NativeSelect diseaseField = addField(CaseDataDto.DISEASE, NativeSelect.class);
+    	AbstractSelect diseaseField = addField(CaseDataDto.DISEASE, ComboBox.class);
     	TextField diseaseDetailsField = addField(CaseDataDto.DISEASE_DETAILS, TextField.class);
     	TextField healthFacilityDetails = addField(CaseDataDto.HEALTH_FACILITY_DETAILS, TextField.class);
     	
@@ -203,10 +203,10 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	
 	private static class DiseaseChangeListener implements ValueChangeListener {
 		
-		private NativeSelect diseaseField;
+		private AbstractSelect diseaseField;
 		private Disease currentDisease;
 		
-		DiseaseChangeListener(NativeSelect diseaseField, Disease currentDisease) {
+		DiseaseChangeListener(AbstractSelect diseaseField, Disease currentDisease) {
 			this.diseaseField = diseaseField;
 			this.currentDisease = currentDisease;
 		}

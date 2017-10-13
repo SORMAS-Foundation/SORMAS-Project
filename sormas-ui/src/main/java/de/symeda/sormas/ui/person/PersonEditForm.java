@@ -12,7 +12,6 @@ import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.Field;
-import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
@@ -153,18 +152,18 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
     	addField(PersonDto.APPROXIMATE_AGE, TextField.class);
     	addField(PersonDto.APPROXIMATE_AGE_TYPE, ComboBox.class);
     	
-    	NativeSelect deathPlaceType = addField(PersonDto.DEATH_PLACE_TYPE, NativeSelect.class);
+    	AbstractSelect deathPlaceType = addField(PersonDto.DEATH_PLACE_TYPE, ComboBox.class);
     	deathPlaceType.setNullSelectionAllowed(true);
     	TextField deathPlaceDesc = addField(PersonDto.DEATH_PLACE_DESCRIPTION, TextField.class);
     	addField(PersonDto.BURIAL_DATE, DateField.class);
     	TextField burialPlaceDesc = addField(PersonDto.BURIAL_PLACE_DESCRIPTION, TextField.class);
-    	addField(PersonDto.BURIAL_CONDUCTOR, NativeSelect.class);
+    	addField(PersonDto.BURIAL_CONDUCTOR, ComboBox.class);
     	
     	addField(PersonDto.ADDRESS, LocationEditForm.class).setCaption(null);
     	addField(PersonDto.PHONE, TextField.class);
     	addField(PersonDto.PHONE_OWNER, TextField.class);
 
-    	addField(PersonDto.OCCUPATION_TYPE, NativeSelect.class);
+    	addField(PersonDto.OCCUPATION_TYPE, ComboBox.class);
     	addField(PersonDto.OCCUPATION_DETAILS, TextField.class);
     	
     	ComboBox facilityRegion = new ComboBox();
@@ -303,7 +302,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	}
 	
 	private void toogleOccupationMetaFields() {
-		OccupationType type = (OccupationType) ((NativeSelect)getFieldGroup().getField(PersonDto.OCCUPATION_TYPE)).getValue();
+		OccupationType type = (OccupationType) ((AbstractSelect)getFieldGroup().getField(PersonDto.OCCUPATION_TYPE)).getValue();
 		switch(type) {
 			case BUSINESSMAN_WOMAN:
 			case TRANSPORTER:
@@ -338,7 +337,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	private void toogleDeathAndBurialFields() {
 		List<Object> deathAndBurialIds = Arrays.asList(PersonDto.DEATH_PLACE_TYPE, PersonDto.DEATH_PLACE_DESCRIPTION, PersonDto.BURIAL_DATE,
 				PersonDto.BURIAL_PLACE_DESCRIPTION, PersonDto.BURIAL_CONDUCTOR);
-		PresentCondition type = (PresentCondition) ((NativeSelect)getFieldGroup().getField(PersonDto.PRESENT_CONDITION)).getValue();
+		PresentCondition type = (PresentCondition) ((AbstractSelect)getFieldGroup().getField(PersonDto.PRESENT_CONDITION)).getValue();
 		switch (type) {
 		case DEAD:
 			setVisible(true,
@@ -379,7 +378,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			}
 		}
 	
-		fillDeathAndBurialFields((NativeSelect)getField(PersonDto.DEATH_PLACE_TYPE), (TextField)getField(PersonDto.DEATH_PLACE_DESCRIPTION), (TextField)getField(PersonDto.BURIAL_PLACE_DESCRIPTION));
+		fillDeathAndBurialFields((AbstractSelect)getField(PersonDto.DEATH_PLACE_TYPE), (TextField)getField(PersonDto.DEATH_PLACE_DESCRIPTION), (TextField)getField(PersonDto.BURIAL_PLACE_DESCRIPTION));
 	}
 	
 	private void fillFacilityFields() {
@@ -403,7 +402,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	}
 	
 	private void updateOccupationFieldCaptions() {
-		OccupationType type = (OccupationType) ((NativeSelect)getFieldGroup().getField(PersonDto.OCCUPATION_TYPE)).getValue();
+		OccupationType type = (OccupationType) ((AbstractSelect)getFieldGroup().getField(PersonDto.OCCUPATION_TYPE)).getValue();
 		Field<?> od = getFieldGroup().getField(PersonDto.OCCUPATION_DETAILS);
 		switch(type) {
 			case BUSINESSMAN_WOMAN:
@@ -440,7 +439,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		months.setItemCaption(12, I18nProperties.getEnumCaption(Month.DECEMBER));
 	}
 	
-	private void fillDeathAndBurialFields(NativeSelect deathPlaceType, TextField deathPlaceDesc, TextField burialPlaceDesc) {
+	private void fillDeathAndBurialFields(AbstractSelect deathPlaceType, TextField deathPlaceDesc, TextField burialPlaceDesc) {
 		if (deathPlaceType.isVisible() && deathPlaceType.getValue() == null) {
 			deathPlaceType.setValue(DeathPlaceType.OTHER);
 			if (deathPlaceDesc.isVisible() && (deathPlaceDesc.getValue() == null || deathPlaceDesc.getValue().isEmpty())) {
