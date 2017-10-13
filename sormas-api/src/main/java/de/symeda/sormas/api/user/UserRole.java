@@ -74,6 +74,10 @@ public enum UserRole {
 			collection.add(SURVEILLANCE_SUPERVISOR);
 			collection.add(CASE_SUPERVISOR);
 			collection.add(CONTACT_SUPERVISOR);
+			collection.add(CASE_OFFICER);
+			collection.add(CONTACT_OFFICER);
+			collection.add(SURVEILLANCE_OFFICER);
+			collection.add(LAB_USER);
 			break;
 		case SURVEILLANCE_SUPERVISOR:
 			collection.add(SURVEILLANCE_OFFICER);
