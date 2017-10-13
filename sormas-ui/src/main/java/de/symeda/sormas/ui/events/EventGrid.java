@@ -67,9 +67,11 @@ public class EventGrid extends Grid {
 			@Override
 			public String getValue(Item item, Object itemId, Object propertyId) {
 				EventDto eventDto = (EventDto) itemId;
-				if(eventDto.getDisease() != null) {
-					String diseaseName = eventDto.getDisease().getName();
-					return Disease.valueOf(diseaseName).toShortString();
+				Disease disease = eventDto.getDisease();
+				if(disease != null) {
+					String diseaseName = disease.getName();
+					return disease == Disease.OTHER ? Disease.valueOf(diseaseName).toShortString() + " (" + eventDto.getDiseaseDetails() + ")" 
+							: Disease.valueOf(diseaseName).toShortString();
 				} else {
 					return null;
 				}

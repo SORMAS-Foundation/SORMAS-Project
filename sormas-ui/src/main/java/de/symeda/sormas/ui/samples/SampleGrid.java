@@ -66,8 +66,10 @@ public class SampleGrid extends Grid {
 			@Override
 			public String getValue(Item item, Object itemId, Object propertyId) {
 				SampleIndexDto indexDto = (SampleIndexDto) itemId;
-				String diseaseName = indexDto.getDisease().getName();
-				return Disease.valueOf(diseaseName).toShortString();
+				Disease disease = indexDto.getDisease();
+				String diseaseName = disease.getName();
+				return disease == Disease.OTHER ? Disease.valueOf(diseaseName).toShortString() + " (" + indexDto.getDiseaseDetails() + ")" 
+						: Disease.valueOf(diseaseName).toShortString();
 			}
 			@Override
 			public Class<String> getType() {

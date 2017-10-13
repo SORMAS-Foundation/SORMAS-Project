@@ -16,6 +16,7 @@ public class SampleIndexDto extends SampleReferenceDto {
 	
 	public static final String ASSOCIATED_CASE = "associatedCase";
 	public static final String DISEASE = "disease";
+	public static final String DISEASE_DETAILS = "diseaseDetails";
 	public static final String SAMPLE_CODE = "sampleCode";
 	public static final String LAB_SAMPLE_ID = "labSampleID";
 	public static final String LGA = "lga";
@@ -34,6 +35,7 @@ public class SampleIndexDto extends SampleReferenceDto {
 	
 	private CaseReferenceDto associatedCase;
 	private Disease disease;
+	private String diseaseDetails;
 	private String sampleCode;
 	private String labSampleID;
 	private DistrictReferenceDto lga;
@@ -61,6 +63,12 @@ public class SampleIndexDto extends SampleReferenceDto {
 	}
 	public void setDisease(Disease disease) {
 		this.disease = disease;
+	}
+	public String getDiseaseDetails() {
+		return diseaseDetails;
+	}
+	public void setDiseaseDetails(String diseaseDetails) {
+		this.diseaseDetails = diseaseDetails;
 	}
 	public String getSampleCode() {
 		return sampleCode;

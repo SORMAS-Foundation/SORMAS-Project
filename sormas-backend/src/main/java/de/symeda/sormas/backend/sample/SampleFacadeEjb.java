@@ -216,6 +216,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		
 		target.setAssociatedCase(CaseFacadeEjb.toReferenceDto(source.getAssociatedCase()));
 		target.setDisease(source.getAssociatedCase().getDisease());
+		target.setDiseaseDetails(source.getAssociatedCase().getDiseaseDetails());
 		target.setSampleCode(source.getSampleCode());
 		target.setLabSampleID(source.getLabSampleID());
 		target.setShipmentDate(source.getShipmentDate());
