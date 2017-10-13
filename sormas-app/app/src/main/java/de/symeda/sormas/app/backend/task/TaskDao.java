@@ -87,7 +87,10 @@ public class TaskDao extends AbstractAdoDao<Task> {
                             where.and(
                                     where.between(Task.LOCAL_CHANGE_DATE, rangeStart, rangeEnd),
                                     where.eq(Task.MODIFIED, false),
-                                    where.raw(Task.LAST_OPENED_DATE + " < " + Task.LOCAL_CHANGE_DATE),
+                                    where.or(
+                                            where.raw(Task.LAST_OPENED_DATE + " < " + Task.LOCAL_CHANGE_DATE),
+                                            where.isNull(Task.LAST_OPENED_DATE)
+                                    ),
                                     where.le(Task.SUGGESTED_START, rangeEnd)
                             )
                     )

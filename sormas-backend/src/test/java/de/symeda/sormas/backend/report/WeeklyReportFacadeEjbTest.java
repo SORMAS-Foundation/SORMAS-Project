@@ -1,6 +1,6 @@
 package de.symeda.sormas.backend.report;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.Date;
 import java.util.List;
@@ -8,17 +8,10 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.caze.InvestigationStatus;
-import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.region.RegionFacade;
-import de.symeda.sormas.api.report.WeeklyReportDto;
 import de.symeda.sormas.api.report.WeeklyReportFacade;
 import de.symeda.sormas.api.report.WeeklyReportSummaryDto;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserFacade;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;

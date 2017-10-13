@@ -99,6 +99,7 @@ public class SettingsActivity extends AbstractEditTabActivity {
     public void logout(View view) {
         ConfigProvider.clearUsernameAndPassword();
         ConfigProvider.clearPin();
+        ConfigProvider.setAccessGranted(false);
         Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
     }

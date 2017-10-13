@@ -33,6 +33,9 @@ public class SormasApplication extends Application {
         DatabaseHelper.init(this);
         ConfigProvider.init(this);
 
+        // Make sure the Enter Pin Activity is shown when the app has just started
+        ConfigProvider.setAccessGranted(false);
+
         TaskNotificationService.startTaskNotificationAlarm(this);
 
         // Initialize the tracker that is used to send information to Google Analytics

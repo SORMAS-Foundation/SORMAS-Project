@@ -50,6 +50,7 @@ public final class ConfigProvider {
     private static String KEY_PASSWORD = "password";
     private static String KEY_PIN = "pin";
     private static String KEY_SERVER_REST_URL = "serverRestUrl";
+    private static String KEY_ACCESS_GRANTED = "accessGranted";
     private static String LAST_NOTIFICATION_DATE = "lastNotificationDate";
 
     public static ConfigProvider instance = null;
@@ -69,6 +70,7 @@ public final class ConfigProvider {
     private String pin;
     private User user;
     private Date lastNotificationDate;
+    private Boolean accessGranted;
 
     private ConfigProvider(Context context) {
         this.context = context;
@@ -403,4 +405,30 @@ public final class ConfigProvider {
             DatabaseHelper.getConfigDao().createOrUpdate(new Config(LAST_NOTIFICATION_DATE, String.valueOf(lastNotificationDate.getTime())));
         }
     }
+
+    public static Boolean isAccessGranted() {
+        if (instance.accessGranted == null) {
+            Config config = DatabaseHelper.getConfigDao().queryForId(KEY_ACCESS_GRANTED);
+            if (config != null) {
+                instance.accessGranted = Boolean.parseBoolean(config.getValue());
+            }
+        }
+        return instance.accessGranted;
+    }
+
+    public static void setAccessGranted(Boolean accessGranted) {
+        if (accessGranted == null) {
+            throw new NullPointerException("accessGranted");
+        }
+
+        if (accessGranted.equals(instance.accessGranted)) {
+            return;
+        }
+
+        instance.accessGranted = accessGranted;
+
+        DatabaseHelper.getConfigDao().createOrUpdate(new Config(KEY_ACCESS_GRANTED, String.valueOf(accessGranted)));
+    }
+
+
 }

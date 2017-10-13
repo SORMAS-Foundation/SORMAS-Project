@@ -117,7 +117,7 @@ public class TaskNotificationService extends Service {
         EventDao eventDAO = DatabaseHelper.getEventDao();
         PersonDao personDAO = DatabaseHelper.getPersonDao();
 
-        for (Task task:taskList) {
+        for (Task task : taskList) {
             Intent notificationIntent = new Intent(context, TaskEditActivity.class);
             notificationIntent.putExtra(Task.UUID, task.getUuid());
 

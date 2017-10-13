@@ -51,6 +51,12 @@ public abstract class AbstractSormasActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        // Show the Enter Pin Activity if the user doesn't have access to the app
+        if (!ConfigProvider.isAccessGranted()) {
+            Intent intent = new Intent(this, EnterPinActivity.class);
+            startActivity(intent);
+        }
+
         super.onCreate(savedInstanceState);
 
         SormasApplication application = (SormasApplication) getApplication();
