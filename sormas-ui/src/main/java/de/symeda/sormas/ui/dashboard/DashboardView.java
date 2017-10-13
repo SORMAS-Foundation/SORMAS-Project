@@ -176,7 +176,7 @@ public class DashboardView extends AbstractView {
 				refreshDashboard();
 			}
 		});
-		applyButton.addStyleName(CssStyles.FORCE_CAPTION_21);
+		applyButton.addStyleName(CssStyles.FORCE_CAPTION);
 
 		dateFromFilter.setDateFormat(DateHelper.getShortDateFormat().toLocalizedPattern());
 		dateFromFilter.setWidth(200, Unit.PIXELS);

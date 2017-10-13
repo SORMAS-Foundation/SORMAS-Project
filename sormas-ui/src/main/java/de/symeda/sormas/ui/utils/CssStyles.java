@@ -26,7 +26,6 @@ public final class CssStyles {
 	public static final String VSPACE_NO_FILTERS = "vspace-no-filters";
 	public static final String VSPACETOP3 = "vspacetop3";
 	public static final String VSPACETOP4 = "vspacetop4";
-	public static final String VSPACE_TOP_24 = "vspace-top-24";
 
 	public static final String SELECTABLE = "selectable";
 
@@ -71,7 +70,6 @@ public final class CssStyles {
 	 * Stellt sicher, dass CM-Checkboxen dieselbe Höhe wie Textfelder etc. haben
 	 */
 	public static final String FORCE_CAPTION = "force-caption";
-	public static final String FORCE_CAPTION_21 = "force-caption-21";
 	public static final String CAPTION_HIDDEN = "caption-hidden";
 
 	public static final String FONT_CROSSED = "font-crossed";
@@ -118,31 +116,13 @@ public final class CssStyles {
 			component.addStyleName(style);
 	}
 
-//	public static void style(CommitDiscardWrapperComponent<?> component) {
-//		component.getCommitButton().setPrimaryStyleName(CssStyles.BUTTON);
-//		component.getCommitButton().addStyleName(CssStyles.BUTTON_PRIMARY);
-//
-//		component.getDiscardButton().setPrimaryStyleName(CssStyles.BUTTON);
-//		component.getDiscardButton().addStyleName(CssStyles.BUTTON_LINK);
-//
-//		ConfirmationComponent deleteConfirmationComponent = component.getDeleteConfirmationComponent();
-//		NativeButton cancelButton = deleteConfirmationComponent.getCancelButton();
-//		stylePrimary(cancelButton, CssStyles.BUTTON, CssStyles.BUTTON_LINK);
-//
-//		NativeButton commitButton = deleteConfirmationComponent.getConfirmButton();
-//		stylePrimary(commitButton, CssStyles.BUTTON, CssStyles.BUTTON_PRIMARY);
-//
-//		NativeButton deleteButton = component.getDeleteButton();
-//		stylePrimary(deleteButton, CssStyles.BUTTON, CssStyles.BUTTON_LINK);
-//	}
-
 	/**
-	 * Stylt und (de-)aktiviert die übergebenen Buttons.
+	 * Styles and (de-)activates the given buttons.
 	 * 
 	 * @param activeButton
-	 *            Dieser Button wird als aktiv gestylt, aber disabled.
+	 *		This button is styled as active but disabled.
 	 * @param allOrOtherButtons
-	 *            Diese Buttons verlieren das Aktiv-Styling und werden enabled. {@code activeButton} darf hier enthalten sein.
+	 *		These buttons lose their active styling and become enabled. {@code activeButton} may be included here.
 	 */
 	public static void styleSectionFilterButton(Button activeButton, Button... allOrOtherButtons) {
 
@@ -150,12 +130,12 @@ public final class CssStyles {
 	}
 
 	/**
-	 * Stylt und (de-)aktiviert die übergebenen Buttons.
+	 * Styles and (de-)activates the given buttons.
 	 * 
 	 * @param activeButton
-	 *            Dieser Button wird als aktiv gestylt, aber disabled.
+	 *		This button is styled as active but disabled.
 	 * @param allOrOtherButtons
-	 *            Diese Buttons verlieren das Aktiv-Styling und werden enabled. {@code activeButton} darf hier enthalten sein.
+	 *		These buttons lose their active styling and become enabled. {@code activeButton} may be included here.
 	 */
 	public static <B extends Button> void styleSectionFilterButton(Button activeButton, Iterable<B> allOrOtherButtons) {
 
@@ -167,14 +147,4 @@ public final class CssStyles {
 		activeButton.setEnabled(false);
 		activeButton.addStyleName(CssStyles.LINK_ACTIVE);
 	}
-
-//	/**
-//	 * Konkateniert die css-Klassen
-//	 *
-//	 * @param classes
-//	 * @return
-//	 */
-//	public static String all(String... classes) {
-//		return org.apache.commons.lang3.StringUtils.join(classes, " ");
-//	}
 }

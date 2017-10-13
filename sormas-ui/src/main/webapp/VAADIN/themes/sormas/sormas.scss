@@ -8,11 +8,14 @@
 $v-luminance-threshold: 180 !default;
 
 $v-background-color: #ffffff !default;
+$v-app-background-color: #ffffff !default;
 $v-font-color: #394C5B !default;
+$v-selection-color: #005A9C !default;
 $v-focus-color: #CDD8EC !default;
 $v-error-indicator-color: #eb2977 !default;
 $v-friendly-color: rgb(54, 185, 85);
 
+$v-font-family: "Open Sans", sans-serif, "Source Sans Pro";
 $v-font-size: 12px !default;
 $v-font-weight: 400 !default;
 $v-font-weight--header: 400 !default;
@@ -23,7 +26,7 @@ $v-link-font-color: #1565A2;
 $v-unit-size: 32px !default;
 $v-gradient: false;
 
-$v-border: 2px solid $v-selection-color;
+$v-border: 2px solid $v-focus-color;
 $v-caption-font-weight: 600 !default; 
 
 $valo-menu-background-color: #6691C4 !default;
@@ -49,18 +52,30 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
 
 @import "../valo/valo.scss";
 
-@import "valo-components/valo-menu.scss";
+@import "valo-components/menu.scss";
+@import "valo-components/optiongroup.scss";
+@import "valo-components/textfield.scss";
 
 @import "views/login.scss";
 
 
 @function valo-font-color ($bg-color, $contrast: $v-font-color-contrast) {
-  @return #374B5A;
+  @if type-of($bg-color) == color {
+    @if is-dark-color($bg-color) {
+      @return #FEFEFE;
+    } @else {
+      @return #374B59;
+    }
+  }
+  @return #374B59;
 }
 
 @mixin sormas {
   @include valo;
+
   @include sormas-valo-menu;
+  @include sormas-valo-optiongroup;
+  @include sormas-valo-textfield;
 
   @include login;
 
@@ -85,6 +100,7 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
   
   .v-button {
     text-transform: uppercase;
+    border-color: $v-selection-color;
   }
   
   .v-filterselect [class$="button"] {
@@ -100,43 +116,6 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
     
     &::before {
       color: $v-font-color;
-    }
-  }
-  
-  .v-radiobutton {
-    margin: 0 0 10px -2px !important;
-    padding: 0 !important;
-    border: $v-border;
-    border-radius: 0;
-    font-size: 11px;
-    text-transform: uppercase;
-      
-    &:first-child {
-      border-radius: 4px 0 0 4px; 
-      margin-left: 0 !important;
-    }
-    &:last-child {
-      border-radius: 0 4px 4px 0; 
-    }
-    
-    :root & > input {
-      display: none;
-	  
-      & ~ label {
-        margin-bottom: 0;
-        padding: 4px 8px;
-        height: 28px;
-        line-height: 20px;
-      }
-    
-	  &:checked ~ label {
-        background: $v-selection-color;
-      }
-
-      & ~ label:before,
-      & ~ label:after {
-        content: none;
-      }
     }
   }
   
@@ -269,9 +248,7 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
   .force-caption {
 	margin-top: 1.5em;
   }
-  .force-caption-21 {
-  	margin-top: 21px;
-  }
+
   .no-margin, .h1.no-margin, .h2.no-margin, .h3.no-margin, .h4.no-margin, .h5.no-margin, .v-checkbox.no-margin label {
   	margin: 0;
   }

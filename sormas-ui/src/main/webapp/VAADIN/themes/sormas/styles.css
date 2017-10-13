@@ -379,6 +379,30 @@
 	font-style: normal;
 }
 
+@font-face {
+	font-family: "Source Sans Pro";
+	src: url(../valo/fonts/source-sans-pro/sourcesanspro-light.eot);
+	src: url(../valo/fonts/source-sans-pro/sourcesanspro-light.eot?#iefix) format("embedded-opentype"), url(../valo/fonts/source-sans-pro/sourcesanspro-light.woff) format("woff"), url(../valo/fonts/source-sans-pro/sourcesanspro-light.ttf) format("truetype");
+	font-weight: 300;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: "Source Sans Pro";
+	src: url(../valo/fonts/source-sans-pro/sourcesanspro-regular.eot);
+	src: url(../valo/fonts/source-sans-pro/sourcesanspro-regular.eot?#iefix) format("embedded-opentype"), url(../valo/fonts/source-sans-pro/sourcesanspro-regular.woff) format("woff"), url(../valo/fonts/source-sans-pro/sourcesanspro-regular.ttf) format("truetype");
+	font-weight: 400;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: "Source Sans Pro";
+	src: url(../valo/fonts/source-sans-pro/sourcesanspro-semibold.eot);
+	src: url(../valo/fonts/source-sans-pro/sourcesanspro-semibold.eot?#iefix) format("embedded-opentype"), url(../valo/fonts/source-sans-pro/sourcesanspro-semibold.woff) format("woff"), url(../valo/fonts/source-sans-pro/sourcesanspro-semibold.ttf) format("truetype");
+	font-weight: 600;
+	font-style: normal;
+}
+
 @-webkit-keyframes v-rotate-360 {
 		to {
 		-webkit-transform: rotate(360deg);
@@ -1562,7 +1586,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas.v-app, .sormas.v-app-loading {
-	font: 400 12px/1.55 "Open Sans", sans-serif;
+	font: 400 12px/1.55 "Open Sans", sans-serif, "Source Sans Pro";
 	color: #394C5B;
 	background-color: #ffffff;
 	cursor: default;
@@ -1715,7 +1739,7 @@ div.v-layout.v-horizontal.v-widget {
 	border-radius: 4px;
 	border: 2px solid #CDD8EC;
 	background: #ffffff;
-	color: #374B5A;
+	color: #374B59;
 }
 
 .sormas select:focus {
@@ -1755,7 +1779,7 @@ div.v-layout.v-horizontal.v-widget {
 
 .sormas .v-drag-element {
 	background: #ffffff;
-	color: #374B5A;
+	color: #374B59;
 	-webkit-box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 	border-radius: 4px;
@@ -1815,7 +1839,7 @@ div.v-layout.v-horizontal.v-widget {
 	padding: 4px 4px;
 	border-radius: 4px;
 	background-color: white;
-	color: #374B5A;
+	color: #374B59;
 	-webkit-box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.1), 0 3px 5px 0 rgba(0, 0, 0, 0.05), 0 0 0 2px rgba(0, 0, 0, 0.09);
 	box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.1), 0 3px 5px 0 rgba(0, 0, 0, 0.05), 0 0 0 2px rgba(0, 0, 0, 0.09);
 	-webkit-backface-visibility: hidden;
@@ -1859,7 +1883,7 @@ div.v-layout.v-horizontal.v-widget {
 	right: 0;
 	bottom: 0;
 	left: 0;
-	background: #5185e3;
+	background: #003f6d;
 	opacity: 0.15;
 	filter: alpha(opacity=15.0) ;
 	pointer-events: none;
@@ -1873,9 +1897,9 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-contextmenu .gwt-MenuItem-selected {
-	background: #CDD8EC;
-	color: #374B5A;
-	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.05);
+	background: #005A9C;
+	color: #FEFEFE;
+	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.05);
 }
 
 .sormas .v-reconnect-dialog {
@@ -1973,7 +1997,7 @@ div.v-layout.v-horizontal.v-widget {
 
 .sormas .v-verticallayout-well, .sormas .v-horizontallayout-well {
 	background: #fafafa;
-	color: #374B5A;
+	color: #374B59;
 	-webkit-box-shadow: 0 1px 0 0 rgba(255, 255, 255, 0.05), inset 0 2px 3px rgba(0, 0, 0, 0.05);
 	box-shadow: 0 1px 0 0 rgba(255, 255, 255, 0.05), inset 0 2px 3px rgba(0, 0, 0, 0.05);
 	border-radius: 4px;
@@ -2004,7 +2028,7 @@ div.v-layout.v-horizontal.v-widget {
 
 .sormas .v-verticallayout-card, .sormas .v-horizontallayout-card {
 	background: white;
-	color: #374B5A;
+	color: #374B59;
 	border-radius: 4px;
 	border: 2px solid #CDD8EC;
 	-webkit-box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);
@@ -2049,7 +2073,7 @@ div.v-layout.v-horizontal.v-widget {
 	cursor: pointer;
 	height: 32px;
 	padding: 0 14px;
-	color: #374B5A;
+	color: #374B59;
 	font-weight: 500;
 	
 	
@@ -2138,16 +2162,16 @@ div.v-layout.v-horizontal.v-widget {
 .sormas .v-button-primary {
 	height: 32px;
 	padding: 0 14px;
-	color: #374B5A;
+	color: #FEFEFE;
 	font-weight: 500;
 	
 	
 	border-radius: 4px;
 	border: 2px solid #CDD8EC;
-	background: #CDD8EC;
-	-webkit-box-shadow: inset 0 1px 0 #ebeef4, inset 0 -1px 0 #c4d0e7, 0 2px 3px rgba(0, 0, 0, 0.05);
-	box-shadow: inset 0 1px 0 #ebeef4, inset 0 -1px 0 #c4d0e7, 0 2px 3px rgba(0, 0, 0, 0.05);
-	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.05);
+	background: #005A9C;
+	-webkit-box-shadow: inset 0 1px 0 #0f6eb7, inset 0 -1px 0 #005694, 0 2px 3px rgba(0, 0, 0, 0.05);
+	box-shadow: inset 0 1px 0 #0f6eb7, inset 0 -1px 0 #005694, 0 2px 3px rgba(0, 0, 0, 0.05);
+	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.05);
 	padding: 0 16px;
 	font-weight: bold;
 	min-width: 70px;
@@ -2162,7 +2186,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-button-primary:hover:after {
-	background-color: rgba(113, 144, 201, 0.1);
+	background-color: rgba(0, 134, 233, 0.1);
 }
 
 .sormas .v-button-primary:focus:after {
@@ -2172,7 +2196,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-button-primary:active:after {
-	background-color: rgba(33, 88, 187, 0.2);
+	background-color: rgba(0, 45, 78, 0.2);
 }
 
 .v-ie8 .sormas .v-button-primary {
@@ -2182,7 +2206,7 @@ div.v-layout.v-horizontal.v-widget {
 .sormas .v-button-friendly {
 	height: 32px;
 	padding: 0 14px;
-	color: #374B5A;
+	color: #FEFEFE;
 	font-weight: 500;
 	
 	
@@ -2191,7 +2215,7 @@ div.v-layout.v-horizontal.v-widget {
 	background: #36b955;
 	-webkit-box-shadow: inset 0 1px 0 #5cc672, inset 0 -1px 0 #36b053, 0 2px 3px rgba(0, 0, 0, 0.05);
 	box-shadow: inset 0 1px 0 #5cc672, inset 0 -1px 0 #36b053, 0 2px 3px rgba(0, 0, 0, 0.05);
-	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.05);
+	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.05);
 }
 
 .sormas .v-button-friendly:after {
@@ -2219,7 +2243,7 @@ div.v-layout.v-horizontal.v-widget {
 .sormas .v-button-danger {
 	height: 32px;
 	padding: 0 14px;
-	color: #374B5A;
+	color: #FEFEFE;
 	font-weight: 500;
 	
 	
@@ -2228,7 +2252,7 @@ div.v-layout.v-horizontal.v-widget {
 	background: #eb2977;
 	-webkit-box-shadow: inset 0 1px 0 #ed5b90, inset 0 -1px 0 #e42773, 0 2px 3px rgba(0, 0, 0, 0.05);
 	box-shadow: inset 0 1px 0 #ed5b90, inset 0 -1px 0 #e42773, 0 2px 3px rgba(0, 0, 0, 0.05);
-	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.05);
+	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.05);
 }
 
 .sormas .v-button-danger:after {
@@ -2279,11 +2303,11 @@ div.v-layout.v-horizontal.v-widget {
 	-webkit-box-shadow: none;
 	box-shadow: none;
 	background: transparent;
-	color: #CDD8EC;
+	color: #005A9C;
 }
 
 .sormas .v-button-borderless-colored:hover {
-	color: #f2f5fa;
+	color: #0077cf;
 }
 
 .sormas .v-button-borderless-colored:hover:after {
@@ -2355,7 +2379,7 @@ div.v-layout.v-horizontal.v-widget {
 .sormas .v-button-tiny {
 	height: 24px;
 	padding: 0 11px;
-	color: #374B5A;
+	color: #374B59;
 	
 	font-size: 9px;
 	
@@ -2373,7 +2397,7 @@ div.v-layout.v-horizontal.v-widget {
 .sormas .v-button-small {
 	height: 27px;
 	padding: 0 12px;
-	color: #374B5A;
+	color: #374B59;
 	
 	font-size: 11px;
 	
@@ -2391,7 +2415,7 @@ div.v-layout.v-horizontal.v-widget {
 .sormas .v-button-large {
 	height: 38px;
 	padding: 0 17px;
-	color: #374B5A;
+	color: #374B59;
 	
 	font-size: 15px;
 	
@@ -2409,7 +2433,7 @@ div.v-layout.v-horizontal.v-widget {
 .sormas .v-button-huge {
 	height: 51px;
 	padding: 0 22px;
-	color: #374B5A;
+	color: #374B59;
 	
 	font-size: 20px;
 	
@@ -2540,7 +2564,7 @@ div.v-layout.v-horizontal.v-widget {
 :root .sormas .v-checkbox > input ~ label:before {
 	height: 16px;
 	padding: 0 8px;
-	color: #374B5A;
+	color: #374B59;
 	font-weight: 500;
 	
 	
@@ -2568,7 +2592,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 :root .sormas .v-checkbox > input:checked ~ label:after {
-	color: #CDD8EC;
+	color: #005A9C;
 }
 
 .sormas .v-checkbox > .v-icon, .sormas .v-checkbox > label .v-icon {
@@ -2666,7 +2690,7 @@ div.v-layout.v-horizontal.v-widget {
 :root .sormas .v-checkbox-small > input ~ label:before {
 	height: 13.5px;
 	padding: 0 7px;
-	color: #374B5A;
+	color: #374B59;
 	font-weight: 500;
 	
 	
@@ -2694,7 +2718,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 :root .sormas .v-checkbox-small > input:checked ~ label:after {
-	color: #CDD8EC;
+	color: #005A9C;
 }
 
 .sormas .v-checkbox-small > .v-icon, .sormas .v-checkbox-small > label .v-icon {
@@ -2792,7 +2816,7 @@ div.v-layout.v-horizontal.v-widget {
 :root .sormas .v-checkbox-large > input ~ label:before {
 	height: 19px;
 	padding: 0 9px;
-	color: #374B5A;
+	color: #374B59;
 	font-weight: 500;
 	
 	
@@ -2820,7 +2844,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 :root .sormas .v-checkbox-large > input:checked ~ label:after {
-	color: #CDD8EC;
+	color: #005A9C;
 }
 
 .sormas .v-checkbox-large > .v-icon, .sormas .v-checkbox-large > label .v-icon {
@@ -2891,7 +2915,7 @@ div.v-layout.v-horizontal.v-widget {
 	padding: 4px 8px;
 	border: 2px solid #CDD8EC;
 	background: white;
-	color: #374B5A;
+	color: #374B59;
 	-webkit-box-shadow: inset 0 1px 0 #f7f7f7, 0 1px 0 rgba(255, 255, 255, 0.1);
 	box-shadow: inset 0 1px 0 #f7f7f7, 0 1px 0 rgba(255, 255, 255, 0.1);
 	-webkit-transition: box-shadow 180ms, border 180ms;
@@ -2939,7 +2963,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-filterselect span.v-icon {
-	color: #374B5A;
+	color: #374B59;
 	width: 32px;
 	line-height: 1;
 	padding-top: 0.12em;
@@ -2982,7 +3006,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-filterselect [class$="button"]:hover:before {
-	color: #374B5A;
+	color: #374B59;
 }
 
 .sormas .v-filterselect [class$="button"]:active:after {
@@ -3012,7 +3036,7 @@ div.v-layout.v-horizontal.v-widget {
 
 .sormas .v-filterselect.v-readonly [class*="input"] {
 	background: #fafafa;
-	color: #374B5A;
+	color: #374B59;
 	-webkit-box-shadow: none;
 	box-shadow: none;
 }
@@ -3039,7 +3063,7 @@ div.v-layout.v-horizontal.v-widget {
 .sormas .v-filterselect-error .v-filterselect-input {
 	border-color: #eb2977 !important;
 	background: #fffbfc;
-	color: #374B5A;
+	color: #374B59;
 }
 
 .sormas .v-filterselect-error .v-filterselect-button {
@@ -3061,7 +3085,7 @@ div.v-layout.v-horizontal.v-widget {
 	padding: 4px 4px;
 	border-radius: 4px;
 	background-color: white;
-	color: #374B5A;
+	color: #374B59;
 	-webkit-box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.1), 0 3px 5px 0 rgba(0, 0, 0, 0.05), 0 0 0 2px rgba(0, 0, 0, 0.09);
 	box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.1), 0 3px 5px 0 rgba(0, 0, 0, 0.05), 0 0 0 2px rgba(0, 0, 0, 0.09);
 	-webkit-backface-visibility: hidden;
@@ -3106,7 +3130,7 @@ div.v-layout.v-horizontal.v-widget {
 	right: 0;
 	bottom: 0;
 	left: 0;
-	background: #5185e3;
+	background: #003f6d;
 	opacity: 0.15;
 	filter: alpha(opacity=15.0) ;
 	pointer-events: none;
@@ -3120,16 +3144,16 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-filterselect-suggestpopup .gwt-MenuItem-selected {
-	background: #CDD8EC;
-	color: #374B5A;
-	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.05);
+	background: #005A9C;
+	color: #FEFEFE;
+	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.05);
 }
 
 .sormas .v-filterselect-suggestpopup [class$="status"] {
 	position: absolute;
 	right: 4px;
 	background: rgba(217, 217, 217, 0.9);
-	color: #374B5A;
+	color: #374B59;
 	border-radius: 0 0 4px 4px;
 	height: 20px;
 	bottom: -20px;
@@ -3144,7 +3168,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-filterselect-suggestpopup [class$="status"]  > * {
-	color: #374B5A;
+	color: #374B59;
 	text-decoration: none;
 }
 
@@ -3168,7 +3192,7 @@ div.v-layout.v-horizontal.v-widget {
 	-ms-transform: scale(0.8);
 	-o-transform: scale(0.8);
 	transform: scale(0.8);
-	color: #374B5A;
+	color: #374B59;
 }
 
 .sormas .v-filterselect-suggestpopup div[class*="page"]:after {
@@ -3369,7 +3393,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-filterselect-tiny span.v-icon {
-	color: #374B5A;
+	color: #374B59;
 	width: 24px;
 	line-height: 1;
 	padding-top: 0.12em;
@@ -3424,7 +3448,7 @@ div.v-layout.v-horizontal.v-widget {
 
 .sormas .v-filterselect-tiny.v-readonly [class*="input"] {
 	background: #fafafa;
-	color: #374B5A;
+	color: #374B59;
 	-webkit-box-shadow: none;
 	box-shadow: none;
 }
@@ -3496,7 +3520,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-filterselect-compact span.v-icon, .sormas .v-filterselect-small span.v-icon {
-	color: #374B5A;
+	color: #374B59;
 	width: 27px;
 	line-height: 1;
 	padding-top: 0.12em;
@@ -3551,7 +3575,7 @@ div.v-layout.v-horizontal.v-widget {
 
 .sormas .v-filterselect-compact.v-readonly [class*="input"], .sormas .v-filterselect-small.v-readonly [class*="input"] {
 	background: #fafafa;
-	color: #374B5A;
+	color: #374B59;
 	-webkit-box-shadow: none;
 	box-shadow: none;
 }
@@ -3628,7 +3652,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-filterselect-large span.v-icon {
-	color: #374B5A;
+	color: #374B59;
 	width: 38px;
 	line-height: 1;
 	padding-top: 0.12em;
@@ -3683,7 +3707,7 @@ div.v-layout.v-horizontal.v-widget {
 
 .sormas .v-filterselect-large.v-readonly [class*="input"] {
 	background: #fafafa;
-	color: #374B5A;
+	color: #374B59;
 	-webkit-box-shadow: none;
 	box-shadow: none;
 }
@@ -3756,7 +3780,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-filterselect-huge span.v-icon {
-	color: #374B5A;
+	color: #374B59;
 	width: 51px;
 	line-height: 1;
 	padding-top: 0.12em;
@@ -3811,7 +3835,7 @@ div.v-layout.v-horizontal.v-widget {
 
 .sormas .v-filterselect-huge.v-readonly [class*="input"] {
 	background: #fafafa;
-	color: #374B5A;
+	color: #374B59;
 	-webkit-box-shadow: none;
 	box-shadow: none;
 }
@@ -3832,7 +3856,7 @@ div.v-layout.v-horizontal.v-widget {
 
 .sormas .v-csslayout-well {
 	background: #fafafa;
-	color: #374B5A;
+	color: #374B59;
 	-webkit-box-shadow: 0 1px 0 0 rgba(255, 255, 255, 0.05), inset 0 2px 3px rgba(0, 0, 0, 0.05);
 	box-shadow: 0 1px 0 0 rgba(255, 255, 255, 0.05), inset 0 2px 3px rgba(0, 0, 0, 0.05);
 	border-radius: 4px;
@@ -3863,7 +3887,7 @@ div.v-layout.v-horizontal.v-widget {
 
 .sormas .v-csslayout-card {
 	background: white;
-	color: #374B5A;
+	color: #374B59;
 	border-radius: 4px;
 	border: 2px solid #CDD8EC;
 	-webkit-box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);
@@ -4028,7 +4052,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-formlayout.light  > table > tbody > tr > [class*="captioncell"] {
-	color: #374B5A;
+	color: #374B59;
 	text-align: right;
 	padding-left: 11px;
 	line-height: 32px;
@@ -4319,7 +4343,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-grid .header-drag-table .v-grid-header  > .v-grid-drop-marker {
-	background-color: #CDD8EC;
+	background-color: #005A9C;
 	position: absolute;
 	width: 3px;
 }
@@ -4448,7 +4472,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-grid-row-selected > td {
-	background: #CDD8EC;
+	background: #005A9C;
 }
 
 .sormas .v-grid-row-focused > td {
@@ -4571,7 +4595,7 @@ div.v-layout.v-horizontal.v-widget {
 	right: 0;
 	bottom: 0;
 	left: 0;
-	border: 2px solid #CDD8EC;
+	border: 2px solid #005A9C;
 	display: none;
 	pointer-events: none;
 }
@@ -4761,7 +4785,7 @@ div.v-layout.v-horizontal.v-widget {
 	top: 0;
 	left: 0;
 	width: 4px;
-	background-color: #CDD8EC;
+	background-color: #005A9C;
 	position: absolute;
 	height: 100%;
 	pointer-events: none;
@@ -4819,14 +4843,14 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-grid-row-selected  > .v-grid-cell {
-	background: #CDD8EC;
-	color: #374B5A;
-	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.05);
-	border-color: #b4c2dc;
+	background: #005A9C;
+	color: #FEFEFE;
+	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.05);
+	border-color: #05426f;
 }
 
 .sormas .v-grid-row-selected  > .v-grid-cell-focused:before {
-	border-color: white;
+	border-color: #0394ff;
 }
 
 .sormas .v-grid-editor {
@@ -5005,7 +5029,7 @@ div.v-layout.v-horizontal.v-widget {
 	padding: 4px 8px;
 	border: 2px solid #CDD8EC;
 	background: white;
-	color: #374B5A;
+	color: #374B59;
 	-webkit-box-shadow: inset 0 1px 0 #f7f7f7, 0 1px 0 rgba(255, 255, 255, 0.1);
 	box-shadow: inset 0 1px 0 #f7f7f7, 0 1px 0 rgba(255, 255, 255, 0.1);
 	-webkit-transition: box-shadow 180ms, border 180ms;
@@ -5042,7 +5066,7 @@ div.v-layout.v-horizontal.v-widget {
 
 .sormas .v-textfield-readonly {
 	background: #fafafa;
-	color: #374B5A;
+	color: #374B59;
 	-webkit-box-shadow: none;
 	box-shadow: none;
 }
@@ -5055,7 +5079,7 @@ div.v-layout.v-horizontal.v-widget {
 .sormas .v-textfield-error {
 	border-color: #eb2977 !important;
 	background: #fffbfc;
-	color: #374B5A;
+	color: #374B59;
 }
 
 .sormas .v-textfield-borderless {
@@ -5471,7 +5495,7 @@ div.v-layout.v-horizontal.v-widget {
 	padding: 5px;
 	border: 2px solid #CDD8EC;
 	background: white;
-	color: #374B5A;
+	color: #374B59;
 	-webkit-box-shadow: inset 0 1px 0 #f7f7f7, 0 1px 0 rgba(255, 255, 255, 0.1);
 	box-shadow: inset 0 1px 0 #f7f7f7, 0 1px 0 rgba(255, 255, 255, 0.1);
 	-webkit-transition: box-shadow 180ms, border 180ms;
@@ -5517,7 +5541,7 @@ div.v-layout.v-horizontal.v-widget {
 
 .sormas .v-textarea-readonly {
 	background: #fafafa;
-	color: #374B5A;
+	color: #374B59;
 	-webkit-box-shadow: none;
 	box-shadow: none;
 }
@@ -5530,7 +5554,7 @@ div.v-layout.v-horizontal.v-widget {
 .sormas .v-textarea-error {
 	border-color: #eb2977 !important;
 	background: #fffbfc;
-	color: #374B5A;
+	color: #374B59;
 }
 
 .sormas .v-textarea-borderless {
@@ -5759,7 +5783,7 @@ div.v-layout.v-horizontal.v-widget {
 	padding: 4px 8px;
 	border: 2px solid #CDD8EC;
 	background: white;
-	color: #374B5A;
+	color: #374B59;
 	-webkit-box-shadow: inset 0 1px 0 #f7f7f7, 0 1px 0 rgba(255, 255, 255, 0.1);
 	box-shadow: inset 0 1px 0 #f7f7f7, 0 1px 0 rgba(255, 255, 255, 0.1);
 	-webkit-transition: box-shadow 180ms, border 180ms;
@@ -5826,7 +5850,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-datefield [class*="button"]:hover {
-	color: #374B5A;
+	color: #374B59;
 }
 
 .sormas .v-datefield [class*="button"]:before {
@@ -5864,7 +5888,7 @@ div.v-layout.v-horizontal.v-widget {
 
 .sormas .v-datefield.v-readonly [class*="textfield"] {
 	background: #fafafa;
-	color: #374B5A;
+	color: #374B59;
 	-webkit-box-shadow: none;
 	box-shadow: none;
 }
@@ -5886,7 +5910,7 @@ div.v-layout.v-horizontal.v-widget {
 .sormas .v-datefield-error .v-datefield-textfield {
 	border-color: #eb2977 !important;
 	background: #fffbfc;
-	color: #374B5A;
+	color: #374B59;
 }
 
 .sormas .v-datefield-error .v-datefield-button {
@@ -5914,7 +5938,7 @@ div.v-layout.v-horizontal.v-widget {
 	padding: 4px 4px;
 	border-radius: 4px;
 	background-color: white;
-	color: #374B5A;
+	color: #374B59;
 	-webkit-box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.1), 0 3px 5px 0 rgba(0, 0, 0, 0.05), 0 0 0 2px rgba(0, 0, 0, 0.09);
 	box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.1), 0 3px 5px 0 rgba(0, 0, 0, 0.05), 0 0 0 2px rgba(0, 0, 0, 0.09);
 	-webkit-backface-visibility: hidden;
@@ -5982,7 +6006,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-datefield-popup .v-datefield-calendarpanel-day:hover {
-	color: #CDD8EC;
+	color: #005A9C;
 }
 
 .sormas .v-datefield-popup .v-datefield-calendarpanel-day-offmonth {
@@ -5991,14 +6015,14 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-datefield-popup .v-datefield-calendarpanel-day-today {
-	color: #374B5A;
+	color: #374B59;
 	font-weight: 600;
-	border-color: #374B5A;
+	border-color: #374B59;
 }
 
 .sormas .v-datefield-popup .v-datefield-calendarpanel-day.v-datefield-calendarpanel-day-selected, .sormas .v-datefield-popup .v-datefield-calendarpanel-day.v-datefield-calendarpanel-day-selected:hover {
-	color: #374B5A;
-	background: #CDD8EC;
+	color: #FEFEFE;
+	background: #005A9C;
 	border: none;
 	font-weight: 600;
 }
@@ -6097,7 +6121,7 @@ div.v-layout.v-horizontal.v-widget {
 
 .sormas .v-datefield-popup td.v-datefield-calendarpanel-month {
 	width: 128px;
-	color: #CDD8EC;
+	color: #005A9C;
 }
 
 .sormas .v-datefield-popup .v-datefield-calendarpanel-year td.v-datefield-calendarpanel-month {
@@ -6173,7 +6197,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-datefield-calendarpanel-day:hover {
-	color: #CDD8EC;
+	color: #005A9C;
 }
 
 .sormas .v-datefield-calendarpanel-day-offmonth {
@@ -6182,14 +6206,14 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-datefield-calendarpanel-day-today {
-	color: #374B5A;
+	color: #374B59;
 	font-weight: 600;
-	border-color: #374B5A;
+	border-color: #374B59;
 }
 
 .sormas .v-datefield-calendarpanel-day.v-datefield-calendarpanel-day-selected, .sormas .v-datefield-calendarpanel-day.v-datefield-calendarpanel-day-selected:hover {
-	color: #374B5A;
-	background: #CDD8EC;
+	color: #FEFEFE;
+	background: #005A9C;
 	border: none;
 	font-weight: 600;
 }
@@ -6288,7 +6312,7 @@ div.v-layout.v-horizontal.v-widget {
 
 .sormas td.v-datefield-calendarpanel-month {
 	width: 128px;
-	color: #CDD8EC;
+	color: #005A9C;
 }
 
 .sormas .v-datefield-calendarpanel-year td.v-datefield-calendarpanel-month {
@@ -6464,7 +6488,7 @@ div.v-layout.v-horizontal.v-widget {
 
 .sormas .v-datefield-tiny.v-readonly [class*="textfield"] {
 	background: #fafafa;
-	color: #374B5A;
+	color: #374B59;
 	-webkit-box-shadow: none;
 	box-shadow: none;
 }
@@ -6579,7 +6603,7 @@ div.v-layout.v-horizontal.v-widget {
 
 .sormas .v-datefield-compact.v-readonly [class*="textfield"], .sormas .v-datefield-small.v-readonly [class*="textfield"] {
 	background: #fafafa;
-	color: #374B5A;
+	color: #374B59;
 	-webkit-box-shadow: none;
 	box-shadow: none;
 }
@@ -6699,7 +6723,7 @@ div.v-layout.v-horizontal.v-widget {
 
 .sormas .v-datefield-large.v-readonly [class*="textfield"] {
 	background: #fafafa;
-	color: #374B5A;
+	color: #374B59;
 	-webkit-box-shadow: none;
 	box-shadow: none;
 }
@@ -6815,7 +6839,7 @@ div.v-layout.v-horizontal.v-widget {
 
 .sormas .v-datefield-huge.v-readonly [class*="textfield"] {
 	background: #fafafa;
-	color: #374B5A;
+	color: #374B59;
 	-webkit-box-shadow: none;
 	box-shadow: none;
 }
@@ -6866,7 +6890,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-inline-datefield-calendarpanel-day:hover {
-	color: #CDD8EC;
+	color: #005A9C;
 }
 
 .sormas .v-inline-datefield-calendarpanel-day-offmonth {
@@ -6875,14 +6899,14 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-inline-datefield-calendarpanel-day-today {
-	color: #374B5A;
+	color: #374B59;
 	font-weight: 600;
-	border-color: #374B5A;
+	border-color: #374B59;
 }
 
 .sormas .v-inline-datefield-calendarpanel-day.v-inline-datefield-calendarpanel-day-selected, .sormas .v-inline-datefield-calendarpanel-day.v-inline-datefield-calendarpanel-day-selected:hover {
-	color: #374B5A;
-	background: #CDD8EC;
+	color: #FEFEFE;
+	background: #005A9C;
 	border: none;
 	font-weight: 600;
 }
@@ -6981,7 +7005,7 @@ div.v-layout.v-horizontal.v-widget {
 
 .sormas td.v-inline-datefield-calendarpanel-month {
 	width: 128px;
-	color: #CDD8EC;
+	color: #005A9C;
 }
 
 .sormas .v-inline-datefield-calendarpanel-year td.v-inline-datefield-calendarpanel-month {
@@ -7062,7 +7086,7 @@ div.v-layout.v-horizontal.v-widget {
 	cursor: pointer;
 	height: 32px;
 	padding: 0 14px;
-	color: #374B5A;
+	color: #374B59;
 	font-weight: 500;
 	
 	cursor: default;
@@ -7217,7 +7241,7 @@ div.v-layout.v-horizontal.v-widget {
 	background-color: #f2f2f2;
 	background-image: -webkit-linear-gradient(bottom, #f2f2f2 0%, #f2f2f2 100%);
 	background-image: linear-gradient(to top,#f2f2f2 0%, #f2f2f2 100%);
-	color: #374B5A;
+	color: #374B59;
 }
 
 .sormas .v-disabled > .v-menubar-menuitem, .sormas .v-menubar > .v-menubar-menuitem-disabled {
@@ -7234,16 +7258,16 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-menubar > .v-menubar-menuitem-selected {
-	color: #374B5A;
+	color: #FEFEFE;
 	
 	
 	
 	border-radius: 0;
 	border: 2px solid #CDD8EC;
-	background: #CDD8EC;
-	-webkit-box-shadow: inset 0 1px 0 #ebeef4, inset 0 -1px 0 #c4d0e7;
-	box-shadow: inset 0 1px 0 #ebeef4, inset 0 -1px 0 #c4d0e7;
-	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.05);
+	background: #005A9C;
+	-webkit-box-shadow: inset 0 1px 0 #0f6eb7, inset 0 -1px 0 #005694;
+	box-shadow: inset 0 1px 0 #0f6eb7, inset 0 -1px 0 #005694;
+	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.05);
 	border-top-width: 0;
 	border-left-width: 0;
 	border-bottom-width: 0;
@@ -7275,7 +7299,7 @@ div.v-layout.v-horizontal.v-widget {
 	padding: 4px 4px;
 	border-radius: 4px;
 	background-color: white;
-	color: #374B5A;
+	color: #374B59;
 	-webkit-box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.1), 0 3px 5px 0 rgba(0, 0, 0, 0.05), 0 0 0 2px rgba(0, 0, 0, 0.09);
 	box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.1), 0 3px 5px 0 rgba(0, 0, 0, 0.05), 0 0 0 2px rgba(0, 0, 0, 0.09);
 	-webkit-backface-visibility: hidden;
@@ -7323,7 +7347,7 @@ div.v-layout.v-horizontal.v-widget {
 	right: 0;
 	bottom: 0;
 	left: 0;
-	background: #5185e3;
+	background: #003f6d;
 	opacity: 0.15;
 	filter: alpha(opacity=15.0) ;
 	pointer-events: none;
@@ -7349,9 +7373,9 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-menubar-popup .v-menubar-menuitem-selected {
-	background: #CDD8EC;
-	color: #374B5A;
-	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.05);
+	background: #005A9C;
+	color: #FEFEFE;
+	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.05);
 }
 
 .sormas .v-menubar-popup .v-menubar-separator {
@@ -7380,7 +7404,7 @@ div.v-layout.v-horizontal.v-widget {
 .sormas .v-menubar-small {
 	height: 27px;
 	padding: 0 12px;
-	color: #374B5A;
+	color: #374B59;
 	font-weight: 500;
 	
 	cursor: default;
@@ -7428,7 +7452,7 @@ div.v-layout.v-horizontal.v-widget {
 	border: none;
 	margin-right: 2px;
 	border-radius: 4px;
-	color: #CDD8EC;
+	color: #005A9C;
 	padding: 0 11px;
 	-webkit-transition: color 140ms;
 	-moz-transition: color 140ms;
@@ -7444,7 +7468,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-menubar-borderless .v-menubar-menuitem:hover {
-	color: #f2f5fa;
+	color: #0077cf;
 }
 
 .sormas .v-menubar-borderless .v-menubar-menuitem:active {
@@ -7453,7 +7477,7 @@ div.v-layout.v-horizontal.v-widget {
 
 .sormas .v-menubar-borderless .v-menubar-menuitem-checked, .sormas .v-menubar-borderless .v-menubar-menuitem-checked:first-child {
 	border: 2px solid #CDD8EC;
-	color: #CDD8EC;
+	color: #005A9C;
 }
 
 .sormas .v-menubar-borderless .v-menubar-menuitem-checked .v-menubar-menuitem-caption, .sormas .v-menubar-borderless .v-menubar-menuitem-checked:first-child .v-menubar-menuitem-caption {
@@ -7462,12 +7486,12 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-menubar-borderless .v-menubar-menuitem-selected {
-	color: #374B5A;
-	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.05);
+	color: #FEFEFE;
+	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.05);
 }
 
 .sormas .v-menubar-borderless .v-menubar-menuitem-selected:hover {
-	color: #374B5A;
+	color: #FEFEFE;
 }
 
 .sormas .v-menubar-borderless .v-menubar-menuitem-disabled, .sormas .v-menubar-borderless .v-menubar-menuitem-disabled:hover {
@@ -7531,7 +7555,7 @@ div.v-layout.v-horizontal.v-widget {
 :root .sormas .v-radiobutton > input ~ label:before {
 	height: 16px;
 	padding: 0 8px;
-	color: #374B5A;
+	color: #374B59;
 	font-weight: 500;
 	
 	
@@ -7559,7 +7583,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 :root .sormas .v-radiobutton > input:checked ~ label:after {
-	color: #CDD8EC;
+	color: #005A9C;
 }
 
 .sormas .v-radiobutton > .v-icon, .sormas .v-radiobutton > label .v-icon {
@@ -7604,7 +7628,7 @@ div.v-layout.v-horizontal.v-widget {
 	height: 6px;
 	top: 5px;
 	left: 5px;
-	background: #CDD8EC;
+	background: #005A9C;
 }
 
 :root .sormas .v-radiobutton > input ~ label:before, :root .sormas .v-radiobutton > input ~ label:after {
@@ -7690,7 +7714,7 @@ div.v-layout.v-horizontal.v-widget {
 :root .sormas .v-select-optiongroup-small .v-checkbox > input ~ label:before {
 	height: 13.5px;
 	padding: 0 7px;
-	color: #374B5A;
+	color: #374B59;
 	font-weight: 500;
 	
 	
@@ -7718,7 +7742,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 :root .sormas .v-select-optiongroup-small .v-checkbox > input:checked ~ label:after {
-	color: #CDD8EC;
+	color: #005A9C;
 }
 
 .sormas .v-select-optiongroup-small .v-checkbox > .v-icon, .sormas .v-select-optiongroup-small .v-checkbox > label .v-icon {
@@ -7815,7 +7839,7 @@ div.v-layout.v-horizontal.v-widget {
 :root .sormas .v-select-optiongroup-small .v-radiobutton > input ~ label:before {
 	height: 13.5px;
 	padding: 0 7px;
-	color: #374B5A;
+	color: #374B59;
 	font-weight: 500;
 	
 	
@@ -7843,7 +7867,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 :root .sormas .v-select-optiongroup-small .v-radiobutton > input:checked ~ label:after {
-	color: #CDD8EC;
+	color: #005A9C;
 }
 
 .sormas .v-select-optiongroup-small .v-radiobutton > .v-icon, .sormas .v-select-optiongroup-small .v-radiobutton > label .v-icon {
@@ -7888,7 +7912,7 @@ div.v-layout.v-horizontal.v-widget {
 	height: 5px;
 	top: 5px;
 	left: 5px;
-	background: #CDD8EC;
+	background: #005A9C;
 }
 
 :root .sormas .v-select-optiongroup-small .v-radiobutton > input ~ label:before, :root .sormas .v-select-optiongroup-small .v-radiobutton > input ~ label:after {
@@ -7974,7 +7998,7 @@ div.v-layout.v-horizontal.v-widget {
 :root .sormas .v-select-optiongroup-large .v-checkbox > input ~ label:before {
 	height: 19px;
 	padding: 0 9px;
-	color: #374B5A;
+	color: #374B59;
 	font-weight: 500;
 	
 	
@@ -8002,7 +8026,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 :root .sormas .v-select-optiongroup-large .v-checkbox > input:checked ~ label:after {
-	color: #CDD8EC;
+	color: #005A9C;
 }
 
 .sormas .v-select-optiongroup-large .v-checkbox > .v-icon, .sormas .v-select-optiongroup-large .v-checkbox > label .v-icon {
@@ -8099,7 +8123,7 @@ div.v-layout.v-horizontal.v-widget {
 :root .sormas .v-select-optiongroup-large .v-radiobutton > input ~ label:before {
 	height: 19px;
 	padding: 0 9px;
-	color: #374B5A;
+	color: #374B59;
 	font-weight: 500;
 	
 	
@@ -8127,7 +8151,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 :root .sormas .v-select-optiongroup-large .v-radiobutton > input:checked ~ label:after {
-	color: #CDD8EC;
+	color: #005A9C;
 }
 
 .sormas .v-select-optiongroup-large .v-radiobutton > .v-icon, .sormas .v-select-optiongroup-large .v-radiobutton > label .v-icon {
@@ -8172,7 +8196,7 @@ div.v-layout.v-horizontal.v-widget {
 	height: 7px;
 	top: 6px;
 	left: 6px;
-	background: #CDD8EC;
+	background: #005A9C;
 }
 
 :root .sormas .v-select-optiongroup-large .v-radiobutton > input ~ label:before, :root .sormas .v-select-optiongroup-large .v-radiobutton > input ~ label:after {
@@ -8257,7 +8281,7 @@ div.v-layout.v-horizontal.v-widget {
 	padding: 4px 4px;
 	border-radius: 4px;
 	background-color: white;
-	color: #374B5A;
+	color: #374B59;
 	-webkit-box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.1), 0 3px 5px 0 rgba(0, 0, 0, 0.05), 0 0 0 2px rgba(0, 0, 0, 0.09);
 	box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.1), 0 3px 5px 0 rgba(0, 0, 0, 0.05), 0 0 0 2px rgba(0, 0, 0, 0.09);
 	-webkit-backface-visibility: hidden;
@@ -8358,7 +8382,7 @@ div.v-layout.v-horizontal.v-widget {
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
-	color: #73818b;
+	color: #73818a;
 }
 
 .sormas .v-window-restorebox-disabled  ~ .v-window-closebox ~ .v-window-header, .sormas .v-window-maximizebox-disabled  ~ .v-window-closebox ~ .v-window-header {
@@ -8384,7 +8408,7 @@ div.v-layout.v-horizontal.v-widget {
 	text-align: center;
 	cursor: pointer;
 	font-size: 16px;
-	color: #374B5A;
+	color: #374B59;
 	-webkit-transition: color 140ms;
 	-moz-transition: color 140ms;
 	transition: color 140ms;
@@ -8397,7 +8421,7 @@ div.v-layout.v-horizontal.v-widget {
 .sormas .v-window-closebox:hover, .sormas .v-window-maximizebox:hover, .sormas .v-window-restorebox:hover {
 	opacity: 1;
 	filter: none ;
-	color: #CDD8EC;
+	color: #005A9C;
 }
 
 .sormas .v-window-closebox:active, .sormas .v-window-maximizebox:active, .sormas .v-window-restorebox:active {
@@ -8749,18 +8773,18 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-tree-node-selected {
-	color: #374B5A;
-	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.05);
+	color: #FEFEFE;
+	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.05);
 }
 
 .sormas .v-tree-node-selected:after {
 	opacity: 1;
-	background: #CDD8EC;
+	background: #005A9C;
 	border: none;
 }
 
 .v-ie8 .sormas .v-tree-node-selected {
-	background: #CDD8EC;
+	background: #005A9C;
 }
 
 .sormas .v-tree-node-children {
@@ -8813,7 +8837,7 @@ div.v-layout.v-horizontal.v-widget {
 .sormas .v-table {
 	position: relative;
 	background: #ffffff;
-	color: #374B5A;
+	color: #374B59;
 	overflow: hidden;
 }
 
@@ -8969,23 +8993,23 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-table [class*="-row"].v-selected {
-	background: #CDD8EC;
+	background: #005A9C;
 	background-origin: border-box;
-	color: #374B5A;
-	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.05);
+	color: #FEFEFE;
+	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.05);
 }
 
 .sormas .v-table [class*="-row"].v-selected  + .v-selected {
-	background: #CDD8EC;
+	background: #005A9C;
 }
 
 .sormas .v-table [class*="-row"].v-selected  + .v-selected td {
-	border-top-color: #CDD8EC;
+	border-top-color: #005A9C;
 }
 
 .sormas .v-table [class*="-row"].v-selected .v-table-cell-content {
 	border-color: transparent;
-	border-left-color: #b4c2dc;
+	border-left-color: #05426f;
 }
 
 .sormas .v-table [class*="-row"].v-selected .v-table-cell-content:first-child {
@@ -9056,7 +9080,7 @@ div.v-layout.v-horizontal.v-widget {
 .sormas .v-table-column-selector {
 	height: 32px;
 	padding: 0 14px;
-	color: #374B5A;
+	color: #374B59;
 	font-weight: 500;
 	
 	
@@ -9168,7 +9192,7 @@ div.v-layout.v-horizontal.v-widget {
 .sormas tbody.v-drag-element tr {
 	display: block;
 	
-	color: #374B5A;
+	color: #374B59;
 	-webkit-box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 	border-radius: 4px;
@@ -9212,7 +9236,7 @@ div.v-layout.v-horizontal.v-widget {
 
 .sormas .v-table-row-drag-middle .v-table-cell-content {
 	background-color: #f5f7fb;
-	color: #374B5A;
+	color: #374B59;
 }
 
 .sormas .v-table-row-drag-bottom td.v-table-cell-content {
@@ -9425,7 +9449,7 @@ div.v-layout.v-horizontal.v-widget {
 .sormas .v-splitpanel-horizontal  > div > .v-splitpanel-hsplitter div:before {
 	height: 32px;
 	padding: 0 14px;
-	color: #374B5A;
+	color: #374B59;
 	font-weight: 500;
 	
 	
@@ -9479,7 +9503,7 @@ div.v-layout.v-horizontal.v-widget {
 .sormas .v-splitpanel-vertical  > div > .v-splitpanel-vsplitter div:before {
 	height: 32px;
 	padding: 0 14px;
-	color: #374B5A;
+	color: #374B59;
 	font-weight: 500;
 	
 	
@@ -9528,7 +9552,7 @@ div.v-layout.v-horizontal.v-widget {
 .sormas .v-splitpanel-horizontal.large  > div > .v-splitpanel-hsplitter div:before {
 	height: 32px;
 	padding: 0 14px;
-	color: #374B5A;
+	color: #374B59;
 	font-weight: 500;
 	
 	
@@ -9596,7 +9620,7 @@ div.v-layout.v-horizontal.v-widget {
 .sormas .v-splitpanel-vertical.large  > div > .v-splitpanel-vsplitter div:before {
 	height: 32px;
 	padding: 0 14px;
-	color: #374B5A;
+	color: #374B59;
 	font-weight: 500;
 	
 	
@@ -9660,7 +9684,7 @@ div.v-layout.v-horizontal.v-widget {
 .sormas .v-progressbar-indicator {
 	border-radius: 4px;
 	height: inherit;
-	background: #CDD8EC;
+	background: #005A9C;
 	
 	
 	border: 2px solid #CDD8EC;
@@ -9688,7 +9712,7 @@ div.v-layout.v-horizontal.v-widget {
 	display: inline-block;
 	border-radius: 4px;
 	height: inherit;
-	background: #CDD8EC;
+	background: #005A9C;
 	
 	
 	border: 2px solid #CDD8EC;
@@ -9782,7 +9806,7 @@ div.v-layout.v-horizontal.v-widget {
 .sormas .v-slider-base:after {
 	border-radius: 4px;
 	height: inherit;
-	background: #CDD8EC;
+	background: #005A9C;
 	
 	
 	border: 2px solid #CDD8EC;
@@ -9816,7 +9840,7 @@ div.v-layout.v-horizontal.v-widget {
 .sormas .v-slider-handle:before {
 	height: 32px;
 	padding: 0 14px;
-	color: #374B5A;
+	color: #374B59;
 	font-weight: 500;
 	
 	
@@ -9920,7 +9944,7 @@ div.v-layout.v-horizontal.v-widget {
 .sormas .v-slider-vertical .v-slider-base:after {
 	height: 101%;
 	margin-left: 0;
-	background: #CDD8EC;
+	background: #005A9C;
 }
 
 .v-ie8 .sormas .v-slider-vertical .v-slider-base:after {
@@ -9996,7 +10020,7 @@ div.v-layout.v-horizontal.v-widget {
 	line-height: 32px;
 	font-size: 11px;
 	font-weight: 400;
-	color: #374B5A;
+	color: #374B59;
 	width: auto !important;
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -10016,7 +10040,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-tabsheet-tabitemcell .v-caption:hover {
-	color: #CDD8EC;
+	color: #005A9C;
 }
 
 .sormas .v-tabsheet-tabitemcell .v-caption.v-disabled {
@@ -10035,12 +10059,12 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-tabsheet-tabitemcell:focus .v-caption {
-	color: #CDD8EC;
+	color: #005A9C;
 }
 
 .sormas .v-tabsheet-tabitemcell .v-tabsheet-tabitem-selected .v-caption.v-caption {
-	border-bottom-color: #CDD8EC;
-	color: #CDD8EC;
+	border-bottom-color: #005A9C;
+	color: #005A9C;
 }
 
 .sormas .v-tabsheet-tabitemcell .v-caption-closable {
@@ -10061,17 +10085,17 @@ div.v-layout.v-horizontal.v-widget {
 	width: 13px;
 	text-align: center;
 	border-radius: 2px;
-	color: #374B5A;
+	color: #374B59;
 }
 
 .sormas .v-tabsheet-tabitemcell .v-tabsheet-caption-close:hover {
 	background: rgba(0, 0, 0, 0.03);
-	color: #CDD8EC;
+	color: #005A9C;
 }
 
 .sormas .v-tabsheet-tabitemcell .v-tabsheet-caption-close:active {
-	background: #CDD8EC;
-	color: #374B5A;
+	background: #005A9C;
+	color: #FEFEFE;
 }
 
 .sormas .v-tabsheet-scroller {
@@ -10130,13 +10154,13 @@ div.v-layout.v-horizontal.v-widget {
 .sormas .v-tabsheet-scroller button:hover {
 	opacity: 1;
 	filter: none ;
-	color: #CDD8EC;
+	color: #005A9C;
 }
 
 .sormas .v-tabsheet-scroller button:active {
 	opacity: 0.7;
 	filter: alpha(opacity=70) ;
-	color: #CDD8EC;
+	color: #005A9C;
 }
 
 .sormas .v-tabsheet-scroller button::-moz-focus-inner {
@@ -10489,7 +10513,7 @@ div.v-layout.v-horizontal.v-widget {
 
 .sormas .v-panel {
 	background: white;
-	color: #374B5A;
+	color: #374B59;
 	border-radius: 4px;
 	border: 2px solid #CDD8EC;
 	-webkit-box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);
@@ -10507,7 +10531,7 @@ div.v-layout.v-horizontal.v-widget {
 	background-color: #ffffff;
 	background-image: -webkit-linear-gradient(top, #ffffff 0%, #ffffff 100%);
 	background-image: linear-gradient(to bottom,#ffffff 0%, #ffffff 100%);
-	color: #374B5A;
+	color: #374B59;
 	font-weight: 600;
 	font-size: 11px;
 	-webkit-box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f7f7f7;
@@ -10561,7 +10585,7 @@ div.v-layout.v-horizontal.v-widget {
 
 .sormas .v-panel-well {
 	background: #fafafa;
-	color: #374B5A;
+	color: #374B59;
 	-webkit-box-shadow: 0 1px 0 0 rgba(255, 255, 255, 0.05), inset 0 2px 3px rgba(0, 0, 0, 0.05);
 	box-shadow: 0 1px 0 0 rgba(255, 255, 255, 0.05), inset 0 2px 3px rgba(0, 0, 0, 0.05);
 	border-radius: 4px;
@@ -10616,7 +10640,7 @@ div.v-layout.v-horizontal.v-widget {
 
 .sormas .v-accordion {
 	background: white;
-	color: #374B5A;
+	color: #374B59;
 	border-radius: 4px;
 	border: 2px solid #CDD8EC;
 	-webkit-box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);
@@ -10672,7 +10696,7 @@ div.v-layout.v-horizontal.v-widget {
 	background-color: #ffffff;
 	background-image: -webkit-linear-gradient(top, #ffffff 0%, #ffffff 100%);
 	background-image: linear-gradient(to bottom,#ffffff 0%, #ffffff 100%);
-	color: #374B5A;
+	color: #374B59;
 	font-weight: 600;
 	font-size: 11px;
 	-webkit-box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f7f7f7;
@@ -10748,7 +10772,7 @@ div.v-layout.v-horizontal.v-widget {
 .sormas .v-select-twincol select {
 	border: 2px solid #CDD8EC;
 	background: #ffffff;
-	color: #374B5A;
+	color: #374B59;
 }
 
 .sormas .v-select-twincol select:focus {
@@ -10830,13 +10854,13 @@ div.v-layout.v-horizontal.v-widget {
 .sormas .v-select-twincol-error .v-select-twincol-options, .sormas .v-select-twincol-error .v-select-twincol-selections {
 	border-color: #eb2977 !important;
 	background: #fffbfc;
-	color: #374B5A;
+	color: #374B59;
 }
 
 .sormas .v-select select {
 	border: 2px solid #CDD8EC;
 	background: #ffffff;
-	color: #374B5A;
+	color: #374B59;
 }
 
 .sormas .v-select select:focus {
@@ -10862,7 +10886,7 @@ div.v-layout.v-horizontal.v-widget {
 .sormas .v-select-error .v-select-select {
 	border-color: #eb2977 !important;
 	background: #fffbfc;
-	color: #374B5A;
+	color: #374B59;
 }
 
 .sormas .v-calendar-header-day {
@@ -10986,7 +11010,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-calendar-month-day-selected {
-	background-color: #fafbfd;
+	background-color: #e5eef5;
 }
 
 .sormas .v-calendar-month-day-dragemphasis {
@@ -11081,7 +11105,7 @@ div.v-layout.v-horizontal.v-widget {
 	right: 0;
 	bottom: -1px;
 	left: 0;
-	background: #CDD8EC;
+	background: #005A9C;
 	opacity: 0.5;
 	filter: alpha(opacity=50) ;
 	border-radius: 4px 4px 0 0;
@@ -11317,7 +11341,7 @@ div.v-layout.v-horizontal.v-widget {
 .sormas h1, .sormas .v-label-h1, .sormas h2, .sormas .v-label-h2, .sormas h3, .sormas .v-label-h3 {
 	line-height: 1.1;
 	font-weight: 400;
-	color: #374B5A;
+	color: #374B59;
 }
 
 .sormas h1, .sormas .v-label-h1 {
@@ -11348,7 +11372,7 @@ div.v-layout.v-horizontal.v-widget {
 	line-height: 1.1;
 	font-weight: 600;
 	font-size: 11px;
-	color: #374B5A;
+	color: #374B59;
 	text-transform: uppercase;
 	letter-spacing: 0;
 	margin-top: 2.4em;
@@ -11372,7 +11396,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-label-colored {
-	color: #CDD8EC;
+	color: #005A9C;
 }
 
 .sormas .v-label-large {
@@ -11437,7 +11461,7 @@ div.v-layout.v-horizontal.v-widget {
 
 .sormas .v-label-success, .sormas .v-label-failure {
 	background: white;
-	color: #374B5A;
+	color: #374B59;
 	border: 2px solid #36b955;
 	border-radius: 4px;
 	padding: 6px 16px 6px 32px;
@@ -11566,7 +11590,7 @@ div.v-layout.v-horizontal.v-widget {
 .sormas .v-select select {
 	border: 2px solid #CDD8EC;
 	background: #ffffff;
-	color: #374B5A;
+	color: #374B59;
 }
 
 .sormas .v-select select:focus {
@@ -11592,7 +11616,7 @@ div.v-layout.v-horizontal.v-widget {
 .sormas .v-select-error .v-select-select {
 	border-color: #eb2977 !important;
 	background: #fffbfc;
-	color: #374B5A;
+	color: #374B59;
 }
 
 .sormas .v-popupview {
@@ -11618,7 +11642,7 @@ div.v-layout.v-horizontal.v-widget {
 	padding: 4px 4px;
 	border-radius: 4px;
 	background-color: white;
-	color: #374B5A;
+	color: #374B59;
 	-webkit-box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.1), 0 3px 5px 0 rgba(0, 0, 0, 0.05), 0 0 0 2px rgba(0, 0, 0, 0.09);
 	box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.1), 0 3px 5px 0 rgba(0, 0, 0, 0.05), 0 0 0 2px rgba(0, 0, 0, 0.09);
 	-webkit-backface-visibility: hidden;
@@ -11704,7 +11728,7 @@ div.v-layout.v-horizontal.v-widget {
 	padding: 0;
 	border: 2px solid #CDD8EC;
 	background: white;
-	color: #374B5A;
+	color: #374B59;
 	-webkit-box-shadow: inset 0 1px 0 #f7f7f7, 0 1px 0 rgba(255, 255, 255, 0.1);
 	box-shadow: inset 0 1px 0 #f7f7f7, 0 1px 0 rgba(255, 255, 255, 0.1);
 	-webkit-transition: box-shadow 180ms, border 180ms;
@@ -11729,7 +11753,7 @@ div.v-layout.v-horizontal.v-widget {
 	-webkit-box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f7f7f7;
 	box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f7f7f7;
 	border-bottom: 2px solid #CDD8EC;
-	color: #374B5A;
+	color: #374B59;
 }
 
 .sormas .v-richtextarea .gwt-ToggleButton, .sormas .v-richtextarea .gwt-PushButton {
@@ -11741,7 +11765,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-richtextarea .gwt-ToggleButton:hover, .sormas .v-richtextarea .gwt-PushButton:hover {
-	color: #374B5A;
+	color: #374B59;
 }
 
 .sormas .v-richtextarea .gwt-ToggleButton-down, .sormas .v-richtextarea .gwt-ToggleButton-down-hovering {
@@ -12072,11 +12096,11 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-Notification.error .v-Notification-caption {
-	color: #374B5A;
+	color: #FEFEFE;
 }
 
 .sormas .v-Notification.error .v-Notification-description {
-	color: #374B5A;
+	color: #FEFEFE;
 }
 
 .sormas .v-Notification.dark {
@@ -12252,7 +12276,7 @@ div.v-layout.v-horizontal.v-widget {
 	background-color: #6691C4;
 	background-image: -webkit-linear-gradient(right, #6691c4 0%, #6691C4 8px);
 	background-image: linear-gradient(to left,#6691c4 0%, #6691C4 8px);
-	color: #374B5A;
+	color: #FEFEFE;
 	font-size: 11px;
 	line-height: 26px;
 	border-right: 2px solid #CDD8EC;
@@ -12293,9 +12317,9 @@ div.v-layout.v-horizontal.v-widget {
 
 .sormas .valo-menu-title {
 	line-height: 1.2;
-	background: #CDD8EC;
-	color: #374B5A;
-	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.05);
+	background: #005A9C;
+	color: #FEFEFE;
+	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.05);
 	padding: 11px 16px;
 	font-size: 11px;
 	border-bottom: 2px solid #CDD8EC;
@@ -12315,8 +12339,8 @@ div.v-layout.v-horizontal.v-widget {
 
 .sormas .valo-menu-title .v-menubar-menuitem {
 	background: transparent;
-	-webkit-box-shadow: inset 0 1px 0 #ebeef4, inset 0 -1px 0 #c4d0e7;
-	box-shadow: inset 0 1px 0 #ebeef4, inset 0 -1px 0 #c4d0e7;
+	-webkit-box-shadow: inset 0 1px 0 #0f6eb7, inset 0 -1px 0 #005694;
+	box-shadow: inset 0 1px 0 #0f6eb7, inset 0 -1px 0 #005694;
 	text-shadow: inherit;
 	font-size: 12px;
 	border-color: inherit;
@@ -12355,7 +12379,7 @@ div.v-layout.v-horizontal.v-widget {
 	border: none;
 	margin-right: 2px;
 	border-radius: 4px;
-	color: #CDD8EC;
+	color: #005A9C;
 	padding: 0 11px;
 	-webkit-transition: color 140ms;
 	-moz-transition: color 140ms;
@@ -12371,7 +12395,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-menubar-user-menu .v-menubar-menuitem:hover {
-	color: #f2f5fa;
+	color: #0077cf;
 }
 
 .sormas .v-menubar-user-menu .v-menubar-menuitem:active {
@@ -12380,7 +12404,7 @@ div.v-layout.v-horizontal.v-widget {
 
 .sormas .v-menubar-user-menu .v-menubar-menuitem-checked, .sormas .v-menubar-user-menu .v-menubar-menuitem-checked:first-child {
 	border: 2px solid #CDD8EC;
-	color: #CDD8EC;
+	color: #005A9C;
 }
 
 .sormas .v-menubar-user-menu .v-menubar-menuitem-checked .v-menubar-menuitem-caption, .sormas .v-menubar-user-menu .v-menubar-menuitem-checked:first-child .v-menubar-menuitem-caption {
@@ -12389,12 +12413,12 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-menubar-user-menu .v-menubar-menuitem-selected {
-	color: #374B5A;
-	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.05);
+	color: #FEFEFE;
+	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.05);
 }
 
 .sormas .v-menubar-user-menu .v-menubar-menuitem-selected:hover {
-	color: #374B5A;
+	color: #FEFEFE;
 }
 
 .sormas .v-menubar-user-menu .v-menubar-menuitem-disabled, .sormas .v-menubar-user-menu .v-menubar-menuitem-disabled:hover {
@@ -12430,13 +12454,13 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .valo-menu-subtitle {
-	color: #374B5A;
+	color: #FEFEFE;
 	margin: 6px 0 6px 16px;
 	border-bottom: 2px solid #7ca1cc;
 }
 
 .sormas .valo-menu-subtitle [class*="badge"] {
-	color: #8291a3;
+	color: #7faccd;
 }
 
 .sormas .valo-menuitems {
@@ -12450,7 +12474,7 @@ div.v-layout.v-horizontal.v-widget {
 	cursor: pointer;
 	position: relative;
 	overflow: hidden;
-	text-shadow: 0 -2px 0 rgba(255, 255, 255, 0.05);
+	text-shadow: 0 2px 0 rgba(0, 0, 0, 0.05);
 	-webkit-transition: background-color 300ms, color 60ms;
 	-moz-transition: background-color 300ms, color 60ms;
 	transition: background-color 300ms, color 60ms;
@@ -12467,7 +12491,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .valo-menu-item [class*="badge"] {
-	color: #CDD8EC;
+	color: #005A9C;
 }
 
 .sormas .valo-menu-item.selected {
@@ -12475,16 +12499,16 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .valo-menu-item.selected .v-icon {
-	color: #CDD8EC;
+	color: #005A9C;
 }
 
 .sormas .valo-menu-item.selected [class*="badge"] {
-	background: #CDD8EC;
-	color: #374B5A;
+	background: #005A9C;
+	color: #FEFEFE;
 }
 
 .sormas .valo-menu-item:focus, .sormas .valo-menu-item:hover, .sormas .valo-menu-item.selected {
-	color: #374B5A;
+	color: #FEFEFE;
 }
 
 .sormas .valo-menu-item span.v-icon {
@@ -12613,8 +12637,8 @@ div.v-layout.v-horizontal.v-widget {
 	height: 38px;
 	border-radius: 4px;
 	text-align: center;
-	background: #CDD8EC;
-	color: #374B5A;
+	background: #005A9C;
+	color: #FEFEFE;
 	font-size: 21px;
 	line-height: 38px;
 	margin: 16px auto;
@@ -12767,7 +12791,7 @@ div.v-layout.v-horizontal.v-widget {
 	margin: 0;
 	padding: 0;
 	height: 32px;
-	color: #374B5A;
+	color: #FEFEFE;
 	max-width: 30%;
 	-webkit-backface-visibility: hidden;
 }
@@ -12791,7 +12815,7 @@ div.v-layout.v-horizontal.v-widget {
 	background-color: #6691C4;
 	background-image: -webkit-linear-gradient(right, #6691c4 0%, #6691C4 8px);
 	background-image: linear-gradient(to left,#6691c4 0%, #6691C4 8px);
-	color: #374B5A;
+	color: #FEFEFE;
 	font-size: 11px;
 	line-height: 26px;
 	border-right: 2px solid #CDD8EC;
@@ -12873,6 +12897,48 @@ div.v-layout.v-horizontal.v-widget {
 	color: #005A9C !important;
 }
 
+.sormas .v-radiobutton {
+	margin: 0 0 10px -2px !important;
+	padding: 0 !important;
+	border: 2px solid #CDD8EC;
+	border-radius: 0;
+	font-size: 11px;
+	text-transform: uppercase;
+}
+
+.sormas .v-radiobutton:first-child {
+	border-radius: 4px 0 0 4px;
+	margin-left: 0 !important;
+}
+
+.sormas .v-radiobutton:last-child {
+	border-radius: 0 4px 4px 0;
+}
+
+:root .sormas .v-radiobutton > input {
+	display: none;
+}
+
+:root .sormas .v-radiobutton > input ~ label {
+	margin-bottom: 0;
+	padding: 4px 8px;
+	height: 28px;
+	line-height: 20px;
+}
+
+:root .sormas .v-radiobutton > input:checked ~ label {
+	background: #CDD8EC;
+}
+
+:root .sormas .v-radiobutton > input ~ label:before, :root .sormas .v-radiobutton > input ~ label:after {
+	content: none;
+}
+
+.sormas .v-textfield.v-readonly {
+	border: none;
+	padding-left: 0;
+}
+
 .sormas .login-screen {
 	background: #EFF5FC;
 	background-image: url(views/img/login-bg.png);
@@ -12885,7 +12951,7 @@ div.v-layout.v-horizontal.v-widget {
 
 .sormas .login-screen .login-form {
 	background: white;
-	color: #374B5A;
+	color: #374B59;
 	border-radius: 4px;
 	border: 2px solid #CDD8EC;
 	-webkit-box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);
@@ -12906,10 +12972,10 @@ div.v-layout.v-horizontal.v-widget {
 	left: 0;
 	width: 300px;
 	height: 100%;
-	background: #CDD8EC;
-	background-color: rgba(205, 216, 236, 0.7);
+	background: #005A9C;
+	background-color: rgba(0, 90, 156, 0.7);
 	padding: 21px 21px 21px 21px;
-	color: #374B5A;
+	color: #FEFEFE;
 	-webkit-animation: valo-animate-in-fade 1s 1s backwards;
 	-moz-animation: valo-animate-in-fade 1s 1s backwards;
 	animation: valo-animate-in-fade 1s 1s backwards;
@@ -12952,6 +13018,7 @@ div.v-layout.v-horizontal.v-widget {
 
 .sormas .v-button {
 	text-transform: uppercase;
+	border-color: #005A9C;
 }
 
 .sormas .v-filterselect [class$="button"] {
@@ -12968,43 +13035,6 @@ div.v-layout.v-horizontal.v-widget {
 
 .sormas .v-datefield [class$="button"]::before {
 	color: #394C5B;
-}
-
-.sormas .v-radiobutton {
-	margin: 0 0 10px -2px !important;
-	padding: 0 !important;
-	border: 2px solid #CDD8EC;
-	border-radius: 0;
-	font-size: 11px;
-	text-transform: uppercase;
-}
-
-.sormas .v-radiobutton:first-child {
-	border-radius: 4px 0 0 4px;
-	margin-left: 0 !important;
-}
-
-.sormas .v-radiobutton:last-child {
-	border-radius: 0 4px 4px 0;
-}
-
-:root .sormas .v-radiobutton > input {
-	display: none;
-}
-
-:root .sormas .v-radiobutton > input ~ label {
-	margin-bottom: 0;
-	padding: 4px 8px;
-	height: 28px;
-	line-height: 20px;
-}
-
-:root .sormas .v-radiobutton > input:checked ~ label {
-	background: #CDD8EC;
-}
-
-:root .sormas .v-radiobutton > input ~ label:before, :root .sormas .v-radiobutton > input ~ label:after {
-	content: none;
 }
 
 .sormas h3 {
@@ -13136,10 +13166,6 @@ div.v-layout.v-horizontal.v-widget {
 	margin-top: 1.5em;
 }
 
-.sormas .force-caption-21 {
-	margin-top: 21px;
-}
-
 .sormas .no-margin, .sormas .h1.no-margin, .sormas .h2.no-margin, .sormas .h3.no-margin, .sormas .h4.no-margin, .sormas .h5.no-margin, .sormas .v-checkbox.no-margin label {
 	margin: 0;
 }
@@ -13158,7 +13184,7 @@ div.v-layout.v-horizontal.v-widget {
 
 .sormas .about-view .about-content {
 	background: white;
-	color: #374B5A;
+	color: #374B59;
 	border-radius: 4px;
 	border: 2px solid #CDD8EC;
 	-webkit-box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);

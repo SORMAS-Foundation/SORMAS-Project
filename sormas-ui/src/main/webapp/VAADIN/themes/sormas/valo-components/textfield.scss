@@ -1,0 +1,13 @@
+
+$v-textfield-background-color--readonly: $v-app-background-color !default;
+
+@mixin sormas-valo-textfield {
+
+  .v-textfield {
+  
+    &.v-readonly {
+      border: none;
+      padding-left: 0;
+   }
+  }
+}

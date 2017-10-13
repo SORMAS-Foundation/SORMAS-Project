@@ -1,0 +1,40 @@
+
+@mixin sormas-valo-optiongroup {
+	
+  .v-radiobutton {
+    margin: 0 0 10px -2px !important;
+    padding: 0 !important;
+    border: $v-border;
+    border-radius: 0;
+    font-size: 11px;
+    text-transform: uppercase;
+      
+    &:first-child {
+      border-radius: 4px 0 0 4px; 
+      margin-left: 0 !important;
+    }
+    &:last-child {
+      border-radius: 0 4px 4px 0; 
+    }
+    
+    :root & > input {
+      display: none;
+	  
+      & ~ label {
+        margin-bottom: 0;
+        padding: 4px 8px;
+        height: 28px;
+        line-height: 20px;
+      }
+    
+	  &:checked ~ label {
+        background: $v-focus-color;
+      }
+
+      & ~ label:before,
+      & ~ label:after {
+        content: none;
+      }
+    }
+  }
+}

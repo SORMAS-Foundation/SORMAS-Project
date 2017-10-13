@@ -44,11 +44,11 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 							LayoutUtil.fluidRowLocs(SampleDto.SAMPLE_SOURCE, ""),
 							LayoutUtil.fluidRowLocs(SampleDto.SUGGESTED_TYPE_OF_TEST, SampleDto.LAB)
 					),
-					LayoutUtil.locCss(CssStyles.VSPACE_TOP_24, SampleDto.SHIPPED),
+					LayoutUtil.locCss(CssStyles.VSPACETOP3, SampleDto.SHIPPED),
 					LayoutUtil.div(
 							LayoutUtil.fluidRowLocs(SampleDto.SHIPMENT_DATE, SampleDto.SHIPMENT_DETAILS)
 					),
-					LayoutUtil.locCss(CssStyles.VSPACE_TOP_24, SampleDto.RECEIVED),
+					LayoutUtil.locCss(CssStyles.VSPACETOP3, SampleDto.RECEIVED),
 					LayoutUtil.div(
 							LayoutUtil.fluidRowLocs(SampleDto.RECEIVED_DATE, SampleDto.LAB_SAMPLE_ID),
 							LayoutUtil.fluidRowLocs(SampleDto.SPECIMEN_CONDITION, SampleDto.NO_TEST_POSSIBLE_REASON),
