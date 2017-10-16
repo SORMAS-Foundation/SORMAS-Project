@@ -7,13 +7,17 @@
 
 $v-luminance-threshold: 180 !default;
 
-$v-background-color: #ffffff !default;
-$v-app-background-color: #ffffff !default;
+$s-warning-color: #E10002;
+$s-primary-color: #005A9C;
+$s-default-color: #6691C4;
+
+$v-background-color: #FEFEFE !default;
+$v-app-background-color: $v-background-color !default;
 $v-font-color: #394C5B !default;
-$v-selection-color: #005A9C !default;
+$v-selection-color: $s-primary-color !default;
 $v-focus-color: #CDD8EC !default;
-$v-error-indicator-color: #eb2977 !default;
-$v-friendly-color: rgb(54, 185, 85);
+$v-error-indicator-color: $s-warning-color !default;
+$v-friendly-color: $s-default-color !default;
 
 $v-font-family: "Open Sans", sans-serif, "Source Sans Pro";
 $v-font-size: 12px !default;
@@ -29,20 +33,6 @@ $v-gradient: false;
 $v-border: 2px solid $v-focus-color;
 $v-caption-font-weight: 600 !default; 
 
-$valo-menu-background-color: #6691C4 !default;
-
-$login-info-width: 300px !default;
-$login-info-opacity: 0.7 !default;
-$login-background-color: $editor-background-color !default;
-// Get more background images from unsplash.com (remember to optimize the filesize)
-$login-background-image: "img/login-bg.png" !default;
-
-$editor-shadow: 0 0 10px 10px rgba(0,0,0,.1) !default;
-$editor-background-color: #6691C4 !default;
-$editor-embed-background-color: darken($editor-background-color, 5%) !default;
-$editor-raised-background-color: lighten($editor-background-color, 10%) !default;
-$editor-caption-font-color: valo-font-color($editor-background-color, 0.5) !default;
-
 $v-layout-margin-top: round($v-unit-size / 1.5) !default;
 $v-layout-margin-right: $v-layout-margin-top !default;
 $v-layout-margin-bottom: $v-layout-margin-top !default;
@@ -50,17 +40,27 @@ $v-layout-margin-left: $v-layout-margin-top !default;
 $v-layout-spacing-vertical: round($v-unit-size / 1.8) !default;
 $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
 
-@import "../valo/valo.scss";
 
-@import "valo-components/button.scss";
-@import "valo-components/combobox.scss";
-@import "valo-components/datefield.scss";
-@import "valo-components/menu.scss";
-@import "valo-components/optiongroup.scss";
-@import "valo-components/panel.scss";
-@import "valo-components/textfield.scss";
+$editor-shadow: 0 0 10px 10px rgba(0,0,0,.1) !default;
+$editor-background-color: #6691C4 !default;
+$editor-embed-background-color: darken($editor-background-color, 5%) !default;
+$editor-raised-background-color: lighten($editor-background-color, 10%) !default;
+$editor-caption-font-color: valo-font-color($editor-background-color, 0.5) !default;
+
+
+@import "components/button.scss";
+@import "components/combobox.scss";
+@import "components/datefield.scss";
+@import "components/grid.scss";
+@import "components/menu.scss";
+@import "components/optiongroup.scss";
+@import "components/panel.scss";
+@import "components/textfield.scss";
+@import "components/window.scss";
 
 @import "views/login.scss";
+
+@import "../valo/valo.scss";
 
 
 @function valo-font-color ($bg-color, $contrast: $v-font-color-contrast) {
@@ -77,13 +77,15 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
 @mixin sormas {
   @include valo;
 
-  @include sormas-valo-button;
-  @include sormas-valo-combobox;
-  @include sormas-valo-datefield;
-  @include sormas-valo-menu;
-  @include sormas-valo-optiongroup;
-  @include sormas-valo-panel;
-  @include sormas-valo-textfield;
+  @include sormas-button;
+  @include sormas-combobox;
+  @include sormas-datefield;
+  @include sormas-grid;
+  @include sormas-menu;
+  @include sormas-optiongroup;
+  @include sormas-panel;
+  @include sormas-textfield;
+  @include sormas-window;
 
   @include login;
 
@@ -121,34 +123,6 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
     }
   }   
 
-  .v-grid-header th {
-    font-size: 12px;
-  }
-  
-  .v-grid-cell {
-    font-size: 13px;
-  }
-  
-  .v-grid-cell.priority-high {
-    background-color: #DFA7A5;
-    color: white;
-  }
-  .v-grid-cell.priority-normal {
-    background-color: #A6BFDD;
-    color: white;
-  }
-
-  .v-grid-row.status-discarded .v-grid-cell {
-    text-decoration: line-through;
-    color: #888;
-  }
-  .v-grid-row.status-done .v-grid-cell {
-    color: #888;
-  }
-  .v-grid-row.status-not .v-grid-cell {
-    color: #C44;
-  }
-  
   .callout {
 	text-align: center;
 	outline: none;

@@ -1,39 +1,41 @@
 
-@mixin sormas-valo-menu {
+$valo-menu-background-color: $s-default-color !default;
+
+@mixin sormas-menu {
 	
   .valo-menu {
     font-size: 16px;
     vertical-align: middle;
-    border-right-color: #E6E8EB;
+    border-right-color: $v-focus-color;
   }
   
   .valo-menu-title {
     padding: 16px;
-    background: #ffffff;
-    color: #6791C5;
+    background: $v-background-color;
+    color: $s-default-color;
     font-weight: bold;
     font-size: 32px;
     line-height: 32px;
     font-family: 'Source Sans Pro';
     letter-spacing: -1px;  
-    border-bottom: 3px solid #E10002;
+    border-bottom: 3px solid $s-warning-color;
   }
 	  
   .valo-menu-item {
-	color: #FEFEFE;
+	color: inherit;
 	text-shadow: none;
 	padding: 12px 16px;
     line-height: 36px;
 	
 	.v-icon {
-	  color: #FEFEFE;
+	  color: inherit;
 	  font-size: 28px;
 	  min-width: 36px;
 	}
 	
 	&.selected {
-	  background: #FAFBFC !important;
-      color: #005A9C !important;
+	  background: $v-background-color !important;
+      color: $v-selection-color !important;
 	  text-shadow: none !important;
 	  
 	  .v-icon {

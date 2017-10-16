@@ -1,31 +1,31 @@
 
-@mixin sormas-valo-combobox {
+@mixin sormas-datefield {
 
-  .v-filterselect {
-  
+  .v-datefield {
+    
     [class$="button"] {
-      border-left: none;
+      border-right: none;
     
       &::before {
         color: $v-font-color;
       }
     }
-  
+    
     &.v-readonly {
       height: inherit;
 	  background: inherit;
       color: inherit;
 	
-	  .v-filterselect-input {
+	  .v-datefield-textfield {
         border: none;
         padding: 0;
         background: inherit;
         color: inherit;
       }
-            
-      .v-filterselect-button {
+
+      .v-datefield-button {
         display: none;
       }
-   }
+    }
   }
-}
+}  

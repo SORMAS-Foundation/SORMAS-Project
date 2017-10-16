@@ -759,28 +759,28 @@
 
 @-webkit-keyframes valo-grid-editor-footer-animate-in-alt {
 		0% {
-		margin-bottom: -34px;
+		margin-bottom: -33px;
 	}
 		100% {
-		margin-bottom: -2px;
+		margin-bottom: -1px;
 	}
 	}
 
 @-moz-keyframes valo-grid-editor-footer-animate-in-alt {
 		0% {
-		margin-bottom: -34px;
+		margin-bottom: -33px;
 	}
 		100% {
-		margin-bottom: -2px;
+		margin-bottom: -1px;
 	}
 	}
 
 @keyframes valo-grid-editor-footer-animate-in-alt {
 		0% {
-		margin-bottom: -34px;
+		margin-bottom: -33px;
 	}
 		100% {
-		margin-bottom: -2px;
+		margin-bottom: -1px;
 	}
 	}
 
@@ -1588,14 +1588,14 @@ div.v-layout.v-horizontal.v-widget {
 .sormas.v-app, .sormas.v-app-loading {
 	font: 400 12px/1.55 "Open Sans", sans-serif, "Source Sans Pro";
 	color: #394C5B;
-	background-color: #ffffff;
+	background-color: #FEFEFE;
 	cursor: default;
 }
 
 .sormas .v-app-loading {
 	width: 100%;
 	height: 100%;
-	background: #ffffff;
+	background: #FEFEFE;
 }
 
 .sormas .v-app-loading:before {
@@ -1715,7 +1715,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-errorindicator {
-	color: #eb2977;
+	color: #E10002;
 	font-weight: 600;
 	width: 16px;
 	text-align: center;
@@ -1726,7 +1726,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-required-field-indicator {
-	color: #eb2977;
+	color: #E10002;
 	padding: 0 0.2em;
 }
 
@@ -1738,7 +1738,7 @@ div.v-layout.v-horizontal.v-widget {
 	margin: 0;
 	border-radius: 4px;
 	border: 2px solid #CDD8EC;
-	background: #ffffff;
+	background: #FEFEFE;
 	color: #374B59;
 }
 
@@ -1778,7 +1778,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-drag-element {
-	background: #ffffff;
+	background: #FEFEFE;
 	color: #374B59;
 	-webkit-box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
@@ -1808,7 +1808,7 @@ div.v-layout.v-horizontal.v-widget {
 .sormas .v-tooltip .v-errormessage {
 	background-color: white;
 	background-color: #fff;
-	color: #eb2977;
+	color: #E10002;
 	margin: -4px -8px;
 	padding: 4px 8px;
 	max-height: 10em;
@@ -1840,8 +1840,8 @@ div.v-layout.v-horizontal.v-widget {
 	border-radius: 4px;
 	background-color: white;
 	color: #374B59;
-	-webkit-box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.1), 0 3px 5px 0 rgba(0, 0, 0, 0.05), 0 0 0 2px rgba(0, 0, 0, 0.09);
-	box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.1), 0 3px 5px 0 rgba(0, 0, 0, 0.05), 0 0 0 2px rgba(0, 0, 0, 0.09);
+	-webkit-box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.1), 0 3px 5px 0 rgba(0, 0, 0, 0.05), 0 0 0 2px rgba(0, 0, 0, 0.0902);
+	box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.1), 0 3px 5px 0 rgba(0, 0, 0, 0.05), 0 0 0 2px rgba(0, 0, 0, 0.0902);
 	-webkit-backface-visibility: hidden;
 	-moz-backface-visibility: hidden;
 	-ms-backface-visibility: hidden;
@@ -1996,7 +1996,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-verticallayout-well, .sormas .v-horizontallayout-well {
-	background: #fafafa;
+	background: #f9f9f9;
 	color: #374B59;
 	-webkit-box-shadow: 0 1px 0 0 rgba(255, 255, 255, 0.05), inset 0 2px 3px rgba(0, 0, 0, 0.05);
 	box-shadow: 0 1px 0 0 rgba(255, 255, 255, 0.05), inset 0 2px 3px rgba(0, 0, 0, 0.05);
@@ -2079,9 +2079,9 @@ div.v-layout.v-horizontal.v-widget {
 	
 	border-radius: 4px;
 	border: 2px solid #CDD8EC;
-	background: #ffffff;
-	-webkit-box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f7f7f7, 0 2px 3px rgba(0, 0, 0, 0.05);
-	box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f7f7f7, 0 2px 3px rgba(0, 0, 0, 0.05);
+	background: #FEFEFE;
+	-webkit-box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f6f6f6, 0 2px 3px rgba(0, 0, 0, 0.05);
+	box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f6f6f6, 0 2px 3px rgba(0, 0, 0, 0.05);
 	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
@@ -2146,7 +2146,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-button:hover:after {
-	background-color: rgba(191, 191, 191, 0.1);
+	background-color: rgba(190, 190, 190, 0.1);
 }
 
 .sormas .v-button:focus:after {
@@ -2156,7 +2156,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-button:active:after {
-	background-color: rgba(128, 128, 128, 0.2);
+	background-color: rgba(127, 127, 127, 0.2);
 }
 
 .sormas .v-button-primary {
@@ -2212,9 +2212,9 @@ div.v-layout.v-horizontal.v-widget {
 	
 	border-radius: 4px;
 	border: 2px solid #CDD8EC;
-	background: #36b955;
-	-webkit-box-shadow: inset 0 1px 0 #5cc672, inset 0 -1px 0 #36b053, 0 2px 3px rgba(0, 0, 0, 0.05);
-	box-shadow: inset 0 1px 0 #5cc672, inset 0 -1px 0 #36b053, 0 2px 3px rgba(0, 0, 0, 0.05);
+	background: #6691C4;
+	-webkit-box-shadow: inset 0 1px 0 #8fa6c8, inset 0 -1px 0 #628cbf, 0 2px 3px rgba(0, 0, 0, 0.05);
+	box-shadow: inset 0 1px 0 #8fa6c8, inset 0 -1px 0 #628cbf, 0 2px 3px rgba(0, 0, 0, 0.05);
 	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.05);
 }
 
@@ -2227,7 +2227,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-button-friendly:hover:after {
-	background-color: rgba(104, 211, 130, 0.1);
+	background-color: rgba(157, 185, 217, 0.1);
 }
 
 .sormas .v-button-friendly:focus:after {
@@ -2237,7 +2237,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-button-friendly:active:after {
-	background-color: rgba(12, 107, 35, 0.2);
+	background-color: rgba(23, 70, 126, 0.2);
 }
 
 .sormas .v-button-danger {
@@ -2249,9 +2249,9 @@ div.v-layout.v-horizontal.v-widget {
 	
 	border-radius: 4px;
 	border: 2px solid #CDD8EC;
-	background: #eb2977;
-	-webkit-box-shadow: inset 0 1px 0 #ed5b90, inset 0 -1px 0 #e42773, 0 2px 3px rgba(0, 0, 0, 0.05);
-	box-shadow: inset 0 1px 0 #ed5b90, inset 0 -1px 0 #e42773, 0 2px 3px rgba(0, 0, 0, 0.05);
+	background: #E10002;
+	-webkit-box-shadow: inset 0 1px 0 #f61b1d, inset 0 -1px 0 #d50002, 0 2px 3px rgba(0, 0, 0, 0.05);
+	box-shadow: inset 0 1px 0 #f61b1d, inset 0 -1px 0 #d50002, 0 2px 3px rgba(0, 0, 0, 0.05);
 	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.05);
 }
 
@@ -2264,7 +2264,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-button-danger:hover:after {
-	background-color: rgba(242, 111, 163, 0.1);
+	background-color: rgba(255, 47, 48, 0.1);
 }
 
 .sormas .v-button-danger:focus:after {
@@ -2274,7 +2274,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-button-danger:active:after {
-	background-color: rgba(136, 2, 56, 0.2);
+	background-color: rgba(112, 0, 1, 0.2);
 }
 
 .sormas .v-button-borderless {
@@ -2541,8 +2541,8 @@ div.v-layout.v-horizontal.v-widget {
 	border: 2px solid #CDD8EC;
 	-webkit-box-shadow: 0 0 0 2px rgba(205, 216, 236, 0.5);
 	box-shadow: 0 0 0 2px rgba(205, 216, 236, 0.5);
-	-webkit-box-shadow: 0 0 0 2px rgba(205, 216, 236, 0.5), inset 0 1px 0 white, inset 0 -1px 0 #f7f7f7, 0 2px 3px rgba(0, 0, 0, 0.05);
-	box-shadow: 0 0 0 2px rgba(205, 216, 236, 0.5), inset 0 1px 0 white, inset 0 -1px 0 #f7f7f7, 0 2px 3px rgba(0, 0, 0, 0.05);
+	-webkit-box-shadow: 0 0 0 2px rgba(205, 216, 236, 0.5), inset 0 1px 0 white, inset 0 -1px 0 #f6f6f6, 0 2px 3px rgba(0, 0, 0, 0.05);
+	box-shadow: 0 0 0 2px rgba(205, 216, 236, 0.5), inset 0 1px 0 white, inset 0 -1px 0 #f6f6f6, 0 2px 3px rgba(0, 0, 0, 0.05);
 }
 
 :root .sormas .v-checkbox > input ~ label:before, :root .sormas .v-checkbox > input ~ label:after {
@@ -2570,9 +2570,9 @@ div.v-layout.v-horizontal.v-widget {
 	
 	border-radius: 4px;
 	border: 2px solid #CDD8EC;
-	background: #ffffff;
-	-webkit-box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f7f7f7, 0 2px 3px rgba(0, 0, 0, 0.05);
-	box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f7f7f7, 0 2px 3px rgba(0, 0, 0, 0.05);
+	background: #FEFEFE;
+	-webkit-box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f6f6f6, 0 2px 3px rgba(0, 0, 0, 0.05);
+	box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f6f6f6, 0 2px 3px rgba(0, 0, 0, 0.05);
 	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.05);
 	padding: 0;
 	height: 16px;
@@ -2588,7 +2588,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 :root .sormas .v-checkbox > input:active ~ label:after {
-	background-color: rgba(128, 128, 128, 0.2);
+	background-color: rgba(127, 127, 127, 0.2);
 }
 
 :root .sormas .v-checkbox > input:checked ~ label:after {
@@ -2667,8 +2667,8 @@ div.v-layout.v-horizontal.v-widget {
 	border: 2px solid #CDD8EC;
 	-webkit-box-shadow: 0 0 0 2px rgba(205, 216, 236, 0.5);
 	box-shadow: 0 0 0 2px rgba(205, 216, 236, 0.5);
-	-webkit-box-shadow: 0 0 0 2px rgba(205, 216, 236, 0.5), inset 0 1px 0 white, inset 0 -1px 0 #f7f7f7, 0 2px 3px rgba(0, 0, 0, 0.05);
-	box-shadow: 0 0 0 2px rgba(205, 216, 236, 0.5), inset 0 1px 0 white, inset 0 -1px 0 #f7f7f7, 0 2px 3px rgba(0, 0, 0, 0.05);
+	-webkit-box-shadow: 0 0 0 2px rgba(205, 216, 236, 0.5), inset 0 1px 0 white, inset 0 -1px 0 #f6f6f6, 0 2px 3px rgba(0, 0, 0, 0.05);
+	box-shadow: 0 0 0 2px rgba(205, 216, 236, 0.5), inset 0 1px 0 white, inset 0 -1px 0 #f6f6f6, 0 2px 3px rgba(0, 0, 0, 0.05);
 }
 
 :root .sormas .v-checkbox-small > input ~ label:before, :root .sormas .v-checkbox-small > input ~ label:after {
@@ -2696,9 +2696,9 @@ div.v-layout.v-horizontal.v-widget {
 	
 	border-radius: 4px;
 	border: 2px solid #CDD8EC;
-	background: #ffffff;
-	-webkit-box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f7f7f7, 0 2px 3px rgba(0, 0, 0, 0.05);
-	box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f7f7f7, 0 2px 3px rgba(0, 0, 0, 0.05);
+	background: #FEFEFE;
+	-webkit-box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f6f6f6, 0 2px 3px rgba(0, 0, 0, 0.05);
+	box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f6f6f6, 0 2px 3px rgba(0, 0, 0, 0.05);
 	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.05);
 	padding: 0;
 	height: 14px;
@@ -2714,7 +2714,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 :root .sormas .v-checkbox-small > input:active ~ label:after {
-	background-color: rgba(128, 128, 128, 0.2);
+	background-color: rgba(127, 127, 127, 0.2);
 }
 
 :root .sormas .v-checkbox-small > input:checked ~ label:after {
@@ -2793,8 +2793,8 @@ div.v-layout.v-horizontal.v-widget {
 	border: 2px solid #CDD8EC;
 	-webkit-box-shadow: 0 0 0 2px rgba(205, 216, 236, 0.5);
 	box-shadow: 0 0 0 2px rgba(205, 216, 236, 0.5);
-	-webkit-box-shadow: 0 0 0 2px rgba(205, 216, 236, 0.5), inset 0 1px 0 white, inset 0 -1px 0 #f7f7f7, 0 2px 3px rgba(0, 0, 0, 0.05);
-	box-shadow: 0 0 0 2px rgba(205, 216, 236, 0.5), inset 0 1px 0 white, inset 0 -1px 0 #f7f7f7, 0 2px 3px rgba(0, 0, 0, 0.05);
+	-webkit-box-shadow: 0 0 0 2px rgba(205, 216, 236, 0.5), inset 0 1px 0 white, inset 0 -1px 0 #f6f6f6, 0 2px 3px rgba(0, 0, 0, 0.05);
+	box-shadow: 0 0 0 2px rgba(205, 216, 236, 0.5), inset 0 1px 0 white, inset 0 -1px 0 #f6f6f6, 0 2px 3px rgba(0, 0, 0, 0.05);
 }
 
 :root .sormas .v-checkbox-large > input ~ label:before, :root .sormas .v-checkbox-large > input ~ label:after {
@@ -2822,9 +2822,9 @@ div.v-layout.v-horizontal.v-widget {
 	
 	border-radius: 4px;
 	border: 2px solid #CDD8EC;
-	background: #ffffff;
-	-webkit-box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f7f7f7, 0 2px 3px rgba(0, 0, 0, 0.05);
-	box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f7f7f7, 0 2px 3px rgba(0, 0, 0, 0.05);
+	background: #FEFEFE;
+	-webkit-box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f6f6f6, 0 2px 3px rgba(0, 0, 0, 0.05);
+	box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f6f6f6, 0 2px 3px rgba(0, 0, 0, 0.05);
 	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.05);
 	padding: 0;
 	height: 19px;
@@ -2840,7 +2840,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 :root .sormas .v-checkbox-large > input:active ~ label:after {
-	background-color: rgba(128, 128, 128, 0.2);
+	background-color: rgba(127, 127, 127, 0.2);
 }
 
 :root .sormas .v-checkbox-large > input:checked ~ label:after {
@@ -3061,14 +3061,14 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-filterselect-error .v-filterselect-input {
-	border-color: #eb2977 !important;
-	background: #fffbfc;
+	border-color: #E10002 !important;
+	background: #fff9f9;
 	color: #374B59;
 }
 
 .sormas .v-filterselect-error .v-filterselect-button {
-	color: #eb2977;
-	border-color: #eb2977;
+	color: #E10002;
+	border-color: #E10002;
 }
 
 .sormas .v-filterselect-suggestpopup {
@@ -3086,8 +3086,8 @@ div.v-layout.v-horizontal.v-widget {
 	border-radius: 4px;
 	background-color: white;
 	color: #374B59;
-	-webkit-box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.1), 0 3px 5px 0 rgba(0, 0, 0, 0.05), 0 0 0 2px rgba(0, 0, 0, 0.09);
-	box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.1), 0 3px 5px 0 rgba(0, 0, 0, 0.05), 0 0 0 2px rgba(0, 0, 0, 0.09);
+	-webkit-box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.1), 0 3px 5px 0 rgba(0, 0, 0, 0.05), 0 0 0 2px rgba(0, 0, 0, 0.0902);
+	box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.1), 0 3px 5px 0 rgba(0, 0, 0, 0.05), 0 0 0 2px rgba(0, 0, 0, 0.0902);
 	-webkit-backface-visibility: hidden;
 	-moz-backface-visibility: hidden;
 	-ms-backface-visibility: hidden;
@@ -3152,7 +3152,7 @@ div.v-layout.v-horizontal.v-widget {
 .sormas .v-filterselect-suggestpopup [class$="status"] {
 	position: absolute;
 	right: 4px;
-	background: rgba(217, 217, 217, 0.9);
+	background: rgba(216, 216, 216, 0.9);
 	color: #374B59;
 	border-radius: 0 0 4px 4px;
 	height: 20px;
@@ -3205,7 +3205,7 @@ div.v-layout.v-horizontal.v-widget {
 .sormas .v-filterselect-suggestpopup div[class*="page"]:hover {
 	opacity: 1;
 	filter: none ;
-	background: rgba(255, 255, 255, 0.5);
+	background: rgba(254, 254, 254, 0.5);
 }
 
 .sormas .v-filterselect-suggestpopup div[class*="page"]:hover:after {
@@ -3269,10 +3269,10 @@ div.v-layout.v-horizontal.v-widget {
 	-moz-user-select: none;
 	-ms-user-select: none;
 	user-select: none;
-	background: #ffffff;
+	background: #FEFEFE;
 	cursor: inherit;
-	-webkit-box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f7f7f7, 0 2px 3px rgba(0, 0, 0, 0.05);
-	box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f7f7f7, 0 2px 3px rgba(0, 0, 0, 0.05);
+	-webkit-box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f6f6f6, 0 2px 3px rgba(0, 0, 0, 0.05);
+	box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f6f6f6, 0 2px 3px rgba(0, 0, 0, 0.05);
 	border: 2px solid #CDD8EC;
 	text-shadow: inherit;
 	text-overflow: ellipsis;
@@ -3284,8 +3284,8 @@ div.v-layout.v-horizontal.v-widget {
 	-webkit-transition: none;
 	-moz-transition: none;
 	transition: none;
-	-webkit-box-shadow: 0 0 0 2px rgba(205, 216, 236, 0.5), inset 0 1px 0 white, inset 0 -1px 0 #f7f7f7, 0 2px 3px rgba(0, 0, 0, 0.05);
-	box-shadow: 0 0 0 2px rgba(205, 216, 236, 0.5), inset 0 1px 0 white, inset 0 -1px 0 #f7f7f7, 0 2px 3px rgba(0, 0, 0, 0.05);
+	-webkit-box-shadow: 0 0 0 2px rgba(205, 216, 236, 0.5), inset 0 1px 0 white, inset 0 -1px 0 #f6f6f6, 0 2px 3px rgba(0, 0, 0, 0.05);
+	box-shadow: 0 0 0 2px rgba(205, 216, 236, 0.5), inset 0 1px 0 white, inset 0 -1px 0 #f6f6f6, 0 2px 3px rgba(0, 0, 0, 0.05);
 	-webkit-box-shadow: 0 0 0 2px rgba(205, 216, 236, 0.5);
 	box-shadow: 0 0 0 2px rgba(205, 216, 236, 0.5);
 }
@@ -3855,7 +3855,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-csslayout-well {
-	background: #fafafa;
+	background: #f9f9f9;
 	color: #374B59;
 	-webkit-box-shadow: 0 1px 0 0 rgba(255, 255, 255, 0.05), inset 0 2px 3px rgba(0, 0, 0, 0.05);
 	box-shadow: 0 1px 0 0 rgba(255, 255, 255, 0.05), inset 0 2px 3px rgba(0, 0, 0, 0.05);
@@ -4308,7 +4308,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-grid-scroller-vertical, .sormas .v-grid-scroller-horizontal {
-	border: 2px solid #CDD8EC;
+	border: 1px solid #CDD8EC;
 }
 
 .sormas .v-grid-scroller-vertical {
@@ -4320,7 +4320,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-grid-tablewrapper {
-	border: 2px solid #CDD8EC;
+	border: 1px solid #CDD8EC;
 }
 
 .sormas .v-grid .header-drag-table {
@@ -4335,7 +4335,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-grid .header-drag-table .v-grid-header  > .v-grid-cell {
-	border: 2px solid #CDD8EC;
+	border: 1px solid #CDD8EC;
 	margin-top: -10px;
 	opacity: 0.9;
 	filter: alpha(opacity=90);
@@ -4343,7 +4343,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-grid .header-drag-table .v-grid-header  > .v-grid-drop-marker {
-	background-color: #005A9C;
+	background-color: #CDD8EC;
 	position: absolute;
 	width: 3px;
 }
@@ -4355,8 +4355,8 @@ div.v-layout.v-horizontal.v-widget {
 	position: absolute;
 	top: 0;
 	right: 0;
-	background-color: #ffffff;
-	border: 2px solid #CDD8EC;
+	background-color: #FEFEFE;
+	border: 1px solid #CDD8EC;
 	padding: 0;
 	z-index: 5;
 }
@@ -4444,16 +4444,12 @@ div.v-layout.v-horizontal.v-widget {
 .sormas .v-grid-cell.frozen {
 	-webkit-box-shadow: 1px 0 2px rgba(0, 0, 0, 0.1);
 	box-shadow: 1px 0 2px rgba(0, 0, 0, 0.1);
-	border-right: 2px solid #CDD8EC;
-}
-
-.sormas .v-grid-cell.frozen  + th, .sormas .v-grid-cell.frozen  + td {
-	border-left: none;
+	border-right: none;
 }
 
 .sormas .v-grid-row > td, .sormas .v-grid-editor-cells > div {
-	border-left: 2px solid #CDD8EC;
-	border-bottom: 2px solid #CDD8EC;
+	border-left: none;
+	border-bottom: 1px solid #CDD8EC;
 }
 
 .sormas .v-grid-row > td:first-child, .sormas .v-grid-editor-cells > div:first-child {
@@ -4463,16 +4459,16 @@ div.v-layout.v-horizontal.v-widget {
 .sormas .v-grid-editor-cells.frozen > div {
 	-webkit-box-shadow: 1px 0 2px rgba(0, 0, 0, 0.1);
 	box-shadow: 1px 0 2px rgba(0, 0, 0, 0.1);
-	border-right: 2px solid #CDD8EC;
+	border-right: none;
 	border-left: none;
 }
 
 .sormas .v-grid-row-stripe > td {
-	background-color: #f5f5f5;
+	background-color: white;
 }
 
 .sormas .v-grid-row-selected > td {
-	background: #005A9C;
+	background: #CDD8EC;
 }
 
 .sormas .v-grid-row-focused > td {
@@ -4481,11 +4477,11 @@ div.v-layout.v-horizontal.v-widget {
 
 .sormas .v-grid-header th {
 	position: relative;
-	background-color: #ffffff;
+	background-color: #FEFEFE;
 	font-size: 10px;
 	font-weight: inherit;
-	border-left: 2px solid #CDD8EC;
-	border-bottom: 2px solid #CDD8EC;
+	border-left: 1px solid #CDD8EC;
+	border-bottom: 1px solid #CDD8EC;
 	
 	text-align: left;
 }
@@ -4541,11 +4537,11 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-grid-footer td {
-	background-color: #ffffff;
+	background-color: #FEFEFE;
 	font-size: 10px;
 	font-weight: inherit;
-	border-left: 2px solid #CDD8EC;
-	border-top: 2px solid #CDD8EC;
+	border-left: 1px solid #CDD8EC;
+	border-top: 1px solid #CDD8EC;
 	border-bottom: none;
 	
 }
@@ -4567,20 +4563,20 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-grid-header-deco {
-	border-top: 2px solid #CDD8EC;
-	border-right: 2px solid #CDD8EC;
-	background-color: #ffffff;
+	border-top: 1px solid #CDD8EC;
+	border-right: 1px solid #CDD8EC;
+	background-color: #FEFEFE;
 }
 
 .sormas .v-grid-footer-deco {
-	border-bottom: 2px solid #CDD8EC;
-	border-right: 2px solid #CDD8EC;
-	background-color: #ffffff;
+	border-bottom: 1px solid #CDD8EC;
+	border-right: 1px solid #CDD8EC;
+	background-color: #FEFEFE;
 }
 
 .sormas .v-grid-horizontal-scrollbar-deco {
-	background-color: #ffffff;
-	border: 2px solid #CDD8EC;
+	background-color: #FEFEFE;
+	border: 1px solid #CDD8EC;
 	border-top: none;
 }
 
@@ -4595,7 +4591,7 @@ div.v-layout.v-horizontal.v-widget {
 	right: 0;
 	bottom: 0;
 	left: 0;
-	border: 2px solid #005A9C;
+	border: none;
 	display: none;
 	pointer-events: none;
 }
@@ -4618,10 +4614,10 @@ div.v-layout.v-horizontal.v-widget {
 	overflow: hidden;
 	left: 0;
 	right: 0;
-	border: 2px solid #CDD8EC;
+	border: 1px solid #CDD8EC;
 	box-sizing: border-box;
 	-moz-box-sizing: border-box;
-	margin-top: -2px;
+	margin-top: -1px;
 	-webkit-box-shadow: 0 0 9px rgba(0, 0, 0, 0.2);
 	box-shadow: 0 0 9px rgba(0, 0, 0, 0.2);
 }
@@ -4714,22 +4710,22 @@ div.v-layout.v-horizontal.v-widget {
 .sormas .v-grid-editor-footer {
 	display: table;
 	height: 32px;
-	border-top: 2px solid #CDD8EC;
-	margin-top: -2px;
+	border-top: 1px solid #CDD8EC;
+	margin-top: -1px;
 	background: white;
 	padding: 0 5px;
 }
 
 .sormas .v-grid-editor-footer  + .v-grid-editor-cells > div {
 	border-bottom: none;
-	border-top: 2px solid #CDD8EC;
+	border-top: 1px solid #CDD8EC;
 }
 
 .sormas .v-grid-editor-footer:first-child {
 	border-top: none;
 	margin-top: 0;
-	border-bottom: 2px solid #CDD8EC;
-	margin-bottom: -2px;
+	border-bottom: 1px solid #CDD8EC;
+	margin-bottom: -1px;
 }
 
 .sormas .v-grid-editor-message, .sormas .v-grid-editor-buttons {
@@ -4757,7 +4753,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-grid-spacer {
-	padding-left: 3px;
+	padding-left: 1px;
 }
 
 .sormas .v-grid-spacer > td {
@@ -4765,13 +4761,13 @@ div.v-layout.v-horizontal.v-widget {
 	padding: 0;
 	background-color: white;
 	border-top: 2px solid #CDD8EC;
-	border-bottom: 2px solid #CDD8EC;
+	border-bottom: 1px solid #CDD8EC;
 }
 
 .sormas .v-grid-spacer.stripe > td {
-	background-color: #f5f5f5;
+	background-color: white;
 	border-top: 2px solid #CDD8EC;
-	border-bottom: 2px solid #CDD8EC;
+	border-bottom: 1px solid #CDD8EC;
 }
 
 .sormas .v-grid-spacer-deco-container {
@@ -4784,7 +4780,7 @@ div.v-layout.v-horizontal.v-widget {
 .sormas .v-grid-spacer-deco {
 	top: 0;
 	left: 0;
-	width: 4px;
+	width: 2px;
 	background-color: #005A9C;
 	position: absolute;
 	height: 100%;
@@ -4804,7 +4800,7 @@ div.v-layout.v-horizontal.v-widget {
 	-moz-user-select: text;
 	-ms-user-select: text;
 	user-select: text;
-	background-color: #ffffff;
+	background-color: #FEFEFE;
 }
 
 .sormas .v-grid.v-disabled {
@@ -4813,7 +4809,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-grid-header .v-grid-cell {
-	background: #ffffff;
+	background: #FEFEFE;
 	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
@@ -4830,27 +4826,27 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-grid-footer .v-grid-cell {
-	background: #ffffff;
+	background: #FEFEFE;
 	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .sormas .v-grid-header-deco {
-	background: #ffffff;
+	background: #FEFEFE;
 }
 
 .sormas .v-grid-footer-deco, .sormas .v-grid-horizontal-scrollbar-deco {
-	background: #ffffff;
+	background: #FEFEFE;
 }
 
 .sormas .v-grid-row-selected  > .v-grid-cell {
-	background: #005A9C;
-	color: #FEFEFE;
-	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.05);
-	border-color: #05426f;
+	background: #CDD8EC;
+	color: #374B59;
+	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.05);
+	border-color: #b4c2dc;
 }
 
 .sormas .v-grid-row-selected  > .v-grid-cell-focused:before {
-	border-color: #0394ff;
+	border-color: white;
 }
 
 .sormas .v-grid-editor {
@@ -4862,7 +4858,7 @@ div.v-layout.v-horizontal.v-widget {
 .sormas .v-grid-editor-footer {
 	font-size: 11px;
 	padding: 0 9px;
-	background: #ffffff;
+	background: #FEFEFE;
 	-webkit-animation: valo-grid-editor-footer-animate-in 200ms 120ms backwards;
 	-moz-animation: valo-grid-editor-footer-animate-in 200ms 120ms backwards;
 	animation: valo-grid-editor-footer-animate-in 200ms 120ms backwards;
@@ -4890,20 +4886,20 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-grid-editor-cells > div .error::before {
-	border-top: 8px solid #eb2977;
+	border-top: 8px solid #E10002;
 	border-right: 8px solid transparent;
 }
 
 .sormas .v-grid-editor-cells > div .error, .sormas .v-grid-editor-cells > div .error > input {
-	background-color: #fffbfc;
+	background-color: #fff9f9;
 }
 
 .sormas .v-grid-editor-cells > div .v-textfield, .sormas .v-grid-editor-cells > div .v-textfield-focus, .sormas .v-grid-editor-cells > div .v-datefield, .sormas .v-grid-editor-cells > div .v-datefield .v-textfield-focus, .sormas .v-grid-editor-cells > div .v-filterselect-input, .sormas .v-grid-editor-cells > div .v-filterselect-input:focus {
 	border: none;
 	border-radius: 0;
 	background: transparent;
-	-webkit-box-shadow: inset 0 1px 0 #f7f7f7;
-	box-shadow: inset 0 1px 0 #f7f7f7;
+	-webkit-box-shadow: inset 0 1px 0 #f6f6f6;
+	box-shadow: inset 0 1px 0 #f6f6f6;
 }
 
 .sormas .v-grid-editor-cells > div input[type="text"].v-datefield-textfield {
@@ -4941,7 +4937,7 @@ div.v-layout.v-horizontal.v-widget {
 
 .sormas .v-grid-editor-message > div:before {
 	display: inline-block;
-	color: #eb2977;
+	color: #E10002;
 	font-weight: 600;
 	width: 16px;
 	text-align: center;
@@ -4975,7 +4971,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-grid-spacer {
-	margin-top: -2px;
+	margin-top: -1px;
 }
 
 .sormas .v-grid-sidebar.v-contextmenu.open .v-grid-sidebar-content {
@@ -4986,7 +4982,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-grid-sidebar.v-contextmenu.closed {
-	background: #ffffff;
+	background: #FEFEFE;
 }
 
 .sormas .v-grid-scroller::-webkit-scrollbar {
@@ -5077,8 +5073,8 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-textfield-error {
-	border-color: #eb2977 !important;
-	background: #fffbfc;
+	border-color: #E10002 !important;
+	background: #fff9f9;
 	color: #374B59;
 }
 
@@ -5552,8 +5548,8 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-textarea-error {
-	border-color: #eb2977 !important;
-	background: #fffbfc;
+	border-color: #E10002 !important;
+	background: #fff9f9;
 	color: #374B59;
 }
 
@@ -5908,14 +5904,14 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-datefield-error .v-datefield-textfield {
-	border-color: #eb2977 !important;
-	background: #fffbfc;
+	border-color: #E10002 !important;
+	background: #fff9f9;
 	color: #374B59;
 }
 
 .sormas .v-datefield-error .v-datefield-button {
-	color: #eb2977;
-	border-color: #eb2977;
+	color: #E10002;
+	border-color: #E10002;
 }
 
 .sormas .v-datefield-full {
@@ -5939,8 +5935,8 @@ div.v-layout.v-horizontal.v-widget {
 	border-radius: 4px;
 	background-color: white;
 	color: #374B59;
-	-webkit-box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.1), 0 3px 5px 0 rgba(0, 0, 0, 0.05), 0 0 0 2px rgba(0, 0, 0, 0.09);
-	box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.1), 0 3px 5px 0 rgba(0, 0, 0, 0.05), 0 0 0 2px rgba(0, 0, 0, 0.09);
+	-webkit-box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.1), 0 3px 5px 0 rgba(0, 0, 0, 0.05), 0 0 0 2px rgba(0, 0, 0, 0.0902);
+	box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.1), 0 3px 5px 0 rgba(0, 0, 0, 0.05), 0 0 0 2px rgba(0, 0, 0, 0.0902);
 	-webkit-backface-visibility: hidden;
 	-moz-backface-visibility: hidden;
 	-ms-backface-visibility: hidden;
@@ -5993,7 +5989,7 @@ div.v-layout.v-horizontal.v-widget {
 	line-height: 22px;
 	text-align: center;
 	font-size: 11px;
-	background: #ffffff;
+	background: #FEFEFE;
 	border-radius: 2px;
 	-webkit-transition: color 200ms;
 	-moz-transition: color 200ms;
@@ -6010,7 +6006,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-datefield-popup .v-datefield-calendarpanel-day-offmonth {
-	color: #9ba5ac;
+	color: #9aa4ab;
 	background: transparent;
 }
 
@@ -6038,13 +6034,13 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-datefield-popup .v-datefield-calendarpanel-day.v-datefield-calendarpanel-day-outside-range, .sormas .v-datefield-popup .v-datefield-calendarpanel-day.v-datefield-calendarpanel-day-outside-range:hover {
-	color: #9ba5ac;
+	color: #9aa4ab;
 	cursor: not-allowed;
 }
 
 .sormas .v-datefield-popup .v-datefield-calendarpanel-weekdays {
 	height: 22px;
-	color: rgba(125, 138, 147, 0.85);
+	color: rgba(124, 137, 146, 0.85);
 }
 
 .sormas .v-datefield-popup .v-datefield-calendarpanel-weekdays strong {
@@ -6077,7 +6073,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-datefield-popup td[class*="year"] button:before, .sormas .v-datefield-popup td[class*="month"] button:before {
-	color: #9ba5ac;
+	color: #9aa4ab;
 	font-size: 16px;
 	line-height: 18px;
 	-webkit-transition: color 200ms;
@@ -6096,7 +6092,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-datefield-popup td[class*="year"] button.outside-range:hover:before, .sormas .v-datefield-popup td[class*="month"] button.outside-range:hover:before {
-	color: #9ba5ac;
+	color: #9aa4ab;
 }
 
 .sormas .v-datefield-popup .v-button-prevyear:before {
@@ -6130,7 +6126,7 @@ div.v-layout.v-horizontal.v-widget {
 
 .sormas .v-datefield-popup .v-datefield-calendarpanel-weeknumber, .sormas .v-datefield-popup .v-datefield-calendarpanel-weekdays.v-datefield-calendarpanel-weeknumbers td:first-child {
 	width: 26px;
-	color: rgba(125, 138, 147, 0.85);
+	color: rgba(124, 137, 146, 0.85);
 	font-size: 11px;
 	display: inline-block;
 	text-align: left;
@@ -6151,7 +6147,7 @@ div.v-layout.v-horizontal.v-widget {
 	border-right: 2px solid #CDD8EC;
 	border-top-right-radius: 4px;
 	border-bottom-left-radius: 4px;
-	background: #ffffff;
+	background: #FEFEFE;
 }
 
 .sormas .v-datefield-popup td.v-datefield-calendarpanel-time {
@@ -6184,7 +6180,7 @@ div.v-layout.v-horizontal.v-widget {
 	line-height: 22px;
 	text-align: center;
 	font-size: 11px;
-	background: #ffffff;
+	background: #FEFEFE;
 	border-radius: 2px;
 	-webkit-transition: color 200ms;
 	-moz-transition: color 200ms;
@@ -6201,7 +6197,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-datefield-calendarpanel-day-offmonth {
-	color: #9ba5ac;
+	color: #9aa4ab;
 	background: transparent;
 }
 
@@ -6229,13 +6225,13 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-datefield-calendarpanel-day.v-datefield-calendarpanel-day-outside-range, .sormas .v-datefield-calendarpanel-day.v-datefield-calendarpanel-day-outside-range:hover {
-	color: #9ba5ac;
+	color: #9aa4ab;
 	cursor: not-allowed;
 }
 
 .sormas .v-datefield-calendarpanel-weekdays {
 	height: 22px;
-	color: rgba(125, 138, 147, 0.85);
+	color: rgba(124, 137, 146, 0.85);
 }
 
 .sormas .v-datefield-calendarpanel-weekdays strong {
@@ -6268,7 +6264,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas td[class*="year"] button:before, .sormas td[class*="month"] button:before {
-	color: #9ba5ac;
+	color: #9aa4ab;
 	font-size: 16px;
 	line-height: 18px;
 	-webkit-transition: color 200ms;
@@ -6287,7 +6283,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas td[class*="year"] button.outside-range:hover:before, .sormas td[class*="month"] button.outside-range:hover:before {
-	color: #9ba5ac;
+	color: #9aa4ab;
 }
 
 .sormas .v-button-prevyear:before {
@@ -6321,7 +6317,7 @@ div.v-layout.v-horizontal.v-widget {
 
 .sormas .v-datefield-calendarpanel-weeknumber, .sormas .v-datefield-calendarpanel-weekdays.v-datefield-calendarpanel-weeknumbers td:first-child {
 	width: 26px;
-	color: rgba(125, 138, 147, 0.85);
+	color: rgba(124, 137, 146, 0.85);
 	font-size: 11px;
 	display: inline-block;
 	text-align: left;
@@ -6342,7 +6338,7 @@ div.v-layout.v-horizontal.v-widget {
 	border-right: 2px solid #CDD8EC;
 	border-top-right-radius: 4px;
 	border-bottom-left-radius: 4px;
-	background: #ffffff;
+	background: #FEFEFE;
 }
 
 .sormas td.v-datefield-calendarpanel-time {
@@ -6877,7 +6873,7 @@ div.v-layout.v-horizontal.v-widget {
 	line-height: 22px;
 	text-align: center;
 	font-size: 11px;
-	background: #ffffff;
+	background: #FEFEFE;
 	border-radius: 2px;
 	-webkit-transition: color 200ms;
 	-moz-transition: color 200ms;
@@ -6894,7 +6890,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-inline-datefield-calendarpanel-day-offmonth {
-	color: #9ba5ac;
+	color: #9aa4ab;
 	background: transparent;
 }
 
@@ -6922,13 +6918,13 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-inline-datefield-calendarpanel-day.v-inline-datefield-calendarpanel-day-outside-range, .sormas .v-inline-datefield-calendarpanel-day.v-inline-datefield-calendarpanel-day-outside-range:hover {
-	color: #9ba5ac;
+	color: #9aa4ab;
 	cursor: not-allowed;
 }
 
 .sormas .v-inline-datefield-calendarpanel-weekdays {
 	height: 22px;
-	color: rgba(125, 138, 147, 0.85);
+	color: rgba(124, 137, 146, 0.85);
 }
 
 .sormas .v-inline-datefield-calendarpanel-weekdays strong {
@@ -6961,7 +6957,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas td[class*="year"] button:before, .sormas td[class*="month"] button:before {
-	color: #9ba5ac;
+	color: #9aa4ab;
 	font-size: 16px;
 	line-height: 18px;
 	-webkit-transition: color 200ms;
@@ -6980,7 +6976,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas td[class*="year"] button.outside-range:hover:before, .sormas td[class*="month"] button.outside-range:hover:before {
-	color: #9ba5ac;
+	color: #9aa4ab;
 }
 
 .sormas .v-button-prevyear:before {
@@ -7014,7 +7010,7 @@ div.v-layout.v-horizontal.v-widget {
 
 .sormas .v-inline-datefield-calendarpanel-weeknumber, .sormas .v-inline-datefield-calendarpanel-weekdays.v-inline-datefield-calendarpanel-weeknumbers td:first-child {
 	width: 26px;
-	color: rgba(125, 138, 147, 0.85);
+	color: rgba(124, 137, 146, 0.85);
 	font-size: 11px;
 	display: inline-block;
 	text-align: left;
@@ -7035,7 +7031,7 @@ div.v-layout.v-horizontal.v-widget {
 	border-right: 2px solid #CDD8EC;
 	border-top-right-radius: 4px;
 	border-bottom-left-radius: 4px;
-	background: #ffffff;
+	background: #FEFEFE;
 }
 
 .sormas td.v-inline-datefield-calendarpanel-time {
@@ -7092,9 +7088,9 @@ div.v-layout.v-horizontal.v-widget {
 	cursor: default;
 	border-radius: 4px;
 	border: 2px solid #CDD8EC;
-	background: #ffffff;
-	-webkit-box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f7f7f7, 0 2px 3px rgba(0, 0, 0, 0.05);
-	box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f7f7f7, 0 2px 3px rgba(0, 0, 0, 0.05);
+	background: #FEFEFE;
+	-webkit-box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f6f6f6, 0 2px 3px rgba(0, 0, 0, 0.05);
+	box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f6f6f6, 0 2px 3px rgba(0, 0, 0, 0.05);
 	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.05);
 	padding: 0;
 	text-align: left;
@@ -7170,9 +7166,9 @@ div.v-layout.v-horizontal.v-widget {
 	cursor: pointer;
 	border-radius: 0;
 	border: 2px solid #CDD8EC;
-	background: #ffffff;
-	-webkit-box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f7f7f7;
-	box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f7f7f7;
+	background: #FEFEFE;
+	-webkit-box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f6f6f6;
+	box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f6f6f6;
 	background: transparent;
 	-webkit-box-shadow: none;
 	box-shadow: none;
@@ -7213,12 +7209,12 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-menubar > .v-menubar-menuitem:hover:before {
-	background-color: rgba(191, 191, 191, 0.1);
+	background-color: rgba(190, 190, 190, 0.1);
 	border: none;
 }
 
 .sormas .v-menubar > .v-menubar-menuitem:active:before {
-	background-color: rgba(128, 128, 128, 0.2);
+	background-color: rgba(127, 127, 127, 0.2);
 }
 
 .sormas .v-menubar > .v-menubar-menuitem .v-icon {
@@ -7238,9 +7234,9 @@ div.v-layout.v-horizontal.v-widget {
 .sormas .v-menubar > .v-menubar-menuitem-checked {
 	-webkit-box-shadow: none;
 	box-shadow: none;
-	background-color: #f2f2f2;
-	background-image: -webkit-linear-gradient(bottom, #f2f2f2 0%, #f2f2f2 100%);
-	background-image: linear-gradient(to top,#f2f2f2 0%, #f2f2f2 100%);
+	background-color: #f1f1f1;
+	background-image: -webkit-linear-gradient(bottom, #f1f1f1 0%, #f1f1f1 100%);
+	background-image: linear-gradient(to top,#f1f1f1 0%, #f1f1f1 100%);
 	color: #374B59;
 }
 
@@ -7300,8 +7296,8 @@ div.v-layout.v-horizontal.v-widget {
 	border-radius: 4px;
 	background-color: white;
 	color: #374B59;
-	-webkit-box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.1), 0 3px 5px 0 rgba(0, 0, 0, 0.05), 0 0 0 2px rgba(0, 0, 0, 0.09);
-	box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.1), 0 3px 5px 0 rgba(0, 0, 0, 0.05), 0 0 0 2px rgba(0, 0, 0, 0.09);
+	-webkit-box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.1), 0 3px 5px 0 rgba(0, 0, 0, 0.05), 0 0 0 2px rgba(0, 0, 0, 0.0902);
+	box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.1), 0 3px 5px 0 rgba(0, 0, 0, 0.05), 0 0 0 2px rgba(0, 0, 0, 0.0902);
 	-webkit-backface-visibility: hidden;
 	-moz-backface-visibility: hidden;
 	-ms-backface-visibility: hidden;
@@ -7532,8 +7528,8 @@ div.v-layout.v-horizontal.v-widget {
 	border: 2px solid #CDD8EC;
 	-webkit-box-shadow: 0 0 0 2px rgba(205, 216, 236, 0.5);
 	box-shadow: 0 0 0 2px rgba(205, 216, 236, 0.5);
-	-webkit-box-shadow: 0 0 0 2px rgba(205, 216, 236, 0.5), inset 0 1px 0 white, inset 0 -1px 0 #f7f7f7, 0 2px 3px rgba(0, 0, 0, 0.05);
-	box-shadow: 0 0 0 2px rgba(205, 216, 236, 0.5), inset 0 1px 0 white, inset 0 -1px 0 #f7f7f7, 0 2px 3px rgba(0, 0, 0, 0.05);
+	-webkit-box-shadow: 0 0 0 2px rgba(205, 216, 236, 0.5), inset 0 1px 0 white, inset 0 -1px 0 #f6f6f6, 0 2px 3px rgba(0, 0, 0, 0.05);
+	box-shadow: 0 0 0 2px rgba(205, 216, 236, 0.5), inset 0 1px 0 white, inset 0 -1px 0 #f6f6f6, 0 2px 3px rgba(0, 0, 0, 0.05);
 }
 
 :root .sormas .v-radiobutton > input ~ label:before, :root .sormas .v-radiobutton > input ~ label:after {
@@ -7561,9 +7557,9 @@ div.v-layout.v-horizontal.v-widget {
 	
 	border-radius: 4px;
 	border: 2px solid #CDD8EC;
-	background: #ffffff;
-	-webkit-box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f7f7f7, 0 2px 3px rgba(0, 0, 0, 0.05);
-	box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f7f7f7, 0 2px 3px rgba(0, 0, 0, 0.05);
+	background: #FEFEFE;
+	-webkit-box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f6f6f6, 0 2px 3px rgba(0, 0, 0, 0.05);
+	box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f6f6f6, 0 2px 3px rgba(0, 0, 0, 0.05);
 	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.05);
 	padding: 0;
 	height: 16px;
@@ -7579,7 +7575,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 :root .sormas .v-radiobutton > input:active ~ label:after {
-	background-color: rgba(128, 128, 128, 0.2);
+	background-color: rgba(127, 127, 127, 0.2);
 }
 
 :root .sormas .v-radiobutton > input:checked ~ label:after {
@@ -7691,8 +7687,8 @@ div.v-layout.v-horizontal.v-widget {
 	border: 2px solid #CDD8EC;
 	-webkit-box-shadow: 0 0 0 2px rgba(205, 216, 236, 0.5);
 	box-shadow: 0 0 0 2px rgba(205, 216, 236, 0.5);
-	-webkit-box-shadow: 0 0 0 2px rgba(205, 216, 236, 0.5), inset 0 1px 0 white, inset 0 -1px 0 #f7f7f7, 0 2px 3px rgba(0, 0, 0, 0.05);
-	box-shadow: 0 0 0 2px rgba(205, 216, 236, 0.5), inset 0 1px 0 white, inset 0 -1px 0 #f7f7f7, 0 2px 3px rgba(0, 0, 0, 0.05);
+	-webkit-box-shadow: 0 0 0 2px rgba(205, 216, 236, 0.5), inset 0 1px 0 white, inset 0 -1px 0 #f6f6f6, 0 2px 3px rgba(0, 0, 0, 0.05);
+	box-shadow: 0 0 0 2px rgba(205, 216, 236, 0.5), inset 0 1px 0 white, inset 0 -1px 0 #f6f6f6, 0 2px 3px rgba(0, 0, 0, 0.05);
 }
 
 :root .sormas .v-select-optiongroup-small .v-checkbox > input ~ label:before, :root .sormas .v-select-optiongroup-small .v-checkbox > input ~ label:after {
@@ -7720,9 +7716,9 @@ div.v-layout.v-horizontal.v-widget {
 	
 	border-radius: 4px;
 	border: 2px solid #CDD8EC;
-	background: #ffffff;
-	-webkit-box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f7f7f7, 0 2px 3px rgba(0, 0, 0, 0.05);
-	box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f7f7f7, 0 2px 3px rgba(0, 0, 0, 0.05);
+	background: #FEFEFE;
+	-webkit-box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f6f6f6, 0 2px 3px rgba(0, 0, 0, 0.05);
+	box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f6f6f6, 0 2px 3px rgba(0, 0, 0, 0.05);
 	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.05);
 	padding: 0;
 	height: 14px;
@@ -7738,7 +7734,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 :root .sormas .v-select-optiongroup-small .v-checkbox > input:active ~ label:after {
-	background-color: rgba(128, 128, 128, 0.2);
+	background-color: rgba(127, 127, 127, 0.2);
 }
 
 :root .sormas .v-select-optiongroup-small .v-checkbox > input:checked ~ label:after {
@@ -7816,8 +7812,8 @@ div.v-layout.v-horizontal.v-widget {
 	border: 2px solid #CDD8EC;
 	-webkit-box-shadow: 0 0 0 2px rgba(205, 216, 236, 0.5);
 	box-shadow: 0 0 0 2px rgba(205, 216, 236, 0.5);
-	-webkit-box-shadow: 0 0 0 2px rgba(205, 216, 236, 0.5), inset 0 1px 0 white, inset 0 -1px 0 #f7f7f7, 0 2px 3px rgba(0, 0, 0, 0.05);
-	box-shadow: 0 0 0 2px rgba(205, 216, 236, 0.5), inset 0 1px 0 white, inset 0 -1px 0 #f7f7f7, 0 2px 3px rgba(0, 0, 0, 0.05);
+	-webkit-box-shadow: 0 0 0 2px rgba(205, 216, 236, 0.5), inset 0 1px 0 white, inset 0 -1px 0 #f6f6f6, 0 2px 3px rgba(0, 0, 0, 0.05);
+	box-shadow: 0 0 0 2px rgba(205, 216, 236, 0.5), inset 0 1px 0 white, inset 0 -1px 0 #f6f6f6, 0 2px 3px rgba(0, 0, 0, 0.05);
 }
 
 :root .sormas .v-select-optiongroup-small .v-radiobutton > input ~ label:before, :root .sormas .v-select-optiongroup-small .v-radiobutton > input ~ label:after {
@@ -7845,9 +7841,9 @@ div.v-layout.v-horizontal.v-widget {
 	
 	border-radius: 4px;
 	border: 2px solid #CDD8EC;
-	background: #ffffff;
-	-webkit-box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f7f7f7, 0 2px 3px rgba(0, 0, 0, 0.05);
-	box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f7f7f7, 0 2px 3px rgba(0, 0, 0, 0.05);
+	background: #FEFEFE;
+	-webkit-box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f6f6f6, 0 2px 3px rgba(0, 0, 0, 0.05);
+	box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f6f6f6, 0 2px 3px rgba(0, 0, 0, 0.05);
 	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.05);
 	padding: 0;
 	height: 14px;
@@ -7863,7 +7859,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 :root .sormas .v-select-optiongroup-small .v-radiobutton > input:active ~ label:after {
-	background-color: rgba(128, 128, 128, 0.2);
+	background-color: rgba(127, 127, 127, 0.2);
 }
 
 :root .sormas .v-select-optiongroup-small .v-radiobutton > input:checked ~ label:after {
@@ -7975,8 +7971,8 @@ div.v-layout.v-horizontal.v-widget {
 	border: 2px solid #CDD8EC;
 	-webkit-box-shadow: 0 0 0 2px rgba(205, 216, 236, 0.5);
 	box-shadow: 0 0 0 2px rgba(205, 216, 236, 0.5);
-	-webkit-box-shadow: 0 0 0 2px rgba(205, 216, 236, 0.5), inset 0 1px 0 white, inset 0 -1px 0 #f7f7f7, 0 2px 3px rgba(0, 0, 0, 0.05);
-	box-shadow: 0 0 0 2px rgba(205, 216, 236, 0.5), inset 0 1px 0 white, inset 0 -1px 0 #f7f7f7, 0 2px 3px rgba(0, 0, 0, 0.05);
+	-webkit-box-shadow: 0 0 0 2px rgba(205, 216, 236, 0.5), inset 0 1px 0 white, inset 0 -1px 0 #f6f6f6, 0 2px 3px rgba(0, 0, 0, 0.05);
+	box-shadow: 0 0 0 2px rgba(205, 216, 236, 0.5), inset 0 1px 0 white, inset 0 -1px 0 #f6f6f6, 0 2px 3px rgba(0, 0, 0, 0.05);
 }
 
 :root .sormas .v-select-optiongroup-large .v-checkbox > input ~ label:before, :root .sormas .v-select-optiongroup-large .v-checkbox > input ~ label:after {
@@ -8004,9 +8000,9 @@ div.v-layout.v-horizontal.v-widget {
 	
 	border-radius: 4px;
 	border: 2px solid #CDD8EC;
-	background: #ffffff;
-	-webkit-box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f7f7f7, 0 2px 3px rgba(0, 0, 0, 0.05);
-	box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f7f7f7, 0 2px 3px rgba(0, 0, 0, 0.05);
+	background: #FEFEFE;
+	-webkit-box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f6f6f6, 0 2px 3px rgba(0, 0, 0, 0.05);
+	box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f6f6f6, 0 2px 3px rgba(0, 0, 0, 0.05);
 	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.05);
 	padding: 0;
 	height: 19px;
@@ -8022,7 +8018,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 :root .sormas .v-select-optiongroup-large .v-checkbox > input:active ~ label:after {
-	background-color: rgba(128, 128, 128, 0.2);
+	background-color: rgba(127, 127, 127, 0.2);
 }
 
 :root .sormas .v-select-optiongroup-large .v-checkbox > input:checked ~ label:after {
@@ -8100,8 +8096,8 @@ div.v-layout.v-horizontal.v-widget {
 	border: 2px solid #CDD8EC;
 	-webkit-box-shadow: 0 0 0 2px rgba(205, 216, 236, 0.5);
 	box-shadow: 0 0 0 2px rgba(205, 216, 236, 0.5);
-	-webkit-box-shadow: 0 0 0 2px rgba(205, 216, 236, 0.5), inset 0 1px 0 white, inset 0 -1px 0 #f7f7f7, 0 2px 3px rgba(0, 0, 0, 0.05);
-	box-shadow: 0 0 0 2px rgba(205, 216, 236, 0.5), inset 0 1px 0 white, inset 0 -1px 0 #f7f7f7, 0 2px 3px rgba(0, 0, 0, 0.05);
+	-webkit-box-shadow: 0 0 0 2px rgba(205, 216, 236, 0.5), inset 0 1px 0 white, inset 0 -1px 0 #f6f6f6, 0 2px 3px rgba(0, 0, 0, 0.05);
+	box-shadow: 0 0 0 2px rgba(205, 216, 236, 0.5), inset 0 1px 0 white, inset 0 -1px 0 #f6f6f6, 0 2px 3px rgba(0, 0, 0, 0.05);
 }
 
 :root .sormas .v-select-optiongroup-large .v-radiobutton > input ~ label:before, :root .sormas .v-select-optiongroup-large .v-radiobutton > input ~ label:after {
@@ -8129,9 +8125,9 @@ div.v-layout.v-horizontal.v-widget {
 	
 	border-radius: 4px;
 	border: 2px solid #CDD8EC;
-	background: #ffffff;
-	-webkit-box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f7f7f7, 0 2px 3px rgba(0, 0, 0, 0.05);
-	box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f7f7f7, 0 2px 3px rgba(0, 0, 0, 0.05);
+	background: #FEFEFE;
+	-webkit-box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f6f6f6, 0 2px 3px rgba(0, 0, 0, 0.05);
+	box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f6f6f6, 0 2px 3px rgba(0, 0, 0, 0.05);
 	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.05);
 	padding: 0;
 	height: 19px;
@@ -8147,7 +8143,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 :root .sormas .v-select-optiongroup-large .v-radiobutton > input:active ~ label:after {
-	background-color: rgba(128, 128, 128, 0.2);
+	background-color: rgba(127, 127, 127, 0.2);
 }
 
 :root .sormas .v-select-optiongroup-large .v-radiobutton > input:checked ~ label:after {
@@ -8282,14 +8278,14 @@ div.v-layout.v-horizontal.v-widget {
 	border-radius: 4px;
 	background-color: white;
 	color: #374B59;
-	-webkit-box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.1), 0 3px 5px 0 rgba(0, 0, 0, 0.05), 0 0 0 2px rgba(0, 0, 0, 0.09);
-	box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.1), 0 3px 5px 0 rgba(0, 0, 0, 0.05), 0 0 0 2px rgba(0, 0, 0, 0.09);
+	-webkit-box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.1), 0 3px 5px 0 rgba(0, 0, 0, 0.05), 0 0 0 2px rgba(0, 0, 0, 0.0902);
+	box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.1), 0 3px 5px 0 rgba(0, 0, 0, 0.05), 0 0 0 2px rgba(0, 0, 0, 0.0902);
 	-webkit-backface-visibility: hidden;
 	-moz-backface-visibility: hidden;
 	-ms-backface-visibility: hidden;
 	backface-visibility: hidden;
-	-webkit-box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1), 0 16px 80px -6px rgba(0, 0, 0, 0.15), 0 0 0 2px rgba(0, 0, 0, 0.09);
-	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1), 0 16px 80px -6px rgba(0, 0, 0, 0.15), 0 0 0 2px rgba(0, 0, 0, 0.09);
+	-webkit-box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1), 0 16px 80px -6px rgba(0, 0, 0, 0.15), 0 0 0 2px rgba(0, 0, 0, 0.0902);
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1), 0 16px 80px -6px rgba(0, 0, 0, 0.15), 0 0 0 2px rgba(0, 0, 0, 0.0902);
 	padding: 0;
 	min-width: 128px !important;
 	min-height: 32px !important;
@@ -8591,7 +8587,7 @@ div.v-layout.v-horizontal.v-widget {
 	z-index: 2;
 	border-top: 2px solid #CDD8EC;
 	border-bottom: 2px solid #CDD8EC;
-	background-color: #ffffff;
+	background-color: #FEFEFE;
 }
 
 .sormas .v-window-top-toolbar.v-menubar {
@@ -8606,9 +8602,9 @@ div.v-layout.v-horizontal.v-widget {
 
 .sormas .v-window-bottom-toolbar.v-layout {
 	padding: 6px 11px;
-	background-color: #ffffff;
-	background-image: -webkit-linear-gradient(top, white 0, #ffffff 3px);
-	background-image: linear-gradient(to bottom,white 0, #ffffff 3px);
+	background-color: #FEFEFE;
+	background-image: -webkit-linear-gradient(top, #fefefe 0, #FEFEFE 3px);
+	background-image: linear-gradient(to bottom,#fefefe 0, #FEFEFE 3px);
 	border-top: 2px solid #CDD8EC;
 	border-radius: 0 0 4px 4px;
 }
@@ -8806,7 +8802,7 @@ div.v-layout.v-horizontal.v-widget {
 	line-height: 2px;
 	color: #CDD8EC;
 	text-indent: -3px;
-	text-shadow: 0 0 1px #ffffff, 0 0 1px #ffffff;
+	text-shadow: 0 0 1px #FEFEFE, 0 0 1px #FEFEFE;
 	opacity: 1;
 	visibility: visible;
 }
@@ -8836,7 +8832,7 @@ div.v-layout.v-horizontal.v-widget {
 
 .sormas .v-table {
 	position: relative;
-	background: #ffffff;
+	background: #FEFEFE;
 	color: #374B59;
 	overflow: hidden;
 }
@@ -8852,7 +8848,7 @@ div.v-layout.v-horizontal.v-widget {
 
 .sormas .v-table-header-wrap, .sormas .v-table-footer-wrap, .sormas .v-table-header-drag {
 	border: 2px solid #CDD8EC;
-	background: #ffffff;
+	background: #FEFEFE;
 	white-space: nowrap;
 	font-size: 10px;
 	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.05);
@@ -9086,9 +9082,9 @@ div.v-layout.v-horizontal.v-widget {
 	
 	border-radius: 4px;
 	border: 2px solid #CDD8EC;
-	background: #ffffff;
-	-webkit-box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f7f7f7;
-	box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f7f7f7;
+	background: #FEFEFE;
+	-webkit-box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f6f6f6;
+	box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f6f6f6;
 	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.05);
 	position: absolute;
 	z-index: 2;
@@ -9119,7 +9115,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-table-column-selector:hover:after {
-	background-color: rgba(191, 191, 191, 0.1);
+	background-color: rgba(190, 190, 190, 0.1);
 }
 
 .sormas .v-table-column-selector:focus:after {
@@ -9129,7 +9125,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-table-column-selector:active:after {
-	background-color: rgba(128, 128, 128, 0.2);
+	background-color: rgba(127, 127, 127, 0.2);
 }
 
 .sormas .v-table-column-selector:after {
@@ -9143,7 +9139,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-table-column-selector:active:after {
-	background-color: rgba(128, 128, 128, 0.2);
+	background-color: rgba(127, 127, 127, 0.2);
 }
 
 .sormas .v-table-column-selector:before {
@@ -9455,14 +9451,14 @@ div.v-layout.v-horizontal.v-widget {
 	
 	border-radius: 4px;
 	border: 2px solid #CDD8EC;
-	background: #ffffff;
-	-webkit-box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f7f7f7, none;
-	box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f7f7f7, none;
+	background: #FEFEFE;
+	-webkit-box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f6f6f6, none;
+	box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f6f6f6, none;
 	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.05);
 	height: auto;
 	padding: 0;
 	border-radius: 0;
-	background: #ffffff;
+	background: #FEFEFE;
 }
 
 .sormas .v-splitpanel-horizontal  > div > .v-splitpanel-hsplitter div:before:after {
@@ -9474,7 +9470,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-splitpanel-horizontal  > div > .v-splitpanel-hsplitter div:before:hover:after {
-	background-color: rgba(191, 191, 191, 0.1);
+	background-color: rgba(190, 190, 190, 0.1);
 }
 
 .sormas .v-splitpanel-horizontal  > div > .v-splitpanel-hsplitter div:before:focus:after {
@@ -9484,7 +9480,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-splitpanel-horizontal  > div > .v-splitpanel-hsplitter div:before:active:after {
-	background-color: rgba(128, 128, 128, 0.2);
+	background-color: rgba(127, 127, 127, 0.2);
 }
 
 .sormas .v-splitpanel-horizontal  > div > .v-splitpanel-second-container {
@@ -9509,9 +9505,9 @@ div.v-layout.v-horizontal.v-widget {
 	
 	border-radius: 4px;
 	border: 2px solid #CDD8EC;
-	background: #ffffff;
-	-webkit-box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f7f7f7, none;
-	box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f7f7f7, none;
+	background: #FEFEFE;
+	-webkit-box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f6f6f6, none;
+	box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f6f6f6, none;
 	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.05);
 	height: auto;
 	padding: 0;
@@ -9527,7 +9523,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-splitpanel-vertical  > div > .v-splitpanel-vsplitter div:before:hover:after {
-	background-color: rgba(191, 191, 191, 0.1);
+	background-color: rgba(190, 190, 190, 0.1);
 }
 
 .sormas .v-splitpanel-vertical  > div > .v-splitpanel-vsplitter div:before:focus:after {
@@ -9537,7 +9533,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-splitpanel-vertical  > div > .v-splitpanel-vsplitter div:before:active:after {
-	background-color: rgba(128, 128, 128, 0.2);
+	background-color: rgba(127, 127, 127, 0.2);
 }
 
 .sormas .v-splitpanel-horizontal.large  > div > .v-splitpanel-hsplitter {
@@ -9558,14 +9554,14 @@ div.v-layout.v-horizontal.v-widget {
 	
 	border-radius: 4px;
 	border: 2px solid #CDD8EC;
-	background: #ffffff;
-	-webkit-box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f7f7f7, none;
-	box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f7f7f7, none;
+	background: #FEFEFE;
+	-webkit-box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f6f6f6, none;
+	box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f6f6f6, none;
 	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.05);
 	height: auto;
 	padding: 0;
 	border-radius: 0;
-	background: #ffffff;
+	background: #FEFEFE;
 }
 
 .sormas .v-splitpanel-horizontal.large  > div > .v-splitpanel-hsplitter div:before:after {
@@ -9577,7 +9573,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-splitpanel-horizontal.large  > div > .v-splitpanel-hsplitter div:before:hover:after {
-	background-color: rgba(191, 191, 191, 0.1);
+	background-color: rgba(190, 190, 190, 0.1);
 }
 
 .sormas .v-splitpanel-horizontal.large  > div > .v-splitpanel-hsplitter div:before:focus:after {
@@ -9587,7 +9583,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-splitpanel-horizontal.large  > div > .v-splitpanel-hsplitter div:before:active:after {
-	background-color: rgba(128, 128, 128, 0.2);
+	background-color: rgba(127, 127, 127, 0.2);
 }
 
 .sormas .v-splitpanel-horizontal.large  > div > .v-splitpanel-hsplitter div:after {
@@ -9626,9 +9622,9 @@ div.v-layout.v-horizontal.v-widget {
 	
 	border-radius: 4px;
 	border: 2px solid #CDD8EC;
-	background: #ffffff;
-	-webkit-box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f7f7f7, none;
-	box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f7f7f7, none;
+	background: #FEFEFE;
+	-webkit-box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f6f6f6, none;
+	box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f6f6f6, none;
 	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.05);
 	height: auto;
 	padding: 0;
@@ -9644,7 +9640,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-splitpanel-vertical.large  > div > .v-splitpanel-vsplitter div:before:hover:after {
-	background-color: rgba(191, 191, 191, 0.1);
+	background-color: rgba(190, 190, 190, 0.1);
 }
 
 .sormas .v-splitpanel-vertical.large  > div > .v-splitpanel-vsplitter div:before:focus:after {
@@ -9654,7 +9650,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-splitpanel-vertical.large  > div > .v-splitpanel-vsplitter div:before:active:after {
-	background-color: rgba(128, 128, 128, 0.2);
+	background-color: rgba(127, 127, 127, 0.2);
 }
 
 .sormas .v-splitpanel-vertical.large  > div > .v-splitpanel-vsplitter div:after {
@@ -9674,7 +9670,7 @@ div.v-layout.v-horizontal.v-widget {
 .sormas .v-progressbar-wrapper {
 	border-radius: 4px;
 	height: 8px;
-	background: #d9d9d9;
+	background: #d8d8d8;
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
@@ -9780,7 +9776,7 @@ div.v-layout.v-horizontal.v-widget {
 .sormas .v-slider-base {
 	border-radius: 4px;
 	height: 8px;
-	background: #d9d9d9;
+	background: #d8d8d8;
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
@@ -9846,9 +9842,9 @@ div.v-layout.v-horizontal.v-widget {
 	
 	border-radius: 4px;
 	border: 2px solid #CDD8EC;
-	background: #ffffff;
-	-webkit-box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f7f7f7, 0 2px 3px rgba(0, 0, 0, 0.05);
-	box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f7f7f7, 0 2px 3px rgba(0, 0, 0, 0.05);
+	background: #FEFEFE;
+	-webkit-box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f6f6f6, 0 2px 3px rgba(0, 0, 0, 0.05);
+	box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f6f6f6, 0 2px 3px rgba(0, 0, 0, 0.05);
 	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
@@ -9861,7 +9857,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-slider-handle:before:hover:after {
-	background-color: rgba(191, 191, 191, 0.1);
+	background-color: rgba(190, 190, 190, 0.1);
 }
 
 .sormas .v-slider-handle:before:focus:after {
@@ -9871,7 +9867,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-slider-handle:before:active:after {
-	background-color: rgba(128, 128, 128, 0.2);
+	background-color: rgba(127, 127, 127, 0.2);
 }
 
 .sormas .v-slider-handle:after {
@@ -9923,7 +9919,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-slider-vertical .v-slider-base {
-	background: #d9d9d9;
+	background: #d8d8d8;
 	width: 4px;
 	height: 100% !important;
 	min-width: 0;
@@ -10105,8 +10101,8 @@ div.v-layout.v-horizontal.v-widget {
 	bottom: 0;
 	padding-left: 16px;
 	background-color: transparent;
-	background-image: -webkit-linear-gradient(right, #ffffff 70%, rgba(255, 255, 255, 0) 100%);
-	background-image: linear-gradient(to left,#ffffff 70%, rgba(255, 255, 255, 0) 100%);
+	background-image: -webkit-linear-gradient(right, #FEFEFE 70%, rgba(254, 254, 254, 0) 100%);
+	background-image: linear-gradient(to left,#FEFEFE 70%, rgba(254, 254, 254, 0) 100%);
 	pointer-events: none;
 }
 
@@ -10124,7 +10120,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .v-ie8 .sormas .v-tabsheet-scroller, .v-ie9 .sormas .v-tabsheet-scroller {
-	background-color: #ffffff;
+	background-color: #FEFEFE;
 }
 
 .v-ie8 .sormas .v-tabsheet-scroller:after, .v-ie9 .sormas .v-tabsheet-scroller:after {
@@ -10259,7 +10255,7 @@ div.v-layout.v-horizontal.v-widget {
 .sormas .v-tabsheet-framed  > .v-tabsheet-tabcontainer .v-caption {
 	margin-left: 3px;
 	padding: 0 18px;
-	background-color: #ffffff;
+	background-color: #FEFEFE;
 	border: 2px solid transparent;
 	line-height: 30px;
 	border-radius: 4px 4px 0 0;
@@ -10270,12 +10266,12 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-tabsheet-framed  > .v-tabsheet-tabcontainer .v-caption:hover {
-	background-color: #f7f7f7;
+	background-color: #f6f6f6;
 	border-bottom-color: #CDD8EC;
 }
 
 .sormas .v-tabsheet-framed  > .v-tabsheet-tabcontainer .v-caption.v-disabled:hover {
-	background-color: #ffffff;
+	background-color: #FEFEFE;
 }
 
 .sormas .v-tabsheet-framed  > .v-tabsheet-tabcontainer .v-caption-closable {
@@ -10315,7 +10311,7 @@ div.v-layout.v-horizontal.v-widget {
 .sormas .v-tabsheet-framed.padded-tabbar  > .v-tabsheet-tabcontainer {
 	border: 2px solid #CDD8EC;
 	border-bottom: none;
-	background: #ffffff;
+	background: #FEFEFE;
 	padding-top: 5px;
 }
 
@@ -10451,8 +10447,8 @@ div.v-layout.v-horizontal.v-widget {
 .sormas .v-colorpicker-popup .v-horizontallayout {
 	height: auto !important;
 	padding: 8px 0;
-	background-color: #ffffff;
-	border-top: 2px solid #f2f2f2;
+	background-color: #FEFEFE;
+	border-top: 2px solid #f1f1f1;
 }
 
 .sormas .v-colorpicker-popup .v-horizontallayout .v-expand {
@@ -10528,14 +10524,14 @@ div.v-layout.v-horizontal.v-widget {
 	padding: 0 11px;
 	line-height: 30px;
 	border-bottom: 2px solid #CDD8EC;
-	background-color: #ffffff;
-	background-image: -webkit-linear-gradient(top, #ffffff 0%, #ffffff 100%);
-	background-image: linear-gradient(to bottom,#ffffff 0%, #ffffff 100%);
+	background-color: #FEFEFE;
+	background-image: -webkit-linear-gradient(top, #FEFEFE 0%, #FEFEFE 100%);
+	background-image: linear-gradient(to bottom,#FEFEFE 0%, #FEFEFE 100%);
 	color: #374B59;
 	font-weight: 600;
 	font-size: 11px;
-	-webkit-box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f7f7f7;
-	box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f7f7f7;
+	-webkit-box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f6f6f6;
+	box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f6f6f6;
 	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.05);
 	border-radius: 2px 2px 0 0;
 }
@@ -10584,7 +10580,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-panel-well {
-	background: #fafafa;
+	background: #f9f9f9;
 	color: #374B59;
 	-webkit-box-shadow: 0 1px 0 0 rgba(255, 255, 255, 0.05), inset 0 2px 3px rgba(0, 0, 0, 0.05);
 	box-shadow: 0 1px 0 0 rgba(255, 255, 255, 0.05), inset 0 2px 3px rgba(0, 0, 0, 0.05);
@@ -10620,7 +10616,7 @@ div.v-layout.v-horizontal.v-widget {
 	z-index: 2;
 	top: 0;
 	height: 0;
-	border-top: 2px solid #ffffff;
+	border-top: 2px solid #FEFEFE;
 	left: 0;
 	right: 0;
 }
@@ -10645,9 +10641,9 @@ div.v-layout.v-horizontal.v-widget {
 	border: 2px solid #CDD8EC;
 	-webkit-box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);
 	box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);
-	background-color: #ffffff;
-	background-image: -webkit-linear-gradient(top, #ffffff 0%, #ffffff 100%);
-	background-image: linear-gradient(to bottom,#ffffff 0%, #ffffff 100%);
+	background-color: #FEFEFE;
+	background-image: -webkit-linear-gradient(top, #FEFEFE 0%, #FEFEFE 100%);
+	background-image: linear-gradient(to bottom,#FEFEFE 0%, #FEFEFE 100%);
 	overflow: hidden;
 }
 
@@ -10693,14 +10689,14 @@ div.v-layout.v-horizontal.v-widget {
 	padding: 0 11px;
 	line-height: 30px;
 	border-bottom: 2px solid #CDD8EC;
-	background-color: #ffffff;
-	background-image: -webkit-linear-gradient(top, #ffffff 0%, #ffffff 100%);
-	background-image: linear-gradient(to bottom,#ffffff 0%, #ffffff 100%);
+	background-color: #FEFEFE;
+	background-image: -webkit-linear-gradient(top, #FEFEFE 0%, #FEFEFE 100%);
+	background-image: linear-gradient(to bottom,#FEFEFE 0%, #FEFEFE 100%);
 	color: #374B59;
 	font-weight: 600;
 	font-size: 11px;
-	-webkit-box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f7f7f7;
-	box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f7f7f7;
+	-webkit-box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f6f6f6;
+	box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f6f6f6;
 	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.05);
 	display: block;
 	background: transparent;
@@ -10721,12 +10717,12 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-accordion-item-caption  > .v-caption:hover:before {
-	background-color: rgba(191, 191, 191, 0.1);
+	background-color: rgba(190, 190, 190, 0.1);
 	border: none;
 }
 
 .sormas .v-accordion-item-caption  > .v-caption:active:before {
-	background-color: rgba(128, 128, 128, 0.2);
+	background-color: rgba(127, 127, 127, 0.2);
 }
 
 .sormas .v-accordion-item-content {
@@ -10771,7 +10767,7 @@ div.v-layout.v-horizontal.v-widget {
 
 .sormas .v-select-twincol select {
 	border: 2px solid #CDD8EC;
-	background: #ffffff;
+	background: #FEFEFE;
 	color: #374B59;
 }
 
@@ -10852,14 +10848,14 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-select-twincol-error .v-select-twincol-options, .sormas .v-select-twincol-error .v-select-twincol-selections {
-	border-color: #eb2977 !important;
-	background: #fffbfc;
+	border-color: #E10002 !important;
+	background: #fff9f9;
 	color: #374B59;
 }
 
 .sormas .v-select select {
 	border: 2px solid #CDD8EC;
-	background: #ffffff;
+	background: #FEFEFE;
 	color: #374B59;
 }
 
@@ -10884,8 +10880,8 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-select-error .v-select-select {
-	border-color: #eb2977 !important;
-	background: #fffbfc;
+	border-color: #E10002 !important;
+	background: #fff9f9;
 	color: #374B59;
 }
 
@@ -10988,7 +10984,7 @@ div.v-layout.v-horizontal.v-widget {
 	text-align: right;
 	margin: 0 4px;
 	white-space: nowrap;
-	border-top: 1px solid #f7f7f7;
+	border-top: 1px solid #f6f6f6;
 	cursor: pointer;
 }
 
@@ -10997,7 +10993,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-calendar-month-day-today {
-	background: #fcfdfe;
+	background: #fbfcfd;
 }
 
 .sormas .v-calendar-month-day-today .v-calendar-day-number {
@@ -11010,7 +11006,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-calendar-month-day-selected {
-	background-color: #e5eef5;
+	background-color: #e4edf4;
 }
 
 .sormas .v-calendar-month-day-dragemphasis {
@@ -11023,7 +11019,7 @@ div.v-layout.v-horizontal.v-widget {
 
 .sormas .v-calendar-weekly-longevents {
 	margin-left: 50px;
-	border-bottom: 3px solid #e6e6e6;
+	border-bottom: 3px solid #e5e5e5;
 }
 
 .sormas .v-calendar-weekly-longevents .v-calendar-event-all-day {
@@ -11218,7 +11214,7 @@ div.v-layout.v-horizontal.v-widget {
 .sormas .v-calendar-week-wrapper .v-calendar-event-content {
 	margin-top: -1px;
 	border-radius: 5px;
-	border: 1px solid #ffffff;
+	border: 1px solid #FEFEFE;
 	padding-top: 3px;
 	margin-right: 4px;
 }
@@ -11228,8 +11224,8 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-calendar-event-all-day {
-	background-color: #cceef8;
-	background-color: rgba(204, 238, 248, 0.8);
+	background-color: #cbedf8;
+	background-color: rgba(203, 237, 248, 0.8);
 	color: #00ace0;
 }
 
@@ -11238,8 +11234,8 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-calendar-week-wrapper .v-calendar-event .v-calendar-event-content {
-	background-color: #cceef8;
-	background-color: rgba(204, 238, 248, 0.8);
+	background-color: #cbedf8;
+	background-color: rgba(203, 237, 248, 0.8);
 }
 
 .sormas .v-calendar-event-month[class*="color2"]:before {
@@ -11247,8 +11243,8 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-calendar-event-all-day[class*="color2"] {
-	background-color: #d5ebd1;
-	background-color: rgba(213, 235, 209, 0.8);
+	background-color: #d4ebd0;
+	background-color: rgba(212, 235, 208, 0.8);
 	color: #2d9f19;
 }
 
@@ -11257,8 +11253,8 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-calendar-week-wrapper .v-calendar-event[class*="color2"] .v-calendar-event-content {
-	background-color: #d5ebd1;
-	background-color: rgba(213, 235, 209, 0.8);
+	background-color: #d4ebd0;
+	background-color: rgba(212, 235, 208, 0.8);
 }
 
 .sormas .v-calendar-event-month[class*="color3"]:before {
@@ -11266,8 +11262,8 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-calendar-event-all-day[class*="color3"] {
-	background-color: #f5e5cc;
-	background-color: rgba(245, 229, 204, 0.8);
+	background-color: #f5e5cb;
+	background-color: rgba(245, 229, 203, 0.8);
 	color: #d18100;
 }
 
@@ -11276,8 +11272,8 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-calendar-week-wrapper .v-calendar-event[class*="color3"] .v-calendar-event-content {
-	background-color: #f5e5cc;
-	background-color: rgba(245, 229, 204, 0.8);
+	background-color: #f5e5cb;
+	background-color: rgba(245, 229, 203, 0.8);
 }
 
 .sormas .v-calendar-event-month[class*="color4"]:before {
@@ -11285,8 +11281,8 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-calendar-event-all-day[class*="color4"] {
-	background-color: #f5d7cf;
-	background-color: rgba(245, 215, 207, 0.8);
+	background-color: #f4d6ce;
+	background-color: rgba(244, 214, 206, 0.8);
 	color: #ce3812;
 }
 
@@ -11295,8 +11291,8 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-calendar-week-wrapper .v-calendar-event[class*="color4"] .v-calendar-event-content {
-	background-color: #f5d7cf;
-	background-color: rgba(245, 215, 207, 0.8);
+	background-color: #f4d6ce;
+	background-color: rgba(244, 214, 206, 0.8);
 }
 
 .sormas .v-calendar-event-month[class*="color5"]:before {
@@ -11304,8 +11300,8 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-calendar-event-all-day[class*="color5"] {
-	background-color: #d5ddf5;
-	background-color: rgba(213, 221, 245, 0.8);
+	background-color: #d4dcf4;
+	background-color: rgba(212, 220, 244, 0.8);
 	color: #2d55cd;
 }
 
@@ -11314,8 +11310,8 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-calendar-week-wrapper .v-calendar-event[class*="color5"] .v-calendar-event-content {
-	background-color: #d5ddf5;
-	background-color: rgba(213, 221, 245, 0.8);
+	background-color: #d4dcf4;
+	background-color: rgba(212, 220, 244, 0.8);
 }
 
 .sormas .v-calendar.v-disabled * {
@@ -11462,7 +11458,7 @@ div.v-layout.v-horizontal.v-widget {
 .sormas .v-label-success, .sormas .v-label-failure {
 	background: white;
 	color: #374B59;
-	border: 2px solid #36b955;
+	border: 2px solid #6691C4;
 	border-radius: 4px;
 	padding: 6px 16px 6px 32px;
 	font-weight: 500;
@@ -11474,16 +11470,16 @@ div.v-layout.v-horizontal.v-widget {
 	content: "\f00c";
 	margin-right: 0.5em;
 	margin-left: -16px;
-	color: #36b955;
+	color: #6691C4;
 }
 
 .sormas .v-label-failure {
-	border-color: #eb2977;
+	border-color: #E10002;
 }
 
 .sormas .v-label-failure:before {
 	content: "\f05e";
-	color: #eb2977;
+	color: #E10002;
 }
 
 .sormas [draggable=true] {
@@ -11589,7 +11585,7 @@ div.v-layout.v-horizontal.v-widget {
 
 .sormas .v-select select {
 	border: 2px solid #CDD8EC;
-	background: #ffffff;
+	background: #FEFEFE;
 	color: #374B59;
 }
 
@@ -11614,8 +11610,8 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-select-error .v-select-select {
-	border-color: #eb2977 !important;
-	background: #fffbfc;
+	border-color: #E10002 !important;
+	background: #fff9f9;
 	color: #374B59;
 }
 
@@ -11643,8 +11639,8 @@ div.v-layout.v-horizontal.v-widget {
 	border-radius: 4px;
 	background-color: white;
 	color: #374B59;
-	-webkit-box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.1), 0 3px 5px 0 rgba(0, 0, 0, 0.05), 0 0 0 2px rgba(0, 0, 0, 0.09);
-	box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.1), 0 3px 5px 0 rgba(0, 0, 0, 0.05), 0 0 0 2px rgba(0, 0, 0, 0.09);
+	-webkit-box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.1), 0 3px 5px 0 rgba(0, 0, 0, 0.05), 0 0 0 2px rgba(0, 0, 0, 0.0902);
+	box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.1), 0 3px 5px 0 rgba(0, 0, 0, 0.05), 0 0 0 2px rgba(0, 0, 0, 0.0902);
 	-webkit-backface-visibility: hidden;
 	-moz-backface-visibility: hidden;
 	-ms-backface-visibility: hidden;
@@ -11749,9 +11745,9 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-richtextarea .gwt-RichTextToolbar {
-	background: #ffffff;
-	-webkit-box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f7f7f7;
-	box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f7f7f7;
+	background: #FEFEFE;
+	-webkit-box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f6f6f6;
+	box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #f6f6f6;
 	border-bottom: 2px solid #CDD8EC;
 	color: #374B59;
 }
@@ -11769,9 +11765,9 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-richtextarea .gwt-ToggleButton-down, .sormas .v-richtextarea .gwt-ToggleButton-down-hovering {
-	background-color: #e6e6e6;
-	background-image: -webkit-linear-gradient(bottom, #e6e6e6 0%, #e6e6e6 100%);
-	background-image: linear-gradient(to top,#e6e6e6 0%, #e6e6e6 100%);
+	background-color: #e5e5e5;
+	background-image: -webkit-linear-gradient(bottom, #e5e5e5 0%, #e5e5e5 100%);
+	background-image: linear-gradient(to top,#e5e5e5 0%, #e5e5e5 100%);
 }
 
 .sormas .v-richtextarea .gwt-RichTextToolbar-top img {
@@ -12089,7 +12085,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-Notification.error {
-	background: #eb2977;
+	background: #E10002;
 	font-weight: 500;
 	-webkit-box-shadow: 0px 5px 15px 0px rgba(0, 0, 0, 0.25);
 	box-shadow: 0px 5px 15px 0px rgba(0, 0, 0, 0.25);
@@ -12241,11 +12237,11 @@ div.v-layout.v-horizontal.v-widget {
 .sormas .v-Notification.success, .sormas .v-Notification.failure {
 	background: #fff;
 	color: #555;
-	border: 2px solid #36b955;
+	border: 2px solid #6691C4;
 }
 
 .sormas .v-Notification.success .v-Notification-caption, .sormas .v-Notification.failure .v-Notification-caption {
-	color: #36b955;
+	color: #6691C4;
 	font-weight: 500;
 }
 
@@ -12260,11 +12256,11 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-Notification.failure {
-	border-color: #eb2977;
+	border-color: #E10002;
 }
 
 .sormas .v-Notification.failure .v-Notification-caption {
-	color: #eb2977;
+	color: #E10002;
 }
 
 .sormas .v-Notification.failure .v-Notification-caption:before {
@@ -12911,16 +12907,74 @@ div.v-layout.v-horizontal.v-widget {
 	display: none;
 }
 
+.sormas .v-grid .v-grid-tablewrapper, .sormas .v-grid .v-grid-header-deco, .sormas .v-grid .v-grid-footer-deco, .sormas .v-grid .v-grid-scroller {
+	border-left: none;
+	border-right: none;
+}
+
+.sormas .v-grid .v-grid-scroller {
+	border-top: none;
+}
+
+.sormas .v-grid .v-grid-row .v-grid-cell {
+	padding: 3px 6px;
+}
+
+.sormas .v-grid .v-grid-row .v-grid-cell:first-child {
+	padding-left: 0;
+}
+
+.sormas .v-grid .v-grid-row .v-grid-cell:last-child {
+	padding-right: 0;
+}
+
+.sormas .v-grid .v-grid-row .v-grid-cell.priority-high {
+	color: #E10002;
+}
+
+.sormas .v-grid .v-grid-row .v-grid-cell.priority-normal {
+	color: #6691C4;
+}
+
+.sormas .v-grid .v-grid-row .v-grid-cell.warning {
+	color: #E10002;
+	font-weight: 600;
+}
+
+.sormas .v-grid .v-grid-row.status-discarded .v-grid-cell {
+	text-decoration: line-through;
+	color: #888;
+}
+
+.sormas .v-grid .v-grid-row.status-done .v-grid-cell {
+	color: #888;
+}
+
+.sormas .v-grid .v-grid-row.status-not .v-grid-cell {
+	color: #C44;
+}
+
+.sormas .v-grid .v-grid-header .v-grid-cell {
+	border-left: none;
+	border-bottom: none;
+}
+
+.sormas .v-grid .v-grid-header .v-grid-column-header-content {
+	text-transform: uppercase;
+	font-weight: 600;
+	border-bottom: 2px solid #CDD8EC;
+}
+
 .sormas .valo-menu {
 	font-size: 16px;
 	vertical-align: middle;
-	border-right-color: #E6E8EB;
+	border-right-color: #CDD8EC;
 }
 
 .sormas .valo-menu-title {
 	padding: 16px;
-	background: #ffffff;
-	color: #6791C5;
+	background: #FEFEFE;
+	color: #6691C4;
 	font-weight: bold;
 	font-size: 32px;
 	line-height: 32px;
@@ -12930,20 +12984,20 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .valo-menu-item {
-	color: #FEFEFE;
+	color: inherit;
 	text-shadow: none;
 	padding: 12px 16px;
 	line-height: 36px;
 }
 
 .sormas .valo-menu-item .v-icon {
-	color: #FEFEFE;
+	color: inherit;
 	font-size: 28px;
 	min-width: 36px;
 }
 
 .sormas .valo-menu-item.selected {
-	background: #FAFBFC !important;
+	background: #FEFEFE !important;
 	color: #005A9C !important;
 	text-shadow: none !important;
 }
@@ -13005,6 +13059,37 @@ div.v-layout.v-horizontal.v-widget {
 	background: inherit;
 	color: inherit;
 	height: inherit;
+}
+
+.sormas .v-window .v-window-outerheader {
+	border-bottom: 3px solid #CDD8EC;
+}
+
+.sormas .v-window .v-window-outerheader .v-window-header {
+	padding: 16px 32px 8px 32px;
+	font-size: 24px;
+	font-weight: 600;
+	color: #005A9C;
+}
+
+.sormas .v-window .v-window-outerheader::after {
+	
+}
+
+.sormas .v-window .v-window-contents > .v-scrollable > .v-layout.v-margin-left {
+	padding-left: 32px;
+}
+
+.sormas .v-window .v-window-contents > .v-scrollable > .v-layout.v-margin-right {
+	padding-right: 32px;
+}
+
+.sormas .v-window .v-window-contents > .v-scrollable > .v-layout.v-margin-top {
+	padding-top: 32px;
+}
+
+.sormas .v-window .v-window-contents > .v-scrollable > .v-layout.v-margin-bottom {
+	padding-bottom: 32px;
 }
 
 .sormas .login-screen {
@@ -13096,37 +13181,6 @@ div.v-layout.v-horizontal.v-widget {
 	background: #FFF;
 	position: relative;
 	padding-right: 8px;
-}
-
-.sormas .v-grid-header th {
-	font-size: 12px;
-}
-
-.sormas .v-grid-cell {
-	font-size: 13px;
-}
-
-.sormas .v-grid-cell.priority-high {
-	background-color: #DFA7A5;
-	color: white;
-}
-
-.sormas .v-grid-cell.priority-normal {
-	background-color: #A6BFDD;
-	color: white;
-}
-
-.sormas .v-grid-row.status-discarded .v-grid-cell {
-	text-decoration: line-through;
-	color: #888;
-}
-
-.sormas .v-grid-row.status-done .v-grid-cell {
-	color: #888;
-}
-
-.sormas .v-grid-row.status-not .v-grid-cell {
-	color: #C44;
 }
 
 .sormas .callout {

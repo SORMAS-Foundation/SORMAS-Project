@@ -81,7 +81,7 @@ public class TaskGrid extends Grid implements ItemClickListener {
 			else if (TaskDto.DUE_DATE.equals(cell.getPropertyId())) {
 				Date dueDate = (Date)cell.getProperty().getValue();
 				if (dueDate != null && dueDate.before(new Date())) {
-					return CssStyles.PRIORITY_HIGH;
+					return CssStyles.WARNING;
 				}
 			}
 			return null;
