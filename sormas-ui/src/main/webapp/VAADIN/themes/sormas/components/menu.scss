@@ -41,6 +41,16 @@ $valo-menu-background-color: $s-default-color !default;
 	  .v-icon {
         color: #005A9C !important;
 	  }
+	  
+	  &::before {
+	    position: absolute;
+	    top: -12px;
+	    right: 0px;
+	    width: 4px;
+	    height: 74px;
+	    background-color: $v-selection-color;
+	    content: "";
+	  }
 	}
   }
 }

@@ -175,10 +175,18 @@ public class Menu extends CssLayout {
         for (Button button : viewButtons.values()) {
             button.removeStyleName("selected");
         }
+        
         Button selected = viewButtons.get(viewName);
+        if (selected == null && viewName.contains("/")) {
+        	// might be a sub-view
+        	viewName = viewName.substring(0, viewName.indexOf('/'));
+        	selected = viewButtons.get(viewName);
+        }
+        
         if (selected != null) {
             selected.addStyleName("selected");
         }
+        
         menuPart.removeStyleName(VALO_MENU_VISIBLE);
     }
 }

@@ -13006,6 +13006,16 @@ div.v-layout.v-horizontal.v-widget {
 	color: #005A9C !important;
 }
 
+.sormas .valo-menu-item.selected::before {
+	position: absolute;
+	top: -12px;
+	right: 0px;
+	width: 4px;
+	height: 74px;
+	background-color: #005A9C;
+	content: "";
+}
+
 .sormas .v-radiobutton {
 	margin: 0 0 10px -2px !important;
 	padding: 0 !important;
