@@ -23,4 +23,8 @@ public enum Disease {
 	public String getName() {
 		return this.name();
 	}
+	
+	public boolean hasContactFollowUp() {
+		return this == EVD || this == LASSA || this == AVIAN_INFLUENCA;
+	}
 }

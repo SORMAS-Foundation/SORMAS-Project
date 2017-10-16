@@ -5,6 +5,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
+import java.util.List;
+
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.epidata.EpiData;
 import de.symeda.sormas.app.backend.hospitalization.Hospitalization;
@@ -28,20 +30,22 @@ import de.symeda.sormas.app.util.FormTab;
 public class CaseEditPagerAdapter extends FragmentStatePagerAdapter {
 
     private Bundle caseEditBundle; // this bundle contains the uuids
+    private List<CaseEditTabs> visibleTabs;
 
     // Build a Constructor and assign the passed Values to appropriate values in the class
-    public CaseEditPagerAdapter(FragmentManager fm, String caseUuid) {
+    public CaseEditPagerAdapter(FragmentManager fm, String caseUuid, List<CaseEditTabs> visibleTabs) {
         super(fm);
         caseEditBundle = new Bundle();
         caseEditBundle.putString(Case.UUID, caseUuid);
+        this.visibleTabs = visibleTabs;
     }
 
     // This method return the fragment for the every position in the View Pager
     @Override
     public Fragment getItem(int position) {
         Fragment frag = null;
-        CaseEditTabs tab = CaseEditTabs.values()[position];
-        Case caze = null;
+        CaseEditTabs tab = visibleTabs.get(position);
+        Case caze;
         switch (tab) {
             case CASE_DATA:
                 frag = new CaseEditDataForm();
@@ -109,12 +113,21 @@ public class CaseEditPagerAdapter extends FragmentStatePagerAdapter {
     // This method return the titles for the Tabs in the Tab Strip
     @Override
     public CharSequence getPageTitle(int position) {
-        return CaseEditTabs.values()[position].toString();
+        return visibleTabs.get(position).toString();
     }
 
     // This method return the Number of tabs for the tabs Strip
     @Override
     public int getCount() {
-        return CaseEditTabs.values().length;
+        return visibleTabs.size();
     }
+
+    public CaseEditTabs getTabForPosition(int position) {
+        return visibleTabs.get(position);
+    }
+
+    public int getPositionOfTab(CaseEditTabs tab) {
+        return visibleTabs.indexOf(tab);
+    }
+
 }

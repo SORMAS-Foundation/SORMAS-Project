@@ -15,6 +15,7 @@ import javax.ejb.Stateless;
 import javax.validation.ValidationException;
 import javax.validation.constraints.NotNull;
 
+import org.jboss.weld.exceptions.UnsupportedOperationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -162,6 +163,11 @@ public class ContactFacadeEjb implements ContactFacade {
 	@Override
 	public ContactDto saveContact(ContactDto dto) {
 		Contact entity = fromDto(dto);
+		
+		if (!entity.getCaze().getDisease().hasContactFollowUp()) {
+			throw new UnsupportedOperationException("Contact creation is not allowed for diseases that don't have contact follow-up.");
+		}
+		
 		contactService.ensurePersisted(entity);
 		contactService.updateFollowUpUntilAndStatus(entity);
 		return toDto(entity);
