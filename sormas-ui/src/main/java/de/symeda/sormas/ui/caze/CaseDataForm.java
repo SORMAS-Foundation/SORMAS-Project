@@ -26,7 +26,6 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.Diseases.DiseasesConfiguration;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
@@ -41,7 +40,6 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 	private static final String MEDICAL_INFORMATION_LOC = "medicalInformationLoc";
-	private static final String REPORT_INFO_LOC = "reportInfoLoc";
 	public static final String NONE_HEALTH_FACILITY_DETAILS = "noneHealthFacilityDetails";
 	
     private static final String HTML_LAYOUT = 
@@ -51,7 +49,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					LayoutUtil.fluidRowLocs(CaseDataDto.CASE_CLASSIFICATION) +
 					LayoutUtil.fluidRowLocs(CaseDataDto.INVESTIGATION_STATUS) +
 		    		LayoutUtil.fluidRowCss(CssStyles.VSPACE4,
-		    				LayoutUtil.fluidRowLocs(CaseDataDto.UUID, REPORT_INFO_LOC) +
+		    				LayoutUtil.fluidRow(
+		    						LayoutUtil.loc(CaseDataDto.UUID), 
+		    						LayoutUtil.fluidRowLocs(CaseDataDto.REPORT_DATE, CaseDataDto.REPORTING_USER)) +
 		    				LayoutUtil.fluidRowLocs(CaseDataDto.EPID_NUMBER, CaseDataDto.DISEASE) +
 		    				LayoutUtil.fluidRowLocs("", CaseDataDto.DISEASE_DETAILS) +
 		    				LayoutUtil.fluidRowLocs(CaseDataDto.REGION, CaseDataDto.DISTRICT) +
@@ -70,7 +70,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
     private final PersonDto person;
     private final Disease disease;
-	private Label reportInfoLabel;
 
     public CaseDataForm(PersonDto person, Disease disease) {
         super(CaseDataDto.class, CaseDataDto.I18N_PREFIX);
@@ -85,7 +84,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
     		return;
     	}
     	
-    	addField(CaseDataDto.UUID, TextField.class);
+    	addFields(CaseDataDto.UUID, CaseDataDto.REPORT_DATE, CaseDataDto.REPORTING_USER);
     	
     	TextField epidField = addField(CaseDataDto.EPID_NUMBER, TextField.class);
     	epidField.addValidator(new RegexpValidator(DataHelper.getEpidNumberRegexp(), true, 
@@ -117,7 +116,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
     	setRequired(true, CaseDataDto.CASE_CLASSIFICATION, CaseDataDto.INVESTIGATION_STATUS,
     			CaseDataDto.REGION, CaseDataDto.DISTRICT, CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY);
 
-    	setReadOnly(true, CaseDataDto.UUID, CaseDataDto.INVESTIGATION_STATUS, CaseDataDto.REGION,
+    	setReadOnly(true, CaseDataDto.UUID, CaseDataDto.REPORT_DATE, CaseDataDto.REPORTING_USER,
+    			CaseDataDto.INVESTIGATION_STATUS, CaseDataDto.REGION,
     			CaseDataDto.DISTRICT, CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY);
     	if (!UserRole.isSupervisor(LoginHelper.getCurrentUserRoles())) {
     		setReadOnly(true, CaseDataDto.DISEASE);
@@ -154,13 +154,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			}
 		}
 		
-		reportInfoLabel = new Label();
-		reportInfoLabel.setContentMode(ContentMode.HTML);
-		reportInfoLabel.setCaption(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, REPORT_INFO_LOC));
-		getContent().addComponent(reportInfoLabel, REPORT_INFO_LOC);
-		
 		addValueChangeListener(e -> {
-			updateReportInfo();
 			diseaseField.addValueChangeListener(new DiseaseChangeListener(diseaseField, getValue().getDisease()));
 		});
 		
@@ -186,14 +180,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				healthFacilityDetails.clear();
 			}			
 		});
-	}
-    
-    private void updateReportInfo() {
-		CaseDataDto caseDto = getValue();
-		StringBuilder sb = new StringBuilder();
-		sb.append(DateHelper.formatShortDateTime(caseDto.getReportDate()) + ", ");
-		sb.append(caseDto.getReportingUser().toString());
-		reportInfoLabel.setValue(sb.toString());
 	}
     
 	@Override 

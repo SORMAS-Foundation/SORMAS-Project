@@ -1,0 +1,31 @@
+
+@mixin sormas-valo-datefield {
+
+  .v-datefield {
+    
+    [class$="button"] {
+      border-right: none;
+    
+      &::before {
+        color: $v-font-color;
+      }
+    }
+    
+    &.v-readonly {
+      height: inherit;
+	  background: inherit;
+      color: inherit;
+	
+	  .v-datefield-textfield {
+        border: none;
+        padding: 0;
+        background: inherit;
+        color: inherit;
+      }
+
+      .v-datefield-button {
+        display: none;
+      }
+    }
+  }
+}  

@@ -23,6 +23,7 @@ import com.vaadin.ui.OptionGroup;
 
 import de.symeda.sormas.api.DataTransferObject;
 import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.epidata.EpiDataBurialsField;
@@ -107,6 +108,9 @@ public abstract class AbstractEditForm <DTO extends DataTransferObject> extends 
 					DateField field = super.createField(type, DateField.class);
 					field.setDateFormat(DateHelper.getDateFormat().toPattern());
 					return (T) field;
+				}
+				else if (ReferenceDto.class.isAssignableFrom(type)) {
+					return (T) new ComboBox();
 				}
 				
 				return super.createField(type, fieldType);

@@ -12856,6 +12856,61 @@ div.v-layout.v-horizontal.v-widget {
 	overflow: hidden;
 }
 
+.sormas .v-button {
+	text-transform: uppercase;
+	border-color: #005A9C;
+}
+
+.sormas .v-filterselect [class$="button"] {
+	border-left: none;
+}
+
+.sormas .v-filterselect [class$="button"]::before {
+	color: #394C5B;
+}
+
+.sormas .v-filterselect.v-readonly {
+	height: inherit;
+	background: inherit;
+	color: inherit;
+}
+
+.sormas .v-filterselect.v-readonly .v-filterselect-input {
+	border: none;
+	padding: 0;
+	background: inherit;
+	color: inherit;
+}
+
+.sormas .v-filterselect.v-readonly .v-filterselect-button {
+	display: none;
+}
+
+.sormas .v-datefield [class$="button"] {
+	border-right: none;
+}
+
+.sormas .v-datefield [class$="button"]::before {
+	color: #394C5B;
+}
+
+.sormas .v-datefield.v-readonly {
+	height: inherit;
+	background: inherit;
+	color: inherit;
+}
+
+.sormas .v-datefield.v-readonly .v-datefield-textfield {
+	border: none;
+	padding: 0;
+	background: inherit;
+	color: inherit;
+}
+
+.sormas .v-datefield.v-readonly .v-datefield-button {
+	display: none;
+}
+
 .sormas .valo-menu {
 	font-size: 16px;
 	vertical-align: middle;
@@ -12915,6 +12970,10 @@ div.v-layout.v-horizontal.v-widget {
 	border-radius: 0 4px 4px 0;
 }
 
+.sormas .v-radiobutton.v-radiobutton-disabled label {
+	cursor: default;
+}
+
 :root .sormas .v-radiobutton > input {
 	display: none;
 }
@@ -12934,9 +12993,18 @@ div.v-layout.v-horizontal.v-widget {
 	content: none;
 }
 
+.sormas .v-panel {
+	border: none;
+	box-shadow: none;
+	border-radius: 0;
+}
+
 .sormas .v-textfield.v-readonly {
 	border: none;
-	padding-left: 0;
+	padding: 0;
+	background: inherit;
+	color: inherit;
+	height: inherit;
 }
 
 .sormas .login-screen {
@@ -13008,33 +13076,6 @@ div.v-layout.v-horizontal.v-widget {
 
 .sormas .v-caption.v-caption-caption-hidden {
 	display: none;
-}
-
-.sormas .v-panel {
-	border: none;
-	box-shadow: none;
-	border-radius: 0;
-}
-
-.sormas .v-button {
-	text-transform: uppercase;
-	border-color: #005A9C;
-}
-
-.sormas .v-filterselect [class$="button"] {
-	border-left: none;
-}
-
-.sormas .v-filterselect [class$="button"]::before {
-	color: #394C5B;
-}
-
-.sormas .v-datefield [class$="button"] {
-	border-right: none;
-}
-
-.sormas .v-datefield [class$="button"]::before {
-	color: #394C5B;
 }
 
 .sormas h3 {

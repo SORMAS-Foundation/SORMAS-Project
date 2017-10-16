@@ -52,8 +52,12 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
 
 @import "../valo/valo.scss";
 
+@import "valo-components/button.scss";
+@import "valo-components/combobox.scss";
+@import "valo-components/datefield.scss";
 @import "valo-components/menu.scss";
 @import "valo-components/optiongroup.scss";
+@import "valo-components/panel.scss";
 @import "valo-components/textfield.scss";
 
 @import "views/login.scss";
@@ -73,8 +77,12 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
 @mixin sormas {
   @include valo;
 
+  @include sormas-valo-button;
+  @include sormas-valo-combobox;
+  @include sormas-valo-datefield;
   @include sormas-valo-menu;
   @include sormas-valo-optiongroup;
+  @include sormas-valo-panel;
   @include sormas-valo-textfield;
 
   @include login;
@@ -91,34 +99,8 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
   .v-caption.v-caption-caption-hidden {
     display: none;
   }
-  
-  .v-panel {
-    border: none;
-    box-shadow: none;
-    border-radius: 0;
-  }
-  
-  .v-button {
-    text-transform: uppercase;
-    border-color: $v-selection-color;
-  }
-  
-  .v-filterselect [class$="button"] {
-    border-left: none;
-    
-    &::before {
-      color: $v-font-color;
-    }
-  }
 
-  .v-datefield [class$="button"] {
-    border-right: none;
-    
-    &::before {
-      color: $v-font-color;
-    }
-  }
-  
+
   h3 {
     margin-bottom: 16px;
   

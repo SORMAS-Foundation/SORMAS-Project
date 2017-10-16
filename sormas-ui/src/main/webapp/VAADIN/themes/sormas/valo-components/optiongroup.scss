@@ -17,6 +17,10 @@
       border-radius: 0 4px 4px 0; 
     }
     
+    &.v-radiobutton-disabled label {
+      cursor: default;
+    }
+    
     :root & > input {
       display: none;
 	  
