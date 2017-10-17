@@ -15,7 +15,6 @@ import javax.ejb.Stateless;
 import javax.validation.ValidationException;
 import javax.validation.constraints.NotNull;
 
-import org.jboss.weld.exceptions.UnsupportedOperationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
