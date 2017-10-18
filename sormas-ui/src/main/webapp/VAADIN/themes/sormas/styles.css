@@ -13082,7 +13082,7 @@ div.v-layout.v-horizontal.v-widget {
 	border-right-color: #CDD8EC;
 }
 
-.sormas .valo-menu-title {
+.sormas .valo-menu .valo-menu-title {
 	padding: 16px;
 	background: #FEFEFE;
 	color: #6691C4;
@@ -13094,30 +13094,38 @@ div.v-layout.v-horizontal.v-widget {
 	border-bottom: 3px solid #E10002;
 }
 
-.sormas .valo-menu-item {
+.sormas .valo-menu .valo-menu-logo {
+	height: 32px !important;
+	width: auto !important;
+	background: none;
+	box-shadow: none;
+	margin: 0;
+}
+
+.sormas .valo-menu .valo-menu-item {
 	color: inherit;
 	text-shadow: none;
 	padding: 12px 16px;
 	line-height: 36px;
 }
 
-.sormas .valo-menu-item .v-icon {
+.sormas .valo-menu .valo-menu-item .v-icon {
 	color: inherit;
 	font-size: 28px;
 	min-width: 36px;
 }
 
-.sormas .valo-menu-item.selected {
+.sormas .valo-menu .valo-menu-item.selected {
 	background: #FEFEFE !important;
 	color: #005A9C !important;
 	text-shadow: none !important;
 }
 
-.sormas .valo-menu-item.selected .v-icon {
+.sormas .valo-menu .valo-menu-item.selected .v-icon {
 	color: #005A9C !important;
 }
 
-.sormas .valo-menu-item.selected::before {
+.sormas .valo-menu .valo-menu-item.selected::before {
 	position: absolute;
 	top: -12px;
 	right: 0px;
@@ -13133,7 +13141,7 @@ div.v-layout.v-horizontal.v-widget {
 	margin-bottom: 0;
 }
 
-.sormas .v-ui[width-range~="801px-1100px"] .valo-menu-part .v-slot-logo, .sormas .v-ui[width-range~="801px-1100px"] .valo-menu-part .v-slot-logo + .v-spacing {
+.sormas .v-ui[width-range~="801px-1100px"] .valo-menu-part .valo-menu-title .v-label {
 	display: none;
 }
 
