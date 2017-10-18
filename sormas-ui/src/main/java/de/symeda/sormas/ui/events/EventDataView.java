@@ -5,7 +5,6 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.task.TaskListComponent;
-import de.symeda.sormas.ui.utils.CssStyles;
 
 public class EventDataView extends AbstractEventView {
 	
@@ -24,9 +23,8 @@ public class EventDataView extends AbstractEventView {
 		setSubComponent(ControllerProvider.getEventController().getEventDataEditComponent(getEventRef().getUuid()));
 		
     	TaskListComponent taskListComponent = new TaskListComponent(TaskContext.EVENT, getEventRef());
-    	taskListComponent.addStyleName(CssStyles.SUBLIST_MARGIN);
     	addComponent(taskListComponent);
-    	taskListComponent.enter(event);
+    	taskListComponent.reload();
 	}
 
 }

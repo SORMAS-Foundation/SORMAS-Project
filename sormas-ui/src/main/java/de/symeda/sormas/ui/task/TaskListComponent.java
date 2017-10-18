@@ -1,6 +1,5 @@
 package de.symeda.sormas.ui.task;
 
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.grid.HeightMode;
@@ -8,7 +7,6 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -19,11 +17,10 @@ import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.login.LoginHelper;
-import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 @SuppressWarnings("serial")
-public class TaskListComponent extends AbstractView {
+public class TaskListComponent extends VerticalLayout {
 
 	private TaskGrid grid;    
     private Button createButton;
@@ -32,7 +29,6 @@ public class TaskListComponent extends AbstractView {
 	
 	public TaskListComponent() {
 		setSizeFull();
-        addStyleName("crud-view");
 
         grid = new TaskGrid();
 
@@ -68,12 +64,7 @@ public class TaskListComponent extends AbstractView {
     	HorizontalLayout topLayout = new HorizontalLayout();
     	topLayout.setSpacing(true);
     	topLayout.setWidth(100, Unit.PERCENTAGE);
-    	topLayout.addStyleName(CssStyles.VSPACE3);
-    	
-    	Label header = new Label("Tasks");
-    	header.setSizeUndefined();
-    	CssStyles.style(header, CssStyles.H2, CssStyles.NO_MARGIN);
-    	topLayout.addComponent(header);
+    	topLayout.addStyleName(CssStyles.VSPACE_3);
     	
     	HorizontalLayout buttonFilterLayout = new HorizontalLayout();
     	{
@@ -106,27 +97,7 @@ public class TaskListComponent extends AbstractView {
 		HorizontalLayout topLayout = new HorizontalLayout();
     	topLayout.setSpacing(true);
     	topLayout.setWidth(100, Unit.PERCENTAGE);
-    	topLayout.addStyleName(CssStyles.VSPACE3);
-    	
-    	Label header;
-    	switch(context) {
-    	case CASE:
-    		header = new Label("Case tasks");
-    		break;
-    	case CONTACT:
-    		header = new Label("Contact tasks");
-    		break;
-    	case EVENT:
-    		header = new Label("Alert tasks");
-    		break;
-    	default:
-    		header = new Label("Tasks");
-    		break;
-    	}
-    	
-    	header.setSizeUndefined();
-    	CssStyles.style(header, CssStyles.H3, CssStyles.NO_MARGIN, CssStyles.SUBLIST_PADDING);
-    	topLayout.addComponent(header);
+    	topLayout.addStyleName(CssStyles.VSPACE_3);
     	
     	HorizontalLayout buttonFilterLayout = new HorizontalLayout();
     	{
@@ -157,7 +128,7 @@ public class TaskListComponent extends AbstractView {
     	HorizontalLayout filterLayout = new HorizontalLayout();
     	filterLayout.setSpacing(true);
     	filterLayout.setSizeUndefined();
-    	filterLayout.addStyleName(CssStyles.VSPACE3);
+    	filterLayout.addStyleName(CssStyles.VSPACE_3);
     	        
         ComboBox statusFilter = new ComboBox();
         statusFilter.setWidth(200, Unit.PIXELS);
@@ -170,8 +141,7 @@ public class TaskListComponent extends AbstractView {
         return filterLayout;
     }
 
-    @Override
-    public void enter(ViewChangeEvent event) {
+    public void reload() {
     	grid.reload();
     }
     

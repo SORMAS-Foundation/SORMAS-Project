@@ -12,13 +12,14 @@ public class TasksView extends AbstractView {
 	private final TaskListComponent taskListComponent;
 
     public TasksView() {
+    	super(VIEW_NAME);
+    	
         taskListComponent = new TaskListComponent();
-        setSizeFull();
         addComponent(taskListComponent);
     }
 
     @Override
     public void enter(ViewChangeEvent event) {
-    	taskListComponent.enter(event);
+    	taskListComponent.reload();
     }
 }

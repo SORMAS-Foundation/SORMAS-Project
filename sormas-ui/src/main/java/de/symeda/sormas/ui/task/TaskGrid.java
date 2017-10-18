@@ -45,13 +45,13 @@ public class TaskGrid extends Grid implements ItemClickListener {
 			if (task != null && task.getTaskStatus() != null) {
 				switch (task.getTaskStatus()) {
 				case REMOVED:
-					return CssStyles.STATUS_DISCARDED;
+					return CssStyles.GRID_ROW_STATUS_DISCARDED;
 				case NOT_EXECUTABLE:
-					return CssStyles.STATUS_NOT;
+					return CssStyles.GRID_ROW_STATUS_NOT;
 				case DONE:
-					return CssStyles.STATUS_DONE;
+					return CssStyles.GRID_ROW_STATUS_DONE;
 				case PENDING:
-					return CssStyles.STATUS_PENDING;
+					return CssStyles.GRID_ROW_STATUS_PENDING;
 				default:
 					throw new IndexOutOfBoundsException(task.getTaskStatus().toString());
 				}
@@ -68,11 +68,11 @@ public class TaskGrid extends Grid implements ItemClickListener {
 				if (priority != null) {
 				switch (priority) {
 				case HIGH:
-					return CssStyles.PRIORITY_HIGH;
+					return CssStyles.GRID_CELL_PRIORITY_HIGH;
 				case NORMAL:
-					return CssStyles.PRIORITY_NORMAL;
+					return CssStyles.GRID_CELL_PRIORITY_NORMAL;
 				case LOW:
-					return CssStyles.PRIORITY_LOW;
+					return CssStyles.GRID_CELL_PRIORITY_LOW;
 				default:
 					throw new IndexOutOfBoundsException(priority.toString());
 				}
@@ -81,7 +81,7 @@ public class TaskGrid extends Grid implements ItemClickListener {
 			else if (TaskDto.DUE_DATE.equals(cell.getPropertyId())) {
 				Date dueDate = (Date)cell.getProperty().getValue();
 				if (dueDate != null && dueDate.before(new Date())) {
-					return CssStyles.WARNING;
+					return CssStyles.GRID_CELL_WARNING;
 				}
 			}
 			return null;

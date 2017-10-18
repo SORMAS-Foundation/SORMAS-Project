@@ -1,6 +1,5 @@
 package de.symeda.sormas.ui.samples;
 
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.grid.HeightMode;
@@ -8,7 +7,6 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
@@ -22,11 +20,10 @@ import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.login.LoginHelper;
-import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 @SuppressWarnings("serial")
-public class SampleListComponent extends AbstractView {
+public class SampleListComponent extends VerticalLayout {
 
 	public static final String LGA = "lga";
 	public static final String SEARCH_FIELD = "searchField";
@@ -37,7 +34,6 @@ public class SampleListComponent extends AbstractView {
 
 	public SampleListComponent() {
 		setSizeFull();
-		addStyleName("crud-view");
 
 		grid = new SampleGrid();
 
@@ -54,7 +50,6 @@ public class SampleListComponent extends AbstractView {
 
 	public SampleListComponent(CaseReferenceDto caseRef) {
 		setSizeFull();
-		addStyleName("crud-view");
 
 		grid = new SampleGrid(caseRef);
 		grid.setHeightMode(HeightMode.ROW);
@@ -72,13 +67,8 @@ public class SampleListComponent extends AbstractView {
 	public HorizontalLayout createTopBar() {
 		HorizontalLayout topLayout = new HorizontalLayout();
 		topLayout.setSpacing(true);
-		topLayout.setWidth(100, Unit.PERCENTAGE);
-		topLayout.addStyleName(CssStyles.VSPACE3);
-
-		Label header = new Label("Laboratory samples");
-		header.setSizeUndefined();
-		CssStyles.style(header, CssStyles.H2, CssStyles.NO_MARGIN);
-		topLayout.addComponent(header);
+		topLayout.setSizeUndefined();
+		topLayout.addStyleName(CssStyles.VSPACE_3);
 
 		HorizontalLayout buttonFilterLayout = new HorizontalLayout();
 		{
@@ -101,7 +91,6 @@ public class SampleListComponent extends AbstractView {
 		}
 
 		topLayout.addComponent(buttonFilterLayout);
-		topLayout.setExpandRatio(buttonFilterLayout, 1);
 
 		return topLayout;
 	}
@@ -110,12 +99,7 @@ public class SampleListComponent extends AbstractView {
 		HorizontalLayout topLayout = new HorizontalLayout();
 		topLayout.setSpacing(true);
 		topLayout.setWidth(100, Unit.PERCENTAGE);
-		topLayout.addStyleName(CssStyles.VSPACE3);
-
-		Label header = new Label("Laboratory samples");
-		header.setSizeUndefined();
-		CssStyles.style(header, CssStyles.H3, CssStyles.NO_MARGIN, CssStyles.SUBLIST_PADDING);
-		topLayout.addComponent(header);
+		topLayout.addStyleName(CssStyles.VSPACE_3);
 
 		HorizontalLayout buttonFilterLayout = new HorizontalLayout();
 		{
@@ -153,7 +137,7 @@ public class SampleListComponent extends AbstractView {
 		HorizontalLayout filterLayout = new HorizontalLayout();
 		filterLayout.setSpacing(true);
 		filterLayout.setSizeUndefined();
-		filterLayout.addStyleName(CssStyles.VSPACE3);
+		filterLayout.addStyleName(CssStyles.VSPACE_3);
 
 		UserDto user = LoginHelper.getCurrentUser();
 		if(user.getRegion() != null) {
@@ -181,8 +165,7 @@ public class SampleListComponent extends AbstractView {
 		return filterLayout;
 	}
 
-	@Override
-	public void enter(ViewChangeEvent event) {
+	public void reload() {
 		grid.reload();
 	}
 

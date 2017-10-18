@@ -1,7 +1,5 @@
 @import "bootstrap-grid.min.css";
 
-@import "general.css";
-
 /**
  * Checks if a list contains a certain value.
  * 
@@ -12852,6 +12850,119 @@ div.v-layout.v-horizontal.v-widget {
 	overflow: hidden;
 }
 
+.sormas .v-caption {
+	text-transform: uppercase;
+	display: block;
+	padding-bottom: 0.1em;
+}
+
+.sormas .v-caption.v-caption-caption-hidden {
+	display: none;
+}
+
+.sormas .force-caption {
+	margin-top: 1.5em;
+}
+
+.sormas .v-widget.v-textfield, .sormas .v-widget.v-textarea, .sormas .v-widget.v-select, .sormas .v-widget.v-datefield, .sormas .v-widget.v-filterselect {
+	margin-bottom: 10px;
+}
+
+.sormas h1, .sormas .h1 {
+	color: #005A9C;
+	font-weight: 600;
+}
+
+.sormas h2, .sormas .h2 {
+	color: #6591C4;
+	font-weight: 600;
+}
+
+.sormas h3, .sormas .h3 {
+	margin-bottom: 16px;
+}
+
+.sormas h3::before, .sormas .h3::before {
+	background: #EEF2F8;
+	content: "";
+	display: block;
+	position: relative;
+	top: 15px;
+	height: 2px;
+	width: 100%;
+}
+
+.sormas h3 span, .sormas .h3 span {
+	background: #FFF;
+	position: relative;
+	padding-right: 8px;
+}
+
+.sormas h4, .sormas .h4 {
+	color: #6591C4;
+	font-weight: 600;
+}
+
+.sormas .vspace-0 {
+	margin-bottom: 64px;
+}
+
+.sormas .vspace-1 {
+	margin-bottom: 36px;
+}
+
+.sormas .vspace-2 {
+	margin-bottom: 20px;
+}
+
+.sormas .vspace-3 {
+	margin-bottom: 10px;
+}
+
+.sormas .vspace-4 {
+	margin-bottom: 6px;
+}
+
+.sormas .vspace-5 {
+	margin-bottom: 2px;
+}
+
+.sormas .vspace-none {
+	margin-bottom: 0 !important;
+}
+
+.sormas .vspace-top-0 {
+	margin-top: 64px;
+}
+
+.sormas .vspace-top-1 {
+	margin-top: 36px;
+}
+
+.sormas .vspace-top-2 {
+	margin-top: 20px;
+}
+
+.sormas .vspace-top-3 {
+	margin-top: 10px;
+}
+
+.sormas .vspace-top-4 {
+	margin-top: 6px;
+}
+
+.sormas .vspace-top-5 {
+	margin-top: 2px;
+}
+
+.sormas .vspace-top-none {
+	margin-top: 0 !important;
+}
+
+.sormas .align-right {
+	text-align: right;
+}
+
 .sormas .v-button {
 	text-transform: uppercase;
 	border-color: #005A9C;
@@ -13016,6 +13127,20 @@ div.v-layout.v-horizontal.v-widget {
 	content: "";
 }
 
+.sormas .v-ui[width-range~="801px-"] .valo-menu-part .user-menu {
+	position: fixed;
+	bottom: 0;
+	margin-bottom: 0;
+}
+
+.sormas .v-ui[width-range~="801px-1100px"] .valo-menu-part .v-slot-logo, .sormas .v-ui[width-range~="801px-1100px"] .valo-menu-part .v-slot-logo + .v-spacing {
+	display: none;
+}
+
+.sormas .v-ui[width-range~="0-500px"] .valo-menu .v-menubar-user-menu .v-menubar-menuitem-caption {
+	width: auto;
+}
+
 .sormas .v-radiobutton {
 	margin: 0 0 10px -2px !important;
 	padding: 0 !important;
@@ -13057,10 +13182,64 @@ div.v-layout.v-horizontal.v-widget {
 	content: none;
 }
 
+.sormas .v-select-optiongroup-caption-inline {
+	text-align: right;
+}
+
+.sormas .v-caption-caption-inline {
+	float: left;
+	padding-top: 7px;
+	margin-bottom: -30px;
+	font-weight: 500;
+	font-size: 12px;
+	text-transform: none;
+}
+
 .sormas .v-panel {
 	border: none;
 	box-shadow: none;
 	border-radius: 0;
+}
+
+.sormas .v-tabsheet {
+	margin-top: -3px;
+}
+
+.sormas .v-tabsheet .v-tabsheet-tabitemcell {
+	border-top: 2px solid #CDD8EC;
+	border-top-width: 3px;
+}
+
+.sormas .v-tabsheet .v-tabsheet-tabitemcell .v-tabsheet-tabitem {
+	overflow: visible;
+}
+
+.sormas .v-tabsheet .v-tabsheet-tabitemcell .v-tabsheet-tabitem .v-caption {
+	margin-top: -3px;
+	border-bottom: none;
+	border-top: 2px solid #CDD8EC;
+	border-top-width: 3px;
+	color: #005A9C;
+	font-weight: 600;
+	text-decoration: none;
+}
+
+.sormas .v-tabsheet .v-tabsheet-tabitemcell .v-tabsheet-tabitem.back {
+	border-right: 2px solid #CDD8EC;
+	border-right-width: 3px;
+	padding-right: 16px;
+}
+
+.sormas .v-tabsheet .v-tabsheet-tabitemcell .v-tabsheet-tabitem.selected .v-caption {
+	border-top-color: #005A9C;
+}
+
+.sormas .v-tabsheet .v-tabsheet-tabitemcell:first-child {
+	margin-left: 20px;
+}
+
+.sormas .v-tabsheet .v-tabsheet-tabcontainer::before {
+	content: none;
 }
 
 .sormas .v-textfield.v-readonly {
@@ -13069,6 +13248,11 @@ div.v-layout.v-horizontal.v-widget {
 	background: inherit;
 	color: inherit;
 	height: inherit;
+}
+
+.sormas input[type=number]::-webkit-inner-spin-button, .sormas input[type=number]::-webkit-outer-spin-button {
+	-webkit-appearance: none;
+	margin: 0;
 }
 
 .sormas .v-window .v-window-outerheader {
@@ -13100,6 +13284,81 @@ div.v-layout.v-horizontal.v-widget {
 
 .sormas .v-window .v-window-contents > .v-scrollable > .v-layout.v-margin-bottom {
 	padding-bottom: 32px;
+}
+
+.sormas .view-header {
+	border-bottom: 2px solid #CDD8EC;
+	border-bottom-width: 3px;
+}
+
+.sormas .view-header .h1-sub {
+	margin-bottom: 8px;
+}
+
+.sormas .about-view {
+	overflow: auto;
+}
+
+.sormas .about-view .about-content {
+	background: white;
+	color: #374B59;
+	border-radius: 4px;
+	border: 2px solid #CDD8EC;
+	-webkit-box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);
+	box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);
+	max-width: 500px;
+	padding: 32px !important;
+}
+
+.sormas .v-ui[width-range~="0-550px"] .about-view {
+	padding-bottom: 0;
+	padding-top: 0;
+	height: auto;
+	padding: 3.2px;
+}
+
+.sormas .v-ui[width-range~="0-550px"] .about-view .v-slot-about-content {
+	overflow: auto;
+}
+
+.sormas .v-ui[width-range~="0-550px"] .about-view .about-content {
+	width: 100%;
+	max-width: 100%;
+	height: auto;
+	vertical-align: top;
+	padding: 0;
+	background: transparent;
+	-webkit-box-shadow: none;
+	box-shadow: none;
+}
+
+.sormas .dashboard-key {
+	text-align: center;
+	outline: none;
+	-webkit-tap-highlight-color: transparent;
+	-webkit-touch-callout: none;
+	padding: 7px;
+	color: #191919;
+	font-weight: 500;
+	border-radius: 4px;
+	border: 1px solid #c5c5c5;
+	border-top-color: #c5c5c5;
+	border-bottom-color: #bcbcbc;
+	background-color: #fafafa;
+}
+
+.sormas .googlemap.no-tiles img {
+	opacity: 0.2;
+	filter: alpha(opacity=20);
+}
+
+.sormas .googlemap.no-tiles .gmnoprint img {
+	opacity: inherit;
+	filter: inherit;
+}
+
+.sormas .googlemap gm-style {
+	background-color: white;
 }
 
 .sormas .login-screen {
@@ -13159,149 +13418,6 @@ div.v-layout.v-horizontal.v-widget {
 	height: 100%;
 }
 
-.sormas .valo-content {
-	overflow: auto;
-}
-
-.sormas .v-caption {
-	text-transform: uppercase;
-	display: block;
-	padding-bottom: 0.1em;
-}
-
-.sormas .v-caption.v-caption-caption-hidden {
-	display: none;
-}
-
-.sormas h3 {
-	margin-bottom: 16px;
-}
-
-.sormas h3::before {
-	background: #EEF2F8;
-	content: "";
-	display: block;
-	position: relative;
-	top: 15px;
-	height: 2px;
-	width: 100%;
-}
-
-.sormas h3 span {
-	background: #FFF;
-	position: relative;
-	padding-right: 8px;
-}
-
-.sormas .callout {
-	text-align: center;
-	outline: none;
-	-webkit-tap-highlight-color: transparent;
-	-webkit-touch-callout: none;
-	padding: 0 14px;
-	color: #191919;
-	font-weight: 500;
-	border-radius: 4px;
-	border: 1px solid #c5c5c5;
-	border-left: 7px solid #60a0ea;
-	border-top-color: #c5c5c5;
-	border-bottom-color: #bcbcbc;
-	background-color: #fafafa;
-}
-
-.sormas .dashboard-key {
-	text-align: center;
-	outline: none;
-	-webkit-tap-highlight-color: transparent;
-	-webkit-touch-callout: none;
-	padding: 7px;
-	color: #191919;
-	font-weight: 500;
-	border-radius: 4px;
-	border: 1px solid #c5c5c5;
-	border-top-color: #c5c5c5;
-	border-bottom-color: #bcbcbc;
-	background-color: #fafafa;
-}
-
-.sormas .googlemap.no-tiles img {
-	opacity: 0.2;
-	filter: alpha(opacity=20);
-}
-
-.sormas .googlemap.no-tiles .gmnoprint img {
-	opacity: inherit;
-	filter: inherit;
-}
-
-.sormas .googlemap gm-style {
-	background-color: white;
-}
-
-.sormas .v-widget.v-textfield, .sormas .v-widget.v-textarea, .sormas .v-widget.v-select, .sormas .v-widget.v-datefield, .sormas .v-widget.v-filterselect {
-	margin-bottom: 10px;
-}
-
-.sormas .v-caption-row-optiongroup {
-	float: left;
-	padding-top: 7px;
-	margin-bottom: -30px;
-	font-weight: 500;
-	font-size: 12px;
-	text-transform: none;
-}
-
-.sormas .v-select-optiongroup-row-optiongroup {
-	text-align: right;
-}
-
-.sormas .v-select-optiongroup-row-optiongroup .v-select-option, .sormas .v-select-optiongroup-inline-optiongroup .v-select-option {
-	display: inline-block;
-}
-
-.sormas .crud-view {
-	position: relative;
-}
-
-.sormas .crud-view .filter-textfield {
-	width: 288px;
-}
-
-.sormas .force-caption {
-	margin-top: 1.5em;
-}
-
-.sormas .no-margin, .sormas .h1.no-margin, .sormas .h2.no-margin, .sormas .h3.no-margin, .sormas .h4.no-margin, .sormas .h5.no-margin, .sormas .v-checkbox.no-margin label {
-	margin: 0;
-}
-
-.sormas .sublist-padding {
-	padding-top: 7px;
-}
-
-.sormas .v-readonly, .sormas .v-caption-v-readonly {
-	color: #aaa;
-}
-
-.sormas .about-view {
-	overflow: auto;
-}
-
-.sormas .about-view .about-content {
-	background: white;
-	color: #374B59;
-	border-radius: 4px;
-	border: 2px solid #CDD8EC;
-	-webkit-box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);
-	box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);
-	max-width: 500px;
-	padding: 32px !important;
-}
-
-.sormas .v-ui[width-range~="0-800px"] .main-screen {
-	padding-top: 32px;
-}
-
 .sormas .v-ui[width-range~="0-800px"] .login-screen {
 	height: auto;
 	min-height: 100%;
@@ -13358,115 +13474,18 @@ div.v-layout.v-horizontal.v-widget {
 	text-align: center;
 }
 
-.sormas .v-ui[width-range~="801px-1100px"] .valo-menu-part .v-slot-logo, .sormas .v-ui[width-range~="801px-1100px"] .valo-menu-part .v-slot-logo + .v-spacing {
-	display: none;
-}
-
-.sormas .v-ui[width-range~="801px-"] .valo-menu-part .user-menu {
-	position: fixed;
-	bottom: 0;
-	margin-bottom: 0;
-}
-
-.sormas .v-ui[width-range~="0-550px"] .crud-view .crud-main-layout {
-	padding: 0 0 0 0;
-}
-
-.sormas .v-ui[width-range~="0-550px"] .crud-view .crud-main-layout .top-bar {
-	padding: 18px 18px 0 18px;
-}
-
-.sormas .v-ui[width-range~="0-550px"] .crud-view .crud-main-layout .top-bar .filter-textfield {
-	width: 100%;
-}
-
-.sormas .v-ui[width-range~="0-550px"] .about-view {
-	padding-bottom: 0;
-	padding-top: 0;
-	height: auto;
-	padding: 3.2px;
-}
-
-.sormas .v-ui[width-range~="0-550px"] .about-view .v-slot-about-content {
-	overflow: auto;
-}
-
-.sormas .v-ui[width-range~="0-550px"] .about-view .about-content {
-	width: 100%;
-	max-width: 100%;
-	height: auto;
-	vertical-align: top;
-	padding: 0;
-	background: transparent;
-	-webkit-box-shadow: none;
-	box-shadow: none;
-}
-
-.sormas .v-ui[width-range~="0-500px"] .valo-menu .v-menubar-user-menu .v-menubar-menuitem-caption {
-	width: auto;
-}
-
-.sormas input[type=number]::-webkit-inner-spin-button, .sormas input[type=number]::-webkit-outer-spin-button {
-	-webkit-appearance: none;
-	margin: 0;
-}
-
-.sormas .align-right {
-	text-align: right;
-}
-
-.sormas .v-Notification.error {
-	background: #C31924;
-}
-
-.sormas .cursor-link {
-	cursor: pointer;
-}
-
-.sormas .font-size-large {
-	font-size: 18px;
-}
-
-.sormas .font-size-xlarge {
-	font-size: 22px;
-}
-
-.sormas .font-size-xlarge li, .sormas .font-size-xlarge ol {
-	line-height: 32px;
-}
-
-.sormas .font-size-small {
-	font-size: 12px;
-}
-
-.sormas .sublist-margin {
-	margin-top: 50px;
-}
-
-.sormas .sublist-margin-small {
-	margin-top: 20px;
-}
-
-.sormas .info-column-margin {
-	margin-left: 25px;
-}
-
-.sormas .color-red .v-icon {
-	color: #7F3300;
-}
-
-.sormas .color-green .v-icon {
-	color: #007F0E;
-}
-
-.sormas .color-grey .v-icon {
-	color: #A8A8A8;
-}
-
-.sormas .vspace-no-filters {
-	margin-bottom: 16px;
-}
-
-.sormas .vspace-top-24 {
-	margin-top: 24px;
+.sormas .callout {
+	text-align: center;
+	outline: none;
+	-webkit-tap-highlight-color: transparent;
+	-webkit-touch-callout: none;
+	padding: 0 14px;
+	color: #191919;
+	font-weight: 500;
+	border-radius: 4px;
+	border: 1px solid #c5c5c5;
+	border-left: 7px solid #60a0ea;
+	border-top-color: #c5c5c5;
+	border-bottom-color: #bcbcbc;
+	background-color: #fafafa;
 }

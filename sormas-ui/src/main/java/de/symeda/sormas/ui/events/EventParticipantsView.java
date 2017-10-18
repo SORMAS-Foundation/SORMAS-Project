@@ -52,7 +52,7 @@ public class EventParticipantsView extends AbstractEventView {
 		
 		Label header = new Label(I18nProperties.getPrefixFieldCaption(EventDto.I18N_PREFIX, EventDto.EVENT_PERSONS));
 		header.setSizeUndefined();
-		CssStyles.style(header, CssStyles.H2, CssStyles.NO_MARGIN);
+		CssStyles.style(header, CssStyles.H2, CssStyles.VSPACE_NONE);
 		topLayout.addComponent(header);
 		
 		addButton = new Button("Add person");
@@ -66,7 +66,7 @@ public class EventParticipantsView extends AbstractEventView {
 		topLayout.setComponentAlignment(addButton, Alignment.MIDDLE_RIGHT);
 		topLayout.setExpandRatio(addButton, 1);
 		
-		topLayout.addStyleName(CssStyles.VSPACE3);
+		topLayout.addStyleName(CssStyles.VSPACE_3);
 		return topLayout;
 	}
 	

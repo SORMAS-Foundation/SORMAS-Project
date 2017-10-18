@@ -42,14 +42,12 @@ public class UsersView extends AbstractView {
 	private VerticalLayout gridLayout;
 
     public UsersView() {
-        setSizeFull();
-        addStyleName("crud-view");
-
+    	super(VIEW_NAME);
+    	
         grid = new UserGrid();
         grid.addItemClickListener(e -> ControllerProvider.getUserController().edit((UserDto)e.getItemId()));
 
         gridLayout = new VerticalLayout();
-        gridLayout.addComponent(createTopBar());
         gridLayout.addComponent(createFilterBar());
         gridLayout.addComponent(grid);
         gridLayout.setMargin(true);
@@ -59,35 +57,19 @@ public class UsersView extends AbstractView {
         gridLayout.setStyleName("crud-main-layout");
         
         addComponent(gridLayout);
-    }
-
-	public HorizontalLayout createTopBar() {
-    	HorizontalLayout topLayout = new HorizontalLayout();
-    	topLayout.setSpacing(true);
-    	topLayout.setWidth(100, Unit.PERCENTAGE);
-    	topLayout.addStyleName(CssStyles.VSPACE3);
-    	
-    	Label header = new Label("Users");
-    	header.setSizeUndefined();
-    	CssStyles.style(header, CssStyles.H2, CssStyles.NO_MARGIN);
-    	topLayout.addComponent(header);
-
+        
         createButton = new Button("New user");
         createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
         createButton.setIcon(FontAwesome.PLUS_CIRCLE);
         createButton.addClickListener(e -> ControllerProvider.getUserController().create());
-        topLayout.addComponent(createButton);
-        topLayout.setComponentAlignment(createButton, Alignment.MIDDLE_RIGHT);
-        topLayout.setExpandRatio(createButton, 1);
-        
-        return topLayout;
+        addHeaderComponent(createButton);
     }
 	
 	public HorizontalLayout createFilterBar() {
     	HorizontalLayout filterLayout = new HorizontalLayout();
     	filterLayout.setSpacing(true);
     	filterLayout.setSizeUndefined();
-    	filterLayout.addStyleName(CssStyles.VSPACE3);
+    	filterLayout.addStyleName(CssStyles.VSPACE_3);
 
         ComboBox activeFilter = new ComboBox();
         activeFilter.setWidth(200, Unit.PIXELS);

@@ -53,7 +53,7 @@ public class ContactVisitsView extends AbstractContactView {
     	
     	Label header = new Label("Follow-up visits");
     	header.setSizeUndefined();
-    	CssStyles.style(header, CssStyles.H2, CssStyles.NO_MARGIN);
+    	CssStyles.style(header, CssStyles.H2, CssStyles.VSPACE_NONE);
     	topLayout.addComponent(header);
 
     	Button contactButton = new Button("contact related", e -> {
@@ -80,7 +80,7 @@ public class ContactVisitsView extends AbstractContactView {
         topLayout.setComponentAlignment(newButton, Alignment.MIDDLE_RIGHT);
         topLayout.setExpandRatio(newButton, 1);
         
-        topLayout.addStyleName(CssStyles.VSPACE3);
+        topLayout.addStyleName(CssStyles.VSPACE_3);
         return topLayout;
     }
 

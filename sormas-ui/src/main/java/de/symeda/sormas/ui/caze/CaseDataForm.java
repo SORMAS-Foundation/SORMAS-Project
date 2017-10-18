@@ -43,21 +43,20 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	public static final String NONE_HEALTH_FACILITY_DETAILS = "noneHealthFacilityDetails";
 	
     private static final String HTML_LAYOUT = 
-    		LayoutUtil.h3(CssStyles.VSPACE3, "Case data")+
+    		LayoutUtil.h3(CssStyles.VSPACE_3, "Case data")+
 			
-			LayoutUtil.div( 
+			LayoutUtil.divCss(CssStyles.VSPACE_4,
+    				LayoutUtil.fluidRow(
+    						LayoutUtil.loc(CaseDataDto.UUID), 
+    						LayoutUtil.fluidRowLocs(CaseDataDto.REPORT_DATE, CaseDataDto.REPORTING_USER)) +
 					LayoutUtil.fluidRowLocs(CaseDataDto.CASE_CLASSIFICATION) +
 					LayoutUtil.fluidRowLocs(CaseDataDto.INVESTIGATION_STATUS) +
-		    		LayoutUtil.fluidRowCss(CssStyles.VSPACE4,
-		    				LayoutUtil.fluidRow(
-		    						LayoutUtil.loc(CaseDataDto.UUID), 
-		    						LayoutUtil.fluidRowLocs(CaseDataDto.REPORT_DATE, CaseDataDto.REPORTING_USER)) +
-		    				LayoutUtil.fluidRowLocs(CaseDataDto.EPID_NUMBER, CaseDataDto.DISEASE) +
-		    				LayoutUtil.fluidRowLocs("", CaseDataDto.DISEASE_DETAILS) +
-		    				LayoutUtil.fluidRowLocs(CaseDataDto.REGION, CaseDataDto.DISTRICT) +
-				    		LayoutUtil.fluidRowLocs(CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY) +
-		    				LayoutUtil.fluidRowLocs("", CaseDataDto.HEALTH_FACILITY_DETAILS) +
-		    				LayoutUtil.fluidRowLocs(CaseDataDto.SURVEILLANCE_OFFICER, ""))
+    				LayoutUtil.fluidRowLocs(CaseDataDto.EPID_NUMBER, CaseDataDto.DISEASE) +
+    				LayoutUtil.fluidRowLocs("", CaseDataDto.DISEASE_DETAILS) +
+    				LayoutUtil.fluidRowLocs(CaseDataDto.REGION, CaseDataDto.DISTRICT) +
+		    		LayoutUtil.fluidRowLocs(CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY) +
+    				LayoutUtil.fluidRowLocs("", CaseDataDto.HEALTH_FACILITY_DETAILS) +
+    				LayoutUtil.fluidRowLocs(CaseDataDto.SURVEILLANCE_OFFICER, "")
 		    )+
 			LayoutUtil.loc(MEDICAL_INFORMATION_LOC) +
 			LayoutUtil.fluidRow(
@@ -146,7 +145,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		
 		for (String medicalInformationField : medicalInformationFields) {
 			if (getFieldGroup().getField(medicalInformationField).isVisible()) {
-				String medicalInformationCaptionLayout = LayoutUtil.h3(CssStyles.VSPACE3, "Additional medical information");
+				String medicalInformationCaptionLayout = LayoutUtil.h3(CssStyles.VSPACE_3, "Additional medical information");
 				Label medicalInformationCaptionLabel = new Label(medicalInformationCaptionLayout);
 				medicalInformationCaptionLabel.setContentMode(ContentMode.HTML);
 				getContent().addComponent(medicalInformationCaptionLabel, MEDICAL_INFORMATION_LOC);

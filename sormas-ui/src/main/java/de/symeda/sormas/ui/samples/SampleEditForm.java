@@ -37,18 +37,18 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 	private static final String HTML_LAYOUT = 
 			LayoutUtil.h3(null, "Laboratory sample") +
 			LayoutUtil.div(
-					LayoutUtil.locCss(CssStyles.VSPACE2, REPORT_INFORMATION_LOC) +
+					LayoutUtil.locCss(CssStyles.VSPACE_2, REPORT_INFORMATION_LOC) +
 					LayoutUtil.div(
 							LayoutUtil.fluidRowLocs(SampleDto.SAMPLE_DATE_TIME, SampleDto.SAMPLE_CODE),
 							LayoutUtil.fluidRowLocs(SampleDto.SAMPLE_MATERIAL, SampleDto.SAMPLE_MATERIAL_TEXT),
 							LayoutUtil.fluidRowLocs(SampleDto.SAMPLE_SOURCE, ""),
 							LayoutUtil.fluidRowLocs(SampleDto.SUGGESTED_TYPE_OF_TEST, SampleDto.LAB)
 					),
-					LayoutUtil.locCss(CssStyles.VSPACETOP3, SampleDto.SHIPPED),
+					LayoutUtil.locCss(CssStyles.VSPACE_TOP_3, SampleDto.SHIPPED),
 					LayoutUtil.div(
 							LayoutUtil.fluidRowLocs(SampleDto.SHIPMENT_DATE, SampleDto.SHIPMENT_DETAILS)
 					),
-					LayoutUtil.locCss(CssStyles.VSPACETOP3, SampleDto.RECEIVED),
+					LayoutUtil.locCss(CssStyles.VSPACE_TOP_3, SampleDto.RECEIVED),
 					LayoutUtil.div(
 							LayoutUtil.fluidRowLocs(SampleDto.RECEIVED_DATE, SampleDto.LAB_SAMPLE_ID),
 							LayoutUtil.fluidRowLocs(SampleDto.SPECIMEN_CONDITION, SampleDto.NO_TEST_POSSIBLE_REASON),
@@ -142,7 +142,7 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 				SampleDto referredFrom = FacadeProvider.getSampleFacade().getSampleByUuid(referredFromRef.getUuid());
 				Button referredButton = new Button("Referred from " + referredFrom.getLab().toString());
 				referredButton.addStyleName(ValoTheme.BUTTON_LINK);
-				referredButton.addStyleName(CssStyles.NO_MARGIN);
+				referredButton.addStyleName(CssStyles.VSPACE_NONE);
 				referredButton.addClickListener(s -> ControllerProvider.getSampleController().navigateToData(referredFrom.getUuid()));
 				reportInfoLayout.addComponent(referredButton);
 			}

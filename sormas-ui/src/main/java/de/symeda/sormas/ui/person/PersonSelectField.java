@@ -67,7 +67,7 @@ public class PersonSelectField extends CustomField<PersonReferenceDto> {
 		
 		createNewPerson = new OptionGroup(null);
 		createNewPerson.addItem(CREATE_PERSON);
-		createNewPerson.setItemCaption(CREATE_PERSON, I18nProperties.getButtonCaption("Person.createNew"));
+		createNewPerson.setItemCaption(CREATE_PERSON, I18nProperties.getFragment("Person.createNew"));
 		// unselect grid when "create new" is selected
 		createNewPerson.addValueChangeListener(e -> {
 			if (e.getProperty().getValue() != null) {
@@ -86,7 +86,7 @@ public class PersonSelectField extends CustomField<PersonReferenceDto> {
 		if (personGrid == null) {
 			personGrid = new PersonGrid();
 			personGrid.setHeightByRows(6);
-			personGrid.setCaption(I18nProperties.getButtonCaption("Person.select"));
+			personGrid.setCaption(I18nProperties.getFragment("Person.select"));
 			personGrid.setSelectionMode(SelectionMode.SINGLE);
 			personGrid.setFirstNameFilter(firstNameField.getValue());
 			personGrid.setLastNameFilter(lastNameField.getValue());

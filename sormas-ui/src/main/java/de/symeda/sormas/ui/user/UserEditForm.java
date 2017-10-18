@@ -25,17 +25,17 @@ import de.symeda.sormas.ui.utils.LayoutUtil;
 public class UserEditForm extends AbstractEditForm<UserDto> {
 	
     private static final String HTML_LAYOUT = 
-    		LayoutUtil.h3(CssStyles.VSPACE3, "Person data")+
-			LayoutUtil.divCss(CssStyles.VSPACE2,
+    		LayoutUtil.h3(CssStyles.VSPACE_3, "Person data")+
+			LayoutUtil.divCss(CssStyles.VSPACE_2,
 					LayoutUtil.fluidRowLocs(UserDto.FIRST_NAME, UserDto.LAST_NAME),
 					LayoutUtil.fluidRowLocs(UserDto.USER_EMAIL, UserDto.PHONE)
 					)+
-			LayoutUtil.h3(CssStyles.VSPACE3, "Adress")+
-			LayoutUtil.divCss(CssStyles.VSPACE2,
+			LayoutUtil.h3(CssStyles.VSPACE_3, "Adress")+
+			LayoutUtil.divCss(CssStyles.VSPACE_2,
 					LayoutUtil.fluidRowLocs(UserDto.ADDRESS)
 					)+
-			LayoutUtil.h3(CssStyles.VSPACE3, "User data")+
-			LayoutUtil.divCss(CssStyles.VSPACE2,
+			LayoutUtil.h3(CssStyles.VSPACE_3, "User data")+
+			LayoutUtil.divCss(CssStyles.VSPACE_2,
 					LayoutUtil.fluidRowLocs(UserDto.ACTIVE),
 					LayoutUtil.fluidRowLocs(UserDto.USER_NAME, UserDto.USER_ROLES),
 					LayoutUtil.fluidRowLocs(UserDto.REGION, UserDto.DISTRICT),

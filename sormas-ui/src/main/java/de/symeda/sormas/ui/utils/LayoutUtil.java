@@ -26,14 +26,6 @@ public class LayoutUtil {
 		return locCss(null, location);
 	}
 
-	public static String flow(String... htmls) {
-		StringBuilder sb = new StringBuilder();
-		for (String html : htmls) {
-			sb.append("<div class='").append(CssStyles.FLOW_LAYOUT).append("'>").append(html).append("</div>\n");
-		}
-		return sb.toString();
-	}
-
 	public static String locs(String... locations) {
 		StringBuilder sb = new StringBuilder();
 		for (String location : locations) {
@@ -44,14 +36,6 @@ public class LayoutUtil {
 
 	public static String locsCss(String css, String... locations) {
 		return divCss(css, locs(locations));
-	}
-
-	public static String flowLocs(String... locations) {
-		StringBuilder sb = new StringBuilder();
-		for (String location : locations) {
-			sb.append("<div class='").append(CssStyles.FLOW_LAYOUT).append("' location='").append(location).append("'></div>\n");
-		}
-		return sb.toString();
 	}
 
 	/**

@@ -29,9 +29,8 @@ public class ReportsView extends AbstractView {
 	private AbstractSelect epiWeekFilter;
 	
 	public ReportsView() {
-		setSizeFull();
-		addStyleName("crud-view");
-		
+    	super(VIEW_NAME);
+    	
 		grid = new WeeklyReportGrid();
 		grid.setHeightMode(HeightMode.UNDEFINED);
 		
@@ -50,11 +49,11 @@ public class ReportsView extends AbstractView {
 	
 	public HorizontalLayout createTopBar() {
 		HorizontalLayout topLayout = new HorizontalLayout();
-		topLayout.addStyleName(CssStyles.VSPACE3);
+		topLayout.addStyleName(CssStyles.VSPACE_3);
 		
 		Label header = new Label("Reports");
 		header.setSizeUndefined();
-		CssStyles.style(header, CssStyles.H2, CssStyles.NO_MARGIN);
+		CssStyles.style(header, CssStyles.H2, CssStyles.VSPACE_NONE);
 		topLayout.addComponent(header);
 		
 		return topLayout;
@@ -63,7 +62,7 @@ public class ReportsView extends AbstractView {
 	public HorizontalLayout createFilterBar() {
 		HorizontalLayout filterLayout = new HorizontalLayout();
 		filterLayout.setSpacing(true);
-		filterLayout.addStyleName(CssStyles.VSPACE3);
+		filterLayout.addStyleName(CssStyles.VSPACE_3);
 		
 		EpiWeek prevEpiWeek = DateHelper.getPreviousEpiWeek(new Date());
 		int year = prevEpiWeek.getYear();

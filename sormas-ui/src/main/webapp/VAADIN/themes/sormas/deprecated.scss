@@ -1,0 +1,20 @@
+
+@mixin sormas-deprecated {
+	
+  .callout {
+	text-align: center;
+	outline: none;
+	-webkit-tap-highlight-color: transparent;
+	-webkit-touch-callout: none;
+	padding: 0 14px;
+	color: #191919;
+	font-weight: 500;
+	
+	border-radius: 4px;
+	border: 1px solid #c5c5c5;
+	border-left: 7px solid #60a0ea;
+	border-top-color: #c5c5c5;
+	border-bottom-color: #bcbcbc;
+	background-color: #fafafa;
+  }
+}

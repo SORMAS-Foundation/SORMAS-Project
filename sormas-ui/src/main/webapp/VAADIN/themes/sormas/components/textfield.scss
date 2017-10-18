@@ -11,6 +11,14 @@ $v-textfield-background-color--readonly: $v-app-background-color !default;
       background: inherit;
       color: inherit;
       height: inherit;
-   }
+    }
+   
+  }
+
+  // Hide spinner buttons from number input
+  input[type=number]::-webkit-inner-spin-button,
+  input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
   }
 }

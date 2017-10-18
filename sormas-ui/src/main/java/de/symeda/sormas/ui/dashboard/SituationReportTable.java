@@ -24,7 +24,6 @@ import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.login.LoginHelper;
-import de.symeda.sormas.ui.utils.CssStyles;
 
 @SuppressWarnings("serial")
 public class SituationReportTable extends Table {
@@ -201,23 +200,23 @@ public class SituationReportTable extends Table {
 			Label arrow;
 			if (previousPeriod > queryPeriod) {
 				arrow = new Label(FontAwesome.ARROW_DOWN.getHtml(), ContentMode.HTML);
-				arrow.addStyleName(CssStyles.COLOR_GREEN);
+				//arrow.addStyleName(CssStyles.COLOR_GREEN);
 			} else if (previousPeriod < queryPeriod) {
 				arrow = new Label(FontAwesome.ARROW_UP.getHtml(), ContentMode.HTML);
-				arrow.addStyleName(CssStyles.COLOR_RED);
+				//arrow.addStyleName(CssStyles.COLOR_RED);
 			} else {
 				arrow = new Label(FontAwesome.ARROW_RIGHT.getHtml(), ContentMode.HTML);
-				arrow.addStyleName(CssStyles.COLOR_GREY);
+				//arrow.addStyleName(CssStyles.COLOR_GREY);
 			}
 			previousPeriodLayout.addComponent(number);
 			previousPeriodLayout.addComponent(arrow);
 		}
 
-		// Display the contents of the row in a small font size when the respective attribute is set
-		if (smallRow) {
-			previousPeriodLayout.addStyleName(CssStyles.FONT_SIZE_SMALL);
-			queryPeriodLabel.addStyleName(CssStyles.FONT_SIZE_SMALL);
-		}
+//		// Display the contents of the row in a small font size when the respective attribute is set
+//		if (smallRow) {
+//			previousPeriodLayout.addStyleName(CssStyles.FONT_SIZE_SMALL);
+//			queryPeriodLabel.addStyleName(CssStyles.FONT_SIZE_SMALL);
+//		}
 
 		addItem(new Object[]{heading, subHeading, queryPeriodLayout, previousPeriodLayout}, position);
 	}
@@ -228,7 +227,7 @@ public class SituationReportTable extends Table {
 	 */
 	private Label createHcwLabel() {
 		Label hcwLabel = new Label("<i>" + I18nProperties.getPrefixFieldCaption(DashboardView.I18N_PREFIX, DashboardView.HCWS) + "</i>", ContentMode.HTML);
-		hcwLabel.addStyleName(CssStyles.FONT_SIZE_SMALL);
+		hcwLabel.addStyleName(ValoTheme.LABEL_SMALL);
 		return hcwLabel;
 	}
 

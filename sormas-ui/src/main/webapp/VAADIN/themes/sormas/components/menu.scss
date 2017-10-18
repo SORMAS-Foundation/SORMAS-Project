@@ -53,4 +53,27 @@ $valo-menu-background-color: $s-default-color !default;
 	  }
 	}
   }
+    // Move logout button to the bottom of the menu on large screens
+  .v-ui[width-range~="801px-"] .valo-menu-part {
+    .user-menu {
+      position: fixed;
+      bottom: 0;
+      margin-bottom: 0;
+    }
+  }
+  
+  // hide the logo for a more compact header when the menu is narrow
+  .v-ui[width-range~="801px-1100px"] .valo-menu-part {
+    .v-slot-logo,
+    .v-slot-logo + .v-spacing {
+      display: none;
+    }
+  }    
+
+  // Override valo default narrow menu button on small screens to have the full logout text visible
+  .v-ui[width-range~="0-500px"] {
+    .valo-menu .v-menubar-user-menu .v-menubar-menuitem-caption {
+      width: auto;
+    }
+  }    
 }

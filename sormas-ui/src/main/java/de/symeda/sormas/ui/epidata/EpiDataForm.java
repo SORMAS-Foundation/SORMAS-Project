@@ -28,7 +28,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 	private static final String ENVIRONMENTAL_LOC = "environmentalLoc";
 	
 	private static final String HTML_LAYOUT = 
-			LayoutUtil.h3(CssStyles.VSPACE3, "Epidemiological data") +
+			LayoutUtil.h3(CssStyles.VSPACE_3, "Epidemiological data") +
 			LayoutUtil.fluidRowLocs(EpiDataDto.BURIAL_ATTENDED) +
 			LayoutUtil.fluidRowLocs(EpiDataDto.BURIALS) +
 			LayoutUtil.fluidRowLocs(EpiDataDto.GATHERING_ATTENDED) +
@@ -38,7 +38,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			LayoutUtil.loc(ANIMAL_CAPTION_LOC) +
 			LayoutUtil.fluidRow(
 					LayoutUtil.fluidColumn(6, 0,
-							LayoutUtil.locsCss(CssStyles.VSPACE3,
+							LayoutUtil.locsCss(CssStyles.VSPACE_3,
 									EpiDataDto.RODENTS, EpiDataDto.BATS, EpiDataDto.PRIMATES,
 									EpiDataDto.SWINE, EpiDataDto.BIRDS, EpiDataDto.POULTRY_EAT,
 									EpiDataDto.POULTRY, EpiDataDto.POULTRY_DETAILS,
@@ -47,7 +47,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 							)
 					),
 					LayoutUtil.fluidColumn(6, 0,
-							LayoutUtil.locsCss(CssStyles.VSPACE3,
+							LayoutUtil.locsCss(CssStyles.VSPACE_3,
 									EpiDataDto.CATTLE, EpiDataDto.OTHER_ANIMALS,
 									EpiDataDto.OTHER_ANIMALS_DETAILS, EpiDataDto.WILDBIRDS, EpiDataDto.WILDBIRDS_DETAILS,
 									EpiDataDto.WILDBIRDS_DATE, EpiDataDto.WILDBIRDS_LOCATION
@@ -110,7 +110,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			getFieldGroup().getField(propertyId).setVisible(visible);
 		}
 		
-		styleAsRow(Arrays.asList(EpiDataDto.RODENTS, EpiDataDto.BATS, EpiDataDto.PRIMATES, EpiDataDto.SWINE, EpiDataDto.CATTLE,
+		styleAsOptionGroupHorizontal(Arrays.asList(EpiDataDto.RODENTS, EpiDataDto.BATS, EpiDataDto.PRIMATES, EpiDataDto.SWINE, EpiDataDto.CATTLE,
 				EpiDataDto.OTHER_ANIMALS, EpiDataDto.BIRDS, EpiDataDto.POULTRY_EAT, EpiDataDto.WILDBIRDS));
 		
 		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(EpiDataDto.POULTRY_DETAILS), EpiDataDto.POULTRY, Arrays.asList(YesNoUnknown.YES), true);
@@ -130,7 +130,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		
 		for (String animalContact : animalContacts) {
 			if (getFieldGroup().getField(animalContact).isVisible()) {
-				String animalCaptionLayout = LayoutUtil.h3(CssStyles.VSPACE3, "Animal contacts") + LayoutUtil.divCss(CssStyles.VSPACE3, I18nProperties.getFieldCaption("EpiData.hint"));
+				String animalCaptionLayout = LayoutUtil.h3(CssStyles.VSPACE_3, "Animal contacts") + LayoutUtil.divCss(CssStyles.VSPACE_3, I18nProperties.getFieldCaption("EpiData.hint"));
 				Label animalCaptionLabel = new Label(animalCaptionLayout);
 				animalCaptionLabel.setContentMode(ContentMode.HTML);
 				getContent().addComponent(animalCaptionLabel, ANIMAL_CAPTION_LOC);
@@ -142,7 +142,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		
 		for (String environmentalExp : environmentalExposures) {
 			if (getFieldGroup().getField(environmentalExp).isVisible()) {
-				String environmentalCaptionLayout = LayoutUtil.h3(CssStyles.VSPACE3, "Environmental exposure");
+				String environmentalCaptionLayout = LayoutUtil.h3(CssStyles.VSPACE_3, "Environmental exposure");
 				Label environmentalCaptionLabel = new Label(environmentalCaptionLayout);
 				environmentalCaptionLabel.setContentMode(ContentMode.HTML);
 				getContent().addComponent(environmentalCaptionLabel, ENVIRONMENTAL_LOC);

@@ -110,9 +110,8 @@ public class DashboardView extends AbstractView {
 	private RegionMapVisualization regionMapVisualization = RegionMapVisualization.CASE_COUNT;
 
 	public DashboardView() {
-		setSizeFull();
-		addStyleName("crud-view");
-		
+    	super(VIEW_NAME);
+    			
 		if (LoginHelper.isUserInRole(UserRole.NATIONAL_USER)) {
 			showRegions = true;
 		} else {
@@ -141,11 +140,11 @@ public class DashboardView extends AbstractView {
 		HorizontalLayout topLayout = new HorizontalLayout();
 		topLayout.setSpacing(true);
 		topLayout.setWidth(100, Unit.PERCENTAGE);
-		topLayout.addStyleName(CssStyles.VSPACE_NO_FILTERS);
+		topLayout.addStyleName(CssStyles.VSPACE_3);
 
 		Label header = new Label("Dashboard");
 		header.setSizeUndefined();
-		CssStyles.style(header, CssStyles.H2, CssStyles.NO_MARGIN);
+		CssStyles.style(header, CssStyles.H2, CssStyles.VSPACE_NONE);
 		topLayout.addComponent(header);
 
 		return topLayout;
@@ -155,7 +154,7 @@ public class DashboardView extends AbstractView {
 		HorizontalLayout filterLayout = new HorizontalLayout();
 		filterLayout.setSpacing(true);
 		filterLayout.setSizeUndefined();
-		filterLayout.addStyleName(CssStyles.VSPACE3);
+		filterLayout.addStyleName(CssStyles.VSPACE_3);
 
 		Calendar c = Calendar.getInstance();
 		c.setTime(new Date());
@@ -322,7 +321,7 @@ public class DashboardView extends AbstractView {
 			// Add check boxes and apply button to popupLayout
 			{
 				CheckBox dateFilterForMap = new CheckBox();
-				dateFilterForMap.addStyleName(CssStyles.NO_MARGIN);
+				dateFilterForMap.addStyleName(CssStyles.VSPACE_NONE);
 				dateFilterForMap.setCaption(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, DATE_FILTER_FOR_MAP));
 				dateFilterForMap.addValueChangeListener(e -> {
 					useDateFilterForMap = dateFilterForMap.getValue();
@@ -330,7 +329,7 @@ public class DashboardView extends AbstractView {
 				popupLayout.addComponent(dateFilterForMap);	        
 				
 				CheckBox showCasesCheckBox = new CheckBox();
-				showCasesCheckBox.addStyleName(CssStyles.NO_MARGIN);
+				showCasesCheckBox.addStyleName(CssStyles.VSPACE_NONE);
 				showCasesCheckBox.setCaption(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, SHOW_CASES));
 				showCasesCheckBox.setValue(showCases);
 				showCasesCheckBox.addValueChangeListener(e -> {
@@ -342,7 +341,7 @@ public class DashboardView extends AbstractView {
 				CheckBox showUnconfirmedContactsCheckBox = new CheckBox();
 				
 				CheckBox showContactsCheckBox = new CheckBox();
-				showContactsCheckBox.addStyleName(CssStyles.NO_MARGIN);
+				showContactsCheckBox.addStyleName(CssStyles.VSPACE_NONE);
 				showContactsCheckBox.setCaption(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, SHOW_CONTACTS));
 				showContactsCheckBox.setValue(showContacts);
 				showContactsCheckBox.addValueChangeListener(e -> {
@@ -354,7 +353,7 @@ public class DashboardView extends AbstractView {
 				});
 				popupLayout.addComponent(showContactsCheckBox);
 				
-				showConfirmedContactsCheckBox.addStyleName(CssStyles.NO_MARGIN);
+				showConfirmedContactsCheckBox.addStyleName(CssStyles.VSPACE_NONE);
 				showConfirmedContactsCheckBox.setCaption(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, SHOW_CONFIRMED_CONTACTS));
 				showConfirmedContactsCheckBox.setValue(showConfirmedContacts);
 				showConfirmedContactsCheckBox.addValueChangeListener(e -> {
@@ -362,7 +361,7 @@ public class DashboardView extends AbstractView {
 				});
 				popupLayout.addComponent(showConfirmedContactsCheckBox);	 
 				
-				showUnconfirmedContactsCheckBox.addStyleName(CssStyles.NO_MARGIN);
+				showUnconfirmedContactsCheckBox.addStyleName(CssStyles.VSPACE_NONE);
 				showUnconfirmedContactsCheckBox.setCaption(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, SHOW_UNCONFIRMED_CONTACTS));
 				showUnconfirmedContactsCheckBox.setValue(showUnconfirmedContacts);
 				showUnconfirmedContactsCheckBox.addValueChangeListener(e -> {
@@ -372,7 +371,7 @@ public class DashboardView extends AbstractView {
 
 				if (LoginHelper.isUserInRole(UserRole.NATIONAL_USER)) {
 					CheckBox showRegionsCheckBox = new CheckBox();
-					showRegionsCheckBox.addStyleName(CssStyles.NO_MARGIN);
+					showRegionsCheckBox.addStyleName(CssStyles.VSPACE_NONE);
 					showRegionsCheckBox.setCaption("Show regions");
 					showRegionsCheckBox.setValue(showRegions);
 					showRegionsCheckBox.addValueChangeListener(e -> {
@@ -382,7 +381,7 @@ public class DashboardView extends AbstractView {
 				}
 				
 				Button applyButton = new Button(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, APPLY));
-				applyButton.addStyleName(CssStyles.VSPACETOP4);
+				applyButton.addStyleName(CssStyles.VSPACE_TOP_4);
 				applyButton.addClickListener(new ClickListener() {
 					@Override
 					public void buttonClick(ClickEvent event) {
@@ -398,10 +397,10 @@ public class DashboardView extends AbstractView {
 			
 			Button expandMap = new Button(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, EXPAND), FontAwesome.EXPAND);
 			expandMap.setStyleName(ValoTheme.BUTTON_LINK);
-			expandMap.addStyleName(CssStyles.NO_MARGIN);   
+			expandMap.addStyleName(CssStyles.VSPACE_NONE);   
 			Button collapseMap = new Button(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, COLLAPSE), FontAwesome.COMPRESS);
 			collapseMap.setStyleName(ValoTheme.BUTTON_LINK);
-			collapseMap.addStyleName(CssStyles.NO_MARGIN);
+			collapseMap.addStyleName(CssStyles.VSPACE_NONE);
 
 			expandMap.addClickListener(new ClickListener() {
 				@Override
@@ -440,7 +439,7 @@ public class DashboardView extends AbstractView {
 			{
 				mapCaseFooterLayout.setWidth(100, Unit.PERCENTAGE);
 				mapCaseFooterLayout.setSpacing(true);
-				mapCaseFooterLayout.addStyleName(CssStyles.VSPACETOP3);
+				mapCaseFooterLayout.addStyleName(CssStyles.VSPACE_TOP_3);
 	
 				HorizontalLayout legendLayout = new HorizontalLayout();
 				legendLayout.setWidth(100, Unit.PERCENTAGE);
@@ -628,7 +627,7 @@ public class DashboardView extends AbstractView {
 		entry.addComponent(spacer);
 		Label label = new Label(labelCaption);
 		label.setSizeUndefined();
-		label.addStyleName(CssStyles.LABEL_SMALL);
+		label.addStyleName(ValoTheme.LABEL_SMALL);
 		entry.addComponent(label);
 		return entry;
 	}

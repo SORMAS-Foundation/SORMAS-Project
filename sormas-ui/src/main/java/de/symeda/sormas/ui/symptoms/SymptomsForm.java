@@ -35,19 +35,19 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 
 	private static final String BUTTONS_LOC = "buttonsLoc";
 
-	private static final String HTML_LAYOUT = LayoutUtil.h3(CssStyles.VSPACE3, "Clinical Signs and Symptoms")
-			+ LayoutUtil.divCss(CssStyles.VSPACE3,
+	private static final String HTML_LAYOUT = LayoutUtil.h3(CssStyles.VSPACE_3, "Clinical Signs and Symptoms")
+			+ LayoutUtil.divCss(CssStyles.VSPACE_3,
 					LayoutUtil.fluidRowLocs(SymptomsDto.TEMPERATURE, SymptomsDto.TEMPERATURE_SOURCE))
-			+ LayoutUtil.divCss(CssStyles.VSPACE3,
+			+ LayoutUtil.divCss(CssStyles.VSPACE_3,
 					LayoutUtil.fluidRowLocs(SymptomsDto.ONSET_DATE, SymptomsDto.ONSET_SYMPTOM))
-			+ LayoutUtil.fluidRowCss(CssStyles.VSPACE3,
+			+ LayoutUtil.fluidRowCss(CssStyles.VSPACE_3,
 					LayoutUtil.fluidColumn(8, 0,
 							LayoutUtil.div(I18nProperties.getFieldCaption("Symptoms.hint"))),
 					LayoutUtil.fluidColumn(4, 0,
 							LayoutUtil.locCss(CssStyles.ALIGN_RIGHT, BUTTONS_LOC)))
 			+ LayoutUtil.fluidRow(
 					LayoutUtil.fluidColumn(6, 0,
-							LayoutUtil.locsCss(CssStyles.VSPACE3,
+							LayoutUtil.locsCss(CssStyles.VSPACE_3,
 									SymptomsDto.ABDOMINAL_PAIN, SymptomsDto.HEARINGLOSS, SymptomsDto.ALTERED_CONSCIOUSNESS, SymptomsDto.ANOREXIA_APPETITE_LOSS,
 									SymptomsDto.BACKACHE, SymptomsDto.STOMACH_BLEEDING, SymptomsDto.BLOOD_IN_STOOL, SymptomsDto.CHEST_PAIN,
 									SymptomsDto.CONFUSED_DISORIENTED, SymptomsDto.CONJUNCTIVITIS, SymptomsDto.SEIZURES, SymptomsDto.COUGH,
@@ -58,7 +58,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 									SymptomsDto.NAUSEA, SymptomsDto.NECK_STIFFNESS, SymptomsDto.RAPID_BREATHING,
 									SymptomsDto.REFUSAL_FEEDOR_DRINK, SymptomsDto.RUNNY_NOSE)),
 					LayoutUtil.fluidColumn(6, 0, 
-							LayoutUtil.locsCss(CssStyles.VSPACE3,
+							LayoutUtil.locsCss(CssStyles.VSPACE_3,
 									SymptomsDto.SHOCK, SymptomsDto.SKIN_RASH, SymptomsDto.SORE_THROAT,
 									SymptomsDto.SWOLLEN_GLANDS, SymptomsDto.THROBOCYTOPENIA,
 									SymptomsDto.UNEXPLAINED_BLEEDING, SymptomsDto.INJECTION_SITE_BLEEDING, SymptomsDto.BLEEDING_VAGINA, SymptomsDto.GUMS_BLEEDING,
@@ -66,7 +66,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 									SymptomsDto.DIGESTED_BLOOD_VOMIT, SymptomsDto.RED_BLOOD_VOMIT, SymptomsDto.NOSE_BLEEDING, SymptomsDto.OTHER_HEMORRHAGIC_SYMPTOMS,
 									SymptomsDto.OTHER_HEMORRHAGIC_SYMPTOMS_TEXT, SymptomsDto.VOMITING,
 									SymptomsDto.OTHER_NON_HEMORRHAGIC_SYMPTOMS, SymptomsDto.OTHER_NON_HEMORRHAGIC_SYMPTOMS_TEXT)
-							+ LayoutUtil.locsCss(CssStyles.VSPACE3,
+							+ LayoutUtil.locsCss(CssStyles.VSPACE_3,
 									SymptomsDto.SYMPTOMS_COMMENTS))
 						);
 

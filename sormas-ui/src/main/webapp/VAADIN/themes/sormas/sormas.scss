@@ -9,6 +9,7 @@ $v-luminance-threshold: 180 !default;
 
 $s-warning-color: #E10002;
 $s-primary-color: #005A9C;
+$s-secondary-color: #6591C4;
 $s-default-color: #6691C4;
 
 $v-background-color: #FEFEFE !default;
@@ -48,6 +49,9 @@ $editor-raised-background-color: lighten($editor-background-color, 10%) !default
 $editor-caption-font-color: valo-font-color($editor-background-color, 0.5) !default;
 
 
+@import "global.scss";
+@import "deprecated.scss";
+
 @import "components/button.scss";
 @import "components/combobox.scss";
 @import "components/datefield.scss";
@@ -55,9 +59,13 @@ $editor-caption-font-color: valo-font-color($editor-background-color, 0.5) !defa
 @import "components/menu.scss";
 @import "components/optiongroup.scss";
 @import "components/panel.scss";
+@import "components/tabsheet.scss";
 @import "components/textfield.scss";
 @import "components/window.scss";
 
+@import "views/view.scss";
+@import "views/about.scss";
+@import "views/dashboard.scss";
 @import "views/login.scss";
 
 @import "../valo/valo.scss";
@@ -66,7 +74,7 @@ $editor-caption-font-color: valo-font-color($editor-background-color, 0.5) !defa
 @function valo-font-color ($bg-color, $contrast: $v-font-color-contrast) {
   @if type-of($bg-color) == color {
     @if is-dark-color($bg-color) {
-      @return #FEFEFE;
+      @return $v-background-color;
     } @else {
       @return #374B59;
     }
@@ -77,6 +85,8 @@ $editor-caption-font-color: valo-font-color($editor-background-color, 0.5) !defa
 @mixin sormas {
   @include valo;
 
+  @include sormas-global;
+  
   @include sormas-button;
   @include sormas-combobox;
   @include sormas-datefield;
@@ -84,354 +94,14 @@ $editor-caption-font-color: valo-font-color($editor-background-color, 0.5) !defa
   @include sormas-menu;
   @include sormas-optiongroup;
   @include sormas-panel;
+  @include sormas-tabsheet;
   @include sormas-textfield;
   @include sormas-window;
 
-  @include login;
-
-  .valo-content {
-  	overflow: auto;
-  }
+  @include sormas-view;
+  @include sormas-about-view;
+  @include sormas-dashboard-view;
+  @include sormas-login-view;
   
-  .v-caption {
-    text-transform: uppercase;
-	display: block;
-    padding-bottom: 0.1em;
-  }
-  .v-caption.v-caption-caption-hidden {
-    display: none;
-  }
-
-
-  h3 {
-    margin-bottom: 16px;
-  
-    &::before {
-      background: #EEF2F8;
-      content: "";
-      display: block;
-      position: relative;
-      top: 15px;
-      height: 2px;
-      width: 100%;
-    }
-  
-    span {
-      background: #FFF;
-      position: relative;
-      padding-right: 8px;
-    }
-  }   
-
-  .callout {
-	text-align: center;
-	outline: none;
-	-webkit-tap-highlight-color: transparent;
-	-webkit-touch-callout: none;
-	padding: 0 14px;
-	color: #191919;
-	font-weight: 500;
-	
-	border-radius: 4px;
-	border: 1px solid #c5c5c5;
-	border-left: 7px solid #60a0ea;
-	border-top-color: #c5c5c5;
-	border-bottom-color: #bcbcbc;
-	background-color: #fafafa;
-  }
-  
-  .dashboard-key {
-  	text-align: center;
-  	outline: none;
-  	-webkit-tap-highlight-color: transparent;
-  	-webkit-touch-callout: none;
-  	padding: 7px;
-  	color: #191919;
-  	font-weight: 500;
-  	
-  	border-radius: 4px;
-  	border: 1px solid #c5c5c5;
-  	border-top-color: #c5c5c5;
-  	border-bottom-color: #bcbcbc;
-  	background-color: #fafafa;
-  }
-  
-  /* "hack" to hide map tiles in google maps component */
-  .googlemap.no-tiles img {
-    opacity: 0.2;
-    filter: alpha(opacity=20); /* For IE8 and earlier */
-  } 
-  .googlemap.no-tiles .gmnoprint img {
-    opacity: inherit;    
-    filter: inherit;
-  }
-  .googlemap gm-style {
-    background-color: white;
-  } 
-  
-  .v-widget.v-textfield, .v-widget.v-textarea, .v-widget.v-select, .v-widget.v-datefield,
-  .v-widget.v-filterselect {
-  	margin-bottom: 10px;
-  }
-  
-  .v-caption-row-optiongroup {
-  	float: left;
-  	padding-top: 7px;
-  	margin-bottom: -30px;
-    font-weight: 500;
-    font-size: 12px;
-  	text-transform: none;
-  }
-
-  .v-select-optiongroup-row-optiongroup {
-  	text-align: right;
-  }
-  
-  .v-select-optiongroup-row-optiongroup .v-select-option,
-  .v-select-optiongroup-inline-optiongroup .v-select-option  {
-  	display: inline-block;
-  }
-  
-  // makes the CRUD view keep the sidebar editor within the view as sidebar is absolutely positioned
-  .crud-view {
-  	position: relative;
-
-    .filter-textfield {
-      width: round($v-unit-size * 9);
-    }
-  }
-  
-  .force-caption {
-	margin-top: 1.5em;
-  }
-
-  .no-margin, .h1.no-margin, .h2.no-margin, .h3.no-margin, .h4.no-margin, .h5.no-margin, .v-checkbox.no-margin label {
-  	margin: 0;
-  }
-  .sublist-padding {
-    padding-top: 7px;
-  }
-  
-  .v-readonly, .v-caption-v-readonly {
-  	color: #aaa;
-  }
-  
-  // About view
-
-  .about-view {
-    overflow: auto;
-
-    .about-content {
-      @include valo-panel-style;
-      max-width: 500px;
-      // Override the default of CustomLayout
-      padding: $v-unit-size !important;
-    }
-  }
-
-  // Style rules for smaller display sizes
-
-  // No top menu on the login view, login screen layout changes
-  .v-ui[width-range~="0-800px"] {
-
-    .main-screen {
-      padding-top: $v-unit-size;
-    }
-    // TODO also move loading indicator if using the hack above
-
-    // More compact login screen
-    .login-screen {
-      height: auto;
-      min-height: 100%;
-
-      .login-information {
-        position: static;
-        width: 100%;
-        height: auto;
-
-        .v-label {
-          text-align: center;
-
-          h1 {
-            margin-top: .4em;
-          }
-          
-        }
-      }
-
-      .centering-layout {
-        display: block;
-        width: 100%;
-        height: auto;
-        padding-left: 0;
-        padding-top: 60px;
-        padding-bottom: 60px;
-      }
-
-      .login-form {
-        width: 400px;
-        max-width: 100%;
-
-        table {
-          width: 100%;
-        }
-
-        .v-textfield {
-          width: 100% !important;
-        }
-
-        .v-formlayout-captioncell,
-        .v-formlayout-contentcell,
-        .v-formlayout-errorcell {
-          display: block;
-          text-align: center;
-          padding-top: 0;
-        }
-        .buttons {
-          width: 100%;
-          .v-button {
-            display: block;
-            text-align: center;
-          }
-        }
-      }
-    }
-  }
-
-  // hide the logo for a more compact header when the menu is narrow
-  .v-ui[width-range~="801px-1100px"] .valo-menu-part {
-    .v-slot-logo,
-    .v-slot-logo + .v-spacing {
-      display: none;
-    }
-  }
-
-  // Move logout button to the bottom of the menu on large screens
-  .v-ui[width-range~="801px-"] .valo-menu-part {
-    .user-menu {
-      position: fixed;
-      bottom: 0;
-      margin-bottom: 0;
-    }
-  }
-
-  // Editor should take whole browser width when we are under 550px in width.
-  .v-ui[width-range~="0-550px"] {
-
-    // Remove margins around the grid and reduce top bar margins on small screens
-    .crud-view .crud-main-layout {
-      padding: 0 0 0 0;
-
-      .top-bar {
-        // Use spacing to the grid below as the margin - smaller than default margin
-        padding: $v-layout-spacing-vertical $v-layout-spacing-horizontal 0 $v-layout-spacing-horizontal;
-
-        .filter-textfield {
-          width: 100%;
-        }
-      }
-    }
-
-    // About view fills the display on small screens
-    .about-view {
-      padding-bottom: 0;
-      padding-top: 0;
-      height: auto;
-      padding: 0.1 * $v-unit-size;
-
-      .v-slot-about-content {
-        overflow: auto;
-      }
-
-      .about-content {
-        width: 100%;
-        max-width: 100%;
-        height: auto;
-        vertical-align: top;
-        padding: 0;
-        background: transparent;
-        @include box-shadow(none);
-      }
-    }
-  }
-
-  // Override valo default narrow menu button on small screens to have the full logout text visible
-  .v-ui[width-range~="0-500px"] {
-    .valo-menu .v-menubar-user-menu .v-menubar-menuitem-caption {
-      width: auto;
-    }
-  }
-
-  // Hide spinner buttons from number input
-  input[type=number]::-webkit-inner-spin-button,
-  input[type=number]::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-  }
-  
-  // For aligning in grid until #15438 is done
-  .align-right {
-  	text-align: right;
-  }
-
-  .v-Notification.error {
-    background: #C31924;
-  }
-  
-  .cursor-link {
-  	cursor: pointer;
-  }
-  
-  .font-size-large {
-  	font-size: 18px;
-  }
-  
-  .font-size-xlarge {
-  	font-size: 22px;
-  	li, ol {
-      line-height: 32px;
-	}
-  }
-  
-  .font-size-small {
-  	font-size: 12px;
-  }
-  
-  .sublist-margin {
-  	margin-top: 50px;
-  }
-  
-  .sublist-margin-small {
-  	margin-top: 20px;
-  }
-  
-  .info-column-margin {
-  	margin-left: 25px;
-  }
-  
-  .color-red {
-  	.v-icon {
-  	  color: #7F3300;
-  	}
-  }
-  
-  .color-green {
-  	.v-icon {
-    	color: #007F0E;
-    }
-  }
-  
-  .color-grey {
-  	.v-icon {
-  		color: #A8A8A8;
-  	}
-  }
-  
-  .vspace-no-filters {
-  	margin-bottom: 16px;
-  }
-  
-  .vspace-top-24 {
-  	margin-top: 24px;
-  }
+  @include sormas-deprecated;
 }

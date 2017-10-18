@@ -44,12 +44,12 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	private static final String LOST_FOLLOW_UP_BTN_LOC = "lostFollowUpBtnLoc";
 	
     private static final String HTML_LAYOUT = 
-    		LayoutUtil.h3(CssStyles.VSPACE3, "Contact data")+
+    		LayoutUtil.h3(CssStyles.VSPACE_3, "Contact data")+
 			
-			LayoutUtil.divCss(CssStyles.VSPACE2, 
-		    		LayoutUtil.fluidRowCss(CssStyles.VSPACE4,
+			LayoutUtil.divCss(CssStyles.VSPACE_2, 
+		    		LayoutUtil.fluidRowCss(CssStyles.VSPACE_4,
 		    						LayoutUtil.fluidRowLocs(ContactDto.CONTACT_CLASSIFICATION) +
-		    						LayoutUtil.locCss(CssStyles.VSPACE3, TO_CASE_BTN_LOC) +
+		    						LayoutUtil.locCss(CssStyles.VSPACE_3, TO_CASE_BTN_LOC) +
 		    						LayoutUtil.fluidRowLocs(ContactDto.LAST_CONTACT_DATE, ContactDto.UUID) +
 		    						LayoutUtil.fluidRowLocs(ContactDto.REPORTING_USER, ContactDto.REPORT_DATE_TIME) +
 		    						LayoutUtil.fluidRowLocs(ContactDto.CONTACT_PROXIMITY) +
@@ -136,7 +136,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			FollowUpStatus followUpStatus = statusField.getValue();
 			if (followUpStatus == FollowUpStatus.FOLLOW_UP) {
 				
-		    	Button cancelButton = new Button(I18nProperties.getButtonCaption("Contact.cancelFollowUp"));
+		    	Button cancelButton = new Button(I18nProperties.getFragment("Contact.cancelFollowUp"));
 		    	cancelButton.addStyleName(CssStyles.FORCE_CAPTION);
 		    	cancelButton.setWidth(100, Unit.PERCENTAGE);
 		    	cancelButton.addClickListener(new ClickListener() {
@@ -151,7 +151,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 				});
 				getContent().addComponent(cancelButton, CANCEL_OR_RESUME_FOLLOW_UP_BTN_LOC);
 
-		    	Button lostButton = new Button(I18nProperties.getButtonCaption("Contact.lostToFollowUp"));
+		    	Button lostButton = new Button(I18nProperties.getFragment("Contact.lostToFollowUp"));
 		    	lostButton.addStyleName(CssStyles.FORCE_CAPTION);
 		    	lostButton.setWidth(100, Unit.PERCENTAGE);
 		    	lostButton.addClickListener(new ClickListener() {
@@ -169,7 +169,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			} else if (followUpStatus == FollowUpStatus.CANCELED
 					|| followUpStatus == FollowUpStatus.LOST) {
 
-		    	Button resumeButton = new Button(I18nProperties.getButtonCaption("Contact.resumeFollowUp"));
+		    	Button resumeButton = new Button(I18nProperties.getFragment("Contact.resumeFollowUp"));
 		    	resumeButton.addStyleName(CssStyles.FORCE_CAPTION);
 		    	resumeButton.setWidth(100, Unit.PERCENTAGE);
 		    	resumeButton.addClickListener(new ClickListener() {

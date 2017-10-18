@@ -55,8 +55,7 @@ public class Menu extends CssLayout {
         title.setSizeUndefined();
         Image image = new Image(null, new ThemeResource("img/sormas-logo.png"));
         image.setHeight(32, Unit.PIXELS);
-        image.setStyleName("logo");
-        image.addStyleName(CssStyles.CURSOR_LINK);
+        CssStyles.style(image, ValoTheme.MENU_LOGO, ValoTheme.BUTTON_LINK);
         image.addClickListener(new com.vaadin.event.MouseEvents.ClickListener() {
 			@Override
 			public void click(com.vaadin.event.MouseEvents.ClickEvent event) {

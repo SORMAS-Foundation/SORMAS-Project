@@ -49,20 +49,20 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	private Disease disease;
 	
     private static final String HTML_LAYOUT = 
-    		LayoutUtil.h3(CssStyles.VSPACE3, "Person information")+
+    		LayoutUtil.h3(CssStyles.VSPACE_3, "Person information")+
     		LayoutUtil.div(
     				LayoutUtil.fluidRowCss(
-						CssStyles.VSPACE4,
+						CssStyles.VSPACE_4,
 						LayoutUtil.oneOfTwoCol(LayoutUtil.loc(PersonDto.FIRST_NAME)),
 						LayoutUtil.oneOfTwoCol(LayoutUtil.loc(PersonDto.LAST_NAME))
 					),
     				LayoutUtil.fluidRowCss(
-    						CssStyles.VSPACE4, 
+    						CssStyles.VSPACE_4, 
     						LayoutUtil.oneOfTwoCol(LayoutUtil.loc(PersonDto.NICKNAME)),
     						LayoutUtil.oneOfTwoCol(LayoutUtil.loc(PersonDto.MOTHERS_MAIDEN_NAME))
     				),
     				LayoutUtil.fluidRowCss(
-    						CssStyles.VSPACE4,
+    						CssStyles.VSPACE_4,
     						LayoutUtil.oneOfTwoCol(
     								LayoutUtil.fluidRowCss(null,
     										LayoutUtil.oneOfThreeCol(LayoutUtil.loc(PersonDto.BIRTH_DATE_YYYY)),
@@ -74,45 +74,45 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
     						LayoutUtil.oneOfTwoCol(LayoutUtil.fluidRowLocs(PersonDto.APPROXIMATE_AGE, PersonDto.APPROXIMATE_AGE_TYPE))
     				),
     				LayoutUtil.fluidRowCss(
-    						CssStyles.VSPACE4,
+    						CssStyles.VSPACE_4,
     						LayoutUtil.oneOfTwoCol(LayoutUtil.loc(PersonDto.SEX)),
     						LayoutUtil.oneOfTwoCol(LayoutUtil.loc(PersonDto.PRESENT_CONDITION))
     				),
     				LayoutUtil.fluidRowCss(
-    						CssStyles.VSPACE4,
+    						CssStyles.VSPACE_4,
 							LayoutUtil.oneOfFourCol(LayoutUtil.loc(PersonDto.DEATH_DATE)),
     						LayoutUtil.oneOfFourCol(LayoutUtil.loc(PersonDto.DEATH_PLACE_TYPE)),
     						LayoutUtil.oneOfTwoCol(LayoutUtil.loc(PersonDto.DEATH_PLACE_DESCRIPTION))
     				),
     				LayoutUtil.fluidRowCss(
-    						CssStyles.VSPACE4,
+    						CssStyles.VSPACE_4,
     						LayoutUtil.oneOfFourCol(LayoutUtil.loc(PersonDto.BURIAL_DATE)),
     						LayoutUtil.oneOfFourCol(LayoutUtil.loc(PersonDto.BURIAL_CONDUCTOR)),
     						LayoutUtil.oneOfTwoCol(LayoutUtil.loc(PersonDto.BURIAL_PLACE_DESCRIPTION))
     				),
     				LayoutUtil.fluidRowCss(
-						CssStyles.VSPACE4,
+						CssStyles.VSPACE_4,
 						LayoutUtil.oneOfTwoCol(LayoutUtil.loc(PersonDto.PHONE)),
 						LayoutUtil.oneOfTwoCol(LayoutUtil.loc(PersonDto.PHONE_OWNER))
 					)) +
-    		LayoutUtil.h3(CssStyles.VSPACE3, "Occupation")+
+    		LayoutUtil.h3(CssStyles.VSPACE_3, "Occupation")+
     		LayoutUtil.div(
     				LayoutUtil.fluidRowCss(
-						CssStyles.VSPACE4,
+						CssStyles.VSPACE_4,
 						LayoutUtil.oneOfTwoCol(LayoutUtil.loc(PersonDto.OCCUPATION_TYPE)),
 						LayoutUtil.oneOfTwoCol(LayoutUtil.loc(PersonDto.OCCUPATION_DETAILS))
 					),
     				LayoutUtil.fluidRowCss(
-    					CssStyles.VSPACE4,
+    					CssStyles.VSPACE_4,
     					LayoutUtil.oneOfFourCol(LayoutUtil.loc(FACILITY_REGION)),
     					LayoutUtil.oneOfFourCol(LayoutUtil.loc(FACILITY_DISTRICT)),
     					LayoutUtil.oneOfFourCol(LayoutUtil.loc(FACILITY_COMMUNITY)),
     					LayoutUtil.oneOfFourCol(LayoutUtil.loc(PersonDto.OCCUPATION_FACILITY))
     				)
     		) +
-			LayoutUtil.h3(CssStyles.VSPACE3, "Permanent residence of person")+
+			LayoutUtil.h3(CssStyles.VSPACE_3, "Permanent residence of person")+
 			LayoutUtil.div(
-					LayoutUtil.fluidRowLocsCss(CssStyles.VSPACE4, PersonDto.ADDRESS)
+					LayoutUtil.fluidRowLocsCss(CssStyles.VSPACE_4, PersonDto.ADDRESS)
 			);
 
     public PersonEditForm(Disease disease) {

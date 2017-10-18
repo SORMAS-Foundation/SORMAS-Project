@@ -2,7 +2,6 @@ package de.symeda.sormas.ui.caze;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
-import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
@@ -47,7 +46,7 @@ public class CaseContactsView extends AbstractCaseView {
         gridLayout.addComponent(createTopBar());
         gridLayout.addComponent(createFilterBar());
         gridLayout.addComponent(grid);
-        gridLayout.setMargin(new MarginInfo(true, false, false, false));
+        gridLayout.setMargin(true);
         gridLayout.setSpacing(false);
         gridLayout.setSizeFull();
         gridLayout.setExpandRatio(grid, 1);
@@ -63,7 +62,7 @@ public class CaseContactsView extends AbstractCaseView {
     	
     	Label header = new Label("Case contacts");
     	header.setSizeUndefined();
-    	CssStyles.style(header, CssStyles.H2, CssStyles.NO_MARGIN);
+    	CssStyles.style(header, CssStyles.H2, CssStyles.VSPACE_NONE);
     	topLayout.addComponent(header);
     	
     	Button statusAll = new Button("all", e -> grid.setClassificationFilter(null));
