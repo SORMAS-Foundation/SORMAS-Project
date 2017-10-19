@@ -36,11 +36,14 @@ public class Symptoms extends AbstractDomainObject {
 	@DatabaseField
 	private Boolean symptomatic;
 
-	@DatabaseField(foreign = true)
-	private Location illLocation;
-	@DatabaseField
+	@Deprecated
+	@DatabaseField(columnName = "illLocation_id")
+	private Long illLocationId;
+	@Deprecated
+	@DatabaseField(dataType = DataType.DATE_LONG)
 	private Date illLocationFrom;
-	@DatabaseField
+	@Deprecated
+	@DatabaseField(dataType = DataType.DATE_LONG)
 	private Date illLocationTo;
 
 	@Column(columnDefinition = "float8")
