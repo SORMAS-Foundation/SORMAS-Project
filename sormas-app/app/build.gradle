@@ -11,12 +11,12 @@ android {
 //            storePassword 'SunkSesa'
 //        }
 //    }
-    compileSdkVersion 23
+    compileSdkVersion 24
     buildToolsVersion '25.0.3'
     defaultConfig {
         applicationId "de.symeda.sormas.app"
         minSdkVersion 19
-        targetSdkVersion 23
+        targetSdkVersion 24
         versionCode buildVersionCode()
         versionName "$sormasVersion"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -59,8 +59,8 @@ configurations.all {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     // https://mvnrepository.com/artifact/com.googlecode/openbeans
-    compile 'com.android.support:appcompat-v7:23.3.0'
-    compile 'com.android.support:design:23.3.0'
+    compile 'com.android.support:appcompat-v7:24.2.0'
+    compile 'com.android.support:design:24.2.0'
     compile 'com.squareup.retrofit2:retrofit:2.3.0'
     compile 'com.squareup.retrofit2:converter-gson:2.3.0'
     compile 'com.j256.ormlite:ormlite-core:4.48'
@@ -73,7 +73,7 @@ dependencies {
     testCompile 'org.hamcrest:hamcrest-library:1.1'
     testCompile 'org.robolectric:robolectric:3.0'
     testCompile 'org.mockito:mockito-core:1.10.19'
-    androidTestCompile 'com.android.support:support-annotations:23.3.0'
+    androidTestCompile 'com.android.support:support-annotations:24.2.0'
     androidTestCompile 'com.android.support.test:runner:0.5'
     androidTestCompile 'com.android.support.test:rules:0.5'
     androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
