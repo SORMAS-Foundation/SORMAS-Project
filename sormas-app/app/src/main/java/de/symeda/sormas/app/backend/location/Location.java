@@ -105,8 +105,8 @@ public class Location extends AbstractDomainObject {
 		this.longitude = longitude;
 	}
 
-	@Override
-	public String toString() {
+	public String getCompleteString() {
+
 		StringBuilder sb = new StringBuilder();
 		if (getAddress() != null && !getAddress().isEmpty()) {
 			sb.append(getAddress());
@@ -134,11 +134,25 @@ public class Location extends AbstractDomainObject {
 			}
 			sb.append(getDetails());
 		}
-		if (sb.length() == 0) {
-			sb.append(super.toString());
+
+		if (getLatitude() != null && getLongitude() != null) {
+			if (sb.length() > 0) {
+				sb.append(" ");
+			}
+			sb.append("(").append(getLatitude()).append(", ").append(getLongitude()).append(")");
 		}
 
 		return sb.toString();
+	}
+
+	@Override
+	public String toString() {
+
+		String result = getCompleteString();
+		if (!result.isEmpty()) {
+			return result;
+		}
+		return super.toString();
 	}
 
 	public boolean isEmptyLocation() {

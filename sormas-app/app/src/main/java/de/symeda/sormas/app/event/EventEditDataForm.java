@@ -17,7 +17,7 @@ import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventDao;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.component.FieldHelper;
-import de.symeda.sormas.app.component.LocationDialog;
+import de.symeda.sormas.app.component.LocationDialogBuilder;
 import de.symeda.sormas.app.component.PropertyField;
 import de.symeda.sormas.app.databinding.EventDataFragmentLayoutBinding;
 import de.symeda.sormas.app.util.FormTab;
@@ -63,7 +63,7 @@ public class EventEditDataForm extends FormTab {
 
         FieldHelper.initSpinnerField(binding.eventDisease, Disease.class);
 
-        LocationDialog.addLocationField(getActivity(), event.getEventLocation(), binding.eventEventLocation, binding.eventEventLocationBtn, new Consumer() {
+        LocationDialogBuilder.addLocationField(getActivity(), event.getEventLocation(), binding.eventEventLocation, binding.eventEventLocationBtn, new Consumer() {
             @Override
             public void accept(Object parameter) {
                 if(parameter instanceof Location) {

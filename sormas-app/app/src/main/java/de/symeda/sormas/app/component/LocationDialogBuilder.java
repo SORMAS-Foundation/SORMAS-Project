@@ -1,20 +1,22 @@
 package de.symeda.sormas.app.component;
 
 import android.content.DialogInterface;
-import android.graphics.Color;
+import android.graphics.Rect;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
+import android.view.Window;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
@@ -22,14 +24,29 @@ import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.Consumer;
+import de.symeda.sormas.app.util.LocationService;
 
-public class LocationDialog extends AlertDialog.Builder {
+public class LocationDialogBuilder extends AlertDialog.Builder {
 
-    public LocationDialog(FragmentActivity activity, final Location location, final Consumer positiveCallback , final Callback negativeCallback) {
+    private final View dialogView;
+
+    private Float latitude;
+    private Float longitude;
+
+    public LocationDialogBuilder(FragmentActivity activity, final Location location, final Consumer positiveCallback , final Callback negativeCallback) {
         super(activity);
         this.setTitle(activity.getResources().getString(R.string.headline_location));
-        final View dialogView = activity.getLayoutInflater().inflate(R.layout.location_fragment_layout, null);
+
+        latitude = location.getLatitude();
+        longitude = location.getLongitude();
+
+        dialogView = activity.getLayoutInflater().inflate(R.layout.location_fragment_layout, null);
         this.setView(dialogView);
+        // retrieve display dimensions
+        Rect displayRectangle = new Rect();
+        Window window = activity.getWindow();
+        window.getDecorView().getWindowVisibleDisplayFrame(displayRectangle);
+        dialogView.setMinimumWidth((int)(0.9f * displayRectangle.width()));
 
         final List emptyList = new ArrayList<>();
         final List districtsByRegion = DataUtils.toItems(location.getRegion() != null ? DatabaseHelper.getDistrictDao().getByRegion(location.getRegion()) : DataUtils.toItems(emptyList), true);
@@ -96,6 +113,25 @@ public class LocationDialog extends AlertDialog.Builder {
             ((TextField) dialogView.findViewById(R.id.location_city)).setValue(location.getCity());
         }
 
+        Button gpsButton = (Button)dialogView.findViewById(R.id.form_loc_btn_gps);
+        gpsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+
+                LocationService locationService = LocationService.getLocationService(DatabaseHelper.getContext());
+                android.location.Location gpsLocation = locationService.getLocation();
+                if (gpsLocation != null) {
+                    // Use the geo-coordinates of the current location object if it's not older than 15 minutes
+                    if (new Date().getTime() <= gpsLocation.getTime() + (1000 * 60 * 15)) {
+                        latitude = (float) gpsLocation.getLatitude();
+                        longitude = (float) gpsLocation.getLongitude();
+                    }
+                }
+                updateGpsTextView();
+            }
+        });
+
+
         this.setPositiveButton(activity.getResources().getString(R.string.action_done), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int id) {
@@ -110,6 +146,9 @@ public class LocationDialog extends AlertDialog.Builder {
                 location.setDistrict((District)((SpinnerField) dialogView.findViewById(R.id.location_district)).getValue());
                 location.setCommunity((Community)((SpinnerField) dialogView.findViewById(R.id.location_community)).getValue());
 
+                location.setLatitude(latitude);
+                location.setLongitude(longitude);
+
                 if(positiveCallback!=null) {
                     positiveCallback.accept(location);
                 }
@@ -123,7 +162,11 @@ public class LocationDialog extends AlertDialog.Builder {
                 }
             }
         });
+    }
 
+    private void updateGpsTextView() {
+        LabelField gpsLabelField = (LabelField)dialogView.findViewById(R.id.location_latLon);
+        LabelField.setLatLonForLabel(gpsLabelField, latitude, longitude);
     }
 
     public static void addLocationField(final FragmentActivity activity, final Location location, final LabelField locationText, ImageButton btn, final Consumer positiveCallback) {
@@ -140,7 +183,7 @@ public class LocationDialog extends AlertDialog.Builder {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
-                final LocationDialog dialogBuilder = new LocationDialog(activity, location, wrappedPositiveCallback, null);
+                final LocationDialogBuilder dialogBuilder = new LocationDialogBuilder(activity, location, wrappedPositiveCallback, null);
                 AlertDialog newPersonDialog = dialogBuilder.create();
                 newPersonDialog.show();
             }
@@ -149,7 +192,7 @@ public class LocationDialog extends AlertDialog.Builder {
         locationText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
-                final LocationDialog dialogBuilder = new LocationDialog(activity, location, wrappedPositiveCallback, null);
+                final LocationDialogBuilder dialogBuilder = new LocationDialogBuilder(activity, location, wrappedPositiveCallback, null);
                 AlertDialog newPersonDialog = dialogBuilder.create();
                 newPersonDialog.show();
             }

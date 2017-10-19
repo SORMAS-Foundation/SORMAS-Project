@@ -40,6 +40,7 @@
     <string name="action_createCaseFromContact">Create a new case for this contact</string>
     <string name="action_send">Send</string>
     <string name="action_report">Report Problem</string>
+    <string name="action_pick_gps">Pick GPS coordinates</string>
     <string name="action_options">Options</string>
     <string name="action_login">Login</string>
     <string name="action_submit">Submit</string>
@@ -159,6 +160,7 @@
     <string name="label_person_ill">Person ill / </string>
     <string name="label_body_touched">Body touched</string>
     <string name="label_body_not_touched">Body not touched</string>
+    <string name="label_pick_gps">No GPS coordinates picked</string>
 
     <string name="sample_shipmentStatus">Shipment status</string>
     <string name="sample_not_shipped">Not shipped</string>

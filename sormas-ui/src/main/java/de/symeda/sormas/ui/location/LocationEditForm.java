@@ -16,8 +16,14 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 
     private static final String HTML_LAYOUT = 
     		LayoutUtil.div(
-    				LayoutUtil.fluidRowLocs(LocationDto.ADDRESS, LocationDto.DETAILS),
-    				LayoutUtil.fluidRowLocs(LocationDto.REGION, LocationDto.DISTRICT, LocationDto.COMMUNITY, LocationDto.CITY)
+    				LayoutUtil.fluidRow(
+    						LayoutUtil.loc(LocationDto.ADDRESS), 
+    						LayoutUtil.div(
+    								LayoutUtil.fluidRowLocs(LocationDto.REGION, LocationDto.DISTRICT),
+    								LayoutUtil.fluidRowLocs(LocationDto.COMMUNITY, LocationDto.CITY))),
+    				LayoutUtil.fluidRow(
+    						LayoutUtil.loc(LocationDto.DETAILS), 
+    						LayoutUtil.fluidRowLocs(LocationDto.LATITUDE, LocationDto.LONGITUDE))
     			);
 
     public LocationEditForm() {
@@ -33,8 +39,8 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
     	addField(LocationDto.ADDRESS, TextArea.class).setRows(2);
     	addField(LocationDto.DETAILS, TextField.class);
     	addField(LocationDto.CITY, TextField.class);
-//    	addField(LocationDto.LATITUDE, TextField.class);
-//    	addField(LocationDto.LONGITUDE, TextField.class);
+    	addField(LocationDto.LATITUDE, TextField.class);
+    	addField(LocationDto.LONGITUDE, TextField.class);
 
     	ComboBox region = addField(LocationDto.REGION, ComboBox.class);
     	ComboBox district = addField(LocationDto.DISTRICT, ComboBox.class);

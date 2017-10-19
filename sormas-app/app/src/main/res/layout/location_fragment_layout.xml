@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:descendantFocusability="beforeDescendants">
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:descendantFocusability="beforeDescendants">
 
     <data>
         <variable name="location" type="de.symeda.sormas.app.backend.location.Location"/>
@@ -86,45 +87,30 @@
 
         </LinearLayout>
 
-        <!--
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <LinearLayout android:orientation="vertical"
-                android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:paddingTop="@dimen/spinner_padding" android:paddingBottom="@dimen/spinner_padding"
-                android:layout_weight="0.5">
-                <TextView
-                    android:layout_width="match_parent" android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/field_caption_margin_bottom" android:textSize="@dimen/field_caption_size"
-                    android:layout_marginLeft="@dimen/field_caption_margin_left"
-                    android:text="@string/form_address_latitude" />
-                <EditText
-                    android:layout_width="match_parent" android:layout_height="@dimen/field_height"
-                    android:inputType="text"
-                    android:id="@+id/form_location_address_latitude" />
-            </LinearLayout>
+            <de.symeda.sormas.app.component.LabelField
+                android:id="@+id/location_latLon"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:paddingTop="@dimen/field_padding"
+                android:paddingBottom="@dimen/field_padding"
+                app:locationLatLon="@{location}"/>
 
-
-            <LinearLayout android:orientation="vertical"
-                android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:paddingTop="@dimen/spinner_padding" android:paddingBottom="@dimen/spinner_padding"
-                android:layout_weight="0.5">
-                <TextView
-                    android:layout_width="match_parent" android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/field_caption_margin_bottom" android:textSize="@dimen/field_caption_size"
-                    android:layout_marginLeft="@dimen/field_caption_margin_left"
-                    android:text="@string/form_address_longitude" />
-                <EditText
-                    android:layout_width="match_parent" android:layout_height="@dimen/field_height"
-                    android:inputType="text"
-                    android:id="@+id/form_location_address_longitude" />
-            </LinearLayout>
+            <Button
+                android:id="@+id/form_loc_btn_gps"
+                android:text="@string/action_pick_gps"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:paddingTop="@dimen/field_padding"
+                android:paddingBottom="@dimen/field_padding"/>
 
         </LinearLayout>
-        -->
 
     </LinearLayout>
 </layout>
