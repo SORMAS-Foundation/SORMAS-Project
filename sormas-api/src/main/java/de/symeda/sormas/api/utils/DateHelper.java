@@ -210,6 +210,7 @@ public final class DateHelper {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setFirstDayOfWeek(Calendar.MONDAY);
 		calendar.setMinimalDaysInFirstWeek(1);
+		calendar.clear(); // this is necessary, because in some old java versions there a problems updating the fields based on the date
 		return calendar;
 	}
 	
@@ -340,44 +341,31 @@ public final class DateHelper {
 	 * @param epiWeek The epi week to calculate the dates for
 	 * @param weeklyReportDate The date of report of the report for the given epi week, or null if none is available
 	 * @param prevWeeklyReportDate The date of report of the report for the week before the given epi week, or null if none is available
-	 * @param nextWeeklyReportDate The date of report of the report for the week after the given epi week, or null if none is available
 	 * @return An array of size 2, containing the start date at index 0 and the end date at index 1
 	 */
-	public static Date[] calculateEpiWeekReportStartAndEnd(EpiWeek epiWeek, Date weeklyReportDate, Date prevWeeklyReportDate, Date nextWeeklyReportDate) {
-		Date epiWeekStart = getEpiWeekStart(epiWeek);
-		Date epiWeekEnd = getEpiWeekEnd(epiWeek);
-		EpiWeek currentEpiWeek = getEpiWeek(new Date());
-		Date[] dates = new Date[2];
-		
-		if (weeklyReportDate != null) {
-			if (prevWeeklyReportDate != null) {
-				dates[0] = prevWeeklyReportDate;
-				dates[1] = weeklyReportDate;
-			} else {
-				dates[0] = epiWeekStart;
-				dates[1] = weeklyReportDate;
-			}
+	public static Date[] calculateEpiWeekReportStartAndEnd(EpiWeek epiWeek, Date weeklyReportDate, Date prevWeeklyReportDate) {
+
+		Date[] reportStartAndEnd = new Date[2];
+
+		// start date:
+		if (prevWeeklyReportDate != null) {
+			// .. is the previous report date 
+			reportStartAndEnd[0] = prevWeeklyReportDate;
 		} else {
-			if (prevWeeklyReportDate != null) {
-				if (nextWeeklyReportDate != null) {
-					dates[0] = prevWeeklyReportDate;
-					dates[1] = nextWeeklyReportDate;
-				} else {
-					dates[0] = prevWeeklyReportDate;
-					dates[1] = DateHelper.getPreviousEpiWeek(currentEpiWeek).equals(epiWeek) ? new Date() : epiWeekEnd;
-				}
-			} else {				
-				if (nextWeeklyReportDate != null) {
-					dates[0] = epiWeekStart;
-					dates[1] = nextWeeklyReportDate;
-				} else {
-					dates[0] = epiWeekStart;
-					dates[1] = DateHelper.getPreviousEpiWeek(currentEpiWeek).equals(epiWeek) ? new Date() : epiWeekEnd;
-				}
-			}
+			// .. or the start of this week
+			reportStartAndEnd[0] = getEpiWeekStart(epiWeek);
+		}
+
+		// end date:
+		if (weeklyReportDate != null) {
+			// .. is the report date
+			reportStartAndEnd[1] = weeklyReportDate;
+		} else {
+			// .. or the end of this week
+			reportStartAndEnd[1] = getEpiWeekEnd(epiWeek);
 		}
 		
-		return dates;
+		return reportStartAndEnd;
 	}
 	
 }

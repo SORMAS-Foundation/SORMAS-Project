@@ -224,19 +224,18 @@ public class CaseDao extends AbstractAdoDao<Case> {
 
         WeeklyReport epiWeekReport = DatabaseHelper.getWeeklyReportDao().queryForEpiWeek(epiWeek, informant);
         WeeklyReport previousEpiWeekReport = DatabaseHelper.getWeeklyReportDao().queryForEpiWeek(DateHelper.getPreviousEpiWeek(epiWeek), informant);
-        WeeklyReport nextEpiWeekReport = DatabaseHelper.getWeeklyReportDao().queryForEpiWeek(DateHelper.getNextEpiWeek(epiWeek), informant);
 
-        Date[] dates = DateHelper.calculateEpiWeekReportStartAndEnd(epiWeek, epiWeekReport != null ? epiWeekReport.getReportDateTime() : null,
-                previousEpiWeekReport != null ? previousEpiWeekReport.getReportDateTime() : null,
-                nextEpiWeekReport != null ? nextEpiWeekReport.getReportDateTime() : null);
+        Date[] reportStartAndEnd = DateHelper.calculateEpiWeekReportStartAndEnd(epiWeek,
+                epiWeekReport != null ? epiWeekReport.getReportDateTime() : null,
+                previousEpiWeekReport != null ? previousEpiWeekReport.getReportDateTime() : null);
 
         try {
             QueryBuilder builder = queryBuilder();
             Where where = builder.where();
             where.and(
                     where.eq(Case.REPORTING_USER + "_id", informant),
-                    where.ge(Case.REPORT_DATE, dates[0]),
-                    where.le(Case.REPORT_DATE, dates[1])
+                    where.ge(Case.REPORT_DATE, reportStartAndEnd[0]),
+                    where.le(Case.REPORT_DATE, reportStartAndEnd[1])
             );
 
             if (disease != null) {
