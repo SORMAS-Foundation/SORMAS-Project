@@ -12968,6 +12968,10 @@ div.v-layout.v-horizontal.v-widget {
 	border-color: #005A9C;
 }
 
+.sormas .v-filterselect [class$="input"] {
+	background-color: #FEFEFE;
+}
+
 .sormas .v-filterselect [class$="button"] {
 	border-left: none;
 }
@@ -12991,6 +12995,10 @@ div.v-layout.v-horizontal.v-widget {
 
 .sormas .v-filterselect.v-readonly .v-filterselect-button {
 	display: none;
+}
+
+.sormas .v-datefield [class*="textfield"] {
+	background-color: #FEFEFE;
 }
 
 .sormas .v-datefield [class$="button"] {
@@ -13025,6 +13033,10 @@ div.v-layout.v-horizontal.v-widget {
 
 .sormas .v-grid .v-grid-scroller {
 	border-top: none;
+}
+
+.sormas .v-grid .v-grid-row  > td, .sormas .v-grid .v-grid-row  > th {
+	background-color: inherit;
 }
 
 .sormas .v-grid .v-grid-row .v-grid-cell {
@@ -13250,6 +13262,10 @@ div.v-layout.v-horizontal.v-widget {
 	content: none;
 }
 
+.sormas .v-textfield {
+	background-color: #FEFEFE;
+}
+
 .sormas .v-textfield.v-readonly {
 	border: none;
 	padding: 0;
@@ -13297,10 +13313,6 @@ div.v-layout.v-horizontal.v-widget {
 .sormas .view-header {
 	border-bottom: 2px solid #CDD8EC;
 	border-bottom-width: 3px;
-}
-
-.sormas .view-header .h1-sub {
-	margin-bottom: 8px;
 }
 
 .sormas .about-view {

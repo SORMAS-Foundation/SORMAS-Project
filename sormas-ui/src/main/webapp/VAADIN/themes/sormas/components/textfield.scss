@@ -4,6 +4,8 @@ $v-textfield-background-color--readonly: $v-app-background-color !default;
 @mixin sormas-textfield {
 
   .v-textfield {
+
+    background-color: $v-background-color;
   
     &.v-readonly {
       border: none;

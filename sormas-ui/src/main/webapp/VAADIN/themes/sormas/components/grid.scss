@@ -21,6 +21,10 @@ $v-grid-cell-focused-border: none !default;
     
     .v-grid-row {
     
+      > td, > th {
+        background-color: inherit;
+      }
+    
       .v-grid-cell {
       
         padding: 3px 6px;

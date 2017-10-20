@@ -3,6 +3,10 @@
 
   .v-datefield {
     
+    [class*="textfield"] {
+      background-color: $v-background-color;
+    }
+    
     [class$="button"] {
       border-right: none;
     

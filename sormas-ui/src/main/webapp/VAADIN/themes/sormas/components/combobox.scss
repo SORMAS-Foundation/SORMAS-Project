@@ -3,6 +3,10 @@
 
   .v-filterselect {
   
+    [class$="input"] {
+      background-color: $v-background-color;
+    }
+    
     [class$="button"] {
       border-left: none;
     
@@ -26,6 +30,6 @@
       .v-filterselect-button {
         display: none;
       }
-   }
+    }
   }
 }
