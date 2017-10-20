@@ -31,15 +31,11 @@ public class EnterPinActivity extends AppCompatActivity {
 
     public static final String CALLED_FROM_SETTINGS = "calledFromSettings";
 
-    public static final String TASK_UUID = "taskUuid";
-
     private String lastEnteredPIN;
     private boolean calledFromSettings;
     private boolean confirmedCurrentPIN;
     private boolean triedAgain;
     private EditText[] pinFields;
-
-    private String taskUuid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,9 +46,6 @@ public class EnterPinActivity extends AppCompatActivity {
         if (params != null) {
             if (params.containsKey(CALLED_FROM_SETTINGS)) {
                 calledFromSettings = params.getBoolean(CALLED_FROM_SETTINGS);
-            }
-            if (params.containsKey(TASK_UUID)) {
-                taskUuid = params.getString(TASK_UUID);
             }
         }
 
