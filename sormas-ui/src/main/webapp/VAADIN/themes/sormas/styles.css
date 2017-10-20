@@ -13083,7 +13083,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .valo-menu .valo-menu-title {
-	padding: 16px;
+	padding: 36px 12px;
 	background: #FEFEFE;
 	color: #6691C4;
 	font-weight: bold;
@@ -13496,4 +13496,8 @@ div.v-layout.v-horizontal.v-widget {
 	border-top-color: #c5c5c5;
 	border-bottom-color: #bcbcbc;
 	background-color: #fafafa;
+}
+
+.sormas .sormas-content {
+	overflow: auto;
 }

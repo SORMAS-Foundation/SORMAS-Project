@@ -29,11 +29,9 @@ public class MainScreen extends HorizontalLayout {
 
     public MainScreen(SormasUI ui) {
 
-        setStyleName("main-screen");
-
         CssLayout viewContainer = new CssLayout();
-        viewContainer.addStyleName("valo-content");
         viewContainer.setSizeFull();
+        viewContainer.addStyleName("sormas-content");
 
         final Navigator navigator = new Navigator(ui, viewContainer);
         navigator.setErrorView(ErrorView.class);

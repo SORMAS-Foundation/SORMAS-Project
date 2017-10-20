@@ -104,4 +104,8 @@ $editor-caption-font-color: valo-font-color($editor-background-color, 0.5) !defa
   @include sormas-login-view;
   
   @include sormas-deprecated;
+  
+  .sormas-content {
+    overflow: auto;
+  }
 }
