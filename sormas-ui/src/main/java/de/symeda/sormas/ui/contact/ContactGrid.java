@@ -79,9 +79,9 @@ public class ContactGrid extends Grid {
 				ContactIndexDto contactIndexDto = (ContactIndexDto) itemId;
 				CaseDataDto contactCase = FacadeProvider.getCaseFacade().getCaseDataByUuid(contactIndexDto.getCaze().getUuid());
 				Disease disease = contactCase.getDisease();
-				String diseaseName = disease.getName();
-				return disease == Disease.OTHER ? Disease.valueOf(diseaseName).toShortString() + " (" + contactCase.getDiseaseDetails() + ")" 
-						: Disease.valueOf(diseaseName).toShortString();
+				return disease == Disease.OTHER 
+						? disease.toShortString() + " (" + contactCase.getDiseaseDetails() + ")" 
+						: disease.toShortString();
 			}
 			@Override
 			public Class<String> getType() {

@@ -61,9 +61,9 @@ public class CaseGrid extends Grid {
 			public String getValue(Item item, Object itemId, Object propertyId) {
 				CaseDataDto caseDataDto = (CaseDataDto) itemId;
 				Disease disease = caseDataDto.getDisease();
-				String diseaseName = disease.getName();
-				return disease == Disease.OTHER ? Disease.valueOf(diseaseName).toShortString() + " (" + caseDataDto.getDiseaseDetails() + ")" 
-						: Disease.valueOf(diseaseName).toShortString();
+				return disease == Disease.OTHER 
+						? disease.toShortString() + " (" + caseDataDto.getDiseaseDetails() + ")" 
+						: disease.toShortString();
 			}
 			@Override
 			public Class<String> getType() {
