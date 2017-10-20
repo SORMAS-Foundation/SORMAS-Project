@@ -224,10 +224,12 @@ public class CaseDao extends AbstractAdoDao<Case> {
 
         WeeklyReport epiWeekReport = DatabaseHelper.getWeeklyReportDao().queryForEpiWeek(epiWeek, informant);
         WeeklyReport previousEpiWeekReport = DatabaseHelper.getWeeklyReportDao().queryForEpiWeek(DateHelper.getPreviousEpiWeek(epiWeek), informant);
+        WeeklyReport nextEpiWeekReport = DatabaseHelper.getWeeklyReportDao().queryForEpiWeek(DateHelper.getNextEpiWeek(epiWeek), informant);
 
-        Date[] reportStartAndEnd = DateHelper.calculateEpiWeekReportStartAndEnd(epiWeek,
+        Date[] reportStartAndEnd = DateHelper.calculateEpiWeekReportStartAndEnd(new Date(), epiWeek,
                 epiWeekReport != null ? epiWeekReport.getReportDateTime() : null,
-                previousEpiWeekReport != null ? previousEpiWeekReport.getReportDateTime() : null);
+                previousEpiWeekReport != null ? previousEpiWeekReport.getReportDateTime() : null,
+                nextEpiWeekReport != null? nextEpiWeekReport.getReportDateTime() : null);
 
         try {
             QueryBuilder builder = queryBuilder();

@@ -32,6 +32,7 @@ public class EpiWeekCalculationTest {
 	@Test
 	public void testCalculateEpiWeekReportStartAndEnd() {
 		EpiWeek epiWeek = new EpiWeek(2017, 42);
+		Date now = new Date(2017, 9, 11);
 		Calendar calendar = Calendar.getInstance();
 		calendar.clear();
 		calendar.set(2017, 10, 11);
@@ -40,11 +41,11 @@ public class EpiWeekCalculationTest {
 		calendar.set(2017, 10, 10);
 		Date previousWeeklyReportDate = calendar.getTime();
 		
-		Date[] startAndEnd = DateHelper.calculateEpiWeekReportStartAndEnd(epiWeek, weeklyReportDate, previousWeeklyReportDate);
+		Date[] startAndEnd = DateHelper.calculateEpiWeekReportStartAndEnd(now, epiWeek, weeklyReportDate, previousWeeklyReportDate, null);
 		assertTrue(startAndEnd[0].equals(previousWeeklyReportDate));
 		assertFalse(startAndEnd[1].after(weeklyReportDate));
 		
-		startAndEnd = DateHelper.calculateEpiWeekReportStartAndEnd(epiWeek, null, previousWeeklyReportDate);
+		startAndEnd = DateHelper.calculateEpiWeekReportStartAndEnd(now, epiWeek, null, previousWeeklyReportDate, null);
 		assertTrue(startAndEnd[0].equals(previousWeeklyReportDate));
 		assertTrue(startAndEnd[1].equals(DateHelper.getEpiWeekEnd(epiWeek)));
 	}

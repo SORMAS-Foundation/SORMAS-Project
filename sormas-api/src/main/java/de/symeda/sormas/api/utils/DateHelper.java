@@ -338,12 +338,14 @@ public final class DateHelper {
 	/**
 	 * Calculates the start and end dates of the report for the given epi week. 
 	 * 
+	 * @param now
 	 * @param epiWeek The epi week to calculate the dates for
-	 * @param weeklyReportDate The date of report of the report for the given epi week, or null if none is available
-	 * @param prevWeeklyReportDate The date of report of the report for the week before the given epi week, or null if none is available
+	 * @param weeklyReportDate The date of report for the given epi week, or null if none is available
+	 * @param prevWeeklyReportDate The date of report for the week before the given epi week, or null if none is available
+	 * @param nextWeeklyReportDate The date of report for the week after the given epi week, or null if none is available
 	 * @return An array of size 2, containing the start date at index 0 and the end date at index 1
 	 */
-	public static Date[] calculateEpiWeekReportStartAndEnd(EpiWeek epiWeek, Date weeklyReportDate, Date prevWeeklyReportDate) {
+	public static Date[] calculateEpiWeekReportStartAndEnd(Date now, EpiWeek epiWeek, Date weeklyReportDate, Date prevWeeklyReportDate, Date nextWeeklyReportDate) {
 
 		Date[] reportStartAndEnd = new Date[2];
 
@@ -361,8 +363,24 @@ public final class DateHelper {
 			// .. is the report date
 			reportStartAndEnd[1] = weeklyReportDate;
 		} else {
-			// .. or the end of this week
-			reportStartAndEnd[1] = getEpiWeekEnd(epiWeek);
+			Date epiWeekEnd = getEpiWeekEnd(epiWeek);
+			if (now.after(epiWeekEnd)) {
+				if (nextWeeklyReportDate == null) {
+					if (now.before(DateHelper.addDays(epiWeekEnd, 7))) {
+						// we are in the following week -> all reports until now count
+						reportStartAndEnd[1] = now;
+					} else {
+						// we are somewhere in the future - go with the unmodified epi week end
+						reportStartAndEnd[1] = epiWeekEnd;
+					}
+				} else {
+					// there is a next report - go with the unmodified epi week end
+					reportStartAndEnd[1] = epiWeekEnd;
+				}
+			} else {
+				// .. or the end of this week
+				reportStartAndEnd[1] = epiWeekEnd;
+			}
 		}
 		
 		return reportStartAndEnd;
