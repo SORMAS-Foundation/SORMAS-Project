@@ -6,11 +6,11 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -20,7 +20,6 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.contact.ContactGrid;
 import de.symeda.sormas.ui.login.LoginHelper;
-import de.symeda.sormas.ui.utils.CssStyles;
 
 public class CaseContactsView extends AbstractCaseView {
 
@@ -34,13 +33,11 @@ public class CaseContactsView extends AbstractCaseView {
 
     public CaseContactsView() {
     	super(VIEW_NAME);
-
         setSizeFull();
-        addStyleName("crud-view");
 
         grid = new ContactGrid();
-        grid.setColumns(ContactIndexDto.UUID, ContactIndexDto.PERSON, ContactIndexDto.CONTACT_PROXIMITY, 
-        		ContactIndexDto.LAST_CONTACT_DATE, ContactIndexDto.CONTACT_OFFICER, ContactGrid.ASSOCIATED_CASE);
+//        grid.setColumns(ContactIndexDto.UUID, ContactIndexDto.PERSON, ContactIndexDto.CONTACT_PROXIMITY, 
+//        		ContactIndexDto.LAST_CONTACT_DATE, ContactIndexDto.CONTACT_OFFICER, ContactGrid.ASSOCIATED_CASE);
 
         gridLayout = new VerticalLayout();
         gridLayout.addComponent(createTopBar());
@@ -50,7 +47,6 @@ public class CaseContactsView extends AbstractCaseView {
         gridLayout.setSpacing(false);
         gridLayout.setSizeFull();
         gridLayout.setExpandRatio(grid, 1);
-        gridLayout.setStyleName("crud-main-layout");
         
         setSubComponent(gridLayout);
     }
@@ -59,11 +55,6 @@ public class CaseContactsView extends AbstractCaseView {
     	HorizontalLayout topLayout = new HorizontalLayout();
     	topLayout.setSpacing(true);
     	topLayout.setWidth("100%");
-    	
-    	Label header = new Label("Case contacts");
-    	header.setSizeUndefined();
-    	CssStyles.style(header, CssStyles.H2, CssStyles.VSPACE_NONE);
-    	topLayout.addComponent(header);
     	
     	Button statusAll = new Button("all", e -> grid.setClassificationFilter(null));
         statusAll.setStyleName(ValoTheme.BUTTON_LINK);
@@ -93,9 +84,11 @@ public class CaseContactsView extends AbstractCaseView {
 	public HorizontalLayout createFilterBar() {
     	HorizontalLayout topLayout = new HorizontalLayout();
     	topLayout.setSpacing(true);
-    	topLayout.setWidth("100%");
+    	topLayout.setWidth(100, Unit.PERCENTAGE);
     	
         ComboBox districtFilter = new ComboBox();
+        districtFilter.setWidth(240, Unit.PIXELS);
+        districtFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CAZE_DISTRICT));
         UserDto user = LoginHelper.getCurrentUser();
         if (user.getRegion() != null) {
         	districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(user.getRegion().getUuid()));
@@ -104,6 +97,8 @@ public class CaseContactsView extends AbstractCaseView {
         topLayout.addComponent(districtFilter);
 
         ComboBox officerFilter = new ComboBox();
+        officerFilter.setWidth(240, Unit.PIXELS);
+        officerFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CONTACT_OFFICER));
         officerFilter.addItems(FacadeProvider.getUserFacade().getAssignableUsers(user, UserRole.CONTACT_OFFICER));
         officerFilter.addValueChangeListener(e->grid.setContactOfficerFilter(((UserReferenceDto)e.getProperty().getValue())));
         topLayout.addComponent(officerFilter);

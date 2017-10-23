@@ -53,6 +53,7 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
 @import "components/optiongroup.scss";
 @import "components/panel.scss";
 @import "components/tabsheet.scss";
+@import "components/table.scss";
 @import "components/textfield.scss";
 @import "components/window.scss";
 
@@ -88,6 +89,7 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
   @include sormas-optiongroup;
   @include sormas-panel;
   @include sormas-tabsheet;
+  @include sormas-table;
   @include sormas-textfield;
   @include sormas-window;
 

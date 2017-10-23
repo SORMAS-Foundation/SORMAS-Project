@@ -52,9 +52,10 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		    						LayoutUtil.locCss(CssStyles.VSPACE_3, TO_CASE_BTN_LOC) +
 		    						LayoutUtil.fluidRowLocs(ContactDto.LAST_CONTACT_DATE, ContactDto.UUID) +
 		    						LayoutUtil.fluidRowLocs(ContactDto.REPORTING_USER, ContactDto.REPORT_DATE_TIME) +
-		    						LayoutUtil.fluidRowLocs(ContactDto.CONTACT_PROXIMITY) +
+		    						LayoutUtil.fluidRow(ContactDto.CONTACT_PROXIMITY) +
 		    						LayoutUtil.fluidRowLocs(ContactDto.RELATION_TO_CASE) +
 				    				LayoutUtil.fluidRowLocs(ContactDto.DESCRIPTION) +
+				    				LayoutUtil.h3(CssStyles.VSPACE_3, "Follow-up status") +
 				    				LayoutUtil.fluidRowLocs(ContactDto.FOLLOW_UP_STATUS, CANCEL_OR_RESUME_FOLLOW_UP_BTN_LOC, LOST_FOLLOW_UP_BTN_LOC) +
 				    				LayoutUtil.fluidRowLocs(ContactDto.FOLLOW_UP_COMMENT) +
 				    				LayoutUtil.fluidRowLocs(ContactDto.FOLLOW_UP_UNTIL, ContactDto.CONTACT_OFFICER)
@@ -72,7 +73,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
     	addField(ContactDto.REPORTING_USER, ComboBox.class);
     	addField(ContactDto.LAST_CONTACT_DATE, DateField.class);
     	addField(ContactDto.REPORT_DATE_TIME, DateField.class);
-    	addField(ContactDto.CONTACT_PROXIMITY, OptionGroup.class);
+    	addField(ContactDto.CONTACT_PROXIMITY, OptionGroup.class).removeStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
     	addField(ContactDto.RELATION_TO_CASE, ComboBox.class);
     	addField(ContactDto.DESCRIPTION, TextArea.class).setRows(3);
 
@@ -137,7 +138,6 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			if (followUpStatus == FollowUpStatus.FOLLOW_UP) {
 				
 		    	Button cancelButton = new Button(I18nProperties.getFragment("Contact.cancelFollowUp"));
-		    	cancelButton.addStyleName(CssStyles.FORCE_CAPTION);
 		    	cancelButton.setWidth(100, Unit.PERCENTAGE);
 		    	cancelButton.addClickListener(new ClickListener() {
 					@Override
@@ -152,7 +152,6 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 				getContent().addComponent(cancelButton, CANCEL_OR_RESUME_FOLLOW_UP_BTN_LOC);
 
 		    	Button lostButton = new Button(I18nProperties.getFragment("Contact.lostToFollowUp"));
-		    	lostButton.addStyleName(CssStyles.FORCE_CAPTION);
 		    	lostButton.setWidth(100, Unit.PERCENTAGE);
 		    	lostButton.addClickListener(new ClickListener() {
 					@Override

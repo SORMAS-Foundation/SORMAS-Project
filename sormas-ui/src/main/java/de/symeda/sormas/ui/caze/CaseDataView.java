@@ -32,12 +32,10 @@ public class CaseDataView extends AbstractCaseView {
     	setSubComponent(caseDataEditComponent);
     	
     	TaskListComponent taskListComponent = new TaskListComponent(TaskContext.CASE, getCaseRef());
-    	taskListComponent.setMargin(true);
     	addComponent(taskListComponent);
     	taskListComponent.reload();
     	
     	SampleListComponent sampleListComponent = new SampleListComponent(getCaseRef());
-    	sampleListComponent.setMargin(true);
     	addComponent(sampleListComponent);
     	sampleListComponent.reload();
     }

@@ -50,6 +50,7 @@ public class SampleListComponent extends VerticalLayout {
 
 	public SampleListComponent(CaseReferenceDto caseRef) {
 		setSizeFull();
+		setMargin(true);
 
 		grid = new SampleGrid(caseRef);
 		grid.setHeightMode(HeightMode.ROW);

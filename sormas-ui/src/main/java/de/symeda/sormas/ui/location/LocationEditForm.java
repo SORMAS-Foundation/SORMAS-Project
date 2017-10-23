@@ -39,6 +39,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
     	addField(LocationDto.ADDRESS, TextArea.class).setRows(2);
     	addField(LocationDto.DETAILS, TextField.class);
     	addField(LocationDto.CITY, TextField.class);
+    	// TODO the default converter rounds - this is not appropriate
     	addField(LocationDto.LATITUDE, TextField.class);
     	addField(LocationDto.LONGITUDE, TextField.class);
 

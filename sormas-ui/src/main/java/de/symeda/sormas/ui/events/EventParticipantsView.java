@@ -2,7 +2,6 @@ package de.symeda.sormas.ui.events;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
-import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -34,11 +33,12 @@ public class EventParticipantsView extends AbstractEventView {
 		grid = new EventParticipantsGrid();
 		
 		gridLayout = new VerticalLayout();
+		gridLayout.setSizeFull();
+		gridLayout.setMargin(true);
+		gridLayout.setSpacing(false);
+
 		gridLayout.addComponent(createTopBar());
 		gridLayout.addComponent(grid);
-		gridLayout.setMargin(new MarginInfo(true, false, false, false));
-		gridLayout.setSpacing(false);
-		gridLayout.setSizeFull();
 		gridLayout.setExpandRatio(grid, 1);
 		gridLayout.setStyleName("crud-main-layout");
 		

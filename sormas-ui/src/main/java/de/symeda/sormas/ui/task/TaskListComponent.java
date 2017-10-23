@@ -45,7 +45,7 @@ public class TaskListComponent extends VerticalLayout {
 	
 	public TaskListComponent(TaskContext context, ReferenceDto entityRef) {
 		setSizeFull();
-		addStyleName("crud-view");
+		setMargin(true);
 		
 		grid = new TaskGrid(context, entityRef);
 		grid.setHeightMode(HeightMode.ROW);

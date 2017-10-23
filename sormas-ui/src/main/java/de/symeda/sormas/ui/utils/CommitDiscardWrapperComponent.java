@@ -135,15 +135,15 @@ public class CommitDiscardWrapperComponent<C extends Component> extends
 		buttonsPanel.setSpacing(true);
 		buttonsPanel.setWidth(100, Unit.PERCENTAGE);
 
-		Button commitButton = getCommitButton();
-		buttonsPanel.addComponent(commitButton);
-		buttonsPanel.setComponentAlignment(commitButton, Alignment.BOTTOM_RIGHT);
-		buttonsPanel.setExpandRatio(commitButton, 1);
-
 		Button discardButton = getDiscardButton();
 		buttonsPanel.addComponent(discardButton);
 		buttonsPanel.setComponentAlignment(discardButton, Alignment.BOTTOM_RIGHT);
-		buttonsPanel.setExpandRatio(discardButton, 0);
+		buttonsPanel.setExpandRatio(discardButton, 1);
+
+		Button commitButton = getCommitButton();
+		buttonsPanel.addComponent(commitButton);
+		buttonsPanel.setComponentAlignment(commitButton, Alignment.BOTTOM_RIGHT);
+		buttonsPanel.setExpandRatio(commitButton, 0);
 
 		addComponent(buttonsPanel);
 		setComponentAlignment(buttonsPanel, Alignment.BOTTOM_RIGHT);

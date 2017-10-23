@@ -130,7 +130,7 @@ public class LocationDialogBuilder extends AlertDialog.Builder {
                 updateGpsTextView();
             }
         });
-
+        updateGpsTextView();
 
         this.setPositiveButton(activity.getResources().getString(R.string.action_done), new DialogInterface.OnClickListener() {
             @Override

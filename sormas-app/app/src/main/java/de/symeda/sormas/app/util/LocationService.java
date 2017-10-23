@@ -10,6 +10,8 @@ import android.os.Looper;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
+import java.util.Date;
+
 /**
  * Created by Mate Strysewske on 16.08.2017.
  */
@@ -80,7 +82,19 @@ public class LocationService {
             LocationListener locationListener = new LocationListener() {
                 @Override
                 public void onLocationChanged(Location location) {
-                    LocationService.this.location = location;
+                    if (LocationManager.NETWORK_PROVIDER.equals(location.getProvider())) {
+                        // only when the gps location is older than 10 minutes
+                        Location oldLocation = LocationService.this.location;
+                        if (oldLocation == null
+                            || LocationManager.NETWORK_PROVIDER.equals(oldLocation.getProvider())
+                            || new Date().getTime() <= oldLocation.getTime() + (1000 * 60 * 10)) {
+                            LocationService.this.location = location;
+                        } else {
+                            // ignore the location
+                        }
+                    } else {
+                        LocationService.this.location = location;
+                    }
                 }
                 @Override
                 public void onStatusChanged(String s, int i, Bundle bundle) {
@@ -94,9 +108,11 @@ public class LocationService {
             };
 
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_CHANGE, MIN_DISTANCE_CHANGE, locationListener, Looper.getMainLooper());
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME_CHANGE, MIN_DISTANCE_CHANGE, locationListener, Looper.getMainLooper());
 
             // Request initial GPS location
             locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, locationListener, Looper.getMainLooper());
+            locationManager.requestSingleUpdate(LocationManager.NETWORK_PROVIDER, locationListener, Looper.getMainLooper());
         } catch (SecurityException e) {
             Log.e(getClass().getName(), "Error while initializing LocationService", e);
         }

@@ -8836,16 +8836,16 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-table-header table, .sormas .v-table-footer table, .sormas .v-table-table {
-	-webkit-box-shadow: 0 0 0 2px #CDD8EC;
-	box-shadow: 0 0 0 2px #CDD8EC;
+	-webkit-box-shadow: 0 0 0 1px #CDD8EC;
+	box-shadow: 0 0 0 1px #CDD8EC;
 }
 
 .v-ie8 .sormas .v-table-header table, .v-ie8 .sormas .v-table-footer table, .v-ie8 .sormas .v-table-table {
-	outline: 2px solid #CDD8EC;
+	outline: 1px solid #CDD8EC;
 }
 
 .sormas .v-table-header-wrap, .sormas .v-table-footer-wrap, .sormas .v-table-header-drag {
-	border: 2px solid #CDD8EC;
+	border: 1px solid #CDD8EC;
 	background: #FEFEFE;
 	white-space: nowrap;
 	font-size: 10px;
@@ -8862,13 +8862,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-table-footer td {
-	border-left: 2px solid #CDD8EC;
-	display: inline-block;
-	margin-left: -1px;
-}
-
-.sormas .v-table-footer td:first-child {
-	margin-left: 0;
+	border-left: 1px solid #CDD8EC;
 }
 
 .sormas .v-table-footer-container, .sormas .v-table-caption-container {
@@ -8881,11 +8875,11 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .v-ie8 .sormas .v-table-footer-container, .v-ie8 .sormas .v-table-caption-container {
-	min-height: 12px;
+	min-height: 11px;
 }
 
 .sormas .v-table-footer-container {
-	padding: 9px 11px 11px;
+	padding: 10px 11px 11px;
 	float: right;
 }
 
@@ -8894,8 +8888,8 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-table-caption-container, .sormas .v-table-header-drag {
-	padding: 11px 11px 9px;
-	border-left: 2px solid #CDD8EC;
+	padding: 11px 11px 10px;
+	border-left: 1px solid #CDD8EC;
 }
 
 .sormas .v-table-caption-container-align-right {
@@ -8914,7 +8908,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-table-cell-content {
-	border-left: 2px solid #CDD8EC;
+	border-left: 1px solid #CDD8EC;
 	overflow: hidden;
 	height: 32px;
 	vertical-align: middle;
@@ -8922,7 +8916,7 @@ div.v-layout.v-horizontal.v-widget {
 
 .sormas .v-table-cell-content:first-child {
 	border-left: none;
-	padding-left: 2px;
+	padding-left: 1px;
 }
 
 .sormas .v-table-header td:first-child .v-table-caption-container, .sormas .v-table-footer td:first-child {
@@ -8952,7 +8946,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-table-body {
-	border: 2px solid #CDD8EC;
+	border: 1px solid #CDD8EC;
 	-webkit-user-select: text;
 	-moz-user-select: text;
 	-ms-user-select: text;
@@ -8965,7 +8959,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-table-table td {
-	border-top: 2px solid #CDD8EC;
+	border-top: 1px solid #CDD8EC;
 }
 
 .sormas .v-table-table tr:first-child > td {
@@ -9039,8 +9033,8 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-table-focus {
-	outline: 2px solid #CDD8EC;
-	outline-offset: -2px;
+	outline: 1px solid #CDD8EC;
+	outline-offset: -1px;
 }
 
 .sormas .v-drag-element.v-table-focus, .sormas .v-drag-element .v-table-focus {
@@ -9057,18 +9051,18 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-table-focus-slot-right {
-	border-right: 4px solid #CDD8EC;
-	right: -3px;
-	margin-left: -11px !important;
+	border-right: 3px solid #CDD8EC;
+	right: -2px;
+	margin-left: -10px !important;
 }
 
 .sormas .v-table-focus-slot-left {
 	float: left;
-	border-left: 4px solid #CDD8EC;
-	left: -2px;
+	border-left: 3px solid #CDD8EC;
+	left: -1px;
 	right: auto;
 	margin-left: 0 !important;
-	margin-right: -11px;
+	margin-right: -10px;
 }
 
 .sormas .v-table-column-selector {
@@ -9244,7 +9238,7 @@ div.v-layout.v-horizontal.v-widget {
 
 .sormas .v-table-row-drag-top td.v-table-cell-content {
 	border-top: 2px solid #CDD8EC;
-	height: 32px;
+	height: 31px;
 }
 
 .sormas .v-table-row-drag-top .v-table-cell-wrapper {
@@ -9257,11 +9251,11 @@ div.v-layout.v-horizontal.v-widget {
 
 .sormas .v-table-no-vertical-lines .v-table-cell-content {
 	border-left: none;
-	padding-left: 2px;
+	padding-left: 1px;
 }
 
 .sormas .v-table-no-vertical-lines.v-treetable .v-table-cell-content {
-	padding-left: 13px;
+	padding-left: 12px;
 }
 
 .sormas .v-table-no-horizontal-lines .v-table-cell-content {
@@ -9282,11 +9276,11 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-table-borderless .v-table-header-wrap {
-	border-bottom: 2px solid #CDD8EC;
+	border-bottom: 1px solid #CDD8EC;
 }
 
 .sormas .v-table-borderless .v-table-footer-wrap {
-	border-top: 2px solid #CDD8EC;
+	border-top: 1px solid #CDD8EC;
 }
 
 .sormas .v-table-compact .v-table-header-wrap, .sormas .v-table-compact .v-table-footer-wrap, .sormas .v-table-compact .v-table-header-drag, .sormas .v-table-small .v-table-header-wrap, .sormas .v-table-small .v-table-footer-wrap, .sormas .v-table-small .v-table-header-drag {
@@ -9294,12 +9288,12 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-table-compact .v-table-footer-container, .sormas .v-table-small .v-table-footer-container {
-	padding: 7px 8px 9px;
+	padding: 8px 7px 9px;
 }
 
 .sormas .v-table-compact .v-table-caption-container, .sormas .v-table-compact .v-table-header-drag, .sormas .v-table-small .v-table-caption-container, .sormas .v-table-small .v-table-header-drag {
 	padding-top: 9px;
-	padding-bottom: 7px;
+	padding-bottom: 8px;
 	padding-left: 6px;
 	padding-right: 6px;
 }
@@ -9355,7 +9349,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-table-compact.v-treetable .v-table-cell-content:first-child, .sormas .v-table-small.v-treetable .v-table-cell-content:first-child {
-	padding-left: 8px;
+	padding-left: 7px;
 }
 
 .sormas .v-table-compact.v-treetable .v-table-footer-container, .sormas .v-table-small.v-treetable .v-table-footer-container {
@@ -9384,7 +9378,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-treetable [class*="caption-container"], .sormas .v-treetable [class*="footer-container"] {
-	min-height: 12px;
+	min-height: 11px;
 }
 
 .sormas .v-treetable [class*="cell-wrapper"] {
@@ -9409,7 +9403,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-treetable [class*="cell-content"]:first-child {
-	padding-left: 13px;
+	padding-left: 12px;
 }
 
 .sormas .v-treetable-treespacer {
@@ -12864,7 +12858,7 @@ div.v-layout.v-horizontal.v-widget {
 	margin-top: 1.5em;
 }
 
-.sormas .v-widget.v-textfield, .sormas .v-widget.v-textarea, .sormas .v-widget.v-select, .sormas .v-widget.v-datefield, .sormas .v-widget.v-filterselect {
+.sormas .v-widget.v-textfield, .sormas .v-widget.v-textarea, .sormas .v-widget.v-select, .sormas .v-widget.v-datefield, .sormas .v-widget.v-filterselect, .sormas .v-widget.v-select-optiongroup {
 	margin-bottom: 10px;
 }
 
@@ -13161,8 +13155,8 @@ div.v-layout.v-horizontal.v-widget {
 	width: auto;
 }
 
-.sormas .v-radiobutton {
-	margin: 0 0 10px -2px !important;
+.sormas .v-select-optiongroup-horizontal .v-radiobutton {
+	margin: 0 0 0 -2px !important;
 	padding: 0 !important;
 	border: 2px solid #CDD8EC;
 	border-radius: 0;
@@ -13170,39 +13164,40 @@ div.v-layout.v-horizontal.v-widget {
 	text-transform: uppercase;
 }
 
-.sormas .v-radiobutton:first-child {
+.sormas .v-select-optiongroup-horizontal .v-radiobutton:first-child {
 	border-radius: 4px 0 0 4px;
 	margin-left: 0 !important;
 }
 
-.sormas .v-radiobutton:last-child {
+.sormas .v-select-optiongroup-horizontal .v-radiobutton:last-child {
 	border-radius: 0 4px 4px 0;
 }
 
-.sormas .v-radiobutton.v-radiobutton-disabled label {
+.sormas .v-select-optiongroup-horizontal .v-radiobutton.v-radiobutton-disabled label {
 	cursor: default;
+	color: #888;
 }
 
-:root .sormas .v-radiobutton > input {
+:root .sormas .v-select-optiongroup-horizontal .v-radiobutton > input {
 	display: none;
 }
 
-:root .sormas .v-radiobutton > input ~ label {
+:root .sormas .v-select-optiongroup-horizontal .v-radiobutton > input ~ label {
 	margin-bottom: 0;
 	padding: 4px 8px;
 	height: 28px;
 	line-height: 20px;
 }
 
-:root .sormas .v-radiobutton > input:checked ~ label {
+:root .sormas .v-select-optiongroup-horizontal .v-radiobutton > input:checked ~ label {
 	background: #CDD8EC;
 }
 
-:root .sormas .v-radiobutton > input ~ label:before, :root .sormas .v-radiobutton > input ~ label:after {
+:root .sormas .v-select-optiongroup-horizontal .v-radiobutton > input ~ label:before, :root .sormas .v-select-optiongroup-horizontal .v-radiobutton > input ~ label:after {
 	content: none;
 }
 
-.sormas .v-select-optiongroup-caption-inline {
+.sormas .v-select-optiongroup-horizontal.v-select-optiongroup-caption-inline {
 	text-align: right;
 }
 
@@ -13219,6 +13214,7 @@ div.v-layout.v-horizontal.v-widget {
 	border: none;
 	box-shadow: none;
 	border-radius: 0;
+	background: inherit;
 }
 
 .sormas .v-tabsheet {
@@ -13260,6 +13256,78 @@ div.v-layout.v-horizontal.v-widget {
 
 .sormas .v-tabsheet .v-tabsheet-tabcontainer::before {
 	content: none;
+}
+
+.sormas .v-table .v-table-caption-container, .sormas .v-table .v-table-cell-content, .sormas .v-table .v-table-header-wrap, .sormas .v-table .v-table-body-wrapper, .sormas .v-table .v-table-footer-wrap {
+	border-left: none;
+	border-right: none;
+}
+
+.sormas .v-table .v-table-body {
+	border-top: 0;
+}
+
+.sormas .v-table .v-table-row  > td, .sormas .v-table .v-table-row  > th, .sormas .v-table .v-table-row-odd  > td, .sormas .v-table .v-table-row-odd  > th {
+	background-color: inherit;
+}
+
+.sormas .v-table .v-table-row .v-table-cell-content, .sormas .v-table .v-table-row-odd .v-table-cell-content {
+	padding: 0;
+	border: 0;
+}
+
+.sormas .v-table .v-table-row .v-table-cell-content .v-table-cell-wrapper, .sormas .v-table .v-table-row-odd .v-table-cell-content .v-table-cell-wrapper {
+	padding: 3px 6px;
+	white-space: pre-wrap;
+}
+
+.sormas .v-table .v-table-row .v-table-cell-content:first-child .v-table-cell-wrapper, .sormas .v-table .v-table-row-odd .v-table-cell-content:first-child .v-table-cell-wrapper {
+	padding-left: 0;
+}
+
+.sormas .v-table .v-table-row .v-table-cell-content:last-child .v-table-cell-wrapper, .sormas .v-table .v-table-row-odd .v-table-cell-content:last-child .v-table-cell-wrapper {
+	padding-right: 0;
+}
+
+.sormas .v-table .v-table-row .v-table-cell-content.priority-high, .sormas .v-table .v-table-row-odd .v-table-cell-content.priority-high {
+	color: #E10002;
+}
+
+.sormas .v-table .v-table-row .v-table-cell-content.priority-normal, .sormas .v-table .v-table-row-odd .v-table-cell-content.priority-normal {
+	color: #6691C4;
+}
+
+.sormas .v-table .v-table-row .v-table-cell-content.warning, .sormas .v-table .v-table-row-odd .v-table-cell-content.warning {
+	color: #E10002;
+	font-weight: 600;
+}
+
+.sormas .v-table .v-table-row.status-discarded .v-grid-cell, .sormas .v-table .v-table-row-odd.status-discarded .v-grid-cell {
+	text-decoration: line-through;
+	color: #888;
+}
+
+.sormas .v-table .v-table-row.status-done .v-grid-cell, .sormas .v-table .v-table-row-odd.status-done .v-grid-cell {
+	color: #888;
+}
+
+.sormas .v-table .v-table-row.status-not .v-grid-cell, .sormas .v-table .v-table-row-odd.status-not .v-grid-cell {
+	color: #C44;
+}
+
+.sormas .v-table .v-table-row-odd {
+	background: inherit;
+}
+
+.sormas .v-table .v-table-header .v-table-header-cell {
+	border-left: none;
+	border-bottom: none;
+}
+
+.sormas .v-table .v-table-header .v-table-header-cell .v-table-caption-container {
+	text-transform: uppercase;
+	font-weight: 600;
+	border-bottom: 2px solid #CDD8EC;
 }
 
 .sormas .v-textfield {
