@@ -4,5 +4,9 @@
   .v-button {
     text-transform: uppercase;
     border-color: $v-selection-color;
-  }    
+  }
+  
+  .v-button-subtle {
+  	background-color: inherit;
+  }
 }

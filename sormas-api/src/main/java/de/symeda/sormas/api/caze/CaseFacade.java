@@ -9,8 +9,10 @@ import javax.ejb.Remote;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.EpiWeek;
 
 @Remote
 public interface CaseFacade {
@@ -19,8 +21,8 @@ public interface CaseFacade {
 	
 	List<CaseDataDto> getAllCasesByDisease(Disease disease, String userUuid);
 	
-	List<CaseDataDto> getAllCasesBetween(Date fromDate, Date toDate, Disease disease, String userUuid);
-
+	List<CaseDataDto> getAllCasesBetween(Date fromDate, Date toDate, DistrictReferenceDto districtRef, Disease disease, String userUuid);
+	
 	CaseDataDto getCaseDataByUuid(String uuid);
     
     CaseDataDto saveCase(CaseDataDto dto);

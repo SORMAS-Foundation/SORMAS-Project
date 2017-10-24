@@ -12953,6 +12953,34 @@ div.v-layout.v-horizontal.v-widget {
 	margin-top: 0 !important;
 }
 
+.sormas .hspace-right-0 {
+	margin-right: 64px;
+}
+
+.sormas .hspace-right-1 {
+	margin-right: 36px;
+}
+
+.sormas .hspace-right-2 {
+	margin-right: 20px;
+}
+
+.sormas .hspace-right-3 {
+	margin-right: 10px;
+}
+
+.sormas .hspace-right-4 {
+	margin-right: 6px;
+}
+
+.sormas .hspace-right-5 {
+	margin-right: 2px;
+}
+
+.sormas .hspace-right-none {
+	margin-right: 0 !important;
+}
+
 .sormas .align-right {
 	text-align: right;
 }
@@ -12960,6 +12988,10 @@ div.v-layout.v-horizontal.v-widget {
 .sormas .v-button {
 	text-transform: uppercase;
 	border-color: #005A9C;
+}
+
+.sormas .v-button-subtle {
+	background-color: inherit;
 }
 
 .sormas .v-filterselect [class$="input"] {
@@ -13433,6 +13465,10 @@ div.v-layout.v-horizontal.v-widget {
 	border-top-color: #c5c5c5;
 	border-bottom-color: #bcbcbc;
 	background-color: #fafafa;
+}
+
+.sormas .curve-and-map-layout {
+	background-color: #CDD8EC;
 }
 
 .sormas .googlemap.no-tiles img {

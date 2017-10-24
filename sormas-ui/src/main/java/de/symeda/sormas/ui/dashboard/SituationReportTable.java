@@ -22,6 +22,7 @@ import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventType;
 import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.login.LoginHelper;
 
@@ -40,7 +41,7 @@ public class SituationReportTable extends Table {
 		setColumnAlignment(DashboardView.PREVIOUS_PERIOD, Align.CENTER);
 	}
 
-	public void clearAndFill(Date fromDate, Date toDate, Disease disease, List<CaseDataDto> cases) {
+	public void clearAndFill(Date fromDate, Date toDate, DistrictReferenceDto district, Disease disease, List<CaseDataDto> cases) {
 		removeAllItems();
 
 		// Update header captions; this has to be done every time the data is changed to update the amount of days
@@ -57,7 +58,7 @@ public class SituationReportTable extends Table {
 		// Cases
 		List<CaseDataDto> previousCases = FacadeProvider.getCaseFacade().getAllCasesBetween(
 				DateHelper.subtractDays(fromDate, DateHelper.getDaysBetween(fromDate, toDate)), 
-				DateHelper.subtractDays(toDate, DateHelper.getDaysBetween(fromDate, toDate)), disease, userUuid);
+				DateHelper.subtractDays(toDate, DateHelper.getDaysBetween(fromDate, toDate)), district, disease, userUuid);
 
 		List<CaseDataDto> confirmedCases = cases.stream()
 				.filter(c -> c.getCaseClassification() == CaseClassification.CONFIRMED)
@@ -103,10 +104,10 @@ public class SituationReportTable extends Table {
 		int previousTotalHcwsCount = previousConfirmedHcwsCount + previousSuspectedHcwsCount + previousProbableHcwsCount;
 
 		// Deaths
-		List<PersonDto> deadPersons = FacadeProvider.getPersonFacade().getDeathsBetween(fromDate, toDate, disease, userUuid);
+		List<PersonDto> deadPersons = FacadeProvider.getPersonFacade().getDeathsBetween(fromDate, toDate, district, disease, userUuid);
 		List<PersonDto> previousDeadPersons = FacadeProvider.getPersonFacade().getDeathsBetween(
 				DateHelper.subtractDays(fromDate, DateHelper.getDaysBetween(fromDate, toDate)), 
-				DateHelper.subtractDays(toDate, DateHelper.getDaysBetween(fromDate, toDate)), disease, userUuid);
+				DateHelper.subtractDays(toDate, DateHelper.getDaysBetween(fromDate, toDate)), district, disease, userUuid);
 		int deadHcws = (int) deadPersons.stream()
 				.filter(p -> p.getOccupationType() == OccupationType.HEALTHCARE_WORKER)
 				.count();
@@ -115,10 +116,10 @@ public class SituationReportTable extends Table {
 				.count();
 
 		// Contacts
-		List<ContactDto> contacts = FacadeProvider.getContactFacade().getFollowUpBetween(fromDate, toDate, disease, userUuid);
+		List<ContactDto> contacts = FacadeProvider.getContactFacade().getFollowUpBetween(fromDate, toDate, district, disease, userUuid);
 		List<ContactDto> previousContacts = FacadeProvider.getContactFacade().getFollowUpBetween(
 				DateHelper.subtractDays(fromDate, DateHelper.getDaysBetween(fromDate, toDate)), 
-				DateHelper.subtractDays(toDate, DateHelper.getDaysBetween(fromDate, toDate)), disease, userUuid);
+				DateHelper.subtractDays(toDate, DateHelper.getDaysBetween(fromDate, toDate)), district, disease, userUuid);
 		int onLastDayOfPeriod = (int) contacts.stream()
 				.filter(c -> (c.getFollowUpUntil().after(toDate) || DateHelper.isSameDay(c.getFollowUpUntil(), toDate)) && 
 						(c.getLastContactDate().before(toDate) || DateHelper.isSameDay(c.getLastContactDate(), toDate)))
@@ -131,10 +132,10 @@ public class SituationReportTable extends Table {
 				.count();
 
 		// Events
-		List<EventDto> events = FacadeProvider.getEventFacade().getAllEventsBetween(fromDate, toDate, disease, userUuid);
+		List<EventDto> events = FacadeProvider.getEventFacade().getAllEventsBetween(fromDate, toDate, district, disease, userUuid);
 		List<EventDto> previousEvents = FacadeProvider.getEventFacade().getAllEventsBetween(
 				DateHelper.subtractDays(fromDate, DateHelper.getDaysBetween(fromDate, toDate)), 
-				DateHelper.subtractDays(toDate, DateHelper.getDaysBetween(fromDate, toDate)), disease, userUuid);
+				DateHelper.subtractDays(toDate, DateHelper.getDaysBetween(fromDate, toDate)), district, disease, userUuid);
 		int outbreaksCount = (int) events.stream()
 				.filter(e -> e.getEventType() == EventType.OUTBREAK)
 				.count();

@@ -21,6 +21,7 @@ import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskHelper;
@@ -29,6 +30,7 @@ import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
@@ -142,17 +144,18 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
-	public List<CaseDataDto> getAllCasesBetween(Date fromDate, Date toDate, Disease disease, String userUuid) {
+	public List<CaseDataDto> getAllCasesBetween(Date fromDate, Date toDate, DistrictReferenceDto districtRef, Disease disease, String userUuid) {
 		User user = userService.getByUuid(userUuid);
+		District district = districtService.getByReferenceDto(districtRef);
 
 		if (user == null) {
 			return Collections.emptyList();
 		}
 
-		return caseService.getAllBetween(fromDate, toDate, disease, user).stream().map(c -> toDto(c))
+		return caseService.getAllBetween(fromDate, toDate, district, disease, user).stream().map(c -> toDto(c))
 				.collect(Collectors.toList());
 	}
-
+	
 	@Override
 	public List<CaseReferenceDto> getAllCasesAfterAsReference(Date date, String userUuid) {
 

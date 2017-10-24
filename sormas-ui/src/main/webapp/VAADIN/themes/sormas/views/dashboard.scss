@@ -17,6 +17,10 @@
   	background-color: #fafafa;
   }
   
+  .curve-and-map-layout {
+  	background-color: $v-focus-color;
+  }
+  
   /* "hack" to hide map tiles in google maps component */
   .googlemap.no-tiles img {
     opacity: 0.2;

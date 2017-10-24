@@ -20,12 +20,15 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.person.PersonIndexDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
+import de.symeda.sormas.backend.region.District;
+import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
@@ -40,6 +43,8 @@ public class PersonFacadeEjb implements PersonFacade {
 	private FacilityService facilityService;
 	@EJB
 	private RegionService regionService;
+	@EJB
+	private DistrictService districtService;
 	@EJB
 	private LocationFacadeEjbLocal locationFacade;
 	@EJB
@@ -120,13 +125,15 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 	
 	@Override
-	public List<PersonDto> getDeathsBetween(Date fromDate, Date toDate, Disease disease, String uuid) {
+	public List<PersonDto> getDeathsBetween(Date fromDate, Date toDate, DistrictReferenceDto districtRef, Disease disease, String uuid) {
 		User user = userService.getByUuid(uuid);
+		District district = districtService.getByReferenceDto(districtRef);
+		
 		if (user == null) {
 			return Collections.emptyList();
 		}
 		
-		List<PersonDto> result = personService.getDeathsBetween(fromDate, toDate, disease, user).stream()
+		List<PersonDto> result = personService.getDeathsBetween(fromDate, toDate, district, disease, user).stream()
 				.map(c -> toDto(c))
 				.collect(Collectors.toList());
 		return result;

@@ -42,6 +42,12 @@ $v-layout-spacing-vertical: round($v-unit-size / 1.8) !default;
 $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
 
 
+$editor-shadow: 0 0 10px 10px rgba(0,0,0,.1) !default;
+$editor-background-color: #6691C4 !default;
+$editor-embed-background-color: darken($editor-background-color, 5%) !default;
+$editor-raised-background-color: lighten($editor-background-color, 10%) !default;
+$editor-caption-font-color: valo-font-color($editor-background-color, 0.5) !default;
+
 @import "global.scss";
 @import "deprecated.scss";
 

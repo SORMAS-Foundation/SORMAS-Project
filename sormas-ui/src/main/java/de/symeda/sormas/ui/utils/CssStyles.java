@@ -29,7 +29,17 @@ public final class CssStyles {
 	public static final String VSPACE_TOP_4 = "vspace-top-4";
 	public static final String VSPACE_TOP_5 = "vspace-top-5";
 	public static final String VSPACE_TOP_NONE = "vspace-top-none";
+	
+	public static final String HSPACE_RIGHT_0 = "hspace-right-0";
+	public static final String HSPACE_RIGHT_1 = "hspace-right-1";
+	public static final String HSPACE_RIGHT_2 = "hspace-right-2";
+	public static final String HSPACE_RIGHT_3 = "hspace-right-3";
+	public static final String HSPACE_RIGHT_4 = "hspace-right-4";
+	public static final String HSPACE_RIGHT_5 = "hspace-right-5";
+	public static final String HSPACE_RIGHT_NONE = "hspace-top-none";
 
+	public static final String BUTTON_SUBTLE = "subtle";
+	
 	public static final String LINK_ACTIVE = "active";
 
 	/**
