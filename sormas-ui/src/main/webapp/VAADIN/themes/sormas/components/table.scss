@@ -5,6 +5,8 @@ $v-table-border-width: 1px;
 @mixin sormas-table {
   
   .v-table {
+
+    border-bottom: $v-table-border-width solid  $v-focus-color;
   
     .v-table-caption-container, .v-table-cell-content, 
     .v-table-header-wrap, .v-table-body-wrapper, .v-table-footer-wrap  {
@@ -13,9 +15,9 @@ $v-table-border-width: 1px;
     }
 
     .v-table-body {
-      border-top: 0;
+      border: none;
     }
-
+    
     .v-table-row, .v-table-row-odd {
     
       > td, > th {

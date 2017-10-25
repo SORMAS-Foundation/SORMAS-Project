@@ -12988,6 +12988,7 @@ div.v-layout.v-horizontal.v-widget {
 .sormas .v-button {
 	text-transform: uppercase;
 	border-color: #005A9C;
+	box-shadow: none;
 }
 
 .sormas .v-button-subtle {
@@ -13101,6 +13102,10 @@ div.v-layout.v-horizontal.v-widget {
 
 .sormas .v-grid .v-grid-row.status-not .v-grid-cell {
 	color: #C44;
+}
+
+.sormas .v-grid .v-grid-header {
+	background-color: #FEFEFE;
 }
 
 .sormas .v-grid .v-grid-header .v-grid-cell {
@@ -13256,6 +13261,7 @@ div.v-layout.v-horizontal.v-widget {
 .sormas .v-tabsheet .v-tabsheet-tabitemcell {
 	border-top: 2px solid #CDD8EC;
 	border-top-width: 3px;
+	vertical-align: top;
 }
 
 .sormas .v-tabsheet .v-tabsheet-tabitemcell .v-tabsheet-tabitem {
@@ -13290,13 +13296,17 @@ div.v-layout.v-horizontal.v-widget {
 	content: none;
 }
 
+.sormas .v-table {
+	border-bottom: 1px solid #CDD8EC;
+}
+
 .sormas .v-table .v-table-caption-container, .sormas .v-table .v-table-cell-content, .sormas .v-table .v-table-header-wrap, .sormas .v-table .v-table-body-wrapper, .sormas .v-table .v-table-footer-wrap {
 	border-left: none;
 	border-right: none;
 }
 
 .sormas .v-table .v-table-body {
-	border-top: 0;
+	border: none;
 }
 
 .sormas .v-table .v-table-row  > td, .sormas .v-table .v-table-row  > th, .sormas .v-table .v-table-row-odd  > td, .sormas .v-table .v-table-row-odd  > th {

@@ -61,6 +61,8 @@ $v-grid-cell-focused-border: none !default;
     }
      
     .v-grid-header {
+    
+      background-color: $v-background-color; 
 
 	  .v-grid-cell {
 	    border-left: none;

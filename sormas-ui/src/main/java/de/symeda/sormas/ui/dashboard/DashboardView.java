@@ -98,7 +98,8 @@ public class DashboardView extends AbstractView {
 	private VerticalLayout dashboardLayout;
 	private VerticalLayout mapLayout;
 	private MapComponent mapComponent;
-	private SituationReportTable situationReportTable;
+	private SituationReportTable situationReportTableLeft;
+	private SituationReportTable situationReportTableRight;
 	
 	private VerticalLayout situationReportLayout;
 	private HighChart epiCurveChart;
@@ -153,19 +154,34 @@ public class DashboardView extends AbstractView {
 		situationReportLayout = new VerticalLayout();
 		{
 			situationReportLayout.setMargin(new MarginInfo(false, true, true, true));
+			situationReportLayout.setWidth(100, Unit.PERCENTAGE);
+			situationReportLayout.setHeightUndefined();
+			
 			Label reportTableLabel = new Label(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, SITUATION_REPORT));
 			reportTableLabel.addStyleName(CssStyles.H4);
 			situationReportLayout.addComponent(reportTableLabel);
-			situationReportTable = new SituationReportTable();
-			if (dateFilterOption == DateFilterOptions.DATE) {
-				situationReportTable.clearAndFill(fromDate, toDate, district, disease, cases);
-			} else {
-				int year = Calendar.getInstance().get(Calendar.YEAR);
-				situationReportTable.clearAndFill(DateHelper.getEpiWeekStart(new EpiWeek(year, fromWeek)), DateHelper.getEpiWeekEnd(new EpiWeek(year, toWeek)), district, disease, cases);
+			
+			HorizontalLayout situationReportSubLayout = new HorizontalLayout();
+			{
+				situationReportSubLayout.setSpacing(true);
+				situationReportSubLayout.setWidth(100, Unit.PERCENTAGE);
+				situationReportSubLayout.setHeightUndefined();
+				
+				situationReportTableLeft = new SituationReportTable(true, false, false, false);
+				situationReportTableRight = new SituationReportTable(false, true, true, true);
+
+				if (dateFilterOption == DateFilterOptions.DATE) {
+					situationReportTableLeft.clearAndFill(fromDate, toDate, district, disease, cases);
+					situationReportTableRight.clearAndFill(fromDate, toDate, district, disease, cases);
+				} else {
+					int year = Calendar.getInstance().get(Calendar.YEAR);
+					situationReportTableLeft.clearAndFill(DateHelper.getEpiWeekStart(new EpiWeek(year, fromWeek)), DateHelper.getEpiWeekEnd(new EpiWeek(year, toWeek)), district, disease, cases);
+					situationReportTableRight.clearAndFill(DateHelper.getEpiWeekStart(new EpiWeek(year, fromWeek)), DateHelper.getEpiWeekEnd(new EpiWeek(year, toWeek)), district, disease, cases);
+				}
+				situationReportSubLayout.addComponent(situationReportTableLeft);
+				situationReportSubLayout.addComponent(situationReportTableRight);
 			}
-			situationReportLayout.addComponent(situationReportTable);
-			situationReportLayout.setExpandRatio(situationReportTable, 1);
-			situationReportTable.setPageLength(8);
+			situationReportLayout.addComponent(situationReportSubLayout);
 		}
 		dashboardLayout.addComponent(situationReportLayout);
 		
@@ -864,9 +880,11 @@ public class DashboardView extends AbstractView {
 		
 		// Update situation report and epi curve data
 		if (dateFilterOption == DateFilterOptions.DATE) {
-			situationReportTable.clearAndFill(fromDate, toDate, district, disease, cases);
+			situationReportTableLeft.clearAndFill(fromDate, toDate, district, disease, cases);
+			situationReportTableRight.clearAndFill(fromDate, toDate, district, disease, cases);
 		} else {
-			situationReportTable.clearAndFill(DateHelper.getEpiWeekStart(new EpiWeek(year, fromWeek)), DateHelper.getEpiWeekEnd(new EpiWeek(year, toWeek)), district, disease, cases);
+			situationReportTableLeft.clearAndFill(DateHelper.getEpiWeekStart(new EpiWeek(year, fromWeek)), DateHelper.getEpiWeekEnd(new EpiWeek(year, toWeek)), district, disease, cases);
+			situationReportTableRight.clearAndFill(DateHelper.getEpiWeekStart(new EpiWeek(year, fromWeek)), DateHelper.getEpiWeekEnd(new EpiWeek(year, toWeek)), district, disease, cases);
 		}
 		
 		// Update epi curve and map date labels
@@ -974,9 +992,10 @@ public class DashboardView extends AbstractView {
 			}
 		}
 
-		hcjs.append("yAxis: { min: 0, title: { text: 'Number of Cases' }, allowDecimals: false, softMax: 10, stackLabels: { enabled: true, style: {"
-				+ "fontWeight: 'bold', gridLineColor: '#000000', color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray' } } },"
-				+ "legend: { verticalAlign: 'top', backgroundColor: '#CDD8EC', align: 'left', "
+		hcjs.append("yAxis: { min: 0, title: { text: 'Number of Cases' }, allowDecimals: false, softMax: 10, "
+				+ "stackLabels: { enabled: true, "
+				+ "style: {fontWeight: 'normal', textOutline: '0', gridLineColor: '#000000', color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray' } } },"
+				+ "legend: { verticalAlign: 'top', backgroundColor: 'transparent', align: 'left', "
 				+ "borderWidth: 0, shadow: false, margin: 30, padding: 0 },"
 				+ "tooltip: { headerFormat: '<b>{point.x}</b><br/>', pointFormat: '{series.name}: {point.y}<br/>Total: {point.stackTotal}'},"
 				+ "plotOptions: { column: { borderWidth: 0, stacking: 'normal', dataLabels: {"

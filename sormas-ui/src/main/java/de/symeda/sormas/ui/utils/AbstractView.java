@@ -21,8 +21,7 @@ public abstract class AbstractView extends VerticalLayout implements View {
     protected AbstractView(String viewName) {
         this.viewName = viewName;
         
-        setWidth(100, Unit.PERCENTAGE);
-        setHeightUndefined();
+        setSizeFull();
         setMargin(false);
         setSpacing(false);
         
