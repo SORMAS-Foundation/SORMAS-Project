@@ -9,11 +9,13 @@ import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
+import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
+import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.CssStyles;
 
@@ -35,28 +37,14 @@ public class ReportsView extends AbstractView {
 		grid.setHeightMode(HeightMode.UNDEFINED);
 		
 		gridLayout = new VerticalLayout();
-		gridLayout.addComponent(createTopBar());
 		gridLayout.addComponent(createFilterBar());
 		gridLayout.addComponent(grid);
 		gridLayout.setMargin(true);
 		gridLayout.setSpacing(false);
 		gridLayout.setSizeFull();
 		gridLayout.setExpandRatio(grid, 1);
-		gridLayout.setStyleName("crud-main-layout");
 		
 		addComponent(gridLayout);
-	}
-	
-	public HorizontalLayout createTopBar() {
-		HorizontalLayout topLayout = new HorizontalLayout();
-		topLayout.addStyleName(CssStyles.VSPACE_3);
-		
-		Label header = new Label("Reports");
-		header.setSizeUndefined();
-		CssStyles.style(header, CssStyles.H2, CssStyles.VSPACE_NONE);
-		topLayout.addComponent(header);
-		
-		return topLayout;
 	}
 	
 	public HorizontalLayout createFilterBar() {
@@ -82,7 +70,7 @@ public class ReportsView extends AbstractView {
 		epiWeekFilter.select(week);
 		epiWeekFilter.setCaption("Epi Week");
 		epiWeekFilter.addValueChangeListener(e -> {
-			grid.reload((int) yearFilter.getValue(), (int) epiWeekFilter.getValue());
+			reloadGrid();
 		});
 		filterLayout.addComponent(epiWeekFilter);
 		
@@ -109,7 +97,14 @@ public class ReportsView extends AbstractView {
 
 	@Override
 	public void enter(ViewChangeEvent event) {
-		grid.reload((int) yearFilter.getValue(), (int) epiWeekFilter.getValue());
+		reloadGrid();
 	}	
-
+	
+	private void reloadGrid() {
+		RegionReferenceDto region = null;
+		if (!LoginHelper.isUserInRole(UserRole.NATIONAL_USER)) {
+			region = LoginHelper.getCurrentUser().getRegion();
+		}
+		grid.reload(region, (int) yearFilter.getValue(), (int) epiWeekFilter.getValue());
+	}
 }

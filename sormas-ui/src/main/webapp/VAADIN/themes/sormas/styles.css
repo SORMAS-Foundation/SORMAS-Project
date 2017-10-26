@@ -13117,6 +13117,7 @@ div.v-layout.v-horizontal.v-widget {
 	text-transform: uppercase;
 	font-weight: 600;
 	border-bottom: 2px solid #CDD8EC;
+	min-height: 32px;
 }
 
 .sormas .valo-menu {

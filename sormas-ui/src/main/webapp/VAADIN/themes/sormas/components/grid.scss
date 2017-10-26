@@ -73,6 +73,7 @@ $v-grid-cell-focused-border: none !default;
         text-transform: uppercase;
         font-weight: 600;
 	    border-bottom: $v-border;
+	    min-height: $v-grid-row-height;
       }
     }
   }

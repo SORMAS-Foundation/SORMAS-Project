@@ -15,41 +15,59 @@ import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.report.WeeklyReportSummaryDto;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.EpiWeek;
-import de.symeda.sormas.ui.login.LoginHelper;
+import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 @SuppressWarnings("serial")
 public class WeeklyReportGrid extends Grid implements ItemClickListener {
 
 	private static final String VIEW_DETAILS_BTN_ID = "viewDetails";
-	
+
+	private RegionReferenceDto region; // may be null
 	private int week;
 	private int year;
 	
+	private final class WeeklyReportGridCellStyleGenerator implements CellStyleGenerator {
+		@Override
+		public String getStyle(CellReference cell) {
+			if (WeeklyReportSummaryDto.MISSING_REPORTS_PERCENTAGE.equals(cell.getPropertyId())) {
+				float missingReportsPercentage = (float)cell.getProperty().getValue();
+				if (missingReportsPercentage <= 10) {
+					return CssStyles.GRID_CELL_PRIORITY_LOW;
+				} else if (missingReportsPercentage <= 40) {
+					return CssStyles.GRID_CELL_PRIORITY_NORMAL;
+				} else {
+					return CssStyles.GRID_CELL_PRIORITY_HIGH;
+				}
+			}
+			return null;
+		}
+	}
+
 	public WeeklyReportGrid() {
 		setSizeFull();
-		
+
 		setSelectionMode(SelectionMode.NONE);
+		setCellStyleGenerator(new WeeklyReportGridCellStyleGenerator());
 		
 		BeanItemContainer<WeeklyReportSummaryDto> container = new BeanItemContainer<WeeklyReportSummaryDto>(WeeklyReportSummaryDto.class);
 		GeneratedPropertyContainer generatedContainer = new GeneratedPropertyContainer(container);
         VaadinUiUtil.addIconColumn(generatedContainer, VIEW_DETAILS_BTN_ID, FontAwesome.EYE);
 		setContainerDataSource(generatedContainer);
 		
-		setColumns(VIEW_DETAILS_BTN_ID, WeeklyReportSummaryDto.REGION, WeeklyReportSummaryDto.DISTRICT, WeeklyReportSummaryDto.FACILITIES, 
-				WeeklyReportSummaryDto.REPORTS, WeeklyReportSummaryDto.REPORTS_PERCENTAGE,
-				WeeklyReportSummaryDto.ZERO_REPORTS, WeeklyReportSummaryDto.ZERO_REPORTS_PERCENTAGE,
-				WeeklyReportSummaryDto.MISSING_REPORTS, WeeklyReportSummaryDto.MISSING_REPORTS_PERCENTAGE);
-	
-		if (LoginHelper.getCurrentUserRoles().contains(UserRole.NATIONAL_USER)) {
-			getColumn(VIEW_DETAILS_BTN_ID).setHidden(true);
-		} else {
-	        getColumn(VIEW_DETAILS_BTN_ID).setRenderer(new HtmlRenderer());
-	        getColumn(VIEW_DETAILS_BTN_ID).setWidth(60);
-		}
+		setColumns(VIEW_DETAILS_BTN_ID, 
+				WeeklyReportSummaryDto.REGION, WeeklyReportSummaryDto.DISTRICT, 
+				WeeklyReportSummaryDto.FACILITIES, 
+				WeeklyReportSummaryDto.REPORTS_PERCENTAGE,
+				WeeklyReportSummaryDto.REPORTS, 
+				WeeklyReportSummaryDto.ZERO_REPORTS_PERCENTAGE,
+				WeeklyReportSummaryDto.ZERO_REPORTS, 
+				WeeklyReportSummaryDto.MISSING_REPORTS_PERCENTAGE,
+				WeeklyReportSummaryDto.MISSING_REPORTS
+				);
 		
 		for (Column column : getColumns()) {
 			if (column.getPropertyId().equals(VIEW_DETAILS_BTN_ID)) {
@@ -59,12 +77,24 @@ public class WeeklyReportGrid extends Grid implements ItemClickListener {
 						WeeklyReportSummaryDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
 			}
 		}
-		
-		if (LoginHelper.getCurrentUserRoles().contains(UserRole.NATIONAL_USER)) {
-			getColumn(WeeklyReportSummaryDto.DISTRICT).setHidden(true);
-		} else {
-			getColumn(WeeklyReportSummaryDto.REGION).setHidden(true);
-		}
+
+		HeaderRow preHeaderRow = prependHeaderRow();
+		preHeaderRow.join(WeeklyReportSummaryDto.REPORTS_PERCENTAGE, WeeklyReportSummaryDto.REPORTS)
+			.setHtml(getColumn(WeeklyReportSummaryDto.REPORTS).getHeaderCaption());
+		getColumn(WeeklyReportSummaryDto.REPORTS).setHeaderCaption("#");
+		preHeaderRow.join(WeeklyReportSummaryDto.ZERO_REPORTS_PERCENTAGE, WeeklyReportSummaryDto.ZERO_REPORTS)
+			.setHtml(getColumn(WeeklyReportSummaryDto.ZERO_REPORTS).getHeaderCaption());
+		getColumn(WeeklyReportSummaryDto.ZERO_REPORTS).setHeaderCaption("#");
+		preHeaderRow.join(WeeklyReportSummaryDto.MISSING_REPORTS_PERCENTAGE, WeeklyReportSummaryDto.MISSING_REPORTS)
+			.setHtml(getColumn(WeeklyReportSummaryDto.MISSING_REPORTS).getHeaderCaption());
+		getColumn(WeeklyReportSummaryDto.MISSING_REPORTS).setHeaderCaption("#");
+
+		preHeaderRow.getCell(WeeklyReportSummaryDto.FACILITIES)
+			.setHtml(getColumn(WeeklyReportSummaryDto.FACILITIES).getHeaderCaption());
+		getColumn(WeeklyReportSummaryDto.FACILITIES).setHeaderCaption("#");
+
+        getColumn(VIEW_DETAILS_BTN_ID).setRenderer(new HtmlRenderer());
+        getColumn(VIEW_DETAILS_BTN_ID).setWidth(60);
 	
 		addItemClickListener(this);
 	}
@@ -75,18 +105,27 @@ public class WeeklyReportGrid extends Grid implements ItemClickListener {
 		return (BeanItemContainer<WeeklyReportSummaryDto>) container.getWrappedContainer();
 	}
 	
-	public void reload(int year, int week) {
+	public void reload(RegionReferenceDto region, int year, int week) {
+		
+		this.region = region;
 		this.week = week;
 		this.year = year;
+		
 		getContainer().removeAllItems();
 		EpiWeek epiWeek = new EpiWeek(year, week);
 		
-		if (LoginHelper.getCurrentUserRoles().contains(UserRole.NATIONAL_USER)) {
+		if (region == null) {
 			List<WeeklyReportSummaryDto> summaryDtos = FacadeProvider.getWeeklyReportFacade().getSummariesPerRegion(epiWeek);
 			summaryDtos.forEach(s -> getContainer().addItem(s));
+
+			getColumn(WeeklyReportSummaryDto.DISTRICT).setHidden(true);
+			getColumn(WeeklyReportSummaryDto.REGION).setHidden(false);
 		} else {
-			List<WeeklyReportSummaryDto> summaryDtos = FacadeProvider.getWeeklyReportFacade().getSummariesPerDistrict(LoginHelper.getCurrentUser().getRegion(), epiWeek);
+			List<WeeklyReportSummaryDto> summaryDtos = FacadeProvider.getWeeklyReportFacade().getSummariesPerDistrict(region, epiWeek);
 			summaryDtos.forEach(s -> getContainer().addItem(s));
+
+			getColumn(WeeklyReportSummaryDto.DISTRICT).setHidden(false);
+			getColumn(WeeklyReportSummaryDto.REGION).setHidden(true);
 		}
 	}
 	
@@ -95,13 +134,25 @@ public class WeeklyReportGrid extends Grid implements ItemClickListener {
 		if (event.getPropertyId().equals(VIEW_DETAILS_BTN_ID)) {
 			WeeklyReportSummaryDto summaryDto = (WeeklyReportSummaryDto) event.getItemId();
 			VerticalLayout layout = new VerticalLayout();
-			WeeklyReportDetailsGrid grid = new WeeklyReportDetailsGrid(summaryDto.getDistrict(), new EpiWeek(year, week));
-			grid.setHeightMode(HeightMode.ROW);
-			layout.addComponent(grid);
-			layout.setMargin(true);
 			Window window = VaadinUiUtil.showPopupWindow(layout);
-			window.setCaption("Weekly Reports in " + summaryDto.getDistrict().toString() + " - Epi Week " + week + "/" + year);
+			layout.setMargin(true);
+
+			if (region != null) {
+				WeeklyReportDetailsGrid grid = new WeeklyReportDetailsGrid(summaryDto.getDistrict(), new EpiWeek(year, week));
+				grid.setWidth(960, Unit.PIXELS);
+				grid.setHeightMode(HeightMode.ROW);
+				grid.setHeightUndefined();
+				layout.addComponent(grid);
+				window.setCaption("Weekly Reports in " + summaryDto.getDistrict().toString() + " - Epi Week " + week + "/" + year);
+			} else {
+				WeeklyReportGrid grid = new WeeklyReportGrid();
+				grid.reload(summaryDto.getRegion(), year, week);
+				grid.setWidth(960, Unit.PIXELS);
+				grid.setHeightMode(HeightMode.ROW);
+				grid.setHeightUndefined();
+				layout.addComponent(grid);
+				window.setCaption("Weekly Reports in " + summaryDto.getRegion().toString() + " - Epi Week " + week + "/" + year);
+			}
 		}
 	}
-	
 }

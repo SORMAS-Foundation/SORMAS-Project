@@ -28,8 +28,7 @@ public class WeeklyReportDetailsGrid extends Grid {
 	public WeeklyReportDetailsGrid(DistrictReferenceDto districtRef, EpiWeek epiWeek) {
 		this.districtRef = districtRef;
 		this.epiWeek = epiWeek;
-		setWidth(960, Unit.PIXELS);
-		setHeightUndefined();
+		setSizeFull();
 		
 		setSelectionMode(SelectionMode.NONE);
 		
