@@ -123,7 +123,7 @@ public class VisitEditActivity extends AbstractEditTabActivity {
             }
         }
         else {
-            LocationService.instance().requestFreshLocation();
+            LocationService.instance().requestFreshLocation(this);
         }
     }
 

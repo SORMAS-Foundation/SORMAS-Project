@@ -119,7 +119,7 @@ public class SampleEditActivity extends AbstractSormasActivity {
             }
         }
         else {
-            LocationService.instance().requestFreshLocation();
+            LocationService.instance().requestFreshLocation(this);
         }
     }
 

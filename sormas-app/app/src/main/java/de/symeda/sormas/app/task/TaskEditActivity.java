@@ -109,7 +109,7 @@ public class TaskEditActivity extends AbstractSormasActivity {
         super.onResume();
         taskForm.onResume();
 
-        LocationService.instance().requestFreshLocation();
+        LocationService.instance().requestFreshLocation(this);
 
         Task currentEntity = DatabaseHelper.getTaskDao().queryUuid(taskUuid);
         // If the task has been removed from the database in the meantime, redirect the user to the tasks overview

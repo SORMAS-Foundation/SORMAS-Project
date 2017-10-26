@@ -1,5 +1,10 @@
 package de.symeda.sormas.ui.location;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.Locale;
+
+import com.vaadin.data.util.converter.StringToDoubleConverter;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
@@ -14,7 +19,22 @@ import de.symeda.sormas.ui.utils.LayoutUtil;
 @SuppressWarnings("serial")
 public class LocationEditForm extends AbstractEditForm<LocationDto> {
 
-    private static final String HTML_LAYOUT = 
+    private final class StringToAngularLocationConverter extends StringToDoubleConverter {
+		protected NumberFormat getFormat(Locale locale) {
+			
+	        if (locale == null) {
+	            locale = Locale.getDefault();
+	        }
+			
+			DecimalFormat numberFormat = (DecimalFormat)NumberFormat.getNumberInstance(locale);
+			numberFormat.setGroupingUsed(false);
+			numberFormat.setMaximumFractionDigits(5);
+
+			return numberFormat;
+		}
+	}
+
+	private static final String HTML_LAYOUT = 
     		LayoutUtil.div(
     				LayoutUtil.fluidRow(
     						LayoutUtil.loc(LocationDto.ADDRESS), 
@@ -39,9 +59,9 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
     	addField(LocationDto.ADDRESS, TextArea.class).setRows(2);
     	addField(LocationDto.DETAILS, TextField.class);
     	addField(LocationDto.CITY, TextField.class);
-    	// TODO the default converter rounds - this is not appropriate
-    	addField(LocationDto.LATITUDE, TextField.class);
-    	addField(LocationDto.LONGITUDE, TextField.class);
+    	
+    	addField(LocationDto.LATITUDE, TextField.class).setConverter(new StringToAngularLocationConverter());
+    	addField(LocationDto.LONGITUDE, TextField.class).setConverter(new StringToAngularLocationConverter());
     	addField(LocationDto.LAT_LON_ACCURACY, TextField.class);
 
     	ComboBox region = addField(LocationDto.REGION, ComboBox.class);

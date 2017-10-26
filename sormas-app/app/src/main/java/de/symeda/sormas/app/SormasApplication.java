@@ -64,7 +64,7 @@ public class SormasApplication extends Application implements Application.Activi
 
     @Override
     public void onActivityStarted(Activity activity) {
-        LocationService.instance().requestActiveLocationUpdates();
+        LocationService.instance().requestActiveLocationUpdates(activity);
     }
 
     @Override

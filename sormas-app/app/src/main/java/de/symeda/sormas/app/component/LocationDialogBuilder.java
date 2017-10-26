@@ -34,10 +34,10 @@ public class LocationDialogBuilder extends AlertDialog.Builder {
     private Double longitude;
     private Float latLonAccuracy;
 
-    public LocationDialogBuilder(FragmentActivity activity, final Location location, final Consumer positiveCallback , final Callback negativeCallback) {
+    public LocationDialogBuilder(final FragmentActivity activity, final Location location, final Consumer positiveCallback , final Callback negativeCallback) {
         super(activity);
 
-        LocationService.instance().requestFreshLocation();
+        LocationService.instance().requestFreshLocation(activity);
 
         this.setTitle(activity.getResources().getString(R.string.headline_location));
 
@@ -123,11 +123,15 @@ public class LocationDialogBuilder extends AlertDialog.Builder {
             @Override
             public void onClick(View arg0) {
 
-                android.location.Location phoneLocation = LocationService.instance().getLocation();
+                android.location.Location phoneLocation = LocationService.instance().getLocation(activity);
                 if (phoneLocation != null) {
                     latitude = phoneLocation.getLatitude();
                     longitude = phoneLocation.getLongitude();
                     latLonAccuracy = phoneLocation.getAccuracy();
+                } else {
+                    latitude = null;
+                    longitude = null;
+                    latLonAccuracy = null;
                 }
                 updateGpsTextView();
             }

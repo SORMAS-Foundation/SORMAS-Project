@@ -92,7 +92,7 @@ public class CaseNewActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
-        LocationService.instance().requestFreshLocation();
+        LocationService.instance().requestFreshLocation(this);
 
         super.onResume();
     }
