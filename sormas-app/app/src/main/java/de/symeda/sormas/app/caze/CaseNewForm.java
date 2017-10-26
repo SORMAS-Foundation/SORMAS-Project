@@ -179,11 +179,14 @@ public class CaseNewForm extends FormTab {
         binding.caseDataRegion.setEnabled(false);
         binding.caseDataDistrict.setEnabled(false);
         User user = ConfigProvider.getUser();
-        if (user.getUserRole() == UserRole.SURVEILLANCE_OFFICER ||
-                user.getUserRole() == UserRole.CASE_OFFICER) {
-            binding.caseDataCommunity.setEnabled(true);
-        } else {
+        if (user.getUserRole() == UserRole.INFORMANT
+                && user.getHealthFacility() != null) {
+            // this is ok, becuase informants are required to have a community and health facility
             binding.caseDataCommunity.setEnabled(false);
+            binding.caseDataHealthFacility.setEnabled(false);
+        } else {
+            binding.caseDataCommunity.setEnabled(true);
+            binding.caseDataHealthFacility.setEnabled(true);
         }
 
         return binding.getRoot();
