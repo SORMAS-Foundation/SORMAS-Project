@@ -76,14 +76,10 @@ public class ContactDao extends AbstractAdoDao<Contact> {
     public Contact saveAndSnapshot(final Contact contact) throws DaoException {
         // If a new contact is created, use the last available location to update its report latitude and longitude
         if (contact.getId() == null) {
-            LocationService locationService = LocationService.getLocationService(DatabaseHelper.getContext());
-            Location location = locationService.getLocation();
+            Location location = LocationService.instance().getLocation();
             if (location != null) {
-                // Use the geo-coordinates of the current location object if it's not older than 15 minutes
-                if (new Date().getTime() <= location.getTime() + (1000 * 60 * 15)) {
-                    contact.setReportLat((float) location.getLatitude());
-                    contact.setReportLon((float) location.getLongitude());
-                }
+                contact.setReportLat((float) location.getLatitude());
+                contact.setReportLon((float) location.getLongitude());
             }
         }
 

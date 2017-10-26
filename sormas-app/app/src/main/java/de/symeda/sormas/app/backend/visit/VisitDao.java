@@ -113,14 +113,10 @@ public class VisitDao extends AbstractAdoDao<Visit> {
     public Visit saveAndSnapshot(final Visit visit) throws DaoException {
         // If a new visit is created, use the last available location to update its report latitude and longitude
         if (visit.getId() == null) {
-            LocationService locationService = LocationService.getLocationService(DatabaseHelper.getContext());
-            Location location = locationService.getLocation();
+            Location location = LocationService.instance().getLocation();
             if (location != null) {
-                // Use the geo-coordinates of the current location object if it's not older than 15 minutes
-                if (new Date().getTime() <= location.getTime() + (1000 * 60 * 15)) {
-                    visit.setReportLat((float) location.getLatitude());
-                    visit.setReportLon((float) location.getLongitude());
-                }
+                visit.setReportLat((float) location.getLatitude());
+                visit.setReportLon((float) location.getLongitude());
             }
         }
 

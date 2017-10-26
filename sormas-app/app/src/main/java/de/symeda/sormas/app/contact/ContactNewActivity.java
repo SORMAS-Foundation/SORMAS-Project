@@ -37,6 +37,7 @@ import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
+import de.symeda.sormas.app.util.LocationService;
 import de.symeda.sormas.app.util.SyncCallback;
 import de.symeda.sormas.app.validation.ContactValidator;
 
@@ -73,6 +74,13 @@ public class ContactNewActivity extends AppCompatActivity {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         contactNewForm = new ContactNewForm();
         ft.add(R.id.fragment_frame, contactNewForm).commit();
+    }
+
+    @Override
+    protected void onResume() {
+        LocationService.instance().requestFreshLocation();
+
+        super.onResume();
     }
 
     @Override

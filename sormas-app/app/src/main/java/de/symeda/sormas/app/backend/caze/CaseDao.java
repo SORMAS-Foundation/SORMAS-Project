@@ -295,14 +295,10 @@ public class CaseDao extends AbstractAdoDao<Case> {
     public Case saveAndSnapshot(final Case caze) throws DaoException {
         // If a new case is created, use the last available location to update its report latitude and longitude
         if (caze.getId() == null) {
-            LocationService locationService = LocationService.getLocationService(DatabaseHelper.getContext());
-            Location location = locationService.getLocation();
+            Location location = LocationService.instance().getLocation();
             if (location != null) {
-                // Use the geo-coordinates of the current location object if it's not older than 15 minutes
-                if (new Date().getTime() <= location.getTime() + (1000 * 60 * 15)) {
-                    caze.setReportLat((float) location.getLatitude());
-                    caze.setReportLon((float) location.getLongitude());
-                }
+                caze.setReportLat((float) location.getLatitude());
+                caze.setReportLon((float) location.getLongitude());
             }
         }
 

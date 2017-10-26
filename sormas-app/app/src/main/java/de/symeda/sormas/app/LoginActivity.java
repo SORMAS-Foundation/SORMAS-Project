@@ -103,15 +103,14 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
     }
 
     private boolean hasGPSTurnedOnAndPermissionGranted() {
-        LocationService locationService = LocationService.getLocationService(this);
 
-        if (!locationService.hasGPSAccess(this)) {
+        if (!LocationService.instance().hasGPSAccess()) {
             AlertDialog requestPermissionDialog = buildRequestPermissionDialog();
             requestPermissionDialog.show();
             return false;
         }
 
-        if (!locationService.hasGPSEnabled()) {
+        if (!LocationService.instance().hasGPSEnabled()) {
             AlertDialog turnOnGPSDialog = buildTurnOnGPSDialog();
             turnOnGPSDialog.show();
             return false;

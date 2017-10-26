@@ -34,6 +34,7 @@ import de.symeda.sormas.app.databinding.VisitDataFragmentLayoutBinding;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
+import de.symeda.sormas.app.util.LocationService;
 import de.symeda.sormas.app.util.SyncCallback;
 import de.symeda.sormas.app.validation.SymptomsValidator;
 import de.symeda.sormas.app.validation.VisitValidator;
@@ -120,6 +121,9 @@ public class VisitEditActivity extends AbstractEditTabActivity {
                 });
                 snackbar.show();
             }
+        }
+        else {
+            LocationService.instance().requestFreshLocation();
         }
     }
 

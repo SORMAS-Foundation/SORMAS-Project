@@ -28,6 +28,7 @@ import de.symeda.sormas.app.databinding.SampleDataFragmentLayoutBinding;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
+import de.symeda.sormas.app.util.LocationService;
 import de.symeda.sormas.app.util.SyncCallback;
 import de.symeda.sormas.app.validation.SampleValidator;
 
@@ -53,16 +54,6 @@ public class SampleEditActivity extends AbstractSormasActivity {
     }
 
     @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-
-        Bundle extras = intent.getExtras();
-        if(extras != null) {
-
-        }
-    }
-
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -79,25 +70,22 @@ public class SampleEditActivity extends AbstractSormasActivity {
         }
 
         params = getIntent().getExtras();
-        if (params != null) {
-            if (params.containsKey(NEW_SAMPLE)) {
-                getSupportActionBar().setTitle(getResources().getText(R.string.headline_new_sample));
-            } else {
-                getSupportActionBar().setTitle(getResources().getText(R.string.headline_sample));
+        if (params.containsKey(NEW_SAMPLE)) {
+            getSupportActionBar().setTitle(getResources().getText(R.string.headline_new_sample));
+        } else if (params.containsKey(KEY_SAMPLE_UUID)) {
+            getSupportActionBar().setTitle(getResources().getText(R.string.headline_sample));
+            sampleUuid = params.getString(KEY_SAMPLE_UUID);
+            Sample initialEntity = DatabaseHelper.getSampleDao().queryUuid(sampleUuid);
+            // If the sample has been removed from the database in the meantime, redirect the user to the samples overview
+            if (initialEntity == null) {
+                Intent intent = new Intent(this, SamplesActivity.class);
+                startActivity(intent);
+                finish();
             }
 
-            if (params.containsKey(KEY_SAMPLE_UUID)) {
-                sampleUuid = params.getString(KEY_SAMPLE_UUID);
-                Sample initialEntity = DatabaseHelper.getSampleDao().queryUuid(sampleUuid);
-                // If the sample has been removed from the database in the meantime, redirect the user to the samples overview
-                if (initialEntity == null) {
-                    Intent intent = new Intent(this, SamplesActivity.class);
-                    startActivity(intent);
-                    finish();
-                }
-
-                DatabaseHelper.getSampleDao().markAsRead(initialEntity);
-            }
+            DatabaseHelper.getSampleDao().markAsRead(initialEntity);
+        } else {
+            throw new UnsupportedOperationException("SampleEditActivity needs either sampleUuid or newSample passed");
         }
 
         setAdapter();
@@ -129,6 +117,9 @@ public class SampleEditActivity extends AbstractSormasActivity {
                 });
                 snackbar.show();
             }
+        }
+        else {
+            LocationService.instance().requestFreshLocation();
         }
     }
 

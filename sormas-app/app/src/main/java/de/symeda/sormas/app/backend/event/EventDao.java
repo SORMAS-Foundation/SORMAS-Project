@@ -61,14 +61,10 @@ public class EventDao extends AbstractAdoDao<Event> {
     public Event saveAndSnapshot(final Event event) throws DaoException {
         // If a new event is created, use the last available location to update its report latitude and longitude
         if (event.getId() == null) {
-            LocationService locationService = LocationService.getLocationService(DatabaseHelper.getContext());
-            android.location.Location location = locationService.getLocation();
+            android.location.Location location = LocationService.instance().getLocation();
             if (location != null) {
-                // Use the geo-coordinates of the current location object if it's not older than 15 minutes
-                if (new Date().getTime() <= location.getTime() + (1000 * 60 * 15)) {
-                    event.setReportLat((float) location.getLatitude());
-                    event.setReportLon((float) location.getLongitude());
-                }
+                event.setReportLat((float) location.getLatitude());
+                event.setReportLon((float) location.getLongitude());
             }
         }
 

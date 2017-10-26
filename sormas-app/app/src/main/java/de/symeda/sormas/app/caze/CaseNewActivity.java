@@ -42,6 +42,7 @@ import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
+import de.symeda.sormas.app.util.LocationService;
 import de.symeda.sormas.app.util.SyncCallback;
 import de.symeda.sormas.app.validation.CaseValidator;
 
@@ -87,6 +88,13 @@ public class CaseNewActivity extends AppCompatActivity {
         }
         caseNewForm.setArguments(arguments);
         ft.add(R.id.fragment_frame, caseNewForm).commit();
+    }
+
+    @Override
+    protected void onResume() {
+        LocationService.instance().requestFreshLocation();
+
+        super.onResume();
     }
 
     @Override

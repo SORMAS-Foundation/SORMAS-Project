@@ -35,6 +35,9 @@ public class LocationDialogBuilder extends AlertDialog.Builder {
 
     public LocationDialogBuilder(FragmentActivity activity, final Location location, final Consumer positiveCallback , final Callback negativeCallback) {
         super(activity);
+
+        LocationService.instance().requestFreshLocation();
+
         this.setTitle(activity.getResources().getString(R.string.headline_location));
 
         latitude = location.getLatitude();
@@ -118,14 +121,10 @@ public class LocationDialogBuilder extends AlertDialog.Builder {
             @Override
             public void onClick(View arg0) {
 
-                LocationService locationService = LocationService.getLocationService(DatabaseHelper.getContext());
-                android.location.Location gpsLocation = locationService.getLocation();
+                android.location.Location gpsLocation = LocationService.instance().getLocation();
                 if (gpsLocation != null) {
-                    // Use the geo-coordinates of the current location object if it's not older than 15 minutes
-                    if (new Date().getTime() <= gpsLocation.getTime() + (1000 * 60 * 15)) {
-                        latitude = (float) gpsLocation.getLatitude();
-                        longitude = (float) gpsLocation.getLongitude();
-                    }
+                    latitude = (float) gpsLocation.getLatitude();
+                    longitude = (float) gpsLocation.getLongitude();
                 }
                 updateGpsTextView();
             }
@@ -163,6 +162,8 @@ public class LocationDialogBuilder extends AlertDialog.Builder {
             }
         });
     }
+
+
 
     private void updateGpsTextView() {
         LabelField gpsLabelField = (LabelField)dialogView.findViewById(R.id.location_latLon);

@@ -46,14 +46,10 @@ public class TaskDao extends AbstractAdoDao<Task> {
         task.setTaskStatus(targetStatus);
         task.setStatusChangeDate(new Date());
 
-        LocationService locationService = LocationService.getLocationService(DatabaseHelper.getContext());
-        Location location = locationService.getLocation();
+        Location location = LocationService.instance().getLocation();
         if (location != null) {
-            // Use the geo-coordinates of the current location object if it's not older than 15 minutes
-            if (new Date().getTime() <= location.getTime() + (1000 * 60 * 15)) {
-                task.setClosedLat((float) location.getLatitude());
-                task.setClosedLon((float) location.getLongitude());
-            }
+            task.setClosedLat((float) location.getLatitude());
+            task.setClosedLon((float) location.getLongitude());
         }
 
         saveAndSnapshot(task);

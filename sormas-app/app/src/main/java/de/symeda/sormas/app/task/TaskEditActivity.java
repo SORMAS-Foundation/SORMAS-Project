@@ -30,6 +30,7 @@ import de.symeda.sormas.app.component.UserReportDialog;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
+import de.symeda.sormas.app.util.LocationService;
 import de.symeda.sormas.app.util.SyncCallback;
 
 
@@ -107,6 +108,8 @@ public class TaskEditActivity extends AbstractSormasActivity {
     protected void onResume() {
         super.onResume();
         taskForm.onResume();
+
+        LocationService.instance().requestFreshLocation();
 
         Task currentEntity = DatabaseHelper.getTaskDao().queryUuid(taskUuid);
         // If the task has been removed from the database in the meantime, redirect the user to the tasks overview
