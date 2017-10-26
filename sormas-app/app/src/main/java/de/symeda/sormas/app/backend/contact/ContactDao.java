@@ -78,8 +78,9 @@ public class ContactDao extends AbstractAdoDao<Contact> {
         if (contact.getId() == null) {
             Location location = LocationService.instance().getLocation();
             if (location != null) {
-                contact.setReportLat((float) location.getLatitude());
-                contact.setReportLon((float) location.getLongitude());
+                contact.setReportLat(location.getLatitude());
+                contact.setReportLon(location.getLongitude());
+                contact.setReportLatLonAccuracy(location.getAccuracy());
             }
         }
 

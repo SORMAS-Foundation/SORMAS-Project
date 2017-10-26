@@ -31,7 +31,6 @@ import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
@@ -244,6 +243,7 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		target.setReportLat(source.getReportLat());
 		target.setReportLon(source.getReportLon());
+		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
 
 		return target;
 	}
@@ -282,7 +282,8 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		target.setReportLat(source.getReportLat());
 		target.setReportLon(source.getReportLon());
-
+		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
+		
 		return target;
 	}
 
@@ -333,6 +334,8 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		target.setReportLat(source.getReportLat());
 		target.setReportLon(source.getReportLon());
+		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
+
 		target.setContactClassification(source.getContactClassification());
 		
 		if (lastVisit != null) {

@@ -297,8 +297,9 @@ public class CaseDao extends AbstractAdoDao<Case> {
         if (caze.getId() == null) {
             Location location = LocationService.instance().getLocation();
             if (location != null) {
-                caze.setReportLat((float) location.getLatitude());
-                caze.setReportLon((float) location.getLongitude());
+                caze.setReportLat(location.getLatitude());
+                caze.setReportLon(location.getLongitude());
+                caze.setReportLatLonAccuracy(location.getAccuracy());
             }
         }
 

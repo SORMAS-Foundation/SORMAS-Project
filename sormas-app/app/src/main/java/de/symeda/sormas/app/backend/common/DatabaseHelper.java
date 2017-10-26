@@ -73,10 +73,10 @@ import de.symeda.sormas.app.backend.visit.VisitDao;
  */
 public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
-	// name of the database file for your application -- change to something appropriate for your app
+	// name of the database file for your application. Stored in data/data/de.symeda.sormas.app/databases
 	private static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	private static final int DATABASE_VERSION = 108;
+	private static final int DATABASE_VERSION = 109;
 
 	private static DatabaseHelper instance = null;
 	public static void init(Context context) {
@@ -320,6 +320,17 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					currentVersion = 107;
 					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN diseaseDetails varchar(512);");
 					getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN diseaseDetails varchar(512);");
+				case 108:
+					currentVersion = 108;
+					getDao(Location.class).executeRaw("ALTER TABLE location ADD COLUMN latLonAccuracy real;");
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN reportLatLonAccuracy real;");
+					getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN reportLatLonAccuracy real;");
+					getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN reportLatLonAccuracy real;");
+					getDao(Visit.class).executeRaw("ALTER TABLE visits ADD COLUMN reportLatLonAccuracy real;");
+					getDao(Task.class).executeRaw("ALTER TABLE tasks ADD COLUMN closedLatLonAccuracy real;");
+					getDao(Sample.class).executeRaw("ALTER TABLE samples ADD COLUMN reportLat double precision;");
+					getDao(Sample.class).executeRaw("ALTER TABLE samples ADD COLUMN reportLon double precision;");
+					getDao(Sample.class).executeRaw("ALTER TABLE samples ADD COLUMN reportLatLonAccuracy real;");
 
 					// ATTENTION: break should only be done after last version
 					break;

@@ -275,15 +275,25 @@ public class LabelField extends PropertyField<String> {
 
     @BindingAdapter("locationLatLon")
     public static void setLocationLatLonForLabel(LabelField labelField, Location location) {
-        setLatLonForLabel(labelField, location != null ? location.getLatitude() : null, location != null ? location.getLongitude() : null);
+        setLatLonForLabel(labelField,
+                location != null ? location.getLatitude() : null,
+                location != null ? location.getLongitude() : null,
+                location != null ? location.getLatLonAccuracy() : null);
     }
 
-    public static void setLatLonForLabel(LabelField labelField, Float latitude, Float longitude) {
+    public static void setLatLonForLabel(LabelField labelField, Double latitude, Double longitude, Float latLonAccuracy) {
         if (latitude == null || longitude == null) {
             labelField.setValue(labelField.getContext().getString(R.string.label_pick_gps));
         }
         else {
-            labelField.setValue(latitude + ", " + longitude);
+            if (latLonAccuracy != null) {
+                labelField.setValue(android.location.Location.convert(latitude, android.location.Location.FORMAT_DEGREES)
+                        + ", " + android.location.Location.convert(longitude, android.location.Location.FORMAT_DEGREES)
+                        + " +-" + Math.round(latLonAccuracy) + "m");
+            } else {
+                labelField.setValue(android.location.Location.convert(latitude, android.location.Location.FORMAT_DEGREES)
+                        + ", " + android.location.Location.convert(longitude, android.location.Location.FORMAT_DEGREES));
+            }
         }
     }
 

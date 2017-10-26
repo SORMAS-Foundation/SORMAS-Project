@@ -70,50 +70,52 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 
         target.setReportLat(source.getReportLat());
         target.setReportLon(source.getReportLon());
+        target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
     }
 
     @Override
-    public void fillInnerFromAdo(EventDto dto, Event ado) {
+    public void fillInnerFromAdo(EventDto target, Event source) {
 
-        dto.setEventType(ado.getEventType());
-        dto.setEventStatus(ado.getEventStatus());
-        dto.setEventDesc(ado.getEventDesc());
-        dto.setEventDate(ado.getEventDate());
-        dto.setReportDateTime(ado.getReportDateTime());
+        target.setEventType(source.getEventType());
+        target.setEventStatus(source.getEventStatus());
+        target.setEventDesc(source.getEventDesc());
+        target.setEventDate(source.getEventDate());
+        target.setReportDateTime(source.getReportDateTime());
 
-        if (ado.getReportingUser() != null) {
-            User user = DatabaseHelper.getUserDao().queryForId(ado.getReportingUser().getId());
-            dto.setReportingUser(UserDtoHelper.toReferenceDto(user));
+        if (source.getReportingUser() != null) {
+            User user = DatabaseHelper.getUserDao().queryForId(source.getReportingUser().getId());
+            target.setReportingUser(UserDtoHelper.toReferenceDto(user));
         } else {
-            dto.setReportingUser(null);
+            target.setReportingUser(null);
         }
 
-        if (ado.getEventLocation() != null) {
-            Location location = DatabaseHelper.getLocationDao().queryForId(ado.getEventLocation().getId());
-            dto.setEventLocation(locationHelper.adoToDto(location));
+        if (source.getEventLocation() != null) {
+            Location location = DatabaseHelper.getLocationDao().queryForId(source.getEventLocation().getId());
+            target.setEventLocation(locationHelper.adoToDto(location));
         } else {
-            dto.setEventLocation(null);
+            target.setEventLocation(null);
         }
 
-        dto.setTypeOfPlace(ado.getTypeOfPlace());
-        dto.setSrcFirstName(ado.getSrcFirstName());
-        dto.setSrcLastName(ado.getSrcLastName());
-        dto.setSrcTelNo(ado.getSrcTelNo());
-        dto.setSrcEmail(ado.getSrcEmail());
-        dto.setDisease(ado.getDisease());
-        dto.setDiseaseDetails(ado.getDiseaseDetails());
+        target.setTypeOfPlace(source.getTypeOfPlace());
+        target.setSrcFirstName(source.getSrcFirstName());
+        target.setSrcLastName(source.getSrcLastName());
+        target.setSrcTelNo(source.getSrcTelNo());
+        target.setSrcEmail(source.getSrcEmail());
+        target.setDisease(source.getDisease());
+        target.setDiseaseDetails(source.getDiseaseDetails());
 
-        if (ado.getSurveillanceOfficer() != null) {
-            User user = DatabaseHelper.getUserDao().queryForId(ado.getSurveillanceOfficer().getId());
-            dto.setSurveillanceOfficer(UserDtoHelper.toReferenceDto(user));
+        if (source.getSurveillanceOfficer() != null) {
+            User user = DatabaseHelper.getUserDao().queryForId(source.getSurveillanceOfficer().getId());
+            target.setSurveillanceOfficer(UserDtoHelper.toReferenceDto(user));
         } else {
-            dto.setSurveillanceOfficer(null);
+            target.setSurveillanceOfficer(null);
         }
 
-        dto.setTypeOfPlaceText(ado.getTypeOfPlaceText());
+        target.setTypeOfPlaceText(source.getTypeOfPlaceText());
 
-        dto.setReportLat(ado.getReportLat());
-        dto.setReportLon(ado.getReportLon());
+        target.setReportLat(source.getReportLat());
+        target.setReportLon(source.getReportLon());
+        target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
     }
 
     public static EventReferenceDto toReferenceDto(Event ado) {

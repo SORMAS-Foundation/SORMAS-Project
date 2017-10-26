@@ -72,49 +72,51 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 
         target.setReportLat(source.getReportLat());
         target.setReportLon(source.getReportLon());
+        target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
     }
 
     @Override
-    public void fillInnerFromAdo(ContactDto dto, Contact ado) {
+    public void fillInnerFromAdo(ContactDto target, Contact source) {
 
-        if (ado.getPerson() != null) {
-            Person person = DatabaseHelper.getPersonDao().queryForId(ado.getPerson().getId());
-            dto.setPerson(PersonDtoHelper.toReferenceDto(person));
+        if (source.getPerson() != null) {
+            Person person = DatabaseHelper.getPersonDao().queryForId(source.getPerson().getId());
+            target.setPerson(PersonDtoHelper.toReferenceDto(person));
         } else {
-            dto.setPerson(null);
+            target.setPerson(null);
         }
-        if (ado.getCaze() != null) {
-            Case caze = DatabaseHelper.getCaseDao().queryForId(ado.getCaze().getId());
-            dto.setCaze(CaseDtoHelper.toReferenceDto(caze));
+        if (source.getCaze() != null) {
+            Case caze = DatabaseHelper.getCaseDao().queryForId(source.getCaze().getId());
+            target.setCaze(CaseDtoHelper.toReferenceDto(caze));
         } else {
-            dto.setCaze(null);
+            target.setCaze(null);
         }
 
-        if (ado.getReportingUser() != null) {
-            User user = DatabaseHelper.getUserDao().queryForId(ado.getReportingUser().getId());
-            dto.setReportingUser(UserDtoHelper.toReferenceDto(user));
+        if (source.getReportingUser() != null) {
+            User user = DatabaseHelper.getUserDao().queryForId(source.getReportingUser().getId());
+            target.setReportingUser(UserDtoHelper.toReferenceDto(user));
         } else {
-            dto.setReportingUser(null);
+            target.setReportingUser(null);
         }
-        dto.setReportDateTime(ado.getReportDateTime());
+        target.setReportDateTime(source.getReportDateTime());
 
-        dto.setLastContactDate(ado.getLastContactDate());
-        dto.setContactProximity(ado.getContactProximity());
-        dto.setContactClassification(ado.getContactClassification());
-        dto.setRelationToCase(ado.getRelationToCase());
-        dto.setFollowUpStatus(ado.getFollowUpStatus());
-        dto.setFollowUpComment(ado.getFollowUpComment());
-        dto.setFollowUpUntil(ado.getFollowUpUntil());
-        if (ado.getContactOfficer() != null) {
-            User user = DatabaseHelper.getUserDao().queryForId(ado.getContactOfficer().getId());
-            dto.setContactOfficer(UserDtoHelper.toReferenceDto(user));
+        target.setLastContactDate(source.getLastContactDate());
+        target.setContactProximity(source.getContactProximity());
+        target.setContactClassification(source.getContactClassification());
+        target.setRelationToCase(source.getRelationToCase());
+        target.setFollowUpStatus(source.getFollowUpStatus());
+        target.setFollowUpComment(source.getFollowUpComment());
+        target.setFollowUpUntil(source.getFollowUpUntil());
+        if (source.getContactOfficer() != null) {
+            User user = DatabaseHelper.getUserDao().queryForId(source.getContactOfficer().getId());
+            target.setContactOfficer(UserDtoHelper.toReferenceDto(user));
         } else {
-            dto.setContactOfficer(null);
+            target.setContactOfficer(null);
         }
-        dto.setDescription(ado.getDescription());
+        target.setDescription(source.getDescription());
 
-        dto.setReportLat(ado.getReportLat());
-        dto.setReportLon(ado.getReportLon());
+        target.setReportLat(source.getReportLat());
+        target.setReportLon(source.getReportLon());
+        target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
     }
 
     public static ContactReferenceDto toReferenceDto(Contact ado) {

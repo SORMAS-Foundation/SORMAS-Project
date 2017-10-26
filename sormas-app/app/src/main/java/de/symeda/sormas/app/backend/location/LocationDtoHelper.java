@@ -48,6 +48,7 @@ public class LocationDtoHelper extends AdoDtoHelper<Location, LocationDto> {
         target.setDetails(source.getDetails());
         target.setLatitude(source.getLatitude());
         target.setLongitude(source.getLongitude());
+        target.setLatLonAccuracy(source.getLatLonAccuracy());
 
         target.setRegion(DatabaseHelper.getRegionDao().getByReferenceDto(source.getRegion()));
         target.setDistrict(DatabaseHelper.getDistrictDao().getByReferenceDto(source.getDistrict()));
@@ -55,28 +56,29 @@ public class LocationDtoHelper extends AdoDtoHelper<Location, LocationDto> {
     }
 
     @Override
-    public void fillInnerFromAdo(LocationDto dto, Location ado) {
+    public void fillInnerFromAdo(LocationDto target, Location source) {
 
-        dto.setAddress(ado.getAddress());
-        dto.setCity(ado.getCity());
-        dto.setDetails(ado.getDetails());
-        dto.setLatitude(ado.getLatitude());
-        dto.setLongitude(ado.getLongitude());
+        target.setAddress(source.getAddress());
+        target.setCity(source.getCity());
+        target.setDetails(source.getDetails());
+        target.setLatitude(source.getLatitude());
+        target.setLongitude(source.getLongitude());
+        target.setLatLonAccuracy(source.getLatLonAccuracy());
 
-        if (ado.getCommunity() != null) {
-            dto.setCommunity(CommunityDtoHelper.toReferenceDto(DatabaseHelper.getCommunityDao().queryForId(ado.getCommunity().getId())));
+        if (source.getCommunity() != null) {
+            target.setCommunity(CommunityDtoHelper.toReferenceDto(DatabaseHelper.getCommunityDao().queryForId(source.getCommunity().getId())));
         } else {
-            dto.setCommunity(null);
+            target.setCommunity(null);
         }
-        if (ado.getDistrict() != null) {
-            dto.setDistrict(DistrictDtoHelper.toReferenceDto(DatabaseHelper.getDistrictDao().queryForId(ado.getDistrict().getId())));
+        if (source.getDistrict() != null) {
+            target.setDistrict(DistrictDtoHelper.toReferenceDto(DatabaseHelper.getDistrictDao().queryForId(source.getDistrict().getId())));
         } else {
-            dto.setDistrict(null);
+            target.setDistrict(null);
         }
-        if (ado.getRegion() != null) {
-            dto.setRegion(RegionDtoHelper.toReferenceDto(DatabaseHelper.getRegionDao().queryForId(ado.getRegion().getId())));
+        if (source.getRegion() != null) {
+            target.setRegion(RegionDtoHelper.toReferenceDto(DatabaseHelper.getRegionDao().queryForId(source.getRegion().getId())));
         } else {
-            dto.setRegion(null);
+            target.setRegion(null);
         }
     }
 }

@@ -48,8 +48,9 @@ public class TaskDao extends AbstractAdoDao<Task> {
 
         Location location = LocationService.instance().getLocation();
         if (location != null) {
-            task.setClosedLat((float) location.getLatitude());
-            task.setClosedLon((float) location.getLongitude());
+            task.setClosedLat(location.getLatitude());
+            task.setClosedLon(location.getLongitude());
+            task.setClosedLatLonAccuracy(location.getAccuracy());
         }
 
         saveAndSnapshot(task);

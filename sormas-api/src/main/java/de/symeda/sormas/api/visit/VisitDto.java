@@ -30,8 +30,10 @@ public class VisitDto extends VisitReferenceDto {
 	private VisitStatus visitStatus;
 	private String visitRemarks;
 	private SymptomsDto symptoms;
-	private Float reportLat;
-	private Float reportLon;
+	
+	private Double reportLat;
+	private Double reportLon;
+	private Float reportLatLonAccuracy;
 	
 	public Date getVisitDateTime() {
 		return visitDateTime;
@@ -75,17 +77,23 @@ public class VisitDto extends VisitReferenceDto {
 	public void setVisitUser(UserReferenceDto visitUser) {
 		this.visitUser = visitUser;
 	}
-	public Float getReportLat() {
+	public Double getReportLat() {
 		return reportLat;
 	}
-	public void setReportLat(Float reportLat) {
+	public void setReportLat(Double reportLat) {
 		this.reportLat = reportLat;
 	}
-	public Float getReportLon() {
+	public Double getReportLon() {
 		return reportLon;
 	}
-	public void setReportLon(Float reportLon) {
+	public void setReportLon(Double reportLon) {
 		this.reportLon = reportLon;
+	}
+	public Float getReportLatLonAccuracy() {
+		return reportLatLonAccuracy;
+	}
+	public void setReportLatLonAccuracy(Float reportLatLonAccuracy) {
+		this.reportLatLonAccuracy = reportLatLonAccuracy;
 	}
 	
 }

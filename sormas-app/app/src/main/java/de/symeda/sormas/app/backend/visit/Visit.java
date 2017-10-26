@@ -58,11 +58,12 @@ public class Visit extends AbstractDomainObject {
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
 	private Symptoms symptoms;
 
-	@Column(columnDefinition = "float8")
-	private Float reportLat;
-
-	@Column(columnDefinition = "float8")
-	private Float reportLon;
+	@DatabaseField
+	private Double reportLat;
+	@DatabaseField
+	private Double reportLon;
+	@DatabaseField
+	private Float reportLatLonAccuracy;
 	
 	public Person getPerson() {
 		return person;
@@ -117,19 +118,19 @@ public class Visit extends AbstractDomainObject {
 		this.symptoms = symptoms;
 	}
 
-	public Float getReportLat() {
+	public Double getReportLat() {
 		return reportLat;
 	}
 
-	public void setReportLat(Float reportLat) {
+	public void setReportLat(Double reportLat) {
 		this.reportLat = reportLat;
 	}
 
-	public Float getReportLon() {
+	public Double getReportLon() {
 		return reportLon;
 	}
 
-	public void setReportLon(Float reportLon) {
+	public void setReportLon(Double reportLon) {
 		this.reportLon = reportLon;
 	}
 
@@ -141,5 +142,13 @@ public class Visit extends AbstractDomainObject {
 	@Override
 	public String toString() {
 		return super.toString() + " " + DateHelper.formatShortDate(getVisitDateTime());
+	}
+
+	public Float getReportLatLonAccuracy() {
+		return reportLatLonAccuracy;
+	}
+
+	public void setReportLatLonAccuracy(Float reportLatLonAccuracy) {
+		this.reportLatLonAccuracy = reportLatLonAccuracy;
 	}
 }

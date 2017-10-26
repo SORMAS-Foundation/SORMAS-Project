@@ -67,54 +67,56 @@ public class TaskDtoHelper extends AdoDtoHelper<Task, TaskDto> {
 
         target.setClosedLat(source.getClosedLat());
         target.setClosedLon(source.getClosedLon());
+        target.setClosedLatLonAccuracy(source.getClosedLatLonAccuracy());
     }
 
     @Override
-    public void fillInnerFromAdo(TaskDto dto, Task ado) {
+    public void fillInnerFromAdo(TaskDto target, Task source) {
 
-        dto.setTaskContext(ado.getTaskContext());
-        if (ado.getCaze() != null) {
-            Case caze = DatabaseHelper.getCaseDao().queryForId(ado.getCaze().getId());
-            dto.setCaze(CaseDtoHelper.toReferenceDto(caze));
+        target.setTaskContext(source.getTaskContext());
+        if (source.getCaze() != null) {
+            Case caze = DatabaseHelper.getCaseDao().queryForId(source.getCaze().getId());
+            target.setCaze(CaseDtoHelper.toReferenceDto(caze));
         } else {
-            dto.setCaze(null);
+            target.setCaze(null);
         }
-        if (ado.getContact() != null) {
-            Contact contact = DatabaseHelper.getContactDao().queryForId(ado.getContact().getId());
-            dto.setContact(ContactDtoHelper.toReferenceDto(contact));
+        if (source.getContact() != null) {
+            Contact contact = DatabaseHelper.getContactDao().queryForId(source.getContact().getId());
+            target.setContact(ContactDtoHelper.toReferenceDto(contact));
         } else {
-            dto.setContact(null);
+            target.setContact(null);
         }
-        if (ado.getEvent() != null) {
-            Event event = DatabaseHelper.getEventDao().queryForId(ado.getEvent().getId());
-            dto.setEvent(EventDtoHelper.toReferenceDto(event));
+        if (source.getEvent() != null) {
+            Event event = DatabaseHelper.getEventDao().queryForId(source.getEvent().getId());
+            target.setEvent(EventDtoHelper.toReferenceDto(event));
         } else {
-            dto.setEvent(null);
+            target.setEvent(null);
         }
-        dto.setTaskType(ado.getTaskType());
-        dto.setTaskStatus(ado.getTaskStatus());
-        dto.setDueDate(ado.getDueDate());
-        dto.setPriority(ado.getPriority());
-        dto.setSuggestedStart(ado.getSuggestedStart());
-        dto.setStatusChangeDate(ado.getStatusChangeDate());
-        dto.setPerceivedStart(ado.getPerceivedStart());
+        target.setTaskType(source.getTaskType());
+        target.setTaskStatus(source.getTaskStatus());
+        target.setDueDate(source.getDueDate());
+        target.setPriority(source.getPriority());
+        target.setSuggestedStart(source.getSuggestedStart());
+        target.setStatusChangeDate(source.getStatusChangeDate());
+        target.setPerceivedStart(source.getPerceivedStart());
 
-        if (ado.getCreatorUser() != null) {
-            User user = DatabaseHelper.getUserDao().queryForId(ado.getCreatorUser().getId());
-            dto.setCreatorUser(UserDtoHelper.toReferenceDto(user));
+        if (source.getCreatorUser() != null) {
+            User user = DatabaseHelper.getUserDao().queryForId(source.getCreatorUser().getId());
+            target.setCreatorUser(UserDtoHelper.toReferenceDto(user));
         } else {
-            dto.setCreatorUser(null);
+            target.setCreatorUser(null);
         }
-        dto.setCreatorComment(ado.getCreatorComment());
-        if (ado.getAssigneeUser() != null) {
-            User user = DatabaseHelper.getUserDao().queryForId(ado.getAssigneeUser().getId());
-            dto.setAssigneeUser(UserDtoHelper.toReferenceDto(user));
+        target.setCreatorComment(source.getCreatorComment());
+        if (source.getAssigneeUser() != null) {
+            User user = DatabaseHelper.getUserDao().queryForId(source.getAssigneeUser().getId());
+            target.setAssigneeUser(UserDtoHelper.toReferenceDto(user));
         } else {
-            dto.setAssigneeUser(null);
+            target.setAssigneeUser(null);
         }
-        dto.setAssigneeReply(ado.getAssigneeReply());
+        target.setAssigneeReply(source.getAssigneeReply());
 
-        dto.setClosedLat(ado.getClosedLat());
-        dto.setClosedLon(ado.getClosedLon());
+        target.setClosedLat(source.getClosedLat());
+        target.setClosedLon(source.getClosedLon());
+        target.setClosedLatLonAccuracy(source.getClosedLatLonAccuracy());
     }
 }

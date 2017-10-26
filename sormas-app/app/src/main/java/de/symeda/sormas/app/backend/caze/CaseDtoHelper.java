@@ -105,6 +105,7 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 
         target.setReportLat(source.getReportLat());
         target.setReportLon(source.getReportLon());
+        target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
     }
 
     @Override
@@ -199,6 +200,7 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 
         target.setReportLat(source.getReportLat());
         target.setReportLon(source.getReportLon());
+        target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
     }
 
     public static CaseReferenceDto toReferenceDto(Case ado) {

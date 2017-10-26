@@ -30,8 +30,9 @@ public class LocationDialogBuilder extends AlertDialog.Builder {
 
     private final View dialogView;
 
-    private Float latitude;
-    private Float longitude;
+    private Double latitude;
+    private Double longitude;
+    private Float latLonAccuracy;
 
     public LocationDialogBuilder(FragmentActivity activity, final Location location, final Consumer positiveCallback , final Callback negativeCallback) {
         super(activity);
@@ -42,6 +43,7 @@ public class LocationDialogBuilder extends AlertDialog.Builder {
 
         latitude = location.getLatitude();
         longitude = location.getLongitude();
+        latLonAccuracy = location.getLatLonAccuracy();
 
         dialogView = activity.getLayoutInflater().inflate(R.layout.location_fragment_layout, null);
         this.setView(dialogView);
@@ -121,10 +123,11 @@ public class LocationDialogBuilder extends AlertDialog.Builder {
             @Override
             public void onClick(View arg0) {
 
-                android.location.Location gpsLocation = LocationService.instance().getLocation();
-                if (gpsLocation != null) {
-                    latitude = (float) gpsLocation.getLatitude();
-                    longitude = (float) gpsLocation.getLongitude();
+                android.location.Location phoneLocation = LocationService.instance().getLocation();
+                if (phoneLocation != null) {
+                    latitude = phoneLocation.getLatitude();
+                    longitude = phoneLocation.getLongitude();
+                    latLonAccuracy = phoneLocation.getAccuracy();
                 }
                 updateGpsTextView();
             }
@@ -147,6 +150,7 @@ public class LocationDialogBuilder extends AlertDialog.Builder {
 
                 location.setLatitude(latitude);
                 location.setLongitude(longitude);
+                location.setLatLonAccuracy(latLonAccuracy);
 
                 if(positiveCallback!=null) {
                     positiveCallback.accept(location);
@@ -167,7 +171,7 @@ public class LocationDialogBuilder extends AlertDialog.Builder {
 
     private void updateGpsTextView() {
         LabelField gpsLabelField = (LabelField)dialogView.findViewById(R.id.location_latLon);
-        LabelField.setLatLonForLabel(gpsLabelField, latitude, longitude);
+        LabelField.setLatLonForLabel(gpsLabelField, latitude, longitude, latLonAccuracy);
     }
 
     public static void addLocationField(final FragmentActivity activity, final Location location, final LabelField locationText, ImageButton btn, final Consumer positiveCallback) {

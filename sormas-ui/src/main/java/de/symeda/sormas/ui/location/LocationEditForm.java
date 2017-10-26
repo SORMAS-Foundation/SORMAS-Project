@@ -23,7 +23,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
     								LayoutUtil.fluidRowLocs(LocationDto.COMMUNITY, LocationDto.CITY))),
     				LayoutUtil.fluidRow(
     						LayoutUtil.loc(LocationDto.DETAILS), 
-    						LayoutUtil.fluidRowLocs(LocationDto.LATITUDE, LocationDto.LONGITUDE))
+    						LayoutUtil.fluidRowLocs(LocationDto.LATITUDE, LocationDto.LONGITUDE, LocationDto.LAT_LON_ACCURACY))
     			);
 
     public LocationEditForm() {
@@ -42,6 +42,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
     	// TODO the default converter rounds - this is not appropriate
     	addField(LocationDto.LATITUDE, TextField.class);
     	addField(LocationDto.LONGITUDE, TextField.class);
+    	addField(LocationDto.LAT_LON_ACCURACY, TextField.class);
 
     	ComboBox region = addField(LocationDto.REGION, ComboBox.class);
     	ComboBox district = addField(LocationDto.DISTRICT, ComboBox.class);

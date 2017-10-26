@@ -1,8 +1,5 @@
 package de.symeda.sormas.app.backend.contact;
 
-import android.support.annotation.Nullable;
-
-import com.googlecode.openbeans.PropertyDescriptor;
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
@@ -86,11 +83,12 @@ public class Contact extends AbstractDomainObject {
 	@Enumerated(EnumType.STRING)
 	private ContactRelation relationToCase;
 
-	@Column(columnDefinition = "float8")
-	private Float reportLat;
-
-	@Column(columnDefinition = "float8")
-	private Float reportLon;
+	@DatabaseField
+	private Double reportLat;
+	@DatabaseField
+	private Double reportLon;
+	@DatabaseField
+	private Float reportLatLonAccuracy;
 	
 	public Person getPerson() {
 		return person;
@@ -185,19 +183,19 @@ public class Contact extends AbstractDomainObject {
 		this.relationToCase = relationToCase;
 	}
 
-	public Float getReportLat() {
+	public Double getReportLat() {
 		return reportLat;
 	}
 
-	public void setReportLat(Float reportLat) {
+	public void setReportLat(Double reportLat) {
 		this.reportLat = reportLat;
 	}
 
-	public Float getReportLon() {
+	public Double getReportLon() {
 		return reportLon;
 	}
 
-	public void setReportLon(Float reportLon) {
+	public void setReportLon(Double reportLon) {
 		this.reportLon = reportLon;
 	}
 
@@ -221,5 +219,13 @@ public class Contact extends AbstractDomainObject {
 	@Override
 	public String getI18nPrefix() {
 		return I18N_PREFIX;
+	}
+
+	public Float getReportLatLonAccuracy() {
+		return reportLatLonAccuracy;
+	}
+
+	public void setReportLatLonAccuracy(Float reportLatLonAccuracy) {
+		this.reportLatLonAccuracy = reportLatLonAccuracy;
 	}
 }

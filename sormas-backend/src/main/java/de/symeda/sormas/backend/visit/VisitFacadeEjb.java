@@ -138,6 +138,7 @@ public class VisitFacadeEjb implements VisitFacade {
 
 		target.setReportLat(source.getReportLat());
 		target.setReportLon(source.getReportLon());
+		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
 		
 		return target;
 	}
@@ -168,7 +169,8 @@ public class VisitFacadeEjb implements VisitFacade {
 
 		target.setReportLat(source.getReportLat());
 		target.setReportLon(source.getReportLon());
-		
+		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
+
 		return target;
 	}
 }

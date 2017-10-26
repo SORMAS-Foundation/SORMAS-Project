@@ -15,8 +15,9 @@ public class ContactMapDto extends ContactReferenceDto {
 	
 	private VisitReferenceDto lastVisit;
 	private ContactClassification contactClassification;
-	private Float reportLat;
-	private Float reportLon;
+	private Double reportLat;
+	private Double reportLon;
+	private Float reportLatLonAccuracy;
 	
 	public VisitReferenceDto getLastVisit() {
 		return lastVisit;
@@ -32,18 +33,25 @@ public class ContactMapDto extends ContactReferenceDto {
 		this.contactClassification = contactClassification;
 	}
 	
-	public Float getReportLat() {
+	public Double getReportLat() {
 		return reportLat;
 	}
-	public void setReportLat(Float reportLat) {
+	public void setReportLat(Double reportLat) {
 		this.reportLat = reportLat;
 	}
 	
-	public Float getReportLon() {
+	public Double getReportLon() {
 		return reportLon;
 	}
-	public void setReportLon(Float reportLon) {
+	public void setReportLon(Double reportLon) {
 		this.reportLon = reportLon;
+	}
+	
+	public Float getReportLatLonAccuracy() {
+		return reportLatLonAccuracy;
+	}
+	public void setReportLatLonAccuracy(Float reportLatLonAccuracy) {
+		this.reportLatLonAccuracy = reportLatLonAccuracy;
 	}
 
 }

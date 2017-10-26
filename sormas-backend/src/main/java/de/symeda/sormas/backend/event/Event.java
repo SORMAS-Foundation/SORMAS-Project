@@ -70,8 +70,9 @@ public class Event extends AbstractDomainObject {
 	private String diseaseDetails;
 	private User surveillanceOfficer;
 	private String typeOfPlaceText;
-	private Float reportLat;
-	private Float reportLon;
+	private Double reportLat;
+	private Double reportLon;
+	private Float reportLatLonAccuracy;
 
 	private List<Task> tasks;
 	
@@ -244,19 +245,17 @@ public class Event extends AbstractDomainObject {
 		this.tasks = tasks;
 	}
 
-	@Column(columnDefinition = "float8")
-	public Float getReportLat() {
+	public Double getReportLat() {
 		return reportLat;
 	}
-	public void setReportLat(Float reportLat) {
+	public void setReportLat(Double reportLat) {
 		this.reportLat = reportLat;
 	}
 	
-	@Column(columnDefinition = "float8")
-	public Float getReportLon() {
+	public Double getReportLon() {
 		return reportLon;
 	}
-	public void setReportLon(Float reportLon) {
+	public void setReportLon(Double reportLon) {
 		this.reportLon = reportLon;
 	}
 	
@@ -265,6 +264,14 @@ public class Event extends AbstractDomainObject {
 		String diseaseString = disease == null ? "" : disease.toString() + (disease == Disease.OTHER ? " (" + diseaseDetails + ")" : "");
 		String eventTypeString = diseaseString.isEmpty() ? eventType.toString() : eventType.toString().toLowerCase();
 		return diseaseString + " " + eventTypeString + " on " + DateHelper.formatDate(eventDate);
+	}
+
+	public Float getReportLatLonAccuracy() {
+		return reportLatLonAccuracy;
+	}
+
+	public void setReportLatLonAccuracy(Float reportLatLonAccuracy) {
+		this.reportLatLonAccuracy = reportLatLonAccuracy;
 	}
 
 }

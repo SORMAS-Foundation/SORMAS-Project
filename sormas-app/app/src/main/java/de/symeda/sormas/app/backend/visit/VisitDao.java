@@ -115,8 +115,9 @@ public class VisitDao extends AbstractAdoDao<Visit> {
         if (visit.getId() == null) {
             Location location = LocationService.instance().getLocation();
             if (location != null) {
-                visit.setReportLat((float) location.getLatitude());
-                visit.setReportLon((float) location.getLongitude());
+                visit.setReportLat(location.getLatitude());
+                visit.setReportLon(location.getLongitude());
+                visit.setReportLatLonAccuracy(location.getAccuracy());
             }
         }
 

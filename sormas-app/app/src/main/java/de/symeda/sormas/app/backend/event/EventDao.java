@@ -63,8 +63,9 @@ public class EventDao extends AbstractAdoDao<Event> {
         if (event.getId() == null) {
             android.location.Location location = LocationService.instance().getLocation();
             if (location != null) {
-                event.setReportLat((float) location.getLatitude());
-                event.setReportLon((float) location.getLongitude());
+                event.setReportLat(location.getLatitude());
+                event.setReportLon(location.getLongitude());
+                event.setReportLatLonAccuracy(location.getAccuracy());
             }
         }
 

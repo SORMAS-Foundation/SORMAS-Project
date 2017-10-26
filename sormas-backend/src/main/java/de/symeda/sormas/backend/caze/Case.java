@@ -89,6 +89,10 @@ public class Case extends AbstractDomainObject {
 	
 	private User reportingUser;
 	private Date reportDate;
+	private Double reportLat;
+	private Double reportLon;
+	private Float reportLatLonAccuracy;
+	
 	private Date investigatedDate;
 	private Date suspectDate;
 	private Date confirmedDate;
@@ -111,9 +115,6 @@ public class Case extends AbstractDomainObject {
 	private VaccinationInfoSource yellowFeverVaccinationInfoSource;
 	
 	private String epidNumber;
-	
-	private Float reportLat;
-	private Float reportLon;
 	
 	private List<Task> tasks;
 	
@@ -408,20 +409,25 @@ public class Case extends AbstractDomainObject {
 		this.investigationStatus = investigationStatus;
 	}
 
-	@Column(columnDefinition = "float8")
-	public Float getReportLat() {
+	public Double getReportLat() {
 		return reportLat;
 	}
-	public void setReportLat(Float reportLat) {
+	public void setReportLat(Double reportLat) {
 		this.reportLat = reportLat;
 	}
 	
-	@Column(columnDefinition = "float8")
-	public Float getReportLon() {
+	public Double getReportLon() {
 		return reportLon;
 	}
-	public void setReportLon(Float reportLon) {
+	public void setReportLon(Double reportLon) {
 		this.reportLon = reportLon;
+	}
+
+	public Float getReportLatLonAccuracy() {
+		return reportLatLonAccuracy;
+	}
+	public void setReportLatLonAccuracy(Float reportLatLonAccuracy) {
+		this.reportLatLonAccuracy = reportLatLonAccuracy;
 	}
 	
 }

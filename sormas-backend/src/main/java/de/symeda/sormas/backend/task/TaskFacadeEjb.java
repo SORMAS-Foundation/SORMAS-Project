@@ -87,6 +87,7 @@ public class TaskFacadeEjb implements TaskFacade {
 		
 		target.setClosedLat(source.getClosedLat());
 		target.setClosedLon(source.getClosedLon());
+		target.setClosedLatLonAccuracy(source.getClosedLatLonAccuracy());
 		
 		target.setTaskContext(source.getTaskContext());
 		if (source.getTaskContext() != null) {
@@ -129,33 +130,34 @@ public class TaskFacadeEjb implements TaskFacade {
 			return null;
 		}
 
-		TaskDto a = new TaskDto();
-		Task b = task;
+		TaskDto target = new TaskDto();
+		Task source = task;
 		
-		a.setCreationDate(b.getCreationDate());
-		a.setChangeDate(b.getChangeDate());
-		a.setUuid(b.getUuid());
+		target.setCreationDate(source.getCreationDate());
+		target.setChangeDate(source.getChangeDate());
+		target.setUuid(source.getUuid());
 		
-		a.setAssigneeUser(UserFacadeEjb.toReferenceDto(b.getAssigneeUser()));
-		a.setAssigneeReply(b.getAssigneeReply());
-		a.setCreatorUser(UserFacadeEjb.toReferenceDto(b.getCreatorUser()));
-		a.setCreatorComment(b.getCreatorComment());
-		a.setPriority(b.getPriority());
-		a.setDueDate(b.getDueDate());
-		a.setSuggestedStart(b.getSuggestedStart());
-		a.setPerceivedStart(b.getPerceivedStart());
-		a.setStatusChangeDate(b.getStatusChangeDate());
-		a.setTaskContext(b.getTaskContext());
-		a.setTaskStatus(b.getTaskStatus());
-		a.setTaskType(b.getTaskType());	
-		a.setCaze(CaseFacadeEjb.toReferenceDto(b.getCaze()));
-		a.setContact(ContactFacadeEjb.toReferenceDto(b.getContact()));
-		a.setEvent(EventFacadeEjb.toReferenceDto(b.getEvent()));
+		target.setAssigneeUser(UserFacadeEjb.toReferenceDto(source.getAssigneeUser()));
+		target.setAssigneeReply(source.getAssigneeReply());
+		target.setCreatorUser(UserFacadeEjb.toReferenceDto(source.getCreatorUser()));
+		target.setCreatorComment(source.getCreatorComment());
+		target.setPriority(source.getPriority());
+		target.setDueDate(source.getDueDate());
+		target.setSuggestedStart(source.getSuggestedStart());
+		target.setPerceivedStart(source.getPerceivedStart());
+		target.setStatusChangeDate(source.getStatusChangeDate());
+		target.setTaskContext(source.getTaskContext());
+		target.setTaskStatus(source.getTaskStatus());
+		target.setTaskType(source.getTaskType());	
+		target.setCaze(CaseFacadeEjb.toReferenceDto(source.getCaze()));
+		target.setContact(ContactFacadeEjb.toReferenceDto(source.getContact()));
+		target.setEvent(EventFacadeEjb.toReferenceDto(source.getEvent()));
 		
-		a.setClosedLat(b.getClosedLat());
-		a.setClosedLon(b.getClosedLon());
+		target.setClosedLat(source.getClosedLat());
+		target.setClosedLon(source.getClosedLon());
+		target.setClosedLatLonAccuracy(source.getClosedLatLonAccuracy());
 
-		return a;
+		return target;
 	}
 
 	@Override

@@ -1760,3 +1760,26 @@ ALTER TABLE symptoms_history DROP COLUMN illlocationfrom;
 ALTER TABLE symptoms_history DROP COLUMN illlocationto;
 
 INSERT INTO schema_version (version_number, comment) VALUES (70, 'IllLocation removed from symptoms #347');
+
+-- 2017-10-26 Add accuracy to lat lon data #371
+ALTER TABLE location ADD COLUMN latLonAccuracy real;
+ALTER TABLE cases ADD COLUMN reportLatLonAccuracy real;
+ALTER TABLE contact ADD COLUMN reportLatLonAccuracy real;
+ALTER TABLE events ADD COLUMN reportLatLonAccuracy real;
+ALTER TABLE visit ADD COLUMN reportLatLonAccuracy real;
+ALTER TABLE task ADD COLUMN closedLatLonAccuracy real;
+ALTER TABLE samples ADD COLUMN reportLat double precision;
+ALTER TABLE samples ADD COLUMN reportLon double precision;
+ALTER TABLE samples ADD COLUMN reportLatLonAccuracy real;
+
+ALTER TABLE location_history ADD COLUMN latLonAccuracy real;
+ALTER TABLE cases_history ADD COLUMN reportLatLonAccuracy real;
+ALTER TABLE contact_history ADD COLUMN reportLatLonAccuracy real;
+ALTER TABLE events_history ADD COLUMN reportLatLonAccuracy real;
+ALTER TABLE visit_history ADD COLUMN reportLatLonAccuracy real;
+ALTER TABLE task_history ADD COLUMN closedLatLonAccuracy real;
+ALTER TABLE samples_history ADD COLUMN reportLat double precision;
+ALTER TABLE samples_history ADD COLUMN reportLon double precision;
+ALTER TABLE samples_history ADD COLUMN reportLatLonAccuracy real;
+
+INSERT INTO schema_version (version_number, comment) VALUES (71, 'Add accuracy to lat lon data #371');

@@ -59,40 +59,42 @@ public class VisitDtoHelper extends AdoDtoHelper<Visit, VisitDto> {
 
         target.setReportLat(source.getReportLat());
         target.setReportLon(source.getReportLon());
+        target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
     }
 
     @Override
-    public void fillInnerFromAdo(VisitDto dto, Visit ado) {
+    public void fillInnerFromAdo(VisitDto target, Visit source) {
 
-        dto.setDisease(ado.getDisease());
+        target.setDisease(source.getDisease());
 
-        if (ado.getPerson() != null) {
-            Person person = DatabaseHelper.getPersonDao().queryForId(ado.getPerson().getId());
-            dto.setPerson(PersonDtoHelper.toReferenceDto(person));
+        if (source.getPerson() != null) {
+            Person person = DatabaseHelper.getPersonDao().queryForId(source.getPerson().getId());
+            target.setPerson(PersonDtoHelper.toReferenceDto(person));
         } else {
-            dto.setPerson(null);
+            target.setPerson(null);
         }
 
-        if (ado.getSymptoms() != null) {
-            Symptoms symptoms = DatabaseHelper.getSymptomsDao().queryForId(ado.getSymptoms().getId());
+        if (source.getSymptoms() != null) {
+            Symptoms symptoms = DatabaseHelper.getSymptomsDao().queryForId(source.getSymptoms().getId());
             SymptomsDto symptomsDto = symptomsDtoHelper.adoToDto(symptoms);
-            dto.setSymptoms(symptomsDto);
+            target.setSymptoms(symptomsDto);
         } else {
-            dto.setSymptoms(null);
+            target.setSymptoms(null);
         }
 
-        dto.setVisitDateTime(ado.getVisitDateTime());
-        dto.setVisitRemarks(ado.getVisitRemarks());
-        dto.setVisitStatus(ado.getVisitStatus());
+        target.setVisitDateTime(source.getVisitDateTime());
+        target.setVisitRemarks(source.getVisitRemarks());
+        target.setVisitStatus(source.getVisitStatus());
 
-        if (ado.getVisitUser() != null) {
-            User user = DatabaseHelper.getUserDao().queryForId(ado.getVisitUser().getId());
-            dto.setVisitUser(UserDtoHelper.toReferenceDto(user));
+        if (source.getVisitUser() != null) {
+            User user = DatabaseHelper.getUserDao().queryForId(source.getVisitUser().getId());
+            target.setVisitUser(UserDtoHelper.toReferenceDto(user));
         } else {
-            dto.setVisitUser(null);
+            target.setVisitUser(null);
         }
 
-        dto.setReportLat(ado.getReportLat());
-        dto.setReportLon(ado.getReportLon());
+        target.setReportLat(source.getReportLat());
+        target.setReportLon(source.getReportLon());
+        target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
     }
 }
