@@ -1759,8 +1759,6 @@ ALTER TABLE symptoms_history DROP COLUMN illlocation_id;
 ALTER TABLE symptoms_history DROP COLUMN illlocationfrom;
 ALTER TABLE symptoms_history DROP COLUMN illlocationto;
 
-INSERT INTO schema_version (version_number, comment) VALUES (70, 'IllLocation removed from symptoms #347');
-
 -- 2017-10-26 Add accuracy to lat lon data #371
 ALTER TABLE location ADD COLUMN latLonAccuracy real;
 ALTER TABLE cases ADD COLUMN reportLatLonAccuracy real;
@@ -1783,3 +1781,36 @@ ALTER TABLE samples_history ADD COLUMN reportLon double precision;
 ALTER TABLE samples_history ADD COLUMN reportLatLonAccuracy real;
 
 INSERT INTO schema_version (version_number, comment) VALUES (71, 'Add accuracy to lat lon data #371');
+
+-- 2017-10-24 Monkeypox disease fields #366
+ALTER TABLE symptoms ADD COLUMN cutaneouseruption varchar(255);
+ALTER TABLE symptoms ADD COLUMN lesions varchar(255);
+ALTER TABLE symptoms ADD COLUMN lesionssamestate varchar(255);
+ALTER TABLE symptoms ADD COLUMN lesionssamesize varchar(255);
+ALTER TABLE symptoms ADD COLUMN lesionsdeepprofound varchar(255);
+ALTER TABLE symptoms ADD COLUMN lesionsface boolean;
+ALTER TABLE symptoms ADD COLUMN lesionslegs boolean;
+ALTER TABLE symptoms ADD COLUMN lesionssolesfeet boolean;
+ALTER TABLE symptoms ADD COLUMN lesionspalmshands boolean;
+ALTER TABLE symptoms ADD COLUMN lesionsthorax boolean;
+ALTER TABLE symptoms ADD COLUMN lesionsarms boolean;
+ALTER TABLE symptoms ADD COLUMN lesionsgenitals boolean;
+ALTER TABLE symptoms ADD COLUMN lesionsalloverbody boolean;
+ALTER TABLE symptoms ADD COLUMN lesionsresembleimg1 varchar(255);
+ALTER TABLE symptoms ADD COLUMN lesionsresembleimg2 varchar(255);
+ALTER TABLE symptoms ADD COLUMN lesionsresembleimg3 varchar(255);
+ALTER TABLE symptoms ADD COLUMN lesionsresembleimg4 varchar(255);
+ALTER TABLE symptoms ADD COLUMN lymphadenopathyinguinal varchar(255);
+ALTER TABLE symptoms ADD COLUMN lymphadenopathyaxillary varchar(255);
+ALTER TABLE symptoms ADD COLUMN lymphadenopathycervical varchar(255);
+ALTER TABLE symptoms ADD COLUMN chillssweats varchar(255);
+ALTER TABLE symptoms ADD COLUMN lesionsthatitch varchar(255);
+ALTER TABLE symptoms ADD COLUMN bedridden varchar(255);
+ALTER TABLE symptoms ADD COLUMN oralulcers varchar(255);
+ALTER TABLE symptoms ADD COLUMN illlocation varchar(512);
+ALTER TABLE cases ADD COLUMN smallpoxVaccinationScar varchar(255);
+ALTER TABLE epidata ADD COLUMN dateoflastexposure timestamp;
+ALTER TABLE epidata ADD COLUMN placeoflastexposure varchar(512);
+ALTER TABLE epidata ADD COLUMN animalcondition varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (72, 'Monkeypox disease fields #366');

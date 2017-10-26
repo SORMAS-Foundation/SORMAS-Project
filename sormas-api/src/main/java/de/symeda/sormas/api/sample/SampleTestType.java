@@ -11,6 +11,7 @@ public enum SampleTestType {
 	MICROSCOPY,
 	VIRUS_ISOLATION,
 	RAPID_TEST,
+	ANTIGEN_DETECTION,
 	OTHER,
 	;
 	

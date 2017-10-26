@@ -9,6 +9,7 @@ public enum Disease {
 	MEASLES,
 	YELLOW_FEVER,
 	DENGUE,
+	MONKEYPOX,
 	OTHER
 	;
 	
@@ -25,6 +26,6 @@ public enum Disease {
 	}
 	
 	public boolean hasContactFollowUp() {
-		return this == EVD || this == LASSA || this == AVIAN_INFLUENCA;
+		return this == EVD || this == LASSA || this == AVIAN_INFLUENCA || this == MONKEYPOX;
 	}
 }

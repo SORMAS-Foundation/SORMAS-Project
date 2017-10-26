@@ -94,6 +94,31 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setStomachBleeding(source.getStomachBleeding());
 		target.setRapidBreathing(source.getRapidBreathing());
 		target.setSwollenGlands(source.getSwollenGlands());
+		target.setCutaneousEruption(source.getCutaneousEruption());
+		target.setLesions(source.getLesions());
+		target.setLesionsSameState(source.getLesionsSameState());
+		target.setLesionsSameSize(source.getLesionsSameSize());
+		target.setLesionsDeepProfound(source.getLesionsDeepProfound());
+		target.setLesionsFace(source.getLesionsFace());
+		target.setLesionsLegs(source.getLesionsLegs());
+		target.setLesionsSolesFeet(source.getLesionsSolesFeet());
+		target.setLesionsPalmsHands(source.getLesionsPalmsHands());
+		target.setLesionsThorax(source.getLesionsThorax());
+		target.setLesionsArms(source.getLesionsArms());
+		target.setLesionsGenitals(source.getLesionsGenitals());
+		target.setLesionsAllOverBody(source.getLesionsAllOverBody());
+		target.setLesionsResembleImg1(source.getLesionsResembleImg1());
+		target.setLesionsResembleImg2(source.getLesionsResembleImg2());
+		target.setLesionsResembleImg3(source.getLesionsResembleImg3());
+		target.setLesionsResembleImg4(source.getLesionsResembleImg4());
+		target.setLymphadenopathyInguinal(source.getLymphadenopathyInguinal());
+		target.setLymphadenopathyAxillary(source.getLymphadenopathyAxillary());
+		target.setLymphadenopathyCervical(source.getLymphadenopathyCervical());
+		target.setChillsSweats(source.getChillsSweats());
+		target.setLesionsThatItch(source.getLesionsThatItch());
+		target.setBedridden(source.getBedridden());
+		target.setOralUlcers(source.getOralUlcers());
+		target.setIllLocation(source.getIllLocation());
 		
 		return symptoms;
 	}
@@ -170,6 +195,31 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setStomachBleeding(source.getStomachBleeding());
 		target.setRapidBreathing(source.getRapidBreathing());
 		target.setSwollenGlands(source.getSwollenGlands());
+		target.setCutaneousEruption(source.getCutaneousEruption());
+		target.setLesions(source.getLesions());
+		target.setLesionsSameState(source.getLesionsSameState());
+		target.setLesionsSameSize(source.getLesionsSameSize());
+		target.setLesionsDeepProfound(source.getLesionsDeepProfound());
+		target.setLesionsFace(source.getLesionsFace());
+		target.setLesionsLegs(source.getLesionsLegs());
+		target.setLesionsSolesFeet(source.getLesionsSolesFeet());
+		target.setLesionsPalmsHands(source.getLesionsPalmsHands());
+		target.setLesionsThorax(source.getLesionsThorax());
+		target.setLesionsArms(source.getLesionsArms());
+		target.setLesionsGenitals(source.getLesionsGenitals());
+		target.setLesionsAllOverBody(source.getLesionsAllOverBody());
+		target.setLesionsResembleImg1(source.getLesionsResembleImg1());
+		target.setLesionsResembleImg2(source.getLesionsResembleImg2());
+		target.setLesionsResembleImg3(source.getLesionsResembleImg3());
+		target.setLesionsResembleImg4(source.getLesionsResembleImg4());
+		target.setLymphadenopathyInguinal(source.getLymphadenopathyInguinal());
+		target.setLymphadenopathyAxillary(source.getLymphadenopathyAxillary());
+		target.setLymphadenopathyCervical(source.getLymphadenopathyCervical());
+		target.setChillsSweats(source.getChillsSweats());
+		target.setLesionsThatItch(source.getLesionsThatItch());
+		target.setBedridden(source.getBedridden());
+		target.setOralUlcers(source.getOralUlcers());
+		target.setIllLocation(source.getIllLocation());
 		
 		return target;
 	}

@@ -14,8 +14,8 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.WaterSource;
-import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.Diseases.DiseasesConfiguration;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -24,11 +24,12 @@ import de.symeda.sormas.ui.utils.LayoutUtil;
 @SuppressWarnings("serial")
 public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 
+	private static final String EPI_DATA_CAPTION_LOC = "epiDataCaptionLoc";
 	private static final String ANIMAL_CAPTION_LOC = "animalCaptionLoc";
 	private static final String ENVIRONMENTAL_LOC = "environmentalLoc";
 	
 	private static final String HTML_LAYOUT = 
-			LayoutUtil.h3(CssStyles.VSPACE_3, "Epidemiological data") +
+			LayoutUtil.loc(EPI_DATA_CAPTION_LOC) +
 			LayoutUtil.fluidRowLocs(EpiDataDto.BURIAL_ATTENDED) +
 			LayoutUtil.fluidRowLocs(EpiDataDto.BURIALS) +
 			LayoutUtil.fluidRowLocs(EpiDataDto.GATHERING_ATTENDED) +
@@ -50,7 +51,9 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 							LayoutUtil.locsCss(CssStyles.VSPACE_3,
 									EpiDataDto.CATTLE, EpiDataDto.OTHER_ANIMALS,
 									EpiDataDto.OTHER_ANIMALS_DETAILS, EpiDataDto.WILDBIRDS, EpiDataDto.WILDBIRDS_DETAILS,
-									EpiDataDto.WILDBIRDS_DATE, EpiDataDto.WILDBIRDS_LOCATION
+									EpiDataDto.WILDBIRDS_DATE, EpiDataDto.WILDBIRDS_LOCATION,
+									EpiDataDto.DATE_OF_LAST_EXPOSURE, EpiDataDto.PLACE_OF_LAST_EXPOSURE,
+									EpiDataDto.ANIMAL_CONDITION
 							)
 					)
 			) +
@@ -104,6 +107,9 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		addField(EpiDataDto.WATER_SOURCE, ComboBox.class);
 		addField(EpiDataDto.WATER_SOURCE_OTHER, TextField.class);
 		addField(EpiDataDto.WATER_BODY_DETAILS, TextField.class);
+		addField(EpiDataDto.DATE_OF_LAST_EXPOSURE, DateField.class);
+		addField(EpiDataDto.PLACE_OF_LAST_EXPOSURE, TextField.class);
+		addField(EpiDataDto.ANIMAL_CONDITION, OptionGroup.class);
 
 		for (Object propertyId : getFieldGroup().getBoundPropertyIds()) {
 			boolean visible = DiseasesConfiguration.isDefinedOrMissing(EpiDataDto.class, (String)propertyId, disease);
@@ -115,9 +121,9 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		
 		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(EpiDataDto.POULTRY_DETAILS), EpiDataDto.POULTRY, Arrays.asList(YesNoUnknown.YES), true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), EpiDataDto.POULTRY_SICK, EpiDataDto.POULTRY, Arrays.asList(YesNoUnknown.YES), true);
-		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(EpiDataDto.POULTRY_SICK_DETAILS, EpiDataDto.POULTRY_DATE, EpiDataDto.POULTRY_LOCATION), EpiDataDto.POULTRY_SICK, Arrays.asList(YesNoUnknown.YES), true);
+		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(EpiDataDto.POULTRY_SICK_DETAILS, EpiDataDto.POULTRY_DATE, EpiDataDto.POULTRY_LOCATION), EpiDataDto.POULTRY_SICK, Arrays.asList(YesNoUnknown.YES), true, EpiDataDto.class, disease);
 		FieldHelper.setVisibleWhen(getFieldGroup(), EpiDataDto.OTHER_ANIMALS_DETAILS, EpiDataDto.OTHER_ANIMALS, Arrays.asList(YesNoUnknown.YES), true);
-		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(EpiDataDto.WILDBIRDS_DETAILS, EpiDataDto.WILDBIRDS_DATE, EpiDataDto.WILDBIRDS_LOCATION), EpiDataDto.WILDBIRDS, Arrays.asList(YesNoUnknown.YES), true);
+		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(EpiDataDto.WILDBIRDS_DETAILS, EpiDataDto.WILDBIRDS_DATE, EpiDataDto.WILDBIRDS_LOCATION), EpiDataDto.WILDBIRDS, Arrays.asList(YesNoUnknown.YES), true, EpiDataDto.class, disease);
 		FieldHelper.setVisibleWhen(getFieldGroup(), EpiDataDto.WATER_SOURCE_OTHER, EpiDataDto.WATER_SOURCE, Arrays.asList(WaterSource.OTHER), true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), EpiDataDto.WATER_BODY_DETAILS, EpiDataDto.WATER_BODY, Arrays.asList(YesNoUnknown.YES), true);
 		
@@ -125,12 +131,24 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		FieldHelper.setVisibleWhen(getFieldGroup(), EpiDataDto.GATHERINGS, EpiDataDto.GATHERING_ATTENDED, Arrays.asList(YesNoUnknown.YES), true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), EpiDataDto.TRAVELS, EpiDataDto.TRAVELED, Arrays.asList(YesNoUnknown.YES), true);
 		
+		List<String> epiDataFields = Arrays.asList(EpiDataDto.BURIAL_ATTENDED, EpiDataDto.GATHERING_ATTENDED, EpiDataDto.TRAVELED);
+		
+		for (String epiDataField : epiDataFields) {
+			if (getFieldGroup().getField(epiDataField).isVisible()) {
+				String epiDataCaptionLayout = LayoutUtil.h3(CssStyles.VSPACE_3, "Epidemiological Data") + LayoutUtil.divCss(CssStyles.VSPACE_3, I18nProperties.getFieldCaption("EpiData.epiDataHint"));
+				Label epiDataCaptionLabel = new Label(epiDataCaptionLayout);
+				epiDataCaptionLabel.setContentMode(ContentMode.HTML);
+				getContent().addComponent(epiDataCaptionLabel, EPI_DATA_CAPTION_LOC);
+				break;
+			}
+		}
+		
 		List<String> animalContacts = Arrays.asList(EpiDataDto.RODENTS, EpiDataDto.BATS, EpiDataDto.PRIMATES, EpiDataDto.SWINE, EpiDataDto.CATTLE,
 				EpiDataDto.OTHER_ANIMALS, EpiDataDto.WILDBIRDS, EpiDataDto.BIRDS, EpiDataDto.POULTRY_EAT, EpiDataDto.POULTRY, EpiDataDto.POULTRY_SICK);
 		
 		for (String animalContact : animalContacts) {
 			if (getFieldGroup().getField(animalContact).isVisible()) {
-				String animalCaptionLayout = LayoutUtil.h3(CssStyles.VSPACE_3, "Animal contacts") + LayoutUtil.divCss(CssStyles.VSPACE_3, I18nProperties.getFieldCaption("EpiData.hint"));
+				String animalCaptionLayout = LayoutUtil.h3(CssStyles.VSPACE_3, "Animal Contacts") + LayoutUtil.divCss(CssStyles.VSPACE_3, I18nProperties.getFieldCaption("EpiData.animalHint"));
 				Label animalCaptionLabel = new Label(animalCaptionLayout);
 				animalCaptionLabel.setContentMode(ContentMode.HTML);
 				getContent().addComponent(animalCaptionLabel, ANIMAL_CAPTION_LOC);
@@ -142,7 +160,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		
 		for (String environmentalExp : environmentalExposures) {
 			if (getFieldGroup().getField(environmentalExp).isVisible()) {
-				String environmentalCaptionLayout = LayoutUtil.h3(CssStyles.VSPACE_3, "Environmental exposure");
+				String environmentalCaptionLayout = LayoutUtil.h3(CssStyles.VSPACE_3, "Environmental Exposure");
 				Label environmentalCaptionLabel = new Label(environmentalCaptionLayout);
 				environmentalCaptionLabel.setContentMode(ContentMode.HTML);
 				getContent().addComponent(environmentalCaptionLabel, ENVIRONMENTAL_LOC);

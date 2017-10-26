@@ -19,8 +19,6 @@ import javax.validation.constraints.NotNull;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
@@ -166,6 +164,7 @@ public class ContactService extends AbstractAdoService<Contact> {
 	public int getFollowUpDuration(Disease disease) {
 		switch (disease) {
 		case EVD:
+		case MONKEYPOX:
 		case CHOLERA:
 			return 21;
 		case AVIAN_INFLUENCA:

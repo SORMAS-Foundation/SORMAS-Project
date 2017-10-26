@@ -25,6 +25,7 @@ public class Symptoms extends AbstractDomainObject {
 	private Date onsetDate;
 	private String onsetSymptom;
 	private Boolean symptomatic;
+	private String illLocation;
 	
 	private Float temperature;
 	private TemperatureSource temperatureSource;
@@ -80,6 +81,30 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState stomachBleeding;
 	private SymptomState rapidBreathing;
 	private SymptomState swollenGlands;
+	private SymptomState cutaneousEruption;
+	private SymptomState lesions;
+	private SymptomState lesionsSameState;
+	private SymptomState lesionsSameSize;
+	private SymptomState lesionsDeepProfound;
+	private SymptomState lesionsThatItch;
+	private Boolean lesionsFace;
+	private Boolean lesionsLegs;
+	private Boolean lesionsSolesFeet;
+	private Boolean lesionsPalmsHands;
+	private Boolean lesionsThorax;
+	private Boolean lesionsArms;
+	private Boolean lesionsGenitals;
+	private Boolean lesionsAllOverBody;
+	private SymptomState lesionsResembleImg1;
+	private SymptomState lesionsResembleImg2;
+	private SymptomState lesionsResembleImg3;
+	private SymptomState lesionsResembleImg4;
+	private SymptomState lymphadenopathyInguinal;
+	private SymptomState lymphadenopathyAxillary;
+	private SymptomState lymphadenopathyCervical;
+	private SymptomState chillsSweats;
+	private SymptomState bedridden;
+	private SymptomState oralUlcers;
 	private String otherNonHemorrhagicSymptomsText;
 	private String symptomsComments;
 	
@@ -90,6 +115,15 @@ public class Symptoms extends AbstractDomainObject {
 
 	public void setOnsetDate(Date onsetDate) {
 		this.onsetDate = onsetDate;
+	}
+	
+	@Column(length = 255)
+	public String getIllLocation() {
+		return illLocation;
+	}
+
+	public void setIllLocation(String illLocation) {
+		this.illLocation = illLocation;
 	}
 
 	@Column(columnDefinition = "float8")
@@ -606,6 +640,210 @@ public class Symptoms extends AbstractDomainObject {
 
 	public void setSwollenGlands(SymptomState swollenGlands) {
 		this.swollenGlands = swollenGlands;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getCutaneousEruption() {
+		return cutaneousEruption;
+	}
+
+	public void setCutaneousEruption(SymptomState cutaneousEruption) {
+		this.cutaneousEruption = cutaneousEruption;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getLesions() {
+		return lesions;
+	}
+
+	public void setLesions(SymptomState lesions) {
+		this.lesions = lesions;
+	}
+
+	public Boolean getLesionsFace() {
+		return lesionsFace;
+	}
+
+	public Boolean getLesionsLegs() {
+		return lesionsLegs;
+	}
+
+	public Boolean getLesionsSolesFeet() {
+		return lesionsSolesFeet;
+	}
+
+	public Boolean getLesionsPalmsHands() {
+		return lesionsPalmsHands;
+	}
+
+	public Boolean getLesionsThorax() {
+		return lesionsThorax;
+	}
+
+	public Boolean getLesionsArms() {
+		return lesionsArms;
+	}
+
+	public Boolean getLesionsGenitals() {
+		return lesionsGenitals;
+	}
+
+	public Boolean getLesionsAllOverBody() {
+		return lesionsAllOverBody;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getLesionsSameState() {
+		return lesionsSameState;
+	}
+
+	public void setLesionsSameState(SymptomState lesionsSameState) {
+		this.lesionsSameState = lesionsSameState;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getLesionsSameSize() {
+		return lesionsSameSize;
+	}
+
+	public void setLesionsSameSize(SymptomState lesionsSameSize) {
+		this.lesionsSameSize = lesionsSameSize;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getLesionsDeepProfound() {
+		return lesionsDeepProfound;
+	}
+
+	public void setLesionsDeepProfound(SymptomState lesionsDeepProfound) {
+		this.lesionsDeepProfound = lesionsDeepProfound;
+	}
+	
+	public void setLesionsFace(Boolean lesionsFace) {
+		this.lesionsFace = lesionsFace;
+	}
+	
+	public void setLesionsLegs(Boolean lesionsLegs) {
+		this.lesionsLegs = lesionsLegs;
+	}
+
+	public void setLesionsSolesFeet(Boolean lesionsSolesFeet) {
+		this.lesionsSolesFeet = lesionsSolesFeet;
+	}
+
+	public void setLesionsPalmsHands(Boolean lesionsPalmsHands) {
+		this.lesionsPalmsHands = lesionsPalmsHands;
+	}
+	
+	public void setLesionsThorax(Boolean lesionsThorax) {
+		this.lesionsThorax = lesionsThorax;
+	}
+
+	public void setLesionsArms(Boolean lesionsArms) {
+		this.lesionsArms = lesionsArms;
+	}
+
+	public void setLesionsGenitals(Boolean lesionsGenitals) {
+		this.lesionsGenitals = lesionsGenitals;
+	}
+
+	public void setLesionsAllOverBody(Boolean lesionsAllOverBody) {
+		this.lesionsAllOverBody = lesionsAllOverBody;
+	}
+
+	public SymptomState getLesionsResembleImg1() {
+		return lesionsResembleImg1;
+	}
+
+	public void setLesionsResembleImg1(SymptomState lesionsResembleImg1) {
+		this.lesionsResembleImg1 = lesionsResembleImg1;
+	}
+
+	public SymptomState getLesionsResembleImg2() {
+		return lesionsResembleImg2;
+	}
+
+	public void setLesionsResembleImg2(SymptomState lesionsResembleImg2) {
+		this.lesionsResembleImg2 = lesionsResembleImg2;
+	}
+
+	public SymptomState getLesionsResembleImg3() {
+		return lesionsResembleImg3;
+	}
+
+	public void setLesionsResembleImg3(SymptomState lesionsResembleImg3) {
+		this.lesionsResembleImg3 = lesionsResembleImg3;
+	}
+
+	public SymptomState getLesionsResembleImg4() {
+		return lesionsResembleImg4;
+	}
+
+	public void setLesionsResembleImg4(SymptomState lesionsResembleImg4) {
+		this.lesionsResembleImg4 = lesionsResembleImg4;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getLymphadenopathyInguinal() {
+		return lymphadenopathyInguinal;
+	}
+
+	public void setLymphadenopathyInguinal(SymptomState lymphadenopathyInguinal) {
+		this.lymphadenopathyInguinal = lymphadenopathyInguinal;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getLymphadenopathyAxillary() {
+		return lymphadenopathyAxillary;
+	}
+
+	public void setLymphadenopathyAxillary(SymptomState lymphadenopathyAxillary) {
+		this.lymphadenopathyAxillary = lymphadenopathyAxillary;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getLymphadenopathyCervical() {
+		return lymphadenopathyCervical;
+	}
+
+	public void setLymphadenopathyCervical(SymptomState lymphadenopathyCervical) {
+		this.lymphadenopathyCervical = lymphadenopathyCervical;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getChillsSweats() {
+		return chillsSweats;
+	}
+
+	public void setChillsSweats(SymptomState chillsSweats) {
+		this.chillsSweats = chillsSweats;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getLesionsThatItch() {
+		return lesionsThatItch;
+	}
+
+	public void setLesionsThatItch(SymptomState lesionsThatItch) {
+		this.lesionsThatItch = lesionsThatItch;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getBedridden() {
+		return bedridden;
+	}
+
+	public void setBedridden(SymptomState bedridden) {
+		this.bedridden = bedridden;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getOralUlcers() {
+		return oralUlcers;
+	}
+
+	public void setOralUlcers(SymptomState oralUlcers) {
+		this.oralUlcers = oralUlcers;
 	}
 
 	@Column(length = 255)

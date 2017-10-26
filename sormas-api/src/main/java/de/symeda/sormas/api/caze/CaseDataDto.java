@@ -48,6 +48,7 @@ public class CaseDataDto extends CaseReferenceDto {
 	public static final String MEASLES_VACCINATION_INFO_SOURCE = "measlesVaccinationInfoSource";
 	public static final String YELLOW_FEVER_VACCINATION = "yellowFeverVaccination";
 	public static final String YELLOW_FEVER_VACCINATION_INFO_SOURCE = "yellowFeverVaccinationInfoSource";
+	public static final String SMALLPOX_VACCINATION_SCAR = "smallpoxVaccinationScar";
 	public static final String EPID_NUMBER = "epidNumber";
 	public static final String REPORT_LAT = "reportLat";
 	public static final String REPORT_LON = "reportLon";
@@ -83,6 +84,8 @@ public class CaseDataDto extends CaseReferenceDto {
 	private Vaccination yellowFeverVaccination;
 	@Diseases({Disease.YELLOW_FEVER})
 	private VaccinationInfoSource yellowFeverVaccinationInfoSource;
+	@Diseases({Disease.MONKEYPOX})
+	private YesNoUnknown smallpoxVaccinationScar;
 	
 	private String epidNumber;
 
@@ -284,6 +287,14 @@ public class CaseDataDto extends CaseReferenceDto {
 
 	public void setYellowFeverVaccinationInfoSource(VaccinationInfoSource yellowFeverVaccinationInfoSource) {
 		this.yellowFeverVaccinationInfoSource = yellowFeverVaccinationInfoSource;
+	}
+
+	public YesNoUnknown getSmallpoxVaccinationScar() {
+		return smallpoxVaccinationScar;
+	}
+
+	public void setSmallpoxVaccinationScar(YesNoUnknown smallpoxVaccinationScar) {
+		this.smallpoxVaccinationScar = smallpoxVaccinationScar;
 	}
 
 	public String getEpidNumber() {

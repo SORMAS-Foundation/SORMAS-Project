@@ -64,14 +64,25 @@ public final class FieldHelper {
 		});
 	}
 
-	public static void setVisibleWhen(FieldGroup fieldGroup, Object targetPropertyId, 
+	public static void setVisibleWhen(FieldGroup fieldGroup, String targetPropertyId, 
 			Object sourcePropertyId, List<Object> sourceValues, boolean clearOnHidden) {
-		setVisibleWhen(fieldGroup, Arrays.asList(targetPropertyId), sourcePropertyId, sourceValues, clearOnHidden);
+		setVisibleWhen(fieldGroup, Arrays.asList(targetPropertyId), sourcePropertyId, sourceValues, clearOnHidden, null, null);
+	}
+	
+	public static void setVisibleWhen(FieldGroup fieldGroup, List<String> targetPropertyIds, 
+			Object sourcePropertyId, List<Object> sourceValues, boolean clearOnHidden) {
+		setVisibleWhen(fieldGroup, targetPropertyIds, sourcePropertyId, sourceValues, clearOnHidden, null, null);
+	}
+	
+	@SuppressWarnings("rawtypes")
+	public static void setVisibleWhen(FieldGroup fieldGroup, String targetPropertyId, 
+			Object sourcePropertyId, List<Object> sourceValues, boolean clearOnHidden, Class fieldClass, Disease disease) {
+		setVisibleWhen(fieldGroup, Arrays.asList(targetPropertyId), sourcePropertyId, sourceValues, clearOnHidden, fieldClass, disease);
 	}
 
 	@SuppressWarnings("rawtypes")
-	public static void setVisibleWhen(final FieldGroup fieldGroup, List<Object> targetPropertyIds, 
-			Object sourcePropertyId, final List<Object> sourceValues, final boolean clearOnHidden) {
+	public static void setVisibleWhen(final FieldGroup fieldGroup, List<String> targetPropertyIds, 
+			Object sourcePropertyId, final List<Object> sourceValues, final boolean clearOnHidden, Class fieldClass, Disease disease) {
 
 		Field sourceField = fieldGroup.getField(sourcePropertyId);
 		if (sourceField instanceof AbstractField<?>) {
@@ -83,9 +94,11 @@ public final class FieldHelper {
 			boolean visible = sourceValues.contains(sourceField.getValue());
 			for (Object targetPropertyId : targetPropertyIds) {
 				Field targetField = fieldGroup.getField(targetPropertyId);
-				targetField.setVisible(visible);
-				if (!visible && clearOnHidden && targetField.getValue() != null) {
-					targetField.clear();
+					if(fieldClass == null || disease == null || Diseases.DiseasesConfiguration.isDefined(fieldClass, (String) targetPropertyId, disease)) {
+					targetField.setVisible(visible);
+					if (!visible && clearOnHidden && targetField.getValue() != null) {
+						targetField.clear();
+					}
 				}
 			}
 		}
@@ -94,23 +107,25 @@ public final class FieldHelper {
 			boolean visible = sourceValues.contains(event.getProperty().getValue());
 			for (Object targetPropertyId : targetPropertyIds) {
 				Field targetField = fieldGroup.getField(targetPropertyId);
-				targetField.setVisible(visible);
-				if (!visible && clearOnHidden && targetField.getValue() != null) {
-					targetField.clear();
+					if(fieldClass == null || disease == null || Diseases.DiseasesConfiguration.isDefined(fieldClass, (String) targetPropertyId, disease)) {
+					targetField.setVisible(visible);
+					if (!visible && clearOnHidden && targetField.getValue() != null) {
+						targetField.clear();
+					}
 				}
 			}
 		});
 	}
 	
 	public static void setRequiredWhen(FieldGroup fieldGroup, Object sourcePropertyId,
-			List<Object> targetPropertyIds, final List<Object> sourceValues) {
+			List<String> targetPropertyIds, final List<Object> sourceValues) {
 		
 		setRequiredWhen(fieldGroup, fieldGroup.getField(sourcePropertyId), targetPropertyIds, sourceValues);
 	}
 	
 	@SuppressWarnings("rawtypes")
 	public static void setRequiredWhen(FieldGroup fieldGroup, Field sourceField,
-			List<Object> targetPropertyIds, final List<Object> sourceValues) {
+			List<String> targetPropertyIds, final List<Object> sourceValues) {
 		
 		if(sourceField instanceof AbstractField<?>) {
 			((AbstractField) sourceField).setImmediate(true);
@@ -141,7 +156,7 @@ public final class FieldHelper {
 	 */
 	@SuppressWarnings("rawtypes")
 	public static void setRequiredWhen(FieldGroup fieldGroup, Field sourceField, 
-			List<Object> targetPropertyIds, final List<Object> sourceValues, Disease disease) {
+			List<String> targetPropertyIds, final List<Object> sourceValues, Disease disease) {
 		
 		if(sourceField instanceof AbstractField<?>) {
 			((AbstractField) sourceField).setImmediate(true);
