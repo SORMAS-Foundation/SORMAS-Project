@@ -7,6 +7,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.SubNavigationMenu;
 import de.symeda.sormas.ui.epidata.EpiDataView;
 import de.symeda.sormas.ui.hospitalization.CaseHospitalizationView;
@@ -40,7 +41,9 @@ public abstract class AbstractCaseView extends AbstractSubNavigationView {
 		infoLabel.setValue(caseRef.getCaption());
 		
 		CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(params);
-		infoLabelSub.setValue(caseDto.getDisease().toString() + (caseDto.getDisease() == Disease.OTHER ? " (" + caseDto.getDiseaseDetails() + ")" : ""));
+		infoLabelSub.setValue(caseDto.getDisease() != Disease.OTHER
+				? DataHelper.toStringNullable(caseDto.getDisease())
+				: DataHelper.toStringNullable(caseDto.getDiseaseDetails()));
     }
 
 	public CaseReferenceDto getCaseRef() {

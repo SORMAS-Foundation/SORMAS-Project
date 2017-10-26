@@ -45,14 +45,9 @@ public class EventsListArrayAdapter extends ArrayAdapter<Event> {
         uuid.setText(DataHelper.getShortUuid(event.getUuid()));
 
         TextView disease = (TextView) convertView.findViewById(R.id.eli_disease);
-        if(event.getDisease() != null) {
-            String diseaseName = event.getDisease().getName();
-            disease.setText(Disease.valueOf(diseaseName).toShortString() + (event.getDisease() == Disease.OTHER ? " (" + event.getDiseaseDetails() + ")" : ""));
-        } else {
-            disease.setText(null);
-        }
-//        TextView eventStatus = (TextView) convertView.findViewById(R.id.eli_eventStatus);
-//        eventStatus.setText(event.getEventStatus()!=null?event.getEventStatus().toString():null);
+        disease.setText(event.getDisease() != Disease.OTHER
+                ? (event.getDisease() != null ? event.getDisease().toShortString() : "")
+                : DataHelper.toStringNullable(event.getDiseaseDetails()));
 
         TextView summary = (TextView) convertView.findViewById(R.id.eli_summary);
         StringBuilder sb = new StringBuilder();

@@ -20,6 +20,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.EventType;
 import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.location.Location;
@@ -261,7 +262,9 @@ public class Event extends AbstractDomainObject {
 	
 	@Override
 	public String toString() {
-		String diseaseString = disease == null ? "" : disease.toString() + (disease == Disease.OTHER ? " (" + diseaseDetails + ")" : "");
+		String diseaseString = getDisease() != Disease.OTHER
+				? DataHelper.toStringNullable(getDisease())
+				: DataHelper.toStringNullable(getDiseaseDetails());
 		String eventTypeString = diseaseString.isEmpty() ? eventType.toString() : eventType.toString().toLowerCase();
 		return diseaseString + " " + eventTypeString + " on " + DateHelper.formatDate(eventDate);
 	}

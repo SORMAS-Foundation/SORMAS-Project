@@ -8,6 +8,7 @@ import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.SubNavigationMenu;
 import de.symeda.sormas.ui.caze.CaseContactsView;
 import de.symeda.sormas.ui.utils.AbstractSubNavigationView;
@@ -36,7 +37,10 @@ public abstract class AbstractContactView extends AbstractSubNavigationView {
 		
 		infoLabel.setValue(contact.toString());
 		CaseDataDto caseData = FacadeProvider.getCaseFacade().getCaseDataByUuid(contact.getCaze().getUuid());
-		infoLabelSub.setValue(caseData.getDisease().toString() + (caseData.getDisease() == Disease.OTHER ? " (" + caseData.getDiseaseDetails() + ")" : ""));
+		infoLabelSub.setValue(
+				caseData.getDisease() != Disease.OTHER 
+				? caseData.getDisease().toShortString()
+				: DataHelper.toStringNullable(caseData.getDiseaseDetails()));
     }
 
 	public ContactReferenceDto getContactRef() {

@@ -19,6 +19,7 @@ import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.UuidRenderer;
@@ -71,10 +72,9 @@ public class ContactGrid extends Grid {
 			public String getValue(Item item, Object itemId, Object propertyId) {
 				ContactIndexDto contactIndexDto = (ContactIndexDto) itemId;
 				CaseDataDto contactCase = FacadeProvider.getCaseFacade().getCaseDataByUuid(contactIndexDto.getCaze().getUuid());
-				Disease disease = contactCase.getDisease();
-				return disease == Disease.OTHER 
-						? disease.toShortString() + " (" + contactCase.getDiseaseDetails() + ")" 
-						: disease.toShortString();
+				return contactCase.getDisease() != Disease.OTHER 
+					? contactCase.getDisease().toShortString()
+					: DataHelper.toStringNullable(contactCase.getDiseaseDetails());
 			}
 			@Override
 			public Class<String> getType() {
