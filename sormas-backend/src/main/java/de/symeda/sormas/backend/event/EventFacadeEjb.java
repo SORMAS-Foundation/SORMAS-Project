@@ -14,10 +14,13 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventFacade;
 import de.symeda.sormas.api.event.EventReferenceDto;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
 import de.symeda.sormas.backend.location.LocationService;
+import de.symeda.sormas.backend.region.District;
+import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
@@ -34,6 +37,8 @@ public class EventFacadeEjb implements EventFacade {
 	private LocationService locationService;
 	@EJB
 	private LocationFacadeEjbLocal locationFacade;
+	@EJB
+	private DistrictService districtService;
 	
 	@Override
 	public List<String> getAllUuids(String userUuid) {
@@ -69,14 +74,15 @@ public class EventFacadeEjb implements EventFacade {
 	}
 	
 	@Override
-	public List<EventDto> getAllEventsBetween(Date fromDate, Date toDate, Disease disease, String userUuid) {
+	public List<EventDto> getAllEventsBetween(Date fromDate, Date toDate, DistrictReferenceDto districtRef, Disease disease, String userUuid) {
 		User user = userService.getByUuid(userUuid);
+		District district = districtService.getByReferenceDto(districtRef);
 		
 		if (user == null) {
 			return Collections.emptyList();
 		}
 		
-		return eventService.getAllBetween(fromDate, toDate, disease, user).stream()
+		return eventService.getAllBetween(fromDate, toDate, district, disease, user).stream()
 				.map(e -> toDto(e))
 				.collect(Collectors.toList());
 	}
@@ -137,6 +143,7 @@ public class EventFacadeEjb implements EventFacade {
 
 		target.setReportLat(source.getReportLat());
 		target.setReportLon(source.getReportLon());
+		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
 		
 		return target;
 	}
@@ -177,7 +184,8 @@ public class EventFacadeEjb implements EventFacade {
 
 		target.setReportLat(source.getReportLat());
 		target.setReportLon(source.getReportLon());
-		
+		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
+
 		return target;
 	}
 

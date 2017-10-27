@@ -40,7 +40,7 @@ import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.component.FieldHelper;
-import de.symeda.sormas.app.component.LocationDialog;
+import de.symeda.sormas.app.component.LocationDialogBuilder;
 import de.symeda.sormas.app.component.PropertyField;
 import de.symeda.sormas.app.component.SpinnerField;
 import de.symeda.sormas.app.component.TextField;
@@ -140,7 +140,7 @@ public class PersonEditForm extends FormTab {
         updateApproximateAgeField();
 
         // ================ Address ================
-        LocationDialog.addLocationField(getActivity(), person.getAddress(), binding.personAddress, binding.formCpBtnAddress, new Consumer() {
+        LocationDialogBuilder.addLocationField(getActivity(), person.getAddress(), binding.personAddress, binding.formCpBtnAddress, new Consumer() {
             @Override
             public void accept(Object parameter) {
                 if(parameter instanceof Location) {
@@ -153,7 +153,7 @@ public class PersonEditForm extends FormTab {
         // ================ Occupation ================
 
         final TextField occupationDetails = binding.personOccupationDetails;
-        FieldHelper.initSpinnerField(binding.personOccupationType1, OccupationType.class, new AdapterView.OnItemSelectedListener() {
+        FieldHelper.initSpinnerField(binding.personOccupationType, OccupationType.class, new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 Item item = (Item)parent.getItemAtPosition(position);

@@ -18,6 +18,7 @@ import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.EventType;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.UuidRenderer;
@@ -67,12 +68,9 @@ public class EventGrid extends Grid {
 			@Override
 			public String getValue(Item item, Object itemId, Object propertyId) {
 				EventDto eventDto = (EventDto) itemId;
-				if(eventDto.getDisease() != null) {
-					String diseaseName = eventDto.getDisease().getName();
-					return Disease.valueOf(diseaseName).toShortString();
-				} else {
-					return null;
-				}
+				return eventDto.getDisease() != Disease.OTHER 
+						? (eventDto.getDisease() != null ? eventDto.getDisease().toShortString() : "")
+						: DataHelper.toStringNullable(eventDto.getDiseaseDetails());
 			}
 			@Override
 			public Class<String> getType() {

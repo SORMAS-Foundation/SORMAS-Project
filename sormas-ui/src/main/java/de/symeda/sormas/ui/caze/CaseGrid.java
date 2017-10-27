@@ -22,6 +22,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.UuidRenderer;
@@ -60,8 +61,9 @@ public class CaseGrid extends Grid {
 			@Override
 			public String getValue(Item item, Object itemId, Object propertyId) {
 				CaseDataDto caseDataDto = (CaseDataDto) itemId;
-				String diseaseName = caseDataDto.getDisease().getName();
-				return Disease.valueOf(diseaseName).toShortString();
+				return caseDataDto.getDisease() != Disease.OTHER 
+						? (caseDataDto.getDisease() != null ? caseDataDto.getDisease().toShortString() : "")
+						: DataHelper.toStringNullable(caseDataDto.getDiseaseDetails());
 			}
 			@Override
 			public Class<String> getType() {

@@ -38,8 +38,13 @@ public class SampleDto extends SampleReferenceDto {
 	private String sampleCode;
 	private String labSampleID;
 	private Date sampleDateTime;
+	
 	private Date reportDateTime;
 	private UserReferenceDto reportingUser;
+	private Double reportLat;
+	private Double reportLon;
+	private Float reportLatLonAccuracy;
+	
 	private SampleMaterial sampleMaterial;
 	private String sampleMaterialText;
 	private FacilityReferenceDto lab;
@@ -196,6 +201,24 @@ public class SampleDto extends SampleReferenceDto {
 		sample.setSampleSource(referredSample.getSampleSource());
 		
 		return sample;
+	}
+	public Double getReportLat() {
+		return reportLat;
+	}
+	public void setReportLat(Double reportLat) {
+		this.reportLat = reportLat;
+	}
+	public Double getReportLon() {
+		return reportLon;
+	}
+	public void setReportLon(Double reportLon) {
+		this.reportLon = reportLon;
+	}
+	public Float getReportLatLonAccuracy() {
+		return reportLatLonAccuracy;
+	}
+	public void setReportLatLonAccuracy(Float reportLatLonAccuracy) {
+		this.reportLatLonAccuracy = reportLatLonAccuracy;
 	}
 	
 }

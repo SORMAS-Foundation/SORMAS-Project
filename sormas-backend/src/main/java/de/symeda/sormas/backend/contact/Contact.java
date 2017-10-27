@@ -60,8 +60,10 @@ public class Contact extends AbstractDomainObject {
 	private User contactOfficer;
 	private String description;
 	private ContactRelation relationToCase;
-	private Float reportLat;
-	private Float reportLon;
+	
+	private Double reportLat;
+	private Double reportLon;
+	private Float reportLatLonAccuracy;
 	
 	private List<Task> tasks;
 	
@@ -192,19 +194,17 @@ public class Contact extends AbstractDomainObject {
 		this.tasks = tasks;
 	}
 
-	@Column(columnDefinition = "float8")
-	public Float getReportLat() {
+	public Double getReportLat() {
 		return reportLat;
 	}
-	public void setReportLat(Float reportLat) {
+	public void setReportLat(Double reportLat) {
 		this.reportLat = reportLat;
 	}
 	
-	@Column(columnDefinition = "float8")
-	public Float getReportLon() {
+	public Double getReportLon() {
 		return reportLon;
 	}
-	public void setReportLon(Float reportLon) {
+	public void setReportLon(Double reportLon) {
 		this.reportLon = reportLon;
 	}
 
@@ -215,5 +215,13 @@ public class Contact extends AbstractDomainObject {
 
 	public void setFollowUpComment(String followUpComment) {
 		this.followUpComment = followUpComment;
+	}
+
+	public Float getReportLatLonAccuracy() {
+		return reportLatLonAccuracy;
+	}
+
+	public void setReportLatLonAccuracy(Float reportLatLonAccuracy) {
+		this.reportLatLonAccuracy = reportLatLonAccuracy;
 	}	
 }

@@ -48,7 +48,7 @@ public class CaseBackendTest {
 
     @Before
     public void initTest() {
-        TestHelper.initTestEnvironment();
+        TestHelper.initTestEnvironment(false);
     }
 
     @Test
@@ -132,14 +132,12 @@ public class CaseBackendTest {
         mergeCase.setPerson((Person) caze.getPerson().clone());
         mergeCase.getPerson().setAddress((Location) caze.getPerson().getAddress().clone());
         mergeCase.setSymptoms((Symptoms) caze.getSymptoms().clone());
-        mergeCase.getSymptoms().setIllLocation((Location) caze.getSymptoms().getIllLocation().clone());
         mergeCase.setHospitalization((Hospitalization) caze.getHospitalization().clone());
         mergeCase.setEpiData((EpiData) caze.getEpiData().clone());
         mergeCase.setId(null);
         mergeCase.getPerson().setId(null);
         mergeCase.getPerson().getAddress().setId(null);
         mergeCase.getSymptoms().setId(null);
-        mergeCase.getSymptoms().getIllLocation().setId(null);
         mergeCase.getHospitalization().setId(null);
         mergeCase.getEpiData().setId(null);
 
@@ -228,14 +226,12 @@ public class CaseBackendTest {
         mergeCase.setPerson((Person) caze.getPerson().clone());
         mergeCase.getPerson().setAddress((Location) caze.getPerson().getAddress().clone());
         mergeCase.setSymptoms((Symptoms) caze.getSymptoms().clone());
-        mergeCase.getSymptoms().setIllLocation((Location) caze.getSymptoms().getIllLocation().clone());
         mergeCase.setHospitalization((Hospitalization) caze.getHospitalization().clone());
         mergeCase.setEpiData((EpiData) caze.getEpiData().clone());
         mergeCase.setId(null);
         mergeCase.getPerson().setId(null);
         mergeCase.getPerson().getAddress().setId(null);
         mergeCase.getSymptoms().setId(null);
-        mergeCase.getSymptoms().getIllLocation().setId(null);
         mergeCase.getHospitalization().setId(null);
         mergeCase.getEpiData().setId(null);
         mergeCase.setEpidNumber("ServerEpidNumber");

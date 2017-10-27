@@ -7,9 +7,9 @@ import com.vaadin.data.Property;
 import com.vaadin.data.validator.RegexpValidator;
 import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.Window;
@@ -26,7 +26,6 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.Diseases.DiseasesConfiguration;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
@@ -41,36 +40,36 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 	private static final String MEDICAL_INFORMATION_LOC = "medicalInformationLoc";
-	private static final String REPORT_INFO_LOC = "reportInfoLoc";
 	public static final String NONE_HEALTH_FACILITY_DETAILS = "noneHealthFacilityDetails";
 	
     private static final String HTML_LAYOUT = 
-    		LayoutUtil.h3(CssStyles.VSPACE3, "Case data")+
+    		LayoutUtil.h3(CssStyles.VSPACE_3, "Case data")+
 			
-			LayoutUtil.div( 
+			LayoutUtil.divCss(CssStyles.VSPACE_4,
+    				LayoutUtil.fluidRow(
+    						LayoutUtil.loc(CaseDataDto.UUID), 
+    						LayoutUtil.fluidRowLocs(CaseDataDto.REPORT_DATE, CaseDataDto.REPORTING_USER)) +
 					LayoutUtil.fluidRowLocs(CaseDataDto.CASE_CLASSIFICATION) +
 					LayoutUtil.fluidRowLocs(CaseDataDto.INVESTIGATION_STATUS) +
-		    		LayoutUtil.fluidRowCss(CssStyles.VSPACE4,
-		    				LayoutUtil.fluidRowLocs(CaseDataDto.UUID, REPORT_INFO_LOC) +
-		    				LayoutUtil.fluidRowLocs(CaseDataDto.EPID_NUMBER, CaseDataDto.DISEASE) +
-		    				LayoutUtil.fluidRowLocs("", CaseDataDto.DISEASE_DETAILS) +
-		    				LayoutUtil.fluidRowLocs(CaseDataDto.REGION, CaseDataDto.DISTRICT) +
-				    		LayoutUtil.fluidRowLocs(CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY) +
-		    				LayoutUtil.fluidRowLocs("", CaseDataDto.HEALTH_FACILITY_DETAILS) +
-		    				LayoutUtil.fluidRowLocs(CaseDataDto.SURVEILLANCE_OFFICER, ""))
+    				LayoutUtil.fluidRowLocs(CaseDataDto.EPID_NUMBER, CaseDataDto.DISEASE) +
+    				LayoutUtil.fluidRowLocs("", CaseDataDto.DISEASE_DETAILS) +
+    				LayoutUtil.fluidRowLocs(CaseDataDto.REGION, CaseDataDto.DISTRICT) +
+		    		LayoutUtil.fluidRowLocs(CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY) +
+    				LayoutUtil.fluidRowLocs("", CaseDataDto.HEALTH_FACILITY_DETAILS) +
+    				LayoutUtil.fluidRowLocs(CaseDataDto.SURVEILLANCE_OFFICER, "")
 		    )+
 			LayoutUtil.loc(MEDICAL_INFORMATION_LOC) +
 			LayoutUtil.fluidRow(
 					LayoutUtil.fluidRowLocs(CaseDataDto.PREGNANT, "") +
 					LayoutUtil.fluidRowLocs(CaseDataDto.MEASLES_VACCINATION, CaseDataDto.MEASLES_DOSES) +
 					LayoutUtil.fluidRowLocs(CaseDataDto.MEASLES_VACCINATION_INFO_SOURCE, "") +
-					LayoutUtil.fluidRowLocs(CaseDataDto.YELLOW_FEVER_VACCINATION, CaseDataDto.YELLOW_FEVER_VACCINATION_INFO_SOURCE)
+					LayoutUtil.fluidRowLocs(CaseDataDto.YELLOW_FEVER_VACCINATION, CaseDataDto.YELLOW_FEVER_VACCINATION_INFO_SOURCE) +
+					LayoutUtil.fluidRowLocs(CaseDataDto.SMALLPOX_VACCINATION_SCAR)
 			);
     	
 
     private final PersonDto person;
     private final Disease disease;
-	private Label reportInfoLabel;
 
     public CaseDataForm(PersonDto person, Disease disease) {
         super(CaseDataDto.class, CaseDataDto.I18N_PREFIX);
@@ -85,7 +84,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
     		return;
     	}
     	
-    	addField(CaseDataDto.UUID, TextField.class);
+    	addFields(CaseDataDto.UUID, CaseDataDto.REPORT_DATE, CaseDataDto.REPORTING_USER);
     	
     	TextField epidField = addField(CaseDataDto.EPID_NUMBER, TextField.class);
     	epidField.addValidator(new RegexpValidator(DataHelper.getEpidNumberRegexp(), true, 
@@ -95,8 +94,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
     	
     	addField(CaseDataDto.CASE_CLASSIFICATION, OptionGroup.class);
     	addField(CaseDataDto.INVESTIGATION_STATUS, OptionGroup.class);
-    	NativeSelect diseaseField = addField(CaseDataDto.DISEASE, NativeSelect.class);
-    	TextField diseaseDetailsField = addField(CaseDataDto.DISEASE_DETAILS, TextField.class);
+    	AbstractSelect diseaseField = addField(CaseDataDto.DISEASE, ComboBox.class);
+    	addField(CaseDataDto.DISEASE_DETAILS, TextField.class);
     	TextField healthFacilityDetails = addField(CaseDataDto.HEALTH_FACILITY_DETAILS, TextField.class);
     	
     	addField(CaseDataDto.REGION, ComboBox.class);
@@ -113,11 +112,13 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		addField(CaseDataDto.MEASLES_VACCINATION_INFO_SOURCE, ComboBox.class);
 		addField(CaseDataDto.YELLOW_FEVER_VACCINATION, ComboBox.class);
 		addField(CaseDataDto.YELLOW_FEVER_VACCINATION_INFO_SOURCE, ComboBox.class);
+		addField(CaseDataDto.SMALLPOX_VACCINATION_SCAR, OptionGroup.class);
     	
     	setRequired(true, CaseDataDto.CASE_CLASSIFICATION, CaseDataDto.INVESTIGATION_STATUS,
     			CaseDataDto.REGION, CaseDataDto.DISTRICT, CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY);
 
-    	setReadOnly(true, CaseDataDto.UUID, CaseDataDto.INVESTIGATION_STATUS, CaseDataDto.REGION,
+    	setReadOnly(true, CaseDataDto.UUID, CaseDataDto.REPORT_DATE, CaseDataDto.REPORTING_USER,
+    			CaseDataDto.INVESTIGATION_STATUS, CaseDataDto.REGION,
     			CaseDataDto.DISTRICT, CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY);
     	if (!UserRole.isSupervisor(LoginHelper.getCurrentUserRoles())) {
     		setReadOnly(true, CaseDataDto.DISEASE);
@@ -142,11 +143,12 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.DISEASE_DETAILS), CaseDataDto.DISEASE, Arrays.asList(Disease.OTHER), true);
 		FieldHelper.setRequiredWhen(getFieldGroup(), CaseDataDto.DISEASE, Arrays.asList(CaseDataDto.DISEASE_DETAILS), Arrays.asList(Disease.OTHER));
 		
-		List<String> medicalInformationFields = Arrays.asList(CaseDataDto.PREGNANT, CaseDataDto.MEASLES_VACCINATION, CaseDataDto.YELLOW_FEVER_VACCINATION);
+		List<String> medicalInformationFields = Arrays.asList(CaseDataDto.PREGNANT, CaseDataDto.MEASLES_VACCINATION, 
+				CaseDataDto.YELLOW_FEVER_VACCINATION, CaseDataDto.SMALLPOX_VACCINATION_SCAR);
 		
 		for (String medicalInformationField : medicalInformationFields) {
 			if (getFieldGroup().getField(medicalInformationField).isVisible()) {
-				String medicalInformationCaptionLayout = LayoutUtil.h3(CssStyles.VSPACE3, "Additional medical information");
+				String medicalInformationCaptionLayout = LayoutUtil.h3(CssStyles.VSPACE_3, "Additional medical information");
 				Label medicalInformationCaptionLabel = new Label(medicalInformationCaptionLayout);
 				medicalInformationCaptionLabel.setContentMode(ContentMode.HTML);
 				getContent().addComponent(medicalInformationCaptionLabel, MEDICAL_INFORMATION_LOC);
@@ -154,13 +156,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			}
 		}
 		
-		reportInfoLabel = new Label();
-		reportInfoLabel.setContentMode(ContentMode.HTML);
-		reportInfoLabel.setCaption(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, REPORT_INFO_LOC));
-		getContent().addComponent(reportInfoLabel, REPORT_INFO_LOC);
-		
 		addValueChangeListener(e -> {
-			updateReportInfo();
 			diseaseField.addValueChangeListener(new DiseaseChangeListener(diseaseField, getValue().getDisease()));
 		});
 		
@@ -188,14 +184,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		});
 	}
     
-    private void updateReportInfo() {
-		CaseDataDto caseDto = getValue();
-		StringBuilder sb = new StringBuilder();
-		sb.append(DateHelper.formatShortDateTime(caseDto.getReportDate()) + ", ");
-		sb.append(caseDto.getReportingUser().toString());
-		reportInfoLabel.setValue(sb.toString());
-	}
-    
 	@Override 
 	protected String createHtmlLayout() {
 		 return HTML_LAYOUT;
@@ -203,10 +191,10 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	
 	private static class DiseaseChangeListener implements ValueChangeListener {
 		
-		private NativeSelect diseaseField;
+		private AbstractSelect diseaseField;
 		private Disease currentDisease;
 		
-		DiseaseChangeListener(NativeSelect diseaseField, Disease currentDisease) {
+		DiseaseChangeListener(AbstractSelect diseaseField, Disease currentDisease) {
 			this.diseaseField = diseaseField;
 			this.currentDisease = currentDisease;
 		}

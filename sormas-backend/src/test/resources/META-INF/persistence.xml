@@ -29,6 +29,8 @@
 		<class>de.symeda.sormas.backend.epidata.EpiDataBurial</class>
 		<class>de.symeda.sormas.backend.epidata.EpiDataGathering</class>
 		<class>de.symeda.sormas.backend.epidata.EpiDataTravel</class>
+		<class>de.symeda.sormas.backend.report.WeeklyReport</class>
+		<class>de.symeda.sormas.backend.report.WeeklyReportEntry</class>
 
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 

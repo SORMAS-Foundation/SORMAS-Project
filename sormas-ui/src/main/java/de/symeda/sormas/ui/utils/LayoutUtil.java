@@ -26,14 +26,6 @@ public class LayoutUtil {
 		return locCss(null, location);
 	}
 
-	public static String flow(String... htmls) {
-		StringBuilder sb = new StringBuilder();
-		for (String html : htmls) {
-			sb.append("<div class='").append(CssStyles.FLOW_LAYOUT).append("'>").append(html).append("</div>\n");
-		}
-		return sb.toString();
-	}
-
 	public static String locs(String... locations) {
 		StringBuilder sb = new StringBuilder();
 		for (String location : locations) {
@@ -44,14 +36,6 @@ public class LayoutUtil {
 
 	public static String locsCss(String css, String... locations) {
 		return divCss(css, locs(locations));
-	}
-
-	public static String flowLocs(String... locations) {
-		StringBuilder sb = new StringBuilder();
-		for (String location : locations) {
-			sb.append("<div class='").append(CssStyles.FLOW_LAYOUT).append("' location='").append(location).append("'></div>\n");
-		}
-		return sb.toString();
 	}
 
 	/**
@@ -85,19 +69,19 @@ public class LayoutUtil {
 	}
 
 	public static String h1(String cssClasses, String content) {
-		return element("h1", cssClasses, content);
+		return element("h1", cssClasses, span(content));
 	}
 
 	public static String h2(String cssClasses, String content) {
-		return element("h2", cssClasses, content);
+		return element("h2", cssClasses, span(content));
 	}
 
 	public static String h3(String cssClasses, String content) {
-		return element("h3", cssClasses, content);
+		return element("h3", cssClasses, span(content));
 	}
 
 	public static String h4(String cssClasses, String content) {
-		return element("h4", cssClasses, content);
+		return element("h4", cssClasses, span(content));
 	}
 
 	public static String strong(String cssClasses, String content) {
@@ -168,7 +152,7 @@ public class LayoutUtil {
 
 	public static String fluidRowCss(String cssClasses, FluidColumn... columns) {
 		StringBuilder sb = new StringBuilder();
-		sb.append("<div class='row-fluid");
+		sb.append("<div class='row");
 		if (cssClasses != null) {
 			sb.append(' ').append(cssClasses);
 		}
@@ -216,33 +200,16 @@ public class LayoutUtil {
 
 		sb.append("</div>");
 		return sb.toString();
-	}
-
-//	public static String escape(String stringToBeEscaped) {
-//		if (stringToBeEscaped == null) {
-//			return "";
-//		}
-//		return StringEscapeUtils.escapeHtml4(stringToBeEscaped);
-//	}
+	}	
 	
-	
-	/**
-	 * Erstellt eine "Drittel"-Spalte (span4).
-	 */
 	public static FluidColumn oneOfThreeCol(String content) {
 		return fluidColumnCss(null, 4, 0, content);
 	}
 
-	/**
-	 * Erstellt eine "Zwei-Drittel"-Spalte (span8).
-	 */
 	public static FluidColumn twoOfThreeCol(String content) {
 		return fluidColumnCss(null, 8, 0, content);
 	}
 
-	/**
-	 * Erstellt eine "Halb"-Spalte (span6).
-	 */
 	public static FluidColumn oneOfTwoCol(String content) {
 		return fluidColumnCss(null, 6, 0, content);
 	}
@@ -251,9 +218,6 @@ public class LayoutUtil {
 		return fluidColumnCss(cssClasses, 6, 0, content);
 	}
 
-	/**
-	 * Erstellt eine "Viertel"-Spalte (span3).
-	 */
 	public static FluidColumn oneOfFourCol(String content) {
 		return fluidColumnCss(null, 3, 0, content);
 	}
@@ -274,10 +238,10 @@ public class LayoutUtil {
 			if (cssClasses != null || span > 0 || offset > 0) {
 				sb.append(" class='");
 				if (span > 0) {
-					sb.append("span").append(span).append(' ');
+					sb.append("col-xs-").append(span).append(' ');
 				}
 				if (offset > 0) {
-					sb.append("offset").append(offset).append(' ');
+					sb.append("col-xs-offset-").append(offset).append(' ');
 				}
 				if (cssClasses != null) {
 					sb.append(cssClasses);

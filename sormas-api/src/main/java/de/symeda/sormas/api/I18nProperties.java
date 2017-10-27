@@ -10,7 +10,7 @@ public class I18nProperties {
 
 	private final Properties fieldCaptionProperties;
 	private final Properties fieldDescriptionProperties;
-	private final Properties buttonCaptionProperties;
+	private final Properties fragmentProperties;
 	private final Properties enumProperties;
 
 	private static I18nProperties getInstance() {
@@ -44,14 +44,32 @@ public class I18nProperties {
 	/**
 	 * Uses <param>key</param> as default value
 	 */
-	public static String getButtonCaption(String key) {
-		return getButtonCaption(key, key);
+	public static String getFragment(String key) {
+		return getFragment(key, key);
 	}
 
-	public static String getButtonCaption(String key, String defaultValue) {
-		return getInstance().buttonCaptionProperties.getProperty(key, defaultValue);
+	public static String getFragment(String key, String defaultValue) {
+		return getInstance().fragmentProperties.getProperty(key, defaultValue);
 	}
 
+	/**
+	 * Uses <param>key</param> as default value
+	 */
+	public static String getPrefixFragment(String prefix, String key) {
+		return getPrefixFragment(prefix, key, key);
+	}
+	
+	public static String getPrefixFragment(String prefix, String key, String defaultValue) {
+		String result = null;
+		if (prefix != null) {
+			result = getInstance().fragmentProperties.getProperty(prefix+"."+key);
+		}
+		if (result == null) {
+			result = getFragment(key, defaultValue);
+		}
+		return result;
+	}
+	
 	/**
 	 * Uses <param>key</param> as default value
 	 */
@@ -110,7 +128,7 @@ public class I18nProperties {
 	private I18nProperties() {
 		fieldCaptionProperties = loadProperties("/fieldCaptions.properties");
 		fieldDescriptionProperties = loadProperties("/fieldDescriptions.properties");
-		buttonCaptionProperties = loadProperties("/buttonCaptions.properties");
+		fragmentProperties = loadProperties("/fragments.properties");
 		enumProperties = loadProperties("/enum.properties");
 	}
 	

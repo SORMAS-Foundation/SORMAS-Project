@@ -58,6 +58,13 @@ public class Sample extends AbstractDomainObject {
     @DatabaseField(foreign = true, foreignAutoRefresh = true)
     private User reportingUser;
 
+    @DatabaseField
+    private Double reportLat;
+    @DatabaseField
+    private Double reportLon;
+    @DatabaseField
+    private Float reportLatLonAccuracy;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private SampleMaterial sampleMaterial;
@@ -275,5 +282,29 @@ public class Sample extends AbstractDomainObject {
     @Override
     public String toString() {
         return super.toString() + DateHelper.formatShortDate(getSampleDateTime());
+    }
+
+    public Double getReportLat() {
+        return reportLat;
+    }
+
+    public void setReportLat(Double reportLat) {
+        this.reportLat = reportLat;
+    }
+
+    public Double getReportLon() {
+        return reportLon;
+    }
+
+    public void setReportLon(Double reportLon) {
+        this.reportLon = reportLon;
+    }
+
+    public Float getReportLatLonAccuracy() {
+        return reportLatLonAccuracy;
+    }
+
+    public void setReportLatLonAccuracy(Float reportLatLonAccuracy) {
+        this.reportLatLonAccuracy = reportLatLonAccuracy;
     }
 }

@@ -41,16 +41,16 @@ public class UserController {
 		CommitDiscardWrapperComponent<UserEditForm> userCreateComponent = getUserCreateComponent();
 		Window window = VaadinUiUtil.showModalPopupWindow(userCreateComponent, "Create new user");
 		// user form is too big for typical screens
-		window.setWidth(userCreateComponent.getWrappedComponent().getWidth() + 40, Unit.PIXELS); 
-		window.setHeight(80, Unit.PERCENTAGE); 
+		window.setWidth(userCreateComponent.getWrappedComponent().getWidth() + 64+20, Unit.PIXELS);
+		window.setHeight(90, Unit.PERCENTAGE); 
 	}
 
 	public void edit(UserDto user) {
 		CommitDiscardWrapperComponent<UserEditForm> userComponent = getUserEditComponent(user.getUuid());
 		Window window = VaadinUiUtil.showModalPopupWindow(userComponent, "Edit a user");
 		// user form is too big for typical screens
-		window.setWidth(userComponent.getWrappedComponent().getWidth() + 40, Unit.PIXELS); 
-		window.setHeight(80, Unit.PERCENTAGE); 
+		window.setWidth(userComponent.getWrappedComponent().getWidth() + 64+20, Unit.PIXELS); 
+		window.setHeight(90, Unit.PERCENTAGE); 
 	}
 
 

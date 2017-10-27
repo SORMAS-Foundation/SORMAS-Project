@@ -1,33 +1,11 @@
 package de.symeda.sormas.app;
 
-import android.accounts.AuthenticatorException;
-import android.content.Intent;
-import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.view.View;
-
-import com.google.android.gms.analytics.Tracker;
-
-import java.net.ConnectException;
 
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
-import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.config.ConfigProvider;
-import de.symeda.sormas.app.backend.synclog.SyncLogDao;
-import de.symeda.sormas.app.caze.CaseEditTabs;
-import de.symeda.sormas.app.component.SyncLogDialog;
-import de.symeda.sormas.app.rest.RetroProvider;
-import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.util.FormTab;
 import de.symeda.sormas.app.util.SlidingTabLayout;
-import de.symeda.sormas.app.util.SyncCallback;
 
 public abstract class AbstractTabActivity extends AbstractSormasActivity {
 

@@ -25,6 +25,7 @@ import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactMapDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
@@ -36,7 +37,9 @@ import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.person.PersonService;
+import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb;
+import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.task.TaskCriteria;
@@ -47,6 +50,7 @@ import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DateHelper8;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.visit.Visit;
+import de.symeda.sormas.backend.visit.VisitFacadeEjb;
 import de.symeda.sormas.backend.visit.VisitService;
 
 @Stateless(name = "ContactFacade")
@@ -66,7 +70,9 @@ public class ContactFacadeEjb implements ContactFacade {
 	private VisitService visitService;
 	@EJB
 	private TaskService taskService;
-
+	@EJB
+	private DistrictService districtService;
+	
 	@Override
 	public List<String> getAllUuids(String userUuid) {
 
@@ -102,14 +108,15 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 
 	@Override
-	public List<ContactDto> getFollowUpBetween(Date fromDate, Date toDate, Disease disease, String userUuid) {
+	public List<ContactDto> getFollowUpBetween(Date fromDate, Date toDate, DistrictReferenceDto districtRef, Disease disease, String userUuid) {
 		User user = userService.getByUuid(userUuid);
+		District district = districtService.getByReferenceDto(districtRef);
 
 		if (user == null) {
 			return Collections.emptyList();
 		}
 
-		return contactService.getFollowUpBetween(fromDate, toDate, disease, user).stream()
+		return contactService.getFollowUpBetween(fromDate, toDate, district, disease, user).stream()
 				.map(c -> toDto(c))
 				.collect(Collectors.toList());
 	}
@@ -161,6 +168,11 @@ public class ContactFacadeEjb implements ContactFacade {
 	@Override
 	public ContactDto saveContact(ContactDto dto) {
 		Contact entity = fromDto(dto);
+		
+		if (!entity.getCaze().getDisease().hasContactFollowUp()) {
+			throw new UnsupportedOperationException("Contact creation is not allowed for diseases that don't have contact follow-up.");
+		}
+		
 		contactService.ensurePersisted(entity);
 		contactService.updateFollowUpUntilAndStatus(entity);
 		return toDto(entity);
@@ -182,14 +194,15 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 
 	@Override
-	public List<ContactMapDto> getMapContacts(Date fromDate, Date toDate, Disease disease, String userUuid) {
+	public List<ContactMapDto> getMapContacts(Date fromDate, Date toDate, DistrictReferenceDto districtRef, Disease disease, String userUuid) {
 		User user = userService.getByUuid(userUuid);
+		District district = districtService.getByReferenceDto(districtRef);
 
 		if (user == null) {
 			return Collections.emptyList();
 		}
 
-		return contactService.getMapContacts(fromDate, toDate, disease, user)
+		return contactService.getMapContacts(fromDate, toDate, district, disease, user)
 				.stream()
 				.map(c -> toMapDto(c, visitService.getLastVisitByContact(c, VisitStatus.COOPERATIVE)))
 				.collect(Collectors.toList());
@@ -230,6 +243,7 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		target.setReportLat(source.getReportLat());
 		target.setReportLon(source.getReportLon());
+		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
 
 		return target;
 	}
@@ -268,7 +282,8 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		target.setReportLat(source.getReportLat());
 		target.setReportLon(source.getReportLon());
-
+		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
+		
 		return target;
 	}
 
@@ -319,8 +334,12 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		target.setReportLat(source.getReportLat());
 		target.setReportLon(source.getReportLon());
+		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
+
+		target.setContactClassification(source.getContactClassification());
+		
 		if (lastVisit != null) {
-			target.setLastVisitDateTime(lastVisit.getVisitDateTime());
+			target.setLastVisit(VisitFacadeEjb.toReferenceDto(lastVisit));
 		}
 
 		return target;
@@ -332,7 +351,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		// get all contacts that are followed up
 		LocalDateTime fromDateTime = LocalDate.now().atStartOfDay();
 		LocalDateTime toDateTime = fromDateTime.plusDays(1);
-		List<Contact> contacts = contactService.getFollowUpBetween(DateHelper8.toDate(fromDateTime), DateHelper8.toDate(toDateTime), null, null);
+		List<Contact> contacts = contactService.getFollowUpBetween(DateHelper8.toDate(fromDateTime), DateHelper8.toDate(toDateTime), null, null, null);
 
 		for (Contact contact : contacts) {
 

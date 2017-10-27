@@ -50,6 +50,9 @@ public class SubNavigationMenu extends CssLayout {
     	CssLayout tabItem = new CssLayout();
     	tabItem.setSizeUndefined();
     	tabItem.setPrimaryStyleName("v-tabsheet-tabitem");
+    	if (isBackNavigation) {
+    		tabItem.addStyleName("back");
+    	}
     	tabItemCell.addComponent(tabItem);
 
     	Link link = new Link(caption, new ExternalResource(target));

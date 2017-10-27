@@ -55,8 +55,13 @@ public class Sample extends AbstractDomainObject {
 	private String sampleCode;
 	private String labSampleID;
 	private Date sampleDateTime;
+
 	private Date reportDateTime;
 	private User reportingUser;
+	private Double reportLat;
+	private Double reportLon;
+	private Float reportLatLonAccuracy;
+
 	private SampleMaterial sampleMaterial;
 	private String sampleMaterialText;
 	private Facility lab;
@@ -254,6 +259,25 @@ public class Sample extends AbstractDomainObject {
 		String materialString = sampleMaterial == null ? "" : sampleMaterial.toString();
 		String sampleString = materialString.isEmpty() ? "Sample" : "sample";
 		return materialString + " " + sampleString + " for case " + DataHelper.getShortUuid(associatedCase.getUuid());
+	}
+	
+	public Double getReportLat() {
+		return reportLat;
+	}
+	public void setReportLat(Double reportLat) {
+		this.reportLat = reportLat;
+	}
+	public Double getReportLon() {
+		return reportLon;
+	}
+	public void setReportLon(Double reportLon) {
+		this.reportLon = reportLon;
+	}
+	public Float getReportLatLonAccuracy() {
+		return reportLatLonAccuracy;
+	}
+	public void setReportLatLonAccuracy(Float reportLatLonAccuracy) {
+		this.reportLatLonAccuracy = reportLatLonAccuracy;
 	}
 	
 	

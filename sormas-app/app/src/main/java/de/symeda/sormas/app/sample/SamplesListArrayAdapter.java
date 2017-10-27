@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.sample.SpecimenCondition;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -49,8 +50,9 @@ public class SamplesListArrayAdapter extends ArrayAdapter<Sample> {
         dateTime.setText(DateHelper.formatDate(sample.getSampleDateTime()));
 
         TextView disease = (TextView) convertView.findViewById(R.id.sample_disease_li);
-        disease.setText(sample.getAssociatedCase().getDisease().toShortString() +
-                (sample.getAssociatedCase().getDisease() == Disease.OTHER ? " (" + sample.getAssociatedCase().getDiseaseDetails() + ")" : ""));
+        disease.setText(sample.getAssociatedCase().getDisease() != Disease.OTHER
+                ? (sample.getAssociatedCase().getDisease() != null ? sample.getAssociatedCase().getDisease().toShortString() : "")
+                : DataHelper.toStringNullable(sample.getAssociatedCase().getDiseaseDetails()));
 
         TextView shipmentStatus = (TextView) convertView.findViewById(R.id.sample_shipment_status_li);
         if (sample.getReferredTo() != null) {

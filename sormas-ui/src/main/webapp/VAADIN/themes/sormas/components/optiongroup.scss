@@ -1,0 +1,61 @@
+
+@mixin sormas-optiongroup {
+	
+  .v-select-optiongroup-horizontal {	
+  
+	  .v-radiobutton {
+	    margin: 0 0 0 -2px !important;
+	    padding: 0 !important;
+	    border: $v-border;
+	    border-radius: 0;
+	    font-size: 11px;
+	    text-transform: uppercase;
+	      
+	    &:first-child {
+	      border-radius: 4px 0 0 4px; 
+	      margin-left: 0 !important;
+	    }
+	    &:last-child {
+	      border-radius: 0 4px 4px 0; 
+	    }
+	    
+	    &.v-radiobutton-disabled label {
+	      cursor: default;
+	      color: #888;
+	    }
+	    
+	    :root & > input {
+	      display: none;
+		  
+	      & ~ label {
+	        margin-bottom: 0;
+	        padding: 4px 8px;
+	        height: 28px;
+	        line-height: 20px;
+	      }
+	    
+		  &:checked ~ label {
+	        background: $v-focus-color;
+	      }
+	
+	      & ~ label:before,
+	      & ~ label:after {
+	        content: none;
+	      }
+	    }
+	  }
+		
+	  &.v-select-optiongroup-caption-inline {
+	  	text-align: right;
+	  }
+  }
+
+  .v-caption-caption-inline {
+    float: left;
+    padding-top: 7px;
+    margin-bottom: -30px;
+    font-weight: 500;
+    font-size: 12px;
+    text-transform: none;
+  }
+}

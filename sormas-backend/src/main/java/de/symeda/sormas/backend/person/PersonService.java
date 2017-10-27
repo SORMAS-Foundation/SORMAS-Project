@@ -28,6 +28,7 @@ import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.location.Location;
+import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.user.User;
 
 @Stateless
@@ -174,7 +175,7 @@ public class PersonService extends AbstractAdoService<Person> {
 				.collect(Collectors.toList());
 	}
 	
-	public List<Person> getDeathsBetween(Date fromDate, Date toDate, Disease disease, User user) {
+	public List<Person> getDeathsBetween(Date fromDate, Date toDate, District district, Disease disease, User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		
 		CriteriaQuery<Person> casePersonsQuery = cb.createQuery(Person.class);
@@ -202,6 +203,10 @@ public class PersonService extends AbstractAdoService<Person> {
 			casePersonsFilter = cb.and(casePersonsFilter, dateFilter);
 		} else {
 			casePersonsFilter = dateFilter;
+		}
+		
+		if (casePersonsFilter != null && district != null) {
+			casePersonsFilter = cb.and(casePersonsFilter, cb.equal(casePersonsRoot.get(Case.DISTRICT), district));
 		}
 		
 		if (casePersonsFilter != null && disease != null) {

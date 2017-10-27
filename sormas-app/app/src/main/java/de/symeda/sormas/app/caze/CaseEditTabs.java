@@ -14,10 +14,6 @@ public enum CaseEditTabs {
 	TASKS,
 	;
 
-	public static CaseEditTabs fromInt(int x) {
-		return CaseEditTabs.values()[x];
-	}
-
 	public String toString() {
 		return I18nProperties.getFieldCaption(CaseDataDto.I18N_PREFIX+"."+this.name());
 	};

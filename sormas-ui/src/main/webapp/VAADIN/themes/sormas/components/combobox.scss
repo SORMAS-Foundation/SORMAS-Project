@@ -1,0 +1,35 @@
+
+@mixin sormas-combobox {
+
+  .v-filterselect {
+  
+    [class$="input"] {
+      background-color: $v-background-color;
+    }
+    
+    [class$="button"] {
+      border-left: none;
+    
+      &::before {
+        color: $v-font-color;
+      }
+    }
+  
+    &.v-readonly {
+      height: inherit;
+	  background: inherit;
+      color: inherit;
+	
+	  .v-filterselect-input {
+        border: none;
+        padding: 0;
+        background: inherit;
+        color: inherit;
+      }
+            
+      .v-filterselect-button {
+        display: none;
+      }
+    }
+  }
+}

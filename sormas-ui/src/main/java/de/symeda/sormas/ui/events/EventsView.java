@@ -2,11 +2,9 @@ package de.symeda.sormas.ui.events;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -31,9 +29,8 @@ public class EventsView extends AbstractView {
 	private VerticalLayout gridLayout;
 	
 	public EventsView() {
-		setSizeFull();
-		addStyleName("crud-view");
-		
+    	super(VIEW_NAME);
+    	
 		grid = new EventGrid();
 		
 		gridLayout = new VerticalLayout();
@@ -47,18 +44,19 @@ public class EventsView extends AbstractView {
 		gridLayout.setStyleName("crud-main-layout");
 		
 		addComponent(gridLayout);
+		
+		createButton = new Button("New alert");
+		createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+		createButton.setIcon(FontAwesome.PLUS_CIRCLE);
+		createButton.addClickListener(e -> ControllerProvider.getEventController().create());
+		addHeaderComponent(createButton);
 	}
 	
 	public HorizontalLayout createTopBar() {
 		HorizontalLayout topLayout = new HorizontalLayout();
 		topLayout.setSpacing(true);
-		topLayout.setWidth(100, Unit.PERCENTAGE);
-		topLayout.addStyleName(CssStyles.VSPACE3);
-		
-		Label header = new Label("Alerts");
-		header.setSizeUndefined();
-		CssStyles.style(header, CssStyles.H2, CssStyles.NO_MARGIN);
-		topLayout.addComponent(header);
+		topLayout.setSizeUndefined();
+		topLayout.addStyleName(CssStyles.VSPACE_3);
 		
 		Button statusAll = new Button("all", e -> grid.setStatusFilter(null));
 		statusAll.setStyleName(ValoTheme.BUTTON_LINK);
@@ -70,14 +68,6 @@ public class EventsView extends AbstractView {
 			topLayout.addComponent(statusButton);
 		}
 		
-		createButton = new Button("New alert");
-		createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-		createButton.setIcon(FontAwesome.PLUS_CIRCLE);
-		createButton.addClickListener(e -> ControllerProvider.getEventController().create());
-		topLayout.addComponent(createButton);
-		topLayout.setComponentAlignment(createButton, Alignment.MIDDLE_RIGHT);
-		topLayout.setExpandRatio(createButton, 1);
-		
 		return topLayout;
 	}
 	
@@ -85,7 +75,7 @@ public class EventsView extends AbstractView {
 		HorizontalLayout filterLayout = new HorizontalLayout();
 		filterLayout.setSpacing(true);
 		filterLayout.setSizeUndefined();
-		filterLayout.addStyleName(CssStyles.VSPACE3);
+		filterLayout.addStyleName(CssStyles.VSPACE_3);
 		
 		ComboBox typeFilter = new ComboBox();
 		typeFilter.setWidth(200, Unit.PIXELS);

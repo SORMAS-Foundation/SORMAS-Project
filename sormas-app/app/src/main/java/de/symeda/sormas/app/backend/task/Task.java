@@ -93,11 +93,12 @@ public class Task extends AbstractDomainObject {
 	@Column(length=512)
 	private String assigneeReply;
 
-	@Column(columnDefinition = "float8")
-	private Float closedLat;
-
-	@Column(columnDefinition = "float8")
-	private Float closedLon;
+	@DatabaseField
+	private Double closedLat;
+	@DatabaseField
+	private Double closedLon;
+	@DatabaseField
+	private Float closedLatLonAccuracy;
 
 	public TaskContext getTaskContext() {
 		return taskContext;
@@ -220,24 +221,32 @@ public class Task extends AbstractDomainObject {
 		this.suggestedStart = suggestedStart;
 	}
 
-	public Float getClosedLat() {
+	public Double getClosedLat() {
 		return closedLat;
 	}
 
-	public void setClosedLat(Float closedLat) {
+	public void setClosedLat(Double closedLat) {
 		this.closedLat = closedLat;
 	}
 
-	public Float getClosedLon() {
+	public Double getClosedLon() {
 		return closedLon;
 	}
 
-	public void setClosedLon(Float closedLon) {
+	public void setClosedLon(Double closedLon) {
 		this.closedLon = closedLon;
 	}
 
 	@Override
 	public String getI18nPrefix() {
 		return I18N_PREFIX;
+	}
+
+	public Float getClosedLatLonAccuracy() {
+		return closedLatLonAccuracy;
+	}
+
+	public void setClosedLatLonAccuracy(Float closedLatLonAccuracy) {
+		this.closedLatLonAccuracy = closedLatLonAccuracy;
 	}
 }

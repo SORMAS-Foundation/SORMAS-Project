@@ -12,6 +12,8 @@ public class SamplesView extends AbstractView {
 	private final SampleListComponent sampleListComponent;
 	
 	public SamplesView() {
+    	super(VIEW_NAME);
+    	
 		sampleListComponent = new SampleListComponent();
 		setSizeFull();
 		addComponent(sampleListComponent);
@@ -19,7 +21,7 @@ public class SamplesView extends AbstractView {
 	
 	@Override
 	public void enter(ViewChangeEvent event) {
-		sampleListComponent.enter(event);
+		sampleListComponent.reload();
 	}
 
 }

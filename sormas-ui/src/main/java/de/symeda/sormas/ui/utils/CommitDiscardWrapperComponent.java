@@ -121,6 +121,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends
 		}
 
 		setSpacing(false);
+		setMargin(true);
 		setSizeUndefined();
 		
 		contentPanel = new Panel(component);
@@ -131,18 +132,17 @@ public class CommitDiscardWrapperComponent<C extends Component> extends
 
 		buttonsPanel = new HorizontalLayout();
 		buttonsPanel.setMargin(false);
+		buttonsPanel.setSpacing(true);
 		buttonsPanel.setWidth(100, Unit.PERCENTAGE);
 
 		Button discardButton = getDiscardButton();
 		buttonsPanel.addComponent(discardButton);
-		buttonsPanel.setComponentAlignment(discardButton,
-				Alignment.BOTTOM_RIGHT);
+		buttonsPanel.setComponentAlignment(discardButton, Alignment.BOTTOM_RIGHT);
 		buttonsPanel.setExpandRatio(discardButton, 1);
 
 		Button commitButton = getCommitButton();
 		buttonsPanel.addComponent(commitButton);
-		buttonsPanel
-				.setComponentAlignment(commitButton, Alignment.BOTTOM_RIGHT);
+		buttonsPanel.setComponentAlignment(commitButton, Alignment.BOTTOM_RIGHT);
 		buttonsPanel.setExpandRatio(commitButton, 0);
 
 		addComponent(buttonsPanel);
@@ -327,7 +327,6 @@ public class CommitDiscardWrapperComponent<C extends Component> extends
 	public Button getDiscardButton() {
 		if (discardButton == null) {
 			discardButton = new Button("discard");
-			discardButton.addStyleName(ValoTheme.BUTTON_LINK);
 
 			discardButton.addClickListener(new ClickListener() {
 				private static final long serialVersionUID = 1L;

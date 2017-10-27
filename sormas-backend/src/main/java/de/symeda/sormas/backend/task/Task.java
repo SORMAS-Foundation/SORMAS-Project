@@ -63,8 +63,9 @@ public class Task extends AbstractDomainObject {
 	private User assigneeUser;
 	private String assigneeReply;
 	
-	private Float closedLat;
-	private Float closedLon;
+	private Double closedLat;
+	private Double closedLon;
+	private Float closedLatLonAccuracy;
 	
 	@Enumerated(EnumType.STRING)
 	public TaskContext getTaskContext() {
@@ -186,20 +187,25 @@ public class Task extends AbstractDomainObject {
 		this.suggestedStart = suggestedStart;
 	}
 
-	@Column(columnDefinition = "float8")
-	public Float getClosedLat() {
+	public Double getClosedLat() {
 		return closedLat;
 	}
-	public void setClosedLat(Float closedLat) {
+	public void setClosedLat(Double closedLat) {
 		this.closedLat = closedLat;
 	}
 
-	@Column(columnDefinition = "float8")
-	public Float getClosedLon() {
+	public Double getClosedLon() {
 		return closedLon;
 	}
-	public void setClosedLon(Float closedLon) {
+	public void setClosedLon(Double closedLon) {
 		this.closedLon = closedLon;
+	}
+
+	public Float getClosedLatLonAccuracy() {
+		return closedLatLonAccuracy;
+	}
+	public void setClosedLatLonAccuracy(Float closedLatLonAccuracy) {
+		this.closedLatLonAccuracy = closedLatLonAccuracy;
 	}
 	
 }

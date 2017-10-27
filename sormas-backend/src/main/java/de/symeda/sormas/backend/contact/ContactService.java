@@ -24,6 +24,7 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.DateHelper8;
 import de.symeda.sormas.backend.visit.Visit;
@@ -66,7 +67,7 @@ public class ContactService extends AbstractAdoService<Contact> {
 	 * @param user optional
 	 * @return
 	 */
-	public List<Contact> getFollowUpBetween(@NotNull Date fromDate, @NotNull Date toDate, Disease disease, User user) {
+	public List<Contact> getFollowUpBetween(@NotNull Date fromDate, @NotNull Date toDate, District district, Disease disease, User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Contact> cq = cb.createQuery(getElementClass());
 		Root<Contact> from = cq.from(getElementClass());
@@ -81,6 +82,11 @@ public class ContactService extends AbstractAdoService<Contact> {
 				filter = cb.and(filter, userFilter);
 			}
 		} 	
+		
+		if (district != null) {
+			Join<Contact, Case> caze = from.join(Contact.CAZE);
+			filter = cb.and(filter, cb.equal(caze.get(Case.DISTRICT), district));
+		}
 		
 		if (disease != null) {
 			Join<Contact, Case> caze = from.join(Contact.CAZE);
@@ -107,7 +113,7 @@ public class ContactService extends AbstractAdoService<Contact> {
 		return result;
 	}	
 	
-	public List<Contact> getMapContacts(Date fromDate, Date toDate, Disease disease, User user) {
+	public List<Contact> getMapContacts(Date fromDate, Date toDate, District district, Disease disease, User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Contact> cq = cb.createQuery(getElementClass());
 		Root<Contact> from = cq.from(getElementClass());
@@ -127,10 +133,23 @@ public class ContactService extends AbstractAdoService<Contact> {
 				filter = dateFilter;
 			}
 		}
+		if (district != null) {
+			Join<Contact, Case> contactCase = from.join(Contact.CAZE);
+			Predicate districtFilter = cb.equal(contactCase.get(Case.DISTRICT), district);
+			if (filter != null) {
+				filter = cb.and(filter, districtFilter);
+			} else {
+				filter = districtFilter;
+			}
+		}
 		if (disease != null) {
 			Join<Contact, Case> contactCase = from.join(Contact.CAZE);
 			Predicate diseaseFilter = cb.equal(contactCase.get(Case.DISEASE), disease);
-			filter = cb.and(filter, diseaseFilter);
+			if (filter != null) {
+				filter = cb.and(filter, diseaseFilter);
+			} else {
+				filter = diseaseFilter;
+			}
 		}	
 		// Only retrieve contacts that are currently under follow-up
 		if (filter != null) {
@@ -145,7 +164,8 @@ public class ContactService extends AbstractAdoService<Contact> {
 	public int getFollowUpDuration(Disease disease) {
 		switch (disease) {
 		case EVD:
-		case CHOLERA:
+		case MONKEYPOX:
+		case OTHER:
 			return 21;
 		case AVIAN_INFLUENCA:
 			return 17;

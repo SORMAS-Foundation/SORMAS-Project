@@ -2,7 +2,6 @@ package de.symeda.sormas.ui.events;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
-import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -34,11 +33,12 @@ public class EventParticipantsView extends AbstractEventView {
 		grid = new EventParticipantsGrid();
 		
 		gridLayout = new VerticalLayout();
+		gridLayout.setSizeFull();
+		gridLayout.setMargin(true);
+		gridLayout.setSpacing(false);
+
 		gridLayout.addComponent(createTopBar());
 		gridLayout.addComponent(grid);
-		gridLayout.setMargin(new MarginInfo(true, false, false, false));
-		gridLayout.setSpacing(false);
-		gridLayout.setSizeFull();
 		gridLayout.setExpandRatio(grid, 1);
 		gridLayout.setStyleName("crud-main-layout");
 		
@@ -52,7 +52,7 @@ public class EventParticipantsView extends AbstractEventView {
 		
 		Label header = new Label(I18nProperties.getPrefixFieldCaption(EventDto.I18N_PREFIX, EventDto.EVENT_PERSONS));
 		header.setSizeUndefined();
-		CssStyles.style(header, CssStyles.H2, CssStyles.NO_MARGIN);
+		CssStyles.style(header, CssStyles.H2, CssStyles.VSPACE_NONE);
 		topLayout.addComponent(header);
 		
 		addButton = new Button("Add person");
@@ -66,7 +66,7 @@ public class EventParticipantsView extends AbstractEventView {
 		topLayout.setComponentAlignment(addButton, Alignment.MIDDLE_RIGHT);
 		topLayout.setExpandRatio(addButton, 1);
 		
-		topLayout.addStyleName(CssStyles.VSPACE3);
+		topLayout.addStyleName(CssStyles.VSPACE_3);
 		return topLayout;
 	}
 	

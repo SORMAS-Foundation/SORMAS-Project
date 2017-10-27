@@ -13,23 +13,25 @@ import com.vaadin.data.util.BeanItem;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.AbstractTextField;
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.Field;
-import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.OptionGroup;
+import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.DataTransferObject;
 import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.epidata.EpiDataBurialsField;
 import de.symeda.sormas.ui.epidata.EpiDataGatheringsField;
 import de.symeda.sormas.ui.epidata.EpiDataTravelsField;
 import de.symeda.sormas.ui.hospitalization.PreviousHospitalizationsField;
-import de.symeda.sormas.ui.location.LocationForm;
+import de.symeda.sormas.ui.location.LocationEditForm;
 
 @SuppressWarnings("serial")
 public abstract class AbstractEditForm <DTO extends DataTransferObject> extends CustomField<DTO> {// implements DtoEditForm<DTO> {
@@ -69,15 +71,15 @@ public abstract class AbstractEditForm <DTO extends DataTransferObject> extends 
 				if (type.isEnum()) {
 					if (SymptomState.class.isAssignableFrom(type)) {
 						OptionGroup field = super.createField(type, OptionGroup.class);
-						CssStyles.style(field, CssStyles.ROW_OPTIONGROUP);
+						CssStyles.style(field, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_CAPTION_INLINE);
 						return (T) field;
 					} else {
 						if (!AbstractSelect.class.isAssignableFrom(fieldType)) {
-							fieldType = (Class<T>) NativeSelect.class;
+							fieldType = (Class<T>) ComboBox.class;
 						}
 						T field = super.createField(type, fieldType);
 						if (OptionGroup.class.isAssignableFrom(fieldType)) {
-							CssStyles.style(field, CssStyles.INLINE_OPTIONGROUP);
+							CssStyles.style(field, ValoTheme.OPTIONGROUP_HORIZONTAL);
 						}
 						return field;
 					}
@@ -85,8 +87,8 @@ public abstract class AbstractEditForm <DTO extends DataTransferObject> extends 
 				else if (AbstractSelect.class.isAssignableFrom(fieldType)) {
 					return (T) createCompatibleSelect((Class<? extends AbstractSelect>) fieldType);
 				} 
-				else if (LocationForm.class.isAssignableFrom(fieldType)) {
-					return (T) new LocationForm();
+				else if (LocationEditForm.class.isAssignableFrom(fieldType)) {
+					return (T) new LocationEditForm();
 				} 
 				else if (DateTimeField.class.isAssignableFrom(fieldType)) {
 					return (T) new DateTimeField();
@@ -103,10 +105,17 @@ public abstract class AbstractEditForm <DTO extends DataTransferObject> extends 
 				else if (EpiDataTravelsField.class.isAssignableFrom(fieldType)) {
 					return (T) new EpiDataTravelsField();
 				}
-				else if (Date.class.isAssignableFrom(type)) {
-					DateField field = super.createField(type, DateField.class);
-					field.setDateFormat(DateHelper.getDateFormat().toPattern());
-					return (T) field;
+				else if (fieldType.equals(Field.class)) {
+					// no specific field type defined -> fallbacks
+					
+					if (Date.class.isAssignableFrom(type)) {
+						DateField field = super.createField(type, DateField.class);
+						field.setDateFormat(DateHelper.getDateFormat().toPattern());
+						return (T) field;
+					}
+					else if (ReferenceDto.class.isAssignableFrom(type)) {
+						return (T) new ComboBox();
+					}
 				}
 				
 				return super.createField(type, fieldType);
@@ -254,9 +263,9 @@ public abstract class AbstractEditForm <DTO extends DataTransferObject> extends 
 		return field;
 	}
 	
-	protected void styleAsRow(List<String> fields) {
+	protected void styleAsOptionGroupHorizontal(List<String> fields) {
 		for(String field : fields) {
-			CssStyles.style(getFieldGroup().getField(field), CssStyles.ROW_OPTIONGROUP);
+			CssStyles.style((OptionGroup)getFieldGroup().getField(field), ValoTheme.OPTIONGROUP_HORIZONTAL);
 		}
 	}
 	

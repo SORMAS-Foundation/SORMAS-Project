@@ -18,6 +18,8 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.location.Location;
+import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.user.User;
 
 @Stateless
@@ -28,7 +30,7 @@ public class EventService extends AbstractAdoService<Event> {
 		super(Event.class);
 	}
 	
-	public List<Event> getAllBetween(Date fromDate, Date toDate, Disease disease, User user) {
+	public List<Event> getAllBetween(Date fromDate, Date toDate, District district, Disease disease, User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Event> cq = cb.createQuery(getElementClass());
 		Root<Event> from = cq.from(getElementClass());
@@ -41,6 +43,11 @@ public class EventService extends AbstractAdoService<Event> {
 			filter = cb.and(filter, dateFilter);
 		} else {
 			filter = dateFilter;
+		}
+		
+		if (filter != null && district != null) {
+			Join<Event, Location> eventLocation = from.join(Event.EVENT_LOCATION);
+			filter = cb.and(filter, cb.equal(eventLocation.get(Location.DISTRICT), district));
 		}
 		
 		if (filter != null && disease != null) {

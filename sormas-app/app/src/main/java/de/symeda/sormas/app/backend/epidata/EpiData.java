@@ -13,6 +13,7 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
+import de.symeda.sormas.api.epidata.AnimalCondition;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.epidata.WaterSource;
@@ -113,6 +114,15 @@ public class EpiData extends AbstractDomainObject {
 
     @Enumerated(EnumType.STRING)
     private YesNoUnknown tickBite;
+
+    @DatabaseField(dataType = DataType.DATE_LONG)
+    private Date dateOfLastExposure;
+
+    @Column(length=512)
+    private String placeOfLastExposure;
+
+    @Enumerated(EnumType.STRING)
+    private AnimalCondition animalCondition;
 
     // just for reference, not persisted in DB
     private List<EpiDataBurial> burials = new ArrayList<>();
@@ -333,6 +343,30 @@ public class EpiData extends AbstractDomainObject {
 
     public void setTickBite(YesNoUnknown tickBite) {
         this.tickBite = tickBite;
+    }
+
+    public Date getDateOfLastExposure() {
+        return dateOfLastExposure;
+    }
+
+    public void setDateOfLastExposure(Date dateOfLastExposure) {
+        this.dateOfLastExposure = dateOfLastExposure;
+    }
+
+    public String getPlaceOfLastExposure() {
+        return placeOfLastExposure;
+    }
+
+    public void setPlaceOfLastExposure(String placeOfLastExposure) {
+        this.placeOfLastExposure = placeOfLastExposure;
+    }
+
+    public AnimalCondition getAnimalCondition() {
+        return animalCondition;
+    }
+
+    public void setAnimalCondition(AnimalCondition animalCondition) {
+        this.animalCondition = animalCondition;
     }
 
     public List<EpiDataBurial> getBurials() {

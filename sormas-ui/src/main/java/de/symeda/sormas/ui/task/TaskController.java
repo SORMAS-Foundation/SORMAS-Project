@@ -2,7 +2,6 @@ package de.symeda.sormas.ui.task;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Consumer;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.ReferenceDto;
@@ -22,7 +21,6 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
-import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DiscardListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class TaskController {

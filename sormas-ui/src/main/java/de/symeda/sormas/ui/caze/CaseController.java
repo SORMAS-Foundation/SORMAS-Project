@@ -31,6 +31,7 @@ import de.symeda.sormas.api.hospitalization.HospitalizationFacade;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.RegionDto;
+import de.symeda.sormas.api.symptoms.SymptomsContext;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsFacade;
 import de.symeda.sormas.api.user.UserDto;
@@ -265,7 +266,7 @@ public class CaseController {
     	
         CaseDataDto caseDataDto = findCase(caseUuid);
 
-    	SymptomsForm symptomsForm = new SymptomsForm(caseDataDto.getDisease(), true);
+    	SymptomsForm symptomsForm = new SymptomsForm(caseDataDto.getDisease(), SymptomsContext.CASE);
         symptomsForm.setValue(caseDataDto.getSymptoms());
     	symptomsForm.initializeSymptomRequirementsForCase();
         final CommitDiscardWrapperComponent<SymptomsForm> editView = new CommitDiscardWrapperComponent<SymptomsForm>(symptomsForm, symptomsForm.getFieldGroup());

@@ -87,7 +87,7 @@ public class TaskForm extends FormTab {
 
         if (possibleStatusChanges.contains(TaskStatus.NOT_EXECUTABLE)) {
             binding.taskNotExecutableBtn.setVisibility(View.VISIBLE);
-            binding.taskNotExecutableBtn.setText(TaskStatus.NOT_EXECUTABLE.getChangeString());
+            binding.taskNotExecutableBtn.setText(TaskStatus.NOT_EXECUTABLE.toString());
             binding.taskNotExecutableBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -118,7 +118,7 @@ public class TaskForm extends FormTab {
 
         if (possibleStatusChanges.contains(TaskStatus.DONE)) {
             binding.taskDoneBtn.setVisibility(View.VISIBLE);
-            binding.taskDoneBtn.setText(TaskStatus.DONE.getChangeString());
+            binding.taskDoneBtn.setText(TaskStatus.DONE.toString());
             binding.taskDoneBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

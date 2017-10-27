@@ -29,7 +29,8 @@ public enum TaskType {
 	ANIMAL_DEPOPULATION(TaskContext.EVENT, TaskContext.CASE),
 	OTHER(true, TaskContext.CASE, TaskContext.CONTACT, TaskContext.EVENT, TaskContext.GENERAL),
 	DAILY_REPORT_GENERATION(TaskContext.GENERAL),
-	SURVEILLANCE_REPORT_GENERATION(TaskContext.GENERAL);
+	SURVEILLANCE_REPORT_GENERATION(TaskContext.GENERAL),
+	WEEKLY_REPORT_GENERATION(TaskContext.GENERAL);
 	
 	private final boolean creatorCommentRequired;
 	private final TaskContext[] taskContexts;

@@ -73,54 +73,62 @@ public class SampleDtoHelper extends AdoDtoHelper<Sample, SampleDto> {
         target.setReferredTo(DatabaseHelper.getSampleDao().getByReferenceDto(source.getReferredTo()));
         target.setShipped(source.isShipped());
         target.setReceived(source.isReceived());
+
+        target.setReportLat(source.getReportLat());
+        target.setReportLon(source.getReportLon());
+        target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
     }
 
     @Override
-    public void fillInnerFromAdo(SampleDto dto, Sample ado) {
-        if(ado.getAssociatedCase() != null) {
-            Case associatedCase = DatabaseHelper.getCaseDao().queryForId(ado.getAssociatedCase().getId());
-            dto.setAssociatedCase(CaseDtoHelper.toReferenceDto(associatedCase));
+    public void fillInnerFromAdo(SampleDto target, Sample source) {
+        if(source.getAssociatedCase() != null) {
+            Case associatedCase = DatabaseHelper.getCaseDao().queryForId(source.getAssociatedCase().getId());
+            target.setAssociatedCase(CaseDtoHelper.toReferenceDto(associatedCase));
         } else {
-            dto.setAssociatedCase(null);
+            target.setAssociatedCase(null);
         }
 
-        if(ado.getReportingUser() != null) {
-            User user = DatabaseHelper.getUserDao().queryForId(ado.getReportingUser().getId());
-            dto.setReportingUser(UserDtoHelper.toReferenceDto(user));
+        if(source.getReportingUser() != null) {
+            User user = DatabaseHelper.getUserDao().queryForId(source.getReportingUser().getId());
+            target.setReportingUser(UserDtoHelper.toReferenceDto(user));
         } else {
-            dto.setReportingUser(null);
+            target.setReportingUser(null);
         }
 
-        if(ado.getLab() != null) {
-            Facility lab = DatabaseHelper.getFacilityDao().queryForId(ado.getLab().getId());
-            dto.setLab(FacilityDtoHelper.toReferenceDto(lab));
+        if(source.getLab() != null) {
+            Facility lab = DatabaseHelper.getFacilityDao().queryForId(source.getLab().getId());
+            target.setLab(FacilityDtoHelper.toReferenceDto(lab));
         } else {
-            dto.setLab(null);
+            target.setLab(null);
         }
 
-        if (ado.getReferredTo() != null) {
-            Sample referredSample = DatabaseHelper.getSampleDao().queryForId(ado.getReferredTo().getId());
-            dto.setReferredTo(SampleDtoHelper.toReferenceDto(referredSample));
+        if (source.getReferredTo() != null) {
+            Sample referredSample = DatabaseHelper.getSampleDao().queryForId(source.getReferredTo().getId());
+            target.setReferredTo(SampleDtoHelper.toReferenceDto(referredSample));
         } else {
-            dto.setReferredTo(null);
+            target.setReferredTo(null);
         }
 
-        dto.setSampleCode(ado.getSampleCode());
-        dto.setLabSampleID(ado.getLabSampleID());
-        dto.setSampleDateTime(ado.getSampleDateTime());
-        dto.setReportDateTime(ado.getReportDateTime());
-        dto.setSampleMaterial(ado.getSampleMaterial());
-        dto.setSampleMaterialText(ado.getSampleMaterialText());
-        dto.setShipmentDate(ado.getShipmentDate());
-        dto.setShipmentDetails(ado.getShipmentDetails());
-        dto.setReceivedDate(ado.getReceivedDate());
-        dto.setSpecimenCondition(ado.getSpecimenCondition());
-        dto.setNoTestPossibleReason(ado.getNoTestPossibleReason());
-        dto.setComment(ado.getComment());
-        dto.setSampleSource(ado.getSampleSource());
-        dto.setSuggestedTypeOfTest(ado.getSuggestedTypeOfTest());
-        dto.setShipped(ado.isShipped());
-        dto.setReceived(ado.isReceived());
+        target.setSampleCode(source.getSampleCode());
+        target.setLabSampleID(source.getLabSampleID());
+        target.setSampleDateTime(source.getSampleDateTime());
+        target.setReportDateTime(source.getReportDateTime());
+        target.setSampleMaterial(source.getSampleMaterial());
+        target.setSampleMaterialText(source.getSampleMaterialText());
+        target.setShipmentDate(source.getShipmentDate());
+        target.setShipmentDetails(source.getShipmentDetails());
+        target.setReceivedDate(source.getReceivedDate());
+        target.setSpecimenCondition(source.getSpecimenCondition());
+        target.setNoTestPossibleReason(source.getNoTestPossibleReason());
+        target.setComment(source.getComment());
+        target.setSampleSource(source.getSampleSource());
+        target.setSuggestedTypeOfTest(source.getSuggestedTypeOfTest());
+        target.setShipped(source.isShipped());
+        target.setReceived(source.isReceived());
+
+        target.setReportLat(source.getReportLat());
+        target.setReportLon(source.getReportLon());
+        target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
     }
 
     public static SampleReferenceDto toReferenceDto(Sample ado) {

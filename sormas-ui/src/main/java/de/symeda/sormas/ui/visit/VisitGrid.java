@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.GeneratedPropertyContainer;
+import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.renderers.DateRenderer;
 import com.vaadin.ui.renderers.HtmlRenderer;
@@ -40,7 +41,7 @@ public class VisitGrid extends Grid {
         container.addNestedContainerProperty(SYMPTOMS_TEMPERATURE);
 
 		GeneratedPropertyContainer editContainer = new GeneratedPropertyContainer(container);
-        VaadinUiUtil.addEditColumn(editContainer, EDIT_BTN_ID);
+        VaadinUiUtil.addIconColumn(editContainer, EDIT_BTN_ID, FontAwesome.PENCIL_SQUARE);
         setContainerDataSource(editContainer);
 
         setColumns(EDIT_BTN_ID, VisitDto.VISIT_DATE_TIME, VisitDto.VISIT_STATUS, VisitDto.VISIT_REMARKS, 

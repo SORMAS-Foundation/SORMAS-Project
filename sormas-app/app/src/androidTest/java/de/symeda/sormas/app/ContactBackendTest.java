@@ -34,13 +34,11 @@ public class ContactBackendTest {
 
     @Before
     public void initTest() {
-        TestHelper.initTestEnvironment();
+        TestHelper.initTestEnvironment(false);
     }
 
     @Test
     public void shouldCreateContact() {
-        TestHelper.initTestEnvironment();
-
         assertThat(DatabaseHelper.getContactDao().queryForAll().size(), is(0));
         TestEntityCreator.createContact();
 
@@ -85,11 +83,9 @@ public class ContactBackendTest {
         mergeVisit.setPerson((Person) visit.getPerson().clone());
         mergeVisit.getPerson().setAddress((Location) visit.getPerson().getAddress().clone());
         mergeVisit.setSymptoms((Symptoms) visit.getSymptoms().clone());
-        mergeVisit.getSymptoms().setIllLocation((Location) visit.getSymptoms().getIllLocation().clone());
         mergeVisit.setId(null);
         mergeVisit.getPerson().getAddress().setId(null);
         mergeVisit.getSymptoms().setId(null);
-        mergeVisit.getSymptoms().getIllLocation().setId(null);
 
         mergeVisit.setVisitStatus(VisitStatus.COOPERATIVE);
 

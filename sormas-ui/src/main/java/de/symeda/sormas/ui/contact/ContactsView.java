@@ -4,7 +4,6 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -39,9 +38,8 @@ public class ContactsView extends AbstractView {
 	private VerticalLayout gridLayout;
 
     public ContactsView() {
-        setSizeFull();
-        addStyleName("crud-view");
-
+    	super(VIEW_NAME);
+    	
         grid = new ContactGrid();
 
         gridLayout = new VerticalLayout();
@@ -61,28 +59,18 @@ public class ContactsView extends AbstractView {
 	public HorizontalLayout createTopBar() {
     	HorizontalLayout topLayout = new HorizontalLayout();
     	topLayout.setSpacing(true);
-    	topLayout.setWidth(100, Unit.PERCENTAGE);
-    	topLayout.addStyleName(CssStyles.VSPACE3);
+    	topLayout.setSizeUndefined();
+    	topLayout.addStyleName(CssStyles.VSPACE_3);
     	
-    	Label header = new Label("Contacts");
-    	header.setSizeUndefined();
-    	CssStyles.style(header, CssStyles.H2, CssStyles.NO_MARGIN);
-    	topLayout.addComponent(header);
-    	
-    	HorizontalLayout buttonFilterLayout = new HorizontalLayout();
-    	{
-	    	Button statusAll = new Button("all", e -> grid.setClassificationFilter(null));
-	        statusAll.setStyleName(ValoTheme.BUTTON_LINK);
-	        buttonFilterLayout.addComponent(statusAll);
-	        
-	        for (ContactClassification status : ContactClassification.values()) {
-		    	Button statusButton = new Button(status.toString(), e -> grid.setClassificationFilter(status));
-		    	statusButton.setStyleName(ValoTheme.BUTTON_LINK);
-		        buttonFilterLayout.addComponent(statusButton);
-	        }
-    	}
-    	topLayout.addComponent(buttonFilterLayout);
-    	topLayout.setExpandRatio(buttonFilterLayout, 1);
+    	Button statusAll = new Button("all", e -> grid.setClassificationFilter(null));
+        statusAll.setStyleName(ValoTheme.BUTTON_LINK);
+        topLayout.addComponent(statusAll);
+        
+        for (ContactClassification status : ContactClassification.values()) {
+	    	Button statusButton = new Button(status.toString(), e -> grid.setClassificationFilter(status));
+	    	statusButton.setStyleName(ValoTheme.BUTTON_LINK);
+	    	topLayout.addComponent(statusButton);
+        }
         
         return topLayout;
     }
@@ -91,7 +79,7 @@ public class ContactsView extends AbstractView {
     	HorizontalLayout filterLayout = new HorizontalLayout();
     	filterLayout.setSpacing(true);
     	filterLayout.setSizeUndefined();
-    	filterLayout.addStyleName(CssStyles.VSPACE3);
+    	filterLayout.addStyleName(CssStyles.VSPACE_3);
     	
         ComboBox diseaseFilter = new ComboBox();
         diseaseFilter.setWidth(200, Unit.PIXELS);

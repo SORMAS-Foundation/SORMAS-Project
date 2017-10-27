@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
@@ -16,9 +17,11 @@ import android.widget.TextView;
 import java.util.regex.Pattern;
 
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.caze.CasesActivity;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.settings.SettingsActivity;
+import de.symeda.sormas.app.task.TaskEditActivity;
 import de.symeda.sormas.app.util.SyncCallback;
 
 /**
@@ -136,8 +139,9 @@ public class EnterPinActivity extends AppCompatActivity {
                 // otherwise display an error message and restart the activity
                 if (lastEnteredPIN.equals(enteredPIN)) {
                     ConfigProvider.setPin(enteredPIN);
+                    ConfigProvider.setAccessGranted(true);
                     Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_pin_correct_loading, Snackbar.LENGTH_LONG).show();
-                    startMainActivity();
+                    finish();
                 } else {
                     lastEnteredPIN = null;
                     Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_pin_not_matching, Snackbar.LENGTH_LONG).show();
@@ -174,8 +178,9 @@ public class EnterPinActivity extends AppCompatActivity {
             } else {
                 // Process the login if the PIN is correct, otherwise display an error message and restart the activity
                 if (enteredPIN.equals(savedPIN)) {
+                    ConfigProvider.setAccessGranted(true);
                     Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_pin_correct_loading, Snackbar.LENGTH_LONG).show();
-                    startMainActivity();
+                    finish();
                 } else {
                     Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_pin_wrong, Snackbar.LENGTH_LONG).show();
                     triedAgain = true;
@@ -262,8 +267,7 @@ public class EnterPinActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    public void enterNumber(View view)
-    {
+    public void enterNumber(View view) {
         enterNumber(((Button)view).getText());
     }
 
@@ -294,13 +298,6 @@ public class EnterPinActivity extends AppCompatActivity {
 
     public void backToSettings(View view) {
         Intent intent = new Intent(this, SettingsActivity.class);
-        startActivity(intent);
-    }
-
-
-
-    private void startMainActivity() {
-        Intent intent = new Intent(this, CasesActivity.class);
         startActivity(intent);
     }
 

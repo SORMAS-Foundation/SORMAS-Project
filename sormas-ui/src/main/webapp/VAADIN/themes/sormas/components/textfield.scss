@@ -1,0 +1,26 @@
+
+$v-textfield-background-color--readonly: $v-app-background-color !default;
+
+@mixin sormas-textfield {
+
+  .v-textfield {
+
+    background-color: $v-background-color;
+  
+    &.v-readonly {
+      border: none;
+      padding: 0;
+      background: inherit;
+      color: inherit;
+      height: inherit;
+    }
+   
+  }
+
+  // Hide spinner buttons from number input
+  input[type=number]::-webkit-inner-spin-button,
+  input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+}

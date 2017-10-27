@@ -31,7 +31,7 @@ import de.symeda.sormas.ui.utils.SormasDefaultConverterFactory;
  */
 @SuppressWarnings("serial")
 @Viewport("user-scalable=no,initial-scale=1.0")
-@Theme("sormastheme")
+@Theme("sormas")
 @Widgetset("de.symeda.sormas.SormasWidgetset")
 public class SormasUI extends UI {
 

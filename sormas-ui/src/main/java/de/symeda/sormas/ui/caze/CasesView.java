@@ -2,11 +2,9 @@ package de.symeda.sormas.ui.caze;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
@@ -46,8 +44,13 @@ public class CasesView extends AbstractView {
 	private VerticalLayout gridLayout;
 
     public CasesView() {
-        setSizeFull();
-        addStyleName("crud-view");
+    	super(VIEW_NAME);
+    	
+        createButton = new Button("New case");
+        createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+        createButton.setIcon(FontAwesome.PLUS_CIRCLE);
+        createButton.addClickListener(e -> ControllerProvider.getCaseController().create());
+        addHeaderComponent(createButton);
 
         grid = new CaseGrid();
 
@@ -68,13 +71,8 @@ public class CasesView extends AbstractView {
 	public HorizontalLayout createTopBar() {
     	HorizontalLayout topLayout = new HorizontalLayout();
     	topLayout.setSpacing(true);
-    	topLayout.setWidth(100, Unit.PERCENTAGE);
-    	topLayout.addStyleName(CssStyles.VSPACE3);
-    	
-    	Label header = new Label("Cases");
-    	header.setSizeUndefined();
-    	CssStyles.style(header, CssStyles.H2, CssStyles.NO_MARGIN);
-    	topLayout.addComponent(header);
+    	topLayout.setSizeUndefined();
+    	topLayout.addStyleName(CssStyles.VSPACE_3);
     	
     	Button statusAll = new Button("all", e -> grid.setInvestigationFilter(null));
         statusAll.setStyleName(ValoTheme.BUTTON_LINK);
@@ -85,15 +83,7 @@ public class CasesView extends AbstractView {
 	    	statusButton.setStyleName(ValoTheme.BUTTON_LINK);
 	        topLayout.addComponent(statusButton);
         }
-        
-        createButton = new Button("New case");
-        createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-        createButton.setIcon(FontAwesome.PLUS_CIRCLE);
-        createButton.addClickListener(e -> ControllerProvider.getCaseController().create());
-        topLayout.addComponent(createButton);
-        topLayout.setComponentAlignment(createButton, Alignment.MIDDLE_RIGHT);
-        topLayout.setExpandRatio(createButton, 1);
-        
+
         return topLayout;
     }
 
@@ -101,7 +91,7 @@ public class CasesView extends AbstractView {
     	HorizontalLayout filterLayout = new HorizontalLayout();
     	filterLayout.setSpacing(true);
     	filterLayout.setSizeUndefined();
-    	filterLayout.addStyleName(CssStyles.VSPACE3);
+    	filterLayout.addStyleName(CssStyles.VSPACE_3);
 
         ComboBox diseaseFilter = new ComboBox();
         diseaseFilter.setWidth(200, Unit.PIXELS);

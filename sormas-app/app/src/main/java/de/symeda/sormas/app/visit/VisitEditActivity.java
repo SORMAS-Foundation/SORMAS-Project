@@ -34,6 +34,7 @@ import de.symeda.sormas.app.databinding.VisitDataFragmentLayoutBinding;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
+import de.symeda.sormas.app.util.LocationService;
 import de.symeda.sormas.app.util.SyncCallback;
 import de.symeda.sormas.app.validation.SymptomsValidator;
 import de.symeda.sormas.app.validation.VisitValidator;
@@ -121,6 +122,9 @@ public class VisitEditActivity extends AbstractEditTabActivity {
                 snackbar.show();
             }
         }
+        else {
+            LocationService.instance().requestFreshLocation(this);
+        }
     }
 
     @Override
@@ -196,7 +200,7 @@ public class VisitEditActivity extends AbstractEditTabActivity {
 
                 // Necessary because the entry could've been automatically set, in which case the setValue method of the
                 // custom field has not been called
-                symptoms.setOnsetSymptom((String) symptomsBinding.symptomsOnsetSymptom1.getValue());
+                symptoms.setOnsetSymptom((String) symptomsBinding.symptomsOnsetSymptom.getValue());
 
                 VisitValidator.clearErrorsForVisitData(visitDataBinding);
                 SymptomsValidator.clearErrorsForSymptoms(symptomsBinding);

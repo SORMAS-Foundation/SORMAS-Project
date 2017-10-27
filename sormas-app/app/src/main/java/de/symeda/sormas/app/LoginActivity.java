@@ -1,14 +1,10 @@
 package de.symeda.sormas.app;
 
-import android.Manifest;
 import android.accounts.AuthenticatorException;
-import android.app.Activity;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.EditText;
@@ -16,6 +12,7 @@ import android.widget.EditText;
 import java.net.ConnectException;
 
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.caze.CasesActivity;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.settings.SettingsActivity;
@@ -42,7 +39,7 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
     protected void onResume() {
         super.onResume();
 
-        if (hasGPSTurnedOnAndPermissionGranted()) {
+        if (LocationService.instance().validateGpsAccessAndEnabled(this)) {
             processLogin();
         }
     }
@@ -80,7 +77,7 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
                     public void call(boolean syncFailed, String syncFailedMessage) {
                         // logged in?
                         if (ConfigProvider.getUser() != null) {
-                            Intent intent = new Intent(LoginActivity.this, EnterPinActivity.class);
+                            Intent intent = new Intent(LoginActivity.this, CasesActivity.class);
                             startActivity(intent);
                         }
                     }
@@ -96,92 +93,12 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        if (hasGPSTurnedOnAndPermissionGranted()) {
+        if (LocationService.instance().validateGpsAccessAndEnabled(this)) {
             processLogin();
         }
     }
 
-    private boolean hasGPSTurnedOnAndPermissionGranted() {
-        LocationService locationService = LocationService.getLocationService(this);
 
-        if (!locationService.hasGPSAccess(this)) {
-            AlertDialog requestPermissionDialog = buildRequestPermissionDialog();
-            requestPermissionDialog.show();
-            return false;
-        }
-
-        if (!locationService.hasGPSEnabled()) {
-            AlertDialog turnOnGPSDialog = buildTurnOnGPSDialog();
-            turnOnGPSDialog.show();
-            return false;
-        }
-
-        return true;
-    }
-
-    private AlertDialog buildRequestPermissionDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setCancelable(false);
-        builder.setMessage(R.string.alert_gps_permission);
-        builder.setTitle(R.string.alert_title_gps_permission);
-        builder.setIcon(R.drawable.ic_perm_device_information_black_24dp);
-        AlertDialog dialog = builder.create();
-        dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.action_close_app),
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Activity finishActivity = LoginActivity.this;
-                        do {
-                            finishActivity.finish();
-                            finishActivity = finishActivity.getParent();
-                        } while (finishActivity != null);
-                    }
-                }
-        );
-        dialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.action_allow_gps_access),
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        ActivityCompat.requestPermissions(LoginActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 9999);
-                    }
-                }
-        );
-
-        return dialog;
-    }
-
-    private AlertDialog buildTurnOnGPSDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setCancelable(false);
-        builder.setMessage(R.string.alert_gps);
-        builder.setTitle(R.string.alert_title_gps);
-        builder.setIcon(R.drawable.ic_location_on_black_24dp);
-        AlertDialog dialog = builder.create();
-        dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.action_close_app),
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Activity finishActivity = LoginActivity.this;
-                        do {
-                            finishActivity.finish();
-                            finishActivity = finishActivity.getParent();
-                        } while (finishActivity != null);
-                    }
-                }
-        );
-        dialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.action_turn_on_gps),
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Intent gpsOptionsIntent = new Intent(
-                                android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                        startActivity(gpsOptionsIntent);
-                    }
-                }
-        );
-
-        return dialog;
-    }
 
     private void processLogin() {
         // try to connect -> validates login data
@@ -207,14 +124,14 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
                     @Override
                     public void call(boolean syncFailed, String syncFailedMessage) {
                         if (ConfigProvider.getUser() != null) {
-                            Intent intent = new Intent(LoginActivity.this, EnterPinActivity.class);
+                            Intent intent = new Intent(LoginActivity.this, CasesActivity.class);
                             startActivity(intent);
                         }
                     }
                 });
             }
             else {
-                Intent intent = new Intent(LoginActivity.this, EnterPinActivity.class);
+                Intent intent = new Intent(LoginActivity.this, CasesActivity.class);
                 startActivity(intent);
             }
         }

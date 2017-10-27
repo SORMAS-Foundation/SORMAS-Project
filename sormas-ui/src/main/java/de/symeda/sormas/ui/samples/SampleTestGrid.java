@@ -8,6 +8,7 @@ import com.vaadin.data.util.GeneratedPropertyContainer;
 import com.vaadin.data.util.MethodProperty;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
+import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.renderers.DateRenderer;
 import com.vaadin.ui.renderers.HtmlRenderer;
@@ -31,7 +32,7 @@ public class SampleTestGrid extends Grid implements ItemClickListener {
 		
 		BeanItemContainer<SampleTestDto> container = new BeanItemContainer<SampleTestDto>(SampleTestDto.class);
 		GeneratedPropertyContainer generatedContainer = new GeneratedPropertyContainer(container);
-		VaadinUiUtil.addEditColumn(generatedContainer, EDIT_BTN_ID);
+		VaadinUiUtil.addIconColumn(generatedContainer, EDIT_BTN_ID, FontAwesome.PENCIL_SQUARE);
 		setContainerDataSource(generatedContainer);
 		
 		setColumns(EDIT_BTN_ID, SampleTestDto.TEST_TYPE, SampleTestDto.TEST_DATE_TIME, SampleTestDto.LAB,

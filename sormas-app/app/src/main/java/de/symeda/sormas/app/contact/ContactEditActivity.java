@@ -100,6 +100,10 @@ public class ContactEditActivity extends AbstractEditTabActivity {
                     finish();
                 }
 
+                if (toolbar != null) {
+                    getSupportActionBar().setSubtitle(initialEntity.toString());
+                }
+
                 DatabaseHelper.getContactDao().markAsRead(initialEntity);
             }
             if (params.containsKey(TaskForm.KEY_TASK_UUID)) {

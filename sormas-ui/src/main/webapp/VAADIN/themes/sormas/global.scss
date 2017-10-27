@@ -1,0 +1,141 @@
+
+@mixin sormas-global {
+	
+  .v-caption {
+    text-transform: uppercase;
+	display: block;
+    padding-bottom: 0.1em;
+    
+    &.v-caption-caption-hidden {
+      display: none;
+    }
+  }
+  
+  .force-caption {
+	margin-top: 1.5em;
+  }
+  
+  .v-widget.v-textfield,
+  .v-widget.v-textarea,
+  .v-widget.v-select,
+  .v-widget.v-datefield,
+  .v-widget.v-filterselect,
+  .v-widget.v-select-optiongroup {
+  	margin-bottom: 10px;
+  }
+  
+  
+  /** HEADER STYLES **/
+
+  h1, .h1 {
+    color: $s-primary-color;
+    font-weight: 600;
+  }
+
+  h2, .h2 {
+    color: $s-secondary-color;
+    font-weight: 600;
+  }
+
+  h3, .h3 {
+    margin-bottom: 16px;
+  
+    &::before {
+      background: #EEF2F8;
+      content: "";
+      display: block;
+      position: relative;
+      top: 15px;
+      height: 2px;
+      width: 100%;
+    }
+  
+    span {
+      background: #FFF;
+      position: relative;
+      padding-right: 8px;
+    }
+  }   
+    
+  h4, .h4 {
+    color: $s-secondary-color;
+    font-weight: 600;
+  }
+  
+
+
+  /** CUSTOM STYLES **/
+	
+  .vspace-0 {
+	margin-bottom: 64px;
+  }
+  .vspace-1 {
+	margin-bottom: 36px;
+  }
+  .vspace-2 {
+	margin-bottom: 20px;
+  }
+  .vspace-3 {
+	margin-bottom: 10px;
+  }	
+  .vspace-4 {
+	margin-bottom: 6px;
+  }
+  .vspace-5 {
+    margin-bottom: 2px;
+  }
+  .vspace-none {
+  	margin-bottom: 0 !important;
+  }
+  
+  .vspace-top-0 {
+    margin-top: 64px;
+  }
+  .vspace-top-1 {
+	margin-top: 36px;
+  }
+  .vspace-top-2 {
+	margin-top: 20px;
+  }
+  .vspace-top-3 {
+	margin-top: 10px;
+  }
+  .vspace-top-4 {
+	margin-top: 6px;
+  }
+  .vspace-top-5 {
+	margin-top: 2px;
+  }
+  .vspace-top-none {
+  	margin-top: 0 !important;
+  }
+ 
+  .hspace-right-0 {
+  	margin-right: 64px;
+  }
+  .hspace-right-1 {
+  	margin-right: 36px;
+  }
+  .hspace-right-2 {
+  	margin-right: 20px;
+  }
+  .hspace-right-3 {
+  	margin-right: 10px;
+  }
+  .hspace-right-4 {
+  	margin-right: 6px;
+  }
+  .hspace-right-5 {
+  	margin-right: 2px;
+  }
+  .hspace-right-none {
+  	margin-right: 0 !important;
+  }
+	
+  // For aligning in bootstrap grid
+  .align-right {
+  	text-align: right;
+  }
+
+  
+}

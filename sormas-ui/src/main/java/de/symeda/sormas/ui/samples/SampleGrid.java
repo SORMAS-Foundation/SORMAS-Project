@@ -23,6 +23,7 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.login.LoginHelper;
@@ -66,8 +67,9 @@ public class SampleGrid extends Grid {
 			@Override
 			public String getValue(Item item, Object itemId, Object propertyId) {
 				SampleIndexDto indexDto = (SampleIndexDto) itemId;
-				String diseaseName = indexDto.getDisease().getName();
-				return Disease.valueOf(diseaseName).toShortString();
+				return indexDto.getDisease() != Disease.OTHER 
+						? (indexDto.getDisease() != null ? indexDto.getDisease().toShortString() : "")
+						: DataHelper.toStringNullable(indexDto.getDiseaseDetails());
 			}
 			@Override
 			public Class<String> getType() {

@@ -163,6 +163,10 @@ public class SampleFacadeEjb implements SampleFacade {
 		target.setReferredTo(sampleService.getByReferenceDto(source.getReferredTo()));
 		target.setShipped(source.isShipped());
 		target.setReceived(source.isReceived());
+
+		target.setReportLat(source.getReportLat());
+		target.setReportLon(source.getReportLon());
+		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
 		
 		return target;
 	}
@@ -194,6 +198,10 @@ public class SampleFacadeEjb implements SampleFacade {
 		target.setReferredTo(SampleFacadeEjb.toReferenceDto(source.getReferredTo()));
 		target.setShipped(source.isShipped());
 		target.setReceived(source.isReceived());
+
+		target.setReportLat(source.getReportLat());
+		target.setReportLon(source.getReportLon());
+		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
 		
 		return target;
 	}
@@ -216,6 +224,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		
 		target.setAssociatedCase(CaseFacadeEjb.toReferenceDto(source.getAssociatedCase()));
 		target.setDisease(source.getAssociatedCase().getDisease());
+		target.setDiseaseDetails(source.getAssociatedCase().getDiseaseDetails());
 		target.setSampleCode(source.getSampleCode());
 		target.setLabSampleID(source.getLabSampleID());
 		target.setShipmentDate(source.getShipmentDate());

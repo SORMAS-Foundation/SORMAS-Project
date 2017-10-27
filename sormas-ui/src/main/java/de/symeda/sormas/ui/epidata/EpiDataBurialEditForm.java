@@ -4,7 +4,7 @@ import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TextField;
 
 import de.symeda.sormas.api.epidata.EpiDataBurialDto;
-import de.symeda.sormas.ui.location.LocationForm;
+import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
@@ -31,7 +31,7 @@ public class EpiDataBurialEditForm extends AbstractEditForm<EpiDataBurialDto> {
 		addField(EpiDataBurialDto.BURIAL_RELATION, TextField.class);
 		addField(EpiDataBurialDto.BURIAL_ILL, OptionGroup.class);
 		addField(EpiDataBurialDto.BURIAL_TOUCHING, OptionGroup.class);
-		addField(EpiDataBurialDto.BURIAL_ADDRESS, LocationForm.class).setCaption(null);
+		addField(EpiDataBurialDto.BURIAL_ADDRESS, LocationEditForm.class).setCaption(null);
 		
 		setRequired(true,
 				EpiDataBurialDto.BURIAL_DATE_FROM,

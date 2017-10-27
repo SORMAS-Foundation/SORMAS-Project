@@ -26,7 +26,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 	private static final String LAST_NAME = "lastName";
 	
     private static final String HTML_LAYOUT = 
-			LayoutUtil.divCss(CssStyles.VSPACE2,
+			LayoutUtil.divCss(CssStyles.VSPACE_2,
 					LayoutUtil.fluidRowLocs(ContactDto.CAZE, ContactDto.LAST_CONTACT_DATE),
 					LayoutUtil.fluidRowLocs(FIRST_NAME, LAST_NAME),
 					LayoutUtil.fluidRowLocs(ContactDto.CONTACT_PROXIMITY),

@@ -31,8 +31,9 @@ public class Location extends AbstractDomainObject {
 	private District district;
 	private Community community;
 	
-	private Float latitude;
-	private Float longitude;
+	private Double latitude;
+	private Double longitude;
+	private Float latLonAccuracy;
 	
 	@Column(length = 255)
 	public String getAddress() {
@@ -82,19 +83,24 @@ public class Location extends AbstractDomainObject {
 		this.community = community;
 	}
 	
-	@Column(columnDefinition = "float8")
-	public Float getLatitude() {
+	public Double getLatitude() {
 		return latitude;
 	}
-	public void setLatitude(Float latitude) {
+	public void setLatitude(Double latitude) {
 		this.latitude = latitude;
 	}
 	
-	@Column(columnDefinition = "float8")
-	public Float getLongitude() {
+	public Double getLongitude() {
 		return longitude;
 	}
-	public void setLongitude(Float longitude) {
+	public void setLongitude(Double longitude) {
 		this.longitude = longitude;
+	}
+
+	public Float getLatLonAccuracy() {
+		return latLonAccuracy;
+	}
+	public void setLatLonAccuracy(Float latLonAccuracy) {
+		this.latLonAccuracy = latLonAccuracy;
 	}
 }

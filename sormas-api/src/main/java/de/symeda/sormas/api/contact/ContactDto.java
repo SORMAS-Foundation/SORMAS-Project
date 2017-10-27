@@ -37,19 +37,20 @@ public class ContactDto extends ContactReferenceDto {
 	private Date lastContactDate;
 	private ContactProximity contactProximity;
 	private ContactClassification contactClassification;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.CHOLERA})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.CHOLERA,Disease.MONKEYPOX,Disease.OTHER})
 	private FollowUpStatus followUpStatus;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.CHOLERA})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.CHOLERA,Disease.MONKEYPOX,Disease.OTHER})
 	private String followUpComment;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.CHOLERA})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.CHOLERA,Disease.MONKEYPOX,Disease.OTHER})
 	private Date followUpUntil;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.CHOLERA})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.CHOLERA,Disease.MONKEYPOX,Disease.OTHER})
 	private UserReferenceDto contactOfficer;
 	private String description;
 	private ContactRelation relationToCase;
-	private Float reportLat;
-	private Float reportLon;
-	
+	private Double reportLat;
+	private Double reportLon;
+	private Float reportLatLonAccuracy;
+
 	public PersonReferenceDto getPerson() {
 		return person;
 	}
@@ -123,16 +124,16 @@ public class ContactDto extends ContactReferenceDto {
 	public void setRelationToCase(ContactRelation relationToCase) {
 		this.relationToCase = relationToCase;
 	}
-	public Float getReportLat() {
+	public Double getReportLat() {
 		return reportLat;
 	}
-	public void setReportLat(Float reportLat) {
+	public void setReportLat(Double reportLat) {
 		this.reportLat = reportLat;
 	}
-	public Float getReportLon() {
+	public Double getReportLon() {
 		return reportLon;
 	}
-	public void setReportLon(Float reportLon) {
+	public void setReportLon(Double reportLon) {
 		this.reportLon = reportLon;
 	}
 	public String getFollowUpComment() {
@@ -140,6 +141,12 @@ public class ContactDto extends ContactReferenceDto {
 	}
 	public void setFollowUpComment(String followUpComment) {
 		this.followUpComment = followUpComment;
+	}
+	public Float getReportLatLonAccuracy() {
+		return reportLatLonAccuracy;
+	}
+	public void setReportLatLonAccuracy(Float reportLatLonAccuracy) {
+		this.reportLatLonAccuracy = reportLatLonAccuracy;
 	}
 	
 }

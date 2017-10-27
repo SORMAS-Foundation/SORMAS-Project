@@ -12,8 +12,4 @@ public enum TaskStatus {
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}
-	
-	public String getChangeString() {
-		return I18nProperties.getButtonCaption(getClass().getSimpleName() + "." + name(), name());
-	}
 }

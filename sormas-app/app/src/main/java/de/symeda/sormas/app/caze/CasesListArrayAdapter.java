@@ -52,12 +52,9 @@ public class CasesListArrayAdapter extends ArrayAdapter<Case> {
         uuid.setText(DataHelper.getShortUuid(caze.getUuid()));
 
         TextView disease = (TextView) convertView.findViewById(R.id.cli_disease);
-        if(caze.getDisease() != null) {
-            String diseaseName = caze.getDisease().getName();
-            disease.setText(Disease.valueOf(diseaseName).toShortString() + (caze.getDisease() == Disease.OTHER ? " (" + caze.getDiseaseDetails() + ")" : ""));
-        } else {
-            disease.setText(null);
-        }
+        disease.setText(caze.getDisease() != Disease.OTHER
+                ? (caze.getDisease() != null ? caze.getDisease().toShortString() : "")
+                : DataHelper.toStringNullable(caze.getDiseaseDetails()));
 
         TextView reportDate = (TextView) convertView.findViewById(R.id.cli_report_date);
         reportDate.setText(DateHelper.formatDate(caze.getReportDate()));

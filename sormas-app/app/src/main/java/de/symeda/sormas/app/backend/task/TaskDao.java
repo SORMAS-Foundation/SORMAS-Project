@@ -46,14 +46,11 @@ public class TaskDao extends AbstractAdoDao<Task> {
         task.setTaskStatus(targetStatus);
         task.setStatusChangeDate(new Date());
 
-        LocationService locationService = LocationService.getLocationService(DatabaseHelper.getContext());
-        Location location = locationService.getLocation();
+        Location location = LocationService.instance().getLocation();
         if (location != null) {
-            // Use the geo-coordinates of the current location object if it's not older than 15 minutes
-            if (new Date().getTime() <= location.getTime() + (1000 * 60 * 15)) {
-                task.setClosedLat((float) location.getLatitude());
-                task.setClosedLon((float) location.getLongitude());
-            }
+            task.setClosedLat(location.getLatitude());
+            task.setClosedLon(location.getLongitude());
+            task.setClosedLatLonAccuracy(location.getAccuracy());
         }
 
         saveAndSnapshot(task);
@@ -65,6 +62,7 @@ public class TaskDao extends AbstractAdoDao<Task> {
      * 2. due date within range
      * 3. localChangeDate within range, not modified (-> has been updated on server) and suggested start before end of range
      * Ordered by priority, then due date - oldes (most due) first
+     * Typically, the range is the interval between two notification polls (e.g. 2 minutes)
      * @return
      */
     public List<Task> queryMyPendingForNotification(Date rangeStart, Date rangeEnd) {
@@ -86,6 +84,10 @@ public class TaskDao extends AbstractAdoDao<Task> {
                             where.and(
                                     where.between(Task.LOCAL_CHANGE_DATE, rangeStart, rangeEnd),
                                     where.eq(Task.MODIFIED, false),
+                                    where.or(
+                                            where.raw(Task.LAST_OPENED_DATE + " < " + Task.LOCAL_CHANGE_DATE),
+                                            where.isNull(Task.LAST_OPENED_DATE)
+                                    ),
                                     where.le(Task.SUGGESTED_START, rangeEnd)
                             )
                     )

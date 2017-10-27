@@ -1,5 +1,10 @@
 package de.symeda.sormas.ui.location;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.Locale;
+
+import com.vaadin.data.util.converter.StringToDoubleConverter;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
@@ -12,15 +17,36 @@ import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
 @SuppressWarnings("serial")
-public class LocationForm extends AbstractEditForm<LocationDto> {
+public class LocationEditForm extends AbstractEditForm<LocationDto> {
 
-    private static final String HTML_LAYOUT = 
+    private final class StringToAngularLocationConverter extends StringToDoubleConverter {
+		protected NumberFormat getFormat(Locale locale) {
+			
+	        if (locale == null) {
+	            locale = Locale.getDefault();
+	        }
+			
+			DecimalFormat numberFormat = (DecimalFormat)NumberFormat.getNumberInstance(locale);
+			numberFormat.setGroupingUsed(false);
+			numberFormat.setMaximumFractionDigits(5);
+
+			return numberFormat;
+		}
+	}
+
+	private static final String HTML_LAYOUT = 
     		LayoutUtil.div(
-    				LayoutUtil.fluidRowLocs(LocationDto.ADDRESS, LocationDto.DETAILS),
-    				LayoutUtil.fluidRowLocs(LocationDto.REGION, LocationDto.DISTRICT, LocationDto.COMMUNITY, LocationDto.CITY)
+    				LayoutUtil.fluidRow(
+    						LayoutUtil.loc(LocationDto.ADDRESS), 
+    						LayoutUtil.div(
+    								LayoutUtil.fluidRowLocs(LocationDto.REGION, LocationDto.DISTRICT),
+    								LayoutUtil.fluidRowLocs(LocationDto.COMMUNITY, LocationDto.CITY))),
+    				LayoutUtil.fluidRow(
+    						LayoutUtil.loc(LocationDto.DETAILS), 
+    						LayoutUtil.fluidRowLocs(LocationDto.LATITUDE, LocationDto.LONGITUDE, LocationDto.LAT_LON_ACCURACY))
     			);
 
-    public LocationForm() {
+    public LocationEditForm() {
     	super(LocationDto.class, LocationDto.I18N_PREFIX);
     }
     
@@ -33,8 +59,10 @@ public class LocationForm extends AbstractEditForm<LocationDto> {
     	addField(LocationDto.ADDRESS, TextArea.class).setRows(2);
     	addField(LocationDto.DETAILS, TextField.class);
     	addField(LocationDto.CITY, TextField.class);
-//    	addField(LocationDto.LATITUDE, TextField.class);
-//    	addField(LocationDto.LONGITUDE, TextField.class);
+    	
+    	addField(LocationDto.LATITUDE, TextField.class).setConverter(new StringToAngularLocationConverter());
+    	addField(LocationDto.LONGITUDE, TextField.class).setConverter(new StringToAngularLocationConverter());
+    	addField(LocationDto.LAT_LON_ACCURACY, TextField.class);
 
     	ComboBox region = addField(LocationDto.REGION, ComboBox.class);
     	ComboBox district = addField(LocationDto.DISTRICT, ComboBox.class);

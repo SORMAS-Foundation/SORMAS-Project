@@ -25,6 +25,7 @@
             android:theme="@style/AppTheme">
 
             <TextView
+                android:id="@+id/epiData_epiData"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingBottom="10dp"
@@ -33,6 +34,16 @@
                 android:textColor="@android:color/tab_indicator_text"
                 android:textSize="@dimen/abc_text_size_body_1_material"
                 android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/field_caption_margin_bottom"
+                android:textSize="@dimen/field_caption_size"
+                android:layout_marginLeft="@dimen/field_caption_margin_left"
+                android:text="@string/epiData_infoText"
+                android:id="@+id/epiData_epiDataInfoText"
+                android:paddingBottom="10dp"/>
 
             <de.symeda.sormas.app.component.YesNoUnknownVerticalField
                 android:id="@+id/epiData_burialAttended"
@@ -87,6 +98,16 @@
                 android:textColor="@android:color/tab_indicator_text"
                 android:textSize="@dimen/abc_text_size_body_1_material"
                 android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/field_caption_margin_bottom"
+                android:textSize="@dimen/field_caption_size"
+                android:layout_marginLeft="@dimen/field_caption_margin_left"
+                android:text="@string/animalContacts_infoText"
+                android:id="@+id/epiData_animalContactsInfoText"
+                android:paddingBottom="10dp"/>
 
             <de.symeda.sormas.app.component.YesNoUnknownField
                 android:id="@+id/epiData_rodents"
@@ -236,6 +257,31 @@
                 android:paddingBottom="@dimen/field_padding"
                 android:nextFocusForward="@+id/epiData_waterSource"
                 android:value="@={epiData.wildbirdsLocation}"/>
+
+            <de.symeda.sormas.app.component.DateField
+                android:id="@+id/epiData_dateOfLastExposure"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="@dimen/field_padding"
+                android:paddingTop="@dimen/field_padding"
+                android:value="@={epiData.dateOfLastExposure}" />
+
+            <de.symeda.sormas.app.component.TextField
+                android:id="@+id/epiData_placeOfLastExposure"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/field_padding"
+                android:paddingBottom="@dimen/field_padding"
+                android:nextFocusForward="@+id/epiData_animalCondition"
+                android:value="@={epiData.placeOfLastExposure}"/>
+
+            <de.symeda.sormas.app.component.SpinnerField
+                android:id="@+id/epiData_animalCondition"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingTop="@dimen/field_padding"
+                android:paddingBottom="@dimen/field_padding"
+                android:value="@={epiData.animalCondition}"/>
 
             <TextView
                 android:id="@+id/epiData_environmentalExposure"

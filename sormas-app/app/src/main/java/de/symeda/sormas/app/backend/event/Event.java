@@ -98,11 +98,13 @@ public class Event extends AbstractDomainObject {
 	@Column(length=512)
 	private String typeOfPlaceText;
 
-	@Column(columnDefinition = "float8")
-	private Float reportLat;
+	@DatabaseField
+	private Double reportLat;
+	@DatabaseField
+	private Double reportLon;
+	@DatabaseField
+	private Float reportLatLonAccuracy;
 
-	@Column(columnDefinition = "float8")
-	private Float reportLon;
 
 	public EventType getEventType() {
 		return eventType;
@@ -219,19 +221,19 @@ public class Event extends AbstractDomainObject {
 		this.typeOfPlaceText = typeOfPlaceText;
 	}
 
-	public Float getReportLat() {
+	public Double getReportLat() {
 		return reportLat;
 	}
 
-	public void setReportLat(Float reportLat) {
+	public void setReportLat(Double reportLat) {
 		this.reportLat = reportLat;
 	}
 
-	public Float getReportLon() {
+	public Double getReportLon() {
 		return reportLon;
 	}
 
-	public void setReportLon(Float reportLon) {
+	public void setReportLon(Double reportLon) {
 		this.reportLon = reportLon;
 	}
 
@@ -245,5 +247,13 @@ public class Event extends AbstractDomainObject {
 	@Override
 	public String getI18nPrefix() {
 		return I18N_PREFIX;
+	}
+
+	public Float getReportLatLonAccuracy() {
+		return reportLatLonAccuracy;
+	}
+
+	public void setReportLatLonAccuracy(Float reportLatLonAccuracy) {
+		this.reportLatLonAccuracy = reportLatLonAccuracy;
 	}
 }

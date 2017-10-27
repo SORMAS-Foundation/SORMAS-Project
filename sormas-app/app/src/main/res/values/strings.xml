@@ -40,6 +40,7 @@
     <string name="action_createCaseFromContact">Create a new case for this contact</string>
     <string name="action_send">Send</string>
     <string name="action_report">Report Problem</string>
+    <string name="action_pick_gps">Pick GPS coordinates</string>
     <string name="action_options">Options</string>
     <string name="action_login">Login</string>
     <string name="action_submit">Submit</string>
@@ -140,12 +141,14 @@
     <!-- forms -->
     <string name="case_move">Move case to another health facility \u279D</string>
 
-    <string name="form_p_date_of_birth">Date of birth (day / month / year)</string>
+    <string name="form_p_date_of_birth">Date of birth (year / month / day)</string>
 
     <string name="form_username">Username</string>
     <string name="form_password">Password</string>
 
     <string name="symptoms_infoText">Please tick an answer for ALL symptoms indicating if they occurred during this illness between symptom onset and case detection:</string>
+    <string name="epiData_infoText">Please indicate if any of the following is relevant for the patient during the incubation period or illness.</string>
+    <string name="animalContacts_infoText">Please indicate an answer regarding ALL animals (live or dead) the person had direct exposure to (e.g. hunt, touch, eat) during the incubation period.</string>
     <string name="infoText_resetPIN">To reset your PIN you will <b>need your SORMAS user password.</b></string>
     <string name="infoText_move_case_discard_changes">Moving the case will discard any unsaved changes. Do you want to continue?</string>
 
@@ -159,6 +162,8 @@
     <string name="label_person_ill">Person ill / </string>
     <string name="label_body_touched">Body touched</string>
     <string name="label_body_not_touched">Body not touched</string>
+    <string name="label_pick_gps">No GPS coordinates picked</string>
+    <string name="label_lesions_locations">Localisation of the lesions</string>
 
     <string name="sample_shipmentStatus">Shipment status</string>
     <string name="sample_not_shipped">Not shipped</string>
@@ -290,6 +295,7 @@
     <string name="validation_none_health_facility_details">Please enter a description for the place the case has been reported at.</string>
     <string name="validation_symptoms_onset_date">Please enter the date of initial symptom onset.</string>
     <string name="validation_symptoms_onset_symptom">Please select the initial onset symptom.</string>
+    <string name="validation_symptoms_patient_ill_location">Please specify the location where the patient became ill.</string>
     <string name="validation_symptoms_symptom">Please select a state for this symptom.</string>
     <string name="validation_symptoms_other_hemorrhagic">Please enter the additional hemorrhagic symptoms.</string>
     <string name="validation_symptoms_other_clinical">Please enter the additional clinical symptoms.</string>

@@ -9,6 +9,7 @@ public enum Disease {
 	MEASLES,
 	YELLOW_FEVER,
 	DENGUE,
+	MONKEYPOX,
 	OTHER
 	;
 	
@@ -22,5 +23,9 @@ public enum Disease {
 	
 	public String getName() {
 		return this.name();
+	}
+	
+	public boolean hasContactFollowUp() {
+		return this == EVD || this == LASSA || this == AVIAN_INFLUENCA || this == MONKEYPOX || this == OTHER;
 	}
 }

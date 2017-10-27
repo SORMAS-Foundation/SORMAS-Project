@@ -46,7 +46,10 @@ public class CaseInfoLayout extends VerticalLayout {
 				I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, PersonDto.SEX));
 		this.addComponent(ageSexLayout);
 
-		addDescLabel(this, caseDto.getDisease() + (caseDto.getDisease() == Disease.OTHER ? " (" + caseDto.getDiseaseDetails() + ")" : ""),
+		addDescLabel(this, 
+				caseDto.getDisease() != Disease.OTHER 
+				? caseDto.getDisease().toShortString()
+				: DataHelper.toStringNullable(caseDto.getDiseaseDetails()),
 				I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISEASE));
 		addDescLabel(this, caseDto.getCaseClassification(),
 				I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.CASE_CLASSIFICATION));

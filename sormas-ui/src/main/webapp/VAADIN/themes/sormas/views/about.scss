@@ -1,0 +1,40 @@
+
+@mixin sormas-about-view {
+
+  .about-view {
+    overflow: auto;
+
+    .about-content {
+      @include valo-panel-style;
+      max-width: 500px;
+      // Override the default of CustomLayout
+      padding: $v-unit-size !important;
+    }
+  }
+  
+  // Editor should take whole browser width when we are under 550px in width.
+  .v-ui[width-range~="0-550px"] {
+
+    // About view fills the display on small screens
+    .about-view {
+      padding-bottom: 0;
+      padding-top: 0;
+      height: auto;
+      padding: 0.1 * $v-unit-size;
+
+      .v-slot-about-content {
+        overflow: auto;
+      }
+
+      .about-content {
+        width: 100%;
+        max-width: 100%;
+        height: auto;
+        vertical-align: top;
+        padding: 0;
+        background: transparent;
+        @include box-shadow(none);
+      }
+    }
+  }
+}

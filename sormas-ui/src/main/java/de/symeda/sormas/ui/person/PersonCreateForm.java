@@ -11,8 +11,8 @@ import de.symeda.sormas.ui.utils.LayoutUtil;
 public class PersonCreateForm extends AbstractEditForm<PersonReferenceDto> {
 	
     private static final String HTML_LAYOUT = 
-    		LayoutUtil.h3(CssStyles.VSPACE3, "Create new person")+
-			LayoutUtil.divCss(CssStyles.VSPACE2,
+    		LayoutUtil.h3(CssStyles.VSPACE_3, "Create new person")+
+			LayoutUtil.divCss(CssStyles.VSPACE_2,
 					LayoutUtil.fluidRowLocs(PersonReferenceDto.FIRST_NAME, PersonReferenceDto.LAST_NAME),
 					LayoutUtil.fluidRowLocs(PersonReferenceDto.UUID, "")
 					);

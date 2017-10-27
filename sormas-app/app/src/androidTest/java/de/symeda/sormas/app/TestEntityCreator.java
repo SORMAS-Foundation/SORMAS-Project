@@ -16,6 +16,7 @@ import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -33,6 +34,7 @@ import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
+import de.symeda.sormas.app.backend.report.WeeklyReport;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.backend.sample.SampleTest;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
@@ -216,8 +218,6 @@ public class TestEntityCreator {
     public static Visit createVisit(Contact contact) throws DaoException {
         Visit visit = DatabaseHelper.getVisitDao().build(contact.getUuid());
         Symptoms symptoms = DatabaseHelper.getSymptomsDao().build();
-        Location illLocation = DatabaseHelper.getLocationDao().build();
-        symptoms.setIllLocation(illLocation);
         visit.setSymptoms(symptoms);
         visit.setVisitUser(ConfigProvider.getUser());
 
@@ -285,6 +285,18 @@ public class TestEntityCreator {
         }
 
         return DatabaseHelper.getTaskDao().queryForId(task.getId());
+    }
+
+    public static WeeklyReport createWeeklyReport(EpiWeek epiWeek) {
+        WeeklyReport weeklyReport;
+
+        try {
+            weeklyReport = DatabaseHelper.getWeeklyReportDao().create(epiWeek);
+        } catch (DaoException e) {
+            throw new RuntimeException(e);
+        }
+
+        return weeklyReport;
     }
 
 }

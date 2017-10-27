@@ -44,10 +44,11 @@ public class Facility extends AbstractDomainObject {
 	private Community community;
 	@Column(length = 255)
 	private String city;
-	@Column(columnDefinition = "float8")
-	private Float latitude;
-	@Column(columnDefinition = "float8")
-	private Float longitude;
+
+	@DatabaseField
+	private Double latitude;
+	@DatabaseField
+	private Double longitude;
 
 	@Enumerated(EnumType.STRING)
 	private FacilityType type;
@@ -90,17 +91,17 @@ public class Facility extends AbstractDomainObject {
 		this.community = community;
 	}
 
-	public Float getLatitude() {
+	public Double getLatitude() {
 		return latitude;
 	}
-	public void setLatitude(Float latitude) {
+	public void setLatitude(Double latitude) {
 		this.latitude = latitude;
 	}
 
-	public Float getLongitude() {
+	public Double getLongitude() {
 		return longitude;
 	}
-	public void setLongitude(Float longitude) {
+	public void setLongitude(Double longitude) {
 		this.longitude = longitude;
 	}
 	

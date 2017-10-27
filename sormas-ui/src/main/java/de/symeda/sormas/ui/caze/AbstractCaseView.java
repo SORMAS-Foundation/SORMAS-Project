@@ -7,6 +7,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.SubNavigationMenu;
 import de.symeda.sormas.ui.epidata.EpiDataView;
 import de.symeda.sormas.ui.hospitalization.CaseHospitalizationView;
@@ -25,6 +26,7 @@ public abstract class AbstractCaseView extends AbstractSubNavigationView {
 	public void refreshMenu(SubNavigationMenu menu, Label infoLabel, Label infoLabelSub, String params) {
 		
 		caseRef = FacadeProvider.getCaseFacade().getReferenceByUuid(params);
+		CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseRef.getUuid());
 		
 		menu.removeAllViews();
 		menu.addView(CasesView.VIEW_NAME, "Cases list");
@@ -33,11 +35,15 @@ public abstract class AbstractCaseView extends AbstractSubNavigationView {
 		menu.addView(CaseHospitalizationView.VIEW_NAME, I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, "hospitalization"), params);
 		menu.addView(CaseSymptomsView.VIEW_NAME, I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.SYMPTOMS), params);
 		menu.addView(EpiDataView.VIEW_NAME, I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, "epiData"), params);
-		menu.addView(CaseContactsView.VIEW_NAME, I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, "contacts"), params);
+		if (caze.getDisease().hasContactFollowUp()) {
+			menu.addView(CaseContactsView.VIEW_NAME, I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, "contacts"), params);
+		}
 		infoLabel.setValue(caseRef.getCaption());
 		
 		CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(params);
-		infoLabelSub.setValue(caseDto.getDisease().toString() + (caseDto.getDisease() == Disease.OTHER ? " (" + caseDto.getDiseaseDetails() + ")" : ""));
+		infoLabelSub.setValue(caseDto.getDisease() != Disease.OTHER
+				? DataHelper.toStringNullable(caseDto.getDisease())
+				: DataHelper.toStringNullable(caseDto.getDiseaseDetails()));
     }
 
 	public CaseReferenceDto getCaseRef() {

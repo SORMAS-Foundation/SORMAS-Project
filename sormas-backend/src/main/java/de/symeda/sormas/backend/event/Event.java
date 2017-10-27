@@ -20,6 +20,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.EventType;
 import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.location.Location;
@@ -70,8 +71,9 @@ public class Event extends AbstractDomainObject {
 	private String diseaseDetails;
 	private User surveillanceOfficer;
 	private String typeOfPlaceText;
-	private Float reportLat;
-	private Float reportLon;
+	private Double reportLat;
+	private Double reportLon;
+	private Float reportLatLonAccuracy;
 
 	private List<Task> tasks;
 	
@@ -244,27 +246,35 @@ public class Event extends AbstractDomainObject {
 		this.tasks = tasks;
 	}
 
-	@Column(columnDefinition = "float8")
-	public Float getReportLat() {
+	public Double getReportLat() {
 		return reportLat;
 	}
-	public void setReportLat(Float reportLat) {
+	public void setReportLat(Double reportLat) {
 		this.reportLat = reportLat;
 	}
 	
-	@Column(columnDefinition = "float8")
-	public Float getReportLon() {
+	public Double getReportLon() {
 		return reportLon;
 	}
-	public void setReportLon(Float reportLon) {
+	public void setReportLon(Double reportLon) {
 		this.reportLon = reportLon;
 	}
 	
 	@Override
 	public String toString() {
-		String diseaseString = disease == null ? "" : disease.toString() + (disease == Disease.OTHER ? " (" + diseaseDetails + ")" : "");
+		String diseaseString = getDisease() != Disease.OTHER
+				? DataHelper.toStringNullable(getDisease())
+				: DataHelper.toStringNullable(getDiseaseDetails());
 		String eventTypeString = diseaseString.isEmpty() ? eventType.toString() : eventType.toString().toLowerCase();
 		return diseaseString + " " + eventTypeString + " on " + DateHelper.formatDate(eventDate);
+	}
+
+	public Float getReportLatLonAccuracy() {
+		return reportLatLonAccuracy;
+	}
+
+	public void setReportLatLonAccuracy(Float reportLatLonAccuracy) {
+		this.reportLatLonAccuracy = reportLatLonAccuracy;
 	}
 
 }

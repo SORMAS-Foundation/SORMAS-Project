@@ -48,15 +48,13 @@ public class Menu extends CssLayout {
 
         // header of the menu
         final HorizontalLayout top = new HorizontalLayout();
-        top.setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
+        top.setDefaultComponentAlignment(Alignment.TOP_CENTER);
         top.addStyleName(ValoTheme.MENU_TITLE);
         top.setSpacing(true);
         Label title = new Label("SORMAS");
-        title.addStyleName(ValoTheme.LABEL_H3);
         title.setSizeUndefined();
         Image image = new Image(null, new ThemeResource("img/sormas-logo.png"));
-        image.setStyleName("logo");
-        image.addStyleName(CssStyles.CURSOR_LINK);
+        CssStyles.style(image, ValoTheme.MENU_LOGO, ValoTheme.BUTTON_LINK);
         image.addClickListener(new com.vaadin.event.MouseEvents.ClickListener() {
 			@Override
 			public void click(com.vaadin.event.MouseEvents.ClickEvent event) {
@@ -175,10 +173,18 @@ public class Menu extends CssLayout {
         for (Button button : viewButtons.values()) {
             button.removeStyleName("selected");
         }
+        
         Button selected = viewButtons.get(viewName);
+        if (selected == null && viewName.contains("/")) {
+        	// might be a sub-view
+        	viewName = viewName.substring(0, viewName.indexOf('/'));
+        	selected = viewButtons.get(viewName);
+        }
+        
         if (selected != null) {
             selected.addStyleName("selected");
         }
+        
         menuPart.removeStyleName(VALO_MENU_VISIBLE);
     }
 }

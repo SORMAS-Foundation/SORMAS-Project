@@ -9,7 +9,6 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.caze.CaseInfoLayout;
-import de.symeda.sormas.ui.utils.CssStyles;
 
 public class SampleDataView extends AbstractSampleView {
 	
@@ -34,13 +33,12 @@ public class SampleDataView extends AbstractSampleView {
     	layout.addComponent(ControllerProvider.getSampleController().getSampleEditComponent(sampleDto.getUuid()));
     	CaseInfoLayout caseInfoLayout = new CaseInfoLayout(caseDto);
     	caseInfoLayout.setMargin(new MarginInfo(true, false, false, true));
-    	caseInfoLayout.addStyleName(CssStyles.INFO_COLUMN_MARGIN);
     	layout.addComponent(caseInfoLayout);
     	addComponent(layout);
     	
 		if (sampleDto.isReceived()) {
 			SampleTestsComponent sampleTestsComponent = new SampleTestsComponent(getSampleRef());
-			sampleTestsComponent.addStyleName(CssStyles.SUBLIST_MARGIN);
+			sampleTestsComponent.setMargin(true);
 			addComponent(sampleTestsComponent);
 		}
 	}

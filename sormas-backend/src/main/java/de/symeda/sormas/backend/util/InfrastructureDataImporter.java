@@ -183,10 +183,10 @@ public final class InfrastructureDataImporter {
 				facility.setCity(cityName);
 				try {
 					if (!longitudeString.isEmpty()) {
-						facility.setLongitude(geoCoordFormat.parse(longitudeString).floatValue());
+						facility.setLongitude(geoCoordFormat.parse(longitudeString).doubleValue());
 					}
 					if (!latitudeString.isEmpty()) {
-						facility.setLatitude(geoCoordFormat.parse(latitudeString).floatValue());
+						facility.setLatitude(geoCoordFormat.parse(latitudeString).doubleValue());
 					}
 				} catch (ParseException e) {
 					throw new IllegalArgumentException("Error parsing geo coordinates for facility '" + facilityName + "' in " + resourceFileName, e);

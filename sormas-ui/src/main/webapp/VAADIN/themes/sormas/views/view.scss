@@ -1,0 +1,8 @@
+
+@mixin sormas-view {
+	
+  .view-header {
+    border-bottom: $v-border;
+    border-bottom-width: 3px;
+  }
+}

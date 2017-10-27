@@ -80,7 +80,7 @@
                     android:value="@={hospitalization.isolated}" />
 
                 <de.symeda.sormas.app.component.DateField
-                    android:id="@+id/hospitalization_1isolationDate"
+                    android:id="@+id/hospitalization_isolationDate"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.5"

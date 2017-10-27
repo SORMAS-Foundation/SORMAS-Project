@@ -35,4 +35,6 @@ public interface UserFacade {
 
 	int getNumberOfInformantsByFacility(FacilityReferenceDto facilityRef);
 	
+	List<UserReferenceDto> getForWeeklyReportDetails(DistrictReferenceDto districtRef);
+	
 }

@@ -1,0 +1,80 @@
+
+$v-grid-border: 1px solid $v-focus-color !default;
+$v-grid-row-stripe-background-color: $v-grid-row-background-color !default;
+$v-grid-row-selected-background-color: $v-focus-color !default;
+$v-grid-cell-vertical-border: none !default;
+$v-grid-cell-horizontal-border: $v-grid-border !default;
+$v-grid-cell-focused-border: none !default;
+
+
+@mixin sormas-grid {
+  
+  .v-grid {
+  
+    .v-grid-tablewrapper, .v-grid-header-deco, .v-grid-footer-deco, .v-grid-scroller {
+      border-left: none;
+      border-right: none;
+    }
+    .v-grid-scroller {
+      border-top: none;
+    }
+    
+    .v-grid-row {
+    
+      > td, > th {
+        background-color: inherit;
+      }
+    
+      .v-grid-cell {
+      
+        padding: 3px 6px;
+      
+        &:first-child {
+          padding-left: 0;
+        }
+        &:last-child {
+          padding-right: 0;
+        }
+      
+        &.priority-high {
+          color: $s-warning-color;
+        }
+        &.priority-normal {
+          color: $s-default-color;
+        }
+        &.warning {
+          color: $s-warning-color;
+          font-weight: 600;
+        }
+      }
+    	
+      &.status-discarded .v-grid-cell {
+        text-decoration: line-through;
+        color: #888;
+      }
+      &.status-done .v-grid-cell {
+        color: #888;
+      }
+      &.status-not .v-grid-cell {
+        color: #C44;
+      }
+    }
+     
+    .v-grid-header {
+    
+      background-color: $v-background-color; 
+
+	  .v-grid-cell {
+	    border-left: none;
+	    border-bottom: none;
+      }
+      
+      .v-grid-column-header-content {
+        text-transform: uppercase;
+        font-weight: 600;
+	    border-bottom: $v-border;
+	    min-height: $v-grid-row-height;
+      }
+    }
+  }
+}

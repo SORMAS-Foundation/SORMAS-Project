@@ -27,6 +27,7 @@ import de.symeda.sormas.app.databinding.EventDataFragmentLayoutBinding;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
+import de.symeda.sormas.app.util.LocationService;
 import de.symeda.sormas.app.util.SyncCallback;
 import de.symeda.sormas.app.validation.EventValidator;
 
@@ -62,6 +63,9 @@ public class EventNewActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
+
+        LocationService.instance().requestFreshLocation(this);
+
         super.onResume();
     }
 

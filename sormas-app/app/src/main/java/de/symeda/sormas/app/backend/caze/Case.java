@@ -117,6 +117,9 @@ public class Case extends AbstractDomainObject {
 	@Enumerated(EnumType.STRING)
 	private VaccinationInfoSource yellowFeverVaccinationInfoSource;
 
+	@Enumerated(EnumType.STRING)
+	private YesNoUnknown smallpoxVaccinationScar;
+
 	@Column(length=512)
 	private String epidNumber;
 
@@ -127,13 +130,15 @@ public class Case extends AbstractDomainObject {
 	private EpiData epiData;
 
 	@Column
+	@Deprecated
 	private Long contactOfficer_id;
 
-	@Column(columnDefinition = "float8")
-	private Float reportLat;
-
-	@Column(columnDefinition = "float8")
-	private Float reportLon;
+	@DatabaseField
+	private Double reportLat;
+	@DatabaseField
+	private Double reportLon;
+	@DatabaseField
+	private Float reportLatLonAccuracy;
 
 	public Person getPerson() {
 		return person;
@@ -303,6 +308,14 @@ public class Case extends AbstractDomainObject {
 		this.yellowFeverVaccinationInfoSource = yellowFeverVaccinationInfoSource;
 	}
 
+	public YesNoUnknown getSmallpoxVaccinationScar() {
+		return smallpoxVaccinationScar;
+	}
+
+	public void setSmallpoxVaccinationScar(YesNoUnknown smallpoxVaccinationScar) {
+		this.smallpoxVaccinationScar = smallpoxVaccinationScar;
+	}
+
 	public String getEpidNumber() {
 		return epidNumber;
 	}
@@ -327,19 +340,19 @@ public class Case extends AbstractDomainObject {
 		this.epiData = epiData;
 	}
 
-	public Float getReportLat() {
+	public Double getReportLat() {
 		return reportLat;
 	}
 
-	public void setReportLat(Float reportLat) {
+	public void setReportLat(Double reportLat) {
 		this.reportLat = reportLat;
 	}
 
-	public Float getReportLon() {
+	public Double getReportLon() {
 		return reportLon;
 	}
 
-	public void setReportLon(Float reportLon) {
+	public void setReportLon(Double reportLon) {
 		this.reportLon = reportLon;
 	}
 
@@ -365,4 +378,11 @@ public class Case extends AbstractDomainObject {
 		return I18N_PREFIX;
 	}
 
+	public Float getReportLatLonAccuracy() {
+		return reportLatLonAccuracy;
+	}
+
+	public void setReportLatLonAccuracy(Float reportLatLonAccuracy) {
+		this.reportLatLonAccuracy = reportLatLonAccuracy;
+	}
 }

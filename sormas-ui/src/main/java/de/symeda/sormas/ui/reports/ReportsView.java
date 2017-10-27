@@ -3,17 +3,19 @@ package de.symeda.sormas.ui.reports;
 import java.util.Date;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.shared.ui.grid.HeightMode;
+import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.VerticalLayout;
 
+import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
+import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.CssStyles;
 
@@ -25,50 +27,36 @@ public class ReportsView extends AbstractView {
 	
 	private WeeklyReportGrid grid;
 	private VerticalLayout gridLayout;
-	private NativeSelect yearFilter;
-	private NativeSelect epiWeekFilter;
+	private AbstractSelect yearFilter;
+	private AbstractSelect epiWeekFilter;
 	
 	public ReportsView() {
-		setSizeFull();
-		addStyleName("crud-view");
-		
+    	super(VIEW_NAME);
+    	
 		grid = new WeeklyReportGrid();
+		grid.setHeightMode(HeightMode.UNDEFINED);
 		
 		gridLayout = new VerticalLayout();
-		gridLayout.addComponent(createTopBar());
 		gridLayout.addComponent(createFilterBar());
 		gridLayout.addComponent(grid);
 		gridLayout.setMargin(true);
 		gridLayout.setSpacing(false);
 		gridLayout.setSizeFull();
 		gridLayout.setExpandRatio(grid, 1);
-		gridLayout.setStyleName("crud-main-layout");
 		
 		addComponent(gridLayout);
-	}
-	
-	public HorizontalLayout createTopBar() {
-		HorizontalLayout topLayout = new HorizontalLayout();
-		topLayout.addStyleName(CssStyles.VSPACE3);
-		
-		Label header = new Label("Reports");
-		header.setSizeUndefined();
-		CssStyles.style(header, CssStyles.H2, CssStyles.NO_MARGIN);
-		topLayout.addComponent(header);
-		
-		return topLayout;
 	}
 	
 	public HorizontalLayout createFilterBar() {
 		HorizontalLayout filterLayout = new HorizontalLayout();
 		filterLayout.setSpacing(true);
-		filterLayout.addStyleName(CssStyles.VSPACE3);
+		filterLayout.addStyleName(CssStyles.VSPACE_3);
 		
 		EpiWeek prevEpiWeek = DateHelper.getPreviousEpiWeek(new Date());
 		int year = prevEpiWeek.getYear();
 		int week = prevEpiWeek.getWeek();
 		
-		yearFilter = new NativeSelect();
+		yearFilter = new ComboBox();
 		yearFilter.setWidth(200, Unit.PIXELS);
 		yearFilter.addItems(DateHelper.getYearsToNow());
 		yearFilter.select(year);
@@ -76,13 +64,13 @@ public class ReportsView extends AbstractView {
 		yearFilter.setItemCaptionMode(ItemCaptionMode.ID_TOSTRING);
 		filterLayout.addComponent(yearFilter);
 		
-		epiWeekFilter = new NativeSelect();
+		epiWeekFilter = new ComboBox();
 		epiWeekFilter.setWidth(200, Unit.PIXELS);
 		epiWeekFilter.addItems(DateHelper.createWeeksList(year));
 		epiWeekFilter.select(week);
 		epiWeekFilter.setCaption("Epi Week");
 		epiWeekFilter.addValueChangeListener(e -> {
-			grid.reload((int) yearFilter.getValue(), (int) epiWeekFilter.getValue());
+			reloadGrid();
 		});
 		filterLayout.addComponent(epiWeekFilter);
 		
@@ -109,7 +97,14 @@ public class ReportsView extends AbstractView {
 
 	@Override
 	public void enter(ViewChangeEvent event) {
-		grid.reload((int) yearFilter.getValue(), (int) epiWeekFilter.getValue());
+		reloadGrid();
 	}	
-
+	
+	private void reloadGrid() {
+		RegionReferenceDto region = null;
+		if (!LoginHelper.isUserInRole(UserRole.NATIONAL_USER)) {
+			region = LoginHelper.getCurrentUser().getRegion();
+		}
+		grid.reload(region, (int) yearFilter.getValue(), (int) epiWeekFilter.getValue());
+	}
 }

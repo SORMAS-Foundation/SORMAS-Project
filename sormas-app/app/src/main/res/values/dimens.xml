@@ -1,6 +1,7 @@
 <resources>
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin_inv">-16dp</dimen>
 
     <dimen name="field_caption_size">17dp</dimen>
     <dimen name="field_radio_font_size">11dp</dimen>

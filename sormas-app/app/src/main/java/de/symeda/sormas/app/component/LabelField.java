@@ -233,12 +233,18 @@ public class LabelField extends PropertyField<String> {
 
     @BindingAdapter("location")
     public static void setLocationForLabel(LabelField labelField, Location location) {
-        if(location == null || location.toString().isEmpty()) {
+        if (location == null ) {
             labelField.setValue(labelField.getContext().getString(R.string.label_enter_location));
             labelField.setTextColor(Color.LTGRAY);
         } else {
-            labelField.setValue(location.toString());
-            labelField.setTextColor(Color.BLACK);
+            String locationString = location.getCompleteString();
+            if (!locationString.isEmpty()) {
+                labelField.setValue(locationString);
+                labelField.setTextColor(Color.BLACK);
+            } else {
+                labelField.setValue(labelField.getContext().getString(R.string.label_enter_location));
+                labelField.setTextColor(Color.LTGRAY);
+            }
         }
     }
 
@@ -260,6 +266,35 @@ public class LabelField extends PropertyField<String> {
     @BindingAdapter("facility")
     public static void setFacilityForLabel(LabelField labelField, Facility facility) {
         labelField.setValue(facility!=null?facility.toString():"");
+    }
+
+    @BindingAdapter("number")
+    public static void setNumberForLabel(LabelField labelField, Number number) {
+        labelField.setValue(number!=null?number.toString():"");
+    }
+
+    @BindingAdapter("locationLatLon")
+    public static void setLocationLatLonForLabel(LabelField labelField, Location location) {
+        setLatLonForLabel(labelField,
+                location != null ? location.getLatitude() : null,
+                location != null ? location.getLongitude() : null,
+                location != null ? location.getLatLonAccuracy() : null);
+    }
+
+    public static void setLatLonForLabel(LabelField labelField, Double latitude, Double longitude, Float latLonAccuracy) {
+        if (latitude == null || longitude == null) {
+            labelField.setValue(labelField.getContext().getString(R.string.label_pick_gps));
+        }
+        else {
+            if (latLonAccuracy != null) {
+                labelField.setValue(android.location.Location.convert(latitude, android.location.Location.FORMAT_DEGREES)
+                        + ", " + android.location.Location.convert(longitude, android.location.Location.FORMAT_DEGREES)
+                        + " +-" + Math.round(latLonAccuracy) + "m");
+            } else {
+                labelField.setValue(android.location.Location.convert(latitude, android.location.Location.FORMAT_DEGREES)
+                        + ", " + android.location.Location.convert(longitude, android.location.Location.FORMAT_DEGREES));
+            }
+        }
     }
 
     @Override

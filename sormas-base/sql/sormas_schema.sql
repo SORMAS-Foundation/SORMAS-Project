@@ -1750,3 +1750,100 @@ ALTER TABLE cases ADD COLUMN diseasedetails varchar(512);
 ALTER TABLE events ADD COLUMN diseasedetails varchar(512);
 
 INSERT INTO schema_version (version_number, comment) VALUES (69, 'Disease details field #322');
+
+-- 2017-09-25 IllLoction removed from symptoms #347
+ALTER TABLE symptoms DROP COLUMN illlocation_id;
+ALTER TABLE symptoms DROP COLUMN illlocationfrom;
+ALTER TABLE symptoms DROP COLUMN illlocationto;
+ALTER TABLE symptoms_history DROP COLUMN illlocation_id;
+ALTER TABLE symptoms_history DROP COLUMN illlocationfrom;
+ALTER TABLE symptoms_history DROP COLUMN illlocationto;
+
+-- 2017-10-26 Add accuracy to lat lon data #371
+ALTER TABLE location ADD COLUMN latLonAccuracy real;
+ALTER TABLE cases ADD COLUMN reportLatLonAccuracy real;
+ALTER TABLE contact ADD COLUMN reportLatLonAccuracy real;
+ALTER TABLE events ADD COLUMN reportLatLonAccuracy real;
+ALTER TABLE visit ADD COLUMN reportLatLonAccuracy real;
+ALTER TABLE task ADD COLUMN closedLatLonAccuracy real;
+ALTER TABLE samples ADD COLUMN reportLat double precision;
+ALTER TABLE samples ADD COLUMN reportLon double precision;
+ALTER TABLE samples ADD COLUMN reportLatLonAccuracy real;
+
+ALTER TABLE location_history ADD COLUMN latLonAccuracy real;
+ALTER TABLE cases_history ADD COLUMN reportLatLonAccuracy real;
+ALTER TABLE contact_history ADD COLUMN reportLatLonAccuracy real;
+ALTER TABLE events_history ADD COLUMN reportLatLonAccuracy real;
+ALTER TABLE visit_history ADD COLUMN reportLatLonAccuracy real;
+ALTER TABLE task_history ADD COLUMN closedLatLonAccuracy real;
+ALTER TABLE samples_history ADD COLUMN reportLat double precision;
+ALTER TABLE samples_history ADD COLUMN reportLon double precision;
+ALTER TABLE samples_history ADD COLUMN reportLatLonAccuracy real;
+
+INSERT INTO schema_version (version_number, comment) VALUES (71, 'Add accuracy to lat lon data #371');
+
+-- 2017-10-24 Monkeypox disease fields #366
+ALTER TABLE symptoms ADD COLUMN cutaneouseruption varchar(255);
+ALTER TABLE symptoms ADD COLUMN lesions varchar(255);
+ALTER TABLE symptoms ADD COLUMN lesionssamestate varchar(255);
+ALTER TABLE symptoms ADD COLUMN lesionssamesize varchar(255);
+ALTER TABLE symptoms ADD COLUMN lesionsdeepprofound varchar(255);
+ALTER TABLE symptoms ADD COLUMN lesionsface boolean;
+ALTER TABLE symptoms ADD COLUMN lesionslegs boolean;
+ALTER TABLE symptoms ADD COLUMN lesionssolesfeet boolean;
+ALTER TABLE symptoms ADD COLUMN lesionspalmshands boolean;
+ALTER TABLE symptoms ADD COLUMN lesionsthorax boolean;
+ALTER TABLE symptoms ADD COLUMN lesionsarms boolean;
+ALTER TABLE symptoms ADD COLUMN lesionsgenitals boolean;
+ALTER TABLE symptoms ADD COLUMN lesionsalloverbody boolean;
+ALTER TABLE symptoms ADD COLUMN lesionsresembleimg1 varchar(255);
+ALTER TABLE symptoms ADD COLUMN lesionsresembleimg2 varchar(255);
+ALTER TABLE symptoms ADD COLUMN lesionsresembleimg3 varchar(255);
+ALTER TABLE symptoms ADD COLUMN lesionsresembleimg4 varchar(255);
+ALTER TABLE symptoms ADD COLUMN lymphadenopathyinguinal varchar(255);
+ALTER TABLE symptoms ADD COLUMN lymphadenopathyaxillary varchar(255);
+ALTER TABLE symptoms ADD COLUMN lymphadenopathycervical varchar(255);
+ALTER TABLE symptoms ADD COLUMN chillssweats varchar(255);
+ALTER TABLE symptoms ADD COLUMN lesionsthatitch varchar(255);
+ALTER TABLE symptoms ADD COLUMN bedridden varchar(255);
+ALTER TABLE symptoms ADD COLUMN oralulcers varchar(255);
+ALTER TABLE symptoms ADD COLUMN patientilllocation varchar(512);
+ALTER TABLE cases ADD COLUMN smallpoxVaccinationScar varchar(255);
+ALTER TABLE epidata ADD COLUMN dateoflastexposure timestamp;
+ALTER TABLE epidata ADD COLUMN placeoflastexposure varchar(512);
+ALTER TABLE epidata ADD COLUMN animalcondition varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (72, 'Monkeypox disease fields #366');
+
+-- 2017-10-27 Monkeypox disease fields for history table #366
+ALTER TABLE symptoms_history ADD COLUMN cutaneouseruption varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN lesions varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN lesionssamestate varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN lesionssamesize varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN lesionsdeepprofound varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN lesionsface boolean;
+ALTER TABLE symptoms_history ADD COLUMN lesionslegs boolean;
+ALTER TABLE symptoms_history ADD COLUMN lesionssolesfeet boolean;
+ALTER TABLE symptoms_history ADD COLUMN lesionspalmshands boolean;
+ALTER TABLE symptoms_history ADD COLUMN lesionsthorax boolean;
+ALTER TABLE symptoms_history ADD COLUMN lesionsarms boolean;
+ALTER TABLE symptoms_history ADD COLUMN lesionsgenitals boolean;
+ALTER TABLE symptoms_history ADD COLUMN lesionsalloverbody boolean;
+ALTER TABLE symptoms_history ADD COLUMN lesionsresembleimg1 varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN lesionsresembleimg2 varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN lesionsresembleimg3 varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN lesionsresembleimg4 varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN lymphadenopathyinguinal varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN lymphadenopathyaxillary varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN lymphadenopathycervical varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN chillssweats varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN lesionsthatitch varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN bedridden varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN oralulcers varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN patientilllocation varchar(512);
+ALTER TABLE cases_history ADD COLUMN smallpoxVaccinationScar varchar(255);
+ALTER TABLE epidata_history ADD COLUMN dateoflastexposure timestamp;
+ALTER TABLE epidata_history ADD COLUMN placeoflastexposure varchar(512);
+ALTER TABLE epidata_history ADD COLUMN animalcondition varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (73, 'Monkeypox disease fields for history table #366');

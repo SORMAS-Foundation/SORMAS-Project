@@ -62,6 +62,13 @@ public abstract class AbstractSormasActivity extends AppCompatActivity {
             getSupportActionBar().setHomeButtonEnabled(true);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
+
+        // Show the Enter Pin Activity if the user doesn't have access to the app
+        if (!ConfigProvider.isAccessGranted()) {
+            Intent intent = new Intent(this, EnterPinActivity.class);
+            startActivity(intent);
+            return;
+        }
     }
 
     @Override

@@ -1,0 +1,13 @@
+
+@mixin sormas-button {
+
+  .v-button {
+    text-transform: uppercase;
+    border-color: $v-selection-color;
+    box-shadow: none;
+  }
+  
+  .v-button-subtle {
+  	background-color: inherit;
+  }
+}

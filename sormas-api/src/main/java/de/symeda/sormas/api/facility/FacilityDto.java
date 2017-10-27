@@ -16,14 +16,15 @@ public class FacilityDto extends FacilityReferenceDto {
 	public static final String NONE_FACILITY_UUID = "SORMAS-CONSTID-ISNONE-FACILITY";
 	public static final String OTHER_FACILITY = "OTHER_FACILITY";
 	public static final String NO_FACILITY = "NO_FACILITY";
+	public static final String NAME = "name";
 	
 	private String name;
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	private CommunityReferenceDto community;
 	private String city;
-	private Float latitude;
-	private Float longitude;
+	private Double latitude;
+	private Double longitude;
 	private FacilityType type;
 	private boolean publicOwnership;
 	
@@ -57,17 +58,17 @@ public class FacilityDto extends FacilityReferenceDto {
 		this.community = community;
 	}
 	
-	public Float getLatitude() {
+	public Double getLatitude() {
 		return latitude;
 	}
-	public void setLatitude(Float latitude) {
+	public void setLatitude(Double latitude) {
 		this.latitude = latitude;
 	}
 	
-	public Float getLongitude() {
+	public Double getLongitude() {
 		return longitude;
 	}
-	public void setLongitude(Float longitude) {
+	public void setLongitude(Double longitude) {
 		this.longitude = longitude;
 	}
 	

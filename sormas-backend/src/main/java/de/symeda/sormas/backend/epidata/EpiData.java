@@ -14,6 +14,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import de.symeda.auditlog.api.Audited;
+import de.symeda.sormas.api.epidata.AnimalCondition;
 import de.symeda.sormas.api.epidata.WaterSource;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -54,6 +55,9 @@ public class EpiData extends AbstractDomainObject {
 	public static final String WATER_BODY = "waterBody";
 	public static final String WATER_BODY_DETAILS = "waterBodyDetails";
 	public static final String TICKBITE = "tickBite";
+	public static final String DATE_OF_LAST_EXPOSURE = "dateOfLastExposure";
+	public static final String PLACE_OF_LAST_EXPOSURE = "placeOfLastExposure";
+	public static final String ANIMAL_CONDITION = "animalCondition";
 	
 	private YesNoUnknown burialAttended;
 	private YesNoUnknown gatheringAttended;
@@ -82,6 +86,9 @@ public class EpiData extends AbstractDomainObject {
 	private YesNoUnknown waterBody;
 	private String waterBodyDetails;
 	private YesNoUnknown tickBite;
+	private Date dateOfLastExposure;
+	private String placeOfLastExposure;
+	private AnimalCondition animalCondition;
 
 	private Date changeDateOfEmbeddedLists;
 	private List<EpiDataBurial> burials = new ArrayList<>();
@@ -302,6 +309,30 @@ public class EpiData extends AbstractDomainObject {
 	}
 	public void setTickBite(YesNoUnknown tickBite) {
 		this.tickBite = tickBite;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getDateOfLastExposure() {
+		return dateOfLastExposure;
+	}
+	public void setDateOfLastExposure(Date dateOfLastExposure) {
+		this.dateOfLastExposure = dateOfLastExposure;
+	}
+
+	@Column(length=512)
+	public String getPlaceOfLastExposure() {
+		return placeOfLastExposure;
+	}
+	public void setPlaceOfLastExposure(String placeOfLastExposure) {
+		this.placeOfLastExposure = placeOfLastExposure;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public AnimalCondition getAnimalCondition() {
+		return animalCondition;
+	}
+	public void setAnimalCondition(AnimalCondition animalCondition) {
+		this.animalCondition = animalCondition;
 	}
 	
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = EpiDataBurial.EPI_DATA)

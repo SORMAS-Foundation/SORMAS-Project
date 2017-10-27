@@ -1,0 +1,112 @@
+// If you edit this file you need to compile the theme. See README.md for details.
+
+// Global variable overrides. Must be declared before importing Valo.
+// For more information, see: https://vaadin.com/book/-/page/themes.valo.html
+// Example variants can be copy/pasted from https://vaadin.com/docs/v8/framework/articles/ValoExamples.html
+// See also https://vaadin.com/api/valo/
+
+$v-luminance-threshold: 180 !default;
+
+$s-warning-color: #E10002;
+$s-primary-color: #005A9C;
+$s-secondary-color: #6591C4;
+$s-default-color: #6691C4;
+
+$v-background-color: #FEFEFE !default;
+$v-app-background-color: $v-background-color !default;
+$v-font-color: #394C5B !default;
+$v-selection-color: $s-primary-color !default;
+$v-focus-color: #CDD8EC !default;
+$v-error-indicator-color: $s-warning-color !default;
+$v-friendly-color: $s-default-color !default;
+
+$v-font-family: "Open Sans", sans-serif, "Source Sans Pro";
+$v-font-size: 12px !default;
+$v-font-weight: 400 !default;
+$v-font-weight--header: 400 !default;
+$v-font-size--h3: 16px;
+
+$v-link-font-color: #1565A2;
+
+$v-unit-size: 32px !default;
+$v-gradient: false;
+
+$v-border: 2px solid $v-focus-color;
+$v-caption-font-weight: 600 !default; 
+
+$v-layout-margin-top: round($v-unit-size / 1.5) !default;
+$v-layout-margin-right: $v-layout-margin-top !default;
+$v-layout-margin-bottom: $v-layout-margin-top !default;
+$v-layout-margin-left: $v-layout-margin-top !default;
+$v-layout-spacing-vertical: round($v-unit-size / 1.8) !default;
+$v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
+
+
+$editor-shadow: 0 0 10px 10px rgba(0,0,0,.1) !default;
+$editor-background-color: #6691C4 !default;
+$editor-embed-background-color: darken($editor-background-color, 5%) !default;
+$editor-raised-background-color: lighten($editor-background-color, 10%) !default;
+$editor-caption-font-color: valo-font-color($editor-background-color, 0.5) !default;
+
+@import "global.scss";
+@import "deprecated.scss";
+
+@import "components/button.scss";
+@import "components/combobox.scss";
+@import "components/datefield.scss";
+@import "components/grid.scss";
+@import "components/menu.scss";
+@import "components/optiongroup.scss";
+@import "components/panel.scss";
+@import "components/tabsheet.scss";
+@import "components/table.scss";
+@import "components/textfield.scss";
+@import "components/window.scss";
+
+@import "views/view.scss";
+@import "views/about.scss";
+@import "views/dashboard.scss";
+@import "views/login.scss";
+
+@import "../valo/valo.scss";
+
+
+@function valo-font-color ($bg-color, $contrast: $v-font-color-contrast) {
+  @if type-of($bg-color) == color {
+    @if is-dark-color($bg-color) {
+      @return $v-background-color;
+    } @else {
+      @return #374B59;
+    }
+  }
+  @return #374B59;
+}
+
+@mixin sormas {
+  @include valo;
+
+  @include sormas-global;
+  
+  @include sormas-button;
+  @include sormas-combobox;
+  @include sormas-datefield;
+  @include sormas-grid;
+  @include sormas-menu;
+  @include sormas-optiongroup;
+  @include sormas-panel;
+  @include sormas-tabsheet;
+  @include sormas-table;
+  @include sormas-textfield;
+  @include sormas-window;
+
+  @include sormas-view;
+  @include sormas-about-view;
+  @include sormas-dashboard-view;
+  @include sormas-login-view;
+  
+  @include sormas-deprecated;
+  
+  .sormas-content {
+    overflow: auto;
+  }
+}

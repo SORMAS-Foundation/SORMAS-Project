@@ -1,8 +1,10 @@
 package de.symeda.sormas.app;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.location.Location;
+import android.os.Bundle;
 import android.util.Log;
 
 import com.google.android.gms.analytics.ExceptionReporter;
@@ -18,7 +20,7 @@ import de.symeda.sormas.app.util.UncaughtExceptionParser;
 /**
  * Created by Martin Wahnschaffe on 22.07.2016.
  */
-public class SormasApplication extends Application {
+public class SormasApplication extends Application implements Application.ActivityLifecycleCallbacks {
 
     private static final String PROPERTY_ID = "UA-98128295-1";
 
@@ -32,6 +34,10 @@ public class SormasApplication extends Application {
     public void onCreate() {
         DatabaseHelper.init(this);
         ConfigProvider.init(this);
+        LocationService.init(this);
+
+        // Make sure the Enter Pin Activity is shown when the app has just started
+        ConfigProvider.setAccessGranted(false);
 
         TaskNotificationService.startTaskNotificationAlarm(this);
 
@@ -47,6 +53,42 @@ public class SormasApplication extends Application {
         reporter.setExceptionParser(new UncaughtExceptionParser());
 
         super.onCreate();
+
+        this.registerActivityLifecycleCallbacks(this);
     }
 
+    @Override
+    public void onActivityCreated(Activity activity, Bundle bundle) {
+
+    }
+
+    @Override
+    public void onActivityStarted(Activity activity) {
+        LocationService.instance().requestActiveLocationUpdates(activity);
+    }
+
+    @Override
+    public void onActivityResumed(Activity activity) {
+
+    }
+
+    @Override
+    public void onActivityPaused(Activity activity) {
+
+    }
+
+    @Override
+    public void onActivityStopped(Activity activity) {
+        LocationService.instance().removeActiveLocationUpdates();
+    }
+
+    @Override
+    public void onActivitySaveInstanceState(Activity activity, Bundle bundle) {
+
+    }
+
+    @Override
+    public void onActivityDestroyed(Activity activity) {
+
+    }
 }

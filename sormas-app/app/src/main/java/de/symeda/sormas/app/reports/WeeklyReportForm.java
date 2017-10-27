@@ -183,7 +183,8 @@ public class WeeklyReportForm extends FormTab {
         binding.weeklyReportShowLastWeek.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                EpiWeek epiWeek = DateHelper.getPreviousEpiWeek(new Date());
+                Date now = new Date();
+                EpiWeek epiWeek = DateHelper.getPreviousEpiWeek(now);
                 binding.weeklyReportYear.setValue(epiWeek.getYear());
                 binding.weeklyReportWeek.setValue(epiWeek.getWeek());
             }
@@ -191,7 +192,9 @@ public class WeeklyReportForm extends FormTab {
         binding.weeklyReportShowThisWeek.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                EpiWeek epiWeek = DateHelper.getEpiWeek(new Date());
+                Calendar epiCalendar = DateHelper.getEpiCalendar();
+                Date now = new Date();
+                EpiWeek epiWeek = DateHelper.getEpiWeek(now);
                 binding.weeklyReportYear.setValue(epiWeek.getYear());
                 binding.weeklyReportWeek.setValue(epiWeek.getWeek());
             }

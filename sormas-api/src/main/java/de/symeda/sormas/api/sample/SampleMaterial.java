@@ -11,6 +11,7 @@ public enum SampleMaterial {
 	THROAT_SWAB,
 	NP_SWAB,
 	CEREBROSPINAL_FLUID,
+	CRUST,
 	OTHER,
 	;
 	

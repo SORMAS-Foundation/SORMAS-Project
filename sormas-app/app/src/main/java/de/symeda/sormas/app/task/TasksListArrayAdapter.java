@@ -99,6 +99,8 @@ public class TasksListArrayAdapter extends ArrayAdapter<Task> {
             sb.append(" (" + DataHelper.getShortUuid(task.getEvent().getUuid()) + ")");
             sb.append(", " + task.getEvent().getEventDesc().substring(0, 15) + (task.getEvent().getEventDesc().length() > 15 ? "..." : ""));
             taskInfo.setText(sb.toString());
+        } else {
+            taskInfo.setText("");
         }
 
         TextView creatorComment = (TextView) convertView.findViewById(R.id.task_creatorComment_li);

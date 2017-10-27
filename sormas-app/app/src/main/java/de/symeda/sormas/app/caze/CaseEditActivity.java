@@ -16,8 +16,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import java.util.Arrays;
 import java.util.List;
 
+import de.symeda.sormas.app.AbstractEditTabActivity;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
@@ -34,7 +36,6 @@ import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.backend.sample.SampleDao;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
-import de.symeda.sormas.app.AbstractEditTabActivity;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.task.TaskDao;
 import de.symeda.sormas.app.component.FacilityChangeDialogBuilder;
@@ -52,14 +53,12 @@ import de.symeda.sormas.app.task.TaskForm;
 import de.symeda.sormas.app.task.TasksListFragment;
 import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
-import de.symeda.sormas.app.validation.CaseValidator;
 import de.symeda.sormas.app.validation.PersonValidator;
 import de.symeda.sormas.app.validation.SymptomsValidator;
 
 public class CaseEditActivity extends AbstractEditTabActivity {
 
     public static final String KEY_CASE_UUID = "caseUuid";
-    public static final String CASE_SUBTITLE = "caseSubtitle";
 
     private CaseEditPagerAdapter adapter;
     private String caseUuid;
@@ -90,17 +89,22 @@ public class CaseEditActivity extends AbstractEditTabActivity {
             getSupportActionBar().setTitle(getResources().getText(R.string.headline_case) + " - " + ConfigProvider.getUser().getUserRole().toShortString());
         }
 
+        Case initialEntity = null;
         Bundle params = getIntent().getExtras();
         if (params != null) {
             if (params.containsKey(KEY_CASE_UUID)) {
                 caseUuid = params.getString(KEY_CASE_UUID);
-                Case initialEntity = DatabaseHelper.getCaseDao().queryUuid(caseUuid);
+                initialEntity = DatabaseHelper.getCaseDao().queryUuid(caseUuid);
                 // If the case has been removed from the database in the meantime, redirect the user to the cases overview
                 // TODO add Snackbar and test
                 if (initialEntity == null) {
                     Intent intent = new Intent(this, CasesActivity.class);
                     startActivity(intent);
                     finish();
+                }
+
+                if (toolbar != null) {
+                    getSupportActionBar().setSubtitle(initialEntity.toString());
                 }
 
                 DatabaseHelper.getCaseDao().markAsRead(initialEntity);
@@ -111,12 +115,9 @@ public class CaseEditActivity extends AbstractEditTabActivity {
             if (params.containsKey(KEY_PAGE)) {
                 currentTab = params.getInt(KEY_PAGE);
             }
-            if (params.containsKey(CASE_SUBTITLE) && toolbar != null) {
-                getSupportActionBar().setSubtitle(params.getString(CASE_SUBTITLE));
-            }
         }
 
-        setAdapter();
+        setAdapter(initialEntity);
     }
 
     @Override
@@ -134,7 +135,7 @@ public class CaseEditActivity extends AbstractEditTabActivity {
         if (currentEntity.isUnreadOrChildUnread()) {
             // Resetting the adapter will reload the form and therefore also override any unsaved changes
             DatabaseHelper.getCaseDao().markAsRead(currentEntity);
-            setAdapter();
+            setAdapter(currentEntity);
 
             final Snackbar snackbar = Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_entity_overridden), getResources().getString(R.string.entity_case)), Snackbar.LENGTH_INDEFINITE);
             snackbar.setAction(R.string.snackbar_okay, new View.OnClickListener() {
@@ -173,7 +174,7 @@ public class CaseEditActivity extends AbstractEditTabActivity {
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        CaseEditTabs tab = CaseEditTabs.values()[currentTab];
+        CaseEditTabs tab = adapter.getTabForPosition(currentTab);
         switch (tab) {
             case CASE_DATA:
                 updateActionBarGroups(menu, false, false, true, false, true);
@@ -214,8 +215,8 @@ public class CaseEditActivity extends AbstractEditTabActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         setCurrentTab(pager.getCurrentItem());
-        CaseEditTabs tab = CaseEditTabs.values()[currentTab];
-        Case caze = (Case) getData(CaseEditTabs.CASE_DATA.ordinal());
+        CaseEditTabs tab = adapter.getTabForPosition(currentTab);
+        Case caze = (Case) getData(adapter.getPositionOfTab(CaseEditTabs.CASE_DATA));
         CaseDao caseDao = DatabaseHelper.getCaseDao();
         switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button
@@ -338,8 +339,19 @@ public class CaseEditActivity extends AbstractEditTabActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void setAdapter() {
-        adapter = new CaseEditPagerAdapter(getSupportFragmentManager(), caseUuid);
+    public void setAdapter(Case caze) {
+        List<CaseEditTabs> visibleTabs;
+        if (caze != null && !caze.getDisease().hasContactFollowUp()) {
+            visibleTabs = Arrays.asList(CaseEditTabs.CASE_DATA, CaseEditTabs.PATIENT,
+                    CaseEditTabs.HOSPITALIZATION, CaseEditTabs.SYMPTOMS, CaseEditTabs.EPIDATA,
+                    CaseEditTabs.SAMPLES, CaseEditTabs.TASKS);
+        } else {
+            visibleTabs = Arrays.asList(CaseEditTabs.CASE_DATA, CaseEditTabs.PATIENT,
+                    CaseEditTabs.HOSPITALIZATION, CaseEditTabs.SYMPTOMS, CaseEditTabs.EPIDATA,
+                    CaseEditTabs.CONTACTS, CaseEditTabs.SAMPLES, CaseEditTabs.TASKS);
+        }
+
+        adapter = new CaseEditPagerAdapter(getSupportFragmentManager(), caseUuid, visibleTabs);
         createTabViews(adapter);
 
         pager.setCurrentItem(currentTab);
@@ -347,7 +359,7 @@ public class CaseEditActivity extends AbstractEditTabActivity {
 
     public void moveCase(View v) {
         if (saveCase()) {
-            final CaseDataFragmentLayoutBinding caseBinding = ((CaseEditDataForm)getTabByPosition(CaseEditTabs.CASE_DATA.ordinal())).getBinding();
+            final CaseDataFragmentLayoutBinding caseBinding = ((CaseEditDataForm)getTabByPosition(adapter.getPositionOfTab(CaseEditTabs.CASE_DATA))).getBinding();
 
             final Consumer positiveCallback = new Consumer() {
                 @Override
@@ -361,7 +373,7 @@ public class CaseEditActivity extends AbstractEditTabActivity {
                         Snackbar.make(findViewById(R.id.base_layout), getResources().getString(R.string.snackbar_case_moved_error), Snackbar.LENGTH_LONG).show();
                     }
 
-                    setAdapter();
+                    setAdapter(updatedCase);
                 }
             };
 
@@ -376,28 +388,28 @@ public class CaseEditActivity extends AbstractEditTabActivity {
         // PATIENT
         LocationDao locLocationDao = DatabaseHelper.getLocationDao();
         PersonDao personDao = DatabaseHelper.getPersonDao();
-        Person person = (Person) getData(CaseEditTabs.PATIENT.ordinal());
+        Person person = (Person) getData(adapter.getPositionOfTab(CaseEditTabs.PATIENT));
 
         // SYMPTOMS
-        Symptoms symptoms = (Symptoms) getData(CaseEditTabs.SYMPTOMS.ordinal());
+        Symptoms symptoms = (Symptoms) getData(adapter.getPositionOfTab(CaseEditTabs.SYMPTOMS));
 
         // HOSPITALIZATION
-        Hospitalization hospitalization = (Hospitalization) getData(CaseEditTabs.HOSPITALIZATION.ordinal());
+        Hospitalization hospitalization = (Hospitalization) getData(adapter.getPositionOfTab(CaseEditTabs.HOSPITALIZATION));
 
         // EPI DATA
-        EpiData epiData = (EpiData) getData(CaseEditTabs.EPIDATA.ordinal());
+        EpiData epiData = (EpiData) getData(adapter.getPositionOfTab(CaseEditTabs.EPIDATA));
 
         // CASE_DATA
-        Case caze = (Case) getData(CaseEditTabs.CASE_DATA.ordinal());
+        Case caze = (Case) getData(adapter.getPositionOfTab(CaseEditTabs.CASE_DATA));
 
         // Validations have to be processed from last tab to first to make sure that the user will be re-directed
         // to the first tab with a validation error
-        PersonEditFragmentLayoutBinding personBinding =  ((PersonEditForm)getTabByPosition(CaseEditTabs.PATIENT.ordinal())).getBinding();
-        CaseSymptomsFragmentLayoutBinding symptomsBinding = ((SymptomsEditForm)getTabByPosition(CaseEditTabs.SYMPTOMS.ordinal())).getBinding();
+        PersonEditFragmentLayoutBinding personBinding =  ((PersonEditForm)getTabByPosition(adapter.getPositionOfTab(CaseEditTabs.PATIENT))).getBinding();
+        CaseSymptomsFragmentLayoutBinding symptomsBinding = ((SymptomsEditForm)getTabByPosition(adapter.getPositionOfTab(CaseEditTabs.SYMPTOMS))).getBinding();
 
         // Necessary because the entry could've been automatically set, in which case the setValue method of the
         // custom field has not been called
-        symptoms.setOnsetSymptom((String) symptomsBinding.symptomsOnsetSymptom1.getValue());
+        symptoms.setOnsetSymptom((String) symptomsBinding.symptomsOnsetSymptom.getValue());
 
         PersonValidator.clearErrors(personBinding);
         SymptomsValidator.clearErrorsForSymptoms(symptomsBinding);
@@ -405,10 +417,10 @@ public class CaseEditActivity extends AbstractEditTabActivity {
         int validationErrorTab = -1;
 
         if (!SymptomsValidator.validateCaseSymptoms(symptoms, symptomsBinding)) {
-            validationErrorTab = CaseEditTabs.SYMPTOMS.ordinal();
+            validationErrorTab = adapter.getPositionOfTab(CaseEditTabs.SYMPTOMS);
         }
         if (!PersonValidator.validatePersonData(person, personBinding)) {
-            validationErrorTab = CaseEditTabs.PATIENT.ordinal();
+            validationErrorTab = adapter.getPositionOfTab(CaseEditTabs.PATIENT);
         }
 
         if (validationErrorTab >= 0) {

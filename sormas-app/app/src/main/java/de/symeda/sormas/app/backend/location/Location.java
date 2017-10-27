@@ -5,6 +5,8 @@ import android.databinding.Bindable;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import java.text.NumberFormat;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
@@ -41,10 +43,12 @@ public class Location extends AbstractDomainObject {
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private Community community;
 
-	@Column(columnDefinition = "float8")
-	private Float latitude;
-	@Column(columnDefinition = "float8")
-	private Float longitude;
+	@DatabaseField
+	private Double latitude;
+	@DatabaseField
+	private Double longitude;
+	@DatabaseField
+	private Float latLonAccuracy;
 
 	@Bindable
 	public String getAddress() {
@@ -91,22 +95,22 @@ public class Location extends AbstractDomainObject {
 		this.community = community;
 	}
 	
-	public Float getLatitude() {
+	public Double getLatitude() {
 		return latitude;
 	}
-	public void setLatitude(Float latitude) {
+	public void setLatitude(Double latitude) {
 		this.latitude = latitude;
 	}
 	
-	public Float getLongitude() {
+	public Double getLongitude() {
 		return longitude;
 	}
-	public void setLongitude(Float longitude) {
+	public void setLongitude(Double longitude) {
 		this.longitude = longitude;
 	}
 
-	@Override
-	public String toString() {
+	public String getCompleteString() {
+
 		StringBuilder sb = new StringBuilder();
 		if (getAddress() != null && !getAddress().isEmpty()) {
 			sb.append(getAddress());
@@ -134,11 +138,26 @@ public class Location extends AbstractDomainObject {
 			}
 			sb.append(getDetails());
 		}
-		if (sb.length() == 0) {
-			sb.append(super.toString());
+
+		if (getLatitude() != null && getLongitude() != null) {
+			if (sb.length() > 0) {
+				sb.append(" ");
+			}
+			sb.append("(").append(android.location.Location.convert(getLatitude(), android.location.Location.FORMAT_DEGREES))
+					.append(", ").append(android.location.Location.convert(getLongitude(), android.location.Location.FORMAT_DEGREES)).append(")");
 		}
 
 		return sb.toString();
+	}
+
+	@Override
+	public String toString() {
+
+		String result = getCompleteString();
+		if (!result.isEmpty()) {
+			return result;
+		}
+		return super.toString();
 	}
 
 	public boolean isEmptyLocation() {
@@ -149,5 +168,13 @@ public class Location extends AbstractDomainObject {
 	@Override
 	public String getI18nPrefix() {
 		return I18N_PREFIX;
+	}
+
+	public Float getLatLonAccuracy() {
+		return latLonAccuracy;
+	}
+
+	public void setLatLonAccuracy(Float latLonAccuracy) {
+		this.latLonAccuracy = latLonAccuracy;
 	}
 }

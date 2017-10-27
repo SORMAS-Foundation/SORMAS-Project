@@ -96,34 +96,22 @@ public class UserService extends AbstractAdoService<User> {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<User> cq = cb.createQuery(getElementClass());
 		Root<User> from = cq.from(getElementClass());
-		
-		Predicate filter = cb.equal(from.get(User.DISTRICT), district);
-		
-		if (userRoles.length > 0) {
-			Join<User, UserRole> joinRoles = from.join(User.USER_ROLES, JoinType.LEFT);
-			Predicate rolesFilter = joinRoles.in(Arrays.asList(userRoles));
-			if (filter != null) {
-				filter = cb.and(filter, rolesFilter);
-			} else {
-				filter = rolesFilter;
-			}
-		}
 
-		if (includeSupervisors) {
-			Join<User, UserRole> joinRoles = from.join(User.USER_ROLES, JoinType.LEFT);
-			Predicate supervisorFilter = joinRoles.in(Arrays.asList(UserRole.CASE_SUPERVISOR, UserRole.CONTACT_SUPERVISOR, UserRole.SURVEILLANCE_SUPERVISOR));
-			if (filter != null) {
-				filter = cb.or(filter, supervisorFilter);
-			} else {
-				filter = supervisorFilter;
-			}
-		}
-		
-		if (filter != null) {
-			cq.where(filter);
-		}
+		buildDistrictQuery(cb, cq, from, district, includeSupervisors, userRoles);
 		
 		cq.orderBy(cb.asc(from.get(AbstractDomainObject.ID)));
+		return em.createQuery(cq).getResultList();
+	}
+	
+	public List<User> getForWeeklyReportDetails(District district) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<User> cq = cb.createQuery(getElementClass());
+		Root<User> from = cq.from(getElementClass());
+		
+		buildDistrictQuery(cb, cq, from, district, false, UserRole.INFORMANT);
+		
+		Join<User, Facility> joinFacility = from.join(User.HEALTH_FACILITY, JoinType.LEFT);
+		cq.orderBy(cb.asc(joinFacility.get(Facility.NAME)));
 		return em.createQuery(cq).getResultList();
 	}
 	
@@ -174,6 +162,34 @@ public class UserService extends AbstractAdoService<User> {
 	protected Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<User, User> from, User user) {
 		// a user can read all other users
 		return null;
+	}
+
+	private void buildDistrictQuery(CriteriaBuilder cb, CriteriaQuery<User> cq, Root<User> from, District district, boolean includeSupervisors, UserRole... userRoles) {
+		Predicate filter = cb.equal(from.get(User.DISTRICT), district);
+		
+		if (userRoles.length > 0) {
+			Join<User, UserRole> joinRoles = from.join(User.USER_ROLES, JoinType.LEFT);
+			Predicate rolesFilter = joinRoles.in(Arrays.asList(userRoles));
+			if (filter != null) {
+				filter = cb.and(filter, rolesFilter);
+			} else {
+				filter = rolesFilter;
+			}
+		}
+
+		if (includeSupervisors) {
+			Join<User, UserRole> joinRoles = from.join(User.USER_ROLES, JoinType.LEFT);
+			Predicate supervisorFilter = joinRoles.in(Arrays.asList(UserRole.CASE_SUPERVISOR, UserRole.CONTACT_SUPERVISOR, UserRole.SURVEILLANCE_SUPERVISOR));
+			if (filter != null) {
+				filter = cb.or(filter, supervisorFilter);
+			} else {
+				filter = supervisorFilter;
+			}
+		}
+		
+		if (filter != null) {
+			cq.where(filter);
+		}
 	}
 	
 }

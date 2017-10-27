@@ -68,6 +68,7 @@ public class Case extends AbstractDomainObject {
 	public static final String MEASLES_VACCINATION_INFO_SOURCE = "measlesVaccinationInfoSource";
 	public static final String YELLOW_FEVER_VACCINATION = "yellowFeverVaccination";
 	public static final String YELLOW_FEVER_VACCINATION_INFO_SOURCE = "yellowFeverVaccinationInfoSource";
+	public static final String SMALLPOX_VACCINATION_SCAR = "smallpoxVaccinationScar";
 	public static final String EPID_NUMBER = "epidNumber";
 	public static final String REPORT_LAT = "reportLat";
 	public static final String REPORT_LON = "reportLon";
@@ -89,6 +90,10 @@ public class Case extends AbstractDomainObject {
 	
 	private User reportingUser;
 	private Date reportDate;
+	private Double reportLat;
+	private Double reportLon;
+	private Float reportLatLonAccuracy;
+	
 	private Date investigatedDate;
 	private Date suspectDate;
 	private Date confirmedDate;
@@ -110,10 +115,9 @@ public class Case extends AbstractDomainObject {
 	private Vaccination yellowFeverVaccination;
 	private VaccinationInfoSource yellowFeverVaccinationInfoSource;
 	
-	private String epidNumber;
+	private YesNoUnknown smallpoxVaccinationScar;
 	
-	private Float reportLat;
-	private Float reportLon;
+	private String epidNumber;
 	
 	private List<Task> tasks;
 	
@@ -377,6 +381,14 @@ public class Case extends AbstractDomainObject {
 	public void setYellowFeverVaccinationInfoSource(VaccinationInfoSource yellowFeverVaccinationInfoSource) {
 		this.yellowFeverVaccinationInfoSource = yellowFeverVaccinationInfoSource;
 	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getSmallpoxVaccinationScar() {
+		return smallpoxVaccinationScar;
+	}
+	public void setSmallpoxVaccinationScar(YesNoUnknown smallpoxVaccinationScar) {
+		this.smallpoxVaccinationScar = smallpoxVaccinationScar;
+	}
 	
 	@Column(length = 512)
 	public String getEpidNumber() {
@@ -408,20 +420,25 @@ public class Case extends AbstractDomainObject {
 		this.investigationStatus = investigationStatus;
 	}
 
-	@Column(columnDefinition = "float8")
-	public Float getReportLat() {
+	public Double getReportLat() {
 		return reportLat;
 	}
-	public void setReportLat(Float reportLat) {
+	public void setReportLat(Double reportLat) {
 		this.reportLat = reportLat;
 	}
 	
-	@Column(columnDefinition = "float8")
-	public Float getReportLon() {
+	public Double getReportLon() {
 		return reportLon;
 	}
-	public void setReportLon(Float reportLon) {
+	public void setReportLon(Double reportLon) {
 		this.reportLon = reportLon;
+	}
+
+	public Float getReportLatLonAccuracy() {
+		return reportLatLonAccuracy;
+	}
+	public void setReportLatLonAccuracy(Float reportLatLonAccuracy) {
+		this.reportLatLonAccuracy = reportLatLonAccuracy;
 	}
 	
 }

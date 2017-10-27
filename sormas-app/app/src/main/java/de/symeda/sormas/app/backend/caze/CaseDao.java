@@ -226,17 +226,18 @@ public class CaseDao extends AbstractAdoDao<Case> {
         WeeklyReport previousEpiWeekReport = DatabaseHelper.getWeeklyReportDao().queryForEpiWeek(DateHelper.getPreviousEpiWeek(epiWeek), informant);
         WeeklyReport nextEpiWeekReport = DatabaseHelper.getWeeklyReportDao().queryForEpiWeek(DateHelper.getNextEpiWeek(epiWeek), informant);
 
-        Date[] dates = DateHelper.calculateEpiWeekReportStartAndEnd(epiWeek, epiWeekReport != null ? epiWeekReport.getReportDateTime() : null,
+        Date[] reportStartAndEnd = DateHelper.calculateEpiWeekReportStartAndEnd(new Date(), epiWeek,
+                epiWeekReport != null ? epiWeekReport.getReportDateTime() : null,
                 previousEpiWeekReport != null ? previousEpiWeekReport.getReportDateTime() : null,
-                nextEpiWeekReport != null ? nextEpiWeekReport.getReportDateTime() : null);
+                nextEpiWeekReport != null? nextEpiWeekReport.getReportDateTime() : null);
 
         try {
             QueryBuilder builder = queryBuilder();
             Where where = builder.where();
             where.and(
                     where.eq(Case.REPORTING_USER + "_id", informant),
-                    where.ge(Case.REPORT_DATE, dates[0]),
-                    where.le(Case.REPORT_DATE, dates[1])
+                    where.ge(Case.REPORT_DATE, reportStartAndEnd[0]),
+                    where.le(Case.REPORT_DATE, reportStartAndEnd[1])
             );
 
             if (disease != null) {
@@ -294,14 +295,11 @@ public class CaseDao extends AbstractAdoDao<Case> {
     public Case saveAndSnapshot(final Case caze) throws DaoException {
         // If a new case is created, use the last available location to update its report latitude and longitude
         if (caze.getId() == null) {
-            LocationService locationService = LocationService.getLocationService(DatabaseHelper.getContext());
-            Location location = locationService.getLocation();
+            Location location = LocationService.instance().getLocation();
             if (location != null) {
-                // Use the geo-coordinates of the current location object if it's not older than 15 minutes
-                if (new Date().getTime() <= location.getTime() + (1000 * 60 * 15)) {
-                    caze.setReportLat((float) location.getLatitude());
-                    caze.setReportLon((float) location.getLongitude());
-                }
+                caze.setReportLat(location.getLatitude());
+                caze.setReportLon(location.getLongitude());
+                caze.setReportLatLonAccuracy(location.getAccuracy());
             }
         }
 

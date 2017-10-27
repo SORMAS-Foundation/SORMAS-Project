@@ -110,7 +110,7 @@ public abstract class AbstractTableField<E> extends CustomField<Collection> {
 	protected Component initContent() {
 		
 		this.addStyleName(CssStyles.CAPTION_HIDDEN);
-		this.addStyleName(CssStyles.VSPACE2);
+		this.addStyleName(CssStyles.VSPACE_2);
 
 		layout = new VerticalLayout();
 		layout.setSpacing(false);

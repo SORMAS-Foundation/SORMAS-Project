@@ -42,6 +42,9 @@ public class EpiDataDto extends DataTransferObject {
 	public static final String WATER_BODY = "waterBody";
 	public static final String WATER_BODY_DETAILS = "waterBodyDetails";
 	public static final String TICKBITE = "tickBite";
+	public static final String DATE_OF_LAST_EXPOSURE = "dateOfLastExposure";
+	public static final String PLACE_OF_LAST_EXPOSURE = "placeOfLastExposure";
+	public static final String ANIMAL_CONDITION = "animalCondition";
 	public static final String BURIALS = "burials";
 	public static final String GATHERINGS = "gatherings";
 	public static final String TRAVELS = "travels";
@@ -50,17 +53,17 @@ public class EpiDataDto extends DataTransferObject {
 	private YesNoUnknown burialAttended;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.OTHER})
 	private YesNoUnknown gatheringAttended;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.MONKEYPOX,Disease.OTHER})
 	private YesNoUnknown traveled;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.MONKEYPOX,Disease.OTHER})
 	private YesNoUnknown rodents;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.OTHER})
 	private YesNoUnknown bats;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.MONKEYPOX,Disease.OTHER})
 	private YesNoUnknown primates;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.OTHER})
 	private YesNoUnknown swine;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA})
 	private YesNoUnknown birds;
 	@Diseases({Disease.AVIAN_INFLUENCA,Disease.OTHER})
 	private YesNoUnknown poultryEat;
@@ -72,23 +75,23 @@ public class EpiDataDto extends DataTransferObject {
 	private YesNoUnknown poultrySick;
 	@Diseases({Disease.AVIAN_INFLUENCA,Disease.OTHER})
 	private String poultrySickDetails;
-	@Diseases({Disease.AVIAN_INFLUENCA,Disease.OTHER})
+	@Diseases({Disease.AVIAN_INFLUENCA})
 	private Date poultryDate;
-	@Diseases({Disease.AVIAN_INFLUENCA,Disease.OTHER})
+	@Diseases({Disease.AVIAN_INFLUENCA})
 	private String poultryLocation;
 	@Diseases({Disease.AVIAN_INFLUENCA,Disease.OTHER})
 	private YesNoUnknown wildbirds;
 	@Diseases({Disease.AVIAN_INFLUENCA,Disease.OTHER})
 	private String wildbirdsDetails;
-	@Diseases({Disease.AVIAN_INFLUENCA,Disease.OTHER})
+	@Diseases({Disease.AVIAN_INFLUENCA})
 	private Date wildbirdsDate;
-	@Diseases({Disease.AVIAN_INFLUENCA,Disease.OTHER})
+	@Diseases({Disease.AVIAN_INFLUENCA})
 	private String wildbirdsLocation;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.OTHER})
 	private YesNoUnknown cattle;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.MONKEYPOX,Disease.OTHER})
 	private YesNoUnknown otherAnimals;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.MONKEYPOX,Disease.OTHER})
 	private String otherAnimalsDetails;
 	@Diseases({Disease.CHOLERA,Disease.OTHER})
 	private WaterSource waterSource;
@@ -100,6 +103,12 @@ public class EpiDataDto extends DataTransferObject {
 	private String waterBodyDetails;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.OTHER})
 	private YesNoUnknown tickBite;
+	@Diseases({Disease.MONKEYPOX,Disease.OTHER})
+	private Date dateOfLastExposure;
+	@Diseases({Disease.MONKEYPOX,Disease.OTHER})	
+	private String placeOfLastExposure;
+	@Diseases({Disease.MONKEYPOX,Disease.OTHER})
+	private AnimalCondition animalCondition;
 
 	private List<EpiDataBurialDto> burials = new ArrayList<>();
 	private List<EpiDataGatheringDto> gatherings = new ArrayList<>();
@@ -292,6 +301,27 @@ public class EpiDataDto extends DataTransferObject {
 	}
 	public void setTickBite(YesNoUnknown tickBite) {
 		this.tickBite = tickBite;
+	}
+	
+	public Date getDateOfLastExposure() {
+		return dateOfLastExposure;
+	}
+	public void setDateOfLastExposure(Date dateOfLastExposure) {
+		this.dateOfLastExposure = dateOfLastExposure;
+	}
+	
+	public String getPlaceOfLastExposure() {
+		return placeOfLastExposure;
+	}
+	public void setPlaceOfLastExposure(String placeOfLastExposure) {
+		this.placeOfLastExposure = placeOfLastExposure;
+	}
+	
+	public AnimalCondition getAnimalCondition() {
+		return animalCondition;
+	}
+	public void setAnimalCondition(AnimalCondition animalCondition) {
+		this.animalCondition = animalCondition;
 	}
 	
 	public List<EpiDataBurialDto> getBurials() {

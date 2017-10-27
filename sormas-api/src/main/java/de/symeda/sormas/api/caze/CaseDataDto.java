@@ -48,6 +48,7 @@ public class CaseDataDto extends CaseReferenceDto {
 	public static final String MEASLES_VACCINATION_INFO_SOURCE = "measlesVaccinationInfoSource";
 	public static final String YELLOW_FEVER_VACCINATION = "yellowFeverVaccination";
 	public static final String YELLOW_FEVER_VACCINATION_INFO_SOURCE = "yellowFeverVaccinationInfoSource";
+	public static final String SMALLPOX_VACCINATION_SCAR = "smallpoxVaccinationScar";
 	public static final String EPID_NUMBER = "epidNumber";
 	public static final String REPORT_LAT = "reportLat";
 	public static final String REPORT_LON = "reportLon";
@@ -83,14 +84,18 @@ public class CaseDataDto extends CaseReferenceDto {
 	private Vaccination yellowFeverVaccination;
 	@Diseases({Disease.YELLOW_FEVER})
 	private VaccinationInfoSource yellowFeverVaccinationInfoSource;
+	@Diseases({Disease.MONKEYPOX})
+	private YesNoUnknown smallpoxVaccinationScar;
 	
 	private String epidNumber;
 
 	private UserReferenceDto surveillanceOfficer;
 	private UserReferenceDto caseOfficer;
 	
-	private Float reportLat;
-	private Float reportLon;
+	private Double reportLat;
+	private Double reportLon;
+	private Float reportLatLonAccuracy;
+
 	
 	public CaseClassification getCaseClassification() {
 		return caseClassification;
@@ -284,6 +289,14 @@ public class CaseDataDto extends CaseReferenceDto {
 		this.yellowFeverVaccinationInfoSource = yellowFeverVaccinationInfoSource;
 	}
 
+	public YesNoUnknown getSmallpoxVaccinationScar() {
+		return smallpoxVaccinationScar;
+	}
+
+	public void setSmallpoxVaccinationScar(YesNoUnknown smallpoxVaccinationScar) {
+		this.smallpoxVaccinationScar = smallpoxVaccinationScar;
+	}
+
 	public String getEpidNumber() {
 		return epidNumber;
 	}
@@ -292,20 +305,28 @@ public class CaseDataDto extends CaseReferenceDto {
 		this.epidNumber = epidNumber;
 	}
 
-	public Float getReportLat() {
+	public Double getReportLat() {
 		return reportLat;
 	}
 
-	public void setReportLat(Float reportLat) {
+	public void setReportLat(Double reportLat) {
 		this.reportLat = reportLat;
 	}
 
-	public Float getReportLon() {
+	public Double getReportLon() {
 		return reportLon;
 	}
 
-	public void setReportLon(Float reportLon) {
+	public void setReportLon(Double reportLon) {
 		this.reportLon = reportLon;
+	}
+
+	public Float getReportLatLonAccuracy() {
+		return reportLatLonAccuracy;
+	}
+
+	public void setReportLatLonAccuracy(Float reportLatLonAccuracy) {
+		this.reportLatLonAccuracy = reportLatLonAccuracy;
 	}
 
 }
