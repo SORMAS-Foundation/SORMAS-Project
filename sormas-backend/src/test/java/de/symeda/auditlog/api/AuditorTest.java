@@ -253,7 +253,7 @@ public class AuditorTest {
 		assertThat(annotationAttributes.get(Entity.FLAG), is(equalTo("false")));
 		assertThat(annotationAttributes.get(Entity.STRING), is(equalTo("changed")));
 		assertThat(annotationAttributes.get(Entity.INTEGER), is(equalTo("42")));
-		assertThat(t2, lessThan(250_000L));
+		assertThat(t2, lessThan(1000_000L));
 		System.out.println("AuditorTest.testDetectAnnotationChangesFast(): t1= " + t1 + " nanos, t2= " + t2 + " nanos");
 	}
 }

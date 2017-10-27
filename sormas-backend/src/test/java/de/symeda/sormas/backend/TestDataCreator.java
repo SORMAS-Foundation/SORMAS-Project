@@ -85,7 +85,6 @@ public class TestDataCreator extends BaseBeanTest {
 		this.facilityService = facilityService;
 	}
 	
-	@Test
 	public UserDto createUser(String regionUuid, String districtUuid, String facilityUuid, String firstName, String lastName, UserRole... roles) {
 		UserDto user = new UserDto();
 		user.setUuid(DataHelper.createUuid());
@@ -101,7 +100,6 @@ public class TestDataCreator extends BaseBeanTest {
 		return user;
 	}
 
-	@Test
 	public PersonDto createPerson(String firstName, String lastName) {
 		PersonDto cazePerson = new PersonDto();
 		cazePerson.setUuid(DataHelper.createUuid());
@@ -112,7 +110,6 @@ public class TestDataCreator extends BaseBeanTest {
 		return cazePerson;
 	}
 
-	@Test
 	public CaseDataDto createCase(UserDto user, PersonDto cazePerson, Disease disease, CaseClassification caseClassification, 
 			InvestigationStatus investigationStatus, Date reportDate, RDCF rdcf) {
 		CaseDataDto caze = new CaseDataDto();
@@ -133,7 +130,6 @@ public class TestDataCreator extends BaseBeanTest {
 		return caze;
 	}
 
-	@Test
 	public ContactDto createContact(UserDto reportingUser, UserDto contactOfficer, PersonDto contactPerson,
 			CaseDataDto caze, Date reportDateTime, Date lastContactDate) {
 		ContactDto contact = new ContactDto();
@@ -150,7 +146,6 @@ public class TestDataCreator extends BaseBeanTest {
 		return contact;
 	}
 
-	@Test
 	public TaskDto createTask(TaskContext context, TaskType type, TaskStatus status, CaseDataDto caze,
 			ContactDto contact, UserDto assigneeUser) {
 		TaskDto task = new TaskDto();
@@ -171,7 +166,6 @@ public class TestDataCreator extends BaseBeanTest {
 		return task;
 	}
 	
-	@Test
 	public VisitDto createVisit(Disease disease, PersonDto contactPerson, Date visitDateTime, VisitStatus visitStatus) {
 		VisitDto visit = new VisitDto();
 		visit.setUuid(DataHelper.createUuid());
@@ -185,7 +179,6 @@ public class TestDataCreator extends BaseBeanTest {
 		return visit;
 	}
 	
-	@Test
 	public WeeklyReportDto createWeeklyReport(String facilityUuid, UserDto informant, Date reportDateTime, int epiWeek, int year, int numberOfCases) {
 		WeeklyReportDto report = new WeeklyReportDto();
 		report.setUuid(DataHelper.createUuid());
@@ -201,7 +194,6 @@ public class TestDataCreator extends BaseBeanTest {
 		return report;
 	}
 	
-	@Test
 	public RDCF createRDCF(String regionName, String districtName, String communityName, String facilityName) {
 		Region region = createRegion(regionName);
 		District district = createDistrict(districtName, region);
@@ -211,7 +203,6 @@ public class TestDataCreator extends BaseBeanTest {
 		return new RDCF(region, district, community, facility);
 	}
 	
-	@Test 
 	public Region createRegion(String regionName) {
 		Region region = new Region();
 		region.setUuid(DataHelper.createUuid());
@@ -221,7 +212,6 @@ public class TestDataCreator extends BaseBeanTest {
 		return region;
 	}
 	
-	@Test
 	public District createDistrict(String districtName, Region region) {
 		District district = new District();
 		district.setUuid(DataHelper.createUuid());
@@ -232,7 +222,6 @@ public class TestDataCreator extends BaseBeanTest {
 		return district;
 	}
 	
-	@Test
 	public Community createCommunity(String communityName, District district) {
 		Community community = new Community();
 		community.setUuid(DataHelper.createUuid());
@@ -243,7 +232,6 @@ public class TestDataCreator extends BaseBeanTest {
 		return community;
 	}
 	
-	@Test
 	public Facility createFacility(String facilityName, Region region, District district, Community community) {
 		Facility facility = new Facility();
 		facility.setUuid(DataHelper.createUuid());
@@ -270,5 +258,4 @@ public class TestDataCreator extends BaseBeanTest {
 			this.facility = facility;
 		}
 	}
-
 }
