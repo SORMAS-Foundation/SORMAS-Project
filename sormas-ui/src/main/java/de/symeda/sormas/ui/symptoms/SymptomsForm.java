@@ -180,7 +180,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		Label lesionsLocationsCaption = new Label("Localisation of the lesions");
 		CssStyles.style(lesionsLocationsCaption, CssStyles.VSPACE_3);
 		getContent().addComponent(lesionsLocationsCaption, LESIONS_LOCATIONS_LOC);
-		getContent().getComponent(LESIONS_LOCATIONS_LOC).setVisible(getFieldGroup().getField(SymptomsDto.LESIONS).isVisible());
+		getContent().getComponent(LESIONS_LOCATIONS_LOC).setVisible(getFieldGroup().getField(SymptomsDto.LESIONS).getValue() == SymptomState.YES);
 		getFieldGroup().getField(SymptomsDto.LESIONS).addValueChangeListener(e -> {
 			getContent().getComponent(LESIONS_LOCATIONS_LOC).setVisible(e.getProperty().getValue() == SymptomState.YES);
 		});
