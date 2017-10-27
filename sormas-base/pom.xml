@@ -472,7 +472,6 @@
 						<noDeploy>true</noDeploy>
 						<autoVersionSubmodules>true</autoVersionSubmodules>
 						<updateDependencies>true</updateDependencies>
-						<allowUntracked>true</allowUntracked>
 					</configuration>
 				</plugin>
 
