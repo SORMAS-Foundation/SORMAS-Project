@@ -118,7 +118,7 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setLesionsThatItch(source.getLesionsThatItch());
 		target.setBedridden(source.getBedridden());
 		target.setOralUlcers(source.getOralUlcers());
-		target.setIllLocation(source.getIllLocation());
+		target.setPatientIllLocation(source.getPatientIllLocation());
 		
 		return symptoms;
 	}
@@ -219,7 +219,7 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setLesionsThatItch(source.getLesionsThatItch());
 		target.setBedridden(source.getBedridden());
 		target.setOralUlcers(source.getOralUlcers());
-		target.setIllLocation(source.getIllLocation());
+		target.setPatientIllLocation(source.getPatientIllLocation());
 		
 		return target;
 	}

@@ -25,7 +25,7 @@ public class Symptoms extends AbstractDomainObject {
 	private Date onsetDate;
 	private String onsetSymptom;
 	private Boolean symptomatic;
-	private String illLocation;
+	private String patientIllLocation;
 	
 	private Float temperature;
 	private TemperatureSource temperatureSource;
@@ -118,12 +118,12 @@ public class Symptoms extends AbstractDomainObject {
 	}
 	
 	@Column(length = 255)
-	public String getIllLocation() {
-		return illLocation;
+	public String getPatientIllLocation() {
+		return patientIllLocation;
 	}
 
-	public void setIllLocation(String illLocation) {
-		this.illLocation = illLocation;
+	public void setPatientIllLocation(String patientIllLocation) {
+		this.patientIllLocation = patientIllLocation;
 	}
 
 	@Column(columnDefinition = "float8")

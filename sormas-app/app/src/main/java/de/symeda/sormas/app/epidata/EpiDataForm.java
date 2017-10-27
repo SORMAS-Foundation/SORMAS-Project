@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.epidata.AnimalCondition;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.WaterSource;
@@ -215,8 +216,12 @@ public class EpiDataForm extends FormTab {
             @Override
             public void onChange(PropertyField field) {
                 binding.epiDataPoultrySickDetails.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
-                binding.epiDataPoultryDate.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
-                binding.epiDataPoultryLocation.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
+                if (Diseases.DiseasesConfiguration.isDefinedOrMissing(EpiDataDto.class, EpiDataDto.POULTRY_DATE, disease)) {
+                    binding.epiDataPoultryDate.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
+                }
+                if (Diseases.DiseasesConfiguration.isDefinedOrMissing(EpiDataDto.class, EpiDataDto.POULTRY_LOCATION, disease)) {
+                    binding.epiDataPoultryLocation.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
+                }
             }
         });
 
@@ -231,8 +236,12 @@ public class EpiDataForm extends FormTab {
             @Override
             public void onChange(PropertyField field) {
                 binding.epiDataWildbirdsDetails.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
-                binding.epiDataWildbirdsDate.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
-                binding.epiDataWildbirdsLocation.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
+                if (Diseases.DiseasesConfiguration.isDefinedOrMissing(EpiDataDto.class, EpiDataDto.WILDBIRDS_DATE, disease)) {
+                    binding.epiDataWildbirdsDate.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
+                }
+                if (Diseases.DiseasesConfiguration.isDefinedOrMissing(EpiDataDto.class, EpiDataDto.WILDBIRDS_LOCATION, disease)) {
+                    binding.epiDataWildbirdsLocation.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
+                }
             }
         });
 
@@ -253,10 +262,19 @@ public class EpiDataForm extends FormTab {
         setVisibilityByDisease(EpiDataDto.class, disease, (ViewGroup)binding.getRoot());
         showOrHideHeadlines();
 
+        FieldHelper.initSpinnerField(binding.epiDataAnimalCondition, AnimalCondition.class);
+        binding.epiDataDateOfLastExposure.initialize(this);
+
         return view;
     }
 
     private void showOrHideHeadlines() {
+        if (!(binding.epiDataBurialAttended.getVisibility() == View.VISIBLE || binding.epiDataGatheringAttended.getVisibility() == View.VISIBLE ||
+                binding.epiDataTraveled.getVisibility() == View.VISIBLE)) {
+            binding.epiDataEpiData.setVisibility(View.GONE);
+            binding.epiDataEpiDataInfoText.setVisibility(View.GONE);
+        }
+
         if (!(binding.epiDataRodents.getVisibility() == View.VISIBLE || binding.epiDataBats.getVisibility() == View.VISIBLE ||
                 binding.epiDataPrimates.getVisibility() == View.VISIBLE || binding.epiDataSwine.getVisibility() == View.VISIBLE ||
                 binding.epiDataCattle.getVisibility() == View.VISIBLE || binding.epiDataOtherAnimals.getVisibility() == View.VISIBLE ||
@@ -264,6 +282,7 @@ public class EpiDataForm extends FormTab {
                 binding.epiDataPoultryEat.getVisibility() == View.VISIBLE || binding.epiDataPoultry.getVisibility() == View.VISIBLE ||
                 binding.epiDataPoultrySick.getVisibility() == View.VISIBLE)) {
             binding.epiDataAnimalContacts.setVisibility(View.GONE);
+            binding.epiDataAnimalContactsInfoText.setVisibility(View.GONE);
         }
 
         if (!(binding.epiDataWaterSource.getVisibility() == View.VISIBLE || binding.epiDataWaterBody.getVisibility() == View.VISIBLE ||

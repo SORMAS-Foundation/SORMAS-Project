@@ -85,6 +85,9 @@ public class CaseEditDataForm extends FormTab {
         boolean showYellowFeverVaccination = Diseases.DiseasesConfiguration.isDefinedOrMissing(CaseDataDto.class, binding.caseDataYellowFeverVaccination.getPropertyId(), binding.getCaze().getDisease());
         binding.caseDataYellowFeverVaccination.setVisibility(showYellowFeverVaccination ? View.VISIBLE : View.GONE);
 
+        boolean showSmallpoxVaccinationScar = Diseases.DiseasesConfiguration.isDefinedOrMissing(CaseDataDto.class, binding.caseDataSmallpoxVaccinationScar.getPropertyId(), binding.getCaze().getDisease());
+        binding.caseDataSmallpoxVaccinationScar.setVisibility(showSmallpoxVaccinationScar ? View.VISIBLE : View.GONE);
+
         if (binding.getCaze().getPerson().getSex() != Sex.FEMALE) {
             binding.caseDataPregnant.setVisibility(View.GONE);
         }
@@ -107,7 +110,7 @@ public class CaseEditDataForm extends FormTab {
         });
 
         if (binding.caseDataPregnant.getVisibility() == View.GONE && binding.caseDataMeaslesVaccination.getVisibility() == View.GONE &&
-                binding.caseDataYellowFeverVaccination.getVisibility() == View.GONE) {
+                binding.caseDataYellowFeverVaccination.getVisibility() == View.GONE && binding.caseDataSmallpoxVaccinationScar.getVisibility() == View.GONE) {
             binding.caseMedicalInformationHeadline.setVisibility(View.GONE);
         }
 

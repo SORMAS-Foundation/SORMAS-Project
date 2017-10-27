@@ -80,6 +80,9 @@ public class EpiDataDtoHelper extends AdoDtoHelper<EpiData, EpiDataDto> {
         a.setWaterBody(b.getWaterBody());
         a.setWaterBodyDetails(b.getWaterBodyDetails());
         a.setTickBite(b.getTickBite());
+        a.setDateOfLastExposure(b.getDateOfLastExposure());
+        a.setPlaceOfLastExposure(b.getPlaceOfLastExposure());
+        a.setAnimalCondition(b.getAnimalCondition());
 
         // just recreate all of this and throw the old stuff away
         List<EpiDataBurial> burials = new ArrayList<>();
@@ -144,6 +147,9 @@ public class EpiDataDtoHelper extends AdoDtoHelper<EpiData, EpiDataDto> {
         a.setWaterBody(b.getWaterBody());
         a.setWaterBodyDetails(b.getWaterBodyDetails());
         a.setTickBite(b.getTickBite());
+        a.setDateOfLastExposure(b.getDateOfLastExposure());
+        a.setPlaceOfLastExposure(b.getPlaceOfLastExposure());
+        a.setAnimalCondition(b.getAnimalCondition());
 
         List<EpiDataBurialDto> burialDtos = new ArrayList<>();
         if (!b.getBurials().isEmpty()) {

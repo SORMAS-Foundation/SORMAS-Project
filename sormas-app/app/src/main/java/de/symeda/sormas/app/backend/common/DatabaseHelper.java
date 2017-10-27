@@ -322,6 +322,36 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN diseaseDetails varchar(512);");
 				case 108:
 					currentVersion = 108;
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN smallpoxVaccinationScar varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN cutaneousEruption varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN lesions varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN lesionsSameState varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN lesionsSameSize varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN lesionsDeepProfound varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN lesionsFace boolean;");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN lesionsLegs boolean;");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN lesionsSolesFeet boolean;");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN lesionsPalmsHands boolean;");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN lesionsThorax boolean;");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN lesionsArms boolean;");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN lesionsGenitals boolean;");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN lesionsAllOverBody boolean;");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN lesionsResembleImg1 varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN lesionsResembleImg2 varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN lesionsResembleImg3 varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN lesionsResembleImg4 varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN lymphadenopathyInguinal varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN lymphadenopathyAxillary varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN lymphadenopathyCervical varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN chillsSweats varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN lesionsThatItch varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN bedridden varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN oralUlcers varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN patientIllLocation varchar(512);");
+					getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN dateOfLastExposure timestamp;");
+					getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN placeOfLastExposure varchar(512);");
+					getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN animalCondition varchar(255);");				case 109:
+					currentVersion = 109;
 					getDao(Location.class).executeRaw("ALTER TABLE location ADD COLUMN latLonAccuracy real;");
 					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN reportLatLonAccuracy real;");
 					getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN reportLatLonAccuracy real;");
@@ -331,7 +361,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					getDao(Sample.class).executeRaw("ALTER TABLE samples ADD COLUMN reportLat double precision;");
 					getDao(Sample.class).executeRaw("ALTER TABLE samples ADD COLUMN reportLon double precision;");
 					getDao(Sample.class).executeRaw("ALTER TABLE samples ADD COLUMN reportLatLonAccuracy real;");
-
 					// ATTENTION: break should only be done after last version
 					break;
 				default:

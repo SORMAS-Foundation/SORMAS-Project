@@ -12,6 +12,7 @@ import android.widget.Button;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import de.symeda.sormas.api.Disease;
@@ -24,6 +25,7 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
+import de.symeda.sormas.app.component.CheckBoxField;
 import de.symeda.sormas.app.component.FieldHelper;
 import de.symeda.sormas.app.component.PropertyField;
 import de.symeda.sormas.app.component.SymptomStateField;
@@ -45,9 +47,14 @@ public class SymptomsEditForm extends FormTab {
     public static final String FOR_VISIT = "forVisit";
     public static final String VISIT_COOPERATIVE = "visitCooperative";
 
+    private Disease disease;
+
     private CaseSymptomsFragmentLayoutBinding binding;
     private List<SymptomStateField> nonConditionalSymptoms;
     private List<SymptomStateField> conditionalBleedingSymptoms;
+    private List<SymptomStateField> lesionsFields;
+    private List<CheckBoxField> lesionsLocationFields;
+    private List<SymptomStateField> monkeypoxFields;
 
     private boolean forVisit;
     private boolean visitCooperative;
@@ -59,7 +66,7 @@ public class SymptomsEditForm extends FormTab {
 
         Symptoms symptoms;
 
-        final Disease disease = (Disease) getArguments().getSerializable(Case.DISEASE);
+        disease = (Disease) getArguments().getSerializable(Case.DISEASE);
 
         // build a new visit from contact data
         if(getArguments().getBoolean(NEW_SYMPTOMS)) {
@@ -126,12 +133,35 @@ public class SymptomsEditForm extends FormTab {
                 }
             }
         });
+        binding.symptomsLesions.addValueChangedListener(new PropertyField.ValueChangeListener() {
+            @Override
+            public void onChange(PropertyField field) {
+                visibilityLesionsFields();
+                if (forVisit) {
+                    SymptomsValidator.setRequiredHintsForVisitSymptoms(visitCooperative, binding);
+                } else {
+                    SymptomsValidator.setRequiredHintsForCaseSymptoms(binding);
+                }
+            }
+        });
+
+        lesionsFields = Arrays.asList(binding.symptomsLesionsSameState, binding.symptomsLesionsSameSize, binding.symptomsLesionsDeepProfound, binding.symptomsLesionsThatItch);
+
+        lesionsLocationFields = Arrays.asList(binding.symptomsLesionsFace, binding.symptomsLesionsLegs, binding.symptomsLesionsSolesFeet, binding.symptomsLesionsPalmsHands,
+                binding.symptomsLesionsThorax, binding.symptomsLesionsArms, binding.symptomsLesionsGenitals, binding.symptomsLesionsAllOverBody);
+
+        monkeypoxFields = Arrays.asList(binding.symptomsLesionsResembleImg1, binding.symptomsLesionsResembleImg2, binding.symptomsLesionsResembleImg3, binding.symptomsLesionsResembleImg4);
 
         // set initial UI
         toggleUnexplainedBleedingFields();
         visibilityOtherHemorrhagicSymptoms();
         visibilityOtherNonHemorrhagicSymptoms();
+        visibilityLesionsFields();
         setVisibilityByDisease(SymptomsDto.class, disease, (ViewGroup)binding.getRoot());
+
+        if (forVisit) {
+            binding.symptomsPatientIllLocation.setVisibility(View.GONE);
+        }
 
         nonConditionalSymptoms = Arrays.asList(binding.symptomsFever, binding.symptomsVomiting,
                 binding.symptomsDiarrhea, binding.symptomsBloodInStool1, binding.symptomsNausea, binding.symptomsAbdominalPain,
@@ -144,7 +174,9 @@ public class SymptomsEditForm extends FormTab {
                 binding.symptomsRefusalFeedorDrink, binding.symptomsJointPain, binding.symptomsShock,
                 binding.symptomsHiccups, binding.symptomsBackache, binding.symptomsEyesBleeding, binding.symptomsJaundice,
                 binding.symptomsDarkUrine, binding.symptomsStomachBleeding, binding.symptomsRapidBreathing, binding.symptomsSwollenGlands,
-                binding.symptomsOtherNonHemorrhagicSymptoms);
+                binding.symptomsOtherNonHemorrhagicSymptoms, binding.symptomsCutaneousEruption, binding.symptomsLesions, binding.symptomsLymphadenopathyAxillary,
+                binding.symptomsLymphadenopathyCervical, binding.symptomsLymphadenopathyInguinal, binding.symptomsChillsSweats, binding.symptomsBedridden,
+                binding.symptomsOralUlcers);
 
         conditionalBleedingSymptoms = Arrays.asList(binding.symptomsGumsBleeding1, binding.symptomsInjectionSiteBleeding,
                 binding.symptomsNoseBleeding1, binding.symptomsBloodyBlackStool, binding.symptomsRedBloodVomit,
@@ -164,7 +196,15 @@ public class SymptomsEditForm extends FormTab {
                 for (SymptomStateField symptom : conditionalBleedingSymptoms) {
                     symptom.setValue(null);
                 }
-
+                for (SymptomStateField symptom : lesionsFields) {
+                    symptom.setValue(null);
+                }
+                for (CheckBoxField checkBox : lesionsLocationFields) {
+                    checkBox.setValue(null);
+                }
+                for (SymptomStateField symptom : monkeypoxFields) {
+                    symptom.setValue(null);
+                }
                 if (forVisit) {
                     SymptomsValidator.setRequiredHintsForVisitSymptoms(visitCooperative, binding);
                 } else {
@@ -183,6 +223,16 @@ public class SymptomsEditForm extends FormTab {
                     }
                 }
                 for (SymptomStateField symptom : conditionalBleedingSymptoms) {
+                    if (symptom.getVisibility() == View.VISIBLE && symptom.getValue() == null) {
+                        symptom.setValue(SymptomState.NO);
+                    }
+                }
+                for (SymptomStateField symptom : lesionsFields) {
+                    if (symptom.getVisibility() == View.VISIBLE && symptom.getValue() == null) {
+                        symptom.setValue(SymptomState.NO);
+                    }
+                }
+                for (SymptomStateField symptom : monkeypoxFields) {
                     if (symptom.getVisibility() == View.VISIBLE && symptom.getValue() == null) {
                         symptom.setValue(SymptomState.NO);
                     }
@@ -252,6 +302,27 @@ public class SymptomsEditForm extends FormTab {
         }
     }
 
+    private void visibilityLesionsFields() {
+        SymptomState symptomState = binding.symptomsLesions.getValue();
+        binding.symptomsLesionsLayout.setVisibility(symptomState == SymptomState.YES ? View.VISIBLE : View.GONE);
+        if (symptomState != SymptomState.YES) {
+            for (PropertyField field : lesionsFields) {
+                field.setValue(null);
+            }
+            for (PropertyField field : lesionsLocationFields) {
+                field.setValue(false);
+            }
+        }
+        if (disease == Disease.MONKEYPOX) {
+            binding.symptomsMonkeypoxLayout.setVisibility(symptomState == SymptomState.YES ? View.VISIBLE : View.GONE);
+            if (symptomState != SymptomState.YES) {
+                for (PropertyField field : monkeypoxFields) {
+                    field.setValue(null);
+                }
+            }
+        }
+    }
+
     private void toggleUnexplainedBleedingFields() {
         int[] fieldIds = {
                 R.id.symptoms_gumsBleeding1,
@@ -283,27 +354,12 @@ public class SymptomsEditForm extends FormTab {
 
     private void addListenerForOnsetSymptom() {
         final ArrayAdapter<Item> adapter = (ArrayAdapter<Item>) binding.symptomsOnsetSymptom1.getAdapter();
+        List<SymptomStateField> relevantSymptoms = new ArrayList<>();
+        relevantSymptoms.addAll(nonConditionalSymptoms);
+        relevantSymptoms.addAll(conditionalBleedingSymptoms);
+        relevantSymptoms.add(binding.symptomsLesionsThatItch);
 
-        for (SymptomStateField symptom : nonConditionalSymptoms) {
-            symptom.addValueChangedListener(new PropertyField.ValueChangeListener() {
-                @Override
-                public void onChange(PropertyField field) {
-                    Item item = new Item(field.getCaption(), field.getCaption());
-                    int position = binding.symptomsOnsetSymptom1.getPositionOf(item);
-                    if (field.getValue() == SymptomState.YES) {
-                        if (position == -1) {
-                            adapter.add(item);
-                        }
-                    } else {
-                        if (position != -1) {
-                            adapter.remove(adapter.getItem(position));
-                        }
-                    }
-                }
-            });
-        }
-
-        for (SymptomStateField symptom : conditionalBleedingSymptoms) {
+        for (SymptomStateField symptom : relevantSymptoms) {
             symptom.addValueChangedListener(new PropertyField.ValueChangeListener() {
                 @Override
                 public void onChange(PropertyField field) {

@@ -103,6 +103,31 @@ public class SymptomsDtoHelper extends AdoDtoHelper<Symptoms, SymptomsDto> {
         a.setStomachBleeding(b.getStomachBleeding());
         a.setRapidBreathing(b.getRapidBreathing());
         a.setSwollenGlands(b.getSwollenGlands());
+        a.setCutaneousEruption(b.getCutaneousEruption());
+        a.setLesions(b.getLesions());
+        a.setLesionsSameState(b.getLesionsSameState());
+        a.setLesionsSameSize(b.getLesionsSameSize());
+        a.setLesionsDeepProfound(b.getLesionsDeepProfound());
+        a.setLesionsThatItch(b.getLesionsThatItch());
+        a.setLesionsFace(b.getLesionsFace());
+        a.setLesionsLegs(b.getLesionsLegs());
+        a.setLesionsSolesFeet(b.getLesionsSolesFeet());
+        a.setLesionsPalmsHands(b.getLesionsPalmsHands());
+        a.setLesionsThorax(b.getLesionsThorax());
+        a.setLesionsArms(b.getLesionsArms());
+        a.setLesionsGenitals(b.getLesionsGenitals());
+        a.setLesionsAllOverBody(b.getLesionsAllOverBody());
+        a.setLesionsResembleImg1(b.getLesionsResembleImg1());
+        a.setLesionsResembleImg2(b.getLesionsResembleImg2());
+        a.setLesionsResembleImg3(b.getLesionsResembleImg3());
+        a.setLesionsResembleImg4(b.getLesionsResembleImg4());
+        a.setLymphadenopathyAxillary(b.getLymphadenopathyAxillary());
+        a.setLymphadenopathyCervical(b.getLymphadenopathyCervical());
+        a.setLymphadenopathyInguinal(b.getLymphadenopathyInguinal());
+        a.setChillsSweats(b.getChillsSweats());
+        a.setBedridden(b.getBedridden());
+        a.setOralUlcers(b.getOralUlcers());
+        a.setPatientIllLocation(b.getPatientIllLocation());
     }
 
     @Override
@@ -166,5 +191,30 @@ public class SymptomsDtoHelper extends AdoDtoHelper<Symptoms, SymptomsDto> {
         a.setStomachBleeding(b.getStomachBleeding());
         a.setRapidBreathing(b.getRapidBreathing());
         a.setSwollenGlands(b.getSwollenGlands());
+        a.setCutaneousEruption(b.getCutaneousEruption());
+        a.setLesions(b.getLesions());
+        a.setLesionsSameState(b.getLesionsSameState());
+        a.setLesionsSameSize(b.getLesionsSameSize());
+        a.setLesionsDeepProfound(b.getLesionsDeepProfound());
+        a.setLesionsThatItch(b.getLesionsThatItch());
+        a.setLesionsFace(b.getLesionsFace());
+        a.setLesionsLegs(b.getLesionsLegs());
+        a.setLesionsSolesFeet(b.getLesionsSolesFeet());
+        a.setLesionsPalmsHands(b.getLesionsPalmsHands());
+        a.setLesionsThorax(b.getLesionsThorax());
+        a.setLesionsArms(b.getLesionsArms());
+        a.setLesionsGenitals(b.getLesionsGenitals());
+        a.setLesionsAllOverBody(b.getLesionsAllOverBody());
+        a.setLesionsResembleImg1(b.getLesionsResembleImg1());
+        a.setLesionsResembleImg2(b.getLesionsResembleImg2());
+        a.setLesionsResembleImg3(b.getLesionsResembleImg3());
+        a.setLesionsResembleImg4(b.getLesionsResembleImg4());
+        a.setLymphadenopathyAxillary(b.getLymphadenopathyAxillary());
+        a.setLymphadenopathyCervical(b.getLymphadenopathyCervical());
+        a.setLymphadenopathyInguinal(b.getLymphadenopathyInguinal());
+        a.setChillsSweats(b.getChillsSweats());
+        a.setBedridden(b.getBedridden());
+        a.setOralUlcers(b.getOralUlcers());
+        a.setPatientIllLocation(b.getPatientIllLocation());
     }
 }

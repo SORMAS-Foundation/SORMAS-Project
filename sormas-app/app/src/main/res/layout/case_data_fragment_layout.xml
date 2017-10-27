@@ -271,6 +271,12 @@
                 android:paddingBottom="@dimen/field_padding"
                 android:value="@={caze.yellowFeverVaccinationInfoSource}"/>
 
+            <de.symeda.sormas.app.component.YesNoUnknownField
+                android:id="@+id/caseData_smallpoxVaccinationScar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:value="@={caze.smallpoxVaccinationScar}"/>
+
             <de.symeda.sormas.app.component.LabelField
                 android:id="@+id/caseData_surveillanceOfficer"
                 android:layout_width="match_parent"

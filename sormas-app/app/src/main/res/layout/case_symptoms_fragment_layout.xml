@@ -147,6 +147,12 @@
                 android:value="@={symptoms.chestPain}"/>
 
             <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_chillsSweats"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:value="@={symptoms.chillsSweats}"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
                 android:id="@+id/symptoms_confusedDisoriented"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -169,6 +175,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:value="@={symptoms.cough}"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_cutaneousEruption"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:value="@={symptoms.cutaneousEruption}"/>
 
             <de.symeda.sormas.app.component.SymptomStateField
                 android:id="@+id/symptoms_darkUrine"
@@ -231,6 +243,12 @@
                 android:value="@={symptoms.hiccups}"/>
 
             <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_bedridden"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:value="@={symptoms.bedridden}"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
                 android:id="@+id/symptoms_jaundice"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -247,6 +265,188 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:value="@={symptoms.kopliksSpots}"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_lesions"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:value="@={symptoms.lesions}"/>
+
+            <LinearLayout
+                android:id="@+id/symptoms_lesionsLayout"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/field_padding"
+                android:paddingBottom="@dimen/field_padding">
+
+                <de.symeda.sormas.app.component.SymptomStateField
+                    android:id="@+id/symptoms_lesionsThatItch"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:value="@={symptoms.lesionsThatItch}"/>
+
+                <de.symeda.sormas.app.component.SymptomStateField
+                    android:id="@+id/symptoms_lesionsSameState"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:value="@={symptoms.lesionsSameState}"/>
+
+                <de.symeda.sormas.app.component.SymptomStateField
+                    android:id="@+id/symptoms_lesionsSameSize"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:value="@={symptoms.lesionsSameSize}"/>
+
+                <de.symeda.sormas.app.component.SymptomStateField
+                    android:id="@+id/symptoms_lesionsDeepProfound"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:value="@={symptoms.lesionsDeepProfound}"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.6"
+                    android:id="@+id/lesions_locations_label"
+                    android:focusable="true"
+                    android:clickable="true"
+                    android:focusableInTouchMode="true"
+                    android:textSize="@dimen/field_caption_size"
+                    android:textColor="?android:attr/editTextColor"
+                    android:layout_marginLeft="@dimen/field_caption_margin_left"
+                    android:layout_marginTop="@dimen/field_yes_no_caption_margin_top"
+                    android:text="@string/label_lesions_locations"/>
+
+                <de.symeda.sormas.app.component.CheckBoxField
+                    android:id="@+id/symptoms_lesionsFace"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:value="@={symptoms.lesionsFace}"/>
+
+                <de.symeda.sormas.app.component.CheckBoxField
+                    android:id="@+id/symptoms_lesionsLegs"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:value="@={symptoms.lesionsLegs}"/>
+
+                <de.symeda.sormas.app.component.CheckBoxField
+                    android:id="@+id/symptoms_lesionsSolesFeet"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:value="@={symptoms.lesionsSolesFeet}"/>
+
+                <de.symeda.sormas.app.component.CheckBoxField
+                    android:id="@+id/symptoms_lesionsPalmsHands"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:value="@={symptoms.lesionsPalmsHands}"/>
+
+                <de.symeda.sormas.app.component.CheckBoxField
+                    android:id="@+id/symptoms_lesionsThorax"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:value="@={symptoms.lesionsThorax}"/>
+
+                <de.symeda.sormas.app.component.CheckBoxField
+                    android:id="@+id/symptoms_lesionsArms"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:value="@={symptoms.lesionsArms}"/>
+
+                <de.symeda.sormas.app.component.CheckBoxField
+                    android:id="@+id/symptoms_lesionsGenitals"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:value="@={symptoms.lesionsGenitals}"/>
+
+                <de.symeda.sormas.app.component.CheckBoxField
+                    android:id="@+id/symptoms_lesionsAllOverBody"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:value="@={symptoms.lesionsAllOverBody}"/>
+
+                <LinearLayout
+                    android:id="@+id/symptoms_monkeypoxLayout"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="@dimen/field_padding"
+                    android:paddingBottom="@dimen/field_padding">
+
+                    <de.symeda.sormas.app.component.SymptomStateField
+                        android:id="@+id/symptoms_lesionsResembleImg1"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:value="@={symptoms.lesionsResembleImg1}"/>
+
+                    <ImageView
+                        android:id="@+id/lesionsImg1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:src="@drawable/monkeypox_lesions_1"/>
+
+                    <de.symeda.sormas.app.component.SymptomStateField
+                        android:id="@+id/symptoms_lesionsResembleImg2"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:value="@={symptoms.lesionsResembleImg2}"/>
+
+                    <ImageView
+                        android:id="@+id/lesionsImg2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:src="@drawable/monkeypox_lesions_2"/>
+
+                    <de.symeda.sormas.app.component.SymptomStateField
+                        android:id="@+id/symptoms_lesionsResembleImg3"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:value="@={symptoms.lesionsResembleImg3}"/>
+
+                    <ImageView
+                        android:id="@+id/lesionsImg3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:src="@drawable/monkeypox_lesions_3"/>
+
+                    <de.symeda.sormas.app.component.SymptomStateField
+                        android:id="@+id/symptoms_lesionsResembleImg4"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:value="@={symptoms.lesionsResembleImg4}"/>
+
+                    <ImageView
+                        android:id="@+id/lesionsImg4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:src="@drawable/monkeypox_lesions_4"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_lymphadenopathyAxillary"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:value="@={symptoms.lymphadenopathyAxillary}"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_lymphadenopathyCervical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:value="@={symptoms.lymphadenopathyCervical}"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_lymphadenopathyInguinal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:value="@={symptoms.lymphadenopathyInguinal}"/>
 
             <de.symeda.sormas.app.component.SymptomStateField
                 android:id="@+id/symptoms_otitisMedia"
@@ -289,6 +489,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:value="@={symptoms.runnyNose}"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_oralUlcers"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:value="@={symptoms.oralUlcers}"/>
 
             <de.symeda.sormas.app.component.SymptomStateField
                 android:id="@+id/symptoms_shock"
@@ -472,6 +678,14 @@
                     android:paddingTop="@dimen/field_padding"
                     android:paddingBottom="@dimen/field_padding"
                     android:value="@={symptoms.onsetSymptom}"/>
+
+                <de.symeda.sormas.app.component.TextField
+                    android:id="@+id/symptoms_patientIllLocation"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="@dimen/field_padding"
+                    android:paddingBottom="@dimen/field_padding"
+                    android:value="@={symptoms.patientIllLocation}"/>
 
             </LinearLayout>
 

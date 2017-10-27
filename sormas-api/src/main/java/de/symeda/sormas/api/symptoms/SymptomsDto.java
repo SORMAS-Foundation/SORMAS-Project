@@ -16,7 +16,7 @@ public class SymptomsDto extends DataTransferObject {
 	public static final String TEMPERATURE_SOURCE = "temperatureSource";
 	public static final String ONSET_DATE = "onsetDate";
 	public static final String ONSET_SYMPTOM = "onsetSymptom";
-	public static final String ILL_LOCATION = "illLocation";
+	public static final String PATIENT_ILL_LOCATION = "patientIllLocation";
 
 	public static final String ABDOMINAL_PAIN = "abdominalPain";
 	public static final String ALTERED_CONSCIOUSNESS = "alteredConsciousness";
@@ -48,8 +48,6 @@ public class SymptomsDto extends DataTransferObject {
 	public static final String LESIONS_SAME_STATE = "lesionsSameState";
 	public static final String LESIONS_SAME_SIZE = "lesionsSameSize";
 	public static final String LESIONS_DEEP_PROFOUND = "lesionsDeepProfound";
-	// Enum list containing only the location set to 'Yes'
-	// public static final String LESIONS_LOCATIONS = "lesionsLocations";
 	public static final String LESIONS_FACE = "lesionsFace";
 	public static final String LESIONS_LEGS = "lesionsLegs";
 	public static final String LESIONS_SOLES_FEET = "lesionsSolesFeet";
@@ -266,7 +264,7 @@ public class SymptomsDto extends DataTransferObject {
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.DENGUE,Disease.MONKEYPOX,Disease.OTHER})
 	private String symptomsComments;
 	@Diseases({Disease.MONKEYPOX,Disease.OTHER})
-	private String illLocation;
+	private String patientIllLocation;
 
 	public Boolean getSymptomatic() {
 		return symptomatic;
@@ -286,11 +284,11 @@ public class SymptomsDto extends DataTransferObject {
 	public void setOnsetSymptom(String onsetSymptom) {
 		this.onsetSymptom = onsetSymptom;
 	}
-	public String getIllLocation() {
-		return illLocation;
+	public String getPatientIllLocation() {
+		return patientIllLocation;
 	}
-	public void setIllLocation(String illLocation) {
-		this.illLocation = illLocation;
+	public void setPatientIllLocation(String patientIllLocation) {
+		this.patientIllLocation = patientIllLocation;
 	}
 	public Float getTemperature() {
 		return temperature;

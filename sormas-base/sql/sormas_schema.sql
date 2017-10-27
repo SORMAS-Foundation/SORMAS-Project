@@ -1807,7 +1807,7 @@ ALTER TABLE symptoms ADD COLUMN chillssweats varchar(255);
 ALTER TABLE symptoms ADD COLUMN lesionsthatitch varchar(255);
 ALTER TABLE symptoms ADD COLUMN bedridden varchar(255);
 ALTER TABLE symptoms ADD COLUMN oralulcers varchar(255);
-ALTER TABLE symptoms ADD COLUMN illlocation varchar(512);
+ALTER TABLE symptoms ADD COLUMN patientilllocation varchar(512);
 ALTER TABLE cases ADD COLUMN smallpoxVaccinationScar varchar(255);
 ALTER TABLE epidata ADD COLUMN dateoflastexposure timestamp;
 ALTER TABLE epidata ADD COLUMN placeoflastexposure varchar(512);
