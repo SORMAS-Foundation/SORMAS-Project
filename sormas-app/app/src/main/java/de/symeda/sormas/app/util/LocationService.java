@@ -61,10 +61,10 @@ public final class LocationService {
             }
 
             LocationListener gpsBaseLocationListener = new BestKnownLocationListener();
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000*60*10, 100, gpsBaseLocationListener, Looper.getMainLooper());
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000*60*20, 1000, gpsBaseLocationListener, Looper.getMainLooper());
 
             LocationListener networkBaseLocationListener = new BestKnownLocationListener();
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000*60*10, 100, networkBaseLocationListener, Looper.getMainLooper());
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000*60*20, 1000, networkBaseLocationListener, Looper.getMainLooper());
 
         } catch (SecurityException e) {
             Log.e(LocationService.class.getName(), "Error while initializing LocationService", e);

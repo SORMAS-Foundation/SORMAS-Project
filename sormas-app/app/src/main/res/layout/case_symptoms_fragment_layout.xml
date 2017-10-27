@@ -135,7 +135,7 @@
                 android:value="@={symptoms.stomachBleeding}"/>
 
             <de.symeda.sormas.app.component.SymptomStateField
-                android:id="@+id/symptoms_bloodInStool1"
+                android:id="@+id/symptoms_bloodInStool"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:value="@={symptoms.bloodInStool}"/>
@@ -261,7 +261,7 @@
                 android:value="@={symptoms.jointPain}"/>
 
             <de.symeda.sormas.app.component.SymptomStateField
-                android:id="@+id/symptoms_kopliksSpots1"
+                android:id="@+id/symptoms_kopliksSpots"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:value="@={symptoms.kopliksSpots}"/>
@@ -378,6 +378,7 @@
                         android:id="@+id/symptoms_lesionsResembleImg1"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:layout_marginBottom="@dimen/activity_vertical_margin_inv"
                         android:value="@={symptoms.lesionsResembleImg1}"/>
 
                     <ImageView
@@ -385,12 +386,14 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
+                        android:layout_marginBottom="@dimen/activity_vertical_margin"
                         android:src="@drawable/monkeypox_lesions_1"/>
 
                     <de.symeda.sormas.app.component.SymptomStateField
                         android:id="@+id/symptoms_lesionsResembleImg2"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:layout_marginBottom="@dimen/activity_vertical_margin_inv"
                         android:value="@={symptoms.lesionsResembleImg2}"/>
 
                     <ImageView
@@ -398,12 +401,14 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
+                        android:layout_marginBottom="@dimen/activity_vertical_margin"
                         android:src="@drawable/monkeypox_lesions_2"/>
 
                     <de.symeda.sormas.app.component.SymptomStateField
                         android:id="@+id/symptoms_lesionsResembleImg3"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:layout_marginBottom="@dimen/activity_vertical_margin_inv"
                         android:value="@={symptoms.lesionsResembleImg3}"/>
 
                     <ImageView
@@ -411,12 +416,14 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
+                        android:layout_marginBottom="@dimen/activity_vertical_margin"
                         android:src="@drawable/monkeypox_lesions_3"/>
 
                     <de.symeda.sormas.app.component.SymptomStateField
                         android:id="@+id/symptoms_lesionsResembleImg4"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:layout_marginBottom="@dimen/activity_vertical_margin_inv"
                         android:value="@={symptoms.lesionsResembleImg4}"/>
 
                     <ImageView
@@ -424,6 +431,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
+                        android:layout_marginBottom="@dimen/activity_vertical_margin"
                         android:src="@drawable/monkeypox_lesions_4"/>
 
                 </LinearLayout>
@@ -547,7 +555,7 @@
 
             <!-- Should be called symptoms_gumsBleeding, but this doesn't work with AS < 2.3 because of https://code.google.com/p/android/issues/detail?id=212492 -->
             <de.symeda.sormas.app.component.SymptomStateField
-                android:id="@+id/symptoms_gumsBleeding1"
+                android:id="@+id/symptoms_gumsBleeding"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:value="@={symptoms.gumsBleeding}"/>
@@ -565,7 +573,7 @@
                 android:value="@={symptoms.bloodyBlackStool}"/>
 
             <de.symeda.sormas.app.component.SymptomStateField
-                android:id="@+id/symptoms_skinBruising1"
+                android:id="@+id/symptoms_skinBruising"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:value="@={symptoms.skinBruising}"/>
@@ -589,7 +597,7 @@
                 android:value="@={symptoms.redBloodVomit}"/>
 
             <de.symeda.sormas.app.component.SymptomStateField
-                android:id="@+id/symptoms_noseBleeding1"
+                android:id="@+id/symptoms_noseBleeding"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:value="@={symptoms.noseBleeding}"/>
@@ -672,7 +680,7 @@
                     android:value="@={symptoms.onsetDate}"/>
 
                 <de.symeda.sormas.app.component.SpinnerField
-                    android:id="@+id/symptoms_onsetSymptom1"
+                    android:id="@+id/symptoms_onsetSymptom"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:paddingTop="@dimen/field_padding"

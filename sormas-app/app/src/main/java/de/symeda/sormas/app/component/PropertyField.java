@@ -127,10 +127,10 @@ public abstract class PropertyField<T> extends LinearLayout {
 
         String fieldIdString = getResources().getResourceName(getId());
 
-        // this is a workaround used in AS < 2.3 because of https://code.google.com/p/android/issues/detail?id=212492 -->
-        if (fieldIdString.endsWith("1")) {
-            fieldIdString = fieldIdString.substring(0, fieldIdString.length() - 1);
-        }
+//        // this is a workaround used in AS < 2.3 because of https://code.google.com/p/android/issues/detail?id=212492 -->
+//        if (fieldIdString.endsWith("1")) {
+//            fieldIdString = fieldIdString.substring(0, fieldIdString.length() - 1);
+//        }
         return fieldIdString;
     }
 

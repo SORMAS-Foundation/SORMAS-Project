@@ -34,7 +34,7 @@ public class WeeklyReportGrid extends Grid implements ItemClickListener {
 		@Override
 		public String getStyle(CellReference cell) {
 			if (WeeklyReportSummaryDto.MISSING_REPORTS_PERCENTAGE.equals(cell.getPropertyId())) {
-				float missingReportsPercentage = (float)cell.getProperty().getValue();
+				Float missingReportsPercentage = (Float)cell.getProperty().getValue();
 				if (missingReportsPercentage <= 10) {
 					return CssStyles.GRID_CELL_PRIORITY_LOW;
 				} else if (missingReportsPercentage <= 40) {

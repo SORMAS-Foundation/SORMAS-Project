@@ -153,7 +153,7 @@ public class PersonEditForm extends FormTab {
         // ================ Occupation ================
 
         final TextField occupationDetails = binding.personOccupationDetails;
-        FieldHelper.initSpinnerField(binding.personOccupationType1, OccupationType.class, new AdapterView.OnItemSelectedListener() {
+        FieldHelper.initSpinnerField(binding.personOccupationType, OccupationType.class, new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 Item item = (Item)parent.getItemAtPosition(position);

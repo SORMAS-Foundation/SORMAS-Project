@@ -86,7 +86,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 	private List<String> conditionalBleedingSymptomFieldIds;
 	private List<String> lesionsFieldIds;
 	private List<String> lesionsLocationFieldIds;
-	private List<String> monkeypoxFieldIds;
+	private List<String> monkeypoxImageFieldIds;
 
 	public SymptomsForm(Disease disease, SymptomsContext symptomsContext) {
 		super(SymptomsDto.class, SymptomsDto.I18N_PREFIX);
@@ -127,13 +127,15 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 				SymptomsDto.BLEEDING_VAGINA, SymptomsDto.SKIN_BRUISING, SymptomsDto.BLOOD_URINE, SymptomsDto.OTHER_HEMORRHAGIC_SYMPTOMS, SymptomsDto.OTHER_HEMORRHAGIC_SYMPTOMS_TEXT, 
 				SymptomsDto.OTHER_NON_HEMORRHAGIC_SYMPTOMS, SymptomsDto.OTHER_NON_HEMORRHAGIC_SYMPTOMS_TEXT, SymptomsDto.CUTANEOUS_ERUPTION, SymptomsDto.LESIONS, SymptomsDto.LESIONS_THAT_ITCH,
 				SymptomsDto.LESIONS_SAME_STATE, SymptomsDto.LESIONS_SAME_SIZE, SymptomsDto.LESIONS_DEEP_PROFOUND, SymptomsDto.LESIONS_FACE, SymptomsDto.LESIONS_LEGS,
-				SymptomsDto.LESIONS_SOLES_FEET, SymptomsDto.LESIONS_PALMS_HANDS, SymptomsDto.LESIONS_THORAX, SymptomsDto.LESIONS_ARMS, SymptomsDto.LESIONS_GENITALS,
-				SymptomsDto.LESIONS_ALL_OVER_BODY, SymptomsDto.LESIONS_RESEMBLE_IMG1, SymptomsDto.LESIONS_RESEMBLE_IMG2, SymptomsDto.LESIONS_RESEMBLE_IMG3, SymptomsDto.LESIONS_RESEMBLE_IMG4, 
+				SymptomsDto.LESIONS_SOLES_FEET, SymptomsDto.LESIONS_PALMS_HANDS, SymptomsDto.LESIONS_THORAX, SymptomsDto.LESIONS_ARMS, SymptomsDto.LESIONS_GENITALS, SymptomsDto.LESIONS_ALL_OVER_BODY,  
 				SymptomsDto.LYMPHADENOPATHY_AXILLARY, SymptomsDto.LYMPHADENOPATHY_CERVICAL, SymptomsDto.LYMPHADENOPATHY_INGUINAL, SymptomsDto.CHILLS_SWEATS,
 				SymptomsDto.BEDRIDDEN, SymptomsDto.ORAL_ULCERS, SymptomsDto.PATIENT_ILL_LOCATION);
 
-		//		getFieldGroup().getField(SymptomsDto.OTHER_HEMORRHAGIC_SYMPTOMS_TEXT).setCaption(null);
-		//		getFieldGroup().getField(SymptomsDto.OTHER_NON_HEMORRHAGIC_SYMPTOMS_TEXT).setCaption(null);
+		monkeypoxImageFieldIds = Arrays.asList(SymptomsDto.LESIONS_RESEMBLE_IMG1, SymptomsDto.LESIONS_RESEMBLE_IMG2, SymptomsDto.LESIONS_RESEMBLE_IMG3, SymptomsDto.LESIONS_RESEMBLE_IMG4);
+		for (String propertyId : monkeypoxImageFieldIds) {
+			Field monkeypoxImageField = addField(propertyId);
+			CssStyles.style(monkeypoxImageField, CssStyles.VSPACE_NONE);
+		}
 
 		conditionalBleedingSymptomFieldIds = Arrays.asList(SymptomsDto.GUMS_BLEEDING, SymptomsDto.INJECTION_SITE_BLEEDING, SymptomsDto.NOSE_BLEEDING, 
 				SymptomsDto.BLOODY_BLACK_STOOL, SymptomsDto.RED_BLOOD_VOMIT, SymptomsDto.DIGESTED_BLOOD_VOMIT, 
@@ -144,8 +146,6 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		lesionsLocationFieldIds = Arrays.asList(SymptomsDto.LESIONS_FACE, SymptomsDto.LESIONS_LEGS, SymptomsDto.LESIONS_SOLES_FEET, SymptomsDto.LESIONS_PALMS_HANDS, SymptomsDto.LESIONS_THORAX,
 				SymptomsDto.LESIONS_ARMS, SymptomsDto.LESIONS_GENITALS, SymptomsDto.LESIONS_ALL_OVER_BODY);
 
-		monkeypoxFieldIds = Arrays.asList(SymptomsDto.LESIONS_RESEMBLE_IMG1, SymptomsDto.LESIONS_RESEMBLE_IMG2, SymptomsDto.LESIONS_RESEMBLE_IMG3, SymptomsDto.LESIONS_RESEMBLE_IMG4);
-		
 		for (Object propertyId : getFieldGroup().getBoundPropertyIds()) {
 			boolean visible = DiseasesConfiguration.isDefinedOrMissing(SymptomsDto.class, (String)propertyId, disease);
 			getFieldGroup().getField(propertyId).setVisible(visible);
@@ -210,7 +210,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		FieldHelper.setRequiredWhen(getFieldGroup(), getFieldGroup().getField(SymptomsDto.OTHER_NON_HEMORRHAGIC_SYMPTOMS), 
 				Arrays.asList(SymptomsDto.OTHER_NON_HEMORRHAGIC_SYMPTOMS_TEXT), Arrays.asList(SymptomState.YES), disease);
 		FieldHelper.setRequiredWhen(getFieldGroup(), getFieldGroup().getField(SymptomsDto.LESIONS), lesionsFieldIds, Arrays.asList(SymptomState.YES), disease);
-		FieldHelper.setRequiredWhen(getFieldGroup(), getFieldGroup().getField(SymptomsDto.LESIONS), monkeypoxFieldIds, Arrays.asList(SymptomState.YES), disease);
+		FieldHelper.setRequiredWhen(getFieldGroup(), getFieldGroup().getField(SymptomsDto.LESIONS), monkeypoxImageFieldIds, Arrays.asList(SymptomState.YES), disease);
 
 		ComboBox onsetSymptom = addField(SymptomsDto.ONSET_SYMPTOM, ComboBox.class);
 		addListenerForOnsetSymptom(onsetSymptom);
@@ -233,7 +233,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 				for (Object symptomId : lesionsLocationFieldIds) {
 					getFieldGroup().getField(symptomId).setValue(null);
 				}
-				for (Object symptomId : monkeypoxFieldIds) {
+				for (Object symptomId : monkeypoxImageFieldIds) {
 					getFieldGroup().getField(symptomId).setValue(null);
 				}
 			}
@@ -264,7 +264,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 						symptom.setValue(SymptomState.NO);
 					}
 				}
-				for (Object symptomId : monkeypoxFieldIds) {
+				for (Object symptomId : monkeypoxImageFieldIds) {
 					Field<SymptomState> symptom = (Field<SymptomState>) getFieldGroup().getField(symptomId);
 					if (symptom.isVisible() && symptom.getValue() == null) {
 						symptom.setValue(SymptomState.NO);
@@ -413,7 +413,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 	private void setUpMonkeypoxVisibilities() {
 		// Monkeypox picture resemblance fields
 		FieldHelper.setVisibleWhen(getFieldGroup(), 
-				monkeypoxFieldIds, 
+				monkeypoxImageFieldIds, 
 				SymptomsDto.LESIONS, 
 				Arrays.asList(SymptomState.YES), true);
 

@@ -98,7 +98,7 @@ public class HospitalizationForm extends FormTab {
 
         binding.hospitalizationAdmissionDate.initialize(this);
         binding.hospitalizationDischargeDate.initialize(this);
-        binding.hospitalization1isolationDate.initialize(this);
+        binding.hospitalizationIsolationDate.initialize(this);
 
         binding.hospitalizationHospitalizedPreviously.addValueChangedListener(new PropertyField.ValueChangeListener() {
             @Override
@@ -110,7 +110,7 @@ public class HospitalizationForm extends FormTab {
         binding.hospitalizationIsolated.addValueChangedListener(new PropertyField.ValueChangeListener() {
             @Override
             public void onChange(PropertyField field) {
-                binding.hospitalization1isolationDate.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
+                binding.hospitalizationIsolationDate.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
             }
         });
 

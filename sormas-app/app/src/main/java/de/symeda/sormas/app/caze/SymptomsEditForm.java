@@ -164,12 +164,12 @@ public class SymptomsEditForm extends FormTab {
         }
 
         nonConditionalSymptoms = Arrays.asList(binding.symptomsFever, binding.symptomsVomiting,
-                binding.symptomsDiarrhea, binding.symptomsBloodInStool1, binding.symptomsNausea, binding.symptomsAbdominalPain,
+                binding.symptomsDiarrhea, binding.symptomsBloodInStool, binding.symptomsNausea, binding.symptomsAbdominalPain,
                 binding.symptomsHeadache, binding.symptomsMusclePain, binding.symptomsFatigueWeakness, binding.symptomsUnexplainedBleeding,
                 binding.symptomsSkinRash, binding.symptomsNeckStiffness, binding.symptomsSoreThroat, binding.symptomsCough,
                 binding.symptomsRunnyNose, binding.symptomsDifficultyBreathing, binding.symptomsChestPain, binding.symptomsConfusedDisoriented,
                 binding.symptomsSeizures, binding.symptomsAlteredConsciousness, binding.symptomsConjunctivitis,
-                binding.symptomsEyePainLightSensitive, binding.symptomsKopliksSpots1, binding.symptomsThrobocytopenia,
+                binding.symptomsEyePainLightSensitive, binding.symptomsKopliksSpots, binding.symptomsThrobocytopenia,
                 binding.symptomsOtitisMedia, binding.symptomsHearingloss, binding.symptomsDehydration, binding.symptomsAnorexiaAppetiteLoss,
                 binding.symptomsRefusalFeedorDrink, binding.symptomsJointPain, binding.symptomsShock,
                 binding.symptomsHiccups, binding.symptomsBackache, binding.symptomsEyesBleeding, binding.symptomsJaundice,
@@ -178,12 +178,12 @@ public class SymptomsEditForm extends FormTab {
                 binding.symptomsLymphadenopathyCervical, binding.symptomsLymphadenopathyInguinal, binding.symptomsChillsSweats, binding.symptomsBedridden,
                 binding.symptomsOralUlcers);
 
-        conditionalBleedingSymptoms = Arrays.asList(binding.symptomsGumsBleeding1, binding.symptomsInjectionSiteBleeding,
-                binding.symptomsNoseBleeding1, binding.symptomsBloodyBlackStool, binding.symptomsRedBloodVomit,
+        conditionalBleedingSymptoms = Arrays.asList(binding.symptomsGumsBleeding, binding.symptomsInjectionSiteBleeding,
+                binding.symptomsNoseBleeding, binding.symptomsBloodyBlackStool, binding.symptomsRedBloodVomit,
                 binding.symptomsDigestedBloodVomit, binding.symptomsCoughingBlood, binding.symptomsBleedingVagina,
-                binding.symptomsSkinBruising1, binding.symptomsBloodUrine, binding.symptomsOtherHemorrhagicSymptoms);
+                binding.symptomsSkinBruising, binding.symptomsBloodUrine, binding.symptomsOtherHemorrhagicSymptoms);
 
-        FieldHelper.initSpinnerField(binding.symptomsOnsetSymptom1, DataUtils.toItems(null, true));
+        FieldHelper.initSpinnerField(binding.symptomsOnsetSymptom, DataUtils.toItems(null, true));
         addListenerForOnsetSymptom();
 
         Button clearAllBtn = binding.symptomsClearAll;
@@ -325,15 +325,15 @@ public class SymptomsEditForm extends FormTab {
 
     private void toggleUnexplainedBleedingFields() {
         int[] fieldIds = {
-                R.id.symptoms_gumsBleeding1,
+                R.id.symptoms_gumsBleeding,
                 R.id.symptoms_injectionSiteBleeding,
-                R.id.symptoms_noseBleeding1,
+                R.id.symptoms_noseBleeding,
                 R.id.symptoms_bloodyBlackStool,
                 R.id.symptoms_redBloodVomit,
                 R.id.symptoms_digestedBloodVomit,
                 R.id.symptoms_coughingBlood,
                 R.id.symptoms_bleedingVagina,
-                R.id.symptoms_skinBruising1,
+                R.id.symptoms_skinBruising,
                 R.id.symptoms_bloodUrine,
                 R.id.symptoms_otherHemorrhagicSymptoms
         };
@@ -353,7 +353,7 @@ public class SymptomsEditForm extends FormTab {
     }
 
     private void addListenerForOnsetSymptom() {
-        final ArrayAdapter<Item> adapter = (ArrayAdapter<Item>) binding.symptomsOnsetSymptom1.getAdapter();
+        final ArrayAdapter<Item> adapter = (ArrayAdapter<Item>) binding.symptomsOnsetSymptom.getAdapter();
         List<SymptomStateField> relevantSymptoms = new ArrayList<>();
         relevantSymptoms.addAll(nonConditionalSymptoms);
         relevantSymptoms.addAll(conditionalBleedingSymptoms);
@@ -364,7 +364,7 @@ public class SymptomsEditForm extends FormTab {
                 @Override
                 public void onChange(PropertyField field) {
                     Item item = new Item(field.getCaption(), field.getCaption());
-                    int position = binding.symptomsOnsetSymptom1.getPositionOf(item);
+                    int position = binding.symptomsOnsetSymptom.getPositionOf(item);
                     if (field.getValue() == SymptomState.YES) {
                         if (position == -1) {
                             adapter.add(item);

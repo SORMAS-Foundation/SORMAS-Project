@@ -48,7 +48,7 @@ public final class SymptomsValidator {
         // Date of initial symptom onset & initial onset symptom
         if (isAnySymptomSetTo(SymptomState.YES, nonConditionalSymptoms)) {
             if (symptoms.getOnsetSymptom() == null) {
-                binding.symptomsOnsetSymptom1.setError(resources.getString(R.string.validation_symptoms_onset_symptom));
+                binding.symptomsOnsetSymptom.setError(resources.getString(R.string.validation_symptoms_onset_symptom));
                 success = false;
             }
             if (symptoms.getOnsetDate() == null) {
@@ -108,7 +108,7 @@ public final class SymptomsValidator {
         // Onset symptom & date
         if (isAnySymptomSetTo(SymptomState.YES, nonConditionalSymptoms)) {
             if (symptoms.getOnsetSymptom() == null) {
-                binding.symptomsOnsetSymptom1.setError(resources.getString(R.string.validation_symptoms_onset_symptom));
+                binding.symptomsOnsetSymptom.setError(resources.getString(R.string.validation_symptoms_onset_symptom));
                 success = false;
             }
             if (symptoms.getOnsetDate() == null) {
@@ -205,7 +205,7 @@ public final class SymptomsValidator {
 
         // Set required hints
         if (isAnySymptomSetTo(SymptomState.YES, getNonConditionalSymptoms(binding))) {
-            binding.symptomsOnsetSymptom1.setRequiredHint(true);
+            binding.symptomsOnsetSymptom.setRequiredHint(true);
             binding.symptomsOnsetDate.setRequiredHint(true);
             binding.symptomsPatientIllLocation.setRequiredHint(true);
         }
@@ -238,7 +238,7 @@ public final class SymptomsValidator {
         }
 
         if (isAnySymptomSetTo(SymptomState.YES, getNonConditionalSymptoms(binding))) {
-            binding.symptomsOnsetSymptom1.setRequiredHint(true);
+            binding.symptomsOnsetSymptom.setRequiredHint(true);
             binding.symptomsOnsetDate.setRequiredHint(true);
         }
 
@@ -278,12 +278,12 @@ public final class SymptomsValidator {
     private static List<SymptomStateField> getNonConditionalSymptoms(CaseSymptomsFragmentLayoutBinding binding) {
         // These should be in reverse order of how they're displayed on the screen
         return Arrays.asList(binding.symptomsFever, binding.symptomsVomiting,
-                binding.symptomsDiarrhea, binding.symptomsBloodInStool1, binding.symptomsNausea, binding.symptomsAbdominalPain,
+                binding.symptomsDiarrhea, binding.symptomsBloodInStool, binding.symptomsNausea, binding.symptomsAbdominalPain,
                 binding.symptomsHeadache, binding.symptomsMusclePain, binding.symptomsFatigueWeakness, binding.symptomsUnexplainedBleeding,
                 binding.symptomsSkinRash, binding.symptomsNeckStiffness, binding.symptomsSoreThroat, binding.symptomsCough,
                 binding.symptomsRunnyNose, binding.symptomsDifficultyBreathing, binding.symptomsChestPain, binding.symptomsConfusedDisoriented,
                 binding.symptomsSeizures, binding.symptomsAlteredConsciousness, binding.symptomsConjunctivitis,
-                binding.symptomsEyePainLightSensitive, binding.symptomsKopliksSpots1, binding.symptomsThrobocytopenia,
+                binding.symptomsEyePainLightSensitive, binding.symptomsKopliksSpots, binding.symptomsThrobocytopenia,
                 binding.symptomsOtitisMedia, binding.symptomsHearingloss, binding.symptomsDehydration, binding.symptomsAnorexiaAppetiteLoss,
                 binding.symptomsRefusalFeedorDrink, binding.symptomsJointPain, binding.symptomsShock,
                 binding.symptomsHiccups, binding.symptomsBackache, binding.symptomsEyesBleeding, binding.symptomsJaundice,
@@ -295,10 +295,10 @@ public final class SymptomsValidator {
 
     private static List<SymptomStateField> getConditionalBleedingSymptoms(CaseSymptomsFragmentLayoutBinding binding) {
         // These should be in reverse order of how they're displayed on the screen
-        return Arrays.asList(binding.symptomsGumsBleeding1, binding.symptomsInjectionSiteBleeding,
-                binding.symptomsNoseBleeding1, binding.symptomsBloodyBlackStool, binding.symptomsRedBloodVomit,
+        return Arrays.asList(binding.symptomsGumsBleeding, binding.symptomsInjectionSiteBleeding,
+                binding.symptomsNoseBleeding, binding.symptomsBloodyBlackStool, binding.symptomsRedBloodVomit,
                 binding.symptomsDigestedBloodVomit, binding.symptomsCoughingBlood, binding.symptomsBleedingVagina,
-                binding.symptomsSkinBruising1, binding.symptomsBloodUrine, binding.symptomsOtherHemorrhagicSymptoms);
+                binding.symptomsSkinBruising, binding.symptomsBloodUrine, binding.symptomsOtherHemorrhagicSymptoms);
     }
 
     private static List<SymptomStateField> getLesionsFields(CaseSymptomsFragmentLayoutBinding binding) {
@@ -315,7 +315,7 @@ public final class SymptomsValidator {
     }
 
     private static List<PropertyField<?>> getOtherSymptomsFields(CaseSymptomsFragmentLayoutBinding binding) {
-        return Arrays.asList(binding.symptomsOnsetDate, binding.symptomsOnsetSymptom1,
+        return Arrays.asList(binding.symptomsOnsetDate, binding.symptomsOnsetSymptom,
                 binding.symptomsOther1HemorrhagicSymptomsText, binding.symptomsOther1NonHemorrhagicSymptomsText,
                 binding.symptomsTemperature, binding.symptomsTemperatureSource, binding.symptomsPatientIllLocation);
     }

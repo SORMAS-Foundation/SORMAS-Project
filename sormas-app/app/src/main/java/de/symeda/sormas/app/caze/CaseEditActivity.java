@@ -409,7 +409,7 @@ public class CaseEditActivity extends AbstractEditTabActivity {
 
         // Necessary because the entry could've been automatically set, in which case the setValue method of the
         // custom field has not been called
-        symptoms.setOnsetSymptom((String) symptomsBinding.symptomsOnsetSymptom1.getValue());
+        symptoms.setOnsetSymptom((String) symptomsBinding.symptomsOnsetSymptom.getValue());
 
         PersonValidator.clearErrors(personBinding);
         SymptomsValidator.clearErrorsForSymptoms(symptomsBinding);
