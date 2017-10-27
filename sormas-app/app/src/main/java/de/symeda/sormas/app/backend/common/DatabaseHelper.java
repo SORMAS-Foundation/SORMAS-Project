@@ -76,7 +76,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// name of the database file for your application. Stored in data/data/de.symeda.sormas.app/databases
 	private static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	private static final int DATABASE_VERSION = 109;
+	private static final int DATABASE_VERSION = 110;
 
 	private static DatabaseHelper instance = null;
 	public static void init(Context context) {
@@ -322,6 +322,17 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN diseaseDetails varchar(512);");
 				case 108:
 					currentVersion = 108;
+					getDao(Location.class).executeRaw("ALTER TABLE location ADD COLUMN latLonAccuracy real;");
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN reportLatLonAccuracy real;");
+					getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN reportLatLonAccuracy real;");
+					getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN reportLatLonAccuracy real;");
+					getDao(Visit.class).executeRaw("ALTER TABLE visits ADD COLUMN reportLatLonAccuracy real;");
+					getDao(Task.class).executeRaw("ALTER TABLE tasks ADD COLUMN closedLatLonAccuracy real;");
+					getDao(Sample.class).executeRaw("ALTER TABLE samples ADD COLUMN reportLat double precision;");
+					getDao(Sample.class).executeRaw("ALTER TABLE samples ADD COLUMN reportLon double precision;");
+					getDao(Sample.class).executeRaw("ALTER TABLE samples ADD COLUMN reportLatLonAccuracy real;");
+				case 109:
+					currentVersion = 109;
 					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN smallpoxVaccinationScar varchar(255);");
 					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN cutaneousEruption varchar(255);");
 					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN lesions varchar(255);");
@@ -350,17 +361,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN patientIllLocation varchar(512);");
 					getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN dateOfLastExposure timestamp;");
 					getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN placeOfLastExposure varchar(512);");
-					getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN animalCondition varchar(255);");				case 109:
-					currentVersion = 109;
-					getDao(Location.class).executeRaw("ALTER TABLE location ADD COLUMN latLonAccuracy real;");
-					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN reportLatLonAccuracy real;");
-					getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN reportLatLonAccuracy real;");
-					getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN reportLatLonAccuracy real;");
-					getDao(Visit.class).executeRaw("ALTER TABLE visits ADD COLUMN reportLatLonAccuracy real;");
-					getDao(Task.class).executeRaw("ALTER TABLE tasks ADD COLUMN closedLatLonAccuracy real;");
-					getDao(Sample.class).executeRaw("ALTER TABLE samples ADD COLUMN reportLat double precision;");
-					getDao(Sample.class).executeRaw("ALTER TABLE samples ADD COLUMN reportLon double precision;");
-					getDao(Sample.class).executeRaw("ALTER TABLE samples ADD COLUMN reportLatLonAccuracy real;");
+					getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN animalCondition varchar(255);");
+
 					// ATTENTION: break should only be done after last version
 					break;
 				default:

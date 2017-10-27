@@ -1814,3 +1814,36 @@ ALTER TABLE epidata ADD COLUMN placeoflastexposure varchar(512);
 ALTER TABLE epidata ADD COLUMN animalcondition varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (72, 'Monkeypox disease fields #366');
+
+-- 2017-10-27 Monkeypox disease fields for history table #366
+ALTER TABLE symptoms_history ADD COLUMN cutaneouseruption varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN lesions varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN lesionssamestate varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN lesionssamesize varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN lesionsdeepprofound varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN lesionsface boolean;
+ALTER TABLE symptoms_history ADD COLUMN lesionslegs boolean;
+ALTER TABLE symptoms_history ADD COLUMN lesionssolesfeet boolean;
+ALTER TABLE symptoms_history ADD COLUMN lesionspalmshands boolean;
+ALTER TABLE symptoms_history ADD COLUMN lesionsthorax boolean;
+ALTER TABLE symptoms_history ADD COLUMN lesionsarms boolean;
+ALTER TABLE symptoms_history ADD COLUMN lesionsgenitals boolean;
+ALTER TABLE symptoms_history ADD COLUMN lesionsalloverbody boolean;
+ALTER TABLE symptoms_history ADD COLUMN lesionsresembleimg1 varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN lesionsresembleimg2 varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN lesionsresembleimg3 varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN lesionsresembleimg4 varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN lymphadenopathyinguinal varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN lymphadenopathyaxillary varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN lymphadenopathycervical varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN chillssweats varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN lesionsthatitch varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN bedridden varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN oralulcers varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN patientilllocation varchar(512);
+ALTER TABLE cases_history ADD COLUMN smallpoxVaccinationScar varchar(255);
+ALTER TABLE epidata_history ADD COLUMN dateoflastexposure timestamp;
+ALTER TABLE epidata_history ADD COLUMN placeoflastexposure varchar(512);
+ALTER TABLE epidata_history ADD COLUMN animalcondition varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (73, 'Monkeypox disease fields for history table #366');
