@@ -165,7 +165,7 @@ public class ContactService extends AbstractAdoService<Contact> {
 		switch (disease) {
 		case EVD:
 		case MONKEYPOX:
-		case CHOLERA:
+		case OTHER:
 			return 21;
 		case AVIAN_INFLUENCA:
 			return 17;

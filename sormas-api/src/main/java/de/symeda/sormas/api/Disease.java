@@ -26,6 +26,6 @@ public enum Disease {
 	}
 	
 	public boolean hasContactFollowUp() {
-		return this == EVD || this == LASSA || this == AVIAN_INFLUENCA || this == MONKEYPOX;
+		return this == EVD || this == LASSA || this == AVIAN_INFLUENCA || this == MONKEYPOX || this == OTHER;
 	}
 }
