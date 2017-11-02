@@ -130,9 +130,7 @@ public class Facility extends AbstractDomainObject {
 
 		StringBuilder caption = new StringBuilder();
 		caption.append(name);
-		if (community != null) {
-			caption.append(" (").append(community.getName()).append(")");
-		}
+
 		return caption.toString();
 	}
 
