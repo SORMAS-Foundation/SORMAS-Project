@@ -65,11 +65,21 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<ADO> cq = cb.createQuery(getElementClass());
 		Root<ADO> from = cq.from(getElementClass());
-		cq.orderBy(cb.asc(from.get(AbstractDomainObject.CHANGE_DATE)));
+		cq.orderBy(cb.desc(from.get(AbstractDomainObject.CHANGE_DATE)));
 
 		return em.createQuery(cq).getResultList();
 	}
-	
+
+	public List<ADO> getAll(String orderProperty, boolean asc) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<ADO> cq = cb.createQuery(getElementClass());
+		Root<ADO> from = cq.from(getElementClass());
+		cq.orderBy(asc ? cb.asc(from.get(orderProperty)) : cb.desc(from.get(orderProperty)));
+
+		return em.createQuery(cq).getResultList();
+	}
+
 	public List<ADO> getAllAfter(Date date, User user) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -120,7 +130,6 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 		CriteriaQuery<ADO> cq = cb.createQuery(getElementClass());
 		Root<ADO> from = cq.from(getElementClass());
 		cq.where(from.get(AbstractDomainObject.UUID).in(uuids));
-		cq.orderBy(cb.asc(from.get(AbstractDomainObject.CHANGE_DATE)));
 
 		return em.createQuery(cq).getResultList();
 	}

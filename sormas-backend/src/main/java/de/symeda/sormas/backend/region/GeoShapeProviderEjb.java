@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import java.util.Optional;
 
 import javax.annotation.PostConstruct;
+import javax.ejb.EJB;
 import javax.ejb.Singleton;
 
 import org.geotools.data.shapefile.ShapefileDataStore;
@@ -30,12 +31,16 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.region.GeoLatLon;
 import de.symeda.sormas.api.region.GeoShapeProvider;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.backend.common.ConfigService;
 
 @Singleton(name = "GeoShapeProvider")
 public class GeoShapeProviderEjb implements GeoShapeProvider {
 	
 	final static Logger logger = LoggerFactory.getLogger(GeoShapeProviderEjb.class);
 
+	@EJB
+	private ConfigService configService;
+	
 	private Map<RegionReferenceDto, MultiPolygon> regionMultiPolygons;
 	private Map<RegionReferenceDto, GeoLatLon[][]> regionShapes;
 	
@@ -54,6 +59,22 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 		return null;
 	}
 	
+	public GeoLatLon getCenterOfAllRegions() {
+		
+		double lat = 0, lon = 0;
+		int count = 0;
+		for (MultiPolygon polygon : regionMultiPolygons.values()) {
+			lat += polygon.getCentroid().getX();
+			lon += polygon.getCentroid().getY();
+			count++;
+		}
+		if (count > 0) {
+			return new GeoLatLon(lat/count, lon/count);
+		} else {
+			return null;
+		}		
+	}
+	
 	public GeoLatLon getCenterOfRegion(RegionReferenceDto region) {
 		Point polygonCenter = regionMultiPolygons.get(region).getCentroid();
 		return new GeoLatLon(polygonCenter.getX(), polygonCenter.getY());
@@ -66,7 +87,8 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 		regionMultiPolygons = new HashMap<>();
 		
     	// load shapefile
-    	String filepath = "shapefiles/nigeria/regions.shp";
+		String countryName = configService.getCountryName();
+    	String filepath = "shapefiles/" + countryName + "/regions.shp";
     	File file = new File(getClass().getClassLoader().getResource(filepath).getFile());
 		if (!file.exists() || !filepath.endsWith(".shp")) {
 		    throw new RuntimeException("Invalid shapefile filepath: " + filepath);
@@ -85,15 +107,29 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 			    GeometryAttribute defaultGeometryProperty = feature.getDefaultGeometryProperty();
 			    MultiPolygon multiPolygon = (MultiPolygon) defaultGeometryProperty.getValue();
 			    
-			    String shapeRegionName = ((String)feature.getAttribute("StateName")).replaceAll("\\W", "").toLowerCase();
+			    String shapeRegionName = (String)feature.getAttribute("StateName");
+			    if (shapeRegionName == null) {
+			    	shapeRegionName = (String)feature.getAttribute("REGION");
+			    }
+			    shapeRegionName = shapeRegionName.replaceAll("\\W", "").toLowerCase();
+			    String finalShapeRegionName = shapeRegionName;
 			    Optional<RegionReferenceDto> regionResult = regions.stream()
 			    		.filter(r -> {
 			    			String regionName = r.getCaption().replaceAll("\\W", "").toLowerCase();
-			    			return regionName.contains(shapeRegionName) || shapeRegionName.contains(regionName);
-			    		}).findFirst();
+			    			return regionName.contains(finalShapeRegionName) || finalShapeRegionName.contains(regionName);
+			    		})
+			    		.reduce((r1,r2) -> {
+			    			// dumb heuristic: take the result that best fits the length
+			    			if (Math.abs(r1.getCaption().length()-finalShapeRegionName.length())
+			    					<= Math.abs(r2.getCaption().length()-finalShapeRegionName.length())) {
+			    				return r1;
+			    			} else {
+			    				return r2;
+			    			}
+			    		});
 
 			    if (!regionResult.isPresent()) {
-			    	logger.warn("Region not found: " + (String)feature.getAttribute("StateName"));
+			    	logger.warn("Region not found: " + shapeRegionName);
 			    	continue;
 			    }
 			    RegionReferenceDto region = regionResult.get();

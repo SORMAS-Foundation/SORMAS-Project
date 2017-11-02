@@ -105,10 +105,10 @@ read -p "Press [Enter] to continue..."
 
 ${ASADMIN} create-javamail-resource --mailhost localhost --mailuser user --fromaddress ${MAIL_FROM} mail/MailSession
 
-${ASADMIN} create-custom-resource --restype java.util.Properties --factoryclass org.glassfish.resources.custom.factory.PropertiesFactory --property "org.glassfish.resources.custom.factory.PropertiesFactory.fileName=domains/${DOMAIN_NAME}/${DOMAIN_NAME}.properties" ${DOMAIN_NAME}/Properties
+${ASADMIN} create-custom-resource --restype java.util.Properties --factoryclass org.glassfish.resources.custom.factory.PropertiesFactory --property "org.glassfish.resources.custom.factory.PropertiesFactory.fileName=domains/${DOMAIN_NAME}/sormas.properties" sormas/Properties
 
-cp ./${DOMAIN_NAME}.properties ${DOMAIN_DIR}
-chown glassfish:glassfish ${DOMAIN_DIR}/${DOMAIN_NAME}.properties
+cp ./sormas.properties ${DOMAIN_DIR}
+chown glassfish:glassfish ${DOMAIN_DIR}/sormas.properties
 
 cp logback.xml ${DOMAIN_DIR}/config/
 chown glassfish:glassfish ${DOMAIN_DIR}/config/logback.xml

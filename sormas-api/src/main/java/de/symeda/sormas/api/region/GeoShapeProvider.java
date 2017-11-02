@@ -12,5 +12,7 @@ public interface GeoShapeProvider {
 
 	RegionReferenceDto getRegionByCoord(GeoLatLon latLon);
 	
+	GeoLatLon getCenterOfAllRegions();
+
 	GeoLatLon getCenterOfRegion(RegionReferenceDto region);
 }

@@ -21,8 +21,6 @@ public class CaseDataDto extends CaseReferenceDto {
 	
 	public static final String I18N_PREFIX = "CaseData";
 	
-	public static final String COUNTRY_EPID_CODE = "NIE";
-	
 	public static final String CASE_CLASSIFICATION = "caseClassification";
 	public static final String INVESTIGATION_STATUS = "investigationStatus";
 	public static final String PERSON = "person";

@@ -71,7 +71,9 @@ public class PersonService extends AbstractAdoService<Person> {
 		Join<Person, Person> casePersonsSelect = casePersonsRoot.join(Case.PERSON);
 		casePersonsQuery.select(casePersonsSelect.get(Person.UUID));
 		Predicate casePersonsFilter = caseService.createUserFilter(cb, casePersonsQuery, casePersonsRoot, user);
-		casePersonsQuery.where(casePersonsFilter);
+		if (casePersonsFilter != null) {
+			casePersonsQuery.where(casePersonsFilter);
+		}
 		casePersonsQuery.distinct(true);
 		List<String> casePersonsResultList = em.createQuery(casePersonsQuery).getResultList();
 
@@ -134,7 +136,9 @@ public class PersonService extends AbstractAdoService<Person> {
 				casePersonsFilter = dateFilter;
 			}
 		}
-		casePersonsQuery.where(casePersonsFilter);
+		if (casePersonsFilter != null) {
+			casePersonsQuery.where(casePersonsFilter);
+		}
 		casePersonsQuery.distinct(true);
 		List<Person> casePersonsResultList = em.createQuery(casePersonsQuery).getResultList();
 
@@ -149,7 +153,9 @@ public class PersonService extends AbstractAdoService<Person> {
 			Predicate dateFilter = createDateFilter(cb, contactPersonsQuery, contactPersonsSelect, date);
 			contactPersonsFilter = cb.and(contactPersonsFilter, dateFilter);
 		}
-		contactPersonsQuery.where(contactPersonsFilter);
+		if (contactPersonsFilter != null) {
+			contactPersonsQuery.where(contactPersonsFilter);
+		}
 		contactPersonsQuery.distinct(true);
 		List<Person> contactPersonsResultList = em.createQuery(contactPersonsQuery).getResultList();
 
@@ -164,7 +170,9 @@ public class PersonService extends AbstractAdoService<Person> {
 			Predicate dateFilter = createDateFilter(cb, eventPersonsQuery, eventPersonsSelect, date);
 			eventPersonsFilter = cb.and(eventPersonsFilter, dateFilter);
 		}
-		eventPersonsQuery.where(eventPersonsFilter);
+		if (eventPersonsFilter != null) {
+			eventPersonsQuery.where(eventPersonsFilter);
+		}
 		eventPersonsQuery.distinct(true);
 		List<Person> eventPersonsResultList = em.createQuery(eventPersonsQuery).getResultList();
 		
@@ -213,7 +221,9 @@ public class PersonService extends AbstractAdoService<Person> {
 			casePersonsFilter = cb.and(casePersonsFilter, cb.equal(casePersonsRoot.get(Case.DISEASE), disease));
 		}
 		
-		casePersonsQuery.where(casePersonsFilter);
+		if (casePersonsFilter != null) {
+			casePersonsQuery.where(casePersonsFilter);
+		}
 		casePersonsQuery.distinct(true);
 		List<Person> casePersonsResultList = em.createQuery(casePersonsQuery).getResultList();
 		return casePersonsResultList;
