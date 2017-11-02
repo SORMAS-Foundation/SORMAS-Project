@@ -268,6 +268,11 @@ public class EpiDataForm extends FormTab {
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
     private void showOrHideHeadlines() {
         if (!(binding.epiDataBurialAttended.getVisibility() == View.VISIBLE || binding.epiDataGatheringAttended.getVisibility() == View.VISIBLE ||
                 binding.epiDataTraveled.getVisibility() == View.VISIBLE)) {

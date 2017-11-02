@@ -175,6 +175,11 @@ public class CaseEditDataForm extends FormTab {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    @Override
     public AbstractDomainObject getData() {
         return binding.getCaze();
     }

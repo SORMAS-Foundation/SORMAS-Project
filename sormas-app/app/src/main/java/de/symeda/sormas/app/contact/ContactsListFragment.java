@@ -75,7 +75,7 @@ public class ContactsListFragment extends ListFragment {
     public void updateCaseContactsArrayAdapter() {
         caseUuid = getArguments().getString(Case.UUID);
         final CaseDao caseDao = DatabaseHelper.getCaseDao();
-        final Case caze = caseDao.queryUuid(caseUuid);
+        final Case caze = caseDao.queryUuidReference(caseUuid);
 
         List<Contact> contacts = DatabaseHelper.getContactDao().getByCase(caze);
         ArrayAdapter<Contact> listAdapter = (ArrayAdapter<Contact>)getListAdapter();

@@ -257,7 +257,6 @@ public class CaseEditActivity extends AbstractEditTabActivity {
                 switch (tab) {
                     case CONTACTS:
                         ContactDao contactDao = DatabaseHelper.getContactDao();
-                        PersonDao personDao = DatabaseHelper.getPersonDao();
                         List<Contact> contacts = contactDao.getByCase(caze);
                         for (Contact contactToMark : contacts) {
                             contactDao.markAsRead(contactToMark);
@@ -372,7 +371,7 @@ public class CaseEditActivity extends AbstractEditTabActivity {
                     CaseEditTabs.CONTACTS, CaseEditTabs.SAMPLES, CaseEditTabs.TASKS);
         }
 
-        adapter = new CaseEditPagerAdapter(getSupportFragmentManager(), caseUuid, visibleTabs);
+        adapter = new CaseEditPagerAdapter(getSupportFragmentManager(), caze, visibleTabs);
         createTabViews(adapter);
 
         pager.setCurrentItem(currentTab);

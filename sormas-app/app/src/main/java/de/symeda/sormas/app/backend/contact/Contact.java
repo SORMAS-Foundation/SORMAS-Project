@@ -30,8 +30,8 @@ public class Contact extends AbstractDomainObject {
 	public static final String TABLE_NAME = "contacts";
 	public static final String I18N_PREFIX = "Contact";
 
-	public static final String PERSON = "person";
-	public static final String CAZE = "caze";
+	public static final String PERSON = "person_id";
+	public static final String CAZE = "caze_id";
 	public static final String REPORT_DATE_TIME = "reportDateTime";
 	public static final String REPORTING_USER = "reportingUser";
 	public static final String LAST_CONTACT_DATE = "lastContactDate";
