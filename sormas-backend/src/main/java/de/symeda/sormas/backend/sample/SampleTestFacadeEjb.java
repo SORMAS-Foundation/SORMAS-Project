@@ -113,6 +113,7 @@ public class SampleTestFacadeEjb implements SampleTestFacade {
 		target.setTestResult(source.getTestResult());
 		target.setTestResultText(source.getTestResultText());
 		target.setTestResultVerified(source.isTestResultVerified());
+		target.setFourFoldIncreaseAntibodyTiter(source.isFourFoldIncreaseAntibodyTiter());
 		
 		return target;
 	}
@@ -133,6 +134,7 @@ public class SampleTestFacadeEjb implements SampleTestFacade {
 		target.setTestResult(source.getTestResult());
 		target.setTestResultText(source.getTestResultText());
 		target.setTestResultVerified(source.isTestResultVerified());
+		target.setFourFoldIncreaseAntibodyTiter(source.isFourFoldIncreaseAntibodyTiter());
 		
 		return target;
 	}

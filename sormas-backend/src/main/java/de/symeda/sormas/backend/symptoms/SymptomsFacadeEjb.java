@@ -118,6 +118,9 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setLesionsThatItch(source.getLesionsThatItch());
 		target.setBedridden(source.getBedridden());
 		target.setOralUlcers(source.getOralUlcers());
+		target.setPainfulLymphadenitis(source.getPainfulLymphadenitis());
+		target.setBlackeningDeathOfTissue(source.getBlackeningDeathOfTissue());
+		target.setBuboesGroinArmpitNeck(source.getBuboesGroinArmpitNeck());
 		target.setPatientIllLocation(source.getPatientIllLocation());
 		
 		return symptoms;
@@ -219,6 +222,9 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setLesionsThatItch(source.getLesionsThatItch());
 		target.setBedridden(source.getBedridden());
 		target.setOralUlcers(source.getOralUlcers());
+		target.setPainfulLymphadenitis(source.getPainfulLymphadenitis());
+		target.setBlackeningDeathOfTissue(source.getBlackeningDeathOfTissue());
+		target.setBuboesGroinArmpitNeck(source.getBuboesGroinArmpitNeck());
 		target.setPatientIllLocation(source.getPatientIllLocation());
 		
 		return target;

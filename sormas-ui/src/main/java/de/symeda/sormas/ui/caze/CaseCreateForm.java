@@ -29,7 +29,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 
     private static final String HTML_LAYOUT = 
 			LayoutUtil.divCss(CssStyles.VSPACE_2,
-					LayoutUtil.fluidRowLocs(CaseDataDto.DISEASE, CaseDataDto.DISEASE_DETAILS),
+					LayoutUtil.fluidRow(LayoutUtil.loc(CaseDataDto.DISEASE), LayoutUtil.locs(CaseDataDto.DISEASE_DETAILS, CaseDataDto.PLAGUE_TYPE)),
 					LayoutUtil.fluidRowLocs(FIRST_NAME, LAST_NAME),
 					LayoutUtil.fluidRowLocs(CaseDataDto.REGION, CaseDataDto.DISTRICT),
 					LayoutUtil.fluidRowLocs(CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY),
@@ -46,6 +46,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 	protected void addFields() {
     	addField(CaseDataDto.DISEASE, ComboBox.class);
     	addField(CaseDataDto.DISEASE_DETAILS, TextField.class);
+    	addField(CaseDataDto.PLAGUE_TYPE, ComboBox.class);
     	
     	addCustomField(FIRST_NAME, String.class, TextField.class);
     	addCustomField(LAST_NAME, String.class, TextField.class);
@@ -86,6 +87,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 
 		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.DISEASE_DETAILS), CaseDataDto.DISEASE, Arrays.asList(Disease.OTHER), true);
 		FieldHelper.setRequiredWhen(getFieldGroup(), CaseDataDto.DISEASE, Arrays.asList(CaseDataDto.DISEASE_DETAILS), Arrays.asList(Disease.OTHER));
+		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.PLAGUE_TYPE), CaseDataDto.DISEASE, Arrays.asList(Disease.PLAGUE), true);
 		
     	facility.addValueChangeListener(e -> {
     		if (facility.getValue() != null) {

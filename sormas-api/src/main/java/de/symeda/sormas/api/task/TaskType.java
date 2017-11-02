@@ -10,7 +10,8 @@ import java.util.Map;
 import de.symeda.sormas.api.I18nProperties;
 
 public enum TaskType {
-	
+
+	ACTIVE_SEARCH_FOR_OTHER_CASES(TaskContext.CASE),
 	CASE_ISOLATION(TaskContext.CASE),
 	CASE_INVESTIGATION(TaskContext.CASE),
 	CASE_MANAGEMENT(TaskContext.CASE),

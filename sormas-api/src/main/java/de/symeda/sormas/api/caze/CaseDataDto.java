@@ -3,6 +3,7 @@ package de.symeda.sormas.api.caze;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.PlagueType;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
@@ -26,6 +27,7 @@ public class CaseDataDto extends CaseReferenceDto {
 	public static final String PERSON = "person";
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
+	public static final String PLAGUE_TYPE = "plagueType";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
@@ -56,6 +58,7 @@ public class CaseDataDto extends CaseReferenceDto {
 	private InvestigationStatus investigationStatus;
 	private Disease disease;
 	private String diseaseDetails;
+	private PlagueType plagueType;
 	private UserReferenceDto reportingUser;
 	private Date reportDate;
 	private Date investigatedDate;
@@ -125,6 +128,14 @@ public class CaseDataDto extends CaseReferenceDto {
 
 	public void setDiseaseDetails(String diseaseDetails) {
 		this.diseaseDetails = diseaseDetails;
+	}
+
+	public PlagueType getPlagueType() {
+		return plagueType;
+	}
+
+	public void setPlagueType(PlagueType plagueType) {
+		this.plagueType = plagueType;
 	}
 
 	public UserReferenceDto getReportingUser() {

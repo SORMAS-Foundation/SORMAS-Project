@@ -198,6 +198,12 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState bedridden;
 	@Enumerated(EnumType.STRING)
 	private SymptomState oralUlcers;
+    @Enumerated(EnumType.STRING)
+    private SymptomState painfulLymphadenitis;
+    @Enumerated(EnumType.STRING)
+    private SymptomState buboesGroinArmpitNeck;
+    @Enumerated(EnumType.STRING)
+    private SymptomState blackeningDeathOfTissue;
 	@Enumerated(EnumType.STRING)
 	private SymptomState otherHemorrhagicSymptoms;
 	@Column(length = 255)
@@ -831,7 +837,31 @@ public class Symptoms extends AbstractDomainObject {
 		this.oralUlcers = oralUlcers;
 	}
 
-	public String getPatientIllLocation() {
+    public SymptomState getPainfulLymphadenitis() {
+        return painfulLymphadenitis;
+    }
+
+    public void setPainfulLymphadenitis(SymptomState painfulLymphadenitis) {
+        this.painfulLymphadenitis = painfulLymphadenitis;
+    }
+
+    public SymptomState getBuboesGroinArmpitNeck() {
+        return buboesGroinArmpitNeck;
+    }
+
+    public void setBuboesGroinArmpitNeck(SymptomState buboesGroinArmpitNeck) {
+        this.buboesGroinArmpitNeck = buboesGroinArmpitNeck;
+    }
+
+    public SymptomState getBlackeningDeathOfTissue() {
+        return blackeningDeathOfTissue;
+    }
+
+    public void setBlackeningDeathOfTissue(SymptomState blackeningDeathOfTissue) {
+        this.blackeningDeathOfTissue = blackeningDeathOfTissue;
+    }
+
+    public String getPatientIllLocation() {
 		return patientIllLocation;
 	}
 

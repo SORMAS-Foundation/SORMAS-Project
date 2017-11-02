@@ -23,7 +23,9 @@ public class SymptomsDto extends DataTransferObject {
 	public static final String ANOREXIA_APPETITE_LOSS = "anorexiaAppetiteLoss";
 	public static final String BACKACHE = "backache";
 	public static final String BEDRIDDEN = "bedridden";
+	public static final String BLACKENING_DEATH_OF_TISSUE = "blackeningDeathOfTissue";
 	public static final String BLOOD_IN_STOOL = "bloodInStool";
+	public static final String BUBOES_GROIN_ARMPIT_NECK = "buboesGroinArmpitNeck";
 	public static final String CHEST_PAIN = "chestPain";
 	public static final String CHILLS_SWEATS = "chillsSweats";
 	public static final String CONFUSED_DISORIENTED = "confusedDisoriented";
@@ -35,7 +37,6 @@ public class SymptomsDto extends DataTransferObject {
 	public static final String DIARRHEA = "diarrhea";
 	public static final String DIFFICULTY_BREATHING = "difficultyBreathing";
 	public static final String EYE_PAIN_LIGHT_SENSITIVE = "eyePainLightSensitive";
-	public static final String EYES_BLEEDING = "eyesBleeding";
 	public static final String FATIGUE_WEAKNESS = "fatigueWeakness";
 	public static final String FEVER = "fever";
 	public static final String HEADACHE = "headache";
@@ -69,6 +70,7 @@ public class SymptomsDto extends DataTransferObject {
 	public static final String NECK_STIFFNESS = "neckStiffness";
 	public static final String ORAL_ULCERS = "oralUlcers";
 	public static final String OTITIS_MEDIA = "otitisMedia";
+	public static final String PAINFUL_LYMPHADENITIS = "painfulLymphadenitis";
 	public static final String RAPID_BREATHING = "rapidBreathing";
 	public static final String REFUSAL_FEEDOR_DRINK = "refusalFeedorDrink";
 	public static final String RUNNY_NOSE = "runnyNose";
@@ -76,14 +78,15 @@ public class SymptomsDto extends DataTransferObject {
 	public static final String SHOCK = "shock";
 	public static final String SKIN_RASH = "skinRash";
 	public static final String SORE_THROAT = "soreThroat";
-	public static final String STOMACH_BLEEDING = "stomachBleeding";
 	public static final String SWOLLEN_GLANDS = "swollenGlands";
 	public static final String THROBOCYTOPENIA = "throbocytopenia";
 	public static final String VOMITING = "vomiting";
 	public static final String OTHER_NON_HEMORRHAGIC_SYMPTOMS = "otherNonHemorrhagicSymptoms";
 	public static final String OTHER_NON_HEMORRHAGIC_SYMPTOMS_TEXT = "otherNonHemorrhagicSymptomsText";
 	public static final String UNEXPLAINED_BLEEDING = "unexplainedBleeding";
+	public static final String EYES_BLEEDING = "eyesBleeding";
 	public static final String GUMS_BLEEDING = "gumsBleeding";
+	public static final String STOMACH_BLEEDING = "stomachBleeding";
 	public static final String INJECTION_SITE_BLEEDING = "injectionSiteBleeding";
 	public static final String NOSE_BLEEDING = "noseBleeding";
 	public static final String BLOODY_BLACK_STOOL = "bloodyBlackStool";
@@ -103,32 +106,40 @@ public class SymptomsDto extends DataTransferObject {
 	private Date onsetDate;
 	private String onsetSymptom;
 	
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.MONKEYPOX,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.MONKEYPOX,Disease.PLAGUE,Disease.OTHER})
 	private Float temperature;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.MONKEYPOX,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.MONKEYPOX,Disease.PLAGUE,Disease.OTHER})
 	private TemperatureSource temperatureSource;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.MONKEYPOX,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.MONKEYPOX,Disease.PLAGUE,Disease.OTHER})
 	private SymptomState fever;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.MONKEYPOX,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.MONKEYPOX,Disease.PLAGUE,Disease.OTHER})
 	private SymptomState vomiting;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.PLAGUE,Disease.OTHER})
 	private SymptomState diarrhea;
+	@Diseases({Disease.PLAGUE,Disease.OTHER})
+	private SymptomState blackeningDeathOfTissue;
 	@Diseases({Disease.CHOLERA,Disease.YELLOW_FEVER,Disease.OTHER})
 	private SymptomState bloodInStool;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.MONKEYPOX,Disease.OTHER})
+	@Diseases({Disease.PLAGUE,Disease.OTHER})
+	private SymptomState buboesGroinArmpitNeck;
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.MONKEYPOX,Disease.PLAGUE,Disease.OTHER})
 	private SymptomState nausea;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CHOLERA,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CHOLERA,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.PLAGUE,Disease.OTHER})
 	private SymptomState abdominalPain;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.MONKEYPOX,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.MONKEYPOX,Disease.PLAGUE,Disease.OTHER})
 	private SymptomState headache;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.MONKEYPOX,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.MONKEYPOX,Disease.PLAGUE,Disease.OTHER})
 	private SymptomState musclePain;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.MONKEYPOX,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.MONKEYPOX,Disease.PLAGUE,Disease.OTHER})
 	private SymptomState fatigueWeakness;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.PLAGUE,Disease.OTHER})
 	private SymptomState unexplainedBleeding;
+	@Diseases({Disease.YELLOW_FEVER,Disease.OTHER})
+	private SymptomState eyesBleeding;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.OTHER})
 	private SymptomState gumsBleeding;
+	@Diseases({Disease.YELLOW_FEVER,Disease.OTHER})
+	private SymptomState stomachBleeding;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.OTHER})
 	private SymptomState injectionSiteBleeding;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.YELLOW_FEVER,Disease.OTHER})
@@ -139,7 +150,7 @@ public class SymptomsDto extends DataTransferObject {
 	private SymptomState redBloodVomit;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.OTHER})
 	private SymptomState digestedBloodVomit;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.PLAGUE,Disease.OTHER})
 	private SymptomState coughingBlood;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.OTHER})
 	private SymptomState bleedingVagina;
@@ -147,9 +158,9 @@ public class SymptomsDto extends DataTransferObject {
 	private SymptomState skinBruising;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.OTHER})
 	private SymptomState bloodUrine;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.PLAGUE,Disease.OTHER})
 	private SymptomState otherHemorrhagicSymptoms;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.PLAGUE,Disease.OTHER})
 	private String otherHemorrhagicSymptomsText;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.MEASLES,Disease.DENGUE,Disease.OTHER})
 	private SymptomState skinRash;
@@ -157,15 +168,15 @@ public class SymptomsDto extends DataTransferObject {
 	private SymptomState neckStiffness;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.MEASLES,Disease.MONKEYPOX,Disease.OTHER})
 	private SymptomState soreThroat;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.MEASLES,Disease.MONKEYPOX,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.MEASLES,Disease.MONKEYPOX,Disease.PLAGUE,Disease.OTHER})
 	private SymptomState cough;
 	@Diseases({Disease.AVIAN_INFLUENCA,Disease.MEASLES,Disease.OTHER})
 	private SymptomState runnyNose;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.MEASLES,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.MEASLES,Disease.PLAGUE,Disease.OTHER})
 	private SymptomState difficultyBreathing;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.PLAGUE,Disease.OTHER})
 	private SymptomState chestPain;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.PLAGUE,Disease.OTHER})
 	private SymptomState confusedDisoriented;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.OTHER})
 	private SymptomState seizures;
@@ -191,20 +202,16 @@ public class SymptomsDto extends DataTransferObject {
 	private SymptomState refusalFeedorDrink;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.MEASLES,Disease.DENGUE,Disease.OTHER})
 	private SymptomState jointPain;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.PLAGUE,Disease.OTHER})
 	private SymptomState shock;
 	@Diseases({Disease.EVD,Disease.OTHER})
 	private SymptomState hiccups;
 	@Diseases({Disease.YELLOW_FEVER,Disease.OTHER})
 	private SymptomState backache;
 	@Diseases({Disease.YELLOW_FEVER,Disease.OTHER})
-	private SymptomState eyesBleeding;
-	@Diseases({Disease.YELLOW_FEVER,Disease.OTHER})
 	private SymptomState jaundice;
 	@Diseases({Disease.YELLOW_FEVER,Disease.OTHER})
 	private SymptomState darkUrine;
-	@Diseases({Disease.YELLOW_FEVER,Disease.OTHER})
-	private SymptomState stomachBleeding;
 	@Diseases({Disease.DENGUE,Disease.OTHER})
 	private SymptomState rapidBreathing;
 	@Diseases({Disease.DENGUE,Disease.OTHER})
@@ -249,7 +256,9 @@ public class SymptomsDto extends DataTransferObject {
 	private SymptomState lymphadenopathyAxillary;
 	@Diseases({Disease.MONKEYPOX,Disease.OTHER})
 	private SymptomState lymphadenopathyCervical;
-	@Diseases({Disease.MONKEYPOX,Disease.OTHER})
+	@Diseases({Disease.PLAGUE,Disease.OTHER})
+	private SymptomState painfulLymphadenitis;
+	@Diseases({Disease.MONKEYPOX,Disease.PLAGUE,Disease.OTHER})
 	private SymptomState chillsSweats;
 	@Diseases({Disease.MONKEYPOX,Disease.OTHER})
 	private SymptomState lesionsThatItch;
@@ -257,11 +266,11 @@ public class SymptomsDto extends DataTransferObject {
 	private SymptomState bedridden;
 	@Diseases({Disease.MONKEYPOX,Disease.OTHER})
 	private SymptomState oralUlcers;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.DENGUE,Disease.MONKEYPOX,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.DENGUE,Disease.MONKEYPOX,Disease.PLAGUE,Disease.OTHER})
 	private SymptomState otherNonHemorrhagicSymptoms;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.DENGUE,Disease.MONKEYPOX,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.DENGUE,Disease.MONKEYPOX,Disease.PLAGUE,Disease.OTHER})
 	private String otherNonHemorrhagicSymptomsText;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.DENGUE,Disease.MONKEYPOX,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.DENGUE,Disease.MONKEYPOX,Disease.PLAGUE,Disease.OTHER})
 	private String symptomsComments;
 	@Diseases({Disease.MONKEYPOX,Disease.OTHER})
 	private String patientIllLocation;
@@ -751,6 +760,24 @@ public class SymptomsDto extends DataTransferObject {
 	}
 	public void setOralUlcers(SymptomState oralUlcers) {
 		this.oralUlcers = oralUlcers;
+	}
+	public SymptomState getPainfulLymphadenitis() {
+		return painfulLymphadenitis;
+	}
+	public void setPainfulLymphadenitis(SymptomState painfulLymphadenitis) {
+		this.painfulLymphadenitis = painfulLymphadenitis;
+	}
+	public SymptomState getBlackeningDeathOfTissue() {
+		return blackeningDeathOfTissue;
+	}
+	public void setBlackeningDeathOfTissue(SymptomState blackeningDeathOfTissue) {
+		this.blackeningDeathOfTissue = blackeningDeathOfTissue;
+	}
+	public SymptomState getBuboesGroinArmpitNeck() {
+		return buboesGroinArmpitNeck;
+	}
+	public void setBuboesGroinArmpitNeck(SymptomState buboesGroinArmpitNeck) {
+		this.buboesGroinArmpitNeck = buboesGroinArmpitNeck;
 	}
 	public SymptomState getOtherNonHemorrhagicSymptoms() {
 		return otherNonHemorrhagicSymptoms;

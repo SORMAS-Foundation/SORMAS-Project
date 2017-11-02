@@ -37,13 +37,13 @@ public class ContactDto extends ContactReferenceDto {
 	private Date lastContactDate;
 	private ContactProximity contactProximity;
 	private ContactClassification contactClassification;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.CHOLERA,Disease.MONKEYPOX,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.CHOLERA,Disease.MONKEYPOX,Disease.PLAGUE,Disease.OTHER})
 	private FollowUpStatus followUpStatus;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.CHOLERA,Disease.MONKEYPOX,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.CHOLERA,Disease.MONKEYPOX,Disease.PLAGUE,Disease.OTHER})
 	private String followUpComment;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.CHOLERA,Disease.MONKEYPOX,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.CHOLERA,Disease.MONKEYPOX,Disease.PLAGUE,Disease.OTHER})
 	private Date followUpUntil;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.CHOLERA,Disease.MONKEYPOX,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.CHOLERA,Disease.MONKEYPOX,Disease.PLAGUE,Disease.OTHER})
 	private UserReferenceDto contactOfficer;
 	private String description;
 	private ContactRelation relationToCase;

@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.PlagueType;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.Vaccination;
@@ -78,6 +79,7 @@ public class CaseEditDataForm extends FormTab {
         FieldHelper.initSpinnerField(binding.caseDataVaccinationInfoSource, VaccinationInfoSource.class);
         FieldHelper.initSpinnerField(binding.caseDataYellowFeverVaccination, Vaccination.class);
         FieldHelper.initSpinnerField(binding.caseDataYellowFeverVaccinationInfoSource, VaccinationInfoSource.class);
+        FieldHelper.initSpinnerField(binding.caseDataPlagueType, PlagueType.class);
 
         boolean showMeaslesVaccination = Diseases.DiseasesConfiguration.isDefinedOrMissing(CaseDataDto.class, binding.caseDataMeaslesVaccination.getPropertyId(), binding.getCaze().getDisease());
         binding.caseDataMeaslesVaccination.setVisibility(showMeaslesVaccination ? View.VISIBLE : View.GONE);
@@ -163,6 +165,10 @@ public class CaseEditDataForm extends FormTab {
 
         if (binding.getCaze().getDisease() != Disease.OTHER) {
             binding.caseDataDiseaseDetails.setVisibility(View.GONE);
+        }
+
+        if (binding.getCaze().getDisease() != Disease.PLAGUE) {
+            binding.caseDataPlagueType.setVisibility(View.GONE);
         }
 
         return binding.getRoot();

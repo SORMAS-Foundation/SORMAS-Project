@@ -20,6 +20,7 @@ import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.symptoms.TemperatureSource;
+import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
@@ -86,6 +87,27 @@ public class SymptomsEditForm extends FormTab {
         }
 
         binding.setSymptoms(symptoms);
+
+        nonConditionalSymptoms = Arrays.asList(binding.symptomsFever, binding.symptomsVomiting,
+                binding.symptomsDiarrhea, binding.symptomsBloodInStool, binding.symptomsNausea, binding.symptomsAbdominalPain,
+                binding.symptomsHeadache, binding.symptomsMusclePain, binding.symptomsFatigueWeakness, binding.symptomsUnexplainedBleeding,
+                binding.symptomsSkinRash, binding.symptomsNeckStiffness, binding.symptomsSoreThroat, binding.symptomsCough,
+                binding.symptomsRunnyNose, binding.symptomsDifficultyBreathing, binding.symptomsChestPain, binding.symptomsConfusedDisoriented,
+                binding.symptomsSeizures, binding.symptomsAlteredConsciousness, binding.symptomsConjunctivitis,
+                binding.symptomsEyePainLightSensitive, binding.symptomsKopliksSpots, binding.symptomsThrobocytopenia,
+                binding.symptomsOtitisMedia, binding.symptomsHearingloss, binding.symptomsDehydration, binding.symptomsAnorexiaAppetiteLoss,
+                binding.symptomsRefusalFeedorDrink, binding.symptomsJointPain, binding.symptomsShock,
+                binding.symptomsHiccups, binding.symptomsBackache, binding.symptomsJaundice,
+                binding.symptomsDarkUrine, binding.symptomsRapidBreathing, binding.symptomsSwollenGlands,
+                binding.symptomsOtherNonHemorrhagicSymptoms, binding.symptomsCutaneousEruption, binding.symptomsLesions, binding.symptomsLymphadenopathyAxillary,
+                binding.symptomsLymphadenopathyCervical, binding.symptomsLymphadenopathyInguinal, binding.symptomsChillsSweats, binding.symptomsBedridden,
+                binding.symptomsOralUlcers, binding.symptomsBlackeningDeathOfTissue, binding.symptomsBuboesGroinArmpitNeck, binding.symptomsPainfulLymphadenitis);
+
+        conditionalBleedingSymptoms = Arrays.asList(binding.symptomsGumsBleeding, binding.symptomsInjectionSiteBleeding,
+                binding.symptomsNoseBleeding, binding.symptomsBloodyBlackStool, binding.symptomsRedBloodVomit,
+                binding.symptomsDigestedBloodVomit, binding.symptomsCoughingBlood, binding.symptomsBleedingVagina,
+                binding.symptomsSkinBruising, binding.symptomsBloodUrine, binding.symptomsEyesBleeding, binding.symptomsStomachBleeding,
+                binding.symptomsOtherHemorrhagicSymptoms);
 
         binding.symptomsOnsetDate.initialize(this);
 
@@ -162,26 +184,6 @@ public class SymptomsEditForm extends FormTab {
         if (forVisit) {
             binding.symptomsPatientIllLocation.setVisibility(View.GONE);
         }
-
-        nonConditionalSymptoms = Arrays.asList(binding.symptomsFever, binding.symptomsVomiting,
-                binding.symptomsDiarrhea, binding.symptomsBloodInStool, binding.symptomsNausea, binding.symptomsAbdominalPain,
-                binding.symptomsHeadache, binding.symptomsMusclePain, binding.symptomsFatigueWeakness, binding.symptomsUnexplainedBleeding,
-                binding.symptomsSkinRash, binding.symptomsNeckStiffness, binding.symptomsSoreThroat, binding.symptomsCough,
-                binding.symptomsRunnyNose, binding.symptomsDifficultyBreathing, binding.symptomsChestPain, binding.symptomsConfusedDisoriented,
-                binding.symptomsSeizures, binding.symptomsAlteredConsciousness, binding.symptomsConjunctivitis,
-                binding.symptomsEyePainLightSensitive, binding.symptomsKopliksSpots, binding.symptomsThrobocytopenia,
-                binding.symptomsOtitisMedia, binding.symptomsHearingloss, binding.symptomsDehydration, binding.symptomsAnorexiaAppetiteLoss,
-                binding.symptomsRefusalFeedorDrink, binding.symptomsJointPain, binding.symptomsShock,
-                binding.symptomsHiccups, binding.symptomsBackache, binding.symptomsEyesBleeding, binding.symptomsJaundice,
-                binding.symptomsDarkUrine, binding.symptomsStomachBleeding, binding.symptomsRapidBreathing, binding.symptomsSwollenGlands,
-                binding.symptomsOtherNonHemorrhagicSymptoms, binding.symptomsCutaneousEruption, binding.symptomsLesions, binding.symptomsLymphadenopathyAxillary,
-                binding.symptomsLymphadenopathyCervical, binding.symptomsLymphadenopathyInguinal, binding.symptomsChillsSweats, binding.symptomsBedridden,
-                binding.symptomsOralUlcers);
-
-        conditionalBleedingSymptoms = Arrays.asList(binding.symptomsGumsBleeding, binding.symptomsInjectionSiteBleeding,
-                binding.symptomsNoseBleeding, binding.symptomsBloodyBlackStool, binding.symptomsRedBloodVomit,
-                binding.symptomsDigestedBloodVomit, binding.symptomsCoughingBlood, binding.symptomsBleedingVagina,
-                binding.symptomsSkinBruising, binding.symptomsBloodUrine, binding.symptomsOtherHemorrhagicSymptoms);
 
         FieldHelper.initSpinnerField(binding.symptomsOnsetSymptom, DataUtils.toItems(null, true));
         addListenerForOnsetSymptom();
@@ -324,30 +326,15 @@ public class SymptomsEditForm extends FormTab {
     }
 
     private void toggleUnexplainedBleedingFields() {
-        int[] fieldIds = {
-                R.id.symptoms_gumsBleeding,
-                R.id.symptoms_injectionSiteBleeding,
-                R.id.symptoms_noseBleeding,
-                R.id.symptoms_bloodyBlackStool,
-                R.id.symptoms_redBloodVomit,
-                R.id.symptoms_digestedBloodVomit,
-                R.id.symptoms_coughingBlood,
-                R.id.symptoms_bleedingVagina,
-                R.id.symptoms_skinBruising,
-                R.id.symptoms_bloodUrine,
-                R.id.symptoms_otherHemorrhagicSymptoms
-        };
-
-        SymptomState symptomState = binding.symptomsUnexplainedBleeding.getValue();
-        for (int fieldId:fieldIds) {
-            if(symptomState == SymptomState.YES) {
-                setFieldVisible(binding.getRoot().findViewById(fieldId), true);
-            }
-            else {
-                View view = binding.getRoot().findViewById(fieldId);
-                // reset value
-                ((SymptomStateField)view).setValue(null);
-                setFieldGone(view);
+        SymptomState unexplainedBleeding = binding.symptomsUnexplainedBleeding.getValue();
+        for (SymptomStateField field : conditionalBleedingSymptoms) {
+            if (Diseases.DiseasesConfiguration.isDefinedOrMissing(SymptomsDto.class, field.getPropertyId(), disease)) {
+                if (unexplainedBleeding == SymptomState.YES) {
+                    setFieldVisible(field, true);
+                } else {
+                    field.setValue(null);
+                    setFieldGone(field);
+                }
             }
         }
     }

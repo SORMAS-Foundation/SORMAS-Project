@@ -115,6 +115,9 @@ public class EpiData extends AbstractDomainObject {
     @Enumerated(EnumType.STRING)
     private YesNoUnknown tickBite;
 
+    @Enumerated(EnumType.STRING)
+    private YesNoUnknown fleaBite;
+
     @DatabaseField(dataType = DataType.DATE_LONG)
     private Date dateOfLastExposure;
 
@@ -343,6 +346,14 @@ public class EpiData extends AbstractDomainObject {
 
     public void setTickBite(YesNoUnknown tickBite) {
         this.tickBite = tickBite;
+    }
+
+    public YesNoUnknown getFleaBite() {
+        return fleaBite;
+    }
+
+    public void setFleaBite(YesNoUnknown fleaBite) {
+        this.fleaBite = fleaBite;
     }
 
     public Date getDateOfLastExposure() {

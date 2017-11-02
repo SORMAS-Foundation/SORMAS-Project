@@ -52,7 +52,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					LayoutUtil.fluidRowLocs(CaseDataDto.CASE_CLASSIFICATION) +
 					LayoutUtil.fluidRowLocs(CaseDataDto.INVESTIGATION_STATUS) +
     				LayoutUtil.fluidRowLocs(CaseDataDto.EPID_NUMBER, CaseDataDto.DISEASE) +
-    				LayoutUtil.fluidRowLocs("", CaseDataDto.DISEASE_DETAILS) +
+    				LayoutUtil.fluidRow("", LayoutUtil.locs(CaseDataDto.DISEASE_DETAILS, CaseDataDto.PLAGUE_TYPE)) +
     				LayoutUtil.fluidRowLocs(CaseDataDto.REGION, CaseDataDto.DISTRICT) +
 		    		LayoutUtil.fluidRowLocs(CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY) +
     				LayoutUtil.fluidRowLocs("", CaseDataDto.HEALTH_FACILITY_DETAILS) +
@@ -96,6 +96,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
     	addField(CaseDataDto.INVESTIGATION_STATUS, OptionGroup.class);
     	AbstractSelect diseaseField = addField(CaseDataDto.DISEASE, ComboBox.class);
     	addField(CaseDataDto.DISEASE_DETAILS, TextField.class);
+    	addField(CaseDataDto.PLAGUE_TYPE, OptionGroup.class);
     	TextField healthFacilityDetails = addField(CaseDataDto.HEALTH_FACILITY_DETAILS, TextField.class);
     	
     	addField(CaseDataDto.REGION, ComboBox.class);
@@ -142,6 +143,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		
 		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.DISEASE_DETAILS), CaseDataDto.DISEASE, Arrays.asList(Disease.OTHER), true);
 		FieldHelper.setRequiredWhen(getFieldGroup(), CaseDataDto.DISEASE, Arrays.asList(CaseDataDto.DISEASE_DETAILS), Arrays.asList(Disease.OTHER));
+		
+		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.PLAGUE_TYPE), CaseDataDto.DISEASE, Arrays.asList(Disease.PLAGUE), true);
 		
 		List<String> medicalInformationFields = Arrays.asList(CaseDataDto.PREGNANT, CaseDataDto.MEASLES_VACCINATION, 
 				CaseDataDto.YELLOW_FEVER_VACCINATION, CaseDataDto.SMALLPOX_VACCINATION_SCAR);

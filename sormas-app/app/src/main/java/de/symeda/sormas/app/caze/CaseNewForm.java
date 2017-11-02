@@ -13,6 +13,7 @@ import java.util.List;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.PlagueType;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.user.UserRole;
@@ -60,6 +61,7 @@ public class CaseNewForm extends FormTab {
         binding.setCaze(caze);
 
         FieldHelper.initSpinnerField(binding.caseDataDisease, Disease.class);
+        FieldHelper.initSpinnerField(binding.caseDataPlagueType, PlagueType.class);
 
         final List emptyList = new ArrayList<>();
         final List districtsByRegion = DataUtils.toItems(caze.getRegion() != null ? DatabaseHelper.getDistrictDao().getByRegion(caze.getRegion()) : DataUtils.toItems(emptyList), true);
@@ -170,6 +172,12 @@ public class CaseNewForm extends FormTab {
                     binding.caseDataDiseaseDetails.setVisibility(View.VISIBLE);
                 } else {
                     binding.caseDataDiseaseDetails.setVisibility(View.GONE);
+                }
+
+                if (field.getValue() == Disease.PLAGUE) {
+                    binding.caseDataPlagueType.setVisibility(View.VISIBLE);
+                } else {
+                    binding.caseDataPlagueType.setVisibility(View.GONE);
                 }
             }
         });

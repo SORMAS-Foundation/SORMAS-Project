@@ -129,16 +129,22 @@
                 android:value="@={symptoms.backache}"/>
 
             <de.symeda.sormas.app.component.SymptomStateField
-                android:id="@+id/symptoms_stomachBleeding"
+                android:id="@+id/symptoms_blackeningDeathOfTissue"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:value="@={symptoms.stomachBleeding}"/>
+                android:value="@={symptoms.blackeningDeathOfTissue}"/>
 
             <de.symeda.sormas.app.component.SymptomStateField
                 android:id="@+id/symptoms_bloodInStool"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:value="@={symptoms.bloodInStool}"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_buboesGroinArmpitNeck"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:value="@={symptoms.buboesGroinArmpitNeck}"/>
 
             <de.symeda.sormas.app.component.SymptomStateField
                 android:id="@+id/symptoms_chestPain"
@@ -211,12 +217,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:value="@={symptoms.eyePainLightSensitive}"/>
-
-            <de.symeda.sormas.app.component.SymptomStateField
-                android:id="@+id/symptoms_eyesBleeding"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:value="@={symptoms.eyesBleeding}"/>
 
             <de.symeda.sormas.app.component.SymptomStateField
                 android:id="@+id/symptoms_fatigueWeakness"
@@ -481,6 +481,12 @@
                 android:value="@={symptoms.neckStiffness}"/>
 
             <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_painfulLymphadenitis"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:value="@={symptoms.painfulLymphadenitis}"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
                 android:id="@+id/symptoms_rapidBreathing"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -542,6 +548,18 @@
                 android:value="@={symptoms.unexplainedBleeding}"/>
 
             <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_eyesBleeding"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:value="@={symptoms.eyesBleeding}"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_stomachBleeding"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:value="@={symptoms.stomachBleeding}"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
                 android:id="@+id/symptoms_injectionSiteBleeding"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -573,6 +591,12 @@
                 android:value="@={symptoms.bloodyBlackStool}"/>
 
             <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_noseBleeding"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:value="@={symptoms.noseBleeding}"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
                 android:id="@+id/symptoms_skinBruising"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -595,12 +619,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:value="@={symptoms.redBloodVomit}"/>
-
-            <de.symeda.sormas.app.component.SymptomStateField
-                android:id="@+id/symptoms_noseBleeding"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:value="@={symptoms.noseBleeding}"/>
 
             <de.symeda.sormas.app.component.SymptomStateField
                 android:id="@+id/symptoms_otherHemorrhagicSymptoms"

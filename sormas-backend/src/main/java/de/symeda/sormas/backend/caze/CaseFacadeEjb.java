@@ -1,5 +1,7 @@
 package de.symeda.sormas.backend.caze;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -7,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -30,6 +33,8 @@ import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
@@ -54,6 +59,7 @@ import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.region.RegionService;
+import de.symeda.sormas.backend.report.WeeklyReport;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLocal;
 import de.symeda.sormas.backend.task.Task;
@@ -62,6 +68,7 @@ import de.symeda.sormas.backend.task.TaskService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
+import de.symeda.sormas.backend.util.DateHelper8;
 import de.symeda.sormas.backend.util.DtoHelper;
 
 @Stateless(name = "CaseFacade")
@@ -214,6 +221,11 @@ public class CaseFacadeEjb implements CaseFacade {
 				contactFacade.updateFollowUpUntilAndStatus(contact);
 			}
 		}
+		
+		// Create a task to search for other cases for new Plague cases
+		if (currentCaze == null && dto.getDisease() == Disease.PLAGUE) {
+			createActiveSearchForOtherCasesTask(caze);
+		}
 
 		return toDto(caze);
 	}
@@ -296,6 +308,7 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		target.setDisease(source.getDisease());
 		target.setDiseaseDetails(source.getDiseaseDetails());
+		target.setPlagueType(source.getPlagueType());
 		target.setReportDate(source.getReportDate());
 		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
 		target.setPerson(personService.getByReferenceDto(source.getPerson()));
@@ -349,6 +362,7 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		target.setDisease(source.getDisease());
 		target.setDiseaseDetails(source.getDiseaseDetails());
+		target.setPlagueType(source.getPlagueType());
 		target.setCaseClassification(source.getCaseClassification());
 		target.setInvestigationStatus(source.getInvestigationStatus());
 		target.setPerson(PersonFacadeEjb.toReferenceDto(source.getPerson()));
@@ -444,7 +458,6 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	private void createInvestigationTask(Case caze) {
-
 		Task task = new Task();
 		task.setTaskStatus(TaskStatus.PENDING);
 		task.setTaskContext(TaskContext.CASE);
@@ -454,7 +467,27 @@ public class CaseFacadeEjb implements CaseFacade {
 		task.setDueDate(TaskHelper.getDefaultDueDate());
 		task.setPriority(TaskPriority.NORMAL);
 
-		// assign officer or supervisor
+		assignOfficerOrSupervisorToTask(caze, task);
+
+		taskService.ensurePersisted(task);
+	}
+	
+	private void createActiveSearchForOtherCasesTask(Case caze) {
+		Task task = new Task();
+		task.setTaskStatus(TaskStatus.PENDING);
+		task.setTaskContext(TaskContext.CASE);
+		task.setCaze(caze);
+		task.setTaskType(TaskType.ACTIVE_SEARCH_FOR_OTHER_CASES);
+		task.setSuggestedStart(TaskHelper.getDefaultSuggestedStart());
+		task.setDueDate(TaskHelper.getDefaultDueDate());
+		task.setPriority(TaskPriority.NORMAL);
+		
+		assignOfficerOrSupervisorToTask(caze, task);
+		
+		taskService.ensurePersisted(task);
+	}
+	
+	private void assignOfficerOrSupervisorToTask(Case caze, Task task) {
 		if (caze.getSurveillanceOfficer() != null) {
 			task.setAssigneeUser(caze.getSurveillanceOfficer());
 		} else {
@@ -467,8 +500,6 @@ public class CaseFacadeEjb implements CaseFacade {
 				throw new UnsupportedOperationException("surveillance supervisor missing for: " + caze.getRegion());
 			}
 		}
-
-		taskService.ensurePersisted(task);
 	}
 	
 	@Override

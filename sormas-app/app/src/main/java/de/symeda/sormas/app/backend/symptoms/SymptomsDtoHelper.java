@@ -15,8 +15,6 @@ import retrofit2.Call;
  */
 public class SymptomsDtoHelper extends AdoDtoHelper<Symptoms, SymptomsDto> {
 
-    private LocationDtoHelper locationHelper = new LocationDtoHelper();
-
     @Override
     protected Class<Symptoms> getAdoClass() {
         return Symptoms.class;
@@ -128,6 +126,9 @@ public class SymptomsDtoHelper extends AdoDtoHelper<Symptoms, SymptomsDto> {
         a.setBedridden(b.getBedridden());
         a.setOralUlcers(b.getOralUlcers());
         a.setPatientIllLocation(b.getPatientIllLocation());
+        a.setBlackeningDeathOfTissue(b.getBlackeningDeathOfTissue());
+        a.setBuboesGroinArmpitNeck(b.getBuboesGroinArmpitNeck());
+        a.setPainfulLymphadenitis(b.getPainfulLymphadenitis());
     }
 
     @Override
@@ -216,5 +217,8 @@ public class SymptomsDtoHelper extends AdoDtoHelper<Symptoms, SymptomsDto> {
         a.setBedridden(b.getBedridden());
         a.setOralUlcers(b.getOralUlcers());
         a.setPatientIllLocation(b.getPatientIllLocation());
+        a.setBlackeningDeathOfTissue(b.getBlackeningDeathOfTissue());
+        a.setBuboesGroinArmpitNeck(b.getBuboesGroinArmpitNeck());
+        a.setPainfulLymphadenitis(b.getPainfulLymphadenitis());
     }
 }

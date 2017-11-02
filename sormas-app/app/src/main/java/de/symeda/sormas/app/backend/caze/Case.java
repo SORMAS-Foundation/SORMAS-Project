@@ -15,6 +15,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.PlagueType;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.Vaccination;
@@ -60,6 +61,9 @@ public class Case extends AbstractDomainObject {
 
 	@Column(length=512)
 	private String diseaseDetails;
+
+	@Column(length=255)
+	private PlagueType plagueType;
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
@@ -166,6 +170,13 @@ public class Case extends AbstractDomainObject {
 	}
 	public void setDiseaseDetails(String diseaseDetails) {
 		this.diseaseDetails = diseaseDetails;
+	}
+
+	public PlagueType getPlagueType() {
+		return plagueType;
+	}
+	public void setPlagueType(PlagueType plagueType) {
+		this.plagueType = plagueType;
 	}
 
 	public CaseClassification getCaseClassification() {

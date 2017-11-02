@@ -1,6 +1,7 @@
 package de.symeda.sormas.app.caze;
 
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -19,10 +20,16 @@ import android.widget.LinearLayout;
 import java.util.Arrays;
 import java.util.List;
 
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.DiseaseHelper;
+import de.symeda.sormas.api.PlagueType;
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.app.AbstractEditTabActivity;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
+import de.symeda.sormas.app.backend.caze.CaseDtoHelper;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
@@ -36,6 +43,7 @@ import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.backend.sample.SampleDao;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
+import de.symeda.sormas.app.backend.symptoms.SymptomsDtoHelper;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.task.TaskDao;
 import de.symeda.sormas.app.component.FacilityChangeDialogBuilder;
@@ -51,6 +59,7 @@ import de.symeda.sormas.app.sample.SampleEditActivity;
 import de.symeda.sormas.app.sample.SamplesListFragment;
 import de.symeda.sormas.app.task.TaskForm;
 import de.symeda.sormas.app.task.TasksListFragment;
+import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.validation.PersonValidator;
@@ -216,7 +225,7 @@ public class CaseEditActivity extends AbstractEditTabActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         setCurrentTab(pager.getCurrentItem());
         CaseEditTabs tab = adapter.getTabForPosition(currentTab);
-        Case caze = (Case) getData(adapter.getPositionOfTab(CaseEditTabs.CASE_DATA));
+        final Case caze = (Case) getData(adapter.getPositionOfTab(CaseEditTabs.CASE_DATA));
         CaseDao caseDao = DatabaseHelper.getCaseDao();
         switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button
@@ -299,18 +308,28 @@ public class CaseEditActivity extends AbstractEditTabActivity {
 
             // Save button
             case R.id.action_save:
-                if (saveCase()) {
-                    Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_case)), Snackbar.LENGTH_LONG).show();
+                final Case caseBeforeSaving = DatabaseHelper.getCaseDao().queryUuid(caze.getUuid());
+                if (caze.getDisease() == Disease.PLAGUE) {
+                    Symptoms symptoms = (Symptoms) getData(adapter.getPositionOfTab(CaseEditTabs.SYMPTOMS));
+                    SymptomsDto symptomsDto = new SymptomsDto();
+                    new SymptomsDtoHelper().fillInnerFromAdo(symptomsDto, symptoms);
 
-                    // switch to next tab
-                    try {
-                        pager.setCurrentItem(currentTab + 1);
-                    } catch (NullPointerException e) {
-                        pager.setCurrentItem(currentTab);
+                    final PlagueType newPlagueType = DiseaseHelper.getPlagueTypeForSymptoms(symptomsDto);
+                    if (newPlagueType != null && newPlagueType != caze.getPlagueType()) {
+                        AlertDialog plagueTypeChangeDialog = buildPlagueTypeChangeDialog(newPlagueType, new Callback() {
+                            @Override
+                            public void call() {
+                                caze.setPlagueType(newPlagueType);
+                                saveCase(caze, caseBeforeSaving);
+                            }
+                        });
+                        plagueTypeChangeDialog.show();
+                    } else {
+                        saveCase(caze, caseBeforeSaving);
                     }
+                } else {
+                    saveCase(caze, caseBeforeSaving);
                 }
-
-                return true;
 
             // Add button
             case R.id.action_add:
@@ -341,7 +360,9 @@ public class CaseEditActivity extends AbstractEditTabActivity {
 
     public void setAdapter(Case caze) {
         List<CaseEditTabs> visibleTabs;
-        if (caze != null && !caze.getDisease().hasContactFollowUp()) {
+        CaseDataDto caseDataDto = new CaseDataDto();
+        new CaseDtoHelper().fillInnerFromAdo(caseDataDto, caze);
+        if (!DiseaseHelper.hasContactFollowUp(caseDataDto)) {
             visibleTabs = Arrays.asList(CaseEditTabs.CASE_DATA, CaseEditTabs.PATIENT,
                     CaseEditTabs.HOSPITALIZATION, CaseEditTabs.SYMPTOMS, CaseEditTabs.EPIDATA,
                     CaseEditTabs.SAMPLES, CaseEditTabs.TASKS);
@@ -358,7 +379,7 @@ public class CaseEditActivity extends AbstractEditTabActivity {
     }
 
     public void moveCase(View v) {
-        if (saveCase()) {
+        if (saveCaseToDatabase()) {
             final CaseDataFragmentLayoutBinding caseBinding = ((CaseEditDataForm)getTabByPosition(adapter.getPositionOfTab(CaseEditTabs.CASE_DATA))).getBinding();
 
             final Consumer positiveCallback = new Consumer() {
@@ -384,7 +405,29 @@ public class CaseEditActivity extends AbstractEditTabActivity {
         }
     }
 
-    private boolean saveCase() {
+    private boolean saveCase(Case caze, Case caseBeforeSaving) {
+        if (saveCaseToDatabase()) {
+            Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_case)), Snackbar.LENGTH_LONG).show();
+
+            // switch to next tab
+            try {
+                pager.setCurrentItem(currentTab + 1);
+            } catch (NullPointerException e) {
+                pager.setCurrentItem(currentTab);
+            }
+
+            // reset adapter for Plague cases to make sure that the Contact tab is displayed or hidden correctly
+            Case savedCase = DatabaseHelper.getCaseDao().queryUuid(caze.getUuid());
+            if (savedCase.getDisease() == Disease.PLAGUE && caseBeforeSaving.getPlagueType() != savedCase.getPlagueType() &&
+                    (caseBeforeSaving.getPlagueType() == PlagueType.PNEUMONIC || savedCase.getPlagueType() == PlagueType.PNEUMONIC)) {
+                setAdapter(savedCase);
+            }
+        }
+
+        return true;
+    }
+
+    private boolean saveCaseToDatabase() {
         // PATIENT
         LocationDao locLocationDao = DatabaseHelper.getLocationDao();
         PersonDao personDao = DatabaseHelper.getPersonDao();
@@ -445,6 +488,24 @@ public class CaseEditActivity extends AbstractEditTabActivity {
 
             return false;
         }
+    }
+
+    private AlertDialog buildPlagueTypeChangeDialog(PlagueType plagueType, final Callback callback) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(String.format(getResources().getString(R.string.alert_plague_type_change), plagueType.toString(), plagueType.toString()));
+        builder.setTitle(R.string.alert_title_plague_type_change);
+        builder.setIcon(R.drawable.ic_info_outline_black_24dp);
+        AlertDialog dialog = builder.create();
+        dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.action_confirm),
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        callback.call();
+                    }
+                }
+        );
+
+        return dialog;
     }
 
 }

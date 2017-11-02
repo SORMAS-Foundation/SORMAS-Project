@@ -17,6 +17,7 @@ import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.PlagueType;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.visit.VisitStatus;
@@ -161,18 +162,27 @@ public class ContactService extends AbstractAdoService<Contact> {
 		return em.createQuery(cq).getResultList();
 	}
 
-	public int getFollowUpDuration(Disease disease) {
-		switch (disease) {
-		case EVD:
-		case MONKEYPOX:
-		case OTHER:
-			return 21;
-		case AVIAN_INFLUENCA:
-			return 17;
-		case LASSA:
-			return 6;
-		default:
-			return 0;
+	public int getFollowUpDuration(Case caze) {
+		Disease disease = caze.getDisease();
+		if (disease == Disease.PLAGUE) {
+			if (caze.getPlagueType() == PlagueType.PNEUMONIC) {
+				return 7;
+			} else {
+				return 0;
+			}
+		} else {
+			switch (disease) {
+			case EVD:
+			case MONKEYPOX:
+			case OTHER:
+				return 21;
+			case AVIAN_INFLUENCA:
+				return 17;
+			case LASSA:
+				return 6;
+			default:
+				return 0;
+			}
 		}
 	}
 	
@@ -188,7 +198,7 @@ public class ContactService extends AbstractAdoService<Contact> {
 	public void updateFollowUpUntilAndStatus(Contact contact) {
 		
 		Disease disease = contact.getCaze().getDisease();
-		int followUpDuration = getFollowUpDuration(disease);
+		int followUpDuration = getFollowUpDuration(contact.getCaze());
 		boolean changeStatus = contact.getFollowUpStatus() != FollowUpStatus.CANCELED
 				&& contact.getFollowUpStatus() != FollowUpStatus.LOST;
 

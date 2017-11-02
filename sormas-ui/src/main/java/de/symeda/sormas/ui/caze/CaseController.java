@@ -6,17 +6,23 @@ import java.util.List;
 
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
+import com.vaadin.server.Sizeable.Unit;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.PlagueType;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
@@ -48,6 +54,7 @@ import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.symptoms.SymptomsForm;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
+import de.symeda.sormas.ui.utils.ConfirmationComponent;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class CaseController {
@@ -235,7 +242,7 @@ public class CaseController {
         	@Override
         	public void onCommit() {
         		if (!caseEditForm.getFieldGroup().isModified()) {
-        			final CaseDataDto cazeDto = caseEditForm.getValue();       
+        			final CaseDataDto cazeDto = caseEditForm.getValue();   
         			saveCase(cazeDto);
         		}
         	}
@@ -279,9 +286,7 @@ public class CaseController {
         	public void onCommit() {
         		if (!symptomsForm.getFieldGroup().isModified()) {
         			SymptomsDto dto = symptomsForm.getValue();
-        			sf.saveSymptoms(dto);
-        			Notification.show("Case symptoms saved", Type.WARNING_MESSAGE);
-        			navigateToSymptoms(caseUuid);
+        			saveSymptoms(dto, caseUuid);
         		}
         	}
         });
@@ -368,6 +373,63 @@ public class CaseController {
 		cazeDto = cf.saveCase(cazeDto);
 		Notification.show("Case data saved", Type.WARNING_MESSAGE);
 		navigateToData(cazeDto.getUuid());
+	}
+	
+	private void saveSymptoms(SymptomsDto symptomsDto, String caseUuid) {
+		sf.saveSymptoms(symptomsDto);
+		
+		CaseDataDto caseDataDto = findCase(caseUuid);		
+		if (caseDataDto.getDisease() == Disease.PLAGUE) {
+			PlagueType plagueType = DiseaseHelper.getPlagueTypeForSymptoms(caseDataDto.getSymptoms());
+			if (plagueType != caseDataDto.getPlagueType() && plagueType != null) {
+				openPlagueTypeChangeLayout(plagueType, caseDataDto);
+				return;
+			}
+		}
+		
+		Notification.show("Case symptoms saved", Type.WARNING_MESSAGE);
+		navigateToSymptoms(caseUuid);
+	}
+	
+	private void openPlagueTypeChangeLayout(PlagueType plagueType, CaseDataDto caseDto) {
+		ConfirmationComponent plagueTypeChangeComponent = new ConfirmationComponent(false) {
+			private static final long serialVersionUID = 1L;
+			@Override
+			protected void onConfirm() {
+			}
+			@Override
+			protected void onCancel() {
+			}
+		};
+		plagueTypeChangeComponent.getConfirmButton().setCaption("Confirm");
+		plagueTypeChangeComponent.removeComponent(plagueTypeChangeComponent.getCancelButton());
+
+		VerticalLayout layout = new VerticalLayout();	
+		layout.setMargin(true);
+		Label description = new Label("The symptoms selected match the clinical criteria for " + plagueType.toString() + ". "
+				+ "It will be set to " + plagueType.toString() + " for this case.");
+		description.setContentMode(ContentMode.HTML);
+		description.setWidth(100, Unit.PERCENTAGE);
+		layout.addComponent(description);
+		layout.addComponent(plagueTypeChangeComponent);
+		layout.setComponentAlignment(plagueTypeChangeComponent, Alignment.BOTTOM_RIGHT);
+		layout.setSizeUndefined();
+		layout.setSpacing(true);
+		
+		Window popupWindow = VaadinUiUtil.showPopupWindow(layout);
+		popupWindow.setSizeUndefined();
+		popupWindow.setCaption("Confirm Plague Type Change");
+		plagueTypeChangeComponent.getConfirmButton().addClickListener(new ClickListener() {
+			private static final long serialVersionUID = 1L;
+			@Override
+			public void buttonClick(ClickEvent event) {
+				popupWindow.close();
+				caseDto.setPlagueType(plagueType);
+				cf.saveCase(caseDto);
+				Notification.show("Case symptoms saved", Type.WARNING_MESSAGE);
+				navigateToSymptoms(caseDto.getUuid());
+			}
+		});
 	}
 	
 }

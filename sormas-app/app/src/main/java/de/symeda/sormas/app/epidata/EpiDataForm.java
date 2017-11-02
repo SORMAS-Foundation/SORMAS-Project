@@ -286,7 +286,7 @@ public class EpiDataForm extends FormTab {
         }
 
         if (!(binding.epiDataWaterSource.getVisibility() == View.VISIBLE || binding.epiDataWaterBody.getVisibility() == View.VISIBLE ||
-                binding.epiDataTickBite.getVisibility() == View.VISIBLE)) {
+                binding.epiDataTickBite.getVisibility() == View.VISIBLE || binding.epiDataFleaBite.getVisibility() == View.VISIBLE)) {
             binding.epiDataEnvironmentalExposure.setVisibility(View.GONE);
         }
     }
