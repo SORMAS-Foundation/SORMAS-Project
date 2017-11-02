@@ -1,16 +1,16 @@
 package de.symeda.sormas.api;
 
 public enum Disease {
+	AVIAN_INFLUENCA,
+	CHOLERA,
+	CSM,
+	DENGUE,
 	EVD,
 	LASSA,
-	AVIAN_INFLUENCA,
-	CSM,
-	CHOLERA,
 	MEASLES,
-	YELLOW_FEVER,
-	DENGUE,
 	MONKEYPOX,
 	PLAGUE,
+	YELLOW_FEVER,
 	OTHER
 	;
 	
