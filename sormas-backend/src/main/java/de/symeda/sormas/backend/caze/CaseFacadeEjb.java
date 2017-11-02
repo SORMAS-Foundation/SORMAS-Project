@@ -1,7 +1,5 @@
 package de.symeda.sormas.backend.caze;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -9,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -33,8 +30,6 @@ import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
@@ -59,7 +54,6 @@ import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.region.RegionService;
-import de.symeda.sormas.backend.report.WeeklyReport;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLocal;
 import de.symeda.sormas.backend.task.Task;
@@ -68,7 +62,6 @@ import de.symeda.sormas.backend.task.TaskService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
-import de.symeda.sormas.backend.util.DateHelper8;
 import de.symeda.sormas.backend.util.DtoHelper;
 
 @Stateless(name = "CaseFacade")
@@ -334,6 +327,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setYellowFeverVaccination(source.getYellowFeverVaccination());
 		target.setYellowFeverVaccinationInfoSource(source.getYellowFeverVaccinationInfoSource());
 		target.setSmallpoxVaccinationScar(source.getSmallpoxVaccinationScar());
+		target.setSmallpoxVaccinationReceived(source.getSmallpoxVaccinationReceived());
+		target.setSmallpoxVaccinationDate(source.getSmallpoxVaccinationDate());
 
 		target.setEpidNumber(source.getEpidNumber());
 
@@ -390,6 +385,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setYellowFeverVaccination(source.getYellowFeverVaccination());
 		target.setYellowFeverVaccinationInfoSource(source.getYellowFeverVaccinationInfoSource());
 		target.setSmallpoxVaccinationScar(source.getSmallpoxVaccinationScar());
+		target.setSmallpoxVaccinationReceived(source.getSmallpoxVaccinationReceived());
+		target.setSmallpoxVaccinationDate(source.getSmallpoxVaccinationDate());
 
 		target.setEpidNumber(source.getEpidNumber());
 

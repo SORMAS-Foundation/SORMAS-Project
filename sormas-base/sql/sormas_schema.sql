@@ -1841,7 +1841,7 @@ ALTER TABLE symptoms_history ADD COLUMN lesionsthatitch varchar(255);
 ALTER TABLE symptoms_history ADD COLUMN bedridden varchar(255);
 ALTER TABLE symptoms_history ADD COLUMN oralulcers varchar(255);
 ALTER TABLE symptoms_history ADD COLUMN patientilllocation varchar(512);
-ALTER TABLE cases_history ADD COLUMN smallpoxVaccinationScar varchar(255);
+ALTER TABLE cases_history ADD COLUMN smallpoxvaccinationscar varchar(255);
 ALTER TABLE epidata_history ADD COLUMN dateoflastexposure timestamp;
 ALTER TABLE epidata_history ADD COLUMN placeoflastexposure varchar(512);
 ALTER TABLE epidata_history ADD COLUMN animalcondition varchar(255);
@@ -1864,3 +1864,12 @@ ALTER TABLE epidata_history ADD COLUMN fleabite varchar(255);
 ALTER TABLE sampletest_history ADD COLUMN fourfoldincreaseantibodytiter boolean;
 
 INSERT INTO schema_version (version_number, comment) VALUES (74, 'Plague disease fields #373');
+
+-- 2017-11-02 Additional Monkeypox fields #375
+ALTER TABLE cases ADD COLUMN smallpoxvaccinationreceived varchar(255);
+ALTER TABLE cases ADD COLUMN smallpoxvaccinationdate timestamp;
+
+ALTER TABLE cases_history ADD COLUMN smallpoxvaccinationreceived varchar(255);
+ALTER TABLE cases_history ADD COLUMN smallpoxvaccinationdate timestamp;
+
+INSERT INTO schema_version (version_number, comment) VALUES (75, 'Additional Monkeypox fields #375');

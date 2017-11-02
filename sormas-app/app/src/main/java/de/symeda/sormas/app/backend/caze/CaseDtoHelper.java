@@ -102,6 +102,8 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
         target.setYellowFeverVaccination(source.getYellowFeverVaccination());
         target.setYellowFeverVaccinationInfoSource(source.getYellowFeverVaccinationInfoSource());
         target.setSmallpoxVaccinationScar(source.getSmallpoxVaccinationScar());
+        target.setSmallpoxVaccinationReceived(source.getSmallpoxVaccinationReceived());
+        target.setSmallpoxVaccinationDate(source.getSmallpoxVaccinationDate());
         target.setEpidNumber(source.getEpidNumber());
         target.setPlagueType(source.getPlagueType());
 
@@ -199,6 +201,8 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
         target.setYellowFeverVaccination(source.getYellowFeverVaccination());
         target.setYellowFeverVaccinationInfoSource(source.getYellowFeverVaccinationInfoSource());
         target.setSmallpoxVaccinationScar(source.getSmallpoxVaccinationScar());
+        target.setSmallpoxVaccinationReceived(source.getSmallpoxVaccinationReceived());
+        target.setSmallpoxVaccinationDate(source.getSmallpoxVaccinationDate());
         target.setEpidNumber(source.getEpidNumber());
         target.setPlagueType(source.getPlagueType());
 

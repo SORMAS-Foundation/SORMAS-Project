@@ -125,6 +125,12 @@ public class Case extends AbstractDomainObject {
 	@Enumerated(EnumType.STRING)
 	private YesNoUnknown smallpoxVaccinationScar;
 
+	@Enumerated(EnumType.STRING)
+	private YesNoUnknown smallpoxVaccinationReceived;
+
+	@DatabaseField(dataType = DataType.DATE_LONG)
+	private Date smallpoxVaccinationDate;
+
 	@Column(length=512)
 	private String epidNumber;
 
@@ -326,6 +332,22 @@ public class Case extends AbstractDomainObject {
 
 	public void setSmallpoxVaccinationScar(YesNoUnknown smallpoxVaccinationScar) {
 		this.smallpoxVaccinationScar = smallpoxVaccinationScar;
+	}
+
+	public YesNoUnknown getSmallpoxVaccinationReceived() {
+		return smallpoxVaccinationReceived;
+	}
+
+	public void setSmallpoxVaccinationReceived(YesNoUnknown smallpoxVaccinationReceived) {
+		this.smallpoxVaccinationReceived = smallpoxVaccinationReceived;
+	}
+
+	public Date getSmallpoxVaccinationDate() {
+		return smallpoxVaccinationDate;
+	}
+
+	public void setSmallpoxVaccinationDate(Date smallpoxVaccinationDate) {
+		this.smallpoxVaccinationDate = smallpoxVaccinationDate;
 	}
 
 	public String getEpidNumber() {

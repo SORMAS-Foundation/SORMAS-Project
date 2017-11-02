@@ -49,6 +49,8 @@ public class CaseDataDto extends CaseReferenceDto {
 	public static final String YELLOW_FEVER_VACCINATION = "yellowFeverVaccination";
 	public static final String YELLOW_FEVER_VACCINATION_INFO_SOURCE = "yellowFeverVaccinationInfoSource";
 	public static final String SMALLPOX_VACCINATION_SCAR = "smallpoxVaccinationScar";
+	public static final String SMALLPOX_VACCINATION_RECEIVED = "smallpoxVaccinationReceived";
+	public static final String SMALLPOX_VACCINATION_DATE = "smallpoxVaccinationDate";
 	public static final String EPID_NUMBER = "epidNumber";
 	public static final String REPORT_LAT = "reportLat";
 	public static final String REPORT_LON = "reportLon";
@@ -87,6 +89,10 @@ public class CaseDataDto extends CaseReferenceDto {
 	private VaccinationInfoSource yellowFeverVaccinationInfoSource;
 	@Diseases({Disease.MONKEYPOX})
 	private YesNoUnknown smallpoxVaccinationScar;
+	@Diseases({Disease.MONKEYPOX})
+	private YesNoUnknown smallpoxVaccinationReceived;
+	@Diseases({Disease.MONKEYPOX})
+	private Date smallpoxVaccinationDate;
 	
 	private String epidNumber;
 
@@ -304,6 +310,22 @@ public class CaseDataDto extends CaseReferenceDto {
 
 	public void setSmallpoxVaccinationScar(YesNoUnknown smallpoxVaccinationScar) {
 		this.smallpoxVaccinationScar = smallpoxVaccinationScar;
+	}
+
+	public YesNoUnknown getSmallpoxVaccinationReceived() {
+		return smallpoxVaccinationReceived;
+	}
+
+	public void setSmallpoxVaccinationReceived(YesNoUnknown smallpoxVaccinationReceived) {
+		this.smallpoxVaccinationReceived = smallpoxVaccinationReceived;
+	}
+
+	public Date getSmallpoxVaccinationDate() {
+		return smallpoxVaccinationDate;
+	}
+
+	public void setSmallpoxVaccinationDate(Date smallpoxVaccinationDate) {
+		this.smallpoxVaccinationDate = smallpoxVaccinationDate;
 	}
 
 	public String getEpidNumber() {
