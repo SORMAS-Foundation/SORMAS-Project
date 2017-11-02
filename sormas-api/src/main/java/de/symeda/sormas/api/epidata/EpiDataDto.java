@@ -42,6 +42,7 @@ public class EpiDataDto extends DataTransferObject {
 	public static final String WATER_BODY = "waterBody";
 	public static final String WATER_BODY_DETAILS = "waterBodyDetails";
 	public static final String TICKBITE = "tickBite";
+	public static final String FLEABITE = "fleaBite";
 	public static final String DATE_OF_LAST_EXPOSURE = "dateOfLastExposure";
 	public static final String PLACE_OF_LAST_EXPOSURE = "placeOfLastExposure";
 	public static final String ANIMAL_CONDITION = "animalCondition";
@@ -53,9 +54,9 @@ public class EpiDataDto extends DataTransferObject {
 	private YesNoUnknown burialAttended;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.OTHER})
 	private YesNoUnknown gatheringAttended;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.MONKEYPOX,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.MONKEYPOX,Disease.PLAGUE,Disease.OTHER})
 	private YesNoUnknown traveled;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.MONKEYPOX,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.MONKEYPOX,Disease.PLAGUE,Disease.OTHER})
 	private YesNoUnknown rodents;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.OTHER})
 	private YesNoUnknown bats;
@@ -103,6 +104,8 @@ public class EpiDataDto extends DataTransferObject {
 	private String waterBodyDetails;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.OTHER})
 	private YesNoUnknown tickBite;
+	@Diseases({Disease.PLAGUE,Disease.OTHER})
+	private YesNoUnknown fleaBite;
 	@Diseases({Disease.MONKEYPOX,Disease.OTHER})
 	private Date dateOfLastExposure;
 	@Diseases({Disease.MONKEYPOX,Disease.OTHER})	
@@ -322,6 +325,13 @@ public class EpiDataDto extends DataTransferObject {
 	}
 	public void setAnimalCondition(AnimalCondition animalCondition) {
 		this.animalCondition = animalCondition;
+	}
+	
+	public YesNoUnknown getFleaBite() {
+		return fleaBite;
+	}
+	public void setFleaBite(YesNoUnknown fleaBite) {
+		this.fleaBite = fleaBite;
 	}
 	
 	public List<EpiDataBurialDto> getBurials() {

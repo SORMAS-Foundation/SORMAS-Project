@@ -10,6 +10,7 @@ import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.data.fieldgroup.DefaultFieldGroupFieldFactory;
 import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
 import com.vaadin.data.util.BeanItem;
+import com.vaadin.shared.ui.combobox.FilteringMode;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.AbstractTextField;
@@ -78,8 +79,10 @@ public abstract class AbstractEditForm <DTO extends DataTransferObject> extends 
 							fieldType = (Class<T>) ComboBox.class;
 						}
 						T field = super.createField(type, fieldType);
-						if (OptionGroup.class.isAssignableFrom(fieldType)) {
+						if (field instanceof OptionGroup) {
 							CssStyles.style(field, ValoTheme.OPTIONGROUP_HORIZONTAL);
+						} else if (field instanceof ComboBox) {
+							((ComboBox)field).setFilteringMode(FilteringMode.CONTAINS);
 						}
 						return field;
 					}

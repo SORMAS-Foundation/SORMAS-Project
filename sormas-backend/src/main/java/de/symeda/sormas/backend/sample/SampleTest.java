@@ -43,6 +43,7 @@ public class SampleTest extends AbstractDomainObject {
 	private SampleTestResultType testResult;
 	private String testResultText;
 	private boolean testResultVerified;
+	private boolean fourFoldIncreaseAntibodyTiter;
 	
 	@ManyToOne(cascade = {})
 	@JoinColumn(nullable = false)
@@ -120,6 +121,14 @@ public class SampleTest extends AbstractDomainObject {
 	}
 	public void setTestResultVerified(boolean testResultVerified) {
 		this.testResultVerified = testResultVerified;
+	}
+	
+	@Column
+	public boolean isFourFoldIncreaseAntibodyTiter() {
+		return fourFoldIncreaseAntibodyTiter;
+	}
+	public void setFourFoldIncreaseAntibodyTiter(boolean fourFoldIncreaseAntibodyTiter) {
+		this.fourFoldIncreaseAntibodyTiter = fourFoldIncreaseAntibodyTiter;
 	}
 	
 }

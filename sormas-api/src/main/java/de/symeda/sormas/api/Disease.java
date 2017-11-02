@@ -1,15 +1,16 @@
 package de.symeda.sormas.api;
 
 public enum Disease {
+	AVIAN_INFLUENCA,
+	CHOLERA,
+	CSM,
+	DENGUE,
 	EVD,
 	LASSA,
-	AVIAN_INFLUENCA,
-	CSM,
-	CHOLERA,
 	MEASLES,
-	YELLOW_FEVER,
-	DENGUE,
 	MONKEYPOX,
+	PLAGUE,
+	YELLOW_FEVER,
 	OTHER
 	;
 	
@@ -25,7 +26,4 @@ public enum Disease {
 		return this.name();
 	}
 	
-	public boolean hasContactFollowUp() {
-		return this == EVD || this == LASSA || this == AVIAN_INFLUENCA || this == MONKEYPOX || this == OTHER;
-	}
 }

@@ -286,11 +286,10 @@ public final class SymptomsValidator {
                 binding.symptomsEyePainLightSensitive, binding.symptomsKopliksSpots, binding.symptomsThrobocytopenia,
                 binding.symptomsOtitisMedia, binding.symptomsHearingloss, binding.symptomsDehydration, binding.symptomsAnorexiaAppetiteLoss,
                 binding.symptomsRefusalFeedorDrink, binding.symptomsJointPain, binding.symptomsShock,
-                binding.symptomsHiccups, binding.symptomsBackache, binding.symptomsEyesBleeding, binding.symptomsJaundice,
-                binding.symptomsDarkUrine, binding.symptomsStomachBleeding, binding.symptomsRapidBreathing, binding.symptomsSwollenGlands,
+                binding.symptomsHiccups, binding.symptomsBackache, binding.symptomsJaundice, binding.symptomsDarkUrine, binding.symptomsRapidBreathing, binding.symptomsSwollenGlands,
                 binding.symptomsOtherNonHemorrhagicSymptoms, binding.symptomsCutaneousEruption, binding.symptomsLesions, binding.symptomsLymphadenopathyAxillary,
                 binding.symptomsLymphadenopathyCervical, binding.symptomsLymphadenopathyInguinal, binding.symptomsChillsSweats, binding.symptomsBedridden,
-                binding.symptomsOralUlcers);
+                binding.symptomsOralUlcers, binding.symptomsBlackeningDeathOfTissue, binding.symptomsBuboesGroinArmpitNeck, binding.symptomsPainfulLymphadenitis);
     }
 
     private static List<SymptomStateField> getConditionalBleedingSymptoms(CaseSymptomsFragmentLayoutBinding binding) {
@@ -298,7 +297,8 @@ public final class SymptomsValidator {
         return Arrays.asList(binding.symptomsGumsBleeding, binding.symptomsInjectionSiteBleeding,
                 binding.symptomsNoseBleeding, binding.symptomsBloodyBlackStool, binding.symptomsRedBloodVomit,
                 binding.symptomsDigestedBloodVomit, binding.symptomsCoughingBlood, binding.symptomsBleedingVagina,
-                binding.symptomsSkinBruising, binding.symptomsBloodUrine, binding.symptomsOtherHemorrhagicSymptoms);
+                binding.symptomsSkinBruising, binding.symptomsBloodUrine, binding.symptomsEyesBleeding,
+                binding.symptomsStomachBleeding, binding.symptomsOtherHemorrhagicSymptoms);
     }
 
     private static List<SymptomStateField> getLesionsFields(CaseSymptomsFragmentLayoutBinding binding) {

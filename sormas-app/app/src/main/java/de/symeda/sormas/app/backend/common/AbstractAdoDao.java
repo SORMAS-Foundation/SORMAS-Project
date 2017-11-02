@@ -70,6 +70,32 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
         }
     }
 
+    public ADO queryUuidReference(String uuid) {
+
+        try {
+
+            List<ADO> results = queryBuilder()
+                    .selectColumns(AbstractDomainObject.ID,
+                            AbstractDomainObject.UUID,
+                            AbstractDomainObject.MODIFIED,
+                            AbstractDomainObject.SNAPSHOT)
+                    .where().eq(AbstractDomainObject.UUID, uuid)
+                        .and().eq(AbstractDomainObject.SNAPSHOT, false)
+                    .query();
+            if (results.size() == 0) {
+                return null;
+            } else if (results.size() == 1) {
+                return results.get(0);
+            } else {
+                Log.e(getTableName(), "Found multiple results for UUID: " + uuid);
+                throw new NonUniqueResultException("Found multiple results for UUID: " + uuid);
+            }
+        } catch (SQLException e) {
+            Log.e(getTableName(), "Could not perform queryUuid");
+            throw new RuntimeException(e);
+        }
+    }
+
     public ADO queryUuidWithEmbedded(String uuid) {
         ADO result = queryUuid(uuid);
         initEmbedded(result);

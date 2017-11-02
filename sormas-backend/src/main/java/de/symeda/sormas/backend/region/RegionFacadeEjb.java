@@ -21,7 +21,7 @@ public class RegionFacadeEjb implements RegionFacade {
 
 	@Override
 	public List<RegionReferenceDto> getAllAsReference() {
-		return service.getAll().stream()
+		return service.getAll(Region.NAME, true).stream()
 				.map(f -> toReferenceDto(f))
 				.collect(Collectors.toList());
 	}
@@ -35,7 +35,7 @@ public class RegionFacadeEjb implements RegionFacade {
 	
 	@Override
 	public List<RegionDataDto> getAllData() {
-		return service.getAll().stream()
+		return service.getAll(Region.NAME, true).stream()
 			.map(c -> toDataDto(c))
 			.collect(Collectors.toList());
 	}

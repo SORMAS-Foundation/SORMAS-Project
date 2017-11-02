@@ -89,7 +89,7 @@ public class CaseDao extends AbstractAdoDao<Case> {
             QueryBuilder builder = queryBuilder();
             Where where = builder.where();
             where.and(
-                    where.eq(Case.PERSON + "_id", person),
+                    where.eq(Case.PERSON, person),
                     where.eq(Case.DISEASE, disease)
             );
 

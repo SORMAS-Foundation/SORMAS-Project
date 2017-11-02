@@ -19,6 +19,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.DiseaseHelper;
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactFacade;
@@ -34,6 +36,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
+import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.person.PersonService;
@@ -72,6 +75,8 @@ public class ContactFacadeEjb implements ContactFacade {
 	private TaskService taskService;
 	@EJB
 	private DistrictService districtService;
+	@EJB
+	private CaseFacadeEjbLocal caseFacade;
 	
 	@Override
 	public List<String> getAllUuids(String userUuid) {
@@ -169,7 +174,7 @@ public class ContactFacadeEjb implements ContactFacade {
 	public ContactDto saveContact(ContactDto dto) {
 		Contact entity = fromDto(dto);
 		
-		if (!entity.getCaze().getDisease().hasContactFollowUp()) {
+		if (!DiseaseHelper.hasContactFollowUp(caseFacade.getCaseDataByUuid(entity.getCaze().getUuid()))) {
 			throw new UnsupportedOperationException("Contact creation is not allowed for diseases that don't have contact follow-up.");
 		}
 		

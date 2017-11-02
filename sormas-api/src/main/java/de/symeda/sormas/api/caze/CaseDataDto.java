@@ -3,6 +3,7 @@ package de.symeda.sormas.api.caze;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.PlagueType;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
@@ -21,13 +22,12 @@ public class CaseDataDto extends CaseReferenceDto {
 	
 	public static final String I18N_PREFIX = "CaseData";
 	
-	public static final String COUNTRY_EPID_CODE = "NIE";
-	
 	public static final String CASE_CLASSIFICATION = "caseClassification";
 	public static final String INVESTIGATION_STATUS = "investigationStatus";
 	public static final String PERSON = "person";
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
+	public static final String PLAGUE_TYPE = "plagueType";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
@@ -49,6 +49,8 @@ public class CaseDataDto extends CaseReferenceDto {
 	public static final String YELLOW_FEVER_VACCINATION = "yellowFeverVaccination";
 	public static final String YELLOW_FEVER_VACCINATION_INFO_SOURCE = "yellowFeverVaccinationInfoSource";
 	public static final String SMALLPOX_VACCINATION_SCAR = "smallpoxVaccinationScar";
+	public static final String SMALLPOX_VACCINATION_RECEIVED = "smallpoxVaccinationReceived";
+	public static final String SMALLPOX_VACCINATION_DATE = "smallpoxVaccinationDate";
 	public static final String EPID_NUMBER = "epidNumber";
 	public static final String REPORT_LAT = "reportLat";
 	public static final String REPORT_LON = "reportLon";
@@ -58,6 +60,7 @@ public class CaseDataDto extends CaseReferenceDto {
 	private InvestigationStatus investigationStatus;
 	private Disease disease;
 	private String diseaseDetails;
+	private PlagueType plagueType;
 	private UserReferenceDto reportingUser;
 	private Date reportDate;
 	private Date investigatedDate;
@@ -86,6 +89,10 @@ public class CaseDataDto extends CaseReferenceDto {
 	private VaccinationInfoSource yellowFeverVaccinationInfoSource;
 	@Diseases({Disease.MONKEYPOX})
 	private YesNoUnknown smallpoxVaccinationScar;
+	@Diseases({Disease.MONKEYPOX})
+	private YesNoUnknown smallpoxVaccinationReceived;
+	@Diseases({Disease.MONKEYPOX})
+	private Date smallpoxVaccinationDate;
 	
 	private String epidNumber;
 
@@ -127,6 +134,14 @@ public class CaseDataDto extends CaseReferenceDto {
 
 	public void setDiseaseDetails(String diseaseDetails) {
 		this.diseaseDetails = diseaseDetails;
+	}
+
+	public PlagueType getPlagueType() {
+		return plagueType;
+	}
+
+	public void setPlagueType(PlagueType plagueType) {
+		this.plagueType = plagueType;
 	}
 
 	public UserReferenceDto getReportingUser() {
@@ -295,6 +310,22 @@ public class CaseDataDto extends CaseReferenceDto {
 
 	public void setSmallpoxVaccinationScar(YesNoUnknown smallpoxVaccinationScar) {
 		this.smallpoxVaccinationScar = smallpoxVaccinationScar;
+	}
+
+	public YesNoUnknown getSmallpoxVaccinationReceived() {
+		return smallpoxVaccinationReceived;
+	}
+
+	public void setSmallpoxVaccinationReceived(YesNoUnknown smallpoxVaccinationReceived) {
+		this.smallpoxVaccinationReceived = smallpoxVaccinationReceived;
+	}
+
+	public Date getSmallpoxVaccinationDate() {
+		return smallpoxVaccinationDate;
+	}
+
+	public void setSmallpoxVaccinationDate(Date smallpoxVaccinationDate) {
+		this.smallpoxVaccinationDate = smallpoxVaccinationDate;
 	}
 
 	public String getEpidNumber() {

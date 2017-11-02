@@ -3,6 +3,7 @@ package de.symeda.sormas.ui.caze;
 import com.vaadin.ui.Label;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -35,7 +36,7 @@ public abstract class AbstractCaseView extends AbstractSubNavigationView {
 		menu.addView(CaseHospitalizationView.VIEW_NAME, I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, "hospitalization"), params);
 		menu.addView(CaseSymptomsView.VIEW_NAME, I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.SYMPTOMS), params);
 		menu.addView(EpiDataView.VIEW_NAME, I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, "epiData"), params);
-		if (caze.getDisease().hasContactFollowUp()) {
+		if (DiseaseHelper.hasContactFollowUp(caze)) {
 			menu.addView(CaseContactsView.VIEW_NAME, I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, "contacts"), params);
 		}
 		infoLabel.setValue(caseRef.getCaption());

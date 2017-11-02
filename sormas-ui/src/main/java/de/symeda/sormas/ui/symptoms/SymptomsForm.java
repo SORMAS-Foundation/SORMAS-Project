@@ -58,9 +58,9 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 					LayoutUtil.fluidColumn(6, 0,
 							LayoutUtil.locsCss(CssStyles.VSPACE_3,
 									SymptomsDto.ABDOMINAL_PAIN, SymptomsDto.HEARINGLOSS, SymptomsDto.ALTERED_CONSCIOUSNESS, SymptomsDto.ANOREXIA_APPETITE_LOSS,
-									SymptomsDto.BACKACHE, SymptomsDto.STOMACH_BLEEDING, SymptomsDto.BLOOD_IN_STOOL, SymptomsDto.CHEST_PAIN, SymptomsDto.CHILLS_SWEATS,
+									SymptomsDto.BACKACHE, SymptomsDto.BLACKENING_DEATH_OF_TISSUE, SymptomsDto.BLOOD_IN_STOOL, SymptomsDto.BUBOES_GROIN_ARMPIT_NECK, SymptomsDto.CHEST_PAIN, SymptomsDto.CHILLS_SWEATS,
 									SymptomsDto.CONFUSED_DISORIENTED, SymptomsDto.CONJUNCTIVITIS, SymptomsDto.SEIZURES, SymptomsDto.COUGH, SymptomsDto.CUTANEOUS_ERUPTION,
-									SymptomsDto.DARK_URINE, SymptomsDto.DEHYDRATION, SymptomsDto.DIARRHEA, SymptomsDto.DIFFICULTY_BREATHING, SymptomsDto.EYES_BLEEDING, SymptomsDto.FATIGUE_WEAKNESS,
+									SymptomsDto.DARK_URINE, SymptomsDto.DEHYDRATION, SymptomsDto.DIARRHEA, SymptomsDto.DIFFICULTY_BREATHING, SymptomsDto.FATIGUE_WEAKNESS,
 									SymptomsDto.FEVER, SymptomsDto.HEADACHE, SymptomsDto.HICCUPS, SymptomsDto.BEDRIDDEN, SymptomsDto.JAUNDICE, SymptomsDto.JOINT_PAIN, SymptomsDto.KOPLIKS_SPOTS, 
 									SymptomsDto.LESIONS, SymptomsDto.LESIONS_THAT_ITCH, SymptomsDto.LESIONS_SAME_STATE, SymptomsDto.LESIONS_SAME_SIZE, SymptomsDto.LESIONS_DEEP_PROFOUND, 
 									LESIONS_LOCATIONS_LOC, SymptomsDto.LESIONS_FACE, SymptomsDto.LESIONS_LEGS, SymptomsDto.LESIONS_SOLES_FEET, SymptomsDto.LESIONS_PALMS_HANDS, SymptomsDto.LESIONS_THORAX,
@@ -70,11 +70,12 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 							LayoutUtil.locsCss(CssStyles.VSPACE_3,
 									SymptomsDto.LYMPHADENOPATHY_AXILLARY, SymptomsDto.LYMPHADENOPATHY_CERVICAL, SymptomsDto.LYMPHADENOPATHY_INGUINAL, 
 									SymptomsDto.OTITIS_MEDIA, SymptomsDto.MUSCLE_PAIN, SymptomsDto.NAUSEA, SymptomsDto.NECK_STIFFNESS, SymptomsDto.RAPID_BREATHING,
-									SymptomsDto.REFUSAL_FEEDOR_DRINK, SymptomsDto.RUNNY_NOSE, SymptomsDto.ORAL_ULCERS, SymptomsDto.EYE_PAIN_LIGHT_SENSITIVE, SymptomsDto.SHOCK, SymptomsDto.SKIN_RASH, SymptomsDto.SORE_THROAT,
-									SymptomsDto.SWOLLEN_GLANDS, SymptomsDto.THROBOCYTOPENIA, SymptomsDto.UNEXPLAINED_BLEEDING, SymptomsDto.INJECTION_SITE_BLEEDING, SymptomsDto.BLEEDING_VAGINA, 
-									SymptomsDto.GUMS_BLEEDING, SymptomsDto.BLOOD_URINE, SymptomsDto.BLOODY_BLACK_STOOL, SymptomsDto.SKIN_BRUISING, SymptomsDto.COUGHING_BLOOD, 
-									SymptomsDto.DIGESTED_BLOOD_VOMIT, SymptomsDto.RED_BLOOD_VOMIT, SymptomsDto.NOSE_BLEEDING, SymptomsDto.OTHER_HEMORRHAGIC_SYMPTOMS,
-									SymptomsDto.OTHER_HEMORRHAGIC_SYMPTOMS_TEXT, SymptomsDto.VOMITING,
+									SymptomsDto.REFUSAL_FEEDOR_DRINK, SymptomsDto.RUNNY_NOSE, SymptomsDto.ORAL_ULCERS, SymptomsDto.EYE_PAIN_LIGHT_SENSITIVE, SymptomsDto.PAINFUL_LYMPHADENITIS,
+									SymptomsDto.SHOCK, SymptomsDto.SKIN_RASH, SymptomsDto.SORE_THROAT,
+									SymptomsDto.SWOLLEN_GLANDS, SymptomsDto.THROBOCYTOPENIA, SymptomsDto.UNEXPLAINED_BLEEDING, SymptomsDto.EYES_BLEEDING, SymptomsDto.INJECTION_SITE_BLEEDING, 
+									SymptomsDto.BLEEDING_VAGINA, SymptomsDto.GUMS_BLEEDING, SymptomsDto.STOMACH_BLEEDING, SymptomsDto.BLOOD_URINE, SymptomsDto.BLOODY_BLACK_STOOL, 
+									SymptomsDto.SKIN_BRUISING, SymptomsDto.COUGHING_BLOOD, SymptomsDto.DIGESTED_BLOOD_VOMIT, SymptomsDto.RED_BLOOD_VOMIT, SymptomsDto.NOSE_BLEEDING, 
+									SymptomsDto.OTHER_HEMORRHAGIC_SYMPTOMS, SymptomsDto.OTHER_HEMORRHAGIC_SYMPTOMS_TEXT, SymptomsDto.VOMITING,
 									SymptomsDto.OTHER_NON_HEMORRHAGIC_SYMPTOMS, SymptomsDto.OTHER_NON_HEMORRHAGIC_SYMPTOMS_TEXT)
 							+ LayoutUtil.locsCss(CssStyles.VSPACE_3,
 									SymptomsDto.PATIENT_ILL_LOCATION, SymptomsDto.SYMPTOMS_COMMENTS))
@@ -129,17 +130,18 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 				SymptomsDto.LESIONS_SAME_STATE, SymptomsDto.LESIONS_SAME_SIZE, SymptomsDto.LESIONS_DEEP_PROFOUND, SymptomsDto.LESIONS_FACE, SymptomsDto.LESIONS_LEGS,
 				SymptomsDto.LESIONS_SOLES_FEET, SymptomsDto.LESIONS_PALMS_HANDS, SymptomsDto.LESIONS_THORAX, SymptomsDto.LESIONS_ARMS, SymptomsDto.LESIONS_GENITALS, SymptomsDto.LESIONS_ALL_OVER_BODY,  
 				SymptomsDto.LYMPHADENOPATHY_AXILLARY, SymptomsDto.LYMPHADENOPATHY_CERVICAL, SymptomsDto.LYMPHADENOPATHY_INGUINAL, SymptomsDto.CHILLS_SWEATS,
-				SymptomsDto.BEDRIDDEN, SymptomsDto.ORAL_ULCERS, SymptomsDto.PATIENT_ILL_LOCATION);
+				SymptomsDto.BEDRIDDEN, SymptomsDto.ORAL_ULCERS, SymptomsDto.PAINFUL_LYMPHADENITIS, SymptomsDto.BLACKENING_DEATH_OF_TISSUE, SymptomsDto.BUBOES_GROIN_ARMPIT_NECK, SymptomsDto.PATIENT_ILL_LOCATION);
 
 		monkeypoxImageFieldIds = Arrays.asList(SymptomsDto.LESIONS_RESEMBLE_IMG1, SymptomsDto.LESIONS_RESEMBLE_IMG2, SymptomsDto.LESIONS_RESEMBLE_IMG3, SymptomsDto.LESIONS_RESEMBLE_IMG4);
 		for (String propertyId : monkeypoxImageFieldIds) {
+			@SuppressWarnings("rawtypes")
 			Field monkeypoxImageField = addField(propertyId);
 			CssStyles.style(monkeypoxImageField, CssStyles.VSPACE_NONE);
 		}
 
 		conditionalBleedingSymptomFieldIds = Arrays.asList(SymptomsDto.GUMS_BLEEDING, SymptomsDto.INJECTION_SITE_BLEEDING, SymptomsDto.NOSE_BLEEDING, 
-				SymptomsDto.BLOODY_BLACK_STOOL, SymptomsDto.RED_BLOOD_VOMIT, SymptomsDto.DIGESTED_BLOOD_VOMIT, 
-				SymptomsDto.COUGHING_BLOOD, SymptomsDto.BLEEDING_VAGINA, SymptomsDto.SKIN_BRUISING, 
+				SymptomsDto.BLOODY_BLACK_STOOL, SymptomsDto.RED_BLOOD_VOMIT, SymptomsDto.DIGESTED_BLOOD_VOMIT, SymptomsDto.EYES_BLEEDING, 
+				SymptomsDto.COUGHING_BLOOD, SymptomsDto.BLEEDING_VAGINA, SymptomsDto.SKIN_BRUISING, SymptomsDto.STOMACH_BLEEDING,
 				SymptomsDto.BLOOD_URINE, SymptomsDto.OTHER_HEMORRHAGIC_SYMPTOMS);
 
 		lesionsFieldIds = Arrays.asList(SymptomsDto.LESIONS_SAME_STATE, SymptomsDto.LESIONS_SAME_SIZE, SymptomsDto.LESIONS_DEEP_PROFOUND, SymptomsDto.LESIONS_THAT_ITCH);
@@ -154,7 +156,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		FieldHelper.setVisibleWhen(getFieldGroup(), 
 				conditionalBleedingSymptomFieldIds,
 				SymptomsDto.UNEXPLAINED_BLEEDING,
-				Arrays.asList(SymptomState.YES), true);
+				Arrays.asList(SymptomState.YES), true, SymptomsDto.class, disease);
 
 		FieldHelper.setVisibleWhen(getFieldGroup(), 
 				SymptomsDto.OTHER_HEMORRHAGIC_SYMPTOMS_TEXT,
@@ -199,10 +201,11 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 				SymptomsDto.CHEST_PAIN, SymptomsDto.CONFUSED_DISORIENTED, SymptomsDto.SEIZURES, SymptomsDto.ALTERED_CONSCIOUSNESS, SymptomsDto.CONJUNCTIVITIS,
 				SymptomsDto.EYE_PAIN_LIGHT_SENSITIVE, SymptomsDto.KOPLIKS_SPOTS, SymptomsDto.THROBOCYTOPENIA, SymptomsDto.OTITIS_MEDIA, SymptomsDto.HEARINGLOSS,
 				SymptomsDto.DEHYDRATION, SymptomsDto.ANOREXIA_APPETITE_LOSS, SymptomsDto.REFUSAL_FEEDOR_DRINK, SymptomsDto.JOINT_PAIN, SymptomsDto.SHOCK,
-				SymptomsDto.HICCUPS, SymptomsDto.BACKACHE, SymptomsDto.EYES_BLEEDING, SymptomsDto.JAUNDICE, SymptomsDto.DARK_URINE, SymptomsDto.STOMACH_BLEEDING,
+				SymptomsDto.HICCUPS, SymptomsDto.BACKACHE, SymptomsDto.JAUNDICE, SymptomsDto.DARK_URINE,
 				SymptomsDto.RAPID_BREATHING, SymptomsDto.SWOLLEN_GLANDS, SymptomsDto.UNEXPLAINED_BLEEDING, SymptomsDto.OTHER_NON_HEMORRHAGIC_SYMPTOMS,
 				SymptomsDto.CUTANEOUS_ERUPTION, SymptomsDto.LESIONS, SymptomsDto.LYMPHADENOPATHY_AXILLARY, SymptomsDto.LYMPHADENOPATHY_CERVICAL,
-				SymptomsDto.LYMPHADENOPATHY_INGUINAL, SymptomsDto.CHILLS_SWEATS, SymptomsDto.BEDRIDDEN, SymptomsDto.ORAL_ULCERS);
+				SymptomsDto.LYMPHADENOPATHY_INGUINAL, SymptomsDto.CHILLS_SWEATS, SymptomsDto.BEDRIDDEN, SymptomsDto.ORAL_ULCERS, SymptomsDto.PAINFUL_LYMPHADENITIS,
+				SymptomsDto.BLACKENING_DEATH_OF_TISSUE, SymptomsDto.BUBOES_GROIN_ARMPIT_NECK);
 
 		FieldHelper.setRequiredWhen(getFieldGroup(), getFieldGroup().getField(SymptomsDto.UNEXPLAINED_BLEEDING), conditionalBleedingSymptomFieldIds, Arrays.asList(SymptomState.YES), disease);
 		FieldHelper.setRequiredWhen(getFieldGroup(), getFieldGroup().getField(SymptomsDto.OTHER_HEMORRHAGIC_SYMPTOMS), 

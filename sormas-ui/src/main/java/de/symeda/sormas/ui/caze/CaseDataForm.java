@@ -6,9 +6,12 @@ import java.util.List;
 import com.vaadin.data.Property;
 import com.vaadin.data.validator.RegexpValidator;
 import com.vaadin.data.validator.StringLengthValidator;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.DateField;
+import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TextField;
@@ -27,6 +30,7 @@ import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases.DiseasesConfiguration;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DoneListener;
@@ -40,72 +44,75 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 	private static final String MEDICAL_INFORMATION_LOC = "medicalInformationLoc";
+	private static final String SMALLPOX_VACCINATION_SCAR_IMG = "smallpoxVaccinationScarImg";
+
 	public static final String NONE_HEALTH_FACILITY_DETAILS = "noneHealthFacilityDetails";
-	
-    private static final String HTML_LAYOUT = 
-    		LayoutUtil.h3(CssStyles.VSPACE_3, "Case data")+
-			
+
+	private static final String HTML_LAYOUT = 
+			LayoutUtil.h3(CssStyles.VSPACE_3, "Case data")+
+
 			LayoutUtil.divCss(CssStyles.VSPACE_4,
-    				LayoutUtil.fluidRow(
-    						LayoutUtil.loc(CaseDataDto.UUID), 
-    						LayoutUtil.fluidRowLocs(CaseDataDto.REPORT_DATE, CaseDataDto.REPORTING_USER)) +
+					LayoutUtil.fluidRow(
+							LayoutUtil.loc(CaseDataDto.UUID), 
+							LayoutUtil.fluidRowLocs(CaseDataDto.REPORT_DATE, CaseDataDto.REPORTING_USER)) +
 					LayoutUtil.fluidRowLocs(CaseDataDto.CASE_CLASSIFICATION) +
 					LayoutUtil.fluidRowLocs(CaseDataDto.INVESTIGATION_STATUS) +
-    				LayoutUtil.fluidRowLocs(CaseDataDto.EPID_NUMBER, CaseDataDto.DISEASE) +
-    				LayoutUtil.fluidRowLocs("", CaseDataDto.DISEASE_DETAILS) +
-    				LayoutUtil.fluidRowLocs(CaseDataDto.REGION, CaseDataDto.DISTRICT) +
-		    		LayoutUtil.fluidRowLocs(CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY) +
-    				LayoutUtil.fluidRowLocs("", CaseDataDto.HEALTH_FACILITY_DETAILS) +
-    				LayoutUtil.fluidRowLocs(CaseDataDto.SURVEILLANCE_OFFICER, "")
-		    )+
+					LayoutUtil.fluidRowLocs(CaseDataDto.EPID_NUMBER, CaseDataDto.DISEASE) +
+					LayoutUtil.fluidRow("", LayoutUtil.locs(CaseDataDto.DISEASE_DETAILS, CaseDataDto.PLAGUE_TYPE)) +
+					LayoutUtil.fluidRowLocs(CaseDataDto.REGION, CaseDataDto.DISTRICT) +
+					LayoutUtil.fluidRowLocs(CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY) +
+					LayoutUtil.fluidRowLocs("", CaseDataDto.HEALTH_FACILITY_DETAILS) +
+					LayoutUtil.fluidRowLocs(CaseDataDto.SURVEILLANCE_OFFICER, "")
+					)+
 			LayoutUtil.loc(MEDICAL_INFORMATION_LOC) +
-			LayoutUtil.fluidRow(
-					LayoutUtil.fluidRowLocs(CaseDataDto.PREGNANT, "") +
-					LayoutUtil.fluidRowLocs(CaseDataDto.MEASLES_VACCINATION, CaseDataDto.MEASLES_DOSES) +
-					LayoutUtil.fluidRowLocs(CaseDataDto.MEASLES_VACCINATION_INFO_SOURCE, "") +
-					LayoutUtil.fluidRowLocs(CaseDataDto.YELLOW_FEVER_VACCINATION, CaseDataDto.YELLOW_FEVER_VACCINATION_INFO_SOURCE) +
-					LayoutUtil.fluidRowLocs(CaseDataDto.SMALLPOX_VACCINATION_SCAR)
-			);
-    	
+			LayoutUtil.fluidRowLocs(CaseDataDto.PREGNANT, "") +
+			LayoutUtil.fluidRowLocs(CaseDataDto.MEASLES_VACCINATION, CaseDataDto.MEASLES_DOSES) +
+			LayoutUtil.fluidRowLocs(CaseDataDto.MEASLES_VACCINATION_INFO_SOURCE, "") +
+			LayoutUtil.fluidRowLocs(CaseDataDto.YELLOW_FEVER_VACCINATION, CaseDataDto.YELLOW_FEVER_VACCINATION_INFO_SOURCE) +
+			LayoutUtil.fluidRowLocs(CaseDataDto.SMALLPOX_VACCINATION_RECEIVED, CaseDataDto.SMALLPOX_VACCINATION_DATE) +
+			LayoutUtil.fluidRowLocs(CaseDataDto.SMALLPOX_VACCINATION_SCAR) +
+			LayoutUtil.fluidRowLocs(SMALLPOX_VACCINATION_SCAR_IMG);
 
-    private final PersonDto person;
-    private final Disease disease;
 
-    public CaseDataForm(PersonDto person, Disease disease) {
-        super(CaseDataDto.class, CaseDataDto.I18N_PREFIX);
-        this.person = person;
-        this.disease = disease;
-        addFields();
-    }
+	private final PersonDto person;
+	private final Disease disease;
 
-    @Override
+	public CaseDataForm(PersonDto person, Disease disease) {
+		super(CaseDataDto.class, CaseDataDto.I18N_PREFIX);
+		this.person = person;
+		this.disease = disease;
+		addFields();
+	}
+
+	@Override
 	protected void addFields() {
-    	if (person == null || disease == null) {
-    		return;
-    	}
-    	
-    	addFields(CaseDataDto.UUID, CaseDataDto.REPORT_DATE, CaseDataDto.REPORTING_USER);
-    	
-    	TextField epidField = addField(CaseDataDto.EPID_NUMBER, TextField.class);
-    	epidField.addValidator(new RegexpValidator(DataHelper.getEpidNumberRegexp(), true, 
-    			"The EPID number does not match the required pattern. You may still save the case and enter the correct number later."));
-    	epidField.addValidator(new StringLengthValidator("An EPID number has to be provided. You may still save the case and enter the correct number later.", 1, null, false));
-    	epidField.setInvalidCommitted(true);
-    	
-    	addField(CaseDataDto.CASE_CLASSIFICATION, OptionGroup.class);
-    	addField(CaseDataDto.INVESTIGATION_STATUS, OptionGroup.class);
-    	AbstractSelect diseaseField = addField(CaseDataDto.DISEASE, ComboBox.class);
-    	addField(CaseDataDto.DISEASE_DETAILS, TextField.class);
-    	TextField healthFacilityDetails = addField(CaseDataDto.HEALTH_FACILITY_DETAILS, TextField.class);
-    	
-    	addField(CaseDataDto.REGION, ComboBox.class);
-    	addField(CaseDataDto.DISTRICT, ComboBox.class);
-    	addField(CaseDataDto.COMMUNITY, ComboBox.class);
-    	ComboBox facility = addField(CaseDataDto.HEALTH_FACILITY, ComboBox.class);
-    	
+		if (person == null || disease == null) {
+			return;
+		}
+
+		addFields(CaseDataDto.UUID, CaseDataDto.REPORT_DATE, CaseDataDto.REPORTING_USER);
+
+		TextField epidField = addField(CaseDataDto.EPID_NUMBER, TextField.class);
+		epidField.addValidator(new RegexpValidator(DataHelper.getEpidNumberRegexp(), true, 
+				"The EPID number does not match the required pattern. You may still save the case and enter the correct number later."));
+		epidField.addValidator(new StringLengthValidator("An EPID number has to be provided. You may still save the case and enter the correct number later.", 1, null, false));
+		epidField.setInvalidCommitted(true);
+
+		addField(CaseDataDto.CASE_CLASSIFICATION, OptionGroup.class);
+		addField(CaseDataDto.INVESTIGATION_STATUS, OptionGroup.class);
+		AbstractSelect diseaseField = addField(CaseDataDto.DISEASE, ComboBox.class);
+		addField(CaseDataDto.DISEASE_DETAILS, TextField.class);
+		addField(CaseDataDto.PLAGUE_TYPE, OptionGroup.class);
+		TextField healthFacilityDetails = addField(CaseDataDto.HEALTH_FACILITY_DETAILS, TextField.class);
+
+		addField(CaseDataDto.REGION, ComboBox.class);
+		addField(CaseDataDto.DISTRICT, ComboBox.class);
+		addField(CaseDataDto.COMMUNITY, ComboBox.class);
+		ComboBox facility = addField(CaseDataDto.HEALTH_FACILITY, ComboBox.class);
+
 		ComboBox surveillanceOfficerField = addField(CaseDataDto.SURVEILLANCE_OFFICER, ComboBox.class);
 		surveillanceOfficerField.setNullSelectionAllowed(true);
-		
+
 		addField(CaseDataDto.PREGNANT, OptionGroup.class);
 		addField(CaseDataDto.MEASLES_VACCINATION, ComboBox.class);
 		addField(CaseDataDto.MEASLES_DOSES, TextField.class);
@@ -113,39 +120,56 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		addField(CaseDataDto.YELLOW_FEVER_VACCINATION, ComboBox.class);
 		addField(CaseDataDto.YELLOW_FEVER_VACCINATION_INFO_SOURCE, ComboBox.class);
 		addField(CaseDataDto.SMALLPOX_VACCINATION_SCAR, OptionGroup.class);
-    	
-    	setRequired(true, CaseDataDto.CASE_CLASSIFICATION, CaseDataDto.INVESTIGATION_STATUS,
-    			CaseDataDto.REGION, CaseDataDto.DISTRICT, CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY);
+		addField(CaseDataDto.SMALLPOX_VACCINATION_RECEIVED, OptionGroup.class);
+		addField(CaseDataDto.SMALLPOX_VACCINATION_DATE, DateField.class);
 
-    	setReadOnly(true, CaseDataDto.UUID, CaseDataDto.REPORT_DATE, CaseDataDto.REPORTING_USER,
-    			CaseDataDto.INVESTIGATION_STATUS, CaseDataDto.REGION,
-    			CaseDataDto.DISTRICT, CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY);
-    	if (!UserRole.isSupervisor(LoginHelper.getCurrentUserRoles())) {
-    		setReadOnly(true, CaseDataDto.DISEASE);
-    	}
-    	
+		setRequired(true, CaseDataDto.CASE_CLASSIFICATION, CaseDataDto.INVESTIGATION_STATUS,
+				CaseDataDto.REGION, CaseDataDto.DISTRICT, CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY);
+
+		setReadOnly(true, CaseDataDto.UUID, CaseDataDto.REPORT_DATE, CaseDataDto.REPORTING_USER,
+				CaseDataDto.INVESTIGATION_STATUS, CaseDataDto.REGION,
+				CaseDataDto.DISTRICT, CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY);
+		if (!UserRole.isSupervisor(LoginHelper.getCurrentUserRoles())) {
+			setReadOnly(true, CaseDataDto.DISEASE);
+		}
+
 		for (Object propertyId : getFieldGroup().getBoundPropertyIds()) {
 			boolean visible = DiseasesConfiguration.isDefinedOrMissing(CaseDataDto.class, (String)propertyId, disease);
 			getFieldGroup().getField(propertyId).setVisible(visible);
 		}
-		
-    	Sex personSex = person.getSex();
-    	if (personSex != Sex.FEMALE) {
-    		setVisible(false, CaseDataDto.PREGNANT);
-    	}
-		
+
+		Sex personSex = person.getSex();
+		if (personSex != Sex.FEMALE) {
+			setVisible(false, CaseDataDto.PREGNANT);
+		}
+
 		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.MEASLES_DOSES, CaseDataDto.MEASLES_VACCINATION_INFO_SOURCE), 
 				CaseDataDto.MEASLES_VACCINATION, Arrays.asList(Vaccination.VACCINATED), true);
-		
 		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.YELLOW_FEVER_VACCINATION_INFO_SOURCE),
 				CaseDataDto.YELLOW_FEVER_VACCINATION, Arrays.asList(Vaccination.VACCINATED), true);
-		
 		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.DISEASE_DETAILS), CaseDataDto.DISEASE, Arrays.asList(Disease.OTHER), true);
 		FieldHelper.setRequiredWhen(getFieldGroup(), CaseDataDto.DISEASE, Arrays.asList(CaseDataDto.DISEASE_DETAILS), Arrays.asList(Disease.OTHER));
-		
+		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.PLAGUE_TYPE), CaseDataDto.DISEASE, Arrays.asList(Disease.PLAGUE), true);
+
+		if (disease == Disease.MONKEYPOX) {
+			Image smallpoxVaccinationScarImg = new Image(null, new ThemeResource("img/smallpox-vaccination-scar.jpg"));
+			CssStyles.style(smallpoxVaccinationScarImg, CssStyles.VSPACE_3);
+			getContent().addComponent(smallpoxVaccinationScarImg, SMALLPOX_VACCINATION_SCAR_IMG);
+			// Set up initial image visibility
+			getContent().getComponent(SMALLPOX_VACCINATION_SCAR_IMG).setVisible(
+					getFieldGroup().getField(CaseDataDto.SMALLPOX_VACCINATION_RECEIVED).getValue() == YesNoUnknown.YES);
+
+			// Set up image visibility listener
+			getFieldGroup().getField(CaseDataDto.SMALLPOX_VACCINATION_RECEIVED).addValueChangeListener(e -> {
+				getContent().getComponent(SMALLPOX_VACCINATION_SCAR_IMG).setVisible(e.getProperty().getValue() == YesNoUnknown.YES);
+			});
+		}
+
+		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.SMALLPOX_VACCINATION_SCAR, CaseDataDto.SMALLPOX_VACCINATION_DATE), CaseDataDto.SMALLPOX_VACCINATION_RECEIVED, Arrays.asList(YesNoUnknown.YES), true);
+
 		List<String> medicalInformationFields = Arrays.asList(CaseDataDto.PREGNANT, CaseDataDto.MEASLES_VACCINATION, 
-				CaseDataDto.YELLOW_FEVER_VACCINATION, CaseDataDto.SMALLPOX_VACCINATION_SCAR);
-		
+				CaseDataDto.YELLOW_FEVER_VACCINATION, CaseDataDto.SMALLPOX_VACCINATION_RECEIVED);
+
 		for (String medicalInformationField : medicalInformationFields) {
 			if (getFieldGroup().getField(medicalInformationField).isVisible()) {
 				String medicalInformationCaptionLayout = LayoutUtil.h3(CssStyles.VSPACE_3, "Additional medical information");
@@ -155,17 +179,17 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				break;
 			}
 		}
-		
+
 		addValueChangeListener(e -> {
 			diseaseField.addValueChangeListener(new DiseaseChangeListener(diseaseField, getValue().getDisease()));
 		});
-		
+
 		facility.addValueChangeListener(e -> {
 			if (facility.getValue() != null) {
 				boolean otherHealthFacility = ((FacilityReferenceDto) facility.getValue()).getUuid().equals(FacilityDto.OTHER_FACILITY_UUID);
 				boolean noneHealthFacility = ((FacilityReferenceDto) facility.getValue()).getUuid().equals(FacilityDto.NONE_FACILITY_UUID);
 				boolean detailsVisible = otherHealthFacility || noneHealthFacility;
-				
+
 				healthFacilityDetails.setVisible(detailsVisible);
 
 				if (otherHealthFacility) {
@@ -183,25 +207,25 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			}			
 		});
 	}
-    
+
 	@Override 
 	protected String createHtmlLayout() {
-		 return HTML_LAYOUT;
+		return HTML_LAYOUT;
 	}
-	
+
 	private static class DiseaseChangeListener implements ValueChangeListener {
-		
+
 		private AbstractSelect diseaseField;
 		private Disease currentDisease;
-		
+
 		DiseaseChangeListener(AbstractSelect diseaseField, Disease currentDisease) {
 			this.diseaseField = diseaseField;
 			this.currentDisease = currentDisease;
 		}
-		
+
 		@Override
 		public void valueChange(Property.ValueChangeEvent e) {
-			
+
 			if (diseaseField.getValue() != currentDisease) {
 				ConfirmationComponent confirmDiseaseChangeComponent = new ConfirmationComponent(false) {
 					private static final long serialVersionUID = 1L;
@@ -217,7 +241,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				confirmDiseaseChangeComponent.getConfirmButton().setCaption("Really change case disease?");
 				confirmDiseaseChangeComponent.getCancelButton().setCaption("Cancel");
 				confirmDiseaseChangeComponent.setMargin(true);
-				
+
 				Window popupWindow = VaadinUiUtil.showPopupWindow(confirmDiseaseChangeComponent);
 				CloseListener closeListener = new CloseListener() {
 					@Override

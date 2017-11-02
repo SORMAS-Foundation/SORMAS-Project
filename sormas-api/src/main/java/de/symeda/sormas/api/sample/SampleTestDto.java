@@ -20,6 +20,7 @@ public class SampleTestDto extends SampleTestReferenceDto {
 	public static final String TEST_RESULT = "testResult";
 	public static final String TEST_RESULT_TEXT = "testResultText";
 	public static final String TEST_RESULT_VERIFIED = "testResultVerified";
+	public static final String FOUR_FOLD_INCREASE_ANTIBODY_TITER = "fourFoldIncreaseAntibodyTiter";
 	
 	private SampleReferenceDto sample;
 	private SampleTestType testType;
@@ -30,6 +31,7 @@ public class SampleTestDto extends SampleTestReferenceDto {
 	private SampleTestResultType testResult;
 	private String testResultText;
 	private boolean testResultVerified;
+	private boolean fourFoldIncreaseAntibodyTiter;
 	
 	public SampleReferenceDto getSample() {
 		return sample;
@@ -84,6 +86,12 @@ public class SampleTestDto extends SampleTestReferenceDto {
 	}
 	public void setTestResultVerified(boolean testResultVerified) {
 		this.testResultVerified = testResultVerified;
+	}
+	public boolean isFourFoldIncreaseAntibodyTiter() {
+		return fourFoldIncreaseAntibodyTiter;
+	}
+	public void setFourFoldIncreaseAntibodyTiter(boolean fourFoldIncreaseAntibodyTiter) {
+		this.fourFoldIncreaseAntibodyTiter = fourFoldIncreaseAntibodyTiter;
 	}
 	
 }

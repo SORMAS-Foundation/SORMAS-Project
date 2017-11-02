@@ -104,9 +104,7 @@ public class FacilityDto extends FacilityReferenceDto {
 		
 		StringBuilder caption = new StringBuilder();
 		caption.append(name);
-		if (community != null) {
-			caption.append(" (").append(community.getCaption()).append(")");
-		}
+
 		return caption.toString();
 	}
 }

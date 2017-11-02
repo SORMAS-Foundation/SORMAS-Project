@@ -67,14 +67,16 @@ public class MapComponent extends VerticalLayout {
 		
 		if (LoginHelper.isUserInRole(UserRole.NATIONAL_USER)) {
 			map.setZoom(6);
-			map.setCenter(new LatLon(9.101718, 7.396517));
+			GeoLatLon mapCenter = FacadeProvider.getGeoShapeProvider().getCenterOfAllRegions();
+			map.setCenter(new LatLon(mapCenter.getLon(), mapCenter.getLat()));
 		} else {
 	    	UserDto user = LoginHelper.getCurrentUser();
 	    	if (user.getRegion() != null) {
 				GeoLatLon mapCenter = FacadeProvider.getGeoShapeProvider().getCenterOfRegion(user.getRegion());
 				map.setCenter(new LatLon(mapCenter.getLon(), mapCenter.getLat()));
 	    	} else {
-				map.setCenter(new LatLon(9.101718, 7.396517));
+				GeoLatLon mapCenter = FacadeProvider.getGeoShapeProvider().getCenterOfAllRegions();
+				map.setCenter(new LatLon(mapCenter.getLon(), mapCenter.getLat()));
 	    	}
 	        map.setZoom(9);
 		}
@@ -149,6 +151,9 @@ public class MapComponent extends VerticalLayout {
 
 	    	RegionReferenceDto regionRef = region.toReferenceDto();
 		    GeoLatLon[][] regionShape = FacadeProvider.getGeoShapeProvider().getRegionShape(regionRef);
+		    if (regionShape == null) {
+		    	continue;
+		    }
 		    
 		    for (GeoLatLon[] regionShapePart : regionShape) {
 		    	

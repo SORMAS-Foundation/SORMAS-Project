@@ -48,8 +48,9 @@ For information on what libs are used see pom.xml in sormas-base project: https:
     * ``sudo -u postgres pg_dump -Fc -b sormas_db >  "sormas_db_"`date +"%Y-%m-%d_%H-%M-%S"`".dump"``
     * ``cd /root/deploy/sormas/$(date +%F)``	
 * Update the database schema
-    * make the schema update script executable: ``chmod +x sql/database-update.sh``
-    * execute the update script: ``sql/database-update.sh``
+    * ``cd /root/deploy/sormas/$(date +%F)/sql``
+    * make the schema update script executable: ``chmod +x ./database-update.sh``
+    * execute the update script: ``./database-update.sh``
     * confirm schema update by pressing enter when asked
 * Alternative: Manual database update
     * Find out current schema version of database:

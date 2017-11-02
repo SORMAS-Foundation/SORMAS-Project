@@ -208,7 +208,9 @@ public class CaseNewActivity extends AppCompatActivity {
 
         Calendar calendar = Calendar.getInstance();
         String year = String.valueOf(calendar.get(Calendar.YEAR)).substring(2);
-        caze.setEpidNumber(CaseDataDto.COUNTRY_EPID_CODE + "-" + caze.getRegion().getEpidCode() + "-" + caze.getDistrict().getEpidCode() + "-" + year + "-");
+        caze.setEpidNumber(caze.getRegion().getEpidCode() != null ? caze.getRegion().getEpidCode() : ""
+                + "-" + caze.getDistrict().getEpidCode() != null ? caze.getDistrict().getEpidCode() : ""
+                + "-" + year + "-");
 
         CaseDao caseDao = DatabaseHelper.getCaseDao();
         caseDao.saveAndSnapshot(caze);

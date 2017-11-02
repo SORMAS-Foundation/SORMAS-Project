@@ -12,7 +12,6 @@ import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
-import de.symeda.sormas.api.utils.EpiWeek;
 
 @Remote
 public interface CaseFacade {
@@ -47,4 +46,5 @@ public interface CaseFacade {
 	 * @param disease optional
 	 */
 	Map<RegionReferenceDto, Long> getCaseCountPerRegion(Date onsetFromDate, Date onsetToDate, Disease disease);
+	
 }

@@ -214,6 +214,11 @@ public class CaseFacadeEjb implements CaseFacade {
 				contactFacade.updateFollowUpUntilAndStatus(contact);
 			}
 		}
+		
+		// Create a task to search for other cases for new Plague cases
+		if (currentCaze == null && dto.getDisease() == Disease.PLAGUE) {
+			createActiveSearchForOtherCasesTask(caze);
+		}
 
 		return toDto(caze);
 	}
@@ -296,6 +301,7 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		target.setDisease(source.getDisease());
 		target.setDiseaseDetails(source.getDiseaseDetails());
+		target.setPlagueType(source.getPlagueType());
 		target.setReportDate(source.getReportDate());
 		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
 		target.setPerson(personService.getByReferenceDto(source.getPerson()));
@@ -321,6 +327,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setYellowFeverVaccination(source.getYellowFeverVaccination());
 		target.setYellowFeverVaccinationInfoSource(source.getYellowFeverVaccinationInfoSource());
 		target.setSmallpoxVaccinationScar(source.getSmallpoxVaccinationScar());
+		target.setSmallpoxVaccinationReceived(source.getSmallpoxVaccinationReceived());
+		target.setSmallpoxVaccinationDate(source.getSmallpoxVaccinationDate());
 
 		target.setEpidNumber(source.getEpidNumber());
 
@@ -349,6 +357,7 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		target.setDisease(source.getDisease());
 		target.setDiseaseDetails(source.getDiseaseDetails());
+		target.setPlagueType(source.getPlagueType());
 		target.setCaseClassification(source.getCaseClassification());
 		target.setInvestigationStatus(source.getInvestigationStatus());
 		target.setPerson(PersonFacadeEjb.toReferenceDto(source.getPerson()));
@@ -376,6 +385,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setYellowFeverVaccination(source.getYellowFeverVaccination());
 		target.setYellowFeverVaccinationInfoSource(source.getYellowFeverVaccinationInfoSource());
 		target.setSmallpoxVaccinationScar(source.getSmallpoxVaccinationScar());
+		target.setSmallpoxVaccinationReceived(source.getSmallpoxVaccinationReceived());
+		target.setSmallpoxVaccinationDate(source.getSmallpoxVaccinationDate());
 
 		target.setEpidNumber(source.getEpidNumber());
 
@@ -444,7 +455,6 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	private void createInvestigationTask(Case caze) {
-
 		Task task = new Task();
 		task.setTaskStatus(TaskStatus.PENDING);
 		task.setTaskContext(TaskContext.CASE);
@@ -454,7 +464,27 @@ public class CaseFacadeEjb implements CaseFacade {
 		task.setDueDate(TaskHelper.getDefaultDueDate());
 		task.setPriority(TaskPriority.NORMAL);
 
-		// assign officer or supervisor
+		assignOfficerOrSupervisorToTask(caze, task);
+
+		taskService.ensurePersisted(task);
+	}
+	
+	private void createActiveSearchForOtherCasesTask(Case caze) {
+		Task task = new Task();
+		task.setTaskStatus(TaskStatus.PENDING);
+		task.setTaskContext(TaskContext.CASE);
+		task.setCaze(caze);
+		task.setTaskType(TaskType.ACTIVE_SEARCH_FOR_OTHER_CASES);
+		task.setSuggestedStart(TaskHelper.getDefaultSuggestedStart());
+		task.setDueDate(TaskHelper.getDefaultDueDate());
+		task.setPriority(TaskPriority.NORMAL);
+		
+		assignOfficerOrSupervisorToTask(caze, task);
+		
+		taskService.ensurePersisted(task);
+	}
+	
+	private void assignOfficerOrSupervisorToTask(Case caze, Task task) {
 		if (caze.getSurveillanceOfficer() != null) {
 			task.setAssigneeUser(caze.getSurveillanceOfficer());
 		} else {
@@ -467,8 +497,6 @@ public class CaseFacadeEjb implements CaseFacade {
 				throw new UnsupportedOperationException("surveillance supervisor missing for: " + caze.getRegion());
 			}
 		}
-
-		taskService.ensurePersisted(task);
 	}
 	
 	@Override

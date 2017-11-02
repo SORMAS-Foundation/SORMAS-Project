@@ -79,8 +79,7 @@ public class SamplesListFragment extends ListFragment {
         } else {
             if(arguments.containsKey(KEY_CASE_UUID)) {
                 parentCaseUuid = (String) arguments.get(KEY_CASE_UUID);
-                final CaseDao caseDao = DatabaseHelper.getCaseDao();
-                final Case caze = caseDao.queryUuid(parentCaseUuid);
+                final Case caze = DatabaseHelper.getCaseDao().queryUuidReference(parentCaseUuid);
                 if (caze != null) {
                     samples = DatabaseHelper.getSampleDao().queryByCase(caze);
                 } else {

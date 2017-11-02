@@ -15,6 +15,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.PlagueType;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.Vaccination;
@@ -44,10 +45,11 @@ public class Case extends AbstractDomainObject {
 
 	public static final String INVESTIGATION_STATUS = "investigationStatus";
 	public static final String DISEASE = "disease";
-	public static final String PERSON = "person";
+	public static final String PERSON = "person_id";
 	public static final String REPORT_DATE = "reportDate";
 	public static final String SYMPTOMS = "symptoms";
 	public static final String REPORTING_USER = "reportingUser";
+	public static final String HEALTH_FACILITY = "healthFacility_id";
 
 	@DatabaseField(foreign = true, foreignAutoRefresh=true, canBeNull = false, maxForeignAutoRefreshLevel = 3)
 	private Person person;
@@ -60,6 +62,9 @@ public class Case extends AbstractDomainObject {
 
 	@Column(length=512)
 	private String diseaseDetails;
+
+	@Column(length=255)
+	private PlagueType plagueType;
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
@@ -120,6 +125,12 @@ public class Case extends AbstractDomainObject {
 	@Enumerated(EnumType.STRING)
 	private YesNoUnknown smallpoxVaccinationScar;
 
+	@Enumerated(EnumType.STRING)
+	private YesNoUnknown smallpoxVaccinationReceived;
+
+	@DatabaseField(dataType = DataType.DATE_LONG)
+	private Date smallpoxVaccinationDate;
+
 	@Column(length=512)
 	private String epidNumber;
 
@@ -166,6 +177,13 @@ public class Case extends AbstractDomainObject {
 	}
 	public void setDiseaseDetails(String diseaseDetails) {
 		this.diseaseDetails = diseaseDetails;
+	}
+
+	public PlagueType getPlagueType() {
+		return plagueType;
+	}
+	public void setPlagueType(PlagueType plagueType) {
+		this.plagueType = plagueType;
 	}
 
 	public CaseClassification getCaseClassification() {
@@ -314,6 +332,22 @@ public class Case extends AbstractDomainObject {
 
 	public void setSmallpoxVaccinationScar(YesNoUnknown smallpoxVaccinationScar) {
 		this.smallpoxVaccinationScar = smallpoxVaccinationScar;
+	}
+
+	public YesNoUnknown getSmallpoxVaccinationReceived() {
+		return smallpoxVaccinationReceived;
+	}
+
+	public void setSmallpoxVaccinationReceived(YesNoUnknown smallpoxVaccinationReceived) {
+		this.smallpoxVaccinationReceived = smallpoxVaccinationReceived;
+	}
+
+	public Date getSmallpoxVaccinationDate() {
+		return smallpoxVaccinationDate;
+	}
+
+	public void setSmallpoxVaccinationDate(Date smallpoxVaccinationDate) {
+		this.smallpoxVaccinationDate = smallpoxVaccinationDate;
 	}
 
 	public String getEpidNumber() {

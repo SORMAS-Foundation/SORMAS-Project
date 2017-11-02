@@ -45,6 +45,16 @@ public final class DataHelper {
 		return nullable.toString();
 	}
 	
+	public static boolean isNullOrEmpty(String string) {
+		if (string == null) {
+			return true;
+		} else if (string.isEmpty()) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
 	/**
 	 * @return Type is a "value" type like a primtive, enum, number, date or string
 	 */

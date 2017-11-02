@@ -1,6 +1,8 @@
 package de.symeda.sormas.backend.common;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -11,9 +13,14 @@ import javax.ejb.Startup;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.symeda.sormas.api.facility.FacilityDto;
+import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.user.UserHelper;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.epidata.EpiData;
@@ -35,6 +42,9 @@ import de.symeda.sormas.backend.symptoms.SymptomsService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.InfrastructureDataImporter;
+import de.symeda.sormas.backend.util.InfrastructureDataImporter.CommunityConsumer;
+import de.symeda.sormas.backend.util.InfrastructureDataImporter.DistrictConsumer;
+import de.symeda.sormas.backend.util.InfrastructureDataImporter.FacilityConsumer;
 import de.symeda.sormas.backend.util.MockDataGenerator;
 
 @Singleton(name = "StartupShutdownService")
@@ -43,6 +53,10 @@ import de.symeda.sormas.backend.util.MockDataGenerator;
 @TransactionManagement(TransactionManagementType.CONTAINER)
 public class StartupShutdownService {
 
+	private final Logger logger = LoggerFactory.getLogger(getClass());
+
+	@EJB
+	private ConfigService configService;
 	@EJB
 	private UserService userService;
 	@EJB
@@ -65,18 +79,384 @@ public class StartupShutdownService {
 	@PostConstruct
 	public void startup() {
 		
-		importRegionAndFacilityData();
+		String countryName = configService.getCountryName();
 		
-		importEpidCodes();
+		importAdministrativeDivisions(countryName);
 		
-		importPopulationData();
-		
-		initLaboratoriesMockData();
-		
+		importFacilities(countryName);
+
 		initUserMockData();
 		
 		// TODO enable/disable via config?
 		fixMissingEntities();
+	}
+
+	private void importAdministrativeDivisions(String countryName) {
+
+		if (regionService.count() > 0) {
+			return;
+		}		
+
+		List<Region> regions = regionService.getAll();
+		
+		importRegions(countryName, regions);
+		
+		importDistricts(countryName, regions);
+
+		importCommunities(countryName, regions);		
+	}
+
+	private void importRegions(String countryName, List<Region> regions) {
+		
+		InfrastructureDataImporter.importRegions(countryName, 
+			(regionName, epidCode, population, growthRate) -> {
+				
+				Optional<Region> regionResult = regions.stream()
+						.filter(r -> r.getName().equals(regionName))
+						.findFirst();
+				
+				Region region;
+				if (regionResult.isPresent()) {
+					region = regionResult.get();
+				} else {
+					region = new Region();
+					regions.add(region);
+					region.setName(regionName);
+				}
+				
+				region.setEpidCode(epidCode);
+				region.setPopulation(population);
+				region.setGrowthRate(growthRate);
+	
+				regionService.persist(region);
+			});
+	}
+
+	private void importDistricts(String countryName, List<Region> regions) {
+		InfrastructureDataImporter.importDistricts(countryName, new DistrictConsumer() {
+			
+			private Region cachedRegion = null;
+			
+			@Override
+			public void consume(String regionName, String districtName, String epidCode) {
+					
+					if (cachedRegion == null || !cachedRegion.getName().equals(regionName)) {
+						Optional<Region> regionResult = regions.stream()
+								.filter(r -> r.getName().equals(regionName))
+								.findFirst();
+	
+						if (regionResult.isPresent()) {
+							cachedRegion = regionResult.get();
+						} else {
+							logger.warn("Could not find region '" + regionName + "' for district '" + districtName + "'");
+							return;
+						}
+						
+						if (cachedRegion.getDistricts() == null) {
+							cachedRegion.setDistricts(new ArrayList<District>());
+						}
+					}
+					Optional<District> districtResult = cachedRegion.getDistricts().stream()
+							.filter(r -> r.getName().equals(districtName))
+							.findFirst();
+					
+					District district;
+					if (districtResult.isPresent()) {
+						district = districtResult.get();
+					} else {
+						district = new District();
+						cachedRegion.getDistricts().add(district);
+						district.setName(districtName);
+						district.setRegion(cachedRegion);
+					}
+					
+					district.setEpidCode(epidCode);
+	
+					districtService.persist(district);
+			}
+		});
+	}
+
+	private void importCommunities(String countryName, List<Region> regions) {
+		
+		InfrastructureDataImporter.importCommunities(countryName, new CommunityConsumer() {
+			
+			private Region cachedRegion = null;
+			private District cachedDistrict = null;
+			
+			@Override
+			public void consume(String regionName, String districtName, String communityName) {
+					
+					if (cachedRegion == null || !cachedRegion.getName().equals(regionName)) {
+						Optional<Region> regionResult = regions.stream()
+								.filter(r -> r.getName().equals(regionName))
+								.findFirst();
+
+						if (regionResult.isPresent()) {
+							cachedRegion = regionResult.get();
+						} else {
+							logger.warn("Could not find region '" + regionName + "' for district '" + districtName + "' in community '" + communityName + "'");
+							return;
+						}
+					}
+					
+					if (cachedDistrict == null || !cachedDistrict.getName().equals(districtName)) {
+						Optional<District> districtResult = cachedRegion.getDistricts().stream()
+								.filter(r -> r.getName().equals(districtName))
+								.findFirst();
+
+						if (districtResult.isPresent()) {
+							cachedDistrict = districtResult.get();
+						} else {
+							logger.warn("Could not find district '" + districtName + "' for community '" + communityName + "'");
+							return;
+						}
+						
+						if (cachedDistrict.getCommunities() == null) {
+							cachedDistrict.setCommunities(new ArrayList<Community>());
+						}
+					}
+
+					Optional<Community> communityResult = cachedDistrict.getCommunities().stream()
+							.filter(r -> r.getName().equals(communityName))
+							.findFirst();
+					
+					Community community;
+					if (communityResult.isPresent()) {
+						community = communityResult.get();
+					} else {
+						community = new Community();
+						cachedDistrict.getCommunities().add(community);
+						community.setName(communityName);
+						community.setDistrict(cachedDistrict);
+					}
+					
+					communityService.persist(community);
+			}
+		});
+	}
+
+	private void importFacilities(String countryName) {
+		
+		if (facilityService.count() > 0) {
+			return;
+		}
+		
+		List<Region> regions = regionService.getAll();
+		List<Facility> facilities = facilityService.getAll();
+		
+		for (Region region : regions) {
+			
+			InfrastructureDataImporter.importFacilities(countryName, region, new FacilityConsumer() {
+				
+				private District cachedDistrict = null;
+				private Community cachedCommunity = null;				
+
+				@Override
+				public void consume(String regionName, String districtName, String communityName, String facilityName,
+						String city, String address, Double latitude, Double longitude, FacilityType type,
+						boolean publicOwnership) {
+
+					if (cachedDistrict == null || !cachedDistrict.getName().equals(districtName)) {
+						Optional<District> districtResult = region.getDistricts().stream()
+								.filter(r -> r.getName().equals(districtName))
+								.findFirst();
+
+						if (districtResult.isPresent()) {
+							cachedDistrict = districtResult.get();
+						} else {
+							logger.warn("Could not find district '" + districtName + "' for facility '" + facilityName + "'");
+							return;
+						}
+					}
+					
+					if (cachedCommunity == null || !cachedCommunity.getName().equals(communityName)) {
+						Optional<Community> communityResult = cachedDistrict.getCommunities().stream()
+								.filter(r -> r.getName().equals(communityName))
+								.findFirst();
+
+						if (communityResult.isPresent()) {
+							cachedCommunity = communityResult.get();
+						} else {
+							logger.warn("Could not find community '" + communityName + "' for facility '" + facilityName + "'");
+							return;
+						}
+					}
+
+					Optional<Facility> facilityResult = facilities.stream()
+							.filter(r -> r.getName().equals(facilityName)
+									&& DataHelper.equal(r.getRegion(), region)
+									&& DataHelper.equal(r.getDistrict(), cachedDistrict)
+									&& DataHelper.equal(r.getCommunity(), cachedCommunity))
+							.findFirst();
+					
+					Facility facility;
+					if (facilityResult.isPresent()) {
+						facility = facilityResult.get();
+					} else {
+						facility = new Facility();
+						facility.setName(facilityName);
+						facility.setRegion(region);
+						facility.setDistrict(cachedDistrict);
+						facility.setCommunity(cachedCommunity);
+					}
+					
+					facility.setCity(city);
+					facility.setLatitude(latitude);
+					facility.setLongitude(longitude);
+					facility.setPublicOwnership(publicOwnership);
+					facility.setType(type);
+					
+					facilityService.persist(facility);
+				}
+			});
+		}		
+
+		// Add 'Other' health facility with a constant UUID that is not
+		// associated with a specific region
+		if (facilityService.getByUuid(FacilityDto.OTHER_FACILITY_UUID) == null) {
+			Facility otherFacility = new Facility();
+			otherFacility.setName("OTHER_FACILITY");
+			otherFacility.setUuid(FacilityDto.OTHER_FACILITY_UUID);
+			facilityService.persist(otherFacility);
+		}
+
+		// Add 'None' health facility with a constant UUID that is not
+		// associated with a specific region
+		if (facilityService.getByUuid(FacilityDto.NONE_FACILITY_UUID) == null) {
+			Facility noneFacility = new Facility();
+			noneFacility.setName("NO_FACILITY");
+			noneFacility.setUuid(FacilityDto.NONE_FACILITY_UUID);
+			facilityService.persist(noneFacility);
+		}
+		
+		importLaboratories(countryName, regions, facilities);
+	}
+
+	private void importLaboratories(String countryName, List<Region> regions, List<Facility> facilities) {
+
+		InfrastructureDataImporter.importLaboratories(countryName, new FacilityConsumer() {
+			
+			private Region cachedRegion = null;
+			private District cachedDistrict = null;
+			private Community cachedCommunity = null;				
+
+			@Override
+			public void consume(String regionName, String districtName, String communityName, String facilityName,
+					String city, String address, Double latitude, Double longitude, FacilityType type,
+					boolean publicOwnership) {
+
+				if (DataHelper.isNullOrEmpty(regionName)) {
+					cachedRegion = null; // no region is ok
+				} else if (cachedRegion == null || !cachedRegion.getName().equals(regionName)) {
+					Optional<Region> regionResult = regions.stream()
+							.filter(r -> r.getName().equals(regionName))
+							.findFirst();
+
+					if (regionResult.isPresent()) {
+						cachedRegion = regionResult.get();
+					} else {
+						logger.warn("Could not find region '" + regionName + "' for facility '" + facilityName + "'");
+						cachedRegion = null;
+					}
+				}	
+				
+				if (cachedRegion == null || DataHelper.isNullOrEmpty(districtName)) {
+					cachedDistrict = null; // no district is ok
+				} else if (cachedDistrict == null || !cachedDistrict.getName().equals(districtName)) {
+					Optional<District> districtResult = cachedRegion.getDistricts().stream()
+							.filter(r -> r.getName().equals(districtName))
+							.findFirst();
+
+					if (districtResult.isPresent()) {
+						cachedDistrict = districtResult.get();
+					} else {
+						logger.warn("Could not find district '" + districtName + "' for facility '" + facilityName + "'");
+						cachedDistrict = null;
+					}
+				}
+				
+				if (cachedDistrict == null || DataHelper.isNullOrEmpty(communityName)) {
+					cachedCommunity = null; // no community is ok
+				} else if (cachedCommunity == null || !cachedCommunity.getName().equals(communityName)) {
+					Optional<Community> communityResult = cachedDistrict.getCommunities().stream()
+							.filter(r -> r.getName().equals(communityName))
+							.findFirst();
+
+					if (communityResult.isPresent()) {
+						cachedCommunity = communityResult.get();
+					} else {
+						logger.warn("Could not find community '" + communityName + "' for facility '" + facilityName + "'");
+						cachedCommunity = null;
+					}
+				}
+
+				Optional<Facility> facilityResult = facilities.stream()
+						.filter(r -> r.getName().equals(facilityName)
+								&& DataHelper.equal(r.getRegion(), cachedRegion)
+								&& DataHelper.equal(r.getDistrict(), cachedDistrict)
+								&& DataHelper.equal(r.getCommunity(), cachedCommunity))
+						.findFirst();
+				
+				Facility facility;
+				if (facilityResult.isPresent()) {
+					facility = facilityResult.get();
+				} else {
+					facility = new Facility();
+					facility.setName(facilityName);
+					facility.setRegion(cachedRegion);
+					facility.setDistrict(cachedDistrict);
+					facility.setCommunity(cachedCommunity);
+				}
+				
+				facility.setCity(city);
+				facility.setLatitude(latitude);
+				facility.setLongitude(longitude);
+				facility.setPublicOwnership(publicOwnership);
+				facility.setType(type);
+				
+				facilityService.persist(facility);
+			}
+		});
+	}
+
+	private void initUserMockData() {
+		if (userService.getAll().isEmpty()) {
+	
+			Region region = regionService.getAll().get(0);
+			District district = region.getDistricts().get(0);
+			Community community = district.getCommunities().get(0);
+			List<Facility> healthFacilities = facilityService.getHealthFacilitiesByCommunity(community, false);
+			Facility facility = healthFacilities.size() > 0 ? healthFacilities.get(0) : null;
+	
+			User admin = MockDataGenerator.createUser(UserRole.ADMIN, "ad", "min", "sadmin");
+			userService.persist(admin);
+	
+			User surveillanceSupervisor = MockDataGenerator.createUser(UserRole.SURVEILLANCE_SUPERVISOR, "Sunkanmi",
+					"Sesay", "Sunkanmi");
+			surveillanceSupervisor.setRegion(region);
+			userService.persist(surveillanceSupervisor);
+	
+			User surveillanceOfficer = MockDataGenerator.createUser(UserRole.SURVEILLANCE_OFFICER, "Sanaa", "Obasanjo",
+					"Sanaa");
+			surveillanceOfficer.setRegion(region);
+			surveillanceOfficer.setDistrict(district);
+			userService.persist(surveillanceOfficer);
+	
+			User informant = MockDataGenerator.createUser(UserRole.INFORMANT, "Sangodele", "Ibori", "Sango");
+			informant.setRegion(region);
+			informant.setDistrict(district);
+			informant.setHealthFacility(facility);
+			informant.setAssociatedOfficer(surveillanceOfficer);
+			userService.persist(informant);
+		}
+	
+		User supervisor = userService.getByUserName(UserHelper.getSuggestedUsername("Sunkanmi", "Sesay"));
+		if (!supervisor.getUserRoles().contains(UserRole.CONTACT_SUPERVISOR)
+				|| !supervisor.getUserRoles().contains(UserRole.CASE_SUPERVISOR)) {
+			supervisor.getUserRoles().add(UserRole.CONTACT_SUPERVISOR);
+			supervisor.getUserRoles().add(UserRole.CASE_SUPERVISOR);
+		}
 	}
 
 	private void fixMissingEntities() {
@@ -98,239 +478,6 @@ public class StartupShutdownService {
 			if (caze.getEpiData().getId() == null)
 				caze.setEpiData(new EpiData());
 			caseService.persist(caze);
-		}
-	}
-
-	private void initUserMockData() {
-		if (userService.getAll().isEmpty()) {
-
-			Region region = regionService.getAll().get(0);
-			District district = region.getDistricts().get(0);
-			Community community = district.getCommunities().get(0);
-			Facility facility = facilityService.getHealthFacilitiesByCommunity(community, false).get(0);
-
-			User admin = MockDataGenerator.createUser(UserRole.ADMIN, "ad", "min", "sadmin");
-			userService.persist(admin);
-
-			User surveillanceSupervisor = MockDataGenerator.createUser(UserRole.SURVEILLANCE_SUPERVISOR, "Sunkanmi",
-					"Sesay", "Sunkanmi");
-			surveillanceSupervisor.setRegion(region);
-			userService.persist(surveillanceSupervisor);
-
-			User surveillanceOfficer = MockDataGenerator.createUser(UserRole.SURVEILLANCE_OFFICER, "Sanaa", "Obasanjo",
-					"Sanaa");
-			surveillanceOfficer.setRegion(region);
-			surveillanceOfficer.setDistrict(district);
-			userService.persist(surveillanceOfficer);
-
-			User informant = MockDataGenerator.createUser(UserRole.INFORMANT, "Sangodele", "Ibori", "Sango");
-			informant.setRegion(region);
-			informant.setDistrict(district);
-			informant.setHealthFacility(facility);
-			informant.setAssociatedOfficer(surveillanceOfficer);
-			userService.persist(informant);
-		}
-
-		User supervisor = userService.getByUserName(UserHelper.getSuggestedUsername("Sunkanmi", "Sesay"));
-		if (!supervisor.getUserRoles().contains(UserRole.CONTACT_SUPERVISOR)
-				|| !supervisor.getUserRoles().contains(UserRole.CASE_SUPERVISOR)) {
-			supervisor.getUserRoles().add(UserRole.CONTACT_SUPERVISOR);
-			supervisor.getUserRoles().add(UserRole.CASE_SUPERVISOR);
-		}
-	}
-
-	private void importRegionAndFacilityData() {
-
-		List<Region> regions = regionService.getAll();
-
-		// TODO just go through all files in directory
-
-		if (!regions.stream().anyMatch(r -> "Abia".equals(r.getName()))) {
-			importDataForRegion(InfrastructureDataImporter.importRegion("Abia"));
-		}
-		if (!regions.stream().anyMatch(r -> "Adamawa".equals(r.getName()))) {
-			importDataForRegion(InfrastructureDataImporter.importRegion("Adamawa"));
-		}
-		if (!regions.stream().anyMatch(r -> "Akwa-Ibom".equals(r.getName()))) {
-			importDataForRegion(InfrastructureDataImporter.importRegion("Akwa-Ibom"));
-		}
-		if (!regions.stream().anyMatch(r -> "Anambra".equals(r.getName()))) {
-			importDataForRegion(InfrastructureDataImporter.importRegion("Anambra"));
-		}
-		if (!regions.stream().anyMatch(r -> "Bauchi".equals(r.getName()))) {
-			importDataForRegion(InfrastructureDataImporter.importRegion("Bauchi"));
-		}
-		if (!regions.stream().anyMatch(r -> "Bayelsa".equals(r.getName()))) {
-			importDataForRegion(InfrastructureDataImporter.importRegion("Bayelsa"));
-		}
-		if (!regions.stream().anyMatch(r -> "Benue".equals(r.getName()))) {
-			importDataForRegion(InfrastructureDataImporter.importRegion("Benue"));
-		}
-		if (!regions.stream().anyMatch(r -> "Borno".equals(r.getName()))) {
-			importDataForRegion(InfrastructureDataImporter.importRegion("Borno"));
-		}
-		if (!regions.stream().anyMatch(r -> "Cross River".equals(r.getName()))) {
-			importDataForRegion(InfrastructureDataImporter.importRegion("Cross River"));
-		}
-		if (!regions.stream().anyMatch(r -> "Delta".equals(r.getName()))) {
-			importDataForRegion(InfrastructureDataImporter.importRegion("Delta"));
-		}
-		if (!regions.stream().anyMatch(r -> "Ebonyi".equals(r.getName()))) {
-			importDataForRegion(InfrastructureDataImporter.importRegion("Ebonyi"));
-		}
-		if (!regions.stream().anyMatch(r -> "Edo".equals(r.getName()))) {
-			importDataForRegion(InfrastructureDataImporter.importRegion("Edo"));
-		}
-		if (!regions.stream().anyMatch(r -> "Ekiti".equals(r.getName()))) {
-			importDataForRegion(InfrastructureDataImporter.importRegion("Ekiti"));
-		}
-		if (!regions.stream().anyMatch(r -> "Enugu".equals(r.getName()))) {
-			importDataForRegion(InfrastructureDataImporter.importRegion("Enugu"));
-		}
-		if (!regions.stream().anyMatch(r -> "FCT".equals(r.getName()))) {
-			importDataForRegion(InfrastructureDataImporter.importRegion("FCT"));
-		}
-		if (!regions.stream().anyMatch(r -> "Gombe".equals(r.getName()))) {
-			importDataForRegion(InfrastructureDataImporter.importRegion("Gombe"));
-		}
-		if (!regions.stream().anyMatch(r -> "Imo".equals(r.getName()))) {
-			importDataForRegion(InfrastructureDataImporter.importRegion("Imo"));
-		}
-		if (!regions.stream().anyMatch(r -> "Jigawa".equals(r.getName()))) {
-			importDataForRegion(InfrastructureDataImporter.importRegion("Jigawa"));
-		}
-		if (!regions.stream().anyMatch(r -> "Kaduna".equals(r.getName()))) {
-			importDataForRegion(InfrastructureDataImporter.importRegion("Kaduna"));
-		}
-		if (!regions.stream().anyMatch(r -> "Kano".equals(r.getName()))) {
-			importDataForRegion(InfrastructureDataImporter.importRegion("Kano"));
-		}
-		if (!regions.stream().anyMatch(r -> "Katsina".equals(r.getName()))) {
-			importDataForRegion(InfrastructureDataImporter.importRegion("Katsina"));
-		}
-		if (!regions.stream().anyMatch(r -> "Kebbi".equals(r.getName()))) {
-			importDataForRegion(InfrastructureDataImporter.importRegion("Kebbi"));
-		}
-		if (!regions.stream().anyMatch(r -> "Kogi".equals(r.getName()))) {
-			importDataForRegion(InfrastructureDataImporter.importRegion("Kogi"));
-		}
-		if (!regions.stream().anyMatch(r -> "Kwara".equals(r.getName()))) {
-			importDataForRegion(InfrastructureDataImporter.importRegion("Kwara"));
-		}
-		if (!regions.stream().anyMatch(r -> "Lagos".equals(r.getName()))) {
-			importDataForRegion(InfrastructureDataImporter.importRegion("Lagos"));
-		}
-		if (!regions.stream().anyMatch(r -> "Nasarawa".equals(r.getName()))) {
-			importDataForRegion(InfrastructureDataImporter.importRegion("Nasarawa"));
-		}
-		if (!regions.stream().anyMatch(r -> "Niger".equals(r.getName()))) {
-			importDataForRegion(InfrastructureDataImporter.importRegion("Niger"));
-		}
-		if (!regions.stream().anyMatch(r -> "Ogun".equals(r.getName()))) {
-			importDataForRegion(InfrastructureDataImporter.importRegion("Ogun"));
-		}
-		if (!regions.stream().anyMatch(r -> "Ondo".equals(r.getName()))) {
-			importDataForRegion(InfrastructureDataImporter.importRegion("Ondo"));
-		}
-		if (!regions.stream().anyMatch(r -> "Osun".equals(r.getName()))) {
-			importDataForRegion(InfrastructureDataImporter.importRegion("Osun"));
-		}
-		if (!regions.stream().anyMatch(r -> "Oyo".equals(r.getName()))) {
-			importDataForRegion(InfrastructureDataImporter.importRegion("Oyo"));
-		}
-		if (!regions.stream().anyMatch(r -> "Plateau".equals(r.getName()))) {
-			importDataForRegion(InfrastructureDataImporter.importRegion("Plateau"));
-		}
-		if (!regions.stream().anyMatch(r -> "Rivers".equals(r.getName()))) {
-			importDataForRegion(InfrastructureDataImporter.importRegion("Rivers"));
-		}
-		if (!regions.stream().anyMatch(r -> "Sokoto".equals(r.getName()))) {
-			importDataForRegion(InfrastructureDataImporter.importRegion("Sokoto"));
-		}
-		if (!regions.stream().anyMatch(r -> "Taraba".equals(r.getName()))) {
-			importDataForRegion(InfrastructureDataImporter.importRegion("Taraba"));
-		}
-		if (!regions.stream().anyMatch(r -> "Yobe".equals(r.getName()))) {
-			importDataForRegion(InfrastructureDataImporter.importRegion("Yobe"));
-		}
-		if (!regions.stream().anyMatch(r -> "Zamfara".equals(r.getName()))) {
-			importDataForRegion(InfrastructureDataImporter.importRegion("Zamfara"));
-		}
-
-		// Add 'Other' health facility with a constant UUID that is not
-		// associated with a specific region
-		if (facilityService.getByUuid(FacilityDto.OTHER_FACILITY_UUID) == null) {
-			Facility otherFacility = new Facility();
-			otherFacility.setName("OTHER_FACILITY");
-			otherFacility.setUuid(FacilityDto.OTHER_FACILITY_UUID);
-			facilityService.persist(otherFacility);
-		}
-
-		// Add 'None' health facility with a constant UUID that is not
-		// associated with a specific region
-		if (facilityService.getByUuid(FacilityDto.NONE_FACILITY_UUID) == null) {
-			Facility noneFacility = new Facility();
-			noneFacility.setName("NO_FACILITY");
-			noneFacility.setUuid(FacilityDto.NONE_FACILITY_UUID);
-			facilityService.persist(noneFacility);
-		}
-	}
-
-	private void importEpidCodes() {
-		List<Region> regions = regionService.getAllWithoutEpidCode();
-		List<District> districts = districtService.getAllWithoutEpidCode();
-		
-		// Import the EPID codes
-		InfrastructureDataImporter.importEpidCodes(regions, districts);
-		
-		// Refresh the updated database instances
-		for (Region region : regions) {
-			regionService.ensurePersisted(region);
-		}
-		
-		for (District district : districts) {
-			districtService.ensurePersisted(district);
-		}
-	}
-	
-	private void importPopulationData() {
-		List<Region> regions = regionService.getAllWithoutPopulationData();
-		
-		// Import the EPID codes
-		InfrastructureDataImporter.importPopulationData(regions);
-		
-		// Refresh the updated database instances
-		for (Region region : regions) {
-			regionService.ensurePersisted(region);
-		}
-	}
-
-	private void importDataForRegion(Region region) {
-		for (District district : region.getDistricts()) {
-			for (Community community : district.getCommunities()) {
-				communityService.persist(community);
-			}
-			districtService.persist(district);
-		}
-		regionService.persist(region);
-
-		List<Facility> facilities = InfrastructureDataImporter.importFacilities(region);
-		for (Facility facility : facilities) {
-			if (facility.getDistrict() == null) {
-				throw new NullPointerException("Facility should have a district defined: " + facility.getName());
-			}
-			facilityService.persist(facility);
-		}
-	}
-
-	private void initLaboratoriesMockData() {
-
-		if (facilityService.getAllLaboratories().isEmpty()) {
-			List<Region> regions = regionService.getAll();
-			List<Facility> labs = InfrastructureDataImporter.importLaboratories(regions);
-			for (Facility lab : labs) {
-				facilityService.persist(lab);
-			}
 		}
 	}
 

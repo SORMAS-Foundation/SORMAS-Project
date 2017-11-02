@@ -86,6 +86,7 @@ public class EpiData extends AbstractDomainObject {
 	private YesNoUnknown waterBody;
 	private String waterBodyDetails;
 	private YesNoUnknown tickBite;
+	private YesNoUnknown fleaBite;
 	private Date dateOfLastExposure;
 	private String placeOfLastExposure;
 	private AnimalCondition animalCondition;
@@ -311,6 +312,14 @@ public class EpiData extends AbstractDomainObject {
 		this.tickBite = tickBite;
 	}
 
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getFleaBite() {
+		return fleaBite;
+	}
+	public void setFleaBite(YesNoUnknown fleaBite) {
+		this.fleaBite = fleaBite;
+	}
+	
 	@Temporal(TemporalType.TIMESTAMP)
 	public Date getDateOfLastExposure() {
 		return dateOfLastExposure;

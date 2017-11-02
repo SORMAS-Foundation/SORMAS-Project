@@ -151,8 +151,8 @@ public class TestHelper {
         facility.setDistrict(district);
         facility.setCommunity(community);
         facility.setCity("Facility City");
-        facility.setLatitude(11.9327697753906f);
-        facility.setLongitude(9.03450965881348f);
+        facility.setLatitude(11.9327697753906D);
+        facility.setLongitude(9.03450965881348D);
         DatabaseHelper.getFacilityDao().create(facility);
 
         Facility secondFacility = new Facility();
@@ -165,8 +165,8 @@ public class TestHelper {
         secondFacility.setDistrict(secondDistrict);
         secondFacility.setCommunity(secondCommunity);
         secondFacility.setCity("Second Facility City");
-        secondFacility.setLatitude(12.9327697753906f);
-        secondFacility.setLongitude(10.03450965881348f);
+        secondFacility.setLatitude(12.9327697753906D);
+        secondFacility.setLongitude(10.03450965881348D);
         DatabaseHelper.getFacilityDao().create(secondFacility);
     }
 

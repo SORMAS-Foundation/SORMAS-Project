@@ -1,114 +1,153 @@
 package de.symeda.sormas.backend.util;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.facility.FacilityType;
-import de.symeda.sormas.backend.facility.Facility;
-import de.symeda.sormas.backend.region.Community;
-import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 
 public final class InfrastructureDataImporter {
+	
+    @FunctionalInterface
+    public interface RegionConsumer {
+        public void consume(String regionName, String epidCode, Integer population, Float growthRate);
+    }
+
+    @FunctionalInterface
+    public interface DistrictConsumer {
+        public void consume(String regionName, String districtName, String epidCode);
+    }
+    
+    @FunctionalInterface
+    public interface CommunityConsumer {
+        public void consume(String regionName, String districtName, String communityName);
+    }
+
+    @FunctionalInterface
+    public interface FacilityConsumer {
+        public void consume(String regionName, String districtName, String communityName,
+        		String facilityName, String city, String address, Double latitude, Double longitude, 
+        		FacilityType type, boolean publicOwnership);
+    }
 
 	private static final Logger logger = LoggerFactory.getLogger(InfrastructureDataImporter.class);
 	
-	public static Region importRegion(String name) {
+	public static void importRegions(String countryName, RegionConsumer regionConsumer) {
 		
-		String resourceFileName = "/facilities/"+name+".csv";
+		String resourceFileName = "/regions/" + countryName + "/regions.csv";
 		InputStream stream = InfrastructureDataImporter.class.getResourceAsStream(resourceFileName);
 		BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
 		
-		Region region = new Region();
-		region.setName(name);
-		region.setDistricts(new ArrayList<District>());
+		NumberFormat populationFormat = NumberFormat.getIntegerInstance(Locale.ENGLISH);
+		NumberFormat growthRateFormat = NumberFormat.getNumberInstance(Locale.ENGLISH);
 
-		District district = null;
-		Community community = null;
+		String currentLine = null;
 		try {
-			String firstLine = reader.readLine();
-			if (!firstLine.startsWith("LGA")) {
-				throw new IllegalArgumentException("Resource file does not match expected format. First line should contain header starting with 'LGA'. " + resourceFileName);
+			currentLine = reader.readLine();
+			if (!currentLine.equals("region;epidcode;population;growthrate")) {
+				throw new IllegalArgumentException("Resource file does not match expected format. "
+						+ "First line has to be 'region;epidcode;population;growthrate'. " + resourceFileName);
 			}
 
 			while (reader.ready()) {
-				String line = reader.readLine();
-				String[] columns = line.split(";");
+				currentLine = reader.readLine();
+				String[] columns = currentLine.split(";");
 				
-				String districtName = columns[0];
-				String communityName = columns[1];
-				
-				if (district == null || !districtName.equals(district.getName())) {
-					district = null;
-					community = null;
-					
-					// try to find the district
-					for (District existing : region.getDistricts()) {
-						if (districtName.equals(existing.getName())) {
-							district = existing;
-							break;
-						}
-					}
+				String regionName = columns[0];
+				String epidCode = columns.length > 1 ? columns[1] : null;
+				Number populationNumber = columns.length > 2 ? populationFormat.parse(columns[2]) : null;
+				Number growthRateNumber = columns.length > 3 ? growthRateFormat.parse(columns[3]) : null;
+				Integer population = populationNumber != null ? populationNumber.intValue() : null;
+				Float growthRate = growthRateNumber != null ? growthRateNumber.floatValue() : null;
 
-					// or create it
-					if (district == null) {
-						district = new District();
-						district.setName(districtName);
-						district.setRegion(region);
-						district.setCommunities(new ArrayList<Community>());
-						region.getDistricts().add(district);
-					}
-				}
-				
-				if (community == null || !communityName.equals(community.getName())) {
-					community = null;
-					
-					// try to find the community
-					for (Community existing : district.getCommunities()) {
-						if (communityName.equals(existing.getName())) {
-							community = existing;
-							break;
-						}
-					}
-
-					// or create it
-					if (community == null) {
-						community = new Community();
-						community.setName(communityName);
-						community.setDistrict(district);
-						district.getCommunities().add(community);
-					}
-				}
+				regionConsumer.consume(regionName, epidCode, population, growthRate);
 			}
 			
 			stream.close();
-		} catch (IOException e) {
-			throw new IllegalArgumentException("Exception while reading resource file: " + resourceFileName, e);
+		} catch (Exception e) {
+			throw new IllegalArgumentException("Exception while reading resource file '" + resourceFileName + "' line '" + currentLine + "'", e);
 		}
-		
-		return region;
 	}
 	
-	public static List<Facility> importFacilities(Region region) {
+	public static void importDistricts(String countryName, DistrictConsumer districtConsumer) {
 		
-		List<Facility> result = new ArrayList<Facility>();
-		
-		String resourceFileName = "/facilities/"+region.getName()+".csv";
+		String resourceFileName = "/regions/" + countryName + "/districts.csv";
 		InputStream stream = InfrastructureDataImporter.class.getResourceAsStream(resourceFileName);
+		BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+		
+		String currentLine = null;
+		try {
+			currentLine = reader.readLine();
+			if (!currentLine.equals("region;district;epidcode")) {
+				throw new IllegalArgumentException("Resource file does not match expected format. "
+						+ "First line has to be 'region;district;epidcode'. " + resourceFileName);
+			}
+
+			while (reader.ready()) {
+				currentLine = reader.readLine();
+				String[] columns = currentLine.split(";");
+				
+				String regionName = columns[0];
+				String districtName = columns[1];
+				String epidCode = columns.length > 2 ? columns[2] : null;
+
+				districtConsumer.consume(regionName, districtName, epidCode);
+			}
+			
+			stream.close();
+		} catch (Exception e) {
+			throw new IllegalArgumentException("Exception while reading resource file '" + resourceFileName + "' line '" + currentLine + "'", e);
+		}
+	}
+
+	public static void importCommunities(String countryName, CommunityConsumer communityConsumer) {
+		
+		String resourceFileName = "/regions/" + countryName + "/communities.csv";
+		InputStream stream = InfrastructureDataImporter.class.getResourceAsStream(resourceFileName);
+		BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+		
+		String currentLine = null;
+		try {
+			currentLine = reader.readLine();
+			if (!currentLine.equals("region;district;community")) {
+				throw new IllegalArgumentException("Resource file does not match expected format. "
+						+ "First line has to be 'region;district;community'. " + resourceFileName);
+			}
+
+			while (reader.ready()) {
+				currentLine = reader.readLine();
+				String[] columns = currentLine.split(";");
+				
+				String regionName = columns[0];
+				String districtName = columns[1];
+				String communityName = columns[2];
+
+				communityConsumer.consume(regionName, districtName, communityName);
+			}
+			
+			stream.close();
+		} catch (Exception e) {
+			throw new IllegalArgumentException("Exception while reading resource file '" + resourceFileName + "' line '" + currentLine + "'", e);
+		}
+	}
+	
+	public static void importFacilities(String countryName, Region region, FacilityConsumer facilityConsumer) {
+		
+		String resourceFileName = "/facilities/"+countryName + "/"+region.getName()+".csv";
+		InputStream stream = InfrastructureDataImporter.class.getResourceAsStream(resourceFileName);
+		if (stream == null) {
+			logger.warn("No facilities for region '" + region.getName() + "' defined.");
+			return;
+		}
 		BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
 
 		DecimalFormat geoCoordFormat = new DecimalFormat();
@@ -117,17 +156,18 @@ public final class InfrastructureDataImporter {
 		decimalSymbols.setGroupingSeparator('.');
 		geoCoordFormat.setDecimalFormatSymbols(decimalSymbols);
 		
-		District district = null;
-		Community community = null;
+		String currentLine = null;
 		try {
-			String firstLine = reader.readLine();
-			if (!firstLine.startsWith("LGA")) {
-				throw new IllegalArgumentException("Resource file does not match expected format. First line should contain header starting with 'LGA'. " + resourceFileName);
+			currentLine = reader.readLine();
+			if (!currentLine.startsWith("LGA") // old data
+					&& !currentLine.equals("district;community;city;facility;type;ownership;address;longitude;latitude")) {
+				throw new IllegalArgumentException("Resource file does not match expected format. "
+						+ "First line has to be 'district;community;city;facility;type;ownership;address;longitude;latitude'. " + resourceFileName);
 			}
 
 			while (reader.ready()) {
-				String line = reader.readLine();
-				String[] columns = line.split(";");
+				currentLine = reader.readLine();
+				String[] columns = currentLine.split(";");
 
 				String districtName = columns[0];
 				String communityName = columns[1];
@@ -135,204 +175,75 @@ public final class InfrastructureDataImporter {
 				String facilityName = columns[3];
 				String facilityTypeString = columns.length > 4 ? columns[4] : "";
 				String ownershipString = columns.length > 5 ? columns[5] : "";
-				// String address = columns.length > 6 ? columns[6] : "";
+				String address = columns.length > 6 ? columns[6] : null;
 				String longitudeString = columns.length > 7 ? columns[7] : "";
 				String latitudeString = columns.length > 8 ? columns[8] : "";
 				
-				if (district == null || !districtName.equals(district.getName())) {
-					district = null;
-					community = null;
-					// try to find the district
-					for (District existing : region.getDistricts()) {
-						if (districtName.equals(existing.getName())) {
-							district = existing;
-							break;
-						}
-					}
-					if (district == null) {
-						throw new IllegalArgumentException("Could not find district '" + districtName + "' in resource file " + resourceFileName);
-					}
-				}	
+				Double latitude = null, longitude = null;
 				
-				if (community == null || !communityName.equals(community.getName())) {
-					community = null;
-					
-					// try to find the community
-					for (Community existing : district.getCommunities()) {
-						if (communityName.equals(existing.getName())) {
-							community = existing;
-							break;
-						}
+				try {
+					if (!longitudeString.isEmpty()) {
+						longitude = geoCoordFormat.parse(longitudeString).doubleValue();
 					}
-					if (community == null) {
-						throw new IllegalArgumentException("Could not find community '" + communityName + "' in resource file " + resourceFileName);
+					if (!latitudeString.isEmpty()) {
+						latitude = geoCoordFormat.parse(latitudeString).doubleValue();
 					}
-				}	
-				
-				Facility facility = new Facility();
-				facility.setName(facilityName);
+				} catch (ParseException e) {
+					logger.warn("Failed parsing geo coordinates for facility '" + facilityName + "' in " + resourceFileName, e);
+				}
+
+				FacilityType facilityType = null;
 				try { 
-					facility.setType(FacilityType.valueOf(facilityTypeString));
+					facilityType = FacilityType.valueOf(facilityTypeString);
 				} catch (IllegalArgumentException e) { 
 					// that's ok
 				}
-				facility.setPublicOwnership("PUBLIC".equalsIgnoreCase(ownershipString));
-				facility.setRegion(region);
-				facility.setDistrict(district);
-				facility.setCommunity(community);
-				facility.setCity(cityName);
-				try {
-					if (!longitudeString.isEmpty()) {
-						facility.setLongitude(geoCoordFormat.parse(longitudeString).doubleValue());
-					}
-					if (!latitudeString.isEmpty()) {
-						facility.setLatitude(geoCoordFormat.parse(latitudeString).doubleValue());
-					}
-				} catch (ParseException e) {
-					throw new IllegalArgumentException("Error parsing geo coordinates for facility '" + facilityName + "' in " + resourceFileName, e);
-				}
 				
-				result.add(facility);				
+				boolean publicOwnership = "PUBLIC".equalsIgnoreCase(ownershipString);
+
+				facilityConsumer.consume(region.getName(), districtName, communityName, facilityName, cityName, address, 
+						latitude, longitude, facilityType, publicOwnership);
 			}
 			
 			stream.close();
-		} catch (IOException e) {
-			throw new IllegalArgumentException("Exception while reading resource file: " + resourceFileName, e);
+		} catch (Exception e) {
+			throw new IllegalArgumentException("Exception while reading resource file '" + resourceFileName + "' line '" + currentLine + "'", e);
 		}
-		
-		return result;
 	}
 	
-	public static List<Facility> importLaboratories(List<Region> regions) {
+	public static void importLaboratories(String countryName, FacilityConsumer facilityConsumer) {
 		
-		List<Facility> result = new ArrayList<Facility>();
-		
-		InputStream stream = InfrastructureDataImporter.class.getResourceAsStream("/facilities/Laboratories.csv");
+		String resourceFileName = "/facilities/" + countryName + "/Laboratories.csv";
+		InputStream stream = InfrastructureDataImporter.class.getResourceAsStream(resourceFileName);
+		if (stream == null) {
+			logger.warn("No laboratories defined.");
+			return;
+		}
 		BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
 		
-		Region region = null;
+		String currentLine = null;
 		try {
+			currentLine = reader.readLine();
+			if (!currentLine.equals("region;city;name;ownership")) {
+				throw new IllegalArgumentException("Resource file does not match expected format. "
+						+ "First line has to be 'region;city;name;ownership'. " + resourceFileName);
+			}
+			
 			while (reader.ready()) {
-				String line = reader.readLine();
-				String[] columns = line.split(";");
-				
-				// region
-				if(columns[0].length() > 0) {
-					region = null;
-					for(Region r : regions) {
-						if(columns[0].equalsIgnoreCase(r.getName())) {
-							region = r;
-							break;
-						}
-					}
-				}
-				
-				Facility facility = new Facility();
-				String facilityName = columns[2];
-				facility.setName(facilityName);
-				facility.setType(FacilityType.LABORATORY);
-				facility.setPublicOwnership("PUBLIC".equalsIgnoreCase(columns[3]));
-				facility.setRegion(region);
+				currentLine = reader.readLine();
+				String[] columns = currentLine.split(";");
+
+				String regionName = columns[0];
 				String cityName = columns[1];
-				facility.setCity(cityName);
-				result.add(facility);				
+				String facilityName = columns[2];
+				boolean publicOwnership = "PUBLIC".equalsIgnoreCase(columns[3]);
+				
+				facilityConsumer.consume(regionName, null, null, facilityName, cityName, null, null, null, null, publicOwnership);
 			}
 			
 			stream.close();
-		} catch (IOException e) {
-			logger.info(e.getMessage(), e);
-			e.printStackTrace();
-		}
-		
-		return result;
-	}
-	
-	public static void importEpidCodes(List<Region> regions, List<District> districts) {
-		try {
-			InputStream stream = InfrastructureDataImporter.class.getResourceAsStream("/epid-codes.csv");
-			BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
-			reader.readLine(); // header
-			
-			while (reader.ready()) {
-				String line = reader.readLine();
-				String[] columns = line.split(";");
-				
-				Optional<Region> regionResult = regions.stream()
-						.filter(r -> r.getName().equals(columns[3]))
-						.findFirst();
-				
-			    if (!regionResult.isPresent()) {
-			    	continue;
-			    }
-			    regionResult.get().setEpidCode(columns[1]);
-				
-				// Region has to be checked again in case there are districts with the same name in different regions
-				Optional<District> districtResult = districts.stream()
-						.filter(d -> d.getRegion().getName().equals(columns[3]) && d.getName().equals(columns[5]))
-						.findFirst();
-				
-			    if (!districtResult.isPresent()) {
-			    	continue;
-			    }
-			    districtResult.get().setEpidCode(columns[2]);
-			}			
-			
-			stream.close();
-		} catch (IOException e) {
-			throw new IllegalArgumentException("Exception while reading resource file: epid-codes.csv", e);
-		}
-		
-		String regionsWithoutEpidCode = regions.stream().filter(r -> r.getEpidCode() == null)
-			.map(r -> r.getName())
-			.collect(Collectors.joining(", "));
-		if (!regionsWithoutEpidCode.isEmpty()) {
-			logger.warn("Regions without EPID-Code found: " + regionsWithoutEpidCode);
-		}
-		
-		String districtsWithoutEpidCode = districts.stream().filter(d -> d.getEpidCode() == null)
-				.map(d -> d.getName())
-				.collect(Collectors.joining(", "));
-		if (!districtsWithoutEpidCode.isEmpty()) {
-			logger.warn("Districts without EPID-Code found: " + districtsWithoutEpidCode);
-		}
-	}
-
-	public static void importPopulationData(List<Region> regions) {
-		
-		NumberFormat numberFormat = NumberFormat.getInstance(Locale.ENGLISH);
-
-		try {
-			InputStream stream = InfrastructureDataImporter.class.getResourceAsStream("/state-population.csv");
-			BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
-			reader.readLine(); // header
-
-			while (reader.ready()) {
-				String line = reader.readLine();
-				String[] columns = line.split(";");
-				
-				Optional<Region> regionResult = regions.stream()
-						.filter(r -> r.getName().equals(columns[0]))
-						.findFirst();
-				
-			    if (!regionResult.isPresent()) {
-			    	continue;
-			    }
-
-				Region region = regionResult.get();
-				region.setPopulation(numberFormat.parse(columns[1]).intValue());
-				region.setGrowthRate(numberFormat.parse(columns[2]).floatValue());
-			}			
-			
-			stream.close();
-		} catch (IOException | ParseException e) {
-			throw new IllegalArgumentException("Exception while reading resource file: state-population.csv", e);
-		}
-		
-		String regionsWithoutPopulatonData = regions.stream().filter(r -> r.getPopulation() == null)
-				.map(r -> r.getName())
-				.collect(Collectors.joining(", "));
-		if (!regionsWithoutPopulatonData.isEmpty()) {
-			logger.warn("Regions without population data found: " + regionsWithoutPopulatonData);
+		} catch (Exception e) {
+			throw new IllegalArgumentException("Exception while reading resource file '" + resourceFileName + "' line '" + currentLine + "'", e);
 		}
 	}
 }

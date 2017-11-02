@@ -336,6 +336,13 @@
                 android:layout_weight="0.5"
                 android:value="@={epiData.tickBite}" />
 
+            <de.symeda.sormas.app.component.YesNoUnknownField
+                android:id="@+id/epiData_fleaBite"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.5"
+                android:value="@={epiData.fleaBite}" />
+
         </LinearLayout>
     </ScrollView>
 </layout>

@@ -65,6 +65,15 @@
                 android:value="@={caze.diseaseDetails}"/>
 
             <de.symeda.sormas.app.component.SpinnerField
+                android:id="@+id/caseData_plagueType"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:paddingTop="@dimen/field_padding"
+                android:paddingBottom="@dimen/field_padding"
+                android:value="@={caze.plagueType}"/>
+
+            <de.symeda.sormas.app.component.SpinnerField
                 android:id="@+id/caseData_region"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

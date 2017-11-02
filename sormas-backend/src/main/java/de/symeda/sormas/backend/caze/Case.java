@@ -19,6 +19,7 @@ import javax.persistence.TemporalType;
 import de.symeda.auditlog.api.Audited;
 import de.symeda.auditlog.api.AuditedIgnore;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.PlagueType;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.Vaccination;
@@ -48,6 +49,7 @@ public class Case extends AbstractDomainObject {
 	public static final String PERSON = "person";
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
+	public static final String PLAGUE_TYPE = "plagueType";
 	public static final String HEALTH_FACILITY = "healthFacility";
 	public static final String HEALTH_FACILITY_DETAILS = "healthFacilityDetails";
 	public static final String REPORTING_USER = "reportingUser";
@@ -77,6 +79,7 @@ public class Case extends AbstractDomainObject {
 	private String description;
 	private Disease disease;
 	private String diseaseDetails;
+	private PlagueType plagueType;
 	private CaseClassification caseClassification;
 	private InvestigationStatus investigationStatus;
 	private Hospitalization hospitalization;
@@ -116,6 +119,8 @@ public class Case extends AbstractDomainObject {
 	private VaccinationInfoSource yellowFeverVaccinationInfoSource;
 	
 	private YesNoUnknown smallpoxVaccinationScar;
+	private YesNoUnknown smallpoxVaccinationReceived;
+	private Date smallpoxVaccinationDate;
 	
 	private String epidNumber;
 	
@@ -150,9 +155,16 @@ public class Case extends AbstractDomainObject {
 	public String getDiseaseDetails() {
 		return diseaseDetails;
 	}
-
 	public void setDiseaseDetails(String diseaseDetails) {
 		this.diseaseDetails = diseaseDetails;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public PlagueType getPlagueType() {
+		return plagueType;
+	}
+	public void setPlagueType(PlagueType plagueType) {
+		this.plagueType = plagueType;
 	}
 	
 	@Enumerated(EnumType.STRING)
@@ -388,6 +400,22 @@ public class Case extends AbstractDomainObject {
 	}
 	public void setSmallpoxVaccinationScar(YesNoUnknown smallpoxVaccinationScar) {
 		this.smallpoxVaccinationScar = smallpoxVaccinationScar;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getSmallpoxVaccinationReceived() {
+		return smallpoxVaccinationReceived;
+	}
+	public void setSmallpoxVaccinationReceived(YesNoUnknown smallpoxVaccinationReceived) {
+		this.smallpoxVaccinationReceived = smallpoxVaccinationReceived;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getSmallpoxVaccinationDate() {
+		return smallpoxVaccinationDate;
+	}
+	public void setSmallpoxVaccinationDate(Date smallpoxVaccinationDate) {
+		this.smallpoxVaccinationDate = smallpoxVaccinationDate;
 	}
 	
 	@Column(length = 512)

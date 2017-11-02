@@ -83,6 +83,7 @@ public class EpiDataDtoHelper extends AdoDtoHelper<EpiData, EpiDataDto> {
         a.setDateOfLastExposure(b.getDateOfLastExposure());
         a.setPlaceOfLastExposure(b.getPlaceOfLastExposure());
         a.setAnimalCondition(b.getAnimalCondition());
+        a.setFleaBite(b.getFleaBite());
 
         // just recreate all of this and throw the old stuff away
         List<EpiDataBurial> burials = new ArrayList<>();
@@ -150,6 +151,7 @@ public class EpiDataDtoHelper extends AdoDtoHelper<EpiData, EpiDataDto> {
         a.setDateOfLastExposure(b.getDateOfLastExposure());
         a.setPlaceOfLastExposure(b.getPlaceOfLastExposure());
         a.setAnimalCondition(b.getAnimalCondition());
+        a.setFleaBite(b.getFleaBite());
 
         List<EpiDataBurialDto> burialDtos = new ArrayList<>();
         if (!b.getBurials().isEmpty()) {

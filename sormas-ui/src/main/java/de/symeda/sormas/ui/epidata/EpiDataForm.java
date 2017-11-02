@@ -60,7 +60,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			LayoutUtil.loc(ENVIRONMENTAL_LOC) +
 			LayoutUtil.fluidRowLocs(EpiDataDto.WATER_SOURCE, EpiDataDto.WATER_BODY) +
 			LayoutUtil.fluidRowLocs(EpiDataDto.WATER_SOURCE_OTHER, EpiDataDto.WATER_BODY_DETAILS) +
-			LayoutUtil.fluidRowLocs(EpiDataDto.TICKBITE, "")			
+			LayoutUtil.fluidRow(LayoutUtil.locs(EpiDataDto.TICKBITE, EpiDataDto.FLEABITE))			
 	;
 	
 	private final Disease disease;
@@ -96,6 +96,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		addField(EpiDataDto.POULTRY_SICK, OptionGroup.class);
 		addField(EpiDataDto.WATER_BODY, OptionGroup.class);
 		addField(EpiDataDto.TICKBITE, OptionGroup.class);
+		addField(EpiDataDto.FLEABITE, OptionGroup.class);
 		addField(EpiDataDto.POULTRY_DETAILS, TextField.class);
 		addField(EpiDataDto.POULTRY_SICK_DETAILS, TextField.class);
 		addField(EpiDataDto.POULTRY_DATE, DateField.class);
@@ -156,7 +157,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			}
 		}
 		
-		List<String> environmentalExposures = Arrays.asList(EpiDataDto.WATER_SOURCE, EpiDataDto.WATER_BODY, EpiDataDto.TICKBITE);
+		List<String> environmentalExposures = Arrays.asList(EpiDataDto.WATER_SOURCE, EpiDataDto.WATER_BODY, EpiDataDto.TICKBITE, EpiDataDto.FLEABITE);
 		
 		for (String environmentalExp : environmentalExposures) {
 			if (getFieldGroup().getField(environmentalExp).isVisible()) {

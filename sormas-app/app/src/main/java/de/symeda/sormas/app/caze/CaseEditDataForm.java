@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.PlagueType;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.Vaccination;
@@ -23,6 +24,7 @@ import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
@@ -78,6 +80,8 @@ public class CaseEditDataForm extends FormTab {
         FieldHelper.initSpinnerField(binding.caseDataVaccinationInfoSource, VaccinationInfoSource.class);
         FieldHelper.initSpinnerField(binding.caseDataYellowFeverVaccination, Vaccination.class);
         FieldHelper.initSpinnerField(binding.caseDataYellowFeverVaccinationInfoSource, VaccinationInfoSource.class);
+        FieldHelper.initSpinnerField(binding.caseDataPlagueType, PlagueType.class);
+        binding.caseDataSmallpoxVaccinationDate.initialize(this);
 
         boolean showMeaslesVaccination = Diseases.DiseasesConfiguration.isDefinedOrMissing(CaseDataDto.class, binding.caseDataMeaslesVaccination.getPropertyId(), binding.getCaze().getDisease());
         binding.caseDataMeaslesVaccination.setVisibility(showMeaslesVaccination ? View.VISIBLE : View.GONE);
@@ -85,8 +89,15 @@ public class CaseEditDataForm extends FormTab {
         boolean showYellowFeverVaccination = Diseases.DiseasesConfiguration.isDefinedOrMissing(CaseDataDto.class, binding.caseDataYellowFeverVaccination.getPropertyId(), binding.getCaze().getDisease());
         binding.caseDataYellowFeverVaccination.setVisibility(showYellowFeverVaccination ? View.VISIBLE : View.GONE);
 
-        boolean showSmallpoxVaccinationScar = Diseases.DiseasesConfiguration.isDefinedOrMissing(CaseDataDto.class, binding.caseDataSmallpoxVaccinationScar.getPropertyId(), binding.getCaze().getDisease());
-        binding.caseDataSmallpoxVaccinationScar.setVisibility(showSmallpoxVaccinationScar ? View.VISIBLE : View.GONE);
+        boolean showSmallpoxVaccination = Diseases.DiseasesConfiguration.isDefinedOrMissing(CaseDataDto.class, binding.caseDataSmallpoxVaccinationReceived.getPropertyId(), binding.getCaze().getDisease());
+        binding.caseDataSmallpoxVaccinationReceived.setVisibility(showSmallpoxVaccination ? View.VISIBLE : View.GONE);
+
+        binding.caseDataSmallpoxVaccinationReceived.addValueChangedListener(new PropertyField.ValueChangeListener() {
+            @Override
+            public void onChange(PropertyField field) {
+                toggleSmallpoxVaccinationFields();
+            }
+        });
 
         if (binding.getCaze().getPerson().getSex() != Sex.FEMALE) {
             binding.caseDataPregnant.setVisibility(View.GONE);
@@ -165,7 +176,16 @@ public class CaseEditDataForm extends FormTab {
             binding.caseDataDiseaseDetails.setVisibility(View.GONE);
         }
 
+        if (binding.getCaze().getDisease() != Disease.PLAGUE) {
+            binding.caseDataPlagueType.setVisibility(View.GONE);
+        }
+
         return binding.getRoot();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
     }
 
     @Override
@@ -188,6 +208,19 @@ public class CaseEditDataForm extends FormTab {
             binding.caseDataYellowFeverVaccinationInfoSource.setVisibility(View.GONE);
         } else {
             binding.caseDataYellowFeverVaccinationInfoSource.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void toggleSmallpoxVaccinationFields() {
+        if (binding.caseDataSmallpoxVaccinationReceived.getVisibility() == View.VISIBLE
+                && binding.caseDataSmallpoxVaccinationReceived.getValue() == YesNoUnknown.YES) {
+            binding.caseDataSmallpoxVaccinationDate.setVisibility(View.VISIBLE);
+            binding.caseDataSmallpoxVaccinationScar.setVisibility(View.VISIBLE);
+            binding.smallpoxVaccinationScarImg.setVisibility(View.VISIBLE);
+        } else {
+            binding.caseDataSmallpoxVaccinationDate.setVisibility(View.GONE);
+            binding.caseDataSmallpoxVaccinationScar.setVisibility(View.GONE);
+            binding.smallpoxVaccinationScarImg.setVisibility(View.GONE);
         }
     }
 

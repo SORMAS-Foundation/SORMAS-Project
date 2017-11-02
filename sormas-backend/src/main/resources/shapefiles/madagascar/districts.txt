@@ -1,0 +1,45 @@
+FILE IDENTIFIER (Filename to which this metadata record applies): mdg_polbnda_adm2_district_NDMO_OCHA
+
+POINT OF CONTACT (Person or Organization that can be contacted for acquiring knowledge about or acquisition of the resource): UN OCHA ROSA (United Nations, Office for the Coordination of Humanitarian Affairs, Regional Office for Southern Africa). 
+Contact: Amanda Vickers E-mail: vickersa@un.org +27 11 517 1635  Web: http://ochaonline.un.org/rosa
+
+METADATA DATE STAMP (The date on which the metadata record was created - YYYYMMDD): 20 March 2012
+
+TITLE (The title of the map or data set, the name by which the cited resource is known): Districts: Administrative Boundaries Level 2 for Madagascar
+     
+DATASET REFERENCE DATE (The date on which the data set was published or created): September 2011
+
+DATASET REFERENCE DATE TYPE (Does the date above indicate publication or creation): Date Unknown 
+
+ABSTRACT (A brief narrative summary of the content of the dataset):
+Madagascar District Boundaries (Fivondronana), Administrative Level 2.  
+Cleaned & merged from the commune (adm3) shape data obtained from Madagascar BNGRC (National Disaster Management Office) in 2011, based on the District name field, by OCHA.
+Differences from SALB/GAUL Boundaries: 
+There are 111 districts in the SALB/GAUL Boundaries in comparison to 114 districts in this shapefile. 
+The old Fianarantsoa II district in SALB has been divided into 3 districts, namely Isandra, Lalangina & Vohibato Districts. 
+The old Betafo district has been divided into 2 districts, namely Betafo & Mandoto Districts.
+(Toamasina II District falls in Atsinanana Region not  Analanjirofo region as in SALB/GAUL)
+Antananarivo-Avaradrano and Antananarivo-Atsimondrano district names were inverted in the commune (adm3) data in comparison to SALB/GAUL and were therefore changed around in the district shape. 
+
+RESOURCE PROVIDER (The person or organization that provides the resource, the source of the dataset): UN OCHA ROSA (United Nations, Office for the Coordination of Humanitarian Affairs, Regional Office for Southern Africa) & NDMO/BNGRC (Madagascar National Disaster Management Office)
+
+PLACE KEYWORD (A keyword that describes the geographical extent of the data set): Madagascar
+
+DATASET LANGUAGE (The language or languages of any text information in the data set): English
+
+COORDINATE REFERENCE SYSTEM (The projection and datum used for geographic data): Geographic WGS84 (converted from Hotine_Oblique_Mercator_Azimuth_Center projection)
+
+DATA DICTIONARY (Description of the contents of all attributes and coded values in the dataset):
+DISTRICT:  District Name (adm2)
+P-CODE:    OCHA Unique District ID (Country abbreviation + Region Code + District Code)
+D CODE:    District code from the Madagascar Government/ National Disaster Management Office
+REGION:    Region Name (adm1) in which the District falls.    
+REG_PCODE: OCHA Unique Region ID (Country abbreviation + Region Code)
+R_CODE:    Region code from the Madagascar Government/ National Disaster Management Office
+SOURCE:    Data Source 
+
+Source: Data was cleaned and merged from by OCHA, based on the district name field in the Commune (adm3) data received from the BNGRC (National Disaster Management Office) in 2011. 
+
+DISTRIBUTION INFORMATION (Description of distribution rights, to the extent it is known): Not for commercial use.
+The presentation of this material does not imply the expression of any opinion whatsoever on the part of the Secretariat of the United Nations concerning the legal status of any country, territory, city or area or of its authorities, or concerning the delimitation of its frontiers or boundaries.
+
