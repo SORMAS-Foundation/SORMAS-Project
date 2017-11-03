@@ -12,10 +12,10 @@ android {
 //        }
 //    }
     compileSdkVersion 24
-    buildToolsVersion '25.0.3'
+    buildToolsVersion '26.0.2'
     defaultConfig {
         applicationId "de.symeda.sormas.app"
-        minSdkVersion 19
+        minSdkVersion 21
         targetSdkVersion 24
         versionCode buildVersionCode()
         versionName "$sormasVersion"
