@@ -368,7 +368,7 @@ public class SymptomsEditForm extends FormTab {
 
     @Override
     public AbstractDomainObject getData() {
-        return binding.getSymptoms();
+        return binding == null ? null : binding.getSymptoms();
     }
 
     public CaseSymptomsFragmentLayoutBinding getBinding() {

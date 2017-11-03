@@ -119,7 +119,7 @@ public class ContactEditDataForm extends FormTab {
 
     @Override
     public AbstractDomainObject getData() {
-        return binding.getContact();
+        return binding == null ? null : binding.getContact();
     }
 
     public ContactDataFragmentLayoutBinding getBinding() {

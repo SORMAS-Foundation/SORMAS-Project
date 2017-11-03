@@ -103,7 +103,7 @@ public final class LocationService {
 
     public void removeActiveLocationUpdates() {
 
-        if (activeRequestCount <= 0) {
+        if (activeRequestCount < 1) {
             throw new UnsupportedOperationException("removeActiveLocationUpdates was called although no active request exists");
         }
 

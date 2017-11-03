@@ -214,7 +214,7 @@ public class TaskForm extends FormTab {
 
     @Override
     public AbstractDomainObject getData() {
-        return binding.getTask();
+        return binding == null ? null : binding.getTask();
     }
 
 }

@@ -53,7 +53,7 @@ public class ContactNewForm extends FormTab {
 
     @Override
     public Contact getData() {
-        return binding.getContact();
+        return binding == null ? null : binding.getContact();
     }
 
     public ContactNewFragmentLayoutBinding getBinding() {

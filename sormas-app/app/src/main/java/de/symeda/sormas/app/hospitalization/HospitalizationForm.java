@@ -119,7 +119,7 @@ public class HospitalizationForm extends FormTab {
 
     @Override
     public AbstractDomainObject getData() {
-        return binding.getHospitalization();
+        return binding == null ? null : binding.getHospitalization();
     }
 
 }

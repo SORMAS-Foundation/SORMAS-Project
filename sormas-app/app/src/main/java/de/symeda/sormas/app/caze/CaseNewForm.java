@@ -189,7 +189,7 @@ public class CaseNewForm extends FormTab {
         User user = ConfigProvider.getUser();
         if (user.getUserRole() == UserRole.INFORMANT
                 && user.getHealthFacility() != null) {
-            // this is ok, becuase informants are required to have a community and health facility
+            // this is ok, because informants are required to have a community and health facility
             binding.caseDataCommunity.setEnabled(false);
             binding.caseDataHealthFacility.setEnabled(false);
         } else {
@@ -202,7 +202,7 @@ public class CaseNewForm extends FormTab {
 
     @Override
     public Case getData() {
-        return binding.getCaze();
+        return binding == null ? null : binding.getCaze();
     }
 
     public CaseNewFragmentLayoutBinding getBinding() {

@@ -95,7 +95,7 @@ public class EventEditDataForm extends FormTab {
 
     @Override
     public AbstractDomainObject getData() {
-        return binding.getEvent();
+        return binding == null ? null : binding.getEvent();
     }
 
 

@@ -182,7 +182,7 @@ public class SampleEditForm extends FormTab {
 
     @Override
     public AbstractDomainObject getData() {
-        return binding.getSample();
+        return binding == null ? null : binding.getSample();
     }
 
     public SampleDataFragmentLayoutBinding getBinding() {

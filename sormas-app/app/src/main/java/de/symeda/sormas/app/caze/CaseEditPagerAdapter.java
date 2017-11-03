@@ -47,6 +47,7 @@ public class CaseEditPagerAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int position) {
         Fragment frag = null;
         CaseEditTabs tab = visibleTabs.get(position);
+
         switch (tab) {
             case CASE_DATA:
                 frag = new CaseEditDataForm();
@@ -100,6 +101,7 @@ public class CaseEditPagerAdapter extends FragmentStatePagerAdapter {
                 frag.setArguments(epiDataBundle);
                 break;
         }
+
         return frag;
     }
 

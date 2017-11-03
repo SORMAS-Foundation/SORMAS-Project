@@ -190,7 +190,7 @@ public class CaseEditDataForm extends FormTab {
 
     @Override
     public AbstractDomainObject getData() {
-        return binding.getCaze();
+        return binding == null ? null : binding.getCaze();
     }
 
     private void toggleMeaslesFields() {

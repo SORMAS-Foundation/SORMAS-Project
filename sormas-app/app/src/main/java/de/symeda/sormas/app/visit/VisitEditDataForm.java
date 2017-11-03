@@ -59,7 +59,7 @@ public class VisitEditDataForm extends FormTab {
 
     @Override
     public AbstractDomainObject getData() {
-        return binding.getVisit();
+        return binding == null ? null : binding.getVisit();
     }
 
     public VisitDataFragmentLayoutBinding getBinding() {
