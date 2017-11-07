@@ -286,10 +286,10 @@ public class TaskFacadeEjb implements TaskFacade {
 	}
 	
 	@Override
-	public List<TaskDashboardDto> getAllWithDueDateBetween(Date from, Date to, String userUuid) {
+	public List<TaskDashboardDto> getAllPending(Date from, Date to, String userUuid) {
 		User user = userService.getByUuid(userUuid);
 		
-		return taskService.getAllWithDueDateBetween(from, to, user);
+		return taskService.getAllPending(from, to, user);
 	}
 	
 	@Override

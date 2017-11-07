@@ -13390,6 +13390,42 @@ div.v-layout.v-horizontal.v-widget {
 	margin: 0;
 }
 
+.sormas .v-label-border-red {
+	border-top: 4px solid #FF0000;
+	border-radius: 3px;
+	padding-top: 6px;
+}
+
+.sormas .v-label-border-orange {
+	border-top: 4px solid #FF8C00;
+	border-radius: 3px;
+	padding-top: 6px;
+}
+
+.sormas .v-label-border-yellow {
+	border-top: 4px solid #FFD700;
+	border-radius: 3px;
+	padding-top: 6px;
+}
+
+.sormas .v-label-border-light-blue {
+	border-top: 4px solid #00BFFF;
+	border-radius: 3px;
+	padding-top: 6px;
+}
+
+.sormas .v-label-border-green {
+	border-top: 4px solid #32CD32;
+	border-radius: 3px;
+	padding-top: 6px;
+}
+
+.sormas .v-label-border-grey {
+	border-top: 4px solid #808080;
+	border-radius: 3px;
+	padding-top: 6px;
+}
+
 .sormas .v-window .v-window-outerheader {
 	border-bottom: 3px solid #CDD8EC;
 }

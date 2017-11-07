@@ -109,12 +109,12 @@ public class TaskService extends AbstractAdoService<Task> {
 		return resultList;	
 	}
 
-	public List<TaskDashboardDto> getAllWithDueDateBetween(Date from, Date to, User user) {
+	public List<TaskDashboardDto> getAllPending(Date from, Date to, User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<TaskDashboardDto> cq = cb.createQuery(TaskDashboardDto.class);
 		Root<Task> task = cq.from(getElementClass());
 		
-		TaskCriteria taskCriteria = new TaskCriteria().assigneeUserEquals(user).dueDateBetween(from, to);
+		TaskCriteria taskCriteria = new TaskCriteria().assigneeUserEquals(user).taskStatusEquals(TaskStatus.PENDING);
 		Predicate filter = buildCriteriaFilter(taskCriteria, cb, task);
 		
 		List<TaskDashboardDto> result;

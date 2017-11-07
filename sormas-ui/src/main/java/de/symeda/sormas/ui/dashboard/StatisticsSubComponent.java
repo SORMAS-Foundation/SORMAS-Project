@@ -12,6 +12,10 @@ import de.symeda.sormas.ui.utils.CssStyles;
 @SuppressWarnings("serial")
 public class StatisticsSubComponent extends VerticalLayout {
 
+	// Layouts
+	private HorizontalLayout overviewLayout;
+	
+	// Components
 	private Label dateLabel;
 	private Label countLabel;
 	
@@ -51,7 +55,17 @@ public class StatisticsSubComponent extends VerticalLayout {
 	}
 	
 	public void addOverview() {
+		overviewLayout = new HorizontalLayout();
+		overviewLayout.setWidthUndefined();
+		overviewLayout.setSpacing(true);
+		CssStyles.style(overviewLayout, CssStyles.VSPACE_4);
 		
+		addComponent(overviewLayout);
+	}
+	
+	public void addComponentToOverview(StatisticsOverviewElement overviewElement) {
+		overviewElement.setWidthUndefined();
+		overviewLayout.addComponent(overviewElement);
 	}
 	
 	public void addContent() {
