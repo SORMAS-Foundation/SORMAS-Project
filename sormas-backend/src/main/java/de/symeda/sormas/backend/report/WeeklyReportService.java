@@ -91,6 +91,7 @@ public class WeeklyReportService extends AbstractAdoService<WeeklyReport> {
 	}
 
 	@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+	@SuppressWarnings("rawtypes")
 	public List<WeeklyReportSummaryDto> getWeeklyReportSummariesPerRegion(EpiWeek epiWeek) {
 		Query query = em.createNativeQuery("SELECT region_id, COUNT(fac) as facilities, SUM(missing) as missing, SUM(report) as report, SUM(zero) as zero "
 				+ "FROM ("
@@ -109,7 +110,6 @@ public class WeeklyReportService extends AbstractAdoService<WeeklyReport> {
 				+ ") as inner_query "
 				+ "GROUP BY region_id;");
 
-		@SuppressWarnings("rawtypes")
 		List results = query.getResultList();
 
 		List<WeeklyReportSummaryDto> summaryDtos = new ArrayList<>();

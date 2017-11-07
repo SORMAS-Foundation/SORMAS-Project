@@ -39,6 +39,8 @@ public interface CaseFacade {
 	CaseDataDto moveCase(CaseReferenceDto caze, CommunityReferenceDto community, FacilityReferenceDto facility, String facilityDetails, UserReferenceDto surveillanceOfficer);
 
 	List<CaseDataDto> getByUuids(List<String> uuids);
+	
+	List<CaseDashboardDto> getNewCasesBetween(Date from, Date to, String userUuid);
 
 	/**
 	 * @param onsetFromDate optional

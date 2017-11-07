@@ -1,10 +1,16 @@
 package de.symeda.sormas.backend.task;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
@@ -12,9 +18,12 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.api.caze.CaseDashboardDto;
+import de.symeda.sormas.api.task.TaskDashboardDto;
 import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.contact.Contact;
@@ -73,7 +82,7 @@ public class TaskService extends AbstractAdoService<Task> {
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Task> from = cq.from(getElementClass());
 		
-		Predicate filter = buildCriteraFilter(taskCriteria, cb, from);
+		Predicate filter = buildCriteriaFilter(taskCriteria, cb, from);
 		if (filter != null) {
 			cq.where(filter);
 		}
@@ -90,7 +99,7 @@ public class TaskService extends AbstractAdoService<Task> {
 		CriteriaQuery<Task> cq = cb.createQuery(getElementClass());
 		Root<Task> from = cq.from(getElementClass());
 
-		Predicate filter = buildCriteraFilter(taskCriteria, cb, from);
+		Predicate filter = buildCriteriaFilter(taskCriteria, cb, from);
 		if (filter != null) {
 			cq.where(filter);
 		}
@@ -100,7 +109,32 @@ public class TaskService extends AbstractAdoService<Task> {
 		return resultList;	
 	}
 
-	private Predicate buildCriteraFilter(TaskCriteria taskCriteria, CriteriaBuilder cb, Root<Task> from) {
+	public List<TaskDashboardDto> getAllWithDueDateBetween(Date from, Date to, User user) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<TaskDashboardDto> cq = cb.createQuery(TaskDashboardDto.class);
+		Root<Task> task = cq.from(getElementClass());
+		
+		TaskCriteria taskCriteria = new TaskCriteria().assigneeUserEquals(user).dueDateBetween(from, to);
+		Predicate filter = buildCriteriaFilter(taskCriteria, cb, task);
+		
+		List<TaskDashboardDto> result;
+		if (filter != null) {
+			cq.where(filter);
+			cq.multiselect(
+					task.get(Task.UUID),
+					task.get(Task.PRIORITY),
+					task.get(Task.TASK_STATUS)
+			);
+			
+			result = em.createQuery(cq).getResultList();
+		} else {
+			result = Collections.emptyList();
+		}
+		
+		return result;
+	}
+
+	private Predicate buildCriteriaFilter(TaskCriteria taskCriteria, CriteriaBuilder cb, Root<Task> from) {
 		Predicate filter = null;
 		if (taskCriteria.getTaskStatuses() != null && taskCriteria.getTaskStatuses().length > 0) {
 			if (taskCriteria.getTaskStatuses().length == 1) {

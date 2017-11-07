@@ -83,6 +83,7 @@ public class DashboardView extends AbstractView {
 	private HorizontalLayout epiCurveAndMapLayout;
 	private MapComponent mapComponent;
 	private EpiCurveComponent epiCurveComponent;
+	private StatisticsComponent statisticsComponent;
 
 	// Entities
 	private List<CaseDataDto> cases = new ArrayList<>();
@@ -114,7 +115,9 @@ public class DashboardView extends AbstractView {
 		// Add filter bar
 		dashboardLayout.addComponent(createFilterBar());
 
-		// TODO Add statistics
+		// Add statistics
+		statisticsComponent = new StatisticsComponent(this);
+		dashboardLayout.addComponent(statisticsComponent);
 
 		// Add epi curve and map
 		epiCurveAndMapLayout = createEpiCurveAndMapLayout();
@@ -126,10 +129,18 @@ public class DashboardView extends AbstractView {
 	
 	public void updateDateLabel(Label dateLabel) {
 		if (dateFilterOption == DateFilterOption.EPI_WEEK) {
-			dateLabel.setValue("FOR WEEK " + fromWeek.getWeek() + (toWeek.getWeek() != fromWeek.getWeek() ? " TO WEEK " + toWeek.getWeek() : ""));
+			if (fromWeek.getWeek() == toWeek.getWeek()) {
+				dateLabel.setValue("IN EPI WEEK " + fromWeek.getWeek());
+			} else {
+				dateLabel.setValue("FROM EPI WEEK " + fromWeek.getWeek() + " TO " + toWeek.getWeek());
+			}
 		} else {
-			dateLabel.setValue("FROM " + DateHelper.formatShortDate(fromDate) + 
-					(DateHelper.isSameDay(fromDate, toDate) ? " TO " + DateHelper.formatShortDate(toDate) : ""));
+			if (DateHelper.isSameDay(fromDate, toDate)) {
+				dateLabel.setValue("ON " + DateHelper.formatShortDate(fromDate));
+			} else {
+				dateLabel.setValue("FROM " + DateHelper.formatShortDate(fromDate) + 
+						" TO " + DateHelper.formatShortDate(toDate));
+			}
 		}
 	}
 
@@ -336,6 +347,9 @@ public class DashboardView extends AbstractView {
 					DateHelper.getEpiWeekEnd(toWeek), district, disease, userUuid);
 		}
 
+		// Updates statistics
+		statisticsComponent.updateStatistics();
+		
 		// Update cases and contacts shown on the map
 		mapComponent.refreshMap();
 

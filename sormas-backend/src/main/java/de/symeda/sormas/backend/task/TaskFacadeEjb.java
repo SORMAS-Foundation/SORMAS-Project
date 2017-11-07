@@ -15,6 +15,7 @@ import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
+import de.symeda.sormas.api.task.TaskDashboardDto;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskFacade;
 import de.symeda.sormas.api.task.TaskStatus;
@@ -282,6 +283,13 @@ public class TaskFacadeEjb implements TaskFacade {
 				.stream()
 				.map(c -> toDto(c))
 				.collect(Collectors.toList());
+	}
+	
+	@Override
+	public List<TaskDashboardDto> getAllWithDueDateBetween(Date from, Date to, String userUuid) {
+		User user = userService.getByUuid(userUuid);
+		
+		return taskService.getAllWithDueDateBetween(from, to, user);
 	}
 	
 	@Override

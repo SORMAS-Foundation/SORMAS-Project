@@ -19,4 +19,6 @@ public interface SampleTestFacade {
 	List<String> getAllUuids(String userUuid);
 
 	List<SampleTestDto> getByUuids(List<String> uuids);
+	
+	List<TestResultDashboardDto> getNewTestResultsBetween(Date from, Date to, String userUuid);
 }

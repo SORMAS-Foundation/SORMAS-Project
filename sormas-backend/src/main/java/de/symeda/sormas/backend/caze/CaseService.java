@@ -1,5 +1,6 @@
 package de.symeda.sormas.backend.caze;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -8,6 +9,8 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -19,6 +22,7 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseDashboardDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.common.AbstractAdoService;
@@ -127,6 +131,37 @@ public class CaseService extends AbstractAdoService<Case> {
 		List<Case> resultList = em.createQuery(cq).getResultList();
 		return resultList;
 	}	
+	
+	public List<CaseDashboardDto> getNewCasesBetween(Date from, Date to, User user) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<CaseDashboardDto> cq = cb.createQuery(CaseDashboardDto.class);
+		Root<Case> caze = cq.from(getElementClass());
+		
+		Predicate filter = createUserFilter(cb, cq, caze, user);
+		Predicate dateFilter = cb.between(caze.get(Case.REPORT_DATE), from, to);
+		if (filter != null) {
+			filter = cb.and(filter, dateFilter);
+		} else {
+			filter = dateFilter;
+		}
+		
+		List<CaseDashboardDto> result;
+		if (filter != null) {
+			cq.where(filter);
+			cq.multiselect(
+					caze.get(Case.UUID),
+					caze.get(Case.CASE_CLASSIFICATION),
+					caze.get(Case.DISEASE),
+					caze.get(Case.INVESTIGATION_STATUS)
+			);
+			
+			result = em.createQuery(cq).getResultList();
+		} else {
+			result = Collections.emptyList();
+		}
+		
+		return result;
+	}
 	
 	/**
 	 * @see /sormas-backend/doc/UserDataAccess.md

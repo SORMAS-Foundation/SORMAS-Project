@@ -18,6 +18,7 @@ public final class DateHelper {
 	private static final SimpleDateFormat DATE_TIME_FORMAT = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 	private static final SimpleDateFormat SHORT_DATE_TIME_FORMAT = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 	private static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm");
+	private static final SimpleDateFormat DATABASE_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 	
 	public static String formatTime(Date date) {
 		if (date != null) {
@@ -78,6 +79,14 @@ public final class DateHelper {
 	public static String formatShortDateTime(Date date) {
 		if (date != null) {
 			return clone(SHORT_DATE_TIME_FORMAT).format(date);
+		} else {
+			return "";
+		}
+	}
+	
+	public static String formatDateForDatabase(Date date) {
+		if (date != null) {
+			return clone(DATABASE_DATE_FORMAT).format(date);
 		} else {
 			return "";
 		}

@@ -31,6 +31,8 @@ public interface TaskFacade {
 
 	List<TaskDto> getByUuids(List<String> uuids);
 	
+	List<TaskDashboardDto> getAllWithDueDateBetween(Date from, Date to, String userUuid);
+	
 	long getPendingTaskCountByCase(CaseDataDto caseDataDto);
 	
 	long getPendingTaskCountByContact(ContactIndexDto contactDto);

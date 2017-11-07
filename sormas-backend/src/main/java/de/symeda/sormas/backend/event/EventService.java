@@ -1,5 +1,6 @@
 package de.symeda.sormas.backend.event;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -14,11 +15,12 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.event.EventDashboardDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.location.Location;
-import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.user.User;
 
@@ -61,6 +63,37 @@ public class EventService extends AbstractAdoService<Event> {
 		
 		List<Event> resultList = em.createQuery(cq).getResultList();
 		return resultList;
+	}
+	
+	public List<EventDashboardDto> getNewEventsBetween(Date from, Date to, User user) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<EventDashboardDto> cq = cb.createQuery(EventDashboardDto.class);
+		Root<Event> event = cq.from(getElementClass());
+		
+		Predicate filter = createUserFilter(cb, cq, event, user);
+		Predicate dateFilter = cb.between(event.get(Event.REPORT_DATE_TIME), from, to);
+		if (filter != null) {
+			filter = cb.and(filter, dateFilter);
+		} else {
+			filter = dateFilter;
+		}
+		
+		List<EventDashboardDto> result;
+		if (filter != null) {
+			cq.where(filter);
+			cq.multiselect(
+					event.get(Event.UUID),
+					event.get(Event.EVENT_TYPE),
+					event.get(Event.EVENT_STATUS),
+					event.get(Event.DISEASE)
+			);
+			
+			result = em.createQuery(cq).getResultList();
+		} else {
+			result = Collections.emptyList();
+		}
+		
+		return result;
 	}
 
 	/**

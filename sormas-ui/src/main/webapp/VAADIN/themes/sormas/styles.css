@@ -13482,6 +13482,14 @@ div.v-layout.v-horizontal.v-widget {
 	background-color: #CDD8EC;
 }
 
+.sormas .statistics-sub-component {
+	border-left: 2px solid #CDD8EC;
+}
+
+.sormas .statistics-sub-component.statistics-sub-component-right {
+	border-right: 2px solid #CDD8EC;
+}
+
 .sormas .googlemap.no-tiles img {
 	opacity: 0.2;
 	filter: alpha(opacity=20);
