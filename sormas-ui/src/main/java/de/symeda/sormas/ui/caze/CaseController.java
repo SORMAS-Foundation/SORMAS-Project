@@ -407,7 +407,7 @@ public class CaseController {
 		VerticalLayout layout = new VerticalLayout();	
 		layout.setMargin(true);
 		Label description = new Label("The symptoms selected match the clinical criteria for " + plagueType.toString() + ". "
-				+ "It will be set to " + plagueType.toString() + " for this case.");
+				+ "The plague type has been set to " + plagueType.toString() + " for this case.");
 		description.setContentMode(ContentMode.HTML);
 		description.setWidth(100, Unit.PERCENTAGE);
 		layout.addComponent(description);

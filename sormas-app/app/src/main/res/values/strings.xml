@@ -279,7 +279,7 @@
     <string name="alert_gps">SORMAS needs access to your GPS location for all of its features to work as intended. Please click on \"Turn On GPS\" to enable the required functionality on your device.</string>
     <string name="alert_gps_permission">SORMAS needs access to your GPS location for all of its features to work as intended. Please click on \"Allow GPS Access\" to allow SORMAS to access the required functionality on your device.</string>
     <string name="alert_missing_report">You have not confirmed your report for the last epi week. If you want to add a case you\'ve not yet reported for the last epi week, please visit the Reports screen and click on \'Add Missing Case\'. You will have to confirm your report before creating a new case for this week.</string>
-    <string name="alert_plague_type_change">The symptoms selected match the clinical criteria for %1$s. It will be set to %2$s for this case.</string>
+    <string name="alert_plague_type_change">The symptoms selected match the clinical criteria for %1$s. The plague type has been be set to %2$s for this case.</string>
 
     <string name="alert_title_gps">Turn On GPS</string>
     <string name="alert_title_gps_permission">Allow GPS Access</string>
