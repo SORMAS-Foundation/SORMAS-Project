@@ -167,7 +167,8 @@ public class FacilityChangeDialogBuilder extends AlertDialog.Builder {
                     try {
                         DatabaseHelper.getCaseDao().moveCase(caze);
                         callback.accept(true);
-                    } catch (DaoException e) {
+                    } catch (NullPointerException | DaoException e) {
+                        // TODO Remove the NullPointerException here as soon as bug #381 has been fixed!
                         Log.e(getClass().getName(), "Error while trying to move case", e);
                         ErrorReportingHelper.sendCaughtException(tracker, e, caze, true);
                         callback.accept(false);
