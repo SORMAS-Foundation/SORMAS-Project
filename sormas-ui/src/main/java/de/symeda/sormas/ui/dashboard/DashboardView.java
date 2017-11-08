@@ -247,8 +247,13 @@ public class DashboardView extends AbstractView {
 		dateFilterOption = (DateFilterOption) dateFilterOptionFilter.getValue();
 
 		// Epi week filter
+		List<EpiWeek> epiWeekList = DateHelper.createEpiWeekList(c.get(Calendar.YEAR));
+		
 		weekFromFilter.setWidth(200, Unit.PIXELS);
-		weekFromFilter.addItems(DateHelper.createWeeksList(c.get(Calendar.YEAR)));
+		for (EpiWeek week : epiWeekList) {
+			weekFromFilter.addItem(week.getWeek());
+			weekFromFilter.setItemCaption(week.getWeek(), week.getWeek() + " (" + DateHelper.formatShortDate(DateHelper.getEpiWeekStart(week)) + " - " + DateHelper.formatShortDate(DateHelper.getEpiWeekEnd(week)) + ")");
+		}
 		weekFromFilter.setNullSelectionAllowed(false);
 		weekFromFilter.setValue(DateHelper.getEpiWeek(c.getTime()).getWeek());
 		weekFromFilter.setCaption(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, FROM_WEEK));
@@ -259,7 +264,10 @@ public class DashboardView extends AbstractView {
 		setFromWeek((int) weekFromFilter.getValue());
 
 		weekToFilter.setWidth(200, Unit.PIXELS);
-		weekToFilter.addItems(DateHelper.createWeeksList(c.get(Calendar.YEAR)));
+		for (EpiWeek week : epiWeekList) {
+			weekToFilter.addItem(week.getWeek());
+			weekToFilter.setItemCaption(week.getWeek(), week.getWeek() + " (" + DateHelper.formatShortDate(DateHelper.getEpiWeekStart(week)) + " - " + DateHelper.formatShortDate(DateHelper.getEpiWeekEnd(week)) + ")");
+		}
 		weekToFilter.setNullSelectionAllowed(false);
 		weekToFilter.setValue(DateHelper.getEpiWeek(c.getTime()).getWeek());
 		weekToFilter.setCaption(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, TO_WEEK));

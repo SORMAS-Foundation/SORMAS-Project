@@ -1,6 +1,7 @@
 package de.symeda.sormas.ui.reports;
 
 import java.util.Date;
+import java.util.List;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.shared.ui.grid.HeightMode;
@@ -66,7 +67,11 @@ public class ReportsView extends AbstractView {
 		
 		epiWeekFilter = new ComboBox();
 		epiWeekFilter.setWidth(200, Unit.PIXELS);
-		epiWeekFilter.addItems(DateHelper.createWeeksList(year));
+		List<EpiWeek> epiWeekList = DateHelper.createEpiWeekList(year);
+		for (EpiWeek epiWeek : epiWeekList) {
+			epiWeekFilter.addItem(epiWeek.getWeek());
+			epiWeekFilter.setItemCaption(epiWeek.getWeek(), epiWeek.getWeek() + " (" + DateHelper.formatShortDate(DateHelper.getEpiWeekStart(epiWeek)) + " - " + DateHelper.formatShortDate(DateHelper.getEpiWeekEnd(epiWeek)) + ")");
+		}
 		epiWeekFilter.select(week);
 		epiWeekFilter.setCaption("Epi Week");
 		epiWeekFilter.addValueChangeListener(e -> {

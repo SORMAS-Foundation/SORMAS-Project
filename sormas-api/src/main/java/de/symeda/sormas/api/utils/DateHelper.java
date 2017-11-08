@@ -334,14 +334,14 @@ public final class DateHelper {
 		return secondCalendar.getTime().after(calendar.getTime());
 	}
 	
-	public static List<Integer> createWeeksList(int year) {
+	public static List<EpiWeek> createEpiWeekList(int year) {
         Calendar calendar = getEpiCalendar();
         calendar.set(year, 0, 1);
-        List<Integer> weeksList = new ArrayList<>();
+        List<EpiWeek> epiWeekList = new ArrayList<>();
         for (int week = 1; week <= calendar.getActualMaximum(Calendar.WEEK_OF_YEAR); week++) {
-            weeksList.add(week);
+            epiWeekList.add(new EpiWeek(year, week));
         }
-        return weeksList;
+        return epiWeekList;
     }
 	
 	/**
