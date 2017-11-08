@@ -152,8 +152,8 @@ public final class InfrastructureDataImporter {
 
 		DecimalFormat geoCoordFormat = new DecimalFormat();
 		DecimalFormatSymbols decimalSymbols = new DecimalFormatSymbols();
-		decimalSymbols.setDecimalSeparator(',');
-		decimalSymbols.setGroupingSeparator('.');
+		decimalSymbols.setDecimalSeparator('.');
+		decimalSymbols.setGroupingSeparator(',');
 		geoCoordFormat.setDecimalFormatSymbols(decimalSymbols);
 		
 		String currentLine = null;
