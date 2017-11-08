@@ -9,7 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.symeda.sormas.api.task.TaskContext;
-import de.symeda.sormas.api.task.TaskDashboardDto;
+import de.symeda.sormas.api.task.DashboardTask;
 import de.symeda.sormas.api.task.TaskFacade;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
@@ -55,7 +55,7 @@ public class TaskFacadeEjbTest extends BaseBeanTest {
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		creator.createTask(TaskContext.GENERAL, TaskType.OTHER, TaskStatus.PENDING, null, null, DateHelper.addDays(new Date(), 1), user);
 		
-		List<TaskDashboardDto> dashboardDtos = taskFacade.getAllPending(new Date(), DateHelper.addDays(new Date(), 2), user.getUuid());
+		List<DashboardTask> dashboardDtos = taskFacade.getAllPending(new Date(), DateHelper.addDays(new Date(), 2), user.getUuid());
 		
 		// List should have one entry
 		assertEquals(1, dashboardDtos.size());

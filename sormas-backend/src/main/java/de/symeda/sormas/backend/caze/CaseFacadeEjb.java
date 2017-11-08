@@ -13,7 +13,7 @@ import javax.ejb.Stateless;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.caze.CaseDashboardDto;
+import de.symeda.sormas.api.caze.DashboardCase;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -173,10 +173,11 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 	
 	@Override
-	public List<CaseDashboardDto> getNewCasesBetween(Date from, Date to, String userUuid) {
+	public List<DashboardCase> getNewCasesForDashboard(DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid) {
+		District district = districtService.getByReferenceDto(districtRef);
 		User user = userService.getByUuid(userUuid);
 		
-		return caseService.getNewCasesBetween(from, to, user);
+		return caseService.getNewCasesForDashboard(district, disease, from, to, user);
 	}
 
 	@Override

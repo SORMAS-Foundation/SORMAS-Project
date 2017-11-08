@@ -1,6 +1,5 @@
 package de.symeda.sormas.backend.task;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -8,9 +7,6 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
@@ -18,12 +14,10 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import de.symeda.sormas.api.caze.CaseDashboardDto;
-import de.symeda.sormas.api.task.TaskDashboardDto;
+import de.symeda.sormas.api.task.DashboardTask;
 import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.contact.Contact;
@@ -109,19 +103,18 @@ public class TaskService extends AbstractAdoService<Task> {
 		return resultList;	
 	}
 
-	public List<TaskDashboardDto> getAllPending(Date from, Date to, User user) {
+	public List<DashboardTask> getAllPending(Date from, Date to, User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<TaskDashboardDto> cq = cb.createQuery(TaskDashboardDto.class);
+		CriteriaQuery<DashboardTask> cq = cb.createQuery(DashboardTask.class);
 		Root<Task> task = cq.from(getElementClass());
 		
 		TaskCriteria taskCriteria = new TaskCriteria().assigneeUserEquals(user).taskStatusEquals(TaskStatus.PENDING);
 		Predicate filter = buildCriteriaFilter(taskCriteria, cb, task);
 		
-		List<TaskDashboardDto> result;
+		List<DashboardTask> result;
 		if (filter != null) {
 			cq.where(filter);
 			cq.multiselect(
-					task.get(Task.UUID),
 					task.get(Task.PRIORITY),
 					task.get(Task.TASK_STATUS)
 			);

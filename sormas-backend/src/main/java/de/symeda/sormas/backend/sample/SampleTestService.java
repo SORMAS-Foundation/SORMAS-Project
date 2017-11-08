@@ -16,9 +16,11 @@ import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import de.symeda.sormas.api.sample.TestResultDashboardDto;
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.sample.DashboardTestResult;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.user.User;
 
 @Stateless
@@ -46,9 +48,9 @@ public class SampleTestService extends AbstractAdoService<SampleTest> {
 		return resultList;
 	}
 	
-	public List<TestResultDashboardDto> getNewTestResultsBetween(Date from, Date to, User user) {
+	public List<DashboardTestResult> getNewTestResultsForDashboard(District district, Disease disease, Date from, Date to, User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<TestResultDashboardDto> cq = cb.createQuery(TestResultDashboardDto.class);
+		CriteriaQuery<DashboardTestResult> cq = cb.createQuery(DashboardTestResult.class);
 		Root<SampleTest> sampleTest = cq.from(getElementClass());
 		Join<SampleTest, Sample> sample = sampleTest.join(SampleTest.SAMPLE, JoinType.LEFT);
 		Join<Sample, Case> caze = sample.join(Sample.ASSOCIATED_CASE, JoinType.LEFT);
@@ -61,11 +63,28 @@ public class SampleTestService extends AbstractAdoService<SampleTest> {
 			filter = dateFilter;
 		}
 		
-		List<TestResultDashboardDto> result;
+		if (district != null) {
+			Predicate districtFilter = cb.equal(caze.get(Case.DISTRICT), district);
+			if (filter != null) {
+				filter = cb.and(filter, districtFilter);
+			} else {
+				filter = districtFilter;
+			}
+		}
+		
+		if (disease != null) {
+			Predicate diseaseFilter = cb.equal(caze.get(Case.DISEASE), disease);
+			if (filter != null) {
+				filter = cb.and(filter, diseaseFilter);
+			} else {
+				filter = diseaseFilter;
+			}
+		}
+		
+		List<DashboardTestResult> result;
 		if (filter != null) {
 			cq.where(filter);
 			cq.multiselect(
-					sampleTest.get(SampleTest.UUID),
 					caze.get(Case.DISEASE),
 					sample.get(Sample.SHIPPED),
 					sample.get(Sample.RECEIVED),

@@ -40,7 +40,7 @@ public interface CaseFacade {
 
 	List<CaseDataDto> getByUuids(List<String> uuids);
 	
-	List<CaseDashboardDto> getNewCasesBetween(Date from, Date to, String userUuid);
+	List<DashboardCase> getNewCasesForDashboard(DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid);
 
 	/**
 	 * @param onsetFromDate optional

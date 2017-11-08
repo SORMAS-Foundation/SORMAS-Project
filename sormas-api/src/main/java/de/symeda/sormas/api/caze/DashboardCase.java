@@ -1,9 +1,10 @@
 package de.symeda.sormas.api.caze;
 
-import de.symeda.sormas.api.DataTransferObject;
+import java.io.Serializable;
+
 import de.symeda.sormas.api.Disease;
 
-public class CaseDashboardDto extends DataTransferObject {
+public class DashboardCase implements Serializable {
 
 	private static final long serialVersionUID = -5705128377788207648L;
 
@@ -17,8 +18,7 @@ public class CaseDashboardDto extends DataTransferObject {
 	private Disease disease;
 	private InvestigationStatus investigationStatus;
 	
-	public CaseDashboardDto(String uuid, CaseClassification caseClassification, Disease disease, InvestigationStatus investigationStatus) {
-		setUuid(uuid);
+	public DashboardCase(CaseClassification caseClassification, Disease disease, InvestigationStatus investigationStatus) {
 		this.caseClassification = caseClassification;
 		this.disease = disease;
 		this.investigationStatus = investigationStatus;

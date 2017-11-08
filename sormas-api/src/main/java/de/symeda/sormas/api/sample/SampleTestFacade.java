@@ -5,6 +5,9 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
+
 @Remote
 public interface SampleTestFacade {
 
@@ -20,5 +23,5 @@ public interface SampleTestFacade {
 
 	List<SampleTestDto> getByUuids(List<String> uuids);
 	
-	List<TestResultDashboardDto> getNewTestResultsBetween(Date from, Date to, String userUuid);
+	List<DashboardTestResult> getNewTestResultsForDashboard(DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid);
 }

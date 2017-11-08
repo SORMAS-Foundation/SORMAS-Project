@@ -9,7 +9,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.event.EventDashboardDto;
+import de.symeda.sormas.api.event.DashboardEvent;
+import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventFacade;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.EventType;
@@ -57,9 +58,9 @@ public class EventFacadeEjbTest extends BaseBeanTest {
 		
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
-		creator.createEvent(EventType.OUTBREAK, EventStatus.POSSIBLE, "Description", "First", "Name", "12345", TypeOfPlace.PUBLIC_PLACE, DateHelper.subtractDays(new Date(), 1), new Date(), user, user, Disease.EVD);
+		EventDto event = creator.createEvent(EventType.OUTBREAK, EventStatus.POSSIBLE, "Description", "First", "Name", "12345", TypeOfPlace.PUBLIC_PLACE, DateHelper.subtractDays(new Date(), 1), new Date(), user, user, Disease.EVD);
 		
-		List<EventDashboardDto> dashboardDtos = eventFacade.getNewEventsBetween(DateHelper.subtractDays(new Date(),  1), DateHelper.addDays(new Date(), 1), user.getUuid());
+		List<DashboardEvent> dashboardDtos = eventFacade.getNewEventsForDashboard(event.getEventLocation().getDistrict(), event.getDisease(), DateHelper.subtractDays(new Date(),  1), DateHelper.addDays(new Date(), 1), user.getUuid());
 		
 		// List should have one entry
 		assertEquals(1, dashboardDtos.size());

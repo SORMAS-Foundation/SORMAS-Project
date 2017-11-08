@@ -13390,40 +13390,61 @@ div.v-layout.v-horizontal.v-widget {
 	margin: 0;
 }
 
-.sormas .v-label-border-red {
+.sormas .v-label-border-critical {
 	border-top: 4px solid #FF0000;
 	border-radius: 3px;
 	padding-top: 6px;
 }
 
-.sormas .v-label-border-orange {
+.sormas .v-label-border-important {
 	border-top: 4px solid #FF8C00;
 	border-radius: 3px;
 	padding-top: 6px;
 }
 
-.sormas .v-label-border-yellow {
+.sormas .v-label-border-relevant {
 	border-top: 4px solid #FFD700;
 	border-radius: 3px;
 	padding-top: 6px;
 }
 
-.sormas .v-label-border-light-blue {
+.sormas .v-label-border-neutral {
 	border-top: 4px solid #00BFFF;
 	border-radius: 3px;
 	padding-top: 6px;
 }
 
-.sormas .v-label-border-green {
+.sormas .v-label-border-positive {
 	border-top: 4px solid #32CD32;
 	border-radius: 3px;
 	padding-top: 6px;
 }
 
-.sormas .v-label-border-grey {
+.sormas .v-label-border-wayne {
 	border-top: 4px solid #808080;
 	border-radius: 3px;
 	padding-top: 6px;
+}
+
+.sormas .v-label-uppercase-small {
+	color: #6591C4;
+	font-weight: bold;
+	text-transform: uppercase;
+	font-size: 0.8em;
+}
+
+.sormas .v-label-uppercase-normal {
+	color: #005A9C;
+	font-weight: bold;
+	text-transform: uppercase;
+	font-size: 1em;
+}
+
+.sormas .v-label-uppercase-xlarge {
+	color: #005A9C;
+	font-weight: bold;
+	text-transform: uppercase;
+	font-size: 2.5em;
 }
 
 .sormas .v-window .v-window-outerheader {

@@ -13,11 +13,11 @@ public class StatisticsOverviewElement extends VerticalLayout {
 	
 	public StatisticsOverviewElement(String caption, String labelClass) {
 		countLabel = new Label();
-		CssStyles.style(countLabel, CssStyles.H4, CssStyles.VSPACE_5, CssStyles.VSPACE_TOP_NONE);
+		CssStyles.style(countLabel, CssStyles.UPPERCASE_NORMAL, CssStyles.VSPACE_5, CssStyles.VSPACE_TOP_NONE);
 		addComponent(countLabel);
 		
 		Label captionLabel = new Label(caption);
-		CssStyles.style(captionLabel, CssStyles.H4, CssStyles.VSPACE_5, CssStyles.VSPACE_TOP_NONE);
+		CssStyles.style(captionLabel, CssStyles.UPPERCASE_SMALL, CssStyles.VSPACE_5, CssStyles.VSPACE_TOP_NONE);
 		captionLabel.addStyleName(labelClass);
 		addComponent(captionLabel);
 		

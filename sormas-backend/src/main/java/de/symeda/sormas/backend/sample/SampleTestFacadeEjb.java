@@ -10,12 +10,16 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SampleTestDto;
 import de.symeda.sormas.api.sample.SampleTestFacade;
-import de.symeda.sormas.api.sample.TestResultDashboardDto;
+import de.symeda.sormas.api.sample.DashboardTestResult;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
+import de.symeda.sormas.backend.region.District;
+import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
@@ -28,6 +32,8 @@ public class SampleTestFacadeEjb implements SampleTestFacade {
 	private SampleTestService sampleTestService;
 	@EJB
 	private SampleService sampleService;
+	@EJB
+	private DistrictService districtService;
 	@EJB
 	private FacilityService facilityService;
 	@EJB
@@ -80,10 +86,11 @@ public class SampleTestFacadeEjb implements SampleTestFacade {
 	}
 	
 	@Override
-	public List<TestResultDashboardDto> getNewTestResultsBetween(Date from, Date to, String userUuid) {
+	public List<DashboardTestResult> getNewTestResultsForDashboard(DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid) {
 		User user = userService.getByUuid(userUuid);
+		District district = districtService.getByReferenceDto(districtRef);
 		
-		return sampleTestService.getNewTestResultsBetween(from, to, user);
+		return sampleTestService.getNewTestResultsForDashboard(district, disease, from, to, user);
 	}
 	
 	@Override

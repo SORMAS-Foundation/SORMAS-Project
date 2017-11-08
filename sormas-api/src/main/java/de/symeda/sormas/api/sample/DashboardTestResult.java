@@ -1,9 +1,10 @@
 package de.symeda.sormas.api.sample;
 
-import de.symeda.sormas.api.DataTransferObject;
+import java.io.Serializable;
+
 import de.symeda.sormas.api.Disease;
 
-public class TestResultDashboardDto extends DataTransferObject {
+public class DashboardTestResult implements Serializable {
 
 	private static final long serialVersionUID = -6488827968218301232L;
 
@@ -19,8 +20,7 @@ public class TestResultDashboardDto extends DataTransferObject {
 	private boolean received;
 	private SampleTestResultType testResult;
 	
-	public TestResultDashboardDto(String uuid, Disease disease, boolean shipped, boolean received, SampleTestResultType testResult) {
-		setUuid(uuid);
+	public DashboardTestResult(Disease disease, boolean shipped, boolean received, SampleTestResultType testResult) {
 		this.disease = disease;
 		this.shipped = shipped;
 		this.received = received;

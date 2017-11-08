@@ -8,12 +8,12 @@ import com.vaadin.ui.Image;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.caze.CaseDashboardDto;
-import de.symeda.sormas.api.event.EventDashboardDto;
+import de.symeda.sormas.api.caze.DashboardCase;
+import de.symeda.sormas.api.event.DashboardEvent;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.sample.SampleTestResultType;
-import de.symeda.sormas.api.sample.TestResultDashboardDto;
-import de.symeda.sormas.api.task.TaskDashboardDto;
+import de.symeda.sormas.api.sample.DashboardTestResult;
+import de.symeda.sormas.api.task.DashboardTask;
 import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.login.LoginHelper;
@@ -77,11 +77,11 @@ public class StatisticsComponent extends HorizontalLayout {
 		
 		// Overview
 		myTasksComponent.addOverview();
-		taskPriorityHigh = new StatisticsOverviewElement("High", "border-red");
+		taskPriorityHigh = new StatisticsOverviewElement("High", "border-critical");
 		myTasksComponent.addComponentToOverview(taskPriorityHigh);
-		taskPriorityNormal = new StatisticsOverviewElement("Normal", "border-light-blue");
+		taskPriorityNormal = new StatisticsOverviewElement("Normal", "border-neutral");
 		myTasksComponent.addComponentToOverview(taskPriorityNormal);
-		taskPriorityLow = new StatisticsOverviewElement("Low", "border-green");
+		taskPriorityLow = new StatisticsOverviewElement("Low", "border-positive");
 		myTasksComponent.addComponentToOverview(taskPriorityLow);
 		
 		updateMyTasksComponent();
@@ -91,21 +91,21 @@ public class StatisticsComponent extends HorizontalLayout {
 	private void updateMyTasksComponent() {
 		dashboardView.updateDateLabel(myTasksComponent.getDateLabel());
 		
-		List<TaskDashboardDto> taskDashboardDtos;
+		List<DashboardTask> dashboardTasks;
 		if (dashboardView.getDateFilterOption() == DateFilterOption.DATE) {
-			taskDashboardDtos = FacadeProvider.getTaskFacade().getAllPending(dashboardView.getFromDate(), dashboardView.getToDate(), LoginHelper.getCurrentUserAsReference().getUuid());
+			dashboardTasks = FacadeProvider.getTaskFacade().getAllPending(dashboardView.getFromDate(), dashboardView.getToDate(), LoginHelper.getCurrentUserAsReference().getUuid());
 		} else {
-			taskDashboardDtos = FacadeProvider.getTaskFacade().getAllPending(DateHelper.getEpiWeekStart(dashboardView.getFromWeek()), DateHelper.getEpiWeekEnd(dashboardView.getToWeek()), LoginHelper.getCurrentUserAsReference().getUuid());
+			dashboardTasks = FacadeProvider.getTaskFacade().getAllPending(DateHelper.getEpiWeekStart(dashboardView.getFromWeek()), DateHelper.getEpiWeekEnd(dashboardView.getToWeek()), LoginHelper.getCurrentUserAsReference().getUuid());
 		}
 		
-		int myTasksCount = taskDashboardDtos.size();		
+		int myTasksCount = dashboardTasks.size();		
 		myTasksComponent.updateCountLabel(myTasksCount);
 		
-		int highPriorityCount = (int) taskDashboardDtos.stream().filter(t -> t.getPriority() == TaskPriority.HIGH).count();
+		int highPriorityCount = (int) dashboardTasks.stream().filter(t -> t.getPriority() == TaskPriority.HIGH).count();
 		taskPriorityHigh.updateCountLabel(highPriorityCount);
-		int normalPriorityCount = (int) taskDashboardDtos.stream().filter(t -> t.getPriority() == TaskPriority.NORMAL).count();
+		int normalPriorityCount = (int) dashboardTasks.stream().filter(t -> t.getPriority() == TaskPriority.NORMAL).count();
 		taskPriorityNormal.updateCountLabel(normalPriorityCount);
-		int lowPriorityCount = (int) taskDashboardDtos.stream().filter(t -> t.getPriority() == TaskPriority.LOW).count();
+		int lowPriorityCount = (int) dashboardTasks.stream().filter(t -> t.getPriority() == TaskPriority.LOW).count();
 		taskPriorityLow.updateCountLabel(lowPriorityCount);
 	}
 	
@@ -118,15 +118,15 @@ public class StatisticsComponent extends HorizontalLayout {
 		
 		// Overview
 		newCasesComponent.addOverview();
-		caseClassificationConfirmed = new StatisticsOverviewElement("Confirmed", "border-red");
+		caseClassificationConfirmed = new StatisticsOverviewElement("Confirmed", "border-critical");
 		newCasesComponent.addComponentToOverview(caseClassificationConfirmed);
-		caseClassificationProbable = new StatisticsOverviewElement("Probable", "border-orange");
+		caseClassificationProbable = new StatisticsOverviewElement("Probable", "border-important");
 		newCasesComponent.addComponentToOverview(caseClassificationProbable);
-		caseClassificationSuspect = new StatisticsOverviewElement("Suspect", "border-yellow");
+		caseClassificationSuspect = new StatisticsOverviewElement("Suspect", "border-relevant");
 		newCasesComponent.addComponentToOverview(caseClassificationSuspect);
-//		caseClassificationNotACase = new StatisticsOverviewElement("Not A Case", "border-green");
+//		caseClassificationNotACase = new StatisticsOverviewElement("Not A Case", "border-positive");
 //		newCasesComponent.addComponentToOverview(caseClassificationNotACase);
-		caseClassificationNotYetClassified = new StatisticsOverviewElement("Not Yet Classified", "border-grey");
+		caseClassificationNotYetClassified = new StatisticsOverviewElement("Not Yet Classified", "border-wayne");
 		newCasesComponent.addComponentToOverview(caseClassificationNotYetClassified);
 		
 		updateNewCasesComponent();
@@ -136,25 +136,25 @@ public class StatisticsComponent extends HorizontalLayout {
 	private void updateNewCasesComponent() {
 		dashboardView.updateDateLabel(newCasesComponent.getDateLabel());
 		
-		List<CaseDashboardDto> caseDashboardDtos;
+		List<DashboardCase> dashboardCases;
 		if (dashboardView.getDateFilterOption() == DateFilterOption.DATE) {
-			caseDashboardDtos = FacadeProvider.getCaseFacade().getNewCasesBetween(dashboardView.getFromDate(), dashboardView.getToDate(), LoginHelper.getCurrentUser().getUuid());
+			dashboardCases = FacadeProvider.getCaseFacade().getNewCasesForDashboard(dashboardView.getDistrict(), dashboardView.getDisease(), dashboardView.getFromDate(), dashboardView.getToDate(), LoginHelper.getCurrentUser().getUuid());
 		} else {
-			caseDashboardDtos = FacadeProvider.getCaseFacade().getNewCasesBetween(DateHelper.getEpiWeekStart(dashboardView.getFromWeek()), DateHelper.getEpiWeekEnd(dashboardView.getToWeek()), LoginHelper.getCurrentUserAsReference().getUuid());
+			dashboardCases = FacadeProvider.getCaseFacade().getNewCasesForDashboard(dashboardView.getDistrict(), dashboardView.getDisease(), DateHelper.getEpiWeekStart(dashboardView.getFromWeek()), DateHelper.getEpiWeekEnd(dashboardView.getToWeek()), LoginHelper.getCurrentUserAsReference().getUuid());
 		}
 		
-		int newCasesCount = caseDashboardDtos.size();
+		int newCasesCount = dashboardCases.size();
 		newCasesComponent.updateCountLabel(newCasesCount);
 		
-		int confirmedCasesCount = (int) caseDashboardDtos.stream().filter(c -> c.getCaseClassification() == CaseClassification.CONFIRMED).count();
+		int confirmedCasesCount = (int) dashboardCases.stream().filter(c -> c.getCaseClassification() == CaseClassification.CONFIRMED).count();
 		caseClassificationConfirmed.updateCountLabel(confirmedCasesCount);
-		int probableCasesCount = (int) caseDashboardDtos.stream().filter(c -> c.getCaseClassification() == CaseClassification.PROBABLE).count();
+		int probableCasesCount = (int) dashboardCases.stream().filter(c -> c.getCaseClassification() == CaseClassification.PROBABLE).count();
 		caseClassificationProbable.updateCountLabel(probableCasesCount);
-		int suspectCasesCount = (int) caseDashboardDtos.stream().filter(c -> c.getCaseClassification() == CaseClassification.SUSPECT).count();
+		int suspectCasesCount = (int) dashboardCases.stream().filter(c -> c.getCaseClassification() == CaseClassification.SUSPECT).count();
 		caseClassificationSuspect.updateCountLabel(suspectCasesCount);
 //		int notACaseCasesCount = (int) caseDashboardDtos.stream().filter(c -> c.getCaseClassification() == CaseClassification.NO_CASE).count();
 //		caseClassificationNotACase.updateCountLabel(notACaseCasesCount);
-		int notYetClassifiedCasesCount = (int) caseDashboardDtos.stream().filter(c -> c.getCaseClassification() == CaseClassification.NOT_CLASSIFIED).count();
+		int notYetClassifiedCasesCount = (int) dashboardCases.stream().filter(c -> c.getCaseClassification() == CaseClassification.NOT_CLASSIFIED).count();
 		caseClassificationNotYetClassified.updateCountLabel(notYetClassifiedCasesCount);
 	}
 
@@ -167,11 +167,11 @@ public class StatisticsComponent extends HorizontalLayout {
 		
 		// Overview
 		newEventsComponent.addOverview();
-		eventStatusConfirmed = new StatisticsOverviewElement("Confirmed", "border-red");
+		eventStatusConfirmed = new StatisticsOverviewElement("Confirmed", "border-critical");
 		newEventsComponent.addComponentToOverview(eventStatusConfirmed);
-		eventStatusPossible = new StatisticsOverviewElement("Possible", "border-orange");
+		eventStatusPossible = new StatisticsOverviewElement("Possible", "border-important");
 		newEventsComponent.addComponentToOverview(eventStatusPossible);
-		eventStatusNotAnEvent = new StatisticsOverviewElement("Not An Event", "border-green");
+		eventStatusNotAnEvent = new StatisticsOverviewElement("Not An Event", "border-positive");
 		newEventsComponent.addComponentToOverview(eventStatusNotAnEvent);
 		
 		updateNewEventsComponent();
@@ -181,21 +181,21 @@ public class StatisticsComponent extends HorizontalLayout {
 	private void updateNewEventsComponent() {
 		dashboardView.updateDateLabel(newEventsComponent.getDateLabel());
 		
-		List<EventDashboardDto> eventDashboardDtos;
+		List<DashboardEvent> dashboardEvents;
 		if (dashboardView.getDateFilterOption() == DateFilterOption.DATE) {
-			eventDashboardDtos = FacadeProvider.getEventFacade().getNewEventsBetween(dashboardView.getFromDate(), dashboardView.getToDate(), LoginHelper.getCurrentUser().getUuid());
+			dashboardEvents = FacadeProvider.getEventFacade().getNewEventsForDashboard(dashboardView.getDistrict(), dashboardView.getDisease(), dashboardView.getFromDate(), dashboardView.getToDate(), LoginHelper.getCurrentUser().getUuid());
 		} else {
-			eventDashboardDtos = FacadeProvider.getEventFacade().getNewEventsBetween(DateHelper.getEpiWeekStart(dashboardView.getFromWeek()), DateHelper.getEpiWeekEnd(dashboardView.getToWeek()), LoginHelper.getCurrentUserAsReference().getUuid());
+			dashboardEvents = FacadeProvider.getEventFacade().getNewEventsForDashboard(dashboardView.getDistrict(), dashboardView.getDisease(), DateHelper.getEpiWeekStart(dashboardView.getFromWeek()), DateHelper.getEpiWeekEnd(dashboardView.getToWeek()), LoginHelper.getCurrentUserAsReference().getUuid());
 		}
 		
-		int newEventsCount = eventDashboardDtos.size();
+		int newEventsCount = dashboardEvents.size();
 		newEventsComponent.updateCountLabel(newEventsCount);
 		
-		int confirmedEventsCount = (int) eventDashboardDtos.stream().filter(e -> e.getEventStatus() == EventStatus.CONFIRMED).count();
+		int confirmedEventsCount = (int) dashboardEvents.stream().filter(e -> e.getEventStatus() == EventStatus.CONFIRMED).count();
 		eventStatusConfirmed.updateCountLabel(confirmedEventsCount);
-		int possibleEventsCount = (int) eventDashboardDtos.stream().filter(e -> e.getEventStatus() == EventStatus.POSSIBLE).count();
+		int possibleEventsCount = (int) dashboardEvents.stream().filter(e -> e.getEventStatus() == EventStatus.POSSIBLE).count();
 		eventStatusPossible.updateCountLabel(possibleEventsCount);
-		int notAnEventEventsCount = (int) eventDashboardDtos.stream().filter(e -> e.getEventStatus() == EventStatus.NO_EVENT).count();
+		int notAnEventEventsCount = (int) dashboardEvents.stream().filter(e -> e.getEventStatus() == EventStatus.NO_EVENT).count();
 		eventStatusNotAnEvent.updateCountLabel(notAnEventEventsCount);
 	}
 	
@@ -209,13 +209,13 @@ public class StatisticsComponent extends HorizontalLayout {
 		
 		// Overview
 		newTestResultsComponent.addOverview();
-		testResultPositive = new StatisticsOverviewElement("Positive", "border-red");
+		testResultPositive = new StatisticsOverviewElement("Positive", "border-critical");
 		newTestResultsComponent.addComponentToOverview(testResultPositive);
-		testResultNegative = new StatisticsOverviewElement("Negative", "border-green");
+		testResultNegative = new StatisticsOverviewElement("Negative", "border-positive");
 		newTestResultsComponent.addComponentToOverview(testResultNegative);
-		testResultPending = new StatisticsOverviewElement("Pending", "border-orange");
+		testResultPending = new StatisticsOverviewElement("Pending", "border-important");
 		newTestResultsComponent.addComponentToOverview(testResultPending);
-		testResultIndeterminate = new StatisticsOverviewElement("Indeterminate", "border-grey");
+		testResultIndeterminate = new StatisticsOverviewElement("Indeterminate", "border-wayne");
 		newTestResultsComponent.addComponentToOverview(testResultIndeterminate);
 		
 		updateNewTestResultsComponent();
@@ -225,23 +225,23 @@ public class StatisticsComponent extends HorizontalLayout {
 	private void updateNewTestResultsComponent() {
 		dashboardView.updateDateLabel(newTestResultsComponent.getDateLabel());
 		
-		List<TestResultDashboardDto> testResultDashboardDtos;
+		List<DashboardTestResult> dashboardTestResults;
 		if (dashboardView.getDateFilterOption() == DateFilterOption.DATE) {
-			testResultDashboardDtos = FacadeProvider.getSampleTestFacade().getNewTestResultsBetween(dashboardView.getFromDate(), dashboardView.getToDate(), LoginHelper.getCurrentUser().getUuid());
+			dashboardTestResults = FacadeProvider.getSampleTestFacade().getNewTestResultsForDashboard(dashboardView.getDistrict(), dashboardView.getDisease(), dashboardView.getFromDate(), dashboardView.getToDate(), LoginHelper.getCurrentUser().getUuid());
 		} else {
-			testResultDashboardDtos = FacadeProvider.getSampleTestFacade().getNewTestResultsBetween(DateHelper.getEpiWeekStart(dashboardView.getFromWeek()), DateHelper.getEpiWeekEnd(dashboardView.getToWeek()), LoginHelper.getCurrentUserAsReference().getUuid());
+			dashboardTestResults = FacadeProvider.getSampleTestFacade().getNewTestResultsForDashboard(dashboardView.getDistrict(), dashboardView.getDisease(), DateHelper.getEpiWeekStart(dashboardView.getFromWeek()), DateHelper.getEpiWeekEnd(dashboardView.getToWeek()), LoginHelper.getCurrentUserAsReference().getUuid());
 		}
 		
-		int newTestResultsCount = testResultDashboardDtos.size();
+		int newTestResultsCount = dashboardTestResults.size();
 		newTestResultsComponent.updateCountLabel(newTestResultsCount);
 		
-		int positiveTestResultsCount = (int) testResultDashboardDtos.stream().filter(r -> r.getTestResult() == SampleTestResultType.POSITIVE).count();
+		int positiveTestResultsCount = (int) dashboardTestResults.stream().filter(r -> r.getTestResult() == SampleTestResultType.POSITIVE).count();
 		testResultPositive.updateCountLabel(positiveTestResultsCount);
-		int negativeTestResultsCount = (int) testResultDashboardDtos.stream().filter(r -> r.getTestResult() == SampleTestResultType.NEGATIVE).count();
+		int negativeTestResultsCount = (int) dashboardTestResults.stream().filter(r -> r.getTestResult() == SampleTestResultType.NEGATIVE).count();
 		testResultNegative.updateCountLabel(negativeTestResultsCount);
-		int pendingTestResultsCount = (int) testResultDashboardDtos.stream().filter(r -> r.getTestResult() == SampleTestResultType.PENDING).count();
+		int pendingTestResultsCount = (int) dashboardTestResults.stream().filter(r -> r.getTestResult() == SampleTestResultType.PENDING).count();
 		testResultPending.updateCountLabel(pendingTestResultsCount);
-		int indeterminateTestResultsCount = (int) testResultDashboardDtos.stream().filter(r -> r.getTestResult() == SampleTestResultType.INDETERMINATE).count();
+		int indeterminateTestResultsCount = (int) dashboardTestResults.stream().filter(r -> r.getTestResult() == SampleTestResultType.INDETERMINATE).count();
 		testResultIndeterminate.updateCountLabel(indeterminateTestResultsCount);
 	}
 	

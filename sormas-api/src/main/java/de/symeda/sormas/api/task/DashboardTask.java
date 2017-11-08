@@ -1,10 +1,10 @@
 package de.symeda.sormas.api.task;
 
-import de.symeda.sormas.api.DataTransferObject;
+import java.io.Serializable;
 
-public class TaskDashboardDto extends DataTransferObject {
+public class DashboardTask implements Serializable {
 
-	private static final long serialVersionUID = -6333336451531224822L;
+	private static final long serialVersionUID = -4719548498678710837L;
 
 	public static final String I18N_PREFIX = "Task";
 	
@@ -14,8 +14,7 @@ public class TaskDashboardDto extends DataTransferObject {
 	private TaskPriority priority;
 	private TaskStatus taskStatus;
 	
-	public TaskDashboardDto(String uuid, TaskPriority priority, TaskStatus taskStatus) {
-		setUuid(uuid);
+	public DashboardTask(TaskPriority priority, TaskStatus taskStatus) {
 		this.priority = priority;
 		this.taskStatus = taskStatus;
 	}

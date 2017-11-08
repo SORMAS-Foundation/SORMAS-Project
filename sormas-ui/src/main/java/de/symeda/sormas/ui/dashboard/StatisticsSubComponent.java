@@ -40,7 +40,7 @@ public class StatisticsSubComponent extends VerticalLayout {
 			labelAndTotalLayout.addComponent(dateLabel);
 			
 			countLabel = new Label();
-			CssStyles.style(countLabel, CssStyles.H1, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
+			CssStyles.style(countLabel, CssStyles.UPPERCASE_XLARGE, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
 			labelAndTotalLayout.addComponent(countLabel);
 			
 		}

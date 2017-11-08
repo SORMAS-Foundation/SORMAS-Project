@@ -18,7 +18,7 @@ import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SampleTestFacade;
 import de.symeda.sormas.api.sample.SampleTestResultType;
 import de.symeda.sormas.api.sample.SampleTestType;
-import de.symeda.sormas.api.sample.TestResultDashboardDto;
+import de.symeda.sormas.api.sample.DashboardTestResult;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -67,7 +67,7 @@ public class SampleTestFacadeEjbTest extends BaseBeanTest {
 		SampleDto sample = creator.createSample(caze, new Date(), new Date(), user, SampleMaterial.BLOOD, rdcf.facility);
 		creator.createSampleTest(sample, SampleTestType.MICROSCOPY, new Date(), rdcf.facility, user, SampleTestResultType.POSITIVE, "Positive", true);
 		
-		List<TestResultDashboardDto> dashboardDtos = sampleTestFacade.getNewTestResultsBetween(DateHelper.subtractDays(new Date(),  1), DateHelper.addDays(new Date(), 1), user.getUuid());
+		List<DashboardTestResult> dashboardDtos = sampleTestFacade.getNewTestResultsForDashboard(caze.getDistrict(), caze.getDisease(), DateHelper.subtractDays(new Date(),  1), DateHelper.addDays(new Date(), 1), user.getUuid());
 		
 		// List should have one entry
 		assertEquals(1, dashboardDtos.size());

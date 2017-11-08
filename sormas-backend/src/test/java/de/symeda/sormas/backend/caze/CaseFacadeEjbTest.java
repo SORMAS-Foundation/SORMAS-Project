@@ -11,7 +11,7 @@ import org.junit.Test;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.caze.CaseDashboardDto;
+import de.symeda.sormas.api.caze.DashboardCase;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.InvestigationStatus;
@@ -142,10 +142,10 @@ public class CaseFacadeEjbTest extends BaseBeanTest {
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
-		creator.createCase(user, cazePerson, Disease.EVD, CaseClassification.PROBABLE,
+		CaseDataDto caze = creator.createCase(user, cazePerson, Disease.EVD, CaseClassification.PROBABLE,
 				InvestigationStatus.PENDING, new Date(), rdcf);
 		
-		List<CaseDashboardDto> dashboardDtos = caseFacade.getNewCasesBetween(DateHelper.subtractDays(new Date(),  1), DateHelper.addDays(new Date(), 1), user.getUuid());
+		List<DashboardCase> dashboardDtos = caseFacade.getNewCasesForDashboard(caze.getDistrict(), caze.getDisease(), DateHelper.subtractDays(new Date(),  1), DateHelper.addDays(new Date(), 1), user.getUuid());
 		
 		// List should have one entry
 		assertEquals(1, dashboardDtos.size());

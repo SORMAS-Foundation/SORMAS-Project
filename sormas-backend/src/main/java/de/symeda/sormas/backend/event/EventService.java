@@ -15,9 +15,8 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.event.EventDashboardDto;
+import de.symeda.sormas.api.event.DashboardEvent;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.location.Location;
@@ -65,9 +64,9 @@ public class EventService extends AbstractAdoService<Event> {
 		return resultList;
 	}
 	
-	public List<EventDashboardDto> getNewEventsBetween(Date from, Date to, User user) {
+	public List<DashboardEvent> getNewEventsForDashboard(District district, Disease disease, Date from, Date to, User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<EventDashboardDto> cq = cb.createQuery(EventDashboardDto.class);
+		CriteriaQuery<DashboardEvent> cq = cb.createQuery(DashboardEvent.class);
 		Root<Event> event = cq.from(getElementClass());
 		
 		Predicate filter = createUserFilter(cb, cq, event, user);
@@ -78,11 +77,29 @@ public class EventService extends AbstractAdoService<Event> {
 			filter = dateFilter;
 		}
 		
-		List<EventDashboardDto> result;
+		if (district != null) {
+			Join<Event, Location> eventLocation = event.join(Event.EVENT_LOCATION);
+			Predicate districtFilter = cb.equal(eventLocation.get(Location.DISTRICT), district);
+			if (filter != null) {
+				filter = cb.and(filter, districtFilter);
+			} else {
+				filter = districtFilter;
+			}
+		}
+		
+		if (disease != null) {
+			Predicate diseaseFilter = cb.equal(event.get(Event.DISEASE), disease);
+			if (filter != null) {
+				filter = cb.and(filter, diseaseFilter);
+			} else {
+				filter = diseaseFilter;
+			}
+		}
+		
+		List<DashboardEvent> result;
 		if (filter != null) {
 			cq.where(filter);
 			cq.multiselect(
-					event.get(Event.UUID),
 					event.get(Event.EVENT_TYPE),
 					event.get(Event.EVENT_STATUS),
 					event.get(Event.DISEASE)

@@ -38,6 +38,10 @@ public final class CssStyles {
 	public static final String HSPACE_RIGHT_5 = "hspace-right-5";
 	public static final String HSPACE_RIGHT_NONE = "hspace-top-none";
 
+	public static final String UPPERCASE_SMALL = "uppercase-small";
+	public static final String UPPERCASE_NORMAL = "uppercase-normal";
+	public static final String UPPERCASE_XLARGE = "uppercase-xlarge";
+	
 	public static final String BUTTON_SUBTLE = "subtle";
 	
 	public static final String LINK_ACTIVE = "active";

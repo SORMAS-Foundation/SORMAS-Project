@@ -11,7 +11,7 @@ import javax.ejb.Stateless;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.event.EventDashboardDto;
+import de.symeda.sormas.api.event.DashboardEvent;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventFacade;
 import de.symeda.sormas.api.event.EventReferenceDto;
@@ -89,10 +89,11 @@ public class EventFacadeEjb implements EventFacade {
 	}
 	
 	@Override
-	public List<EventDashboardDto> getNewEventsBetween(Date from, Date to, String userUuid) {
+	public List<DashboardEvent> getNewEventsForDashboard(DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid) {
 		User user = userService.getByUuid(userUuid);
+		District district = districtService.getByReferenceDto(districtRef);
 		
-		return eventService.getNewEventsBetween(from, to, user);
+		return eventService.getNewEventsForDashboard(district, disease, from, to, user);
 	}
 	
 	@Override

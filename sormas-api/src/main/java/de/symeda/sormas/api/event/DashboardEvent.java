@@ -1,9 +1,12 @@
 package de.symeda.sormas.api.event;
 
-import de.symeda.sormas.api.DataTransferObject;
+import java.io.Serializable;
+
 import de.symeda.sormas.api.Disease;
 
-public class EventDashboardDto extends DataTransferObject {
+public class DashboardEvent implements Serializable {
+
+	private static final long serialVersionUID = -4108181804263076837L;
 
 	public static final String I18N_PREFIX = "Event";
 
@@ -15,8 +18,7 @@ public class EventDashboardDto extends DataTransferObject {
 	private EventStatus eventStatus;
 	private Disease disease;
 	
-	public EventDashboardDto(String uuid, EventType eventType, EventStatus eventStatus, Disease disease) {
-		setUuid(uuid);
+	public DashboardEvent(EventType eventType, EventStatus eventStatus, Disease disease) {
 		this.eventType = eventType;
 		this.eventStatus = eventStatus;
 		this.disease = disease;
