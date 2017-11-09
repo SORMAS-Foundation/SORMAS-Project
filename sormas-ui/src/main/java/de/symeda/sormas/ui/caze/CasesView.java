@@ -120,7 +120,9 @@ public class CasesView extends AbstractView {
         ComboBox officerFilter = new ComboBox();
         officerFilter.setWidth(240, Unit.PIXELS);
         officerFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.SURVEILLANCE_OFFICER));
-        officerFilter.addItems(FacadeProvider.getUserFacade().getAssignableUsers(user, UserRole.SURVEILLANCE_OFFICER));
+        if (user.getRegion() != null) {
+        	officerFilter.addItems(FacadeProvider.getUserFacade().getAssignableUsersByRegion(user.getRegion(), UserRole.SURVEILLANCE_OFFICER));
+        }
         officerFilter.addValueChangeListener(e->grid.setSurveillanceOfficerFilter(((UserReferenceDto)e.getProperty().getValue())));
         filterLayout.addComponent(officerFilter);
         

@@ -7,6 +7,7 @@ import javax.ejb.Remote;
 
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 
 @Remote
 public interface UserFacade {
@@ -29,8 +30,15 @@ public interface UserFacade {
 
 	List<UserReferenceDto> getAllAfterAsReference(Date date);
 
-	List<UserReferenceDto> getAssignableUsers(UserReferenceDto assigningUser, UserRole... assignableRoles);
+	List<UserReferenceDto> getAssignableUsersByRegion(RegionReferenceDto regionRef, UserRole... assignableRoles);
 	
+	/**
+	 * 
+	 * @param district
+	 * @param includeSupervisors independent from the district
+	 * @param assignableRoles roles of the users by district
+	 * @return
+	 */
 	List<UserReferenceDto> getAssignableUsersByDistrict(DistrictReferenceDto district, boolean includeSupervisors, UserRole... assignableRoles);
 
 	int getNumberOfInformantsByFacility(FacilityReferenceDto facilityRef);

@@ -17,6 +17,7 @@ import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskType;
@@ -97,22 +98,34 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
     	addValueChangeListener(e -> {
 	    	TaskDto taskDto = getValue();
 	    	DistrictReferenceDto district = null;
+	    	RegionReferenceDto region = null;
 	    	if (taskDto.getCaze() != null) {
 	    		CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(taskDto.getCaze().getUuid());
 	    		district = caseDto.getDistrict();
+	    		region = caseDto.getRegion();
 	    	} else if (taskDto.getContact() != null) {
 	    		ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(taskDto.getContact().getUuid());
-	    		district = FacadeProvider.getCaseFacade().getCaseDataByUuid(contactDto.getCaze().getUuid()).getDistrict();
+	    		CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(contactDto.getCaze().getUuid());
+	    		district = caseDto.getDistrict();
+	    		region = caseDto.getRegion();
 	    	} else if (taskDto.getEvent() != null) {
 	    		EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(taskDto.getEvent().getUuid());
 	    		district = eventDto.getEventLocation().getDistrict();
+	    		region = eventDto.getEventLocation().getRegion();
+	    	} else {
+	    		UserDto userDto = LoginHelper.getCurrentUser();
+	    		district = userDto.getDistrict();
+	    		region = userDto.getRegion();
 	    	}
 	    	
 	    	List<UserReferenceDto> users = new ArrayList<>();
 	    	if (district != null) {
 	    		users = FacadeProvider.getUserFacade().getAssignableUsersByDistrict(district, true);
+	    	} else if (region != null) {
+	    		users = FacadeProvider.getUserFacade().getAssignableUsersByRegion(region);
 	    	} else {
-	    		users = FacadeProvider.getUserFacade().getAssignableUsers(LoginHelper.getCurrentUser());
+	    		// fallback - just show all users
+	    		users = FacadeProvider.getUserFacade().getAllAfterAsReference(null);
 	    	}
 	    	
 	    	TaskController taskController = ControllerProvider.getTaskController();

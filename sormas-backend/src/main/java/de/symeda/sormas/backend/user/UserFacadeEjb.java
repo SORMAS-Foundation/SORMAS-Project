@@ -1,7 +1,6 @@
 package de.symeda.sormas.backend.user;
 
 import java.sql.Timestamp;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -12,6 +11,7 @@ import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserFacade;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -27,6 +27,7 @@ import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLoca
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb;
 import de.symeda.sormas.backend.region.DistrictService;
+import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -52,16 +53,12 @@ public class UserFacadeEjb implements UserFacade {
 	private EventService eventService;
 	
 	@Override
-	public List<UserReferenceDto> getAssignableUsers(UserReferenceDto assigningUser, UserRole ...assignableRoles) {
-		User user = userService.getByReferenceDto(assigningUser);
+	public List<UserReferenceDto> getAssignableUsersByRegion(RegionReferenceDto regionRef, UserRole ...assignableRoles) {
+		Region region = regionService.getByReferenceDto(regionRef);
 		
-		if (user != null && user.getRegion() != null) {
-			return userService.getAllByRegionAndUserRoles(user.getRegion(), assignableRoles).stream()
-					.map(f -> toReferenceDto(f))
-					.collect(Collectors.toList());
-		}
-		
-		return Collections.emptyList();
+		return userService.getAllByRegionAndUserRoles(region, assignableRoles).stream()
+				.map(f -> toReferenceDto(f))
+				.collect(Collectors.toList());
 	}
 	
 	@Override

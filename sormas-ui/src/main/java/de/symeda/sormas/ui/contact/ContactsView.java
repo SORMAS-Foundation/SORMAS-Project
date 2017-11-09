@@ -101,7 +101,9 @@ public class ContactsView extends AbstractView {
         ComboBox officerFilter = new ComboBox();
         officerFilter.setWidth(240, Unit.PIXELS);
         officerFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CONTACT_OFFICER));
-        officerFilter.addItems(FacadeProvider.getUserFacade().getAssignableUsers(user, UserRole.CONTACT_OFFICER));
+        if (user.getRegion() != null) {
+        	officerFilter.addItems(FacadeProvider.getUserFacade().getAssignableUsersByRegion(user.getRegion(), UserRole.CONTACT_OFFICER));
+        }
         officerFilter.addValueChangeListener(e->grid.setContactOfficerFilter(((UserReferenceDto)e.getProperty().getValue())));
         filterLayout.addComponent(officerFilter);
         
