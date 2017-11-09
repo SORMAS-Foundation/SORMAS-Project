@@ -13,34 +13,35 @@ import de.symeda.sormas.api.I18nProperties;
 public enum UserRole {
 
 	ADMIN(false, false),
-	NATIONAL_USER(false, false),
-	SURVEILLANCE_SUPERVISOR(true, false),
-	SURVEILLANCE_OFFICER(false, true),
-	INFORMANT(false, false),
-	CASE_SUPERVISOR(true, false),
-	CASE_OFFICER(false, true),
-	CONTACT_SUPERVISOR(true, false),
-	CONTACT_OFFICER(false, true),
-	RUMOR_MANAGER(true, false),
+	NATIONAL_USER(false, false),	
+	SURVEILLANCE_SUPERVISOR(true, false),	
+	SURVEILLANCE_OFFICER(false, true),	
+	INFORMANT(false, false),	
+	CASE_SUPERVISOR(true, false),	
+	CASE_OFFICER(false, true),	
+	CONTACT_SUPERVISOR(true, false),	
+	CONTACT_OFFICER(false, true),	
+	RUMOR_MANAGER(true, false),	
 	LAB_USER(false, false),
 	;
 	
 	public static final String _SYSTEM = "SYSTEM";
 	public static final String _USER = "USER";
-	public static final String _ADMIN = "ADMIN";
-	public static final String _NATIONAL_USER = "NATIONAL_USER";
-	public static final String _SURVEILLANCE_SUPERVISOR = "SURVEILLANCE_SUPERVISOR";
-	public static final String _SURVEILLANCE_OFFICER = "SURVEILLANCE_OFFICER";
-	public static final String _INFORMANT = "INFORMANT";
-	public static final String _CASE_SUPERVISOR = "CASE_SUPERVISOR";
-	public static final String _CASE_OFFICER = "CASE_OFFICER";
-	public static final String _CONTACT_SUPERVISOR = "CONTACT_SUPERVISOR";
-	public static final String _CONTACT_OFFICER = "CONTACT_OFFICER";
-	public static final String _RUMOR_MANAGER = "RUMOR_MANAGER";
-	public static final String _LAB_USER = "LAB_USER";
+	public static final String _ADMIN = ADMIN.name();
+	public static final String _NATIONAL_USER = NATIONAL_USER.name();
+	public static final String _SURVEILLANCE_SUPERVISOR = SURVEILLANCE_SUPERVISOR.name();
+	public static final String _SURVEILLANCE_OFFICER = SURVEILLANCE_OFFICER.name();
+	public static final String _INFORMANT = INFORMANT.name();
+	public static final String _CASE_SUPERVISOR = CASE_SUPERVISOR.name();
+	public static final String _CASE_OFFICER = CASE_OFFICER.name();
+	public static final String _CONTACT_SUPERVISOR = CONTACT_SUPERVISOR.name();
+	public static final String _CONTACT_OFFICER = CONTACT_OFFICER.name();
+	public static final String _RUMOR_MANAGER = RUMOR_MANAGER.name();
+	public static final String _LAB_USER = LAB_USER.name();
 	
 	private final boolean supervisor;
 	private final boolean officer;
+	private HashSet<UserRight> userRights = null;
 	
 	private UserRole(boolean supervisor, boolean officer) {
 		this.supervisor = supervisor;
@@ -61,6 +62,24 @@ public enum UserRole {
 	
 	public boolean isOfficer() {
 		return officer;
+	}
+	
+	private void initUserRights() {
+		
+		userRights = new HashSet<UserRight>();
+
+		for (UserRight userRight : UserRight.values()) {
+			if (userRight.isForRole(this)) {
+				userRights.add(userRight);
+			}
+		}
+	}
+	
+	public boolean hasRight(UserRight userRight) {
+		if (userRights == null) {
+			initUserRights();
+		}
+		return userRights.contains(userRight);
 	}
 	
 	public void addAssignableRoles(Collection<UserRole> collection) {

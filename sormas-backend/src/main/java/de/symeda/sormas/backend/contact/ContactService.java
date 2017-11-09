@@ -133,13 +133,15 @@ public class ContactService extends AbstractAdoService<Contact> {
 		
 		Predicate filter = createUserFilter(cb, cq, contact, user);
 		
-		// Only return contacts whose cases are displayed
-		Path<Object> contactCase = contact.get(Contact.CAZE);
-		Predicate caseFilter = contactCase.in(cases);
-		if (filter != null) {
-			filter = cb.and(filter, caseFilter);
-		} else {
-			filter = caseFilter;
+		if (cases != null && !cases.isEmpty()) {
+			// Only return contacts whose cases are displayed
+			Path<Object> contactCase = contact.get(Contact.CAZE);
+			Predicate caseFilter = contactCase.in(cases);
+			if (filter != null) {
+				filter = cb.and(filter, caseFilter);
+			} else {
+				filter = caseFilter;
+			}
 		}
 		
 		if (district != null) {

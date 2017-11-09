@@ -27,7 +27,7 @@ import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases.DiseasesConfiguration;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -129,19 +129,15 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		setReadOnly(true, CaseDataDto.UUID, CaseDataDto.REPORT_DATE, CaseDataDto.REPORTING_USER,
 				CaseDataDto.INVESTIGATION_STATUS, CaseDataDto.REGION,
 				CaseDataDto.DISTRICT, CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY);
-		if (!UserRole.isSupervisor(LoginHelper.getCurrentUserRoles())) {
-			setReadOnly(true, CaseDataDto.DISEASE);
-		}
+
+		setReadOnly(!LoginHelper.hasUserRight(UserRight.CASE_EDIT_DISEASE), CaseDataDto.DISEASE);
 
 		for (Object propertyId : getFieldGroup().getBoundPropertyIds()) {
 			boolean visible = DiseasesConfiguration.isDefinedOrMissing(CaseDataDto.class, (String)propertyId, disease);
 			getFieldGroup().getField(propertyId).setVisible(visible);
 		}
 
-		Sex personSex = person.getSex();
-		if (personSex != Sex.FEMALE) {
-			setVisible(false, CaseDataDto.PREGNANT);
-		}
+		setVisible(person.getSex() == Sex.FEMALE, CaseDataDto.PREGNANT);
 
 		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.MEASLES_DOSES, CaseDataDto.MEASLES_VACCINATION_INFO_SOURCE), 
 				CaseDataDto.MEASLES_VACCINATION, Arrays.asList(Vaccination.VACCINATED), true);

@@ -44,6 +44,7 @@ import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsFacade;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -256,7 +257,7 @@ public class CaseController {
         });
         
         // Initialize 'Move case to another health facility' button
-        if (LoginHelper.getCurrentUserRoles().contains(UserRole.SURVEILLANCE_SUPERVISOR)) {
+        if (LoginHelper.hasUserRight(UserRight.CASE_EDIT_FACILITY)) {
 	        Button moveCaseButton = new Button();
 	        moveCaseButton.addStyleName(ValoTheme.BUTTON_LINK);
 	        moveCaseButton.setCaption("Move case to another health facility");

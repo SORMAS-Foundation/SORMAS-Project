@@ -423,8 +423,10 @@ public class CaseFacadeEjb implements CaseFacade {
 	public void updateCaseInvestigationProcess(Case caze) {
 
 		// any pending case investigation task?
-		long pendingCount = taskService.getCount(new TaskCriteria().taskTypeEquals(TaskType.CASE_INVESTIGATION)
-				.cazeEquals(caze).taskStatusEquals(TaskStatus.PENDING));
+		long pendingCount = taskService.getCount(new TaskCriteria()
+				.taskTypeEquals(TaskType.CASE_INVESTIGATION)
+				.cazeEquals(caze)
+				.taskStatusEquals(TaskStatus.PENDING));
 
 		if (pendingCount > 0) {
 			// set status to investigation pending
@@ -434,8 +436,9 @@ public class CaseFacadeEjb implements CaseFacade {
 		} else {
 
 			// get "case investigation" task created last
-			List<Task> cazeTasks = taskService
-					.findBy(new TaskCriteria().taskTypeEquals(TaskType.CASE_INVESTIGATION).cazeEquals(caze));
+			List<Task> cazeTasks = taskService.findBy(new TaskCriteria()
+					.taskTypeEquals(TaskType.CASE_INVESTIGATION)
+					.cazeEquals(caze));
 
 			if (cazeTasks.isEmpty()) {
 				// no tasks at all -> create
@@ -512,7 +515,12 @@ public class CaseFacadeEjb implements CaseFacade {
 			if (!supervisors.isEmpty()) {
 				task.setAssigneeUser(supervisors.get(0));
 			} else {
-				throw new UnsupportedOperationException("surveillance supervisor missing for: " + caze.getRegion());
+				List<User> nationalUsers = userService.getAllByRegionAndUserRoles(null, UserRole.NATIONAL_USER);
+				if (!nationalUsers.isEmpty()) {
+					task.setAssigneeUser(nationalUsers.get(0));
+				} else {
+					throw new UnsupportedOperationException("no national user and surveillance supervisor missing for: " + caze.getRegion());
+				}
 			}
 		}
 	}
