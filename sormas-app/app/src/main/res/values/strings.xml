@@ -37,7 +37,7 @@
     <string name="action_clearAll">Clear all</string>
     <string name="action_logout">Logout</string>
     <string name="action_setEmptyToNo">Set cleared to No</string>
-    <string name="action_createCaseFromContact">Create a new case for this contact</string>
+    <string name="action_createCaseFromContact">Create a case for this contact person</string>
     <string name="action_send">Send</string>
     <string name="action_report">Report Problem</string>
     <string name="action_pick_gps">Pick GPS coordinates</string>
@@ -104,7 +104,7 @@
     <string name="headline_new_contact">Create new contact</string>
     <string name="headline_contact">Contact</string>
     <string name="headline_source_case">Source case</string>
-    <string name="headline_associated_case">Associated case</string>
+    <string name="headline_associated_case">Open case of this contact person</string>
     <string name="headline_pick_person">Pick or create a person</string>
     <string name="headline_visit">Follow-up visit</string>
     <string name="headline_event">Alert</string>

@@ -13066,6 +13066,10 @@ div.v-layout.v-horizontal.v-widget {
 	background-color: inherit;
 }
 
+.sormas .v-grid .v-grid-row.v-grid-row-selected > td, .sormas .v-grid .v-grid-row.v-grid-row-selected > th {
+	background-color: #CDD8EC;
+}
+
 .sormas .v-grid .v-grid-row .v-grid-cell {
 	padding: 3px 6px;
 }

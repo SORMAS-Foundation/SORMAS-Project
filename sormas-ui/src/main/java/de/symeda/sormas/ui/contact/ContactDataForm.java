@@ -12,6 +12,7 @@ import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.Field;
+import com.vaadin.ui.Link;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
@@ -94,18 +95,18 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
     			Arrays.asList(FollowUpStatus.CANCELED, FollowUpStatus.LOST));
 
     	addValueChangeListener(e -> {
-    		CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(getValue().getCaze().getUuid());
-    		updateLastContactDateValidator();
-    		updateDiseaseConfiguration(caseDto.getDisease());
-    		
-    		updateFollowUpStatusComponents();
-    		
-    		// set assignable officers
         	if (getValue() != null) {
+	    		CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(getValue().getCaze().getUuid());
+	    		updateLastContactDateValidator();
+	    		updateDiseaseConfiguration(caseDto.getDisease());
+	    		
+	    		updateFollowUpStatusComponents();
+    		
     	    	contactOfficerField.addItems(FacadeProvider.getUserFacade().getAssignableUsersByDistrict(caseDto.getDistrict(), false, UserRole.CONTACT_OFFICER));
     	    	
-    	    	if (findAssociatedCaseId(FacadeProvider.getPersonFacade().getPersonByUuid(getValue().getPerson().getUuid()), getValue()) == null) {
-    		    	Button toCaseButton = new Button("-> Create a new case for this contact");
+    	    	String associatedCaseUuid = findAssociatedCaseUuid(FacadeProvider.getPersonFacade().getPersonByUuid(getValue().getPerson().getUuid()), getValue());
+    	    	if (associatedCaseUuid == null) {
+    		    	Button toCaseButton = new Button("Create a case for this contact person");
     				toCaseButton.addStyleName(ValoTheme.BUTTON_LINK);
     				
     				toCaseButton.addClickListener(new ClickListener() {
@@ -120,6 +121,10 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
     				});
     				
     				getContent().addComponent(toCaseButton, TO_CASE_BTN_LOC);
+    	    	} else {
+    	    		// link to case
+    		    	Link linkToData = ControllerProvider.getCaseController().createLinkToData(associatedCaseUuid, "Open case of this contact person");
+    		    	getContent().addComponent(linkToData, TO_CASE_BTN_LOC);
     	    	}
         	}
     	});
@@ -207,7 +212,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		 return HTML_LAYOUT;
 	}
 	
-	private String findAssociatedCaseId(PersonDto personDto, ContactDto contactDto) {
+	private String findAssociatedCaseUuid(PersonDto personDto, ContactDto contactDto) {
 		if(personDto == null || contactDto == null) {
 			return null;
 		}

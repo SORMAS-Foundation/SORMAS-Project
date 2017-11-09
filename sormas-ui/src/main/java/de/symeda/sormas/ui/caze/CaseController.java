@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.vaadin.navigator.Navigator;
+import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.shared.ui.label.ContentMode;
@@ -13,6 +14,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Link;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.VerticalLayout;
@@ -97,6 +99,11 @@ public class CaseController {
     public void navigateToData(String caseUuid) {
    		String navigationState = CaseDataView.VIEW_NAME + "/" + caseUuid;
    		SormasUI.get().getNavigator().navigateTo(navigationState);	
+    }
+    
+    public Link createLinkToData(String caseUuid, String caption) {
+    	Link link = new Link(caption, new ExternalResource("#!" + CaseDataView.VIEW_NAME + "/" + caseUuid));
+    	return link;
     }
 
     public void navigateToSymptoms(String caseUuid) {
