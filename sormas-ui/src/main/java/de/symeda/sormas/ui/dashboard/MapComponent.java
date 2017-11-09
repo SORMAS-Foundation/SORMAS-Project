@@ -63,7 +63,7 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 public class MapComponent extends VerticalLayout {
 
 	final static Logger logger = LoggerFactory.getLogger(MapComponent.class);
-	
+
 	private static final int MARKER_NORMAL_SIZE = 2;
 	private static final int MARKER_LARGE_SIZE = 3;
 	private static final int MARKER_VERY_LARGE_SIZE = 4;
@@ -85,25 +85,26 @@ public class MapComponent extends VerticalLayout {
 	// Entities
 	private final HashMap<FacilityReferenceDto, List<MapCase>> facilitiesCasesMaps = new HashMap<>();
 	private List<MapCase> mapCases = new ArrayList<>();
-	private List<MapCase> mapAndFacilityCases = new ArrayList<>();
+	private List<MapCase> allDisplayedCases = new ArrayList<>();
 	private List<MapContact> mapContacts = new ArrayList<>();
-	
+
 	// Markers
 	private final HashMap<GoogleMapMarker, FacilityDto> markerCaseFacilities = new HashMap<GoogleMapMarker, FacilityDto>();
 	private final HashMap<GoogleMapMarker, MapCase> markerCases = new HashMap<GoogleMapMarker, MapCase>();
 	private final HashMap<GoogleMapMarker, MapContact> markerContacts = new HashMap<GoogleMapMarker, MapContact>();
 	private final HashMap<RegionDataDto, GoogleMapPolygon> regionPolygons = new HashMap<RegionDataDto, GoogleMapPolygon>();
-	
+
 	// Others
 	private RegionMapVisualization regionMapVisualization = RegionMapVisualization.CASE_COUNT;
+	private MapCaseDisplayMode mapCaseDisplayMode = MapCaseDisplayMode.CASES;
 
 	public MapComponent(DashboardView dashboardView) {    	
 		this.dashboardView = dashboardView;
 		map = new GoogleMap("AIzaSyAaJpN8a_NhEU-02-t5uVi02cAaZtKafkw", null, null);
-		
+
 		if (LoginHelper.isUserInRole(UserRole.NATIONAL_USER)) {
 			showRegions = true;
-			
+
 			map.setZoom(6);
 			GeoLatLon mapCenter = FacadeProvider.getGeoShapeProvider().getCenterOfAllRegions();
 			map.setCenter(new LatLon(mapCenter.getLon(), mapCenter.getLat()));
@@ -112,7 +113,7 @@ public class MapComponent extends VerticalLayout {
 			showContacts = true;
 			showConfirmedContacts = true;
 			showUnconfirmedContacts = true;
-			
+
 			UserDto user = LoginHelper.getCurrentUser();
 			if (user.getRegion() != null) {
 				GeoLatLon mapCenter = FacadeProvider.getGeoShapeProvider().getCenterOfRegion(user.getRegion());
@@ -186,7 +187,7 @@ public class MapComponent extends VerticalLayout {
 			DateHelper.getEpiWeekEnd(dashboardView.getToWeek());
 		DistrictReferenceDto district = dashboardView.getDistrict();
 		Disease disease = dashboardView.getDisease();
-		
+
 		if (showRegions) {
 			showRegionsShapes(regionMapVisualization, fromDate, toDate, dashboardView.getDisease());
 		}
@@ -194,7 +195,12 @@ public class MapComponent extends VerticalLayout {
 			showCaseMarkers(FacadeProvider.getCaseFacade().getCasesForMap(district, disease, fromDate, toDate, LoginHelper.getCurrentUser().getUuid()));
 		}
 		if (showContacts) {
-			showContactMarkers(FacadeProvider.getContactFacade().getContactsForMap(district, disease, fromDate, toDate, LoginHelper.getCurrentUser().getUuid(), mapAndFacilityCases));
+			if (!showCases) {
+				// Case lists need to be filled even when cases are hidden because they are needed to retrieve the contacts
+				fillCaseLists(FacadeProvider.getCaseFacade().getCasesForMap(district, disease, fromDate, toDate, LoginHelper.getCurrentUser().getUuid()));
+			}
+			showContactMarkers(FacadeProvider.getContactFacade().getContactsForMap(district, disease, fromDate, toDate, LoginHelper.getCurrentUser().getUuid(), 
+					mapCaseDisplayMode == MapCaseDisplayMode.CASES ? mapCases : allDisplayedCases));
 		}
 	}
 
@@ -219,7 +225,7 @@ public class MapComponent extends VerticalLayout {
 
 		return casesWithoutGPSTag;
 	}
-	
+
 	public void updateDateLabel() {
 		if (dashboardView.getDateFilterOption() == DateFilterOption.EPI_WEEK) {
 			EpiWeek fromWeek = dashboardView.getFromWeek();
@@ -240,17 +246,17 @@ public class MapComponent extends VerticalLayout {
 			}
 		}
 	}
-	
+
 	private boolean hasCasesWithoutGPSTag() {
 		for (MapCase caze : mapCases) {
 			if (caze.getReportLat() == null || caze.getReportLon() == null) {
 				return true;
 			}
 		}
-		
+
 		return false;
 	}
-	
+
 	private HorizontalLayout createHeader() {
 		HorizontalLayout mapHeaderLayout = new HorizontalLayout();
 		mapHeaderLayout.setWidth(100, Unit.PERCENTAGE);
@@ -326,7 +332,7 @@ public class MapComponent extends VerticalLayout {
 
 		return mapHeaderLayout;
 	}
-	
+
 	private HorizontalLayout createFooter() {
 		HorizontalLayout mapFooterLayout = new HorizontalLayout();
 		mapFooterLayout.setWidth(100, Unit.PERCENTAGE);
@@ -353,15 +359,28 @@ public class MapComponent extends VerticalLayout {
 
 			// Add check boxes and apply button
 			{
+				OptionGroup mapCaseDisplayModeSelect = new OptionGroup();
+				mapCaseDisplayModeSelect.setWidth(100, Unit.PERCENTAGE);
+				mapCaseDisplayModeSelect.addItems((Object[]) MapCaseDisplayMode.values());
+				mapCaseDisplayModeSelect.setValue(mapCaseDisplayMode);
+				mapCaseDisplayModeSelect.addValueChangeListener(event -> {
+					mapCaseDisplayMode = (MapCaseDisplayMode) event.getProperty().getValue();
+					applyLayerChanges();
+				});
+
 				CheckBox showCasesCheckBox = new CheckBox();
 				CssStyles.style(showCasesCheckBox, CssStyles.VSPACE_NONE);
 				showCasesCheckBox.setCaption("Show cases");
 				showCasesCheckBox.setValue(showCases);
 				showCasesCheckBox.addValueChangeListener(e -> {
 					showCases = (boolean) e.getProperty().getValue();
+					mapCaseDisplayModeSelect.setEnabled(showCases);
+					mapCaseDisplayModeSelect.setValue(mapCaseDisplayMode);
 					applyLayerChanges();
 				});
 				layersLayout.addComponent(showCasesCheckBox);
+				layersLayout.addComponent(mapCaseDisplayModeSelect);
+				mapCaseDisplayModeSelect.setEnabled(showCases);
 
 				CheckBox showConfirmedContactsCheckBox = new CheckBox();
 				CheckBox showUnconfirmedContactsCheckBox = new CheckBox();
@@ -446,28 +465,32 @@ public class MapComponent extends VerticalLayout {
 			return mapKeyLayout;
 		}
 
-		// Health facilities & cases
-		if (showCases) {
-			Label facilitiesKeyLabel = new Label("Health Facilities");
-			CssStyles.style(facilitiesKeyLabel, CssStyles.H4, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
-			mapKeyLayout.addComponent(facilitiesKeyLabel);
+		// Health facilities
 
-			HorizontalLayout facilitiesKeyLayout = new HorizontalLayout();
-			{
-				facilitiesKeyLayout.setSpacing(false);
-				HorizontalLayout legendEntry = createMapKeyEntry("mapicons/grey-house-small.png", "Only Not Yet Classified Cases");
-				CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
-				facilitiesKeyLayout.addComponent(legendEntry);
-				legendEntry = createMapKeyEntry("mapicons/yellow-house-small.png", "> 1 Suspect Cases");
-				CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
-				facilitiesKeyLayout.addComponent(legendEntry);
-				legendEntry = createMapKeyEntry("mapicons/orange-house-small.png", "> 1 Probable Cases");
-				CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
-				facilitiesKeyLayout.addComponent(legendEntry);
-				legendEntry = createMapKeyEntry("mapicons/red-house-small.png", "> 1 Confirmed Cases");
-				facilitiesKeyLayout.addComponent(legendEntry);
+		// Cases
+		if (showCases) {
+			if (mapCaseDisplayMode == MapCaseDisplayMode.HEALTH_FACILITIES) {
+				Label facilitiesKeyLabel = new Label("Health Facilities");
+				CssStyles.style(facilitiesKeyLabel, CssStyles.H4, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
+				mapKeyLayout.addComponent(facilitiesKeyLabel);
+
+				HorizontalLayout facilitiesKeyLayout = new HorizontalLayout();
+				{
+					facilitiesKeyLayout.setSpacing(false);
+					HorizontalLayout legendEntry = createMapKeyEntry("mapicons/grey-house-small.png", "Only Not Yet Classified Cases");
+					CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
+					facilitiesKeyLayout.addComponent(legendEntry);
+					legendEntry = createMapKeyEntry("mapicons/yellow-house-small.png", "> 1 Suspect Cases");
+					CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
+					facilitiesKeyLayout.addComponent(legendEntry);
+					legendEntry = createMapKeyEntry("mapicons/orange-house-small.png", "> 1 Probable Cases");
+					CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
+					facilitiesKeyLayout.addComponent(legendEntry);
+					legendEntry = createMapKeyEntry("mapicons/red-house-small.png", "> 1 Confirmed Cases");
+					facilitiesKeyLayout.addComponent(legendEntry);
+				}
+				mapKeyLayout.addComponent(facilitiesKeyLayout);
 			}
-			mapKeyLayout.addComponent(facilitiesKeyLayout);
 
 			Label casesKeyLabel = new Label("Cases");
 			CssStyles.style(casesKeyLabel, CssStyles.H4, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_3);
@@ -530,7 +553,7 @@ public class MapComponent extends VerticalLayout {
 
 		return mapKeyLayout;
 	}
-	
+
 	private HorizontalLayout createRegionKey() {
 		HorizontalLayout regionKeyLayout = new HorizontalLayout();
 
@@ -602,7 +625,7 @@ public class MapComponent extends VerticalLayout {
 		entry.addComponent(label);
 		return entry;
 	}
-	
+
 	private void applyLayerChanges() {
 		// Refresh the map according to the selected layers
 		refreshMap();
@@ -611,7 +634,7 @@ public class MapComponent extends VerticalLayout {
 		// Show or hide the button to show cases without a GPS tag depending on whether the cases layer has been selected
 		toggleCasesWithoutGPSButtonVisibility();
 	}
-	
+
 	private void toggleCasesWithoutGPSButtonVisibility() {
 		casesWithoutGPSButton.setVisible(showCases);
 	}
@@ -706,38 +729,16 @@ public class MapComponent extends VerticalLayout {
 		markerCases.clear();
 		facilitiesCasesMaps.clear();
 		mapCases.clear();
-		mapAndFacilityCases.clear();
+		allDisplayedCases.clear();
 	}
 
 	private void showCaseMarkers(List<MapCase> cases) {
-		
+
 		clearCaseMarkers();
+		
+		fillCaseLists(cases);
 
-		// collect cases for health facilities
-		for (MapCase caze : cases) {
-			CaseClassification classification = caze.getCaseClassification();
-			if (classification == null || classification == CaseClassification.NO_CASE)
-				continue;
-			if (caze.getHealthFacilityUuid() == null)
-				continue;
-			if (caze.getHealthFacilityUuid().equals(FacilityDto.NONE_FACILITY_UUID) ||
-					caze.getHealthFacilityUuid().equals(FacilityDto.OTHER_FACILITY_UUID)) {
-				mapCases.add(caze);
-				mapAndFacilityCases.add(caze);
-				continue;
-			}
-
-			FacilityReferenceDto facility = FacadeProvider.getFacilityFacade().getByUuid(caze.getHealthFacilityUuid());
-			if (facilitiesCasesMaps.get(facility) == null) {
-				facilitiesCasesMaps.put(facility, new ArrayList<MapCase>());
-			}
-			facilitiesCasesMaps.get(facility).add(caze);
-			mapAndFacilityCases.add(caze);
-		}
-
-		// create markers for all facilities with cases
 		for (FacilityReferenceDto facilityReference : facilitiesCasesMaps.keySet()) {
-
 			FacilityDto facility = FacadeProvider.getFacilityFacade().getByUuid(facilityReference.getUuid());
 
 			if (facility.getLatitude() == null || facility.getLongitude() == null) {
@@ -785,13 +786,13 @@ public class MapComponent extends VerticalLayout {
 		}
 
 		for (MapCase caze : mapCases) {
-			if (caze.getReportLat() == null || caze.getReportLon() == null) {
-				continue;
+			if (caze.getAddressLat() == null || caze.getAddressLon() == null) {
+				if (caze.getReportLat() == null || caze.getReportLon() == null) {
+					continue;
+				}
 			}
 
-			LatLon latLon = new LatLon(caze.getReportLat(), caze.getReportLon());
 			MapIcon icon;
-
 			if (caze.getCaseClassification() == CaseClassification.CONFIRMED) {
 				icon = MapIcon.RED_DOT_SMALL;
 			} else if (caze.getCaseClassification() == CaseClassification.PROBABLE) {
@@ -802,10 +803,40 @@ public class MapComponent extends VerticalLayout {
 				icon = MapIcon.GREY_DOT_SMALL;
 			}
 
+			LatLon latLon;
+			if (caze.getAddressLat() != null && caze.getAddressLon() != null) {
+				latLon = new LatLon(caze.getAddressLat(), caze.getAddressLon());
+			} else {
+				latLon = new LatLon(caze.getReportLat(), caze.getReportLon());
+			}
 			GoogleMapMarker marker = new GoogleMapMarker(caze.toString(), latLon, false, icon.getUrl());
 			marker.setId(caze.getUuid().hashCode());
 			markerCases.put(marker, caze);
 			map.addMarker(marker);
+		}
+	}
+
+	private void fillCaseLists(List<MapCase> cases) {
+		for (MapCase caze : cases) {
+			CaseClassification classification = caze.getCaseClassification();
+			if (classification == null || classification == CaseClassification.NO_CASE)
+				continue;
+
+			if (mapCaseDisplayMode == MapCaseDisplayMode.CASES) {
+				mapCases.add(caze);
+			} else {
+				if (caze.getHealthFacilityUuid().equals(FacilityDto.NONE_FACILITY_UUID) ||
+						caze.getHealthFacilityUuid().equals(FacilityDto.OTHER_FACILITY_UUID)) {
+					mapCases.add(caze);
+				} else {
+					FacilityReferenceDto facility = FacadeProvider.getFacilityFacade().getByUuid(caze.getHealthFacilityUuid());
+					if (facilitiesCasesMaps.get(facility) == null) {
+						facilitiesCasesMaps.put(facility, new ArrayList<MapCase>());
+					}
+					facilitiesCasesMaps.get(facility).add(caze);
+				}
+				allDisplayedCases.add(caze);
+			}
 		}
 	}
 
@@ -819,11 +850,11 @@ public class MapComponent extends VerticalLayout {
 	}
 
 	private void showContactMarkers(List<MapContact> contacts) {
-		
+
 		clearContactMarkers();
 
 		for (MapContact contact : contacts) {
-			
+
 			// Don't show a marker for contacts that don't have geo coordinates
 			if (contact.getAddressLat() == null || contact.getAddressLon() == null) {
 				if (contact.getReportLat() == null || contact.getReportLon() == null) {
@@ -838,7 +869,7 @@ public class MapComponent extends VerticalLayout {
 			if (!showConfirmedContacts && contact.getContactClassification() != ContactClassification.POSSIBLE) {
 				continue;
 			}
-			
+
 			MapIcon icon;
 			Date lastVisitDateTime = contact.getLastVisitDateTime();
 			long currentTime = new Date().getTime();
@@ -917,7 +948,7 @@ public class MapComponent extends VerticalLayout {
 			return "VAADIN/themes/sormas/mapicons/" + imgName + ".png";
 		};
 	}
-	
+
 	public Label getMapDateLabel() {
 		return mapDateLabel;
 	}

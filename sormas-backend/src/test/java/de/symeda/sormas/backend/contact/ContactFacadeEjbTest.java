@@ -144,7 +144,7 @@ public class ContactFacadeEjbTest extends BaseBeanTest  {
 				InvestigationStatus.PENDING, new Date(), rdcf);
 		PersonDto contactPerson = creator.createPerson("Contact", "Person");
 		creator.createContact(user, user, contactPerson, caze, new Date(), new Date());
-		MapCase mapCase = new MapCase(caze.getUuid(), caze.getReportDate(), caze.getCaseClassification(), caze.getDisease(), caze.getHealthFacility().getUuid(), caze.getPerson().getUuid(), caze.getReportLat(), caze.getReportLon());
+		MapCase mapCase = new MapCase(caze.getUuid(), caze.getReportDate(), caze.getCaseClassification(), caze.getDisease(), caze.getHealthFacility().getUuid(), caze.getPerson().getUuid(), caze.getReportLat(), caze.getReportLon(), caze.getReportLat(), caze.getReportLon());
 		
 		List<MapContact> mapContacts = contactFacade.getContactsForMap(caze.getDistrict(), caze.getDisease(), DateHelper.subtractDays(new Date(),  1), DateHelper.addDays(new Date(), 1), user.getUuid(), Arrays.asList(mapCase));
 		

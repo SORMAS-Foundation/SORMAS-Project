@@ -22,9 +22,12 @@ public class MapCase implements Serializable {
 	private PersonReferenceDto person;
 	private Double reportLat;
 	private Double reportLon;
+	private Double addressLat;
+	private Double addressLon;
 
 	public MapCase(String uuid, Date reportDate, CaseClassification caseClassification, Disease disease,
-			String healthFacilityUuid, String personUuid, Double reportLat, Double reportLon) {
+			String healthFacilityUuid, String personUuid, Double reportLat, Double reportLon,
+			Double addressLat, Double addressLon) {
 		this.uuid = uuid;
 		this.reportDate = reportDate;
 		this.caseClassification = caseClassification;
@@ -33,6 +36,8 @@ public class MapCase implements Serializable {
 		this.personUuid = personUuid;
 		this.reportLat = reportLat;
 		this.reportLon = reportLon;
+		this.addressLat = addressLat;
+		this.addressLon = addressLon;
 	}
 
 	public String getUuid() {
@@ -107,6 +112,22 @@ public class MapCase implements Serializable {
 		this.reportLon = reportLon;
 	}	
 	
+	public Double getAddressLat() {
+		return addressLat;
+	}
+
+	public void setAddressLat(Double addressLat) {
+		this.addressLat = addressLat;
+	}
+
+	public Double getAddressLon() {
+		return addressLon;
+	}
+
+	public void setAddressLon(Double addressLon) {
+		this.addressLon = addressLon;
+	}
+
 	@Override
 	public String toString() {
 		return person.toString() + " (" + DataHelper.getShortUuid(uuid) + ")";

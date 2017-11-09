@@ -203,6 +203,7 @@ public class CaseService extends AbstractAdoService<Case> {
 		Join<Case, Symptoms> symptoms = caze.join(Case.SYMPTOMS, JoinType.LEFT);
 		Join<Case, Facility> facility = caze.join(Case.HEALTH_FACILITY, JoinType.LEFT);
 		Join<Case, Person> person = caze.join(Case.PERSON, JoinType.LEFT);
+		Join<Person, Location> casePersonAddress = person.join(Person.ADDRESS, JoinType.LEFT);
 		
 		Predicate filter = createUserFilter(cb, cq, caze, user);
 
@@ -250,7 +251,9 @@ public class CaseService extends AbstractAdoService<Case> {
 					facility.get(Facility.UUID),
 					person.get(Person.UUID),
 					caze.get(Case.REPORT_LAT),
-					caze.get(Case.REPORT_LON)
+					caze.get(Case.REPORT_LON),
+					casePersonAddress.get(Location.LATITUDE),
+					casePersonAddress.get(Location.LONGITUDE)
 			);
 			
 			result = em.createQuery(cq).getResultList();

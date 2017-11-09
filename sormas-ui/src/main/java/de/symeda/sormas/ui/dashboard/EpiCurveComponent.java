@@ -14,7 +14,6 @@ import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
-import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.DashboardCase;
 import de.symeda.sormas.api.person.PresentCondition;
@@ -302,15 +301,6 @@ public class EpiCurveComponent extends VerticalLayout {
 
 	public EpiCurveMode getEpiCurveMode() {
 		return epiCurveMode;
-	}
-	
-	private enum EpiCurveMode {
-		CASE_STATUS,
-		ALIVE_OR_DEAD;
-		
-		public String toString() {
-			return I18nProperties.getEnumCaption(this);
-		};
 	}
 
 }
