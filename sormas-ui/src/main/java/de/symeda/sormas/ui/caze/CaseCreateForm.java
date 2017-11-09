@@ -54,6 +54,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
     	ComboBox region = addField(CaseDataDto.REGION, ComboBox.class);
     	ComboBox district = addField(CaseDataDto.DISTRICT, ComboBox.class);
     	ComboBox community = addField(CaseDataDto.COMMUNITY, ComboBox.class);
+		community.setNullSelectionAllowed(true);
     	ComboBox facility = addField(CaseDataDto.HEALTH_FACILITY, ComboBox.class);
     	
     	TextField facilityDetails = addField(CaseDataDto.HEALTH_FACILITY_DETAILS, TextField.class);
@@ -67,10 +68,14 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
     		}
        	});
     	district.addValueChangeListener(e -> {
+    		if (community.getValue() == null) {
+    			facility.removeAllItems();
+    		}
     		community.removeAllItems();
     		DistrictReferenceDto districtDto = (DistrictReferenceDto)e.getProperty().getValue();
     		if (districtDto != null) {
     			community.addItems(FacadeProvider.getCommunityFacade().getAllByDistrict(districtDto.getUuid()));
+    			facility.addItems(FacadeProvider.getFacilityFacade().getHealthFacilitiesByDistrict(districtDto, true));
     		}
     	});
     	community.addValueChangeListener(e -> {
@@ -78,12 +83,14 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
     		CommunityReferenceDto communityDto = (CommunityReferenceDto)e.getProperty().getValue();
     		if (communityDto != null) {
     			facility.addItems(FacadeProvider.getFacilityFacade().getHealthFacilitiesByCommunity(communityDto, true));
+    		} else if (district.getValue() != null) {
+    			facility.addItems(FacadeProvider.getFacilityFacade().getHealthFacilitiesByDistrict((DistrictReferenceDto) district.getValue(), true));
     		}
     	});
 		region.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
 
     	setRequired(true, FIRST_NAME, LAST_NAME, CaseDataDto.DISEASE, 
-    			CaseDataDto.REGION, CaseDataDto.DISTRICT, CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY);
+    			CaseDataDto.REGION, CaseDataDto.DISTRICT, CaseDataDto.HEALTH_FACILITY);
 
 		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.DISEASE_DETAILS), CaseDataDto.DISEASE, Arrays.asList(Disease.OTHER), true);
 		FieldHelper.setRequiredWhen(getFieldGroup(), CaseDataDto.DISEASE, Arrays.asList(CaseDataDto.DISEASE_DETAILS), Arrays.asList(Disease.OTHER));

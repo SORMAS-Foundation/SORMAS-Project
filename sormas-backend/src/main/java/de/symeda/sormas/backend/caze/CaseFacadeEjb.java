@@ -254,10 +254,10 @@ public class CaseFacadeEjb implements CaseFacade {
 			UserReferenceDto officerDto) {
 		Case caze = fromDto(getCaseDataByUuid(cazeRef.getUuid()));
 
-		Community community = communityService.getByUuid(communityDto.getUuid());
-		District district = community.getDistrict();
-		Region region = district.getRegion();
+		Community community = communityDto != null ? communityService.getByUuid(communityDto.getUuid()) : null;
 		Facility facility = facilityService.getByUuid(facilityDto.getUuid());
+		District district = facility.getDistrict();
+		Region region = district.getRegion();
 		User officer = null;
 		if (officerDto != null) {
 			officer = userService.getByUuid(officerDto.getUuid());

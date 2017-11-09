@@ -39,6 +39,7 @@ public class CaseFacilityChangeForm extends AbstractEditForm<CaseDataDto> {
 		ComboBox region = addField(CaseDataDto.REGION, ComboBox.class);
 		ComboBox district = addField(CaseDataDto.DISTRICT, ComboBox.class);
 		ComboBox community = addField(CaseDataDto.COMMUNITY, ComboBox.class);
+		community.setNullSelectionAllowed(true);
 		ComboBox facility = addField(CaseDataDto.HEALTH_FACILITY, ComboBox.class);
 		ComboBox officer = addField(CaseDataDto.SURVEILLANCE_OFFICER, ComboBox.class);
 		TextField facilityDetails = addField(CaseDataDto.HEALTH_FACILITY_DETAILS, TextField.class);
@@ -51,10 +52,14 @@ public class CaseFacilityChangeForm extends AbstractEditForm<CaseDataDto> {
 			}
 		});
 		district.addValueChangeListener(e -> {
+			if (community.getValue() == null) {
+				facility.removeAllItems();
+			}
 			community.removeAllItems();
 			DistrictReferenceDto districtDto = (DistrictReferenceDto) e.getProperty().getValue();
 			if (districtDto != null) {
 				community.addItems(FacadeProvider.getCommunityFacade().getAllByDistrict(districtDto.getUuid()));
+				facility.addItems(FacadeProvider.getFacilityFacade().getHealthFacilitiesByDistrict(districtDto, true));
 			}
 			
 			List<UserReferenceDto> assignableSurveillanceOfficers = FacadeProvider.getUserFacade().getAssignableUsersByDistrict(districtDto, false, UserRole.SURVEILLANCE_OFFICER);
@@ -71,7 +76,9 @@ public class CaseFacilityChangeForm extends AbstractEditForm<CaseDataDto> {
 			CommunityReferenceDto communityDto = (CommunityReferenceDto) e.getProperty().getValue();
 			if (communityDto != null) {
 				facility.addItems(FacadeProvider.getFacilityFacade().getHealthFacilitiesByCommunity(communityDto, true));
-			}
+			} else if (district.getValue() != null) {
+    			facility.addItems(FacadeProvider.getFacilityFacade().getHealthFacilitiesByDistrict((DistrictReferenceDto) district.getValue(), true));
+    		}
 		});
 		facility.addValueChangeListener(e -> {
 			if (e.getProperty().getValue() != null) {
@@ -101,7 +108,6 @@ public class CaseFacilityChangeForm extends AbstractEditForm<CaseDataDto> {
 		
 		region.setRequired(true);
 		district.setRequired(true);
-		community.setRequired(true);
 		facility.setRequired(true);
 		officer.setNullSelectionAllowed(true);
 	}
