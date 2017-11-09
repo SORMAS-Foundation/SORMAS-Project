@@ -13,12 +13,12 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.sample.DashboardTestResult;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SampleTestFacade;
 import de.symeda.sormas.api.sample.SampleTestResultType;
 import de.symeda.sormas.api.sample.SampleTestType;
-import de.symeda.sormas.api.sample.DashboardTestResult;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -30,7 +30,7 @@ import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
-import de.symeda.sormas.backend.person.PersonFacadeEjb;
+import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb;
 import de.symeda.sormas.backend.region.CommunityService;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb;
@@ -54,7 +54,7 @@ public class SampleTestFacadeEjbTest extends BaseBeanTest {
 	}
 	
 	@Test
-	public void testTestResultDashboardDtoListCreation() {
+	public void testDashboardTestResultListCreation() {
 		SampleTestFacade sampleTestFacade = getBean(SampleTestFacadeEjb.class);
 		
 		TestDataCreator creator = createTestDataCreator();
@@ -67,14 +67,14 @@ public class SampleTestFacadeEjbTest extends BaseBeanTest {
 		SampleDto sample = creator.createSample(caze, new Date(), new Date(), user, SampleMaterial.BLOOD, rdcf.facility);
 		creator.createSampleTest(sample, SampleTestType.MICROSCOPY, new Date(), rdcf.facility, user, SampleTestResultType.POSITIVE, "Positive", true);
 		
-		List<DashboardTestResult> dashboardDtos = sampleTestFacade.getNewTestResultsForDashboard(caze.getDistrict(), caze.getDisease(), DateHelper.subtractDays(new Date(),  1), DateHelper.addDays(new Date(), 1), user.getUuid());
+		List<DashboardTestResult> dashboardTestResults = sampleTestFacade.getNewTestResultsForDashboard(caze.getDistrict(), caze.getDisease(), DateHelper.subtractDays(new Date(),  1), DateHelper.addDays(new Date(), 1), user.getUuid());
 		
 		// List should have one entry
-		assertEquals(1, dashboardDtos.size());
+		assertEquals(1, dashboardTestResults.size());
 	}
 	
 	private TestDataCreator createTestDataCreator() {
-		return new TestDataCreator(getBean(UserFacadeEjbLocal.class), getBean(PersonFacadeEjb.class),
+		return new TestDataCreator(getBean(UserFacadeEjbLocal.class), getBean(PersonFacadeEjbLocal.class),
 				getBean(CaseFacadeEjbLocal.class), getBean(ContactFacadeEjbLocal.class), getBean(TaskFacadeEjb.class),
 				getBean(VisitFacadeEjb.class), getBean(WeeklyReportFacadeEjbLocal.class), getBean(EventFacadeEjb.class), 
 				getBean(SampleFacadeEjb.class), getBean(SampleTestFacadeEjb.class), getBean(RegionFacadeEjb.class), 

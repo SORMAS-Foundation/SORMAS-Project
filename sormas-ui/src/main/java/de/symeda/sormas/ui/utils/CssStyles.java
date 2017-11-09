@@ -54,6 +54,7 @@ public final class CssStyles {
 
 	public static final String ALIGN_RIGHT = "align-right";
 
+	public static final String OPTIONGROUP_HORIZONTAL_SUBTLE = "horizontal-subtle";
 	public static final String OPTIONGROUP_CAPTION_INLINE = "caption-inline";
 
 	public static final String GRID_CELL_PRIORITY_HIGH = "priority-high";

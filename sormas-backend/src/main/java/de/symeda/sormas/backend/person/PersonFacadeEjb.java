@@ -10,6 +10,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
+import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.validation.constraints.NotNull;
 
@@ -315,6 +316,11 @@ public class PersonFacadeEjb implements PersonFacade {
 		target.setOccupationDetails(source.getOccupationDetails());
 		target.setOccupationFacility(FacilityFacadeEjb.toReferenceDto(source.getOccupationFacility()));
 		return target;
+	}
+	
+	@LocalBean
+	@Stateless
+	public static class PersonFacadeEjbLocal extends PersonFacadeEjb {
 	}
 
 }

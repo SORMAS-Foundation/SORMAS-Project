@@ -8,8 +8,8 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.DashboardTask;
+import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskFacade;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
@@ -24,7 +24,7 @@ import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
-import de.symeda.sormas.backend.person.PersonFacadeEjb;
+import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb;
 import de.symeda.sormas.backend.region.CommunityService;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb;
@@ -46,7 +46,7 @@ public class TaskFacadeEjbTest extends BaseBeanTest {
 	}
 	
 	@Test
-	public void testTaskDashboardDtoListCreation() {
+	public void testDashboardTaskListCreation() {
 		TaskFacade taskFacade = getBean(TaskFacadeEjb.class);
 		
 		TestDataCreator creator = createTestDataCreator();
@@ -55,14 +55,14 @@ public class TaskFacadeEjbTest extends BaseBeanTest {
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		creator.createTask(TaskContext.GENERAL, TaskType.OTHER, TaskStatus.PENDING, null, null, DateHelper.addDays(new Date(), 1), user);
 		
-		List<DashboardTask> dashboardDtos = taskFacade.getAllPending(new Date(), DateHelper.addDays(new Date(), 2), user.getUuid());
+		List<DashboardTask> dashboardTasks = taskFacade.getAllPending(new Date(), DateHelper.addDays(new Date(), 2), user.getUuid());
 		
 		// List should have one entry
-		assertEquals(1, dashboardDtos.size());
+		assertEquals(1, dashboardTasks.size());
 	}
 	
 	private TestDataCreator createTestDataCreator() {
-		return new TestDataCreator(getBean(UserFacadeEjbLocal.class), getBean(PersonFacadeEjb.class),
+		return new TestDataCreator(getBean(UserFacadeEjbLocal.class), getBean(PersonFacadeEjbLocal.class),
 				getBean(CaseFacadeEjbLocal.class), getBean(ContactFacadeEjbLocal.class), getBean(TaskFacadeEjb.class),
 				getBean(VisitFacadeEjb.class), getBean(WeeklyReportFacadeEjbLocal.class), getBean(EventFacadeEjb.class), 
 				getBean(SampleFacadeEjb.class), getBean(SampleTestFacadeEjb.class), getBean(RegionFacadeEjb.class), 

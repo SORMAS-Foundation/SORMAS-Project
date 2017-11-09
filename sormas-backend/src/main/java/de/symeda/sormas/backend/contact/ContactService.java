@@ -1,6 +1,7 @@
 package de.symeda.sormas.backend.contact;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -12,6 +13,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
@@ -19,13 +21,17 @@ import javax.validation.constraints.NotNull;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.PlagueType;
 import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.contact.MapContact;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.region.District;
+import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.DateHelper8;
 import de.symeda.sormas.backend.visit.Visit;
@@ -37,9 +43,10 @@ public class ContactService extends AbstractAdoService<Contact> {
 	
 	@EJB
 	CaseService caseService;
-
 	@EJB
 	VisitService visitService;
+	@EJB
+	PersonFacadeEjbLocal personFacade;
 
 	public ContactService() {
 		super(Contact.class);
@@ -114,52 +121,84 @@ public class ContactService extends AbstractAdoService<Contact> {
 		return result;
 	}	
 	
-	public List<Contact> getMapContacts(Date fromDate, Date toDate, District district, Disease disease, User user) {
+	public List<MapContact> getContactsForMap(District district, Disease disease, Date fromDate, Date toDate, User user, List<Case> cases) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Contact> cq = cb.createQuery(getElementClass());
-		Root<Contact> from = cq.from(getElementClass());
+		CriteriaQuery<MapContact> cq = cb.createQuery(MapContact.class);
+		Root<Contact> contact = cq.from(getElementClass());
+		Join<Contact, Person> person = contact.join(Contact.PERSON, JoinType.LEFT);
+		Join<Person, Location> contactPersonAddress = person.join(Person.ADDRESS, JoinType.LEFT);
+		Join<Contact, Case> caze = contact.join(Contact.CAZE, JoinType.LEFT);
+		Join<Case, Person> casePerson = caze.join(Case.PERSON, JoinType.LEFT);
+		Join<Case, Symptoms> symptoms = caze.join(Case.SYMPTOMS, JoinType.LEFT);
 		
-		Predicate filter = createUserFilter(cb, cq, from, user);
-		if (fromDate != null || toDate != null) {
-			Predicate dateFilter = cb.isNotNull(from.get(Contact.REPORT_DATE_TIME));
-			if (fromDate != null) {
-				dateFilter = cb.and(dateFilter, cb.greaterThanOrEqualTo(from.get(Contact.REPORT_DATE_TIME), fromDate));
-			}
-			if (toDate != null) {
-				dateFilter = cb.and(dateFilter, cb.lessThanOrEqualTo(from.get(Contact.REPORT_DATE_TIME), toDate));
-			}
-			if (filter != null) {
-				filter = cb.and(filter, dateFilter);
-			} else {
-				filter = dateFilter;
-			}
+		Predicate filter = createUserFilter(cb, cq, contact, user);
+		
+		// Only return contacts whose cases are displayed
+		Path<Object> contactCase = contact.get(Contact.CAZE);
+		Predicate caseFilter = contactCase.in(cases);
+		if (filter != null) {
+			filter = cb.and(filter, caseFilter);
+		} else {
+			filter = caseFilter;
 		}
+		
 		if (district != null) {
-			Join<Contact, Case> contactCase = from.join(Contact.CAZE);
-			Predicate districtFilter = cb.equal(contactCase.get(Case.DISTRICT), district);
+			Predicate districtFilter = cb.equal(caze.get(Case.DISTRICT), district);
 			if (filter != null) {
 				filter = cb.and(filter, districtFilter);
 			} else {
 				filter = districtFilter;
 			}
 		}
+		
 		if (disease != null) {
-			Join<Contact, Case> contactCase = from.join(Contact.CAZE);
-			Predicate diseaseFilter = cb.equal(contactCase.get(Case.DISEASE), disease);
+			Predicate diseaseFilter = cb.equal(caze.get(Case.DISEASE), disease);
 			if (filter != null) {
 				filter = cb.and(filter, diseaseFilter);
 			} else {
 				filter = diseaseFilter;
 			}
 		}	
+		
 		// Only retrieve contacts that are currently under follow-up
+		Predicate followUpFilter = cb.equal(contact.get(Contact.FOLLOW_UP_STATUS), FollowUpStatus.FOLLOW_UP);
 		if (filter != null) {
-			filter = cb.and(filter, cb.equal(from.get(Contact.FOLLOW_UP_STATUS), FollowUpStatus.FOLLOW_UP));
+			filter = cb.and(filter, followUpFilter);
 		} else {
-			filter = cb.equal(from.get(Contact.FOLLOW_UP_STATUS), FollowUpStatus.FOLLOW_UP);
+			filter = followUpFilter;
 		}
-		cq.where(filter);
-		return em.createQuery(cq).getResultList();
+		
+		List<MapContact> result;
+		if (filter != null) {
+			cq.where(filter);
+			cq.multiselect(
+					contact.get(Contact.UUID),
+					contact.get(Contact.CONTACT_CLASSIFICATION),
+					contact.get(Contact.REPORT_LAT),
+					contact.get(Contact.REPORT_LON),
+					contactPersonAddress.get(Location.LATITUDE),
+					contactPersonAddress.get(Location.LONGITUDE),
+					symptoms.get(Symptoms.ONSET_DATE),
+					caze.get(Case.REPORT_DATE),
+					person.get(Person.UUID),
+					casePerson.get(Person.UUID)
+			);
+			
+			result = em.createQuery(cq).getResultList();
+			for (MapContact mapContact : result) {
+				Visit lastVisit = visitService.getLastVisitByContact(getByUuid(mapContact.getUuid()), VisitStatus.COOPERATIVE);
+				if (lastVisit != null) {
+					mapContact.setLastVisitDateTime(lastVisit.getVisitDateTime());
+				}
+				
+				mapContact.setPerson(personFacade.getReferenceByUuid(mapContact.getPersonUuid()));
+				mapContact.setCasePerson(personFacade.getReferenceByUuid(mapContact.getCasePersonUuid()));
+			}
+		} else {
+			result = Collections.emptyList();
+		}
+		
+		return result;
 	}
 
 	public int getFollowUpDuration(Case caze) {

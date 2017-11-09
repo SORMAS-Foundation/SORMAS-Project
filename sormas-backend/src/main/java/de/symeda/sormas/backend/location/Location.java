@@ -22,6 +22,8 @@ public class Location extends AbstractDomainObject {
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
+	public static final String LATITUDE = "latitude";
+	public static final String LONGITUDE = "longitude";
 
 	private String address;
 	private String details;

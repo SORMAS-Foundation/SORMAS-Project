@@ -3,6 +3,7 @@ package de.symeda.sormas.backend.contact;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -20,13 +21,13 @@ import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.caze.MapCase;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.contact.ContactIndexDto;
-import de.symeda.sormas.api.contact.ContactMapDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.contact.MapContact;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskStatus;
@@ -53,7 +54,6 @@ import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DateHelper8;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.visit.Visit;
-import de.symeda.sormas.backend.visit.VisitFacadeEjb;
 import de.symeda.sormas.backend.visit.VisitService;
 
 @Stateless(name = "ContactFacade")
@@ -199,18 +199,19 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 
 	@Override
-	public List<ContactMapDto> getMapContacts(Date fromDate, Date toDate, DistrictReferenceDto districtRef, Disease disease, String userUuid) {
+	public List<MapContact> getContactsForMap(DistrictReferenceDto districtRef, Disease disease, Date fromDate, Date toDate, String userUuid, List<MapCase> mapCases) {
 		User user = userService.getByUuid(userUuid);
 		District district = districtService.getByReferenceDto(districtRef);
+		List<Case> cases = new ArrayList<>();
+		for (MapCase mapCase : mapCases) {
+			cases.add(caseService.getByUuid(mapCase.getUuid()));
+		}
 
 		if (user == null) {
 			return Collections.emptyList();
 		}
-
-		return contactService.getMapContacts(fromDate, toDate, district, disease, user)
-				.stream()
-				.map(c -> toMapDto(c, visitService.getLastVisitByContact(c, VisitStatus.COOPERATIVE)))
-				.collect(Collectors.toList());
+		
+		return contactService.getContactsForMap(district, disease, fromDate, toDate, user, cases);
 	}
 
 	public Contact fromDto(@NotNull ContactDto source) {
@@ -325,27 +326,6 @@ public class ContactFacadeEjb implements ContactFacade {
 		}
 		target.setNumberOfCooperativeVisits(numberOfCooperativeVisits);
 		target.setNumberOfMissedVisits(numberOfMissedVisits);
-
-		return target;
-	}
-
-	public ContactMapDto toMapDto(Contact source, Visit lastVisit) {
-		if (source == null) {
-			return null;
-		}
-
-		ContactMapDto target = new ContactMapDto();
-		DtoHelper.fillReferenceDto(target, source);
-
-		target.setReportLat(source.getReportLat());
-		target.setReportLon(source.getReportLon());
-		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
-
-		target.setContactClassification(source.getContactClassification());
-		
-		if (lastVisit != null) {
-			target.setLastVisit(VisitFacadeEjb.toReferenceDto(lastVisit));
-		}
 
 		return target;
 	}

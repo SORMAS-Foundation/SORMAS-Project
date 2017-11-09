@@ -6,7 +6,10 @@ import java.util.Date;
 import java.util.List;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.FontAwesome;
 import com.vaadin.shared.ui.MarginInfo;
+import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
@@ -20,8 +23,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
-import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.contact.ContactMapDto;
+import de.symeda.sormas.api.caze.DashboardCase;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
@@ -78,6 +80,7 @@ public class DashboardView extends AbstractView {
 	public static final String VISIT_GT_48_HOURS = "visitGT48Hours";
 
 	// Layouts and Components
+	private VerticalLayout dashboardLayout;
 	private VerticalLayout mapLayout;
 	private VerticalLayout epiCurveLayout;
 	private HorizontalLayout epiCurveAndMapLayout;
@@ -86,8 +89,7 @@ public class DashboardView extends AbstractView {
 	private StatisticsComponent statisticsComponent;
 
 	// Entities
-	private List<CaseDataDto> cases = new ArrayList<>();
-	private List<ContactMapDto> contacts = new ArrayList<>();
+	private List<DashboardCase> cases = new ArrayList<>();
 
 	// Filters
 	private DistrictReferenceDto district;
@@ -107,7 +109,7 @@ public class DashboardView extends AbstractView {
 
 		thisYear = Calendar.getInstance().get(Calendar.YEAR);
 
-		VerticalLayout dashboardLayout = new VerticalLayout();
+		dashboardLayout = new VerticalLayout();
 		dashboardLayout.setSpacing(false);
 		dashboardLayout.setSizeFull();
 		dashboardLayout.setStyleName("crud-main-layout");
@@ -130,9 +132,9 @@ public class DashboardView extends AbstractView {
 	public void updateDateLabel(Label dateLabel) {
 		if (dateFilterOption == DateFilterOption.EPI_WEEK) {
 			if (fromWeek.getWeek() == toWeek.getWeek()) {
-				dateLabel.setValue("IN EPI WEEK " + fromWeek.getWeek());
+				dateLabel.setValue("EPI WEEK " + fromWeek.getWeek());
 			} else {
-				dateLabel.setValue("FROM EPI WEEK " + fromWeek.getWeek() + " TO " + toWeek.getWeek());
+				dateLabel.setValue("EPI WEEK " + fromWeek.getWeek() + " TO " + toWeek.getWeek());
 			}
 		} else {
 			if (DateHelper.isSameDay(fromDate, toDate)) {
@@ -145,6 +147,7 @@ public class DashboardView extends AbstractView {
 	}
 
 	public void expandMap() {
+		dashboardLayout.removeComponent(statisticsComponent);
 		epiCurveAndMapLayout.removeComponent(epiCurveLayout);
 		this.setHeight(100, Unit.PERCENTAGE);
 		epiCurveAndMapLayout.setHeight(100, Unit.PERCENTAGE);
@@ -152,8 +155,25 @@ public class DashboardView extends AbstractView {
 	}
 
 	public void collapseMap() {
+		dashboardLayout.addComponent(statisticsComponent, 1);
 		epiCurveAndMapLayout.addComponent(epiCurveLayout, 0);
 		mapLayout.setHeight(380, Unit.PIXELS);
+		this.setHeightUndefined();
+		epiCurveAndMapLayout.setHeightUndefined();
+	}
+	
+	public void expandEpiCurve() {
+		dashboardLayout.removeComponent(statisticsComponent);
+		epiCurveAndMapLayout.removeComponent(mapLayout);
+		this.setHeight(100, Unit.PERCENTAGE);
+		epiCurveAndMapLayout.setHeight(100, Unit.PERCENTAGE);
+		epiCurveLayout.setSizeFull();
+	}
+
+	public void collapseEpiCurve() {
+		dashboardLayout.addComponent(statisticsComponent, 1);
+		epiCurveAndMapLayout.addComponent(mapLayout, 1);
+		epiCurveLayout.setHeight(380, Unit.PIXELS);
 		this.setHeightUndefined();
 		epiCurveAndMapLayout.setHeightUndefined();
 	}
@@ -291,8 +311,13 @@ public class DashboardView extends AbstractView {
 		dateToFilter.addValueChangeListener(e -> {
 			applyButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 		});
-
 		filterLayout.addComponent(applyButton);
+		
+		Label infoLabel = new Label(FontAwesome.INFO_CIRCLE.getHtml(), ContentMode.HTML);
+		infoLabel.setDescription("All Dashboard elements that display cases (the 'New Cases' statistics, the Epidemiological Curve and the Case Status Map) use the onset date of the first symptom for the date/epi week filter. If this date is not available, the date of report is used instead.");
+		CssStyles.style(infoLabel, CssStyles.H2, CssStyles.FORCE_CAPTION);
+		filterLayout.addComponent(infoLabel);
+		filterLayout.setComponentAlignment(infoLabel, Alignment.BOTTOM_RIGHT);
 
 		return filterLayout;
 	}
@@ -331,7 +356,7 @@ public class DashboardView extends AbstractView {
 	private VerticalLayout createMapLayout() {
 		VerticalLayout layout = new VerticalLayout();
 		layout.setWidth(100, Unit.PERCENTAGE);
-		layout.setHeight(360, Unit.PIXELS);
+		layout.setHeight(380, Unit.PIXELS);
 
 		mapComponent = new MapComponent(this);
 		mapComponent.setSizeFull();
@@ -346,13 +371,10 @@ public class DashboardView extends AbstractView {
 		// Update the cases and contacts lists according to the filters
 		String userUuid = LoginHelper.getCurrentUser().getUuid();
 		if (dateFilterOption == DateFilterOption.DATE) {
-			cases = FacadeProvider.getCaseFacade().getAllCasesBetween(fromDate, toDate, district, disease, userUuid);
-			contacts = FacadeProvider.getContactFacade().getMapContacts(fromDate, toDate, district, disease, userUuid);
+			cases = FacadeProvider.getCaseFacade().getNewCasesForDashboard(district, disease, fromDate, toDate, userUuid);
 		} else {
-			cases = FacadeProvider.getCaseFacade().getAllCasesBetween(DateHelper.getEpiWeekStart(fromWeek), 
-					DateHelper.getEpiWeekEnd(toWeek), district, disease, userUuid);
-			contacts = FacadeProvider.getContactFacade().getMapContacts(DateHelper.getEpiWeekStart(fromWeek), 
-					DateHelper.getEpiWeekEnd(toWeek), district, disease, userUuid);
+			cases = FacadeProvider.getCaseFacade().getNewCasesForDashboard(district, disease, 
+					DateHelper.getEpiWeekStart(fromWeek), DateHelper.getEpiWeekEnd(toWeek), userUuid);
 		}
 
 		// Updates statistics
@@ -361,12 +383,12 @@ public class DashboardView extends AbstractView {
 		// Update cases and contacts shown on the map
 		mapComponent.refreshMap();
 
-		// Update epi curve and map date labels
-		updateDateLabel(epiCurveComponent.getEpiCurveDateLabel());
-		updateDateLabel(mapComponent.getMapDateLabel());
-
 		// Epi curve chart has to be created again due to a canvas resizing issue when simply refreshing the component
 		epiCurveComponent.clearAndFillEpiCurveChart();
+		
+		// Update epi curve and map date labels
+		updateDateLabel(epiCurveComponent.getEpiCurveDateLabel());
+		mapComponent.updateDateLabel();
 	}
 
 	@Override
@@ -374,14 +396,10 @@ public class DashboardView extends AbstractView {
 		refreshDashboard();
 	}
 
-	public List<CaseDataDto> getCases() {
+	public List<DashboardCase> getCases() {
 		return cases;
 	}
 	
-	public List<ContactMapDto> getContacts() {
-		return contacts;
-	}
-
 	public DateFilterOption getDateFilterOption() {
 		return dateFilterOption;
 	}

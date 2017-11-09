@@ -48,8 +48,10 @@ public class StatisticsSubComponent extends VerticalLayout {
 		headerLayout.setComponentAlignment(labelAndTotalLayout, Alignment.BOTTOM_LEFT);
 		headerLayout.setExpandRatio(labelAndTotalLayout, 1);
 		
-		headerLayout.addComponent(icon);
-		headerLayout.setComponentAlignment(icon, Alignment.TOP_RIGHT);
+		if (icon != null) {
+			headerLayout.addComponent(icon);
+			headerLayout.setComponentAlignment(icon, Alignment.TOP_RIGHT);
+		}
 
 		addComponent(headerLayout);
 	}

@@ -40,8 +40,10 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseFacade;
+import de.symeda.sormas.api.caze.MapCase;
 import de.symeda.sormas.api.contact.ContactClassification;
-import de.symeda.sormas.api.contact.ContactMapDto;
+import de.symeda.sormas.api.contact.MapContact;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -52,7 +54,6 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
-import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -74,11 +75,6 @@ public class MapComponent extends VerticalLayout {
 	private Label mapDateLabel;
 	private PopupButton mapKeyDropdown;
 
-	// Map filters
-	private boolean useDistrictFilterForMap;
-	private boolean useDiseaseFilterForMap;
-	private boolean useDateFilterForMap;
-
 	// Layers
 	private boolean showCases;
 	private boolean showContacts;
@@ -87,14 +83,15 @@ public class MapComponent extends VerticalLayout {
 	private boolean showRegions;
 
 	// Entities
-	private final HashMap<FacilityReferenceDto, List<CaseDataDto>> facilitiesCasesMaps = new HashMap<>();
-	private final List<CaseDataDto> mapCases = new ArrayList<>();
-	private final List<ContactMapDto> mapContacts = new ArrayList<>();
+	private final HashMap<FacilityReferenceDto, List<MapCase>> facilitiesCasesMaps = new HashMap<>();
+	private List<MapCase> mapCases = new ArrayList<>();
+	private List<MapCase> mapAndFacilityCases = new ArrayList<>();
+	private List<MapContact> mapContacts = new ArrayList<>();
 	
 	// Markers
 	private final HashMap<GoogleMapMarker, FacilityDto> markerCaseFacilities = new HashMap<GoogleMapMarker, FacilityDto>();
-	private final HashMap<GoogleMapMarker, CaseDataDto> markerCases = new HashMap<GoogleMapMarker, CaseDataDto>();
-	private final HashMap<GoogleMapMarker, ContactMapDto> markerContacts = new HashMap<GoogleMapMarker, ContactMapDto>();
+	private final HashMap<GoogleMapMarker, MapCase> markerCases = new HashMap<GoogleMapMarker, MapCase>();
+	private final HashMap<GoogleMapMarker, MapContact> markerContacts = new HashMap<GoogleMapMarker, MapContact>();
 	private final HashMap<RegionDataDto, GoogleMapPolygon> regionPolygons = new HashMap<RegionDataDto, GoogleMapPolygon>();
 	
 	// Others
@@ -138,18 +135,17 @@ public class MapComponent extends VerticalLayout {
 		addComponent(createFooter());
 		setExpandRatio(map, 1);
 
-		MapComponent mapComponent = this;
 		map.addMarkerClickListener(new MarkerClickListener() {
 			@Override
 			public void markerClicked(GoogleMapMarker clickedMarker) {
 				FacilityDto facility = markerCaseFacilities.get(clickedMarker);
-				CaseDataDto caze = markerCases.get(clickedMarker);
-				ContactMapDto contact = markerContacts.get(clickedMarker);
+				MapCase caze = markerCases.get(clickedMarker);
+				MapContact contact = markerContacts.get(clickedMarker);
 
 				if (facility != null) {
 					VerticalLayout layout = new VerticalLayout();
 					Window window = VaadinUiUtil.showPopupWindow(layout);
-					CasePopupGrid caseGrid = new CasePopupGrid(window, facility, mapComponent);
+					CasePopupGrid caseGrid = new CasePopupGrid(window, facility, MapComponent.this);
 					caseGrid.setHeightMode(HeightMode.ROW);
 					layout.addComponent(caseGrid);
 					layout.setMargin(true);
@@ -184,83 +180,75 @@ public class MapComponent extends VerticalLayout {
 		clearCaseMarkers();
 		clearContactMarkers();
 
-		Date fromDate = dashboardView.getFromDate();
-		Date toDate = dashboardView.getToDate();
-		EpiWeek fromWeek = dashboardView.getFromWeek();
-		EpiWeek toWeek = dashboardView.getToWeek();
-		Disease disease = dashboardView.getDisease();
+		Date fromDate = dashboardView.getDateFilterOption() == DateFilterOption.DATE ? dashboardView.getFromDate() :
+			DateHelper.getEpiWeekStart(dashboardView.getFromWeek());
+		Date toDate = dashboardView.getDateFilterOption() == DateFilterOption.DATE ? dashboardView.getToDate() :
+			DateHelper.getEpiWeekEnd(dashboardView.getToWeek());
 		DistrictReferenceDto district = dashboardView.getDistrict();
+		Disease disease = dashboardView.getDisease();
 		
 		if (showRegions) {
-			showRegionsShapes(regionMapVisualization, 
-					useDateFilterForMap ? fromDate : null, 
-							useDateFilterForMap ? toDate : null, dashboardView.getDisease());
+			showRegionsShapes(regionMapVisualization, fromDate, toDate, dashboardView.getDisease());
 		}
-
-		if (showCases || showContacts) {
-			List<CaseDataDto> casesForMap;
-			List<ContactMapDto> contactsForMap;
-
-			// Re-create the lists of cases and contacts depending on the filters set for the map
-			if (useDistrictFilterForMap && useDiseaseFilterForMap && useDateFilterForMap) {
-				casesForMap = dashboardView.getCases();
-				contactsForMap = dashboardView.getContacts();
-			} else {
-				String userUuid = LoginHelper.getCurrentUser().getUuid();
-				if (dashboardView.getDateFilterOption() == DateFilterOption.DATE) {
-					if (showCases) {
-						casesForMap = FacadeProvider.getCaseFacade().getAllCasesBetween(useDateFilterForMap ? fromDate : null, useDateFilterForMap ? toDate : null,
-								useDistrictFilterForMap ? district : null, useDiseaseFilterForMap ? disease : null, userUuid);
-					} else {
-						casesForMap = null;
-					}
-					if (showContacts) {
-						contactsForMap = FacadeProvider.getContactFacade().getMapContacts(useDateFilterForMap ? fromDate : null, useDateFilterForMap ? toDate : null,
-								useDistrictFilterForMap ? district : null, useDiseaseFilterForMap ? disease : null, userUuid);
-					} else {
-						contactsForMap = null;
-					}
-				} else {
-					if (showCases) {
-						casesForMap = FacadeProvider.getCaseFacade().getAllCasesBetween(useDateFilterForMap ? DateHelper.getEpiWeekStart(fromWeek) : null, 
-								useDateFilterForMap ? DateHelper.getEpiWeekEnd(toWeek) : null,
-										useDistrictFilterForMap ? district : null, useDiseaseFilterForMap ? disease : null, userUuid);
-					} else {
-						casesForMap = null;
-					}
-					if (showContacts) {
-						contactsForMap = FacadeProvider.getContactFacade().getMapContacts(useDateFilterForMap ? DateHelper.getEpiWeekStart(fromWeek) : null, 
-								useDateFilterForMap ? DateHelper.getEpiWeekEnd(toWeek) : null,
-										useDistrictFilterForMap ? district : null, useDiseaseFilterForMap ? disease : null, userUuid);
-					} else {
-						contactsForMap = null;
-					}
-				}
-			}
-
-			if (showCases) {
-				showCaseMarkers(casesForMap);
-			}
-			if (showContacts) {
-				showContactMarkers(contactsForMap, showConfirmedContacts, showUnconfirmedContacts);
-			}
+		if (showCases) {
+			showCaseMarkers(FacadeProvider.getCaseFacade().getCasesForMap(district, disease, fromDate, toDate, LoginHelper.getCurrentUser().getUuid()));
+		}
+		if (showContacts) {
+			showContactMarkers(FacadeProvider.getContactFacade().getContactsForMap(district, disease, fromDate, toDate, LoginHelper.getCurrentUser().getUuid(), mapAndFacilityCases));
 		}
 	}
 
 	public List<CaseDataDto> getCasesForFacility(FacilityDto facility) {
-		return facilitiesCasesMaps.get(facility);
+		List<CaseDataDto> casesForFacility = new ArrayList<>();
+		CaseFacade caseFacade = FacadeProvider.getCaseFacade();
+		for (MapCase mapCase : facilitiesCasesMaps.get(facility)) {
+			casesForFacility.add(caseFacade.getCaseDataByUuid(mapCase.getUuid()));
+		}
+		return casesForFacility;
 	}
 
 	public List<CaseDataDto> getCasesWithoutGPSTag() {
 		List<CaseDataDto> casesWithoutGPSTag = new ArrayList<>();
 
-		for (CaseDataDto caze : mapCases) {
+		CaseFacade caseFacade = FacadeProvider.getCaseFacade();
+		for (MapCase caze : mapCases) {
 			if (caze.getReportLat() == null || caze.getReportLon() == null) {
-				casesWithoutGPSTag.add(caze);
+				casesWithoutGPSTag.add(caseFacade.getCaseDataByUuid(caze.getUuid()));
 			}
 		}
 
 		return casesWithoutGPSTag;
+	}
+	
+	public void updateDateLabel() {
+		if (dashboardView.getDateFilterOption() == DateFilterOption.EPI_WEEK) {
+			EpiWeek fromWeek = dashboardView.getFromWeek();
+			EpiWeek toWeek = dashboardView.getToWeek();
+			if (fromWeek.getWeek() == toWeek.getWeek()) {
+				mapDateLabel.setValue("ACTIVE CASES/CONTACTS IN EPI WEEK " + fromWeek.getWeek());
+			} else {
+				mapDateLabel.setValue("ACTIVE CASES/CONTACTS BETWEEN EPI WEEK " + fromWeek.getWeek() + " AND " + toWeek.getWeek());
+			}
+		} else {
+			Date fromDate = dashboardView.getFromDate();
+			Date toDate = dashboardView.getToDate();
+			if (DateHelper.isSameDay(fromDate, toDate)) {
+				mapDateLabel.setValue("ACTIVE CASES/CONTACTS ON " + DateHelper.formatShortDate(fromDate));
+			} else {
+				mapDateLabel.setValue("ACTIVE CASES/CONCTACTS BETWEEN " + DateHelper.formatShortDate(fromDate) + 
+						" AND " + DateHelper.formatShortDate(toDate));
+			}
+		}
+	}
+	
+	private boolean hasCasesWithoutGPSTag() {
+		for (MapCase caze : mapCases) {
+			if (caze.getReportLat() == null || caze.getReportLon() == null) {
+				return true;
+			}
+		}
+		
+		return false;
 	}
 	
 	private HorizontalLayout createHeader() {
@@ -279,7 +267,7 @@ public class MapComponent extends VerticalLayout {
 
 			mapDateLabel = new Label();
 			CssStyles.style(mapDateLabel, CssStyles.H4, CssStyles.VSPACE_TOP_NONE);
-			dashboardView.updateDateLabel(mapDateLabel);
+			updateDateLabel();
 			mapLabelLayout.addComponent(mapDateLabel);
 		}
 		mapHeaderLayout.addComponent(mapLabelLayout);
@@ -292,8 +280,7 @@ public class MapComponent extends VerticalLayout {
 		casesWithoutGPSButton.addClickListener(e -> {
 			VerticalLayout layout = new VerticalLayout();
 			Window window = VaadinUiUtil.showPopupWindow(layout);
-			List<CaseDataDto> casesWithoutGPSTag = getCasesWithoutGPSTag();
-			if (casesWithoutGPSTag == null || casesWithoutGPSTag.isEmpty()) {
+			if (!hasCasesWithoutGPSTag()) {
 				Label noCasesLabel = new Label("There are no cases without a GPS tag.");
 				layout.addComponent(noCasesLabel);
 			} else {
@@ -334,7 +321,6 @@ public class MapComponent extends VerticalLayout {
 				mapHeaderLayout.setComponentAlignment(expandMapButton, Alignment.MIDDLE_RIGHT);
 			}
 		});
-
 		mapHeaderLayout.addComponent(expandMapButton);
 		mapHeaderLayout.setComponentAlignment(expandMapButton, Alignment.MIDDLE_RIGHT);
 
@@ -354,51 +340,6 @@ public class MapComponent extends VerticalLayout {
 		mapFooterLayout.addComponent(mapKeyDropdown);
 		mapFooterLayout.setComponentAlignment(mapKeyDropdown, Alignment.BOTTOM_LEFT);
 		mapFooterLayout.setExpandRatio(mapKeyDropdown, 1);
-
-		// Filters dropdown button
-		PopupButton filtersDropdown = new PopupButton("Filters");
-		{
-			CssStyles.style(filtersDropdown, CssStyles.BUTTON_SUBTLE);
-
-			VerticalLayout filtersLayout = new VerticalLayout();
-			filtersLayout.setMargin(true);
-			filtersLayout.setSizeUndefined();
-			filtersDropdown.setContent(filtersLayout);
-
-			// Add check boxes and apply button
-			{
-				if (LoginHelper.getCurrentUser().getRegion() != null) {
-					CheckBox districtFilterForMap = new CheckBox();
-					CssStyles.style(districtFilterForMap, CssStyles.VSPACE_NONE);
-					districtFilterForMap.setCaption("Apply district filter");
-					districtFilterForMap.addValueChangeListener(e -> {
-						useDistrictFilterForMap = districtFilterForMap.getValue();
-						refreshMap();
-					});
-					filtersLayout.addComponent(districtFilterForMap);
-				}
-
-				CheckBox diseaseFilterForMap = new CheckBox();
-				CssStyles.style(diseaseFilterForMap, CssStyles.VSPACE_NONE);
-				diseaseFilterForMap.setCaption("Apply disease filter");
-				diseaseFilterForMap.addValueChangeListener(e -> {
-					useDiseaseFilterForMap = diseaseFilterForMap.getValue();
-					refreshMap();
-				});
-				filtersLayout.addComponent(diseaseFilterForMap);
-
-				CheckBox dateFilterForMap = new CheckBox();
-				CssStyles.style(dateFilterForMap, CssStyles.VSPACE_NONE);
-				dateFilterForMap.setCaption("Apply date filter");
-				dateFilterForMap.addValueChangeListener(e -> {
-					useDateFilterForMap = dateFilterForMap.getValue();
-					refreshMap();
-				});
-				filtersLayout.addComponent(dateFilterForMap);
-			}
-		}
-		mapFooterLayout.addComponent(filtersDropdown);
-		mapFooterLayout.setComponentAlignment(filtersDropdown, Alignment.BOTTOM_RIGHT);
 
 		// Layers dropdown button
 		PopupButton layersDropdown = new PopupButton("Layers");
@@ -754,7 +695,6 @@ public class MapComponent extends VerticalLayout {
 	}
 
 	private void clearCaseMarkers() {
-
 		for (GoogleMapMarker facilityMarker : markerCaseFacilities.keySet()) {
 			map.removeMarker(facilityMarker);
 		}
@@ -766,31 +706,33 @@ public class MapComponent extends VerticalLayout {
 		markerCases.clear();
 		facilitiesCasesMaps.clear();
 		mapCases.clear();
+		mapAndFacilityCases.clear();
 	}
 
-
-	private void showCaseMarkers(List<CaseDataDto> cases) {
-
+	private void showCaseMarkers(List<MapCase> cases) {
+		
 		clearCaseMarkers();
 
 		// collect cases for health facilities
-		for (CaseDataDto caze : cases) {
+		for (MapCase caze : cases) {
 			CaseClassification classification = caze.getCaseClassification();
 			if (classification == null || classification == CaseClassification.NO_CASE)
 				continue;
-			if (caze.getHealthFacility() == null)
+			if (caze.getHealthFacilityUuid() == null)
 				continue;
-			if (caze.getHealthFacility().getUuid().equals(FacilityDto.NONE_FACILITY_UUID) ||
-					caze.getHealthFacility().getUuid().equals(FacilityDto.OTHER_FACILITY_UUID)) {
+			if (caze.getHealthFacilityUuid().equals(FacilityDto.NONE_FACILITY_UUID) ||
+					caze.getHealthFacilityUuid().equals(FacilityDto.OTHER_FACILITY_UUID)) {
 				mapCases.add(caze);
+				mapAndFacilityCases.add(caze);
 				continue;
 			}
 
-			FacilityReferenceDto facility = caze.getHealthFacility();
+			FacilityReferenceDto facility = FacadeProvider.getFacilityFacade().getByUuid(caze.getHealthFacilityUuid());
 			if (facilitiesCasesMaps.get(facility) == null) {
-				facilitiesCasesMaps.put(facility, new ArrayList<CaseDataDto>());
+				facilitiesCasesMaps.put(facility, new ArrayList<MapCase>());
 			}
 			facilitiesCasesMaps.get(facility).add(caze);
+			mapAndFacilityCases.add(caze);
 		}
 
 		// create markers for all facilities with cases
@@ -809,8 +751,8 @@ public class MapComponent extends VerticalLayout {
 			// on the number of cases
 			int numberOfCases = facilitiesCasesMaps.get(facility).size();
 			Set<CaseClassification> classificationSet = new HashSet<>();
-			for (CaseDataDto caseDto : facilitiesCasesMaps.get(facility)) {
-				classificationSet.add(caseDto.getCaseClassification());
+			for (MapCase caze : facilitiesCasesMaps.get(facility)) {
+				classificationSet.add(caze.getCaseClassification());
 			}
 
 			if (classificationSet.contains(CaseClassification.CONFIRMED)) {
@@ -842,7 +784,7 @@ public class MapComponent extends VerticalLayout {
 			map.addMarker(marker);
 		}
 
-		for (CaseDataDto caze : mapCases) {
+		for (MapCase caze : mapCases) {
 			if (caze.getReportLat() == null || caze.getReportLon() == null) {
 				continue;
 			}
@@ -868,7 +810,6 @@ public class MapComponent extends VerticalLayout {
 	}
 
 	private void clearContactMarkers() {
-
 		for (GoogleMapMarker contactMarker : markerContacts.keySet()) {
 			map.removeMarker(contactMarker);
 		}
@@ -877,49 +818,35 @@ public class MapComponent extends VerticalLayout {
 		mapContacts.clear();
 	}
 
-	private void showContactMarkers(List<ContactMapDto> contacts, boolean showConfirmed, boolean showUnconfirmed) {
-
+	private void showContactMarkers(List<MapContact> contacts) {
+		
 		clearContactMarkers();
 
-		for (ContactMapDto contact : contacts) {
-			VisitDto visit = null;
-			boolean noContactCoordinates = true;
-			boolean noVisitCoordinates = true;
-
-			// Don't show a marker for contacts that don't have geo coordinates or geo coordinates for their last visit
-			noContactCoordinates = contact.getReportLat() == null || contact.getReportLon() == null;
-			if (contact.getLastVisit() != null) {
-				visit = FacadeProvider.getVisitFacade().getVisitByUuid(contact.getLastVisit().getUuid());
-				noVisitCoordinates = visit.getReportLat() == null || visit.getReportLon() == null;
-			}
-			if (noContactCoordinates && noVisitCoordinates) {
-				continue;
+		for (MapContact contact : contacts) {
+			
+			// Don't show a marker for contacts that don't have geo coordinates
+			if (contact.getAddressLat() == null || contact.getAddressLon() == null) {
+				if (contact.getReportLat() == null || contact.getReportLon() == null) {
+					continue;
+				}
 			}
 
 			// Don't show a marker for contacts that are filtered out
-			if (!showUnconfirmed && contact.getContactClassification() == ContactClassification.POSSIBLE) {
+			if (!showUnconfirmedContacts && contact.getContactClassification() == ContactClassification.POSSIBLE) {
 				continue;
 			}
-			if (!showConfirmed && contact.getContactClassification() != ContactClassification.POSSIBLE) {
+			if (!showConfirmedContacts && contact.getContactClassification() != ContactClassification.POSSIBLE) {
 				continue;
 			}
-
-
-			LatLon latLon;
-			if (!noVisitCoordinates) {
-				latLon = new LatLon(visit.getReportLat(), visit.getReportLon());
-			} else {
-				latLon = new LatLon(contact.getReportLat(), contact.getReportLon());
-			}
+			
 			MapIcon icon;
-
+			Date lastVisitDateTime = contact.getLastVisitDateTime();
 			long currentTime = new Date().getTime();
-			if (visit != null) {
-				long visitTime = visit.getVisitDateTime() != null ? visit.getVisitDateTime().getTime() : 0;
+			if (lastVisitDateTime != null) {
 				// 1000 ms = 1 second; 3600 seconds = 1 hour
-				if (currentTime - visitTime >= 1000 * 3600 * 48) {				
+				if (currentTime - lastVisitDateTime.getTime() >= 1000 * 3600 * 48) {				
 					icon = MapIcon.RED_CONTACT;
-				} else if (currentTime - visitTime >= 1000 * 3600 * 24) {
+				} else if (currentTime - lastVisitDateTime.getTime() >= 1000 * 3600 * 24) {
 					icon = MapIcon.ORANGE_CONTACT;
 				} else {
 					icon = MapIcon.GREEN_CONTACT;
@@ -928,6 +855,12 @@ public class MapComponent extends VerticalLayout {
 				icon = MapIcon.RED_CONTACT;
 			}
 
+			LatLon latLon;
+			if (contact.getAddressLat() != null && contact.getAddressLon() != null) {
+				latLon = new LatLon(contact.getAddressLat(), contact.getAddressLon());
+			} else {
+				latLon = new LatLon(contact.getReportLat(), contact.getReportLon());
+			}
 			GoogleMapMarker marker = new GoogleMapMarker(contact.toString(), latLon, false, icon.getUrl());
 			marker.setId(contact.getUuid().hashCode());
 			markerContacts.put(marker, contact);

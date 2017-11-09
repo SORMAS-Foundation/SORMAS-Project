@@ -2,17 +2,15 @@ package de.symeda.sormas.ui.dashboard;
 
 import java.util.List;
 
-import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Image;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.DashboardCase;
 import de.symeda.sormas.api.event.DashboardEvent;
 import de.symeda.sormas.api.event.EventStatus;
-import de.symeda.sormas.api.sample.SampleTestResultType;
 import de.symeda.sormas.api.sample.DashboardTestResult;
+import de.symeda.sormas.api.sample.SampleTestResultType;
 import de.symeda.sormas.api.task.DashboardTask;
 import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -73,7 +71,7 @@ public class StatisticsComponent extends HorizontalLayout {
 		myTasksComponent.addStyleName("statistics-sub-component");
 		
 		// Header
-		myTasksComponent.addHeader("My Tasks", new Image(null, new ThemeResource("img/dashboard-icon-placeholder.png")));
+		myTasksComponent.addHeader("My Tasks", null);
 		
 		// Overview
 		myTasksComponent.addOverview();
@@ -114,7 +112,7 @@ public class StatisticsComponent extends HorizontalLayout {
 		newCasesComponent.addStyleName("statistics-sub-component");
 		
 		// Header
-		newCasesComponent.addHeader("New Cases", new Image(null, new ThemeResource("img/dashboard-icon-placeholder.png")));
+		newCasesComponent.addHeader("New Cases", null);
 		
 		// Overview
 		newCasesComponent.addOverview();
@@ -124,8 +122,8 @@ public class StatisticsComponent extends HorizontalLayout {
 		newCasesComponent.addComponentToOverview(caseClassificationProbable);
 		caseClassificationSuspect = new StatisticsOverviewElement("Suspect", "border-relevant");
 		newCasesComponent.addComponentToOverview(caseClassificationSuspect);
-//		caseClassificationNotACase = new StatisticsOverviewElement("Not A Case", "border-positive");
-//		newCasesComponent.addComponentToOverview(caseClassificationNotACase);
+		caseClassificationNotACase = new StatisticsOverviewElement("Not A Case", "border-positive");
+		newCasesComponent.addComponentToOverview(caseClassificationNotACase);
 		caseClassificationNotYetClassified = new StatisticsOverviewElement("Not Yet Classified", "border-wayne");
 		newCasesComponent.addComponentToOverview(caseClassificationNotYetClassified);
 		
@@ -136,12 +134,7 @@ public class StatisticsComponent extends HorizontalLayout {
 	private void updateNewCasesComponent() {
 		dashboardView.updateDateLabel(newCasesComponent.getDateLabel());
 		
-		List<DashboardCase> dashboardCases;
-		if (dashboardView.getDateFilterOption() == DateFilterOption.DATE) {
-			dashboardCases = FacadeProvider.getCaseFacade().getNewCasesForDashboard(dashboardView.getDistrict(), dashboardView.getDisease(), dashboardView.getFromDate(), dashboardView.getToDate(), LoginHelper.getCurrentUser().getUuid());
-		} else {
-			dashboardCases = FacadeProvider.getCaseFacade().getNewCasesForDashboard(dashboardView.getDistrict(), dashboardView.getDisease(), DateHelper.getEpiWeekStart(dashboardView.getFromWeek()), DateHelper.getEpiWeekEnd(dashboardView.getToWeek()), LoginHelper.getCurrentUserAsReference().getUuid());
-		}
+		List<DashboardCase> dashboardCases = dashboardView.getCases();
 		
 		int newCasesCount = dashboardCases.size();
 		newCasesComponent.updateCountLabel(newCasesCount);
@@ -152,8 +145,8 @@ public class StatisticsComponent extends HorizontalLayout {
 		caseClassificationProbable.updateCountLabel(probableCasesCount);
 		int suspectCasesCount = (int) dashboardCases.stream().filter(c -> c.getCaseClassification() == CaseClassification.SUSPECT).count();
 		caseClassificationSuspect.updateCountLabel(suspectCasesCount);
-//		int notACaseCasesCount = (int) caseDashboardDtos.stream().filter(c -> c.getCaseClassification() == CaseClassification.NO_CASE).count();
-//		caseClassificationNotACase.updateCountLabel(notACaseCasesCount);
+		int notACaseCasesCount = (int) dashboardCases.stream().filter(c -> c.getCaseClassification() == CaseClassification.NO_CASE).count();
+		caseClassificationNotACase.updateCountLabel(notACaseCasesCount);
 		int notYetClassifiedCasesCount = (int) dashboardCases.stream().filter(c -> c.getCaseClassification() == CaseClassification.NOT_CLASSIFIED).count();
 		caseClassificationNotYetClassified.updateCountLabel(notYetClassifiedCasesCount);
 	}
@@ -163,7 +156,7 @@ public class StatisticsComponent extends HorizontalLayout {
 		newEventsComponent.addStyleName("statistics-sub-component");
 		
 		// Header
-		newEventsComponent.addHeader("New Events", new Image(null, new ThemeResource("img/dashboard-icon-placeholder.png")));
+		newEventsComponent.addHeader("New Events", null);
 		
 		// Overview
 		newEventsComponent.addOverview();
@@ -205,7 +198,7 @@ public class StatisticsComponent extends HorizontalLayout {
 		newTestResultsComponent.addStyleName("statistics-sub-component-right");
 		
 		// Header
-		newTestResultsComponent.addHeader("New Test Results", new Image(null, new ThemeResource("img/dashboard-icon-placeholder.png")));
+		newTestResultsComponent.addHeader("New Test Results", null);
 		
 		// Overview
 		newTestResultsComponent.addOverview();

@@ -13239,6 +13239,20 @@ div.v-layout.v-horizontal.v-widget {
 	text-align: right;
 }
 
+.sormas .v-select-optiongroup-horizontal.v-select-optiongroup-horizontal-subtle {
+	margin-top: 10px;
+}
+
+.sormas .v-select-optiongroup-horizontal.v-select-optiongroup-horizontal-subtle .v-radiobutton {
+	border: 2px solid #005A9C;
+	font-size: 12px;
+}
+
+:root .sormas .v-select-optiongroup-horizontal.v-select-optiongroup-horizontal-subtle .v-radiobutton > input:checked ~ label {
+	background: #005A9C;
+	color: #FFF;
+}
+
 .sormas .v-caption-caption-inline {
 	float: left;
 	padding-top: 7px;

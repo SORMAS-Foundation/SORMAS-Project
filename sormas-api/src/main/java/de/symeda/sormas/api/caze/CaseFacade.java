@@ -42,6 +42,8 @@ public interface CaseFacade {
 	
 	List<DashboardCase> getNewCasesForDashboard(DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid);
 
+	List<MapCase> getCasesForMap(DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid);
+	
 	/**
 	 * @param onsetFromDate optional
 	 * @param onsetToDate optional
