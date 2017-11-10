@@ -20,6 +20,7 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -125,14 +126,16 @@ public class SampleListComponent extends VerticalLayout {
 		}
 		topLayout.addComponent(buttonFilterLayout);
 
-		Button createButton = new Button("New sample");
-		createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-		createButton.setIcon(FontAwesome.PLUS_CIRCLE);
-		createButton.addClickListener(e -> ControllerProvider.getSampleController().create(caseRef, grid));
-		topLayout.addComponent(createButton);
-		topLayout.setComponentAlignment(createButton, Alignment.MIDDLE_RIGHT);
-		topLayout.setExpandRatio(createButton, 1);
-
+    	if (LoginHelper.hasUserRight(UserRight.CREATE)) {
+			Button createButton = new Button("New sample");
+			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+			createButton.setIcon(FontAwesome.PLUS_CIRCLE);
+			createButton.addClickListener(e -> ControllerProvider.getSampleController().create(caseRef, grid));
+			topLayout.addComponent(createButton);
+			topLayout.setComponentAlignment(createButton, Alignment.MIDDLE_RIGHT);
+			topLayout.setExpandRatio(createButton, 1);
+    	}
+    	
 		return topLayout;
 	}
 

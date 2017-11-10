@@ -41,6 +41,9 @@
 	<security-role>
         <role-name>NATIONAL_USER</role-name>
     </security-role>
+	<security-role>
+        <role-name>NATIONAL_OBSERVER</role-name>
+    </security-role>
 	
 	<security-constraint>
 		<display-name>secure all</display-name>

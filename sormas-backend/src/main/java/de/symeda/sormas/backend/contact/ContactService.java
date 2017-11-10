@@ -315,9 +315,10 @@ public class ContactService extends AbstractAdoService<Contact> {
 	
 	public Predicate createUserFilterWithoutCase(CriteriaBuilder cb, CriteriaQuery cq, From<Contact, Contact> contactPath, User user) {
 		// National users can access all contacts in the system
-		if (user.getUserRoles().contains(UserRole.NATIONAL_USER)) {
-			return null;
-		}
+		if (user.getUserRoles().contains(UserRole.NATIONAL_USER)
+				|| user.getUserRoles().contains(UserRole.NATIONAL_OBSERVER)) {
+				return null;
+			}
 		
 		// whoever created it or is assigned to it is allowed to access it
 		Predicate filter = cb.equal(contactPath.get(Contact.REPORTING_USER), user);

@@ -102,7 +102,8 @@ public class MapComponent extends VerticalLayout {
 		this.dashboardView = dashboardView;
 		map = new GoogleMap("AIzaSyAaJpN8a_NhEU-02-t5uVi02cAaZtKafkw", null, null);
 
-		if (LoginHelper.isUserInRole(UserRole.NATIONAL_USER)) {
+		if (LoginHelper.isUserInRole(UserRole.NATIONAL_USER)
+				|| LoginHelper.isUserInRole(UserRole.NATIONAL_OBSERVER)) {
 			showRegions = true;
 
 			map.setZoom(6);
@@ -420,7 +421,8 @@ public class MapComponent extends VerticalLayout {
 				showConfirmedContactsCheckBox.setEnabled(showContacts);
 				showUnconfirmedContactsCheckBox.setEnabled(showContacts);
 
-				if (LoginHelper.isUserInRole(UserRole.NATIONAL_USER)) {
+				if (LoginHelper.isUserInRole(UserRole.NATIONAL_USER)
+						|| LoginHelper.isUserInRole(UserRole.NATIONAL_OBSERVER)) {
 					OptionGroup regionMapVisualizationSelect = new OptionGroup();
 					regionMapVisualizationSelect.setWidth(100, Unit.PERCENTAGE);
 					regionMapVisualizationSelect.addItems((Object[]) RegionMapVisualization.values());

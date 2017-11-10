@@ -273,9 +273,11 @@ public class CaseService extends AbstractAdoService<Case> {
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Case,Case> casePath, User user) {
 		// National users can access all cases in the system
-		if (user.getUserRoles().contains(UserRole.NATIONAL_USER)) {
+		if (user.getUserRoles().contains(UserRole.NATIONAL_USER)
+			|| user.getUserRoles().contains(UserRole.NATIONAL_OBSERVER)) {
 			return null;
 		}
+
 		
 		// whoever created the case or is assigned to it is allowed to access it
 		Predicate filter = cb.equal(casePath.get(Case.REPORTING_USER), user);

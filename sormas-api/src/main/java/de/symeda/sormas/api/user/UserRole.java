@@ -23,6 +23,7 @@ public enum UserRole {
 	CONTACT_OFFICER(false, true),	
 	RUMOR_MANAGER(true, false),	
 	LAB_USER(false, false),
+	NATIONAL_OBSERVER(false, false),
 	;
 	
 	public static final String _SYSTEM = "SYSTEM";
@@ -38,6 +39,7 @@ public enum UserRole {
 	public static final String _CONTACT_OFFICER = CONTACT_OFFICER.name();
 	public static final String _RUMOR_MANAGER = RUMOR_MANAGER.name();
 	public static final String _LAB_USER = LAB_USER.name();
+	public static final String _NATIONAL_OBSERVER = NATIONAL_OBSERVER.name();
 	
 	private final boolean supervisor;
 	private final boolean officer;
@@ -97,6 +99,7 @@ public enum UserRole {
 			collection.add(CONTACT_OFFICER);
 			collection.add(SURVEILLANCE_OFFICER);
 			collection.add(LAB_USER);
+			collection.add(NATIONAL_OBSERVER);
 			break;
 		case SURVEILLANCE_SUPERVISOR:
 			collection.add(SURVEILLANCE_OFFICER);
@@ -113,6 +116,9 @@ public enum UserRole {
 			break;
 		case LAB_USER:
 			collection.add(LAB_USER);
+			break;
+		case NATIONAL_OBSERVER:
+			collection.add(NATIONAL_OBSERVER);
 			break;
 		default:
 			break;

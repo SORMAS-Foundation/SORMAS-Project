@@ -60,7 +60,7 @@ public class LoginHelper {
 	public static boolean isUserInRole(UserRole userRole) {
 		return VaadinServletService.getCurrentServletRequest().isUserInRole(userRole.name());
 	}
-    
+
 	public static boolean hasUserRight(UserRight userRight) {
 		// TODO cache user on login to make this faster?
 		for (UserRole userRole : userRight.getUserRoles()) {

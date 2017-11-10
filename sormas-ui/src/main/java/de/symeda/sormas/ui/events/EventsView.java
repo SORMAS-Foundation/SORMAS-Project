@@ -13,7 +13,9 @@ import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.EventType;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.CssStyles;
 
@@ -45,11 +47,13 @@ public class EventsView extends AbstractView {
 		
 		addComponent(gridLayout);
 		
-		createButton = new Button("New alert");
-		createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-		createButton.setIcon(FontAwesome.PLUS_CIRCLE);
-		createButton.addClickListener(e -> ControllerProvider.getEventController().create());
-		addHeaderComponent(createButton);
+    	if (LoginHelper.hasUserRight(UserRight.CREATE)) {
+			createButton = new Button("New alert");
+			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+			createButton.setIcon(FontAwesome.PLUS_CIRCLE);
+			createButton.addClickListener(e -> ControllerProvider.getEventController().create());
+			addHeaderComponent(createButton);
+    	}
 	}
 	
 	public HorizontalLayout createTopBar() {

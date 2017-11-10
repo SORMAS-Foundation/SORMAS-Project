@@ -22,6 +22,7 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.login.LoginHelper;
@@ -50,11 +51,13 @@ public class CasesView extends AbstractView {
     public CasesView() {
     	super(VIEW_NAME);
     	
-        createButton = new Button("New case");
-        createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-        createButton.setIcon(FontAwesome.PLUS_CIRCLE);
-        createButton.addClickListener(e -> ControllerProvider.getCaseController().create());
-        addHeaderComponent(createButton);
+    	if (LoginHelper.hasUserRight(UserRight.CREATE)) {
+	        createButton = new Button("New case");
+	        createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+	        createButton.setIcon(FontAwesome.PLUS_CIRCLE);
+	        createButton.addClickListener(e -> ControllerProvider.getCaseController().create());
+	        addHeaderComponent(createButton);
+    	}
 
         grid = new CaseGrid();
 

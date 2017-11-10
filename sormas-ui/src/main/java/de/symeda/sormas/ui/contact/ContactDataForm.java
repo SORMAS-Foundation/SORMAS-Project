@@ -29,6 +29,7 @@ import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.Diseases.DiseasesConfiguration;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -105,22 +106,25 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
     	    	contactOfficerField.addItems(FacadeProvider.getUserFacade().getAssignableUsersByDistrict(caseDto.getDistrict(), false, UserRole.CONTACT_OFFICER));
     	    	
     	    	String associatedCaseUuid = findAssociatedCaseUuid(FacadeProvider.getPersonFacade().getPersonByUuid(getValue().getPerson().getUuid()), getValue());
+    	    	getContent().removeComponent(TO_CASE_BTN_LOC);
     	    	if (associatedCaseUuid == null) {
-    		    	Button toCaseButton = new Button("Create a case for this contact person");
-    				toCaseButton.addStyleName(ValoTheme.BUTTON_LINK);
-    				
-    				toCaseButton.addClickListener(new ClickListener() {
-    					@Override
-    					public void buttonClick(ClickEvent event) {
-    						PersonReferenceDto personRef = getValue().getPerson();
-    						PersonDto person = FacadeProvider.getPersonFacade().getPersonByUuid(personRef.getUuid());
-    						CaseReferenceDto caseRef = getValue().getCaze();
-    						CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseRef.getUuid());
-    						ControllerProvider.getCaseController().create(person, caze.getDisease(), getValue());
-    					}
-    				});
-    				
-    				getContent().addComponent(toCaseButton, TO_CASE_BTN_LOC);
+    	    		if (LoginHelper.hasUserRight(UserRight.CREATE)) {
+	    		    	Button toCaseButton = new Button("Create a case for this contact person");
+	    				toCaseButton.addStyleName(ValoTheme.BUTTON_LINK);
+	    				
+	    				toCaseButton.addClickListener(new ClickListener() {
+	    					@Override
+	    					public void buttonClick(ClickEvent event) {
+	    						PersonReferenceDto personRef = getValue().getPerson();
+	    						PersonDto person = FacadeProvider.getPersonFacade().getPersonByUuid(personRef.getUuid());
+	    						CaseReferenceDto caseRef = getValue().getCaze();
+	    						CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseRef.getUuid());
+	    						ControllerProvider.getCaseController().create(person, caze.getDisease(), getValue());
+	    					}
+	    				});
+	    				
+	    				getContent().addComponent(toCaseButton, TO_CASE_BTN_LOC);
+    	    		}
     	    	} else {
     	    		// link to case
     		    	Link linkToData = ControllerProvider.getCaseController().createLinkToData(associatedCaseUuid, "Open case of this contact person");
@@ -139,7 +143,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 
 		Field<FollowUpStatus> statusField = (Field<FollowUpStatus>) getField(ContactDto.FOLLOW_UP_STATUS);
 		boolean followUpVisible = getValue() != null && statusField.isVisible();
-		if (followUpVisible) {
+		if (followUpVisible && LoginHelper.hasUserRight(UserRight.EDIT)) {
 			FollowUpStatus followUpStatus = statusField.getValue();
 			if (followUpStatus == FollowUpStatus.FOLLOW_UP) {
 				

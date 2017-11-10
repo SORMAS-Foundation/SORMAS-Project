@@ -13,7 +13,6 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.ui.login.LoginHelper;
@@ -106,10 +105,7 @@ public class ReportsView extends AbstractView {
 	}	
 	
 	private void reloadGrid() {
-		RegionReferenceDto region = null;
-		if (!LoginHelper.isUserInRole(UserRole.NATIONAL_USER)) {
-			region = LoginHelper.getCurrentUser().getRegion();
-		}
+		RegionReferenceDto region = LoginHelper.getCurrentUser().getRegion();
 		grid.reload(region, (int) yearFilter.getValue(), (int) epiWeekFilter.getValue());
 	}
 }

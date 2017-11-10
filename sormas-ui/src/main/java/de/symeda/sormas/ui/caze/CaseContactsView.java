@@ -16,9 +16,11 @@ import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.contact.ContactGrid;
+import de.symeda.sormas.ui.login.LoginHelper;
 
 public class CaseContactsView extends AbstractCaseView {
 
@@ -69,14 +71,16 @@ public class CaseContactsView extends AbstractCaseView {
 	    	statusButton.setStyleName(ValoTheme.BUTTON_LINK);
 	        topLayout.addComponent(statusButton);
         }
-        
-        newButton = new Button("New contact");
-        newButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-        newButton.setIcon(FontAwesome.PLUS_CIRCLE);
-        newButton.addClickListener(e -> ControllerProvider.getContactController().create(this.getCaseRef()));
-        topLayout.addComponent(newButton);
-        topLayout.setComponentAlignment(newButton, Alignment.MIDDLE_RIGHT);
-        topLayout.setExpandRatio(newButton, 1);
+
+        if (LoginHelper.hasUserRight(UserRight.CREATE)) {
+	        newButton = new Button("New contact");
+	        newButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+	        newButton.setIcon(FontAwesome.PLUS_CIRCLE);
+	        newButton.addClickListener(e -> ControllerProvider.getContactController().create(this.getCaseRef()));
+	        topLayout.addComponent(newButton);
+	        topLayout.setComponentAlignment(newButton, Alignment.MIDDLE_RIGHT);
+	        topLayout.setExpandRatio(newButton, 1);
+        }
         
         topLayout.setStyleName("top-bar");
         return topLayout;
