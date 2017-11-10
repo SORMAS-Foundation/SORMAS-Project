@@ -191,6 +191,14 @@ public abstract class AbstractDomainObject extends BaseObservable implements Ser
 		this.changeDate = changeDate;
 	}
 
+	public void setChangeDateForNew() {
+		this.changeDate = new Date(0);
+	}
+
+	public boolean isNew() {
+		return changeDate == null || creationDate == null || !changeDate.after(creationDate);
+	}
+
 	public Date getLocalChangeDate() {
 		return localChangeDate;
 	}
