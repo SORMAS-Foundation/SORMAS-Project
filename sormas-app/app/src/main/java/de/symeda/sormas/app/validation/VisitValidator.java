@@ -3,9 +3,11 @@ package de.symeda.sormas.app.validation;
 import android.content.res.Resources;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
@@ -29,16 +31,15 @@ public final class VisitValidator {
             binding.visitVisitDateTime.setError(resources.getString(R.string.validation_visit_date_time));
             success = false;
         } else {
-            if (visit.getVisitDateTime().before(contact.getLastContactDate()) &&
-                    DateHelper.getDaysBetween(visit.getVisitDateTime(), contact.getLastContactDate()) > 10) {
-                binding.visitVisitDateTime.setError(resources.getString(R.string.validation_visit_10_days_before));
+            Date contactReferenceDate = contact.getLastContactDate() != null ? contact.getLastContactDate() : contact.getReportDateTime();
+            if (visit.getVisitDateTime().before(contactReferenceDate) &&
+                    DateHelper.getDaysBetween(visit.getVisitDateTime(), contactReferenceDate) > VisitDto.ALLOWED_CONTACT_DATE_OFFSET) {
+                binding.visitVisitDateTime.setError(resources.getString(R.string.validation_visit_30_days_before));
                 success = false;
-            } else {
-                if (contact.getFollowUpUntil() != null && visit.getVisitDateTime().after(contact.getFollowUpUntil()) &&
-                        DateHelper.getDaysBetween(contact.getFollowUpUntil(), visit.getVisitDateTime()) > 10) {
-                    binding.visitVisitDateTime.setError(resources.getString(R.string.validation_visit_10_days_after));
-                    success = false;
-                }
+            } else if (contact.getFollowUpUntil() != null && visit.getVisitDateTime().after(contactReferenceDate) &&
+                    DateHelper.getDaysBetween(contactReferenceDate, visit.getVisitDateTime()) > VisitDto.ALLOWED_CONTACT_DATE_OFFSET) {
+                binding.visitVisitDateTime.setError(resources.getString(R.string.validation_visit_30_days_after));
+                success = false;
             }
         }
 

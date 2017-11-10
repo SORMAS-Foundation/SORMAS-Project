@@ -47,6 +47,10 @@ public class ContactNewForm extends FormTab {
 
         ContactValidator.setRequiredHintsForNewContact(binding);
 
+        binding.contactLastContactDate.makeFieldSoftRequired();
+        binding.contactContactProximity.makeFieldSoftRequired();
+        binding.contactRelationToCase.makeFieldSoftRequired();
+
         return binding.getRoot();
 
     }

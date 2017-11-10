@@ -122,6 +122,8 @@ public class PreviousHospitalizationForm extends AbstractFormDialogFragment<Prev
         FieldHelper.initSpinnerField(binding.prevHospHealthFacility, facilities);
 
         PreviousHospitalizationValidator.setRequiredHintsForPreviousHospitalization(binding);
+        binding.prevHospAdmissionDate.makeFieldSoftRequired();
+        binding.prevHospDischargeDate.makeFieldSoftRequired();
     }
 
     public PreviousHospitalizationEditFragmentLayoutBinding getBinding() {

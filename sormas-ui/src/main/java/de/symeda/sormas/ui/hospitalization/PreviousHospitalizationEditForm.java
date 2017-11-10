@@ -1,6 +1,7 @@
 package de.symeda.sormas.ui.hospitalization;
 
 import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.DateField;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TextArea;
 
@@ -10,6 +11,7 @@ import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
+import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
 @SuppressWarnings("serial")
@@ -33,8 +35,9 @@ public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHo
 	@Override
 	protected void addFields() {
 
-		addFields(PreviousHospitalizationDto.ADMISSION_DATE,
-				PreviousHospitalizationDto.DISCHARGE_DATE);
+		DateField admissionDate = addField(PreviousHospitalizationDto.ADMISSION_DATE, DateField.class);
+		DateField dischargeDate = addField(PreviousHospitalizationDto.DISCHARGE_DATE, DateField.class);
+		FieldHelper.makeFieldSoftRequired(admissionDate, dischargeDate);
 		addField(PreviousHospitalizationDto.ISOLATED, OptionGroup.class);
 		addField(PreviousHospitalizationDto.DESCRIPTION, TextArea.class).setRows(2);
 
@@ -76,8 +79,6 @@ public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHo
 		facilityRegion.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
 
 		setRequired(true,
-				PreviousHospitalizationDto.ADMISSION_DATE, 
-				PreviousHospitalizationDto.DISCHARGE_DATE, 
 				PreviousHospitalizationDto.REGION,
 				PreviousHospitalizationDto.DISTRICT,
 				PreviousHospitalizationDto.HEALTH_FACILITY);

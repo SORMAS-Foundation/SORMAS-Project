@@ -41,7 +41,7 @@ public class EpiDataGatheringsListArrayAdapter extends ArrayAdapter<EpiDataGathe
         EpiDataGathering gathering = getItem(position);
 
         TextView date = (TextView) convertView.findViewById(R.id.gathering_date_li);
-        date.setText(DateHelper.formatShortDate(gathering.getGatheringDate()));
+        date.setText(gathering.getGatheringDate() != null ? DateHelper.formatShortDate(gathering.getGatheringDate()) : context.getResources().getString(R.string.caption_unknown));
 
         TextView lga = (TextView) convertView.findViewById(R.id.gathering_lga_li);
         if (gathering.getGatheringAddress() != null && gathering.getGatheringAddress().getDistrict() != null)

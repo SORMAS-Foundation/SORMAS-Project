@@ -2,9 +2,11 @@ package de.symeda.sormas.ui.contact;
 
 import org.joda.time.LocalDate;
 
+import com.vaadin.data.Validator;
 import com.vaadin.data.validator.DateRangeValidator;
 import com.vaadin.shared.ui.datefield.Resolution;
 import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.DateField;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TextArea;
@@ -17,6 +19,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
 @SuppressWarnings("serial")
@@ -50,15 +53,17 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
     	addField(ContactDto.CAZE, ComboBox.class)
     		.addItems(FacadeProvider.getCaseFacade().getSelectableCases(LoginHelper.getCurrentUserAsReference()));
 
-    	addField(ContactDto.LAST_CONTACT_DATE);
-    	addField(ContactDto.CONTACT_PROXIMITY, OptionGroup.class);
+    	DateField lastContactDate = addField(ContactDto.LAST_CONTACT_DATE, DateField.class);
+    	OptionGroup contactProximity = addField(ContactDto.CONTACT_PROXIMITY, OptionGroup.class);
     	addField(ContactDto.DESCRIPTION, TextArea.class).setRows(2);
-    	addField(ContactDto.RELATION_TO_CASE, ComboBox.class);
+    	ComboBox relationToCase = addField(ContactDto.RELATION_TO_CASE, ComboBox.class);
 
     	ComboBox contactOfficerField = addField(ContactDto.CONTACT_OFFICER, ComboBox.class);
     	contactOfficerField.setNullSelectionAllowed(true);
     	
-    	setRequired(true, ContactDto.CAZE, FIRST_NAME, LAST_NAME, ContactDto.LAST_CONTACT_DATE, ContactDto.CONTACT_PROXIMITY, ContactDto.RELATION_TO_CASE);
+    	setRequired(true, ContactDto.CAZE, FIRST_NAME, LAST_NAME);
+    	
+    	FieldHelper.makeFieldSoftRequired(lastContactDate, contactProximity, relationToCase);
     	
     	addValueChangeListener(e -> {
     		updateLastContactDateValidator();
@@ -74,7 +79,11 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
     
     protected void updateLastContactDateValidator() {
     	Field<?> dateField = getField(ContactDto.LAST_CONTACT_DATE);
-    	dateField.removeAllValidators();
+    	for (Validator validator : dateField.getValidators()) {
+    		if (validator instanceof DateRangeValidator) {
+    			dateField.removeValidator(validator);
+    		}
+    	}
     	if (getValue() != null) {
 	    	dateField.addValidator(new DateRangeValidator("Date of last contact has to be before date of report",
 	    			null, new LocalDate(getValue().getReportDateTime()).plusDays(1).toDate(), Resolution.SECOND));

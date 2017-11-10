@@ -6,6 +6,7 @@ import com.vaadin.ui.TextArea;
 import de.symeda.sormas.api.epidata.EpiDataGatheringDto;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
+import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
 @SuppressWarnings("serial")
@@ -25,12 +26,11 @@ public class EpiDataGatheringEditForm extends AbstractEditForm<EpiDataGatheringD
 	
 	@Override
 	protected void addFields() {
-		addField(EpiDataGatheringDto.GATHERING_DATE, DateField.class);
+		DateField gatheringDate = addField(EpiDataGatheringDto.GATHERING_DATE, DateField.class);
 		addField(EpiDataGatheringDto.DESCRIPTION, TextArea.class).setRows(2);
 		addField(EpiDataGatheringDto.GATHERING_ADDRESS, LocationEditForm.class).setCaption(null);
 		
-		setRequired(true,
-				EpiDataGatheringDto.GATHERING_DATE);
+		FieldHelper.makeFieldSoftRequired(gatheringDate);
 	}
 	
 	@Override

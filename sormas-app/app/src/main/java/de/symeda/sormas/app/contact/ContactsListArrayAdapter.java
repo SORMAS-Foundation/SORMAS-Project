@@ -49,22 +49,26 @@ public class ContactsListArrayAdapter extends ArrayAdapter<Contact> {
         uuid.setText(DataHelper.getShortUuid(contact.getUuid()));
 
         TextView lastContactDate = (TextView) convertView.findViewById(R.id.contact_lastContactDate_li);
-        int days = DateHelper.getDaysBetween(contact.getLastContactDate(), new Date());
-        String contactDateString = days+" "+ convertView.getResources().getText(R.string.label_days)+ " " + convertView.getResources().getText(R.string.label_ago);
+        Date referenceDate = contact.getLastContactDate() != null ? contact.getLastContactDate() : contact.getReportDateTime();
+        int days = DateHelper.getDaysBetween(referenceDate, new Date());
+        String referenceDateString = days+" "+ convertView.getResources().getText(R.string.label_days)+ " " + convertView.getResources().getText(R.string.label_ago);
         if(days>30) {
-            contactDateString = DateHelper.formatDate(contact.getLastContactDate());
+            referenceDateString = DateHelper.formatDate(referenceDate);
         }
         else if(days == 0) {
-            contactDateString = convertView.getResources().getText(R.string.label_today).toString();
+            referenceDateString = convertView.getResources().getText(R.string.label_today).toString();
         }
-        lastContactDate.setText(contactDateString);
+        lastContactDate.setText(referenceDateString);
 
         TextView person = (TextView) convertView.findViewById(R.id.contact_person_li);
         person.setText(contact.getPerson().toString());
 
         TextView information = (TextView) convertView.findViewById(R.id.contact_information_li);
         StringBuilder sb = new StringBuilder();
-        sb.append(contact.getContactClassification()).append(", " + contact.getContactProximity());
+        sb.append(contact.getContactClassification());
+        if (contact.getContactProximity() != null) {
+            sb.append(", " + contact.getContactProximity());
+        }
         information.setText(sb.toString());
 
         ImageView synchronizedIcon = (ImageView) convertView.findViewById(R.id.contact_synchronized_li);

@@ -7,6 +7,8 @@ import android.view.ViewGroup;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.utils.Diseases;
+import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.component.PropertyField;
 
 public abstract class FormTab extends DialogFragment implements FormFragment {

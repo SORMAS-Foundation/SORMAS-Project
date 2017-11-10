@@ -235,7 +235,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setReportDateTime(source.getReportDateTime());
 
 		// use only date, not time
-		target.setLastContactDate(DateHelper8.toDate(DateHelper8.toLocalDate(source.getLastContactDate())));
+		target.setLastContactDate(source.getLastContactDate() != null ? DateHelper8.toDate(DateHelper8.toLocalDate(source.getLastContactDate())) : null);
 		if (target.getLastContactDate() != null && target.getLastContactDate().after(target.getReportDateTime())) {
 			throw new ValidationException(Contact.LAST_CONTACT_DATE + " has to be before " + Contact.REPORT_DATE_TIME);
 		}

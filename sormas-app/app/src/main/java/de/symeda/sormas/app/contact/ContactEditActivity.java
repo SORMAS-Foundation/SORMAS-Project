@@ -270,16 +270,12 @@ public class ContactEditActivity extends AbstractEditTabActivity {
                 ContactDataFragmentLayoutBinding contactDataBinding = ((ContactEditDataForm)getTabByPosition(ContactEditTabs.CONTACT_DATA.ordinal())).getBinding();
                 PersonEditFragmentLayoutBinding personBinding = ((PersonEditForm)getTabByPosition(ContactEditTabs.PERSON.ordinal())).getBinding();
 
-                ContactValidator.clearErrorsForContactData(contactDataBinding);
                 PersonValidator.clearErrors(personBinding);
 
                 int validationErrorTab = -1;
 
                 if (!PersonValidator.validatePersonData(person, personBinding)) {
                     validationErrorTab = ContactEditTabs.PERSON.ordinal();
-                }
-                if (!ContactValidator.validateContactData(contact, contactDataBinding)) {
-                    validationErrorTab = ContactEditTabs.CONTACT_DATA.ordinal();
                 }
 
                 if (validationErrorTab >= 0) {

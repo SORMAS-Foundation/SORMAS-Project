@@ -38,7 +38,7 @@ public class CheckBoxField extends PropertyField<Boolean> {
 
     @Override
     public void setValue(Boolean value) {
-        checkBox.setChecked(value);
+        checkBox.setChecked(value == null ? false : value);
     }
 
     @Override

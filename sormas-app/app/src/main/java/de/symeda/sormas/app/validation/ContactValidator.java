@@ -9,6 +9,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.component.PropertyField;
+import de.symeda.sormas.app.component.TextField;
 import de.symeda.sormas.app.databinding.ContactDataFragmentLayoutBinding;
 import de.symeda.sormas.app.databinding.ContactNewFragmentLayoutBinding;
 
@@ -17,48 +18,10 @@ import de.symeda.sormas.app.databinding.ContactNewFragmentLayoutBinding;
  */
 public final class ContactValidator {
 
-    public static boolean validateContactData(Contact contact, ContactDataFragmentLayoutBinding binding) {
-        Resources resources = DatabaseHelper.getContext().getResources();
-
-        boolean success = true;
-
-        // Relation to case
-        if (contact.getRelationToCase() == null) {
-            binding.contactRelationToCase.setError(resources.getString(R.string.validation_contact_relation));
-            success = false;
-        }
-
-        // Contact proximity
-        if (contact.getContactProximity() == null) {
-            binding.contactContactProximity.setError(resources.getString(R.string.validation_contact_proximity));
-            success = false;
-        }
-
-        // Last contact date
-        if (contact.getLastContactDate() == null || contact.getLastContactDate().getTime() > contact.getReportDateTime().getTime()) {
-            binding.contactLastContactDate.setError(resources.getString(R.string.validation_contact_last_date));
-            success = false;
-        }
-
-        return success;
-    }
-
     public static boolean validateNewContact(Contact contact, ContactNewFragmentLayoutBinding binding) {
         Resources resources = DatabaseHelper.getContext().getResources();
 
         boolean success = true;
-
-        // Relation to case
-        if (contact.getRelationToCase() == null) {
-            binding.contactRelationToCase.setError(resources.getString(R.string.validation_contact_relation));
-            success = false;
-        }
-
-        // Contact proximity
-        if (contact.getContactProximity() == null) {
-            binding.contactContactProximity.setError(resources.getString(R.string.validation_contact_proximity));
-            success = false;
-        }
 
         // Last name
         if (contact.getPerson().getLastName() == null || contact.getPerson().getLastName().trim().isEmpty()) {
@@ -72,30 +35,12 @@ public final class ContactValidator {
             success = false;
         }
 
-        // Last contact date
-        if (contact.getLastContactDate() == null || contact.getLastContactDate().getTime() > contact.getReportDateTime().getTime()) {
-            binding.contactLastContactDate.setError(resources.getString(R.string.validation_contact_last_date));
-            success = false;
-        }
-
         return success;
-    }
-
-    public static void clearErrorsForContactData(ContactDataFragmentLayoutBinding binding) {
-        for (PropertyField field : getContactDataFields(binding)) {
-            field.clearError();
-        }
     }
 
     public static void clearErrorsForNewContact(ContactNewFragmentLayoutBinding binding) {
         for (PropertyField field : getNewContactFields(binding)) {
             field.clearError();
-        }
-    }
-
-    public static void setRequiredHintsForContactData(ContactDataFragmentLayoutBinding binding) {
-        for (PropertyField field : getContactDataFields(binding)) {
-            field.setRequiredHint(true);
         }
     }
 
@@ -105,14 +50,8 @@ public final class ContactValidator {
         }
     }
 
-    private static final List<PropertyField<?>> getContactDataFields(ContactDataFragmentLayoutBinding binding) {
-        return Arrays.asList(binding.contactRelationToCase, binding.contactContactProximity,
-                binding.contactLastContactDate);
-    }
-
-    private static final List<PropertyField<?>> getNewContactFields(ContactNewFragmentLayoutBinding binding) {
-        return Arrays.asList(binding.contactRelationToCase, binding.contactContactProximity, binding.contactLastContactDate,
-                binding.contactPersonFirstName, binding.contactPersonLastName);
+    private static final List<TextField> getNewContactFields(ContactNewFragmentLayoutBinding binding) {
+        return Arrays.asList(binding.contactPersonFirstName, binding.contactPersonLastName);
     }
 
 }

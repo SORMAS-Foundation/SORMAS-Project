@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import org.joda.time.LocalDate;
 
+import com.vaadin.data.Validator;
 import com.vaadin.data.validator.DateRangeValidator;
 import com.vaadin.shared.ui.datefield.Resolution;
 import com.vaadin.ui.Button;
@@ -72,10 +73,11 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
     	addField(ContactDto.CONTACT_CLASSIFICATION, OptionGroup.class);
     	addField(ContactDto.UUID, TextField.class);
     	addField(ContactDto.REPORTING_USER, ComboBox.class);
-    	addField(ContactDto.LAST_CONTACT_DATE, DateField.class);
+    	DateField lastContactDate = addField(ContactDto.LAST_CONTACT_DATE, DateField.class);
     	addField(ContactDto.REPORT_DATE_TIME, DateField.class);
-    	addField(ContactDto.CONTACT_PROXIMITY, OptionGroup.class).removeStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
-    	addField(ContactDto.RELATION_TO_CASE, ComboBox.class);
+    	OptionGroup contactProximity = addField(ContactDto.CONTACT_PROXIMITY, OptionGroup.class);
+    	contactProximity.removeStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
+    	ComboBox relationToCase = addField(ContactDto.RELATION_TO_CASE, ComboBox.class);
     	addField(ContactDto.DESCRIPTION, TextArea.class).setRows(3);
 
     	addField(ContactDto.FOLLOW_UP_STATUS, ComboBox.class);
@@ -87,8 +89,6 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
     	
     	setReadOnly(true, ContactDto.UUID, ContactDto.REPORTING_USER, ContactDto.REPORT_DATE_TIME, 
     			ContactDto.FOLLOW_UP_STATUS, ContactDto.FOLLOW_UP_UNTIL);
-    		
-    	setRequired(true, ContactDto.LAST_CONTACT_DATE, ContactDto.CONTACT_PROXIMITY, ContactDto.RELATION_TO_CASE);
     	
     	FieldHelper.setRequiredWhen(getFieldGroup(), ContactDto.FOLLOW_UP_STATUS, 
     			Arrays.asList(ContactDto.FOLLOW_UP_COMMENT), 
@@ -128,7 +128,8 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
     	    	}
         	}
     	});
-		
+    	
+    	FieldHelper.makeFieldSoftRequired(lastContactDate, contactProximity, relationToCase);
 	}
     
     private void updateFollowUpStatusComponents() {
@@ -193,7 +194,11 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 
 	protected void updateLastContactDateValidator() {
     	Field<?> dateField = getField(ContactDto.LAST_CONTACT_DATE);
-    	dateField.removeAllValidators();
+    	for (Validator validator : dateField.getValidators()) {
+    		if (validator instanceof DateRangeValidator) {
+    			dateField.removeValidator(validator);
+    		}
+    	}
     	if (getValue() != null) {
 	    	dateField.addValidator(new DateRangeValidator("Date of last contact has to be before date of report",
 	    			null, new LocalDate(getValue().getReportDateTime()).plusDays(1).toDate(), Resolution.SECOND));
