@@ -54,7 +54,8 @@ public class PreviousHospitalizationForm extends AbstractFormDialogFragment<Prev
         final List emptyList = new ArrayList<>();
         final List districtsByRegion = DataUtils.toItems(prevHosp.getRegion() != null ? DatabaseHelper.getDistrictDao().getByRegion(prevHosp.getRegion()) : DataUtils.toItems(emptyList), true);
         final List communitiesByDistrict = DataUtils.toItems(prevHosp.getDistrict() != null ? DatabaseHelper.getCommunityDao().getByDistrict(prevHosp.getDistrict()) : DataUtils.toItems(emptyList), true);
-        final List facilitiesByCommunity = DataUtils.toItems(prevHosp.getCommunity() != null ? DatabaseHelper.getFacilityDao().getHealthFacilitiesByCommunity(prevHosp.getCommunity(), true) : DataUtils.toItems(emptyList), true);
+        final List facilities = DataUtils.toItems(prevHosp.getCommunity() != null ? DatabaseHelper.getFacilityDao().getHealthFacilitiesByCommunity(prevHosp.getCommunity(), true) :
+                prevHosp.getDistrict() != null ? DatabaseHelper.getFacilityDao().getHealthFacilitiesByDistrict(prevHosp.getDistrict(), true) : DataUtils.toItems(emptyList), true);
 
         FieldHelper.initRegionSpinnerField(binding.prevHospRegion, new AdapterView.OnItemSelectedListener() {
             @Override
@@ -64,6 +65,8 @@ public class PreviousHospitalizationForm extends AbstractFormDialogFragment<Prev
                     List<District> districtList = emptyList;
                     if(selectedValue != null) {
                         districtList = DatabaseHelper.getDistrictDao().getByRegion((Region)selectedValue);
+                    } else {
+                        binding.prevHospDistrict.setValue(null);
                     }
                     binding.prevHospDistrict.setAdapterAndValue(binding.prevHospDistrict.getValue(), DataUtils.toItems(districtList));
                 }
@@ -79,10 +82,15 @@ public class PreviousHospitalizationForm extends AbstractFormDialogFragment<Prev
                 Object selectedValue = binding.prevHospDistrict.getValue();
                 if(binding.prevHospCommunity != null) {
                     List<Community> communityList = emptyList;
+                    List<Facility> facilityList = emptyList;
                     if(selectedValue != null) {
                         communityList = DatabaseHelper.getCommunityDao().getByDistrict((District)selectedValue);
+                        facilityList = DatabaseHelper.getFacilityDao().getHealthFacilitiesByDistrict((District) selectedValue, true);
+                    } else {
+                        binding.prevHospCommunity.setValue(null);
                     }
                     binding.prevHospCommunity.setAdapterAndValue(binding.prevHospCommunity.getValue(), DataUtils.toItems(communityList));
+                    binding.prevHospHealthFacility.setAdapterAndValue(binding.prevHospHealthFacility.getValue(), DataUtils.toItems(facilityList));
                 }
             }
             @Override
@@ -93,13 +101,16 @@ public class PreviousHospitalizationForm extends AbstractFormDialogFragment<Prev
         FieldHelper.initSpinnerField(binding.prevHospCommunity, communitiesByDistrict, new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
                 SpinnerField spinnerField = binding.prevHospHealthFacility;
                 Object selectedValue = binding.prevHospCommunity.getValue();
                 if (spinnerField != null) {
                     List<Facility> facilityList = emptyList;
                     if (selectedValue != null) {
                         facilityList = DatabaseHelper.getFacilityDao().getHealthFacilitiesByCommunity((Community) selectedValue, true);
+                    } else if (binding.prevHospDistrict.getValue() != null) {
+                        facilityList = DatabaseHelper.getFacilityDao().getHealthFacilitiesByDistrict((District) binding.prevHospDistrict.getValue(), true);
+                    } else {
+                        spinnerField.setValue(null);
                     }
                     spinnerField.setAdapterAndValue(binding.prevHospHealthFacility.getValue(), DataUtils.toItems(facilityList));
                 }
@@ -108,7 +119,7 @@ public class PreviousHospitalizationForm extends AbstractFormDialogFragment<Prev
             public void onNothingSelected(AdapterView<?> parent) {
             }
         });
-        FieldHelper.initSpinnerField(binding.prevHospHealthFacility, facilitiesByCommunity);
+        FieldHelper.initSpinnerField(binding.prevHospHealthFacility, facilities);
 
         PreviousHospitalizationValidator.setRequiredHintsForPreviousHospitalization(binding);
     }

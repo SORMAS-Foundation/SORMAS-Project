@@ -66,7 +66,8 @@ public class CaseNewForm extends FormTab {
         final List emptyList = new ArrayList<>();
         final List districtsByRegion = DataUtils.toItems(caze.getRegion() != null ? DatabaseHelper.getDistrictDao().getByRegion(caze.getRegion()) : DataUtils.toItems(emptyList), true);
         final List communitiesByDistrict = DataUtils.toItems(caze.getDistrict() != null ? DatabaseHelper.getCommunityDao().getByDistrict(caze.getDistrict()) : DataUtils.toItems(emptyList), true);
-        final List facilitiesByCommunity = DataUtils.toItems(caze.getCommunity() != null ? DatabaseHelper.getFacilityDao().getHealthFacilitiesByCommunity(caze.getCommunity(), true) : DataUtils.toItems(emptyList), true);
+        final List facilities = DataUtils.toItems(caze.getCommunity() != null ? DatabaseHelper.getFacilityDao().getHealthFacilitiesByCommunity(caze.getCommunity(), true) :
+                caze.getDistrict() != null ? DatabaseHelper.getFacilityDao().getHealthFacilitiesByDistrict(caze.getDistrict(), true) : DataUtils.toItems(emptyList), true);
 
         FieldHelper.initRegionSpinnerField(binding.caseDataRegion, new AdapterView.OnItemSelectedListener() {
             @Override
@@ -92,13 +93,17 @@ public class CaseNewForm extends FormTab {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 SpinnerField spinnerField = binding.caseDataCommunity;
+                SpinnerField facilitySpinnerField = binding.caseDataHealthFacility;
                 Object selectedValue = binding.caseDataDistrict.getValue();
                 if(spinnerField != null) {
                     List<Community> communityList = emptyList;
+                    List<Facility> facilityList = emptyList;
                     if(selectedValue != null) {
                         communityList = DatabaseHelper.getCommunityDao().getByDistrict((District)selectedValue);
+                        facilityList = DatabaseHelper.getFacilityDao().getHealthFacilitiesByDistrict((District) selectedValue, true);
                     }
                     spinnerField.setAdapterAndValue(binding.caseDataCommunity.getValue(), DataUtils.toItems(communityList));
+                    facilitySpinnerField.setAdapterAndValue(binding.caseDataHealthFacility.getValue(), DataUtils.toItems(facilityList));
                 }
             }
 
@@ -117,8 +122,11 @@ public class CaseNewForm extends FormTab {
                     List<Facility> facilityList = emptyList;
                     if(selectedValue != null) {
                         facilityList = DatabaseHelper.getFacilityDao().getHealthFacilitiesByCommunity((Community)selectedValue, true);
+                    } else {
+                        facilityList = DatabaseHelper.getFacilityDao().getHealthFacilitiesByDistrict((District) binding.caseDataDistrict.getValue(), true);
                     }
                     spinnerField.setAdapterAndValue(binding.caseDataHealthFacility.getValue(), DataUtils.toItems(facilityList));
+                    spinnerField.setValue(null);
                 }
             }
 
@@ -128,7 +136,7 @@ public class CaseNewForm extends FormTab {
             }
         });
 
-        FieldHelper.initSpinnerField(binding.caseDataHealthFacility, facilitiesByCommunity);
+        FieldHelper.initSpinnerField(binding.caseDataHealthFacility, facilities);
 
         if (disease != null) {
             binding.caseDataFirstName.setEnabled(false);

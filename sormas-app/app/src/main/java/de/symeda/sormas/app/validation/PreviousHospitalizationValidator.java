@@ -28,12 +28,6 @@ public final class PreviousHospitalizationValidator {
             success = false;
         }
 
-        // Community/Ward
-        if (prevHosp.getCommunity() == null) {
-            binding.prevHospCommunity.setError(resources.getString(R.string.validation_community));
-            success = false;
-        }
-
         // District/LGA
         if (prevHosp.getDistrict() == null) {
             binding.prevHospDistrict.setError(resources.getString(R.string.validation_district));
@@ -74,7 +68,7 @@ public final class PreviousHospitalizationValidator {
     }
 
     private static final List<PropertyField<?>> getPreviousHospitalizationFields(PreviousHospitalizationEditFragmentLayoutBinding binding) {
-        return Arrays.asList(binding.prevHospHealthFacility, binding.prevHospCommunity, binding.prevHospDistrict,
+        return Arrays.asList(binding.prevHospHealthFacility, binding.prevHospDistrict,
                 binding.prevHospRegion, binding.prevHospDischargeDate, binding.prevHospAdmissionDate);
     }
 

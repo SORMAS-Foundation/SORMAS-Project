@@ -62,7 +62,8 @@ public class FacilityChangeDialogBuilder extends AlertDialog.Builder {
         final List emptyList = new ArrayList<>();
         final List districtsByRegion = DataUtils.toItems(caze.getRegion() != null ? DatabaseHelper.getDistrictDao().getByRegion(caze.getRegion()) : DataUtils.toItems(emptyList), true);
         final List communitiesByDistrict = DataUtils.toItems(caze.getDistrict() != null ? DatabaseHelper.getCommunityDao().getByDistrict(caze.getDistrict()) : DataUtils.toItems(emptyList), true);
-        final List facilitiesByCommunity = DataUtils.toItems(caze.getCommunity() != null ? DatabaseHelper.getFacilityDao().getHealthFacilitiesByCommunity(caze.getCommunity(), true) : DataUtils.toItems(emptyList), true);
+        final List facilities = DataUtils.toItems(caze.getCommunity() != null ? DatabaseHelper.getFacilityDao().getHealthFacilitiesByCommunity(caze.getCommunity(), true) :
+                caze.getDistrict() != null ? DatabaseHelper.getFacilityDao().getHealthFacilitiesByDistrict(caze.getDistrict(), true) : DataUtils.toItems(emptyList), true);
 
         FieldHelper.initRegionSpinnerField(binding.caseDataRegion, new AdapterView.OnItemSelectedListener() {
             @Override
@@ -73,6 +74,8 @@ public class FacilityChangeDialogBuilder extends AlertDialog.Builder {
                     List<District> districtList = emptyList;
                     if(selectedValue != null) {
                         districtList = DatabaseHelper.getDistrictDao().getByRegion((Region)selectedValue);
+                    } else {
+                        districtSpinner.setValue(null);
                     }
                     districtSpinner.setAdapterAndValue(districtSpinner.getValue(), DataUtils.toItems(districtList));
                 }
@@ -88,13 +91,19 @@ public class FacilityChangeDialogBuilder extends AlertDialog.Builder {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 SpinnerField spinnerField = binding.caseDataCommunity;
+                SpinnerField facilitySpinnerField = binding.caseDataHealthFacility;
                 Object selectedValue = binding.caseDataDistrict.getValue();
                 if(spinnerField != null) {
                     List<Community> communityList = emptyList;
+                    List<Facility> facilityList = emptyList;
                     if(selectedValue != null) {
                         communityList = DatabaseHelper.getCommunityDao().getByDistrict((District)selectedValue);
+                        facilityList = DatabaseHelper.getFacilityDao().getHealthFacilitiesByDistrict((District) selectedValue, true);
+                    } else {
+                        spinnerField.setValue(null);
                     }
                     spinnerField.setAdapterAndValue(spinnerField.getValue(), DataUtils.toItems(communityList));
+                    facilitySpinnerField.setAdapterAndValue(binding.caseDataHealthFacility.getValue(), DataUtils.toItems(facilityList));
                 }
             }
 
@@ -113,6 +122,10 @@ public class FacilityChangeDialogBuilder extends AlertDialog.Builder {
                     List<Facility> facilityList = emptyList;
                     if(selectedValue != null) {
                         facilityList = DatabaseHelper.getFacilityDao().getHealthFacilitiesByCommunity((Community)selectedValue, true);
+                    } else if (binding.caseDataDistrict.getValue() != null) {
+                        facilityList = DatabaseHelper.getFacilityDao().getHealthFacilitiesByDistrict((District) binding.caseDataDistrict.getValue(), true);
+                    } else {
+                        spinnerField.setValue(null);
                     }
                     spinnerField.setAdapterAndValue(spinnerField.getValue(), DataUtils.toItems(facilityList));
                 }
@@ -124,7 +137,7 @@ public class FacilityChangeDialogBuilder extends AlertDialog.Builder {
             }
         });
 
-        FieldHelper.initSpinnerField(binding.caseDataHealthFacility, facilitiesByCommunity);
+        FieldHelper.initSpinnerField(binding.caseDataHealthFacility, facilities);
 
         binding.caseDataHealthFacility.addValueChangedListener(new PropertyField.ValueChangeListener() {
             @Override

@@ -10,6 +10,7 @@ import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.region.Community;
+import de.symeda.sormas.app.backend.region.District;
 
 /**
  * Created by Martin Wahnschaffe on 22.07.2016.
@@ -28,6 +29,22 @@ public class FacilityDao extends AbstractAdoDao<Facility> {
     @Override
     public String getTableName() {
         return Facility.TABLE_NAME;
+    }
+
+    public List<Facility> getHealthFacilitiesByDistrict(District district, boolean includeStaticFacilities) {
+        List<Facility> facilities = queryForEq(Facility.DISTRICT + "_id", district, Facility.NAME, true);
+        for (Facility facility : facilities) {
+            if (facility.getType() == FacilityType.LABORATORY) {
+                facilities.remove(facility);
+            }
+        }
+
+        if (includeStaticFacilities) {
+            facilities.add(queryUuid(FacilityDto.OTHER_FACILITY_UUID));
+            facilities.add(queryUuid(FacilityDto.NONE_FACILITY_UUID));
+        }
+
+        return facilities;
     }
 
     public List<Facility> getHealthFacilitiesByCommunity(Community community, boolean includeStaticFacilities) {

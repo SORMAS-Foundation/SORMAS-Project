@@ -42,7 +42,7 @@ public class FieldHelper {
 
     public static SpinnerField initRegionSpinnerField(SpinnerField spinnerField, final AdapterView.OnItemSelectedListener ...moreListeners) {
         RegionDao regionDao = DatabaseHelper.getRegionDao();
-        List<Item> items = DataUtils.toItems(regionDao.queryForAll(Region.NAME, true));
+        List<Item> items = DataUtils.toItems(regionDao.queryForAll(Region.NAME, true), false);
         spinnerField.initialize(items, moreListeners);
         return spinnerField;
     }
