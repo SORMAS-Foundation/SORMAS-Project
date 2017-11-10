@@ -202,16 +202,16 @@ public class ContactFacadeEjb implements ContactFacade {
 	public List<MapContact> getContactsForMap(DistrictReferenceDto districtRef, Disease disease, Date fromDate, Date toDate, String userUuid, List<MapCase> mapCases) {
 		User user = userService.getByUuid(userUuid);
 		District district = districtService.getByReferenceDto(districtRef);
-		List<Case> cases = new ArrayList<>();
+		List<String> caseUuids = new ArrayList<>();
 		for (MapCase mapCase : mapCases) {
-			cases.add(caseService.getByUuid(mapCase.getUuid()));
+			caseUuids.add(mapCase.getUuid());
 		}
 
 		if (user == null) {
 			return Collections.emptyList();
 		}
 		
-		return contactService.getContactsForMap(district, disease, fromDate, toDate, user, cases);
+		return contactService.getContactsForMap(district, disease, fromDate, toDate, user, caseUuids);
 	}
 
 	public Contact fromDto(@NotNull ContactDto source) {

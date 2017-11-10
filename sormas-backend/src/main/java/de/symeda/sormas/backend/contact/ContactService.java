@@ -121,7 +121,7 @@ public class ContactService extends AbstractAdoService<Contact> {
 		return result;
 	}	
 	
-	public List<MapContact> getContactsForMap(District district, Disease disease, Date fromDate, Date toDate, User user, List<Case> cases) {
+	public List<MapContact> getContactsForMap(District district, Disease disease, Date fromDate, Date toDate, User user, List<String> caseUuids) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<MapContact> cq = cb.createQuery(MapContact.class);
 		Root<Contact> contact = cq.from(getElementClass());
@@ -133,15 +133,18 @@ public class ContactService extends AbstractAdoService<Contact> {
 		
 		Predicate filter = createUserFilter(cb, cq, contact, user);
 		
-		if (cases != null && !cases.isEmpty()) {
+		if (caseUuids != null && !caseUuids.isEmpty()) {
 			// Only return contacts whose cases are displayed
-			Path<Object> contactCase = contact.get(Contact.CAZE);
-			Predicate caseFilter = contactCase.in(cases);
+			Path<Object> contactCaseUuid = contact.get(Contact.CAZE).get(Case.UUID);
+			Predicate caseFilter = contactCaseUuid.in(caseUuids);
 			if (filter != null) {
 				filter = cb.and(filter, caseFilter);
 			} else {
 				filter = caseFilter;
 			}
+		} else {
+			// If no cases are shown, there should also be no contacts shown
+			return Collections.emptyList();
 		}
 		
 		if (district != null) {
