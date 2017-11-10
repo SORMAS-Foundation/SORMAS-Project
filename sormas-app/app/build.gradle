@@ -45,9 +45,8 @@ android {
 
 repositories {
     mavenLocal()
-    maven {
-        url "https://maven.repository.redhat.com/ga/"
-    }
+    google()
+    maven { url "https://maven.repository.redhat.com/ga/" }
 }
 
 configurations.all {
