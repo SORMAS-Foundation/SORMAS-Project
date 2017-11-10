@@ -53,7 +53,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		    						LayoutUtil.locCss(CssStyles.VSPACE_3, TO_CASE_BTN_LOC) +
 		    						LayoutUtil.fluidRowLocs(ContactDto.LAST_CONTACT_DATE, ContactDto.UUID) +
 		    						LayoutUtil.fluidRowLocs(ContactDto.REPORTING_USER, ContactDto.REPORT_DATE_TIME) +
-		    						LayoutUtil.fluidRow(ContactDto.CONTACT_PROXIMITY) +
+		    						LayoutUtil.fluidRowLocs(ContactDto.CONTACT_PROXIMITY, "") +
 		    						LayoutUtil.fluidRowLocs(ContactDto.RELATION_TO_CASE) +
 				    				LayoutUtil.fluidRowLocs(ContactDto.DESCRIPTION) +
 				    				LayoutUtil.h3(CssStyles.VSPACE_3, "Follow-up status") +
