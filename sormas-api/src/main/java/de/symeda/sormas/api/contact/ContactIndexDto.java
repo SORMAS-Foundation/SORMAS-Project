@@ -4,8 +4,10 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 
 public class ContactIndexDto extends ContactReferenceDto {
@@ -18,7 +20,9 @@ public class ContactIndexDto extends ContactReferenceDto {
 	public static final String CAZE = "caze";
 	public static final String CAZE_DISEASE = "cazeDisease";
 	public static final String CAZE_PERSON = "cazePerson";
+	public static final String CAZE_REGION = "cazeRegion";
 	public static final String CAZE_DISTRICT = "cazeDistrict";
+	public static final String CAZE_HEALTH_FACILITY = "cazeHealthFacility";
 	public static final String LAST_CONTACT_DATE = "lastContactDate";
 	public static final String CONTACT_PROXIMITY = "contactProximity";
 	public static final String CONTACT_CLASSIFICATION = "contactClassification";
@@ -32,7 +36,9 @@ public class ContactIndexDto extends ContactReferenceDto {
 	private CaseReferenceDto caze;
 	private Disease cazeDisease;
 	private PersonReferenceDto cazePerson;
+	private RegionReferenceDto cazeRegion;
 	private DistrictReferenceDto cazeDistrict;
+	private FacilityReferenceDto cazeHealthFacility;
 	private Date lastContactDate;
 	private ContactProximity contactProximity;
 	private ContactClassification contactClassification;
@@ -119,6 +125,18 @@ public class ContactIndexDto extends ContactReferenceDto {
 	}
 	public void setNumberOfMissedVisits(int numberOfMissedVisits) {
 		this.numberOfMissedVisits = numberOfMissedVisits;
+	}
+	public RegionReferenceDto getCazeRegion() {
+		return cazeRegion;
+	}
+	public void setCazeRegion(RegionReferenceDto cazeRegion) {
+		this.cazeRegion = cazeRegion;
+	}
+	public FacilityReferenceDto getCazeHealthFacility() {
+		return cazeHealthFacility;
+	}
+	public void setCazeHealthFacility(FacilityReferenceDto cazeHealthFacility) {
+		this.cazeHealthFacility = cazeHealthFacility;
 	}
 	
 }

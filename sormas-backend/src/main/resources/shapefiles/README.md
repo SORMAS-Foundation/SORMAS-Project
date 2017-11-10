@@ -1,0 +1,1 @@
+See http://mapshaper.org/ for compression

@@ -248,6 +248,8 @@ public class PersonEditForm extends FormTab {
                     List<District> districtList = emptyList;
                     if(selectedValue != null) {
                         districtList = DatabaseHelper.getDistrictDao().getByRegion((Region)selectedValue);
+                    } else {
+                        binding.personFacilityDistrict.setValue(null);
                     }
                     binding.personFacilityDistrict.setAdapterAndValue(binding.personFacilityDistrict.getValue(), DataUtils.toItems(districtList));
                 }
@@ -269,10 +271,15 @@ public class PersonEditForm extends FormTab {
                 Object selectedValue = binding.personFacilityDistrict.getValue();
                 if(binding.personFacilityCommunity != null) {
                     List<Community> communityList = emptyList;
+                    List<Facility> facilityList = emptyList;
                     if(selectedValue != null) {
                         communityList = DatabaseHelper.getCommunityDao().getByDistrict((District)selectedValue);
+                        facilityList = DatabaseHelper.getFacilityDao().getHealthFacilitiesByDistrict((District) selectedValue, false);
+                    } else {
+                        binding.personFacilityCommunity.setValue(null);
                     }
                     binding.personFacilityCommunity.setAdapterAndValue(binding.personFacilityCommunity.getValue(), DataUtils.toItems(communityList));
+                    binding.personOccupationFacility.setAdapterAndValue(binding.personOccupationFacility.getValue(), DataUtils.toItems(facilityList));
                 }
             }
             @Override
@@ -289,13 +296,16 @@ public class PersonEditForm extends FormTab {
         FieldHelper.initSpinnerField(binding.personFacilityCommunity, communityList, new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
                 SpinnerField spinnerField = binding.personOccupationFacility;
                 Object selectedValue = binding.personFacilityCommunity.getValue();
                 if (spinnerField != null) {
                     List<Facility> facilityList = emptyList;
                     if (selectedValue != null) {
                         facilityList = DatabaseHelper.getFacilityDao().getHealthFacilitiesByCommunity((Community) selectedValue, false);
+                    } else if (binding.personFacilityDistrict.getValue() != null) {
+                        facilityList = DatabaseHelper.getFacilityDao().getHealthFacilitiesByDistrict((District) binding.personFacilityDistrict.getValue(), false);
+                    } else {
+                        spinnerField.setValue(null);
                     }
                     spinnerField.setAdapterAndValue(binding.personOccupationFacility.getValue(), DataUtils.toItems(facilityList));
                 }
@@ -400,7 +410,7 @@ public class PersonEditForm extends FormTab {
 
     @Override
     public AbstractDomainObject getData() {
-        return binding.getPerson();
+        return binding == null ? null : binding.getPerson();
     }
 
 }

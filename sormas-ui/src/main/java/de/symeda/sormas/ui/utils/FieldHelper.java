@@ -3,7 +3,9 @@ package de.symeda.sormas.ui.utils;
 import java.util.Arrays;
 import java.util.List;
 
+import com.vaadin.data.Validator;
 import com.vaadin.data.fieldgroup.FieldGroup;
+import com.vaadin.data.validator.NullValidator;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Field;
@@ -123,6 +125,12 @@ public final class FieldHelper {
 		setRequiredWhen(fieldGroup, fieldGroup.getField(sourcePropertyId), targetPropertyIds, sourceValues);
 	}
 	
+	public static void setSoftRequiredWhen(FieldGroup fieldGroup, Object sourcePropertyId,
+			List<String> targetPropertyIds, final List<Object> sourceValues) {
+		
+		setRequiredWhen(fieldGroup, fieldGroup.getField(sourcePropertyId), targetPropertyIds, sourceValues);
+	}
+	
 	@SuppressWarnings("rawtypes")
 	public static void setRequiredWhen(FieldGroup fieldGroup, Field sourceField,
 			List<String> targetPropertyIds, final List<Object> sourceValues) {
@@ -145,6 +153,40 @@ public final class FieldHelper {
 			for(Object targetPropertyId : targetPropertyIds) {
 				Field targetField = fieldGroup.getField(targetPropertyId);
 				targetField.setRequired(required);
+			}
+		});
+	}
+	
+	@SuppressWarnings("rawtypes")
+	public static void setSoftRequiredWhen(FieldGroup fieldGroup, Field sourceField,
+			List<String> targetPropertyIds, final List<Object> sourceValues) {
+		
+		if(sourceField instanceof AbstractField<?>) {
+			((AbstractField) sourceField).setImmediate(true);
+		}
+		
+		// initialize
+		{
+			boolean required = sourceValues.contains(sourceField.getValue());
+			for(Object targetPropertyId : targetPropertyIds) {
+				Field targetField = fieldGroup.getField(targetPropertyId);
+				if (required) {
+					makeFieldSoftRequired(targetField);
+				} else {
+					removeSoftRequirement(targetField);
+				}
+			}
+		}
+		
+		sourceField.addValueChangeListener(event -> {
+			boolean required = sourceValues.contains(event.getProperty().getValue());
+			for(Object targetPropertyId : targetPropertyIds) {
+				Field targetField = fieldGroup.getField(targetPropertyId);
+				if (required) {
+					makeFieldSoftRequired(targetField);
+				} else {
+					removeSoftRequirement(targetField);
+				}
 			}
 		});
 	}
@@ -179,6 +221,44 @@ public final class FieldHelper {
 				Field targetField = fieldGroup.getField(targetPropertyId);
 				if(Diseases.DiseasesConfiguration.isDefined(SymptomsDto.class, (String) targetPropertyId, disease)) {
 					targetField.setRequired(required);
+				}
+			}
+		});
+	}
+	
+	@SuppressWarnings("rawtypes")
+	public static void setSoftRequiredWhen(FieldGroup fieldGroup, Field sourceField, 
+			List<String> targetPropertyIds, final List<Object> sourceValues, Disease disease) {
+		
+		if(sourceField instanceof AbstractField<?>) {
+			((AbstractField) sourceField).setImmediate(true);
+		}
+		
+		// initialize
+		{
+			boolean required = sourceValues.contains(sourceField.getValue());
+			for(Object targetPropertyId : targetPropertyIds) {
+				Field targetField = fieldGroup.getField(targetPropertyId);
+				if(Diseases.DiseasesConfiguration.isDefined(SymptomsDto.class, (String) targetPropertyId, disease)) {
+					if (required) {
+						makeFieldSoftRequired(targetField);
+					} else {
+						removeSoftRequirement(targetField);
+					}
+				}
+			}
+		}
+		
+		sourceField.addValueChangeListener(event -> {
+			boolean required = sourceValues.contains(event.getProperty().getValue());
+			for(Object targetPropertyId : targetPropertyIds) {
+				Field targetField = fieldGroup.getField(targetPropertyId);
+				if(Diseases.DiseasesConfiguration.isDefined(SymptomsDto.class, (String) targetPropertyId, disease)) {
+					if (required) {
+						makeFieldSoftRequired(targetField);
+					} else {
+						removeSoftRequirement(targetField);
+					}
 				}
 			}
 		});
@@ -251,5 +331,30 @@ public final class FieldHelper {
 		select.setReadOnly(readOnly);
 	}
 	
+	public static void makeFieldSoftRequired(Field<?> ...fields) {
+		for (Field<?> field : fields) {
+			boolean alreadySoftRequired = false;
+			for (Validator validator : field.getValidators()) {
+				if (validator instanceof NullValidator) {
+					alreadySoftRequired = true;
+					break;
+				}
+			}
+			if (!alreadySoftRequired) {
+				field.addValidator(new NullValidator("Please fill in this field if possible. You can still save without doing so.", false));
+				field.setInvalidCommitted(true);
+			}
+		}
+	}
+	
+	public static void removeSoftRequirement(Field<?> ...fields) {
+		for (Field<?> field : fields) {
+			for (Validator validator : field.getValidators()) {
+				if (validator instanceof NullValidator) {
+					field.removeValidator(validator);
+				}
+			}
+		}
+	}
 
 }

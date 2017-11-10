@@ -16,6 +16,8 @@ public interface EventFacade {
 	
 	List<EventDto> getAllEventsBetween(Date fromDate, Date toDate, DistrictReferenceDto districtRef, Disease disease, String userUuid);
 	
+	List<DashboardEvent> getNewEventsForDashboard(DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid);
+	
 	EventDto getEventByUuid(String uuid);
 	
 	EventDto saveEvent(EventDto dto);

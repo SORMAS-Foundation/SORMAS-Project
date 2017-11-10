@@ -1,2 +1,5 @@
 district;community;city;facility;type;ownership;address;longitude;latitude
-Toamasina I;Anjoma;Toamasina;CSB Depot Analakininina;;;;49.39497438;18.17090139
+Toamasina I;Anjoma;Toamasina;CSB Depot Analakininina;;;;49.39497438;-18.17090139
+Mahanoro;Mahanoro;Mahanoro;Medical Mahanoro;MOCKUP;;;48.803957;-19.892837
+Vatomandry;Vatomandry;Vatomandry;Medical Vatomandry;MOCKUP;;;48.978018;-19.333461
+Marolambo;Marolambo;Marolambo;Medical Marolambo;MOCKUP;;;48.130742;-20.049551

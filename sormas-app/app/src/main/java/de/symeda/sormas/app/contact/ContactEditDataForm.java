@@ -78,7 +78,10 @@ public class ContactEditDataForm extends FormTab {
         }
 
         setVisibilityByDisease(ContactDto.class, contact.getCaze().getDisease(), (ViewGroup)binding.getRoot());
-        ContactValidator.setRequiredHintsForContactData(binding);
+
+        binding.contactLastContactDate.makeFieldSoftRequired();
+        binding.contactContactProximity.makeFieldSoftRequired();
+        binding.contactRelationToCase.makeFieldSoftRequired();
 
         return binding.getRoot();
     }
@@ -119,7 +122,7 @@ public class ContactEditDataForm extends FormTab {
 
     @Override
     public AbstractDomainObject getData() {
-        return binding.getContact();
+        return binding == null ? null : binding.getContact();
     }
 
     public ContactDataFragmentLayoutBinding getBinding() {

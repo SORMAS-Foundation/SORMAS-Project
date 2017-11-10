@@ -35,16 +35,19 @@ public class PreviousHospitalizationsListArrayAdapter extends ArrayAdapter<Previ
 
         PreviousHospitalization previousHospitalization = (PreviousHospitalization)getItem(position);
 
-        StringBuilder sb = new StringBuilder();
-        if(previousHospitalization.getAdmissionDate()!=null) {
-            sb.append(DateHelper.formatShortDate(previousHospitalization.getAdmissionDate()));
+        String hospitalizationPeriod = "";
+        if (previousHospitalization.getAdmissionDate() == null && previousHospitalization.getDischargeDate() == null) {
+            hospitalizationPeriod = context.getResources().getString(R.string.caption_unknown);
+        } else {
+            StringBuilder sb = new StringBuilder();
+            sb.append(previousHospitalization.getAdmissionDate() != null ? DateHelper.formatShortDate(previousHospitalization.getAdmissionDate()) : "?");
             sb.append(" - ");
+            sb.append(previousHospitalization.getDischargeDate() != null ? DateHelper.formatShortDate(previousHospitalization.getDischargeDate()) : "?");
+            hospitalizationPeriod = sb.toString();
         }
-        if(previousHospitalization.getDischargeDate()!=null) {
-            sb.append(DateHelper.formatShortDate(previousHospitalization.getDischargeDate()));
-        }
+
         TextView period = (TextView) convertView.findViewById(R.id.previousHospitalization_period_li);
-        period.setText(sb.toString());
+        period.setText(hospitalizationPeriod);
 
         TextView isolated = (TextView) convertView.findViewById(R.id.previousHospitalization_isolated_li);
         isolated.setText(YesNoUnknown.YES.equals(previousHospitalization.getIsolated())?context.getResources().getString(R.string.isolated):null);

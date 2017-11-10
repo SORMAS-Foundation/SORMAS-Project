@@ -70,11 +70,12 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
 	    		@Override
 	    		public void validate(Object value) throws InvalidValueException {
 	    			Date visitDateTime = (Date) getFieldGroup().getField(VisitDto.VISIT_DATE_TIME).getValue();
-	    			if (visitDateTime.before(contact.getLastContactDate()) && DateHelper.getDaysBetween(visitDateTime, contact.getLastContactDate()) > 10) {
-	    				throw new InvalidValueException("The visit cannot be more than 10 days before the last contact date.");
+	    			Date contactReferenceDate = contact.getLastContactDate() != null ? contact.getLastContactDate() : contact.getReportDateTime();
+	    			if (visitDateTime.before(contactReferenceDate) && DateHelper.getDaysBetween(visitDateTime, contactReferenceDate) > VisitDto.ALLOWED_CONTACT_DATE_OFFSET) {
+	    				throw new InvalidValueException("The visit cannot be more than " + VisitDto.ALLOWED_CONTACT_DATE_OFFSET + " days before the " + (contact.getLastContactDate() != null ? "last contact date." : "contact report date."));
 	    			}
-	    			if (contact.getFollowUpUntil() != null && visitDateTime.after(contact.getFollowUpUntil()) && DateHelper.getDaysBetween(contact.getFollowUpUntil(), visitDateTime) > 10) {
-	    				throw new InvalidValueException("The visit cannot be more than 10 days after the end of the follow-up duration.");
+	    			if (contact.getFollowUpUntil() != null && visitDateTime.after(contact.getFollowUpUntil()) && DateHelper.getDaysBetween(contact.getFollowUpUntil(), visitDateTime) > VisitDto.ALLOWED_CONTACT_DATE_OFFSET) {
+	    				throw new InvalidValueException("The visit cannot be more than " + VisitDto.ALLOWED_CONTACT_DATE_OFFSET + " days after the end of the follow-up duration.");
 	    			}
 	    		}
 	    	});

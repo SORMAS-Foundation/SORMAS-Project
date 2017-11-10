@@ -49,12 +49,6 @@ public final class CaseValidator {
             }
         }
 
-        // Community/Ward
-        if (caze.getCommunity() == null) {
-            binding.caseDataCommunity.setError(resources.getString(R.string.validation_community));
-            success = false;
-        }
-
         // District/LGA
         if (caze.getDistrict() == null) {
             binding.caseDataDistrict.setError(resources.getString(R.string.validation_district));
@@ -92,12 +86,6 @@ public final class CaseValidator {
                     success = false;
                 }
             }
-        }
-
-        // Community/Ward
-        if (caze.getCommunity() == null) {
-            binding.caseDataCommunity.setError(resources.getString(R.string.validation_community));
-            success = false;
         }
 
         // District/LGA
@@ -164,13 +152,13 @@ public final class CaseValidator {
     }
 
     private static final List<PropertyField<?>> getMoveCaseDataFields(MoveCaseFragmentLayoutBinding binding) {
-        return Arrays.asList(binding.caseDataRegion, binding.caseDataDistrict, binding.caseDataCommunity,
+        return Arrays.asList(binding.caseDataRegion, binding.caseDataDistrict,
                 binding.caseDataHealthFacility, binding.caseDataFacilityDetails);
     }
 
     private static final List<PropertyField<?>> getNewCaseFields(CaseNewFragmentLayoutBinding binding) {
         return Arrays.asList(binding.caseDataFirstName, binding.caseDataLastName, binding.caseDataDisease,
-                binding.caseDataDiseaseDetails, binding.caseDataRegion, binding.caseDataDistrict, binding.caseDataCommunity,
+                binding.caseDataDiseaseDetails, binding.caseDataRegion, binding.caseDataDistrict,
                 binding.caseDataHealthFacility, binding.caseDataFacilityDetails);
     }
 

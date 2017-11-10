@@ -13066,6 +13066,10 @@ div.v-layout.v-horizontal.v-widget {
 	background-color: inherit;
 }
 
+.sormas .v-grid .v-grid-row.v-grid-row-selected > td, .sormas .v-grid .v-grid-row.v-grid-row-selected > th {
+	background-color: #CDD8EC;
+}
+
 .sormas .v-grid .v-grid-row .v-grid-cell {
 	padding: 3px 6px;
 }
@@ -13239,6 +13243,20 @@ div.v-layout.v-horizontal.v-widget {
 	text-align: right;
 }
 
+.sormas .v-select-optiongroup-horizontal.v-select-optiongroup-horizontal-subtle {
+	margin-top: 10px;
+}
+
+.sormas .v-select-optiongroup-horizontal.v-select-optiongroup-horizontal-subtle .v-radiobutton {
+	border: 2px solid #005A9C;
+	font-size: 12px;
+}
+
+:root .sormas .v-select-optiongroup-horizontal.v-select-optiongroup-horizontal-subtle .v-radiobutton > input:checked ~ label {
+	background: #005A9C;
+	color: #FFF;
+}
+
 .sormas .v-caption-caption-inline {
 	float: left;
 	padding-top: 7px;
@@ -13390,6 +13408,63 @@ div.v-layout.v-horizontal.v-widget {
 	margin: 0;
 }
 
+.sormas .v-label-border-critical {
+	border-top: 4px solid #FF0000;
+	border-radius: 3px;
+	padding-top: 6px;
+}
+
+.sormas .v-label-border-important {
+	border-top: 4px solid #FF8C00;
+	border-radius: 3px;
+	padding-top: 6px;
+}
+
+.sormas .v-label-border-relevant {
+	border-top: 4px solid #FFD700;
+	border-radius: 3px;
+	padding-top: 6px;
+}
+
+.sormas .v-label-border-neutral {
+	border-top: 4px solid #00BFFF;
+	border-radius: 3px;
+	padding-top: 6px;
+}
+
+.sormas .v-label-border-positive {
+	border-top: 4px solid #32CD32;
+	border-radius: 3px;
+	padding-top: 6px;
+}
+
+.sormas .v-label-border-wayne {
+	border-top: 4px solid #808080;
+	border-radius: 3px;
+	padding-top: 6px;
+}
+
+.sormas .v-label-uppercase-small {
+	color: #6591C4;
+	font-weight: bold;
+	text-transform: uppercase;
+	font-size: 0.8em;
+}
+
+.sormas .v-label-uppercase-normal {
+	color: #005A9C;
+	font-weight: bold;
+	text-transform: uppercase;
+	font-size: 1em;
+}
+
+.sormas .v-label-uppercase-xlarge {
+	color: #005A9C;
+	font-weight: bold;
+	text-transform: uppercase;
+	font-size: 2.5em;
+}
+
 .sormas .v-window .v-window-outerheader {
 	border-bottom: 3px solid #CDD8EC;
 }
@@ -13480,6 +13555,14 @@ div.v-layout.v-horizontal.v-widget {
 
 .sormas .curve-and-map-layout {
 	background-color: #CDD8EC;
+}
+
+.sormas .statistics-sub-component {
+	border-left: 2px solid #CDD8EC;
+}
+
+.sormas .statistics-sub-component.statistics-sub-component-right {
+	border-right: 2px solid #CDD8EC;
 }
 
 .sormas .googlemap.no-tiles img {

@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NavUtils;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -22,7 +21,6 @@ import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventDao;
 import de.symeda.sormas.app.component.UserReportDialog;
-import de.symeda.sormas.app.contact.ContactEditTabs;
 import de.symeda.sormas.app.databinding.EventDataFragmentLayoutBinding;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
@@ -47,7 +45,7 @@ public class EventNewActivity extends AppCompatActivity {
         SormasApplication application = (SormasApplication) getApplication();
         tracker = application.getDefaultTracker();
 
-        setContentView(R.layout.sormas_root_activity_layout);
+        setContentView(R.layout.sormas_default_activity_layout);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);
         if (toolbar != null) {

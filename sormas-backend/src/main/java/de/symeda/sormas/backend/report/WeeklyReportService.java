@@ -91,6 +91,7 @@ public class WeeklyReportService extends AbstractAdoService<WeeklyReport> {
 	}
 
 	@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+	@SuppressWarnings("rawtypes")
 	public List<WeeklyReportSummaryDto> getWeeklyReportSummariesPerRegion(EpiWeek epiWeek) {
 		Query query = em.createNativeQuery("SELECT region_id, COUNT(fac) as facilities, SUM(missing) as missing, SUM(report) as report, SUM(zero) as zero "
 				+ "FROM ("
@@ -109,7 +110,6 @@ public class WeeklyReportService extends AbstractAdoService<WeeklyReport> {
 				+ ") as inner_query "
 				+ "GROUP BY region_id;");
 
-		@SuppressWarnings("rawtypes")
 		List results = query.getResultList();
 
 		List<WeeklyReportSummaryDto> summaryDtos = new ArrayList<>();
@@ -192,7 +192,8 @@ public class WeeklyReportService extends AbstractAdoService<WeeklyReport> {
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<WeeklyReport, WeeklyReport> from, User user) {
 		// National users can access all reports in the system
-		if (user.getUserRoles().contains(UserRole.NATIONAL_USER)) {
+		if (user.getUserRoles().contains(UserRole.NATIONAL_USER)
+			|| user.getUserRoles().contains(UserRole.NATIONAL_OBSERVER)) {
 			return null;
 		}
 

@@ -32,6 +32,7 @@ $v-unit-size: 32px !default;
 $v-gradient: false;
 
 $v-border: 2px solid $v-focus-color;
+$v-border-subtle: 2px solid $v-selection-color;
 $v-caption-font-weight: 600 !default; 
 
 $v-layout-margin-top: round($v-unit-size / 1.5) !default;
@@ -61,6 +62,7 @@ $editor-caption-font-color: valo-font-color($editor-background-color, 0.5) !defa
 @import "components/tabsheet.scss";
 @import "components/table.scss";
 @import "components/textfield.scss";
+@import "components/label.scss";
 @import "components/window.scss";
 
 @import "views/view.scss";
@@ -97,6 +99,7 @@ $editor-caption-font-color: valo-font-color($editor-background-color, 0.5) !defa
   @include sormas-tabsheet;
   @include sormas-table;
   @include sormas-textfield;
+  @include sormas-label;
   @include sormas-window;
 
   @include sormas-view;

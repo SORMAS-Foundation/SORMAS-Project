@@ -44,7 +44,7 @@ public class EventParticipantDataForm extends FormTab {
 
     @Override
     public AbstractDomainObject getData() {
-        return binding.getEventParticipant();
+        return binding == null ? null : binding.getEventParticipant();
     }
 
     public EventParticipantFragmentLayoutBinding getBinding() {

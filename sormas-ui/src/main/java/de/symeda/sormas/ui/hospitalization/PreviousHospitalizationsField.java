@@ -34,11 +34,15 @@ public class PreviousHospitalizationsField extends AbstractTableField<PreviousHo
 			@Override
 			public Object generateCell(Table source, Object itemId, Object columnId) {
 				PreviousHospitalizationDto prevHospitalization = (PreviousHospitalizationDto) itemId;
-				StringBuilder periodBuilder = new StringBuilder();
-				periodBuilder.append(DateHelper.formatDate(prevHospitalization.getAdmissionDate()));
-				periodBuilder.append(" - ");
-				periodBuilder.append(DateHelper.formatDate(prevHospitalization.getDischargeDate()));
-				return periodBuilder.toString();
+				if (prevHospitalization.getAdmissionDate() == null && prevHospitalization.getDischargeDate() == null) {
+					return "Unknown";
+				} else {
+					StringBuilder periodBuilder = new StringBuilder();
+					periodBuilder.append(prevHospitalization.getAdmissionDate() != null ? DateHelper.formatDate(prevHospitalization.getAdmissionDate()) : "?");
+					periodBuilder.append(" - ");
+					periodBuilder.append(prevHospitalization.getDischargeDate() != null ? DateHelper.formatDate(prevHospitalization.getDischargeDate()) : "?");
+					return periodBuilder.toString();
+				}
 			}
 		});
 

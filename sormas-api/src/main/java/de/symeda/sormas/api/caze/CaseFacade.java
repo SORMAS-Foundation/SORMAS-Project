@@ -22,6 +22,8 @@ public interface CaseFacade {
 	
 	List<CaseDataDto> getAllCasesBetween(Date fromDate, Date toDate, DistrictReferenceDto districtRef, Disease disease, String userUuid);
 	
+	List<CaseIndexDto> getIndexList(String userUuid);
+	
 	CaseDataDto getCaseDataByUuid(String uuid);
     
     CaseDataDto saveCase(CaseDataDto dto);
@@ -39,7 +41,11 @@ public interface CaseFacade {
 	CaseDataDto moveCase(CaseReferenceDto caze, CommunityReferenceDto community, FacilityReferenceDto facility, String facilityDetails, UserReferenceDto surveillanceOfficer);
 
 	List<CaseDataDto> getByUuids(List<String> uuids);
+	
+	List<DashboardCase> getNewCasesForDashboard(DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid);
 
+	List<MapCase> getCasesForMap(DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid);
+	
 	/**
 	 * @param onsetFromDate optional
 	 * @param onsetToDate optional

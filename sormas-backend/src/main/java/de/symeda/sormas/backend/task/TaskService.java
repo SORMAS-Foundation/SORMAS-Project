@@ -1,5 +1,7 @@
 package de.symeda.sormas.backend.task;
 
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -12,6 +14,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.api.task.DashboardTask;
 import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.user.UserRole;
@@ -43,7 +46,8 @@ public class TaskService extends AbstractAdoService<Task> {
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Task,Task> taskPath, User user) {
 		// National users can access all tasks in the system
-		if (user.getUserRoles().contains(UserRole.NATIONAL_USER)) {
+		if (user.getUserRoles().contains(UserRole.NATIONAL_USER)
+			|| user.getUserRoles().contains(UserRole.NATIONAL_OBSERVER)) {
 			return null;
 		}
 		
@@ -73,7 +77,7 @@ public class TaskService extends AbstractAdoService<Task> {
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Task> from = cq.from(getElementClass());
 		
-		Predicate filter = buildCriteraFilter(taskCriteria, cb, from);
+		Predicate filter = buildCriteriaFilter(taskCriteria, cb, from);
 		if (filter != null) {
 			cq.where(filter);
 		}
@@ -90,7 +94,7 @@ public class TaskService extends AbstractAdoService<Task> {
 		CriteriaQuery<Task> cq = cb.createQuery(getElementClass());
 		Root<Task> from = cq.from(getElementClass());
 
-		Predicate filter = buildCriteraFilter(taskCriteria, cb, from);
+		Predicate filter = buildCriteriaFilter(taskCriteria, cb, from);
 		if (filter != null) {
 			cq.where(filter);
 		}
@@ -100,7 +104,31 @@ public class TaskService extends AbstractAdoService<Task> {
 		return resultList;	
 	}
 
-	private Predicate buildCriteraFilter(TaskCriteria taskCriteria, CriteriaBuilder cb, Root<Task> from) {
+	public List<DashboardTask> getAllPending(Date from, Date to, User user) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<DashboardTask> cq = cb.createQuery(DashboardTask.class);
+		Root<Task> task = cq.from(getElementClass());
+		
+		TaskCriteria taskCriteria = new TaskCriteria().assigneeUserEquals(user).taskStatusEquals(TaskStatus.PENDING);
+		Predicate filter = buildCriteriaFilter(taskCriteria, cb, task);
+		
+		List<DashboardTask> result;
+		if (filter != null) {
+			cq.where(filter);
+			cq.multiselect(
+					task.get(Task.PRIORITY),
+					task.get(Task.TASK_STATUS)
+			);
+			
+			result = em.createQuery(cq).getResultList();
+		} else {
+			result = Collections.emptyList();
+		}
+		
+		return result;
+	}
+
+	private Predicate buildCriteriaFilter(TaskCriteria taskCriteria, CriteriaBuilder cb, Root<Task> from) {
 		Predicate filter = null;
 		if (taskCriteria.getTaskStatuses() != null && taskCriteria.getTaskStatuses().length > 0) {
 			if (taskCriteria.getTaskStatuses().length == 1) {

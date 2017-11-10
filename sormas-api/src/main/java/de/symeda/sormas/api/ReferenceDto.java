@@ -1,6 +1,6 @@
 package de.symeda.sormas.api;
 
-import de.symeda.sormas.api.DataTransferObject;
+import java.util.Date;
 
 public abstract class ReferenceDto extends DataTransferObject {
 
@@ -9,6 +9,12 @@ public abstract class ReferenceDto extends DataTransferObject {
 	public static final String CAPTION = "caption";
 	
 	private String caption;
+	
+	public ReferenceDto() { }
+	
+	public ReferenceDto(Date creationDate, Date changeDate, String uuid) {
+		super(creationDate, changeDate, uuid);
+	}
 	
 	@Override
 	public String toString() {

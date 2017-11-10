@@ -10,6 +10,7 @@ import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.data.fieldgroup.DefaultFieldGroupFieldFactory;
 import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
 import com.vaadin.data.util.BeanItem;
+import com.vaadin.data.util.converter.Converter.ConversionException;
 import com.vaadin.shared.ui.combobox.FilteringMode;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.AbstractSelect;
@@ -20,6 +21,8 @@ import com.vaadin.ui.CustomField;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.Field;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -27,12 +30,15 @@ import de.symeda.sormas.api.DataTransferObject;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomState;
+import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.epidata.EpiDataBurialsField;
 import de.symeda.sormas.ui.epidata.EpiDataGatheringsField;
 import de.symeda.sormas.ui.epidata.EpiDataTravelsField;
 import de.symeda.sormas.ui.hospitalization.PreviousHospitalizationsField;
 import de.symeda.sormas.ui.location.LocationEditForm;
+import de.symeda.sormas.ui.login.LoginHelper;
 
 @SuppressWarnings("serial")
 public abstract class AbstractEditForm <DTO extends DataTransferObject> extends CustomField<DTO> {// implements DtoEditForm<DTO> {
@@ -137,7 +143,7 @@ public abstract class AbstractEditForm <DTO extends DataTransferObject> extends 
 		
 		addFields();
 	}
-
+	
 	@Override
 	public CustomLayout initContent() {
 		
@@ -163,6 +169,18 @@ public abstract class AbstractEditForm <DTO extends DataTransferObject> extends 
 	protected abstract String createHtmlLayout();
 	protected abstract void addFields();	
 	
+	@Override
+	public void setValue(DTO newFieldValue) throws com.vaadin.data.Property.ReadOnlyException, ConversionException {
+	
+		super.setValue(newFieldValue);
+		
+		if (!LoginHelper.hasUserRight(UserRight.EDIT)) {
+			for (Field field : getFieldGroup().getFields()) {
+				field.setReadOnly(true);
+			}
+		}
+	}
+
 	@Override
 	protected DTO getInternalValue() {
 		BeanItem<DTO> beanItem = getFieldGroup().getItemDataSource();
@@ -190,6 +208,10 @@ public abstract class AbstractEditForm <DTO extends DataTransferObject> extends 
 	
 	@Override
 	public void commit() throws SourceException, InvalidValueException {
+		
+		if (!LoginHelper.hasUserRight(UserRight.EDIT)) {
+			throw new UnsupportedOperationException("User with role 'National Observer' is not allowed to edit data");
+		}
 		
 		try {
 			getFieldGroup().commit();

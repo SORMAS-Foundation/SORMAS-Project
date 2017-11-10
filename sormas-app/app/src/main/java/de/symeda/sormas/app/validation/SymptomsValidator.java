@@ -35,28 +35,6 @@ public final class SymptomsValidator {
         List<SymptomStateField> lesionsFields = getLesionsFields(binding);
         List<SymptomStateField> monkeypoxFields = getMonkeypoxFields(binding);
 
-        // Location where patient got ill
-        if (binding.symptomsPatientIllLocation.getVisibility() == View.VISIBLE) {
-            if (isAnySymptomSetTo(SymptomState.YES, nonConditionalSymptoms)) {
-                if (symptoms.getPatientIllLocation() == null || symptoms.getPatientIllLocation().trim().isEmpty()) {
-                    binding.symptomsPatientIllLocation.setError(resources.getString(R.string.validation_symptoms_patient_ill_location));
-                    success = false;
-                }
-            }
-        }
-
-        // Date of initial symptom onset & initial onset symptom
-        if (isAnySymptomSetTo(SymptomState.YES, nonConditionalSymptoms)) {
-            if (symptoms.getOnsetSymptom() == null) {
-                binding.symptomsOnsetSymptom.setError(resources.getString(R.string.validation_symptoms_onset_symptom));
-                success = false;
-            }
-            if (symptoms.getOnsetDate() == null) {
-                binding.symptomsOnsetDate.setError(resources.getString(R.string.validation_symptoms_onset_date));
-                success = false;
-            }
-        }
-
         // Other clinical symptoms
         if (symptoms.getOtherNonHemorrhagicSymptoms() == SymptomState.YES &&
                 (symptoms.getOtherNonHemorrhagicSymptomsText() == null || symptoms.getOtherNonHemorrhagicSymptomsText().trim().isEmpty())) {
@@ -105,18 +83,6 @@ public final class SymptomsValidator {
         List<SymptomStateField> lesionsFields = getLesionsFields(binding);
         List<SymptomStateField> monkeypoxFields = getMonkeypoxFields(binding);
 
-        // Onset symptom & date
-        if (isAnySymptomSetTo(SymptomState.YES, nonConditionalSymptoms)) {
-            if (symptoms.getOnsetSymptom() == null) {
-                binding.symptomsOnsetSymptom.setError(resources.getString(R.string.validation_symptoms_onset_symptom));
-                success = false;
-            }
-            if (symptoms.getOnsetDate() == null) {
-                binding.symptomsOnsetDate.setError(resources.getString(R.string.validation_symptoms_onset_date));
-                success = false;
-            }
-        }
-
         // Other clinical symptoms
         if (symptoms.getOtherNonHemorrhagicSymptoms() == SymptomState.YES &&
                 (symptoms.getOtherNonHemorrhagicSymptomsText() == null || symptoms.getOtherNonHemorrhagicSymptomsText().trim().isEmpty())) {
@@ -157,20 +123,10 @@ public final class SymptomsValidator {
             if (markAnySymptomSetTo(null, nonConditionalSymptoms, resources)) {
                 success = false;
             }
-            // Temperature source
-            if (symptoms.getTemperatureSource() == null) {
-                binding.symptomsTemperatureSource.setError(resources.getString(R.string.validation_symptoms_temperature_source));
-                success = false;
-            }
             // Temperature & fever
-            if (symptoms.getTemperature() == null) {
-                binding.symptomsTemperature.setError(resources.getString(R.string.validation_symptoms_temperature));
+            if (symptoms.getTemperature() != null && (symptoms.getTemperature().compareTo(38.0F) >= 0 && symptoms.getFever() != SymptomState.YES)) {
+                binding.symptomsFever.setError(resources.getString(R.string.validation_symptoms_fever));
                 success = false;
-            } else {
-                if (symptoms.getTemperature().compareTo(38.0F) >= 0 && symptoms.getFever() != SymptomState.YES) {
-                    binding.symptomsFever.setError(resources.getString(R.string.validation_symptoms_fever));
-                    success = false;
-                }
             }
         }
 
@@ -203,13 +159,6 @@ public final class SymptomsValidator {
         // Reset required hints
         resetRequiredHints(binding);
 
-        // Set required hints
-        if (isAnySymptomSetTo(SymptomState.YES, getNonConditionalSymptoms(binding))) {
-            binding.symptomsOnsetSymptom.setRequiredHint(true);
-            binding.symptomsOnsetDate.setRequiredHint(true);
-            binding.symptomsPatientIllLocation.setRequiredHint(true);
-        }
-
         // Always required because these fields are only visible when they are actually required
         for (SymptomStateField field : getConditionalBleedingSymptoms(binding)) {
             field.setRequiredHint(true);
@@ -224,6 +173,38 @@ public final class SymptomsValidator {
         binding.symptomsOther1HemorrhagicSymptomsText.setRequiredHint(true);
     }
 
+    public static void setSoftRequiredHintsForCaseSymptoms(CaseSymptomsFragmentLayoutBinding binding) {
+        for (SymptomStateField field : getNonConditionalSymptoms(binding)) {
+            if (field.getValue() == SymptomState.YES) {
+                binding.symptomsOnsetDate.makeFieldSoftRequired();
+                binding.symptomsOnsetSymptom.makeFieldSoftRequired();
+                return;
+            }
+        }
+
+        binding.symptomsOnsetDate.removeSoftRequirement();
+        binding.symptomsOnsetSymptom.removeSoftRequirement();
+    }
+
+    public static void setSoftRequiredHintsForVisitSymptoms(boolean cooperative, CaseSymptomsFragmentLayoutBinding binding) {
+        if (cooperative) {
+            for (SymptomStateField field : getNonConditionalSymptoms(binding)) {
+                if (field.getValue() == SymptomState.YES) {
+                    binding.symptomsOnsetDate.makeFieldSoftRequired();
+                    binding.symptomsOnsetSymptom.makeFieldSoftRequired();
+                    binding.symptomsTemperature.makeFieldSoftRequired();
+                    binding.symptomsTemperatureSource.makeFieldSoftRequired();
+                    return;
+                }
+            }
+        }
+
+        binding.symptomsOnsetDate.removeSoftRequirement();
+        binding.symptomsOnsetSymptom.removeSoftRequirement();
+        binding.symptomsTemperature.removeSoftRequirement();
+        binding.symptomsTemperatureSource.removeSoftRequirement();
+    }
+
     public static void setRequiredHintsForVisitSymptoms(boolean cooperative, CaseSymptomsFragmentLayoutBinding binding) {
         // Reset required hints
         resetRequiredHints(binding);
@@ -233,13 +214,6 @@ public final class SymptomsValidator {
             for (SymptomStateField field : getNonConditionalSymptoms(binding)) {
                 field.setRequiredHint(true);
             }
-            binding.symptomsTemperature.setRequiredHint(true);
-            binding.symptomsTemperatureSource.setRequiredHint(true);
-        }
-
-        if (isAnySymptomSetTo(SymptomState.YES, getNonConditionalSymptoms(binding))) {
-            binding.symptomsOnsetSymptom.setRequiredHint(true);
-            binding.symptomsOnsetDate.setRequiredHint(true);
         }
 
         // Always required because these fields are only visible when they are actually required

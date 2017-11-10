@@ -38,6 +38,10 @@ public final class CssStyles {
 	public static final String HSPACE_RIGHT_5 = "hspace-right-5";
 	public static final String HSPACE_RIGHT_NONE = "hspace-top-none";
 
+	public static final String UPPERCASE_SMALL = "uppercase-small";
+	public static final String UPPERCASE_NORMAL = "uppercase-normal";
+	public static final String UPPERCASE_XLARGE = "uppercase-xlarge";
+	
 	public static final String BUTTON_SUBTLE = "subtle";
 	
 	public static final String LINK_ACTIVE = "active";
@@ -50,6 +54,7 @@ public final class CssStyles {
 
 	public static final String ALIGN_RIGHT = "align-right";
 
+	public static final String OPTIONGROUP_HORIZONTAL_SUBTLE = "horizontal-subtle";
 	public static final String OPTIONGROUP_CAPTION_INLINE = "caption-inline";
 
 	public static final String GRID_CELL_PRIORITY_HIGH = "priority-high";

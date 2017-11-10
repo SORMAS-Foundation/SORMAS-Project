@@ -13,7 +13,9 @@ import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.EventType;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.CssStyles;
 
@@ -45,11 +47,13 @@ public class EventsView extends AbstractView {
 		
 		addComponent(gridLayout);
 		
-		createButton = new Button("New alert");
-		createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-		createButton.setIcon(FontAwesome.PLUS_CIRCLE);
-		createButton.addClickListener(e -> ControllerProvider.getEventController().create());
-		addHeaderComponent(createButton);
+    	if (LoginHelper.hasUserRight(UserRight.CREATE)) {
+			createButton = new Button("New alert");
+			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+			createButton.setIcon(FontAwesome.PLUS_CIRCLE);
+			createButton.addClickListener(e -> ControllerProvider.getEventController().create());
+			addHeaderComponent(createButton);
+    	}
 	}
 	
 	public HorizontalLayout createTopBar() {
@@ -78,19 +82,58 @@ public class EventsView extends AbstractView {
 		filterLayout.addStyleName(CssStyles.VSPACE_3);
 		
 		ComboBox typeFilter = new ComboBox();
-		typeFilter.setWidth(200, Unit.PIXELS);
+		typeFilter.setWidth(140, Unit.PIXELS);
 		typeFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(EventDto.I18N_PREFIX, EventDto.EVENT_TYPE));
 		typeFilter.addItems((Object[])EventType.values());
 		typeFilter.addValueChangeListener(e -> grid.setEventTypeFilter(((EventType)e.getProperty().getValue())));
 		filterLayout.addComponent(typeFilter);
 		
 		ComboBox diseaseFilter = new ComboBox();
-		diseaseFilter.setWidth(200, Unit.PIXELS);
+		diseaseFilter.setWidth(140, Unit.PIXELS);
 		diseaseFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(EventDto.I18N_PREFIX, EventDto.DISEASE));
 		diseaseFilter.addItems((Object[])Disease.values());
 		diseaseFilter.addValueChangeListener(e -> grid.setDiseaseFilter(((Disease)e.getProperty().getValue())));
 		filterLayout.addComponent(diseaseFilter);
 		
+		// TODO
+//        UserDto user = LoginHelper.getCurrentUser();
+//
+//        ComboBox regionFilter = new ComboBox();
+//        if (user.getRegion() == null) {
+//            regionFilter.setWidth(140, Unit.PIXELS);
+//            regionFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(LocationDto.I18N_PREFIX, LocationDto.REGION));
+//            regionFilter.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
+//            regionFilter.addValueChangeListener(e -> {
+//            	RegionReferenceDto region = (RegionReferenceDto)e.getProperty().getValue();
+//            	grid.setRegionFilter(region);
+//            });
+//            filterLayout.addComponent(regionFilter);
+//        }
+//
+//        ComboBox districtFilter = new ComboBox();
+//        districtFilter.setWidth(140, Unit.PIXELS);
+//        districtFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(LocationDto.I18N_PREFIX, LocationDto.DISTRICT));
+//        districtFilter.setDescription("Select a district in the state");
+//        districtFilter.addValueChangeListener(e->grid.setDistrictFilter(((DistrictReferenceDto)e.getProperty().getValue())));
+//
+//        if (user.getRegion() != null) {
+//            districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(user.getRegion().getUuid()));
+//            districtFilter.setEnabled(true);
+//        } else {
+//            regionFilter.addValueChangeListener(e -> {
+//            	RegionReferenceDto region = (RegionReferenceDto)e.getProperty().getValue();
+//            	districtFilter.removeAllItems();
+//            	if (region != null) {
+//            		districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(region.getUuid()));
+//                	districtFilter.setEnabled(true);
+//            	} else {
+//                	districtFilter.setEnabled(false);
+//            	}
+//            });
+//            districtFilter.setEnabled(false);
+//        }
+//        filterLayout.addComponent(districtFilter);
+        
 		return filterLayout;
 	}
 	

@@ -1,6 +1,7 @@
 package de.symeda.sormas.ui.hospitalization;
 
 import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.DateField;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TextArea;
 
@@ -10,6 +11,7 @@ import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
+import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
 @SuppressWarnings("serial")
@@ -33,14 +35,16 @@ public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHo
 	@Override
 	protected void addFields() {
 
-		addFields(PreviousHospitalizationDto.ADMISSION_DATE,
-				PreviousHospitalizationDto.DISCHARGE_DATE);
+		DateField admissionDate = addField(PreviousHospitalizationDto.ADMISSION_DATE, DateField.class);
+		DateField dischargeDate = addField(PreviousHospitalizationDto.DISCHARGE_DATE, DateField.class);
+		FieldHelper.makeFieldSoftRequired(admissionDate, dischargeDate);
 		addField(PreviousHospitalizationDto.ISOLATED, OptionGroup.class);
 		addField(PreviousHospitalizationDto.DESCRIPTION, TextArea.class).setRows(2);
 
 		ComboBox facilityRegion = addField(PreviousHospitalizationDto.REGION, ComboBox.class);
 		ComboBox facilityDistrict = addField(PreviousHospitalizationDto.DISTRICT, ComboBox.class);
 		ComboBox facilityCommunity = addField(PreviousHospitalizationDto.COMMUNITY, ComboBox.class);
+		facilityCommunity.setNullSelectionAllowed(true);
 		ComboBox healthFacility = addField(PreviousHospitalizationDto.HEALTH_FACILITY, ComboBox.class);
 		healthFacility.setImmediate(true);
 
@@ -52,10 +56,14 @@ public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHo
 			}
 		});
 		facilityDistrict.addValueChangeListener(e -> {
+			if (facilityCommunity.getValue() == null) {
+				healthFacility.removeAllItems();
+			}
 			facilityCommunity.removeAllItems();
 			DistrictReferenceDto districtDto = (DistrictReferenceDto)e.getProperty().getValue();
 			if(districtDto != null) {
 				facilityCommunity.addItems(FacadeProvider.getCommunityFacade().getAllByDistrict(districtDto.getUuid()));
+				healthFacility.addItems(FacadeProvider.getFacilityFacade().getHealthFacilitiesByDistrict(districtDto, true));
 			}
 		});
 		facilityCommunity.addValueChangeListener(e -> {
@@ -63,17 +71,16 @@ public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHo
 			CommunityReferenceDto communityDto = (CommunityReferenceDto)e.getProperty().getValue();
 			if(communityDto != null) {
 				healthFacility.addItems(FacadeProvider.getFacilityFacade().getHealthFacilitiesByCommunity(communityDto, true));
-			}
+			} else if (facilityDistrict.getValue() != null) {
+				healthFacility.addItems(FacadeProvider.getFacilityFacade().getHealthFacilitiesByDistrict((DistrictReferenceDto) facilityDistrict.getValue(), true));
+    		}
 		});
 
 		facilityRegion.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
 
 		setRequired(true,
-				PreviousHospitalizationDto.ADMISSION_DATE, 
-				PreviousHospitalizationDto.DISCHARGE_DATE, 
 				PreviousHospitalizationDto.REGION,
 				PreviousHospitalizationDto.DISTRICT,
-				PreviousHospitalizationDto.COMMUNITY,
 				PreviousHospitalizationDto.HEALTH_FACILITY);
 	}
 

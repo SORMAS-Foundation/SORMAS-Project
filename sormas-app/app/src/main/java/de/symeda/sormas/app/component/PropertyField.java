@@ -24,6 +24,7 @@ public abstract class PropertyField<T> extends LinearLayout {
     protected TextView caption;
 
     private ArrayList<ValueChangeListener> valueChangedListeners;
+    private ValueChangeListener softRequirementListener;
     private boolean showRequiredHint;
 
     public PropertyField(Context context) {
@@ -148,6 +149,33 @@ public abstract class PropertyField<T> extends LinearLayout {
     }
 
     protected abstract void requestFocusForContentView(View nextView);
+
+    public void makeFieldSoftRequired() {
+        if (getValue() == null) {
+            setErrorWithoutFocus(getContext().getResources().getString(R.string.validation_soft_general));
+        }
+
+        if (softRequirementListener == null) {
+            softRequirementListener = new PropertyField.ValueChangeListener() {
+                @Override
+                public void onChange(PropertyField field) {
+                    if (getValue() == null) {
+                        setErrorWithoutFocus(field.getContext().getResources().getString(R.string.validation_soft_general));
+                    } else {
+                        clearError();
+                    }
+                }
+            };
+            addValueChangedListener(softRequirementListener);
+        }
+    }
+
+    public void removeSoftRequirement() {
+        clearError();
+        if (softRequirementListener != null) {
+            valueChangedListeners.remove(softRequirementListener);
+        }
+    }
 
     public interface ValueChangeListener {
         void onChange(PropertyField field);

@@ -40,18 +40,19 @@ public class EpiDataTravelsListArrayAdapter extends ArrayAdapter<EpiDataTravel> 
 
         EpiDataTravel travel = getItem(position);
 
-        StringBuilder periodString = new StringBuilder();
-        if (travel.getTravelDateFrom() != null) {
-            periodString.append(DateHelper.formatShortDate(travel.getTravelDateFrom()));
-            periodString.append(" - ");
-        }
-
-        if (travel.getTravelDateTo() != null) {
-            periodString.append(DateHelper.formatShortDate(travel.getTravelDateTo()));
+        String travelPeriod = "";
+        if (travel.getTravelDateFrom() == null && travel.getTravelDateTo() == null) {
+            travelPeriod = getContext().getResources().getString(R.string.caption_unknown);
+        } else {
+            StringBuilder sb = new StringBuilder();
+            sb.append(travel.getTravelDateFrom() != null ? DateHelper.formatShortDate(travel.getTravelDateFrom()) : "?");
+            sb.append(" - ");
+            sb.append(travel.getTravelDateTo() != null ? DateHelper.formatShortDate(travel.getTravelDateTo()) : "?");
+            travelPeriod = sb.toString();
         }
 
         TextView period = (TextView) convertView.findViewById(R.id.travel_period_li);
-        period.setText(periodString.toString());
+        period.setText(travelPeriod);
 
         if (travel.getTravelType() != null) {
             TextView type = (TextView) convertView.findViewById(R.id.travel_type_li);

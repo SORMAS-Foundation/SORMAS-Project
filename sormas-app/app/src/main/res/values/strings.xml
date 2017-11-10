@@ -37,7 +37,7 @@
     <string name="action_clearAll">Clear all</string>
     <string name="action_logout">Logout</string>
     <string name="action_setEmptyToNo">Set cleared to No</string>
-    <string name="action_createCaseFromContact">Create a new case for this contact</string>
+    <string name="action_createCaseFromContact">Create a case for this contact person</string>
     <string name="action_send">Send</string>
     <string name="action_report">Report Problem</string>
     <string name="action_pick_gps">Pick GPS coordinates</string>
@@ -104,7 +104,7 @@
     <string name="headline_new_contact">Create new contact</string>
     <string name="headline_contact">Contact</string>
     <string name="headline_source_case">Source case</string>
-    <string name="headline_associated_case">Associated case</string>
+    <string name="headline_associated_case">Open case of this contact person</string>
     <string name="headline_pick_person">Pick or create a person</string>
     <string name="headline_visit">Follow-up visit</string>
     <string name="headline_event">Alert</string>
@@ -138,6 +138,7 @@
     <string name="caption_weekly_report_start">Start</string>
     <string name="caption_weekly_report_end">End</string>
     <string name="caption_weekly_report_report_date">Report date</string>
+    <string name="caption_unknown">Unknown</string>
 
     <!-- forms -->
     <string name="case_move">Move case to another health facility \u279D</string>
@@ -279,7 +280,7 @@
     <string name="alert_gps">SORMAS needs access to your GPS location for all of its features to work as intended. Please click on \"Turn On GPS\" to enable the required functionality on your device.</string>
     <string name="alert_gps_permission">SORMAS needs access to your GPS location for all of its features to work as intended. Please click on \"Allow GPS Access\" to allow SORMAS to access the required functionality on your device.</string>
     <string name="alert_missing_report">You have not confirmed your report for the last epi week. If you want to add a case you\'ve not yet reported for the last epi week, please visit the Reports screen and click on \'Add Missing Case\'. You will have to confirm your report before creating a new case for this week.</string>
-    <string name="alert_plague_type_change">The symptoms selected match the clinical criteria for %1$s. It will be set to %2$s for this case.</string>
+    <string name="alert_plague_type_change">The symptoms selected match the clinical criteria for %1$s. The plague type has been be set to %2$s for this case.</string>
 
     <string name="alert_title_gps">Turn On GPS</string>
     <string name="alert_title_gps_permission">Allow GPS Access</string>
@@ -323,8 +324,8 @@
     <string name="validation_sample_shipment_status">Please select the shipment status.</string>
     <string name="validation_sample_shipment_date">Please enter the shipment date.</string>
     <string name="validation_sample_lab">Please select the laboratory.</string>
-    <string name="validation_visit_10_days_before">The visit cannot be more than 10 days before the last contact date.</string>
-    <string name="validation_visit_10_days_after">The visit cannot be more than 10 days after the end of the follow-up duration.</string>
+    <string name="validation_visit_30_days_before">The visit cannot be more than 30 days before the last contact date.</string>
+    <string name="validation_visit_30_days_after">The visit cannot be more than 30 days after the end of the follow-up duration.</string>
     <string name="validation_visit_date_time">Please enter the date and time of the visit.</string>
     <string name="validation_visit_status">Please select the visit status.</string>
     <string name="validation_prev_hosp_discharge_date">Please select the date of discharge.</string>
@@ -332,5 +333,6 @@
 
     <string name="validation_soft_case_epid_number">The EPID number does not match the required pattern. You may still save the case and enter the correct number later.</string>
     <string name="validation_soft_case_epid_number_empty">An EPID number has to be provided. You may still save the case and enter the correct number later.</string>
+    <string name="validation_soft_general">Please fill in this field if possible. You can still save without doing so.</string>
 
 </resources>

@@ -4,11 +4,9 @@ import java.util.List;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
@@ -16,6 +14,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.login.LoginHelper;
@@ -58,11 +57,13 @@ public class UsersView extends AbstractView {
         
         addComponent(gridLayout);
         
-        createButton = new Button("New user");
-        createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-        createButton.setIcon(FontAwesome.PLUS_CIRCLE);
-        createButton.addClickListener(e -> ControllerProvider.getUserController().create());
-        addHeaderComponent(createButton);
+    	if (LoginHelper.hasUserRight(UserRight.CREATE)) {
+	        createButton = new Button("New user");
+	        createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+	        createButton.setIcon(FontAwesome.PLUS_CIRCLE);
+	        createButton.addClickListener(e -> ControllerProvider.getUserController().create());
+	        addHeaderComponent(createButton);
+    	}
     }
 	
 	public HorizontalLayout createFilterBar() {

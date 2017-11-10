@@ -31,11 +31,15 @@ public class EpiDataTravelsField extends AbstractTableField<EpiDataTravelDto> {
 			@Override
 			public Object generateCell(Table source, Object itemId, Object columnId) {
 				EpiDataTravelDto travel = (EpiDataTravelDto) itemId;
-				StringBuilder periodBuilder = new StringBuilder();
-				periodBuilder.append(DateHelper.formatDate(travel.getTravelDateFrom()));
-				periodBuilder.append(" - ");
-				periodBuilder.append(DateHelper.formatDate(travel.getTravelDateTo()));
-				return periodBuilder.toString();
+				if (travel.getTravelDateFrom() == null && travel.getTravelDateTo() == null) {
+					return "Unknown";
+				} else {
+					StringBuilder periodBuilder = new StringBuilder();
+					periodBuilder.append(travel.getTravelDateFrom() != null ? DateHelper.formatDate(travel.getTravelDateFrom()) : "?");
+					periodBuilder.append(" - ");
+					periodBuilder.append(travel.getTravelDateTo() != null ? DateHelper.formatDate(travel.getTravelDateTo()) : "?");
+					return periodBuilder.toString();
+				}
 			}
 		});
 		

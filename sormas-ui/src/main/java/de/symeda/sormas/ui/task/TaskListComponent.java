@@ -15,6 +15,7 @@ import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskStatus;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -82,14 +83,16 @@ public class TaskListComponent extends VerticalLayout {
     	}
     	topLayout.addComponent(buttonFilterLayout);
     	
-    	createButton = new Button("New task");
-        createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-        createButton.setIcon(FontAwesome.PLUS_CIRCLE);
-        createButton.addClickListener(e -> ControllerProvider.getTaskController().create(TaskContext.GENERAL, null, grid));
-        topLayout.addComponent(createButton);
-        topLayout.setComponentAlignment(createButton, Alignment.MIDDLE_RIGHT);
-        topLayout.setExpandRatio(createButton, 1);
-
+    	if (LoginHelper.hasUserRight(UserRight.CREATE)) {
+	    	createButton = new Button("New task");
+	        createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+	        createButton.setIcon(FontAwesome.PLUS_CIRCLE);
+	        createButton.addClickListener(e -> ControllerProvider.getTaskController().create(TaskContext.GENERAL, null, grid));
+	        topLayout.addComponent(createButton);
+	        topLayout.setComponentAlignment(createButton, Alignment.MIDDLE_RIGHT);
+	        topLayout.setExpandRatio(createButton, 1);
+    	}
+    	
         return topLayout;
     }
 	
@@ -113,14 +116,16 @@ public class TaskListComponent extends VerticalLayout {
     	}
     	topLayout.addComponent(buttonFilterLayout);
     	
-        createButton = new Button("New task");
-        createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-        createButton.setIcon(FontAwesome.PLUS_CIRCLE);
-        createButton.addClickListener(e -> ControllerProvider.getTaskController().create(context, entityRef, grid));
-        topLayout.addComponent(createButton);
-        topLayout.setComponentAlignment(createButton, Alignment.MIDDLE_RIGHT);
-        topLayout.setExpandRatio(createButton, 1);
-
+    	if (LoginHelper.hasUserRight(UserRight.CREATE)) {
+	        createButton = new Button("New task");
+	        createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+	        createButton.setIcon(FontAwesome.PLUS_CIRCLE);
+	        createButton.addClickListener(e -> ControllerProvider.getTaskController().create(context, entityRef, grid));
+	        topLayout.addComponent(createButton);
+	        topLayout.setComponentAlignment(createButton, Alignment.MIDDLE_RIGHT);
+	        topLayout.setExpandRatio(createButton, 1);
+    	}
+    	
         return topLayout;
 	}
 	

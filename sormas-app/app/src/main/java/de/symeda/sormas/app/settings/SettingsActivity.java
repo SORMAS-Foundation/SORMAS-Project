@@ -2,7 +2,6 @@ package de.symeda.sormas.app.settings;
 
 import android.app.AlertDialog;
 import android.content.Intent;
-import android.database.SQLException;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.view.Menu;
@@ -10,18 +9,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.google.android.gms.analytics.Tracker;
-
 import de.symeda.sormas.app.AbstractEditTabActivity;
 import de.symeda.sormas.app.EnterPinActivity;
 import de.symeda.sormas.app.LoginActivity;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.SormasApplication;
-import de.symeda.sormas.app.backend.caze.Case;
-import de.symeda.sormas.app.backend.caze.CaseDao;
-import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
-import de.symeda.sormas.app.AbstractRootTabActivity;
 import de.symeda.sormas.app.component.SyncLogDialog;
 import de.symeda.sormas.app.component.UserReportDialog;
 
@@ -32,7 +24,7 @@ public class SettingsActivity extends AbstractEditTabActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setContentView(R.layout.sormas_root_activity_layout);
+        setContentView(R.layout.sormas_default_activity_layout);
 
         super.onCreate(savedInstanceState);
         setTitle(getResources().getString(R.string.main_menu_settings));

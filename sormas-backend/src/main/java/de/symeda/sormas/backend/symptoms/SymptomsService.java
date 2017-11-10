@@ -19,7 +19,7 @@ public class SymptomsService extends AbstractAdoService<Symptoms> {
 	}
 
 	@Override
-	protected Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Symptoms, Symptoms> from, User user) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Symptoms, Symptoms> from, User user) {
 		// A user should not directly query for this
 		throw new UnsupportedOperationException();
 	}

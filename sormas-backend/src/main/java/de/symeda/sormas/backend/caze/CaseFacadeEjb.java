@@ -10,13 +10,24 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
+import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.caze.DashboardCase;
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.caze.MapCase;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
@@ -63,9 +74,13 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.ModelConstants;
 
 @Stateless(name = "CaseFacade")
 public class CaseFacadeEjb implements CaseFacade {
+
+	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
+	protected EntityManager em;
 
 	@EJB
 	private CaseService caseService;
@@ -119,6 +134,35 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
+	public List<CaseIndexDto> getIndexList(String userUuid) {
+		
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<CaseIndexDto> cq = cb.createQuery(CaseIndexDto.class);
+		Root<Case> caze = cq.from(Case.class);
+		Join<Case, Person> person = caze.join(Case.PERSON, JoinType.LEFT);
+		Join<Case, Region> region = caze.join(Case.REGION, JoinType.LEFT);
+		Join<Case, District> district = caze.join(Case.DISTRICT, JoinType.LEFT);
+		Join<Case, Facility> facility = caze.join(Case.HEALTH_FACILITY, JoinType.LEFT);
+		Join<Case, User> surveillanceOfficerUuid = caze.join(Case.SURVEILLANCE_OFFICER, JoinType.LEFT);
+
+		cq.multiselect(caze.get(Case.CREATION_DATE), caze.get(Case.CHANGE_DATE), caze.get(Case.UUID), 
+				caze.get(Case.EPID_NUMBER), person.get(Person.FIRST_NAME), person.get(Person.LAST_NAME),
+				caze.get(Case.DISEASE), caze.get(Case.DISEASE_DETAILS), caze.get(Case.CASE_CLASSIFICATION),
+				caze.get(Case.INVESTIGATION_STATUS), person.get(Person.PRESENT_CONDITION),
+				caze.get(Case.REPORT_DATE), region.get(Region.UUID), district.get(District.UUID), district.get(District.NAME), 
+				facility.get(Facility.UUID), surveillanceOfficerUuid.get(User.UUID));
+			
+		User user = userService.getByUuid(userUuid);		
+		Predicate filter = caseService.createUserFilter(cb, cq, caze, user);
+		if (filter != null) {
+			cq.where(filter);
+		}
+		
+		List<CaseIndexDto> resultList = em.createQuery(cq).getResultList();
+		return resultList;
+	}
+
+	@Override
 	public List<String> getAllUuids(String userUuid) {
 
 		User user = userService.getByUuid(userUuid);
@@ -169,6 +213,22 @@ public class CaseFacadeEjb implements CaseFacade {
 		User user = userService.getByReferenceDto(userRef);
 
 		return caseService.getAllAfter(null, user).stream().map(c -> toReferenceDto(c)).collect(Collectors.toList());
+	}
+	
+	@Override
+	public List<DashboardCase> getNewCasesForDashboard(DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid) {
+		District district = districtService.getByReferenceDto(districtRef);
+		User user = userService.getByUuid(userUuid);
+		
+		return caseService.getNewCasesForDashboard(district, disease, from, to, user);
+	}
+	
+	@Override
+	public List<MapCase> getCasesForMap(DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid) {
+		District district = districtService.getByReferenceDto(districtRef);
+		User user = userService.getByUuid(userUuid);
+		
+		return caseService.getCasesForMap(district, disease, from, to, user);
 	}
 
 	@Override
@@ -236,10 +296,10 @@ public class CaseFacadeEjb implements CaseFacade {
 			UserReferenceDto officerDto) {
 		Case caze = fromDto(getCaseDataByUuid(cazeRef.getUuid()));
 
-		Community community = communityService.getByUuid(communityDto.getUuid());
-		District district = community.getDistrict();
-		Region region = district.getRegion();
+		Community community = communityDto != null ? communityService.getByUuid(communityDto.getUuid()) : null;
 		Facility facility = facilityService.getByUuid(facilityDto.getUuid());
+		District district = facility.getDistrict();
+		Region region = district.getRegion();
 		User officer = null;
 		if (officerDto != null) {
 			officer = userService.getByUuid(officerDto.getUuid());
@@ -405,8 +465,10 @@ public class CaseFacadeEjb implements CaseFacade {
 	public void updateCaseInvestigationProcess(Case caze) {
 
 		// any pending case investigation task?
-		long pendingCount = taskService.getCount(new TaskCriteria().taskTypeEquals(TaskType.CASE_INVESTIGATION)
-				.cazeEquals(caze).taskStatusEquals(TaskStatus.PENDING));
+		long pendingCount = taskService.getCount(new TaskCriteria()
+				.taskTypeEquals(TaskType.CASE_INVESTIGATION)
+				.cazeEquals(caze)
+				.taskStatusEquals(TaskStatus.PENDING));
 
 		if (pendingCount > 0) {
 			// set status to investigation pending
@@ -416,8 +478,9 @@ public class CaseFacadeEjb implements CaseFacade {
 		} else {
 
 			// get "case investigation" task created last
-			List<Task> cazeTasks = taskService
-					.findBy(new TaskCriteria().taskTypeEquals(TaskType.CASE_INVESTIGATION).cazeEquals(caze));
+			List<Task> cazeTasks = taskService.findBy(new TaskCriteria()
+					.taskTypeEquals(TaskType.CASE_INVESTIGATION)
+					.cazeEquals(caze));
 
 			if (cazeTasks.isEmpty()) {
 				// no tasks at all -> create
@@ -494,7 +557,12 @@ public class CaseFacadeEjb implements CaseFacade {
 			if (!supervisors.isEmpty()) {
 				task.setAssigneeUser(supervisors.get(0));
 			} else {
-				throw new UnsupportedOperationException("surveillance supervisor missing for: " + caze.getRegion());
+				List<User> nationalUsers = userService.getAllByRegionAndUserRoles(null, UserRole.NATIONAL_USER);
+				if (!nationalUsers.isEmpty()) {
+					task.setAssigneeUser(nationalUsers.get(0));
+				} else {
+					throw new UnsupportedOperationException("no national user and surveillance supervisor missing for: " + caze.getRegion());
+				}
 			}
 		}
 	}

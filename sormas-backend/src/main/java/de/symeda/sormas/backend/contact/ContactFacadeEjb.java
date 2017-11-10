@@ -3,6 +3,7 @@ package de.symeda.sormas.backend.contact;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -20,13 +21,13 @@ import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.caze.MapCase;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.contact.ContactIndexDto;
-import de.symeda.sormas.api.contact.ContactMapDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.contact.MapContact;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskStatus;
@@ -38,12 +39,14 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb;
 import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.task.TaskCriteria;
 import de.symeda.sormas.backend.task.TaskService;
@@ -53,7 +56,6 @@ import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DateHelper8;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.visit.Visit;
-import de.symeda.sormas.backend.visit.VisitFacadeEjb;
 import de.symeda.sormas.backend.visit.VisitService;
 
 @Stateless(name = "ContactFacade")
@@ -199,18 +201,19 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 
 	@Override
-	public List<ContactMapDto> getMapContacts(Date fromDate, Date toDate, DistrictReferenceDto districtRef, Disease disease, String userUuid) {
+	public List<MapContact> getContactsForMap(DistrictReferenceDto districtRef, Disease disease, Date fromDate, Date toDate, String userUuid, List<MapCase> mapCases) {
 		User user = userService.getByUuid(userUuid);
 		District district = districtService.getByReferenceDto(districtRef);
+		List<String> caseUuids = new ArrayList<>();
+		for (MapCase mapCase : mapCases) {
+			caseUuids.add(mapCase.getUuid());
+		}
 
 		if (user == null) {
 			return Collections.emptyList();
 		}
-
-		return contactService.getMapContacts(fromDate, toDate, district, disease, user)
-				.stream()
-				.map(c -> toMapDto(c, visitService.getLastVisitByContact(c, VisitStatus.COOPERATIVE)))
-				.collect(Collectors.toList());
+		
+		return contactService.getContactsForMap(district, disease, fromDate, toDate, user, caseUuids);
 	}
 
 	public Contact fromDto(@NotNull ContactDto source) {
@@ -232,7 +235,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setReportDateTime(source.getReportDateTime());
 
 		// use only date, not time
-		target.setLastContactDate(DateHelper8.toDate(DateHelper8.toLocalDate(source.getLastContactDate())));
+		target.setLastContactDate(source.getLastContactDate() != null ? DateHelper8.toDate(DateHelper8.toLocalDate(source.getLastContactDate())) : null);
 		if (target.getLastContactDate() != null && target.getLastContactDate().after(target.getReportDateTime())) {
 			throw new ValidationException(Contact.LAST_CONTACT_DATE + " has to be before " + Contact.REPORT_DATE_TIME);
 		}
@@ -303,7 +306,9 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setCaze(CaseFacadeEjb.toReferenceDto(source.getCaze()));
 		target.setCazePerson(PersonFacadeEjb.toReferenceDto(source.getCaze().getPerson()));
 		target.setCazeDisease(source.getCaze().getDisease());
+		target.setCazeRegion(RegionFacadeEjb.toReferenceDto(source.getCaze().getRegion()));
 		target.setCazeDistrict(DistrictFacadeEjb.toReferenceDto(source.getCaze().getDistrict()));
+		target.setCazeHealthFacility(FacilityFacadeEjb.toReferenceDto(source.getCaze().getHealthFacility()));
 
 		target.setLastContactDate(source.getLastContactDate());
 		target.setContactProximity(source.getContactProximity());
@@ -325,27 +330,6 @@ public class ContactFacadeEjb implements ContactFacade {
 		}
 		target.setNumberOfCooperativeVisits(numberOfCooperativeVisits);
 		target.setNumberOfMissedVisits(numberOfMissedVisits);
-
-		return target;
-	}
-
-	public ContactMapDto toMapDto(Contact source, Visit lastVisit) {
-		if (source == null) {
-			return null;
-		}
-
-		ContactMapDto target = new ContactMapDto();
-		DtoHelper.fillReferenceDto(target, source);
-
-		target.setReportLat(source.getReportLat());
-		target.setReportLon(source.getReportLon());
-		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
-
-		target.setContactClassification(source.getContactClassification());
-		
-		if (lastVisit != null) {
-			target.setLastVisit(VisitFacadeEjb.toReferenceDto(lastVisit));
-		}
 
 		return target;
 	}

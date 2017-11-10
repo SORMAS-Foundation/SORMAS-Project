@@ -15,6 +15,16 @@ public abstract class DataTransferObject implements Serializable, Cloneable {
 	private Date changeDate;
 	private String uuid;
 
+	public DataTransferObject() {
+		
+	}
+	
+	public DataTransferObject(Date creationDate, Date changeDate, String uuid) {
+		this.creationDate = creationDate;
+		this.changeDate = changeDate;
+		this.uuid = uuid;
+	}
+
 	public Date getCreationDate() {
 		return creationDate;
 	}

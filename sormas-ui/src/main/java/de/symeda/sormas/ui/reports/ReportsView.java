@@ -1,6 +1,7 @@
 package de.symeda.sormas.ui.reports;
 
 import java.util.Date;
+import java.util.List;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.shared.ui.grid.HeightMode;
@@ -12,7 +13,6 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.ui.login.LoginHelper;
@@ -66,7 +66,11 @@ public class ReportsView extends AbstractView {
 		
 		epiWeekFilter = new ComboBox();
 		epiWeekFilter.setWidth(200, Unit.PIXELS);
-		epiWeekFilter.addItems(DateHelper.createWeeksList(year));
+		List<EpiWeek> epiWeekList = DateHelper.createEpiWeekList(year);
+		for (EpiWeek epiWeek : epiWeekList) {
+			epiWeekFilter.addItem(epiWeek.getWeek());
+			epiWeekFilter.setItemCaption(epiWeek.getWeek(), epiWeek.getWeek() + " (" + DateHelper.formatShortDate(DateHelper.getEpiWeekStart(epiWeek)) + " - " + DateHelper.formatShortDate(DateHelper.getEpiWeekEnd(epiWeek)) + ")");
+		}
 		epiWeekFilter.select(week);
 		epiWeekFilter.setCaption("Epi Week");
 		epiWeekFilter.addValueChangeListener(e -> {
@@ -101,10 +105,7 @@ public class ReportsView extends AbstractView {
 	}	
 	
 	private void reloadGrid() {
-		RegionReferenceDto region = null;
-		if (!LoginHelper.isUserInRole(UserRole.NATIONAL_USER)) {
-			region = LoginHelper.getCurrentUser().getRegion();
-		}
+		RegionReferenceDto region = LoginHelper.getCurrentUser().getRegion();
 		grid.reload(region, (int) yearFilter.getValue(), (int) epiWeekFilter.getValue());
 	}
 }

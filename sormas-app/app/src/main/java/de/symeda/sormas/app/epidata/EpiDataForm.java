@@ -321,6 +321,6 @@ public class EpiDataForm extends FormTab {
 
     @Override
     public AbstractDomainObject getData() {
-        return binding.getEpiData();
+        return binding == null ? null : binding.getEpiData();
     }
 }

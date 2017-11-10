@@ -43,22 +43,15 @@
             </android.support.v4.view.ViewPager>
 
         </LinearLayout>
-        <!--
 
-        <FrameLayout
-            android:id="@+id/content_frame"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-        -->
         <!-- The navigation drawer -->
-        <ListView android:id="@+id/left_drawer"
-            android:layout_width="200dp"
+        <android.support.design.widget.NavigationView
+            android:id="@+id/navigation_view"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_gravity="start"
-            android:choiceMode="singleChoice"
-            android:divider="@android:color/transparent"
-            android:dividerHeight="0dp"
-            android:background="@color/colorPrimary"/>
+            android:layout_gravity="start|left"
+            app:menu="@menu/nav_menu"/>
+
     </android.support.v4.widget.DrawerLayout>
 
 

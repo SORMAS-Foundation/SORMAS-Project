@@ -29,6 +29,7 @@ public class Facility extends AbstractDomainObject {
 	public static final String TABLE_NAME = "facility";
 	public static final String I18N_PREFIX = "Facility";
 
+	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
 	public static final String NAME = "name";
 	public static final String TYPE = "type";

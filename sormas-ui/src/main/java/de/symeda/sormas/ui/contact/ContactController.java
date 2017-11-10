@@ -94,7 +94,6 @@ public class ContactController {
     	UserReferenceDto userReference = LoginHelper.getCurrentUserAsReference();
     	contact.setReportingUser(userReference);
     	contact.setContactClassification(ContactClassification.POSSIBLE);
-    	contact.setLastContactDate(new Date());
     	
     	return contact;
     }

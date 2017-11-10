@@ -9,6 +9,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.hospitalization.PreviousHospitalization;
 import de.symeda.sormas.app.component.PropertyField;
+import de.symeda.sormas.app.component.SpinnerField;
 import de.symeda.sormas.app.databinding.PreviousHospitalizationEditFragmentLayoutBinding;
 
 /**
@@ -28,12 +29,6 @@ public final class PreviousHospitalizationValidator {
             success = false;
         }
 
-        // Community/Ward
-        if (prevHosp.getCommunity() == null) {
-            binding.prevHospCommunity.setError(resources.getString(R.string.validation_community));
-            success = false;
-        }
-
         // District/LGA
         if (prevHosp.getDistrict() == null) {
             binding.prevHospDistrict.setError(resources.getString(R.string.validation_district));
@@ -43,18 +38,6 @@ public final class PreviousHospitalizationValidator {
         // Region/State
         if (prevHosp.getRegion() == null) {
             binding.prevHospRegion.setError(resources.getString(R.string.validation_region));
-            success = false;
-        }
-
-        // Discharge date
-        if (prevHosp.getDischargeDate() == null) {
-            binding.prevHospDischargeDate.setError(resources.getString(R.string.validation_prev_hosp_discharge_date));
-            success = false;
-        }
-
-        // Admission date
-        if (prevHosp.getAdmissionDate() == null) {
-            binding.prevHospAdmissionDate.setError(resources.getString(R.string.validation_prev_hosp_admission_date));
             success = false;
         }
 
@@ -73,9 +56,8 @@ public final class PreviousHospitalizationValidator {
         }
     }
 
-    private static final List<PropertyField<?>> getPreviousHospitalizationFields(PreviousHospitalizationEditFragmentLayoutBinding binding) {
-        return Arrays.asList(binding.prevHospHealthFacility, binding.prevHospCommunity, binding.prevHospDistrict,
-                binding.prevHospRegion, binding.prevHospDischargeDate, binding.prevHospAdmissionDate);
+    private static final List<SpinnerField> getPreviousHospitalizationFields(PreviousHospitalizationEditFragmentLayoutBinding binding) {
+        return Arrays.asList(binding.prevHospHealthFacility, binding.prevHospDistrict, binding.prevHospRegion);
     }
 
 }

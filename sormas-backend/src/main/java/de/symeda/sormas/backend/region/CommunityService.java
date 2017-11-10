@@ -21,7 +21,7 @@ public class CommunityService extends AbstractAdoService<Community> {
 	}
 
 	@Override
-	protected Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Community, Community> from, User user) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Community, Community> from, User user) {
 		// no fitler by user needed
 		return null;
 	}

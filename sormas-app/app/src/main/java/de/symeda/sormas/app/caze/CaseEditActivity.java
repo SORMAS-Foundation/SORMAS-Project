@@ -37,7 +37,6 @@ import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.contact.ContactDao;
 import de.symeda.sormas.app.backend.epidata.EpiData;
 import de.symeda.sormas.app.backend.hospitalization.Hospitalization;
-import de.symeda.sormas.app.backend.location.LocationDao;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.backend.sample.Sample;
@@ -89,7 +88,7 @@ public class CaseEditActivity extends AbstractEditTabActivity {
         // Android doesn't call onResume when the tab has no focus which would otherwise lead
         // to certain spinners not displaying their values
         ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
-        viewPager.setOffscreenPageLimit(CaseEditTabs.values().length);
+        viewPager.setOffscreenPageLimit(0);
         toolbar = (Toolbar) findViewById(R.id.my_toolbar);
         if (toolbar != null) {
             setSupportActionBar(toolbar);
@@ -308,27 +307,26 @@ public class CaseEditActivity extends AbstractEditTabActivity {
             // Save button
             case R.id.action_save:
                 final Case caseBeforeSaving = DatabaseHelper.getCaseDao().queryUuid(caze.getUuid());
+                boolean showPlagueTypeChangeAlert = false;
                 if (caze.getDisease() == Disease.PLAGUE) {
-                    Symptoms symptoms = (Symptoms) getData(adapter.getPositionOfTab(CaseEditTabs.SYMPTOMS));
-                    SymptomsDto symptomsDto = new SymptomsDto();
-                    new SymptomsDtoHelper().fillInnerFromAdo(symptomsDto, symptoms);
+                    showPlagueTypeChangeAlert = updatePlagueType(caze);
+                }
 
-                    final PlagueType newPlagueType = DiseaseHelper.getPlagueTypeForSymptoms(symptomsDto);
-                    if (newPlagueType != null && newPlagueType != caze.getPlagueType()) {
-                        AlertDialog plagueTypeChangeDialog = buildPlagueTypeChangeDialog(newPlagueType, new Callback() {
+                if (saveCaseToDatabase(caze)) {
+                    if (caze.getDisease() == Disease.PLAGUE && showPlagueTypeChangeAlert) {
+                        AlertDialog plagueTypeChangeDialog = buildPlagueTypeChangeDialog(caze.getPlagueType(), new Callback() {
                             @Override
                             public void call() {
-                                caze.setPlagueType(newPlagueType);
-                                saveCase(caze, caseBeforeSaving);
+                                finalizeSaveProcess(caze, caseBeforeSaving);
                             }
                         });
                         plagueTypeChangeDialog.show();
                     } else {
-                        saveCase(caze, caseBeforeSaving);
+                        finalizeSaveProcess(caze, caseBeforeSaving);
                     }
-                } else {
-                    saveCase(caze, caseBeforeSaving);
                 }
+
+                return true;
 
             // Add button
             case R.id.action_add:
@@ -375,10 +373,31 @@ public class CaseEditActivity extends AbstractEditTabActivity {
         createTabViews(adapter);
 
         pager.setCurrentItem(currentTab);
+
+        pager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                if (position > pager.getOffscreenPageLimit()) {
+                    pager.setOffscreenPageLimit(Math.min(position + 2, CaseEditTabs.values().length));
+                }
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                if (position > pager.getOffscreenPageLimit()) {
+                    pager.setOffscreenPageLimit(Math.min(position + 2, CaseEditTabs.values().length));
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
     }
 
     public void moveCase(View v) {
-        if (saveCaseToDatabase()) {
+        if (saveCaseToDatabase((Case) getData(adapter.getPositionOfTab(CaseEditTabs.CASE_DATA)))) {
             final CaseDataFragmentLayoutBinding caseBinding = ((CaseEditDataForm)getTabByPosition(adapter.getPositionOfTab(CaseEditTabs.CASE_DATA))).getBinding();
 
             final Consumer positiveCallback = new Consumer() {
@@ -404,31 +423,24 @@ public class CaseEditActivity extends AbstractEditTabActivity {
         }
     }
 
-    private boolean saveCase(Case caze, Case caseBeforeSaving) {
-        if (saveCaseToDatabase()) {
-            Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_case)), Snackbar.LENGTH_LONG).show();
+    private boolean updatePlagueType(Case caze) {
+        Symptoms symptoms = (Symptoms) getData(adapter.getPositionOfTab(CaseEditTabs.SYMPTOMS));
+        if (symptoms != null) {
+            SymptomsDto symptomsDto = new SymptomsDto();
+            new SymptomsDtoHelper().fillInnerFromAdo(symptomsDto, symptoms);
 
-            // switch to next tab
-            try {
-                pager.setCurrentItem(currentTab + 1);
-            } catch (NullPointerException e) {
-                pager.setCurrentItem(currentTab);
-            }
-
-            // reset adapter for Plague cases to make sure that the Contact tab is displayed or hidden correctly
-            Case savedCase = DatabaseHelper.getCaseDao().queryUuid(caze.getUuid());
-            if (savedCase.getDisease() == Disease.PLAGUE && caseBeforeSaving.getPlagueType() != savedCase.getPlagueType() &&
-                    (caseBeforeSaving.getPlagueType() == PlagueType.PNEUMONIC || savedCase.getPlagueType() == PlagueType.PNEUMONIC)) {
-                setAdapter(savedCase);
+            final PlagueType newPlagueType = DiseaseHelper.getPlagueTypeForSymptoms(symptomsDto);
+            if (newPlagueType != null && newPlagueType != caze.getPlagueType()) {
+                caze.setPlagueType(newPlagueType);
+                return true;
             }
         }
 
-        return true;
+        return false;
     }
 
-    private boolean saveCaseToDatabase() {
+    private boolean saveCaseToDatabase(Case caze) {
         // PATIENT
-        LocationDao locLocationDao = DatabaseHelper.getLocationDao();
         PersonDao personDao = DatabaseHelper.getPersonDao();
         Person person = (Person) getData(adapter.getPositionOfTab(CaseEditTabs.PATIENT));
 
@@ -441,28 +453,30 @@ public class CaseEditActivity extends AbstractEditTabActivity {
         // EPI DATA
         EpiData epiData = (EpiData) getData(adapter.getPositionOfTab(CaseEditTabs.EPIDATA));
 
-        // CASE_DATA
-        Case caze = (Case) getData(adapter.getPositionOfTab(CaseEditTabs.CASE_DATA));
-
         // Validations have to be processed from last tab to first to make sure that the user will be re-directed
         // to the first tab with a validation error
-        PersonEditFragmentLayoutBinding personBinding =  ((PersonEditForm)getTabByPosition(adapter.getPositionOfTab(CaseEditTabs.PATIENT))).getBinding();
-        CaseSymptomsFragmentLayoutBinding symptomsBinding = ((SymptomsEditForm)getTabByPosition(adapter.getPositionOfTab(CaseEditTabs.SYMPTOMS))).getBinding();
-
-        // Necessary because the entry could've been automatically set, in which case the setValue method of the
-        // custom field has not been called
-        symptoms.setOnsetSymptom((String) symptomsBinding.symptomsOnsetSymptom.getValue());
-
-        PersonValidator.clearErrors(personBinding);
-        SymptomsValidator.clearErrorsForSymptoms(symptomsBinding);
-
         int validationErrorTab = -1;
 
-        if (!SymptomsValidator.validateCaseSymptoms(symptoms, symptomsBinding)) {
-            validationErrorTab = adapter.getPositionOfTab(CaseEditTabs.SYMPTOMS);
+        if (symptoms != null) {
+            CaseSymptomsFragmentLayoutBinding symptomsBinding = ((SymptomsEditForm)getTabByPosition(adapter.getPositionOfTab(CaseEditTabs.SYMPTOMS))).getBinding();
+
+            // Necessary because the entry could've been automatically set, in which case the setValue method of the
+            // custom field has not been called
+            symptoms.setOnsetSymptom((String) symptomsBinding.symptomsOnsetSymptom.getValue());
+
+            SymptomsValidator.clearErrorsForSymptoms(symptomsBinding);
+            if (!SymptomsValidator.validateCaseSymptoms(symptoms, symptomsBinding)) {
+                validationErrorTab = adapter.getPositionOfTab(CaseEditTabs.SYMPTOMS);
+            }
         }
-        if (!PersonValidator.validatePersonData(person, personBinding)) {
-            validationErrorTab = adapter.getPositionOfTab(CaseEditTabs.PATIENT);
+
+        if (person != null) {
+            PersonEditFragmentLayoutBinding personBinding =  ((PersonEditForm)getTabByPosition(adapter.getPositionOfTab(CaseEditTabs.PATIENT))).getBinding();
+
+            PersonValidator.clearErrors(personBinding);
+            if (!PersonValidator.validatePersonData(person, personBinding)) {
+                validationErrorTab = adapter.getPositionOfTab(CaseEditTabs.PATIENT);
+            }
         }
 
         if (validationErrorTab >= 0) {
@@ -471,11 +485,19 @@ public class CaseEditActivity extends AbstractEditTabActivity {
         }
 
         try {
-            personDao.saveAndSnapshot(person);
-            caze.setPerson(person); // we have to set this - otherwise data from the person will be overridden with not fully initialized data
-            caze.setSymptoms(symptoms);
-            caze.setHospitalization(hospitalization);
-            caze.setEpiData(epiData);
+            if (person != null) {
+                personDao.saveAndSnapshot(person);
+                caze.setPerson(person); // we have to set this - otherwise data from the person will be overridden with not fully initialized data
+            }
+            if (symptoms != null) {
+                caze.setSymptoms(symptoms);
+            }
+            if (hospitalization != null) {
+                caze.setHospitalization(hospitalization);
+            }
+            if (epiData != null) {
+                caze.setEpiData(epiData);
+            }
             DatabaseHelper.getCaseDao().saveAndSnapshot(caze);
 
             return true;
@@ -486,6 +508,24 @@ public class CaseEditActivity extends AbstractEditTabActivity {
             ErrorReportingHelper.sendCaughtException(tracker, e, caze, true);
 
             return false;
+        }
+    }
+
+    private void finalizeSaveProcess(Case caze, Case caseBeforeSaving) {
+        Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_case)), Snackbar.LENGTH_LONG).show();
+
+        // switch to next tab
+        try {
+            pager.setCurrentItem(currentTab + 1);
+        } catch (NullPointerException e) {
+            pager.setCurrentItem(currentTab);
+        }
+
+        // reset adapter for Plague cases to make sure that the Contact tab is displayed or hidden correctly
+        Case savedCase = DatabaseHelper.getCaseDao().queryUuid(caze.getUuid());
+        if (savedCase.getDisease() == Disease.PLAGUE && caseBeforeSaving.getPlagueType() != savedCase.getPlagueType() &&
+                (caseBeforeSaving.getPlagueType() == PlagueType.PNEUMONIC || savedCase.getPlagueType() == PlagueType.PNEUMONIC)) {
+            setAdapter(savedCase);
         }
     }
 

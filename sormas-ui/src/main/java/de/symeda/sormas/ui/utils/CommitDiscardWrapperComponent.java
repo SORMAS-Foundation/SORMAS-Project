@@ -33,6 +33,9 @@ import com.vaadin.ui.TextArea;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.ui.login.LoginHelper;
+
 
 public class CommitDiscardWrapperComponent<C extends Component> extends
 		VerticalLayout implements Buffered {
@@ -82,6 +85,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends
 	private boolean autoFocusing = false;
 
 	private boolean autoDisablingButtons = false;
+	
 	private final ValueChangeListener autoHideValueChangeListener = new ValueChangeListener() {
 		private static final long serialVersionUID = 1L;
 		@Override
@@ -151,6 +155,11 @@ public class CommitDiscardWrapperComponent<C extends Component> extends
 		setShortcutsEnabled(shortcutsEnabled);
 
 		applyAutoDisabling();
+		
+		if (!LoginHelper.hasUserRight(UserRight.EDIT)) {
+			getCommitButton().setVisible(false);
+			getDiscardButton().setVisible(false);
+		}
 	}
 
 	public void setAutoFocusing(boolean autoFocusing) {

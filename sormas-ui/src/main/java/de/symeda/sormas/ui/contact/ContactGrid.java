@@ -7,6 +7,8 @@ import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.GeneratedPropertyContainer;
 import com.vaadin.data.util.PropertyValueGenerator;
 import com.vaadin.data.util.filter.Compare.Equal;
+import com.vaadin.data.util.filter.Or;
+import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.ui.Grid;
 
 import de.symeda.sormas.api.Disease;
@@ -17,7 +19,9 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -144,10 +148,26 @@ public class ContactGrid extends Grid {
 		}
 	}
 
+    public void setRegionFilter(RegionReferenceDto region) {
+		getContainer().removeContainerFilters(ContactIndexDto.CAZE_REGION);
+		if (region != null) {
+	    	Equal filter = new Equal(ContactIndexDto.CAZE_REGION, region);  
+	        getContainer().addContainerFilter(filter);
+		}
+	}
+    
     public void setDistrictFilter(DistrictReferenceDto district) {
 		getContainer().removeContainerFilters(ContactIndexDto.CAZE_DISTRICT);
 		if (district != null) {
 	    	Equal filter = new Equal(ContactIndexDto.CAZE_DISTRICT, district);  
+	        getContainer().addContainerFilter(filter);
+		}
+	}
+    
+    public void setHealthFacilityFilter(FacilityReferenceDto facility) {
+		getContainer().removeContainerFilters(ContactIndexDto.CAZE_HEALTH_FACILITY);
+		if (facility != null) {
+	    	Equal filter = new Equal(ContactIndexDto.CAZE_HEALTH_FACILITY, facility);  
 	        getContainer().addContainerFilter(filter);
 		}
 	}
@@ -176,6 +196,23 @@ public class ContactGrid extends Grid {
 		}
 	}
 
+	public void filterByText(String text) {
+		getContainer().removeContainerFilters(ContactIndexDto.UUID);
+		getContainer().removeContainerFilters(ContactIndexDto.PERSON);
+		getContainer().removeContainerFilters(ContactIndexDto.CAZE_PERSON);
+    	getContainer().removeContainerFilters(ContactIndexDto.CAZE);
+
+    	if(text != null && !text.isEmpty()) {
+            SimpleStringFilter uuidFilter = new SimpleStringFilter(ContactIndexDto.UUID, text, true, false);
+            SimpleStringFilter personFilter = new SimpleStringFilter(ContactIndexDto.PERSON, text, true, false);
+            SimpleStringFilter cazePersonFilter = new SimpleStringFilter(ContactIndexDto.CAZE_PERSON, text, true, false);
+            SimpleStringFilter cazeFilter = new SimpleStringFilter(ContactIndexDto.CAZE, text, true, false);
+            getContainer().addContainerFilter(new Or(
+            		uuidFilter, personFilter, cazePersonFilter, cazeFilter));
+		}
+	}
+	
+	
     @SuppressWarnings("unchecked")
 	private BeanItemContainer<ContactIndexDto> getContainer() {
     	GeneratedPropertyContainer container = (GeneratedPropertyContainer) super.getContainerDataSource();

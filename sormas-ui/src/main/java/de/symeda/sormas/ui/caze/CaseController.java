@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.vaadin.navigator.Navigator;
+import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.shared.ui.label.ContentMode;
@@ -13,6 +14,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Link;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.VerticalLayout;
@@ -26,6 +28,7 @@ import de.symeda.sormas.api.PlagueType;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
+import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactDto;
@@ -42,7 +45,7 @@ import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsFacade;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
@@ -98,6 +101,11 @@ public class CaseController {
    		String navigationState = CaseDataView.VIEW_NAME + "/" + caseUuid;
    		SormasUI.get().getNavigator().navigateTo(navigationState);	
     }
+    
+    public Link createLinkToData(String caseUuid, String caption) {
+    	Link link = new Link(caption, new ExternalResource("#!" + CaseDataView.VIEW_NAME + "/" + caseUuid));
+    	return link;
+    }
 
     public void navigateToSymptoms(String caseUuid) {
    		String navigationState = CaseSymptomsView.VIEW_NAME + "/" + caseUuid;
@@ -140,9 +148,9 @@ public class CaseController {
                 + fragmentParameter, false);
     }
 
-    public List<CaseDataDto> getCaseIndexList() {
+    public List<CaseIndexDto> getCaseIndexList() {
     	UserDto user = LoginHelper.getCurrentUser();
-    	return FacadeProvider.getCaseFacade().getAllCasesAfter(null, user.getUuid());
+    	return FacadeProvider.getCaseFacade().getIndexList(user.getUuid());
     }
     
     private CaseDataDto findCase(String uuid) {
@@ -249,7 +257,7 @@ public class CaseController {
         });
         
         // Initialize 'Move case to another health facility' button
-        if (LoginHelper.getCurrentUserRoles().contains(UserRole.SURVEILLANCE_SUPERVISOR)) {
+        if (LoginHelper.hasUserRight(UserRight.CASE_EDIT_FACILITY)) {
 	        Button moveCaseButton = new Button();
 	        moveCaseButton.addStyleName(ValoTheme.BUTTON_LINK);
 	        moveCaseButton.setCaption("Move case to another health facility");
@@ -407,7 +415,7 @@ public class CaseController {
 		VerticalLayout layout = new VerticalLayout();	
 		layout.setMargin(true);
 		Label description = new Label("The symptoms selected match the clinical criteria for " + plagueType.toString() + ". "
-				+ "It will be set to " + plagueType.toString() + " for this case.");
+				+ "The plague type has been set to " + plagueType.toString() + " for this case.");
 		description.setContentMode(ContentMode.HTML);
 		description.setWidth(100, Unit.PERCENTAGE);
 		layout.addComponent(description);

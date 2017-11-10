@@ -12,6 +12,7 @@ import com.vaadin.server.VaadinSession;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 
 
@@ -59,7 +60,17 @@ public class LoginHelper {
 	public static boolean isUserInRole(UserRole userRole) {
 		return VaadinServletService.getCurrentServletRequest().isUserInRole(userRole.name());
 	}
-    
+
+	public static boolean hasUserRight(UserRight userRight) {
+		// TODO cache user on login to make this faster?
+		for (UserRole userRole : userRight.getUserRoles()) {
+			if (isUserInRole(userRole)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
     public static String getCurrentUserName() {
     	
 		Principal activeUserPrincipal = VaadinServletService.getCurrentServletRequest().getUserPrincipal();

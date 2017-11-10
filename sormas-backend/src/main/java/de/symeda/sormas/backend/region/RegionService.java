@@ -43,7 +43,7 @@ public class RegionService extends AbstractAdoService<Region> {
 	}
 
 	@Override
-	protected Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Region, Region> from, User user) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Region, Region> from, User user) {
 		// no fitler by user needed
 		return null;
 	}

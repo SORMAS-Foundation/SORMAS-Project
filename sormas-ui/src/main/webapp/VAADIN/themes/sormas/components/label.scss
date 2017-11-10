@@ -1,0 +1,61 @@
+
+@mixin sormas-label {
+	
+	.v-label-border-critical {
+		border-top: 4px solid #FF0000;
+		border-radius: 3px;
+		padding-top: 6px;
+	}
+
+	.v-label-border-important {
+		border-top: 4px solid #FF8C00;
+		border-radius: 3px;
+		padding-top: 6px;
+	}
+
+	.v-label-border-relevant {
+		border-top: 4px solid #FFD700;
+		border-radius: 3px;
+		padding-top: 6px;
+	}
+
+	.v-label-border-neutral {
+		border-top: 4px solid #00BFFF;
+		border-radius: 3px;
+		padding-top: 6px;
+	}
+
+	.v-label-border-positive {
+		border-top: 4px solid #32CD32;
+		border-radius: 3px;
+		padding-top: 6px;
+	}
+
+	.v-label-border-wayne {
+		border-top: 4px solid #808080;
+		border-radius: 3px;
+		padding-top: 6px;
+	}
+
+	.v-label-uppercase-small {
+		color: $s-secondary-color;
+		font-weight: bold;
+		text-transform: uppercase;
+    	font-size: 0.8em;
+	}
+
+	.v-label-uppercase-normal {
+		color: $s-primary-color;
+		font-weight: bold;
+		text-transform: uppercase;
+    	font-size: 1em;
+	}
+
+	.v-label-uppercase-xlarge {
+		color: $s-primary-color;
+		font-weight: bold;
+		text-transform: uppercase;
+    	font-size: 2.5em;
+	}
+
+}

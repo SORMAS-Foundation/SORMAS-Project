@@ -103,7 +103,6 @@ public class CaseDataDto extends CaseReferenceDto {
 	private Double reportLon;
 	private Float reportLatLonAccuracy;
 
-	
 	public CaseClassification getCaseClassification() {
 		return caseClassification;
 	}

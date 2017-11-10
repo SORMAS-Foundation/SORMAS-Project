@@ -20,10 +20,11 @@ import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
+import de.symeda.sormas.backend.event.EventFacadeEjb;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
-import de.symeda.sormas.backend.person.PersonFacadeEjb;
+import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb;
 import de.symeda.sormas.backend.region.CommunityService;
@@ -33,6 +34,8 @@ import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.report.WeeklyReportFacadeEjb.WeeklyReportFacadeEjbLocal;
+import de.symeda.sormas.backend.sample.SampleFacadeEjb;
+import de.symeda.sormas.backend.sample.SampleTestFacadeEjb;
 import de.symeda.sormas.backend.task.TaskFacadeEjb;
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb;
@@ -81,11 +84,12 @@ public class WeeklyReportFacadeEjbTest extends BaseBeanTest {
 	}
 	
 	private TestDataCreator createTestDataCreator() {
-		return new TestDataCreator(getBean(UserFacadeEjbLocal.class), getBean(PersonFacadeEjb.class),
+		return new TestDataCreator(getBean(UserFacadeEjbLocal.class), getBean(PersonFacadeEjbLocal.class),
 				getBean(CaseFacadeEjbLocal.class), getBean(ContactFacadeEjbLocal.class), getBean(TaskFacadeEjb.class),
-				getBean(VisitFacadeEjb.class), getBean(WeeklyReportFacadeEjbLocal.class), getBean(RegionFacadeEjb.class), getBean(DistrictFacadeEjb.class), 
-				getBean(CommunityFacadeEjb.class), getBean(FacilityFacadeEjb.class), getBean(RegionService.class), getBean(DistrictService.class),
-				getBean(CommunityService.class), getBean(FacilityService.class));
+				getBean(VisitFacadeEjb.class), getBean(WeeklyReportFacadeEjbLocal.class), getBean(EventFacadeEjb.class), 
+				getBean(SampleFacadeEjb.class), getBean(SampleTestFacadeEjb.class), getBean(RegionFacadeEjb.class), 
+				getBean(DistrictFacadeEjb.class), getBean(CommunityFacadeEjb.class), getBean(FacilityFacadeEjb.class), 
+				getBean(RegionService.class), getBean(DistrictService.class), getBean(CommunityService.class), getBean(FacilityService.class));
 	}
 	
 }

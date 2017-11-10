@@ -35,7 +35,7 @@ public class DistrictService extends AbstractAdoService<District> {
 	}
 	
 	@Override
-	protected Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<District, District> from, User user) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<District, District> from, User user) {
 		// no fitler by user needed
 		return null;
 	}

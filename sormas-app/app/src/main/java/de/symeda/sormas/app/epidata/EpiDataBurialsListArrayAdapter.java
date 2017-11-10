@@ -40,18 +40,19 @@ public class EpiDataBurialsListArrayAdapter extends ArrayAdapter<EpiDataBurial> 
 
         EpiDataBurial burial = getItem(position);
 
-        StringBuilder periodString = new StringBuilder();
-        if (burial.getBurialDateFrom() != null) {
-            periodString.append(DateHelper.formatShortDate(burial.getBurialDateFrom()));
-            periodString.append(" - ");
-        }
-
-        if (burial.getBurialDateTo() != null) {
-            periodString.append(DateHelper.formatShortDate(burial.getBurialDateTo()));
+        String burialPeriod = "";
+        if (burial.getBurialDateFrom() == null && burial.getBurialDateTo() == null) {
+            burialPeriod = getContext().getResources().getString(R.string.caption_unknown);
+        } else {
+            StringBuilder sb = new StringBuilder();
+            sb.append(burial.getBurialDateFrom() != null ? DateHelper.formatShortDate(burial.getBurialDateFrom()) : "?");
+            sb.append(" - ");
+            sb.append(burial.getBurialDateTo() != null ? DateHelper.formatShortDate(burial.getBurialDateTo()) : "?");
+            burialPeriod = sb.toString();
         }
 
         TextView period = (TextView) convertView.findViewById(R.id.burial_period_li);
-        period.setText(periodString.toString());
+        period.setText(burialPeriod);
 
         TextView lga = (TextView) convertView.findViewById(R.id.burial_lga_li);
         if (burial.getBurialAddress() != null && burial.getBurialAddress().getDistrict() != null) {

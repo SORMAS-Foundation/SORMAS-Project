@@ -1,5 +1,6 @@
 package de.symeda.sormas.backend.event;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -14,11 +15,11 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.event.DashboardEvent;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.location.Location;
-import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.user.User;
 
@@ -62,6 +63,55 @@ public class EventService extends AbstractAdoService<Event> {
 		List<Event> resultList = em.createQuery(cq).getResultList();
 		return resultList;
 	}
+	
+	public List<DashboardEvent> getNewEventsForDashboard(District district, Disease disease, Date from, Date to, User user) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<DashboardEvent> cq = cb.createQuery(DashboardEvent.class);
+		Root<Event> event = cq.from(getElementClass());
+		
+		Predicate filter = createUserFilter(cb, cq, event, user);
+		Predicate dateFilter = cb.between(event.get(Event.REPORT_DATE_TIME), from, to);
+		if (filter != null) {
+			filter = cb.and(filter, dateFilter);
+		} else {
+			filter = dateFilter;
+		}
+		
+		if (district != null) {
+			Join<Event, Location> eventLocation = event.join(Event.EVENT_LOCATION);
+			Predicate districtFilter = cb.equal(eventLocation.get(Location.DISTRICT), district);
+			if (filter != null) {
+				filter = cb.and(filter, districtFilter);
+			} else {
+				filter = districtFilter;
+			}
+		}
+		
+		if (disease != null) {
+			Predicate diseaseFilter = cb.equal(event.get(Event.DISEASE), disease);
+			if (filter != null) {
+				filter = cb.and(filter, diseaseFilter);
+			} else {
+				filter = diseaseFilter;
+			}
+		}
+		
+		List<DashboardEvent> result;
+		if (filter != null) {
+			cq.where(filter);
+			cq.multiselect(
+					event.get(Event.EVENT_TYPE),
+					event.get(Event.EVENT_STATUS),
+					event.get(Event.DISEASE)
+			);
+			
+			result = em.createQuery(cq).getResultList();
+		} else {
+			result = Collections.emptyList();
+		}
+		
+		return result;
+	}
 
 	/**
 	 * @see /sormas-backend/doc/UserDataAccess.md
@@ -69,9 +119,11 @@ public class EventService extends AbstractAdoService<Event> {
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Event,Event> eventPath, User user) {
 		// National users can access all events in the system
-		if (user.getUserRoles().contains(UserRole.NATIONAL_USER)) {
+		if (user.getUserRoles().contains(UserRole.NATIONAL_USER)
+			|| user.getUserRoles().contains(UserRole.NATIONAL_OBSERVER)) {
 			return null;
 		}
+
 		
 		// whoever created the event or is assigned to it is allowed to access it
 		Predicate filter = cb.equal(eventPath.get(Event.REPORTING_USER), user);

@@ -38,11 +38,15 @@ public class EpiDataBurialsField extends AbstractTableField<EpiDataBurialDto> {
 			@Override
 			public Object generateCell(Table source, Object itemId, Object columnId) {
 				EpiDataBurialDto burial = (EpiDataBurialDto) itemId;
-				StringBuilder periodBuilder = new StringBuilder();
-				periodBuilder.append(DateHelper.formatDate(burial.getBurialDateFrom()));
-				periodBuilder.append(" - ");
-				periodBuilder.append(DateHelper.formatDate(burial.getBurialDateTo()));
-				return periodBuilder.toString();
+				if (burial.getBurialDateFrom() == null && burial.getBurialDateTo() == null) {
+					return "Unknown";
+				} else {
+					StringBuilder periodBuilder = new StringBuilder();
+					periodBuilder.append(burial.getBurialDateFrom() != null ? DateHelper.formatDate(burial.getBurialDateFrom()) : "?");
+					periodBuilder.append(" - ");
+					periodBuilder.append(burial.getBurialDateTo() != null ? DateHelper.formatDate(burial.getBurialDateTo()) : "?");
+					return periodBuilder.toString();
+				}
 			}
 		});
 		

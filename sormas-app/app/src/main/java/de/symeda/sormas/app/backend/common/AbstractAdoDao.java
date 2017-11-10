@@ -834,12 +834,20 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
             builder.where().notIn(AbstractDomainObject.UUID, validUuids);
             List<ADO> invalidEntities = builder.query();
             for (ADO invalidEntity : invalidEntities) {
-                // let user know if changes are lost
-                if (invalidEntity.isModified()) {
-                    DatabaseHelper.getSyncLogDao().createWithParentStack(invalidEntity.toString(), "Changes dropped because you have no longer access to this entity.");
+
+                if (invalidEntity.isNew()) {
+                    // don't delete new entities
+                    continue;
                 }
-                // delete with all embedded entities
-                deleteCascade(invalidEntity);
+                else {
+                    if (invalidEntity.isModified()) {
+                        // let user know if changes are lost
+                        DatabaseHelper.getSyncLogDao().createWithParentStack(invalidEntity.toString(), "Changes dropped because you have no longer access to this entity.");
+                        // TODO include JSON backup
+                    }
+                    // delete with all embedded entities
+                    deleteCascade(invalidEntity);
+                }
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -868,7 +876,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
             ADO ado = getAdoClass().newInstance();
             ado.setUuid(DataHelper.createUuid());
             ado.setCreationDate(new Date()); // now
-            ado.setChangeDate(new Date(0)); // minimum, becuase this has to be set by the server
+            ado.setChangeDateForNew(); // this has to be set by the server
 
             // build all embedded entities
 

@@ -48,6 +48,21 @@
 	  &.v-select-optiongroup-caption-inline {
 	  	text-align: right;
 	  }
+	  	
+	  &.v-select-optiongroup-horizontal-subtle {
+    	margin-top: 10px;
+ 		.v-radiobutton {
+	      border: $v-border-subtle;
+    	  font-size: 12px;
+ 	  	  :root & > input {
+ 	        &:checked ~ label {
+	      	  background: $v-selection-color;
+	      	  color: #FFF;
+	    	}
+	  	  }
+		}
+  	  }
+	 
   }
 
   .v-caption-caption-inline {
@@ -58,4 +73,6 @@
     font-size: 12px;
     text-transform: none;
   }
+ 
+  
 }

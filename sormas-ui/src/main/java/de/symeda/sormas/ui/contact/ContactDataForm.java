@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import org.joda.time.LocalDate;
 
+import com.vaadin.data.Validator;
 import com.vaadin.data.validator.DateRangeValidator;
 import com.vaadin.shared.ui.datefield.Resolution;
 import com.vaadin.ui.Button;
@@ -12,6 +13,7 @@ import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.Field;
+import com.vaadin.ui.Link;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
@@ -27,6 +29,7 @@ import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.Diseases.DiseasesConfiguration;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -52,7 +55,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		    						LayoutUtil.locCss(CssStyles.VSPACE_3, TO_CASE_BTN_LOC) +
 		    						LayoutUtil.fluidRowLocs(ContactDto.LAST_CONTACT_DATE, ContactDto.UUID) +
 		    						LayoutUtil.fluidRowLocs(ContactDto.REPORTING_USER, ContactDto.REPORT_DATE_TIME) +
-		    						LayoutUtil.fluidRow(ContactDto.CONTACT_PROXIMITY) +
+		    						LayoutUtil.fluidRowLocs(ContactDto.CONTACT_PROXIMITY, "") +
 		    						LayoutUtil.fluidRowLocs(ContactDto.RELATION_TO_CASE) +
 				    				LayoutUtil.fluidRowLocs(ContactDto.DESCRIPTION) +
 				    				LayoutUtil.h3(CssStyles.VSPACE_3, "Follow-up status") +
@@ -71,10 +74,11 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
     	addField(ContactDto.CONTACT_CLASSIFICATION, OptionGroup.class);
     	addField(ContactDto.UUID, TextField.class);
     	addField(ContactDto.REPORTING_USER, ComboBox.class);
-    	addField(ContactDto.LAST_CONTACT_DATE, DateField.class);
+    	DateField lastContactDate = addField(ContactDto.LAST_CONTACT_DATE, DateField.class);
     	addField(ContactDto.REPORT_DATE_TIME, DateField.class);
-    	addField(ContactDto.CONTACT_PROXIMITY, OptionGroup.class).removeStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
-    	addField(ContactDto.RELATION_TO_CASE, ComboBox.class);
+    	OptionGroup contactProximity = addField(ContactDto.CONTACT_PROXIMITY, OptionGroup.class);
+    	contactProximity.removeStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
+    	ComboBox relationToCase = addField(ContactDto.RELATION_TO_CASE, ComboBox.class);
     	addField(ContactDto.DESCRIPTION, TextArea.class).setRows(3);
 
     	addField(ContactDto.FOLLOW_UP_STATUS, ComboBox.class);
@@ -86,44 +90,50 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
     	
     	setReadOnly(true, ContactDto.UUID, ContactDto.REPORTING_USER, ContactDto.REPORT_DATE_TIME, 
     			ContactDto.FOLLOW_UP_STATUS, ContactDto.FOLLOW_UP_UNTIL);
-    		
-    	setRequired(true, ContactDto.LAST_CONTACT_DATE, ContactDto.CONTACT_PROXIMITY, ContactDto.RELATION_TO_CASE);
     	
     	FieldHelper.setRequiredWhen(getFieldGroup(), ContactDto.FOLLOW_UP_STATUS, 
     			Arrays.asList(ContactDto.FOLLOW_UP_COMMENT), 
     			Arrays.asList(FollowUpStatus.CANCELED, FollowUpStatus.LOST));
 
     	addValueChangeListener(e -> {
-    		CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(getValue().getCaze().getUuid());
-    		updateLastContactDateValidator();
-    		updateDiseaseConfiguration(caseDto.getDisease());
-    		
-    		updateFollowUpStatusComponents();
-    		
-    		// set assignable officers
         	if (getValue() != null) {
+	    		CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(getValue().getCaze().getUuid());
+	    		updateLastContactDateValidator();
+	    		updateDiseaseConfiguration(caseDto.getDisease());
+	    		
+	    		updateFollowUpStatusComponents();
+    		
     	    	contactOfficerField.addItems(FacadeProvider.getUserFacade().getAssignableUsersByDistrict(caseDto.getDistrict(), false, UserRole.CONTACT_OFFICER));
     	    	
-    	    	if (findAssociatedCaseId(FacadeProvider.getPersonFacade().getPersonByUuid(getValue().getPerson().getUuid()), getValue()) == null) {
-    		    	Button toCaseButton = new Button("-> Create a new case for this contact");
-    				toCaseButton.addStyleName(ValoTheme.BUTTON_LINK);
-    				
-    				toCaseButton.addClickListener(new ClickListener() {
-    					@Override
-    					public void buttonClick(ClickEvent event) {
-    						PersonReferenceDto personRef = getValue().getPerson();
-    						PersonDto person = FacadeProvider.getPersonFacade().getPersonByUuid(personRef.getUuid());
-    						CaseReferenceDto caseRef = getValue().getCaze();
-    						CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseRef.getUuid());
-    						ControllerProvider.getCaseController().create(person, caze.getDisease(), getValue());
-    					}
-    				});
-    				
-    				getContent().addComponent(toCaseButton, TO_CASE_BTN_LOC);
+    	    	String associatedCaseUuid = findAssociatedCaseUuid(FacadeProvider.getPersonFacade().getPersonByUuid(getValue().getPerson().getUuid()), getValue());
+    	    	getContent().removeComponent(TO_CASE_BTN_LOC);
+    	    	if (associatedCaseUuid == null) {
+    	    		if (LoginHelper.hasUserRight(UserRight.CREATE)) {
+	    		    	Button toCaseButton = new Button("Create a case for this contact person");
+	    				toCaseButton.addStyleName(ValoTheme.BUTTON_LINK);
+	    				
+	    				toCaseButton.addClickListener(new ClickListener() {
+	    					@Override
+	    					public void buttonClick(ClickEvent event) {
+	    						PersonReferenceDto personRef = getValue().getPerson();
+	    						PersonDto person = FacadeProvider.getPersonFacade().getPersonByUuid(personRef.getUuid());
+	    						CaseReferenceDto caseRef = getValue().getCaze();
+	    						CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseRef.getUuid());
+	    						ControllerProvider.getCaseController().create(person, caze.getDisease(), getValue());
+	    					}
+	    				});
+	    				
+	    				getContent().addComponent(toCaseButton, TO_CASE_BTN_LOC);
+    	    		}
+    	    	} else {
+    	    		// link to case
+    		    	Link linkToData = ControllerProvider.getCaseController().createLinkToData(associatedCaseUuid, "Open case of this contact person");
+    		    	getContent().addComponent(linkToData, TO_CASE_BTN_LOC);
     	    	}
         	}
     	});
-		
+    	
+    	FieldHelper.makeFieldSoftRequired(lastContactDate, contactProximity, relationToCase);
 	}
     
     private void updateFollowUpStatusComponents() {
@@ -133,7 +143,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 
 		Field<FollowUpStatus> statusField = (Field<FollowUpStatus>) getField(ContactDto.FOLLOW_UP_STATUS);
 		boolean followUpVisible = getValue() != null && statusField.isVisible();
-		if (followUpVisible) {
+		if (followUpVisible && LoginHelper.hasUserRight(UserRight.EDIT)) {
 			FollowUpStatus followUpStatus = statusField.getValue();
 			if (followUpStatus == FollowUpStatus.FOLLOW_UP) {
 				
@@ -188,7 +198,11 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 
 	protected void updateLastContactDateValidator() {
     	Field<?> dateField = getField(ContactDto.LAST_CONTACT_DATE);
-    	dateField.removeAllValidators();
+    	for (Validator validator : dateField.getValidators()) {
+    		if (validator instanceof DateRangeValidator) {
+    			dateField.removeValidator(validator);
+    		}
+    	}
     	if (getValue() != null) {
 	    	dateField.addValidator(new DateRangeValidator("Date of last contact has to be before date of report",
 	    			null, new LocalDate(getValue().getReportDateTime()).plusDays(1).toDate(), Resolution.SECOND));
@@ -207,7 +221,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		 return HTML_LAYOUT;
 	}
 	
-	private String findAssociatedCaseId(PersonDto personDto, ContactDto contactDto) {
+	private String findAssociatedCaseUuid(PersonDto personDto, ContactDto contactDto) {
 		if(personDto == null || contactDto == null) {
 			return null;
 		}

@@ -40,7 +40,7 @@ public class EventParticipantNewPersonForm extends FormTab {
 
     @Override
     public EventParticipant getData() {
-        return binding.getEventParticipant();
+        return binding == null ? null : binding.getEventParticipant();
     }
 
     public EventParticipantNewFragmentLayoutBinding getBinding() {

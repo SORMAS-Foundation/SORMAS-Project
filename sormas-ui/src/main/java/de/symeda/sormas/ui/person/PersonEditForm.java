@@ -228,10 +228,14 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
     		}
     	});
     	facilityDistrict.addValueChangeListener(e -> {
+    		if (facilityCommunity.getValue() == null) {
+    			occupationFacility.removeAllItems();
+    		}
     		facilityCommunity.removeAllItems();
     		DistrictReferenceDto districtDto = (DistrictReferenceDto)e.getProperty().getValue();
     		if(districtDto != null) {
     			facilityCommunity.addItems(FacadeProvider.getCommunityFacade().getAllByDistrict(districtDto.getUuid()));
+    			occupationFacility.addItems(FacadeProvider.getFacilityFacade().getHealthFacilitiesByDistrict(districtDto, false));
     		}
     	});
     	facilityCommunity.addValueChangeListener(e -> {
@@ -240,6 +244,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	    		CommunityReferenceDto communityDto = (CommunityReferenceDto)e.getProperty().getValue();
 	    		if(communityDto != null) {
 	    			occupationFacility.addItems(FacadeProvider.getFacilityFacade().getHealthFacilitiesByCommunity(communityDto, false));
+	    		} else if (facilityDistrict.getValue() != null) {
+	    			occupationFacility.addItems(FacadeProvider.getFacilityFacade().getHealthFacilitiesByDistrict((DistrictReferenceDto) facilityDistrict.getValue(), false));
 	    		}
     		}
     	});
@@ -396,7 +402,13 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	   	facilityDistrict.select(facility.getDistrict());
 	   	facilityCommunity.addItems(FacadeProvider.getCommunityFacade().getAllByDistrict(facility.getDistrict().getUuid()));
 	   	facilityCommunity.select(facility.getCommunity());
-	   	occupationFacility.addItems(FacadeProvider.getFacilityFacade().getHealthFacilitiesByCommunity(facility.getCommunity(), false));
+	   	if (facility.getCommunity() != null) {
+		   	occupationFacility.addItems(FacadeProvider.getFacilityFacade().getHealthFacilitiesByCommunity(facility.getCommunity(), false));
+		   	occupationFacility.select(facility);
+	   	} else {
+	   		occupationFacility.addItems(FacadeProvider.getFacilityFacade().getHealthFacilitiesByDistrict(facility.getDistrict(), false));
+		   	occupationFacility.select(facility);
+	   	}
 	   	
 	   	facilityFieldsInitialized = true;
 	}

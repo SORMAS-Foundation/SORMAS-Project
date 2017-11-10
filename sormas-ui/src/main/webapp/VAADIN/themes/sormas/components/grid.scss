@@ -24,6 +24,10 @@ $v-grid-cell-focused-border: none !default;
       > td, > th {
         background-color: inherit;
       }
+      
+      &.v-grid-row-selected > td, &.v-grid-row-selected > th {
+        background-color: $v-focus-color;
+      }
     
       .v-grid-cell {
       

@@ -4,8 +4,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 
-import org.junit.Test;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -13,6 +11,11 @@ import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactFacade;
+import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventFacade;
+import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.api.event.EventType;
+import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.facility.FacilityFacade;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.person.PersonDto;
@@ -22,6 +25,13 @@ import de.symeda.sormas.api.region.DistrictFacade;
 import de.symeda.sormas.api.region.RegionFacade;
 import de.symeda.sormas.api.report.WeeklyReportDto;
 import de.symeda.sormas.api.report.WeeklyReportFacade;
+import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.sample.SampleFacade;
+import de.symeda.sormas.api.sample.SampleMaterial;
+import de.symeda.sormas.api.sample.SampleTestDto;
+import de.symeda.sormas.api.sample.SampleTestFacade;
+import de.symeda.sormas.api.sample.SampleTestResultType;
+import de.symeda.sormas.api.sample.SampleTestType;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskFacade;
@@ -53,6 +63,9 @@ public class TestDataCreator extends BaseBeanTest {
 	private final TaskFacade taskFacade;
 	private final VisitFacade visitFacade;
 	private final WeeklyReportFacade weeklyReportFacade;
+	private final EventFacade eventFacade;
+	private final SampleFacade sampleFacade;
+	private final SampleTestFacade sampleTestFacade;
 	private final RegionFacade regionFacade;
 	private final DistrictFacade districtFacade;
 	private final CommunityFacade communityFacade;
@@ -65,9 +78,9 @@ public class TestDataCreator extends BaseBeanTest {
 
 	public TestDataCreator(UserFacade userFacade, PersonFacade personFacade, CaseFacade caseFacade,
 			ContactFacade contactFacade, TaskFacade taskFacade, VisitFacade visitFacade, WeeklyReportFacade weeklyReportFacade,
-			RegionFacade regionFacade, DistrictFacade districtFacade, CommunityFacade communityFacade, FacilityFacade facilityFacade,
-			RegionService regionService, DistrictService districtService, CommunityService communityService,
-			FacilityService facilityService) {
+			EventFacade eventFacade, SampleFacade sampleFacade, SampleTestFacade sampleTestFacade, RegionFacade regionFacade, 
+			DistrictFacade districtFacade, CommunityFacade communityFacade, FacilityFacade facilityFacade, RegionService regionService,
+			DistrictService districtService, CommunityService communityService, FacilityService facilityService) {
 		this.userFacade = userFacade;
 		this.personFacade = personFacade;
 		this.caseFacade = caseFacade;
@@ -75,6 +88,9 @@ public class TestDataCreator extends BaseBeanTest {
 		this.taskFacade = taskFacade;
 		this.visitFacade = visitFacade;
 		this.weeklyReportFacade = weeklyReportFacade;
+		this.eventFacade = eventFacade;
+		this.sampleFacade = sampleFacade;
+		this.sampleTestFacade = sampleTestFacade;
 		this.regionFacade = regionFacade;
 		this.districtFacade = districtFacade;
 		this.communityFacade = communityFacade;
@@ -147,7 +163,7 @@ public class TestDataCreator extends BaseBeanTest {
 	}
 
 	public TaskDto createTask(TaskContext context, TaskType type, TaskStatus status, CaseDataDto caze,
-			ContactDto contact, UserDto assigneeUser) {
+			ContactDto contact, Date dueDate, UserDto assigneeUser) {
 		TaskDto task = new TaskDto();
 		task.setUuid(DataHelper.createUuid());
 		task.setTaskContext(context);
@@ -159,6 +175,7 @@ public class TestDataCreator extends BaseBeanTest {
 		if (contact != null) {
 			task.setContact(contact);
 		}
+		task.setDueDate(dueDate);
 		task.setAssigneeUser(assigneeUser);
 		
 		task = taskFacade.saveTask(task);
@@ -192,6 +209,59 @@ public class TestDataCreator extends BaseBeanTest {
 		report = weeklyReportFacade.saveWeeklyReport(report);
 		
 		return report;
+	}
+	
+	public EventDto createEvent(EventType eventType, EventStatus eventStatus, String eventDesc, String srcFirstName, String srcLastName, String srcTelNo, TypeOfPlace typeOfPlace, Date eventDate, Date reportDateTime, UserDto reportingUser, UserDto surveillanceOfficer, Disease disease) {
+		EventDto event = new EventDto();
+		event.setUuid(DataHelper.createUuid());
+		event.setEventType(eventType);
+		event.setEventStatus(eventStatus);
+		event.setEventDesc(eventDesc);
+		event.setSrcFirstName(srcFirstName);
+		event.setSrcLastName(srcLastName);
+		event.setSrcTelNo(srcTelNo);
+		event.setTypeOfPlace(typeOfPlace);
+		event.setEventDate(eventDate);
+		event.setReportDateTime(reportDateTime);
+		event.setReportingUser(reportingUser);
+		event.setSurveillanceOfficer(surveillanceOfficer);
+		event.setDisease(disease);
+		
+		event = eventFacade.saveEvent(event);
+		
+		return event;
+	}
+	
+	public SampleDto createSample(CaseDataDto associatedCase, Date sampleDateTime, Date reportDateTime, UserDto reportingUser, SampleMaterial sampleMaterial, Facility lab) {
+		SampleDto sample = new SampleDto();
+		sample.setUuid(DataHelper.createUuid());
+		sample.setAssociatedCase(associatedCase);
+		sample.setSampleDateTime(sampleDateTime);
+		sample.setReportDateTime(reportDateTime);
+		sample.setReportingUser(reportingUser);
+		sample.setSampleMaterial(sampleMaterial);
+		sample.setLab(facilityFacade.getByUuid(lab.getUuid()));
+		
+		sample = sampleFacade.saveSample(sample);
+		
+		return sample;
+	}
+	
+	public SampleTestDto createSampleTest(SampleDto sample, SampleTestType testType, Date testDateTime, Facility lab, UserDto labUser, SampleTestResultType testResult, String testResultText, boolean verified) {
+		SampleTestDto sampleTest = new SampleTestDto();
+		sampleTest.setUuid(DataHelper.createUuid());
+		sampleTest.setSample(sample);
+		sampleTest.setTestType(testType);
+		sampleTest.setTestDateTime(testDateTime);
+		sampleTest.setLab(facilityFacade.getByUuid(lab.getUuid()));
+		sampleTest.setLabUser(labUser);
+		sampleTest.setTestResult(testResult);
+		sampleTest.setTestResultText(testResultText);
+		sampleTest.setTestResultVerified(verified);
+		
+		sampleTest = sampleTestFacade.saveSampleTest(sampleTest);
+		
+		return sampleTest;
 	}
 	
 	public RDCF createRDCF(String regionName, String districtName, String communityName, String facilityName) {
