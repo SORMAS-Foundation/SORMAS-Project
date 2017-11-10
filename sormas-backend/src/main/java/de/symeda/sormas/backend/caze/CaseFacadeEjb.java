@@ -10,11 +10,20 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
+import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.DashboardCase;
 import de.symeda.sormas.api.caze.InvestigationStatus;
@@ -65,9 +74,13 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.ModelConstants;
 
 @Stateless(name = "CaseFacade")
 public class CaseFacadeEjb implements CaseFacade {
+
+	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
+	protected EntityManager em;
 
 	@EJB
 	private CaseService caseService;
@@ -118,6 +131,35 @@ public class CaseFacadeEjb implements CaseFacade {
 				.stream()
 				.map(c -> toDto(c))
 				.collect(Collectors.toList());
+	}
+
+	@Override
+	public List<CaseIndexDto> getIndexList(String userUuid) {
+		
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<CaseIndexDto> cq = cb.createQuery(CaseIndexDto.class);
+		Root<Case> caze = cq.from(Case.class);
+		Join<Case, Person> person = caze.join(Case.PERSON, JoinType.LEFT);
+		Join<Case, Region> region = caze.join(Case.REGION, JoinType.LEFT);
+		Join<Case, District> district = caze.join(Case.DISTRICT, JoinType.LEFT);
+		Join<Case, Facility> facility = caze.join(Case.HEALTH_FACILITY, JoinType.LEFT);
+		Join<Case, User> surveillanceOfficerUuid = caze.join(Case.SURVEILLANCE_OFFICER, JoinType.LEFT);
+
+		cq.multiselect(caze.get(Case.CREATION_DATE), caze.get(Case.CHANGE_DATE), caze.get(Case.UUID), 
+				caze.get(Case.EPID_NUMBER), person.get(Person.FIRST_NAME), person.get(Person.LAST_NAME),
+				caze.get(Case.DISEASE), caze.get(Case.DISEASE_DETAILS), caze.get(Case.CASE_CLASSIFICATION),
+				caze.get(Case.INVESTIGATION_STATUS), person.get(Person.PRESENT_CONDITION),
+				caze.get(Case.REPORT_DATE), region.get(Region.UUID), district.get(District.UUID), district.get(District.NAME), 
+				facility.get(Facility.UUID), surveillanceOfficerUuid.get(User.UUID));
+			
+		User user = userService.getByUuid(userUuid);		
+		Predicate filter = caseService.createUserFilter(cb, cq, caze, user);
+		if (filter != null) {
+			cq.where(filter);
+		}
+		
+		List<CaseIndexDto> resultList = em.createQuery(cq).getResultList();
+		return resultList;
 	}
 
 	@Override

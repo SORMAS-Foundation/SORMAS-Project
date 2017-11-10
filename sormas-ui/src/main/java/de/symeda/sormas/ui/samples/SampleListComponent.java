@@ -13,9 +13,11 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -140,15 +142,43 @@ public class SampleListComponent extends VerticalLayout {
 		filterLayout.setSizeUndefined();
 		filterLayout.addStyleName(CssStyles.VSPACE_3);
 
-		UserDto user = LoginHelper.getCurrentUser();
-		if(user.getRegion() != null) {
-			ComboBox districtFilter = new ComboBox();
-			districtFilter.setWidth(200, Unit.PIXELS);
-			districtFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(SampleIndexDto.I18N_PREFIX, LGA));
-			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(user.getRegion().getUuid()));
-			districtFilter.addValueChangeListener(e->grid.setDistrictFilter(((DistrictReferenceDto)e.getProperty().getValue())));
-			filterLayout.addComponent(districtFilter);
-		}
+        UserDto user = LoginHelper.getCurrentUser();
+
+        ComboBox regionFilter = new ComboBox();
+        if (user.getRegion() == null) {
+            regionFilter.setWidth(140, Unit.PIXELS);
+            regionFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.REGION));
+            regionFilter.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
+            regionFilter.addValueChangeListener(e -> {
+            	RegionReferenceDto region = (RegionReferenceDto)e.getProperty().getValue();
+            	grid.setRegionFilter(region);
+            });
+            filterLayout.addComponent(regionFilter);
+        }
+
+        ComboBox districtFilter = new ComboBox();
+        districtFilter.setWidth(140, Unit.PIXELS);
+        districtFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISTRICT));
+        districtFilter.setDescription("Select a district in the state");
+        districtFilter.addValueChangeListener(e->grid.setDistrictFilter(((DistrictReferenceDto)e.getProperty().getValue())));
+
+        if (user.getRegion() != null) {
+            districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(user.getRegion().getUuid()));
+            districtFilter.setEnabled(true);
+        } else {
+            regionFilter.addValueChangeListener(e -> {
+            	RegionReferenceDto region = (RegionReferenceDto)e.getProperty().getValue();
+            	districtFilter.removeAllItems();
+            	if (region != null) {
+            		districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(region.getUuid()));
+                	districtFilter.setEnabled(true);
+            	} else {
+                	districtFilter.setEnabled(false);
+            	}
+            });
+            districtFilter.setEnabled(false);
+        }
+        filterLayout.addComponent(districtFilter);
 
 		ComboBox labFilter = new ComboBox();
 		labFilter.setWidth(200, Unit.PIXELS);

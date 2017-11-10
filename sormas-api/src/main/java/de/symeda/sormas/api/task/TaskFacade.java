@@ -33,7 +33,7 @@ public interface TaskFacade {
 	
 	List<DashboardTask> getAllPending(Date from, Date to, String userUuid);
 	
-	long getPendingTaskCountByCase(CaseDataDto caseDataDto);
+	long getPendingTaskCountByCase(CaseReferenceDto caseDto);
 	
 	long getPendingTaskCountByContact(ContactIndexDto contactDto);
 	

@@ -19,7 +19,7 @@ public class EpiDataBurialService extends AbstractAdoService<EpiDataBurial> {
 	}
 
 	@Override
-	protected Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<EpiDataBurial, EpiDataBurial> from, User user) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<EpiDataBurial, EpiDataBurial> from, User user) {
 		// A user should not directly query for this
 		throw new UnsupportedOperationException();
 	}

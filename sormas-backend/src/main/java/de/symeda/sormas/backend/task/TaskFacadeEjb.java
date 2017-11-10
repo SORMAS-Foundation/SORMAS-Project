@@ -293,12 +293,12 @@ public class TaskFacadeEjb implements TaskFacade {
 	}
 	
 	@Override
-	public long getPendingTaskCountByCase(CaseDataDto caseDataDto) {
-		if(caseDataDto == null) {
+	public long getPendingTaskCountByCase(CaseReferenceDto caseDto) {
+		if(caseDto == null) {
 			return 0;
 		}
 		
-		Case caze = caseService.getByUuid(caseDataDto.getUuid());
+		Case caze = caseService.getByUuid(caseDto.getUuid());
 		
 		if(caze == null) {
 			return 0;

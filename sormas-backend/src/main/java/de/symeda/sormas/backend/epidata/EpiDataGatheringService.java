@@ -19,7 +19,7 @@ public class EpiDataGatheringService extends AbstractAdoService<EpiDataGathering
 	}
 
 	@Override
-	protected Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<EpiDataGathering, EpiDataGathering> from, User user) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<EpiDataGathering, EpiDataGathering> from, User user) {
 		// A user should not directly query for this
 		throw new UnsupportedOperationException();
 	}

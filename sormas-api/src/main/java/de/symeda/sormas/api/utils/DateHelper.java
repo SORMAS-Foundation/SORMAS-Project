@@ -7,7 +7,10 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
 
@@ -405,4 +408,146 @@ public final class DateHelper {
 		return reportStartAndEnd;
 	}
 	
+	private static Pattern COMPLETE_DATE_PATTERN = Pattern.compile("(([012]?\\d)|30|31)\\/((0?\\d)|10|11|12)\\/((18|19|20|21)?\\d\\d)");
+	private static Pattern DAY_MONTH_DATE_PATTERN = Pattern.compile("(([012]?\\d)|30|31)\\/((0?\\d)|10|11|12)\\/");
+	private static Pattern MONTH_YEAR_DATE_PATTERN = Pattern.compile("((0?\\d)|10|11|12)\\/((18|19|20|21)?\\d\\d)");
+	private static Pattern MONTH_DATE_PATTERN = Pattern.compile("((0?\\d)|10|11|12)\\/");
+	private static Pattern DAY_DATE_PATTERN = Pattern.compile("(([012]?\\d)|30|31)\\/");
+	private static Pattern YEAR_DATE_PATTERN = Pattern.compile("((18|19|20|21)?\\d\\d)");
+
+	private static Pattern DAY_MONTH_PREFIX_DATE_PATTERN = Pattern.compile("(([012]?\\d)|30|31)\\/((0?\\d)|10|11|12)\\/?");
+	private static Pattern MONTH_PREFIX_DATE_PATTERN = Pattern.compile("((0?\\d)|10|11|12)\\/?");
+	private static Pattern DAY_PREFIX_DATE_PATTERN = Pattern.compile("(([012]?\\d)|30|31)\\/?");
+	
+	/**
+	 *requries joda-time
+	 * 
+	 * <table>
+	 * <tr><td>90      </td><td>-&gt;</td><td>[1/1/1990, 1/1/1991)</td></tr>
+	 * <tr><td>08      </td><td>-&gt;</td><td>[1/1/2008, 1/1/2009)</td></tr>
+	 * <tr><td>1830    </td><td>-&gt;</td><td>[1/1/1830, 1/1/1831)</td></tr>
+	 * <tr><td>3.01    </td><td>-&gt;</td><td>[1/3/2001, 1/4/2001)</td></tr>
+	 * <tr><td>3.      </td><td>-&gt;</td><td>[1/3/THIS_YEAR, 1/4/THIS_YEAR)</td></tr>
+	 * <tr><td>3.4.2012</td><td>-&gt;</td><td>[3/4/2012, 4/4/2012)</td></tr>
+	 * <tr><td>3.4.    </td><td>-&gt;</td><td>[3/4/THIS_YEAR, 4/4/THIS_YEAR)</td></tr>
+	 * </table>
+	 * 
+	 * @param name
+	 * @param value
+	 * @return
+	 */
+	public static Date[] findDateBounds(String value){
+		
+		if (value==null  || value.length() < 2)
+			return null;
+
+		int day = -1;
+		int month = -1;
+		int year = -1;
+		
+		Matcher matcher = COMPLETE_DATE_PATTERN.matcher(value);
+		if (matcher.matches()) {
+			day = Integer.parseInt(matcher.group(1));
+			month = Integer.parseInt(matcher.group(3));
+			year = Integer.parseInt(matcher.group(5));
+		} 
+		else {
+			matcher = DAY_MONTH_DATE_PATTERN.matcher(value);
+			if (matcher.matches()) {
+				day = Integer.parseInt(matcher.group(1));
+				month = Integer.parseInt(matcher.group(3));
+			} 
+			else {
+				matcher = MONTH_YEAR_DATE_PATTERN.matcher(value);
+				if (matcher.matches()) {
+					month = Integer.parseInt(matcher.group(1));
+					year = Integer.parseInt(matcher.group(3));
+				} 
+				else {
+					matcher = MONTH_DATE_PATTERN.matcher(value);
+					if (matcher.matches()) {
+						month = Integer.parseInt(matcher.group(1));
+					} 
+					else {
+						matcher = DAY_DATE_PATTERN.matcher(value);
+						if (matcher.matches()) {
+							day = Integer.parseInt(matcher.group(1));
+						} 
+						else {
+							matcher = YEAR_DATE_PATTERN.matcher(value);
+							if (matcher.matches()) {
+								year = Integer.parseInt(matcher.group(1));
+							} 
+							else
+								return null;
+						}
+					}
+				}
+			}
+		}
+
+		int thisYear = DateTime.now().year().get();
+		if (year == -1) {
+			year = thisYear;
+		} 
+		else if (year < 100) {
+			int thisYearDigits = thisYear % 100;
+			int thisCentury = thisYear - thisYearDigits;
+			if (year < thisYearDigits + 20)
+				year += thisCentury;
+			else
+				year += thisCentury - 100;
+		}
+
+		LocalDate start = new LocalDate(year, 1, 1);
+		LocalDate end = new LocalDate(year, 1, 1);
+
+		if (month == -1)
+			end = end.plusMonths(11);
+		else {
+			start = start.plusMonths(month-1);
+			end = end.plusMonths(month-1);
+		}
+		if (day == -1) {
+			end = end.plusMonths(1);
+		} else {
+			start = start.plusDays(day-1);
+			end = end.plusDays(day);
+		}
+
+		return new Date[] { start.toDate(), end.toDate() };
+	}
+	
+	/**
+	 * Ergänzt findDateBounds um die Möglichkeit nach einem Datum unabhängig vom Jahr zu suchen
+	 * @param value
+	 * @return { day, month } - eins von beiden kann null sein
+	 */
+	public static Integer[] findDatePrefix(String value){
+
+		Integer day = null;
+		Integer month = null;
+
+		Matcher matcher = DAY_MONTH_PREFIX_DATE_PATTERN.matcher(value);
+		if (matcher.matches()) {
+			day = Integer.parseInt(matcher.group(1));
+			month = Integer.parseInt(matcher.group(3));
+		}
+		else {
+			matcher = MONTH_PREFIX_DATE_PATTERN.matcher(value);
+			if (matcher.matches()) {
+				month = Integer.parseInt(matcher.group(1));
+			}
+			else {
+				matcher = DAY_PREFIX_DATE_PATTERN.matcher(value);
+				if (matcher.matches()) {
+					day = Integer.parseInt(matcher.group(1));
+				}
+				else
+					return null;
+			}
+		}
+
+		return new Integer[]{ day, month };
+	}
 }

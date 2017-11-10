@@ -28,6 +28,7 @@ import de.symeda.sormas.api.PlagueType;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
+import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactDto;
@@ -45,7 +46,6 @@ import de.symeda.sormas.api.symptoms.SymptomsFacade;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
@@ -148,9 +148,9 @@ public class CaseController {
                 + fragmentParameter, false);
     }
 
-    public List<CaseDataDto> getCaseIndexList() {
+    public List<CaseIndexDto> getCaseIndexList() {
     	UserDto user = LoginHelper.getCurrentUser();
-    	return FacadeProvider.getCaseFacade().getAllCasesAfter(null, user.getUuid());
+    	return FacadeProvider.getCaseFacade().getIndexList(user.getUuid());
     }
     
     private CaseDataDto findCase(String uuid) {

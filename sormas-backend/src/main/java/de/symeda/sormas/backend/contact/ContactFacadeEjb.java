@@ -39,12 +39,14 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb;
 import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.task.TaskCriteria;
 import de.symeda.sormas.backend.task.TaskService;
@@ -304,7 +306,9 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setCaze(CaseFacadeEjb.toReferenceDto(source.getCaze()));
 		target.setCazePerson(PersonFacadeEjb.toReferenceDto(source.getCaze().getPerson()));
 		target.setCazeDisease(source.getCaze().getDisease());
+		target.setCazeRegion(RegionFacadeEjb.toReferenceDto(source.getCaze().getRegion()));
 		target.setCazeDistrict(DistrictFacadeEjb.toReferenceDto(source.getCaze().getDistrict()));
+		target.setCazeHealthFacility(FacilityFacadeEjb.toReferenceDto(source.getCaze().getHealthFacility()));
 
 		target.setLastContactDate(source.getLastContactDate());
 		target.setContactProximity(source.getContactProximity());

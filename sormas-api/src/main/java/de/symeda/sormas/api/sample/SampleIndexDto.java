@@ -6,6 +6,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 
 public class SampleIndexDto extends SampleReferenceDto {
@@ -19,7 +20,8 @@ public class SampleIndexDto extends SampleReferenceDto {
 	public static final String DISEASE_DETAILS = "diseaseDetails";
 	public static final String SAMPLE_CODE = "sampleCode";
 	public static final String LAB_SAMPLE_ID = "labSampleID";
-	public static final String LGA = "lga";
+	public static final String CASE_REGION = "caseRegion";
+	public static final String CASE_DISTRICT = "caseDistrict";
 	public static final String SHIPMENT_DATE = "shipmentDate";
 	public static final String RECEIVED_DATE = "receivedDate";
 	public static final String LAB = "lab";
@@ -38,7 +40,8 @@ public class SampleIndexDto extends SampleReferenceDto {
 	private String diseaseDetails;
 	private String sampleCode;
 	private String labSampleID;
-	private DistrictReferenceDto lga;
+	private RegionReferenceDto caseRegion;
+	private DistrictReferenceDto caseDistrict;
 	private Date shipmentDate;
 	private Date receivedDate;
 	private FacilityReferenceDto lab;
@@ -82,11 +85,11 @@ public class SampleIndexDto extends SampleReferenceDto {
 	public void setLabSampleID(String labSampleID) {
 		this.labSampleID = labSampleID;
 	}
-	public DistrictReferenceDto getLga() {
-		return lga;
+	public DistrictReferenceDto getCaseDistrict() {
+		return caseDistrict;
 	}
-	public void setLga(DistrictReferenceDto lga) {
-		this.lga = lga;
+	public void setCaseDistrict(DistrictReferenceDto caseDistrict) {
+		this.caseDistrict = caseDistrict;
 	}
 	public Date getShipmentDate() {
 		return shipmentDate;
@@ -159,6 +162,12 @@ public class SampleIndexDto extends SampleReferenceDto {
 	}
 	public void setReceived(boolean received) {
 		this.received = received;
+	}
+	public RegionReferenceDto getCaseRegion() {
+		return caseRegion;
+	}
+	public void setCaseRegion(RegionReferenceDto caseRegion) {
+		this.caseRegion = caseRegion;
 	}
 	
 }

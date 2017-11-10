@@ -23,6 +23,7 @@ import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb;
+import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
@@ -233,7 +234,8 @@ public class SampleFacadeEjb implements SampleFacade {
 		target.setLab(FacilityFacadeEjb.toReferenceDto(source.getLab()));
 		target.setSpecimenCondition(source.getSpecimenCondition());
 		target.setNoTestPossibleReason(source.getNoTestPossibleReason());
-		target.setLga(DistrictFacadeEjb.toReferenceDto(source.getAssociatedCase().getDistrict()));
+		target.setCaseRegion(RegionFacadeEjb.toReferenceDto(source.getAssociatedCase().getRegion()));
+		target.setCaseDistrict(DistrictFacadeEjb.toReferenceDto(source.getAssociatedCase().getDistrict()));
 		target.setReferredTo(SampleFacadeEjb.toReferenceDto(source.getReferredTo()));
 		target.setShipped(source.isShipped());
 		target.setReceived(source.isReceived());

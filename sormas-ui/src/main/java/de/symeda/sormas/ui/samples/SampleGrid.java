@@ -20,6 +20,7 @@ import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.UserRole;
@@ -78,7 +79,7 @@ public class SampleGrid extends Grid {
         });
 		
 		setColumns(SampleIndexDto.SAMPLE_CODE, SampleIndexDto.LAB_SAMPLE_ID, SampleIndexDto.ASSOCIATED_CASE, DISEASE_SHORT,
-				SampleIndexDto.LGA, SampleIndexDto.SHIPPED, SampleIndexDto.RECEIVED, SampleIndexDto.SHIPMENT_DATE, SampleIndexDto.RECEIVED_DATE, SampleIndexDto.LAB,
+				SampleIndexDto.CASE_DISTRICT, SampleIndexDto.SHIPPED, SampleIndexDto.RECEIVED, SampleIndexDto.SHIPMENT_DATE, SampleIndexDto.RECEIVED_DATE, SampleIndexDto.LAB,
 				SampleIndexDto.SAMPLE_MATERIAL, SampleIndexDto.LAB_USER, SampleIndexDto.TEST_TYPE, TEST_RESULT_GEN);
 		
 		getColumn(SampleIndexDto.SHIPMENT_DATE).setRenderer(new DateRenderer(DateHelper.getDateFormat()));
@@ -106,7 +107,7 @@ public class SampleGrid extends Grid {
 		this();
 		removeColumn(SampleIndexDto.ASSOCIATED_CASE);
 		removeColumn(DISEASE_SHORT);
-		removeColumn(SampleIndexDto.LGA);
+		removeColumn(SampleIndexDto.CASE_DISTRICT);
 		this.caseRef = caseRef;
 	}
 	
@@ -144,10 +145,19 @@ public class SampleGrid extends Grid {
 		getContainer().addContainerFilter(referredFilter);
 	}
 	
+	public void setRegionFilter(RegionReferenceDto region) {
+		getContainer().removeContainerFilters(SampleIndexDto.CASE_REGION);
+		if(region != null) {
+			Equal filter = new Equal(SampleIndexDto.CASE_REGION, region);
+			getContainer().addContainerFilter(filter);
+		}
+	}
+	
+	
 	public void setDistrictFilter(DistrictReferenceDto district) {
-		getContainer().removeContainerFilters(SampleIndexDto.LGA);
+		getContainer().removeContainerFilters(SampleIndexDto.CASE_DISTRICT);
 		if(district != null) {
-			Equal filter = new Equal(SampleIndexDto.LGA, district);
+			Equal filter = new Equal(SampleIndexDto.CASE_DISTRICT, district);
 			getContainer().addContainerFilter(filter);
 		}
 	}

@@ -22,6 +22,8 @@ public interface CaseFacade {
 	
 	List<CaseDataDto> getAllCasesBetween(Date fromDate, Date toDate, DistrictReferenceDto districtRef, Disease disease, String userUuid);
 	
+	List<CaseIndexDto> getIndexList(String userUuid);
+	
 	CaseDataDto getCaseDataByUuid(String uuid);
     
     CaseDataDto saveCase(CaseDataDto dto);

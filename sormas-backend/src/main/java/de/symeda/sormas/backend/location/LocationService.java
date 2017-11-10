@@ -19,7 +19,7 @@ public class LocationService extends AbstractAdoService<Location> {
 	}
 
 	@Override
-	protected Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Location, Location> from, User user) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Location, Location> from, User user) {
 		// A user should not directly query for this
 		throw new UnsupportedOperationException();
 	}
