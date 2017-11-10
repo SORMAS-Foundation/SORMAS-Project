@@ -11,8 +11,10 @@ import android.widget.EditText;
 
 import java.net.ConnectException;
 
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.caze.CasesActivity;
+import de.symeda.sormas.app.contact.ContactsActivity;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.settings.SettingsActivity;
@@ -124,14 +126,24 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
                     @Override
                     public void call(boolean syncFailed, String syncFailedMessage) {
                         if (ConfigProvider.getUser() != null) {
-                            Intent intent = new Intent(LoginActivity.this, CasesActivity.class);
+                            Intent intent;
+                            if (ConfigProvider.getUser().getUserRole() == UserRole.CONTACT_OFFICER) {
+                                intent = new Intent(LoginActivity.this, ContactsActivity.class);
+                            } else {
+                                intent = new Intent(LoginActivity.this, CasesActivity.class);
+                            }
                             startActivity(intent);
                         }
                     }
                 });
             }
             else {
-                Intent intent = new Intent(LoginActivity.this, CasesActivity.class);
+                Intent intent;
+                if (ConfigProvider.getUser().getUserRole() == UserRole.CONTACT_OFFICER) {
+                    intent = new Intent(LoginActivity.this, ContactsActivity.class);
+                } else {
+                    intent = new Intent(LoginActivity.this, CasesActivity.class);
+                }
                 startActivity(intent);
             }
         }
