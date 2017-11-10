@@ -79,8 +79,7 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
                     public void call(boolean syncFailed, String syncFailedMessage) {
                         // logged in?
                         if (ConfigProvider.getUser() != null) {
-                            Intent intent = new Intent(LoginActivity.this, CasesActivity.class);
-                            startActivity(intent);
+                            openStartActivity();
                         }
                     }
                 });
@@ -100,7 +99,16 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
         }
     }
 
+    private void openStartActivity() {
+        Intent intent;
+        if (ConfigProvider.getUser().getUserRole() == UserRole.CONTACT_OFFICER) {
+            intent = new Intent(LoginActivity.this, ContactsActivity.class);
+        } else {
+            intent = new Intent(LoginActivity.this, CasesActivity.class);
+        }
+        startActivity(intent);
 
+    }
 
     private void processLogin() {
         // try to connect -> validates login data
@@ -126,26 +134,13 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
                     @Override
                     public void call(boolean syncFailed, String syncFailedMessage) {
                         if (ConfigProvider.getUser() != null) {
-                            Intent intent;
-                            if (ConfigProvider.getUser().getUserRole() == UserRole.CONTACT_OFFICER) {
-                                intent = new Intent(LoginActivity.this, ContactsActivity.class);
-                            } else {
-                                intent = new Intent(LoginActivity.this, CasesActivity.class);
-                            }
-                            startActivity(intent);
+                            openStartActivity();
                         }
                     }
                 });
             }
             else {
-                Intent intent;
-                if (ConfigProvider.getUser().getUserRole() == UserRole.CONTACT_OFFICER) {
-                    intent = new Intent(LoginActivity.this, ContactsActivity.class);
-                } else {
-                    intent = new Intent(LoginActivity.this, CasesActivity.class);
-                }
-                startActivity(intent);
-            }
+                openStartActivity();            }
         }
     }
 
