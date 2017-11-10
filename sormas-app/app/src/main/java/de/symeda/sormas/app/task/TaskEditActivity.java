@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NavUtils;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -15,8 +14,6 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.google.android.gms.analytics.Tracker;
-
-import java.util.Date;
 
 import de.symeda.sormas.app.AbstractSormasActivity;
 import de.symeda.sormas.app.R;
@@ -67,7 +64,7 @@ public class TaskEditActivity extends AbstractSormasActivity {
         SormasApplication application = (SormasApplication) getApplication();
         tracker = application.getDefaultTracker();
 
-        setContentView(R.layout.sormas_root_activity_layout);
+        setContentView(R.layout.sormas_default_activity_layout);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);
         if (toolbar != null) {

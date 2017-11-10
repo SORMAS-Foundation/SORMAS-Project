@@ -55,7 +55,7 @@ public class EventParticipantNewActivity extends AppCompatActivity {
         Bundle params = getIntent().getExtras();
         eventUuid = params.getString(EventEditActivity.KEY_EVENT_UUID);
 
-        setContentView(R.layout.sormas_root_activity_layout);
+        setContentView(R.layout.sormas_default_activity_layout);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);
         if (toolbar != null) {

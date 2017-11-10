@@ -259,7 +259,7 @@ public class WeeklyReportForm extends FormTab {
         TableLayout tableLayout = (TableLayout) getActivity().findViewById(R.id.report_table_layout);
         TableRow row = (TableRow) LayoutInflater.from(getContext()).inflate(R.layout.weekly_report_officer_table_row_layout, null);
         TextView facilityInformantView = (TextView) row.findViewById(R.id.facility_informant_row);
-        facilityInformantView.setText(healthFacility.toString() + " | " + informant.toString());
+        facilityInformantView.setText((healthFacility != null ? healthFacility.toString() + " | " : "") + informant.toString());
         facilityInformantView.setBackground(even ? ContextCompat.getDrawable(getContext(), R.drawable.table_border) : ContextCompat.getDrawable(getContext(), R.drawable.table_border_light_grey));
         TextView caseNumberView = (TextView) row.findViewById(R.id.officer_case_number_row);
         caseNumberView.setText(String.valueOf(numberOfCases));

@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.NavUtils;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -20,9 +19,7 @@ import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
-import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
@@ -38,12 +35,9 @@ import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.SelectOrCreatePersonDialogBuilder;
 import de.symeda.sormas.app.component.UserReportDialog;
 import de.symeda.sormas.app.databinding.CaseNewFragmentLayoutBinding;
-import de.symeda.sormas.app.rest.RetroProvider;
-import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.LocationService;
-import de.symeda.sormas.app.util.SyncCallback;
 import de.symeda.sormas.app.validation.CaseValidator;
 
 
@@ -67,7 +61,7 @@ public class CaseNewActivity extends AppCompatActivity {
         SormasApplication application = (SormasApplication) getApplication();
         tracker = application.getDefaultTracker();
 
-        setContentView(R.layout.sormas_root_activity_layout);
+        setContentView(R.layout.sormas_default_activity_layout);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);
         if (toolbar != null) {

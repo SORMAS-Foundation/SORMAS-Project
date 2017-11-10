@@ -17,8 +17,10 @@ import com.vaadin.ui.Grid;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.ui.utils.UuidRenderer;
 import elemental.json.JsonValue;
 
 public class UserGrid extends Grid {
@@ -49,11 +51,13 @@ public class UserGrid extends Grid {
         
         setContainerDataSource(editContainer);
         
-        setColumns(EDIT_BTN_ID, UserDto.ACTIVE, UserDto.USER_ROLES, UserDto.USER_NAME, UserDto.NAME, UserDto.USER_EMAIL, UserDto.ADDRESS, UserDto.DISTRICT);
+        setColumns(EDIT_BTN_ID, UserDto.UUID, UserDto.ACTIVE, UserDto.USER_ROLES, UserDto.USER_NAME, UserDto.NAME, UserDto.USER_EMAIL, UserDto.ADDRESS, UserDto.DISTRICT);
 
         getColumn(EDIT_BTN_ID).setRenderer(new HtmlRenderer());
         getColumn(EDIT_BTN_ID).setWidth(60);
         
+        getColumn(UserDto.UUID).setRenderer(new UuidRenderer());
+
         getColumn(UserDto.ACTIVE).setRenderer(new ActiveRenderer());
         getColumn(UserDto.ACTIVE).setWidth(80);
 

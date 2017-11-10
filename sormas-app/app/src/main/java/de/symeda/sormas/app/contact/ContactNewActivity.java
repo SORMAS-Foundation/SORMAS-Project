@@ -62,7 +62,7 @@ public class ContactNewActivity extends AppCompatActivity {
         Bundle params = getIntent().getExtras();
         caseUuid = params.getString(CaseEditActivity.KEY_CASE_UUID);
 
-        setContentView(R.layout.sormas_root_activity_layout);
+        setContentView(R.layout.sormas_default_activity_layout);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);
         if (toolbar != null) {
