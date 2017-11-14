@@ -19,7 +19,6 @@ import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.grid.HeightMode;
 import com.vaadin.tapio.googlemaps.GoogleMap;
 import com.vaadin.tapio.googlemaps.client.LatLon;
-import com.vaadin.tapio.googlemaps.client.events.MapClickListener;
 import com.vaadin.tapio.googlemaps.client.events.MarkerClickListener;
 import com.vaadin.tapio.googlemaps.client.overlays.GoogleMapMarker;
 import com.vaadin.tapio.googlemaps.client.overlays.GoogleMapPolygon;
@@ -92,7 +91,7 @@ public class MapComponent extends VerticalLayout {
 	private final HashMap<GoogleMapMarker, FacilityDto> markerCaseFacilities = new HashMap<GoogleMapMarker, FacilityDto>();
 	private final HashMap<GoogleMapMarker, MapCase> markerCases = new HashMap<GoogleMapMarker, MapCase>();
 	private final HashMap<GoogleMapMarker, MapContact> markerContacts = new HashMap<GoogleMapMarker, MapContact>();
-	private final HashMap<RegionDataDto, GoogleMapPolygon> regionPolygons = new HashMap<RegionDataDto, GoogleMapPolygon>();
+	private final HashMap<RegionDataDto, GoogleMapPolygon[]> regionPolygonsMap = new HashMap<RegionDataDto, GoogleMapPolygon[]>();
 
 	// Others
 	private RegionMapVisualization regionMapVisualization = RegionMapVisualization.CASE_COUNT;
@@ -157,22 +156,6 @@ public class MapComponent extends VerticalLayout {
 				} else if (contact != null) {
 					ControllerProvider.getContactController().navigateToData(contact.getUuid());
 				}
-			}
-		});
-
-		map.addMapClickListener(new MapClickListener() {
-
-			@Override
-			public void mapClicked(LatLon position) {
-				if (regionPolygons.isEmpty())
-					return;
-
-				RegionReferenceDto regionRef = FacadeProvider.getGeoShapeProvider().getRegionByCoord(new GeoLatLon(position.getLat(), position.getLon()));
-
-				if (regionRef != null) {
-					GoogleMapPolygon googleMapPolygon = regionPolygons.get(regionRef);
-					googleMapPolygon.setStrokeWeight(3);
-				}				
 			}
 		});
 	}
@@ -643,10 +626,12 @@ public class MapComponent extends VerticalLayout {
 
 	private void clearRegionShapes() {
 
-		for (GoogleMapPolygon regionPolygon : regionPolygons.values()) {
-			map.removePolygonOverlay(regionPolygon);
+		for (GoogleMapPolygon[] regionPolygons : regionPolygonsMap.values()) {
+			for (GoogleMapPolygon regionPolygon : regionPolygons) {
+				map.removePolygonOverlay(regionPolygon);
+			}
 		}
-		regionPolygons.clear();
+		regionPolygonsMap.clear();
 
 		map.removeStyleName("no-tiles");
 	}
@@ -668,8 +653,9 @@ public class MapComponent extends VerticalLayout {
 				continue;
 			}
 
-			for (GeoLatLon[] regionShapePart : regionShape) {
-
+			GoogleMapPolygon[] regionPolygons = new GoogleMapPolygon[regionShape.length];
+			for (int part = 0; part<regionShape.length; part++) {
+				GeoLatLon[] regionShapePart = regionShape[part];
 				GoogleMapPolygon polygon = new GoogleMapPolygon(
 						Arrays.stream(regionShapePart)
 						.map(c -> new LatLon(c.getLat(), c.getLon()))
@@ -713,9 +699,10 @@ public class MapComponent extends VerticalLayout {
 					throw new IllegalArgumentException(regionMapVisualization.toString());
 				}
 
-				regionPolygons.put(region, polygon);
+				regionPolygons[part] = polygon;
 				map.addPolygonOverlay(polygon);
 			}
+			regionPolygonsMap.put(region, regionPolygons);
 		}
 	}
 
