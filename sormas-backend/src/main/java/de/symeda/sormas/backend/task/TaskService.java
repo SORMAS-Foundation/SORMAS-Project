@@ -52,8 +52,8 @@ public class TaskService extends AbstractAdoService<Task> {
 		}
 		
 		// whoever created the task or is assigned to it is allowed to access it
-		Predicate filter = cb.equal(taskPath.get(Task.CREATOR_USER), user);
-		filter = cb.or(filter, cb.equal(taskPath.get(Task.ASSIGNEE_USER), user));
+		Predicate filter = cb.equal(taskPath.join(Task.CREATOR_USER, JoinType.LEFT), user);
+		filter = cb.or(filter, cb.equal(taskPath.join(Task.ASSIGNEE_USER, JoinType.LEFT), user));
 		
 		Predicate caseFilter = caseService.createUserFilter(cb, cq, taskPath.join(Task.CAZE, JoinType.LEFT), user);
 		if (caseFilter != null) {

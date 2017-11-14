@@ -143,14 +143,14 @@ public class CaseFacadeEjb implements CaseFacade {
 		Join<Case, Region> region = caze.join(Case.REGION, JoinType.LEFT);
 		Join<Case, District> district = caze.join(Case.DISTRICT, JoinType.LEFT);
 		Join<Case, Facility> facility = caze.join(Case.HEALTH_FACILITY, JoinType.LEFT);
-		Join<Case, User> surveillanceOfficerUuid = caze.join(Case.SURVEILLANCE_OFFICER, JoinType.LEFT);
+		Join<Case, User> surveillanceOfficer = caze.join(Case.SURVEILLANCE_OFFICER, JoinType.LEFT);
 
 		cq.multiselect(caze.get(Case.CREATION_DATE), caze.get(Case.CHANGE_DATE), caze.get(Case.UUID), 
 				caze.get(Case.EPID_NUMBER), person.get(Person.FIRST_NAME), person.get(Person.LAST_NAME),
 				caze.get(Case.DISEASE), caze.get(Case.DISEASE_DETAILS), caze.get(Case.CASE_CLASSIFICATION),
 				caze.get(Case.INVESTIGATION_STATUS), person.get(Person.PRESENT_CONDITION),
 				caze.get(Case.REPORT_DATE), region.get(Region.UUID), district.get(District.UUID), district.get(District.NAME), 
-				facility.get(Facility.UUID), surveillanceOfficerUuid.get(User.UUID));
+				facility.get(Facility.UUID), surveillanceOfficer.get(User.UUID));
 			
 		User user = userService.getByUuid(userUuid);		
 		Predicate filter = caseService.createUserFilter(cb, cq, caze, user);

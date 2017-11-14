@@ -126,8 +126,8 @@ public class EventService extends AbstractAdoService<Event> {
 
 		
 		// whoever created the event or is assigned to it is allowed to access it
-		Predicate filter = cb.equal(eventPath.get(Event.REPORTING_USER), user);
-		filter = cb.or(filter, cb.equal(eventPath.get(Event.SURVEILLANCE_OFFICER), user));
+		Predicate filter = cb.equal(eventPath.join(Event.REPORTING_USER, JoinType.LEFT), user);
+		filter = cb.or(filter, cb.equal(eventPath.join(Event.SURVEILLANCE_OFFICER, JoinType.LEFT), user));
 		
 		// allow event access based on user role
 		for (UserRole userRole : user.getUserRoles()) {

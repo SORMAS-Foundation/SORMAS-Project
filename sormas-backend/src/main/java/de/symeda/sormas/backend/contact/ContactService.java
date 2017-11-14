@@ -321,8 +321,8 @@ public class ContactService extends AbstractAdoService<Contact> {
 			}
 		
 		// whoever created it or is assigned to it is allowed to access it
-		Predicate filter = cb.equal(contactPath.get(Contact.REPORTING_USER), user);
-		filter = cb.or(filter, cb.equal(contactPath.get(Contact.CONTACT_OFFICER), user));
+		Predicate filter = cb.equal(contactPath.join(Contact.REPORTING_USER, JoinType.LEFT), user);
+		filter = cb.or(filter, cb.equal(contactPath.join(Contact.CONTACT_OFFICER, JoinType.LEFT), user));
 		return filter;
 	}
 }

@@ -277,12 +277,11 @@ public class CaseService extends AbstractAdoService<Case> {
 			|| user.getUserRoles().contains(UserRole.NATIONAL_OBSERVER)) {
 			return null;
 		}
-
 		
 		// whoever created the case or is assigned to it is allowed to access it
-		Predicate filter = cb.equal(casePath.get(Case.REPORTING_USER), user);
-		filter = cb.or(filter, cb.equal(casePath.get(Case.SURVEILLANCE_OFFICER), user));
-		filter = cb.or(filter, cb.equal(casePath.get(Case.CASE_OFFICER), user));
+		Predicate filter = cb.equal(casePath.join(Case.REPORTING_USER, JoinType.LEFT), user);
+		filter = cb.or(filter, cb.equal(casePath.join(Case.SURVEILLANCE_OFFICER, JoinType.LEFT), user));
+		filter = cb.or(filter, cb.equal(casePath.join(Case.CASE_OFFICER, JoinType.LEFT), user));
 		
 		// allow case access based on user role
 		for (UserRole userRole : user.getUserRoles()) {

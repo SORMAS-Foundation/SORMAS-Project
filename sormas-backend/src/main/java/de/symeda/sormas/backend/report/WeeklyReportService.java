@@ -198,7 +198,8 @@ public class WeeklyReportService extends AbstractAdoService<WeeklyReport> {
 		}
 
 		// Whoever created the weekly report is allowed to access it
-		Predicate filter = cb.equal(from.get(WeeklyReport.INFORMANT), user);
+		Join<WeeklyReport, User> informant = from.join(WeeklyReport.INFORMANT, JoinType.LEFT);
+		Predicate filter = cb.equal(informant, user);
 
 		// Allow access based on user role
 		for (UserRole userRole : user.getUserRoles()) {
@@ -208,7 +209,6 @@ public class WeeklyReportService extends AbstractAdoService<WeeklyReport> {
 			case CASE_SUPERVISOR:
 				// Supervisors see all reports from facilities in their region
 				if (user.getRegion() != null) {
-					Join<WeeklyReport, User> informant = from.join(WeeklyReport.INFORMANT, JoinType.LEFT);
 					filter = cb.or(filter, cb.equal(informant.join(User.HEALTH_FACILITY, JoinType.LEFT).get(Facility.REGION), user.getRegion()));
 				}
 				break;
@@ -217,7 +217,6 @@ public class WeeklyReportService extends AbstractAdoService<WeeklyReport> {
 			case CASE_OFFICER:
 				// Officers see all reports from facilities in their district
 				if (user.getDistrict() != null) {
-					Join<WeeklyReport, User> informant = from.join(WeeklyReport.INFORMANT, JoinType.LEFT);
 					filter = cb.or(filter, cb.equal(informant.join(User.HEALTH_FACILITY, JoinType.LEFT).get(Facility.DISTRICT), user.getDistrict()));
 				}
 				break;
