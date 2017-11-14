@@ -28,6 +28,7 @@ import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.GeoLatLon;
 import de.symeda.sormas.api.region.GeoShapeProvider;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -43,11 +44,16 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 	
 	private Map<RegionReferenceDto, MultiPolygon> regionMultiPolygons;
 	private Map<RegionReferenceDto, GeoLatLon[][]> regionShapes;
-	
+
+	private Map<DistrictReferenceDto, MultiPolygon> districtMultiPolygons;
+	private Map<DistrictReferenceDto, GeoLatLon[][]> districtShapes;
+
+	@Override
 	public GeoLatLon[][] getRegionShape(RegionReferenceDto region) {
 		return regionShapes.get(region);
 	}
-	
+
+	@Override
 	public RegionReferenceDto getRegionByCoord(GeoLatLon latLon) {
 		for (Entry<RegionReferenceDto, MultiPolygon> regionMultiPolygon : regionMultiPolygons.entrySet()) {
 			if (regionMultiPolygon.getValue().contains(
@@ -59,6 +65,7 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 		return null;
 	}
 	
+	@Override
 	public GeoLatLon getCenterOfAllRegions() {
 		
 		double lat = 0, lon = 0;
@@ -75,13 +82,36 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 		}		
 	}
 	
+	@Override
 	public GeoLatLon getCenterOfRegion(RegionReferenceDto region) {
 		Point polygonCenter = regionMultiPolygons.get(region).getCentroid();
 		return new GeoLatLon(polygonCenter.getX(), polygonCenter.getY());
 	}
 
+	@Override
+	public GeoLatLon[][] getDistrictShape(DistrictReferenceDto district) {
+		return districtShapes.get(district);
+	}
+	
+	@Override
+	public DistrictReferenceDto getDistrictByCoord(GeoLatLon latLon) {
+		for (Entry<DistrictReferenceDto, MultiPolygon> districtMultiPolygon : districtMultiPolygons.entrySet()) {
+			if (districtMultiPolygon.getValue().contains(
+					GeometryFactory.createPointFromInternalCoord(
+							new Coordinate(latLon.getLon(), latLon.getLat()), districtMultiPolygon.getValue()))) {
+				return districtMultiPolygon.getKey();
+			}
+		}
+		return null;
+	}
+	
 	@PostConstruct
-    private void loadRegionData() {
+    private void loadData() {
+		loadRegionData();
+		loadDistrictData();
+	}
+	
+	private void loadRegionData() {
 
 		regionShapes = new HashMap<>();
 		regionMultiPolygons = new HashMap<>();
@@ -107,6 +137,7 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 			    GeometryAttribute defaultGeometryProperty = feature.getDefaultGeometryProperty();
 			    MultiPolygon multiPolygon = (MultiPolygon) defaultGeometryProperty.getValue();
 			    
+			    // TODO find better solution to column name defintion
 			    String shapeRegionName = (String)feature.getAttribute("StateName");
 			    if (shapeRegionName == null) {
 			    	shapeRegionName = (String)feature.getAttribute("REGION");
@@ -145,6 +176,79 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 			    		.toArray(size -> new GeoLatLon[size]);
 			    }
 			    regionShapes.put(region, regionShape);
+			}
+			iterator.close();
+			dataStore.dispose();
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+    }
+	
+	private void loadDistrictData() {
+
+		districtShapes = new HashMap<>();
+		districtMultiPolygons = new HashMap<>();
+		
+    	// load shapefile
+		String countryName = configService.getCountryName();
+    	String filepath = "shapefiles/" + countryName + "/districts.shp";
+    	File file = new File(getClass().getClassLoader().getResource(filepath).getFile());
+		if (!file.exists() || !filepath.endsWith(".shp")) {
+		    throw new RuntimeException("Invalid shapefile filepath: " + filepath);
+		}
+			
+		try {
+			ShapefileDataStore dataStore = new ShapefileDataStore(file.toURI().toURL());
+			ContentFeatureSource featureSource = dataStore.getFeatureSource();
+			ContentFeatureCollection featureCollection = featureSource.getFeatures();
+			
+		    List<DistrictReferenceDto> districts = FacadeProvider.getDistrictFacade().getAllAsReference();
+
+		    SimpleFeatureIterator iterator = featureCollection.features();
+			while(iterator.hasNext()) {
+			    SimpleFeature feature = iterator.next();
+			    GeometryAttribute defaultGeometryProperty = feature.getDefaultGeometryProperty();
+			    MultiPolygon multiPolygon = (MultiPolygon) defaultGeometryProperty.getValue();
+			    
+			    String shapeDistrictName = (String)feature.getAttribute("LgaName");
+			    if (shapeDistrictName == null) {
+			    	shapeDistrictName = (String)feature.getAttribute("DISTRICT");
+			    }
+			    shapeDistrictName = shapeDistrictName.replaceAll("\\W", "").toLowerCase();
+			    String finalShapeDistrictName = shapeDistrictName;
+			    Optional<DistrictReferenceDto> districtResult = districts.stream()
+			    		.filter(r -> {
+			    			String districtName = r.getCaption().replaceAll("\\W", "").toLowerCase();
+			    			return districtName.contains(finalShapeDistrictName) || finalShapeDistrictName.contains(districtName);
+			    		})
+			    		.reduce((r1,r2) -> {
+			    			// dumb heuristic: take the result that best fits the length
+			    			if (Math.abs(r1.getCaption().length()-finalShapeDistrictName.length())
+			    					<= Math.abs(r2.getCaption().length()-finalShapeDistrictName.length())) {
+			    				return r1;
+			    			} else {
+			    				return r2;
+			    			}
+			    		});
+
+			    if (!districtResult.isPresent()) {
+			    	logger.warn("Region not found: " + shapeDistrictName);
+			    	continue;
+			    }
+			    DistrictReferenceDto district = districtResult.get();
+			    
+			    districtMultiPolygons.put(district, multiPolygon);
+			    
+			    GeoLatLon[][] districtShape = new GeoLatLon[multiPolygon.getNumGeometries()][];
+			    for (int i=0; i<multiPolygon.getNumGeometries(); i++) {
+			    	Polygon polygon = (Polygon)multiPolygon.getGeometryN(i);
+			    	districtShape[i] = Arrays
+		    			.stream(polygon.getExteriorRing().getCoordinates())
+			    		.map(c -> new GeoLatLon(c.y, c.x))
+			    		.toArray(size -> new GeoLatLon[size]);
+			    }
+			    districtShapes.put(district, districtShape);
 			}
 			iterator.close();
 			dataStore.dispose();

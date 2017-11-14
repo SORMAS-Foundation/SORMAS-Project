@@ -16,4 +16,6 @@ public interface DistrictFacade {
 	
 	DistrictReferenceDto getDistrictReferenceByUuid(String uuid);
 
+	List<DistrictReferenceDto> getAllAsReference();
+
 }
