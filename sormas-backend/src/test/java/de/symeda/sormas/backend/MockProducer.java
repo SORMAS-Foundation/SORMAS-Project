@@ -16,8 +16,8 @@ import javax.mail.Session;
 import javax.transaction.UserTransaction;
 
 /**
- * Erzeugt Mocks für in Bean-Test benötigte Ressourcen / externe Services.<br />
- * Zum Abrufen von versendeten E-Mails {@link Mailbox#get(String)} verwenden (Empfänger-Adresse übergeben).
+ * Creates mocks for resources needed in bean test / external services. <br />
+ * Use {@link Mailbox#get (String)} to retrieve e-mails sent (receiver address passed).
  * 
  * @author Stefan Kock
  */
@@ -31,12 +31,13 @@ public class MockProducer {
 	private static Properties properties = mock(Properties.class);
 	private static UserTransaction userTransaction = mock(UserTransaction.class);
 
-	// Empfangender E-Mail-Server ist gemockt: org.jvnet.mock_javamail.Mailbox
+	// Receiving e-mail server is mocked: org. jvnet. mock_javamail. mailbox
 	private static Session mailSession;
 	static {
-		// Sicherstellen, dass die default-Session nicht einen lokalen Mailserver nutzt (falls mock-javamail entfernt wird)
 		Properties props = new Properties();
-		props.setProperty("mail.host", "non@existent");
+		props.setProperty("country.name","nigeria");
+
+		// Make sure that the default session does not use a local mail server (if mock-javamail is removed)
 		mailSession = Session.getInstance(props);
 	}
 
@@ -50,9 +51,6 @@ public class MockProducer {
 		wireMocks();
 	}
 
-	/**
-	 * Verknüpft kaskadierte Mocks untereinander.
-	 */
 	public static void wireMocks() {
 
 		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
