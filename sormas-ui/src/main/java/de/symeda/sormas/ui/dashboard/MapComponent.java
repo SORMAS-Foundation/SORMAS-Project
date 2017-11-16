@@ -478,7 +478,11 @@ public class MapComponent extends VerticalLayout {
 			}
 
 			Label casesKeyLabel = new Label("Cases");
-			CssStyles.style(casesKeyLabel, CssStyles.H4, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_3);
+			if (mapCaseDisplayMode == MapCaseDisplayMode.HEALTH_FACILITIES) {
+				CssStyles.style(casesKeyLabel, CssStyles.H4, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_3);
+			} else {
+				CssStyles.style(casesKeyLabel, CssStyles.H4, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
+			}
 			mapKeyLayout.addComponent(casesKeyLabel);
 
 			HorizontalLayout casesKeyLayout = new HorizontalLayout();

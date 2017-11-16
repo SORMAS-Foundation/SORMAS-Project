@@ -1,6 +1,7 @@
 package de.symeda.sormas.ui.dashboard;
 
 import com.vaadin.shared.ui.MarginInfo;
+import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
@@ -14,6 +15,7 @@ public class StatisticsSubComponent extends VerticalLayout {
 
 	// Layouts
 	private HorizontalLayout overviewLayout;
+	private StatisticsContentLayout contentLayout;
 	
 	// Components
 	private Label dateLabel;
@@ -40,7 +42,7 @@ public class StatisticsSubComponent extends VerticalLayout {
 			labelAndTotalLayout.addComponent(dateLabel);
 			
 			countLabel = new Label();
-			CssStyles.style(countLabel, CssStyles.UPPERCASE_XLARGE, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
+			CssStyles.style(countLabel, CssStyles.COLOR_PRIMARY, CssStyles.SIZE_XXXLARGE, CssStyles.TEXT_BOLD, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
 			labelAndTotalLayout.addComponent(countLabel);
 			
 		}
@@ -65,17 +67,36 @@ public class StatisticsSubComponent extends VerticalLayout {
 		addComponent(overviewLayout);
 	}
 	
-	public void addComponentToOverview(StatisticsOverviewElement overviewElement) {
+	public void addComponentToOverview(AbstractComponent overviewElement) {
 		overviewElement.setWidthUndefined();
 		overviewLayout.addComponent(overviewElement);
 	}
 	
 	public void addContent() {
-		
+		if (contentLayout == null) {
+			contentLayout = new StatisticsContentLayout();
+			addComponent(contentLayout);
+		}
+	}
+	
+	public void addTwoColumnsContent(boolean showSeparator, int leftColumnPercentalWidth) {
+		if (contentLayout == null) {
+			contentLayout = new StatisticsTwoColumnsContentLayout(showSeparator, leftColumnPercentalWidth);
+			addComponent(contentLayout);
+		}
+	}
+	
+	public void removeContent() {
+		removeComponent(contentLayout);
+		contentLayout = null;
 	}
 	
 	public void updateCountLabel(int count) {
 		countLabel.setValue(Integer.toString(count));
+	}
+	
+	public StatisticsContentLayout getContentLayout() {
+		return contentLayout;
 	}
 	
 	public Label getDateLabel() {

@@ -1,7 +1,6 @@
 package de.symeda.sormas.backend.task;
 
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -104,12 +103,16 @@ public class TaskService extends AbstractAdoService<Task> {
 		return resultList;	
 	}
 
-	public List<DashboardTask> getAllPending(Date from, Date to, User user) {
+	public List<DashboardTask> getAllByUserForDashboard(TaskStatus taskStatus, User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<DashboardTask> cq = cb.createQuery(DashboardTask.class);
 		Root<Task> task = cq.from(getElementClass());
 		
-		TaskCriteria taskCriteria = new TaskCriteria().assigneeUserEquals(user).taskStatusEquals(TaskStatus.PENDING);
+		TaskCriteria taskCriteria = new TaskCriteria().assigneeUserEquals(user);
+		if (taskStatus != null) {
+			taskCriteria.taskStatusEquals(TaskStatus.PENDING);
+		}
+		
 		Predicate filter = buildCriteriaFilter(taskCriteria, cb, task);
 		
 		List<DashboardTask> result;

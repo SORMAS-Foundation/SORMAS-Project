@@ -262,6 +262,23 @@ public final class DateHelper {
 	}
 	
 	/**
+	 * Returns the epi week for the amount of weeks specified by difference before the given epi week.
+	 * 
+	 * @param epiWeek The epi week to calculate the previous epi week for
+	 * @param difference How many weeks in the past the desired epi week lies
+	 * @return The previous epi week according to the Nigerian epi week system
+	 */
+	public static EpiWeek getPreviousEpiWeek(EpiWeek epiWeek, int difference) {
+		EpiWeek previousWeek = epiWeek;
+		while (difference > 0) {
+			previousWeek = getPreviousEpiWeek(previousWeek);
+			difference--;
+		}
+		
+		return previousWeek;
+	}
+	
+	/**
 	 * Returns the epi week for the week after the given date according to the Nigerian epi week 
 	 * system, i.e. the week that contains the 1st of January always is the first epi week of the 
 	 * year, even if it begins in December.

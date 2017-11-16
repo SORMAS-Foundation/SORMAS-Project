@@ -12,18 +12,12 @@ public class DashboardTestResult implements Serializable {
 
 	public static final String TEST_RESULT = "testResult";
 	public static final String DISEASE = "disease";
-	public static final String SHIPPED = "shipped";
-	public static final String RECEIVED = "received";
 	
 	private Disease disease;
-	private boolean shipped;
-	private boolean received;
 	private SampleTestResultType testResult;
 	
-	public DashboardTestResult(Disease disease, boolean shipped, boolean received, SampleTestResultType testResult) {
+	public DashboardTestResult(Disease disease, SampleTestResultType testResult) {
 		this.disease = disease;
-		this.shipped = shipped;
-		this.received = received;
 		this.testResult = testResult;
 	}
 
@@ -33,22 +27,6 @@ public class DashboardTestResult implements Serializable {
 
 	public void setDisease(Disease disease) {
 		this.disease = disease;
-	}
-
-	public boolean isShipped() {
-		return shipped;
-	}
-
-	public void setShipped(boolean shipped) {
-		this.shipped = shipped;
-	}
-
-	public boolean isReceived() {
-		return received;
-	}
-
-	public void setReceived(boolean received) {
-		this.received = received;
 	}
 
 	public SampleTestResultType getTestResult() {

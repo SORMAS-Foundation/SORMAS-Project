@@ -286,10 +286,10 @@ public class TaskFacadeEjb implements TaskFacade {
 	}
 	
 	@Override
-	public List<DashboardTask> getAllPending(Date from, Date to, String userUuid) {
+	public List<DashboardTask> getAllByUserForDashboard(TaskStatus taskStatus, String userUuid) {
 		User user = userService.getByUuid(userUuid);
 		
-		return taskService.getAllPending(from, to, user);
+		return taskService.getAllByUserForDashboard(taskStatus, user);
 	}
 	
 	@Override

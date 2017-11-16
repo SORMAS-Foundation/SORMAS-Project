@@ -1,5 +1,7 @@
 package de.symeda.sormas.backend.sample;
 
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -9,14 +11,19 @@ import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.sample.DashboardSample;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.user.User;
 
 @Stateless
@@ -61,6 +68,54 @@ public class SampleService extends AbstractAdoService<Sample> {
 		} catch (NoResultException e) {
 			return null;
 		}
+	}
+	
+	public List<DashboardSample> getNewSamplesForDashboard(District district, Disease disease, Date from, Date to, User user) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<DashboardSample> cq = cb.createQuery(DashboardSample.class);
+		Root<Sample> sample = cq.from(getElementClass());
+		Join<Sample, Case> caze = sample.join(Sample.ASSOCIATED_CASE, JoinType.LEFT);
+		
+		Predicate filter = createUserFilter(cb, cq, sample, user);
+		Predicate dateFilter = cb.between(sample.get(Sample.REPORT_DATE_TIME), from, to);
+		if (filter != null) {
+			filter = cb.and(filter, dateFilter);
+		} else {
+			filter = dateFilter;
+		}
+		
+		if (district != null) {
+			Predicate districtFilter = cb.equal(caze.get(Case.DISTRICT), district);
+			if (filter != null) {
+				filter = cb.and(filter, districtFilter);
+			} else {
+				filter = districtFilter;
+			}
+		}
+		
+		if (disease != null) {
+			Predicate diseaseFilter = cb.equal(caze.get(Case.DISEASE), disease);
+			if (filter != null) {
+				filter = cb.and(filter, diseaseFilter);
+			} else {
+				filter = diseaseFilter;
+			}
+		}
+		
+		List<DashboardSample> result;
+		if (filter != null) {
+			cq.where(filter);
+			cq.multiselect(
+					sample.get(Sample.SHIPPED),
+					sample.get(Sample.RECEIVED)
+			);
+			
+			result = em.createQuery(cq).getResultList();
+		} else {
+			result = Collections.emptyList();
+		}
+		
+		return result;
 	}
 	
 	/**

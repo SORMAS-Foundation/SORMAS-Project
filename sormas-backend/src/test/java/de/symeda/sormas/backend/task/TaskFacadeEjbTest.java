@@ -55,7 +55,7 @@ public class TaskFacadeEjbTest extends BaseBeanTest {
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		creator.createTask(TaskContext.GENERAL, TaskType.OTHER, TaskStatus.PENDING, null, null, DateHelper.addDays(new Date(), 1), user);
 		
-		List<DashboardTask> dashboardTasks = taskFacade.getAllPending(new Date(), DateHelper.addDays(new Date(), 2), user.getUuid());
+		List<DashboardTask> dashboardTasks = taskFacade.getAllByUserForDashboard(TaskStatus.PENDING, user.getUuid());
 		
 		// List should have one entry
 		assertEquals(1, dashboardTasks.size());
