@@ -15,13 +15,12 @@ import de.symeda.sormas.ui.utils.CssStyles;
 public class StatisticsSubComponent extends VerticalLayout {
 
 	// Layouts
-	private HorizontalLayout overviewLayout;
+	private HorizontalLayout countLayout;
 	private AbstractOrderedLayout contentLayout;
 	private VerticalLayout leftContentColumnLayout;
 	private VerticalLayout rightContentColumnLayout;
 	
 	// Components
-	private Label dateLabel;
 	private Label countLabel;
 	
 	public StatisticsSubComponent() {
@@ -40,10 +39,6 @@ public class StatisticsSubComponent extends VerticalLayout {
 			CssStyles.style(headlineLabel, CssStyles.H2, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
 			labelAndTotalLayout.addComponent(headlineLabel);
 			
-			dateLabel = new Label();
-			CssStyles.style(dateLabel, CssStyles.H4, CssStyles.VSPACE_TOP_NONE);
-			labelAndTotalLayout.addComponent(dateLabel);
-			
 			countLabel = new Label();
 			CssStyles.style(countLabel, CssStyles.COLOR_PRIMARY, CssStyles.SIZE_XXXLARGE, CssStyles.TEXT_BOLD, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
 			labelAndTotalLayout.addComponent(countLabel);
@@ -61,18 +56,18 @@ public class StatisticsSubComponent extends VerticalLayout {
 		addComponent(headerLayout);
 	}
 	
-	public void addOverview() {
-		overviewLayout = new HorizontalLayout();
-		overviewLayout.setWidthUndefined();
-		overviewLayout.setSpacing(true);
-		CssStyles.style(overviewLayout, CssStyles.VSPACE_4);
+	public void addCountLayout() {
+		countLayout = new HorizontalLayout();
+		countLayout.setWidthUndefined();
+		countLayout.setSpacing(true);
+		CssStyles.style(countLayout, CssStyles.VSPACE_4);
 		
-		addComponent(overviewLayout);
+		addComponent(countLayout);
 	}
 	
-	public void addComponentToOverview(AbstractComponent overviewElement) {
-		overviewElement.setWidthUndefined();
-		overviewLayout.addComponent(overviewElement);
+	public void addComponentToCountLayout(AbstractComponent countElement) {
+		countElement.setWidthUndefined();
+		countLayout.addComponent(countElement);
 	}
 	
 	public void addContent() {
@@ -156,10 +151,6 @@ public class StatisticsSubComponent extends VerticalLayout {
 		contentLayout.setWidth(100, Unit.PERCENTAGE);
 		contentLayout.setHeightUndefined();
 		CssStyles.style(contentLayout, CssStyles.VSPACE_TOP_2);
-	}
-	
-	public Label getDateLabel() {
-		return dateLabel;
 	}
 	
 }

@@ -24,7 +24,6 @@ import com.vaadin.tapio.googlemaps.client.overlays.GoogleMapMarker;
 import com.vaadin.tapio.googlemaps.client.overlays.GoogleMapPolygon;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.HorizontalLayout;
@@ -68,7 +67,7 @@ public class MapComponent extends VerticalLayout {
 	private static final int MARKER_VERY_LARGE_SIZE = 4;
 
 	// Layouts and components
-	private final DashboardView dashboardView;
+	private final DashboardDataProvider dashboardDataProvider;
 	private final GoogleMap map;
 	private Button casesWithoutGPSButton;
 	private Label mapDateLabel;
@@ -96,9 +95,11 @@ public class MapComponent extends VerticalLayout {
 	// Others
 	private RegionMapVisualization regionMapVisualization = RegionMapVisualization.CASE_COUNT;
 	private MapCaseDisplayMode mapCaseDisplayMode = MapCaseDisplayMode.CASES;
+	private ClickListener externalExpandButtonListener;
+	private ClickListener externalCollapseButtonListener;
 
-	public MapComponent(DashboardView dashboardView) {    	
-		this.dashboardView = dashboardView;
+	public MapComponent(DashboardDataProvider dashboardDataProvider) {    	
+		this.dashboardDataProvider = dashboardDataProvider;
 		map = new GoogleMap("AIzaSyAaJpN8a_NhEU-02-t5uVi02cAaZtKafkw", null, null);
 
 		if (LoginHelper.isUserInRole(UserRole.NATIONAL_USER)
@@ -165,15 +166,15 @@ public class MapComponent extends VerticalLayout {
 		clearCaseMarkers();
 		clearContactMarkers();
 
-		Date fromDate = dashboardView.getDateFilterOption() == DateFilterOption.DATE ? dashboardView.getFromDate() :
-			DateHelper.getEpiWeekStart(dashboardView.getFromWeek());
-		Date toDate = dashboardView.getDateFilterOption() == DateFilterOption.DATE ? dashboardView.getToDate() :
-			DateHelper.getEpiWeekEnd(dashboardView.getToWeek());
-		DistrictReferenceDto district = dashboardView.getDistrict();
-		Disease disease = dashboardView.getDisease();
+		Date fromDate = dashboardDataProvider.getDateFilterOption() == DateFilterOption.DATE ? dashboardDataProvider.getFromDate() :
+			DateHelper.getEpiWeekStart(dashboardDataProvider.getFromWeek());
+		Date toDate = dashboardDataProvider.getDateFilterOption() == DateFilterOption.DATE ? dashboardDataProvider.getToDate() :
+			DateHelper.getEpiWeekEnd(dashboardDataProvider.getToWeek());
+		DistrictReferenceDto district = dashboardDataProvider.getDistrict();
+		Disease disease = dashboardDataProvider.getDisease();
 
 		if (showRegions) {
-			showRegionsShapes(regionMapVisualization, fromDate, toDate, dashboardView.getDisease());
+			showRegionsShapes(regionMapVisualization, fromDate, toDate, dashboardDataProvider.getDisease());
 		}
 		if (showCases) {
 			showCaseMarkers(FacadeProvider.getCaseFacade().getCasesForMap(district, disease, fromDate, toDate, LoginHelper.getCurrentUser().getUuid()));
@@ -211,24 +212,32 @@ public class MapComponent extends VerticalLayout {
 	}
 
 	public void updateDateLabel() {
-		if (dashboardView.getDateFilterOption() == DateFilterOption.EPI_WEEK) {
-			EpiWeek fromWeek = dashboardView.getFromWeek();
-			EpiWeek toWeek = dashboardView.getToWeek();
+		if (dashboardDataProvider.getDateFilterOption() == DateFilterOption.EPI_WEEK) {
+			EpiWeek fromWeek = dashboardDataProvider.getFromWeek();
+			EpiWeek toWeek = dashboardDataProvider.getToWeek();
 			if (fromWeek.getWeek() == toWeek.getWeek()) {
-				mapDateLabel.setValue("ACTIVE CASES/CONTACTS IN EPI WEEK " + fromWeek.getWeek());
+				mapDateLabel.setValue("ACTIVE CASES AND CONTACTS IN EPI WEEK " + fromWeek.getWeek());
 			} else {
-				mapDateLabel.setValue("ACTIVE CASES/CONTACTS BETWEEN EPI WEEK " + fromWeek.getWeek() + " AND " + toWeek.getWeek());
+				mapDateLabel.setValue("ACTIVE CASES AND CONTACTS BETWEEN EPI WEEK " + fromWeek.getWeek() + " AND " + toWeek.getWeek());
 			}
 		} else {
-			Date fromDate = dashboardView.getFromDate();
-			Date toDate = dashboardView.getToDate();
+			Date fromDate = dashboardDataProvider.getFromDate();
+			Date toDate = dashboardDataProvider.getToDate();
 			if (DateHelper.isSameDay(fromDate, toDate)) {
-				mapDateLabel.setValue("ACTIVE CASES/CONTACTS ON " + DateHelper.formatShortDate(fromDate));
+				mapDateLabel.setValue("ACTIVE CASES AND CONTACTS ON " + DateHelper.formatShortDate(fromDate));
 			} else {
-				mapDateLabel.setValue("ACTIVE CASES/CONCTACTS BETWEEN " + DateHelper.formatShortDate(fromDate) + 
+				mapDateLabel.setValue("ACTIVE CASES AND CONCTACTS BETWEEN " + DateHelper.formatShortDate(fromDate) + 
 						" AND " + DateHelper.formatShortDate(toDate));
 			}
 		}
+	}
+
+	public void setExpandListener(ClickListener listener) {
+		externalExpandButtonListener = listener;
+	}
+
+	public void setCollapseListener(ClickListener listener) {
+		externalCollapseButtonListener = listener;
 	}
 
 	private boolean hasCasesWithoutGPSTag() {
@@ -293,23 +302,17 @@ public class MapComponent extends VerticalLayout {
 		CssStyles.style(collapseMapButton, CssStyles.BUTTON_SUBTLE);
 		collapseMapButton.addStyleName(CssStyles.VSPACE_NONE);
 
-		expandMapButton.addClickListener(new ClickListener() {
-			@Override
-			public void buttonClick(ClickEvent event) {
-				dashboardView.expandMap();
-				mapHeaderLayout.removeComponent(expandMapButton);
-				mapHeaderLayout.addComponent(collapseMapButton);
-				mapHeaderLayout.setComponentAlignment(collapseMapButton, Alignment.MIDDLE_RIGHT);
-			}
+		expandMapButton.addClickListener(e -> {
+			externalExpandButtonListener.buttonClick(e);
+			mapHeaderLayout.removeComponent(expandMapButton);
+			mapHeaderLayout.addComponent(collapseMapButton);
+			mapHeaderLayout.setComponentAlignment(collapseMapButton, Alignment.MIDDLE_RIGHT);
 		});
-		collapseMapButton.addClickListener(new ClickListener() {
-			@Override
-			public void buttonClick(ClickEvent event) {
-				dashboardView.collapseMap();
-				mapHeaderLayout.removeComponent(collapseMapButton);
-				mapHeaderLayout.addComponent(expandMapButton);
-				mapHeaderLayout.setComponentAlignment(expandMapButton, Alignment.MIDDLE_RIGHT);
-			}
+		collapseMapButton.addClickListener(e -> {
+			externalCollapseButtonListener.buttonClick(e);
+			mapHeaderLayout.removeComponent(collapseMapButton);
+			mapHeaderLayout.addComponent(expandMapButton);
+			mapHeaderLayout.setComponentAlignment(expandMapButton, Alignment.MIDDLE_RIGHT);
 		});
 		mapHeaderLayout.addComponent(expandMapButton);
 		mapHeaderLayout.setComponentAlignment(expandMapButton, Alignment.MIDDLE_RIGHT);
@@ -728,7 +731,7 @@ public class MapComponent extends VerticalLayout {
 	private void showCaseMarkers(List<MapCase> cases) {
 
 		clearCaseMarkers();
-		
+
 		fillCaseLists(cases);
 
 		for (FacilityReferenceDto facilityReference : facilitiesCasesMaps.keySet()) {

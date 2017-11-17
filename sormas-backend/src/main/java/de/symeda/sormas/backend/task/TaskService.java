@@ -110,7 +110,7 @@ public class TaskService extends AbstractAdoService<Task> {
 		
 		TaskCriteria taskCriteria = new TaskCriteria().assigneeUserEquals(user);
 		if (taskStatus != null) {
-			taskCriteria.taskStatusEquals(TaskStatus.PENDING);
+			taskCriteria.taskStatusEquals(taskStatus);
 		}
 		
 		Predicate filter = buildCriteriaFilter(taskCriteria, cb, task);
