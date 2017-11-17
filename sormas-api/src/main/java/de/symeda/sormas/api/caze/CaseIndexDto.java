@@ -133,27 +133,21 @@ public class CaseIndexDto extends CaseReferenceDto {
 	public void setSurveillanceOfficerUuid(String surveillanceOfficerUuid) {
 		this.surveillanceOfficerUuid = surveillanceOfficerUuid;
 	}
-
 	public String getDistrictName() {
 		return districtName;
 	}
-
 	public void setDistrictName(String districtName) {
 		this.districtName = districtName;
 	}
-
 	public PresentCondition getPresentCondition() {
 		return presentCondition;
 	}
-
 	public void setPresentCondition(PresentCondition presentCondition) {
 		this.presentCondition = presentCondition;
 	}
-
 	public String getHealthFacilityUuid() {
 		return healthFacilityUuid;
 	}
-
 	public void setHealthFacilityUuid(String healthFacilityUuid) {
 		this.healthFacilityUuid = healthFacilityUuid;
 	}

@@ -17,6 +17,7 @@ import org.vaadin.hene.popupbutton.PopupButton;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.grid.HeightMode;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.tapio.googlemaps.GoogleMap;
 import com.vaadin.tapio.googlemaps.client.LatLon;
 import com.vaadin.tapio.googlemaps.client.events.MarkerClickListener;
@@ -355,17 +356,29 @@ public class MapComponent extends VerticalLayout {
 					applyLayerChanges();
 				});
 
-				CheckBox showCasesCheckBox = new CheckBox();
-				CssStyles.style(showCasesCheckBox, CssStyles.VSPACE_NONE);
-				showCasesCheckBox.setCaption("Show cases");
-				showCasesCheckBox.setValue(showCases);
-				showCasesCheckBox.addValueChangeListener(e -> {
-					showCases = (boolean) e.getProperty().getValue();
-					mapCaseDisplayModeSelect.setEnabled(showCases);
-					mapCaseDisplayModeSelect.setValue(mapCaseDisplayMode);
-					applyLayerChanges();
-				});
-				layersLayout.addComponent(showCasesCheckBox);
+				HorizontalLayout showCasesLayout = new HorizontalLayout();
+				{
+					CheckBox showCasesCheckBox = new CheckBox();
+					CssStyles.style(showCasesCheckBox, CssStyles.VSPACE_NONE);
+					showCasesCheckBox.setCaption("Show cases");
+					showCasesCheckBox.setValue(showCases);
+					showCasesCheckBox.addValueChangeListener(e -> {
+						showCases = (boolean) e.getProperty().getValue();
+						mapCaseDisplayModeSelect.setEnabled(showCases);
+						mapCaseDisplayModeSelect.setValue(mapCaseDisplayMode);
+						applyLayerChanges();
+					});
+					showCasesLayout.addComponent(showCasesCheckBox);
+					
+					Label infoLabel = new Label(FontAwesome.INFO_CIRCLE.getHtml(), ContentMode.HTML);
+					infoLabel.setDescription("If cases are shown by home address and there are no GPS coordinates available for it, the coordinates of the location where the case has been reported are used instead.");
+					CssStyles.style(infoLabel, CssStyles.SIZE_MEDIUM, CssStyles.COLOR_SECONDARY, CssStyles.HSPACE_LEFT_3);
+					infoLabel.setHeightUndefined();
+					showCasesLayout.addComponent(infoLabel);
+					showCasesLayout.setComponentAlignment(infoLabel, Alignment.TOP_CENTER);
+				}
+				layersLayout.addComponent(showCasesLayout);
+				
 				layersLayout.addComponent(mapCaseDisplayModeSelect);
 				mapCaseDisplayModeSelect.setEnabled(showCases);
 
