@@ -116,13 +116,20 @@
             </LinearLayout>
 
             <de.symeda.sormas.app.component.LabelField
+                android:id="@+id/task_assigneeUser"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/field_padding"
+                android:paddingBottom="@dimen/field_padding"
+                app:user="@{task.assigneeUser}"/>
+
+            <de.symeda.sormas.app.component.LabelField
                 android:id="@+id/task_creatorComment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingTop="@dimen/field_padding"
                 android:paddingBottom="@dimen/field_padding"
                 android:value="@{task.creatorComment}"/>
-
 
             <de.symeda.sormas.app.component.LabelField
                 android:id="@+id/task_creatorUser"
