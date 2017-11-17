@@ -436,16 +436,16 @@ public class StatisticsComponent extends VerticalLayout {
 			// Remove all children of the content layout
 			newEventsComponent.removeAllComponentsFromContent();
 	
-			// Create a map with all diseases as keys and their respective case counts as values
+			// Create a map with all diseases as keys and their respective event counts as values
 			Map<Disease, Integer> diseaseMap = new TreeMap<Disease, Integer>();
 			for (Disease disease : Disease.values()) {
 				diseaseMap.put(disease, (int) dashboardEvents.stream().filter(e -> e.getDisease() == disease).count());
 			}
 	
-			// Create a list from this map that sorts the entries by case counts
+			// Create a list from this map that sorts the entries by event counts
 			List<Map.Entry<Disease, Integer>> sortedDiseaseList = createSortedDiseaseList(diseaseMap);
 	
-			// Create a new StatisticsDiseaseElement for every disease, automatically sorting them by case count
+			// Create a new StatisticsDiseaseElement for every disease, automatically sorting them by event count
 			for (int i = 0; i < amountOfDisplayedDiseases; i++) {
 				Map.Entry<Disease, Integer> mapEntry = sortedDiseaseList.get(i);
 				int previousDiseaseCount = (int) previousDashboardEvents.stream().filter(e -> e.getDisease() == mapEntry.getKey()).count();
@@ -556,16 +556,16 @@ public class StatisticsComponent extends VerticalLayout {
 			// Remove all children of the content layout
 			newTestResultsComponent.removeAllComponentsFromContent();
 	
-			// Create a map with all diseases as keys and their respective case counts as values
+			// Create a map with all diseases as keys and their respective positive test result counts as values
 			Map<Disease, Integer> diseaseMap = new TreeMap<Disease, Integer>();
 			for (Disease disease : Disease.values()) {
-				diseaseMap.put(disease, (int) dashboardTestResults.stream().filter(r -> r.getDisease() == disease).count());
+				diseaseMap.put(disease, (int) dashboardTestResults.stream().filter(r -> r.getTestResult() == SampleTestResultType.POSITIVE && r.getDisease() == disease).count());
 			}
 	
-			// Create a list from this map that sorts the entries by case counts
+			// Create a list from this map that sorts the entries by test result counts
 			List<Map.Entry<Disease, Integer>> sortedDiseaseList = createSortedDiseaseList(diseaseMap);
 	
-			// Create a new StatisticsDiseaseElement for every disease, automatically sorting them by case count
+			// Create a new StatisticsDiseaseElement for every disease, automatically sorting them by test result count
 			for (int i = 0; i < amountOfDisplayedDiseases; i++) {
 				Map.Entry<Disease, Integer> mapEntry = sortedDiseaseList.get(i);
 				int previousDiseaseCount = (int) previousDashboardTestResults.stream().filter(r -> r.getDisease() == mapEntry.getKey()).count();
