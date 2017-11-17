@@ -166,6 +166,20 @@ public class CaseEditDataForm extends FormTab {
             binding.caseDataEpidNumber.setEnabled(false);
         }
 
+        if (ConfigProvider.getUser().getUserRole() == UserRole.SURVEILLANCE_OFFICER) {
+            binding.caseDataCaseOfficerClassification.addValueChangedListener(new PropertyField.ValueChangeListener() {
+                @Override
+                public void onChange(PropertyField field) {
+                    CaseClassification caseClassification = (CaseClassification) field.getValue();
+                    if (caseClassification == CaseClassification.NOT_CLASSIFIED) {
+                        field.setErrorWithoutFocus(DatabaseHelper.getContext().getResources().getString(R.string.validation_soft_case_classification));
+                    } else {
+                        field.clearError();
+                    }
+                }
+            });
+        }
+
         if (ConfigProvider.getUser().getUserRole() == UserRole.CASE_OFFICER || ConfigProvider.getUser().getUserRole() == UserRole.SURVEILLANCE_OFFICER) {
             binding.caseDataMove.setVisibility(View.VISIBLE);
             binding.caseDataMove.setPaintFlags(binding.caseDataMove.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
