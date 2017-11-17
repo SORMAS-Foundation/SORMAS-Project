@@ -34,18 +34,6 @@
 		color: $s-minor-color;
 	}
 
-	.v-label-color-increase {
-		color: $s-critical-color;
-	}
-
-	.v-label-color-decrease {
-		color: $s-positive-color;
-	}
-
-	.v-label-color-steady {
-		color: $s-steady-color;
-	}
-	
 	// Labels with colorized bar on top
 	.v-label-bar-top-critical {
 		border-top: 4px solid $s-critical-color;
@@ -78,6 +66,12 @@
 	}
 
 	// Separators
+	.v-label-separator-horizontal {
+		border-bottom: 1px solid #CDD8EC;
+		line-height: 1px;
+		font-size: 1px;
+	}
+
 	.v-label-separator-horizontal-bottom {
 		border-bottom: 1px solid #CDD8EC;
 		padding-top: 15px;

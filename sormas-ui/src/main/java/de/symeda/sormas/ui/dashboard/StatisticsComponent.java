@@ -20,9 +20,11 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.DashboardCase;
+import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.event.DashboardEvent;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.EventType;
+import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.sample.DashboardSample;
 import de.symeda.sormas.api.sample.DashboardTestResult;
 import de.symeda.sormas.api.sample.SampleTestResultType;
@@ -65,6 +67,12 @@ public class StatisticsComponent extends VerticalLayout {
 	private StatisticsOverviewElement caseClassificationSuspect;
 	private StatisticsOverviewElement caseClassificationNotACase;
 	private StatisticsOverviewElement caseClassificationNotYetClassified;
+	private StatisticsGrowthElement caseInvestigationStatusDone;
+	private StatisticsGrowthElement caseInvestigationStatusDiscarded;
+	private StatisticsGrowthElement caseFatalities;
+	private Label caseFatalityRateLabel;
+	private Label caseFatalityRateCaption;
+	
 
 	// "New Events" elements
 	private StatisticsOverviewElement eventStatusConfirmed;
@@ -178,18 +186,17 @@ public class StatisticsComponent extends VerticalLayout {
 
 		// Content
 		myTasksComponent.addTwoColumnsContent(false, 60);
-		StatisticsTwoColumnsContentLayout contentLayout = (StatisticsTwoColumnsContentLayout) myTasksComponent.getContentLayout();
 		taskStatusPendingPercentage = new StatisticsPercentageElement("Pending", CssStyles.SVG_FILL_IMPORTANT);
-		contentLayout.addComponentToLeftContentColumn(taskStatusPendingPercentage);
+		myTasksComponent.addComponentToLeftContentColumn(taskStatusPendingPercentage);
 		taskStatusDonePercentage = new StatisticsPercentageElement("Done", CssStyles.SVG_FILL_POSITIVE);
-		contentLayout.addComponentToLeftContentColumn(taskStatusDonePercentage);
+		myTasksComponent.addComponentToLeftContentColumn(taskStatusDonePercentage);
 		taskStatusRemovedPercentage = new StatisticsPercentageElement("Removed", CssStyles.SVG_FILL_CRITICAL);
-		contentLayout.addComponentToLeftContentColumn(taskStatusRemovedPercentage);
+		myTasksComponent.addComponentToLeftContentColumn(taskStatusRemovedPercentage);
 		taskStatusNotExecutablePercentage = new StatisticsPercentageElement("Not Executable", CssStyles.SVG_FILL_MINOR);
-		contentLayout.addComponentToLeftContentColumn(taskStatusNotExecutablePercentage);
+		myTasksComponent.addComponentToLeftContentColumn(taskStatusNotExecutablePercentage);
 
 		taskStatusCircleGraph = new SvgCircleElement(false);
-		contentLayout.addComponentToRightContentColumn(taskStatusCircleGraph);
+		myTasksComponent.addComponentToRightContentColumn(taskStatusCircleGraph);
 
 		subComponentsLayout.addComponent(myTasksComponent);
 	}
@@ -261,6 +268,13 @@ public class StatisticsComponent extends VerticalLayout {
 
 		// Content
 		newCasesComponent.addContent();
+		caseInvestigationStatusDone = new StatisticsGrowthElement("Investigated", CssStyles.COLOR_SECONDARY, Alignment.MIDDLE_LEFT);
+		caseInvestigationStatusDiscarded = new StatisticsGrowthElement("Discarded", CssStyles.COLOR_SECONDARY, Alignment.MIDDLE_LEFT);
+		caseFatalities = new StatisticsGrowthElement("Fatalities", CssStyles.COLOR_CRITICAL, Alignment.MIDDLE_RIGHT);
+		caseFatalityRateLabel = new Label();
+		CssStyles.style(caseFatalityRateLabel, CssStyles.SIZE_LARGE, CssStyles.COLOR_PRIMARY, CssStyles.TEXT_UPPERCASE, CssStyles.TEXT_BOLD);
+		caseFatalityRateCaption = new Label("Case Fatality Rate");
+		CssStyles.style(caseFatalityRateCaption, CssStyles.SIZE_MEDIUM, CssStyles.COLOR_CRITICAL, CssStyles.TEXT_UPPERCASE, CssStyles.TEXT_BOLD);
 
 		subComponentsLayout.addComponent(newCasesComponent);
 	}
@@ -286,18 +300,28 @@ public class StatisticsComponent extends VerticalLayout {
 		caseClassificationNotYetClassified.updateCountLabel(notYetClassifiedCasesCount);
 
 		// Remove and re-create content layout if the disease filter has been applied or set to null
-//		if ((currentDisease == null && previousDisease != null) || (previousDisease == null && currentDisease != null)) {
-//			newCasesComponent.removeContent();
-//			if (currentDisease != null) {
-//				newCasesComponent.addTwoColumnsContent(true);
-//			} else {
-//				newCasesComponent.addContent();
-//			}
-//		}
+		if ((currentDisease == null && previousDisease != null) || (previousDisease == null && currentDisease != null)) {
+			newCasesComponent.removeAllComponentsFromContent();
+			newCasesComponent.addComponentToContent(caseInvestigationStatusDone);
+			newCasesComponent.addComponentToContent(caseInvestigationStatusDiscarded);
+			Label separator = new Label();
+			separator.setWidth(100, Unit.PERCENTAGE);
+			separator.setHeightUndefined();
+			CssStyles.style(separator, CssStyles.SEPARATOR_HORIZONTAL, CssStyles.VSPACE_4);
+			newCasesComponent.addComponentToContent(separator);
+			HorizontalLayout fatalityLayout = new HorizontalLayout();
+			fatalityLayout.setWidth(100, Unit.PERCENTAGE);
+			VerticalLayout fatalityRateLayout = new VerticalLayout();
+			fatalityRateLayout.addComponent(caseFatalityRateLabel);
+			fatalityRateLayout.addComponent(caseFatalityRateCaption);
+			fatalityLayout.addComponent(fatalityRateLayout);
+			fatalityLayout.addComponent(caseFatalities);
+			newCasesComponent.addComponentToContent(fatalityLayout);
+		}
 
 		if (currentDisease == null) {
 			// Remove all children of the content layout
-			newCasesComponent.getContentLayout().removeAllComponents();
+			newCasesComponent.removeAllComponentsFromContent();
 
 			// Create a map with all diseases as keys and their respective case counts as values
 			Map<Disease, Integer> diseaseMap = new TreeMap<Disease, Integer>();
@@ -313,8 +337,32 @@ public class StatisticsComponent extends VerticalLayout {
 				Map.Entry<Disease, Integer> mapEntry = sortedDiseaseList.get(i);
 				int previousDiseaseCount = (int) previousDashboardCases.stream().filter(c -> c.getDisease() == mapEntry.getKey()).count();
 				StatisticsDiseaseElement diseaseElement = new StatisticsDiseaseElement(mapEntry.getKey().toString(), mapEntry.getValue(), previousDiseaseCount);
-				newCasesComponent.getContentLayout().addComponentToContent(diseaseElement);
+				newCasesComponent.addComponentToContent(diseaseElement);
 			}
+		} else {
+			int investigatedCasesCount = (int) dashboardCases.stream().filter(c -> c.getInvestigationStatus() == InvestigationStatus.DONE).count();
+			int previousInvestigatedCasesCount = (int) previousDashboardCases.stream().filter(c -> c.getInvestigationStatus() == InvestigationStatus.DONE).count();
+			int discardedCasesCount = (int) dashboardCases.stream().filter(c -> c.getInvestigationStatus() == InvestigationStatus.DISCARDED).count();
+			int previousDiscardedCasesCount = (int) previousDashboardCases.stream().filter(c -> c.getInvestigationStatus() == InvestigationStatus.DISCARDED).count();
+			int fatalitiesCount = (int) dashboardCases.stream().filter(c -> c.getCasePersonCondition() == PresentCondition.DEAD).count();
+			int previousFatalitiesCount = (int) previousDashboardCases.stream().filter(c -> c.getCasePersonCondition() == PresentCondition.DEAD).count();
+			
+			float investigatedCasesGrowth = investigatedCasesCount == 0 ? -previousInvestigatedCasesCount * 100 : 
+				previousInvestigatedCasesCount == 0 ? investigatedCasesCount * 100 :
+				new BigDecimal(investigatedCasesCount).subtract(new BigDecimal(previousInvestigatedCasesCount)).divide(new BigDecimal(investigatedCasesCount), 1, RoundingMode.HALF_UP).multiply(new BigDecimal(100)).floatValue();
+			float discardedCasesGrowth = discardedCasesCount == 0 ? -previousDiscardedCasesCount * 100 : 
+				previousDiscardedCasesCount == 0 ? discardedCasesCount * 100 :
+				new BigDecimal(discardedCasesCount).subtract(new BigDecimal(previousDiscardedCasesCount)).divide(new BigDecimal(discardedCasesCount), 1, RoundingMode.HALF_UP).multiply(new BigDecimal(100)).floatValue();
+			float fatalitiesGrowth = fatalitiesCount == 0 ? -previousFatalitiesCount * 100 : 
+				previousFatalitiesCount == 0 ? fatalitiesCount * 100 :
+				new BigDecimal(fatalitiesCount).subtract(new BigDecimal(previousFatalitiesCount)).divide(new BigDecimal(fatalitiesCount), 1, RoundingMode.HALF_UP).multiply(new BigDecimal(100)).floatValue();
+			float fatalityRate = fatalitiesCount == 0 ? 0 : newCasesCount == 0 ? 0 :
+				new BigDecimal(fatalitiesCount).multiply(new BigDecimal(100)).divide(new BigDecimal(newCasesCount), 1, RoundingMode.HALF_UP).floatValue();
+			
+			caseInvestigationStatusDone.update(investigatedCasesCount, investigatedCasesGrowth, true);
+			caseInvestigationStatusDiscarded.update(discardedCasesCount, discardedCasesGrowth, false);
+			caseFatalities.update(fatalitiesCount, fatalitiesGrowth, false);
+			caseFatalityRateLabel.setValue("CFR " + (fatalityRate % 1.0 != 0 ? String.format("%s", Float.toString(fatalityRate)) + "%" : String.format("%.0f", fatalityRate) + "%"));
 		}
 	}
 
@@ -366,20 +414,19 @@ public class StatisticsComponent extends VerticalLayout {
 			newEventsComponent.removeContent();
 			if (currentDisease != null) {
 				newEventsComponent.addTwoColumnsContent(true, 20);
-				StatisticsTwoColumnsContentLayout contentLayout = (StatisticsTwoColumnsContentLayout) newEventsComponent.getContentLayout();
-				contentLayout.addComponentToLeftContentColumn(eventTypeRumorCircleGraph);
+				newEventsComponent.addComponentToLeftContentColumn(eventTypeRumorCircleGraph);
 				Label rumorCircleLabel = new Label("Rumor");
 				rumorCircleLabel.setWidth(100, Unit.PERCENTAGE);
 				CssStyles.style(rumorCircleLabel, CssStyles.COLOR_SECONDARY, CssStyles.SIZE_MEDIUM, CssStyles.TEXT_BOLD, CssStyles.TEXT_UPPERCASE, CssStyles.VSPACE_3, CssStyles.ALIGN_CENTER);
-				contentLayout.addComponentToLeftContentColumn(rumorCircleLabel);
-				contentLayout.addComponentToLeftContentColumn(eventTypeOutbreakCircleGraph);
+				newEventsComponent.addComponentToLeftContentColumn(rumorCircleLabel);
+				newEventsComponent.addComponentToLeftContentColumn(eventTypeOutbreakCircleGraph);
 				Label outbreakCircleLabel = new Label("Outbreak");
 				outbreakCircleLabel.setWidth(100, Unit.PERCENTAGE);
 				CssStyles.style(outbreakCircleLabel, CssStyles.COLOR_SECONDARY, CssStyles.SIZE_MEDIUM, CssStyles.TEXT_BOLD, CssStyles.TEXT_UPPERCASE, CssStyles.VSPACE_3, CssStyles.ALIGN_CENTER);
-				contentLayout.addComponentToLeftContentColumn(outbreakCircleLabel);
-				contentLayout.addComponentToRightContentColumn(eventStatusConfirmedPercentage);
-				contentLayout.addComponentToRightContentColumn(eventStatusPossiblePercentage);
-				contentLayout.addComponentToRightContentColumn(eventStatusNotAnEventPercentage);
+				newEventsComponent.addComponentToLeftContentColumn(outbreakCircleLabel);
+				newEventsComponent.addComponentToRightContentColumn(eventStatusConfirmedPercentage);
+				newEventsComponent.addComponentToRightContentColumn(eventStatusPossiblePercentage);
+				newEventsComponent.addComponentToRightContentColumn(eventStatusNotAnEventPercentage);
 			} else {
 				newEventsComponent.addContent();
 			}
@@ -387,7 +434,7 @@ public class StatisticsComponent extends VerticalLayout {
 
 		if (currentDisease == null) {
 			// Remove all children of the content layout
-			newEventsComponent.getContentLayout().removeAllComponents();
+			newEventsComponent.removeAllComponentsFromContent();
 	
 			// Create a map with all diseases as keys and their respective case counts as values
 			Map<Disease, Integer> diseaseMap = new TreeMap<Disease, Integer>();
@@ -403,7 +450,7 @@ public class StatisticsComponent extends VerticalLayout {
 				Map.Entry<Disease, Integer> mapEntry = sortedDiseaseList.get(i);
 				int previousDiseaseCount = (int) previousDashboardEvents.stream().filter(e -> e.getDisease() == mapEntry.getKey()).count();
 				StatisticsDiseaseElement diseaseElement = new StatisticsDiseaseElement(mapEntry.getKey().toString(), mapEntry.getValue(), previousDiseaseCount);
-				newEventsComponent.getContentLayout().addComponentToContent(diseaseElement);
+				newEventsComponent.addComponentToContent(diseaseElement);
 			}
 		} else {
 			int rumorsCount = (int) dashboardEvents.stream().filter(e -> e.getEventType() == EventType.RUMOR).count();
@@ -486,21 +533,20 @@ public class StatisticsComponent extends VerticalLayout {
 			newTestResultsComponent.removeContent();
 			if (currentDisease != null) {
 				newTestResultsComponent.addTwoColumnsContent(true, 20);
-				StatisticsTwoColumnsContentLayout contentLayout = (StatisticsTwoColumnsContentLayout) newTestResultsComponent.getContentLayout();
-				contentLayout.addComponentToLeftContentColumn(testResultShippedCircleGraph);
+				newTestResultsComponent.addComponentToLeftContentColumn(testResultShippedCircleGraph);
 				Label shippedCircleLabel = new Label("Shipped");
 				shippedCircleLabel.setWidth(100, Unit.PERCENTAGE);
 				CssStyles.style(shippedCircleLabel, CssStyles.COLOR_SECONDARY, CssStyles.SIZE_MEDIUM, CssStyles.TEXT_BOLD, CssStyles.TEXT_UPPERCASE, CssStyles.VSPACE_3, CssStyles.ALIGN_CENTER);
-				contentLayout.addComponentToLeftContentColumn(shippedCircleLabel);
-				contentLayout.addComponentToLeftContentColumn(testResultReceivedCircleGraph);
+				newTestResultsComponent.addComponentToLeftContentColumn(shippedCircleLabel);
+				newTestResultsComponent.addComponentToLeftContentColumn(testResultReceivedCircleGraph);
 				Label receivedCircleLabel = new Label("Received");
 				receivedCircleLabel.setWidth(100, Unit.PERCENTAGE);
 				CssStyles.style(receivedCircleLabel, CssStyles.COLOR_SECONDARY, CssStyles.SIZE_MEDIUM, CssStyles.TEXT_BOLD, CssStyles.TEXT_UPPERCASE, CssStyles.VSPACE_3, CssStyles.ALIGN_CENTER);
-				contentLayout.addComponentToLeftContentColumn(receivedCircleLabel);
-				contentLayout.addComponentToRightContentColumn(testResultPositivePercentage);
-				contentLayout.addComponentToRightContentColumn(testResultNegativePercentage);
-				contentLayout.addComponentToRightContentColumn(testResultPendingPercentage);
-				contentLayout.addComponentToRightContentColumn(testResultIndeterminatePercentage);
+				newTestResultsComponent.addComponentToLeftContentColumn(receivedCircleLabel);
+				newTestResultsComponent.addComponentToRightContentColumn(testResultPositivePercentage);
+				newTestResultsComponent.addComponentToRightContentColumn(testResultNegativePercentage);
+				newTestResultsComponent.addComponentToRightContentColumn(testResultPendingPercentage);
+				newTestResultsComponent.addComponentToRightContentColumn(testResultIndeterminatePercentage);
 			} else {
 				newEventsComponent.addContent();
 			}
@@ -508,7 +554,7 @@ public class StatisticsComponent extends VerticalLayout {
 		
 		if (currentDisease == null) {
 			// Remove all children of the content layout
-			newTestResultsComponent.getContentLayout().removeAllComponents();
+			newTestResultsComponent.removeAllComponentsFromContent();
 	
 			// Create a map with all diseases as keys and their respective case counts as values
 			Map<Disease, Integer> diseaseMap = new TreeMap<Disease, Integer>();
@@ -524,7 +570,7 @@ public class StatisticsComponent extends VerticalLayout {
 				Map.Entry<Disease, Integer> mapEntry = sortedDiseaseList.get(i);
 				int previousDiseaseCount = (int) previousDashboardTestResults.stream().filter(r -> r.getDisease() == mapEntry.getKey()).count();
 				StatisticsDiseaseElement diseaseElement = new StatisticsDiseaseElement(mapEntry.getKey().toString(), mapEntry.getValue(), previousDiseaseCount);
-				newTestResultsComponent.getContentLayout().addComponentToContent(diseaseElement);
+				newTestResultsComponent.addComponentToContent(diseaseElement);
 			}
 		} else {
 			List<DashboardSample> dashboardSamples = dashboardView.getSamples();

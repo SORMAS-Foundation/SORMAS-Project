@@ -30,15 +30,16 @@ public class StatisticsDiseaseElement extends HorizontalLayout {
 		growthLabel.setContentMode(ContentMode.HTML);
 		growthLabel.setWidth(15, Unit.PIXELS);
 		
+		CssStyles.removeStyles(growthLabel, CssStyles.COLOR_CRITICAL, CssStyles.COLOR_POSITIVE, CssStyles.COLOR_IMPORTANT);
 		if (count > previousCount) {
 			growthLabel.setValue(FontAwesome.CHEVRON_UP.getHtml());
-			CssStyles.style(growthLabel, CssStyles.COLOR_INCREASE);
+			CssStyles.style(growthLabel, CssStyles.COLOR_CRITICAL);
 		} else if (count == previousCount) {
 			growthLabel.setValue(FontAwesome.CHEVRON_RIGHT.getHtml());
-			CssStyles.style(growthLabel, CssStyles.COLOR_STEADY, CssStyles.ALIGN_CENTER);
+			CssStyles.style(growthLabel, CssStyles.COLOR_IMPORTANT, CssStyles.ALIGN_CENTER);
 		} else {
 			growthLabel.setValue(FontAwesome.CHEVRON_DOWN.getHtml());
-			CssStyles.style(growthLabel, CssStyles.COLOR_DECREASE);
+			CssStyles.style(growthLabel, CssStyles.COLOR_POSITIVE);
 		}
 		
 		CssStyles.style(growthLabel, CssStyles.TEXT_BOLD, CssStyles.SIZE_LARGE);

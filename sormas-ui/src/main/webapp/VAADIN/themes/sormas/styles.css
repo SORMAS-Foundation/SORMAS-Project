@@ -13017,6 +13017,10 @@ div.v-layout.v-horizontal.v-widget {
 	text-align: center;
 }
 
+.sormas .v-slot-separator-horizontal {
+	line-height: 1px;
+}
+
 .sormas .v-button {
 	text-transform: uppercase;
 	border-color: #005A9C;
@@ -13472,18 +13476,6 @@ div.v-layout.v-horizontal.v-widget {
 	color: #808080;
 }
 
-.sormas .v-label-color-increase {
-	color: #FF0000;
-}
-
-.sormas .v-label-color-decrease {
-	color: #32CD32;
-}
-
-.sormas .v-label-color-steady {
-	color: #FF8C00;
-}
-
 .sormas .v-label-bar-top-critical {
 	border-top: 4px solid #FF0000;
 	padding-top: 6px;
@@ -13512,6 +13504,12 @@ div.v-layout.v-horizontal.v-widget {
 .sormas .v-label-bar-top-minor {
 	border-top: 4px solid #808080;
 	padding-top: 6px;
+}
+
+.sormas .v-label-separator-horizontal {
+	border-bottom: 1px solid #CDD8EC;
+	line-height: 1px;
+	font-size: 1px;
 }
 
 .sormas .v-label-separator-horizontal-bottom {

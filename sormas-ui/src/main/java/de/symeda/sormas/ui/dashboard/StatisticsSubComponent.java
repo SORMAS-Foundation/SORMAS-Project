@@ -2,6 +2,7 @@ package de.symeda.sormas.ui.dashboard;
 
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.AbstractComponent;
+import com.vaadin.ui.AbstractOrderedLayout;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
@@ -15,7 +16,9 @@ public class StatisticsSubComponent extends VerticalLayout {
 
 	// Layouts
 	private HorizontalLayout overviewLayout;
-	private StatisticsContentLayout contentLayout;
+	private AbstractOrderedLayout contentLayout;
+	private VerticalLayout leftContentColumnLayout;
+	private VerticalLayout rightContentColumnLayout;
 	
 	// Components
 	private Label dateLabel;
@@ -74,29 +77,85 @@ public class StatisticsSubComponent extends VerticalLayout {
 	
 	public void addContent() {
 		if (contentLayout == null) {
-			contentLayout = new StatisticsContentLayout();
+			contentLayout = new VerticalLayout();
+			contentLayout.setSpacing(false);
+			initializeContentLayout();
 			addComponent(contentLayout);
 		}
 	}
 	
 	public void addTwoColumnsContent(boolean showSeparator, int leftColumnPercentalWidth) {
 		if (contentLayout == null) {
-			contentLayout = new StatisticsTwoColumnsContentLayout(showSeparator, leftColumnPercentalWidth);
+			contentLayout = new HorizontalLayout();
+			contentLayout.setSpacing(true);
+			initializeContentLayout();
 			addComponent(contentLayout);
+			
+			leftContentColumnLayout = new VerticalLayout();
+			leftContentColumnLayout.setWidth(100, Unit.PERCENTAGE);
+			leftContentColumnLayout.setHeightUndefined();
+			contentLayout.addComponent(leftContentColumnLayout);
+			
+			if (showSeparator) {
+				Label separator = new Label();
+				separator.setHeight(100, Unit.PERCENTAGE);
+				separator.setWidthUndefined();
+				CssStyles.style(separator, CssStyles.SEPARATOR_VERTICAL, CssStyles.HSPACE_LEFT_3, CssStyles.HSPACE_RIGHT_3);
+				contentLayout.addComponent(separator);
+			}
+			
+			rightContentColumnLayout = new VerticalLayout();
+			rightContentColumnLayout.setWidth(100, Unit.PERCENTAGE);
+			rightContentColumnLayout.setHeightUndefined();
+			contentLayout.addComponent(rightContentColumnLayout);
+
+			contentLayout.setExpandRatio(leftContentColumnLayout, leftColumnPercentalWidth);
+			contentLayout.setExpandRatio(rightContentColumnLayout, 100 - leftColumnPercentalWidth);
 		}
+	}
+	
+	public void addComponentToContent(AbstractComponent component) {
+		component.setWidth(100, Unit.PERCENTAGE);
+		contentLayout.addComponent(component);
+	}
+	
+	public void addComponentToLeftContentColumn(AbstractComponent component) {
+		component.setWidth(100, Unit.PERCENTAGE);
+		leftContentColumnLayout.addComponent(component);
+	}
+	
+	public void addComponentToRightContentColumn(AbstractComponent component) {
+		component.setWidth(100, Unit.PERCENTAGE);
+		rightContentColumnLayout.addComponent(component);
+	}
+	
+	public void removeAllComponentsFromContent() {
+		contentLayout.removeAllComponents();
+	}
+	
+	public void removeAllComponentsFromLeftContentColumn() {
+		leftContentColumnLayout.removeAllComponents();
+	}
+	
+	public void removeAllComponentsFromRightContentColumn() {
+		rightContentColumnLayout.removeAllComponents();
 	}
 	
 	public void removeContent() {
 		removeComponent(contentLayout);
 		contentLayout = null;
+		leftContentColumnLayout = null;
+		rightContentColumnLayout = null;
 	}
 	
 	public void updateCountLabel(int count) {
 		countLabel.setValue(Integer.toString(count));
 	}
 	
-	public StatisticsContentLayout getContentLayout() {
-		return contentLayout;
+	private void initializeContentLayout() {
+		contentLayout.setWidth(100, Unit.PERCENTAGE);
+		contentLayout.setHeightUndefined();
+		CssStyles.style(contentLayout, CssStyles.VSPACE_TOP_2);
 	}
 	
 	public Label getDateLabel() {

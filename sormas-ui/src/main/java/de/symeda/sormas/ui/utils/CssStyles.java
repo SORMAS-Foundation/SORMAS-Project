@@ -58,9 +58,6 @@ public final class CssStyles {
 	public static final String COLOR_NEUTRAL = "color-neutral";
 	public static final String COLOR_POSITIVE = "color-positive";
 	public static final String COLOR_MINOR = "color-minor";
-	public static final String COLOR_INCREASE = "color-increase";
-	public static final String COLOR_DECREASE = "color-decrease";
-	public static final String COLOR_STEADY = "color-steady";
 	
 	// Font sizes
 	public static final String SIZE_SMALL = "size-small";
@@ -83,6 +80,7 @@ public final class CssStyles {
 	public static final String LABEL_BAR_TOP_MINOR = "bar-top-minor";
 	
 	// Separators
+	public static final String SEPARATOR_HORIZONTAL = "separator-horizontal";
 	public static final String SEPARATOR_HORIZONTAL_BOTTOM = "separator-horizontal-bottom";
 	public static final String SEPARATOR_VERTICAL = "separator-vertical";
 	

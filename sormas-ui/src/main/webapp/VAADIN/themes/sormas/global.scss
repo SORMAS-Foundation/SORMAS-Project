@@ -162,5 +162,10 @@
   .align-center {
   	text-align: center;
   }
+
+  // Make sure that horizontal separators don't have more than 1px height
+  .v-slot-separator-horizontal {
+	line-height: 1px;
+  }
   
 }
