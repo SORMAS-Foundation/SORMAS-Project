@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.enterprise.inject.Specializes;
 
 import de.symeda.sormas.api.region.RegionDataDto;
 import de.symeda.sormas.api.region.RegionDto;
@@ -94,6 +95,7 @@ public class RegionFacadeEjb implements RegionFacade {
 	
 	@LocalBean
 	@Stateless
+	@Specializes
 	public static class RegionFacadeEjbLocal extends RegionFacadeEjb	 {
 	}
 }

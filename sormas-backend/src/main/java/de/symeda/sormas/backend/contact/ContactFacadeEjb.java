@@ -13,6 +13,7 @@ import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.enterprise.inject.Specializes;
 import javax.validation.ValidationException;
 import javax.validation.constraints.NotNull;
 
@@ -424,6 +425,7 @@ public class ContactFacadeEjb implements ContactFacade {
 
 	@LocalBean
 	@Stateless
+	@Specializes
 	public static class ContactFacadeEjbLocal extends ContactFacadeEjb {
 	}
 }

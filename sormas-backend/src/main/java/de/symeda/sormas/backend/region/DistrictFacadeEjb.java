@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.enterprise.inject.Specializes;
 
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictFacade;
@@ -80,6 +81,7 @@ public class DistrictFacadeEjb implements DistrictFacade {
 	
 	@LocalBean
 	@Stateless
+	@Specializes
 	public static class DistrictFacadeEjbLocal extends DistrictFacadeEjb	 {
 	}
 }

@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.enterprise.inject.Specializes;
 
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -211,6 +212,7 @@ public class UserFacadeEjb implements UserFacade {
 	
 	@LocalBean
 	@Stateless
+	@Specializes
 	public static class UserFacadeEjbLocal extends UserFacadeEjb {
 	}
 }
