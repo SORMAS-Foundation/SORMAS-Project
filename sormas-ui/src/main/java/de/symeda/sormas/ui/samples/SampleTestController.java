@@ -2,14 +2,20 @@ package de.symeda.sormas.ui.samples;
 
 import java.util.List;
 
+import com.vaadin.ui.UI;
+import com.vaadin.ui.Window;
+
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SampleTestDto;
 import de.symeda.sormas.api.sample.SampleTestFacade;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
+import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DeleteListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class SampleTestController {
@@ -48,6 +54,8 @@ public class SampleTestController {
 		SampleTestEditForm form = new SampleTestEditForm();
 		form.setValue(newDto);
 		final CommitDiscardWrapperComponent<SampleTestEditForm> editView = new CommitDiscardWrapperComponent<SampleTestEditForm>(form, form.getFieldGroup());
+
+		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, "Edit sample test result");
 		
 		editView.addCommitListener(new CommitListener() {
 			@Override
@@ -59,8 +67,17 @@ public class SampleTestController {
 				}
 			}
 		});
-		
-		VaadinUiUtil.showModalPopupWindow(editView, "Edit sample test result");
+
+        if (LoginHelper.getCurrentUserRoles().contains(UserRole.ADMIN)) {
+			editView.addDeleteListener(new DeleteListener() {
+				@Override
+				public void onDelete() {
+					FacadeProvider.getSampleTestFacade().deleteSampleTest(dto, LoginHelper.getCurrentUserAsReference().getUuid());
+					UI.getCurrent().removeWindow(popupWindow);
+					grid.reload();
+				}
+			}, I18nProperties.getFieldCaption("SampleTest"));
+		}
 	}
 	
 	private SampleTestDto createNewSampleTest(SampleReferenceDto sampleRef) {

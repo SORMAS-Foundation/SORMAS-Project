@@ -1,6 +1,8 @@
 package de.symeda.sormas.ui.dashboard;
 
 import com.vaadin.shared.ui.MarginInfo;
+import com.vaadin.ui.AbstractComponent;
+import com.vaadin.ui.AbstractOrderedLayout;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
@@ -13,10 +15,12 @@ import de.symeda.sormas.ui.utils.CssStyles;
 public class StatisticsSubComponent extends VerticalLayout {
 
 	// Layouts
-	private HorizontalLayout overviewLayout;
+	private HorizontalLayout countLayout;
+	private AbstractOrderedLayout contentLayout;
+	private VerticalLayout leftContentColumnLayout;
+	private VerticalLayout rightContentColumnLayout;
 	
 	// Components
-	private Label dateLabel;
 	private Label countLabel;
 	
 	public StatisticsSubComponent() {
@@ -35,12 +39,8 @@ public class StatisticsSubComponent extends VerticalLayout {
 			CssStyles.style(headlineLabel, CssStyles.H2, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
 			labelAndTotalLayout.addComponent(headlineLabel);
 			
-			dateLabel = new Label();
-			CssStyles.style(dateLabel, CssStyles.H4, CssStyles.VSPACE_TOP_NONE);
-			labelAndTotalLayout.addComponent(dateLabel);
-			
 			countLabel = new Label();
-			CssStyles.style(countLabel, CssStyles.UPPERCASE_XLARGE, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
+			CssStyles.style(countLabel, CssStyles.COLOR_PRIMARY, CssStyles.SIZE_XXXLARGE, CssStyles.TEXT_BOLD, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
 			labelAndTotalLayout.addComponent(countLabel);
 			
 		}
@@ -56,30 +56,101 @@ public class StatisticsSubComponent extends VerticalLayout {
 		addComponent(headerLayout);
 	}
 	
-	public void addOverview() {
-		overviewLayout = new HorizontalLayout();
-		overviewLayout.setWidthUndefined();
-		overviewLayout.setSpacing(true);
-		CssStyles.style(overviewLayout, CssStyles.VSPACE_4);
+	public void addCountLayout() {
+		countLayout = new HorizontalLayout();
+		countLayout.setWidthUndefined();
+		countLayout.setSpacing(true);
+		CssStyles.style(countLayout, CssStyles.VSPACE_4);
 		
-		addComponent(overviewLayout);
+		addComponent(countLayout);
 	}
 	
-	public void addComponentToOverview(StatisticsOverviewElement overviewElement) {
-		overviewElement.setWidthUndefined();
-		overviewLayout.addComponent(overviewElement);
+	public void addComponentToCountLayout(AbstractComponent countElement) {
+		countElement.setWidthUndefined();
+		countLayout.addComponent(countElement);
 	}
 	
 	public void addContent() {
-		
+		if (contentLayout == null) {
+			contentLayout = new VerticalLayout();
+			contentLayout.setSpacing(false);
+			initializeContentLayout();
+			addComponent(contentLayout);
+		}
+	}
+	
+	public void addTwoColumnsContent(boolean showSeparator, int leftColumnPercentalWidth) {
+		if (contentLayout == null) {
+			contentLayout = new HorizontalLayout();
+			contentLayout.setSpacing(true);
+			initializeContentLayout();
+			addComponent(contentLayout);
+			
+			leftContentColumnLayout = new VerticalLayout();
+			leftContentColumnLayout.setWidth(100, Unit.PERCENTAGE);
+			leftContentColumnLayout.setHeightUndefined();
+			contentLayout.addComponent(leftContentColumnLayout);
+			
+			if (showSeparator) {
+				Label separator = new Label();
+				separator.setHeight(100, Unit.PERCENTAGE);
+				separator.setWidthUndefined();
+				CssStyles.style(separator, CssStyles.SEPARATOR_VERTICAL, CssStyles.HSPACE_LEFT_3, CssStyles.HSPACE_RIGHT_3);
+				contentLayout.addComponent(separator);
+			}
+			
+			rightContentColumnLayout = new VerticalLayout();
+			rightContentColumnLayout.setWidth(100, Unit.PERCENTAGE);
+			rightContentColumnLayout.setHeightUndefined();
+			contentLayout.addComponent(rightContentColumnLayout);
+
+			contentLayout.setExpandRatio(leftContentColumnLayout, leftColumnPercentalWidth);
+			contentLayout.setExpandRatio(rightContentColumnLayout, 100 - leftColumnPercentalWidth);
+		}
+	}
+	
+	public void addComponentToContent(AbstractComponent component) {
+		component.setWidth(100, Unit.PERCENTAGE);
+		contentLayout.addComponent(component);
+	}
+	
+	public void addComponentToLeftContentColumn(AbstractComponent component) {
+		component.setWidth(100, Unit.PERCENTAGE);
+		leftContentColumnLayout.addComponent(component);
+	}
+	
+	public void addComponentToRightContentColumn(AbstractComponent component) {
+		component.setWidth(100, Unit.PERCENTAGE);
+		rightContentColumnLayout.addComponent(component);
+	}
+	
+	public void removeAllComponentsFromContent() {
+		contentLayout.removeAllComponents();
+	}
+	
+	public void removeAllComponentsFromLeftContentColumn() {
+		leftContentColumnLayout.removeAllComponents();
+	}
+	
+	public void removeAllComponentsFromRightContentColumn() {
+		rightContentColumnLayout.removeAllComponents();
+	}
+	
+	public void removeContent() {
+		removeComponent(contentLayout);
+		contentLayout = null;
+		leftContentColumnLayout = null;
+		rightContentColumnLayout = null;
 	}
 	
 	public void updateCountLabel(int count) {
 		countLabel.setValue(Integer.toString(count));
 	}
 	
-	public Label getDateLabel() {
-		return dateLabel;
+	private void initializeContentLayout() {
+		contentLayout.setWidth(100, Unit.PERCENTAGE);
+		contentLayout.setHeightUndefined();
+		CssStyles.style(contentLayout, CssStyles.VSPACE_TOP_2);
 	}
 	
 }

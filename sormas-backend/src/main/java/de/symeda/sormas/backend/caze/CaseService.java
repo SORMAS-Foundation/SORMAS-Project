@@ -49,20 +49,20 @@ import de.symeda.sormas.backend.user.User;
 @Stateless
 @LocalBean
 public class CaseService extends AbstractAdoService<Case> {
-	
+
 	@EJB
 	ContactService contactService;
 	@EJB
 	SampleService sampleService;
 	@EJB
 	PersonFacadeEjbLocal personFacade;
-	
+
 	public CaseService() {
 		super(Case.class);
 	}
 
 	public Case createCase(Person person) {
-		
+
 		Case caze = new Case();
 		caze.setPerson(person);
 		return caze;
@@ -74,7 +74,7 @@ public class CaseService extends AbstractAdoService<Case> {
 		Root<Case> from = cq.from(getElementClass());
 
 		Predicate filter = createUserFilter(cb, cq, from, user);
-		
+
 		if (filter != null && disease != null) {
 			filter = cb.and(filter, cb.equal(from.get(Case.DISEASE), disease));
 		}
@@ -88,12 +88,12 @@ public class CaseService extends AbstractAdoService<Case> {
 		List<Case> resultList = em.createQuery(cq).getResultList();
 		return resultList;
 	}
-	
+
 	public List<Case> getAllBetween(Date onsetFromDate, Date onsetToDate, District district, Disease disease, User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Case> cq = cb.createQuery(getElementClass());
 		Root<Case> from = cq.from(getElementClass());
-		
+
 		Predicate filter = createUserFilter(cb, cq, from, user);
 		if (onsetFromDate != null || onsetToDate != null) {
 			Join<Case, Symptoms> symptoms = from.join(Case.SYMPTOMS);
@@ -129,35 +129,35 @@ public class CaseService extends AbstractAdoService<Case> {
 		if (filter != null) {
 			cq.where(filter);
 		}
-		
+
 		cq.distinct(true);
 		List<Case> resultList = em.createQuery(cq).getResultList();
 		return resultList;
 	}	
-	
+
 	public List<DashboardCase> getNewCasesForDashboard(District district, Disease disease, Date from, Date to, User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<DashboardCase> cq = cb.createQuery(DashboardCase.class);
 		Root<Case> caze = cq.from(getElementClass());
 		Join<Case, Symptoms> symptoms = caze.join(Case.SYMPTOMS, JoinType.LEFT);
 		Join<Case, Person> person = caze.join(Case.PERSON, JoinType.LEFT);
-		
+
 		Predicate filter = createUserFilter(cb, cq, caze, user);
-		
+
 		// Use the onset date if available and the report date otherwise
 		Predicate dateFilter = cb.or(
 				cb.between(symptoms.get(Symptoms.ONSET_DATE), from, to), 
 				cb.and(
 						cb.isNull(symptoms.get(Symptoms.ONSET_DATE)), 
 						cb.between(caze.get(Case.REPORT_DATE), from, to)
-				)
-		);
+						)
+				);
 		if (filter != null) {
 			filter = cb.and(filter, dateFilter);
 		} else {
 			filter = dateFilter;
 		}
-		
+
 		if (district != null) {
 			Predicate districtFilter = cb.equal(caze.get(Case.DISTRICT), district);
 			if (filter != null) {
@@ -166,7 +166,7 @@ public class CaseService extends AbstractAdoService<Case> {
 				filter = districtFilter;
 			}
 		}
-		
+
 		if (disease != null) {
 			Predicate diseaseFilter = cb.equal(caze.get(Case.DISEASE), disease);
 			if (filter != null) {
@@ -175,7 +175,7 @@ public class CaseService extends AbstractAdoService<Case> {
 				filter = diseaseFilter;
 			}
 		}
-		
+
 		List<DashboardCase> result;
 		if (filter != null) {
 			cq.where(filter);
@@ -186,16 +186,16 @@ public class CaseService extends AbstractAdoService<Case> {
 					caze.get(Case.DISEASE),
 					caze.get(Case.INVESTIGATION_STATUS),
 					person.get(Person.PRESENT_CONDITION)
-			);
-			
+					);
+
 			result = em.createQuery(cq).getResultList();
 		} else {
 			result = Collections.emptyList();
 		}
-		
+
 		return result;
 	}
-	
+
 	public List<MapCase> getCasesForMap(District district, Disease disease, Date from, Date to, User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<MapCase> cq = cb.createQuery(MapCase.class);
@@ -204,7 +204,7 @@ public class CaseService extends AbstractAdoService<Case> {
 		Join<Case, Facility> facility = caze.join(Case.HEALTH_FACILITY, JoinType.LEFT);
 		Join<Case, Person> person = caze.join(Case.PERSON, JoinType.LEFT);
 		Join<Person, Location> casePersonAddress = person.join(Person.ADDRESS, JoinType.LEFT);
-		
+
 		Predicate filter = createUserFilter(cb, cq, caze, user);
 
 		// Use the onset date if available and the report date otherwise
@@ -214,14 +214,14 @@ public class CaseService extends AbstractAdoService<Case> {
 				cb.and(
 						cb.isNull(symptoms.get(Symptoms.ONSET_DATE)), 
 						cb.lessThanOrEqualTo(caze.get(Case.REPORT_DATE), to)
-				)
-		);
+						)
+				);
 		if (filter != null) {
 			filter = cb.and(filter, dateFilter);
 		} else {
 			filter = dateFilter;
 		}
-		
+
 		if (district != null) {
 			Predicate districtFilter = cb.equal(caze.get(Case.DISTRICT), district);
 			if (filter != null) {
@@ -230,7 +230,7 @@ public class CaseService extends AbstractAdoService<Case> {
 				filter = districtFilter;
 			}
 		}
-		
+
 		if (disease != null) {
 			Predicate diseaseFilter = cb.equal(caze.get(Case.DISEASE), disease);
 			if (filter != null) {
@@ -239,7 +239,7 @@ public class CaseService extends AbstractAdoService<Case> {
 				filter = diseaseFilter;
 			}
 		}
-		
+
 		List<MapCase> result;
 		if (filter != null) {
 			cq.where(filter);
@@ -254,8 +254,8 @@ public class CaseService extends AbstractAdoService<Case> {
 					caze.get(Case.REPORT_LON),
 					casePersonAddress.get(Location.LATITUDE),
 					casePersonAddress.get(Location.LONGITUDE)
-			);
-			
+					);
+
 			result = em.createQuery(cq).getResultList();
 			for (MapCase mapCase : result) {
 				mapCase.setPerson(personFacade.getReferenceByUuid(mapCase.getPersonUuid()));
@@ -263,10 +263,10 @@ public class CaseService extends AbstractAdoService<Case> {
 		} else {
 			result = Collections.emptyList();
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
 	 * @see /sormas-backend/doc/UserDataAccess.md
 	 */
@@ -274,16 +274,15 @@ public class CaseService extends AbstractAdoService<Case> {
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Case,Case> casePath, User user) {
 		// National users can access all cases in the system
 		if (user.getUserRoles().contains(UserRole.NATIONAL_USER)
-			|| user.getUserRoles().contains(UserRole.NATIONAL_OBSERVER)) {
+				|| user.getUserRoles().contains(UserRole.NATIONAL_OBSERVER)) {
 			return null;
 		}
 
-		
 		// whoever created the case or is assigned to it is allowed to access it
-		Predicate filter = cb.equal(casePath.get(Case.REPORTING_USER), user);
-		filter = cb.or(filter, cb.equal(casePath.get(Case.SURVEILLANCE_OFFICER), user));
-		filter = cb.or(filter, cb.equal(casePath.get(Case.CASE_OFFICER), user));
-		
+		Predicate filter = cb.equal(casePath.join(Case.REPORTING_USER, JoinType.LEFT), user);
+		filter = cb.or(filter, cb.equal(casePath.join(Case.SURVEILLANCE_OFFICER, JoinType.LEFT), user));
+		filter = cb.or(filter, cb.equal(casePath.join(Case.CASE_OFFICER, JoinType.LEFT), user));
+
 		// allow case access based on user role
 		for (UserRole userRole : user.getUserRoles()) {
 			switch (userRole) {
@@ -319,56 +318,56 @@ public class CaseService extends AbstractAdoService<Case> {
 				break;
 			case ADMIN:
 				break;
-				
+
 			default:
 				throw new IllegalArgumentException(userRole.toString());
 			}
 		}
-		
+
 		// get all cases based on the user's contact association
 		Subquery<Long> contactCaseSubquery = cq.subquery(Long.class);
 		Root<Contact> contactRoot = contactCaseSubquery.from(Contact.class);
 		contactCaseSubquery.where(contactService.createUserFilterWithoutCase(cb, cq, contactRoot, user));
 		contactCaseSubquery.select(contactRoot.get(Contact.CAZE).get(Case.ID));
-		
+
 		filter = cb.or(filter, cb.in(casePath.get(Case.ID)).value(contactCaseSubquery));
-		
+
 		// users can only be assigned to a task when they have also access to the case
 		//Join<Case, Task> tasksJoin = from.join(Case.TASKS, JoinType.LEFT);
 		//filter = cb.or(filter, cb.equal(tasksJoin.get(Task.ASSIGNEE_USER), user));
 
 		return filter;
 	}
-	
+
 	@Override
 	public Predicate createDateFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Case,Case> casePath, Date date) {
-		
+
 		Predicate dateFilter = cb.greaterThan(casePath.get(Case.CHANGE_DATE), date);
-		
+
 		Join<Case, Symptoms> symptoms = casePath.join(Case.SYMPTOMS, JoinType.LEFT);
 		dateFilter = cb.or(dateFilter, cb.greaterThan(symptoms.get(AbstractDomainObject.CHANGE_DATE), date));
-		
+
 		Join<Case, Hospitalization> hospitalization = casePath.join(Case.HOSPITALIZATION, JoinType.LEFT);
 		dateFilter = cb.or(dateFilter, cb.greaterThan(hospitalization.get(AbstractDomainObject.CHANGE_DATE), date));
-		
+
 		Join<Hospitalization, PreviousHospitalization> previousHospitalization 
-			= hospitalization.join(Hospitalization.PREVIOUS_HOSPITALIZATIONS, JoinType.LEFT);
+		= hospitalization.join(Hospitalization.PREVIOUS_HOSPITALIZATIONS, JoinType.LEFT);
 		dateFilter = cb.or(dateFilter, cb.greaterThan(previousHospitalization.get(AbstractDomainObject.CHANGE_DATE), date));
-		
+
 		Join<Case, EpiData> epiData = casePath.join(Case.EPI_DATA, JoinType.LEFT);
 		dateFilter = cb.or(dateFilter, cb.greaterThan(epiData.get(AbstractDomainObject.CHANGE_DATE), date));
-		
+
 		Join<EpiData, EpiDataTravel> epiDataTravels = epiData.join(EpiData.TRAVELS, JoinType.LEFT);
 		dateFilter = cb.or(dateFilter, cb.greaterThan(epiDataTravels.get(AbstractDomainObject.CHANGE_DATE), date));
-		
+
 		Join<EpiData, EpiDataBurial> epiDataBurials = epiData.join(EpiData.BURIALS, JoinType.LEFT);
 		dateFilter = cb.or(dateFilter, cb.greaterThan(epiDataBurials.get(AbstractDomainObject.CHANGE_DATE), date));
 		dateFilter = cb.or(dateFilter, cb.greaterThan(epiDataBurials.join(EpiDataBurial.BURIAL_ADDRESS, JoinType.LEFT).get(Location.CHANGE_DATE), date));
-		
+
 		Join<EpiData, EpiDataGathering> epiDataGatherings = epiData.join(EpiData.GATHERINGS, JoinType.LEFT);
 		dateFilter = cb.or(dateFilter, cb.greaterThan(epiDataGatherings.get(AbstractDomainObject.CHANGE_DATE), date));
 		dateFilter = cb.or(dateFilter, cb.greaterThan(epiDataGatherings.join(EpiDataGathering.GATHERING_ADDRESS, JoinType.LEFT).get(Location.CHANGE_DATE), date));
-	
+
 		return dateFilter;
 	}
 
@@ -377,20 +376,20 @@ public class CaseService extends AbstractAdoService<Case> {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Case> cq = cb.createQuery(getElementClass());
 		Root<Case> from = cq.from(getElementClass());
-		
+
 		Predicate filter = cb.equal(from.get(Case.REPORTING_USER), user);
 		if (user.getUserRoles().contains(UserRole.SURVEILLANCE_OFFICER)) {
 			filter = cb.or(filter, cb.equal(from.get(Case.SURVEILLANCE_OFFICER), user));
 		}
-		
+
 		filter = cb.and(filter, cb.equal(from.get(Case.DISEASE), disease));
 		filter = cb.and(filter, cb.equal(from.get(Case.PERSON), person));
-		
+
 		if(filter != null) {
 			cq.where(filter);
 		}
 		cq.distinct(true);
-		
+
 		try {
 			Case result = em.createQuery(cq).getSingleResult();
 			return result;
@@ -398,25 +397,25 @@ public class CaseService extends AbstractAdoService<Case> {
 			return null;
 		}
 	}	
-	
-	public Map<RegionReferenceDto, Long> getCaseCountPerRegion(Date onsetFromDate, Date onsetToDate, Disease disease) {
-		
+
+	public Map<RegionReferenceDto, Long> getCaseCountPerRegion(Date fromDate, Date toDate, Disease disease) {
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<Case> from = cq.from(getElementClass());
-		
-		Predicate filter = null;		
-		if (onsetFromDate != null || onsetToDate != null) {
-			Join<Case, Symptoms> symptoms = from.join(Case.SYMPTOMS);
-			Predicate dateFilter = cb.isNotNull(symptoms.get(Symptoms.ONSET_DATE));
-			if (onsetFromDate != null) {
-				dateFilter = cb.and(dateFilter, cb.greaterThanOrEqualTo(symptoms.get(Symptoms.ONSET_DATE), onsetFromDate));
-			}
-			if (onsetToDate != null) {
-				dateFilter = cb.and(dateFilter, cb.lessThanOrEqualTo(symptoms.get(Symptoms.ONSET_DATE), onsetToDate));
-			}
-			filter = dateFilter;
-		}
+		Join<Case, Symptoms> symptoms = from.join(Case.SYMPTOMS);
+
+		Predicate filter = null;	
+		// Use the onset date if available and the report date otherwise
+		// TODO Add date of outcome to the date filter once it is built in
+		Predicate dateFilter = cb.or(
+				cb.lessThanOrEqualTo(symptoms.get(Symptoms.ONSET_DATE), toDate), 
+				cb.and(
+						cb.isNull(symptoms.get(Symptoms.ONSET_DATE)), 
+						cb.lessThanOrEqualTo(from.get(Case.REPORT_DATE), toDate)
+						)
+				);
+		filter = dateFilter;
 		if (disease != null) {
 			Predicate diseaseFilter = cb.equal(from.get(Case.DISEASE), disease);
 			if (filter != null) {
@@ -428,14 +427,14 @@ public class CaseService extends AbstractAdoService<Case> {
 		if (filter != null) {
 			cq.where(filter);
 		}
-		
+
 		cq.groupBy(from.get(Case.REGION));
 		cq.multiselect(from.get(Case.REGION), cb.count(from));
 		List<Object[]> results = em.createQuery(cq).getResultList();
-		
+
 		Map<RegionReferenceDto, Long> resultMap = results.stream().collect(
 				Collectors.toMap(e -> RegionFacadeEjb.toReferenceDto((Region)e[0]), e -> (Long)e[1]));
 		return resultMap;
 	}
-	
+
 }

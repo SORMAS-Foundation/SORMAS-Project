@@ -58,7 +58,7 @@ public class TasksListArrayAdapter extends ArrayAdapter<Task> {
         dueDate.setText(DateHelper.formatDate(task.getDueDate()));
 
         Integer dueDateColor = null;
-        if(task.getDueDate().compareTo(new Date()) <= 0 && !TaskStatus.DONE.equals(task.getTaskStatus())) {
+        if(task.getDueDate().compareTo(new Date()) <= 0 && TaskStatus.PENDING.equals(task.getTaskStatus())) {
             dueDateColor = R.color.textColorRed;
         }
         setFontStyle(dueDate, task.getTaskStatus(),dueDateColor);

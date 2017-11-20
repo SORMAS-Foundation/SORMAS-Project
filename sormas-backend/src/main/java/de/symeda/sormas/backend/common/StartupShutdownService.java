@@ -1,6 +1,5 @@
 package de.symeda.sormas.backend.common;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,8 +41,6 @@ import de.symeda.sormas.backend.symptoms.SymptomsService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.InfrastructureDataImporter;
-import de.symeda.sormas.backend.util.InfrastructureDataImporter.CommunityConsumer;
-import de.symeda.sormas.backend.util.InfrastructureDataImporter.DistrictConsumer;
 import de.symeda.sormas.backend.util.InfrastructureDataImporter.FacilityConsumer;
 import de.symeda.sormas.backend.util.MockDataGenerator;
 
@@ -90,8 +87,8 @@ public class StartupShutdownService {
 		// TODO enable/disable via config?
 		fixMissingEntities();
 	}
-
-	private void importAdministrativeDivisions(String countryName) {
+	
+	public void importAdministrativeDivisions(String countryName) {
 
 		if (regionService.count() > 0) {
 			return;
@@ -99,141 +96,11 @@ public class StartupShutdownService {
 
 		List<Region> regions = regionService.getAll();
 		
-		importRegions(countryName, regions);
+		regionService.importRegions(countryName, regions);
 		
-		importDistricts(countryName, regions);
+		districtService.importDistricts(countryName, regions);
 
-		importCommunities(countryName, regions);		
-	}
-
-	private void importRegions(String countryName, List<Region> regions) {
-		
-		InfrastructureDataImporter.importRegions(countryName, 
-			(regionName, epidCode, population, growthRate) -> {
-				
-				Optional<Region> regionResult = regions.stream()
-						.filter(r -> r.getName().equals(regionName))
-						.findFirst();
-				
-				Region region;
-				if (regionResult.isPresent()) {
-					region = regionResult.get();
-				} else {
-					region = new Region();
-					regions.add(region);
-					region.setName(regionName);
-				}
-				
-				region.setEpidCode(epidCode);
-				region.setPopulation(population);
-				region.setGrowthRate(growthRate);
-	
-				regionService.persist(region);
-			});
-	}
-
-	private void importDistricts(String countryName, List<Region> regions) {
-		InfrastructureDataImporter.importDistricts(countryName, new DistrictConsumer() {
-			
-			private Region cachedRegion = null;
-			
-			@Override
-			public void consume(String regionName, String districtName, String epidCode) {
-					
-					if (cachedRegion == null || !cachedRegion.getName().equals(regionName)) {
-						Optional<Region> regionResult = regions.stream()
-								.filter(r -> r.getName().equals(regionName))
-								.findFirst();
-	
-						if (regionResult.isPresent()) {
-							cachedRegion = regionResult.get();
-						} else {
-							logger.warn("Could not find region '" + regionName + "' for district '" + districtName + "'");
-							return;
-						}
-						
-						if (cachedRegion.getDistricts() == null) {
-							cachedRegion.setDistricts(new ArrayList<District>());
-						}
-					}
-					Optional<District> districtResult = cachedRegion.getDistricts().stream()
-							.filter(r -> r.getName().equals(districtName))
-							.findFirst();
-					
-					District district;
-					if (districtResult.isPresent()) {
-						district = districtResult.get();
-					} else {
-						district = new District();
-						cachedRegion.getDistricts().add(district);
-						district.setName(districtName);
-						district.setRegion(cachedRegion);
-					}
-					
-					district.setEpidCode(epidCode);
-	
-					districtService.persist(district);
-			}
-		});
-	}
-
-	private void importCommunities(String countryName, List<Region> regions) {
-		
-		InfrastructureDataImporter.importCommunities(countryName, new CommunityConsumer() {
-			
-			private Region cachedRegion = null;
-			private District cachedDistrict = null;
-			
-			@Override
-			public void consume(String regionName, String districtName, String communityName) {
-					
-					if (cachedRegion == null || !cachedRegion.getName().equals(regionName)) {
-						Optional<Region> regionResult = regions.stream()
-								.filter(r -> r.getName().equals(regionName))
-								.findFirst();
-
-						if (regionResult.isPresent()) {
-							cachedRegion = regionResult.get();
-						} else {
-							logger.warn("Could not find region '" + regionName + "' for district '" + districtName + "' in community '" + communityName + "'");
-							return;
-						}
-					}
-					
-					if (cachedDistrict == null || !cachedDistrict.getName().equals(districtName)) {
-						Optional<District> districtResult = cachedRegion.getDistricts().stream()
-								.filter(r -> r.getName().equals(districtName))
-								.findFirst();
-
-						if (districtResult.isPresent()) {
-							cachedDistrict = districtResult.get();
-						} else {
-							logger.warn("Could not find district '" + districtName + "' for community '" + communityName + "'");
-							return;
-						}
-						
-						if (cachedDistrict.getCommunities() == null) {
-							cachedDistrict.setCommunities(new ArrayList<Community>());
-						}
-					}
-
-					Optional<Community> communityResult = cachedDistrict.getCommunities().stream()
-							.filter(r -> r.getName().equals(communityName))
-							.findFirst();
-					
-					Community community;
-					if (communityResult.isPresent()) {
-						community = communityResult.get();
-					} else {
-						community = new Community();
-						cachedDistrict.getCommunities().add(community);
-						community.setName(communityName);
-						community.setDistrict(cachedDistrict);
-					}
-					
-					communityService.persist(community);
-			}
-		});
+		communityService.importCommunities(countryName, regions);		
 	}
 
 	private void importFacilities(String countryName) {

@@ -5,6 +5,7 @@ import java.sql.Timestamp;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.enterprise.inject.Specializes;
 
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.location.LocationFacade;
@@ -85,6 +86,7 @@ public class LocationFacadeEjb implements LocationFacade {
 	
 	@LocalBean
 	@Stateless
+	@Specializes
 	public static class LocationFacadeEjbLocal extends LocationFacadeEjb {
 	}
 }

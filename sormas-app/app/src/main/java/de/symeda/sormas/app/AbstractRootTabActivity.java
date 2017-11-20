@@ -57,7 +57,6 @@ public abstract class AbstractRootTabActivity extends AbstractTabActivity implem
         setupDrawer();
     }
 
-
     private void setupDrawer() {
 
         menuDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -224,44 +223,6 @@ public abstract class AbstractRootTabActivity extends AbstractTabActivity implem
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
-    }
-
-    /**
-     * Swaps fragments in the main content view
-     */
-    private void selectItem(int position) {
-        switch (position) {
-            case 0:
-                showTasksView();
-                break;
-            case 1:
-                showCasesView();
-                break;
-            case 2:
-                showContactsView();
-                break;
-            case 3:
-                showEventsView();
-                break;
-            case 4:
-                showSamplesView();
-                break;
-            case 5:
-                showReportsView();
-                break;
-            case 6:
-                showSettingsView();
-                // don't keep this button selected
-//                menuDrawerList.clearChoices();
-                break;
-            case 7:
-                synchronizeCompleteData();
-                // don't keep this button selected
-//                menuDrawerList.clearChoices();
-                break;
-            default:
-                throw new IndexOutOfBoundsException("No action defined for menu entry: " + position);
-        }
     }
 
     @Override

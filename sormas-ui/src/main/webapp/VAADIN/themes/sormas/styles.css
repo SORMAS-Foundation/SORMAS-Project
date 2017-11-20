@@ -12953,6 +12953,34 @@ div.v-layout.v-horizontal.v-widget {
 	margin-top: 0 !important;
 }
 
+.sormas .hspace-left-0 {
+	margin-left: 64px;
+}
+
+.sormas .hspace-left-1 {
+	margin-left: 36px;
+}
+
+.sormas .hspace-left-2 {
+	margin-left: 20px;
+}
+
+.sormas .hspace-left-3 {
+	margin-left: 10px;
+}
+
+.sormas .hspace-left-4 {
+	margin-left: 6px;
+}
+
+.sormas .hspace-left-5 {
+	margin-left: 2px;
+}
+
+.sormas .hspace-left-none {
+	margin-left: 0 !important;
+}
+
 .sormas .hspace-right-0 {
 	margin-right: 64px;
 }
@@ -12985,6 +13013,14 @@ div.v-layout.v-horizontal.v-widget {
 	text-align: right;
 }
 
+.sormas .align-center {
+	text-align: center;
+}
+
+.sormas .v-slot-separator-horizontal {
+	line-height: 1px;
+}
+
 .sormas .v-button {
 	text-transform: uppercase;
 	border-color: #005A9C;
@@ -12993,6 +13029,10 @@ div.v-layout.v-horizontal.v-widget {
 
 .sormas .v-button-subtle {
 	background-color: inherit;
+}
+
+.sormas .v-button-border-neutral {
+	border-color: #000000;
 }
 
 .sormas .v-filterselect [class$="input"] {
@@ -13408,61 +13448,162 @@ div.v-layout.v-horizontal.v-widget {
 	margin: 0;
 }
 
-.sormas .v-label-border-critical {
-	border-top: 4px solid #FF0000;
-	border-radius: 3px;
-	padding-top: 6px;
+.sormas .v-label-color-primary {
+	color: #005A9C;
 }
 
-.sormas .v-label-border-important {
-	border-top: 4px solid #FF8C00;
-	border-radius: 3px;
-	padding-top: 6px;
-}
-
-.sormas .v-label-border-relevant {
-	border-top: 4px solid #FFD700;
-	border-radius: 3px;
-	padding-top: 6px;
-}
-
-.sormas .v-label-border-neutral {
-	border-top: 4px solid #00BFFF;
-	border-radius: 3px;
-	padding-top: 6px;
-}
-
-.sormas .v-label-border-positive {
-	border-top: 4px solid #32CD32;
-	border-radius: 3px;
-	padding-top: 6px;
-}
-
-.sormas .v-label-border-wayne {
-	border-top: 4px solid #808080;
-	border-radius: 3px;
-	padding-top: 6px;
-}
-
-.sormas .v-label-uppercase-small {
+.sormas .v-label-color-secondary {
 	color: #6591C4;
-	font-weight: bold;
-	text-transform: uppercase;
+}
+
+.sormas .v-label-color-critical {
+	color: #FF0000;
+}
+
+.sormas .v-label-color-important {
+	color: #FF8C00;
+}
+
+.sormas .v-label-color-relevant {
+	color: #FFD700;
+}
+
+.sormas .v-label-color-neutral {
+	color: #00BFFF;
+}
+
+.sormas .v-label-color-positive {
+	color: #32CD32;
+}
+
+.sormas .v-label-color-minor {
+	color: #808080;
+}
+
+.sormas .v-label-bar-top-critical {
+	border-top: 4px solid #FF0000;
+	padding-top: 6px;
+}
+
+.sormas .v-label-bar-top-important {
+	border-top: 4px solid #FF8C00;
+	padding-top: 6px;
+}
+
+.sormas .v-label-bar-top-relevant {
+	border-top: 4px solid #FFD700;
+	padding-top: 6px;
+}
+
+.sormas .v-label-bar-top-neutral {
+	border-top: 4px solid #00BFFF;
+	padding-top: 6px;
+}
+
+.sormas .v-label-bar-top-positive {
+	border-top: 4px solid #32CD32;
+	padding-top: 6px;
+}
+
+.sormas .v-label-bar-top-minor {
+	border-top: 4px solid #808080;
+	padding-top: 6px;
+}
+
+.sormas .v-label-separator-horizontal {
+	border-bottom: 1px solid #CDD8EC;
+	line-height: 1px;
+	font-size: 1px;
+}
+
+.sormas .v-label-separator-horizontal-bottom {
+	border-bottom: 1px solid #CDD8EC;
+	padding-top: 15px;
+}
+
+.sormas .v-label-separator-vertical {
+	border-right: 1px solid #CDD8EC;
+}
+
+.sormas .v-label-size-small {
 	font-size: 0.8em;
 }
 
-.sormas .v-label-uppercase-normal {
-	color: #005A9C;
-	font-weight: bold;
-	text-transform: uppercase;
+.sormas .v-label-size-medium {
 	font-size: 1em;
 }
 
-.sormas .v-label-uppercase-xlarge {
-	color: #005A9C;
-	font-weight: bold;
-	text-transform: uppercase;
+.sormas .v-label-size-large {
+	font-size: 1.25em;
+}
+
+.sormas .v-label-size-xlarge {
+	font-size: 1.5em;
+}
+
+.sormas .v-label-size-xxlarge {
+	font-size: 2em;
+}
+
+.sormas .v-label-size-xxxlarge {
 	font-size: 2.5em;
+}
+
+.sormas .v-label-text-bold {
+	font-weight: bold;
+}
+
+.sormas .v-label-text-uppercase {
+	text-transform: uppercase;
+}
+
+.sormas .svg-circle {
+	fill: none;
+	stroke-width: 3;
+}
+
+.sormas .svg-fill-critical {
+	fill: #FF0000;
+}
+
+.sormas .svg-fill-important {
+	fill: #FF8C00;
+}
+
+.sormas .svg-fill-positive {
+	fill: #32CD32;
+}
+
+.sormas .svg-fill-minor {
+	fill: #808080;
+}
+
+.sormas .svg-fill-background {
+	fill: #E6E6E6;
+}
+
+.sormas .svg-stroke-primary {
+	stroke: #005A9C;
+}
+
+.sormas .svg-stroke-critical {
+	stroke: #FF0000;
+}
+
+.sormas .svg-stroke-important {
+	stroke: #FF8C00;
+}
+
+.sormas .svg-stroke-positive {
+	stroke: #32CD32;
+}
+
+.sormas .svg-stroke-minor {
+	stroke: #808080;
+}
+
+.sormas .svg-stroke-background {
+	stroke: #E6E6E6;
 }
 
 .sormas .v-window .v-window-outerheader {

@@ -5,7 +5,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
+import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.enterprise.inject.Specializes;
 
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictFacade;
@@ -14,11 +16,18 @@ import de.symeda.sormas.backend.util.DtoHelper;
 
 @Stateless(name = "DistrictFacade")
 public class DistrictFacadeEjb implements DistrictFacade {
-	
+
 	@EJB
-	private DistrictService service;
+	private DistrictService districtService;
 	@EJB
 	private RegionService regionService;
+
+	@Override
+	public List<DistrictReferenceDto> getAllAsReference() {
+		return districtService.getAll(District.NAME, true).stream()
+				.map(f -> toReferenceDto(f))
+				.collect(Collectors.toList());
+	}
 
 	@Override
 	public List<DistrictReferenceDto> getAllByRegion(String regionUuid) {
@@ -32,19 +41,19 @@ public class DistrictFacadeEjb implements DistrictFacade {
 	
 	@Override
 	public List<DistrictDto> getAllAfter(Date date) {
-		return service.getAllAfter(date, null).stream()
+		return districtService.getAllAfter(date, null).stream()
 			.map(c -> toDto(c))
 			.collect(Collectors.toList());
 	}
 	
 	@Override
 	public DistrictDto getDistrictByUuid(String uuid) {
-		return toDto(service.getByUuid(uuid));
+		return toDto(districtService.getByUuid(uuid));
 	}
 	
 	@Override
 	public DistrictReferenceDto getDistrictReferenceByUuid(String uuid) {
-		return toReferenceDto(service.getByUuid(uuid));
+		return toReferenceDto(districtService.getByUuid(uuid));
 	}
 	
 	public static DistrictReferenceDto toReferenceDto(District entity) {
@@ -68,5 +77,11 @@ public class DistrictFacadeEjb implements DistrictFacade {
 		dto.setRegion(RegionFacadeEjb.toReferenceDto(entity.getRegion()));
 
 		return dto;
+	}	
+	
+	@LocalBean
+	@Stateless
+	@Specializes
+	public static class DistrictFacadeEjbLocal extends DistrictFacadeEjb	 {
 	}
 }

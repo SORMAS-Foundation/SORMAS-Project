@@ -13,6 +13,7 @@ import javax.validation.constraints.NotNull;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantFacade;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.user.User;
@@ -93,6 +94,17 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		EventParticipant entity = fromDto(dto);
 		eventParticipantService.ensurePersisted(entity);
 		return toDto(entity);
+	}
+	
+	@Override
+	public void deleteEventParticipant(EventParticipantReferenceDto eventParticipantRef, String userUuid) {
+		User user = userService.getByUuid(userUuid);
+		if (!user.getUserRoles().contains(UserRole.ADMIN)) {
+			throw new UnsupportedOperationException("Only admins are allowed to delete entities.");
+		}
+		
+		EventParticipant eventParticipant = eventParticipantService.getByReferenceDto(eventParticipantRef);
+		eventParticipantService.delete(eventParticipant);
 	}
 	
 	public EventParticipant fromDto(@NotNull EventParticipantDto source) {

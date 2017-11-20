@@ -17,6 +17,9 @@ import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.caze.Case;
@@ -29,6 +32,8 @@ import de.symeda.sormas.backend.util.ModelConstants;
  */
 public abstract class AbstractAdoService<ADO extends AbstractDomainObject> implements AdoService<ADO> {
 
+	protected final Logger logger = LoggerFactory.getLogger(getClass());
+	
 	@Resource
 	private SessionContext context;
 

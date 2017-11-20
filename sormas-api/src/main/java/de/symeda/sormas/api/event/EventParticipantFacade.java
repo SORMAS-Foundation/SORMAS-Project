@@ -20,5 +20,5 @@ public interface EventParticipantFacade {
 
 	List<EventParticipantDto> getByUuids(List<String> uuids);
 
-	
+	void deleteEventParticipant(EventParticipantReferenceDto eventParticipantRef, String userUuid);
 }

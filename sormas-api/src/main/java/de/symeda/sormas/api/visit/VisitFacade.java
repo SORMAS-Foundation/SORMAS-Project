@@ -26,4 +26,6 @@ public interface VisitFacade {
 	List<String> getAllUuids(String userUuid);
 
 	List<VisitDto> getByUuids(List<String> uuids);
+	
+	void deleteVisit(VisitReferenceDto visitRef, String userUuid);
 }

@@ -13,8 +13,10 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.sample.DashboardSample;
 import de.symeda.sormas.api.sample.DashboardTestResult;
 import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.sample.SampleFacade;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SampleTestFacade;
 import de.symeda.sormas.api.sample.SampleTestResultType;
@@ -51,6 +53,25 @@ public class SampleTestFacadeEjbTest extends BaseBeanTest {
 	@Before
 	public void resetMocks() {
 		MockProducer.resetMocks();
+	}
+	
+	@Test
+	public void testDashboardSampleResultListCreation() {
+		SampleFacade sampleFacade = getBean(SampleFacadeEjb.class);
+		
+		TestDataCreator creator = createTestDataCreator();
+		
+		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		CaseDataDto caze = creator.createCase(user, cazePerson, Disease.EVD, CaseClassification.PROBABLE,
+				InvestigationStatus.PENDING, new Date(), rdcf);
+		creator.createSample(caze, new Date(), new Date(), user, SampleMaterial.BLOOD, rdcf.facility);
+
+		List<DashboardSample> dashboardSamples = sampleFacade.getNewSamplesForDashboard(caze.getDistrict(), caze.getDisease(), DateHelper.subtractDays(new Date(),  1), DateHelper.addDays(new Date(), 1), user.getUuid());
+		
+		// List should have one entry
+		assertEquals(1, dashboardSamples.size());
 	}
 	
 	@Test

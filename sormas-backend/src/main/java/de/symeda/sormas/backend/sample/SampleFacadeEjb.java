@@ -10,19 +10,25 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.sample.DashboardSample;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleFacade;
 import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SampleTestDto;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
+import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb;
+import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
@@ -35,9 +41,13 @@ public class SampleFacadeEjb implements SampleFacade {
 	@EJB
 	private SampleService sampleService;
 	@EJB
+	private SampleTestService sampleTestService;
+	@EJB
 	private UserService userService;
 	@EJB
 	private CaseService caseService;
+	@EJB
+	private DistrictService districtService;
 	@EJB
 	private FacilityService facilityService;
 
@@ -128,8 +138,31 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 	
 	@Override
+	public List<DashboardSample> getNewSamplesForDashboard(DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid) {
+		User user = userService.getByUuid(userUuid);
+		District district = districtService.getByReferenceDto(districtRef);
+		
+		return sampleService.getNewSamplesForDashboard(district, disease, from, to, user);
+	}
+	
+	@Override
 	public SampleReferenceDto getReferredFrom(String sampleUuid) {
 		return toReferenceDto(sampleService.getReferredFrom(sampleUuid));
+	}
+	
+	@Override
+	public void deleteSample(SampleReferenceDto sampleRef, String userUuid) {
+		User user = userService.getByUuid(userUuid);
+		if (!user.getUserRoles().contains(UserRole.ADMIN)) {
+			throw new UnsupportedOperationException("Only admins are allowed to delete entities.");
+		}
+
+		Sample sample = sampleService.getByReferenceDto(sampleRef);
+		List<SampleTest> sampleTests = sampleTestService.getAllBySample(sample);
+		for (SampleTest sampleTest : sampleTests) {
+			sampleTestService.delete(sampleTest);
+		}
+		sampleService.delete(sample);
 	}
 	
 	public Sample fromDto(@NotNull SampleDto source) {

@@ -3,6 +3,7 @@ package de.symeda.sormas.ui.epidata;
 import java.util.function.Consumer;
 
 import com.vaadin.ui.Table;
+import com.vaadin.ui.Window;
 
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.epidata.EpiDataBurialDto;
@@ -125,6 +126,8 @@ public class EpiDataBurialsField extends AbstractTableField<EpiDataBurialDto> {
 		final CommitDiscardWrapperComponent<EpiDataBurialEditForm> editView = new CommitDiscardWrapperComponent<EpiDataBurialEditForm>(editForm, editForm.getFieldGroup());
 		editView.getCommitButton().setCaption("done");
 
+		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, "Burial");
+		
 		editView.addCommitListener(new CommitListener() {
 			@Override
 			public void onCommit() {
@@ -138,12 +141,11 @@ public class EpiDataBurialsField extends AbstractTableField<EpiDataBurialDto> {
 			editView.addDeleteListener(new DeleteListener() {
 				@Override
 				public void onDelete() {
+					popupWindow.close();
 					EpiDataBurialsField.this.removeEntry(entry);
 				}
-			});
+			}, I18nProperties.getFieldCaption("EpiDataBurial"));
 		}
-		
-		VaadinUiUtil.showModalPopupWindow(editView, "Burial");
 	}
 	
 	@Override

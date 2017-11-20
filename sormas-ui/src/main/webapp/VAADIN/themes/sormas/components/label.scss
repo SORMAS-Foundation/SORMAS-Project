@@ -1,61 +1,168 @@
 
 @mixin sormas-label {
 	
-	.v-label-border-critical {
-		border-top: 4px solid #FF0000;
-		border-radius: 3px;
-		padding-top: 6px;
+	// Font colors
+	.v-label-color-primary {
+		color: $s-primary-color;
 	}
 
-	.v-label-border-important {
-		border-top: 4px solid #FF8C00;
-		border-radius: 3px;
-		padding-top: 6px;
-	}
-
-	.v-label-border-relevant {
-		border-top: 4px solid #FFD700;
-		border-radius: 3px;
-		padding-top: 6px;
-	}
-
-	.v-label-border-neutral {
-		border-top: 4px solid #00BFFF;
-		border-radius: 3px;
-		padding-top: 6px;
-	}
-
-	.v-label-border-positive {
-		border-top: 4px solid #32CD32;
-		border-radius: 3px;
-		padding-top: 6px;
-	}
-
-	.v-label-border-wayne {
-		border-top: 4px solid #808080;
-		border-radius: 3px;
-		padding-top: 6px;
-	}
-
-	.v-label-uppercase-small {
+	.v-label-color-secondary {
 		color: $s-secondary-color;
-		font-weight: bold;
-		text-transform: uppercase;
+	}
+
+	.v-label-color-critical {
+		color: $s-critical-color;
+	}
+
+	.v-label-color-important {
+		color: $s-important-color;
+	}
+
+	.v-label-color-relevant {
+		color: $s-relevant-color;
+	}
+
+	.v-label-color-neutral {
+		color: $s-neutral-color;
+	}
+
+	.v-label-color-positive {
+		color: $s-positive-color;
+	}
+
+	.v-label-color-minor {
+		color: $s-minor-color;
+	}
+
+	// Labels with colorized bar on top
+	.v-label-bar-top-critical {
+		border-top: 4px solid $s-critical-color;
+		padding-top: 6px;
+	}
+
+	.v-label-bar-top-important {
+		border-top: 4px solid $s-important-color;
+		padding-top: 6px;
+	}
+
+	.v-label-bar-top-relevant {
+		border-top: 4px solid $s-relevant-color;
+		padding-top: 6px;
+	}
+
+	.v-label-bar-top-neutral {
+		border-top: 4px solid $s-neutral-color;
+		padding-top: 6px;
+	}
+
+	.v-label-bar-top-positive {
+		border-top: 4px solid $s-positive-color;
+		padding-top: 6px;
+	}
+
+	.v-label-bar-top-minor {
+		border-top: 4px solid $s-minor-color;
+		padding-top: 6px;
+	}
+
+	// Separators
+	.v-label-separator-horizontal {
+		border-bottom: 1px solid #CDD8EC;
+		line-height: 1px;
+		font-size: 1px;
+	}
+
+	.v-label-separator-horizontal-bottom {
+		border-bottom: 1px solid #CDD8EC;
+		padding-top: 15px;
+	}
+
+	.v-label-separator-vertical {
+		border-right: 1px solid #CDD8EC;
+	}
+
+	// Font sizes
+	.v-label-size-small {
     	font-size: 0.8em;
 	}
 
-	.v-label-uppercase-normal {
-		color: $s-primary-color;
-		font-weight: bold;
-		text-transform: uppercase;
+	.v-label-size-medium {
     	font-size: 1em;
 	}
 
-	.v-label-uppercase-xlarge {
-		color: $s-primary-color;
-		font-weight: bold;
-		text-transform: uppercase;
+	.v-label-size-large {
+		font-size: 1.25em;
+	}
+
+	.v-label-size-xlarge {
+		font-size: 1.5em;
+	}
+	
+	.v-label-size-xxlarge {
+		font-size: 2em;
+	}
+
+	.v-label-size-xxxlarge {
     	font-size: 2.5em;
+	}
+
+	// Font styles
+	.v-label-text-bold {
+		font-weight: bold;
+	}
+
+	.v-label-text-uppercase {
+		text-transform: uppercase;
+	}
+
+	// SVG colorization
+	.svg-circle {
+		fill: none;
+		stroke-width: 3;
+	}
+
+	.svg-fill-critical {
+		fill: $s-critical-color;
+	}
+
+	.svg-fill-important {
+		fill: $s-important-color;
+	}
+
+	.svg-fill-positive {
+		fill: $s-positive-color;
+	}
+
+	.svg-fill-minor {
+		fill: $s-minor-color;
+	}
+
+	.svg-fill-background {
+		fill: #E6E6E6;
+	}
+
+	.svg-stroke-primary {
+		stroke: $s-primary-color;
+	}
+
+	.svg-stroke-critical {
+		stroke: $s-critical-color;
+	}
+
+	.svg-stroke-important {
+		stroke: $s-important-color;
+	}
+
+	.svg-stroke-positive {
+		stroke: $s-positive-color;
+	}
+
+	.svg-stroke-minor {
+		stroke: $s-minor-color;
+	}
+
+	.svg-stroke-background {
+		stroke: #E6E6E6;
 	}
 
 }

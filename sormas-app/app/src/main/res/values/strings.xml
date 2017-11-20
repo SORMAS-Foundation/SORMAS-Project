@@ -333,6 +333,7 @@
 
     <string name="validation_soft_case_epid_number">The EPID number does not match the required pattern. You may still save the case and enter the correct number later.</string>
     <string name="validation_soft_case_epid_number_empty">An EPID number has to be provided. You may still save the case and enter the correct number later.</string>
+    <string name="validation_soft_case_classification">This case should be classified as soon as the required information is available.</string>
     <string name="validation_soft_general">Please fill in this field if possible. You can still save without doing so.</string>
 
 </resources>

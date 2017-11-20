@@ -12,12 +12,14 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.DashboardCase;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.ui.highcharts.HighChart;
 import de.symeda.sormas.ui.utils.CssStyles;
 
@@ -25,7 +27,7 @@ import de.symeda.sormas.ui.utils.CssStyles;
 public class EpiCurveComponent extends VerticalLayout {
 
 	// Components
-	private final DashboardView dashboardView;
+	private final DashboardDataProvider dashboardDataProvider;
 	private final HighChart epiCurveChart;
 
 	// UI elements
@@ -33,9 +35,11 @@ public class EpiCurveComponent extends VerticalLayout {
 	
 	// Others
 	private EpiCurveMode epiCurveMode;
+	private ClickListener externalExpandButtonListener;
+	private ClickListener externalCollapseButtonListener;
 
-	public EpiCurveComponent(DashboardView dashboardView) {
-		this.dashboardView = dashboardView;
+	public EpiCurveComponent(DashboardDataProvider dashboardDataProvider) {
+		this.dashboardDataProvider = dashboardDataProvider;
 		epiCurveChart = new HighChart();
 		epiCurveChart.setSizeFull();
 		epiCurveMode = EpiCurveMode.CASE_STATUS;
@@ -84,7 +88,7 @@ public class EpiCurveComponent extends VerticalLayout {
 
 		if (epiCurveMode == EpiCurveMode.CASE_STATUS) {
 			// Adds the number of confirmed, probable and suspect cases for each day as data
-			List<DashboardCase> cases = dashboardView.getCases();
+			List<DashboardCase> cases = dashboardDataProvider.getCases();
 			List<DashboardCase> confirmedCases = cases.stream()
 					.filter(c -> c.getCaseClassification() == CaseClassification.CONFIRMED)
 					.collect(Collectors.toList());
@@ -162,7 +166,7 @@ public class EpiCurveComponent extends VerticalLayout {
 			}
 		} else {
 			// Adds the number of alive and dead cases for each day as data
-			List<DashboardCase> cases = dashboardView.getCases();
+			List<DashboardCase> cases = dashboardDataProvider.getCases();
 			List<DashboardCase> aliveCases = cases.stream()
 					.filter(c -> c.getCasePersonCondition() == PresentCondition.ALIVE)
 					.collect(Collectors.toList());
@@ -209,6 +213,35 @@ public class EpiCurveComponent extends VerticalLayout {
 		epiCurveChart.setHcjs(hcjs.toString());	
 	}
 
+	public void updateDateLabel() {
+		if (dashboardDataProvider.getDateFilterOption() == DateFilterOption.EPI_WEEK) {
+			EpiWeek fromWeek = dashboardDataProvider.getFromWeek();
+			EpiWeek toWeek = dashboardDataProvider.getToWeek();
+			if (fromWeek.getWeek() == toWeek.getWeek()) {
+				epiCurveDateLabel.setValue("NEW CASES IN EPI WEEK " + fromWeek.getWeek());
+			} else {
+				epiCurveDateLabel.setValue("NEW CASES BETWEEN EPI WEEK " + fromWeek.getWeek() + " AND " + toWeek.getWeek());
+			}
+		} else {
+			Date fromDate = dashboardDataProvider.getFromDate();
+			Date toDate = dashboardDataProvider.getToDate();
+			if (DateHelper.isSameDay(fromDate, toDate)) {
+				epiCurveDateLabel.setValue("NEW CASES ON " + DateHelper.formatShortDate(fromDate));
+			} else {
+				epiCurveDateLabel.setValue("NEW CASES BETWEEN " + DateHelper.formatShortDate(fromDate) + 
+						" AND " + DateHelper.formatShortDate(toDate));
+			}
+		}
+	}
+
+	public void setExpandListener(ClickListener listener) {
+		externalExpandButtonListener = listener;
+	}
+	
+	public void setCollapseListener(ClickListener listener) {
+		externalCollapseButtonListener = listener;
+	}
+	
 	private HorizontalLayout createHeader() {
 		HorizontalLayout epiCurveHeaderLayout = new HorizontalLayout();
 		epiCurveHeaderLayout.setWidth(100, Unit.PERCENTAGE);
@@ -225,7 +258,7 @@ public class EpiCurveComponent extends VerticalLayout {
 
 			epiCurveDateLabel = new Label();
 			CssStyles.style(epiCurveDateLabel, CssStyles.H4, CssStyles.VSPACE_TOP_NONE);
-			dashboardView.updateDateLabel(epiCurveDateLabel);
+			updateDateLabel();
 			epiCurveLabelLayout.addComponent(epiCurveDateLabel);
 		}
 		epiCurveHeaderLayout.addComponent(epiCurveLabelLayout);
@@ -254,13 +287,13 @@ public class EpiCurveComponent extends VerticalLayout {
 		collapseEpiCurveButton.addStyleName(CssStyles.VSPACE_NONE);
 
 		expandEpiCurveButton.addClickListener(e -> {
-			dashboardView.expandEpiCurve();
+			externalExpandButtonListener.buttonClick(e);
 			epiCurveHeaderLayout.removeComponent(expandEpiCurveButton);
 			epiCurveHeaderLayout.addComponent(collapseEpiCurveButton);
 			epiCurveHeaderLayout.setComponentAlignment(collapseEpiCurveButton, Alignment.MIDDLE_RIGHT);
 		});
 		collapseEpiCurveButton.addClickListener(e -> {
-			dashboardView.collapseEpiCurve();
+			externalCollapseButtonListener.buttonClick(e);
 			epiCurveHeaderLayout.removeComponent(collapseEpiCurveButton);
 			epiCurveHeaderLayout.addComponent(expandEpiCurveButton);
 			epiCurveHeaderLayout.setComponentAlignment(expandEpiCurveButton, Alignment.MIDDLE_RIGHT);
@@ -277,15 +310,15 @@ public class EpiCurveComponent extends VerticalLayout {
 	 */
 	private List<Date> buildListOfFilteredDates() {
 		List<Date> filteredDates = new ArrayList<>();
-		if (dashboardView.getDateFilterOption() == DateFilterOption.DATE) {
-			Date currentDate = new Date(dashboardView.getFromDate().getTime());
-			while (!currentDate.after(dashboardView.getToDate())) {
+		if (dashboardDataProvider.getDateFilterOption() == DateFilterOption.DATE) {
+			Date currentDate = new Date(dashboardDataProvider.getFromDate().getTime());
+			while (!currentDate.after(dashboardDataProvider.getToDate())) {
 				filteredDates.add(currentDate);
 				currentDate = DateHelper.addDays(currentDate, 1);
 			}
 		} else {
-			Date currentDate = DateHelper.getEpiWeekStart(dashboardView.getFromWeek());
-			Date targetDate = DateHelper.getEpiWeekEnd(dashboardView.getToWeek());
+			Date currentDate = DateHelper.getEpiWeekStart(dashboardDataProvider.getFromWeek());
+			Date targetDate = DateHelper.getEpiWeekEnd(dashboardDataProvider.getToWeek());
 			while (!currentDate.after(targetDate)) {
 				filteredDates.add(currentDate);
 				currentDate = DateHelper.addDays(currentDate, 1);

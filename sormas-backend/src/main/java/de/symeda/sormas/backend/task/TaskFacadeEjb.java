@@ -20,6 +20,7 @@ import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskFacade;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
@@ -286,10 +287,10 @@ public class TaskFacadeEjb implements TaskFacade {
 	}
 	
 	@Override
-	public List<DashboardTask> getAllPending(Date from, Date to, String userUuid) {
+	public List<DashboardTask> getAllByUserForDashboard(TaskStatus taskStatus, String userUuid) {
 		User user = userService.getByUuid(userUuid);
 		
-		return taskService.getAllPending(from, to, user);
+		return taskService.getAllByUserForDashboard(taskStatus, user);
 	}
 	
 	@Override
@@ -347,6 +348,17 @@ public class TaskFacadeEjb implements TaskFacade {
 	@Override
 	public TaskDto getByUuid(String uuid) {
 		return toDto(taskService.getByUuid(uuid));
+	}
+	
+	@Override
+	public void deleteTask(TaskDto taskDto, String userUuid) {
+		User user = userService.getByUuid(userUuid);
+		if (!user.getUserRoles().contains(UserRole.ADMIN)) {
+			throw new UnsupportedOperationException("Only admins are allowed to delete entities.");
+		}
+		
+		Task task = taskService.getByUuid(taskDto.getUuid());
+		taskService.delete(task);
 	}
 }
 

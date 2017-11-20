@@ -21,8 +21,6 @@ import com.vaadin.ui.CustomField;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.Field;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -31,7 +29,6 @@ import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.epidata.EpiDataBurialsField;
 import de.symeda.sormas.ui.epidata.EpiDataGatheringsField;
@@ -174,6 +171,8 @@ public abstract class AbstractEditForm <DTO extends DataTransferObject> extends 
 	
 		super.setValue(newFieldValue);
 		
+		// TODO find a better way to do this.
+		// Calling it at the end of addFields does not work, because value changes might make certain fields editable again.
 		if (!LoginHelper.hasUserRight(UserRight.EDIT)) {
 			for (Field field : getFieldGroup().getFields()) {
 				field.setReadOnly(true);

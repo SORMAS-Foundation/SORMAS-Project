@@ -1,7 +1,6 @@
 package de.symeda.sormas.backend.task;
 
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -52,8 +51,8 @@ public class TaskService extends AbstractAdoService<Task> {
 		}
 		
 		// whoever created the task or is assigned to it is allowed to access it
-		Predicate filter = cb.equal(taskPath.get(Task.CREATOR_USER), user);
-		filter = cb.or(filter, cb.equal(taskPath.get(Task.ASSIGNEE_USER), user));
+		Predicate filter = cb.equal(taskPath.join(Task.CREATOR_USER, JoinType.LEFT), user);
+		filter = cb.or(filter, cb.equal(taskPath.join(Task.ASSIGNEE_USER, JoinType.LEFT), user));
 		
 		Predicate caseFilter = caseService.createUserFilter(cb, cq, taskPath.join(Task.CAZE, JoinType.LEFT), user);
 		if (caseFilter != null) {
@@ -104,12 +103,16 @@ public class TaskService extends AbstractAdoService<Task> {
 		return resultList;	
 	}
 
-	public List<DashboardTask> getAllPending(Date from, Date to, User user) {
+	public List<DashboardTask> getAllByUserForDashboard(TaskStatus taskStatus, User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<DashboardTask> cq = cb.createQuery(DashboardTask.class);
 		Root<Task> task = cq.from(getElementClass());
 		
-		TaskCriteria taskCriteria = new TaskCriteria().assigneeUserEquals(user).taskStatusEquals(TaskStatus.PENDING);
+		TaskCriteria taskCriteria = new TaskCriteria().assigneeUserEquals(user);
+		if (taskStatus != null) {
+			taskCriteria.taskStatusEquals(taskStatus);
+		}
+		
 		Predicate filter = buildCriteriaFilter(taskCriteria, cb, task);
 		
 		List<DashboardTask> result;

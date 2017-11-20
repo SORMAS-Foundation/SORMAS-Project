@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.enterprise.inject.Specializes;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -42,7 +43,9 @@ import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
+import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb.EpiDataFacadeEjbLocal;
 import de.symeda.sormas.backend.facility.Facility;
@@ -65,6 +68,8 @@ import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.region.RegionService;
+import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLocal;
 import de.symeda.sormas.backend.task.Task;
@@ -105,6 +110,10 @@ public class CaseFacadeEjb implements CaseFacade {
 	@EJB
 	private HospitalizationService hospitalizationService;
 	@EJB
+	private ContactService contactService;
+	@EJB
+	private SampleService sampleService;
+	@EJB
 	private HospitalizationFacadeEjbLocal hospitalizationFacade;
 	@EJB
 	private PreviousHospitalizationService previousHospitalizationService;
@@ -143,14 +152,14 @@ public class CaseFacadeEjb implements CaseFacade {
 		Join<Case, Region> region = caze.join(Case.REGION, JoinType.LEFT);
 		Join<Case, District> district = caze.join(Case.DISTRICT, JoinType.LEFT);
 		Join<Case, Facility> facility = caze.join(Case.HEALTH_FACILITY, JoinType.LEFT);
-		Join<Case, User> surveillanceOfficerUuid = caze.join(Case.SURVEILLANCE_OFFICER, JoinType.LEFT);
+		Join<Case, User> surveillanceOfficer = caze.join(Case.SURVEILLANCE_OFFICER, JoinType.LEFT);
 
 		cq.multiselect(caze.get(Case.CREATION_DATE), caze.get(Case.CHANGE_DATE), caze.get(Case.UUID), 
 				caze.get(Case.EPID_NUMBER), person.get(Person.FIRST_NAME), person.get(Person.LAST_NAME),
 				caze.get(Case.DISEASE), caze.get(Case.DISEASE_DETAILS), caze.get(Case.CASE_CLASSIFICATION),
 				caze.get(Case.INVESTIGATION_STATUS), person.get(Person.PRESENT_CONDITION),
 				caze.get(Case.REPORT_DATE), region.get(Region.UUID), district.get(District.UUID), district.get(District.NAME), 
-				facility.get(Facility.UUID), surveillanceOfficerUuid.get(User.UUID));
+				facility.get(Facility.UUID), surveillanceOfficer.get(User.UUID));
 			
 		User user = userService.getByUuid(userUuid);		
 		Predicate filter = caseService.createUserFilter(cb, cq, caze, user);
@@ -346,6 +355,29 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 		
 		return toDto(caze);
+	}
+	
+	@Override
+	public void deleteCase(CaseReferenceDto caseRef, String userUuid) {
+		User user = userService.getByUuid(userUuid);
+		if (!user.getUserRoles().contains(UserRole.ADMIN)) {
+			throw new UnsupportedOperationException("Only admins are allowed to delete entities.");
+		}
+		
+		Case caze = caseService.getByReferenceDto(caseRef);
+		List<Contact> contacts = contactService.getAllByCase(caze);
+		for (Contact contact : contacts) {
+			contactService.delete(contact);
+		}
+		List<Sample> samples = sampleService.getAllByCase(caze);
+		for (Sample sample : samples) {
+			sampleService.delete(sample);
+		}
+		List<Task> tasks = taskService.findBy(new TaskCriteria().cazeEquals(caze));
+		for (Task task : tasks) {
+			taskService.delete(task);
+		}
+		caseService.delete(caze);
 	}
 
 	public Case fromDto(@NotNull CaseDataDto source) {
@@ -568,12 +600,13 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 	
 	@Override
-	public Map<RegionReferenceDto, Long> getCaseCountPerRegion(Date onsetFromDate, Date onsetToDate, Disease disease) {
-		return caseService.getCaseCountPerRegion(onsetFromDate, onsetToDate, disease);
+	public Map<RegionReferenceDto, Long> getCaseCountPerRegion(Date fromDate, Date toDate, Disease disease) {
+		return caseService.getCaseCountPerRegion(fromDate, toDate, disease);
 	}
 	
 	@LocalBean
 	@Stateless
+	@Specializes
 	public static class CaseFacadeEjbLocal extends CaseFacadeEjb {
 	}
 

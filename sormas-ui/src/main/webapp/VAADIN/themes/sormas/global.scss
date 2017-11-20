@@ -110,6 +110,28 @@
   	margin-top: 0 !important;
   }
  
+  .hspace-left-0 {
+  	margin-left: 64px;
+  }
+  .hspace-left-1 {
+  	margin-left: 36px;
+  }
+  .hspace-left-2 {
+  	margin-left: 20px;
+  }
+  .hspace-left-3 {
+  	margin-left: 10px;
+  }
+  .hspace-left-4 {
+  	margin-left: 6px;
+  }
+  .hspace-left-5 {
+  	margin-left: 2px;
+  }
+  .hspace-left-none {
+  	margin-left: 0 !important;
+  }
+ 
   .hspace-right-0 {
   	margin-right: 64px;
   }
@@ -137,5 +159,13 @@
   	text-align: right;
   }
 
+  .align-center {
+  	text-align: center;
+  }
+
+  // Make sure that horizontal separators don't have more than 1px height
+  .v-slot-separator-horizontal {
+	line-height: 1px;
+  }
   
 }

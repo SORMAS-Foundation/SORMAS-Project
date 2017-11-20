@@ -1,6 +1,5 @@
 package de.symeda.sormas.ui.dashboard;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -23,8 +22,8 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
-import de.symeda.sormas.api.caze.DashboardCase;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.ui.login.LoginHelper;
@@ -88,9 +87,6 @@ public class DashboardView extends AbstractView {
 	private EpiCurveComponent epiCurveComponent;
 	private StatisticsComponent statisticsComponent;
 
-	// Entities
-	private List<DashboardCase> cases = new ArrayList<>();
-
 	// Filters
 	private DistrictReferenceDto district;
 	private Disease disease;
@@ -101,12 +97,14 @@ public class DashboardView extends AbstractView {
 	private EpiWeek toWeek;
 
 	// Others
+	private DashboardDataProvider dashboardDataProvider;
 	private int thisYear;
 
 	public DashboardView() {
 		super(VIEW_NAME);		
-		addStyleName("dashboard-screen");		
+		addStyleName(DashboardCssStyles.DASHBOARD_SCREEN);		
 
+		dashboardDataProvider = new DashboardDataProvider();
 		thisYear = Calendar.getInstance().get(Calendar.YEAR);
 
 		dashboardLayout = new VerticalLayout();
@@ -118,7 +116,7 @@ public class DashboardView extends AbstractView {
 		dashboardLayout.addComponent(createFilterBar());
 
 		// Add statistics
-		statisticsComponent = new StatisticsComponent(this);
+		statisticsComponent = new StatisticsComponent(dashboardDataProvider);
 		dashboardLayout.addComponent(statisticsComponent);
 
 		// Add epi curve and map
@@ -146,38 +144,6 @@ public class DashboardView extends AbstractView {
 		}
 	}
 
-	public void expandMap() {
-		dashboardLayout.removeComponent(statisticsComponent);
-		epiCurveAndMapLayout.removeComponent(epiCurveLayout);
-		this.setHeight(100, Unit.PERCENTAGE);
-		epiCurveAndMapLayout.setHeight(100, Unit.PERCENTAGE);
-		mapLayout.setSizeFull();
-	}
-
-	public void collapseMap() {
-		dashboardLayout.addComponent(statisticsComponent, 1);
-		epiCurveAndMapLayout.addComponent(epiCurveLayout, 0);
-		mapLayout.setHeight(380, Unit.PIXELS);
-		this.setHeightUndefined();
-		epiCurveAndMapLayout.setHeightUndefined();
-	}
-	
-	public void expandEpiCurve() {
-		dashboardLayout.removeComponent(statisticsComponent);
-		epiCurveAndMapLayout.removeComponent(mapLayout);
-		this.setHeight(100, Unit.PERCENTAGE);
-		epiCurveAndMapLayout.setHeight(100, Unit.PERCENTAGE);
-		epiCurveLayout.setSizeFull();
-	}
-
-	public void collapseEpiCurve() {
-		dashboardLayout.addComponent(statisticsComponent, 1);
-		epiCurveAndMapLayout.addComponent(mapLayout, 1);
-		epiCurveLayout.setHeight(380, Unit.PIXELS);
-		this.setHeightUndefined();
-		epiCurveAndMapLayout.setHeightUndefined();
-	}
-
 	private HorizontalLayout createFilterBar() {
 		HorizontalLayout filterLayout = new HorizontalLayout();
 		filterLayout.setSpacing(true);
@@ -200,14 +166,21 @@ public class DashboardView extends AbstractView {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				district = (DistrictReferenceDto) districtFilter.getValue();
+				dashboardDataProvider.setDistrict(district);
 				disease = (Disease) diseaseFilter.getValue();
+				dashboardDataProvider.setDisease(disease);
 				dateFilterOption = (DateFilterOption) dateFilterOptionFilter.getValue();
+				dashboardDataProvider.setDateFilterOption(dateFilterOption);
 				if (dateFilterOption == DateFilterOption.DATE) {
 					fromDate = dateFromFilter.getValue();
+					dashboardDataProvider.setFromDate(fromDate);
 					toDate = dateToFilter.getValue();
+					dashboardDataProvider.setToDate(toDate);
 				} else {
 					fromWeek = new EpiWeek(thisYear, (int) weekFromFilter.getValue());
+					dashboardDataProvider.setFromWeek(fromWeek);
 					toWeek = new EpiWeek(thisYear, (int) weekToFilter.getValue());
+					dashboardDataProvider.setToWeek(toWeek);
 				}
 				applyButton.removeStyleName(ValoTheme.BUTTON_PRIMARY);
 				refreshDashboard();
@@ -225,6 +198,7 @@ public class DashboardView extends AbstractView {
 			districtFilter.setCaption(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, DISTRICT));
 			filterLayout.addComponent(districtFilter);
 			district = (DistrictReferenceDto) districtFilter.getValue();
+			dashboardDataProvider.setDistrict(district);
 		}
 
 		// Disease filter
@@ -265,6 +239,7 @@ public class DashboardView extends AbstractView {
 		});
 		filterLayout.addComponent(dateFilterOptionFilter);
 		dateFilterOption = (DateFilterOption) dateFilterOptionFilter.getValue();
+		dashboardDataProvider.setDateFilterOption(dateFilterOption);
 
 		// Epi week filter
 		List<EpiWeek> epiWeekList = DateHelper.createEpiWeekList(c.get(Calendar.YEAR));
@@ -315,16 +290,16 @@ public class DashboardView extends AbstractView {
 		
 		Label infoLabel = new Label(FontAwesome.INFO_CIRCLE.getHtml(), ContentMode.HTML);
 		infoLabel.setDescription("All Dashboard elements that display cases (the 'New Cases' statistics, the Epidemiological Curve and the Case Status Map) use the onset date of the first symptom for the date/epi week filter. If this date is not available, the date of report is used instead.");
-		CssStyles.style(infoLabel, CssStyles.H2, CssStyles.FORCE_CAPTION);
+		CssStyles.style(infoLabel, CssStyles.SIZE_XLARGE, CssStyles.COLOR_SECONDARY);
 		filterLayout.addComponent(infoLabel);
-		filterLayout.setComponentAlignment(infoLabel, Alignment.BOTTOM_RIGHT);
+		filterLayout.setComponentAlignment(infoLabel, Alignment.MIDDLE_RIGHT);
 
 		return filterLayout;
 	}
 
 	private HorizontalLayout createEpiCurveAndMapLayout() {
 		HorizontalLayout layout = new HorizontalLayout();
-		layout.addStyleName("curve-and-map-layout");
+		layout.addStyleName(DashboardCssStyles.CURVE_AND_MAP_LAYOUT);
 		layout.setWidth(100, Unit.PERCENTAGE);
 		layout.setMargin(false);
 
@@ -344,11 +319,27 @@ public class DashboardView extends AbstractView {
 		layout.setWidth(100, Unit.PERCENTAGE);
 		layout.setHeight(380, Unit.PIXELS);
 
-		epiCurveComponent = new EpiCurveComponent(this);
+		epiCurveComponent = new EpiCurveComponent(dashboardDataProvider);
 		epiCurveComponent.setSizeFull();
 		
 		layout.addComponent(epiCurveComponent);
 		layout.setExpandRatio(epiCurveComponent, 1);
+		
+		epiCurveComponent.setExpandListener(e -> {
+			dashboardLayout.removeComponent(statisticsComponent);
+			epiCurveAndMapLayout.removeComponent(mapLayout);
+			DashboardView.this.setHeight(100, Unit.PERCENTAGE);
+			epiCurveAndMapLayout.setHeight(100, Unit.PERCENTAGE);
+			epiCurveLayout.setSizeFull();			
+		});
+		
+		epiCurveComponent.setCollapseListener(e -> {
+			dashboardLayout.addComponent(statisticsComponent, 1);
+			epiCurveAndMapLayout.addComponent(mapLayout, 1);
+			epiCurveLayout.setHeight(380, Unit.PIXELS);
+			DashboardView.this.setHeightUndefined();
+			epiCurveAndMapLayout.setHeightUndefined();
+		});
 
 		return layout;
 	}
@@ -358,27 +349,83 @@ public class DashboardView extends AbstractView {
 		layout.setWidth(100, Unit.PERCENTAGE);
 		layout.setHeight(380, Unit.PIXELS);
 
-		mapComponent = new MapComponent(this);
+		mapComponent = new MapComponent(dashboardDataProvider);
 		mapComponent.setSizeFull();
 		
 		layout.addComponent(mapComponent);
 		layout.setExpandRatio(mapComponent, 1);
 
+		mapComponent.setExpandListener(e -> {
+			dashboardLayout.removeComponent(statisticsComponent);
+			epiCurveAndMapLayout.removeComponent(epiCurveLayout);
+			DashboardView.this.setHeight(100, Unit.PERCENTAGE);
+			epiCurveAndMapLayout.setHeight(100, Unit.PERCENTAGE);
+			mapLayout.setSizeFull();
+		});
+
+		mapComponent.setCollapseListener(e -> {
+			dashboardLayout.addComponent(statisticsComponent, 1);
+			epiCurveAndMapLayout.addComponent(epiCurveLayout, 0);
+			mapLayout.setHeight(380, Unit.PIXELS);
+			DashboardView.this.setHeightUndefined();
+			epiCurveAndMapLayout.setHeightUndefined();
+		});
+
 		return layout;
 	}
 
-	private void refreshDashboard() {
-		// Update the cases and contacts lists according to the filters
+	private void refreshDashboard() {		
+		// Update the entities lists according to the filters
 		String userUuid = LoginHelper.getCurrentUser().getUuid();
+		
 		if (dateFilterOption == DateFilterOption.DATE) {
-			cases = FacadeProvider.getCaseFacade().getNewCasesForDashboard(district, disease, fromDate, toDate, userUuid);
+			int period = DateHelper.getDaysBetween(fromDate, toDate);
+			// Cases
+			dashboardDataProvider.setCases(FacadeProvider.getCaseFacade().getNewCasesForDashboard(district, disease, fromDate, toDate, userUuid));
+			dashboardDataProvider.setPreviousCases(FacadeProvider.getCaseFacade().getNewCasesForDashboard(district, disease, 
+					DateHelper.subtractDays(fromDate, period), DateHelper.subtractDays(toDate, period), userUuid));
+			// Events
+			dashboardDataProvider.setEvents(FacadeProvider.getEventFacade().getNewEventsForDashboard(district, disease, fromDate, toDate, userUuid));
+			dashboardDataProvider.setPreviousEvents(FacadeProvider.getEventFacade().getNewEventsForDashboard(district, disease, 
+					DateHelper.subtractDays(fromDate, period), DateHelper.subtractDays(toDate, period), userUuid));
+			// Test results
+			dashboardDataProvider.setTestResults(FacadeProvider.getSampleTestFacade().getNewTestResultsForDashboard(district, disease, fromDate, toDate, userUuid));
+			dashboardDataProvider.setPreviousTestResults(FacadeProvider.getSampleTestFacade().getNewTestResultsForDashboard(district, disease, 
+					DateHelper.subtractDays(fromDate, period), DateHelper.subtractDays(toDate, period), userUuid));
+			// Samples
+			dashboardDataProvider.setSamples(FacadeProvider.getSampleFacade().getNewSamplesForDashboard(district, disease, fromDate, toDate, userUuid));
+			
 		} else {
-			cases = FacadeProvider.getCaseFacade().getNewCasesForDashboard(district, disease, 
-					DateHelper.getEpiWeekStart(fromWeek), DateHelper.getEpiWeekEnd(toWeek), userUuid);
+			int period = toWeek.getWeek() - fromWeek.getWeek() + 1;
+			// Cases
+			dashboardDataProvider.setCases(FacadeProvider.getCaseFacade().getNewCasesForDashboard(district, disease, 
+					DateHelper.getEpiWeekStart(fromWeek), DateHelper.getEpiWeekEnd(toWeek), userUuid));
+			dashboardDataProvider.setPreviousCases(FacadeProvider.getCaseFacade().getNewCasesForDashboard(district, disease,
+					DateHelper.getEpiWeekStart(DateHelper.getPreviousEpiWeek(fromWeek, period)),
+					DateHelper.getEpiWeekEnd(DateHelper.getPreviousEpiWeek(toWeek, period)), userUuid));
+			// Events
+			dashboardDataProvider.setEvents(FacadeProvider.getEventFacade().getNewEventsForDashboard(district, disease, 
+					DateHelper.getEpiWeekStart(fromWeek), DateHelper.getEpiWeekEnd(toWeek), userUuid));
+			dashboardDataProvider.setPreviousEvents(FacadeProvider.getEventFacade().getNewEventsForDashboard(district, disease,
+					DateHelper.getEpiWeekStart(DateHelper.getPreviousEpiWeek(fromWeek, period)),
+					DateHelper.getEpiWeekEnd(DateHelper.getPreviousEpiWeek(toWeek, period)), userUuid));
+			// Test results
+			dashboardDataProvider.setTestResults(FacadeProvider.getSampleTestFacade().getNewTestResultsForDashboard(district, disease, 
+					DateHelper.getEpiWeekStart(fromWeek), DateHelper.getEpiWeekEnd(toWeek), userUuid));
+			dashboardDataProvider.setPreviousTestResults(FacadeProvider.getSampleTestFacade().getNewTestResultsForDashboard(district, disease,
+					DateHelper.getEpiWeekStart(DateHelper.getPreviousEpiWeek(fromWeek, period)),
+					DateHelper.getEpiWeekEnd(DateHelper.getPreviousEpiWeek(toWeek, period)), userUuid));
+			// Samples
+			dashboardDataProvider.setSamples(FacadeProvider.getSampleFacade().getNewSamplesForDashboard(district, disease, 
+					DateHelper.getEpiWeekStart(fromWeek), DateHelper.getEpiWeekEnd(toWeek), userUuid));
 		}
+		
+		// Tasks
+		dashboardDataProvider.setTasks(FacadeProvider.getTaskFacade().getAllByUserForDashboard(null, userUuid));
+		dashboardDataProvider.setPendingTasks(FacadeProvider.getTaskFacade().getAllByUserForDashboard(TaskStatus.PENDING, userUuid));
 
 		// Updates statistics
-		statisticsComponent.updateStatistics();
+		statisticsComponent.updateStatistics(disease);
 		
 		// Update cases and contacts shown on the map
 		mapComponent.refreshMap();
@@ -387,7 +434,7 @@ public class DashboardView extends AbstractView {
 		epiCurveComponent.clearAndFillEpiCurveChart();
 		
 		// Update epi curve and map date labels
-		updateDateLabel(epiCurveComponent.getEpiCurveDateLabel());
+		epiCurveComponent.updateDateLabel();
 		mapComponent.updateDateLabel();
 	}
 
@@ -396,44 +443,14 @@ public class DashboardView extends AbstractView {
 		refreshDashboard();
 	}
 
-	public List<DashboardCase> getCases() {
-		return cases;
-	}
-	
-	public DateFilterOption getDateFilterOption() {
-		return dateFilterOption;
-	}
-
-	public Date getFromDate() {
-		return fromDate;
-	}
-
-	public Date getToDate() {
-		return toDate;
-	}
-
-	public EpiWeek getFromWeek() {
-		return fromWeek;
-	}
-
-	public EpiWeek getToWeek() {
-		return toWeek;
-	}
-	
-	public Disease getDisease() {
-		return disease;
-	}
-	
-	public DistrictReferenceDto getDistrict() {
-		return district;
-	}
-
 	private void setFromWeek(int week) {
 		fromWeek = new EpiWeek(thisYear, week);
+		dashboardDataProvider.setFromWeek(fromWeek);
 	}
 
 	private void setToWeek(int week) {
 		toWeek = new EpiWeek(thisYear, week);
+		dashboardDataProvider.setToWeek(toWeek);
 	}
 
 }

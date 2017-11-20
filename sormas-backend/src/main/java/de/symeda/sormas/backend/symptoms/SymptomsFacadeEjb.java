@@ -5,6 +5,7 @@ import java.sql.Timestamp;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.enterprise.inject.Specializes;
 
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsFacade;
@@ -240,6 +241,7 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 	
 	@LocalBean
 	@Stateless
+	@Specializes
 	public static class SymptomsFacadeEjbLocal extends SymptomsFacadeEjb {
 	}
 }

@@ -4,20 +4,24 @@ import java.util.Date;
 import java.util.function.Consumer;
 
 import com.vaadin.server.Sizeable.Unit;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitReferenceDto;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
+import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DeleteListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class VisitController {
@@ -32,6 +36,11 @@ public class VisitController {
         editForm.setValue(dto);
         final CommitDiscardWrapperComponent<VisitEditForm> editView = new CommitDiscardWrapperComponent<VisitEditForm>(editForm, editForm.getFieldGroup());
         editView.setWidth(100, Unit.PERCENTAGE);
+
+        Window window = VaadinUiUtil.showModalPopupWindow(editView, "Edit visit");
+        // visit form is too big for typical screens
+		window.setWidth(editForm.getWidth() + 40, Unit.PIXELS); 
+		window.setHeight(80, Unit.PERCENTAGE); 
         
         editView.addCommitListener(new CommitListener() {
         	@Override
@@ -45,11 +54,19 @@ public class VisitController {
         		}
         	}
         });
-
-        Window window = VaadinUiUtil.showModalPopupWindow(editView, "Edit visit");
-        // visit form is too big for typical screens
-		window.setWidth(editForm.getWidth() + 40, Unit.PIXELS); 
-		window.setHeight(80, Unit.PERCENTAGE); 
+        
+        if (LoginHelper.getCurrentUserRoles().contains(UserRole.ADMIN)) {
+			editView.addDeleteListener(new DeleteListener() {
+				@Override
+				public void onDelete() {
+					FacadeProvider.getVisitFacade().deleteVisit(dto, LoginHelper.getCurrentUserAsReference().getUuid());
+					UI.getCurrent().removeWindow(window);
+        			if (doneConsumer != null) {
+        				doneConsumer.accept(dto);
+        			}
+				}
+			}, I18nProperties.getFieldCaption("Visit"));
+		}
 	}
 
 	public void createVisit(ContactReferenceDto contactRef, Consumer<VisitReferenceDto> doneConsumer) {

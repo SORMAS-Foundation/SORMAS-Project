@@ -13,6 +13,7 @@ import javax.validation.constraints.NotNull;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitFacade;
 import de.symeda.sormas.api.visit.VisitReferenceDto;
@@ -114,6 +115,17 @@ public class VisitFacadeEjb implements VisitFacade {
 		visitService.ensurePersisted(entity);
 		contactService.updateFollowUpUntilAndStatusByVisit(entity);
 		return toDto(entity);
+	}
+	
+	@Override
+	public void deleteVisit(VisitReferenceDto visitRef, String userUuid) {
+		User user = userService.getByUuid(userUuid);
+		if (!user.getUserRoles().contains(UserRole.ADMIN)) {
+			throw new UnsupportedOperationException("Only admins are allowed to delete entities.");
+		}
+		
+		Visit visit = visitService.getByReferenceDto(visitRef);
+		visitService.delete(visit);
 	}
 
 	public Visit fromDto(@NotNull VisitDto source) {

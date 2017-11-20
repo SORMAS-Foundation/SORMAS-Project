@@ -3,6 +3,7 @@ package de.symeda.sormas.ui.hospitalization;
 import java.util.function.Consumer;
 
 import com.vaadin.ui.Table;
+import com.vaadin.ui.Window;
 
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
@@ -111,8 +112,9 @@ public class PreviousHospitalizationsField extends AbstractTableField<PreviousHo
 				editForm, editForm.getFieldGroup());
 		editView.getCommitButton().setCaption("done");
 
-		editView.addCommitListener(new CommitListener() {
+		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, "Previous hospitalization");
 
+		editView.addCommitListener(new CommitListener() {
 			@Override
 			public void onCommit() {
 				if (!editForm.getFieldGroup().isModified()) {
@@ -125,12 +127,11 @@ public class PreviousHospitalizationsField extends AbstractTableField<PreviousHo
 			editView.addDeleteListener(new DeleteListener() {
 				@Override
 				public void onDelete() {
+					popupWindow.close();
 					PreviousHospitalizationsField.this.removeEntry(entry);
 				}
-			});
+			}, I18nProperties.getFieldCaption("CasePreviousHospitalization"));
 		}
-
-		VaadinUiUtil.showModalPopupWindow(editView, "Previous hospitalization");
 
 	}
 }

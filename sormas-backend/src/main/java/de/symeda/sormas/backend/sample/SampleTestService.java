@@ -86,8 +86,6 @@ public class SampleTestService extends AbstractAdoService<SampleTest> {
 			cq.where(filter);
 			cq.multiselect(
 					caze.get(Case.DISEASE),
-					sample.get(Sample.SHIPPED),
-					sample.get(Sample.RECEIVED),
 					sampleTest.get(SampleTest.TEST_RESULT)
 			);
 			
