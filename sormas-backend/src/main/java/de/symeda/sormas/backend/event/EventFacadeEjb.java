@@ -17,11 +17,15 @@ import de.symeda.sormas.api.event.EventFacade;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
 import de.symeda.sormas.backend.location.LocationService;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictService;
+import de.symeda.sormas.backend.task.Task;
+import de.symeda.sormas.backend.task.TaskCriteria;
+import de.symeda.sormas.backend.task.TaskService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
@@ -35,7 +39,11 @@ public class EventFacadeEjb implements EventFacade {
 	@EJB
 	private EventService eventService;
 	@EJB
+	private EventParticipantService eventParticipantService;
+	@EJB
 	private LocationService locationService;
+	@EJB
+	private TaskService taskService;
 	@EJB
 	private LocationFacadeEjbLocal locationFacade;
 	@EJB
@@ -120,6 +128,25 @@ public class EventFacadeEjb implements EventFacade {
 		return eventService.getAllAfter(null, user).stream()
 				.map(c -> toReferenceDto(c))
 				.collect(Collectors.toList());
+	}
+	
+	@Override
+	public void deleteEvent(EventReferenceDto eventRef, String userUuid) {
+		User user = userService.getByUuid(userUuid);
+		if (!user.getUserRoles().contains(UserRole.ADMIN)) {
+			throw new UnsupportedOperationException("Only admins are allowed to delete entities.");
+		}
+		
+		Event event = eventService.getByReferenceDto(eventRef);
+		List<EventParticipant> eventParticipants = eventParticipantService.getAllByEventAfter(null, event);
+		for (EventParticipant eventParticipant : eventParticipants) {
+			eventParticipantService.delete(eventParticipant);
+		}
+		List<Task> tasks = taskService.findBy(new TaskCriteria().eventEquals(event));
+		for (Task task : tasks) {
+			taskService.delete(task);
+		}
+		eventService.delete(event);
 	}
 	
 	public Event fromDto(@NotNull EventDto source) {

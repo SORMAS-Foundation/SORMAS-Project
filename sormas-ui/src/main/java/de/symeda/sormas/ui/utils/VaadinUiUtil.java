@@ -12,6 +12,16 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DoneListener;
 
 public class VaadinUiUtil {
 
+	public static Window createPopupWindow() {
+		Window window = new Window(null);
+		window.setModal(true);
+		window.setSizeUndefined();
+		window.setResizable(false);
+		window.center();
+		
+		return window;
+	}
+	
 	public static Window showPopupWindow(Component content) {
 		
 		Window window = new Window(null);

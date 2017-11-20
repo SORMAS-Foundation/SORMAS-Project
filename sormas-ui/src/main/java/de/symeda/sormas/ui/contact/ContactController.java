@@ -4,11 +4,12 @@ import java.util.Date;
 
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
-import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
+import com.vaadin.ui.UI;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactClassification;
@@ -17,12 +18,14 @@ import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
+import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DeleteListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class ContactController {
@@ -174,6 +177,16 @@ public class ContactController {
         		}
         	}
         });
+        
+        if (LoginHelper.getCurrentUserRoles().contains(UserRole.ADMIN)) {
+			editComponent.addDeleteListener(new DeleteListener() {
+				@Override
+				public void onDelete() {
+					FacadeProvider.getContactFacade().deleteContact(contact, LoginHelper.getCurrentUserAsReference().getUuid());
+					UI.getCurrent().getNavigator().navigateTo(ContactsView.VIEW_NAME);
+				}
+			}, I18nProperties.getFieldCaption("Contact"));
+		}
         
         return editComponent;
     }

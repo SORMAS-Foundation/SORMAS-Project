@@ -12,10 +12,12 @@ import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.sample.DashboardTestResult;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SampleTestDto;
 import de.symeda.sormas.api.sample.SampleTestFacade;
-import de.symeda.sormas.api.sample.DashboardTestResult;
+import de.symeda.sormas.api.sample.SampleTestReferenceDto;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.region.District;
@@ -104,6 +106,17 @@ public class SampleTestFacadeEjb implements SampleTestFacade {
 		sampleTestService.ensurePersisted(sampleTest);
 		
 		return toDto(sampleTest);
+	}
+	
+	@Override
+	public void deleteSampleTest(SampleTestReferenceDto sampleTestRef, String userUuid) {
+		User user = userService.getByUuid(userUuid);
+		if (!user.getUserRoles().contains(UserRole.ADMIN)) {
+			throw new UnsupportedOperationException("Only admins are allowed to delete entities.");
+		}
+		
+		SampleTest sampleTest = sampleTestService.getByReferenceDto(sampleTestRef);
+		sampleTestService.delete(sampleTest);
 	}
 	
 	public SampleTest fromDto(@NotNull SampleTestDto source) {

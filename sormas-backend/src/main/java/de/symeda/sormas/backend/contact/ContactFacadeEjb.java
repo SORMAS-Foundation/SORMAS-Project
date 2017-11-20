@@ -215,6 +215,25 @@ public class ContactFacadeEjb implements ContactFacade {
 		
 		return contactService.getContactsForMap(district, disease, fromDate, toDate, user, caseUuids);
 	}
+	
+	@Override
+	public void deleteContact(ContactReferenceDto contactRef, String userUuid) {
+		User user = userService.getByUuid(userUuid);
+		if (!user.getUserRoles().contains(UserRole.ADMIN)) {
+			throw new UnsupportedOperationException("Only admins are allowed to delete entities.");
+		}
+		
+		Contact contact = contactService.getByReferenceDto(contactRef);
+		List<Visit> visits = visitService.getAllByContact(contact);
+		for (Visit visit : visits) {
+			visitService.delete(visit);
+		}
+		List<Task> tasks = taskService.findBy(new TaskCriteria().contactEquals(contact));
+		for (Task task : tasks) {
+			taskService.delete(task);
+		}
+		contactService.delete(contact);
+	}
 
 	public Contact fromDto(@NotNull ContactDto source) {
 

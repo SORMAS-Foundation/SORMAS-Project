@@ -20,6 +20,7 @@ import de.symeda.sormas.api.sample.SampleFacade;
 import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SampleTestDto;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
@@ -39,6 +40,8 @@ public class SampleFacadeEjb implements SampleFacade {
 
 	@EJB
 	private SampleService sampleService;
+	@EJB
+	private SampleTestService sampleTestService;
 	@EJB
 	private UserService userService;
 	@EJB
@@ -145,6 +148,21 @@ public class SampleFacadeEjb implements SampleFacade {
 	@Override
 	public SampleReferenceDto getReferredFrom(String sampleUuid) {
 		return toReferenceDto(sampleService.getReferredFrom(sampleUuid));
+	}
+	
+	@Override
+	public void deleteSample(SampleReferenceDto sampleRef, String userUuid) {
+		User user = userService.getByUuid(userUuid);
+		if (!user.getUserRoles().contains(UserRole.ADMIN)) {
+			throw new UnsupportedOperationException("Only admins are allowed to delete entities.");
+		}
+
+		Sample sample = sampleService.getByReferenceDto(sampleRef);
+		List<SampleTest> sampleTests = sampleTestService.getAllBySample(sample);
+		for (SampleTest sampleTest : sampleTests) {
+			sampleTestService.delete(sampleTest);
+		}
+		sampleService.delete(sample);
 	}
 	
 	public Sample fromDto(@NotNull SampleDto source) {

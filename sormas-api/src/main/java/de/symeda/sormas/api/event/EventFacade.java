@@ -30,4 +30,5 @@ public interface EventFacade {
 
 	List<EventDto> getByUuids(List<String> uuids);
 
+	void deleteEvent(EventReferenceDto eventRef, String userUuid);
 }

@@ -86,6 +86,7 @@ public final class CssStyles {
 	
 	// Button styles
 	public static final String BUTTON_SUBTLE = "subtle";
+	public static final String BUTTON_BORDER_NEUTRAL = "border-neutral";
 	public static final String LINK_ACTIVE = "active";
 	
 	// SVG fill and stroke styles

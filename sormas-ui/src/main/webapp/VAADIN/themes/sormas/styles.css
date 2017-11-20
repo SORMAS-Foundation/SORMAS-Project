@@ -13031,6 +13031,10 @@ div.v-layout.v-horizontal.v-widget {
 	background-color: inherit;
 }
 
+.sormas .v-button-border-neutral {
+	border-color: #000000;
+}
+
 .sormas .v-filterselect [class$="input"] {
 	background-color: #FEFEFE;
 }

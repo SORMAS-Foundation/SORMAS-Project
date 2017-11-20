@@ -42,7 +42,9 @@ import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
+import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb.EpiDataFacadeEjbLocal;
 import de.symeda.sormas.backend.facility.Facility;
@@ -65,6 +67,8 @@ import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.region.RegionService;
+import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLocal;
 import de.symeda.sormas.backend.task.Task;
@@ -104,6 +108,10 @@ public class CaseFacadeEjb implements CaseFacade {
 	private TaskService taskService;
 	@EJB
 	private HospitalizationService hospitalizationService;
+	@EJB
+	private ContactService contactService;
+	@EJB
+	private SampleService sampleService;
 	@EJB
 	private HospitalizationFacadeEjbLocal hospitalizationFacade;
 	@EJB
@@ -346,6 +354,29 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 		
 		return toDto(caze);
+	}
+	
+	@Override
+	public void deleteCase(CaseReferenceDto caseRef, String userUuid) {
+		User user = userService.getByUuid(userUuid);
+		if (!user.getUserRoles().contains(UserRole.ADMIN)) {
+			throw new UnsupportedOperationException("Only admins are allowed to delete entities.");
+		}
+		
+		Case caze = caseService.getByReferenceDto(caseRef);
+		List<Contact> contacts = contactService.getAllByCase(caze);
+		for (Contact contact : contacts) {
+			contactService.delete(contact);
+		}
+		List<Sample> samples = sampleService.getAllByCase(caze);
+		for (Sample sample : samples) {
+			sampleService.delete(sample);
+		}
+		List<Task> tasks = taskService.findBy(new TaskCriteria().cazeEquals(caze));
+		for (Task task : tasks) {
+			taskService.delete(task);
+		}
+		caseService.delete(caze);
 	}
 
 	public Case fromDto(@NotNull CaseDataDto source) {

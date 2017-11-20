@@ -7,9 +7,11 @@ import com.vaadin.navigator.View;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantFacade;
@@ -17,12 +19,14 @@ import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
+import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DeleteListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class EventParticipantsController {
@@ -64,6 +68,11 @@ public class EventParticipantsController {
 		editForm.setValue(eventParticipant);
 		final CommitDiscardWrapperComponent<EventParticipantEditForm> editView = new CommitDiscardWrapperComponent<EventParticipantEditForm>(editForm, editForm.getFieldGroup());
 
+		Window window = VaadinUiUtil.showModalPopupWindow(editView, "Edit person");
+        // visit form is too big for typical screens
+		window.setWidth(editForm.getWidth() + 40, Unit.PIXELS); 
+		window.setHeight(80, Unit.PERCENTAGE); 
+		
 		editView.addCommitListener(new CommitListener() {
 			@Override
 			public void onCommit() {
@@ -77,10 +86,16 @@ public class EventParticipantsController {
 			}
 		});
 		
-		Window window = VaadinUiUtil.showModalPopupWindow(editView, "Edit person");
-        // visit form is too big for typical screens
-		window.setWidth(editForm.getWidth() + 40, Unit.PIXELS); 
-		window.setHeight(80, Unit.PERCENTAGE); 
+		if (LoginHelper.getCurrentUserRoles().contains(UserRole.ADMIN)) {
+			editView.addDeleteListener(new DeleteListener() {
+				@Override
+				public void onDelete() {
+					FacadeProvider.getEventParticipantFacade().deleteEventParticipant(editForm.getValue(), LoginHelper.getCurrentUserAsReference().getUuid());
+					UI.getCurrent().removeWindow(window);
+					refreshView();
+				}
+			}, I18nProperties.getFieldCaption("EventParticipant"));
+		}
 	}
 	
 	public EventParticipantDto createNewEventParticipant(EventReferenceDto eventRef) {

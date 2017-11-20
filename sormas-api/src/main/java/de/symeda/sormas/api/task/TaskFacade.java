@@ -44,4 +44,6 @@ public interface TaskFacade {
 	TaskDto getByUuid(String uuid);
 
 	List<String> getAllUuids(String userUuid);
+	
+	void deleteTask(TaskDto taskDto, String userUuid);
 }

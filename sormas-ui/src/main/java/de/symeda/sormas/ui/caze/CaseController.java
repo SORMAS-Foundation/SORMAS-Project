@@ -17,6 +17,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Link;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
@@ -24,6 +25,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.PlagueType;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -46,6 +48,7 @@ import de.symeda.sormas.api.symptoms.SymptomsFacade;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
@@ -57,6 +60,7 @@ import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.symptoms.SymptomsForm;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
+import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DeleteListener;
 import de.symeda.sormas.ui.utils.ConfirmationComponent;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -255,6 +259,16 @@ public class CaseController {
         		}
         	}
         });
+        
+        if (LoginHelper.getCurrentUserRoles().contains(UserRole.ADMIN)) {
+			editView.addDeleteListener(new DeleteListener() {
+				@Override
+				public void onDelete() {
+					FacadeProvider.getCaseFacade().deleteCase(caze, LoginHelper.getCurrentUserAsReference().getUuid());
+					UI.getCurrent().getNavigator().navigateTo(CasesView.VIEW_NAME);
+				}
+			}, I18nProperties.getFieldCaption("Case"));
+		}
         
         // Initialize 'Move case to another health facility' button
         if (LoginHelper.hasUserRight(UserRight.CASE_EDIT_FACILITY)) {

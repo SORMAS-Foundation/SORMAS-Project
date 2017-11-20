@@ -25,12 +25,15 @@ import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.RichTextArea;
 import com.vaadin.ui.TextArea;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.user.UserRight;
@@ -347,57 +350,56 @@ public class CommitDiscardWrapperComponent<C extends Component> extends
 		}
 		return discardButton;
 	}
-
-	/**
-	 * Durch das Aufrufen dieser Methode wird ein Button zum Löschen erstellt, aber nicht angezeigt.
-	 * Dazu muss addDeleteListener() aufgerufen werden. 
-	 * @return
-	 */
-	public Button getDeleteButton() {
+	
+	public Button getDeleteButton(String entityName) {
 		if (deleteButton == null) {
 			deleteButton = new Button("delete");
-			deleteButton.addStyleName(ValoTheme.BUTTON_LINK);
+			CssStyles.style(deleteButton, ValoTheme.BUTTON_DANGER, CssStyles.BUTTON_BORDER_NEUTRAL);
 			deleteButton.addClickListener(new ClickListener() {
 				private static final long serialVersionUID = 1L;
 				@Override
 				public void buttonClick(ClickEvent event) {
-					buttonsPanel.replaceComponent(deleteButton, getDeleteConfirmationComponent());
-					getDiscardButton().setVisible(false);
-					getCommitButton().setVisible(false);
+					Window popupWindow = VaadinUiUtil.createPopupWindow();
+					VerticalLayout deleteLayout = new VerticalLayout();
+					deleteLayout.setMargin(true);
+					Label description = new Label("Are you sure you want to delete this " + entityName + "? This action can not be reversed.");
+					description.setWidth(100, Unit.PERCENTAGE);
+					deleteLayout.addComponent(description);
+					ConfirmationComponent confirmationComponent = getDeleteConfirmationComponent(popupWindow);
+					deleteLayout.addComponent(confirmationComponent);
+					deleteLayout.setComponentAlignment(confirmationComponent, Alignment.BOTTOM_RIGHT);
+					deleteLayout.setSizeUndefined();
+					deleteLayout.setSpacing(true);
+					popupWindow.setCaption("Confirm Deletion");
+					popupWindow.setContent(deleteLayout);
+					UI.getCurrent().addWindow(popupWindow);
 				}
 			});
 		}
-
+		
 		return deleteButton;
 	}
-
-	/**
-	 * Durch das Aufrufen dieser Methode wird beim Löschen eine Bestätigung angefordert.
-	 * Die Details können dann an der zurückgegebenen ConfirmationComponent konfiguriert werden.
-	 * Der Button zum Löschen wird damit aber nicht eingefügt.
-	 * @return
-	 */
-	public ConfirmationComponent getDeleteConfirmationComponent() {
+	
+	public ConfirmationComponent getDeleteConfirmationComponent(Window popupWindow) {
 		if (deleteConfirmationComponent == null) {
 			deleteConfirmationComponent = new ConfirmationComponent(false) {
 				private static final long serialVersionUID = 1L;
 				@Override
 				protected void onConfirm() {
+					popupWindow.close();
 					onDelete();
 					onDone();
-					buttonsPanel.replaceComponent(this, getDeleteButton());
 				}
-
+	
 				@Override
 				protected void onCancel() {
-					buttonsPanel.replaceComponent(this, getDeleteButton());
-					getDiscardButton().setVisible(true);
-					getCommitButton().setVisible(true);
+					popupWindow.close();
 				}
 			};
-			deleteConfirmationComponent.getConfirmButton().setCaption(
-					"Really delete?");
+			deleteConfirmationComponent.getConfirmButton().setCaption("Yes");
+			deleteConfirmationComponent.getCancelButton().setCaption("No");
 		}
+		
 		return deleteConfirmationComponent;
 	}
 
@@ -603,27 +605,16 @@ public class CommitDiscardWrapperComponent<C extends Component> extends
 		for (DoneListener listener : doneListeners)
 			listener.onDone();
 	}
-
-	/**
-	 * Fügt einen Listener zum Löschen hinzu.
-	 * Blendet ggf. den Lösch-Button ein.
-	 * @param listener
-	 */
-	public void addDeleteListener(DeleteListener listener) {
+	
+	public void addDeleteListener(DeleteListener listener, String entityName) {
 		if (deleteListeners.isEmpty())
-			buttonsPanel.addComponent(getDeleteButton(), 0);
+			buttonsPanel.addComponent(getDeleteButton(entityName), 0);
 		if (!deleteListeners.contains(listener))
 			deleteListeners.add(listener);
 	}
 	
 	public boolean hasDeleteListener() {
 		return !deleteListeners.isEmpty();
-	}
-
-	public void removeDeleteListener(DeleteListener listener) {
-		deleteListeners.remove(listener);
-		if (deleteListeners.isEmpty())
-			buttonsPanel.removeComponent(getDeleteButton());
 	}
 
 	private void onDelete() {

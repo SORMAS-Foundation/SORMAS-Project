@@ -3,6 +3,7 @@ package de.symeda.sormas.ui.epidata;
 import java.util.function.Consumer;
 
 import com.vaadin.ui.Table;
+import com.vaadin.ui.Window;
 
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.epidata.EpiDataGatheringDto;
@@ -105,6 +106,8 @@ public class EpiDataGatheringsField extends AbstractTableField<EpiDataGatheringD
 		final CommitDiscardWrapperComponent<EpiDataGatheringEditForm> editView = new CommitDiscardWrapperComponent<EpiDataGatheringEditForm>(editForm, editForm.getFieldGroup());
 		editView.getCommitButton().setCaption("done");
 
+		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, "Social event");
+		
 		editView.addCommitListener(new CommitListener() {
 			@Override
 			public void onCommit() {
@@ -118,12 +121,11 @@ public class EpiDataGatheringsField extends AbstractTableField<EpiDataGatheringD
 			editView.addDeleteListener(new DeleteListener() {
 				@Override
 				public void onDelete() {
+					popupWindow.close();
 					EpiDataGatheringsField.this.removeEntry(entry);
 				}
-			});
+			}, I18nProperties.getFieldCaption("EpiDataGathering"));
 		}
-		
-		VaadinUiUtil.showModalPopupWindow(editView, "Social event");
 	}
 	
 	@Override

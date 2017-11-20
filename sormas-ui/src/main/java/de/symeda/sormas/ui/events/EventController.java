@@ -7,19 +7,23 @@ import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
+import com.vaadin.ui.UI;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventFacade;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
+import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DeleteListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class EventController {
@@ -105,6 +109,16 @@ public class EventController {
 				}
 			}
 		});
+		
+		if (LoginHelper.getCurrentUserRoles().contains(UserRole.ADMIN)) {
+			editView.addDeleteListener(new DeleteListener() {
+				@Override
+				public void onDelete() {
+					FacadeProvider.getEventFacade().deleteEvent(event, LoginHelper.getCurrentUserAsReference().getUuid());
+					UI.getCurrent().getNavigator().navigateTo(EventsView.VIEW_NAME);
+				}
+			}, I18nProperties.getFieldCaption("Event"));
+		}
 		
 		return editView;
 	}

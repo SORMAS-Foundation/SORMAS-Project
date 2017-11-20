@@ -53,4 +53,6 @@ public interface CaseFacade {
 	 */
 	Map<RegionReferenceDto, Long> getCaseCountPerRegion(Date fromDate, Date toDate, Disease disease);
 	
+	void deleteCase(CaseReferenceDto caseRef, String userUuid);
+	
 }
