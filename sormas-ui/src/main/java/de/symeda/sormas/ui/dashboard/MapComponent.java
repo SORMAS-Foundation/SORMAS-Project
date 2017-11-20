@@ -656,14 +656,14 @@ public class MapComponent extends VerticalLayout {
 		map.removeStyleName("no-tiles");
 	}
 
-	private void showRegionsShapes(RegionMapVisualization regionMapVisualization, Date onsetFromDate, Date onsetToDate, Disease disease) {
+	private void showRegionsShapes(RegionMapVisualization regionMapVisualization, Date fromDate, Date toDate, Disease disease) {
 
 		clearRegionShapes();
 
 		map.addStyleName("no-tiles");
 
 		List<RegionDataDto> regions = FacadeProvider.getRegionFacade().getAllData();
-		Map<RegionReferenceDto, Long> caseCountPerRegion = FacadeProvider.getCaseFacade().getCaseCountPerRegion(onsetFromDate, onsetToDate, disease);
+		Map<RegionReferenceDto, Long> caseCountPerRegion = FacadeProvider.getCaseFacade().getCaseCountPerRegion(fromDate, toDate, disease);
 
 		for (RegionDataDto region : regions) {
 

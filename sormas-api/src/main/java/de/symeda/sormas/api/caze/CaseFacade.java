@@ -51,6 +51,6 @@ public interface CaseFacade {
 	 * @param onsetToDate optional
 	 * @param disease optional
 	 */
-	Map<RegionReferenceDto, Long> getCaseCountPerRegion(Date onsetFromDate, Date onsetToDate, Disease disease);
+	Map<RegionReferenceDto, Long> getCaseCountPerRegion(Date fromDate, Date toDate, Disease disease);
 	
 }
