@@ -360,5 +360,6 @@ public class TaskFacadeEjb implements TaskFacade {
 		Task task = taskService.getByUuid(taskDto.getUuid());
 		taskService.delete(task);
 	}
+	
 }
 

@@ -1,6 +1,8 @@
 package de.symeda.sormas.backend.caze;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.time.LocalDate;
 import java.util.Date;
@@ -23,6 +25,8 @@ import de.symeda.sormas.api.facility.FacilityFacade;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.region.CommunityFacade;
+import de.symeda.sormas.api.sample.SampleFacade;
+import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskFacade;
@@ -37,6 +41,7 @@ import de.symeda.sormas.backend.TestDataCreator.RDCF;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventFacadeEjb;
+import de.symeda.sormas.backend.event.EventParticipantFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
@@ -56,7 +61,7 @@ import de.symeda.sormas.backend.visit.VisitFacadeEjb;
 import info.novatec.beantest.api.BaseBeanTest;
 
 public class CaseFacadeEjbTest extends BaseBeanTest {
-	
+
 	/**
 	 * Resets mocks to their initial state so that mock configurations are not shared between tests.
 	 */
@@ -71,7 +76,7 @@ public class CaseFacadeEjbTest extends BaseBeanTest {
 		ContactFacade contactFacade = getBean(ContactFacadeEjbLocal.class);
 
 		TestDataCreator creator = createTestDataCreator();
-	
+
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
@@ -102,7 +107,7 @@ public class CaseFacadeEjbTest extends BaseBeanTest {
 		FacilityFacade facilityFacade = getBean(FacilityFacadeEjb.class);
 
 		TestDataCreator creator = createTestDataCreator();
-		
+
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
@@ -111,69 +116,106 @@ public class CaseFacadeEjbTest extends BaseBeanTest {
 		UserDto caseOfficer = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Case", "Officer", UserRole.CASE_OFFICER);
 		TaskDto pendingTask = creator.createTask(TaskContext.CASE, TaskType.CASE_INVESTIGATION, TaskStatus.PENDING, caze, null, new Date(), user);
 		TaskDto doneTask = creator.createTask(TaskContext.CASE, TaskType.CASE_INVESTIGATION, TaskStatus.DONE, caze, null, new Date(), user);
-		
+
 		RDCF newRDCF = creator.createRDCF("New Region", "New District", "New Community", "New Facility");
 		caseFacade.moveCase(caze, communityFacade.getByUuid(newRDCF.community.getUuid()), facilityFacade.getByUuid(newRDCF.facility.getUuid()), caze.getHealthFacilityDetails(), caseOfficer);
-		
+
 		caze = caseFacade.getCaseDataByUuid(caze.getUuid());
 		pendingTask = taskFacade.getByUuid(pendingTask.getUuid());
 		doneTask = taskFacade.getByUuid(doneTask.getUuid());
-		
+
 		// Case should have the new region, district, community and facility set
 		assertEquals(caze.getRegion().getUuid(), newRDCF.region.getUuid());
 		assertEquals(caze.getDistrict().getUuid(), newRDCF.district.getUuid());
 		assertEquals(caze.getCommunity().getUuid(), newRDCF.community.getUuid());
 		assertEquals(caze.getHealthFacility().getUuid(), newRDCF.facility.getUuid());
-		
+
 		// Pending task should've been reassigned to the case officer, done task should still be assigned to the surveillance supervisor
 		assertEquals(pendingTask.getAssigneeUser().getUuid(), caseOfficer.getUuid());
 		assertEquals(doneTask.getAssigneeUser().getUuid(), user.getUuid());
-		
+
 		// A previous hospitalization with the former facility should have been created
 		List<PreviousHospitalizationDto> previousHospitalizations = caze.getHospitalization().getPreviousHospitalizations();
 		assertEquals(previousHospitalizations.size(), 1);
 	}
-	
+
 	@Test
 	public void testDashboardCaseListCreation() {
 		CaseFacade caseFacade = getBean(CaseFacadeEjbLocal.class);
-		
+
 		TestDataCreator creator = createTestDataCreator();
-		
+
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(user, cazePerson, Disease.EVD, CaseClassification.PROBABLE,
 				InvestigationStatus.PENDING, new Date(), rdcf);
-		
+
 		List<DashboardCase> dashboardCases = caseFacade.getNewCasesForDashboard(caze.getDistrict(), caze.getDisease(), DateHelper.subtractDays(new Date(),  1), DateHelper.addDays(new Date(), 1), user.getUuid());
-		
+
 		// List should have one entry
 		assertEquals(1, dashboardCases.size());
 	}
-	
+
 	@Test
 	public void testMapCaseListCreation() {
 		CaseFacade caseFacade = getBean(CaseFacadeEjbLocal.class);
-		
+
 		TestDataCreator creator = createTestDataCreator();
-		
+
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(user, cazePerson, Disease.EVD, CaseClassification.PROBABLE,
 				InvestigationStatus.PENDING, new Date(), rdcf);
-		
+
 		List<MapCase> mapCases = caseFacade.getCasesForMap(caze.getDistrict(), caze.getDisease(), DateHelper.subtractDays(new Date(),  1), DateHelper.addDays(new Date(), 1), user.getUuid());
-		
+
 		// List should have one entry
 		assertEquals(1, mapCases.size());
 	}
-	
+
+	@Test
+	public void testCaseDeletion() {
+		CaseFacade caseFacade = getBean(CaseFacadeEjbLocal.class);
+		ContactFacade contactFacade = getBean(ContactFacadeEjbLocal.class);
+		TaskFacade taskFacade = getBean(TaskFacadeEjb.class);
+		SampleFacade sampleFacade = getBean(SampleFacadeEjb.class);
+
+		TestDataCreator creator = createTestDataCreator();
+
+		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		String userUuid = user.getUuid();
+		UserDto admin = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Ad", "Min", UserRole.ADMIN);
+		String adminUuid = admin.getUuid();
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		CaseDataDto caze = creator.createCase(user, cazePerson, Disease.EVD, CaseClassification.PROBABLE,
+				InvestigationStatus.PENDING, new Date(), rdcf);
+		PersonDto contactPerson = creator.createPerson("Contact", "Person");
+		creator.createContact(user, user, contactPerson, caze, new Date(), new Date());
+		TaskDto task = creator.createTask(TaskContext.CASE, TaskType.CASE_INVESTIGATION, TaskStatus.PENDING, caze, null, new Date(), user);
+		creator.createSample(caze, new Date(), new Date(), user, SampleMaterial.BLOOD, rdcf.facility);
+		
+		// Database should contain one case, associated contact, task and sample
+		assertEquals(1, caseFacade.getAllCasesAfter(null, userUuid).size());
+		assertEquals(1, contactFacade.getAllContactsAfter(null, userUuid).size());
+		assertNotNull(taskFacade.getByUuid(task.getUuid()));
+		assertEquals(1, sampleFacade.getAllAfter(null, userUuid).size());
+		
+		caseFacade.deleteCase(caze, adminUuid);
+		
+		// Database should contain no case and associated contact, task or sample
+		assertEquals(0, caseFacade.getAllCasesAfter(null, userUuid).size());
+		assertEquals(0, contactFacade.getAllContactsAfter(null, userUuid).size());
+		assertNull(taskFacade.getByUuid(task.getUuid()));
+		assertEquals(0, sampleFacade.getAllAfter(null, userUuid).size());
+	}
+
 	private TestDataCreator createTestDataCreator() {
 		return new TestDataCreator(getBean(UserFacadeEjbLocal.class), getBean(PersonFacadeEjbLocal.class),
 				getBean(CaseFacadeEjbLocal.class), getBean(ContactFacadeEjbLocal.class), getBean(TaskFacadeEjb.class),
-				getBean(VisitFacadeEjb.class), getBean(WeeklyReportFacadeEjbLocal.class), getBean(EventFacadeEjb.class), 
+				getBean(VisitFacadeEjb.class), getBean(WeeklyReportFacadeEjbLocal.class), getBean(EventFacadeEjb.class), getBean(EventParticipantFacadeEjb.class),
 				getBean(SampleFacadeEjb.class), getBean(SampleTestFacadeEjb.class), getBean(RegionFacadeEjbLocal.class), 
 				getBean(DistrictFacadeEjbLocal.class), getBean(CommunityFacadeEjb.class), getBean(FacilityFacadeEjb.class), 
 				getBean(RegionService.class), getBean(DistrictService.class), getBean(CommunityService.class), getBean(FacilityService.class));

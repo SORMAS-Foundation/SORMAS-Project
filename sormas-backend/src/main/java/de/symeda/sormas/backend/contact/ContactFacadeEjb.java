@@ -421,7 +421,6 @@ public class ContactFacadeEjb implements ContactFacade {
 		}
 	}
 
-
 	@LocalBean
 	@Stateless
 	public static class ContactFacadeEjbLocal extends ContactFacadeEjb {

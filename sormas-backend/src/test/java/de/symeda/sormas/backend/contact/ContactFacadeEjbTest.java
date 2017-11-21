@@ -1,6 +1,6 @@
 package de.symeda.sormas.backend.contact;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -21,6 +21,7 @@ import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.MapContact;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskFacade;
 import de.symeda.sormas.api.task.TaskStatus;
@@ -37,6 +38,7 @@ import de.symeda.sormas.backend.TestDataCreator.RDCF;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventFacadeEjb;
+import de.symeda.sormas.backend.event.EventParticipantFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
@@ -152,10 +154,44 @@ public class ContactFacadeEjbTest extends BaseBeanTest  {
 		assertEquals(1, mapContacts.size());
 	}
 	
+	@Test
+	public void testContactDeletion() {
+		ContactFacade contactFacade = getBean(ContactFacadeEjbLocal.class);
+		TaskFacade taskFacade = getBean(TaskFacadeEjb.class);
+		VisitFacade visitFacade = getBean(VisitFacadeEjb.class);
+
+		TestDataCreator creator = createTestDataCreator();
+
+		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		String userUuid = user.getUuid();
+		UserDto admin = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Ad", "Min", UserRole.ADMIN);
+		String adminUuid = admin.getUuid();
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		CaseDataDto caze = creator.createCase(user, cazePerson, Disease.EVD, CaseClassification.PROBABLE,
+				InvestigationStatus.PENDING, new Date(), rdcf);
+		PersonDto contactPerson = creator.createPerson("Contact", "Person");
+		ContactDto contact = creator.createContact(user, user, contactPerson, caze, new Date(), new Date());
+		creator.createVisit(caze.getDisease(), contactPerson, DateUtils.addDays(new Date(), 21), VisitStatus.UNAVAILABLE);
+		TaskDto task = creator.createTask(TaskContext.CONTACT, TaskType.CONTACT_INVESTIGATION, TaskStatus.PENDING, null, contact, new Date(), user);
+		
+		// Database should contain one contact, associated visit and task
+		assertEquals(1, contactFacade.getAllContactsAfter(null, userUuid).size());
+		assertNotNull(taskFacade.getByUuid(task.getUuid()));
+		assertEquals(1, visitFacade.getAllVisitsAfter(null, userUuid).size());
+		
+		contactFacade.deleteContact(contact, adminUuid);
+		
+		// Database should contain no contact and associated visit or task
+		assertEquals(0, contactFacade.getAllContactsAfter(null, userUuid).size());
+		assertNull(taskFacade.getByUuid(task.getUuid()));
+		assertEquals(0, visitFacade.getAllVisitsAfter(null, userUuid).size());
+	}
+	
 	private TestDataCreator createTestDataCreator() {
 		return new TestDataCreator(getBean(UserFacadeEjbLocal.class), getBean(PersonFacadeEjbLocal.class),
 				getBean(CaseFacadeEjbLocal.class), getBean(ContactFacadeEjbLocal.class), getBean(TaskFacadeEjb.class),
-				getBean(VisitFacadeEjb.class), getBean(WeeklyReportFacadeEjbLocal.class), getBean(EventFacadeEjb.class), 
+				getBean(VisitFacadeEjb.class), getBean(WeeklyReportFacadeEjbLocal.class), getBean(EventFacadeEjb.class), getBean(EventParticipantFacadeEjb.class),
 				getBean(SampleFacadeEjb.class), getBean(SampleTestFacadeEjb.class), getBean(RegionFacadeEjbLocal.class), 
 				getBean(DistrictFacadeEjbLocal.class), getBean(CommunityFacadeEjb.class), getBean(FacilityFacadeEjb.class), 
 				getBean(RegionService.class), getBean(DistrictService.class), getBean(CommunityService.class), getBean(FacilityService.class));

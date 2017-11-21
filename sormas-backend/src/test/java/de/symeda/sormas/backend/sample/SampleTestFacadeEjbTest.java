@@ -30,6 +30,7 @@ import de.symeda.sormas.backend.TestDataCreator.RDCF;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventFacadeEjb;
+import de.symeda.sormas.backend.event.EventParticipantFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
@@ -94,10 +95,39 @@ public class SampleTestFacadeEjbTest extends BaseBeanTest {
 		assertEquals(1, dashboardTestResults.size());
 	}
 	
+	@Test
+	public void testSampleDeletion() {
+		SampleFacade sampleFacade = getBean(SampleFacadeEjb.class);
+		SampleTestFacade sampleTestFacade = getBean(SampleTestFacadeEjb.class);
+
+		TestDataCreator creator = createTestDataCreator();
+
+		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		String userUuid = user.getUuid();
+		UserDto admin = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Ad", "Min", UserRole.ADMIN);
+		String adminUuid = admin.getUuid();
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		CaseDataDto caze = creator.createCase(user, cazePerson, Disease.EVD, CaseClassification.PROBABLE,
+				InvestigationStatus.PENDING, new Date(), rdcf);
+		SampleDto sample = creator.createSample(caze, new Date(), new Date(), user, SampleMaterial.BLOOD, rdcf.facility);
+		creator.createSampleTest(sample, SampleTestType.MICROSCOPY, new Date(), rdcf.facility, user, SampleTestResultType.POSITIVE, "Positive", true);
+		
+		// Database should contain one sample and sample test
+		assertEquals(1, sampleFacade.getAllAfter(null, userUuid).size());
+		assertEquals(1, sampleTestFacade.getAllAfter(null, userUuid).size());
+		
+		sampleFacade.deleteSample(sample, adminUuid);
+		
+		// Database should contain no sample or sample test
+		assertEquals(0, sampleFacade.getAllAfter(null, userUuid).size());
+		assertEquals(0, sampleTestFacade.getAllAfter(null, userUuid).size());
+	}
+	
 	private TestDataCreator createTestDataCreator() {
 		return new TestDataCreator(getBean(UserFacadeEjbLocal.class), getBean(PersonFacadeEjbLocal.class),
 				getBean(CaseFacadeEjbLocal.class), getBean(ContactFacadeEjbLocal.class), getBean(TaskFacadeEjb.class),
-				getBean(VisitFacadeEjb.class), getBean(WeeklyReportFacadeEjbLocal.class), getBean(EventFacadeEjb.class), 
+				getBean(VisitFacadeEjb.class), getBean(WeeklyReportFacadeEjbLocal.class), getBean(EventFacadeEjb.class), getBean(EventParticipantFacadeEjb.class),
 				getBean(SampleFacadeEjb.class), getBean(SampleTestFacadeEjb.class), getBean(RegionFacadeEjbLocal.class), 
 				getBean(DistrictFacadeEjbLocal.class), getBean(CommunityFacadeEjb.class), getBean(FacilityFacadeEjb.class), 
 				getBean(RegionService.class), getBean(DistrictService.class), getBean(CommunityService.class), getBean(FacilityService.class));

@@ -12,9 +12,11 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.event.DashboardEvent;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventFacade;
+import de.symeda.sormas.api.event.EventParticipantFacade;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.EventType;
 import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -41,7 +43,7 @@ import de.symeda.sormas.backend.visit.VisitFacadeEjb;
 import info.novatec.beantest.api.BaseBeanTest;
 
 public class EventFacadeEjbTest extends BaseBeanTest {
-	
+
 	/**
 	 * Resets mocks to their initial state so that mock configurations are not shared between tests.
 	 */
@@ -49,27 +51,54 @@ public class EventFacadeEjbTest extends BaseBeanTest {
 	public void resetMocks() {
 		MockProducer.resetMocks();
 	}
-	
+
 	@Test
 	public void testDashboardEventListCreation() {
 		EventFacade eventFacade = getBean(EventFacadeEjb.class);
-		
+
 		TestDataCreator creator = createTestDataCreator();
-		
+
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		EventDto event = creator.createEvent(EventType.OUTBREAK, EventStatus.POSSIBLE, "Description", "First", "Name", "12345", TypeOfPlace.PUBLIC_PLACE, DateHelper.subtractDays(new Date(), 1), new Date(), user, user, Disease.EVD);
-		
+
 		List<DashboardEvent> dashboardEvents = eventFacade.getNewEventsForDashboard(event.getEventLocation().getDistrict(), event.getDisease(), DateHelper.subtractDays(new Date(),  1), DateHelper.addDays(new Date(), 1), user.getUuid());
-		
+
 		// List should have one entry
 		assertEquals(1, dashboardEvents.size());
 	}
-	
+
+	@Test
+	public void testEventDeletion() {
+		EventFacade eventFacade = getBean(EventFacadeEjb.class);
+		EventParticipantFacade eventParticipantFacade = getBean(EventParticipantFacadeEjb.class);
+
+		TestDataCreator creator = createTestDataCreator();
+
+		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		String userUuid = user.getUuid();
+		UserDto admin = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Ad", "Min", UserRole.ADMIN);
+		String adminUuid = admin.getUuid();
+		EventDto event = creator.createEvent(EventType.OUTBREAK, EventStatus.POSSIBLE, "Description", "First", "Name", "12345", TypeOfPlace.PUBLIC_PLACE, DateHelper.subtractDays(new Date(), 1), new Date(), user, user, Disease.EVD);
+		PersonDto eventPerson = creator.createPerson("Event", "Person");
+		creator.createEventParticipant(event, eventPerson, "Description");
+
+		// Database should contain one event and event participant
+		assertEquals(1, eventFacade.getAllEventsAfter(null, userUuid).size());
+		assertEquals(1, eventParticipantFacade.getAllEventParticipantsAfter(null, userUuid).size());
+
+		eventFacade.deleteEvent(event, adminUuid);
+
+		// Database should contain no event or associated event participant
+		assertEquals(0, eventFacade.getAllEventsAfter(null, userUuid).size());
+		assertEquals(0, eventParticipantFacade.getAllEventParticipantsAfter(null, userUuid).size());
+	}
+
 	private TestDataCreator createTestDataCreator() {
 		return new TestDataCreator(getBean(UserFacadeEjbLocal.class), getBean(PersonFacadeEjbLocal.class),
 				getBean(CaseFacadeEjbLocal.class), getBean(ContactFacadeEjbLocal.class), getBean(TaskFacadeEjb.class),
-				getBean(VisitFacadeEjb.class), getBean(WeeklyReportFacadeEjbLocal.class), getBean(EventFacadeEjb.class), 
+				getBean(VisitFacadeEjb.class), getBean(WeeklyReportFacadeEjbLocal.class), getBean(EventFacadeEjb.class), getBean(EventParticipantFacadeEjb.class),
 				getBean(SampleFacadeEjb.class), getBean(SampleTestFacadeEjb.class), getBean(RegionFacadeEjbLocal.class), 
 				getBean(DistrictFacadeEjbLocal.class), getBean(CommunityFacadeEjb.class), getBean(FacilityFacadeEjb.class), 
 				getBean(RegionService.class), getBean(DistrictService.class), getBean(CommunityService.class), getBean(FacilityService.class));
