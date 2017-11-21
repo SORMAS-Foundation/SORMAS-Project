@@ -1,6 +1,6 @@
 package de.symeda.sormas.backend.region;
 
-import java.io.File;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -125,13 +125,13 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 		// load shapefile
 		String countryName = configService.getCountryName();
 		String filepath = "shapefiles/" + countryName + "/regions.shp";
-		File file = new File(getClass().getClassLoader().getResource(filepath).getFile());
-		if (!file.exists() || !filepath.endsWith(".shp")) {
+		URL filepathUrl = getClass().getClassLoader().getResource(filepath);
+		if (filepathUrl == null || !filepath.endsWith(".shp")) {
 			throw new RuntimeException("Invalid shapefile filepath: " + filepath);
 		}
 
 		try {
-			ShapefileDataStore dataStore = new ShapefileDataStore(file.toURI().toURL());
+			ShapefileDataStore dataStore = new ShapefileDataStore(filepathUrl);
 			ContentFeatureSource featureSource = dataStore.getFeatureSource();
 			ContentFeatureCollection featureCollection = featureSource.getFeatures();
 
@@ -207,13 +207,13 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 		// load shapefile
 		String countryName = configService.getCountryName();
 		String filepath = "shapefiles/" + countryName + "/districts.shp";
-		File file = new File(getClass().getClassLoader().getResource(filepath).getFile());
-		if (!file.exists() || !filepath.endsWith(".shp")) {
+		URL filepathUrl = getClass().getClassLoader().getResource(filepath);
+		if (filepathUrl == null || !filepath.endsWith(".shp")) {
 			throw new RuntimeException("Invalid shapefile filepath: " + filepath);
 		}
 
 		try {
-			ShapefileDataStore dataStore = new ShapefileDataStore(file.toURI().toURL());
+			ShapefileDataStore dataStore = new ShapefileDataStore(filepathUrl);
 			ContentFeatureSource featureSource = dataStore.getFeatureSource();
 			ContentFeatureCollection featureCollection = featureSource.getFeatures();
 
