@@ -11,7 +11,6 @@ import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.enterprise.inject.Specializes;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -287,7 +286,6 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 	
 	@LocalBean
 	@Stateless
-	@Specializes
 	public static class WeeklyReportFacadeEjbLocal extends WeeklyReportFacadeEjb {
 	}
 
