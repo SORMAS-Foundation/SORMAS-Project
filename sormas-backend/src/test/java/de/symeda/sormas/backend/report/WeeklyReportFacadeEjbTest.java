@@ -29,9 +29,9 @@ import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb;
 import de.symeda.sormas.backend.region.CommunityService;
 import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.DistrictFacadeEjb;
+import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.region.DistrictService;
-import de.symeda.sormas.backend.region.RegionFacadeEjb;
+import de.symeda.sormas.backend.region.RegionFacadeEjb.RegionFacadeEjbLocal;
 import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.report.WeeklyReportFacadeEjb.WeeklyReportFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb;
@@ -53,7 +53,7 @@ public class WeeklyReportFacadeEjbTest extends BaseBeanTest {
 	
 	@Test
 	public void testShouldBuildDistrictSummaryDto() {
-		RegionFacade regionFacade = getBean(RegionFacadeEjb.class);
+		RegionFacade regionFacade = getBean(RegionFacadeEjbLocal.class);
 		WeeklyReportFacade reportFacade = getBean(WeeklyReportFacadeEjbLocal.class);
 		
 		TestDataCreator creator = createTestDataCreator();
@@ -87,8 +87,8 @@ public class WeeklyReportFacadeEjbTest extends BaseBeanTest {
 		return new TestDataCreator(getBean(UserFacadeEjbLocal.class), getBean(PersonFacadeEjbLocal.class),
 				getBean(CaseFacadeEjbLocal.class), getBean(ContactFacadeEjbLocal.class), getBean(TaskFacadeEjb.class),
 				getBean(VisitFacadeEjb.class), getBean(WeeklyReportFacadeEjbLocal.class), getBean(EventFacadeEjb.class), 
-				getBean(SampleFacadeEjb.class), getBean(SampleTestFacadeEjb.class), getBean(RegionFacadeEjb.class), 
-				getBean(DistrictFacadeEjb.class), getBean(CommunityFacadeEjb.class), getBean(FacilityFacadeEjb.class), 
+				getBean(SampleFacadeEjb.class), getBean(SampleTestFacadeEjb.class), getBean(RegionFacadeEjbLocal.class), 
+				getBean(DistrictFacadeEjbLocal.class), getBean(CommunityFacadeEjb.class), getBean(FacilityFacadeEjb.class), 
 				getBean(RegionService.class), getBean(DistrictService.class), getBean(CommunityService.class), getBean(FacilityService.class));
 	}
 	

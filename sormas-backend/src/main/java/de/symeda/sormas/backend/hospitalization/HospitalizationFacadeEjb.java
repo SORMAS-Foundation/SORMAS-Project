@@ -8,7 +8,6 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.enterprise.inject.Specializes;
 
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationFacade;
@@ -179,7 +178,6 @@ public class HospitalizationFacadeEjb implements HospitalizationFacade {
 	
 	@LocalBean
 	@Stateless
-	@Specializes
 	public static class HospitalizationFacadeEjbLocal extends HospitalizationFacadeEjb {
 	}
 	

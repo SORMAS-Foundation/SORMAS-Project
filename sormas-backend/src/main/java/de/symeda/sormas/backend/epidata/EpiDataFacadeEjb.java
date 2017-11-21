@@ -8,7 +8,6 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.enterprise.inject.Specializes;
 
 import de.symeda.sormas.api.epidata.EpiDataBurialDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
@@ -337,7 +336,6 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 	
 	@LocalBean
 	@Stateless
-	@Specializes
 	public static class EpiDataFacadeEjbLocal extends EpiDataFacadeEjb {
 	}
 	

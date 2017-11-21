@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.enterprise.inject.Specializes;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -606,7 +605,6 @@ public class CaseFacadeEjb implements CaseFacade {
 	
 	@LocalBean
 	@Stateless
-	@Specializes
 	public static class CaseFacadeEjbLocal extends CaseFacadeEjb {
 	}
 

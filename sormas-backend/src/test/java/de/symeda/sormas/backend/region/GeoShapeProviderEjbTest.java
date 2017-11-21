@@ -12,10 +12,14 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import de.symeda.sormas.api.region.DistrictFacade;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.GeoLatLon;
+import de.symeda.sormas.api.region.RegionFacade;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.backend.common.ConfigService;
+import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
+import de.symeda.sormas.backend.region.RegionFacadeEjb.RegionFacadeEjbLocal;
 import info.novatec.beantest.api.BeanProviderHelper;
 
 public class GeoShapeProviderEjbTest {
@@ -49,7 +53,7 @@ public class GeoShapeProviderEjbTest {
 	@Test
 	public void testGetRegionShape() throws Exception {
 		GeoShapeProviderEjb geoShapeProvider = getBean(GeoShapeProviderEjb.class);
-		RegionFacadeEjb regionFacade = getBean(RegionFacadeEjb.class);
+		RegionFacade regionFacade = getBean(RegionFacadeEjbLocal.class);
 		
 		List<RegionReferenceDto> regions = regionFacade.getAllAsReference();
 		assertThat(regions.size(), greaterThan(1)); // make sure we have some regions
@@ -72,7 +76,7 @@ public class GeoShapeProviderEjbTest {
 
 		RegionReferenceDto region = geoShapeProvider.getRegionByCoord(new GeoLatLon(9.076344, 7.276929));
 		
-		DistrictFacadeEjb districtFacade = getBean(DistrictFacadeEjb.class);
+		DistrictFacade districtFacade = getBean(DistrictFacadeEjbLocal.class);
 		List<DistrictReferenceDto> districts = districtFacade.getAllByRegion(region.getUuid());
 		assertThat(districts.size(), greaterThan(1)); // make sure we have some districts
 		

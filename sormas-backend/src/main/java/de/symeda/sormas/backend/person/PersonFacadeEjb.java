@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.enterprise.inject.Specializes;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.Disease;
@@ -321,7 +320,6 @@ public class PersonFacadeEjb implements PersonFacade {
 	
 	@LocalBean
 	@Stateless
-	@Specializes
 	public static class PersonFacadeEjbLocal extends PersonFacadeEjb {
 	}
 
