@@ -87,7 +87,7 @@ public final class InfrastructureDataImporter {
 		String currentLine = null;
 		try {
 			currentLine = reader.readLine();
-			if (!currentLine.equals("region;district;epidcode")) {
+			if (!currentLine.equals("region;district;epidcode;population;growthrate")) {
 				throw new IllegalArgumentException("Resource file does not match expected format. "
 						+ "First line has to be 'region;district;epidcode'. " + resourceFileName);
 			}
