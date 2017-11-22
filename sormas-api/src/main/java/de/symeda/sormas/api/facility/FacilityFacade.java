@@ -22,5 +22,7 @@ public interface FacilityFacade {
 	List<FacilityDto> getAllByRegionAfter(String regionUuid, Date date);
 	List<FacilityDto> getAllWithoutRegionAfter(Date date);
 	
+	FacilityReferenceDto getFacilityReferenceByUuid(String uuid);
+	
 	FacilityDto getByUuid(String uuid);
 }

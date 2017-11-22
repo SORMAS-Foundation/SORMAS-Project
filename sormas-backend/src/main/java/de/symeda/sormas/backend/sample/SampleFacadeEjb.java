@@ -8,10 +8,17 @@ import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.sample.DashboardSample;
@@ -23,21 +30,30 @@ import de.symeda.sormas.api.sample.SampleTestDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
+import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
+import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
 import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.DistrictFacadeEjb;
+import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.region.DistrictService;
-import de.symeda.sormas.backend.region.RegionFacadeEjb;
+import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.region.RegionFacadeEjb.RegionFacadeEjbLocal;
+import de.symeda.sormas.backend.sample.SampleTestFacadeEjb.SampleTestFacadeEjbLocal;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.ModelConstants;
 
 @Stateless(name = "SampleFacade")
 public class SampleFacadeEjb implements SampleFacade {
 
+	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
+	protected EntityManager em;
+	
 	@EJB
 	private SampleService sampleService;
 	@EJB
@@ -50,6 +66,16 @@ public class SampleFacadeEjb implements SampleFacade {
 	private DistrictService districtService;
 	@EJB
 	private FacilityService facilityService;
+	@EJB
+	private CaseFacadeEjbLocal caseFacade;
+	@EJB
+	private RegionFacadeEjbLocal regionFacade;
+	@EJB
+	private DistrictFacadeEjbLocal districtFacade;
+	@EJB
+	private FacilityFacadeEjbLocal facilityFacade;
+	@EJB
+	private SampleTestFacadeEjbLocal sampleTestFacade;
 
 	@Override
 	public List<String> getAllUuids(String userUuid) {
@@ -116,25 +142,68 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 	
 	@Override
-	public List<SampleIndexDto> getIndexList(String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public List<SampleIndexDto> getIndexList(String userUuid, CaseReferenceDto caseRef) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<SampleIndexDto> cq = cb.createQuery(SampleIndexDto.class);
+		Root<Sample> sample = cq.from(Sample.class);
+		Join<Sample, Sample> sampleJoin = sample.join(Sample.REFERRED_TO, JoinType.LEFT);
+		Join<Sample, Facility> lab = sample.join(Sample.LAB, JoinType.LEFT);
+		Join<Sample, Case> caze = sample.join(Sample.ASSOCIATED_CASE, JoinType.LEFT);
+		Join<Case, Region> caseRegion = caze.join(Case.REGION, JoinType.LEFT);
+		Join<Case, District> caseDistrict = caze.join(Case.DISTRICT, JoinType.LEFT);
 		
-		if(user == null) {
-			return Collections.emptyList();
+		cq.multiselect(sample.get(Sample.UUID), caze.get(Case.UUID), sample.get(Sample.SAMPLE_CODE), sample.get(Sample.LAB_SAMPLE_ID),
+				caze.get(Case.DISEASE), caze.get(Case.DISEASE_DETAILS), caseRegion.get(Region.UUID), 
+				caseDistrict.get(District.UUID), sample.get(Sample.SHIPPED), sample.get(Sample.RECEIVED),
+				sampleJoin.get(Sample.UUID), sample.get(Sample.SHIPMENT_DATE), sample.get(Sample.RECEIVED_DATE), 
+				lab.get(Facility.UUID), sample.get(Sample.SAMPLE_MATERIAL), sample.get(Sample.SPECIMEN_CONDITION));
+		
+		Predicate filter = null;
+		if (userUuid != null) {
+			User user = userService.getByUuid(userUuid);
+			filter = sampleService.createUserFilter(cb, cq, sample, user);
+		}
+			
+		if (caseRef != null) {
+			Case sampleCase = caseService.getByReferenceDto(caseRef);
+			Predicate caseFilter = cb.equal(sample.get(Sample.ASSOCIATED_CASE), sampleCase);
+			if (filter != null) {
+				filter = cb.and(filter, caseFilter);
+			} else {
+				filter = caseFilter;
+			}
 		}
 		
-		return sampleService.getAllAfter(null, user).stream()
-				.map(s -> toIndexDto(s))
-				.collect(Collectors.toList());
-	}
-	
-	@Override
-	public List<SampleIndexDto> getIndexListByCase(CaseReferenceDto caseRef) {
-		Case caze = caseService.getByReferenceDto(caseRef);
+		if (filter != null) {
+			cq.where(filter);
+		}
 		
-		return sampleService.getAllByCase(caze).stream()
-				.map(s -> toIndexDto(s))
-				.collect(Collectors.toList());
+		List<SampleIndexDto> resultList = em.createQuery(cq).getResultList();
+		for (SampleIndexDto indexDto : resultList) {
+			indexDto.setAssociatedCase(caseFacade.getReferenceByUuid(indexDto.getAssociatedCaseUuid()));
+			indexDto.setCaseRegion(regionFacade.getRegionReferenceByUuid(indexDto.getCaseRegionUuid()));
+			indexDto.setCaseDistrict(districtFacade.getDistrictReferenceByUuid(indexDto.getCaseDistrictUuid()));
+			indexDto.setReferred(getReferenceByUuid(indexDto.getReferredSampleUuid()) != null);
+			indexDto.setLab(facilityFacade.getFacilityReferenceByUuid(indexDto.getLabUuid()));
+			
+			SampleTestDto latestSampleTest = null;
+			for(SampleTestDto sampleTest : sampleTestFacade.getAllBySample(indexDto)) {
+				if(latestSampleTest == null) {
+					latestSampleTest = sampleTest;
+				} else {
+					if(sampleTest.getTestDateTime().after(latestSampleTest.getTestDateTime())) {
+						latestSampleTest = sampleTest;
+					}
+				}
+			}
+			
+			if(latestSampleTest != null) {
+				indexDto.setLabUser(latestSampleTest.getLabUser());
+				indexDto.setTestResult(latestSampleTest.getTestResult());
+			}
+		}
+		
+		return resultList;	
 	}
 	
 	@Override
@@ -247,51 +316,6 @@ public class SampleFacadeEjb implements SampleFacade {
 		SampleReferenceDto dto = new SampleReferenceDto();
 		DtoHelper.fillReferenceDto(dto, entity);
 		return dto;
-	}
-	
-	public SampleIndexDto toIndexDto(Sample source) {
-		if(source == null) {
-			return null;
-		}
-		SampleIndexDto target = new SampleIndexDto();
-		DtoHelper.fillReferenceDto(target, source);
-		
-		target.setAssociatedCase(CaseFacadeEjb.toReferenceDto(source.getAssociatedCase()));
-		target.setDisease(source.getAssociatedCase().getDisease());
-		target.setDiseaseDetails(source.getAssociatedCase().getDiseaseDetails());
-		target.setSampleCode(source.getSampleCode());
-		target.setLabSampleID(source.getLabSampleID());
-		target.setShipmentDate(source.getShipmentDate());
-		target.setReceivedDate(source.getReceivedDate());
-		target.setSampleMaterial(source.getSampleMaterial());
-		target.setLab(FacilityFacadeEjb.toReferenceDto(source.getLab()));
-		target.setSpecimenCondition(source.getSpecimenCondition());
-		target.setNoTestPossibleReason(source.getNoTestPossibleReason());
-		target.setCaseRegion(RegionFacadeEjb.toReferenceDto(source.getAssociatedCase().getRegion()));
-		target.setCaseDistrict(DistrictFacadeEjb.toReferenceDto(source.getAssociatedCase().getDistrict()));
-		target.setReferredTo(SampleFacadeEjb.toReferenceDto(source.getReferredTo()));
-		target.setShipped(source.isShipped());
-		target.setReceived(source.isReceived());
-		
-		SampleTest latestSampleTest = null;
-		for(SampleTest sampleTest : source.getSampleTests()) {
-			if(latestSampleTest == null) {
-				latestSampleTest = sampleTest;
-			} else {
-				if(sampleTest.getTestDateTime().after(latestSampleTest.getTestDateTime())) {
-					latestSampleTest = sampleTest;
-				}
-			}
-		}
-		
-		if(latestSampleTest != null) {
-			SampleTestDto latestSampleTestDto = FacadeProvider.getSampleTestFacade().getByUuid(latestSampleTest.getUuid());
-			target.setLabUser(latestSampleTestDto.getLabUser());
-			target.setTestType(latestSampleTestDto.getTestType());
-			target.setTestResult(latestSampleTestDto.getTestResult());
-		}
-		
-		return target;
 	}
 	
 }

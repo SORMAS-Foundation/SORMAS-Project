@@ -50,6 +50,7 @@ public class Sample extends AbstractDomainObject {
 	public static final String REFERRED_TO = "referredTo";
 	public static final String SHIPPED = "shipped";
 	public static final String RECEIVED = "received";
+	public static final String SPECIMEN_CONDITION = "specimenCondition";
 	
 	private Case associatedCase;
 	private String sampleCode;

@@ -44,11 +44,11 @@ public class SampleController {
 
 	public List<SampleIndexDto> getAllSamples() {
 		UserDto user = LoginHelper.getCurrentUser();
-		return FacadeProvider.getSampleFacade().getIndexList(user.getUuid());
+		return FacadeProvider.getSampleFacade().getIndexList(user.getUuid(), null);
 	}
 
 	public List<SampleIndexDto> getSamplesByCase(CaseReferenceDto caseRef) {
-		return FacadeProvider.getSampleFacade().getIndexListByCase(caseRef);
+		return FacadeProvider.getSampleFacade().getIndexList(null, caseRef);
 	}
 
 	public void registerViews(Navigator navigator) {

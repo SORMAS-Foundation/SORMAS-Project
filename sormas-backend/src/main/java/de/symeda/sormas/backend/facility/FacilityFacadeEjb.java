@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
+import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.facility.FacilityDto;
@@ -106,6 +107,11 @@ public class FacilityFacadeEjb implements FacilityFacade {
 		return toDto(service.getByUuid(uuid));
 	}
 	
+	@Override
+	public FacilityReferenceDto getFacilityReferenceByUuid(String uuid) {
+		return toReferenceDto(service.getByUuid(uuid));
+	}
+	
 	public static FacilityReferenceDto toReferenceDto(Facility entity) {
 		if (entity == null) {
 			return null;
@@ -133,5 +139,10 @@ public class FacilityFacadeEjb implements FacilityFacade {
 		dto.setLongitude(entity.getLongitude());
 
 		return dto;
+	}
+	
+	@LocalBean
+	@Stateless
+	public static class FacilityFacadeEjbLocal extends FacilityFacadeEjb {
 	}
 }
