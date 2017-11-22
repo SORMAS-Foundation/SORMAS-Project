@@ -1,771 +1,775 @@
-region;district;epidcode
-Abia;Aba North;EZA
-Abia;Aba South;ABA
-Abia;Arochukwu;ACH
-Abia;Bende;BND
-Abia;Ikwuano;KWU
-Abia;Isiala-Ngwa North;KPU
-Abia;Isiala-Ngwa South;MBA
-Abia;Isuikwuato;MBL
-Abia;Obi Nwga;NGK
-Abia;Ohafia;HAF
-Abia;Osisioma Ngwa;SSM
-Abia;Ugwunagbo;GWB
-Abia;Ukwa East;KEK
-Abia;Ukwa West;KKE
-Abia;Umuahia North;UMA
-Abia;Umuahia South;APR
-Abia;Umu-Nneochi;UNC
-Adamawa;Demsa;DSA
-Adamawa;Fufore;FUR
-Adamawa;Ganye;GAN
-Adamawa;Girei;GRE
-Adamawa;Gombi;GMB
-Adamawa;Guyuk;GUY
-Adamawa;Hong;HNG
-Adamawa;Jada;JAD
-Adamawa;Lamurde;LMR
-Adamawa;Madagali;MDG
-Adamawa;Maiha;MAH
-Adamawa;Mayo-Belwa;MWA
-Adamawa;Michika;MCH
-Adamawa;Mubi North;MUB
-Adamawa;Mubi South;GYL
-Adamawa;Numan;NUM
-Adamawa;Shelleng;SHG
-Adamawa;Song;SNG
-Adamawa;Toungo;TNG
-Adamawa;Yola North;YLN
-Adamawa;Yola South;YLA
-Akwa-Ibom;Abak;ABK
-Akwa-Ibom;Eastern Obolo;KRT
-Akwa-Ibom;Eket;KET
-Akwa-Ibom;Esit Eket;AUQ
-Akwa-Ibom;Essien Udim;AFH
-Akwa-Ibom;Etim Ekpo;AEE
-Akwa-Ibom;Etinan;ETN
-Akwa-Ibom;Ibeno;PNG
-Akwa-Ibom;Ibesikpo Asutan;NGD
-Akwa-Ibom;Ibiono Ibom;BMT
-Akwa-Ibom;Ika;NYA
-Akwa-Ibom;Ikono;KKN
-Akwa-Ibom;Ikot Abasi;KTS
-Akwa-Ibom;Ikot Ekpene;KTE
-Akwa-Ibom;Ini;DRK
-Akwa-Ibom;Itu;TTU
-Akwa-Ibom;Mbo;ENW
-Akwa-Ibom;Mkpat Enin;MKP
-Akwa-Ibom;Nsit Atai;AED
-Akwa-Ibom;Nsit Ibom;AFG
-Akwa-Ibom;Nsit Ubium;KTD
-Akwa-Ibom;Obot Akara;NTE
-Akwa-Ibom;Okobo;KPD
-Akwa-Ibom;Onna;ABT
-Akwa-Ibom;Oron;RNN
-Akwa-Ibom;Oruk Anam;KTM
-Akwa-Ibom;Udung Uko;BYF
-Akwa-Ibom;Ukanafun;KPK
-Akwa-Ibom;Uruan;DUU
-Akwa-Ibom;Urue Offong/Oruko;UFG
-Akwa-Ibom;Uyo;DYY
-Anambra;Aguata;AGU
-Anambra;Anambra East;AAH
-Anambra;Anambra West;NZM
-Anambra;Anaocha;NEN
-Anambra;Awka North;ACA
-Anambra;Awka South;AWK
-Anambra;Ayamelum;NKK
-Anambra;Dunukofia;KPP
-Anambra;Ekwusigo;ZBL
-Anambra;Idemili North;GDD
-Anambra;Idemili South;JJT
-Anambra;Ihiala;HAL
-Anambra;Njikoka;ABN
-Anambra;Nnewi North;NNE
-Anambra;Nnewi South;UKP
-Anambra;Ogbaru;ATN
-Anambra;Onitsha North;NSH
-Anambra;Onitsha South;FGG
-Anambra;Orumba North;AJL
-Anambra;Orumba South;UMZ
-Anambra;Oyi;HTE
-Bauchi;Alkaleri;ALK
-Bauchi;Bauchi;BAU
-Bauchi;Bogoro;BGR
-Bauchi;Dambam;DBM
-Bauchi;Darazo;DRZ
-Bauchi;Dass;DAS
-Bauchi;Gamawa;GAM
-Bauchi;Ganjuwa;GJW
-Bauchi;Giade;GYD
-Bauchi;Itas/Gadau;TSG
-Bauchi;Jama'are;JMA
-Bauchi;Katagum;KTG
-Bauchi;Kirfi;KRF
-Bauchi;Misau;MSA
-Bauchi;Ningi;NNG
-Bauchi;Shira;SHR
-Bauchi;Tafawa-Balewa;TFB
-Bauchi;Toro;TRR
-Bauchi;Warji;WRJ
-Bauchi;Zaki;ZAK
-Bayelsa;Brass;BRS
-Bayelsa;Ekeremor;KMR
-Bayelsa;Kolokuma/Opokuma;KMK
-Bayelsa;Nembe;NEM
-Bayelsa;Ogbia;GBB
-Bayelsa;Sagbama;SAG
-Bayelsa;Southern Ijaw;SPR
-Bayelsa;Yenagoa;YEN
-Benue;Ado;GMU
-Benue;Agatu;GTU
-Benue;Apa;GKP
-Benue;Buruku;BKB
-Benue;Gboko;GBK
-Benue;Guma;YGJ
-Benue;Gwer East;ALD
-Benue;Gwer West;NAK
-Benue;Katsina-Ala;KAL
-Benue;Konshisha;TSE
-Benue;Kwande;WDP
-Benue;Logo;GBG
-Benue;Makurdi;MKD
-Benue;Obi;BRT
-Benue;Ogbadibo;BGT
-Benue;Ohimini;DKP
-Benue;Oju;JUX
-Benue;Okpokwu;PKG
-Benue;Otukpo;TKP
-Benue;Tarka;WNN
-Benue;Ukum;UKM
-Benue;Ushongo;SEL
-Benue;Vandeikya;VDY
-Borno;Askira/Uba;ASU
-Borno;Bayo;BAY
-Borno;Biu;BBU
-Borno;Chibok;CBK
-Borno;Damboa;DAM
-Borno;Dikwa;DKW
-Borno;Gubio;GUB
-Borno;Guzamala;GBL
-Borno;Gwoza;GZA
-Borno;Hawul;HWL
-Borno;Jere;JRE
-Borno;Kaga;KGG
-Borno;Kala/Balge;KBG
-Borno;Konduga;KDG
-Borno;Kukawa;KWA
-Borno;Kwaya Kusar;KWY
-Borno;Mafa;MAF
-Borno;Magumeri;MGM
-Borno;Maiduguri;MAG
-Borno;Mobbar;MBR
-Borno;Ngala;NGL
-Borno;Nganzai;NGZ
-Borno;Shani;SHN
-Cross River;Abi;TGD
-Cross River;Akamkpa;KAM
-Cross River;Akpabuyo;KTA
-Cross River;Bakassi;BKS
-Cross River;Bekwarra;ABE
-Cross River;Biase;AKP
-Cross River;Boki;BJE
-Cross River;Calabar Municipal;CAL
-Cross River;Calabar South;ANA
-Cross River;Etung;EFE
-Cross River;Ikom;KMM
-Cross River;Obanliku;BNS
-Cross River;Obubra;BRA
-Cross River;Obudu;UDU
-Cross River;Odukpani;DUK
-Cross River;Ogoja;GGJ
-Cross River;Yakurr;GEP
-Cross River;Yala;CKK
-Delta;Aniocha North;SLK
-Delta;Aniocha South;GWK
-Delta;Bomadi;BMA
-Delta;Burutu;BUR
-Delta;Ethiope East;SKL
-Delta;Ethiope West;GRA
-Delta;Ika North East;AYB
-Delta;Ika South;AGB
-Delta;Isoko North;DSZ
-Delta;Isoko South;LEH
-Delta;Ndokwa East;ABH
-Delta;Ndokwa West;KWC
-Delta;Okpe;KPE
-Delta;Oshimili North;AKU
-Delta;Oshimili South;ASB
-Delta;Patani;PTN
-Delta;Sapele;SAP
-Delta;Udu;ALA
-Delta;Ughelli North;UGH
-Delta;Ughelli South;JRT
-Delta;Ukwuani;BKW
-Delta;Uvwie;EFR
-Delta;Warri North;KLK
-Delta;Warri South;WWR
-Delta;Warri South West;WRC
-Ebonyi;Abakaliki;AKL
-Ebonyi;Afikpo North;AFK
-Ebonyi;Afikpo South;EDA
-Ebonyi;Ebonyi;UGB
-Ebonyi;Ezza North;EBJ
-Ebonyi;Ezza South;NKE
-Ebonyi;Ikwo;CHR
-Ebonyi;Ishielu;ZLL
-Ebonyi;Ivo;SKA
-Ebonyi;Izzi;BKL
-Ebonyi;Ohaozara;BZR
-Ebonyi;Ohaukwu;HKW
-Ebonyi;Onicha;NCA
-Edo;Akoko-Edo;GAR
-Edo;Egor;USL
-Edo;Esan Central;RRU
-Edo;Esan North-East;URM
-Edo;Esan South-East;UBJ
-Edo;Esan West;EKP
-Edo;Etsako Central;FUG
-Edo;Etsako East;AGD
-Edo;Etsako West;AUC
-Edo;Igueben;GUE
-Edo;Ikpoba-Okha;DGE
-Edo;Oredo;BEN
-Edo;Orhionmwon;ABD
-Edo;Ovia North-East;AKA
-Edo;Ovia South-West;GBZ
-Edo;Owan East;AFZ
-Edo;Owan West;SGD
-Edo;Uhunmwonde;EHR
-Ekiti;Ado Ekiti;ADK
-Ekiti;Aiyekire (Gbonyin);DEA
-Ekiti;Efon;EFY
-Ekiti;Ekiti East;MUE
-Ekiti;Ekiti South West;LAW
-Ekiti;Ekiti West;AMK
-Ekiti;Emure;EMR
-Ekiti;Ido-Osi;DEK
-Ekiti;Ijero;JER
-Ekiti;Ikere;KER
-Ekiti;Ikole;KLE
-Ekiti;Ilejemeje;YEK
-Ekiti;Irepodun/Ifelodun;GED
-Ekiti;Ise/Orun;SSE
-Ekiti;Moba;TUN
-Ekiti;Oye;YEE
-Enugu;Aninri;DBR
-Enugu;Awgu;AWG
-Enugu;Enugu East;NKW
-Enugu;Enugu North;ENU
-Enugu;Enugu South;UWN
-Enugu;Ezeagu;AGW
-Enugu;Igbo-Etiti;GBO
-Enugu;Igbo-Eze North;ENZ
-Enugu;Igbo-Eze South;BBG
-Enugu;Isi-Uzo;KEM
-Enugu;Nkanu East;MGL
-Enugu;Nkanu West;AGN
-Enugu;Nsukka;NSK
-Enugu;Oji River;JRV
-Enugu;Udenu;BLF
-Enugu;Udi;UDD
-Enugu;Uzo-Uwani;UMU
-FCT;Abaji;ABJ
-FCT;Abuja Municipal;ABC
-FCT;Bwari;BWR
-FCT;Gwagwalada;GWA
-FCT;Kuje;KUJ
-FCT;Kwali;KWL
-Gombe;Akko;AKK
-Gombe;Balanga;BLG
-Gombe;Billiri;BLR
-Gombe;Dukku;DKU
-Gombe;Funakaye;FKY
-Gombe;Gombe;GME
-Gombe;Kaltungo;KLT
-Gombe;Kwami;KWM
-Gombe;Nafada;NFD
-Gombe;Shongom;SHM
-Gombe;Yamaltu/Deba;YDB
-Imo;Aboh-Mbaise;ABB
-Imo;Ahiazu-Mbaise;AFR
-Imo;Ehime-Mbano;EHM
-Imo;Ezinihitte-Mbaise;ETU
-Imo;Ideato North;URU
-Imo;Ideato South;DFB
-Imo;Ihitte/Uboma;IHI
-Imo;Ikeduru;KED
-Imo;Isiala Mbano;UML
-Imo;Isu;UMD
-Imo;Mbatoli;NWA
-Imo;Ngor-Okpala;NGN
-Imo;Njaba;NSA
-Imo;Nkwerre;NKR
-Imo;Nwangele;AMG
-Imo;Obowo;TTK
-Imo;Oguta;GUA
-Imo;Ohaji/Egbema;EBM
-Imo;Okigwe;KGE
-Imo;Onuimo;KWE
-Imo;Orlu;RLU
-Imo;Orsu;AWD
-Imo;Oru East;MGD
-Imo;Oru West;NGB
-Imo;Owerri Municipal;WER
-Imo;Owerri North;RRT
-Imo;Owerri West;UMG
-Jigawa;Auyo;AUY
-Jigawa;Babura;BBR
-Jigawa;Birnin Kudu;BNW
-Jigawa;Birniwa;BKD
-Jigawa;Buji;BUJ
-Jigawa;Dutse;DUT
-Jigawa;Gagarawa;GGW
-Jigawa;Garki;GRK
-Jigawa;Gumel;GML
-Jigawa;Guri;GRR
-Jigawa;Gwaram;GRM
-Jigawa;Gwiwa;GWW
-Jigawa;Hadejia;HJA
-Jigawa;Jahun;JHN
-Jigawa;Kafin Hausa;KHS
-Jigawa;Kaugama;KGM
-Jigawa;Kazaure;KZR
-Jigawa;Kiri Kasamma;KKM
-Jigawa;Kiyawa;KYW
-Jigawa;Maigatari;MGR
-Jigawa;Malam Madori;MMR
-Jigawa;Miga;MGA
-Jigawa;Ringim;RNG
-Jigawa;Roni;RRN
-Jigawa;Sule-Tankarkar;STK
-Jigawa;Taura;TAR
-Jigawa;Yankwashi;YKS
-Kaduna;Birnin Gwari;BNG
-Kaduna;Chikun;KJM
-Kaduna;Giwa;GKW
-Kaduna;Igabi;TRK
-Kaduna;Ikara;KAR
-Kaduna;Jaba;KWB
-Kaduna;Jema'a;KAF
-Kaduna;Kachia;KCH
-Kaduna;Kaduna North;DKA
-Kaduna;Kaduna South;MKA
-Kaduna;Kagarko;KGK
-Kaduna;Kajuru;KJR
-Kaduna;Kaura;KRA
-Kaduna;Kauru;KRU
-Kaduna;Kubau;ANC
-Kaduna;Kudan;HKY
-Kaduna;Lere;SNK
-Kaduna;Makarfi;MKR
-Kaduna;Sabon Gari;SBG
-Kaduna;Sanga;GWT
-Kaduna;Soba;MGN
-Kaduna;Zangon Kataf;ZKW
-Kaduna;Zaria;ZAR
-Kano;Ajingi;AJG
-Kano;Albasu;ABS
-Kano;Bagwai;BGW
-Kano;Bebeji;BBJ
-Kano;Bichi;BCH
-Kano;Bunkure;BNK
-Kano;Dala;DAL
-Kano;Danbatta;DBT
-Kano;Dawakin Kudu;DKD
-Kano;Dawakin Tofa;DTF
-Kano;Doguwa;DGW
-Kano;Fagge;FGE
-Kano;Gabasawa;GSW
-Kano;Garko;GAK
-Kano;Garum Mallam;GNM
-Kano;Gaya;GYA
-Kano;Gezawa;GZW
-Kano;Gwale;GWL
-Kano;Gwarzo;GRZ
-Kano;Kabo;KBK
-Kano;Kano Municipal;KMC
-Kano;Karaye;KRY
-Kano;Kibiya;KBY
-Kano;Kiru;KKU
-Kano;Kumbotso;KBT
-Kano;Kunchi;KNC
-Kano;Kura;KUR
-Kano;Madobi;MDB
-Kano;Makoda;MKK
-Kano;Minjibir;MJB
-Kano;Nassarawa;NSR
-Kano;Rano;RAN
-Kano;Rimin Gado;RMG
-Kano;Rogo;RGG
-Kano;Shanono;SNN
-Kano;Sumaila;SML
-Kano;Takai;TAK
-Kano;Tarauni;TRN
-Kano;Tofa;TFA
-Kano;Tsanyawa;TYW
-Kano;Tudun Wada;TWD
-Kano;Ungogo;UGG
-Kano;Warawa;WRA
-Kano;Wudil;WDL
-Katsina;Bakori;BKR
-Katsina;Batagarawa;BAT
-Katsina;Batsari;BTR
-Katsina;Baure;BRE
-Katsina;Bindawa;BDW
-Katsina;Charanchi;CRC
-Katsina;Dan Musa;DMS
-Katsina;Dandume;DDM
-Katsina;Danja;DJA
-Katsina;Daura;DRA
-Katsina;Dutsi;DTS
-Katsina;Dutsin-Ma;DTM
-Katsina;Faskari;FSK
-Katsina;Funtua;FTA
-Katsina;Ingawa;NGW
-Katsina;Jibia;JBY
-Katsina;Kafur;KFR
-Katsina;Kaita;KAT
-Katsina;Kankara;KKR
-Katsina;Kankia;KNK
-Katsina;Katsina;KTN
-Katsina;Kurfi;KUF
-Katsina;Kusada;KSD
-Katsina;Mai'Adua;MDW
-Katsina;Malumfashi;MLF
-Katsina;Mani;MAN
-Katsina;Mashi;MSH
-Katsina;Matazu;MTZ
-Katsina;Musawa;MSW
-Katsina;Rimi;RMY
-Katsina;Sabuwa;SBA
-Katsina;Safana;SFN
-Katsina;Sandamu;SDM
-Katsina;Zango;ZNG
-Kebbi;Aleiro;ALR
-Kebbi;Arewa;KGW
-Kebbi;Argungu;ARG
-Kebbi;Augie;AUG
-Kebbi;Bagudo;BGD
-Kebbi;Birnin Kebbi;BRK
-Kebbi;Bunza;BNZ
-Kebbi;Dandi;KMB
-Kebbi;Danko/Wasagu;RBH
-Kebbi;Fakai;MHT
-Kebbi;Gwandu;GWN
-Kebbi;Jega;JEG
-Kebbi;Kalgo;KLG
-Kebbi;Koko/Besse;BES
-Kebbi;Maiyama;MYM
-Kebbi;Ngaski;WRR
-Kebbi;Sakaba;DRD
-Kebbi;Shanga;SNA
-Kebbi;Suru;DKG
-Kebbi;Yauri;YLW
-Kebbi;Zuru;ZUR
-Kogi;Adavi;DAV
-Kogi;Ajaokuta;AJA
-Kogi;Ankpa;KPA
-Kogi;Bassa;BAS
-Kogi;Dekina;KNA
-Kogi;Ibaji;NDG
-Kogi;Idah;DAH
-Kogi;Igalamela-Odolu;AJK
-Kogi;Ijumu;JMU
-Kogi;Kabba/Bunu;KAB
-Kogi;Kogi;KKF
-Kogi;Lokoja;LKJ
-Kogi;Mopa-Muro;MPA
-Kogi;Ofu;KFU
-Kogi;Ogori/Magongo;KPF
-Kogi;Okehi;KKH
-Kogi;Okene;KNE
-Kogi;Olamaboro;LAM
-Kogi;Omala;BJK
-Kogi;Yagba East;SAN
-Kogi;Yagba West;ERE
-Kwara;Asa;AFN
-Kwara;Baruten;KSB
-Kwara;Edu;LAF
-Kwara;Ekiti;ARP
-Kwara;Ifelodun;SHA
-Kwara;Ilorin East;KEY
-Kwara;Ilorin South;FUF
-Kwara;Ilorin West;LRN
-Kwara;Irepodun;MUN
-Kwara;Isin;WSN
-Kwara;Kaiama;KMA
-Kwara;Moro;BDU
-Kwara;Offa;FFA
-Kwara;Oke-Ero;LFF
-Kwara;Oyun;LEM
-Kwara;Pategi;PTG
-Lagos;Agege;GGE
-Lagos;Ajeromi/Ifelodun;AGL
-Lagos;Alimosho;KTU
-Lagos;Amuwo Odofin;FST
-Lagos;Apapa;APP
-Lagos;Badagry;BDG
-Lagos;Epe;EPE
-Lagos;Eti-Osa;EKY
-Lagos;Ibeju Lekki;AKD
-Lagos;Ifako/Ijaye;FKJ
-Lagos;Ikeja;KJA
-Lagos;Ikorodu;KRD
-Lagos;Kosofe;KSF
-Lagos;Lagos Island;AAA
-Lagos;Lagos Mainland;LND
-Lagos;Mushin;MUS
-Lagos;Ojo;JJJ
-Lagos;Oshodi/Isolo;LSD
-Lagos;Shomolu;SMK
-Lagos;Surulere;LSR
-Nasarawa;Akwanga;AKW
-Nasarawa;Awe;AWE
-Nasarawa;Doma;DMA
-Nasarawa;Karu;KRV
-Nasarawa;Keana;KEN
-Nasarawa;Keffi;KEF
-Nasarawa;Kokona;GRU
-Nasarawa;Lafia;LFA
-Nasarawa;Nasarawa;NSW
-Nasarawa;Nasarawa Eggon;NEG
-Nasarawa;Obi;NBB
-Nasarawa;Toto;NTT
-Nasarawa;Wamba;WAM
-Niger;Agaie;AGA
-Niger;Agwara;AGR
-Niger;Bida;BDA
-Niger;Borgu;NBS
-Niger;Bosso;MAK
-Niger;Chanchaga;MNA
-Niger;Edati;ENG
-Niger;Gbako;LMU
-Niger;Gurara;GWU
-Niger;Katcha;KHA
-Niger;Kontagora;KNT
-Niger;Lapai;LAP
-Niger;Lavun;KUG
-Niger;Magama;NAS
-Niger;Mariga;BMG
-Niger;Mashegu;MSG
-Niger;Mokwa;MKW
-Niger;Muya;SRP
-Niger;Paikoro;PAK
-Niger;Rafi;KAG
-Niger;Rijau;RJA
-Niger;Shiroro;KUT
-Niger;Suleja;SUL
-Niger;Tafa;WSE
-Niger;Wushishi;WSH
-Ogun;Abeokuta North;AKM
-Ogun;Abeokuta South;AAB
-Ogun;Ado Odo/Ota;TTD
-Ogun;Ewekoro;TRE
-Ogun;Ifo;FFF
-Ogun;Ijebu East;GBE
-Ogun;Ijebu North;JGB
-Ogun;Ijebu North East;SRA
-Ogun;Ijebu ode;JBD
-Ogun;Ikenne;KNN
-Ogun;Imeko Afon;MEK
-Ogun;Ipokia;PKA
-Ogun;Obafemi-Owode;WDE
-Ogun;Odeda;EDE
-Ogun;Odogbolu;DGB
-Ogun;Ogun Waterside;ABG
-Ogun;Remo North;TTN
-Ogun;Shagamu;SGM
-Ogun;Yewa North;AYE
-Ogun;Yewa South;LAR
-Ondo;Akoko North East;KAK
-Ondo;Akoko North West;ANG
-Ondo;Akoko South East;KAA
-Ondo;Akoko South West;SUA
-Ondo;Akure North;JTA
-Ondo;Akure South;AKR
-Ondo;Ese Odo;GKB
-Ondo;Idanre;WEN
-Ondo;Ifedore;FGB
-Ondo;Ilaje;GBA
-Ondo;Ile-Oluji-Okeigbo;LEL
-Ondo;Irele;REL
-Ondo;Odigbo;REE
-Ondo;Okitipupa;KTP
-Ondo;Ondo East;BDR
-Ondo;Ondo West;NND
-Ondo;Ose;FFN
-Ondo;Owo;WWW
-Osun;Aiyedaade;GBN
-Osun;Aiyedire;LGB
-Osun;Atakunmosa East;PRN
-Osun;Atakunmosa West;SSU
-Osun;Boluwaduro;TAN
-Osun;Boripe;RGB
-Osun;Ede North;EDT
-Osun;Ede South;EDE
-Osun;Egbedore;AAW
-Osun;Ejigbo;EJG
-Osun;Ife Central;FFE
-Osun;Ife East;FEE
-Osun;Ife North;PMD
-Osun;Ife South;FTD
-Osun;Ifedayo;FDY
-Osun;Ifelodun;KNR
-Osun;Ila;LRG
-Osun;Ilesha East;LES
-Osun;Ilesha West;LEW
-Osun;Irepodun;RLG
-Osun;Irewole;KRE
-Osun;Isokan;APM
-Osun;Iwo;WWD
-Osun;Obokun;BKN
-Osun;Odo-Otin;DTN
-Osun;Ola-Oluwa;BDS
-Osun;Olorunda;GNN
-Osun;Oriade;JJS
-Osun;Orolu;FNN
-Osun;Osogbo;SGB
-Oyo;Afijio;JBL
-Oyo;Akinyele;MNY
-Oyo;Atiba;FMT
-Oyo;Atisbo;TDE
-Oyo;Egbeda;EGB
-Oyo;Ibadan North;BDJ
-Oyo;Ibadan North East;AGG
-Oyo;Ibadan North West;NRK
-Oyo;Ibadan South East;MAP
-Oyo;Ibadan South West;LUY
-Oyo;Ibarapa Central;GBR
-Oyo;Ibarapa East;RUW
-Oyo;Ibarapa North;AYT
-Oyo;Ido;DDA
-Oyo;Irepo;KSH
-Oyo;Iseyin;SEY
-Oyo;Itesiwaju;TUT
-Oyo;Iwajowa;WEL
-Oyo;Kajola;KEH
-Oyo;Lagelu;YNF
-Oyo;Ogbomosho North;KNH
-Oyo;Ogbomosho South;AME
-Oyo;Ogo Oluwa;AJW
-Oyo;Olorunsogo;GBY
-Oyo;Oluyole;YRE
-Oyo;Ona Ara;AKN
-Oyo;Orelope;GBH
-Oyo;Ori Ire;KKY
-Oyo;Oyo East;YYY
-Oyo;Oyo West;JND
-Oyo;Saki East;GMD
-Oyo;Saki West;SHK
-Oyo;Surulere;RSD
-Plateau;Barkin Ladi;BLD
-Plateau;Bassa;BSA
-Plateau;Bokkos;BKK
-Plateau;Jos East;ANW
-Plateau;Jos North;JJN
-Plateau;Jos South;BUU
-Plateau;Kanam;DNG
-Plateau;Kanke;KWK
-Plateau;Langtang North;LGT
-Plateau;Langtang South;MBD
-Plateau;Mangu;MGU
-Plateau;Mikang;TNK
-Plateau;Pankshin;PKN
-Plateau;Qua'an Pan;QAP
-Plateau;Riyom;RYM
-Plateau;Shendam;SHD
-Plateau;Wase;WAS
-Rivers;Abua/Odual;ABU
-Rivers;Ahoada East;AHD
-Rivers;Ahoada West;KNM
-Rivers;Akuku Toru;ABM
-Rivers;Andoni;NDN
-Rivers;Asari-Toru;BGM
-Rivers;Bonny;BNY
-Rivers;Degema;DEG
-Rivers;Eleme;NCH
-Rivers;Emuoha;MHA
-Rivers;Etche;KHE
-Rivers;Gokana;KPR
-Rivers;Ikwerre;SKP
-Rivers;Khana;BRR
-Rivers;Obio/Akpor;RUM
-Rivers;Ogba/Egbema/Ndoni;RGM
-Rivers;Ogu/Bolo;GGU
-Rivers;Okrika;KRK
-Rivers;Omumma;BER
-Rivers;Opobo/Nkoro;PBT
-Rivers;Oyigbo;AFM
-Rivers;Port-Harcourt;PHC
-Rivers;Tai;SKN
-Sokoto;Binji;BNJ
-Sokoto;Bodinga;BDN
-Sokoto;Dange-Shuni;DGS
-Sokoto;Gada;GAD
-Sokoto;Goronyo;GRY
-Sokoto;Gudu;BLE
-Sokoto;Gwadabawa;GWD
-Sokoto;Illela;LLA
-Sokoto;Isa;SAA
-Sokoto;Kebbe;KBE
-Sokoto;Kware;KWR
-Sokoto;Rabah;RBA
-Sokoto;Sabon Birni;SBN
-Sokoto;Shagari;SGR
-Sokoto;Silame;SLM
-Sokoto;Sokoto North;SKK
-Sokoto;Sokoto South;SRZ
-Sokoto;Tambuwal;TBW
-Sokoto;Tangaza;TGZ
-Sokoto;Tureta;TRT
-Sokoto;Wamako;WMK
-Sokoto;Wurno;WRN
-Sokoto;Yabo;YYB
-Taraba;Ardo-Kola;ARD
-Taraba;Bali;BAL
-Taraba;Donga;DGA
-Taraba;Gashaka;GKA
-Taraba;Gassol;GAS
-Taraba;Ibi;BBB
-Taraba;Jalingo;JAL
-Taraba;Karim-Lamido;KLD
-Taraba;Kurmi;KRM
-Taraba;Lau;LAU
-Taraba;Sardauna;SDA
-Taraba;Takum;TTM
-Taraba;Ussa;USS
-Taraba;Wukari;WKR
-Taraba;Yorro;YRR
-Taraba;Zing;TZG
-Yobe;Bade;GSH
-Yobe;Bursari;DPH
-Yobe;Damaturu;DTR
-Yobe;Fika;FKA
-Yobe;Fune;FUN
-Yobe;Geidam;GDM
-Yobe;Gujba;GJB
-Yobe;Gulani;GLN
-Yobe;Jakusko;JAK
-Yobe;Karasuwa;KRS
-Yobe;Machina;MCN
-Yobe;Nangere;NNR
-Yobe;Nguru;NGU
-Yobe;Potiskum;PKM
-Yobe;Tarmuwa;TMW
-Yobe;Yunusari;YUN
-Yobe;Yusufari;YSF
-Zamfara;Anka;ANK
-Zamfara;Bakura;BKA
-Zamfara;Birnin Magaji;BMJ
-Zamfara;Bukkuyum;BKM
-Zamfara;Bungudu;BUG
-Zamfara;Gummi;GMM
-Zamfara;Gusau;GUS
-Zamfara;Kaura Namoda;KRN
-Zamfara;Maradun;MRD
-Zamfara;Maru;MRR
-Zamfara;Shinkafi;SKF
-Zamfara;Talata Mafara;TMA
-Zamfara;Tsafe;TSF
-Zamfara;Zurmi;ZRM
+region;district;epidcode;population;growthrate
+Abia;Aba North;EZA;144090;2.7
+Abia;Aba South;ABA;568184;2.7
+Abia;Arochukwu;ACH;228165;2.7
+Abia;Bende;BND;257530;2.7
+Abia;Ikwuano;KWU;184983;2.7
+Abia;Isiala-Ngwa North;KPU;206084;2.7
+Abia;Isiala-Ngwa South;MBA;180652;2.7
+Abia;Isuikwuato;MBL;153412;2.7
+Abia;Obi Nwga;NGK;243223;2.7
+Abia;Ohafia;HAF;328622;2.7
+Abia;Osisioma Ngwa;SSM;294422;2.7
+Abia;Ugwunagbo;GWB;110751;2.7
+Abia;Ukwa East;KEK;78910;2.7
+Abia;Ukwa West;KKE;118710;2.7
+Abia;Umuahia North;UMA;295800;2.7
+Abia;Umuahia South;APR;185757;2.7
+Abia;Umu-Nneochi;UNC;219750;2.7
+Adamawa;Demsa;DSA;246858;2.9
+Adamawa;Fufore;FUR;283884;2.9
+Adamawa;Ganye;GAN;224721;2.9
+Adamawa;Girie;GRE;178031;2.9
+Adamawa;Gombi;GMB;200538;2.9
+Adamawa;Guyuk;GUY;243481;2.9
+Adamawa;Hong;HNG;231622;2.9
+Adamawa;Jada;JAD;230728;2.9
+Adamawa;Larmurde;LMR;154486;2.9
+Adamawa;Madagali;MDG;184649;2.9
+Adamawa;Maiha;MAH;152311;2.9
+Adamawa;Mayo-Belwa;MWA;209714;2.9
+Adamawa;Michika;MCH;212690;2.9
+Adamawa;Mubi North;MUB;206896;2.9
+Adamawa;Mubi South;GYL;176582;2.9
+Adamawa;Numan;NUM;124247;2.9
+Adamawa;Shelleng;SHG;204153;2.9
+Adamawa;Song;SNG;263903;2.9
+Adamawa;Teungo;TNG;71270;2.9
+Adamawa;Yola North;YLN;271504;2.9
+Adamawa;Yola South;YLA;266519;2.9
+Akwa-Ibom;Abak;ABK;200919;3.4
+Akwa-Ibom;Eastern Obolo;KRT;87456;3.4
+Akwa-Ibom;Eket;KET;249263;3.4
+Akwa-Ibom;Esit Eket;AUQ;92018;3.4
+Akwa-Ibom;Essien Udim;AFH;278314;3.4
+Akwa-Ibom;Etim Ekpo;AEE;152279;3.4
+Akwa-Ibom;Etinan;ETN;244535;3.4
+Akwa-Ibom;Ibeno;PNG;108889;3.4
+Akwa-Ibom;Ibesikpo Asutan;NGD;198046;3.4
+Akwa-Ibom;Ibiono Ibom;BMT;273940;3.4
+Akwa-Ibom;Ika;NYA;105362;3.4
+Akwa-Ibom;Ikono;KKN;190539;3.4
+Akwa-Ibom;Ikot Abasi;KTS;190711;3.4
+Akwa-Ibom;Ikot Ekpene;KTE;206679;3.4
+Akwa-Ibom;Ini;DRK;143291;3.4
+Akwa-Ibom;Itu;TTU;183503;3.4
+Akwa-Ibom;Mbo;ENW;150248;3.4
+Akwa-Ibom;Mkpat Enin;MKP;257178;3.4
+Akwa-Ibom;Nsit Atai;AED;107755;3.4
+Akwa-Ibom;Nsit Ibom;AFG;156892;3.4
+Akwa-Ibom;Nsit Ubium;KTD;185233;3.4
+Akwa-Ibom;Obot Akara;NTE;214196;3.4
+Akwa-Ibom;Okobo;KPD;150313;3.4
+Akwa-Ibom;Onna;ABT;178216;3.4
+Akwa-Ibom;Oron;RNN;126340;3.4
+Akwa-Ibom;Oruk Anam;KTM;249404;3.4
+Akwa-Ibom;Udung Uko;BYF;76962;3.4
+Akwa-Ibom;Ukanafun;KPK;183503;3.4
+Akwa-Ibom;Uruan;DUU;170888;3.4
+Akwa-Ibom;Urue Offong/Oruko;UFG;102791;3.4
+Akwa-Ibom;Uyo;DYY;447187;3.4
+Anambra;Aguata;AGU;501566;2.8
+Anambra;Anambra East;AAH;207756;2.8
+Anambra;Anambra West;NZM;226841;2.8
+Anambra;Anaocha;NEN;386164;2.8
+Anambra;Awka North;ACA;152579;2.8
+Anambra;Awka South;AWK;256153;2.8
+Anambra;Ayamelum;NKK;214638;2.8
+Anambra;Dunukofia;KPP;130593;2.8
+Anambra;Ekwusigo;ZBL;214396;2.8
+Anambra;Idemili North;GDD;583691;2.8
+Anambra;Idemili South;JJT;281401;2.8
+Anambra;Ihiala;HAL;409410;2.8
+Anambra;Njikoka;ABN;201163;2.8
+Anambra;Nnewi North;NNE;213499;2.8
+Anambra;Nnewi South;UKP;316596;2.8
+Anambra;Ogbaru;ATN;300636;2.8
+Anambra;Onitsha North;NSH;169291;2.8
+Anambra;Onitsha South;FGG;185171;2.8
+Anambra;Orumba North;AJL;233601;2.8
+Anambra;Orumba South;UMZ;253645;2.8
+Anambra;Oyi;HTE;227671;2.8
+Bauchi;Alkaleri;ALK;475862;3.4
+Bauchi;Bauchi;BAU;713322;3.4
+Bauchi;Bogoro;BGR;121651;3.4
+Bauchi;Damban;DBM;218011;3.4
+Bauchi;Darazo;DRZ;363439;3.4
+Bauchi;Dass;DAS;129925;3.4
+Bauchi;Gamawa;GAM;413695;3.4
+Bauchi;Ganjuwa;GJW;405144;3.4
+Bauchi;Giade;GYD;226746;3.4
+Bauchi;Itas/Gadau;TSG;332236;3.4
+Bauchi;Jama'are;JMA;170285;3.4
+Bauchi;Katagum;KTG;427537;3.4
+Bauchi;Kirfi;KRF;213238;3.4
+Bauchi;Misau;MSA;380614;3.4
+Bauchi;Ningi;NNG;559310;3.4
+Bauchi;Shira;SHR;338040;3.4
+Bauchi;Tafawa-Balewa;TFB;317779;3.4
+Bauchi;Toro;TRR;506168;3.4
+Bauchi;Warji;WRJ;165716;3.4
+Bauchi;Zaki;ZAK;276565;3.4
+Bayelsa;Brass;BRS;253429;2.9
+Bayelsa;Ekeremor;KMR;370123;2.9
+Bayelsa;Kolokuma/Opokuma;KMK;105853;2.9
+Bayelsa;Nembe;NEM;179313;2.9
+Bayelsa;Ogbia;GBB;246413;2.9
+Bayelsa;Sagbama;SAG;256301;2.9
+Bayelsa;Southern Ijaw;SPR;437443;2.9
+Bayelsa;Yenegoa;YEN;483913;2.9
+Benue;Ado;GMU;247615;3.0
+Benue;Agatu;GTU;159911;3.0
+Benue;Apa;GKP;133945;3.0
+Benue;Bukuru;BKB;281998;3.0
+Benue;Gboko;GBK;496851;3.0
+Benue;Guma;YGJ;265218;3.0
+Benue;Gwer East;ALD;226526;3.0
+Benue;Gwer West;NAK;169077;3.0
+Benue;Katsina-Ala;KAL;311062;3.0
+Benue;Konshisha;TSE;312383;3.0
+Benue;Kwande;WDP;344255;3.0
+Benue;Logo;GBG;234023;3.0
+Benue;Markurdi;MKD;411668;3.0
+Benue;Obi;BRT;136838;3.0
+Benue;Ogbadibo;BGT;178161;3.0
+Benue;Ohimini;DKP;98948;3.0
+Benue;Oju;JUX;235646;3.0
+Benue;Okpokwu;PKG;244521;3.0
+Benue;Oturkpo;TKP;362207;3.0
+Benue;Tarka;WNN;110038;3.0
+Benue;Ukum;UKM;300282;3.0
+Benue;Ushongo;SEL;260708;3.0
+Benue;Vandeikya;VDY;318540;3.0
+Borno;Abadam;ADM;144713;3.4
+Borno;Askira/Uba;ASU;199476;3.4
+Borno;Bama;BAM;390002;3.4
+Borno;Bayo;BAY;114086;3.4
+Borno;Biu;BBU;254341;3.4
+Borno;Chibok;CBK;95491;3.4
+Borno;Damboa;DAM;334514;3.4
+Borno;Dikwa;DKW;152989;3.4
+Borno;Gubio;GUB;220692;3.4
+Borno;Guzamala;GBL;138166;3.4
+Borno;Gwoza;GZA;399140;3.4
+Borno;Hawul;HWL;173797;3.4
+Borno;Jere;JRE;305090;3.4
+Borno;Kaga;KGG;130029;3.4
+Borno;Kala/Balge;KBG;87823;3.4
+Borno;Konduga;KDG;226161;3.4
+Borno;Kukawa;KWA;294487;3.4
+Borno;Kwaya Kusar;KWY;81616;3.4
+Borno;Mafa;MAF;149535;3.4
+Borno;Magumeri;MGM;202568;3.4
+Borno;Maiduguri;MAG;753310;3.4
+Borno;Marte;MAR;186879;3.4
+Borno;Mobbar;MBR;168510;3.4
+Borno;Monguno;MNG;158683;3.4
+Borno;Ngala;NGL;342456;3.4
+Borno;Nganzai;NGZ;144162;3.4
+Borno;Shani;SHN;147800;3.4
+Cross River;Abi;TGD;198310;2.9
+Cross River;Akamkpa;KAM;206969;2.9
+Cross River;Akpabuyo;KTA;371682;2.9
+Cross River;Bakassi;BKS;44352;2.9
+Cross River;Bekwarra;ABE;144926;2.9
+Cross River;Biase;AKP;231700;2.9
+Cross River;Boki;BJE;254924;2.9
+Cross River;Calabar Municipal;CAL;245681;2.9
+Cross River;Calabar South;ANA;262442;2.9
+Cross River;Etung;EFE;109830;2.9
+Cross River;Ikom;KMM;222387;2.9
+Cross River;Obanliku;BNS;151091;2.9
+Cross River;Obubra;BRA;236166;2.9
+Cross River;Obudu;UDU;219269;2.9
+Cross River;Odukpani;DUK;263556;2.9
+Cross River;Ogoja;GGJ;235422;2.9
+Cross River;Yakurr;GEP;269043;2.9
+Cross River;Yala;CKK;288754;2.9
+Delta;Aniocha North;SLK;148071;3.2
+Delta;Aniocha South;GWK;198827;3.2
+Delta;Bomadi;BMA;122522;3.2
+Delta;Burutu;BUR;296486;3.2
+Delta;Ethiope East;SKL;283938;3.2
+Delta;Ethiope West;GRA;287897;3.2
+Delta;Ika North East;AYB;259707;3.2
+Delta;Ika South;AGB;229922;3.2
+Delta;Isoko North;DSZ;203848;3.2
+Delta;Isoko South;LEH;322005;3.2
+Delta;Ndokwa East;ABH;145893;3.2
+Delta;Ndokwa West;KWC;211159;3.2
+Delta;Okpe;KPE;183873;3.2
+Delta;Oshimili North;AKU;163067;3.2
+Delta;Oshimili South;ASB;211552;3.2
+Delta;Patani;PTN;95744;3.2
+Delta;Sapele;SAP;243065;3.2
+Delta;Udu;ALA;202725;3.2
+Delta;Ughelli North;UGH;453962;3.2
+Delta;Ughelli South;JRT;302015;3.2
+Delta;Ukwuani;BKW;170242;3.2
+Delta;Uvwie;EFR;270758;3.2
+Delta;Warri North;KLK;194154;3.2
+Delta;Warri South;WWR;429059;3.2
+Delta;Warri South-West;WRC;164997;3.2
+Ebonyi;Abakaliki;AKL;205578;2.8
+Ebonyi;Afikpo North;AFK;212201;2.8
+Ebonyi;Afikpo South;EDA;212825;2.8
+Ebonyi;Ebonyi;UGB;171858;2.8
+Ebonyi;Ezza North;EBJ;197307;2.8
+Ebonyi;Ezza South;NKE;180487;2.8
+Ebonyi;Ikwo;CHR;290778;2.8
+Ebonyi;Ishielu;ZLL;204663;2.8
+Ebonyi;Ivo;SKA;163840;2.8
+Ebonyi;Izzi;BKL;317157;2.8
+Ebonyi;Ohaozara;BZR;201381;2.8
+Ebonyi;Ohaukwu;HKW;266027;2.8
+Ebonyi;Onicha;NCA;320891;2.8
+Edo;Akoko-Edo;GAR;351365;2.7
+Edo;Egor;USL;455643;2.7
+Edo;Esan Central;RRU;141171;2.7
+Edo;Esan North-East;URM;159986;2.7
+Edo;Esan South-East;UBJ;224834;2.7
+Edo;Esan West;EKP;168694;2.7
+Edo;Etsako Central;FUG;126780;2.7
+Edo;Etsako East;AGD;195711;2.7
+Edo;Etsako West;AUC;264900;2.7
+Edo;Iguegben;GUE;93353;2.7
+Edo;Ikpoba-Okha;DGE;497477;2.7
+Edo;Oredo;BEN;502256;2.7
+Edo;Orhionmwon;ABD;244937;2.7
+Edo;Ovia North-East;AKA;206238;2.7
+Edo;Ovia South-West;GBZ;181448;2.7
+Edo;Owan East;AFZ;206957;2.7
+Edo;Owan West;SGD;130551;2.7
+Edo;Uhunmwonde;EHR;161953;2.7
+Ekiti;Ado-Ekiti;ADK;431788;3.1
+Ekiti;Efon;DEA;121638;3.1
+Ekiti;Ekiti East;EFY;193011;3.1
+Ekiti;Ekiti South-West;MUE;231237;3.1
+Ekiti;Ekiti West;LAW;251685;3.1
+Ekiti;Emure;AMK;131352;3.1
+Ekiti;Gbonyin;EMR;207335;3.1
+Ekiti;Ido-Osi;DEK;222615;3.1
+Ekiti;Ijero;JER;309765;3.1
+Ekiti;Ikere;KER;206163;3.1
+Ekiti;Ikole;KLE;235657;3.1
+Ekiti;Ilejemeje;YEK;60902;3.1
+Ekiti;Irepodun/Ifelodun;GED;180691;3.1
+Ekiti;Ise/Orun;SSE;159152;3.1
+Ekiti;Moba;TUN;204961;3.1
+Ekiti;Oye;YEE;187772;3.1
+Enugu;Aninri;DBR;185104;3.0
+Enugu;Awgu;AWG;274264;3.0
+Enugu;Enugu East;NKW;386324;3.0
+Enugu;Enugu North;ENU;338932;3.0
+Enugu;Enugu South;UWN;275079;3.0
+Enugu;Ezeagu;AGW;234929;3.0
+Enugu;Igbo-Etiti;GBO;289648;3.0
+Enugu;Igbo-Eze-North;ENZ;359113;3.0
+Enugu;Igbo-Eze-South;BBG;203936;3.0
+Enugu;Isi-Uzo;KEM;205441;3.0
+Enugu;Nkanu East;MGL;205938;3.0
+Enugu;Nkanu West;AGN;203060;3.0
+Enugu;Nsukka;NSK;428604;3.0
+Enugu;Oji-River;JRV;175226;3.0
+Enugu;Udenu;BLF;247039;3.0
+Enugu;Udi;UDD;323913;3.0
+Enugu;Uzo-Uwani;UMU;172309;3.0
+FCT;Abaji;ABJ;155440;9.3
+FCT;Bwari;ABC;604311;9.3
+FCT;Gwagwalada;BWR;419610;9.3
+FCT;Kuje;GWA;258961;9.3
+FCT;Kwali;KUJ;228295;9.3
+FCT;Municipal Area Council;KWL;2070703;9.3
+Gombe;Akko;AKK;477754;3.2
+Gombe;Balanga;BLG;300563;3.2
+Gombe;Billiri;BLR;285850;3.2
+Gombe;Dukku;DKU;292985;3.2
+Gombe;Funakaye;FKY;333848;3.2
+Gombe;Gombe;GME;378976;3.2
+Gombe;Kaltungo;KLT;211838;3.2
+Gombe;Kwami;KWM;276169;3.2
+Gombe;Nafada;NFD;195406;3.2
+Gombe;Shomgom;SHM;214263;3.2
+Gombe;Yamaltu/Deba;YDB;360943;3.2
+Imo;Aboh-Mbaise;ABB;276669;3.2
+Imo;Ahiazu-Mbaise;AFR;241671;3.2
+Imo;Ehime -Mbano;EHM;185148;3.2
+Imo;Ezinihitte;ETU;234163;3.2
+Imo;Ideato North;URU;224000;3.2
+Imo;Ideato South;DFB;226083;3.2
+Imo;Ihitte/Uboma;IHI;170743;3.2
+Imo;Ikeduru;KED;211146;3.2
+Imo;Isiala Mbano;UML;281030;3.2
+Imo;Isu;UMD;232572;3.2
+Imo;Mbatoli;NWA;335924;3.2
+Imo;Ngor-Okpala;NGN;226158;3.2
+Imo;Njaba;NSA;205198;3.2
+Imo;Nkwerre;NKR;113342;3.2
+Imo;Nwangele;AMG;181671;3.2
+Imo;Obowo;TTK;167024;3.2
+Imo;Oguta;GUA;202226;3.2
+Imo;Ohaji/Egbema;EBM;258125;3.2
+Imo;Okigwe;KGE;186995;3.2
+Imo;Orlu;KWE;201815;3.2
+Imo;Orsu;RLU;169695;3.2
+Imo;Oru East;AWD;158126;3.2
+Imo;Oru West;MGD;166144;3.2
+Imo;Owerri Municipal;NGB;179890;3.2
+Imo;Owerri North;WER;248024;3.2
+Imo;Owerri West;RRT;140370;3.2
+Imo;Unuimo;UMG;140344;3.2
+Jigawa;Auyo;AUY;180778;2.9
+Jigawa;Babura;BBR;284999;2.9
+Jigawa;Biriniwa;BNW;194923;2.9
+Jigawa;Birnin Kudu;BKD;429171;2.9
+Jigawa;Buji;BUJ;133352;2.9
+Jigawa;Dutse;DUT;337098;2.9
+Jigawa;Gagarawa;GGW;110101;2.9
+Jigawa;Garki;GRK;208486;2.9
+Jigawa;Gumel;GML;146759;2.9
+Jigawa;Guri;GRR;157520;2.9
+Jigawa;Gwaram;GRM;373307;2.9
+Jigawa;Gwiwa;GWW;170529;2.9
+Jigawa;Hadejia;HJA;144660;2.9
+Jigawa;Jahun;JHN;313749;2.9
+Jigawa;Kafin Hausa;KHS;371220;2.9
+Jigawa;Kaugama;KGM;175239;2.9
+Jigawa;Kazaure;KZR;221170;2.9
+Jigawa;Kiri Kasama;KKM;262295;2.9
+Jigawa;kiyawa;KYW;236808;2.9
+Jigawa;Maigatari;MGR;246124;2.9
+Jigawa;Malam Maduri;MMR;221059;2.9
+Jigawa;Miga;MGA;175880;2.9
+Jigawa;Ringim;RNG;262981;2.9
+Jigawa;Roni;RRN;106575;2.9
+Jigawa;Sule Tankakar;STK;179201;2.9
+Jigawa;Taura;TAR;180444;2.9
+Jigawa;Yankwashi;YKS;131144;2.9
+Kaduna;Birnin Gwari;BNG;349329;3.0
+Kaduna;Chikun;KJM;509744;3.0
+Kaduna;Giwa;GKW;396482;3.0
+Kaduna;Igabi;TRK;595538;3.0
+Kaduna;Ikara;KAR;268439;3.0
+Kaduna;Jaba;KWB;215078;3.0
+Kaduna;Jema'a;KAF;385834;3.0
+Kaduna;Kachia;KCH;338132;3.0
+Kaduna;Kaduna North;DKA;495132;3.0
+Kaduna;kaduna South;MKA;557002;3.0
+Kaduna;Kagarko;KGK;333521;3.0
+Kaduna;Kajuru;KJR;153467;3.0
+Kaduna;Kaura;KRA;308101;3.0
+Kaduna;Kauru;KRU;235331;3.0
+Kaduna;Kuban;ANC;390416;3.0
+Kaduna;Kudan;HKY;192397;3.0
+Kaduna;Lere;SNK;458404;3.0
+Kaduna;Makarfi;MKR;202457;3.0
+Kaduna;Sabon Gari;SBG;397097;3.0
+Kaduna;Sanga;GWT;206712;3.0
+Kaduna;Soba;MGN;405954;3.0
+Kaduna;Zangon Kataf;ZKW;437930;3.0
+Kaduna;Zaria;ZAR;565041;3.0
+Kano;Ajingi;AJG;248883;3.3
+Kano;Albasu;ABS;271773;3.3
+Kano;Bagwai;BGW;232747;3.3
+Kano;Bebeji;BBJ;269924;3.3
+Kano;Bichi;BCH;396039;3.3
+Kano;Bunkure;BNK;244243;3.3
+Kano;Dala;DAL;598531;3.3
+Kano;Dambatta;DBT;297235;3.3
+Kano;Dawakin Kudu;DKD;322134;3.3
+Kano;Dawakin Tofa;DTF;354272;3.3
+Kano;Doguwa;DGW;216073;3.3
+Kano;Fagge;FGE;284172;3.3
+Kano;Gabasawa;GSW;301647;3.3
+Kano;Garko;GAK;232251;3.3
+Kano;Garum Mallam;GNM;166497;3.3
+Kano;Gaya;GYA;287299;3.3
+Kano;Gezawa;GZW;403143;3.3
+Kano;Gwale;GWL;517467;3.3
+Kano;Gwarzo;GRZ;262961;3.3
+Kano;Kabo;KBK;219856;3.3
+Kano;Kano Municipal;KMC;522421;3.3
+Kano;Karaye;KRY;202104;3.3
+Kano;Kibiya;KBY;195428;3.3
+Kano;Kiru;KKU;378434;3.3
+Kano;Kumbotso;KBT;423023;3.3
+Kano;Kunchi;KNC;158671;3.3
+Kano;Kura;KUR;206669;3.3
+Kano;Madobi;MDB;195266;3.3
+Kano;Makoda;MKK;317860;3.3
+Kano;Minjibir;MJB;305562;3.3
+Kano;Nassarawa;NSR;852780;3.3
+Kano;Rano;RAN;207866;3.3
+Kano;Rimin Gado;RMG;149769;3.3
+Kano;Rogo;RGG;325497;3.3
+Kano;Shanono;SNN;200960;3.3
+Kano;Sumaila;SML;362541;3.3
+Kano;Takai;TAK;289767;3.3
+Kano;Tarauni;TRN;316385;3.3
+Kano;Tofa;TFA;139685;3.3
+Kano;Tsanyawa;TYW;225362;3.3
+Kano;Tudun Wada;TWD;331214;3.3
+Kano;Ungongo;UGG;528327;3.3
+Kano;Warawa;WRA;184067;3.3
+Kano;Wudil;WDL;264679;3.3
+Katsina;Bakori;BKR;206764;3.0
+Katsina;Batagarawa;BAT;255495;3.0
+Katsina;Batsari;BTR;289274;3.0
+Katsina;Baure;BRE;273282;3.0
+Katsina;Bindawa;BDW;210896;3.0
+Katsina;Charanchi;CRC;190489;3.0
+Katsina;Dan Musa;DMS;157375;3.0
+Katsina;Dandume;DDM;201737;3.0
+Katsina;Danja;DJA;174002;3.0
+Katsina;Daura;DRA;304145;3.0
+Katsina;Dutsi;DTS;166140;3.0
+Katsina;Dutsin Ma;DTM;234864;3.0
+Katsina;Faskari;FSK;271358;3.0
+Katsina;Funtua;FTA;312243;3.0
+Katsina;Ingawa;NGW;234978;3.0
+Katsina;Jibia;JBY;234971;3.0
+Katsina;Kafur;KFR;280839;3.0
+Katsina;kaita;KAT;255254;3.0
+Katsina;Kankara;KKR;340160;3.0
+Katsina;Kankia;KNK;209620;3.0
+Katsina;Katsina;KTN;440822;3.0
+Katsina;Kurfi;KUF;162760;3.0
+Katsina;Kusada;KSD;137409;3.0
+Katsina;Mai'Adua;MDW;278477;3.0
+Katsina;Malumfashi;MLF;253204;3.0
+Katsina;Mani;MAN;244962;3.0
+Katsina;Mashi;MSH;239658;3.0
+Katsina;Matazu;MTZ;159637;3.0
+Katsina;Musawa;MSW;237692;3.0
+Katsina;Rimi;RMY;212818;3.0
+Katsina;Sabuwa;SBA;188325;3.0
+Katsina;Safana;SFN;254393;3.0
+Katsina;Sandamu;SDM;190037;3.0
+Katsina;Zango;ZNG;214201;3.0
+Kebbi;Aleiro;ALR;92302;3.1
+Kebbi;Arewa Dandi;KGW;257474;3.1
+Kebbi;Argungu;ARG;273499;3.1
+Kebbi;Augie;AUG;164095;3.1
+Kebbi;Bagudo;BGD;332727;3.1
+Kebbi;Birnin Kebbi;BRK;375543;3.1
+Kebbi;Bunza;BNZ;169935;3.1
+Kebbi;Dandi;KMB;201851;3.1
+Kebbi;Fakai;RBH;169586;3.1
+Kebbi;Gwandu;MHT;211289;3.1
+Kebbi;Jega;GWN;270517;3.1
+Kebbi;Kalgo;JEG;119486;3.1
+Kebbi;Koko/Besse;KLG;216306;3.1
+Kebbi;Maiyama;BES;245800;3.1
+Kebbi;Ngaski;MYM;174559;3.1
+Kebbi;Sakaba;WRR;125830;3.1
+Kebbi;Shanga;DRD;177889;3.1
+Kebbi;Suru;SNA;210185;3.1
+Kebbi;Wasagu/Danko;DKG;371043;3.1
+Kebbi;Yauri;YLW;139597;3.1
+Kebbi;Zuru;ZUR;231615;3.1
+Kogi;Adavi;DAV;279884;3.0
+Kogi;Ajaokuta;AJA;169321;3.0
+Kogi;Ankpa;KPA;370079;3.0
+Kogi;Bassa;BAS;193783;3.0
+Kogi;Dekina;KNA;360333;3.0
+Kogi;Ibaji;NDG;177361;3.0
+Kogi;Idah;DAH;110483;3.0
+Kogi;Igalamela-Odolu;AJK;204894;3.0
+Kogi;Ijumu;JMU;166010;3.0
+Kogi;Kabba/Bunu;KAB;201331;3.0
+Kogi;Kogi;KKF;160433;3.0
+Kogi;Lokoja;LKJ;270287;3.0
+Kogi;Mopa-Muro;MPA;60958;3.0
+Kogi;Ofu;KFU;266007;3.0
+Kogi;Ogori/Magongo;KPF;54846;3.0
+Kogi;Okehi;KKH;276845;3.0
+Kogi;Okene;KNE;443315;3.0
+Kogi;Olamaboro;LAM;221688;3.0
+Kogi;Omala;BJK;150054;3.0
+Kogi;Yagba East;SAN;206283;3.0
+Kogi;Yagba West;ERE;194000;3.0
+Kwara;Asa;AFN;175016;3.0
+Kwara;Baruten;KSB;289940;3.0
+Kwara;Edu;LAF;278880;3.0
+Kwara;Ekiti;ARP;75925;3.0
+Kwara;Ifelodun;SHA;285210;3.0
+Kwara;Ilorin East;KEY;282813;3.0
+Kwara;Ilorin South;FUF;288877;3.0
+Kwara;Ilorin West;LRN;504783;3.0
+Kwara;Irepodun;MUN;205711;3.0
+Kwara;Isin;WSN;82691;3.0
+Kwara;Kaiama;KMA;171872;3.0
+Kwara;Moro;BDU;150594;3.0
+Kwara;Offa;FFA;124130;3.0
+Kwara;Oke Ero;LFF;79758;3.0
+Kwara;Oyun;LEM;130468;3.0
+Kwara;Pategi;PTG;155473;3.0
+Lagos;Agege;GGE;650395;3.2
+Lagos;Ajeromi/Ifelodun;AGL;967385;3.2
+Lagos;Alimosho;KTU;1806801;3.2
+Lagos;Amuwo Odofin;FST;449915;3.2
+Lagos;Apapa;APP;307369;3.2
+Lagos;Badagry;BDG;340927;3.2
+Lagos;Epe;EPE;256528;3.2
+Lagos;Eti Osa;EKY;406954;3.2
+Lagos;Ibeju Lekki;AKD;166129;3.2
+Lagos;Ifako/Ijaye;FKJ;605057;3.2
+Lagos;Ikeja;KJA;442887;3.2
+Lagos;Ikorodu;KRD;757413;3.2
+Lagos;Kosofe;KSF;940925;3.2
+Lagos;Lagos Island;AAA;296163;3.2
+Lagos;Lagos Mainland;LND;449284;3.2
+Lagos;Mushin;MUS;895131;3.2
+Lagos;Ojo;JJJ;845725;3.2
+Lagos;Oshodi/Isolo;LSD;878869;3.2
+Lagos;Shomolu;SMK;569415;3.2
+Lagos;Surulere;LSR;712665;3.2
+Nasarawa;Akwanga;AKW;157014;3.0
+Nasarawa;Awe;AWE;155829;3.0
+Nasarawa;Doma;DMA;193249;3.0
+Nasarawa;Karu;KRV;284428;3.0
+Nasarawa;Keana;KEN;109705;3.0
+Nasarawa;Keffi;KEF;128269;3.0
+Nasarawa;Kokona;GRU;151918;3.0
+Nasarawa;Lafia;LFA;457783;3.0
+Nasarawa;Nasarawa;NSW;262776;3.0
+Nasarawa;Nasarawa Egon;NEG;206429;3.0
+Nasarawa;Obi;NBB;206076;3.0
+Nasarawa;Toto;NTT;164830;3.0
+Nasarawa;Wamba;WAM;100902;3.0
+Niger;Agaie;AGA;191988;3.4
+Niger;Agwara;AGR;82935;3.4
+Niger;Bida;BDA;271833;3.4
+Niger;Borgu;NBS;248408;3.4
+Niger;Bosso;MAK;212864;3.4
+Niger;Chanchaga;MNA;290970;3.4
+Niger;Edati;ENG;231588;3.4
+Niger;Gbako;LMU;184128;3.4
+Niger;Gurara;GWU;131414;3.4
+Niger;Katcha;KHA;176487;3.4
+Niger;Kontagora;KNT;219487;3.4
+Niger;Lapai;LAP;159082;3.4
+Niger;Lavun;KUG;303231;3.4
+Niger;Magama;NAS;262403;3.4
+Niger;Mariga;BMG;288082;3.4
+Niger;Mashegu;MSG;310605;3.4
+Niger;Mokwa;MKW;353818;3.4
+Niger;Muya;SRP;149727;3.4
+Niger;Paikoro;PAK;228360;3.4
+Niger;Rafi;KAG;262802;3.4
+Niger;Rijau;RJA;254313;3.4
+Niger;Shiroro;KUT;340048;3.4
+Niger;Suleja;SUL;312853;3.4
+Niger;Tafa;WSE;120682;3.4
+Niger;Wushishi;WSH;118138;3.4
+Ogun;Abeokuta North;AKM;287746;3.3
+Ogun;Abeokuta South;AAB;357706;3.3
+Ogun;Ado Odo/Ota;TTD;752585;3.3
+Ogun;Egbado North;TRE;259872;3.3
+Ogun;Egbado South;FFF;241326;3.3
+Ogun;Ewekoro;GBE;78831;3.3
+Ogun;Ifo;JGB;750115;3.3
+Ogun;Ijebu East;SRA;157496;3.3
+Ogun;Ijebu North;JBD;406383;3.3
+Ogun;Ijebu North East;KNN;96665;3.3
+Ogun;Ijebu ode;MEK;220148;3.3
+Ogun;Ikenne;PKA;169700;3.3
+Ogun;Imeko Afon;WDE;117507;3.3
+Ogun;Ipokia;EDE;214994;3.3
+Ogun;Obafemi Owode;DGB;327082;3.3
+Ogun;Odeda;ABG;156428;3.3
+Ogun;Odogbolu;TTN;181689;3.3
+Ogun;Ogun waterside;SGM;104241;3.3
+Ogun;Remo North;AYE;85627;3.3
+Ogun;Shagamu;LAR;362185;3.3
+Ondo;Akoko North East;KAK;242807;3.0
+Ondo;Akoko North West;ANG;295938;3.0
+Ondo;Akoko South East;KAA;114097;3.0
+Ondo;Akoko South West;SUA;317662;3.0
+Ondo;Akure North;JTA;182147;3.0
+Ondo;Akure South;AKR;488927;3.0
+Ondo;Ese Odo;GKB;214526;3.0
+Ondo;Idanre;WEN;178599;3.0
+Ondo;Ifedore;FGB;244078;3.0
+Ondo;Ilaje;GBA;402279;3.0
+Ondo;Ile Oluji/Okeigbo;LEL;239293;3.0
+Ondo;Irele;REL;200944;3.0
+Ondo;Odigbo;REE;318860;3.0
+Ondo;Okitipupa;KTP;323309;3.0
+Ondo;Ondo East;BDR;103483;3.0
+Ondo;Ondo West;NND;392668;3.0
+Ondo;Ose;FFN;200577;3.0
+Ondo;Owo;WWW;302989;3.0
+Osun;Aiyedade;GBN;212668;3.2
+Osun;Aiyedire;LGB;107253;3.2
+Osun;Atakunmosa East;PRN;107749;3.2
+Osun;Atakunmosa West;SSU;97067;3.2
+Osun;Boluwaduro;TAN;100082;3.2
+Osun;Boripe;RGB;197065;3.2
+Osun;Ede North;EDT;118544;3.2
+Osun;Ede South;EDE;107520;3.2
+Osun;Egbedore;AAW;105258;3.2
+Osun;Ejigbo;EJG;187566;3.2
+Osun;Ife Central;FFE;236512;3.2
+Osun;Ife East;FEE;265972;3.2
+Osun;Ife North;PMD;217337;3.2
+Osun;Ife South;FTD;191380;3.2
+Osun;Ifedayo;FDY;52403;3.2
+Osun;Ifelodun;KNR;136810;3.2
+Osun;Ila;LRG;87743;3.2
+Osun;Ilesha East;LES;150722;3.2
+Osun;Ilesha West;LEW;146436;3.2
+Osun;Irepodun;RLG;168979;3.2
+Osun;Irewole;KRE;203062;3.2
+Osun;Isokan;APM;145901;3.2
+Osun;Iwo;WWD;270624;3.2
+Osun;Obokun;BKN;164757;3.2
+Osun;Odo Otin;DTN;189643;3.2
+Osun;Ola oluwa;BDS;108309;3.2
+Osun;Olorunda;GNN;186322;3.2
+Osun;Oriade;JJS;210158;3.2
+Osun;Orolu;FNN;145760;3.2
+Osun;Osogbo;SGB;221579;3.2
+Oyo;Afijio;JBL;193817;3.4
+Oyo;Akinyele;MNY;305314;3.4
+Oyo;Atiba;FMT;245139;3.4
+Oyo;Atisbo;TDE;160042;3.4
+Oyo;Egbeda;EGB;406740;3.4
+Oyo;Ibadan North;BDJ;443174;3.4
+Oyo;Ibadan North East;AGG;477271;3.4
+Oyo;Ibadan North West;NRK;220773;3.4
+Oyo;Ibadan South East;MAP;384311;3.4
+Oyo;Ibadan South West;LUY;408202;3.4
+Oyo;Ibarapa Central;GBR;148756;3.4
+Oyo;Ibarapa East;RUW;170781;3.4
+Oyo;Ibarapa North;AYT;146030;3.4
+Oyo;Ido;DDA;149163;3.4
+Oyo;Irepo;KSH;177031;3.4
+Oyo;Iseyin;SEY;371137;3.4
+Oyo;Itesiwaju;TUT;185841;3.4
+Oyo;Iwajowa;WEL;148757;3.4
+Oyo;Kajola;KEH;290346;3.4
+Oyo;Lagelu;YNF;213728;3.4
+Oyo;Ogbomosho North;KNH;287057;3.4
+Oyo;Ogbomosho South;AME;145630;3.4
+Oyo;Ogo Oluwa;AJW;94160;3.4
+Oyo;Olorunsogo;GBY;118103;3.4
+Oyo;Oluyole;YRE;292842;3.4
+Oyo;Ona ara;AKN;382885;3.4
+Oyo;Orelope;GBH;150868;3.4
+Oyo;Ori Ire;KKY;217586;3.4
+Oyo;Oyo East;YYY;178899;3.4
+Oyo;Oyo West;JND;196797;3.4
+Oyo;Saki East;GMD;159220;3.4
+Oyo;Saki West;SHK;401582;3.4
+Oyo;Surulere;RSD;205224;3.4
+Plateau;Barkin Ladi;BLD;234950;2.7
+Plateau;Bassa;BSA;250489;2.7
+Plateau;Bokkos;BKK;239222;2.7
+Plateau;Jos East;ANW;114752;2.7
+Plateau;Jos North;JJN;575487;2.7
+Plateau;Jos South;BUU;411160;2.7
+Plateau;Kanam;DNG;222390;2.7
+Plateau;Kanke;KWK;162772;2.7
+Plateau;Langtang North;LGT;188535;2.7
+Plateau;Langtang South;MBD;142504;2.7
+Plateau;Mangu;MGU;395362;2.7
+Plateau;Mikang;TNK;130582;2.7
+Plateau;Pankshin;PKN;256959;2.7
+Plateau;Qua'an Pan;QAP;263988;2.7
+Plateau;Riyom;RYM;176355;2.7
+Plateau;Shendam;SHD;278852;2.7
+Plateau;Wase;WAS;216782;2.7
+Rivers;Abua/Odual;ABU;408784;3.4
+Rivers;Ahoada East;AHD;240871;3.4
+Rivers;Ahoada West;KNM;360301;3.4
+Rivers;Akuku Toru;ABM;225355;3.4
+Rivers;Andoni;NDN;304808;3.4
+Rivers;Asari-Toru;BGM;317941;3.4
+Rivers;Bonny;BNY;311091;3.4
+Rivers;Degema;DEG;360804;3.4
+Rivers;Eleme;NCH;275737;3.4
+Rivers;Emuoha;MHA;291652;3.4
+Rivers;Etche;KHE;360343;3.4
+Rivers;Gokana;KPR;330548;3.4
+Rivers;Ikwerre;SKP;274064;3.4
+Rivers;Khana;BRR;425005;3.4
+Rivers;Obio/Akpor;RUM;671401;3.4
+Rivers;Ogba/Egbema/Ndoni;RGM;410260;3.4
+Rivers;Ogu Bolo;GGU;107882;3.4
+Rivers;Okrika;KRK;320723;3.4
+Rivers;Omumma;BER;144981;3.4
+Rivers;Opobo/Nkoro;PBT;218862;3.4
+Rivers;Oyigbo;AFM;177225;3.4
+Rivers;Port-Harcourt;PHC;781656;3.4
+Rivers;Tai;SKN;170161;3.4
+Sokoto;Binji;BNJ;145382;3.0
+Sokoto;Bodinga;BDN;242803;3.0
+Sokoto;Dange-Shuni;DGS;269297;3.0
+Sokoto;Gada;GAD;343660;3.0
+Sokoto;Goronyo;GRY;252340;3.0
+Sokoto;Gudu;BLE;132255;3.0
+Sokoto;Gwadabawa;GWD;320254;3.0
+Sokoto;Illela;LLA;208312;3.0
+Sokoto;Isa;SAA;202241;3.0
+Sokoto;Kebbe;KBE;172556;3.0
+Sokoto;Kware;KWR;185348;3.0
+Sokoto;Rabah;RBA;206479;3.0
+Sokoto;Sabon Birni;SBN;287366;3.0
+Sokoto;Shagari;SGR;216512;3.0
+Sokoto;Silame;SLM;144484;3.0
+Sokoto;Sokoto North;SKK;322313;3.0
+Sokoto;Sokoto South;SRZ;269807;3.0
+Sokoto;Tambuwal;TBW;311357;3.0
+Sokoto;Tangaza;TGZ;157599;3.0
+Sokoto;Tureta;TRT;94640;3.0
+Sokoto;Wamako;WMK;248635;3.0
+Sokoto;Wurno;WRN;224671;3.0
+Sokoto;Yabo;YYB;159202;3.0
+Taraba;Ardo-Kola;ARD;119040;2.9
+Taraba;Bali;BAL;286141;2.9
+Taraba;Donga;DGA;183668;2.9
+Taraba;Gashaka;GKA;120218;2.9
+Taraba;Gassol;GAS;335189;2.9
+Taraba;Ibi;BBB;115114;2.9
+Taraba;Jalingo;JAL;191521;2.9
+Taraba;Karim Lamido;KLD;268213;2.9
+Taraba;Kurmi;KRM;125354;2.9
+Taraba;Lau;LAU;132282;2.9
+Taraba;Sardauna;SDA;307371;2.9
+Taraba;Takum;TTM;185363;2.9
+Taraba;Ussa;USS;126019;2.9
+Taraba;Wukari;WKR;330803;2.9
+Taraba;Yorro;YRR;122449;2.9
+Taraba;Zing;TZG;174426;2.9
+Yobe;Barde;GSH;204077;3.5
+Yobe;Borsari;DPH;159318;3.5
+Yobe;Damaturu;DTR;128498;3.5
+Yobe;Fika;FKA;199863;3.5
+Yobe;Fune;FUN;439100;3.5
+Yobe;Geidam;GDM;229646;3.5
+Yobe;Gujba;GJB;189925;3.5
+Yobe;Gulani;GLN;151121;3.5
+Yobe;Jakusko;JAK;334454;3.5
+Yobe;Karasuwa;KRS;156205;3.5
+Yobe;Machina;MCN;89943;3.5
+Yobe;Nangere;NNR;128219;3.5
+Yobe;Nguru;NGU;219918;3.5
+Yobe;Potiskum;PKM;300573;3.5
+Yobe;Tarmua;TMW;112716;3.5
+Yobe;Yunusari;YUN;183695;3.5
+Yobe;Yusufari;YSF;162182;3.5
+Zamfara;Anka;ANK;201197;3.2
+Zamfara;Bakura;BKA;264300;3.2
+Zamfara;Birnin Magaji/Kiyaw;BMJ;252583;3.2
+Zamfara;Bukkuyum;BKM;299268;3.2
+Zamfara;Bungudu;BUG;364718;3.2
+Zamfara;Gummi;GMM;289236;3.2
+Zamfara;Gusau;GUS;541825;3.2
+Zamfara;Kaura Namoda;KRN;397878;3.2
+Zamfara;Maradun;MRD;298163;3.2
+Zamfara;Maru;MRR;412773;3.2
+Zamfara;Shinkafi;SKF;191820;3.2
+Zamfara;Talata Mafara;TMA;304281;3.2
+Zamfara;Tsafe;TSF;376159;3.2
+Zamfara;Zurmi;ZRM;415512;3.2

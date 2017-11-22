@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -47,7 +48,6 @@ import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.GeoLatLon;
-import de.symeda.sormas.api.region.RegionDataDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
@@ -91,7 +91,8 @@ public class MapComponent extends VerticalLayout {
 	private final HashMap<GoogleMapMarker, FacilityDto> markerCaseFacilities = new HashMap<GoogleMapMarker, FacilityDto>();
 	private final HashMap<GoogleMapMarker, MapCase> markerCases = new HashMap<GoogleMapMarker, MapCase>();
 	private final HashMap<GoogleMapMarker, MapContact> markerContacts = new HashMap<GoogleMapMarker, MapContact>();
-	private final HashMap<RegionDataDto, GoogleMapPolygon[]> regionPolygonsMap = new HashMap<RegionDataDto, GoogleMapPolygon[]>();
+	private final HashMap<RegionReferenceDto, GoogleMapPolygon[]> regionPolygonsMap = new HashMap<RegionReferenceDto, GoogleMapPolygon[]>();
+	private final HashMap<DistrictReferenceDto, GoogleMapPolygon[]> districtPolygonsMap = new HashMap<DistrictReferenceDto, GoogleMapPolygon[]>();
 
 	// Others
 	private RegionMapVisualization regionMapVisualization = RegionMapVisualization.CASE_COUNT;
@@ -652,6 +653,13 @@ public class MapComponent extends VerticalLayout {
 			}
 		}
 		regionPolygonsMap.clear();
+		
+		for (GoogleMapPolygon[] districtPolygons : districtPolygonsMap.values()) {
+			for (GoogleMapPolygon districtPolygon : districtPolygons) {
+				map.removePolygonOverlay(districtPolygon);
+			}
+		}
+		districtPolygonsMap.clear();
 
 		map.removeStyleName("no-tiles");
 	}
@@ -662,13 +670,12 @@ public class MapComponent extends VerticalLayout {
 
 		map.addStyleName("no-tiles");
 
-		List<RegionDataDto> regions = FacadeProvider.getRegionFacade().getAllData();
-		Map<RegionReferenceDto, Long> caseCountPerRegion = FacadeProvider.getCaseFacade().getCaseCountPerRegion(fromDate, toDate, disease);
+		List<RegionReferenceDto> regions = FacadeProvider.getRegionFacade().getAllAsReference();
 
-		for (RegionDataDto region : regions) {
+		// draw outlines of all regions
+		for (RegionReferenceDto region : regions) {
 
-			RegionReferenceDto regionRef = region.toReferenceDto();
-			GeoLatLon[][] regionShape = FacadeProvider.getGeoShapeProvider().getRegionShape(regionRef);
+			GeoLatLon[][] regionShape = FacadeProvider.getGeoShapeProvider().getRegionShape(region);
 			if (regionShape == null) {
 				continue;
 			}
@@ -682,8 +689,34 @@ public class MapComponent extends VerticalLayout {
 						.collect(Collectors.toList()));
 
 				polygon.setStrokeOpacity(0.5);
+				polygon.setFillOpacity(0);
+				regionPolygons[part] = polygon;
+				map.addPolygonOverlay(polygon);
+			}
+			regionPolygonsMap.put(region, regionPolygons);
+		}
+		
+		// draw relevant district fills
+		Map<DistrictReferenceDto, Long> caseCountPerDistrict = FacadeProvider.getCaseFacade().getCaseCountPerDistrict(fromDate, toDate, disease);
 
-				long caseCount = caseCountPerRegion.containsKey(regionRef) ? caseCountPerRegion.get(regionRef) : 0;
+		for (Entry<DistrictReferenceDto,Long> districtCaseCount : caseCountPerDistrict.entrySet()) {
+
+			DistrictReferenceDto district = districtCaseCount.getKey();
+			long caseCount = districtCaseCount.getValue();
+			GeoLatLon[][] districtShape = FacadeProvider.getGeoShapeProvider().getDistrictShape(district);
+			if (districtShape == null) {
+				continue;
+			}
+			
+			GoogleMapPolygon[] districtPolygons = new GoogleMapPolygon[districtShape.length];
+			for (int part = 0; part<districtShape.length; part++) {
+				GeoLatLon[] districtShapePart = districtShape[part];
+				GoogleMapPolygon polygon = new GoogleMapPolygon(
+						Arrays.stream(districtShapePart)
+						.map(c -> new LatLon(c.getLat(), c.getLon()))
+						.collect(Collectors.toList()));
+
+				polygon.setStrokeOpacity(0);
 				switch (regionMapVisualization) {
 				case CASE_COUNT:
 					if (caseCount == 0) {
@@ -700,7 +733,9 @@ public class MapComponent extends VerticalLayout {
 					}
 					break;
 				case CASE_INCIDENCE:
-					float incidence = (float)caseCount / (region.getPopulation() / 10000);
+					// TODO use real population
+					long population = 10000;//district.getPopulation();
+					float incidence = (float)caseCount / (population / 10000);
 					if (incidence == 0) {
 						polygon.setFillOpacity(0);
 					} else if (incidence <= 0.5f) {
@@ -718,11 +753,11 @@ public class MapComponent extends VerticalLayout {
 				default:
 					throw new IllegalArgumentException(regionMapVisualization.toString());
 				}
-
-				regionPolygons[part] = polygon;
+				
+				districtPolygons[part] = polygon;
 				map.addPolygonOverlay(polygon);
 			}
-			regionPolygonsMap.put(region, regionPolygons);
+			districtPolygonsMap.put(district, districtPolygons);
 		}
 	}
 

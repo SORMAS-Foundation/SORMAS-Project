@@ -67,6 +67,7 @@ import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.region.RegionService;
+import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
@@ -600,7 +601,95 @@ public class CaseFacadeEjb implements CaseFacade {
 	
 	@Override
 	public Map<RegionReferenceDto, Long> getCaseCountPerRegion(Date fromDate, Date toDate, Disease disease) {
-		return caseService.getCaseCountPerRegion(fromDate, toDate, disease);
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		Root<Case> from = cq.from(Case.class);
+				
+		Predicate filter = null;		
+		if (fromDate != null || toDate != null) {
+			Join<Case, Symptoms> symptoms = from.join(Case.SYMPTOMS);
+			Predicate dateFilter = null;
+			if (fromDate != null) {
+				// TODO Add date of outcome to the date filter once it is built in
+			}
+			if (toDate != null) {
+				// Use the onset date if available and the report date otherwise
+				Predicate subFilter = cb.or(
+						cb.lessThanOrEqualTo(symptoms.get(Symptoms.ONSET_DATE), toDate), 
+						cb.and(
+								cb.isNull(symptoms.get(Symptoms.ONSET_DATE)), 
+								cb.lessThanOrEqualTo(from.get(Case.REPORT_DATE), toDate)
+								)
+						);
+				
+				dateFilter = dateFilter != null ? cb.and(dateFilter, subFilter) : subFilter;
+			}
+			filter = dateFilter;
+		}
+		
+		if (disease != null) {
+			Predicate diseaseFilter = cb.equal(from.get(Case.DISEASE), disease);
+			filter = filter != null ? cb.and(filter, diseaseFilter) : diseaseFilter;
+		}	
+		
+		if (filter != null) {
+			cq.where(filter);
+		}
+		
+		cq.groupBy(from.get(Case.REGION));
+		cq.multiselect(from.get(Case.REGION), cb.count(from));
+		List<Object[]> results = em.createQuery(cq).getResultList();
+		
+		Map<RegionReferenceDto, Long> resultMap = results.stream().collect(
+				Collectors.toMap(e -> RegionFacadeEjb.toReferenceDto((Region)e[0]), e -> (Long)e[1]));
+		return resultMap;
+	}
+	
+	@Override
+	public Map<DistrictReferenceDto, Long> getCaseCountPerDistrict(Date fromDate, Date toDate, Disease disease) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		Root<Case> from = cq.from(Case.class);
+		
+		Predicate filter = null;		
+		if (fromDate != null || toDate != null) {
+			Join<Case, Symptoms> symptoms = from.join(Case.SYMPTOMS);
+			Predicate dateFilter = null;
+			if (fromDate != null) {
+				// TODO Add date of outcome to the date filter once it is built in
+			}
+			if (toDate != null) {
+				// Use the onset date if available and the report date otherwise
+				Predicate subFilter = cb.or(
+						cb.lessThanOrEqualTo(symptoms.get(Symptoms.ONSET_DATE), toDate), 
+						cb.and(
+								cb.isNull(symptoms.get(Symptoms.ONSET_DATE)), 
+								cb.lessThanOrEqualTo(from.get(Case.REPORT_DATE), toDate)
+								)
+						);
+				
+				dateFilter = dateFilter != null ? cb.and(dateFilter, subFilter) : subFilter;
+			}
+			filter = dateFilter;
+		}
+		
+		if (disease != null) {
+			Predicate diseaseFilter = cb.equal(from.get(Case.DISEASE), disease);
+			filter = filter != null ? cb.and(filter, diseaseFilter) : diseaseFilter;
+		}		
+		
+		if (filter != null) {
+			cq.where(filter);
+		}
+		
+		cq.groupBy(from.get(Case.DISTRICT));
+		cq.multiselect(from.get(Case.DISTRICT), cb.count(from));
+		List<Object[]> results = em.createQuery(cq).getResultList();
+		
+		Map<DistrictReferenceDto, Long> resultMap = results.stream().collect(
+				Collectors.toMap(e -> DistrictFacadeEjb.toReferenceDto((District)e[0]), e -> (Long)e[1]));
+		return resultMap;
 	}
 	
 	@LocalBean

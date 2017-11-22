@@ -52,7 +52,14 @@ public interface CaseFacade {
 	 * @param disease optional
 	 */
 	Map<RegionReferenceDto, Long> getCaseCountPerRegion(Date fromDate, Date toDate, Disease disease);
-	
+
+	/**
+	 * @param onsetFromDate optional
+	 * @param onsetToDate optional
+	 * @param disease optional
+	 */
+	Map<DistrictReferenceDto, Long> getCaseCountPerDistrict(Date onsetFromDate, Date onsetToDate, Disease disease);
+
 	void deleteCase(CaseReferenceDto caseRef, String userUuid);
 	
 }
