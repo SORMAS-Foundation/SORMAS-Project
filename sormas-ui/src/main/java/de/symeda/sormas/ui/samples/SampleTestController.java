@@ -44,7 +44,7 @@ public class SampleTestController {
 			}
 		});
 		
-		VaadinUiUtil.showModalPopupWindow(editView, "Create new sample test result"); 
+		VaadinUiUtil.showModalPopupWindow(editView, "Create new sample test result", true); 
 	}
 	
 	public void edit(SampleTestDto dto, SampleTestGrid grid) {
@@ -55,7 +55,7 @@ public class SampleTestController {
 		form.setValue(newDto);
 		final CommitDiscardWrapperComponent<SampleTestEditForm> editView = new CommitDiscardWrapperComponent<SampleTestEditForm>(form, form.getFieldGroup());
 
-		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, "Edit sample test result");
+		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, "Edit sample test result", true);
 		
 		editView.addCommitListener(new CommitListener() {
 			@Override

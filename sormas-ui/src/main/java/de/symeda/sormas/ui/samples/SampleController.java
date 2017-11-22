@@ -77,7 +77,7 @@ public class SampleController {
 			}
 		});
 
-		VaadinUiUtil.showModalPopupWindow(editView, "Create new sample");
+		VaadinUiUtil.showModalPopupWindow(editView, "Create new sample", true);
 	}
 
 	public void createReferral(SampleDto sample) {
@@ -99,7 +99,7 @@ public class SampleController {
 			}
 		});
 
-		VaadinUiUtil.showModalPopupWindow(createView, "Refer sample to another laboratory");
+		VaadinUiUtil.showModalPopupWindow(createView, "Refer sample to another laboratory", true);
 	}
 
 	public CommitDiscardWrapperComponent<SampleEditForm> getSampleEditComponent(final String sampleUuid) {

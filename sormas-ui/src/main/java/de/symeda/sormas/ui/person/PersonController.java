@@ -42,7 +42,7 @@ public class PersonController {
     
     public void openEditModal(String personUuid) {
 		CommitDiscardWrapperComponent<PersonEditForm> personEditComponent = getPersonEditComponent(personUuid, null);
-		VaadinUiUtil.showModalPopupWindow(personEditComponent, "Edit person");
+		VaadinUiUtil.showModalPopupWindow(personEditComponent, "Edit person", true);
     }
     
     public void selectOrCreatePerson(String firstName, String lastName, Consumer<PersonReferenceDto> resultConsumer) {
@@ -70,7 +70,7 @@ public class PersonController {
 	        	}
 	        });
         
-	    	VaadinUiUtil.showModalPopupWindow(selectOrCreateComponent, "Pick or create person");
+	    	VaadinUiUtil.showModalPopupWindow(selectOrCreateComponent, "Pick or create person", true);
     	} else {
     		create(personSelect.getFirstName(), personSelect.getLastName(), resultConsumer);
     	}

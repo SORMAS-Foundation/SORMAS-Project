@@ -11,20 +11,26 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.analytics.Tracker;
 
 import java.util.List;
 
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.task.TaskHelper;
 import de.symeda.sormas.api.task.TaskStatus;
+import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.AbstractSormasActivity;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
+import de.symeda.sormas.app.backend.caze.CaseDtoHelper;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -123,6 +129,12 @@ public class TaskForm extends FormTab {
                 @Override
                 public void onClick(View v) {
                     try {
+                        if (task.getTaskType() == TaskType.CASE_INVESTIGATION) {
+                            CaseDataDto caseData = new CaseDataDto();
+                            new CaseDtoHelper().fillInnerFromAdo(caseData, task.getCaze());
+                            CaseLogic.validateInvestigationDoneAllowed(caseData);
+                        }
+
                         taskDao.saveAndSnapshot(binding.getTask());
                         taskDao.changeTaskStatus(task, TaskStatus.DONE);
                         ((AbstractSormasActivity)getActivity()).synchronizeChangedData(new Callback() {
@@ -135,6 +147,16 @@ public class TaskForm extends FormTab {
                         Log.e(getClass().getName(), "Error while trying to update task status", e);
                         Snackbar.make(getActivity().findViewById(R.id.base_layout), R.string.snackbar_task_status, Snackbar.LENGTH_LONG).show();
                         ErrorReportingHelper.sendCaughtException(tracker, e, task, true);
+                    } catch (ValidationException e) {
+                        final Snackbar snackbar = Snackbar.make(getActivity().findViewById(R.id.base_layout), getResources().getString(R.string.snackbar_task_case_classification), Snackbar.LENGTH_INDEFINITE);
+                        ((TextView) snackbar.getView().findViewById(android.support.design.R.id.snackbar_text)).setMaxLines(3);
+                        snackbar.setAction(R.string.snackbar_okay, new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                snackbar.dismiss();
+                            }
+                        });
+                        snackbar.show();
                     }
                 }
             });

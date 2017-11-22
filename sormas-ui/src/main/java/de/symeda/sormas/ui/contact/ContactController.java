@@ -48,7 +48,7 @@ public class ContactController {
     }
     public void create(CaseReferenceDto caze) {
     	CommitDiscardWrapperComponent<ContactCreateForm> createComponent = getContactCreateComponent(caze);
-    	VaadinUiUtil.showModalPopupWindow(createComponent, "Create new contact");    	
+    	VaadinUiUtil.showModalPopupWindow(createComponent, "Create new contact", true);    	
     }
     
     public void navigateToData(String contactUuid) {

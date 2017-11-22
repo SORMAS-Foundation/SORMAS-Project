@@ -250,6 +250,7 @@
     <string name="snackbar_report_sent">Problem report successfully sent.</string>
     <string name="snackbar_task_status">Task status could not be edited because of an internal error.</string>
     <string name="snackbar_task_reply">An assignee reply is required when setting the task status to not executable.</string>
+    <string name="snackbar_task_case_classification">Please specify the classification of the case associated with this task before you mark it as Done.</string>
     <string name="snackbar_pin_not_matching">The PINs you\'ve entered do not match. Please try again.</string>
     <string name="snackbar_pin_correct_loading">PIN correct. Starting SORMAS ...</string>
     <string name="snackbar_pin_wrong">You\'ve entered an incorrect PIN.</string>

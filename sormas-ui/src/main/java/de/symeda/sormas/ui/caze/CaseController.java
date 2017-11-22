@@ -88,17 +88,17 @@ public class CaseController {
     
     public void create() {
     	CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(null, null, null);
-    	VaadinUiUtil.showModalPopupWindow(caseCreateComponent, "Create new case");    	
+    	VaadinUiUtil.showModalPopupWindow(caseCreateComponent, "Create new case", true);    	
     }
     
     public void create(PersonDto person, Disease disease) {
     	CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(person, disease, null);
-    	VaadinUiUtil.showModalPopupWindow(caseCreateComponent, "Create new case"); 
+    	VaadinUiUtil.showModalPopupWindow(caseCreateComponent, "Create new case", true); 
     }
     
     public void create(PersonDto person, Disease disease, ContactDto contact) {
     	CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(person, disease, contact);
-    	VaadinUiUtil.showModalPopupWindow(caseCreateComponent, "Create new case");
+    	VaadinUiUtil.showModalPopupWindow(caseCreateComponent, "Create new case", true);
     }
     
     public void navigateToData(String caseUuid) {

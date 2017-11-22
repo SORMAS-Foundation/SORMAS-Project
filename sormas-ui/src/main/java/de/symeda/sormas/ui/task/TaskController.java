@@ -9,6 +9,7 @@ import com.vaadin.ui.Window;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
@@ -23,10 +24,12 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DeleteListener;
+import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DiscardListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class TaskController {
@@ -70,7 +73,7 @@ public class TaskController {
         	}
         });
 
-        VaadinUiUtil.showModalPopupWindow(editView, "Create new task");   
+        VaadinUiUtil.showModalPopupWindow(editView, "Create new task", true);   
 	}
 	
 	public void createSampleCollectionTask(TaskContext context, ReferenceDto entityRef, SampleDto sample) {
@@ -92,7 +95,7 @@ public class TaskController {
 			}
 		});
 		
-		VaadinUiUtil.showModalPopupWindow(createView, "Create new task");
+		VaadinUiUtil.showModalPopupWindow(createView, "Create new task", true);
 	}
 
 	public void edit(TaskDto dto, TaskGrid grid) {
@@ -103,18 +106,38 @@ public class TaskController {
         form.setValue(newDto);
         final CommitDiscardWrapperComponent<TaskEditForm> editView = new CommitDiscardWrapperComponent<TaskEditForm>(form, form.getFieldGroup());
 
-        Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, "Edit task");
+        Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, "Edit task", false);
         
         editView.addCommitListener(new CommitListener() {
         	@Override
         	public void onCommit() {
         		if (!form.getFieldGroup().isModified()) {
         			TaskDto dto = form.getValue();
-        			FacadeProvider.getTaskFacade().saveTask(dto);
-        			grid.reload();
+        			
+        			if (dto.getTaskStatus() == TaskStatus.DONE && dto.getTaskType() == TaskType.CASE_INVESTIGATION) {
+        				try {
+        					CaseLogic.validateInvestigationDoneAllowed(FacadeProvider.getCaseFacade().getCaseDataByUuid(dto.getCaze().getUuid()));
+        					FacadeProvider.getTaskFacade().saveTask(dto);
+        					popupWindow.close();
+        					grid.reload();
+        				} catch (ValidationException e) {
+        					VaadinUiUtil.showSimplePopupWindow("Saving Unsuccessful", "Please specify the classification of the case associated with this task before you set it to Done.");
+        				}
+        			} else {
+        				FacadeProvider.getTaskFacade().saveTask(dto);
+    					popupWindow.close();
+        				grid.reload();
+        			}
         		}
         	}
         });
+        
+        editView.addDiscardListener(new DiscardListener() {
+        	@Override
+        	public void onDiscard() {
+        		popupWindow.close();
+        	}
+		});
         
         if (LoginHelper.getCurrentUserRoles().contains(UserRole.ADMIN)) {
 			editView.addDeleteListener(new DeleteListener() {
@@ -127,7 +150,7 @@ public class TaskController {
 			}, I18nProperties.getFieldCaption("Task"));
 		}
 	}
-    
+	
     private TaskDto createNewTask(TaskContext context, ReferenceDto entityRef) {
     	TaskDto task = new TaskDto();
     	task.setUuid(DataHelper.createUuid());
