@@ -1,6 +1,7 @@
 package de.symeda.sormas.ui.hospitalization;
 
 import java.util.Arrays;
+import java.util.Collection;
 
 import com.vaadin.server.UserError;
 import com.vaadin.ui.DateField;
@@ -10,6 +11,7 @@ import com.vaadin.ui.TextField;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
+import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -67,7 +69,8 @@ public class CaseHospitalizationForm extends AbstractEditForm<HospitalizationDto
 	
 	private void updatePrevHospHint(OptionGroup hospitalizedPreviouslyField, PreviousHospitalizationsField previousHospitalizationsField) {
 		YesNoUnknown value = (YesNoUnknown) hospitalizedPreviouslyField.getValue();
-		if (value == YesNoUnknown.YES && previousHospitalizationsField.getValue().size() == 0) {
+		Collection<PreviousHospitalizationDto> previousHospitalizations = previousHospitalizationsField.getValue();
+		if (value == YesNoUnknown.YES && (previousHospitalizations == null || previousHospitalizations.size() == 0)) {
 			hospitalizedPreviouslyField.setComponentError(new UserError("Please add an entry to the list below if there is any data available to you."));
 		} else {
 			hospitalizedPreviouslyField.setComponentError(null);
