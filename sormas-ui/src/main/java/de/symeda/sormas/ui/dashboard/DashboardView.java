@@ -380,49 +380,41 @@ public class DashboardView extends AbstractView {
 		
 		if (dateFilterOption == DateFilterOption.DATE) {
 			int period = DateHelper.getDaysBetween(fromDate, toDate);
+			Date previousFromDate = DateHelper.subtractDays(fromDate, period);
+			Date previousToDate = DateHelper.subtractDays(toDate, period);
 			// Cases
 			dashboardDataProvider.setCases(FacadeProvider.getCaseFacade().getNewCasesForDashboard(district, disease, fromDate, toDate, userUuid));
-			dashboardDataProvider.setPreviousCases(FacadeProvider.getCaseFacade().getNewCasesForDashboard(district, disease, 
-					DateHelper.subtractDays(fromDate, period), DateHelper.subtractDays(toDate, period), userUuid));
+			dashboardDataProvider.setPreviousCases(FacadeProvider.getCaseFacade().getNewCasesForDashboard(district, disease, previousFromDate, previousToDate, userUuid));
 			// Events
 			dashboardDataProvider.setEvents(FacadeProvider.getEventFacade().getNewEventsForDashboard(district, disease, fromDate, toDate, userUuid));
-			dashboardDataProvider.setPreviousEvents(FacadeProvider.getEventFacade().getNewEventsForDashboard(district, disease, 
-					DateHelper.subtractDays(fromDate, period), DateHelper.subtractDays(toDate, period), userUuid));
+			dashboardDataProvider.setPreviousEvents(FacadeProvider.getEventFacade().getNewEventsForDashboard(district, disease, previousFromDate, previousToDate, userUuid));
 			// Test results
 			dashboardDataProvider.setTestResults(FacadeProvider.getSampleTestFacade().getNewTestResultsForDashboard(district, disease, fromDate, toDate, userUuid));
-			dashboardDataProvider.setPreviousTestResults(FacadeProvider.getSampleTestFacade().getNewTestResultsForDashboard(district, disease, 
-					DateHelper.subtractDays(fromDate, period), DateHelper.subtractDays(toDate, period), userUuid));
+			dashboardDataProvider.setPreviousTestResults(FacadeProvider.getSampleTestFacade().getNewTestResultsForDashboard(district, disease, previousFromDate, previousToDate, userUuid));
 			// Samples
 			dashboardDataProvider.setSamples(FacadeProvider.getSampleFacade().getNewSamplesForDashboard(district, disease, fromDate, toDate, userUuid));
-			
 		} else {
 			int period = toWeek.getWeek() - fromWeek.getWeek() + 1;
+			Date epiWeekStart = DateHelper.getEpiWeekStart(fromWeek);
+			Date epiWeekEnd = DateHelper.getEpiWeekEnd(toWeek);
+			Date previousEpiWeekStart = DateHelper.getEpiWeekStart(DateHelper.getPreviousEpiWeek(fromWeek, period));
+			Date previousEpiWeekEnd = DateHelper.getEpiWeekEnd(DateHelper.getPreviousEpiWeek(toWeek, period));
 			// Cases
-			dashboardDataProvider.setCases(FacadeProvider.getCaseFacade().getNewCasesForDashboard(district, disease, 
-					DateHelper.getEpiWeekStart(fromWeek), DateHelper.getEpiWeekEnd(toWeek), userUuid));
-			dashboardDataProvider.setPreviousCases(FacadeProvider.getCaseFacade().getNewCasesForDashboard(district, disease,
-					DateHelper.getEpiWeekStart(DateHelper.getPreviousEpiWeek(fromWeek, period)),
-					DateHelper.getEpiWeekEnd(DateHelper.getPreviousEpiWeek(toWeek, period)), userUuid));
+			dashboardDataProvider.setCases(FacadeProvider.getCaseFacade().getNewCasesForDashboard(district, disease, epiWeekStart, epiWeekEnd, userUuid));
+			dashboardDataProvider.setPreviousCases(FacadeProvider.getCaseFacade().getNewCasesForDashboard(district, disease, previousEpiWeekStart, previousEpiWeekEnd, userUuid));
 			// Events
-			dashboardDataProvider.setEvents(FacadeProvider.getEventFacade().getNewEventsForDashboard(district, disease, 
-					DateHelper.getEpiWeekStart(fromWeek), DateHelper.getEpiWeekEnd(toWeek), userUuid));
-			dashboardDataProvider.setPreviousEvents(FacadeProvider.getEventFacade().getNewEventsForDashboard(district, disease,
-					DateHelper.getEpiWeekStart(DateHelper.getPreviousEpiWeek(fromWeek, period)),
-					DateHelper.getEpiWeekEnd(DateHelper.getPreviousEpiWeek(toWeek, period)), userUuid));
+			dashboardDataProvider.setEvents(FacadeProvider.getEventFacade().getNewEventsForDashboard(district, disease, epiWeekStart, epiWeekEnd, userUuid));
+			dashboardDataProvider.setPreviousEvents(FacadeProvider.getEventFacade().getNewEventsForDashboard(district, disease, previousEpiWeekStart, previousEpiWeekEnd, userUuid));
 			// Test results
-			dashboardDataProvider.setTestResults(FacadeProvider.getSampleTestFacade().getNewTestResultsForDashboard(district, disease, 
-					DateHelper.getEpiWeekStart(fromWeek), DateHelper.getEpiWeekEnd(toWeek), userUuid));
-			dashboardDataProvider.setPreviousTestResults(FacadeProvider.getSampleTestFacade().getNewTestResultsForDashboard(district, disease,
-					DateHelper.getEpiWeekStart(DateHelper.getPreviousEpiWeek(fromWeek, period)),
-					DateHelper.getEpiWeekEnd(DateHelper.getPreviousEpiWeek(toWeek, period)), userUuid));
+			dashboardDataProvider.setTestResults(FacadeProvider.getSampleTestFacade().getNewTestResultsForDashboard(district, disease, epiWeekStart, epiWeekEnd, userUuid));
+			dashboardDataProvider.setPreviousTestResults(FacadeProvider.getSampleTestFacade().getNewTestResultsForDashboard(district, disease, previousEpiWeekStart, previousEpiWeekEnd, userUuid));
 			// Samples
-			dashboardDataProvider.setSamples(FacadeProvider.getSampleFacade().getNewSamplesForDashboard(district, disease, 
-					DateHelper.getEpiWeekStart(fromWeek), DateHelper.getEpiWeekEnd(toWeek), userUuid));
+			dashboardDataProvider.setSamples(FacadeProvider.getSampleFacade().getNewSamplesForDashboard(district, disease, epiWeekStart, epiWeekEnd, userUuid));
 		}
-		
 		// Tasks
-		dashboardDataProvider.setTasks(FacadeProvider.getTaskFacade().getAllByUserForDashboard(null, userUuid));
-		dashboardDataProvider.setPendingTasks(FacadeProvider.getTaskFacade().getAllByUserForDashboard(TaskStatus.PENDING, userUuid));
+		dashboardDataProvider.setTasks(FacadeProvider.getTaskFacade().getAllByUserForDashboard(null, 
+				DateHelper.getEpiWeekStart(DateHelper.getEpiWeek(new Date())), DateHelper.getEpiWeekEnd(DateHelper.getEpiWeek(new Date())), userUuid));
+		dashboardDataProvider.setPendingTasks(FacadeProvider.getTaskFacade().getAllByUserForDashboard(TaskStatus.PENDING, null, null, userUuid));
 
 		// Updates statistics
 		statisticsComponent.updateStatistics(disease);

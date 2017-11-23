@@ -81,6 +81,10 @@
 		border-right: 1px solid #CDD8EC;
 	}
 
+	.v-label-separator-vertical-broad {
+		border-right: 2px solid $v-focus-color;
+	}
+
 	// Font sizes
 	.v-label-size-small {
     	font-size: 0.8em;

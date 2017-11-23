@@ -13525,6 +13525,10 @@ div.v-layout.v-horizontal.v-widget {
 	border-right: 1px solid #CDD8EC;
 }
 
+.sormas .v-label-separator-vertical-broad {
+	border-right: 2px solid #CDD8EC;
+}
+
 .sormas .v-label-size-small {
 	font-size: 0.8em;
 }
@@ -13696,14 +13700,6 @@ div.v-layout.v-horizontal.v-widget {
 
 .sormas .curve-and-map-layout {
 	background-color: #CDD8EC;
-}
-
-.sormas .statistics-sub-component {
-	border-left: 2px solid #CDD8EC;
-}
-
-.sormas .statistics-sub-component.statistics-sub-component-right {
-	border-right: 2px solid #CDD8EC;
 }
 
 .sormas .googlemap.no-tiles img {

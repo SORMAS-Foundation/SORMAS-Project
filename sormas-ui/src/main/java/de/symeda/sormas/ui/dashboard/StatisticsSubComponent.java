@@ -94,7 +94,6 @@ public class StatisticsSubComponent extends VerticalLayout {
 			if (showSeparator) {
 				Label separator = new Label();
 				separator.setHeight(100, Unit.PERCENTAGE);
-				separator.setWidthUndefined();
 				CssStyles.style(separator, CssStyles.SEPARATOR_VERTICAL, CssStyles.HSPACE_LEFT_3, CssStyles.HSPACE_RIGHT_3);
 				contentLayout.addComponent(separator);
 			}
