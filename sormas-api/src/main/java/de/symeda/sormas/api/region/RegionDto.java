@@ -8,6 +8,8 @@ public class RegionDto extends RegionReferenceDto {
 
 	private String name;
 	private String epidCode;
+	private Integer population;
+	private Float growthRate;
 	
 	public String getName() {
 		return name;
@@ -26,5 +28,19 @@ public class RegionDto extends RegionReferenceDto {
 	@Override
 	public String toString() {
 		return getName();
+	}
+	
+	public Integer getPopulation() {
+		return population;
+	}
+	public void setPopulation(Integer population) {
+		this.population = population;
+	}
+	
+	public Float getGrowthRate() {
+		return growthRate;
+	}
+	public void setGrowthRate(Float growthRate) {
+		this.growthRate = growthRate;
 	}
 }

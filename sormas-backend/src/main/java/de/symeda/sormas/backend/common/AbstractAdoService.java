@@ -8,6 +8,7 @@ import javax.annotation.Resource;
 import javax.ejb.SessionContext;
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -62,6 +63,22 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 		cq.select(cb.count(from));
 		long count = em.createQuery(cq).getSingleResult();
 		return count;
+	}
+	
+	/**
+	 * @return null if no entry exists
+	 */
+	public Timestamp getLatestChangeDate() {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Timestamp> cq = cb.createQuery(Timestamp.class);
+		Root<ADO> from = cq.from(getElementClass());
+		cq.select(cb.greatest(from.get(AbstractDomainObject.CHANGE_DATE)));
+		try {
+			Timestamp latestChangeDate = em.createQuery(cq).getSingleResult();
+			return latestChangeDate;
+		} catch (NoResultException ex) {
+			return null;
+		}
 	}
 
 	@Override

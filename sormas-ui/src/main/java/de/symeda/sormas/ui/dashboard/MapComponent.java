@@ -46,6 +46,7 @@ import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.MapContact;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.GeoLatLon;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -697,11 +698,11 @@ public class MapComponent extends VerticalLayout {
 		}
 		
 		// draw relevant district fills
-		Map<DistrictReferenceDto, Long> caseCountPerDistrict = FacadeProvider.getCaseFacade().getCaseCountPerDistrict(fromDate, toDate, disease);
+		Map<DistrictDto, Long> caseCountPerDistrict = FacadeProvider.getCaseFacade().getCaseCountPerDistrict(fromDate, toDate, disease);
 
-		for (Entry<DistrictReferenceDto,Long> districtCaseCount : caseCountPerDistrict.entrySet()) {
+		for (Entry<DistrictDto,Long> districtCaseCount : caseCountPerDistrict.entrySet()) {
 
-			DistrictReferenceDto district = districtCaseCount.getKey();
+			DistrictDto district = districtCaseCount.getKey();
 			long caseCount = districtCaseCount.getValue();
 			GeoLatLon[][] districtShape = FacadeProvider.getGeoShapeProvider().getDistrictShape(district);
 			if (districtShape == null) {
@@ -733,20 +734,24 @@ public class MapComponent extends VerticalLayout {
 					}
 					break;
 				case CASE_INCIDENCE:
-					// TODO use real population
-					long population = 10000;//district.getPopulation();
-					float incidence = (float)caseCount / (population / 10000);
-					if (incidence == 0) {
-						polygon.setFillOpacity(0);
-					} else if (incidence <= 0.5f) {
-						polygon.setFillColor("#FFD800");
+					if (district.getPopulation() == null) {
+						// grey when region has no population data
+						polygon.setFillColor("#999999");
 						polygon.setFillOpacity(0.5);
-					} else if (incidence <= 1) {
-						polygon.setFillColor("#FF6A00");
-						polygon.setFillOpacity(0.5);
-					} else {
-						polygon.setFillColor("#FF0000");
-						polygon.setFillOpacity(0.5);
+					} else {					
+						float incidence = (float)caseCount / (district.getPopulation() / 10000);
+						if (incidence == 0) {
+							polygon.setFillOpacity(0);
+						} else if (incidence <= 0.5f) {
+							polygon.setFillColor("#FFD800");
+							polygon.setFillOpacity(0.5);
+						} else if (incidence <= 1) {
+							polygon.setFillColor("#FF6A00");
+							polygon.setFillOpacity(0.5);
+						} else {
+							polygon.setFillColor("#FF0000");
+							polygon.setFillOpacity(0.5);
+						}
 					}
 					break;
 

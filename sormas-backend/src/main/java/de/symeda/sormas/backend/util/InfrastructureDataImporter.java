@@ -24,7 +24,7 @@ public final class InfrastructureDataImporter {
 
     @FunctionalInterface
     public interface DistrictConsumer {
-        public void consume(String regionName, String districtName, String epidCode);
+        public void consume(String regionName, String districtName, String epidCode, Integer population, Float growthRate);
     }
     
     @FunctionalInterface
@@ -84,12 +84,15 @@ public final class InfrastructureDataImporter {
 		InputStream stream = InfrastructureDataImporter.class.getResourceAsStream(resourceFileName);
 		BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
 		
+		NumberFormat populationFormat = NumberFormat.getIntegerInstance(Locale.ENGLISH);
+		NumberFormat growthRateFormat = NumberFormat.getNumberInstance(Locale.ENGLISH);
+		
 		String currentLine = null;
 		try {
 			currentLine = reader.readLine();
 			if (!currentLine.equals("region;district;epidcode;population;growthrate")) {
 				throw new IllegalArgumentException("Resource file does not match expected format. "
-						+ "First line has to be 'region;district;epidcode'. " + resourceFileName);
+						+ "First line has to be 'region;district;epidcode;population;growthrate'. " + resourceFileName);
 			}
 
 			while (reader.ready()) {
@@ -99,8 +102,12 @@ public final class InfrastructureDataImporter {
 				String regionName = columns[0];
 				String districtName = columns[1];
 				String epidCode = columns.length > 2 ? columns[2] : null;
+				Number populationNumber = columns.length > 3 ? populationFormat.parse(columns[3]) : null;
+				Number growthRateNumber = columns.length > 4 ? growthRateFormat.parse(columns[4]) : null;
+				Integer population = populationNumber != null ? populationNumber.intValue() : null;
+				Float growthRate = growthRateNumber != null ? growthRateNumber.floatValue() : null;
 
-				districtConsumer.consume(regionName, districtName, epidCode);
+				districtConsumer.consume(regionName, districtName, epidCode, population, growthRate);
 			}
 			
 			stream.close();

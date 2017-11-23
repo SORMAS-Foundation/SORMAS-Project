@@ -1873,3 +1873,9 @@ ALTER TABLE cases_history ADD COLUMN smallpoxvaccinationreceived varchar(255);
 ALTER TABLE cases_history ADD COLUMN smallpoxvaccinationdate timestamp;
 
 INSERT INTO schema_version (version_number, comment) VALUES (75, 'Additional Monkeypox fields #375');
+
+-- 2017-11-22 Population for districts #342
+ALTER TABLE district ADD COLUMN population integer;
+ALTER TABLE district ADD COLUMN growthRate real;
+
+INSERT INTO schema_version (version_number, comment) VALUES (76, 'Population for districts #342');

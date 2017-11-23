@@ -9,8 +9,9 @@ import javax.ejb.Remote;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
+import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 
 @Remote
@@ -47,18 +48,18 @@ public interface CaseFacade {
 	List<MapCase> getCasesForMap(DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid);
 	
 	/**
-	 * @param onsetFromDate optional
-	 * @param onsetToDate optional
+	 * @param fromDate optional
+	 * @param toDate optional
 	 * @param disease optional
 	 */
-	Map<RegionReferenceDto, Long> getCaseCountPerRegion(Date fromDate, Date toDate, Disease disease);
+	Map<RegionDto, Long> getCaseCountPerRegion(Date fromDate, Date toDate, Disease disease);
 
 	/**
-	 * @param onsetFromDate optional
-	 * @param onsetToDate optional
+	 * @param fromDate optional
+	 * @param toDate optional
 	 * @param disease optional
 	 */
-	Map<DistrictReferenceDto, Long> getCaseCountPerDistrict(Date onsetFromDate, Date onsetToDate, Disease disease);
+	Map<DistrictDto, Long> getCaseCountPerDistrict(Date onsetFromDate, Date onsetToDate, Disease disease);
 
 	void deleteCase(CaseReferenceDto caseRef, String userUuid);
 	

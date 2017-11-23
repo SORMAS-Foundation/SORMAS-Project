@@ -32,8 +32,9 @@ import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
+import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskHelper;
 import de.symeda.sormas.api.task.TaskPriority;
@@ -67,9 +68,9 @@ import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.region.RegionService;
-import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleService;
+import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLocal;
 import de.symeda.sormas.backend.task.Task;
@@ -600,7 +601,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 	
 	@Override
-	public Map<RegionReferenceDto, Long> getCaseCountPerRegion(Date fromDate, Date toDate, Disease disease) {
+	public Map<RegionDto, Long> getCaseCountPerRegion(Date fromDate, Date toDate, Disease disease) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
@@ -641,13 +642,13 @@ public class CaseFacadeEjb implements CaseFacade {
 		cq.multiselect(from.get(Case.REGION), cb.count(from));
 		List<Object[]> results = em.createQuery(cq).getResultList();
 		
-		Map<RegionReferenceDto, Long> resultMap = results.stream().collect(
-				Collectors.toMap(e -> RegionFacadeEjb.toReferenceDto((Region)e[0]), e -> (Long)e[1]));
+		Map<RegionDto, Long> resultMap = results.stream().collect(
+				Collectors.toMap(e -> RegionFacadeEjb.toDto((Region)e[0]), e -> (Long)e[1]));
 		return resultMap;
 	}
 	
 	@Override
-	public Map<DistrictReferenceDto, Long> getCaseCountPerDistrict(Date fromDate, Date toDate, Disease disease) {
+	public Map<DistrictDto, Long> getCaseCountPerDistrict(Date fromDate, Date toDate, Disease disease) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<Case> from = cq.from(Case.class);
@@ -687,8 +688,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		cq.multiselect(from.get(Case.DISTRICT), cb.count(from));
 		List<Object[]> results = em.createQuery(cq).getResultList();
 		
-		Map<DistrictReferenceDto, Long> resultMap = results.stream().collect(
-				Collectors.toMap(e -> DistrictFacadeEjb.toReferenceDto((District)e[0]), e -> (Long)e[1]));
+		Map<DistrictDto, Long> resultMap = results.stream().collect(
+				Collectors.toMap(e -> DistrictFacadeEjb.toDto((District)e[0]), e -> (Long)e[1]));
 		return resultMap;
 	}
 	

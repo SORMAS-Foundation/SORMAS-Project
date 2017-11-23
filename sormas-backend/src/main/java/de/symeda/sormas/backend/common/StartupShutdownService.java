@@ -1,5 +1,6 @@
 package de.symeda.sormas.backend.common;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,6 +21,7 @@ import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.user.UserHelper;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.epidata.EpiData;
@@ -90,7 +92,11 @@ public class StartupShutdownService {
 	
 	public void importAdministrativeDivisions(String countryName) {
 
-		if (regionService.count() > 0) {
+		Timestamp latestRegionChangeDate = regionService.getLatestChangeDate();
+		if (latestRegionChangeDate != null
+				// last change made to district data for nigeria
+				// TODO replace with solution that reads the change date from the file or something else
+				&& latestRegionChangeDate.after(DateHelper.getDateZero(2017, 11, 22))) {
 			return;
 		}		
 

@@ -64,7 +64,7 @@ public class DistrictFacadeEjb implements DistrictFacade {
 		return dto;
 	}
 	
-	private DistrictDto toDto(District entity) {
+	public static DistrictDto toDto(District entity) {
 		if (entity == null) {
 			return null;
 		}
@@ -73,6 +73,8 @@ public class DistrictFacadeEjb implements DistrictFacade {
 		
 		dto.setName(entity.getName());
 		dto.setEpidCode(entity.getEpidCode());
+		dto.setPopulation(entity.getPopulation());
+		dto.setGrowthRate(entity.getGrowthRate());
 		dto.setRegion(RegionFacadeEjb.toReferenceDto(entity.getRegion()));
 
 		return dto;
