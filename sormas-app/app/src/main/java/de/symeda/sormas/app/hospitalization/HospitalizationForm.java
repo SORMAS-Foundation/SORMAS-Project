@@ -75,6 +75,7 @@ public class HospitalizationForm extends FormTab {
                                                     )
                                             );
                                             previousHospitalizationForm.dismiss();
+                                            updatePrevHospHint();
                                         }
                                     }
                                 }, new Consumer() {
@@ -86,7 +87,7 @@ public class HospitalizationForm extends FormTab {
                                                         (PreviousHospitalization) prevHospDialog
                                                 )
                                         );
-
+                                        updatePrevHospHint();
                                     }
                                 },
                                 getActivity().getResources().getString(R.string.headline_previousHospitalization)
@@ -104,6 +105,7 @@ public class HospitalizationForm extends FormTab {
             @Override
             public void onChange(PropertyField field) {
                 binding.hospitalizationPreviousHospitalizations.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
+                updatePrevHospHint();
             }
         });
 
@@ -115,6 +117,15 @@ public class HospitalizationForm extends FormTab {
         });
 
         return view;
+    }
+
+    private void updatePrevHospHint() {
+        YesNoUnknown hospitalizedPreviously = binding.hospitalizationHospitalizedPreviously.getValue();
+        if (hospitalizedPreviously == YesNoUnknown.YES && binding.hospitalizationPreviousHospitalizations.getValue().size() == 0) {
+            binding.hospitalizationHospitalizedPreviously.setErrorWithoutFocus(DatabaseHelper.getContext().getResources().getString(R.string.validation_soft_add_list_entry));
+        } else {
+            binding.hospitalizationHospitalizedPreviously.clearError();
+        }
     }
 
     @Override

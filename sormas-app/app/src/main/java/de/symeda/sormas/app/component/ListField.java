@@ -26,7 +26,7 @@ import de.symeda.sormas.app.util.Consumer;
 
 public class ListField<FieldClass extends AbstractDomainObject> extends PropertyField<List<FieldClass>> {
 
-    protected ImageButton addBtn;
+    protected Button addBtn;
     protected ListView listView;
     protected ArrayAdapter adapter;
 
@@ -122,7 +122,7 @@ public class ListField<FieldClass extends AbstractDomainObject> extends Property
         caption.setText(getCaption());
         addCaptionOnClickListener();
 
-        addBtn = (ImageButton) this.findViewById(R.id.add_btn);
+        addBtn = (Button) this.findViewById(R.id.add_btn);
 //        addBtn.setText(getResources().getString(R.string.action_add));
 //        addBtn.setBackgroundResource(R.drawable.ic_add_box_black_36dp);
         addBtn.setOnClickListener(new OnClickListener() {

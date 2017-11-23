@@ -29,6 +29,7 @@
     <string name="action_new_case">New case</string>
     <string name="action_help">Help</string>
     <string name="action_add">Add new entry</string>
+    <string name="action_add_list">+ Add new entry</string>
     <string name="action_search">Update search</string>
     <string name="action_select_person">Select</string>
     <string name="action_cancel">Cancel</string>
@@ -335,6 +336,7 @@
     <string name="validation_soft_case_epid_number">The EPID number does not match the required pattern. You may still save the case and enter the correct number later.</string>
     <string name="validation_soft_case_epid_number_empty">An EPID number has to be provided. You may still save the case and enter the correct number later.</string>
     <string name="validation_soft_case_classification">This case should be classified as soon as the required information is available.</string>
+    <string name="validation_soft_add_list_entry">Please add an entry to the list if there is any data available to you.</string>
     <string name="validation_soft_general">Please fill in this field if possible. You can still save without doing so.</string>
 
 </resources>

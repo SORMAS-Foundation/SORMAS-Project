@@ -62,7 +62,12 @@
 	  	  }
 		}
   	  }
-	 
+  
+	  &.v-select-optiongroup-error {
+	  	.v-radiobutton {
+	  	  border-color: $v-error-indicator-color;
+	  	}
+	  }
   }
 
   .v-caption-caption-inline {
