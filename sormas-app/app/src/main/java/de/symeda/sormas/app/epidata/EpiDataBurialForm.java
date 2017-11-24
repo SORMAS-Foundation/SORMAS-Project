@@ -15,6 +15,7 @@ import de.symeda.sormas.app.component.AbstractFormDialogFragment;
 import de.symeda.sormas.app.component.LocationDialogBuilder;
 import de.symeda.sormas.app.databinding.EpidataBurialEditFragmentLayoutBinding;
 import de.symeda.sormas.app.util.Consumer;
+import de.symeda.sormas.app.validation.EpiDataValidator;
 
 /**
  * Created by Mate Strysewske on 09.03.2017.
@@ -49,10 +50,16 @@ public class EpiDataBurialForm extends AbstractFormDialogFragment<EpiDataBurial>
                 }
             }
         });
+
+        EpiDataValidator.setSoftRequiredHintsForBurial(binding);
     }
 
     @Override
     public AbstractDomainObject getData() {
         return binding.getEpiDataBurial();
+    }
+
+    public EpidataBurialEditFragmentLayoutBinding getBinding() {
+        return binding;
     }
 }

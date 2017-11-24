@@ -41,6 +41,13 @@ public class EpiDataBurialEditForm extends AbstractEditForm<EpiDataBurialDto> {
 				EpiDataBurialDto.BURIAL_TOUCHING);
 
 		FieldHelper.makeFieldSoftRequired(burialDateFrom, burialDateTo);
+		
+		burialDateFrom.addValueChangeListener(e -> {
+			FieldHelper.validateDateField(burialDateFrom, burialDateTo, true);
+		});
+		burialDateTo.addValueChangeListener(e -> {
+			FieldHelper.validateDateField(burialDateTo, burialDateFrom, false);
+		});
 	}
 	
 	@Override

@@ -31,6 +31,13 @@ public class EpiDataTravelEditForm extends AbstractEditForm<EpiDataTravelDto> {
 		addField(EpiDataTravelDto.TRAVEL_DESTINATION, TextField.class);
 		
 		FieldHelper.makeFieldSoftRequired(travelDateFrom, travelDateTo);
+
+		travelDateFrom.addValueChangeListener(e -> {
+			FieldHelper.validateDateField(travelDateFrom, travelDateTo, true);
+		});
+		travelDateTo.addValueChangeListener(e -> {
+			FieldHelper.validateDateField(travelDateTo, travelDateFrom, false);
+		});
 	}
 	
 	@Override

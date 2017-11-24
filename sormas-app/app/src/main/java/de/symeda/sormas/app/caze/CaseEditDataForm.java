@@ -33,17 +33,10 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.user.User;
-import de.symeda.sormas.app.component.FacilityChangeDialogBuilder;
 import de.symeda.sormas.app.component.FieldHelper;
 import de.symeda.sormas.app.component.PropertyField;
 import de.symeda.sormas.app.databinding.CaseDataFragmentLayoutBinding;
-import de.symeda.sormas.app.databinding.CaseSymptomsFragmentLayoutBinding;
-import de.symeda.sormas.app.databinding.PersonEditFragmentLayoutBinding;
-import de.symeda.sormas.app.person.PersonEditForm;
-import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.FormTab;
-import de.symeda.sormas.app.validation.PersonValidator;
-import de.symeda.sormas.app.validation.SymptomsValidator;
 
 /**
  * Created by Stefan Szczesny on 27.07.2016.

@@ -27,6 +27,7 @@ import de.symeda.sormas.app.component.PropertyField;
 import de.symeda.sormas.app.databinding.CaseEpidataFragmentLayoutBinding;
 import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.FormTab;
+import de.symeda.sormas.app.validation.EpiDataValidator;
 
 /**
  * Created by Mate Strysewske on 08.03.2017.
@@ -69,14 +70,16 @@ public class EpiDataForm extends FormTab {
                                 new Consumer() {
                                     @Override
                                     public void accept(Object burialDialog) {
-                                        binding.epiDataBurials.setValue(
-                                                ListField.updateList(
-                                                        binding.epiDataBurials.getValue(),
-                                                        (EpiDataBurial) burialDialog
-                                                )
-                                        );
-                                        burialTab.dismiss();
-                                        updateBurialsHint();
+                                        if (EpiDataValidator.validateBurialData(burialTab.getBinding())) {
+                                            binding.epiDataBurials.setValue(
+                                                    ListField.updateList(
+                                                            binding.epiDataBurials.getValue(),
+                                                            (EpiDataBurial) burialDialog
+                                                    )
+                                            );
+                                            burialTab.dismiss();
+                                            updateBurialsHint();
+                                        }
                                     }
                                 }, new Consumer() {
                                     @Override
@@ -157,14 +160,16 @@ public class EpiDataForm extends FormTab {
                                 new Consumer() {
                                     @Override
                                     public void accept(Object travelDialog) {
-                                        binding.epiDataTravels.setValue(
-                                                ListField.updateList(
-                                                        binding.epiDataTravels.getValue(),
-                                                        (EpiDataTravel) travelDialog
-                                                )
-                                        );
-                                        travelTab.dismiss();
-                                        updateTravelsHint();
+                                        if (EpiDataValidator.validateTravelData(travelTab.getBinding())) {
+                                            binding.epiDataTravels.setValue(
+                                                    ListField.updateList(
+                                                            binding.epiDataTravels.getValue(),
+                                                            (EpiDataTravel) travelDialog
+                                                    )
+                                            );
+                                            travelTab.dismiss();
+                                            updateTravelsHint();
+                                        }
                                     }
                                 }, new Consumer() {
                                     @Override

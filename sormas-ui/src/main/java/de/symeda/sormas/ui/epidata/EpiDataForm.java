@@ -17,7 +17,6 @@ import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.WaterSource;
 import de.symeda.sormas.api.utils.Diseases.DiseasesConfiguration;
 import de.symeda.sormas.api.utils.YesNoUnknown;
-import de.symeda.sormas.ui.hospitalization.PreviousHospitalizationsField;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;

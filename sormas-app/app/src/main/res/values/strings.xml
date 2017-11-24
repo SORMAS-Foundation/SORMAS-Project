@@ -332,6 +332,8 @@
     <string name="validation_visit_status">Please select the visit status.</string>
     <string name="validation_prev_hosp_discharge_date">Please select the date of discharge.</string>
     <string name="validation_prev_hosp_admission_date">Please select the date of admission.</string>
+    <string name="validation_date_later">The %1$s can not be later than the %2$s.</string>
+    <string name="validation_date_earlier">The %1$s can not be later than the %2$s.</string>
 
     <string name="validation_soft_case_epid_number">The EPID number does not match the required pattern. You may still save the case and enter the correct number later.</string>
     <string name="validation_soft_case_epid_number_empty">An EPID number has to be provided. You may still save the case and enter the correct number later.</string>
