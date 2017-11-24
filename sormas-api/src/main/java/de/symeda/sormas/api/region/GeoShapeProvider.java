@@ -17,6 +17,8 @@ public interface GeoShapeProvider {
 	GeoLatLon getCenterOfRegion(RegionReferenceDto region);
 
 	GeoLatLon[][] getDistrictShape(DistrictReferenceDto district);
-
+	
 	DistrictReferenceDto getDistrictByCoord(GeoLatLon latLon);
+	
+	GeoLatLon getCenterOfDistrict(DistrictReferenceDto district);
 }

@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -21,54 +22,60 @@ import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.region.District;
+import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.user.User;
 
 @Stateless
 @LocalBean
 public class EventService extends AbstractAdoService<Event> {
 
+	@EJB
+	DistrictFacadeEjbLocal districtFacade;
+
 	public EventService() {
 		super(Event.class);
 	}
-	
+
 	public List<Event> getAllBetween(Date fromDate, Date toDate, District district, Disease disease, User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Event> cq = cb.createQuery(getElementClass());
 		Root<Event> from = cq.from(getElementClass());
-		
+
 		Predicate filter = createUserFilter(cb, cq, from, user);
 		Predicate dateFilter = cb.greaterThanOrEqualTo(from.get(Event.EVENT_DATE), fromDate);
 		dateFilter = cb.and(dateFilter, cb.lessThanOrEqualTo(from.get(Event.EVENT_DATE), toDate));
-		
+
 		if (filter != null) {
 			filter = cb.and(filter, dateFilter);
 		} else {
 			filter = dateFilter;
 		}
-		
+
 		if (filter != null && district != null) {
 			Join<Event, Location> eventLocation = from.join(Event.EVENT_LOCATION);
 			filter = cb.and(filter, cb.equal(eventLocation.get(Location.DISTRICT), district));
 		}
-		
+
 		if (filter != null && disease != null) {
 			filter = cb.and(filter, cb.isNotNull(from.get(Event.DISEASE)));
 			filter = cb.and(filter, cb.equal(from.get(Event.DISEASE), disease));
 		}
-		
+
 		if (filter != null) {
 			cq.where(filter);
 		}
-		
+
 		List<Event> resultList = em.createQuery(cq).getResultList();
 		return resultList;
 	}
-	
+
 	public List<DashboardEvent> getNewEventsForDashboard(District district, Disease disease, Date from, Date to, User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<DashboardEvent> cq = cb.createQuery(DashboardEvent.class);
 		Root<Event> event = cq.from(getElementClass());
-		
+		Join<Event, Location> eventLocation = event.join(Event.EVENT_LOCATION, JoinType.LEFT);
+		Join<Location, District> eventDistrict = eventLocation.join(Location.DISTRICT, JoinType.LEFT);
+
 		Predicate filter = createUserFilter(cb, cq, event, user);
 		Predicate dateFilter = cb.between(event.get(Event.REPORT_DATE_TIME), from, to);
 		if (filter != null) {
@@ -76,9 +83,8 @@ public class EventService extends AbstractAdoService<Event> {
 		} else {
 			filter = dateFilter;
 		}
-		
+
 		if (district != null) {
-			Join<Event, Location> eventLocation = event.join(Event.EVENT_LOCATION);
 			Predicate districtFilter = cb.equal(eventLocation.get(Location.DISTRICT), district);
 			if (filter != null) {
 				filter = cb.and(filter, districtFilter);
@@ -86,7 +92,7 @@ public class EventService extends AbstractAdoService<Event> {
 				filter = districtFilter;
 			}
 		}
-		
+
 		if (disease != null) {
 			Predicate diseaseFilter = cb.equal(event.get(Event.DISEASE), disease);
 			if (filter != null) {
@@ -95,21 +101,30 @@ public class EventService extends AbstractAdoService<Event> {
 				filter = diseaseFilter;
 			}
 		}
-		
+
 		List<DashboardEvent> result;
 		if (filter != null) {
 			cq.where(filter);
 			cq.multiselect(
+					event.get(Event.UUID),
 					event.get(Event.EVENT_TYPE),
 					event.get(Event.EVENT_STATUS),
-					event.get(Event.DISEASE)
-			);
-			
+					event.get(Event.DISEASE),
+					event.get(Event.DISEASE_DETAILS),
+					event.get(Event.EVENT_DATE),
+					event.get(Event.REPORT_LAT),
+					event.get(Event.REPORT_LON),
+					eventDistrict.get(District.UUID)
+					);
+
 			result = em.createQuery(cq).getResultList();
+			for (DashboardEvent dashboardEvent : result) {
+				dashboardEvent.setDistrict(districtFacade.getDistrictReferenceByUuid(dashboardEvent.getDistrictUuid()));
+			}
 		} else {
 			result = Collections.emptyList();
 		}
-		
+
 		return result;
 	}
 
@@ -120,15 +135,15 @@ public class EventService extends AbstractAdoService<Event> {
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Event,Event> eventPath, User user) {
 		// National users can access all events in the system
 		if (user.getUserRoles().contains(UserRole.NATIONAL_USER)
-			|| user.getUserRoles().contains(UserRole.NATIONAL_OBSERVER)) {
+				|| user.getUserRoles().contains(UserRole.NATIONAL_OBSERVER)) {
 			return null;
 		}
 
-		
+
 		// whoever created the event or is assigned to it is allowed to access it
 		Predicate filter = cb.equal(eventPath.join(Event.REPORTING_USER, JoinType.LEFT), user);
 		filter = cb.or(filter, cb.equal(eventPath.join(Event.SURVEILLANCE_OFFICER, JoinType.LEFT), user));
-		
+
 		// allow event access based on user role
 		for (UserRole userRole : user.getUserRoles()) {
 			switch (userRole) {
@@ -155,22 +170,22 @@ public class EventService extends AbstractAdoService<Event> {
 				break;
 			}
 		}
-		
-//		// events assigned with task
-//		Join<Event, Task> tasksJoin = from.join(Event.TASKS, JoinType.LEFT);
-//		filter = cb.or(filter, cb.equal(tasksJoin.get(Task.ASSIGNEE_USER), user));
-		
+
+		//		// events assigned with task
+		//		Join<Event, Task> tasksJoin = from.join(Event.TASKS, JoinType.LEFT);
+		//		filter = cb.or(filter, cb.equal(tasksJoin.get(Task.ASSIGNEE_USER), user));
+
 		return filter;
 	}
-	
+
 	@Override
 	public Predicate createDateFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Event, Event> eventPath, Date date) {
-		
+
 		Predicate dateFilter = cb.greaterThan(eventPath.get(AbstractDomainObject.CHANGE_DATE), date);
-		
+
 		Join<Event, Location> address = eventPath.join(Event.EVENT_LOCATION);
 		dateFilter = cb.or(dateFilter, cb.greaterThan(address.get(AbstractDomainObject.CHANGE_DATE), date));
-		
+
 		return dateFilter;
 	}
 }

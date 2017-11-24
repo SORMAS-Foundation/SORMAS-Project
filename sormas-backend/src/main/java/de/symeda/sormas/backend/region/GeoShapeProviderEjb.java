@@ -93,6 +93,7 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 		Point polygonCenter = regionMultiPolygons.get(region).getCentroid();
 		return new GeoLatLon(polygonCenter.getX(), polygonCenter.getY());
 	}
+	
 
 	@Override
 	public GeoLatLon[][] getDistrictShape(DistrictReferenceDto district) {
@@ -108,6 +109,12 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 			}
 		}
 		return null;
+	}
+	
+	@Override
+	public GeoLatLon getCenterOfDistrict(DistrictReferenceDto district) {
+		Point polygonCenter = districtMultiPolygons.get(district).getCentroid();
+		return new GeoLatLon(polygonCenter.getX(), polygonCenter.getY());
 	}
 
 	@PostConstruct

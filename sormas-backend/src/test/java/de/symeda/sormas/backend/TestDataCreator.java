@@ -20,6 +20,7 @@ import de.symeda.sormas.api.event.EventType;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.facility.FacilityFacade;
 import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.region.CommunityFacade;
@@ -215,7 +216,7 @@ public class TestDataCreator extends BaseBeanTest {
 		return report;
 	}
 	
-	public EventDto createEvent(EventType eventType, EventStatus eventStatus, String eventDesc, String srcFirstName, String srcLastName, String srcTelNo, TypeOfPlace typeOfPlace, Date eventDate, Date reportDateTime, UserDto reportingUser, UserDto surveillanceOfficer, Disease disease) {
+	public EventDto createEvent(EventType eventType, EventStatus eventStatus, String eventDesc, String srcFirstName, String srcLastName, String srcTelNo, TypeOfPlace typeOfPlace, Date eventDate, Date reportDateTime, UserDto reportingUser, UserDto surveillanceOfficer, Disease disease, LocationDto eventLocation) {
 		EventDto event = new EventDto();
 		event.setUuid(DataHelper.createUuid());
 		event.setEventType(eventType);
@@ -230,6 +231,7 @@ public class TestDataCreator extends BaseBeanTest {
 		event.setReportingUser(reportingUser);
 		event.setSurveillanceOfficer(surveillanceOfficer);
 		event.setDisease(disease);
+		event.setEventLocation(eventLocation);
 		
 		event = eventFacade.saveEvent(event);
 		
