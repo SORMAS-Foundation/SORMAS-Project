@@ -86,9 +86,9 @@ public class MapComponent extends VerticalLayout {
 	private boolean showRegions;
 
 	// Entities
-	private final HashMap<FacilityReferenceDto, List<MapCase>> facilitiesCasesMaps = new HashMap<>();
+	private final HashMap<FacilityReferenceDto, List<MapCase>> casesByFacility = new HashMap<>();
 	private List<MapCase> mapCases = new ArrayList<>();
-	private List<MapCase> allDisplayedCases = new ArrayList<>();
+	private List<MapCase> mapAndFacilityCases = new ArrayList<>();
 	private List<MapContact> mapContacts = new ArrayList<>();
 
 	// Markers
@@ -196,8 +196,9 @@ public class MapComponent extends VerticalLayout {
 				// Case lists need to be filled even when cases are hidden because they are needed to retrieve the contacts
 				fillCaseLists(FacadeProvider.getCaseFacade().getCasesForMap(district, disease, fromDate, toDate, LoginHelper.getCurrentUser().getUuid()));
 			}
-			showContactMarkers(FacadeProvider.getContactFacade().getContactsForMap(district, disease, fromDate, toDate, LoginHelper.getCurrentUser().getUuid(), 
-					mapCaseDisplayMode == MapCaseDisplayMode.CASES ? mapCases : allDisplayedCases));
+			showContactMarkers(FacadeProvider.getContactFacade()
+					.getContactsForMap(district, disease, fromDate, toDate, 
+							LoginHelper.getCurrentUser().getUuid(), mapAndFacilityCases));
 		}
 		if (showEvents) {
 			showEventMarkers(dashboardDataProvider.getEvents());
@@ -207,7 +208,7 @@ public class MapComponent extends VerticalLayout {
 	public List<CaseDataDto> getCasesForFacility(FacilityDto facility) {
 		List<CaseDataDto> casesForFacility = new ArrayList<>();
 		CaseFacade caseFacade = FacadeProvider.getCaseFacade();
-		for (MapCase mapCase : facilitiesCasesMaps.get(facility)) {
+		for (MapCase mapCase : casesByFacility.get(facility)) {
 			casesForFacility.add(caseFacade.getCaseDataByUuid(mapCase.getUuid()));
 		}
 		return casesForFacility;
@@ -820,9 +821,9 @@ public class MapComponent extends VerticalLayout {
 
 		markerCaseFacilities.clear();
 		markerCases.clear();
-		facilitiesCasesMaps.clear();
+		casesByFacility.clear();
 		mapCases.clear();
-		allDisplayedCases.clear();
+		mapAndFacilityCases.clear();
 	}
 
 	private void showCaseMarkers(List<MapCase> cases) {
@@ -831,7 +832,7 @@ public class MapComponent extends VerticalLayout {
 
 		fillCaseLists(cases);
 
-		for (FacilityReferenceDto facilityReference : facilitiesCasesMaps.keySet()) {
+		for (FacilityReferenceDto facilityReference : casesByFacility.keySet()) {
 			FacilityDto facility = FacadeProvider.getFacilityFacade().getByUuid(facilityReference.getUuid());
 
 			if (facility.getLatitude() == null || facility.getLongitude() == null) {
@@ -843,9 +844,9 @@ public class MapComponent extends VerticalLayout {
 
 			// colorize the icon by the "strongest" classification type (order as in enum) and set its size depending
 			// on the number of cases
-			int numberOfCases = facilitiesCasesMaps.get(facility).size();
+			int numberOfCases = casesByFacility.get(facility).size();
 			Set<CaseClassification> classificationSet = new HashSet<>();
-			for (MapCase caze : facilitiesCasesMaps.get(facility)) {
+			for (MapCase caze : casesByFacility.get(facility)) {
 				classificationSet.add(caze.getCaseClassification());
 			}
 
@@ -872,7 +873,7 @@ public class MapComponent extends VerticalLayout {
 			}
 
 			// create and place the marker
-			GoogleMapMarker marker = new GoogleMapMarker(facility.toString() + " (" + facilitiesCasesMaps.get(facility).size() + " case(s))", latLon, false, icon.getUrl());
+			GoogleMapMarker marker = new GoogleMapMarker(facility.toString() + " (" + casesByFacility.get(facility).size() + " case(s))", latLon, false, icon.getUrl());
 			marker.setId(facility.getUuid().hashCode());
 			markerCaseFacilities.put(marker, facility);
 			map.addMarker(marker);
@@ -922,14 +923,15 @@ public class MapComponent extends VerticalLayout {
 						caze.getHealthFacilityUuid().equals(FacilityDto.OTHER_FACILITY_UUID)) {
 					mapCases.add(caze);
 				} else {
-					FacilityReferenceDto facility = FacadeProvider.getFacilityFacade().getByUuid(caze.getHealthFacilityUuid());
-					if (facilitiesCasesMaps.get(facility) == null) {
-						facilitiesCasesMaps.put(facility, new ArrayList<MapCase>());
+					FacilityReferenceDto facility = new FacilityReferenceDto();
+					facility.setUuid(caze.getHealthFacilityUuid());
+					if (casesByFacility.get(facility) == null) {
+						casesByFacility.put(facility, new ArrayList<MapCase>());
 					}
-					facilitiesCasesMaps.get(facility).add(caze);
+					casesByFacility.get(facility).add(caze);
 				}
-				allDisplayedCases.add(caze);
 			}
+			mapAndFacilityCases.add(caze);
 		}
 	}
 
