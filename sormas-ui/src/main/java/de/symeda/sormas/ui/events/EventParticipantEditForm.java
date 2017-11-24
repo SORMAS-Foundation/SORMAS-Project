@@ -22,7 +22,7 @@ public class EventParticipantEditForm extends AbstractEditForm<EventParticipantD
 		super(EventParticipantDto.class, EventParticipantDto.I18N_PREFIX);
 		this.event = event;
 		if(event == null) {
-			throw new IllegalArgumentException("Alert cannot be null");
+			throw new IllegalArgumentException("Event cannot be null");
 		}
 		addFields();
 	}

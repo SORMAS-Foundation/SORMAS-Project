@@ -48,7 +48,7 @@ public class EventsView extends AbstractView {
 		addComponent(gridLayout);
 		
     	if (LoginHelper.hasUserRight(UserRight.CREATE)) {
-			createButton = new Button("New alert");
+			createButton = new Button("New event");
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(FontAwesome.PLUS_CIRCLE);
 			createButton.addClickListener(e -> ControllerProvider.getEventController().create());

@@ -121,20 +121,20 @@ public class EventNewActivity extends AppCompatActivity {
                             @Override
                             public void call(boolean syncFailed, String syncFailedMessage) {
                                 if (syncFailed) {
-                                    Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_sync_error_saved), getResources().getString(R.string.entity_alert)), Snackbar.LENGTH_LONG).show();
+                                    Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_sync_error_saved), getResources().getString(R.string.entity_event)), Snackbar.LENGTH_LONG).show();
                                 } else {
-                                    Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_alert)), Snackbar.LENGTH_LONG).show();
+                                    Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_event)), Snackbar.LENGTH_LONG).show();
                                 }
                                 finish();
                             }
                         });
                     } else {
-                        Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_alert)), Snackbar.LENGTH_LONG).show();
+                        Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_event)), Snackbar.LENGTH_LONG).show();
                         finish();
                     }
                 } catch (DaoException e) {
-                    Log.e(getClass().getName(), "Error while trying to build alert", e);
-                    Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_error), getResources().getString(R.string.entity_alert)), Snackbar.LENGTH_LONG).show();
+                    Log.e(getClass().getName(), "Error while trying to build event", e);
+                    Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_error), getResources().getString(R.string.entity_event)), Snackbar.LENGTH_LONG).show();
                     ErrorReportingHelper.sendCaughtException(tracker, e, event, true);
                 }
 

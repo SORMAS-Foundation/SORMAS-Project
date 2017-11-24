@@ -38,7 +38,7 @@ public class EventController {
 	
 	public void create() {
 		CommitDiscardWrapperComponent<EventDataForm> eventCreateComponent = getEventCreateComponent();
-		VaadinUiUtil.showModalPopupWindow(eventCreateComponent, "Create new alert", true);
+		VaadinUiUtil.showModalPopupWindow(eventCreateComponent, "Create new event", true);
 	}
 	
 	public void navigateToData(String eventUuid) {
@@ -83,7 +83,7 @@ public class EventController {
 				if(!eventCreateForm.getFieldGroup().isModified()) {
 					EventDto dto = eventCreateForm.getValue();
 					ef.saveEvent(dto);
-					Notification.show("New alert created", Type.WARNING_MESSAGE);
+					Notification.show("New event created", Type.WARNING_MESSAGE);
 					navigateToParticipants(dto.getUuid());
 				}
 			}
@@ -104,7 +104,7 @@ public class EventController {
 				if(!eventEditForm.getFieldGroup().isModified()) {
 					EventDto eventDto = eventEditForm.getValue();
 					eventDto = ef.saveEvent(eventDto);
-					Notification.show("Alert data saved", Type.WARNING_MESSAGE);
+					Notification.show("Event data saved", Type.WARNING_MESSAGE);
 					navigateToData(eventDto.getUuid());
 				}
 			}

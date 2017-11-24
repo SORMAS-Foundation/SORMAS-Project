@@ -54,7 +54,7 @@ public class DashboardView extends AbstractView {
 	public static final String CASES = "cases";
 	public static final String DEATHS = "deaths";
 	public static final String CONTACTS = "contacts";
-	public static final String ALERTS = "alerts";
+	public static final String EVENTS = "events";
 	public static final String NEW_CASES = "newCases";
 	public static final String ALL = "all";
 	public static final String DISTRICT = "district";
