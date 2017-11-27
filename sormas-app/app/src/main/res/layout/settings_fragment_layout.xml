@@ -53,8 +53,8 @@
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/config_dropData"
-                android:text="@string/action_drop_data"/>
+                android:id="@+id/config_repullData"
+                android:text="@string/action_repull_data"/>
 
             <Button
                 android:layout_width="match_parent"

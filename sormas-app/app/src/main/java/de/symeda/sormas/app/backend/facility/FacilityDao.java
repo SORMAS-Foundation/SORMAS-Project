@@ -1,16 +1,25 @@
 package de.symeda.sormas.app.backend.facility;
 
+import android.util.Log;
+
 import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.dao.GenericRawResults;
+import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.Where;
 
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
+import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
+import de.symeda.sormas.app.backend.region.Region;
 
 /**
  * Created by Martin Wahnschaffe on 22.07.2016.
@@ -31,8 +40,35 @@ public class FacilityDao extends AbstractAdoDao<Facility> {
         return Facility.TABLE_NAME;
     }
 
+    /**
+     * @param region null will return the change date of facilities that don't have a region
+     */
+    public Date getLatestChangeDateByRegion(Region region) {
+
+        try {
+            QueryBuilder<Facility, Long> queryBuilder = queryBuilder();
+            queryBuilder.selectRaw("MAX(" + AbstractDomainObject.CHANGE_DATE + ")");
+            if (region != null) {
+                queryBuilder.where().eq(Facility.REGION, region);
+            } else {
+                queryBuilder.where().isNull(Facility.REGION);
+            }
+
+            GenericRawResults<Object[]> maxChangeDateResult = queryRaw(queryBuilder.prepareStatementString(), new DataType[]{DataType.DATE_LONG});
+            List<Object[]> dateResults = maxChangeDateResult.getResults();
+            if (dateResults.size() > 0) {
+                return (Date) dateResults.get(0)[0];
+            }
+            return null;
+
+        } catch (SQLException e) {
+            Log.e(getTableName(), "Could not perform getLatestChangeDateByRegion");
+            throw new RuntimeException();
+        }
+    }
+
     public List<Facility> getHealthFacilitiesByDistrict(District district, boolean includeStaticFacilities) {
-        List<Facility> facilities = queryForEq(Facility.DISTRICT + "_id", district, Facility.NAME, true);
+        List<Facility> facilities = queryForEq(Facility.DISTRICT, district, Facility.NAME, true);
         for (Facility facility : facilities) {
             if (facility.getType() == FacilityType.LABORATORY) {
                 facilities.remove(facility);
@@ -48,7 +84,7 @@ public class FacilityDao extends AbstractAdoDao<Facility> {
     }
 
     public List<Facility> getHealthFacilitiesByCommunity(Community community, boolean includeStaticFacilities) {
-        List<Facility> facilities = queryForEq(Facility.COMMUNITY + "_id", community, Facility.NAME, true);
+        List<Facility> facilities = queryForEq(Facility.COMMUNITY, community, Facility.NAME, true);
         for (Facility facility : facilities) {
             if (facility.getType() == FacilityType.LABORATORY) {
                 facilities.remove(facility);

@@ -82,10 +82,10 @@ public class CommunityDtoHelper extends AdoDtoHelper<Community, CommunityDto> {
     private boolean databaseWasEmpty = false;
 
     /**
-     * Overriden for performance reasons. No merge needed.
+     * Overriden for performance reasons. No merge needed when database was empty.
      */
     @Override
-    protected void handlePullResponse(final boolean markAsRead, final AbstractAdoDao<Community> dao, Response<List<CommunityDto>> response) throws ServerConnectionException {
+    protected int handlePullResponse(final boolean markAsRead, final AbstractAdoDao<Community> dao, Response<List<CommunityDto>> response) throws ServerConnectionException {
         if (!response.isSuccessful()) {
             String responseErrorBodyString;
             try {
@@ -120,7 +120,9 @@ public class CommunityDtoHelper extends AdoDtoHelper<Community, CommunityDto> {
             });
 
             Log.d(dao.getTableName(), "Pulled: " + result.size());
+            return result.size();
         }
+        return 0;
     }
 
     @Override

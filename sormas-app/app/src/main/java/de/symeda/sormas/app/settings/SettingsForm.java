@@ -8,11 +8,9 @@ import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 import java.net.ConnectException;
 
-import de.symeda.sormas.app.AbstractRootTabActivity;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -36,12 +34,11 @@ public class SettingsForm extends FormTab {
 
         binding.configServerUrl.setValue((String)ConfigProvider.getServerRestUrl());
 
-        binding.configDropData.setOnClickListener(new View.OnClickListener() {
+        binding.configRepullData.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                dropData();
+                repullData();
             }
         });
-        binding.configDropData.setVisibility(View.GONE);
 
         return binding.getRoot();
     }
@@ -52,6 +49,7 @@ public class SettingsForm extends FormTab {
 
         boolean hasUser = ConfigProvider.getUser() != null;
         binding.configChangePIN.setVisibility(hasUser ? View.VISIBLE : View.GONE);
+        binding.configRepullData.setVisibility(hasUser ? View.VISIBLE : View.GONE);
         binding.configSyncLog.setVisibility(hasUser ? View.VISIBLE : View.GONE);
         binding.configLogout.setVisibility(hasUser ? View.VISIBLE : View.GONE);
     }
@@ -59,7 +57,7 @@ public class SettingsForm extends FormTab {
     /**
      * Only possible when server connection is available
      */
-    private void dropData() {
+    private void repullData() {
 
         if (!RetroProvider.isConnected()) {
             try {
@@ -76,8 +74,7 @@ public class SettingsForm extends FormTab {
         if (RetroProvider.isConnected()) {
             binding.configProgressBar.setVisibility(View.VISIBLE);
 
-            DatabaseHelper.clearTables(true);
-            SynchronizeDataAsync.call(SynchronizeDataAsync.SyncMode.ChangesAndInfrastructure, getContext(), new SyncCallback() {
+            SynchronizeDataAsync.call(SynchronizeDataAsync.SyncMode.CompleteAndRepull, getContext(), new SyncCallback() {
                 @Override
                 public void call(boolean syncFailed, String syncFailedMessage) {
                     SettingsForm.this.onResume();

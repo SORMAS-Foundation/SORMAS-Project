@@ -71,27 +71,33 @@ public class FacilityDtoHelper extends AdoDtoHelper<Facility, FacilityDto> {
     @Override
     public void pullEntities(final boolean markAsRead) throws DaoException, ServerConnectionException {
         try {
-            final AbstractAdoDao<Facility> dao = DatabaseHelper.getAdoDao(getAdoClass());
-
-            Date maxModifiedDate = dao.getLatestChangeDate();
-            long maxModifiedTime = maxModifiedDate != null ? maxModifiedDate.getTime() + 1 : 0;
-            databaseWasEmpty = maxModifiedDate == null;
+            final FacilityDao facilityDao = DatabaseHelper.getFacilityDao();
 
             List<Region> regions = DatabaseHelper.getRegionDao().queryForAll();
             for (Region region : regions) {
+                Date maxModifiedDate = facilityDao.getLatestChangeDateByRegion(region);
+                long maxModifiedTime = maxModifiedDate != null ? maxModifiedDate.getTime() + 1 : 0;
+                databaseWasEmpty = maxModifiedDate == null;
+
                 Call<List<FacilityDto>> dtoCall = pullAllByRegionSince(region, maxModifiedTime);
                 if (dtoCall == null) {
                     return;
                 }
-                handlePullResponse(markAsRead, dao, dtoCall.execute());
+                handlePullResponse(markAsRead, facilityDao, dtoCall.execute());
             }
 
-            // Pull 'Other' health facility which has no region set
-            Call<List<FacilityDto>> dtoCall = pullAllWithoutRegionSince(maxModifiedTime);
-            if (dtoCall == null) {
-                return;
+            {
+                // Pull 'Other' health facility which has no region set
+                Date maxModifiedDate = facilityDao.getLatestChangeDateByRegion(null);
+                long maxModifiedTime = maxModifiedDate != null ? maxModifiedDate.getTime() + 1 : 0;
+                databaseWasEmpty = maxModifiedDate == null;
+
+                Call<List<FacilityDto>> dtoCall = pullAllWithoutRegionSince(maxModifiedTime);
+                if (dtoCall == null) {
+                    return;
+                }
+                handlePullResponse(markAsRead, facilityDao, dtoCall.execute());
             }
-            handlePullResponse(markAsRead, dao, dtoCall.execute());
 
         } catch (RuntimeException e) {
             Log.e(getClass().getName(), "Exception thrown when trying to pull entities");
@@ -107,10 +113,10 @@ public class FacilityDtoHelper extends AdoDtoHelper<Facility, FacilityDto> {
     private boolean databaseWasEmpty = false;
 
     /**
-     * Overriden for performance reasons. No merge needed.
+     * Overriden for performance reasons. No merge needed when database was empty.
      */
     @Override
-    protected void handlePullResponse(final boolean markAsRead, final AbstractAdoDao<Facility> dao, Response<List<FacilityDto>> response) {
+    protected int handlePullResponse(final boolean markAsRead, final AbstractAdoDao<Facility> dao, Response<List<FacilityDto>> response) {
         if (!response.isSuccessful()) {
             String responseErrorBodyString;
             try {
@@ -145,7 +151,10 @@ public class FacilityDtoHelper extends AdoDtoHelper<Facility, FacilityDto> {
             });
 
             Log.d(dao.getTableName(), "Pulled: " + result.size());
+            return result.size();
         }
+
+        return 0;
     }
 
     // cache of last queried entities
