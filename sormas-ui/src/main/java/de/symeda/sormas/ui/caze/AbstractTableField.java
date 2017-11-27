@@ -20,6 +20,7 @@ import com.vaadin.data.Container.ItemSetChangeListener;
 import com.vaadin.data.Property;
 import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.data.util.converter.Converter.ConversionException;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.server.FontAwesome;
@@ -41,6 +42,8 @@ import de.symeda.sormas.ui.utils.CssStyles;
 
 /**
  * TODO replace table with grid?
+ * TODO whole component seems to need improvement (e.g. should use setInternalValue instead of setValue)
+ * Does probably not make sense, because of future update to Vaadin 8
  * 
  * @author Martin Wahnschaffe
  */
@@ -232,6 +235,7 @@ public abstract class AbstractTableField<E> extends CustomField<Collection> {
 			@Override
 			public void accept(E result) {
 				table.addItem(result);
+				fireValueChange(false);
 			}
 		});
 	}
@@ -243,6 +247,8 @@ public abstract class AbstractTableField<E> extends CustomField<Collection> {
 	 */
 	protected void onEntryChanged(E entry) {
 		getTable().refreshRowCache();
+		
+		fireValueChange(false);
 	}
 
 	/**
@@ -283,6 +289,8 @@ public abstract class AbstractTableField<E> extends CustomField<Collection> {
 	public void removeEntry(E entry) {
 		// gewünschten Eintrag löschen
 		getTable().removeItem(entry);
+		
+		fireValueChange(false);
 	}
 
 	/**
@@ -366,6 +374,8 @@ public abstract class AbstractTableField<E> extends CustomField<Collection> {
 		applyTablePageLength();
 
 		updateColumns();
+		
+		fireValueChange(false);
 
 		// not set, we manage our own dataSource
 		// super.setPropertyDataSource (newDataSource);
@@ -487,6 +497,9 @@ public abstract class AbstractTableField<E> extends CustomField<Collection> {
 
 				// done
 				dataSource.setValue(entriesCopy);
+				
+				fireValueChange(false);
+				
 			} else {
 				/* An invalid value and we don't allow them, throw the exception */
 				validate();
@@ -531,10 +544,12 @@ public abstract class AbstractTableField<E> extends CustomField<Collection> {
 		}
 		return true;
 	}
-
+	
+	
 	@SuppressWarnings("unchecked")
 	@Override
-	public void setValue(Collection value) {
+	protected void setValue(Collection newFieldValue, boolean repaintIsNotNeeded, boolean ignoreReadOnly)
+			throws com.vaadin.data.Property.ReadOnlyException, ConversionException, InvalidValueException {
 
 		BeanItemContainer<E> container = getContainer();
 		if (container == null) {
@@ -542,8 +557,10 @@ public abstract class AbstractTableField<E> extends CustomField<Collection> {
 		}
 
 		container.removeAllItems();
-		container.addAll(value);
+		container.addAll(newFieldValue);
 		table.refreshRowCache();
+
+		fireValueChange(repaintIsNotNeeded);
 	}
 
 	/**

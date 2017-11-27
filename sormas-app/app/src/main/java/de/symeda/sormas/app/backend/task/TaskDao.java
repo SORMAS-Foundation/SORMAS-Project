@@ -11,8 +11,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.task.TaskStatus;
+import de.symeda.sormas.api.task.TaskType;
+import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.caze.CaseDtoHelper;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DaoException;
@@ -41,8 +46,15 @@ public class TaskDao extends AbstractAdoDao<Task> {
         return Task.TABLE_NAME;
     }
 
-    public void changeTaskStatus(Task task, TaskStatus targetStatus) throws DaoException {
+    public void changeTaskStatus(Task task, TaskStatus targetStatus) throws DaoException, ValidationException {
         task = queryForId(task.getId());
+
+        if (targetStatus == TaskStatus.DONE && task.getTaskType() == TaskType.CASE_INVESTIGATION) {
+            CaseDataDto caseData = new CaseDataDto();
+            new CaseDtoHelper().fillInnerFromAdo(caseData, task.getCaze());
+            CaseLogic.validateInvestigationDoneAllowed(caseData);
+        }
+
         task.setTaskStatus(targetStatus);
         task.setStatusChangeDate(new Date());
 

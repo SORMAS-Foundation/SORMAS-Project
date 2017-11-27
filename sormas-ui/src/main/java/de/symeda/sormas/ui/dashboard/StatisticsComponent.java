@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import com.vaadin.server.FontAwesome;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -103,14 +104,28 @@ public class StatisticsComponent extends VerticalLayout {
 		subComponentsLayout = new HorizontalLayout();
 		subComponentsLayout.setWidth(100, Unit.PERCENTAGE);
 		CssStyles.style(subComponentsLayout, CssStyles.VSPACE_NONE);
+		addSeparatorLabel();
 		addMyTasksComponent();
+		addSeparatorLabel();
 		addNewCasesComponent();
+		addSeparatorLabel();
 		addNewEventsComponent();
+		addSeparatorLabel();
 		addNewTestResultsComponent();
+		addSeparatorLabel();
 		addComponent(subComponentsLayout);
 		if (Disease.values().length > 6) {
 			addShowMoreAndLessButtons();
 		}
+	}
+	
+	private void addSeparatorLabel() {
+		// TODO this is not working well in chrome - needs to be solved differently
+//		Label separator = new Label("<div class='v-label-" + CssStyles.SEPARATOR_VERTICAL_BROAD + "'></div>", ContentMode.HTML);
+//		separator.setHeight(100, Unit.PERCENTAGE);
+//		separator.setWidth(2, Unit.PIXELS);
+//		subComponentsLayout.addComponent(separator);
+//		subComponentsLayout.setExpandRatio(separator, 0);
 	}
 
 	public void updateStatistics(Disease disease) {
@@ -159,7 +174,6 @@ public class StatisticsComponent extends VerticalLayout {
 
 	private void addMyTasksComponent() {
 		myTasksComponent = new StatisticsSubComponent();
-		myTasksComponent.addStyleName(DashboardCssStyles.STATISTICS_SUB_COMPONENT);
 
 		// Header
 		myTasksComponent.addHeader("My Tasks", null);
@@ -198,14 +212,15 @@ public class StatisticsComponent extends VerticalLayout {
 		myTasksComponent.addComponentToRightContentColumn(taskStatusCircleGraph);
 
 		subComponentsLayout.addComponent(myTasksComponent);
+		subComponentsLayout.setExpandRatio(myTasksComponent, 0.25f);
 	}
 
 	private void updateMyTasksComponent() {
 		List<DashboardTask> dashboardTasks = dashboardDataProvider.getTasks();
 		List<DashboardTask> dashboardPendingTasks = dashboardDataProvider.getPendingTasks();
 
-		int myTasksCount = dashboardPendingTasks.size();		
-		myTasksComponent.updateCountLabel(myTasksCount);
+		int pendingTasksCount = dashboardPendingTasks.size();		
+		myTasksComponent.updateCountLabel(pendingTasksCount);
 
 		int highPriorityCount = (int) dashboardPendingTasks.stream().filter(t -> t.getPriority() == TaskPriority.HIGH).count();
 		taskPriorityHigh.updateCountLabel(highPriorityCount);
@@ -214,13 +229,12 @@ public class StatisticsComponent extends VerticalLayout {
 		int lowPriorityCount = (int) dashboardPendingTasks.stream().filter(t -> t.getPriority() == TaskPriority.LOW).count();
 		taskPriorityLow.updateCountLabel(lowPriorityCount);
 
-		int pendingCount = myTasksCount;
 		int doneCount = (int) dashboardTasks.stream().filter(t -> t.getTaskStatus() == TaskStatus.DONE).count();
 		int removedCount = (int) dashboardTasks.stream().filter(t -> t.getTaskStatus() == TaskStatus.REMOVED).count();
 		int notExecutableCount = (int) dashboardTasks.stream().filter(t -> t.getTaskStatus() == TaskStatus.NOT_EXECUTABLE).count();
-		int totalCount = pendingCount + doneCount + removedCount + notExecutableCount;
+		int totalCount = pendingTasksCount + doneCount + removedCount + notExecutableCount;
 		int pendingPercentage = totalCount == 0 ? 0 : 
-			new BigDecimal(pendingCount).multiply(new BigDecimal(100)).divide(new BigDecimal(totalCount), RoundingMode.HALF_UP).intValue();
+			new BigDecimal(pendingTasksCount).multiply(new BigDecimal(100)).divide(new BigDecimal(totalCount), RoundingMode.HALF_UP).intValue();
 		int donePercentage = totalCount == 0 ? 0 :
 			new BigDecimal(doneCount).multiply(new BigDecimal(100)).divide(new BigDecimal(totalCount), RoundingMode.HALF_UP).intValue();
 		int removedPercentage = totalCount == 0 ? 0 :
@@ -228,7 +242,7 @@ public class StatisticsComponent extends VerticalLayout {
 		int notExecutablePercentage = totalCount == 0 ? 0 :
 			new BigDecimal(notExecutableCount).multiply(new BigDecimal(100)).divide(new BigDecimal(totalCount), RoundingMode.HALF_UP).intValue();
 
-		taskStatusPending.updateCountLabel(pendingCount);
+		taskStatusPending.updateCountLabel(pendingTasksCount);
 		taskStatusDone.updateCountLabel(doneCount);
 
 		taskStatusPendingPercentage.updatePercentageValue(pendingPercentage);
@@ -245,7 +259,6 @@ public class StatisticsComponent extends VerticalLayout {
 
 	private void addNewCasesComponent() {
 		newCasesComponent = new StatisticsSubComponent();
-		newCasesComponent.addStyleName(DashboardCssStyles.STATISTICS_SUB_COMPONENT);
 
 		// Header
 		newCasesComponent.addHeader("New Cases", null);
@@ -274,6 +287,7 @@ public class StatisticsComponent extends VerticalLayout {
 		CssStyles.style(caseFatalityRateCaption, CssStyles.SIZE_MEDIUM, CssStyles.COLOR_CRITICAL, CssStyles.TEXT_UPPERCASE, CssStyles.TEXT_BOLD);
 
 		subComponentsLayout.addComponent(newCasesComponent);
+		subComponentsLayout.setExpandRatio(newCasesComponent, 0.25f);
 	}
 
 	private void updateNewCasesComponent(int amountOfDisplayedDiseases) {
@@ -342,14 +356,14 @@ public class StatisticsComponent extends VerticalLayout {
 			int fatalitiesCount = (int) dashboardCases.stream().filter(c -> c.getCasePersonCondition() == PresentCondition.DEAD).count();
 			int previousFatalitiesCount = (int) previousDashboardCases.stream().filter(c -> c.getCasePersonCondition() == PresentCondition.DEAD).count();
 			
-			float investigatedCasesGrowth = investigatedCasesCount == 0 ? -previousInvestigatedCasesCount * 100 : 
-				previousInvestigatedCasesCount == 0 ? investigatedCasesCount * 100 :
+			float investigatedCasesGrowth = investigatedCasesCount == 0 ? previousInvestigatedCasesCount > 0 ? -100 : 0 : 
+				previousInvestigatedCasesCount == 0 ? investigatedCasesCount > 0 ? Float.MIN_VALUE : 0 :
 				new BigDecimal(investigatedCasesCount).subtract(new BigDecimal(previousInvestigatedCasesCount)).divide(new BigDecimal(investigatedCasesCount), 1, RoundingMode.HALF_UP).multiply(new BigDecimal(100)).floatValue();
-			float discardedCasesGrowth = discardedCasesCount == 0 ? -previousDiscardedCasesCount * 100 : 
-				previousDiscardedCasesCount == 0 ? discardedCasesCount * 100 :
+			float discardedCasesGrowth = discardedCasesCount == 0 ? previousDiscardedCasesCount > 0 ? -100 : 0 : 
+				previousDiscardedCasesCount == 0 ? discardedCasesCount > 0 ? Float.MIN_VALUE : 0 :
 				new BigDecimal(discardedCasesCount).subtract(new BigDecimal(previousDiscardedCasesCount)).divide(new BigDecimal(discardedCasesCount), 1, RoundingMode.HALF_UP).multiply(new BigDecimal(100)).floatValue();
-			float fatalitiesGrowth = fatalitiesCount == 0 ? -previousFatalitiesCount * 100 : 
-				previousFatalitiesCount == 0 ? fatalitiesCount * 100 :
+			float fatalitiesGrowth = fatalitiesCount == 0 ? previousFatalitiesCount > 0 ? -100 : 0 : 
+				previousFatalitiesCount == 0 ? fatalitiesCount > 0 ? Float.MIN_VALUE : 0 :
 				new BigDecimal(fatalitiesCount).subtract(new BigDecimal(previousFatalitiesCount)).divide(new BigDecimal(fatalitiesCount), 1, RoundingMode.HALF_UP).multiply(new BigDecimal(100)).floatValue();
 			float fatalityRate = fatalitiesCount == 0 ? 0 : newCasesCount == 0 ? 0 :
 				new BigDecimal(fatalitiesCount).multiply(new BigDecimal(100)).divide(new BigDecimal(newCasesCount), 1, RoundingMode.HALF_UP).floatValue();
@@ -363,7 +377,6 @@ public class StatisticsComponent extends VerticalLayout {
 
 	private void addNewEventsComponent() {
 		newEventsComponent = new StatisticsSubComponent();
-		newEventsComponent.addStyleName(DashboardCssStyles.STATISTICS_SUB_COMPONENT);
 
 		// Header
 		newEventsComponent.addHeader("New Events", null);
@@ -386,6 +399,7 @@ public class StatisticsComponent extends VerticalLayout {
 		eventStatusNotAnEventPercentage = new StatisticsPercentageElement("Not An Event", CssStyles.SVG_FILL_MINOR);
 
 		subComponentsLayout.addComponent(newEventsComponent);
+		subComponentsLayout.setExpandRatio(newEventsComponent, 0.25f);
 	}
 
 	private void updateNewEventsComponent(int amountOfDisplayedDiseases) {
@@ -475,8 +489,6 @@ public class StatisticsComponent extends VerticalLayout {
 
 	private void addNewTestResultsComponent() {
 		newTestResultsComponent = new StatisticsSubComponent();
-		newTestResultsComponent.addStyleName(DashboardCssStyles.STATISTICS_SUB_COMPONENT);
-		newTestResultsComponent.addStyleName(DashboardCssStyles.STATISTICS_SUB_COMPONENT_RIGHT);
 
 		// Header
 		newTestResultsComponent.addHeader("New Test Results", null);
@@ -502,6 +514,7 @@ public class StatisticsComponent extends VerticalLayout {
 		testResultIndeterminatePercentage = new StatisticsPercentageElement("Indeterminate", CssStyles.SVG_FILL_MINOR);
 
 		subComponentsLayout.addComponent(newTestResultsComponent);
+		subComponentsLayout.setExpandRatio(newTestResultsComponent, 0.25f);
 	}
 
 	private void updateNewTestResultsComponent(int amountOfDisplayedDiseases) {
@@ -539,7 +552,7 @@ public class StatisticsComponent extends VerticalLayout {
 				newTestResultsComponent.addComponentToRightContentColumn(testResultPendingPercentage);
 				newTestResultsComponent.addComponentToRightContentColumn(testResultIndeterminatePercentage);
 			} else {
-				newEventsComponent.addContent();
+				newTestResultsComponent.addContent();
 			}
 		}
 		

@@ -27,6 +27,7 @@ import de.symeda.sormas.app.component.PropertyField;
 import de.symeda.sormas.app.databinding.CaseEpidataFragmentLayoutBinding;
 import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.FormTab;
+import de.symeda.sormas.app.validation.EpiDataValidator;
 
 /**
  * Created by Mate Strysewske on 08.03.2017.
@@ -69,13 +70,16 @@ public class EpiDataForm extends FormTab {
                                 new Consumer() {
                                     @Override
                                     public void accept(Object burialDialog) {
-                                        binding.epiDataBurials.setValue(
-                                                ListField.updateList(
-                                                        binding.epiDataBurials.getValue(),
-                                                        (EpiDataBurial) burialDialog
-                                                )
-                                        );
-                                        burialTab.dismiss();
+                                        if (EpiDataValidator.validateBurialData(burialTab.getBinding())) {
+                                            binding.epiDataBurials.setValue(
+                                                    ListField.updateList(
+                                                            binding.epiDataBurials.getValue(),
+                                                            (EpiDataBurial) burialDialog
+                                                    )
+                                            );
+                                            burialTab.dismiss();
+                                            updateBurialsHint();
+                                        }
                                     }
                                 }, new Consumer() {
                                     @Override
@@ -86,6 +90,7 @@ public class EpiDataForm extends FormTab {
                                                         (EpiDataBurial) burialDialog
                                                 )
                                         );
+                                        updateBurialsHint();
                                     }
                                 },
                                 getActivity().getResources().getString(R.string.headline_burial)
@@ -118,6 +123,7 @@ public class EpiDataForm extends FormTab {
                                                 )
                                         );
                                         gatheringTab.dismiss();
+                                        updateGatheringsHint();
                                     }
                                 }, new Consumer() {
                                     @Override
@@ -128,6 +134,7 @@ public class EpiDataForm extends FormTab {
                                                         (EpiDataGathering) gatheringDialog
                                                 )
                                         );
+                                        updateGatheringsHint();
                                     }
                                 },
                                 getActivity().getResources().getString(R.string.headline_gathering)
@@ -153,13 +160,16 @@ public class EpiDataForm extends FormTab {
                                 new Consumer() {
                                     @Override
                                     public void accept(Object travelDialog) {
-                                        binding.epiDataTravels.setValue(
-                                                ListField.updateList(
-                                                        binding.epiDataTravels.getValue(),
-                                                        (EpiDataTravel) travelDialog
-                                                )
-                                        );
-                                        travelTab.dismiss();
+                                        if (EpiDataValidator.validateTravelData(travelTab.getBinding())) {
+                                            binding.epiDataTravels.setValue(
+                                                    ListField.updateList(
+                                                            binding.epiDataTravels.getValue(),
+                                                            (EpiDataTravel) travelDialog
+                                                    )
+                                            );
+                                            travelTab.dismiss();
+                                            updateTravelsHint();
+                                        }
                                     }
                                 }, new Consumer() {
                                     @Override
@@ -170,6 +180,7 @@ public class EpiDataForm extends FormTab {
                                                         (EpiDataTravel) travelDialog
                                                 )
                                         );
+                                        updateTravelsHint();
                                     }
                                 },
                                 getActivity().getResources().getString(R.string.headline_travel)
@@ -187,6 +198,7 @@ public class EpiDataForm extends FormTab {
             @Override
             public void onChange(PropertyField field) {
                 binding.epiDataBurials.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
+                updateBurialsHint();
             }
         });
 
@@ -194,6 +206,7 @@ public class EpiDataForm extends FormTab {
             @Override
             public void onChange(PropertyField field) {
                 binding.epiDataGatherings.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
+                updateGatheringsHint();
             }
         });
 
@@ -201,6 +214,7 @@ public class EpiDataForm extends FormTab {
             @Override
             public void onChange(PropertyField field) {
                 binding.epiDataTravels.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
+                updateTravelsHint();
             }
         });
 
@@ -316,6 +330,33 @@ public class EpiDataForm extends FormTab {
             return true;
         } catch (NumberFormatException e) {
             return false;
+        }
+    }
+
+    private void updateBurialsHint() {
+        YesNoUnknown burialAttended = binding.epiDataBurialAttended.getValue();
+        if (burialAttended == YesNoUnknown.YES && binding.epiDataBurials.getValue().size() == 0) {
+            binding.epiDataBurialAttended.setErrorWithoutFocus(DatabaseHelper.getContext().getResources().getString(R.string.validation_soft_add_list_entry));
+        } else {
+            binding.epiDataBurialAttended.clearError();
+        }
+    }
+
+    private void updateGatheringsHint() {
+        YesNoUnknown gatheringAttended = binding.epiDataGatheringAttended.getValue();
+        if (gatheringAttended == YesNoUnknown.YES && binding.epiDataGatherings.getValue().size() == 0) {
+            binding.epiDataGatheringAttended.setErrorWithoutFocus(DatabaseHelper.getContext().getResources().getString(R.string.validation_soft_add_list_entry));
+        } else {
+            binding.epiDataGatheringAttended.clearError();
+        }
+    }
+
+    private void updateTravelsHint() {
+        YesNoUnknown traveled = binding.epiDataTraveled.getValue();
+        if (traveled == YesNoUnknown.YES && binding.epiDataTravels.getValue().size() == 0) {
+            binding.epiDataTraveled.setErrorWithoutFocus(DatabaseHelper.getContext().getResources().getString(R.string.validation_soft_add_list_entry));
+        } else {
+            binding.epiDataTraveled.clearError();
         }
     }
 

@@ -253,10 +253,12 @@ public class EpiCurveComponent extends VerticalLayout {
 		{
 			epiCurveLabelLayout.setSizeUndefined();
 			Label epiCurveLabel = new Label("Epidemiological Curve");
+			epiCurveLabel.setSizeUndefined();
 			CssStyles.style(epiCurveLabel, CssStyles.H2, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
 			epiCurveLabelLayout.addComponent(epiCurveLabel);
 
 			epiCurveDateLabel = new Label();
+			epiCurveDateLabel.setSizeUndefined();
 			CssStyles.style(epiCurveDateLabel, CssStyles.H4, CssStyles.VSPACE_TOP_NONE);
 			updateDateLabel();
 			epiCurveLabelLayout.addComponent(epiCurveDateLabel);

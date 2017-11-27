@@ -3,6 +3,7 @@ package de.symeda.sormas.ui.epidata;
 import java.util.Arrays;
 import java.util.List;
 
+import com.vaadin.server.UserError;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
@@ -77,12 +78,12 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			return;
 		}
 		
-		addField(EpiDataDto.BURIAL_ATTENDED, OptionGroup.class);
-		addField(EpiDataDto.BURIALS, EpiDataBurialsField.class);
-		addField(EpiDataDto.GATHERING_ATTENDED, OptionGroup.class);
-		addField(EpiDataDto.GATHERINGS, EpiDataGatheringsField.class);
-		addField(EpiDataDto.TRAVELED, OptionGroup.class);
-		addField(EpiDataDto.TRAVELS, EpiDataTravelsField.class);
+		OptionGroup burialAttendedField = addField(EpiDataDto.BURIAL_ATTENDED, OptionGroup.class);
+		EpiDataBurialsField burialsField = addField(EpiDataDto.BURIALS, EpiDataBurialsField.class);
+		OptionGroup gatheringAttendedField = addField(EpiDataDto.GATHERING_ATTENDED, OptionGroup.class);
+		EpiDataGatheringsField gatheringsField = addField(EpiDataDto.GATHERINGS, EpiDataGatheringsField.class);
+		OptionGroup traveledField = addField(EpiDataDto.TRAVELED, OptionGroup.class);
+		EpiDataTravelsField travelsField = addField(EpiDataDto.TRAVELS, EpiDataTravelsField.class);
 		addField(EpiDataDto.RODENTS, OptionGroup.class);
 		addField(EpiDataDto.BATS, OptionGroup.class);
 		addField(EpiDataDto.PRIMATES, OptionGroup.class);
@@ -167,6 +168,52 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 				getContent().addComponent(environmentalCaptionLabel, ENVIRONMENTAL_LOC);
 				break;
 			}
+		}
+		
+		burialAttendedField.addValueChangeListener(e -> {
+			updateBurialsHint(burialAttendedField, burialsField);
+		});
+		burialsField.addValueChangeListener(e -> {
+			updateBurialsHint(burialAttendedField, burialsField);
+		});
+		gatheringAttendedField.addValueChangeListener(e -> {
+			updateGatheringsHint(gatheringAttendedField, gatheringsField);
+		});
+		gatheringsField.addValueChangeListener(e -> {
+			updateGatheringsHint(gatheringAttendedField, gatheringsField);
+		});
+		traveledField.addValueChangeListener(e -> {
+			updateTravelsHint(traveledField, travelsField);
+		});
+		travelsField.addValueChangeListener(e -> {
+			updateTravelsHint(traveledField, travelsField);
+		});
+	}
+	
+	private void updateBurialsHint(OptionGroup burialAttendedField, EpiDataBurialsField burialsField) {
+		YesNoUnknown value = (YesNoUnknown) burialAttendedField.getValue();
+		if (value == YesNoUnknown.YES && (burialsField == null || burialsField.getValue().size() == 0)) {
+			burialAttendedField.setComponentError(new UserError("Please add an entry to the list below if there is any data available to you."));
+		} else {
+			burialAttendedField.setComponentError(null);
+		}
+	}
+	
+	private void updateGatheringsHint(OptionGroup gatheringAttendedField, EpiDataGatheringsField gatheringsField) {
+		YesNoUnknown value = (YesNoUnknown) gatheringAttendedField.getValue();
+		if (value == YesNoUnknown.YES && (gatheringsField == null || gatheringsField.getValue().size() == 0)) {
+			gatheringAttendedField.setComponentError(new UserError("Please add an entry to the list below if there is any data available to you."));
+		} else {
+			gatheringAttendedField.setComponentError(null);
+		}
+	}
+	
+	private void updateTravelsHint(OptionGroup traveledField, EpiDataTravelsField travelsField) {
+		YesNoUnknown value = (YesNoUnknown) traveledField.getValue();
+		if (value == YesNoUnknown.YES && (travelsField == null || travelsField.getValue().size() == 0)) {
+			traveledField.setComponentError(new UserError("Please add an entry to the list below if there is any data available to you."));
+		} else {
+			traveledField.setComponentError(null);
 		}
 	}
 	

@@ -21,6 +21,8 @@ public class TaskCriteria {
 	private Event event;
 	private Date dueDateFrom;
 	private Date dueDateTo;
+	private Date statusChangeDateFrom;
+	private Date statusChangeDateTo;
 	
 	public TaskStatus[] getTaskStatuses() {
 		return taskStatuses;
@@ -81,6 +83,17 @@ public class TaskCriteria {
 	public TaskCriteria dueDateBetween(Date dueDateFrom, Date dueDateTo) {
 		this.dueDateFrom = dueDateFrom;
 		this.dueDateTo = dueDateTo;
+		return this;
+	}
+	public Date getStatusChangeDateFrom() {
+		return statusChangeDateFrom;
+	}
+	public Date getStatusChangeDateTo() {
+		return statusChangeDateTo;
+	}
+	public TaskCriteria statusChangeDateBetween(Date statusChangeDateFrom, Date statusChangeDateTo) {
+		this.statusChangeDateFrom = statusChangeDateFrom;
+		this.statusChangeDateTo = statusChangeDateTo;
 		return this;
 	}
 }

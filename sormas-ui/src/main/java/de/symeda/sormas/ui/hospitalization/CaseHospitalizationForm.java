@@ -1,7 +1,9 @@
 package de.symeda.sormas.ui.hospitalization;
 
 import java.util.Arrays;
+import java.util.Collection;
 
+import com.vaadin.server.UserError;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TextField;
@@ -9,6 +11,7 @@ import com.vaadin.ui.TextField;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
+import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -50,11 +53,28 @@ public class CaseHospitalizationForm extends AbstractEditForm<HospitalizationDto
 		addField(HospitalizationDto.DISCHARGE_DATE, DateField.class);
 		addField(HospitalizationDto.ISOLATED, OptionGroup.class);
 		addField(HospitalizationDto.ISOLATION_DATE, DateField.class);
-		addField(HospitalizationDto.HOSPITALIZED_PREVIOUSLY, OptionGroup.class);
-		addField(HospitalizationDto.PREVIOUS_HOSPITALIZATIONS, PreviousHospitalizationsField.class);
+		OptionGroup hospitalizedPreviouslyField = addField(HospitalizationDto.HOSPITALIZED_PREVIOUSLY, OptionGroup.class);
+		PreviousHospitalizationsField previousHospitalizationsField = addField(HospitalizationDto.PREVIOUS_HOSPITALIZATIONS, PreviousHospitalizationsField.class);
 		
 		FieldHelper.setVisibleWhen(getFieldGroup(), HospitalizationDto.ISOLATION_DATE, HospitalizationDto.ISOLATED, Arrays.asList(YesNoUnknown.YES), true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), HospitalizationDto.PREVIOUS_HOSPITALIZATIONS, HospitalizationDto.HOSPITALIZED_PREVIOUSLY, Arrays.asList(YesNoUnknown.YES), true);
+		
+		hospitalizedPreviouslyField.addValueChangeListener(e -> {
+			updatePrevHospHint(hospitalizedPreviouslyField, previousHospitalizationsField);
+		});
+		previousHospitalizationsField.addValueChangeListener(e -> {
+			updatePrevHospHint(hospitalizedPreviouslyField, previousHospitalizationsField);
+		});
+	}
+	
+	private void updatePrevHospHint(OptionGroup hospitalizedPreviouslyField, PreviousHospitalizationsField previousHospitalizationsField) {
+		YesNoUnknown value = (YesNoUnknown) hospitalizedPreviouslyField.getValue();
+		Collection<PreviousHospitalizationDto> previousHospitalizations = previousHospitalizationsField.getValue();
+		if (value == YesNoUnknown.YES && (previousHospitalizations == null || previousHospitalizations.size() == 0)) {
+			hospitalizedPreviouslyField.setComponentError(new UserError("Please add an entry to the list below if there is any data available to you."));
+		} else {
+			hospitalizedPreviouslyField.setComponentError(null);
+		}
 	}
 	
 	@Override

@@ -83,6 +83,7 @@ public final class CssStyles {
 	public static final String SEPARATOR_HORIZONTAL = "separator-horizontal";
 	public static final String SEPARATOR_HORIZONTAL_BOTTOM = "separator-horizontal-bottom";
 	public static final String SEPARATOR_VERTICAL = "separator-vertical";
+	public static final String SEPARATOR_VERTICAL_BROAD = "separator-vertical-broad";
 	
 	// Button styles
 	public static final String BUTTON_SUBTLE = "subtle";

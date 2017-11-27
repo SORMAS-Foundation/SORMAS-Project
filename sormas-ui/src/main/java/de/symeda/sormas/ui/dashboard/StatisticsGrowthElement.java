@@ -48,7 +48,7 @@ public class StatisticsGrowthElement extends VerticalLayout {
 	
 	public void update(int count, float percentage, boolean increaseIsPositive) {
 		countLabel.setValue(Integer.toString(count));
-		percentageLabel.setValue(percentage % 1.0 != 0 ? String.format("%s", Float.toString(Math.abs(percentage))) + "%" : String.format("%.0f", percentage) + "%");
+		percentageLabel.setValue(percentage != Float.MIN_VALUE ? percentage % 1.0 != 0 ? String.format("%s", Float.toString(Math.abs(percentage))) + "%" : String.format("%.0f", percentage) + "%" : "");
 		CssStyles.removeStyles(growthLabel, CssStyles.COLOR_CRITICAL, CssStyles.COLOR_POSITIVE, CssStyles.COLOR_IMPORTANT);
 		if (percentage > 0) {
 			growthLabel.setValue(FontAwesome.CHEVRON_UP.getHtml());

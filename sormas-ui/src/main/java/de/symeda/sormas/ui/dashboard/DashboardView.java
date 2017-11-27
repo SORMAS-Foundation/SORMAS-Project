@@ -23,7 +23,6 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.ui.login.LoginHelper;
@@ -54,7 +53,7 @@ public class DashboardView extends AbstractView {
 	public static final String CASES = "cases";
 	public static final String DEATHS = "deaths";
 	public static final String CONTACTS = "contacts";
-	public static final String ALERTS = "alerts";
+	public static final String EVENTS = "events";
 	public static final String NEW_CASES = "newCases";
 	public static final String ALL = "all";
 	public static final String DISTRICT = "district";
@@ -289,6 +288,7 @@ public class DashboardView extends AbstractView {
 		filterLayout.addComponent(applyButton);
 		
 		Label infoLabel = new Label(FontAwesome.INFO_CIRCLE.getHtml(), ContentMode.HTML);
+		infoLabel.setSizeUndefined();
 		infoLabel.setDescription("All Dashboard elements that display cases (the 'New Cases' statistics, the Epidemiological Curve and the Case Status Map) use the onset date of the first symptom for the date/epi week filter. If this date is not available, the date of report is used instead.");
 		CssStyles.style(infoLabel, CssStyles.SIZE_XLARGE, CssStyles.COLOR_SECONDARY);
 		filterLayout.addComponent(infoLabel);
@@ -375,55 +375,8 @@ public class DashboardView extends AbstractView {
 	}
 
 	private void refreshDashboard() {		
-		// Update the entities lists according to the filters
-		String userUuid = LoginHelper.getCurrentUser().getUuid();
+		dashboardDataProvider.refreshData();
 		
-		if (dateFilterOption == DateFilterOption.DATE) {
-			int period = DateHelper.getDaysBetween(fromDate, toDate);
-			// Cases
-			dashboardDataProvider.setCases(FacadeProvider.getCaseFacade().getNewCasesForDashboard(district, disease, fromDate, toDate, userUuid));
-			dashboardDataProvider.setPreviousCases(FacadeProvider.getCaseFacade().getNewCasesForDashboard(district, disease, 
-					DateHelper.subtractDays(fromDate, period), DateHelper.subtractDays(toDate, period), userUuid));
-			// Events
-			dashboardDataProvider.setEvents(FacadeProvider.getEventFacade().getNewEventsForDashboard(district, disease, fromDate, toDate, userUuid));
-			dashboardDataProvider.setPreviousEvents(FacadeProvider.getEventFacade().getNewEventsForDashboard(district, disease, 
-					DateHelper.subtractDays(fromDate, period), DateHelper.subtractDays(toDate, period), userUuid));
-			// Test results
-			dashboardDataProvider.setTestResults(FacadeProvider.getSampleTestFacade().getNewTestResultsForDashboard(district, disease, fromDate, toDate, userUuid));
-			dashboardDataProvider.setPreviousTestResults(FacadeProvider.getSampleTestFacade().getNewTestResultsForDashboard(district, disease, 
-					DateHelper.subtractDays(fromDate, period), DateHelper.subtractDays(toDate, period), userUuid));
-			// Samples
-			dashboardDataProvider.setSamples(FacadeProvider.getSampleFacade().getNewSamplesForDashboard(district, disease, fromDate, toDate, userUuid));
-			
-		} else {
-			int period = toWeek.getWeek() - fromWeek.getWeek() + 1;
-			// Cases
-			dashboardDataProvider.setCases(FacadeProvider.getCaseFacade().getNewCasesForDashboard(district, disease, 
-					DateHelper.getEpiWeekStart(fromWeek), DateHelper.getEpiWeekEnd(toWeek), userUuid));
-			dashboardDataProvider.setPreviousCases(FacadeProvider.getCaseFacade().getNewCasesForDashboard(district, disease,
-					DateHelper.getEpiWeekStart(DateHelper.getPreviousEpiWeek(fromWeek, period)),
-					DateHelper.getEpiWeekEnd(DateHelper.getPreviousEpiWeek(toWeek, period)), userUuid));
-			// Events
-			dashboardDataProvider.setEvents(FacadeProvider.getEventFacade().getNewEventsForDashboard(district, disease, 
-					DateHelper.getEpiWeekStart(fromWeek), DateHelper.getEpiWeekEnd(toWeek), userUuid));
-			dashboardDataProvider.setPreviousEvents(FacadeProvider.getEventFacade().getNewEventsForDashboard(district, disease,
-					DateHelper.getEpiWeekStart(DateHelper.getPreviousEpiWeek(fromWeek, period)),
-					DateHelper.getEpiWeekEnd(DateHelper.getPreviousEpiWeek(toWeek, period)), userUuid));
-			// Test results
-			dashboardDataProvider.setTestResults(FacadeProvider.getSampleTestFacade().getNewTestResultsForDashboard(district, disease, 
-					DateHelper.getEpiWeekStart(fromWeek), DateHelper.getEpiWeekEnd(toWeek), userUuid));
-			dashboardDataProvider.setPreviousTestResults(FacadeProvider.getSampleTestFacade().getNewTestResultsForDashboard(district, disease,
-					DateHelper.getEpiWeekStart(DateHelper.getPreviousEpiWeek(fromWeek, period)),
-					DateHelper.getEpiWeekEnd(DateHelper.getPreviousEpiWeek(toWeek, period)), userUuid));
-			// Samples
-			dashboardDataProvider.setSamples(FacadeProvider.getSampleFacade().getNewSamplesForDashboard(district, disease, 
-					DateHelper.getEpiWeekStart(fromWeek), DateHelper.getEpiWeekEnd(toWeek), userUuid));
-		}
-		
-		// Tasks
-		dashboardDataProvider.setTasks(FacadeProvider.getTaskFacade().getAllByUserForDashboard(null, userUuid));
-		dashboardDataProvider.setPendingTasks(FacadeProvider.getTaskFacade().getAllByUserForDashboard(TaskStatus.PENDING, userUuid));
-
 		// Updates statistics
 		statisticsComponent.updateStatistics(disease);
 		

@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
 import java.util.Date;
-import java.util.Map;
 
 import de.symeda.sormas.api.DataTransferObject;
 

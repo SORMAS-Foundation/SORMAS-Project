@@ -122,21 +122,23 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.clearTable(connectionSource, EventParticipant.class);
 			TableUtils.clearTable(connectionSource, Hospitalization.class);
 			TableUtils.clearTable(connectionSource, PreviousHospitalization.class);
-			TableUtils.clearTable(connectionSource, Location.class);
 			TableUtils.clearTable(connectionSource, EpiData.class);
 			TableUtils.clearTable(connectionSource, EpiDataBurial.class);
 			TableUtils.clearTable(connectionSource, EpiDataGathering.class);
 			TableUtils.clearTable(connectionSource, EpiDataTravel.class);
-			TableUtils.clearTable(connectionSource, SyncLog.class);
 			TableUtils.clearTable(connectionSource, WeeklyReport.class);
 			TableUtils.clearTable(connectionSource, WeeklyReportEntry.class);
+			TableUtils.clearTable(connectionSource, Location.class);
+			TableUtils.clearTable(connectionSource, SyncLog.class);
+
+			// actually users
+			TableUtils.clearTable(connectionSource, User.class);
 
 			if (clearInfrastructure) {
-				TableUtils.clearTable(connectionSource, Region.class);
-				TableUtils.clearTable(connectionSource, District.class);
-				TableUtils.clearTable(connectionSource, Community.class);
 				TableUtils.clearTable(connectionSource, Facility.class);
-				TableUtils.clearTable(connectionSource, User.class);
+				TableUtils.clearTable(connectionSource, Community.class);
+				TableUtils.clearTable(connectionSource, District.class);
+				TableUtils.clearTable(connectionSource, Region.class);
 
 				ConfigProvider.init(instance.context);
 			}

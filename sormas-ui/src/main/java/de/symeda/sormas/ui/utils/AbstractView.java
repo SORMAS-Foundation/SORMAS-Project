@@ -40,9 +40,11 @@ public abstract class AbstractView extends VerticalLayout implements View {
 	        String viewTitle = I18nProperties.getPrefixFragment("View", viewName.replaceAll("/", "."));
 	        String viewSubTitle = I18nProperties.getPrefixFragment("View", viewName.replaceAll("/", ".") + ".sub", "");
 	        Label viewTitleLabel = new Label(viewTitle);
+	        viewTitleLabel.setSizeUndefined();
 	        CssStyles.style(viewTitleLabel, CssStyles.H1, CssStyles.VSPACE_NONE);
 	        viewTitleLayout.addComponent(viewTitleLabel);
 	        Label viewSubTitleLabel = new Label(viewSubTitle);
+	        viewSubTitleLabel.setSizeUndefined();
 	        CssStyles.style(viewSubTitleLabel, CssStyles.H4, CssStyles.VSPACE_TOP_NONE);
 	        viewTitleLayout.addComponent(viewSubTitleLabel);
         }

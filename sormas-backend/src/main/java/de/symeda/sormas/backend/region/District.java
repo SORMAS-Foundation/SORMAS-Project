@@ -21,11 +21,15 @@ public class District extends AbstractDomainObject {
 	public static final String REGION = "region";
 	public static final String EPID_CODE = "epidCode";
 	public static final String COMMUNITIES = "communities";
+	public static final String POPULATION = "population";
+	public static final String GROWTH_RATE = "growthRate";
 	
 	private String name;
 	private Region region;
 	private String epidCode;
 	private List<Community> communities;
+	private Integer population;
+	private Float growthRate;
 	
 	public String getName() {
 		return name;
@@ -57,6 +61,20 @@ public class District extends AbstractDomainObject {
 	}
 	public void setCommunities(List<Community> communities) {
 		this.communities = communities;
+	}
+	
+	public Integer getPopulation() {
+		return population;
+	}
+	public void setPopulation(Integer population) {
+		this.population = population;
+	}
+	
+	public Float getGrowthRate() {
+		return growthRate;
+	}
+	public void setGrowthRate(Float growthRate) {
+		this.growthRate = growthRate;
 	}
 	
 	@Override

@@ -1,6 +1,7 @@
 package de.symeda.sormas.backend.task;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -103,7 +104,7 @@ public class TaskService extends AbstractAdoService<Task> {
 		return resultList;	
 	}
 
-	public List<DashboardTask> getAllByUserForDashboard(TaskStatus taskStatus, User user) {
+	public List<DashboardTask> getAllByUserForDashboard(TaskStatus taskStatus, Date from, Date to, User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<DashboardTask> cq = cb.createQuery(DashboardTask.class);
 		Root<Task> task = cq.from(getElementClass());
@@ -111,6 +112,9 @@ public class TaskService extends AbstractAdoService<Task> {
 		TaskCriteria taskCriteria = new TaskCriteria().assigneeUserEquals(user);
 		if (taskStatus != null) {
 			taskCriteria.taskStatusEquals(taskStatus);
+		}
+		if (from != null || to != null) {
+			taskCriteria.statusChangeDateBetween(from, to);
 		}
 		
 		Predicate filter = buildCriteriaFilter(taskCriteria, cb, task);
@@ -165,6 +169,10 @@ public class TaskService extends AbstractAdoService<Task> {
 		if (taskCriteria.getDueDateFrom() != null && taskCriteria.getDueDateTo() != null) {
 			filter = cb.and(filter, cb.greaterThanOrEqualTo(from.get(Task.DUE_DATE), taskCriteria.getDueDateFrom()));
 			filter = cb.and(filter, cb.lessThan(from.get(Task.DUE_DATE), taskCriteria.getDueDateTo()));
+		}
+		if (taskCriteria.getStatusChangeDateFrom() != null && taskCriteria.getStatusChangeDateTo() != null) {
+			filter = cb.and(filter, cb.greaterThanOrEqualTo(from.get(Task.STATUS_CHANGE_DATE), taskCriteria.getStatusChangeDateFrom()));
+			filter = cb.and(filter, cb.lessThan(from.get(Task.STATUS_CHANGE_DATE), taskCriteria.getStatusChangeDateTo()));
 		}
 		return filter;
 	}

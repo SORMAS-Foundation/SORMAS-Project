@@ -81,6 +81,10 @@
 		border-right: 1px solid #CDD8EC;
 	}
 
+	.v-label-separator-vertical-broad {
+		border-right: 2px solid $v-focus-color;
+	}
+
 	// Font sizes
 	.v-label-size-small {
     	font-size: 0.8em;
@@ -113,56 +117,6 @@
 
 	.v-label-text-uppercase {
 		text-transform: uppercase;
-	}
-
-	// SVG colorization
-	.svg-circle {
-		fill: none;
-		stroke-width: 3;
-	}
-
-	.svg-fill-critical {
-		fill: $s-critical-color;
-	}
-
-	.svg-fill-important {
-		fill: $s-important-color;
-	}
-
-	.svg-fill-positive {
-		fill: $s-positive-color;
-	}
-
-	.svg-fill-minor {
-		fill: $s-minor-color;
-	}
-
-	.svg-fill-background {
-		fill: #E6E6E6;
-	}
-
-	.svg-stroke-primary {
-		stroke: $s-primary-color;
-	}
-
-	.svg-stroke-critical {
-		stroke: $s-critical-color;
-	}
-
-	.svg-stroke-important {
-		stroke: $s-important-color;
-	}
-
-	.svg-stroke-positive {
-		stroke: $s-positive-color;
-	}
-
-	.svg-stroke-minor {
-		stroke: $s-minor-color;
-	}
-
-	.svg-stroke-background {
-		stroke: #E6E6E6;
 	}
 
 }

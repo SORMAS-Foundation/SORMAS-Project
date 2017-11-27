@@ -251,36 +251,32 @@ public final class SymptomsValidator {
 
     private static List<SymptomStateField> getNonConditionalSymptoms(CaseSymptomsFragmentLayoutBinding binding) {
         // These should be in reverse order of how they're displayed on the screen
-        return Arrays.asList(binding.symptomsFever, binding.symptomsVomiting,
-                binding.symptomsDiarrhea, binding.symptomsBloodInStool, binding.symptomsNausea, binding.symptomsAbdominalPain,
-                binding.symptomsHeadache, binding.symptomsMusclePain, binding.symptomsFatigueWeakness, binding.symptomsUnexplainedBleeding,
-                binding.symptomsSkinRash, binding.symptomsNeckStiffness, binding.symptomsSoreThroat, binding.symptomsCough,
-                binding.symptomsRunnyNose, binding.symptomsDifficultyBreathing, binding.symptomsChestPain, binding.symptomsConfusedDisoriented,
-                binding.symptomsSeizures, binding.symptomsAlteredConsciousness, binding.symptomsConjunctivitis,
-                binding.symptomsEyePainLightSensitive, binding.symptomsKopliksSpots, binding.symptomsThrobocytopenia,
-                binding.symptomsOtitisMedia, binding.symptomsHearingloss, binding.symptomsDehydration, binding.symptomsAnorexiaAppetiteLoss,
-                binding.symptomsRefusalFeedorDrink, binding.symptomsJointPain, binding.symptomsShock,
-                binding.symptomsHiccups, binding.symptomsBackache, binding.symptomsJaundice, binding.symptomsDarkUrine, binding.symptomsRapidBreathing, binding.symptomsSwollenGlands,
-                binding.symptomsOtherNonHemorrhagicSymptoms, binding.symptomsCutaneousEruption, binding.symptomsLesions, binding.symptomsLymphadenopathyAxillary,
-                binding.symptomsLymphadenopathyCervical, binding.symptomsLymphadenopathyInguinal, binding.symptomsChillsSweats, binding.symptomsBedridden,
-                binding.symptomsOralUlcers, binding.symptomsBlackeningDeathOfTissue, binding.symptomsBuboesGroinArmpitNeck, binding.symptomsPainfulLymphadenitis);
+        return Arrays.asList(binding.symptomsOtherNonHemorrhagicSymptoms, binding.symptomsVomiting, binding.symptomsUnexplainedBleeding, binding.symptomsThrobocytopenia, binding.symptomsSwollenGlands,
+                binding.symptomsSoreThroat, binding.symptomsSkinRash, binding.symptomsShock, binding.symptomsOralUlcers, binding.symptomsRunnyNose,
+                binding.symptomsRefusalFeedorDrink, binding.symptomsRapidBreathing, binding.symptomsPainfulLymphadenitis, binding.symptomsNeckStiffness,
+                binding.symptomsNausea, binding.symptomsMusclePain, binding.symptomsOtitisMedia, binding.symptomsLymphadenopathyInguinal, binding.symptomsLymphadenopathyCervical,
+                binding.symptomsLymphadenopathyAxillary, binding.symptomsLesions, binding.symptomsKopliksSpots, binding.symptomsJointPain, binding.symptomsJaundice,
+                binding.symptomsBedridden, binding.symptomsHiccups, binding.symptomsHeadache, binding.symptomsFever, binding.symptomsFatigueWeakness,
+                binding.symptomsEyePainLightSensitive, binding.symptomsDifficultyBreathing, binding.symptomsDiarrhea, binding.symptomsDehydration,
+                binding.symptomsDarkUrine, binding.symptomsCutaneousEruption, binding.symptomsCough, binding.symptomsSeizures, binding.symptomsConjunctivitis,
+                binding.symptomsConfusedDisoriented, binding.symptomsChillsSweats, binding.symptomsChestPain, binding.symptomsBuboesGroinArmpitNeck,
+                binding.symptomsBloodInStool, binding.symptomsBlackeningDeathOfTissue, binding.symptomsBackache, binding.symptomsAnorexiaAppetiteLoss,
+                binding.symptomsAlteredConsciousness, binding.symptomsHearingloss, binding.symptomsAbdominalPain);
     }
 
     private static List<SymptomStateField> getConditionalBleedingSymptoms(CaseSymptomsFragmentLayoutBinding binding) {
         // These should be in reverse order of how they're displayed on the screen
-        return Arrays.asList(binding.symptomsGumsBleeding, binding.symptomsInjectionSiteBleeding,
-                binding.symptomsNoseBleeding, binding.symptomsBloodyBlackStool, binding.symptomsRedBloodVomit,
-                binding.symptomsDigestedBloodVomit, binding.symptomsCoughingBlood, binding.symptomsBleedingVagina,
-                binding.symptomsSkinBruising, binding.symptomsBloodUrine, binding.symptomsEyesBleeding,
-                binding.symptomsStomachBleeding, binding.symptomsOtherHemorrhagicSymptoms);
+        return Arrays.asList(binding.symptomsOtherHemorrhagicSymptoms, binding.symptomsRedBloodVomit, binding.symptomsDigestedBloodVomit, binding.symptomsCoughingBlood,
+                binding.symptomsSkinBruising, binding.symptomsNoseBleeding, binding.symptomsBloodyBlackStool, binding.symptomsBloodUrine, binding.symptomsGumsBleeding,
+                binding.symptomsBleedingVagina, binding.symptomsInjectionSiteBleeding, binding.symptomsStomachBleeding, binding.symptomsEyesBleeding);
     }
 
     private static List<SymptomStateField> getLesionsFields(CaseSymptomsFragmentLayoutBinding binding) {
-        return Arrays.asList(binding.symptomsLesionsSameState, binding.symptomsLesionsSameSize, binding.symptomsLesionsDeepProfound, binding.symptomsLesionsThatItch);
+        return Arrays.asList(binding.symptomsLesionsDeepProfound, binding.symptomsLesionsSameSize, binding.symptomsLesionsSameState, binding.symptomsLesionsThatItch);
     }
 
     private static List<SymptomStateField> getMonkeypoxFields(CaseSymptomsFragmentLayoutBinding binding) {
-        return Arrays.asList(binding.symptomsLesionsResembleImg1, binding.symptomsLesionsResembleImg2, binding.symptomsLesionsResembleImg3, binding.symptomsLesionsResembleImg4);
+        return Arrays.asList(binding.symptomsLesionsResembleImg4, binding.symptomsLesionsResembleImg3, binding.symptomsLesionsResembleImg2, binding.symptomsLesionsResembleImg1);
     }
 
     public static boolean isSymptomatic(CaseSymptomsFragmentLayoutBinding binding) {

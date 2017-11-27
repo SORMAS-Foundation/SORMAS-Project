@@ -287,10 +287,10 @@ public class TaskFacadeEjb implements TaskFacade {
 	}
 	
 	@Override
-	public List<DashboardTask> getAllByUserForDashboard(TaskStatus taskStatus, String userUuid) {
+	public List<DashboardTask> getAllByUserForDashboard(TaskStatus taskStatus, Date from, Date to, String userUuid) {
 		User user = userService.getByUuid(userUuid);
 		
-		return taskService.getAllByUserForDashboard(taskStatus, user);
+		return taskService.getAllByUserForDashboard(taskStatus, from, to, user);
 	}
 	
 	@Override
@@ -360,5 +360,6 @@ public class TaskFacadeEjb implements TaskFacade {
 		Task task = taskService.getByUuid(taskDto.getUuid());
 		taskService.delete(task);
 	}
+	
 }
 

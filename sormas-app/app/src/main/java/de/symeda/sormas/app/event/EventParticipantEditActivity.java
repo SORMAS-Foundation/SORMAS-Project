@@ -104,7 +104,7 @@ public class EventParticipantEditActivity extends AbstractSormasActivity {
             // Resetting the adapter will reload the form and therefore also override any unsaved changes
             DatabaseHelper.getEventParticipantDao().markAsRead(currentEntity);
             setAdapter();
-            final Snackbar snackbar = Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_entity_overridden), getResources().getString(R.string.entity_alert_person)), Snackbar.LENGTH_INDEFINITE);
+            final Snackbar snackbar = Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_entity_overridden), getResources().getString(R.string.entity_event_person)), Snackbar.LENGTH_INDEFINITE);
             snackbar.setAction(R.string.snackbar_okay, new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -192,20 +192,20 @@ public class EventParticipantEditActivity extends AbstractSormasActivity {
                             @Override
                             public void call(boolean syncFailed, String syncFailedMessage) {
                                 if (syncFailed) {
-                                    Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_sync_error_saved), getResources().getString(R.string.entity_alert_person)), Snackbar.LENGTH_LONG).show();
+                                    Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_sync_error_saved), getResources().getString(R.string.entity_event_person)), Snackbar.LENGTH_LONG).show();
                                 } else {
-                                    Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_alert_person)), Snackbar.LENGTH_LONG).show();
+                                    Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_event_person)), Snackbar.LENGTH_LONG).show();
                                 }
                                 finish();
                             }
                         });
                     } else {
-                        Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_alert_person)), Snackbar.LENGTH_LONG).show();
+                        Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_event_person)), Snackbar.LENGTH_LONG).show();
                         finish();
                     }
                 } catch (DaoException e) {
-                    Log.e(getClass().getName(), "Error while trying to save alert person", e);
-                    Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_error), getResources().getString(R.string.entity_alert_person)), Snackbar.LENGTH_LONG).show();
+                    Log.e(getClass().getName(), "Error while trying to save event person", e);
+                    Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_error), getResources().getString(R.string.entity_event_person)), Snackbar.LENGTH_LONG).show();
                     ErrorReportingHelper.sendCaughtException(tracker, e, eventParticipant, true);
                 }
 

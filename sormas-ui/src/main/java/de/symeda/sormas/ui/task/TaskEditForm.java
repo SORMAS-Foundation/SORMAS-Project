@@ -30,6 +30,7 @@ import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
+import de.symeda.sormas.ui.utils.TaskStatusValidator;
 
 @SuppressWarnings("serial")
 public class TaskEditForm extends AbstractEditForm<TaskDto> {
@@ -64,8 +65,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
     	addField(TaskDto.SUGGESTED_START, DateTimeField.class);
     	addField(TaskDto.DUE_DATE, DateTimeField.class);
     	addField(TaskDto.PRIORITY, ComboBox.class);
-    	addField(TaskDto.TASK_STATUS, OptionGroup.class);
-
+    	OptionGroup taskStatus = addField(TaskDto.TASK_STATUS, OptionGroup.class);
     	OptionGroup taskContext = addField(TaskDto.TASK_CONTEXT, OptionGroup.class);
     	taskContext.setImmediate(true);
     	taskContext.addValueChangeListener(new Property.ValueChangeListener() {
@@ -97,6 +97,11 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
     	
     	addValueChangeListener(e -> {
 	    	TaskDto taskDto = getValue();
+	    	
+	    	if (taskDto.getTaskType() == TaskType.CASE_INVESTIGATION && taskDto.getCaze() != null) {
+	        	taskStatus.addValidator(new TaskStatusValidator(taskDto.getCaze().getUuid(), "Not allowed to set investigation status to done for an unclassified case."));
+	    	}
+	    	
 	    	DistrictReferenceDto district = null;
 	    	RegionReferenceDto region = null;
 	    	if (taskDto.getCaze() != null) {

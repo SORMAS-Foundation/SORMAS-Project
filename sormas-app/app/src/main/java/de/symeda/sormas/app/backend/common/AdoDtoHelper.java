@@ -84,7 +84,34 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
         }
     }
 
-    protected void handlePullResponse(final boolean markAsRead, final AbstractAdoDao<ADO> dao, Response<List<DTO>> response) throws ServerConnectionException {
+    public void repullEntities() throws DaoException, ServerConnectionException {
+        try {
+            final AbstractAdoDao<ADO> dao = DatabaseHelper.getAdoDao(getAdoClass());
+
+            Call<List<DTO>> dtoCall = pullAllSince(0);
+            if (dtoCall == null) {
+                return;
+            }
+
+            Response<List<DTO>> response;
+            try {
+                response = dtoCall.execute();
+            } catch (IOException e) {
+                throw new ServerConnectionException(e);
+            }
+
+            handlePullResponse(false, dao, response);
+
+        } catch (RuntimeException e) {
+            Log.e(getClass().getName(), "Exception thrown when trying to pull entities");
+            throw new DaoException(e);
+        }
+    }
+
+    /**
+     * @return Number or pulled entities
+     */
+    protected int handlePullResponse(final boolean markAsRead, final AbstractAdoDao<ADO> dao, Response<List<DTO>> response) throws ServerConnectionException {
         if (!response.isSuccessful()) {
             throw ServerConnectionException.fromResponse(response);
         }
@@ -107,7 +134,9 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
             });
 
             Log.d(dao.getTableName(), "Pulled: " + result.size());
+            return result.size();
         }
+        return 0;
     }
 
     /**

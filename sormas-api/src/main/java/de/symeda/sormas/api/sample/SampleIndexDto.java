@@ -27,33 +27,54 @@ public class SampleIndexDto extends SampleReferenceDto {
 	public static final String LAB = "lab";
 	public static final String SAMPLE_MATERIAL = "sampleMaterial";
 	public static final String LAB_USER = "labUser";
-	public static final String TEST_TYPE = "testType";
 	public static final String TEST_RESULT = "testResult";
-	public static final String SPECIMEN_CONDITION = "specimenCondition";
-	public static final String NO_TEST_POSSIBLE_REASON = "noTestPossibleReason";
-	public static final String REFERRED_TO = "referredTo";
 	public static final String SHIPPED = "shipped";
 	public static final String RECEIVED = "received";
+	public static final String REFERRED = "referred";
 	
+	private String associatedCaseUuid;
 	private CaseReferenceDto associatedCase;
-	private Disease disease;
-	private String diseaseDetails;
 	private String sampleCode;
 	private String labSampleID;
+	private Disease disease;
+	private String diseaseDetails;
+	private String caseRegionUuid;
 	private RegionReferenceDto caseRegion;
+	private String caseDistrictUuid;
 	private DistrictReferenceDto caseDistrict;
+	private boolean shipped;
+	private boolean received;
+	private String referredSampleUuid;
+	private boolean referred;
 	private Date shipmentDate;
 	private Date receivedDate;
+	private String labUuid;
 	private FacilityReferenceDto lab;
 	private SampleMaterial sampleMaterial;
 	private UserReferenceDto labUser;
-	private SampleTestType testType;
-	private SampleTestResultType testResult;
 	private SpecimenCondition specimenCondition;
-	private String noTestPossibleReason;
-	private SampleReferenceDto referredTo;
-	private boolean shipped;
-	private boolean received;
+	private SampleTestResultType testResult;
+	
+	public SampleIndexDto(String uuid, String associatedCaseUuid, String sampleCode, String labSampleId, Disease disease, String diseaseDetails,
+			String caseRegionUuid, String caseDistrictUuid, boolean shipped, boolean received, String referredSampleUuid, Date shipmenteDate,
+			Date receivedDate, String labUuid, SampleMaterial sampleMaterial, SpecimenCondition specimenCondition) {
+		super.setUuid(uuid);
+		this.associatedCaseUuid = associatedCaseUuid;
+		this.sampleCode = sampleCode;
+		this.labSampleID = labSampleId;
+		this.disease = disease;
+		this.diseaseDetails = diseaseDetails;
+		this.caseRegionUuid = caseRegionUuid;
+		this.caseDistrictUuid = caseDistrictUuid;
+		this.shipped = shipped;
+		this.received = received;
+		this.referredSampleUuid = referredSampleUuid;
+		this.shipmentDate = shipmenteDate;
+		this.receivedDate = receivedDate;
+		this.labUuid = labUuid;
+		this.sampleMaterial = sampleMaterial;
+		this.specimenCondition = specimenCondition;
+	}
 	
 	public CaseReferenceDto getAssociatedCase() {
 		return associatedCase;
@@ -121,35 +142,11 @@ public class SampleIndexDto extends SampleReferenceDto {
 	public void setLabUser(UserReferenceDto labUser) {
 		this.labUser = labUser;
 	}
-	public SampleTestType getTestType() {
-		return testType;
-	}
-	public void setTestType(SampleTestType testType) {
-		this.testType = testType;
-	}
 	public SampleTestResultType getTestResult() {
 		return testResult;
 	}
 	public void setTestResult(SampleTestResultType testResult) {
 		this.testResult = testResult;
-	}
-	public SpecimenCondition getSpecimenCondition() {
-		return specimenCondition;
-	}
-	public void setSpecimenCondition(SpecimenCondition specimenCondition) {
-		this.specimenCondition = specimenCondition;
-	}
-	public String getNoTestPossibleReason() {
-		return noTestPossibleReason;
-	}
-	public void setNoTestPossibleReason(String noTestPossibleReason) {
-		this.noTestPossibleReason = noTestPossibleReason;
-	}	
-	public SampleReferenceDto getReferredTo() {
-		return referredTo;
-	}
-	public void setReferredTo(SampleReferenceDto referredTo) {
-		this.referredTo = referredTo;
 	}
 	public boolean isShipped() {
 		return shipped;
@@ -169,5 +166,47 @@ public class SampleIndexDto extends SampleReferenceDto {
 	public void setCaseRegion(RegionReferenceDto caseRegion) {
 		this.caseRegion = caseRegion;
 	}
-	
+	public String getAssociatedCaseUuid() {
+		return associatedCaseUuid;
+	}
+	public void setAssociatedCaseUuid(String associatedCaseUuid) {
+		this.associatedCaseUuid = associatedCaseUuid;
+	}
+	public boolean isReferred() {
+		return referred;
+	}
+	public void setReferred(boolean referred) {
+		this.referred = referred;
+	}
+	public String getLabUuid() {
+		return labUuid;
+	}
+	public void setLabUuid(String labUuid) {
+		this.labUuid = labUuid;
+	}
+	public String getCaseRegionUuid() {
+		return caseRegionUuid;
+	}
+	public void setCaseRegionUuid(String caseRegionUuid) {
+		this.caseRegionUuid = caseRegionUuid;
+	}
+	public String getCaseDistrictUuid() {
+		return caseDistrictUuid;
+	}
+	public void setCaseDistrictUuid(String caseDistrictUuid) {
+		this.caseDistrictUuid = caseDistrictUuid;
+	}
+	public String getReferredSampleUuid() {
+		return referredSampleUuid;
+	}
+	public void setReferredSampleUuid(String referredSampleUuid) {
+		this.referredSampleUuid = referredSampleUuid;
+	}
+	public SpecimenCondition getSpecimenCondition() {
+		return specimenCondition;
+	}
+	public void setSpecimenCondition(SpecimenCondition specimenCondition) {
+		this.specimenCondition = specimenCondition;
+	}
+
 }

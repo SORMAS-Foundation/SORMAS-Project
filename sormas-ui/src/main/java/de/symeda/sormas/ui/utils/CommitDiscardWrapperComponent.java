@@ -41,7 +41,7 @@ import de.symeda.sormas.ui.login.LoginHelper;
 
 
 public class CommitDiscardWrapperComponent<C extends Component> extends
-		VerticalLayout implements Buffered {
+VerticalLayout implements Buffered {
 
 	private static final long serialVersionUID = 1L;
 
@@ -78,7 +78,6 @@ public class CommitDiscardWrapperComponent<C extends Component> extends
 	private Button discardButton;
 
 	private Button deleteButton;
-	private ConfirmationComponent deleteConfirmationComponent;
 
 	private boolean commited = false;
 
@@ -88,7 +87,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends
 	private boolean autoFocusing = false;
 
 	private boolean autoDisablingButtons = false;
-	
+
 	private final ValueChangeListener autoHideValueChangeListener = new ValueChangeListener() {
 		private static final long serialVersionUID = 1L;
 		@Override
@@ -119,7 +118,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends
 
 		this.wrappedComponent = component;
 		this.fieldGroup = fieldGroup;
-		
+
 		if (contentPanel != null) {
 			contentPanel.setContent(wrappedComponent);
 			applyAutoFocusing();
@@ -130,7 +129,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends
 		setSpacing(false);
 		setMargin(true);
 		setSizeUndefined();
-		
+
 		contentPanel = new Panel(component);
 		updateInternalWidth();
 		updateInternalHeight();
@@ -158,7 +157,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends
 		setShortcutsEnabled(shortcutsEnabled);
 
 		applyAutoDisabling();
-		
+
 		if (!LoginHelper.hasUserRight(UserRight.EDIT)) {
 			getCommitButton().setVisible(false);
 			getDiscardButton().setVisible(false);
@@ -350,7 +349,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends
 		}
 		return discardButton;
 	}
-	
+
 	public Button getDeleteButton(String entityName) {
 		if (deleteButton == null) {
 			deleteButton = new Button("delete");
@@ -359,48 +358,48 @@ public class CommitDiscardWrapperComponent<C extends Component> extends
 				private static final long serialVersionUID = 1L;
 				@Override
 				public void buttonClick(ClickEvent event) {
-					Window popupWindow = VaadinUiUtil.createPopupWindow();
-					VerticalLayout deleteLayout = new VerticalLayout();
-					deleteLayout.setMargin(true);
-					Label description = new Label("Are you sure you want to delete this " + entityName + "? This action can not be reversed.");
-					description.setWidth(100, Unit.PERCENTAGE);
-					deleteLayout.addComponent(description);
-					ConfirmationComponent confirmationComponent = getDeleteConfirmationComponent(popupWindow);
-					deleteLayout.addComponent(confirmationComponent);
-					deleteLayout.setComponentAlignment(confirmationComponent, Alignment.BOTTOM_RIGHT);
-					deleteLayout.setSizeUndefined();
-					deleteLayout.setSpacing(true);
-					popupWindow.setCaption("Confirm Deletion");
-					popupWindow.setContent(deleteLayout);
-					UI.getCurrent().addWindow(popupWindow);
+					showDeleteConfirmationComponent(entityName);
 				}
 			});
 		}
-		
+
 		return deleteButton;
 	}
-	
-	public ConfirmationComponent getDeleteConfirmationComponent(Window popupWindow) {
-		if (deleteConfirmationComponent == null) {
-			deleteConfirmationComponent = new ConfirmationComponent(false) {
-				private static final long serialVersionUID = 1L;
-				@Override
-				protected void onConfirm() {
-					popupWindow.close();
-					onDelete();
-					onDone();
-				}
-	
-				@Override
-				protected void onCancel() {
-					popupWindow.close();
-				}
-			};
-			deleteConfirmationComponent.getConfirmButton().setCaption("Yes");
-			deleteConfirmationComponent.getCancelButton().setCaption("No");
-		}
+
+	public void showDeleteConfirmationComponent(String entityName) {				
+		Window popupWindow = VaadinUiUtil.createPopupWindow();	
 		
-		return deleteConfirmationComponent;
+		VerticalLayout deleteLayout = new VerticalLayout();
+		deleteLayout.setMargin(true);
+		deleteLayout.setSizeUndefined();
+		deleteLayout.setSpacing(true);
+	
+		Label description = new Label("Are you sure you want to delete this " + entityName + "? This action can not be reversed.");
+		description.setWidth(100, Unit.PERCENTAGE);
+		deleteLayout.addComponent(description);
+		
+		ConfirmationComponent deleteConfirmationComponent = new ConfirmationComponent(false) {
+			private static final long serialVersionUID = 1L;
+			@Override
+			protected void onConfirm() {
+				popupWindow.close();
+				onDelete();
+				onDone();
+			}
+
+			@Override
+			protected void onCancel() {
+				popupWindow.close();
+			}
+		};
+		deleteConfirmationComponent.getConfirmButton().setCaption("Yes");
+		deleteConfirmationComponent.getCancelButton().setCaption("No");
+		deleteLayout.addComponent(deleteConfirmationComponent);
+		deleteLayout.setComponentAlignment(deleteConfirmationComponent, Alignment.BOTTOM_RIGHT);
+		
+		popupWindow.setCaption("Confirm Deletion");
+		popupWindow.setContent(deleteLayout);
+		UI.getCurrent().addWindow(popupWindow);
 	}
 
 	@Override
@@ -449,63 +448,63 @@ public class CommitDiscardWrapperComponent<C extends Component> extends
 
 		applyAutoDisabling();
 	}
-	
+
 	private String findHtmlMessage(InvalidValueException exception)
 	{
 		if (!(exception.getMessage() == null || exception.getMessage().isEmpty()))
 			return exception.getHtmlMessage();
-		
+
 		for (InvalidValueException cause : exception.getCauses()) {
 			String message = findHtmlMessage(cause);
 			if (message != null)
 				return message;
 		}
-		
+
 		return null;
 	}
-	
+
 	public void commitAndHandle() {
 		try {
 			commit();
 		} catch (InvalidValueException ex) {
 			StringBuilder htmlMsg = new StringBuilder();
 			String message = ex.getMessage();
-            if (message != null && !message.isEmpty()) {
-            	htmlMsg.append(ex.getHtmlMessage());
-            } else {
-            	
-	            InvalidValueException[] causes = ex.getCauses();
-	            if (causes != null) {
-	            	
-	            	InvalidValueException firstCause = null;
-	            	boolean multipleCausesFound = false;
-	                for (int i = 0; i < causes.length; i++) {
-	                    if (!causes[i].isInvisible()) {
-	                    	if (firstCause == null) {
-	                    		firstCause = causes[i];
-	                    	} else {
-	                    		multipleCausesFound = true;
-	                    		break;
-	                    	}
-	                    }
-	                }
-	                if (multipleCausesFound) {
-	                	htmlMsg.append("<ul>");
-	                	// Alle nochmal
-		                for (int i = 0; i < causes.length; i++) {
-		                    if (!causes[i].isInvisible()) {
-			                	htmlMsg.append("<li>").append(findHtmlMessage(causes[i])).append("</li>");
-		                    }
-		                }
-	                	htmlMsg.append("</ul>");
-	                } else if (firstCause != null) {
-	                	htmlMsg.append(findHtmlMessage(firstCause));
-	                }
-	                
-	            }
-            }
-				
-            new Notification("Please check the input data", htmlMsg.toString(), Type.ERROR_MESSAGE, true).show(Page.getCurrent());
+			if (message != null && !message.isEmpty()) {
+				htmlMsg.append(ex.getHtmlMessage());
+			} else {
+
+				InvalidValueException[] causes = ex.getCauses();
+				if (causes != null) {
+
+					InvalidValueException firstCause = null;
+					boolean multipleCausesFound = false;
+					for (int i = 0; i < causes.length; i++) {
+						if (!causes[i].isInvisible()) {
+							if (firstCause == null) {
+								firstCause = causes[i];
+							} else {
+								multipleCausesFound = true;
+								break;
+							}
+						}
+					}
+					if (multipleCausesFound) {
+						htmlMsg.append("<ul>");
+						// Alle nochmal
+						for (int i = 0; i < causes.length; i++) {
+							if (!causes[i].isInvisible()) {
+								htmlMsg.append("<li>").append(findHtmlMessage(causes[i])).append("</li>");
+							}
+						}
+						htmlMsg.append("</ul>");
+					} else if (firstCause != null) {
+						htmlMsg.append(findHtmlMessage(firstCause));
+					}
+
+				}
+			}
+
+			new Notification("Please check the input data", htmlMsg.toString(), Type.ERROR_MESSAGE, true).show(Page.getCurrent());
 		} 
 	}
 
@@ -605,14 +604,14 @@ public class CommitDiscardWrapperComponent<C extends Component> extends
 		for (DoneListener listener : doneListeners)
 			listener.onDone();
 	}
-	
+
 	public void addDeleteListener(DeleteListener listener, String entityName) {
 		if (deleteListeners.isEmpty())
 			buttonsPanel.addComponent(getDeleteButton(entityName), 0);
 		if (!deleteListeners.contains(listener))
 			deleteListeners.add(listener);
 	}
-	
+
 	public boolean hasDeleteListener() {
 		return !deleteListeners.isEmpty();
 	}
@@ -666,7 +665,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends
 			return notifier + "[" + getKeyCode() + "] =>" + button.getCaption();
 		}
 	}
-	
+
 	public static class CommitRuntimeException extends RuntimeException {
 		private static final long serialVersionUID = 1L;
 		public CommitRuntimeException(CommitException e) {

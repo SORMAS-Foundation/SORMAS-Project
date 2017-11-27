@@ -3,8 +3,6 @@ package de.symeda.sormas.backend.caze;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -22,7 +20,6 @@ import javax.persistence.criteria.Subquery;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.DashboardCase;
 import de.symeda.sormas.api.caze.MapCase;
-import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -39,8 +36,6 @@ import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.Region;
-import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
@@ -396,45 +391,5 @@ public class CaseService extends AbstractAdoService<Case> {
 		} catch (NoResultException e) {
 			return null;
 		}
-	}	
-
-	public Map<RegionReferenceDto, Long> getCaseCountPerRegion(Date fromDate, Date toDate, Disease disease) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
-		Root<Case> from = cq.from(getElementClass());
-		Join<Case, Symptoms> symptoms = from.join(Case.SYMPTOMS);
-
-		Predicate filter = null;	
-		// Use the onset date if available and the report date otherwise
-		// TODO Add date of outcome to the date filter once it is built in
-		Predicate dateFilter = cb.or(
-				cb.lessThanOrEqualTo(symptoms.get(Symptoms.ONSET_DATE), toDate), 
-				cb.and(
-						cb.isNull(symptoms.get(Symptoms.ONSET_DATE)), 
-						cb.lessThanOrEqualTo(from.get(Case.REPORT_DATE), toDate)
-						)
-				);
-		filter = dateFilter;
-		if (disease != null) {
-			Predicate diseaseFilter = cb.equal(from.get(Case.DISEASE), disease);
-			if (filter != null) {
-				filter = cb.and(filter, diseaseFilter);
-			} else {
-				filter = diseaseFilter;
-			}
-		}		
-		if (filter != null) {
-			cq.where(filter);
-		}
-
-		cq.groupBy(from.get(Case.REGION));
-		cq.multiselect(from.get(Case.REGION), cb.count(from));
-		List<Object[]> results = em.createQuery(cq).getResultList();
-
-		Map<RegionReferenceDto, Long> resultMap = results.stream().collect(
-				Collectors.toMap(e -> RegionFacadeEjb.toReferenceDto((Region)e[0]), e -> (Long)e[1]));
-		return resultMap;
 	}
-
 }

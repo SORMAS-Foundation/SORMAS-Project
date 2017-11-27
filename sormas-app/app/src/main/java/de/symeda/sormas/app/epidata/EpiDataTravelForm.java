@@ -16,6 +16,7 @@ import de.symeda.sormas.app.component.AbstractFormDialogFragment;
 import de.symeda.sormas.app.component.FieldHelper;
 import de.symeda.sormas.app.databinding.EpidataBurialEditFragmentLayoutBinding;
 import de.symeda.sormas.app.databinding.EpidataTravelEditFragmentLayoutBinding;
+import de.symeda.sormas.app.validation.EpiDataValidator;
 
 /**
  * Created by Mate Strysewske on 09.03.2017.
@@ -40,10 +41,16 @@ public class EpiDataTravelForm extends AbstractFormDialogFragment<EpiDataTravel>
         binding.travelFrom.initialize(this);
         binding.travelTo.initialize(this);
         FieldHelper.initSpinnerField(binding.travelType, TravelType.class);
+
+        EpiDataValidator.setSoftRequiredHintsForTravel(binding);
     }
 
     @Override
     public AbstractDomainObject getData() {
         return binding.getEpiDataTravel();
+    }
+
+    public EpidataTravelEditFragmentLayoutBinding getBinding() {
+        return binding;
     }
 }

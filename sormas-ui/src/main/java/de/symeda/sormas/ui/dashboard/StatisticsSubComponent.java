@@ -94,7 +94,6 @@ public class StatisticsSubComponent extends VerticalLayout {
 			if (showSeparator) {
 				Label separator = new Label();
 				separator.setHeight(100, Unit.PERCENTAGE);
-				separator.setWidthUndefined();
 				CssStyles.style(separator, CssStyles.SEPARATOR_VERTICAL, CssStyles.HSPACE_LEFT_3, CssStyles.HSPACE_RIGHT_3);
 				contentLayout.addComponent(separator);
 			}
@@ -110,34 +109,49 @@ public class StatisticsSubComponent extends VerticalLayout {
 	}
 	
 	public void addComponentToContent(AbstractComponent component) {
-		component.setWidth(100, Unit.PERCENTAGE);
-		contentLayout.addComponent(component);
+		if (contentLayout != null) {
+			component.setWidth(100, Unit.PERCENTAGE);
+			contentLayout.addComponent(component);
+		}
 	}
 	
 	public void addComponentToLeftContentColumn(AbstractComponent component) {
-		component.setWidth(100, Unit.PERCENTAGE);
-		leftContentColumnLayout.addComponent(component);
+		if (leftContentColumnLayout != null) {
+			component.setWidth(100, Unit.PERCENTAGE);
+			leftContentColumnLayout.addComponent(component);
+		}
 	}
 	
 	public void addComponentToRightContentColumn(AbstractComponent component) {
-		component.setWidth(100, Unit.PERCENTAGE);
-		rightContentColumnLayout.addComponent(component);
+		if (rightContentColumnLayout != null) {
+			component.setWidth(100, Unit.PERCENTAGE);
+			rightContentColumnLayout.addComponent(component);
+		}
 	}
 	
 	public void removeAllComponentsFromContent() {
-		contentLayout.removeAllComponents();
+		if (contentLayout != null) {
+			contentLayout.removeAllComponents();
+		}
 	}
 	
 	public void removeAllComponentsFromLeftContentColumn() {
-		leftContentColumnLayout.removeAllComponents();
+		if (leftContentColumnLayout != null) {
+			leftContentColumnLayout.removeAllComponents();
+		}
 	}
 	
 	public void removeAllComponentsFromRightContentColumn() {
-		rightContentColumnLayout.removeAllComponents();
+		if (rightContentColumnLayout != null) {
+			rightContentColumnLayout.removeAllComponents();
+		}
 	}
 	
 	public void removeContent() {
-		removeComponent(contentLayout);
+		if (contentLayout != null) {
+			removeComponent(contentLayout);
+		}
+		
 		contentLayout = null;
 		leftContentColumnLayout = null;
 		rightContentColumnLayout = null;

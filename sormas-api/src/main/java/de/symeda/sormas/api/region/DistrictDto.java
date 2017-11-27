@@ -8,6 +8,8 @@ public class DistrictDto extends DistrictReferenceDto {
 
 	private String name;
 	private String epidCode;
+	private Integer population;
+	private Float growthRate;
 	private RegionReferenceDto region;
 	
 	public String getName() {
@@ -34,5 +36,19 @@ public class DistrictDto extends DistrictReferenceDto {
 	@Override
 	public String toString() {
 		return getName();
+	}
+	
+	public Integer getPopulation() {
+		return population;
+	}
+	public void setPopulation(Integer population) {
+		this.population = population;
+	}
+	
+	public Float getGrowthRate() {
+		return growthRate;
+	}
+	public void setGrowthRate(Float growthRate) {
+		this.growthRate = growthRate;
 	}
 }

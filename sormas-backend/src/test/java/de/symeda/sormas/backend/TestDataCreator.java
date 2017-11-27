@@ -13,11 +13,14 @@ import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventFacade;
+import de.symeda.sormas.api.event.EventParticipantDto;
+import de.symeda.sormas.api.event.EventParticipantFacade;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.EventType;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.facility.FacilityFacade;
 import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.region.CommunityFacade;
@@ -64,6 +67,7 @@ public class TestDataCreator extends BaseBeanTest {
 	private final VisitFacade visitFacade;
 	private final WeeklyReportFacade weeklyReportFacade;
 	private final EventFacade eventFacade;
+	private final EventParticipantFacade eventParticipantFacade;
 	private final SampleFacade sampleFacade;
 	private final SampleTestFacade sampleTestFacade;
 	private final RegionFacade regionFacade;
@@ -78,7 +82,7 @@ public class TestDataCreator extends BaseBeanTest {
 
 	public TestDataCreator(UserFacade userFacade, PersonFacade personFacade, CaseFacade caseFacade,
 			ContactFacade contactFacade, TaskFacade taskFacade, VisitFacade visitFacade, WeeklyReportFacade weeklyReportFacade,
-			EventFacade eventFacade, SampleFacade sampleFacade, SampleTestFacade sampleTestFacade, RegionFacade regionFacade, 
+			EventFacade eventFacade, EventParticipantFacade eventParticipantFacade, SampleFacade sampleFacade, SampleTestFacade sampleTestFacade, RegionFacade regionFacade, 
 			DistrictFacade districtFacade, CommunityFacade communityFacade, FacilityFacade facilityFacade, RegionService regionService,
 			DistrictService districtService, CommunityService communityService, FacilityService facilityService) {
 		this.userFacade = userFacade;
@@ -89,6 +93,7 @@ public class TestDataCreator extends BaseBeanTest {
 		this.visitFacade = visitFacade;
 		this.weeklyReportFacade = weeklyReportFacade;
 		this.eventFacade = eventFacade;
+		this.eventParticipantFacade = eventParticipantFacade;
 		this.sampleFacade = sampleFacade;
 		this.sampleTestFacade = sampleTestFacade;
 		this.regionFacade = regionFacade;
@@ -211,7 +216,7 @@ public class TestDataCreator extends BaseBeanTest {
 		return report;
 	}
 	
-	public EventDto createEvent(EventType eventType, EventStatus eventStatus, String eventDesc, String srcFirstName, String srcLastName, String srcTelNo, TypeOfPlace typeOfPlace, Date eventDate, Date reportDateTime, UserDto reportingUser, UserDto surveillanceOfficer, Disease disease) {
+	public EventDto createEvent(EventType eventType, EventStatus eventStatus, String eventDesc, String srcFirstName, String srcLastName, String srcTelNo, TypeOfPlace typeOfPlace, Date eventDate, Date reportDateTime, UserDto reportingUser, UserDto surveillanceOfficer, Disease disease, LocationDto eventLocation) {
 		EventDto event = new EventDto();
 		event.setUuid(DataHelper.createUuid());
 		event.setEventType(eventType);
@@ -226,10 +231,22 @@ public class TestDataCreator extends BaseBeanTest {
 		event.setReportingUser(reportingUser);
 		event.setSurveillanceOfficer(surveillanceOfficer);
 		event.setDisease(disease);
+		event.setEventLocation(eventLocation);
 		
 		event = eventFacade.saveEvent(event);
 		
 		return event;
+	}
+	
+	public EventParticipantDto createEventParticipant(EventDto event, PersonDto eventPerson, String involvementDescription) {
+		EventParticipantDto eventParticipant = new EventParticipantDto();
+		eventParticipant.setEvent(event);
+		eventParticipant.setPerson(eventPerson);
+		eventParticipant.setInvolvementDescription(involvementDescription);
+		
+		eventParticipant = eventParticipantFacade.saveEventParticipant(eventParticipant);
+		
+		return eventParticipant;
 	}
 	
 	public SampleDto createSample(CaseDataDto associatedCase, Date sampleDateTime, Date reportDateTime, UserDto reportingUser, SampleMaterial sampleMaterial, Facility lab) {

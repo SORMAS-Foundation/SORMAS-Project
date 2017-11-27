@@ -47,7 +47,7 @@ public class MainScreen extends HorizontalLayout {
         if (!LoginHelper.getCurrentUser().getUserRoles().contains(UserRole.LAB_USER)) {
         	menu.addView(CasesView.class, CasesView.VIEW_NAME, "Cases", FontAwesome.EDIT);
 	        menu.addView(ContactsView.class, ContactsView.VIEW_NAME, "Contacts", FontAwesome.HAND_PAPER_O);
-	        menu.addView(EventsView.class, EventsView.VIEW_NAME, "Alerts", FontAwesome.PHONE);
+	        menu.addView(EventsView.class, EventsView.VIEW_NAME, "Events", FontAwesome.PHONE);
         }
         menu.addView(SamplesView.class, SamplesView.VIEW_NAME, "Samples", FontAwesome.DATABASE);
         menu.addView(ReportsView.class, ReportsView.VIEW_NAME, "Reports", FontAwesome.FILE_TEXT);

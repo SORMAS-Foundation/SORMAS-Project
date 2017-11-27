@@ -15,6 +15,4 @@ public interface RegionFacade {
 	RegionDto getRegionByUuid(String uuid);
 	
 	RegionReferenceDto getRegionReferenceByUuid(String uuid);
-	
-	List<RegionDataDto> getAllData();
 }

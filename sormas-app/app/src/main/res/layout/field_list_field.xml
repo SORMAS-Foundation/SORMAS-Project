@@ -27,11 +27,15 @@
                 android:layout_weight="0.7"
                 android:gravity="right">
 
-                <ImageButton
+                <Button
                     android:id="@+id/add_btn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/ic_add_black_24dp"
+                    android:minHeight="0dp"
+                    android:height="40dp"
+                    android:padding="8dp"
+                    android:text="@string/action_add_list"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
                     android:background="@color/colorPrimary"
                     />
             </LinearLayout>

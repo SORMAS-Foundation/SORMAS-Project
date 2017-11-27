@@ -127,8 +127,8 @@ public class EventParticipantNewActivity extends AppCompatActivity {
                                         eventParticipant.setPerson((Person) parameter);
                                         savePersonAndEventParticipant(eventParticipant);
                                     } catch (DaoException e) {
-                                        Log.e(getClass().getName(), "Error while trying to build alert person", e);
-                                        Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_create_error), getResources().getString(R.string.entity_alert_person)), Snackbar.LENGTH_LONG).show();
+                                        Log.e(getClass().getName(), "Error while trying to build event person", e);
+                                        Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_create_error), getResources().getString(R.string.entity_event_person)), Snackbar.LENGTH_LONG).show();
                                         ErrorReportingHelper.sendCaughtException(tracker, e, null, true);
                                     }
                                 }
@@ -142,8 +142,8 @@ public class EventParticipantNewActivity extends AppCompatActivity {
                         savePersonAndEventParticipant(eventParticipant);
                     }
                 } catch (DaoException e) {
-                    Log.e(getClass().getName(), "Error while trying to build alert person", e);
-                    Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_create_error), getResources().getString(R.string.entity_alert_person)), Snackbar.LENGTH_LONG).show();
+                    Log.e(getClass().getName(), "Error while trying to build event person", e);
+                    Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_create_error), getResources().getString(R.string.entity_event_person)), Snackbar.LENGTH_LONG).show();
                     ErrorReportingHelper.sendCaughtException(tracker, e, null, true);
                 }
 
@@ -171,15 +171,15 @@ public class EventParticipantNewActivity extends AppCompatActivity {
                 @Override
                 public void call(boolean syncFailed, String syncFailedMessage) {
                     if (syncFailed) {
-                        Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_sync_error_created), getResources().getString(R.string.entity_alert_person)), Snackbar.LENGTH_LONG).show();
+                        Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_sync_error_created), getResources().getString(R.string.entity_event_person)), Snackbar.LENGTH_LONG).show();
                     } else {
-                        Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_create_success), getResources().getString(R.string.entity_alert_person)), Snackbar.LENGTH_LONG).show();
+                        Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_create_success), getResources().getString(R.string.entity_event_person)), Snackbar.LENGTH_LONG).show();
                     }
                     showEventParticipantEditView(eventParticipant);
                 }
             });
         } else {
-            Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_create_success), getResources().getString(R.string.entity_alert_person)), Snackbar.LENGTH_LONG).show();
+            Snackbar.make(findViewById(R.id.fragment_frame), String.format(getResources().getString(R.string.snackbar_create_success), getResources().getString(R.string.entity_event_person)), Snackbar.LENGTH_LONG).show();
             finish();
             showEventParticipantEditView(eventParticipant);
         }

@@ -5,13 +5,17 @@ import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.DashboardCase;
 import de.symeda.sormas.api.event.DashboardEvent;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.sample.DashboardSample;
 import de.symeda.sormas.api.sample.DashboardTestResult;
 import de.symeda.sormas.api.task.DashboardTask;
+import de.symeda.sormas.api.task.TaskStatus;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
+import de.symeda.sormas.ui.login.LoginHelper;
 
 public class DashboardDataProvider {
 	
@@ -32,6 +36,49 @@ public class DashboardDataProvider {
 	private List<DashboardSample> samples = new ArrayList<>();
 	private List<DashboardTask> tasks = new ArrayList<>();
 	private List<DashboardTask> pendingTasks = new ArrayList<>();
+	
+	public void refreshData() {
+		// Update the entities lists according to the filters
+		String userUuid = LoginHelper.getCurrentUser().getUuid();
+		
+		if (dateFilterOption == DateFilterOption.DATE) {
+			int period = DateHelper.getDaysBetween(fromDate, toDate);
+			Date previousFromDate = DateHelper.subtractDays(fromDate, period);
+			Date previousToDate = DateHelper.subtractDays(toDate, period);
+			// Cases
+			setCases(FacadeProvider.getCaseFacade().getNewCasesForDashboard(district, disease, fromDate, toDate, userUuid));
+			setPreviousCases(FacadeProvider.getCaseFacade().getNewCasesForDashboard(district, disease, previousFromDate, previousToDate, userUuid));
+			// Events
+			setEvents(FacadeProvider.getEventFacade().getNewEventsForDashboard(district, disease, fromDate, toDate, userUuid));
+			setPreviousEvents(FacadeProvider.getEventFacade().getNewEventsForDashboard(district, disease, previousFromDate, previousToDate, userUuid));
+			// Test results
+			setTestResults(FacadeProvider.getSampleTestFacade().getNewTestResultsForDashboard(district, disease, fromDate, toDate, userUuid));
+			setPreviousTestResults(FacadeProvider.getSampleTestFacade().getNewTestResultsForDashboard(district, disease, previousFromDate, previousToDate, userUuid));
+			// Samples
+			setSamples(FacadeProvider.getSampleFacade().getNewSamplesForDashboard(district, disease, fromDate, toDate, userUuid));
+		} else {
+			int period = toWeek.getWeek() - fromWeek.getWeek() + 1;
+			Date epiWeekStart = DateHelper.getEpiWeekStart(fromWeek);
+			Date epiWeekEnd = DateHelper.getEpiWeekEnd(toWeek);
+			Date previousEpiWeekStart = DateHelper.getEpiWeekStart(DateHelper.getPreviousEpiWeek(fromWeek, period));
+			Date previousEpiWeekEnd = DateHelper.getEpiWeekEnd(DateHelper.getPreviousEpiWeek(toWeek, period));
+			// Cases
+			setCases(FacadeProvider.getCaseFacade().getNewCasesForDashboard(district, disease, epiWeekStart, epiWeekEnd, userUuid));
+			setPreviousCases(FacadeProvider.getCaseFacade().getNewCasesForDashboard(district, disease, previousEpiWeekStart, previousEpiWeekEnd, userUuid));
+			// Events
+			setEvents(FacadeProvider.getEventFacade().getNewEventsForDashboard(district, disease, epiWeekStart, epiWeekEnd, userUuid));
+			setPreviousEvents(FacadeProvider.getEventFacade().getNewEventsForDashboard(district, disease, previousEpiWeekStart, previousEpiWeekEnd, userUuid));
+			// Test results
+			setTestResults(FacadeProvider.getSampleTestFacade().getNewTestResultsForDashboard(district, disease, epiWeekStart, epiWeekEnd, userUuid));
+			setPreviousTestResults(FacadeProvider.getSampleTestFacade().getNewTestResultsForDashboard(district, disease, previousEpiWeekStart, previousEpiWeekEnd, userUuid));
+			// Samples
+			setSamples(FacadeProvider.getSampleFacade().getNewSamplesForDashboard(district, disease, epiWeekStart, epiWeekEnd, userUuid));
+		}
+		// Tasks
+		setTasks(FacadeProvider.getTaskFacade().getAllByUserForDashboard(null, 
+				DateHelper.getEpiWeekStart(DateHelper.getEpiWeek(new Date())), DateHelper.getEpiWeekEnd(DateHelper.getEpiWeek(new Date())), userUuid));
+		setPendingTasks(FacadeProvider.getTaskFacade().getAllByUserForDashboard(TaskStatus.PENDING, null, null, userUuid));
+	}
 	
 	public List<DashboardCase> getCases() {
 		return cases;

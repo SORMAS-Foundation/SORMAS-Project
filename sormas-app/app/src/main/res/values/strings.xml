@@ -4,7 +4,7 @@
     <string name="main_menu_tasks">Tasks</string>
     <string name="main_menu_cases">Cases</string>
     <string name="main_menu_contacts">Contacts</string>
-    <string name="main_menu_events">Alerts</string>
+    <string name="main_menu_events">Events</string>
     <string name="main_menu_samples">Samples</string>
     <string name="main_menu_reports">Reports</string>
     <string name="main_menu_settings">Settings</string>
@@ -16,7 +16,7 @@
 
 
     <!-- actions -->
-    <string name="action_drop_data">Drop data</string>
+    <string name="action_repull_data">Re-synchronize data</string>
     <string name="action_open_syncLog">Synchronization conflicts</string>
     <string name="action_reload">Refresh</string>
     <string name="action_markAllAsRead">Mark All As Read</string>
@@ -29,6 +29,7 @@
     <string name="action_new_case">New case</string>
     <string name="action_help">Help</string>
     <string name="action_add">Add new entry</string>
+    <string name="action_add_list">+ Add new entry</string>
     <string name="action_search">Update search</string>
     <string name="action_select_person">Select</string>
     <string name="action_cancel">Cancel</string>
@@ -107,11 +108,11 @@
     <string name="headline_associated_case">Open case of this contact person</string>
     <string name="headline_pick_person">Pick or create a person</string>
     <string name="headline_visit">Follow-up visit</string>
-    <string name="headline_event">Alert</string>
-    <string name="headline_eventLocation">Alert location</string>
-    <string name="headline_event_information">Alert information</string>
+    <string name="headline_event">Event</string>
+    <string name="headline_eventLocation">Event location</string>
+    <string name="headline_event_information">Event information</string>
     <string name="headline_event_sourceOfInformation">Source of information</string>
-    <string name="headline_new_event">New alert</string>
+    <string name="headline_new_event">New event</string>
     <string name="headline_eventParticipant">Persons involved</string>
     <string name="headline_new_eventParticipant">New person</string>
     <string name="headline_hospitalization_recent">Most recent hospitalization</string>
@@ -126,7 +127,7 @@
     <string name="headline_sync_log">Synchronization Conflicts</string>
     <string name="headline_synchronization">Synchronization</string>
     <string name="headline_contact_synchronization">Contact Synchronization</string>
-    <string name="headline_alert_synchronization">Alert Synchronization</string>
+    <string name="headline_event_synchronization">Event Synchronization</string>
     <string name="headline_sample_synchronization">Sample Synchronization</string>
     <string name="headline_task_synchronization">Task Synchronization</string>
     <string name="headline_visit_synchronization">Visit Synchronization</string>
@@ -185,7 +186,7 @@
     <string name="hint_synchronization">Synchronizing with SORMAS server...</string>
     <string name="hint_select_entry">Select entry</string>
     <string name="hint_contact_synchronization">Contacts are being synchronized...</string>
-    <string name="hint_alert_synchronization">Alerts are being synchronized...</string>
+    <string name="hint_event_synchronization">Events are being synchronized...</string>
     <string name="hint_sample_synchronization">Samples are being synchronized...</string>
     <string name="hint_task_synchronization">Tasks are being synchronized...</string>
     <string name="hint_visit_synchronization">Visits are being synchronized...</string>
@@ -233,23 +234,24 @@
     <string name="snackbar_contact_firstName">Please enter the first name of the contact person.</string>
     <string name="snackbar_contact_lastName">Please enter the last name of the contact person.</string>
     <string name="snackbar_contact_relation">Please specify the relation to the case person.</string>
-    <string name="snackbar_alert_type">Please specify an alert type.</string>
-    <string name="snackbar_alert_description">Please enter an alert description.</string>
-    <string name="snackbar_alert_date">Please specify the alert date.</string>
-    <string name="snackbar_alert_place">Please specify the type of place.</string>
-    <string name="snackbar_alert_place_text">Please further specify the type of place.</string>
-    <string name="snackbar_alert_firstName">Please enter the first name of the alert source.</string>
-    <string name="snackbar_alert_lastName">Please enter the second name of the alert source.</string>
-    <string name="snackbar_alert_telNo">Please enter the telephone number of the alert source.</string>
-    <string name="snackbar_alert_person_description">Please enter an involvement description for the alert person.</string>
-    <string name="snackbar_alert_person_firstName">Please enter the first name of the alert person.</string>
-    <string name="snackbar_alert_person_lastName">Please enter the last name of the alert person.</string>
+    <string name="snackbar_event_type">Please specify an event type.</string>
+    <string name="snackbar_event_description">Please enter an event description.</string>
+    <string name="snackbar_event_date">Please specify the event date.</string>
+    <string name="snackbar_event_place">Please specify the type of place.</string>
+    <string name="snackbar_event_place_text">Please further specify the type of place.</string>
+    <string name="snackbar_event_firstName">Please enter the first name of the event source.</string>
+    <string name="snackbar_event_lastName">Please enter the second name of the event source.</string>
+    <string name="snackbar_event_telNo">Please enter the telephone number of the event source.</string>
+    <string name="snackbar_event_person_description">Please enter an involvement description for the event person.</string>
+    <string name="snackbar_event_person_firstName">Please enter the first name of the event person.</string>
+    <string name="snackbar_event_person_lastName">Please enter the last name of the event person.</string>
     <string name="snackbar_no_more_entries">There are no more entries to display.</string>
     <string name="snackbar_select_create_person">Please select a person or click \'Create\' to create a new one.</string>
     <string name="snackbar_person_first_last_name">Please enter a first and last name for the new person.</string>
     <string name="snackbar_report_sent">Problem report successfully sent.</string>
     <string name="snackbar_task_status">Task status could not be edited because of an internal error.</string>
     <string name="snackbar_task_reply">An assignee reply is required when setting the task status to not executable.</string>
+    <string name="snackbar_task_case_classification">Please specify the classification of the case associated with this task before you mark it as Done.</string>
     <string name="snackbar_pin_not_matching">The PINs you\'ve entered do not match. Please try again.</string>
     <string name="snackbar_pin_correct_loading">PIN correct. Starting SORMAS ...</string>
     <string name="snackbar_pin_wrong">You\'ve entered an incorrect PIN.</string>
@@ -269,8 +271,8 @@
 
     <string name="entity_case">Case</string>
     <string name="entity_contact">Contact</string>
-    <string name="entity_alert">Alert</string>
-    <string name="entity_alert_person">Alert person</string>
+    <string name="entity_event">Event</string>
+    <string name="entity_event_person">Event person</string>
     <string name="entity_sample">Sample</string>
     <string name="entity_visit">Visit</string>
     <string name="entity_task">Task</string>
@@ -309,14 +311,14 @@
     <string name="validation_contact_relation">Please select the relation to the case.</string>
     <string name="validation_contact_proximity">Please select the contact proximity.</string>
     <string name="validation_contact_last_date">Please enter a valid last contact date.</string>
-    <string name="validation_event_type">Please select the type of alert.</string>
-    <string name="validation_event_description">Please enter a description for the alert.</string>
-    <string name="validation_event_date">Please enter the alert date.</string>
+    <string name="validation_event_type">Please select the type of event.</string>
+    <string name="validation_event_description">Please enter a description for the event.</string>
+    <string name="validation_event_date">Please enter the event date.</string>
     <string name="validation_event_type_of_place">Please select the type of place.</string>
     <string name="validation_event_type_of_place_details">Please describe the type of place.</string>
-    <string name="validation_event_src_first_name">Please enter the first name of the alert source.</string>
-    <string name="validation_event_src_last_name">Please enter the last name of the alert source.</string>
-    <string name="validation_event_src_tel_no">Please enter the telephone number of the alert source.</string>
+    <string name="validation_event_src_first_name">Please enter the first name of the event source.</string>
+    <string name="validation_event_src_last_name">Please enter the last name of the event source.</string>
+    <string name="validation_event_src_tel_no">Please enter the telephone number of the event source.</string>
     <string name="validation_event_participant_involvement_desc">Please enter an involvement description.</string>
     <string name="validation_sample_date_time">Please enter the date and time when the sample has been taken.</string>
     <string name="validation_sample_material">Please select the sample material.</string>
@@ -330,10 +332,13 @@
     <string name="validation_visit_status">Please select the visit status.</string>
     <string name="validation_prev_hosp_discharge_date">Please select the date of discharge.</string>
     <string name="validation_prev_hosp_admission_date">Please select the date of admission.</string>
+    <string name="validation_date_later">The %1$s can not be later than the %2$s.</string>
+    <string name="validation_date_earlier">The %1$s can not be later than the %2$s.</string>
 
     <string name="validation_soft_case_epid_number">The EPID number does not match the required pattern. You may still save the case and enter the correct number later.</string>
     <string name="validation_soft_case_epid_number_empty">An EPID number has to be provided. You may still save the case and enter the correct number later.</string>
     <string name="validation_soft_case_classification">This case should be classified as soon as the required information is available.</string>
+    <string name="validation_soft_add_list_entry">Please add an entry to the list if there is any data available to you.</string>
     <string name="validation_soft_general">Please fill in this field if possible. You can still save without doing so.</string>
 
 </resources>

@@ -46,9 +46,8 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
      */
     protected boolean syncFailed;
     protected String syncFailedMessage;
-    protected boolean secondTry;
 
-    private final SyncMode syncMode;
+    private SyncMode syncMode;
     private final Context context;
 
 
@@ -67,20 +66,20 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
             switch (syncMode) {
                 case ChangesOnly:
-                    if (secondTry) {
-                        pullMissingAndDeleteInvalid();
-                    }
                     synchronizeChangedData();
                     break;
                 case ChangesAndInfrastructure:
                     pullInfrastructure();
-                    if (secondTry) {
-                        pullMissingAndDeleteInvalid();
-                    }
                     synchronizeChangedData();
                     break;
                 case Complete:
                     pullInfrastructure();
+                    pullMissingAndDeleteInvalid();
+                    synchronizeChangedData();
+                    break;
+                case CompleteAndRepull:
+                    pullInfrastructure();
+                    repullData();
                     pullMissingAndDeleteInvalid();
                     synchronizeChangedData();
                     break;
@@ -95,15 +94,32 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
         } catch (Exception e) {
 
-            if (!secondTry) {
+            SyncMode newSyncMode = null;
+            switch (syncMode) {
+                case ChangesOnly:
+                case ChangesAndInfrastructure:
+                    newSyncMode = SyncMode.Complete;
+                    break;
+                case Complete:
+                    newSyncMode = SyncMode.CompleteAndRepull;
+                    break;
+                case CompleteAndRepull:
+                    break;
+                default:
+                    throw new IllegalArgumentException(syncMode.toString());
+            }
 
-                Log.e(getClass().getName(), "Error first try synchronizing data", e);
+            if (newSyncMode != null) {
 
-                secondTry = true;
+                Log.w(getClass().getName(), "Error trying to synchronizing data in mode '" + syncMode + "'", e);
+
+                syncMode = newSyncMode;
                 doInBackground(params);
+
             } else {
 
-                Log.e(getClass().getName(), "Error second try synchronizing data", e);
+                Log.e(getClass().getName(), "Error trying to synchronizing data in mode '" + syncMode + "'", e);
+
                 SormasApplication application = (SormasApplication) context.getApplicationContext();
                 Tracker tracker = application.getDefaultTracker();
                 ErrorReportingHelper.sendCaughtException(tracker, e, null, true);
@@ -166,6 +182,34 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
             weeklyReportEntryDtoHelper.pullEntities(true);
     }
 
+    private void repullData() throws DaoException, ServerConnectionException, SynchronizationException {
+
+        PersonDtoHelper personDtoHelper = new PersonDtoHelper();
+        EventDtoHelper eventDtoHelper = new EventDtoHelper();
+        EventParticipantDtoHelper eventParticipantDtoHelper = new EventParticipantDtoHelper();
+        CaseDtoHelper caseDtoHelper = new CaseDtoHelper();
+        SampleDtoHelper sampleDtoHelper = new SampleDtoHelper();
+        SampleTestDtoHelper sampleTestDtoHelper = new SampleTestDtoHelper();
+        ContactDtoHelper contactDtoHelper = new ContactDtoHelper();
+        VisitDtoHelper visitDtoHelper = new VisitDtoHelper();
+        TaskDtoHelper taskDtoHelper = new TaskDtoHelper();
+        WeeklyReportDtoHelper weeklyReportDtoHelper = new WeeklyReportDtoHelper();
+        WeeklyReportEntryDtoHelper weeklyReportEntryDtoHelper = new WeeklyReportEntryDtoHelper();
+
+        new UserDtoHelper().repullEntities();
+        personDtoHelper.repullEntities();
+        eventDtoHelper.repullEntities();
+        eventParticipantDtoHelper.repullEntities();
+        caseDtoHelper.repullEntities();
+        sampleDtoHelper.repullEntities();
+        sampleTestDtoHelper.repullEntities();
+        contactDtoHelper.repullEntities();
+        visitDtoHelper.repullEntities();
+        taskDtoHelper.repullEntities();
+        weeklyReportDtoHelper.repullEntities();
+        weeklyReportEntryDtoHelper.repullEntities();
+    }
+
     private void pullInfrastructure() throws DaoException, ServerConnectionException, SynchronizationException {
 
         new RegionDtoHelper().pullEntities(false);
@@ -177,7 +221,6 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
     private void pullMissingAndDeleteInvalid() throws ServerConnectionException {
         // ATTENTION: Since we are working with UUID lists we have no type safety. Look for typos!
-
 
         Log.d(SynchronizeDataAsync.class.getSimpleName(), "pullMissingAndDeleteInvalid");
 
@@ -281,5 +324,10 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         ChangesOnly,
         ChangesAndInfrastructure,
         Complete,
+        /**
+         * Also repulls all non-infrastructure data and users
+         * Use to handle conflict states resulting out of bugs
+         */
+        CompleteAndRepull,
     }
 }

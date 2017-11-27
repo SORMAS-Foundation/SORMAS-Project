@@ -50,41 +50,43 @@ public class DistrictService extends AbstractAdoService<District> {
 			private Region cachedRegion = null;
 			
 			@Override
-			public void consume(String regionName, String districtName, String epidCode) {
+			public void consume(String regionName, String districtName, String epidCode, Integer population, Float growthRate) {
 					
-					if (cachedRegion == null || !cachedRegion.getName().equals(regionName)) {
-						Optional<Region> regionResult = regions.stream()
-								.filter(r -> r.getName().equals(regionName))
-								.findFirst();
-	
-						if (regionResult.isPresent()) {
-							cachedRegion = regionResult.get();
-						} else {
-							logger.warn("Could not find region '" + regionName + "' for district '" + districtName + "'");
-							return;
-						}
-						
-						if (cachedRegion.getDistricts() == null) {
-							cachedRegion.setDistricts(new ArrayList<District>());
-						}
-					}
-					Optional<District> districtResult = cachedRegion.getDistricts().stream()
-							.filter(r -> r.getName().equals(districtName))
+				if (cachedRegion == null || !cachedRegion.getName().equals(regionName)) {
+					Optional<Region> regionResult = regions.stream()
+							.filter(r -> r.getName().equals(regionName))
 							.findFirst();
-					
-					District district;
-					if (districtResult.isPresent()) {
-						district = districtResult.get();
+
+					if (regionResult.isPresent()) {
+						cachedRegion = regionResult.get();
 					} else {
-						district = new District();
-						cachedRegion.getDistricts().add(district);
-						district.setName(districtName);
-						district.setRegion(cachedRegion);
+						logger.warn("Could not find region '" + regionName + "' for district '" + districtName + "'");
+						return;
 					}
 					
-					district.setEpidCode(epidCode);
-	
-					persist(district);
+					if (cachedRegion.getDistricts() == null) {
+						cachedRegion.setDistricts(new ArrayList<District>());
+					}
+				}
+				Optional<District> districtResult = cachedRegion.getDistricts().stream()
+						.filter(r -> r.getName().equals(districtName))
+						.findFirst();
+				
+				District district;
+				if (districtResult.isPresent()) {
+					district = districtResult.get();
+				} else {
+					district = new District();
+					cachedRegion.getDistricts().add(district);
+					district.setName(districtName);
+					district.setRegion(cachedRegion);
+				}
+				
+				district.setEpidCode(epidCode);
+				district.setPopulation(population);
+				district.setGrowthRate(growthRate);
+
+				persist(district);
 			}
 		});
 	}

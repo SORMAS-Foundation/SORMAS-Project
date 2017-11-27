@@ -13297,6 +13297,10 @@ div.v-layout.v-horizontal.v-widget {
 	color: #FFF;
 }
 
+.sormas .v-select-optiongroup-horizontal.v-select-optiongroup-error .v-radiobutton {
+	border-color: #E10002;
+}
+
 .sormas .v-caption-caption-inline {
 	float: left;
 	padding-top: 7px;
@@ -13525,6 +13529,10 @@ div.v-layout.v-horizontal.v-widget {
 	border-right: 1px solid #CDD8EC;
 }
 
+.sormas .v-label-separator-vertical-broad {
+	border-right: 2px solid #CDD8EC;
+}
+
 .sormas .v-label-size-small {
 	font-size: 0.8em;
 }
@@ -13555,6 +13563,37 @@ div.v-layout.v-horizontal.v-widget {
 
 .sormas .v-label-text-uppercase {
 	text-transform: uppercase;
+}
+
+.sormas .v-window .v-window-outerheader {
+	border-bottom: 3px solid #CDD8EC;
+}
+
+.sormas .v-window .v-window-outerheader .v-window-header {
+	padding: 16px 32px 8px 32px;
+	font-size: 24px;
+	font-weight: 600;
+	color: #005A9C;
+}
+
+.sormas .v-window .v-window-outerheader::after {
+	
+}
+
+.sormas .v-window .v-window-contents > .v-scrollable > .v-layout.v-margin-left {
+	padding-left: 32px;
+}
+
+.sormas .v-window .v-window-contents > .v-scrollable > .v-layout.v-margin-right {
+	padding-right: 32px;
+}
+
+.sormas .v-window .v-window-contents > .v-scrollable > .v-layout.v-margin-top {
+	padding-top: 32px;
+}
+
+.sormas .v-window .v-window-contents > .v-scrollable > .v-layout.v-margin-bottom {
+	padding-bottom: 32px;
 }
 
 .sormas .svg-circle {
@@ -13604,37 +13643,6 @@ div.v-layout.v-horizontal.v-widget {
 
 .sormas .svg-stroke-background {
 	stroke: #E6E6E6;
-}
-
-.sormas .v-window .v-window-outerheader {
-	border-bottom: 3px solid #CDD8EC;
-}
-
-.sormas .v-window .v-window-outerheader .v-window-header {
-	padding: 16px 32px 8px 32px;
-	font-size: 24px;
-	font-weight: 600;
-	color: #005A9C;
-}
-
-.sormas .v-window .v-window-outerheader::after {
-	
-}
-
-.sormas .v-window .v-window-contents > .v-scrollable > .v-layout.v-margin-left {
-	padding-left: 32px;
-}
-
-.sormas .v-window .v-window-contents > .v-scrollable > .v-layout.v-margin-right {
-	padding-right: 32px;
-}
-
-.sormas .v-window .v-window-contents > .v-scrollable > .v-layout.v-margin-top {
-	padding-top: 32px;
-}
-
-.sormas .v-window .v-window-contents > .v-scrollable > .v-layout.v-margin-bottom {
-	padding-bottom: 32px;
 }
 
 .sormas .view-header {
@@ -13696,14 +13704,6 @@ div.v-layout.v-horizontal.v-widget {
 
 .sormas .curve-and-map-layout {
 	background-color: #CDD8EC;
-}
-
-.sormas .statistics-sub-component {
-	border-left: 2px solid #CDD8EC;
-}
-
-.sormas .statistics-sub-component.statistics-sub-component-right {
-	border-right: 2px solid #CDD8EC;
 }
 
 .sormas .googlemap.no-tiles img {
