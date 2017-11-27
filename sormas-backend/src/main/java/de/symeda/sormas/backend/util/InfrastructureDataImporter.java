@@ -245,7 +245,7 @@ public final class InfrastructureDataImporter {
 				String facilityName = columns[2];
 				boolean publicOwnership = "PUBLIC".equalsIgnoreCase(columns[3]);
 				
-				facilityConsumer.consume(regionName, null, null, facilityName, cityName, null, null, null, null, publicOwnership);
+				facilityConsumer.consume(regionName, null, null, facilityName, cityName, null, null, null, FacilityType.LABORATORY, publicOwnership);
 			}
 			
 			stream.close();

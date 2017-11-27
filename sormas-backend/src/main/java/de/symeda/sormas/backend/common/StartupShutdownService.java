@@ -111,9 +111,13 @@ public class StartupShutdownService {
 
 	private void importFacilities(String countryName) {
 		
-		if (facilityService.count() > 0) {
+		Timestamp latestRegionChangeDate = facilityService.getLatestChangeDate();
+		if (latestRegionChangeDate != null
+				// update needed due to bugfix
+				// TODO replace with solution that reads the change date from the file or something else
+				&& latestRegionChangeDate.after(DateHelper.getDateZero(2017, 11, 27))) {
 			return;
-		}
+		}		
 		
 		List<Region> regions = regionService.getAll();
 		List<Facility> facilities = facilityService.getAll();
