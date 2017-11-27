@@ -126,7 +126,6 @@ public class CaseNewForm extends FormTab {
                         facilityList = DatabaseHelper.getFacilityDao().getHealthFacilitiesByDistrict((District) binding.caseDataDistrict.getValue(), true);
                     }
                     spinnerField.setAdapterAndValue(binding.caseDataHealthFacility.getValue(), DataUtils.toItems(facilityList));
-                    spinnerField.setValue(null);
                 }
             }
 
