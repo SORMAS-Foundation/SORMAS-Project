@@ -7,6 +7,7 @@ import com.vaadin.ui.TextField;
 import de.symeda.sormas.api.epidata.EpiDataBurialDto;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
+import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
@@ -30,6 +31,8 @@ public class EpiDataBurialEditForm extends AbstractEditForm<EpiDataBurialDto> {
 	protected void addFields() {
 		DateField burialDateFrom = addField(EpiDataBurialDto.BURIAL_DATE_FROM, DateField.class);
 		DateField burialDateTo = addField(EpiDataBurialDto.BURIAL_DATE_TO, DateField.class);
+		burialDateFrom.addValidator(new DateComparisonValidator(burialDateFrom, burialDateTo, true, true, "The " + burialDateFrom.getCaption() + " can not be later than the " + burialDateTo.getCaption() + "."));
+		burialDateTo.addValidator(new DateComparisonValidator(burialDateTo, burialDateFrom, false, true, "The " + burialDateTo.getCaption() + " can not be earlier than the " + burialDateFrom.getCaption() + "."));
 		addField(EpiDataBurialDto.BURIAL_PERSON_NAME, TextField.class);
 		addField(EpiDataBurialDto.BURIAL_RELATION, TextField.class);
 		addField(EpiDataBurialDto.BURIAL_ILL, OptionGroup.class);
@@ -39,15 +42,8 @@ public class EpiDataBurialEditForm extends AbstractEditForm<EpiDataBurialDto> {
 		setRequired(true,
 				EpiDataBurialDto.BURIAL_ILL,
 				EpiDataBurialDto.BURIAL_TOUCHING);
-
-		FieldHelper.makeFieldSoftRequired(burialDateFrom, burialDateTo);
 		
-		burialDateFrom.addValueChangeListener(e -> {
-			FieldHelper.validateDateField(burialDateFrom, burialDateTo, true);
-		});
-		burialDateTo.addValueChangeListener(e -> {
-			FieldHelper.validateDateField(burialDateTo, burialDateFrom, false);
-		});
+		FieldHelper.makeFieldSoftRequired(burialDateFrom, burialDateTo);
 	}
 	
 	@Override

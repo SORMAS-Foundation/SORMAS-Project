@@ -3,15 +3,11 @@ package de.symeda.sormas.ui.utils;
 import java.util.Arrays;
 import java.util.List;
 
-import org.joda.time.DateTimeComparator;
-
 import com.vaadin.data.Validator;
 import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.validator.NullValidator;
-import com.vaadin.server.UserError;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.AbstractSelect;
-import com.vaadin.ui.DateField;
 import com.vaadin.ui.Field;
 
 import de.symeda.sormas.api.Disease;
@@ -357,30 +353,6 @@ public final class FieldHelper {
 				if (validator instanceof NullValidator) {
 					field.removeValidator(validator);
 				}
-			}
-		}
-	}
-	
-	/**
-	 * Compares the two date fields and sets a component error to the fieldToValidate if the boolean condition is not met. If hasToBeEarlierOrSameDate
-	 * is set to true, fieldToValidate needs to be an earlier than or the same date as fieldToCompare. If it is set to false, fieldToValidate needs
-	 * to be a later than or the same date as fieldToCompare.
-	 * @param fieldToValidate The date field to set a potential component error for
-	 * @param fieldToCompare The date field used to determine whether a component error has to be set
-	 * @param hasToBeEarlierOrSameDate Whether fieldToValidate needs to be earlier/equal or later/equal to fieldToCompare
-	 */
-	public static void validateDateField(DateField fieldToValidate, DateField fieldToCompare, boolean hasToBeEarlierOrSameDate) {
-		if (hasToBeEarlierOrSameDate) {
-			if (DateTimeComparator.getDateOnlyInstance().compare(fieldToValidate.getValue(), fieldToCompare.getValue()) > 0) {
-				fieldToValidate.setComponentError(new UserError("The " + fieldToValidate.getCaption() + " can not be later than the " + fieldToCompare.getCaption() + "."));
-			} else {
-				fieldToValidate.setComponentError(null);
-			}
-		} else {
-			if (DateTimeComparator.getDateOnlyInstance().compare(fieldToValidate.getValue(), fieldToCompare.getValue()) < 0) {
-				fieldToValidate.setComponentError(new UserError("The " + fieldToValidate.getCaption() + " can not be earlier than the " + fieldToCompare.getCaption() + "."));
-			} else {
-				fieldToValidate.setComponentError(null);
 			}
 		}
 	}

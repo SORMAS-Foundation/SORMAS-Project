@@ -22,7 +22,7 @@ public class EpiDataGatheringEditForm extends AbstractEditForm<EpiDataGatheringD
 		super(EpiDataGatheringDto.class, EpiDataGatheringDto.I18N_PREFIX);
 		
 		setWidth(540, Unit.PIXELS);
-	}
+	}	
 	
 	@Override
 	protected void addFields() {
