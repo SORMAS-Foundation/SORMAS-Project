@@ -111,6 +111,8 @@ public class TaskForm extends FormTab {
                             Log.e(getClass().getName(), "Error while trying to update task status", e);
                             Snackbar.make(getActivity().findViewById(R.id.base_layout), R.string.snackbar_task_status, Snackbar.LENGTH_LONG).show();
                             ErrorReportingHelper.sendCaughtException(tracker, e, task, true);
+                        } catch (ValidationException e) {
+                            // Will not happen here
                         }
                     } else {
                         Snackbar.make(getActivity().findViewById(R.id.base_layout), R.string.snackbar_task_reply, Snackbar.LENGTH_LONG).show();
@@ -129,12 +131,6 @@ public class TaskForm extends FormTab {
                 @Override
                 public void onClick(View v) {
                     try {
-                        if (task.getTaskType() == TaskType.CASE_INVESTIGATION) {
-                            CaseDataDto caseData = new CaseDataDto();
-                            new CaseDtoHelper().fillInnerFromAdo(caseData, task.getCaze());
-                            CaseLogic.validateInvestigationDoneAllowed(caseData);
-                        }
-
                         taskDao.saveAndSnapshot(binding.getTask());
                         taskDao.changeTaskStatus(task, TaskStatus.DONE);
                         ((AbstractSormasActivity)getActivity()).synchronizeChangedData(new Callback() {

@@ -38,7 +38,7 @@ public class EventController {
 	
 	public void create() {
 		CommitDiscardWrapperComponent<EventDataForm> eventCreateComponent = getEventCreateComponent();
-		VaadinUiUtil.showModalPopupWindow(eventCreateComponent, "Create new event", true);
+		VaadinUiUtil.showModalPopupWindow(eventCreateComponent, "Create new event");
 	}
 	
 	public void navigateToData(String eventUuid) {

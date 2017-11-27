@@ -24,17 +24,17 @@ public class VaadinUiUtil {
 		window.setSizeUndefined();
 		window.setResizable(false);
 		window.center();
-		
+
 		return window;
 	}
-	
+
 	public static Window showSimplePopupWindow(String caption, String contentText) {
 		Window window = new Window(null);
 		window.setModal(true);
 		window.setSizeUndefined();
 		window.setResizable(false);
 		window.center();
-		
+
 		VerticalLayout popupLayout = new VerticalLayout();
 		popupLayout.setMargin(true);
 		popupLayout.setSpacing(true);
@@ -49,46 +49,44 @@ public class VaadinUiUtil {
 		CssStyles.style(okayButton, ValoTheme.BUTTON_PRIMARY);
 		popupLayout.addComponent(okayButton);
 		popupLayout.setComponentAlignment(okayButton, Alignment.BOTTOM_RIGHT);
-		
+
 		window.setCaption(caption);
 		window.setContent(popupLayout);
 
 		UI.getCurrent().addWindow(window);
-		
+
 		return window;
 	}
-	
+
 	public static Window showPopupWindow(Component content) {
-		
+
 		Window window = new Window(null);
 		window.setModal(true);
 		window.setSizeUndefined();
 		window.setResizable(false);
 		window.center();
 		window.setContent(content);
-		
+
 		UI.getCurrent().addWindow(window);
-		
+
 		return window;
 	}
-	
-	public static Window showModalPopupWindow(CommitDiscardWrapperComponent<?> content, String caption, boolean closeOnDone) {
-		
+
+	public static Window showModalPopupWindow(CommitDiscardWrapperComponent<?> content, String caption) {
+
 		final Window popupWindow = VaadinUiUtil.showPopupWindow(content);
 		popupWindow.setCaption(caption);
 		content.setMargin(true);
-		
-		if (closeOnDone) {
-			content.addDoneListener(new DoneListener() {
-				public void onDone() {
-					popupWindow.close();
-				}
-			});
-		}
-		
+
+		content.addDoneListener(new DoneListener() {
+			public void onDone() {
+				popupWindow.close();
+			}
+		});
+
 		return popupWindow;
 	}
-	
+
 	@SuppressWarnings("serial")
 	public static void addIconColumn(GeneratedPropertyContainer container, String iconPropertyId, FontAwesome fontAwesomeIcon) {
 		container.addGeneratedProperty(iconPropertyId, new PropertyValueGenerator<String>() {

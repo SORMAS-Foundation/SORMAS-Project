@@ -112,7 +112,7 @@ public class PreviousHospitalizationsField extends AbstractTableField<PreviousHo
 				editForm, editForm.getFieldGroup());
 		editView.getCommitButton().setCaption("done");
 
-		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, "Previous hospitalization", true);
+		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, "Previous hospitalization");
 
 		editView.addCommitListener(new CommitListener() {
 			@Override

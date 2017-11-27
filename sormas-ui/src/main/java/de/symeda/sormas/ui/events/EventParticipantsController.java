@@ -60,7 +60,7 @@ public class EventParticipantsController {
 			}
 		});
 		
-		VaadinUiUtil.showModalPopupWindow(createComponent, "Create new person", true);
+		VaadinUiUtil.showModalPopupWindow(createComponent, "Create new person");
 	}
 	
 	public void editEventParticipant(EventParticipantDto eventParticipant) {
@@ -68,7 +68,7 @@ public class EventParticipantsController {
 		editForm.setValue(eventParticipant);
 		final CommitDiscardWrapperComponent<EventParticipantEditForm> editView = new CommitDiscardWrapperComponent<EventParticipantEditForm>(editForm, editForm.getFieldGroup());
 
-		Window window = VaadinUiUtil.showModalPopupWindow(editView, "Edit person", true);
+		Window window = VaadinUiUtil.showModalPopupWindow(editView, "Edit person");
         // visit form is too big for typical screens
 		window.setWidth(editForm.getWidth() + 40, Unit.PIXELS); 
 		window.setHeight(80, Unit.PERCENTAGE); 
