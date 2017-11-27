@@ -355,14 +355,14 @@ public class StatisticsComponent extends VerticalLayout {
 			int fatalitiesCount = (int) dashboardCases.stream().filter(c -> c.getCasePersonCondition() == PresentCondition.DEAD).count();
 			int previousFatalitiesCount = (int) previousDashboardCases.stream().filter(c -> c.getCasePersonCondition() == PresentCondition.DEAD).count();
 			
-			float investigatedCasesGrowth = investigatedCasesCount == 0 ? -previousInvestigatedCasesCount * 100 : 
-				previousInvestigatedCasesCount == 0 ? investigatedCasesCount * 100 :
+			float investigatedCasesGrowth = investigatedCasesCount == 0 ? previousInvestigatedCasesCount > 0 ? -100 : 0 : 
+				previousInvestigatedCasesCount == 0 ? investigatedCasesCount > 0 ? Float.MIN_VALUE : 0 :
 				new BigDecimal(investigatedCasesCount).subtract(new BigDecimal(previousInvestigatedCasesCount)).divide(new BigDecimal(investigatedCasesCount), 1, RoundingMode.HALF_UP).multiply(new BigDecimal(100)).floatValue();
-			float discardedCasesGrowth = discardedCasesCount == 0 ? -previousDiscardedCasesCount * 100 : 
-				previousDiscardedCasesCount == 0 ? discardedCasesCount * 100 :
+			float discardedCasesGrowth = discardedCasesCount == 0 ? previousDiscardedCasesCount > 0 ? -100 : 0 : 
+				previousDiscardedCasesCount == 0 ? discardedCasesCount > 0 ? Float.MIN_VALUE : 0 :
 				new BigDecimal(discardedCasesCount).subtract(new BigDecimal(previousDiscardedCasesCount)).divide(new BigDecimal(discardedCasesCount), 1, RoundingMode.HALF_UP).multiply(new BigDecimal(100)).floatValue();
-			float fatalitiesGrowth = fatalitiesCount == 0 ? -previousFatalitiesCount * 100 : 
-				previousFatalitiesCount == 0 ? fatalitiesCount * 100 :
+			float fatalitiesGrowth = fatalitiesCount == 0 ? previousFatalitiesCount > 0 ? -100 : 0 : 
+				previousFatalitiesCount == 0 ? fatalitiesCount > 0 ? Float.MIN_VALUE : 0 :
 				new BigDecimal(fatalitiesCount).subtract(new BigDecimal(previousFatalitiesCount)).divide(new BigDecimal(fatalitiesCount), 1, RoundingMode.HALF_UP).multiply(new BigDecimal(100)).floatValue();
 			float fatalityRate = fatalitiesCount == 0 ? 0 : newCasesCount == 0 ? 0 :
 				new BigDecimal(fatalitiesCount).multiply(new BigDecimal(100)).divide(new BigDecimal(newCasesCount), 1, RoundingMode.HALF_UP).floatValue();
@@ -551,7 +551,7 @@ public class StatisticsComponent extends VerticalLayout {
 				newTestResultsComponent.addComponentToRightContentColumn(testResultPendingPercentage);
 				newTestResultsComponent.addComponentToRightContentColumn(testResultIndeterminatePercentage);
 			} else {
-				newEventsComponent.addContent();
+				newTestResultsComponent.addContent();
 			}
 		}
 		

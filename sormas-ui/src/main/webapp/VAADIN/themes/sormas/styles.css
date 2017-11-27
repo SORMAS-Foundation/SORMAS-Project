@@ -13565,6 +13565,37 @@ div.v-layout.v-horizontal.v-widget {
 	text-transform: uppercase;
 }
 
+.sormas .v-window .v-window-outerheader {
+	border-bottom: 3px solid #CDD8EC;
+}
+
+.sormas .v-window .v-window-outerheader .v-window-header {
+	padding: 16px 32px 8px 32px;
+	font-size: 24px;
+	font-weight: 600;
+	color: #005A9C;
+}
+
+.sormas .v-window .v-window-outerheader::after {
+	
+}
+
+.sormas .v-window .v-window-contents > .v-scrollable > .v-layout.v-margin-left {
+	padding-left: 32px;
+}
+
+.sormas .v-window .v-window-contents > .v-scrollable > .v-layout.v-margin-right {
+	padding-right: 32px;
+}
+
+.sormas .v-window .v-window-contents > .v-scrollable > .v-layout.v-margin-top {
+	padding-top: 32px;
+}
+
+.sormas .v-window .v-window-contents > .v-scrollable > .v-layout.v-margin-bottom {
+	padding-bottom: 32px;
+}
+
 .sormas .svg-circle {
 	fill: none;
 	stroke-width: 3;
@@ -13612,37 +13643,6 @@ div.v-layout.v-horizontal.v-widget {
 
 .sormas .svg-stroke-background {
 	stroke: #E6E6E6;
-}
-
-.sormas .v-window .v-window-outerheader {
-	border-bottom: 3px solid #CDD8EC;
-}
-
-.sormas .v-window .v-window-outerheader .v-window-header {
-	padding: 16px 32px 8px 32px;
-	font-size: 24px;
-	font-weight: 600;
-	color: #005A9C;
-}
-
-.sormas .v-window .v-window-outerheader::after {
-	
-}
-
-.sormas .v-window .v-window-contents > .v-scrollable > .v-layout.v-margin-left {
-	padding-left: 32px;
-}
-
-.sormas .v-window .v-window-contents > .v-scrollable > .v-layout.v-margin-right {
-	padding-right: 32px;
-}
-
-.sormas .v-window .v-window-contents > .v-scrollable > .v-layout.v-margin-top {
-	padding-top: 32px;
-}
-
-.sormas .v-window .v-window-contents > .v-scrollable > .v-layout.v-margin-bottom {
-	padding-bottom: 32px;
 }
 
 .sormas .view-header {
