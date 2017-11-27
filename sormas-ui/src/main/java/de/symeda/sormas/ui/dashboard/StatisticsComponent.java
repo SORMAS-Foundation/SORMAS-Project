@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import com.vaadin.server.FontAwesome;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -119,12 +120,12 @@ public class StatisticsComponent extends VerticalLayout {
 	}
 	
 	private void addSeparatorLabel() {
-		Label separator = new Label();
-		separator.setHeight(100, Unit.PERCENTAGE);
-		separator.setWidthUndefined();
-		CssStyles.style(separator, CssStyles.SEPARATOR_VERTICAL_BROAD);
-		subComponentsLayout.addComponent(separator);
-		subComponentsLayout.setExpandRatio(separator, 0);
+		// TODO this is not working well in chrome - needs to be solved differently
+//		Label separator = new Label("<div class='v-label-" + CssStyles.SEPARATOR_VERTICAL_BROAD + "'></div>", ContentMode.HTML);
+//		separator.setHeight(100, Unit.PERCENTAGE);
+//		separator.setWidth(2, Unit.PIXELS);
+//		subComponentsLayout.addComponent(separator);
+//		subComponentsLayout.setExpandRatio(separator, 0);
 	}
 
 	public void updateStatistics(Disease disease) {
@@ -211,7 +212,7 @@ public class StatisticsComponent extends VerticalLayout {
 		myTasksComponent.addComponentToRightContentColumn(taskStatusCircleGraph);
 
 		subComponentsLayout.addComponent(myTasksComponent);
-		subComponentsLayout.setExpandRatio(myTasksComponent, 25);
+		subComponentsLayout.setExpandRatio(myTasksComponent, 0.25f);
 	}
 
 	private void updateMyTasksComponent() {
@@ -286,7 +287,7 @@ public class StatisticsComponent extends VerticalLayout {
 		CssStyles.style(caseFatalityRateCaption, CssStyles.SIZE_MEDIUM, CssStyles.COLOR_CRITICAL, CssStyles.TEXT_UPPERCASE, CssStyles.TEXT_BOLD);
 
 		subComponentsLayout.addComponent(newCasesComponent);
-		subComponentsLayout.setExpandRatio(newCasesComponent, 25);
+		subComponentsLayout.setExpandRatio(newCasesComponent, 0.25f);
 	}
 
 	private void updateNewCasesComponent(int amountOfDisplayedDiseases) {
@@ -398,7 +399,7 @@ public class StatisticsComponent extends VerticalLayout {
 		eventStatusNotAnEventPercentage = new StatisticsPercentageElement("Not An Event", CssStyles.SVG_FILL_MINOR);
 
 		subComponentsLayout.addComponent(newEventsComponent);
-		subComponentsLayout.setExpandRatio(newEventsComponent, 25);
+		subComponentsLayout.setExpandRatio(newEventsComponent, 0.25f);
 	}
 
 	private void updateNewEventsComponent(int amountOfDisplayedDiseases) {
@@ -513,7 +514,7 @@ public class StatisticsComponent extends VerticalLayout {
 		testResultIndeterminatePercentage = new StatisticsPercentageElement("Indeterminate", CssStyles.SVG_FILL_MINOR);
 
 		subComponentsLayout.addComponent(newTestResultsComponent);
-		subComponentsLayout.setExpandRatio(newTestResultsComponent, 25);
+		subComponentsLayout.setExpandRatio(newTestResultsComponent, 0.25f);
 	}
 
 	private void updateNewTestResultsComponent(int amountOfDisplayedDiseases) {

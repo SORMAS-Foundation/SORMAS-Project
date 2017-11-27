@@ -13,10 +13,12 @@ public class StatisticsCountElement extends VerticalLayout {
 	
 	public StatisticsCountElement(String caption, String labelClass) {
 		countLabel = new Label();
+		countLabel.setSizeUndefined();
 		CssStyles.style(countLabel, CssStyles.COLOR_PRIMARY, CssStyles.SIZE_MEDIUM, CssStyles.TEXT_BOLD, CssStyles.TEXT_UPPERCASE, CssStyles.VSPACE_5, CssStyles.VSPACE_TOP_NONE);
 		addComponent(countLabel);
 		
 		Label captionLabel = new Label(caption);
+		captionLabel.setSizeUndefined();
 		CssStyles.style(captionLabel, CssStyles.COLOR_SECONDARY, CssStyles.SIZE_SMALL, CssStyles.TEXT_BOLD, CssStyles.TEXT_UPPERCASE, CssStyles.VSPACE_5, CssStyles.VSPACE_TOP_NONE);
 		captionLabel.addStyleName(labelClass);
 		addComponent(captionLabel);

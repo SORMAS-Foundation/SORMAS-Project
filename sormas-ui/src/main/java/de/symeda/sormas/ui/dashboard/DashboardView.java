@@ -288,6 +288,7 @@ public class DashboardView extends AbstractView {
 		filterLayout.addComponent(applyButton);
 		
 		Label infoLabel = new Label(FontAwesome.INFO_CIRCLE.getHtml(), ContentMode.HTML);
+		infoLabel.setSizeUndefined();
 		infoLabel.setDescription("All Dashboard elements that display cases (the 'New Cases' statistics, the Epidemiological Curve and the Case Status Map) use the onset date of the first symptom for the date/epi week filter. If this date is not available, the date of report is used instead.");
 		CssStyles.style(infoLabel, CssStyles.SIZE_XLARGE, CssStyles.COLOR_SECONDARY);
 		filterLayout.addComponent(infoLabel);

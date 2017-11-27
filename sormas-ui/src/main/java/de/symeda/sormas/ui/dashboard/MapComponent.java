@@ -277,10 +277,12 @@ public class MapComponent extends VerticalLayout {
 		{
 			mapLabelLayout.setSizeUndefined();
 			Label caseMapLabel = new Label("Case Status Map");
+			caseMapLabel.setSizeUndefined();
 			CssStyles.style(caseMapLabel, CssStyles.H2, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
 			mapLabelLayout.addComponent(caseMapLabel);
 
 			mapDateLabel = new Label();
+			mapDateLabel.setSizeUndefined();
 			CssStyles.style(mapDateLabel, CssStyles.H4, CssStyles.VSPACE_TOP_NONE);
 			updateDateLabel();
 			mapLabelLayout.addComponent(mapDateLabel);
