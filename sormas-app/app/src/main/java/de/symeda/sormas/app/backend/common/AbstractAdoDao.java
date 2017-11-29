@@ -944,6 +944,17 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
         markAsRead((ADO) ado);
     }
 
+    public boolean isAnyADOModified() {
+        List<ADO> ados = queryForAll();
+        for (ADO ado : ados) {
+            if (ado.isModifiedOrChildModified()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     /**
      * @see Dao#queryForAll()
      */

@@ -133,6 +133,7 @@
     <string name="headline_visit_synchronization">Visit Synchronization</string>
     <string name="headline_reset_PIN">Reset PIN</string>
     <string name="headline_warning">Warning</string>
+    <string name="headline_logout">Logging Out</string>
 
     <string name="caption_weekly_report_year">Year</string>
     <string name="caption_weekly_report_week">Epi Week</string>
@@ -184,6 +185,7 @@
     <string name="hint_login">Please log in to your account.</string>
     <string name="hint_no_sync_errors">There are no synchronization conflicts to display.</string>
     <string name="hint_synchronization">Synchronizing with SORMAS server...</string>
+    <string name="hint_logout">Logging out of SORMAS...</string>
     <string name="hint_select_entry">Select entry</string>
     <string name="hint_contact_synchronization">Contacts are being synchronized...</string>
     <string name="hint_event_synchronization">Events are being synchronized...</string>
@@ -283,11 +285,13 @@
     <string name="alert_gps_permission">SORMAS needs access to your GPS location for all of its features to work as intended. Please click on \"Allow GPS Access\" to allow SORMAS to access the required functionality on your device.</string>
     <string name="alert_missing_report">You have not confirmed your report for the last epi week. If you want to add a case you\'ve not yet reported for the last epi week, please visit the Reports screen and click on \'Add Missing Case\'. You will have to confirm your report before creating a new case for this week.</string>
     <string name="alert_plague_type_change">The symptoms selected match the clinical criteria for %1$s. The plague type has been be set to %2$s for this case.</string>
+    <string name="alert_unsynchronized_changes">There are unsynchronized changes on your device. If you log out now, they will be lost and you will not be able to restore them. Do you still want to log out of SORMAS?</string>
 
     <string name="alert_title_gps">Turn On GPS</string>
     <string name="alert_title_gps_permission">Allow GPS Access</string>
     <string name="alert_title_missing_report">Missing Weekly Report</string>
     <string name="alert_title_plague_type_change">Confirm Plague Type Change</string>
+    <string name="alert_title_unsynchronized_changes">Unsynchronized Changes</string>
 
     <string name="validation_case_disease">Please select the disease for this case.</string>
     <string name="validation_case_disease_details">Please enter the name of the disease.</string>
