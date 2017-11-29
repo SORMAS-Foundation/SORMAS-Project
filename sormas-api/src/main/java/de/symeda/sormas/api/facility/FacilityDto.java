@@ -35,7 +35,6 @@ public class FacilityDto extends FacilityReferenceDto {
 		this.name = name;
 	}
 
-	@XmlTransient
 	public RegionReferenceDto getRegion() {
 		return region;
 	}
@@ -43,7 +42,6 @@ public class FacilityDto extends FacilityReferenceDto {
 		this.region = region;
 	}
 	
-	@XmlTransient
 	public DistrictReferenceDto getDistrict() {
 		return district;
 	}
