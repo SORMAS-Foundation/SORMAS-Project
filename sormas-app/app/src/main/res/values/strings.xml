@@ -62,6 +62,7 @@
     <string name="action_confirm_report">Confirm Report</string>
     <string name="action_open_reports">Open Reports</string>
     <string name="action_confirm">Confirm</string>
+    <string name="action_logout_anyway">Logout anyway</string>
 
     <!-- field -->
     <string name="field_yes_no_yes">Yes</string>

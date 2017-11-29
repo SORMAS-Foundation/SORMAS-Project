@@ -113,7 +113,7 @@ public class SettingsActivity extends AbstractEditTabActivity {
                     builder.setIcon(R.drawable.ic_perm_device_information_black_24dp);
                     AlertDialog dialog = builder.create();
 
-                    dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.action_yes),
+                    dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.action_cancel),
                             new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
@@ -121,7 +121,7 @@ public class SettingsActivity extends AbstractEditTabActivity {
                                 }
                             }
                     );
-                    dialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.action_no),
+                    dialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.action_logout_anyway),
                             new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
