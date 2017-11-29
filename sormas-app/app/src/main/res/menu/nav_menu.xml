@@ -7,46 +7,41 @@
 
         <item
             android:id="@+id/nav_tasks"
-            android:title="@string/main_menu_tasks"
-            android:textSize="16dp"
-            />
-
+            android:title="@string/main_menu_tasks" />
         <item
             android:id="@+id/nav_cases"
-            android:title="@string/main_menu_cases"
-            />
-
+            android:title="@string/main_menu_cases" />
         <item
             android:id="@+id/nav_contacts"
-            android:title="@string/main_menu_contacts"
-            />
-
+            android:title="@string/main_menu_contacts" />
         <item
             android:id="@+id/nav_events"
-            android:title="@string/main_menu_events"
-            />
-
+            android:title="@string/main_menu_events" />
         <item
             android:id="@+id/nav_samples"
             android:title="@string/main_menu_samples"
-            />
-
+            android:textSize="20dp" />
         <item
             android:id="@+id/nav_reports"
-            android:title="@string/main_menu_reports"
-            />
+            android:title="@string/main_menu_reports" />
 
         <item
-            android:id="@+id/nav_settings"
-            android:title="@string/main_menu_settings"
-            android:checkable="false"
-            />
-
-        <item
-            android:id="@+id/nav_syncAll"
-            android:title="@string/main_menu_sync_all"
-            android:checkable="false"
-            />
+            android:id="@+id/navigation_user_sub_header"
+            android:title="@string/main_menu_user_sub_header">
+            <menu>
+                <item
+                    android:id="@+id/nav_settings"
+                    android:title="@string/main_menu_settings"
+                    android:icon="@drawable/ic_settings_black_24dp"
+                    android:checkable="false" />
+                <item
+                    android:id="@+id/nav_syncAll"
+                    android:title="@string/main_menu_sync_all"
+                    android:icon="@drawable/ic_autorenew_black_24dp"
+                    android:checkable="false" />
+            </menu>
+        </item>
 
     </group>
+
 </menu>

@@ -9,6 +9,7 @@
     <string name="main_menu_reports">Reports</string>
     <string name="main_menu_settings">Settings</string>
     <string name="main_menu_sync_all">Synchronize</string>
+    <string name="main_menu_user_sub_header"></string>
 
 
     <string name="drawer_open">Open navigation drawer</string>
