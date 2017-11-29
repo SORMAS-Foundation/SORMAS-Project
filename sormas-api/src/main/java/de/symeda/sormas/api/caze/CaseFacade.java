@@ -12,6 +12,7 @@ import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 
 @Remote
@@ -46,6 +47,8 @@ public interface CaseFacade {
 	List<DashboardCase> getNewCasesForDashboard(DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid);
 
 	List<MapCase> getCasesForMap(DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid);
+	
+	List<StatisticsCase> getCasesForStatistics(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid);
 	
 	/**
 	 * @param fromDate optional

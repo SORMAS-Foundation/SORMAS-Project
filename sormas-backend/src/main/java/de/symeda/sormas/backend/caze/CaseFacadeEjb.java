@@ -28,6 +28,7 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.DashboardCase;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.MapCase;
+import de.symeda.sormas.api.caze.StatisticsCase;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
@@ -35,6 +36,7 @@ import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskHelper;
 import de.symeda.sormas.api.task.TaskPriority;
@@ -239,6 +241,15 @@ public class CaseFacadeEjb implements CaseFacade {
 		User user = userService.getByUuid(userUuid);
 		
 		return caseService.getCasesForMap(district, disease, from, to, user);
+	}
+	
+	@Override
+	public List<StatisticsCase> getCasesForStatistics(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid) {
+		Region region = regionService.getByReferenceDto(regionRef);
+		District district = districtService.getByReferenceDto(districtRef);
+		User user = userService.getByUuid(userUuid);
+		
+		return caseService.getCasesForStatistics(region, district, disease, from, to, user);
 	}
 
 	@Override

@@ -13148,6 +13148,13 @@ div.v-layout.v-horizontal.v-widget {
 	color: #C44;
 }
 
+.sormas .v-grid .row-title {
+	text-transform: uppercase;
+	font-weight: 600;
+	min-height: 32px;
+	font-size: 10px;
+}
+
 .sormas .v-grid .v-grid-header {
 	background-color: #FEFEFE;
 }

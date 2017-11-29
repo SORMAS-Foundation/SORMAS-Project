@@ -20,6 +20,7 @@ import javax.persistence.criteria.Subquery;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.DashboardCase;
 import de.symeda.sormas.api.caze.MapCase;
+import de.symeda.sormas.api.caze.StatisticsCase;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -36,6 +37,7 @@ import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.region.District;
+import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
@@ -255,6 +257,73 @@ public class CaseService extends AbstractAdoService<Case> {
 			for (MapCase mapCase : result) {
 				mapCase.setPerson(personFacade.getReferenceByUuid(mapCase.getPersonUuid()));
 			}
+		} else {
+			result = Collections.emptyList();
+		}
+
+		return result;
+	}
+	
+	public List<StatisticsCase> getCasesForStatistics(Region region, District district, Disease disease, Date from, Date to, User user) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<StatisticsCase> cq = cb.createQuery(StatisticsCase.class);
+		Root<Case> caze = cq.from(getElementClass());
+		Join<Case, Symptoms> symptoms = caze.join(Case.SYMPTOMS, JoinType.LEFT);
+		Join<Case, Person> person = caze.join(Case.PERSON, JoinType.LEFT);	
+		
+		Predicate filter = createUserFilter(cb, cq, caze, user);
+
+		// Use the onset date if available and the report date otherwise
+		// TODO Add date of outcome to the date filter once it is built in
+		Predicate dateFilter = cb.or(
+				cb.lessThanOrEqualTo(symptoms.get(Symptoms.ONSET_DATE), to), 
+				cb.and(
+						cb.isNull(symptoms.get(Symptoms.ONSET_DATE)), 
+						cb.lessThanOrEqualTo(caze.get(Case.REPORT_DATE), to)
+						)
+				);
+		if (filter != null) {
+			filter = cb.and(filter, dateFilter);
+		} else {
+			filter = dateFilter;
+		}
+		
+		if (region != null) {
+			Predicate regionFilter = cb.equal(caze.get(Case.REGION), region);
+			if (filter != null) {
+				filter = cb.and(filter, regionFilter);
+			} else {
+				filter = regionFilter;
+			}
+		}
+
+		if (district != null) {
+			Predicate districtFilter = cb.equal(caze.get(Case.DISTRICT), district);
+			if (filter != null) {
+				filter = cb.and(filter, districtFilter);
+			} else {
+				filter = districtFilter;
+			}
+		}
+
+		if (disease != null) {
+			Predicate diseaseFilter = cb.equal(caze.get(Case.DISEASE), disease);
+			if (filter != null) {
+				filter = cb.and(filter, diseaseFilter);
+			} else {
+				filter = diseaseFilter;
+			}
+		}
+
+		List<StatisticsCase> result;
+		if (filter != null) {
+			cq.where(filter);
+			cq.multiselect(
+					person.get(Person.APPROXIMATE_AGE),
+					person.get(Person.SEX)
+					);
+
+			result = em.createQuery(cq).getResultList();
 		} else {
 			result = Collections.emptyList();
 		}
