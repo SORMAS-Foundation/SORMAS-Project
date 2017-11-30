@@ -23,41 +23,14 @@ public final class EventValidator {
 
         boolean success = true;
 
-        // Event source's telephone number
-        if (event.getSrcTelNo() == null || event.getSrcTelNo().trim().isEmpty()) {
-            binding.eventSrcTelNo.setError(resources.getString(R.string.validation_event_src_tel_no));
-            success = false;
-        }
-
-        // Event source's last name
-        if (event.getSrcLastName() == null || event.getSrcLastName().trim().isEmpty()) {
-            binding.eventSrcLastName.setError(resources.getString(R.string.validation_event_src_last_name));
-            success = false;
-        }
-
-        // Event source's first name
-        if (event.getSrcFirstName() == null || event.getSrcFirstName().trim().isEmpty()) {
-            binding.eventSrcFirstName.setError(resources.getString(R.string.validation_event_src_first_name));
-            success = false;
-        }
-
-        // Type of place & details
-        if (event.getTypeOfPlace() == null) {
-            binding.eventTypeOfPlace.setError(resources.getString(R.string.validation_event_type_of_place));
-            success = false;
-        } else {
+        // Type of place details
+        if (event.getTypeOfPlace() != null) {
             if (event.getTypeOfPlace().equals(TypeOfPlace.OTHER)) {
                 if (event.getTypeOfPlaceText() == null || event.getTypeOfPlaceText().trim().isEmpty()) {
                     binding.eventTypeOfPlaceTxt.setError(resources.getString(R.string.validation_event_type_of_place_details));
                     success = false;
                 }
             }
-        }
-
-        // Event date
-        if (event.getEventDate() == null) {
-            binding.eventEventDate.setError(resources.getString(R.string.validation_event_date));
-            success = false;
         }
 
         // Disease details
@@ -93,10 +66,18 @@ public final class EventValidator {
         }
     }
 
+    public static void setSoftRequiredHintsForEventData(EventDataFragmentLayoutBinding binding) {
+        for (PropertyField field : getSoftRequiredEventDataFields(binding)) {
+            field.makeFieldSoftRequired();
+        }
+    }
+
     private static final List<PropertyField<?>> getEventDataFields(EventDataFragmentLayoutBinding binding) {
-        return Arrays.asList(binding.eventEventType, binding.eventEventDesc, binding.eventEventDate,
-                binding.eventTypeOfPlace, binding.eventTypeOfPlaceTxt, binding.eventSrcFirstName,
-                binding.eventSrcLastName, binding.eventSrcTelNo, binding.eventDiseaseDetails);
+        return Arrays.asList(binding.eventEventType, binding.eventEventDesc, binding.eventTypeOfPlaceTxt, binding.eventDiseaseDetails);
+    }
+
+    private static final List<PropertyField<?>> getSoftRequiredEventDataFields(EventDataFragmentLayoutBinding binding) {
+        return Arrays.asList(binding.eventEventDate, binding.eventSrcFirstName, binding.eventSrcLastName, binding.eventSrcTelNo, binding.eventTypeOfPlace, binding.eventSurveillanceOfficer);
     }
 
 }

@@ -151,7 +151,11 @@ public abstract class PropertyField<T> extends LinearLayout {
     protected abstract void requestFocusForContentView(View nextView);
 
     public void makeFieldSoftRequired() {
-        if (getValue() == null) {
+        if (getValue() == null || (this instanceof TextField && ((String)getValue()).isEmpty())) {
+            setErrorWithoutFocus(getContext().getResources().getString(R.string.validation_soft_general));
+        }
+
+        if (this instanceof TextField && ((String)getValue()).isEmpty()) {
             setErrorWithoutFocus(getContext().getResources().getString(R.string.validation_soft_general));
         }
 
@@ -159,7 +163,7 @@ public abstract class PropertyField<T> extends LinearLayout {
             softRequirementListener = new PropertyField.ValueChangeListener() {
                 @Override
                 public void onChange(PropertyField field) {
-                    if (getValue() == null) {
+                    if (getValue() == null || (PropertyField.this instanceof TextField && ((String)getValue()).isEmpty())) {
                         setErrorWithoutFocus(field.getContext().getResources().getString(R.string.validation_soft_general));
                     } else {
                         clearError();

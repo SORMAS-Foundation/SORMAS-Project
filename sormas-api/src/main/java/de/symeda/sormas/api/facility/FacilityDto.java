@@ -1,7 +1,5 @@
 package de.symeda.sormas.api.facility;
 
-import javax.xml.bind.annotation.XmlTransient;
-
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;

@@ -6,9 +6,11 @@ import java.util.List;
 import com.vaadin.data.Validator;
 import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.validator.NullValidator;
+import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Field;
+import com.vaadin.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
@@ -347,10 +349,36 @@ public final class FieldHelper {
 		}
 	}
 	
+	public static void makeTextFieldSoftRequired(TextField ...fields) {
+		for (TextField field : fields) {
+			boolean alreadySoftRequired = false;
+			for (Validator validator : field.getValidators()) {
+				if (validator instanceof StringLengthValidator) {
+					alreadySoftRequired = true;
+					break;
+				}
+			}
+			if (!alreadySoftRequired) {
+				field.addValidator(new StringLengthValidator("Please fill in this field if possible. You can still save without doing so.", 1, null, false));
+				field.setInvalidCommitted(true);
+			}
+		}
+	}
+	
 	public static void removeSoftRequirement(Field<?> ...fields) {
 		for (Field<?> field : fields) {
 			for (Validator validator : field.getValidators()) {
 				if (validator instanceof NullValidator) {
+					field.removeValidator(validator);
+				}
+			}
+		}
+	}
+	
+	public static void removeSoftRequirement(TextField ...fields) {
+		for (TextField field : fields) {
+			for (Validator validator : field.getValidators()) {
+				if (validator instanceof StringLengthValidator) {
 					field.removeValidator(validator);
 				}
 			}

@@ -76,7 +76,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// name of the database file for your application. Stored in data/data/de.symeda.sormas.app/databases
 	private static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	private static final int DATABASE_VERSION = 112;
+	private static final int DATABASE_VERSION = 113;
 
 	private static DatabaseHelper instance = null;
 	public static void init(Context context) {
@@ -375,6 +375,14 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					currentVersion = 111;
 					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN smallpoxVaccinationReceived varchar(255);");
 					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN smallpoxVaccinationDate timestamp;");
+				case 112:
+					currentVersion = 112;
+					getDao(Event.class).executeRaw("ALTER TABLE events RENAME TO tmp_events;");
+					getDao(Event.class).executeRaw("CREATE TABLE events (disease VARCHAR, diseaseDetails VARCHAR, eventDate BIGINT, eventDesc VARCHAR, eventLocation_id BIGINT, eventStatus VARCHAR, eventType VARCHAR, reportDateTime BIGINT, reportLat DOUBLE PRECISION, reportLatLonAccuracy FLOAT, reportLon DOUBLE PRECISION, reportingUser_id BIGINT, srcEmail VARCHAR, srcFirstName VARCHAR, srcLastName VARCHAR, srcTelNo VARCHAR, surveillanceOfficer_id BIGINT, typeOfPlace VARCHAR, typeOfPlaceText VARCHAR, changeDate BIGINT NOT NULL, creationDate BIGINT NOT NULL, id INTEGER PRIMARY KEY AUTOINCREMENT, lastOpenedDate BIGINT, localChangeDate BIGINT NOT NULL, modified SMALLINT, snapshot SMALLINT, uuid VARCHAR NOT NULL, UNIQUE(snapshot, uuid));");
+					getDao(Event.class).executeRaw("INSERT INTO events(disease, diseaseDetails, eventDate, eventDesc, eventLocation_id, eventStatus, eventType, reportDateTime, reportLat, reportLatLonAccuracy, reportLon, reportingUser_id, srcEmail, srcFirstName, srcLastName, srcTelNo, surveillanceOfficer_id, typeOfPlace, typeOfPlaceText, changeDate, creationDate, id, lastOpenedDate, localChangeDate, modified, snapshot, uuid) " +
+							"SELECT disease, diseaseDetails, eventDate, eventDesc, eventLocation_id, eventStatus, eventType, reportDateTime, reportLat, reportLatLonAccuracy, reportLon, reportingUser_id, srcEmail, srcFirstName, srcLastName, srcTelNo, surveillanceOfficer_id, typeOfPlace, typeOfPlaceText, changeDate, creationDate, id, lastOpenedDate, localChangeDate, modified, snapshot, uuid " +
+							"FROM tmp_events;");
+					getDao(Event.class).executeRaw("DROP TABLE tmp_events;");
 
 					// ATTENTION: break should only be done after last version
 					break;

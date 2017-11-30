@@ -42,7 +42,9 @@ public class EventGrid extends Grid {
 			@Override
 			public String getValue(Item item, Object itemId, Object propertyId) {
 				EventDto eventDto = (EventDto)itemId;
-				return eventDto.getSrcFirstName() + " " + eventDto.getSrcLastName() + " (" + eventDto.getSrcTelNo() + ")";
+				return (eventDto.getSrcFirstName() != null ? eventDto.getSrcFirstName() : "") + " " + 
+						(eventDto.getSrcLastName() != null ? eventDto.getSrcLastName() : "") + 
+						(eventDto.getSrcTelNo() != null && !eventDto.getSrcTelNo().isEmpty() ? " (" + eventDto.getSrcTelNo() + ")" : "");
 			}
 			@Override
 			public Class<String> getType() {

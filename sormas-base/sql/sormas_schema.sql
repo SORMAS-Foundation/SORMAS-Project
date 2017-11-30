@@ -1879,3 +1879,11 @@ ALTER TABLE district ADD COLUMN population integer;
 ALTER TABLE district ADD COLUMN growthRate real;
 
 INSERT INTO schema_version (version_number, comment) VALUES (76, 'Population for districts #342');
+
+-- 2017-11-30 Soft validation for event fields #405
+ALTER TABLE events ALTER COLUMN typeofplace DROP NOT NULL;
+ALTER TABLE events ALTER COLUMN srcfirstname DROP NOT NULL;
+ALTER TABLE events ALTER COLUMN srclastname DROP NOT NULL;
+ALTER TABLE events ALTER COLUMN srctelno DROP NOT NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (77, 'Soft validation for event fields #405');

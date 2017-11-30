@@ -100,7 +100,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		addField(EventDto.EVENT_TYPE, OptionGroup.class);
 		addField(EventDto.DISEASE, ComboBox.class).setNullSelectionAllowed(true);
 		addField(EventDto.DISEASE_DETAILS, TextField.class);
-		addField(EventDto.EVENT_DATE, DateField.class);
+		DateField eventDate = addField(EventDto.EVENT_DATE, DateField.class);
 		addField(EventDto.EVENT_STATUS, OptionGroup.class);
 		addField(EventDto.EVENT_DESC, TextArea.class).setRows(2);
 		addField(EventDto.EVENT_LOCATION, LocationEditForm.class).setCaption(null);
@@ -108,14 +108,16 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		LocationEditForm locationForm = (LocationEditForm) getFieldGroup().getField(EventDto.EVENT_LOCATION);
 		ComboBox districtField = (ComboBox) locationForm.getFieldGroup().getField(LocationDto.DISTRICT);
 		ComboBox surveillanceOfficerField = addField(EventDto.SURVEILLANCE_OFFICER, ComboBox.class);
+		surveillanceOfficerField.setNullSelectionAllowed(true);
 		
-		addField(EventDto.TYPE_OF_PLACE, ComboBox.class);
+		ComboBox typeOfPlace = addField(EventDto.TYPE_OF_PLACE, ComboBox.class);
+		typeOfPlace.setNullSelectionAllowed(true);
 		addField(EventDto.TYPE_OF_PLACE_TEXT, TextField.class);		
 		addField(EventDto.REPORT_DATE_TIME, DateTimeField.class);
 		addField(EventDto.REPORTING_USER, ComboBox.class);
-		addField(EventDto.SRC_FIRST_NAME, TextField.class);
-		addField(EventDto.SRC_LAST_NAME, TextField.class);
-		addField(EventDto.SRC_TEL_NO, TextField.class);
+		TextField srcFirstName = addField(EventDto.SRC_FIRST_NAME, TextField.class);
+		TextField srcLastName = addField(EventDto.SRC_LAST_NAME, TextField.class);
+		TextField srcTelNo = addField(EventDto.SRC_TEL_NO, TextField.class);
 		addField(EventDto.SRC_EMAIL, TextField.class);
 		
 		setReadOnly(true, EventDto.UUID, EventDto.REPORT_DATE_TIME, EventDto.REPORTING_USER);
@@ -125,9 +127,8 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(EventDto.DISEASE_DETAILS), EventDto.DISEASE, Arrays.asList(Disease.OTHER), true);
 		FieldHelper.setRequiredWhen(getFieldGroup(), EventDto.DISEASE, Arrays.asList(EventDto.DISEASE_DETAILS), Arrays.asList(Disease.OTHER));
 		
-		setRequired(true, EventDto.EVENT_TYPE, EventDto.EVENT_DATE, EventDto.EVENT_STATUS, EventDto.UUID, EventDto.EVENT_DESC,
-				EventDto.REPORT_DATE_TIME, EventDto.REPORTING_USER, EventDto.TYPE_OF_PLACE, EventDto.SRC_FIRST_NAME,
-				EventDto.SRC_LAST_NAME, EventDto.SRC_TEL_NO, EventDto.TYPE_OF_PLACE_TEXT, EventDto.SURVEILLANCE_OFFICER);
+		setRequired(true, EventDto.EVENT_TYPE, EventDto.EVENT_STATUS, EventDto.UUID, EventDto.EVENT_DESC,
+				EventDto.REPORT_DATE_TIME, EventDto.REPORTING_USER);
 		setTypeOfPlaceTextRequirement();
 		locationForm.setFieldsRequirement(true, LocationDto.REGION, LocationDto.DISTRICT);
 		
@@ -137,6 +138,9 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			surveillanceOfficerField.select(0);
 			surveillanceOfficerField.addItems(assignableSurveillanceOfficers);
 		});
+		
+		FieldHelper.makeFieldSoftRequired(eventDate, typeOfPlace, surveillanceOfficerField);
+		FieldHelper.makeTextFieldSoftRequired(srcFirstName, srcLastName, srcTelNo);
 	}
 	
 	@Override
