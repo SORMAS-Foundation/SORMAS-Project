@@ -14,6 +14,8 @@ public final class CssStyles {
 	public static final String H3 = "h3";
 	public static final String H4 = "h4";
 	public static final String H5 = "h5";
+	
+	public static final String VR = "vertical-rule";
 
 	// Vertical space
 	public static final String VSPACE_0 = "vspace-0";
@@ -78,12 +80,7 @@ public final class CssStyles {
 	public static final String LABEL_BAR_TOP_NEUTRAL = "bar-top-neutral";
 	public static final String LABEL_BAR_TOP_POSITIVE = "bar-top-positive";
 	public static final String LABEL_BAR_TOP_MINOR = "bar-top-minor";
-	
-	// Separators
-	public static final String SEPARATOR_HORIZONTAL = "separator-horizontal";
-	public static final String SEPARATOR_HORIZONTAL_BOTTOM = "separator-horizontal-bottom";
-	public static final String SEPARATOR_VERTICAL = "separator-vertical";
-	public static final String SEPARATOR_VERTICAL_BROAD = "separator-vertical-broad";
+	public static final String LABEL_BOTTOM_LINE = "bottom-line";
 	
 	// Button styles
 	public static final String BUTTON_SUBTLE = "subtle";

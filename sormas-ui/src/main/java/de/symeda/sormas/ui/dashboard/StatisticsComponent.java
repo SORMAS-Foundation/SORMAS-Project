@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import com.vaadin.server.FontAwesome;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -103,28 +104,14 @@ public class StatisticsComponent extends VerticalLayout {
 		subComponentsLayout = new HorizontalLayout();
 		subComponentsLayout.setWidth(100, Unit.PERCENTAGE);
 		CssStyles.style(subComponentsLayout, CssStyles.VSPACE_NONE);
-		addSeparatorLabel();
 		addMyTasksComponent();
-		addSeparatorLabel();
 		addNewCasesComponent();
-		addSeparatorLabel();
 		addNewEventsComponent();
-		addSeparatorLabel();
 		addNewTestResultsComponent();
-		addSeparatorLabel();
 		addComponent(subComponentsLayout);
 		if (Disease.values().length > 6) {
 			addShowMoreAndLessButtons();
 		}
-	}
-	
-	private void addSeparatorLabel() {
-		// TODO this is not working well in chrome - needs to be solved differently
-//		Label separator = new Label("<div class='v-label-" + CssStyles.SEPARATOR_VERTICAL_BROAD + "'></div>", ContentMode.HTML);
-//		separator.setHeight(100, Unit.PERCENTAGE);
-//		separator.setWidth(2, Unit.PIXELS);
-//		subComponentsLayout.addComponent(separator);
-//		subComponentsLayout.setExpandRatio(separator, 0);
 	}
 
 	public void updateStatistics(Disease disease) {
@@ -188,7 +175,7 @@ public class StatisticsComponent extends VerticalLayout {
 
 		Label separator = new Label();
 		separator.setHeight(100, Unit.PERCENTAGE);
-		CssStyles.style(separator, CssStyles.SEPARATOR_VERTICAL);
+		CssStyles.style(separator, CssStyles.VR);
 		myTasksComponent.addComponentToCountLayout(separator);
 
 		taskStatusPending = new StatisticsCountElement("Pending", CssStyles.LABEL_BAR_TOP_IMPORTANT);
@@ -312,10 +299,10 @@ public class StatisticsComponent extends VerticalLayout {
 			newCasesComponent.removeAllComponentsFromContent();
 			newCasesComponent.addComponentToContent(caseInvestigationStatusDone);
 			newCasesComponent.addComponentToContent(caseInvestigationStatusDiscarded);
-			Label separator = new Label();
-			separator.setWidth(100, Unit.PERCENTAGE);
-			separator.setHeightUndefined();
-			CssStyles.style(separator, CssStyles.SEPARATOR_HORIZONTAL, CssStyles.VSPACE_4);
+			Label separator = new Label("<hr/>", ContentMode.HTML);
+//			separator.setWidth(100, Unit.PERCENTAGE);
+//			separator.setHeightUndefined();
+//			CssStyles.style(separator, CssStyles.SEPARATOR_HORIZONTAL, CssStyles.VSPACE_4);
 			newCasesComponent.addComponentToContent(separator);
 			HorizontalLayout fatalityLayout = new HorizontalLayout();
 			fatalityLayout.setWidth(100, Unit.PERCENTAGE);

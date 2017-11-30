@@ -65,26 +65,6 @@
 		padding-top: 6px;
 	}
 
-	// Separators
-	.v-label-separator-horizontal {
-		border-bottom: 1px solid #CDD8EC;
-		line-height: 1px;
-		font-size: 1px;
-	}
-
-	.v-label-separator-horizontal-bottom {
-		border-bottom: 1px solid #CDD8EC;
-		padding-top: 15px;
-	}
-
-	.v-label-separator-vertical {
-		border-right: 1px solid #CDD8EC;
-	}
-
-	.v-label-separator-vertical-broad {
-		border-right: 2px solid $v-focus-color;
-	}
-
 	// Font sizes
 	.v-label-size-small {
     	font-size: 0.8em;
@@ -119,4 +99,7 @@
 		text-transform: uppercase;
 	}
 
+	.v-label-bottom-line {
+		border-bottom: 1px solid #CDD8EC;
+	}
 }

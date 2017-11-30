@@ -153,8 +153,13 @@
   .hspace-right-none {
   	margin-right: 0 !important;
   }
+  
+  .vertical-rule {
+	border-right: 1px solid #CDD8EC;
+  }
+  
 	
-  // For aligning in bootstrap grid
+  // for aligning in bootstrap grid
   .align-right {
   	text-align: right;
   }
@@ -162,10 +167,4 @@
   .align-center {
   	text-align: center;
   }
-
-  // Make sure that horizontal separators don't have more than 1px height
-  .v-slot-separator-horizontal {
-	line-height: 1px;
-  }
-  
 }

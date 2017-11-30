@@ -13009,16 +13009,16 @@ div.v-layout.v-horizontal.v-widget {
 	margin-right: 0 !important;
 }
 
+.sormas .vertical-rule {
+	border-right: 1px solid #CDD8EC;
+}
+
 .sormas .align-right {
 	text-align: right;
 }
 
 .sormas .align-center {
 	text-align: center;
-}
-
-.sormas .v-slot-separator-horizontal {
-	line-height: 1px;
 }
 
 .sormas .v-button {
@@ -13521,25 +13521,6 @@ div.v-layout.v-horizontal.v-widget {
 	padding-top: 6px;
 }
 
-.sormas .v-label-separator-horizontal {
-	border-bottom: 1px solid #CDD8EC;
-	line-height: 1px;
-	font-size: 1px;
-}
-
-.sormas .v-label-separator-horizontal-bottom {
-	border-bottom: 1px solid #CDD8EC;
-	padding-top: 15px;
-}
-
-.sormas .v-label-separator-vertical {
-	border-right: 1px solid #CDD8EC;
-}
-
-.sormas .v-label-separator-vertical-broad {
-	border-right: 2px solid #CDD8EC;
-}
-
 .sormas .v-label-size-small {
 	font-size: 0.8em;
 }
@@ -13570,6 +13551,10 @@ div.v-layout.v-horizontal.v-widget {
 
 .sormas .v-label-text-uppercase {
 	text-transform: uppercase;
+}
+
+.sormas .v-label-bottom-line {
+	border-bottom: 1px solid #CDD8EC;
 }
 
 .sormas .v-window .v-window-outerheader {
