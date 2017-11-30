@@ -1,5 +1,6 @@
 package de.symeda.sormas.backend.region;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -11,6 +12,8 @@ import javax.ejb.Stateless;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictFacade;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 
 @Stateless(name = "DistrictFacade")
@@ -18,6 +21,8 @@ public class DistrictFacadeEjb implements DistrictFacade {
 
 	@EJB
 	private DistrictService districtService;
+	@EJB
+	private UserService userService;
 	@EJB
 	private RegionService regionService;
 
@@ -43,6 +48,18 @@ public class DistrictFacadeEjb implements DistrictFacade {
 		return districtService.getAllAfter(date, null).stream()
 			.map(c -> toDto(c))
 			.collect(Collectors.toList());
+	}
+	
+	@Override
+	public List<String> getAllUuids(String userUuid) {
+		
+		User user = userService.getByUuid(userUuid);
+		
+		if (user == null) {
+			return Collections.emptyList();
+		}
+		
+		return districtService.getAllUuids(user);
 	}
 	
 	@Override

@@ -1,12 +1,12 @@
 region;city;name;ownership
 Kano;Kano;AKTH NCDC Laboratory;PUBLIC
 Lagos;Yaba;CPHL - Central Public Health Laboratory;PUBLIC
-;Idi-Araba;LUTH - Lagos University Teaching Hospital;PUBLIC
-;Yaba;ILRC - Institute of Lassa Fever Research and Control;PUBLIC
-;Yaba;ISTH - Irrua Specialist Teaching Hospital;PUBLIC
+Lagos;Idi-Araba;LUTH - Lagos University Teaching Hospital;PUBLIC
+Lagos;Yaba;ILRC - Institute of Lassa Fever Research and Control;PUBLIC
+Lagos;Yaba;ISTH - Irrua Specialist Teaching Hospital;PUBLIC
 Edo;Irrua;LAHOR Research Lab;PUBLIC
-;Benin-City;NIRL - National Influenza Reference Laboratory;PUBLIC
-Abuja;Asokoro;NIMR - Nigerian Institute for Medical Research;PUBLIC
+Edo;Benin-City;NIRL - National Influenza Reference Laboratory;PUBLIC
+FCT;Asokoro;NIMR - Nigerian Institute for Medical Research;PUBLIC
 Osun;Ede;ACEGID - African Centre of Excellence for Genomics of Infectious Disesases;PUBLIC
 Oyo;Ibadan;University College Hospital;PUBLIC
 Sokoto;Sokoto;Usmanu Danfodiyo University Teaching Hospital;PUBLIC

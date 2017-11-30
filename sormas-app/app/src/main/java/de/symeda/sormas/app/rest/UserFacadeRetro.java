@@ -14,4 +14,7 @@ public interface UserFacadeRetro {
 
     @GET("users/all/{since}")
     Call<List<UserDto>> pullAllSince(@Path("since") long since);
+
+    @GET("users/uuids")
+    Call<List<String>> pullUuids();
 }

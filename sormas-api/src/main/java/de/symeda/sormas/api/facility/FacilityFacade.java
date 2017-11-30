@@ -25,4 +25,6 @@ public interface FacilityFacade {
 	FacilityReferenceDto getFacilityReferenceByUuid(String uuid);
 	
 	FacilityDto getByUuid(String uuid);
+
+	List<String> getAllUuids(String userUuid);
 }

@@ -178,7 +178,7 @@ public class FacilityDtoHelper extends AdoDtoHelper<Facility, FacilityDto> {
         target.setCommunity(lastCommunity);
         if (source.getDistrict() != null) {
             if (lastDistrict == null || !lastDistrict.getUuid().equals(source.getDistrict().getUuid())) {
-                lastDistrict = DatabaseHelper.getDistrictDao().queryForId(lastCommunity.getDistrict().getId());
+                lastDistrict = DatabaseHelper.getDistrictDao().getByReferenceDto(source.getDistrict());
             }
         } else {
             lastDistrict = null;
@@ -186,7 +186,7 @@ public class FacilityDtoHelper extends AdoDtoHelper<Facility, FacilityDto> {
         target.setDistrict(lastDistrict);
         if (source.getRegion() != null) {
             if (lastRegion == null || !lastRegion.getUuid().equals(source.getRegion().getUuid())) {
-                lastRegion = DatabaseHelper.getRegionDao().queryForId(lastDistrict.getRegion().getId());
+                lastRegion = DatabaseHelper.getRegionDao().getByReferenceDto(source.getRegion());
             }
         } else {
             lastRegion = null;

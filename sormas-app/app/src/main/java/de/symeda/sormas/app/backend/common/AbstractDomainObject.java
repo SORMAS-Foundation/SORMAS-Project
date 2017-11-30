@@ -196,7 +196,7 @@ public abstract class AbstractDomainObject extends BaseObservable implements Ser
 	}
 
 	public boolean isNew() {
-		return changeDate == null || creationDate == null || !changeDate.after(creationDate);
+		return changeDate == null || creationDate == null || changeDate.getTime() == 0;
 	}
 
 	public Date getLocalChangeDate() {

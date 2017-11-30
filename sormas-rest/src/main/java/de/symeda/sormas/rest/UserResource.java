@@ -9,10 +9,13 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.SecurityContext;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserReferenceDto;
 
 /**
  * @see <a href="https://jersey.java.net/documentation/latest/">Jersey documentation</a>
@@ -28,5 +31,14 @@ public class UserResource {
 	@GET @Path("/all/{since}")
 	public List<UserDto> getAll(@PathParam("since") long since) {
 		return FacadeProvider.getUserFacade().getAllAfter(new Date(since));
+	}
+	
+	@GET
+	@Path("/uuids")
+	public List<String> getAllUuids(@Context SecurityContext sc) {
+		
+		UserReferenceDto userDto = FacadeProvider.getUserFacade().getByUserNameAsReference(sc.getUserPrincipal().getName());
+		List<String> uuids = FacadeProvider.getUserFacade().getAllUuids(userDto.getUuid());
+		return uuids;
 	}
 }

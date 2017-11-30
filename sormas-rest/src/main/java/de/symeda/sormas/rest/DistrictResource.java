@@ -8,10 +8,13 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.SecurityContext;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.region.DistrictDto;
+import de.symeda.sormas.api.user.UserReferenceDto;
 
 /**
  * @see <a href="https://jersey.java.net/documentation/latest/">Jersey documentation</a>
@@ -26,5 +29,14 @@ public class DistrictResource {
 	@GET @Path("/all/{since}")
 	public List<DistrictDto> getAll(@PathParam("since") long since) {
 		return FacadeProvider.getDistrictFacade().getAllAfter(new Date(since));
+	}	
+	
+	@GET
+	@Path("/uuids")
+	public List<String> getAllUuids(@Context SecurityContext sc) {
+		
+		UserReferenceDto userDto = FacadeProvider.getUserFacade().getByUserNameAsReference(sc.getUserPrincipal().getName());
+		List<String> uuids = FacadeProvider.getDistrictFacade().getAllUuids(userDto.getUuid());
+		return uuids;
 	}
 }

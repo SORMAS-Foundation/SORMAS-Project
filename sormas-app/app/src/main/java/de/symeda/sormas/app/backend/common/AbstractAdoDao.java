@@ -833,6 +833,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
             QueryBuilder<ADO, Long> builder = queryBuilder();
             builder.where().notIn(AbstractDomainObject.UUID, validUuids);
             List<ADO> invalidEntities = builder.query();
+            int deletionCounter = 0;
             for (ADO invalidEntity : invalidEntities) {
 
                 if (invalidEntity.isNew()) {
@@ -847,7 +848,12 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
                     }
                     // delete with all embedded entities
                     deleteCascade(invalidEntity);
+                    deletionCounter++;
                 }
+            }
+
+            if (invalidEntities.size() > 0) {
+                Log.d(getTableName(), "Deleted invalid entities: " + deletionCounter + " of " + invalidEntities.size());
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);

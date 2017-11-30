@@ -1,6 +1,7 @@
 package de.symeda.sormas.backend.user;
 
 import java.sql.Timestamp;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -101,6 +102,18 @@ public class UserFacadeEjb implements UserFacade {
 		return userService.getAllAfter(date, null).stream()
 			.map(c -> toReferenceDto(c))
 			.collect(Collectors.toList());
+	}
+	
+	@Override
+	public List<String> getAllUuids(String userUuid) {
+		
+		User user = userService.getByUuid(userUuid);
+		
+		if (user == null) {
+			return Collections.emptyList();
+		}
+		
+		return userService.getAllUuids(user);
 	}
 
 	@Override

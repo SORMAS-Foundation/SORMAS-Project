@@ -73,11 +73,13 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
                     synchronizeChangedData();
                     break;
                 case Complete:
+                    deleteInvalidInfrastructure();
                     pullInfrastructure();
                     pullMissingAndDeleteInvalid();
                     synchronizeChangedData();
                     break;
                 case CompleteAndRepull:
+                    deleteInvalidInfrastructure();
                     pullInfrastructure();
                     repullData();
                     pullMissingAndDeleteInvalid();
@@ -224,6 +226,11 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
         Log.d(SynchronizeDataAsync.class.getSimpleName(), "pullMissingAndDeleteInvalid");
 
+        // weekly reports and entries
+        List<String> weeklyReportUuids = executeUuidCall(RetroProvider.getWeeklyReportFacade().pullUuids());
+        DatabaseHelper.getWeeklyReportDao().deleteInvalid(weeklyReportUuids);
+        List<String> weeklyReportEntryUuids = executeUuidCall(RetroProvider.getWeeklyReportEntryFacade().pullUuids());
+        DatabaseHelper.getWeeklyReportEntryDao().deleteInvalid(weeklyReportEntryUuids);
         // tasks
         List<String> taskUuids = executeUuidCall(RetroProvider.getTaskFacade().pullUuids());
         DatabaseHelper.getTaskDao().deleteInvalid(taskUuids);
@@ -251,11 +258,6 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         // persons
         List<String> personUuids = executeUuidCall(RetroProvider.getPersonFacade().pullUuids());
         DatabaseHelper.getPersonDao().deleteInvalid(personUuids);
-        // weekly reports and entries
-        List<String> weeklyReportUuids = executeUuidCall(RetroProvider.getWeeklyReportFacade().pullUuids());
-        DatabaseHelper.getWeeklyReportDao().deleteInvalid(weeklyReportUuids);
-        List<String> weeklyReportEntryUuids = executeUuidCall(RetroProvider.getWeeklyReportEntryFacade().pullUuids());
-        DatabaseHelper.getWeeklyReportEntryDao().deleteInvalid(weeklyReportEntryUuids);
 
         new PersonDtoHelper().pullMissing(personUuids);
         new EventDtoHelper().pullMissing(eventUuids);
@@ -268,6 +270,28 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         new TaskDtoHelper().pullMissing(taskUuids);
         new WeeklyReportDtoHelper().pullMissing(weeklyReportUuids);
         new WeeklyReportEntryDtoHelper().pullMissing(weeklyReportEntryUuids);
+    }
+
+    private void deleteInvalidInfrastructure() throws ServerConnectionException {
+        // ATTENTION: Since we are working with UUID lists we have no type safety. Look for typos!
+
+        Log.d(SynchronizeDataAsync.class.getSimpleName(), "deleteInvalidInfrastructure");
+
+        // users
+        List<String> userUuids = executeUuidCall(RetroProvider.getUserFacade().pullUuids());
+        DatabaseHelper.getUserDao().deleteInvalid(userUuids);
+        // facilities
+        List<String> facilityUuids = executeUuidCall(RetroProvider.getFacilityFacade().pullUuids());
+        DatabaseHelper.getFacilityDao().deleteInvalid(facilityUuids);
+        // communities
+        List<String> communityUuid = executeUuidCall(RetroProvider.getCommunityFacade().pullUuids());
+        DatabaseHelper.getCommunityDao().deleteInvalid(communityUuid);
+        // districts
+        List<String> districtUuids = executeUuidCall(RetroProvider.getDistrictFacade().pullUuids());
+        DatabaseHelper.getDistrictDao().deleteInvalid(districtUuids);
+        // regions
+        List<String> regionUuids = executeUuidCall(RetroProvider.getRegionFacade().pullUuids());
+        DatabaseHelper.getRegionDao().deleteInvalid(regionUuids);
     }
 
     private List<String> executeUuidCall(Call<List<String>> call) throws ServerConnectionException {
