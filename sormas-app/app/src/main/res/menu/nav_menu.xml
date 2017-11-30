@@ -6,22 +6,28 @@
 
         <item
             android:id="@+id/nav_tasks"
-            android:title="@string/main_menu_tasks" />
+            android:title="@string/main_menu_tasks"
+            android:icon="@drawable/ic_assignment_turned_in_black_24dp"/>
         <item
             android:id="@+id/nav_cases"
-            android:title="@string/main_menu_cases" />
+            android:title="@string/main_menu_cases"
+            android:icon="@drawable/ic_airline_seat_individual_suite_black_24dp"/>
         <item
             android:id="@+id/nav_contacts"
-            android:title="@string/main_menu_contacts" />
+            android:title="@string/main_menu_contacts"
+            android:icon="@drawable/ic_people_black_24dp"/>
         <item
             android:id="@+id/nav_events"
-            android:title="@string/main_menu_events" />
+            android:title="@string/main_menu_events"
+            android:icon="@drawable/ic_phone_in_talk_black_24dp"/>
         <item
             android:id="@+id/nav_samples"
-            android:title="@string/main_menu_samples" />
+            android:title="@string/main_menu_samples"
+            android:icon="@drawable/ic_pageview_black_24dp"/>
         <item
             android:id="@+id/nav_reports"
-            android:title="@string/main_menu_reports" />
+            android:title="@string/main_menu_reports"
+            android:icon="@drawable/ic_assignment_black_24dp"/>
 
         <item
             android:id="@+id/navigation_user_sub_header"
