@@ -15,4 +15,5 @@ public interface CommunityFacade {
 	CommunityDto getByUuid(String uuid);
 
 	List<String> getAllUuids(String userUuid);
-}
+
+	CommunityReferenceDto getCommunityReferenceByUuid(String uuid);}

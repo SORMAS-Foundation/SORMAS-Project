@@ -4,14 +4,14 @@ import java.io.Serializable;
 
 import de.symeda.sormas.api.person.Sex;
 
-public class StatisticsCase implements Serializable {
+public class StatisticsCaseDto implements Serializable {
 
 	private static final long serialVersionUID = -6569825315668163543L;
 
 	private Integer approximateAge;
 	private Sex sex;
 	
-	public StatisticsCase(Integer approximateAge, Sex sex) {
+	public StatisticsCaseDto(Integer approximateAge, Sex sex) {
 		this.approximateAge = approximateAge;
 		this.sex = sex;
 	}

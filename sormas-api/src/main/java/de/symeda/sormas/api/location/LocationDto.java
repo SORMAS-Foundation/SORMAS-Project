@@ -1,11 +1,11 @@
 package de.symeda.sormas.api.location;
 
-import de.symeda.sormas.api.DataTransferObject;
+import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 
-public class LocationDto extends DataTransferObject {
+public class LocationDto extends EntityDto {
 
 	private static final long serialVersionUID = -1399197327930368752L;
 

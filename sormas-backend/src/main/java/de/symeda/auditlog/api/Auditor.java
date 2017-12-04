@@ -23,6 +23,7 @@ import de.symeda.auditlog.api.value.format.ValueFormatter;
 import de.symeda.auditlog.api.value.format.override.DateFormatOverrideDetector;
 import de.symeda.auditlog.api.value.format.override.OverrideDetector;
 import de.symeda.auditlog.api.value.reflection.EntityInspector;
+import de.symeda.sormas.api.HasUuid;
 
 /**
  * Class for the inspection of entity states.
@@ -57,7 +58,7 @@ public class Auditor implements Serializable {
 			final ValueContainer valueContainer = getValueContainerOf(entity);
 
 			if (valueContainer != null) {
-				this.changes.put(entity.getOid(), new DefaultValueContainer(valueContainer));
+				this.changes.put(EntityId.getOidFromHasUuid(entity), new DefaultValueContainer(valueContainer));
 			}
 		}
 	}
@@ -81,9 +82,9 @@ public class Auditor implements Serializable {
 
 			final ChangeType changeType = detectChangeType(entity);
 			final SortedMap<String, String> entityChanges;
-			if (this.changes.containsKey(entity.getOid())) {
+			if (this.changes.containsKey(EntityId.getOidFromHasUuid(entity))) {
 				// Compare attributes because already existing
-				ValueContainer originalContainer = this.changes.get(entity.getOid());
+				ValueContainer originalContainer = this.changes.get(EntityId.getOidFromHasUuid(entity));
 				entityChanges = getValueContainerOf(entity).compare(originalContainer);
 			} else {
 				// Entity is new
@@ -120,7 +121,7 @@ public class Auditor implements Serializable {
 	 */
 	private ChangeType detectChangeType(HasUuid entity) {
 
-		if (this.changes.containsKey(entity.getOid())) {
+		if (this.changes.containsKey(EntityId.getOidFromHasUuid(entity))) {
 			return ChangeType.UPDATE;
 		} else {
 			return ChangeType.CREATE;

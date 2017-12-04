@@ -7,7 +7,7 @@ import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
 import java.util.Date;
 
-import de.symeda.sormas.api.DataTransferObject;
+import de.symeda.sormas.api.EntityDto;
 
 public final class DataHelper {
 
@@ -76,7 +76,7 @@ public final class DataHelper {
 		return buffer.array();
 	}
 
-	public static final String getShortUuid(DataTransferObject domainObject) {
+	public static final String getShortUuid(EntityDto domainObject) {
 		return getShortUuid(domainObject.getUuid());
 	}
 

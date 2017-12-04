@@ -21,7 +21,7 @@ import javax.validation.constraints.NotNull;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.sample.DashboardSample;
+import de.symeda.sormas.api.sample.DashboardSampleDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleFacade;
 import de.symeda.sormas.api.sample.SampleIndexDto;
@@ -187,7 +187,7 @@ public class SampleFacadeEjb implements SampleFacade {
 			indexDto.setLab(facilityFacade.getFacilityReferenceByUuid(indexDto.getLabUuid()));
 			
 			SampleTestDto latestSampleTest = null;
-			for(SampleTestDto sampleTest : sampleTestFacade.getAllBySample(indexDto)) {
+			for(SampleTestDto sampleTest : sampleTestFacade.getAllBySample(indexDto.toReference())) {
 				if(latestSampleTest == null) {
 					latestSampleTest = sampleTest;
 				} else {
@@ -207,7 +207,7 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 	
 	@Override
-	public List<DashboardSample> getNewSamplesForDashboard(DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid) {
+	public List<DashboardSampleDto> getNewSamplesForDashboard(DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid) {
 		User user = userService.getByUuid(userUuid);
 		District district = districtService.getByReferenceDto(districtRef);
 		
@@ -279,7 +279,7 @@ public class SampleFacadeEjb implements SampleFacade {
 			return null;
 		}
 		SampleDto target = new SampleDto();
-		DtoHelper.fillReferenceDto(target, source);
+		DtoHelper.fillDto(target, source);
 		
 		target.setAssociatedCase(CaseFacadeEjb.toReferenceDto(source.getAssociatedCase()));
 		target.setSampleCode(source.getSampleCode());
@@ -313,8 +313,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		if(entity == null) {
 			return null;
 		}
-		SampleReferenceDto dto = new SampleReferenceDto();
-		DtoHelper.fillReferenceDto(dto, entity);
+		SampleReferenceDto dto = new SampleReferenceDto(entity.getUuid(), entity.toString());
 		return dto;
 	}
 	

@@ -30,7 +30,7 @@ public interface SampleFacade {
 
 	List<SampleDto> getByUuids(List<String> uuids);
 	
-	List<DashboardSample> getNewSamplesForDashboard(DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid);
+	List<DashboardSampleDto> getNewSamplesForDashboard(DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid);
 	
 	void deleteSample(SampleReferenceDto sampleRef, String userUuid);
 

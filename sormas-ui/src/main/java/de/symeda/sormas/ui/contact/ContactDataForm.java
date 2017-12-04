@@ -116,10 +116,9 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	    					@Override
 	    					public void buttonClick(ClickEvent event) {
 	    						PersonReferenceDto personRef = getValue().getPerson();
-	    						PersonDto person = FacadeProvider.getPersonFacade().getPersonByUuid(personRef.getUuid());
 	    						CaseReferenceDto caseRef = getValue().getCaze();
 	    						CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseRef.getUuid());
-	    						ControllerProvider.getCaseController().create(person, caze.getDisease(), getValue());
+	    						ControllerProvider.getCaseController().create(personRef, caze.getDisease(), getValue());
 	    					}
 	    				});
 	    				

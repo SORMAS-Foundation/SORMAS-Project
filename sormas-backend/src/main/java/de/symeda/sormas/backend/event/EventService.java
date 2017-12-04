@@ -16,7 +16,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.event.DashboardEvent;
+import de.symeda.sormas.api.event.DashboardEventDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -69,9 +69,9 @@ public class EventService extends AbstractAdoService<Event> {
 		return resultList;
 	}
 
-	public List<DashboardEvent> getNewEventsForDashboard(District district, Disease disease, Date from, Date to, User user) {
+	public List<DashboardEventDto> getNewEventsForDashboard(District district, Disease disease, Date from, Date to, User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<DashboardEvent> cq = cb.createQuery(DashboardEvent.class);
+		CriteriaQuery<DashboardEventDto> cq = cb.createQuery(DashboardEventDto.class);
 		Root<Event> event = cq.from(getElementClass());
 		Join<Event, Location> eventLocation = event.join(Event.EVENT_LOCATION, JoinType.LEFT);
 		Join<Location, District> eventDistrict = eventLocation.join(Location.DISTRICT, JoinType.LEFT);
@@ -102,7 +102,7 @@ public class EventService extends AbstractAdoService<Event> {
 			}
 		}
 
-		List<DashboardEvent> result;
+		List<DashboardEventDto> result;
 		if (filter != null) {
 			cq.where(filter);
 			cq.multiselect(
@@ -118,8 +118,8 @@ public class EventService extends AbstractAdoService<Event> {
 					);
 
 			result = em.createQuery(cq).getResultList();
-			for (DashboardEvent dashboardEvent : result) {
-				dashboardEvent.setDistrict(districtFacade.getDistrictReferenceByUuid(dashboardEvent.getDistrictUuid()));
+			for (DashboardEventDto dashboardEventDto : result) {
+				dashboardEventDto.setDistrict(districtFacade.getDistrictReferenceByUuid(dashboardEventDto.getDistrictUuid()));
 			}
 		} else {
 			result = Collections.emptyList();

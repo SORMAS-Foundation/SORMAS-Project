@@ -70,11 +70,11 @@ public class WeeklyReportFacadeEjbTest extends BaseBeanTest {
 		UserDto informant4 = creator.createUser(rdcf3.region.getUuid(), rdcf3.district.getUuid(), rdcf3.facility.getUuid(), "Info", "Four", UserRole.INFORMANT);
 		
 		EpiWeek previousEpiWeek = DateHelper.getPreviousEpiWeek(new Date());
-		creator.createWeeklyReport(rdcf.facility.getUuid(), informant1, new Date(), previousEpiWeek.getWeek(), previousEpiWeek.getYear(), 1);
-		creator.createWeeklyReport(rdcf2.facility.getUuid(), informant3, new Date(), previousEpiWeek.getWeek(), previousEpiWeek.getYear(), 1);
-		creator.createWeeklyReport(rdcf3.facility.getUuid(), informant4, new Date(), previousEpiWeek.getWeek(), previousEpiWeek.getYear(), 0);
+		creator.createWeeklyReport(rdcf.facility.getUuid(), informant1.toReference(), new Date(), previousEpiWeek.getWeek(), previousEpiWeek.getYear(), 1);
+		creator.createWeeklyReport(rdcf2.facility.getUuid(), informant3.toReference(), new Date(), previousEpiWeek.getWeek(), previousEpiWeek.getYear(), 1);
+		creator.createWeeklyReport(rdcf3.facility.getUuid(), informant4.toReference(), new Date(), previousEpiWeek.getWeek(), previousEpiWeek.getYear(), 0);
 		
-		List<WeeklyReportSummaryDto> reportSummaries = reportFacade.getSummariesPerDistrict(regionFacade.getRegionByUuid(rdcf.region.getUuid()), previousEpiWeek);
+		List<WeeklyReportSummaryDto> reportSummaries = reportFacade.getSummariesPerDistrict(regionFacade.getRegionReferenceByUuid(rdcf.region.getUuid()), previousEpiWeek);
 		// Two districts have submitted reports, so there should be two summaries
 		assertEquals(2, reportSummaries.size());
 		// The first district has one submitted and one missing report

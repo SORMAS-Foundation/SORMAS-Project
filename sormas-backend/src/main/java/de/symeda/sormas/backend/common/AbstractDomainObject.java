@@ -14,7 +14,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Version;
 import javax.validation.constraints.Size;
 
-import de.symeda.auditlog.api.HasUuid;
+import de.symeda.sormas.api.HasUuid;
 import de.symeda.sormas.api.utils.DataHelper;
 
 @MappedSuperclass

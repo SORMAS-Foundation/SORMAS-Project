@@ -3,9 +3,9 @@ package de.symeda.sormas.ui.utils;
 import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.ui.Field;
 
-import de.symeda.sormas.api.DataTransferObject;
+import de.symeda.sormas.api.EntityDto;
 
-public interface DtoEditForm<DTO extends DataTransferObject> extends Field<DTO> {
+public interface DtoEditForm<DTO extends EntityDto> extends Field<DTO> {
 
 	DTO getDto();
 

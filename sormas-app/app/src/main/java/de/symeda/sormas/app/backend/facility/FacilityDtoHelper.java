@@ -209,8 +209,7 @@ public class FacilityDtoHelper extends AdoDtoHelper<Facility, FacilityDto> {
         if (ado == null) {
             return null;
         }
-        FacilityReferenceDto dto = new FacilityReferenceDto();
-        fillReferenceDto(dto, ado);
+        FacilityReferenceDto dto = new FacilityReferenceDto(ado.getUuid());
 
         return dto;
     }

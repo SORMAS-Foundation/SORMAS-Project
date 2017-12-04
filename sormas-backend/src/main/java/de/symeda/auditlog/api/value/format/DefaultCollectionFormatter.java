@@ -3,7 +3,7 @@ package de.symeda.auditlog.api.value.format;
 import java.io.Serializable;
 import java.util.Comparator;
 
-import de.symeda.auditlog.api.HasUuid;
+import de.symeda.sormas.api.HasUuid;
 
 /**
  * Supports the following elements in Collections (relevant for a reliable sorting):

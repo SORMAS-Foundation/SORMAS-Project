@@ -8,13 +8,16 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactFacade;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventFacade;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantFacade;
+import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.EventType;
 import de.symeda.sormas.api.event.TypeOfPlace;
@@ -23,6 +26,7 @@ import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.CommunityFacade;
 import de.symeda.sormas.api.region.DistrictFacade;
 import de.symeda.sormas.api.region.RegionFacade;
@@ -31,6 +35,7 @@ import de.symeda.sormas.api.report.WeeklyReportFacade;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleFacade;
 import de.symeda.sormas.api.sample.SampleMaterial;
+import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SampleTestDto;
 import de.symeda.sormas.api.sample.SampleTestFacade;
 import de.symeda.sormas.api.sample.SampleTestResultType;
@@ -42,6 +47,7 @@ import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserFacade;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.visit.VisitDto;
@@ -113,9 +119,9 @@ public class TestDataCreator extends BaseBeanTest {
 		user.setLastName(lastName);
 		user.setUserName(firstName + lastName);
 		user.setUserRoles(new HashSet<UserRole>(Arrays.asList(roles)));
-		user.setRegion(regionFacade.getRegionByUuid(regionUuid));
-		user.setDistrict(districtFacade.getDistrictByUuid(districtUuid));
-		user.setHealthFacility(facilityFacade.getByUuid(facilityUuid));
+		user.setRegion(regionFacade.getRegionReferenceByUuid(regionUuid));
+		user.setDistrict(districtFacade.getDistrictReferenceByUuid(districtUuid));
+		user.setHealthFacility(facilityFacade.getFacilityReferenceByUuid(facilityUuid));
 		user = userFacade.saveUser(user);
 		
 		return user;
@@ -131,7 +137,7 @@ public class TestDataCreator extends BaseBeanTest {
 		return cazePerson;
 	}
 
-	public CaseDataDto createCase(UserDto user, PersonDto cazePerson, Disease disease, CaseClassification caseClassification, 
+	public CaseDataDto createCase(UserReferenceDto user, PersonReferenceDto cazePerson, Disease disease, CaseClassification caseClassification, 
 			InvestigationStatus investigationStatus, Date reportDate, RDCF rdcf) {
 		CaseDataDto caze = new CaseDataDto();
 		caze.setUuid(DataHelper.createUuid());
@@ -141,18 +147,18 @@ public class TestDataCreator extends BaseBeanTest {
 		caze.setDisease(disease);
 		caze.setCaseClassification(caseClassification);
 		caze.setInvestigationStatus(investigationStatus);
-		caze.setRegion(regionFacade.getRegionByUuid(rdcf.region.getUuid()));
-		caze.setDistrict(districtFacade.getDistrictByUuid(rdcf.district.getUuid()));
-		caze.setCommunity(communityFacade.getByUuid(rdcf.community.getUuid()));
-		caze.setHealthFacility(facilityFacade.getByUuid(rdcf.facility.getUuid()));		
+		caze.setRegion(regionFacade.getRegionReferenceByUuid(rdcf.region.getUuid()));
+		caze.setDistrict(districtFacade.getDistrictReferenceByUuid(rdcf.district.getUuid()));
+		caze.setCommunity(communityFacade.getCommunityReferenceByUuid(rdcf.community.getUuid()));
+		caze.setHealthFacility(facilityFacade.getFacilityReferenceByUuid(rdcf.facility.getUuid()));		
 		
 		caze = caseFacade.saveCase(caze);
 		
 		return caze;
 	}
 
-	public ContactDto createContact(UserDto reportingUser, UserDto contactOfficer, PersonDto contactPerson,
-			CaseDataDto caze, Date reportDateTime, Date lastContactDate) {
+	public ContactDto createContact(UserReferenceDto reportingUser, UserReferenceDto contactOfficer, PersonReferenceDto contactPerson,
+			CaseReferenceDto caze, Date reportDateTime, Date lastContactDate) {
 		ContactDto contact = new ContactDto();
 		contact.setUuid(DataHelper.createUuid());
 		contact.setReportingUser(reportingUser);
@@ -167,8 +173,8 @@ public class TestDataCreator extends BaseBeanTest {
 		return contact;
 	}
 
-	public TaskDto createTask(TaskContext context, TaskType type, TaskStatus status, CaseDataDto caze,
-			ContactDto contact, Date dueDate, UserDto assigneeUser) {
+	public TaskDto createTask(TaskContext context, TaskType type, TaskStatus status, CaseReferenceDto caze,
+			ContactReferenceDto contact, Date dueDate, UserReferenceDto assigneeUser) {
 		TaskDto task = new TaskDto();
 		task.setUuid(DataHelper.createUuid());
 		task.setTaskContext(context);
@@ -188,7 +194,7 @@ public class TestDataCreator extends BaseBeanTest {
 		return task;
 	}
 	
-	public VisitDto createVisit(Disease disease, PersonDto contactPerson, Date visitDateTime, VisitStatus visitStatus) {
+	public VisitDto createVisit(Disease disease, PersonReferenceDto contactPerson, Date visitDateTime, VisitStatus visitStatus) {
 		VisitDto visit = new VisitDto();
 		visit.setUuid(DataHelper.createUuid());
 		visit.setDisease(disease);
@@ -201,10 +207,10 @@ public class TestDataCreator extends BaseBeanTest {
 		return visit;
 	}
 	
-	public WeeklyReportDto createWeeklyReport(String facilityUuid, UserDto informant, Date reportDateTime, int epiWeek, int year, int numberOfCases) {
+	public WeeklyReportDto createWeeklyReport(String facilityUuid, UserReferenceDto informant, Date reportDateTime, int epiWeek, int year, int numberOfCases) {
 		WeeklyReportDto report = new WeeklyReportDto();
 		report.setUuid(DataHelper.createUuid());
-		report.setHealthFacility(facilityFacade.getByUuid(facilityUuid));
+		report.setHealthFacility(facilityFacade.getFacilityReferenceByUuid(facilityUuid));
 		report.setInformant(informant);
 		report.setReportDateTime(reportDateTime);
 		report.setEpiWeek(epiWeek);
@@ -216,7 +222,7 @@ public class TestDataCreator extends BaseBeanTest {
 		return report;
 	}
 	
-	public EventDto createEvent(EventType eventType, EventStatus eventStatus, String eventDesc, String srcFirstName, String srcLastName, String srcTelNo, TypeOfPlace typeOfPlace, Date eventDate, Date reportDateTime, UserDto reportingUser, UserDto surveillanceOfficer, Disease disease, LocationDto eventLocation) {
+	public EventDto createEvent(EventType eventType, EventStatus eventStatus, String eventDesc, String srcFirstName, String srcLastName, String srcTelNo, TypeOfPlace typeOfPlace, Date eventDate, Date reportDateTime, UserReferenceDto reportingUser, UserReferenceDto surveillanceOfficer, Disease disease, LocationDto eventLocation) {
 		EventDto event = new EventDto();
 		event.setUuid(DataHelper.createUuid());
 		event.setEventType(eventType);
@@ -238,7 +244,7 @@ public class TestDataCreator extends BaseBeanTest {
 		return event;
 	}
 	
-	public EventParticipantDto createEventParticipant(EventDto event, PersonDto eventPerson, String involvementDescription) {
+	public EventParticipantDto createEventParticipant(EventReferenceDto event, PersonDto eventPerson, String involvementDescription) {
 		EventParticipantDto eventParticipant = new EventParticipantDto();
 		eventParticipant.setEvent(event);
 		eventParticipant.setPerson(eventPerson);
@@ -249,7 +255,7 @@ public class TestDataCreator extends BaseBeanTest {
 		return eventParticipant;
 	}
 	
-	public SampleDto createSample(CaseDataDto associatedCase, Date sampleDateTime, Date reportDateTime, UserDto reportingUser, SampleMaterial sampleMaterial, Facility lab) {
+	public SampleDto createSample(CaseReferenceDto associatedCase, Date sampleDateTime, Date reportDateTime, UserReferenceDto reportingUser, SampleMaterial sampleMaterial, Facility lab) {
 		SampleDto sample = new SampleDto();
 		sample.setUuid(DataHelper.createUuid());
 		sample.setAssociatedCase(associatedCase);
@@ -257,20 +263,20 @@ public class TestDataCreator extends BaseBeanTest {
 		sample.setReportDateTime(reportDateTime);
 		sample.setReportingUser(reportingUser);
 		sample.setSampleMaterial(sampleMaterial);
-		sample.setLab(facilityFacade.getByUuid(lab.getUuid()));
+		sample.setLab(facilityFacade.getFacilityReferenceByUuid(lab.getUuid()));
 		
 		sample = sampleFacade.saveSample(sample);
 		
 		return sample;
 	}
 	
-	public SampleTestDto createSampleTest(SampleDto sample, SampleTestType testType, Date testDateTime, Facility lab, UserDto labUser, SampleTestResultType testResult, String testResultText, boolean verified) {
+	public SampleTestDto createSampleTest(SampleReferenceDto sample, SampleTestType testType, Date testDateTime, Facility lab, UserReferenceDto labUser, SampleTestResultType testResult, String testResultText, boolean verified) {
 		SampleTestDto sampleTest = new SampleTestDto();
 		sampleTest.setUuid(DataHelper.createUuid());
 		sampleTest.setSample(sample);
 		sampleTest.setTestType(testType);
 		sampleTest.setTestDateTime(testDateTime);
-		sampleTest.setLab(facilityFacade.getByUuid(lab.getUuid()));
+		sampleTest.setLab(facilityFacade.getFacilityReferenceByUuid(lab.getUuid()));
 		sampleTest.setLabUser(labUser);
 		sampleTest.setTestResult(testResult);
 		sampleTest.setTestResultText(testResultText);

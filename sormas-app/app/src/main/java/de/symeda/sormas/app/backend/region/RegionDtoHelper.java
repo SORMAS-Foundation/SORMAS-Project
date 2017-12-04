@@ -53,8 +53,7 @@ public class RegionDtoHelper extends AdoDtoHelper<Region, RegionDto> {
         if (ado == null) {
             return null;
         }
-        RegionReferenceDto dto = new RegionReferenceDto();
-        fillReferenceDto(dto, ado);
+        RegionReferenceDto dto = new RegionReferenceDto(ado.getUuid());
 
         return dto;
     }

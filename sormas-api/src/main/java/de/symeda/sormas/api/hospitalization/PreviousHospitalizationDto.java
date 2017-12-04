@@ -2,14 +2,14 @@ package de.symeda.sormas.api.hospitalization;
 
 import java.util.Date;
 
-import de.symeda.sormas.api.DataTransferObject;
+import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
-public class PreviousHospitalizationDto extends DataTransferObject {
+public class PreviousHospitalizationDto extends EntityDto {
 
 	private static final long serialVersionUID = -7544440109802739018L;
 

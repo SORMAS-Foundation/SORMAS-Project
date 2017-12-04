@@ -13,7 +13,7 @@ import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.sample.DashboardTestResult;
+import de.symeda.sormas.api.sample.DashboardTestResultDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SampleTestDto;
 import de.symeda.sormas.api.sample.SampleTestFacade;
@@ -89,7 +89,7 @@ public class SampleTestFacadeEjb implements SampleTestFacade {
 	}
 	
 	@Override
-	public List<DashboardTestResult> getNewTestResultsForDashboard(DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid) {
+	public List<DashboardTestResultDto> getNewTestResultsForDashboard(DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid) {
 		User user = userService.getByUuid(userUuid);
 		District district = districtService.getByReferenceDto(districtRef);
 		
@@ -151,7 +151,7 @@ public class SampleTestFacadeEjb implements SampleTestFacade {
 			return null;
 		}
 		SampleTestDto target = new SampleTestDto();
-		DtoHelper.fillReferenceDto(target, source);
+		DtoHelper.fillDto(target, source);
 		
 		target.setSample(SampleFacadeEjb.toReferenceDto(source.getSample()));
 		target.setTestType(source.getTestType());

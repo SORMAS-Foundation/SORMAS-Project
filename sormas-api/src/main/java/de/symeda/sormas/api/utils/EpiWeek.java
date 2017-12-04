@@ -2,6 +2,7 @@ package de.symeda.sormas.api.utils;
 
 import java.io.Serializable;
 
+@SuppressWarnings("serial")
 public class EpiWeek implements Serializable {
 	
 	private final int year;

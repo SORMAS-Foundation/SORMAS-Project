@@ -12,9 +12,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-import de.symeda.sormas.api.DataTransferObject;
-import de.symeda.sormas.api.ReferenceDto;
-import de.symeda.sormas.app.rest.RetroProvider;
+import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.app.util.DataUtils;
 import retrofit2.Call;
 import retrofit2.Response;
@@ -22,7 +20,7 @@ import retrofit2.Response;
 /**
  * Created by Martin Wahnschaffe on 27.07.2016.
  */
-public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends DataTransferObject> {
+public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends EntityDto> {
 
     private static final Logger logger = LoggerFactory.getLogger(AdoDtoHelper.class);
 
@@ -263,14 +261,9 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
         }
     }
 
-    public static void fillDto(DataTransferObject dto, AbstractDomainObject ado) {
+    public static void fillDto(EntityDto dto, AbstractDomainObject ado) {
         dto.setChangeDate(ado.getChangeDate());
         dto.setCreationDate(ado.getCreationDate());
         dto.setUuid(ado.getUuid());
-    }
-
-    public static void fillReferenceDto(ReferenceDto dto, AbstractDomainObject entity) {
-        fillDto(dto, entity);
-        dto.setCaption(entity.toString());
     }
 }

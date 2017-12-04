@@ -134,8 +134,7 @@ public class CommunityDtoHelper extends AdoDtoHelper<Community, CommunityDto> {
         if (ado == null) {
             return null;
         }
-        CommunityReferenceDto dto = new CommunityReferenceDto();
-        fillReferenceDto(dto, ado);
+        CommunityReferenceDto dto = new CommunityReferenceDto(ado.getUuid());
 
         return dto;
     }

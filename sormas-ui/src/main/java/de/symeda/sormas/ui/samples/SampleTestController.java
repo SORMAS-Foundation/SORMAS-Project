@@ -10,6 +10,7 @@ import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SampleTestDto;
 import de.symeda.sormas.api.sample.SampleTestFacade;
+import de.symeda.sormas.api.sample.SampleTestReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.login.LoginHelper;
@@ -72,7 +73,7 @@ public class SampleTestController {
 			editView.addDeleteListener(new DeleteListener() {
 				@Override
 				public void onDelete() {
-					FacadeProvider.getSampleTestFacade().deleteSampleTest(dto, LoginHelper.getCurrentUserAsReference().getUuid());
+					FacadeProvider.getSampleTestFacade().deleteSampleTest(dto.toReference(), LoginHelper.getCurrentUserAsReference().getUuid());
 					UI.getCurrent().removeWindow(popupWindow);
 					grid.reload();
 				}

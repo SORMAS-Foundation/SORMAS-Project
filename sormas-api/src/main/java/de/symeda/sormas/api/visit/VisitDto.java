@@ -3,11 +3,12 @@ package de.symeda.sormas.api.visit;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 
-public class VisitDto extends VisitReferenceDto {
+public class VisitDto extends EntityDto {
 
 	private static final long serialVersionUID = -441664767075414789L;
 
@@ -95,6 +96,10 @@ public class VisitDto extends VisitReferenceDto {
 	}
 	public void setReportLatLonAccuracy(Float reportLatLonAccuracy) {
 		this.reportLatLonAccuracy = reportLatLonAccuracy;
+	}
+	
+	public VisitReferenceDto toReference() {
+		return new VisitReferenceDto(getUuid());
 	}
 	
 }

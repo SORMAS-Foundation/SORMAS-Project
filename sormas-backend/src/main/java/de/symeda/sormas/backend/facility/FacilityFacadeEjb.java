@@ -133,8 +133,7 @@ public class FacilityFacadeEjb implements FacilityFacade {
 		if (entity == null) {
 			return null;
 		}
-		FacilityReferenceDto dto = new FacilityReferenceDto();
-		DtoHelper.fillReferenceDto(dto, entity);
+		FacilityReferenceDto dto = new FacilityReferenceDto(entity.getUuid(), entity.toString());
 		return dto;
 	}
 	
@@ -143,7 +142,7 @@ public class FacilityFacadeEjb implements FacilityFacade {
 			return null;
 		}
 		FacilityDto dto = new FacilityDto();
-		DtoHelper.fillReferenceDto(dto, entity);
+		DtoHelper.fillDto(dto, entity);
 		
 		dto.setName(entity.getName());
 		dto.setType(entity.getType());

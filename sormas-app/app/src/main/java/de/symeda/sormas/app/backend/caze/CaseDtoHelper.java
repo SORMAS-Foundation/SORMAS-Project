@@ -215,8 +215,7 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
         if (ado == null) {
             return null;
         }
-        CaseReferenceDto dto = new CaseReferenceDto();
-        fillReferenceDto(dto, ado);
+        CaseReferenceDto dto = new CaseReferenceDto(ado.getUuid());
 
         return dto;
     }

@@ -24,7 +24,7 @@ import com.vaadin.ui.Field;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.themes.ValoTheme;
 
-import de.symeda.sormas.api.DataTransferObject;
+import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomState;
@@ -38,7 +38,7 @@ import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.login.LoginHelper;
 
 @SuppressWarnings("serial")
-public abstract class AbstractEditForm <DTO extends DataTransferObject> extends CustomField<DTO> {// implements DtoEditForm<DTO> {
+public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomField<DTO> {// implements DtoEditForm<DTO> {
 
 	private final BeanFieldGroup<DTO> fieldGroup;
 	

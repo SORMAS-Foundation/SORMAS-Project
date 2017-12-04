@@ -3,6 +3,7 @@ package de.symeda.sormas.api.contact;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
@@ -10,12 +11,13 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 
-public class ContactIndexDto extends ContactReferenceDto {
+public class ContactIndexDto extends EntityDto {
 
 	private static final long serialVersionUID = -7764607075875188799L;
 
 	public static final String I18N_PREFIX = "Contact";
 	
+	public static final String UUID = "uuid";
 	public static final String PERSON = "person";
 	public static final String CAZE = "caze";
 	public static final String CAZE_DISEASE = "cazeDisease";

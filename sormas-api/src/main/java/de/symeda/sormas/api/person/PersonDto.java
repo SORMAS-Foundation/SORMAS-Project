@@ -3,17 +3,20 @@ package de.symeda.sormas.api.person;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.utils.Diseases;
 
-public class PersonDto extends PersonReferenceDto {
+public class PersonDto extends EntityDto {
 
 	private static final long serialVersionUID = -8558187171374254398L;
 
 	public static final String I18N_PREFIX = "Person";
 
 	public static final String SEX = "sex";
+	public static final String FIRST_NAME = "firstName";
+	public static final String LAST_NAME = "lastName";
 
 	public static final String PRESENT_CONDITION = "presentCondition";
 	public static final String BIRTH_DATE_DD = "birthdateDD";
@@ -42,6 +45,8 @@ public class PersonDto extends PersonReferenceDto {
 	public static final String OCCUPATION_FACILITY = "occupationFacility";
 	
 	private Sex sex;
+	private String firstName;
+	private String lastName;
 		
 	private PresentCondition presentCondition;
 	private Integer birthdateDD;
@@ -236,6 +241,31 @@ public class PersonDto extends PersonReferenceDto {
 	
 	public void setMothersMaidenName(String mothersMaidenName) {
 		this.mothersMaidenName = mothersMaidenName;
+	}
+	
+	public String getFirstName() {
+		return firstName;
+	}
+	
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+	
+	public String getLastName() {
+		return lastName;
+	}
+	
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+	
+	@Override
+	public String toString() {
+		return firstName + " " + lastName.toUpperCase();
+	}
+	
+	public PersonReferenceDto toReference() {
+		return new PersonReferenceDto(getUuid());
 	}
 
 }

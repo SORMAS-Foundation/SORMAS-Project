@@ -20,16 +20,16 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.caze.DashboardCase;
+import de.symeda.sormas.api.caze.DashboardCaseDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
-import de.symeda.sormas.api.event.DashboardEvent;
+import de.symeda.sormas.api.event.DashboardEventDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.EventType;
 import de.symeda.sormas.api.person.PresentCondition;
-import de.symeda.sormas.api.sample.DashboardSample;
-import de.symeda.sormas.api.sample.DashboardTestResult;
+import de.symeda.sormas.api.sample.DashboardSampleDto;
+import de.symeda.sormas.api.sample.DashboardTestResultDto;
 import de.symeda.sormas.api.sample.SampleTestResultType;
-import de.symeda.sormas.api.task.DashboardTask;
+import de.symeda.sormas.api.task.DashboardTaskDto;
 import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.ui.dashboard.SvgCircleElement.SvgCircleElementPart;
@@ -202,8 +202,8 @@ public class StatisticsComponent extends VerticalLayout {
 	}
 
 	private void updateMyTasksComponent() {
-		List<DashboardTask> dashboardTasks = dashboardDataProvider.getTasks();
-		List<DashboardTask> dashboardPendingTasks = dashboardDataProvider.getPendingTasks();
+		List<DashboardTaskDto> dashboardTaskDtos = dashboardDataProvider.getTasks();
+		List<DashboardTaskDto> dashboardPendingTasks = dashboardDataProvider.getPendingTasks();
 
 		int pendingTasksCount = dashboardPendingTasks.size();		
 		myTasksComponent.updateCountLabel(pendingTasksCount);
@@ -215,9 +215,9 @@ public class StatisticsComponent extends VerticalLayout {
 		int lowPriorityCount = (int) dashboardPendingTasks.stream().filter(t -> t.getPriority() == TaskPriority.LOW).count();
 		taskPriorityLow.updateCountLabel(lowPriorityCount);
 
-		int doneCount = (int) dashboardTasks.stream().filter(t -> t.getTaskStatus() == TaskStatus.DONE).count();
-		int removedCount = (int) dashboardTasks.stream().filter(t -> t.getTaskStatus() == TaskStatus.REMOVED).count();
-		int notExecutableCount = (int) dashboardTasks.stream().filter(t -> t.getTaskStatus() == TaskStatus.NOT_EXECUTABLE).count();
+		int doneCount = (int) dashboardTaskDtos.stream().filter(t -> t.getTaskStatus() == TaskStatus.DONE).count();
+		int removedCount = (int) dashboardTaskDtos.stream().filter(t -> t.getTaskStatus() == TaskStatus.REMOVED).count();
+		int notExecutableCount = (int) dashboardTaskDtos.stream().filter(t -> t.getTaskStatus() == TaskStatus.NOT_EXECUTABLE).count();
 		int totalCount = pendingTasksCount + doneCount + removedCount + notExecutableCount;
 		int pendingPercentage = totalCount == 0 ? 0 : 
 			new BigDecimal(pendingTasksCount).multiply(new BigDecimal(100)).divide(new BigDecimal(totalCount), RoundingMode.HALF_UP).intValue();
@@ -277,21 +277,21 @@ public class StatisticsComponent extends VerticalLayout {
 	}
 
 	private void updateNewCasesComponent(int amountOfDisplayedDiseases) {
-		List<DashboardCase> dashboardCases = dashboardDataProvider.getCases();
-		List<DashboardCase> previousDashboardCases = dashboardDataProvider.getPreviousCases();
+		List<DashboardCaseDto> dashboardCaseDtos = dashboardDataProvider.getCases();
+		List<DashboardCaseDto> previousDashboardCases = dashboardDataProvider.getPreviousCases();
 
-		int newCasesCount = dashboardCases.size();
+		int newCasesCount = dashboardCaseDtos.size();
 		newCasesComponent.updateCountLabel(newCasesCount);
 
-		int confirmedCasesCount = (int) dashboardCases.stream().filter(c -> c.getCaseClassification() == CaseClassification.CONFIRMED).count();
+		int confirmedCasesCount = (int) dashboardCaseDtos.stream().filter(c -> c.getCaseClassification() == CaseClassification.CONFIRMED).count();
 		caseClassificationConfirmed.updateCountLabel(confirmedCasesCount);
-		int probableCasesCount = (int) dashboardCases.stream().filter(c -> c.getCaseClassification() == CaseClassification.PROBABLE).count();
+		int probableCasesCount = (int) dashboardCaseDtos.stream().filter(c -> c.getCaseClassification() == CaseClassification.PROBABLE).count();
 		caseClassificationProbable.updateCountLabel(probableCasesCount);
-		int suspectCasesCount = (int) dashboardCases.stream().filter(c -> c.getCaseClassification() == CaseClassification.SUSPECT).count();
+		int suspectCasesCount = (int) dashboardCaseDtos.stream().filter(c -> c.getCaseClassification() == CaseClassification.SUSPECT).count();
 		caseClassificationSuspect.updateCountLabel(suspectCasesCount);
-		int notACaseCasesCount = (int) dashboardCases.stream().filter(c -> c.getCaseClassification() == CaseClassification.NO_CASE).count();
+		int notACaseCasesCount = (int) dashboardCaseDtos.stream().filter(c -> c.getCaseClassification() == CaseClassification.NO_CASE).count();
 		caseClassificationNotACase.updateCountLabel(notACaseCasesCount);
-		int notYetClassifiedCasesCount = (int) dashboardCases.stream().filter(c -> c.getCaseClassification() == CaseClassification.NOT_CLASSIFIED).count();
+		int notYetClassifiedCasesCount = (int) dashboardCaseDtos.stream().filter(c -> c.getCaseClassification() == CaseClassification.NOT_CLASSIFIED).count();
 		caseClassificationNotYetClassified.updateCountLabel(notYetClassifiedCasesCount);
 
 		// Remove and re-create content layout if the disease filter has been applied or set to null
@@ -321,7 +321,7 @@ public class StatisticsComponent extends VerticalLayout {
 			// Create a map with all diseases as keys and their respective case counts as values
 			Map<Disease, Integer> diseaseMap = new TreeMap<Disease, Integer>();
 			for (Disease disease : Disease.values()) {
-				diseaseMap.put(disease, (int) dashboardCases.stream().filter(c -> c.getDisease() == disease).count());
+				diseaseMap.put(disease, (int) dashboardCaseDtos.stream().filter(c -> c.getDisease() == disease).count());
 			}
 
 			// Create a list from this map that sorts the entries by case counts
@@ -335,11 +335,11 @@ public class StatisticsComponent extends VerticalLayout {
 				newCasesComponent.addComponentToContent(diseaseElement);
 			}
 		} else {
-			int investigatedCasesCount = (int) dashboardCases.stream().filter(c -> c.getInvestigationStatus() == InvestigationStatus.DONE).count();
+			int investigatedCasesCount = (int) dashboardCaseDtos.stream().filter(c -> c.getInvestigationStatus() == InvestigationStatus.DONE).count();
 			int previousInvestigatedCasesCount = (int) previousDashboardCases.stream().filter(c -> c.getInvestigationStatus() == InvestigationStatus.DONE).count();
-			int discardedCasesCount = (int) dashboardCases.stream().filter(c -> c.getInvestigationStatus() == InvestigationStatus.DISCARDED).count();
+			int discardedCasesCount = (int) dashboardCaseDtos.stream().filter(c -> c.getInvestigationStatus() == InvestigationStatus.DISCARDED).count();
 			int previousDiscardedCasesCount = (int) previousDashboardCases.stream().filter(c -> c.getInvestigationStatus() == InvestigationStatus.DISCARDED).count();
-			int fatalitiesCount = (int) dashboardCases.stream().filter(c -> c.getCasePersonCondition() == PresentCondition.DEAD).count();
+			int fatalitiesCount = (int) dashboardCaseDtos.stream().filter(c -> c.getCasePersonCondition() == PresentCondition.DEAD).count();
 			int previousFatalitiesCount = (int) previousDashboardCases.stream().filter(c -> c.getCasePersonCondition() == PresentCondition.DEAD).count();
 			
 			float investigatedCasesGrowth = investigatedCasesCount == 0 ? previousInvestigatedCasesCount > 0 ? -100 : 0 : 
@@ -389,17 +389,17 @@ public class StatisticsComponent extends VerticalLayout {
 	}
 
 	private void updateNewEventsComponent(int amountOfDisplayedDiseases) {
-		List<DashboardEvent> dashboardEvents = dashboardDataProvider.getEvents();
-		List<DashboardEvent> previousDashboardEvents = dashboardDataProvider.getPreviousEvents();
+		List<DashboardEventDto> dashboardEventDtos = dashboardDataProvider.getEvents();
+		List<DashboardEventDto> previousDashboardEvents = dashboardDataProvider.getPreviousEvents();
 
-		int newEventsCount = dashboardEvents.size();
+		int newEventsCount = dashboardEventDtos.size();
 		newEventsComponent.updateCountLabel(newEventsCount);
 
-		int confirmedEventsCount = (int) dashboardEvents.stream().filter(e -> e.getEventStatus() == EventStatus.CONFIRMED).count();
+		int confirmedEventsCount = (int) dashboardEventDtos.stream().filter(e -> e.getEventStatus() == EventStatus.CONFIRMED).count();
 		eventStatusConfirmed.updateCountLabel(confirmedEventsCount);
-		int possibleEventsCount = (int) dashboardEvents.stream().filter(e -> e.getEventStatus() == EventStatus.POSSIBLE).count();
+		int possibleEventsCount = (int) dashboardEventDtos.stream().filter(e -> e.getEventStatus() == EventStatus.POSSIBLE).count();
 		eventStatusPossible.updateCountLabel(possibleEventsCount);
-		int notAnEventEventsCount = (int) dashboardEvents.stream().filter(e -> e.getEventStatus() == EventStatus.NO_EVENT).count();
+		int notAnEventEventsCount = (int) dashboardEventDtos.stream().filter(e -> e.getEventStatus() == EventStatus.NO_EVENT).count();
 		eventStatusNotAnEvent.updateCountLabel(notAnEventEventsCount);
 
 		// Remove and re-create content layout if the disease filter has been applied or set to null
@@ -432,7 +432,7 @@ public class StatisticsComponent extends VerticalLayout {
 			// Create a map with all diseases as keys and their respective event counts as values
 			Map<Disease, Integer> diseaseMap = new TreeMap<Disease, Integer>();
 			for (Disease disease : Disease.values()) {
-				diseaseMap.put(disease, (int) dashboardEvents.stream().filter(e -> e.getDisease() == disease).count());
+				diseaseMap.put(disease, (int) dashboardEventDtos.stream().filter(e -> e.getDisease() == disease).count());
 			}
 	
 			// Create a list from this map that sorts the entries by event counts
@@ -446,8 +446,8 @@ public class StatisticsComponent extends VerticalLayout {
 				newEventsComponent.addComponentToContent(diseaseElement);
 			}
 		} else {
-			int rumorsCount = (int) dashboardEvents.stream().filter(e -> e.getEventType() == EventType.RUMOR).count();
-			int outbreaksCount = (int) dashboardEvents.stream().filter(e -> e.getEventType() == EventType.OUTBREAK).count();
+			int rumorsCount = (int) dashboardEventDtos.stream().filter(e -> e.getEventType() == EventType.RUMOR).count();
+			int outbreaksCount = (int) dashboardEventDtos.stream().filter(e -> e.getEventType() == EventType.OUTBREAK).count();
 			int totalTypeCount = rumorsCount + outbreaksCount;
 			int rumorsPercentage = totalTypeCount == 0 ? 0 : 
 				new BigDecimal(rumorsCount).multiply(new BigDecimal(100)).divide(new BigDecimal(totalTypeCount), RoundingMode.HALF_UP).intValue();
@@ -504,19 +504,19 @@ public class StatisticsComponent extends VerticalLayout {
 	}
 
 	private void updateNewTestResultsComponent(int amountOfDisplayedDiseases) {
-		List<DashboardTestResult> dashboardTestResults = dashboardDataProvider.getTestResults();
-		List<DashboardTestResult> previousDashboardTestResults = dashboardDataProvider.getPreviousTestResults();
+		List<DashboardTestResultDto> dashboardTestResultDtos = dashboardDataProvider.getTestResults();
+		List<DashboardTestResultDto> previousDashboardTestResults = dashboardDataProvider.getPreviousTestResults();
 
-		int newTestResultsCount = dashboardTestResults.size();
+		int newTestResultsCount = dashboardTestResultDtos.size();
 		newTestResultsComponent.updateCountLabel(newTestResultsCount);
 
-		int positiveTestResultsCount = (int) dashboardTestResults.stream().filter(r -> r.getTestResult() == SampleTestResultType.POSITIVE).count();
+		int positiveTestResultsCount = (int) dashboardTestResultDtos.stream().filter(r -> r.getTestResult() == SampleTestResultType.POSITIVE).count();
 		testResultPositive.updateCountLabel(positiveTestResultsCount);
-		int negativeTestResultsCount = (int) dashboardTestResults.stream().filter(r -> r.getTestResult() == SampleTestResultType.NEGATIVE).count();
+		int negativeTestResultsCount = (int) dashboardTestResultDtos.stream().filter(r -> r.getTestResult() == SampleTestResultType.NEGATIVE).count();
 		testResultNegative.updateCountLabel(negativeTestResultsCount);
-		int pendingTestResultsCount = (int) dashboardTestResults.stream().filter(r -> r.getTestResult() == SampleTestResultType.PENDING).count();
+		int pendingTestResultsCount = (int) dashboardTestResultDtos.stream().filter(r -> r.getTestResult() == SampleTestResultType.PENDING).count();
 		testResultPending.updateCountLabel(pendingTestResultsCount);
-		int indeterminateTestResultsCount = (int) dashboardTestResults.stream().filter(r -> r.getTestResult() == SampleTestResultType.INDETERMINATE).count();
+		int indeterminateTestResultsCount = (int) dashboardTestResultDtos.stream().filter(r -> r.getTestResult() == SampleTestResultType.INDETERMINATE).count();
 		testResultIndeterminate.updateCountLabel(indeterminateTestResultsCount);
 
 		if ((currentDisease == null && previousDisease != null) || (previousDisease == null && currentDisease != null)) {
@@ -549,7 +549,7 @@ public class StatisticsComponent extends VerticalLayout {
 			// Create a map with all diseases as keys and their respective positive test result counts as values
 			Map<Disease, Integer> diseaseMap = new TreeMap<Disease, Integer>();
 			for (Disease disease : Disease.values()) {
-				diseaseMap.put(disease, (int) dashboardTestResults.stream().filter(r -> r.getTestResult() == SampleTestResultType.POSITIVE && r.getDisease() == disease).count());
+				diseaseMap.put(disease, (int) dashboardTestResultDtos.stream().filter(r -> r.getTestResult() == SampleTestResultType.POSITIVE && r.getDisease() == disease).count());
 			}
 	
 			// Create a list from this map that sorts the entries by test result counts
@@ -563,11 +563,11 @@ public class StatisticsComponent extends VerticalLayout {
 				newTestResultsComponent.addComponentToContent(diseaseElement);
 			}
 		} else {
-			List<DashboardSample> dashboardSamples = dashboardDataProvider.getSamples();
-			int newSamplesCount = dashboardSamples.size();
+			List<DashboardSampleDto> dashboardSampleDtos = dashboardDataProvider.getSamples();
+			int newSamplesCount = dashboardSampleDtos.size();
 			
-			int shippedCount = (int) dashboardSamples.stream().filter(s -> s.isShipped()).count();
-			int receivedCount = (int) dashboardSamples.stream().filter(s -> s.isReceived()).count();
+			int shippedCount = (int) dashboardSampleDtos.stream().filter(s -> s.isShipped()).count();
+			int receivedCount = (int) dashboardSampleDtos.stream().filter(s -> s.isReceived()).count();
 			int shippedPercentage = newSamplesCount == 0 ? 0 :
 				new BigDecimal(shippedCount).multiply(new BigDecimal(100)).divide(new BigDecimal(newSamplesCount), RoundingMode.HALF_UP).intValue();
 			int receivedPercentage = newSamplesCount == 0 ? 0 :

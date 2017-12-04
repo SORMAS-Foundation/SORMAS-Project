@@ -58,8 +58,7 @@ public class DistrictDtoHelper extends AdoDtoHelper<District, DistrictDto> {
         if (ado == null) {
             return null;
         }
-        DistrictReferenceDto dto = new DistrictReferenceDto();
-        fillReferenceDto(dto, ado);
+        DistrictReferenceDto dto = new DistrictReferenceDto(ado.getUuid());
 
         return dto;
     }

@@ -59,12 +59,16 @@ public class CommunityFacadeEjb implements CommunityFacade {
 		return toDto(communityService.getByUuid(uuid));
 	}
 	
+	@Override
+	public CommunityReferenceDto getCommunityReferenceByUuid(String uuid) {
+		return toReferenceDto(service.getByUuid(uuid));
+	}
+	
 	public static CommunityReferenceDto toReferenceDto(Community entity) {
 		if (entity == null) {
 			return null;
 		}
-		CommunityReferenceDto dto = new CommunityReferenceDto();
-		DtoHelper.fillReferenceDto(dto, entity);
+		CommunityReferenceDto dto = new CommunityReferenceDto(entity.getUuid(), entity.toString());
 		return dto;
 	}
 	
@@ -73,7 +77,7 @@ public class CommunityFacadeEjb implements CommunityFacade {
 			return null;
 		}
 		CommunityDto dto = new CommunityDto();
-		DtoHelper.fillReferenceDto(dto, entity);
+		DtoHelper.fillDto(dto, entity);
 		
 		dto.setName(entity.getName());
 		dto.setDistrict(DistrictFacadeEjb.toReferenceDto(entity.getDistrict()));

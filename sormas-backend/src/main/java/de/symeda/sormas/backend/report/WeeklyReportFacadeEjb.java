@@ -179,8 +179,7 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 		if (entity == null) {
 			return null;
 		}
-		WeeklyReportReferenceDto dto = new WeeklyReportReferenceDto();
-		DtoHelper.fillReferenceDto(dto, entity);
+		WeeklyReportReferenceDto dto = new WeeklyReportReferenceDto(entity.getUuid(), entity.toString());
 		return dto;
 	}
 	
@@ -189,7 +188,7 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 			return null;
 		}
 		WeeklyReportDto target = new WeeklyReportDto();
-		DtoHelper.fillReferenceDto(target, source);
+		DtoHelper.fillDto(target, source);
 		
 		target.setHealthFacility(FacilityFacadeEjb.toReferenceDto(source.getHealthFacility()));
 		target.setInformant(UserFacadeEjb.toReferenceDto(source.getInformant()));

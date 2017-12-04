@@ -10,7 +10,7 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.symeda.sormas.api.task.DashboardTask;
+import de.symeda.sormas.api.task.DashboardTaskDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskFacade;
@@ -57,12 +57,12 @@ public class TaskFacadeEjbTest extends BaseBeanTest {
 		
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
-		creator.createTask(TaskContext.GENERAL, TaskType.OTHER, TaskStatus.PENDING, null, null, DateHelper.addDays(new Date(), 1), user);
+		creator.createTask(TaskContext.GENERAL, TaskType.OTHER, TaskStatus.PENDING, null, null, DateHelper.addDays(new Date(), 1), user.toReference());
 		
-		List<DashboardTask> dashboardTasks = taskFacade.getAllByUserForDashboard(TaskStatus.PENDING, null, null, user.getUuid());
+		List<DashboardTaskDto> dashboardTaskDtos = taskFacade.getAllByUserForDashboard(TaskStatus.PENDING, null, null, user.getUuid());
 		
 		// List should have one entry
-		assertEquals(1, dashboardTasks.size());
+		assertEquals(1, dashboardTaskDtos.size());
 	}
 	
 	@Test
@@ -75,7 +75,7 @@ public class TaskFacadeEjbTest extends BaseBeanTest {
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		UserDto admin = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Ad", "Min", UserRole.ADMIN);
 		String adminUuid = admin.getUuid();
-		TaskDto task = creator.createTask(TaskContext.GENERAL, TaskType.OTHER, TaskStatus.PENDING, null, null, DateHelper.addDays(new Date(), 1), user);
+		TaskDto task = creator.createTask(TaskContext.GENERAL, TaskType.OTHER, TaskStatus.PENDING, null, null, DateHelper.addDays(new Date(), 1), user.toReference());
 		
 		// Database should contain the created task
 		assertNotNull(taskFacade.getByUuid(task.getUuid()));

@@ -22,12 +22,12 @@ import org.slf4j.LoggerFactory;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.caze.MapCase;
+import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
-import de.symeda.sormas.api.contact.MapContact;
+import de.symeda.sormas.api.contact.MapContactDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskStatus;
@@ -201,12 +201,12 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 
 	@Override
-	public List<MapContact> getContactsForMap(DistrictReferenceDto districtRef, Disease disease, Date fromDate, Date toDate, String userUuid, List<MapCase> mapCases) {
+	public List<MapContactDto> getContactsForMap(DistrictReferenceDto districtRef, Disease disease, Date fromDate, Date toDate, String userUuid, List<MapCaseDto> mapCaseDtos) {
 		User user = userService.getByUuid(userUuid);
 		District district = districtService.getByReferenceDto(districtRef);
 		List<String> caseUuids = new ArrayList<>();
-		for (MapCase mapCase : mapCases) {
-			caseUuids.add(mapCase.getUuid());
+		for (MapCaseDto mapCaseDto : mapCaseDtos) {
+			caseUuids.add(mapCaseDto.getUuid());
 		}
 
 		if (user == null) {
@@ -279,8 +279,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		if (source == null) {
 			return null;
 		}
-		ContactReferenceDto target = new ContactReferenceDto();
-		DtoHelper.fillReferenceDto(target, source);
+		ContactReferenceDto target = new ContactReferenceDto(source.getUuid(), source.toString());
 		return target;
 	}	
 
@@ -289,7 +288,7 @@ public class ContactFacadeEjb implements ContactFacade {
 			return null;
 		}
 		ContactDto target = new ContactDto();
-		DtoHelper.fillReferenceDto(target, source);
+		DtoHelper.fillDto(target, source);
 
 		target.setCaze(CaseFacadeEjb.toReferenceDto(source.getCaze()));
 		target.setPerson(PersonFacadeEjb.toReferenceDto(source.getPerson()));
@@ -319,7 +318,7 @@ public class ContactFacadeEjb implements ContactFacade {
 			return null;
 		}
 		ContactIndexDto target = new ContactIndexDto();
-		DtoHelper.fillReferenceDto(target, source);
+		DtoHelper.fillDto(target, source);
 
 		target.setPerson(PersonFacadeEjb.toReferenceDto(source.getPerson()));
 		target.setCaze(CaseFacadeEjb.toReferenceDto(source.getCaze()));

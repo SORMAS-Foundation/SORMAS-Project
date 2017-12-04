@@ -17,7 +17,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.sample.DashboardTestResult;
+import de.symeda.sormas.api.sample.DashboardTestResultDto;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.region.District;
@@ -48,9 +48,9 @@ public class SampleTestService extends AbstractAdoService<SampleTest> {
 		return resultList;
 	}
 	
-	public List<DashboardTestResult> getNewTestResultsForDashboard(District district, Disease disease, Date from, Date to, User user) {
+	public List<DashboardTestResultDto> getNewTestResultsForDashboard(District district, Disease disease, Date from, Date to, User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<DashboardTestResult> cq = cb.createQuery(DashboardTestResult.class);
+		CriteriaQuery<DashboardTestResultDto> cq = cb.createQuery(DashboardTestResultDto.class);
 		Root<SampleTest> sampleTest = cq.from(getElementClass());
 		Join<SampleTest, Sample> sample = sampleTest.join(SampleTest.SAMPLE, JoinType.LEFT);
 		Join<Sample, Case> caze = sample.join(Sample.ASSOCIATED_CASE, JoinType.LEFT);
@@ -81,7 +81,7 @@ public class SampleTestService extends AbstractAdoService<SampleTest> {
 			}
 		}
 		
-		List<DashboardTestResult> result;
+		List<DashboardTestResultDto> result;
 		if (filter != null) {
 			cq.where(filter);
 			cq.multiselect(

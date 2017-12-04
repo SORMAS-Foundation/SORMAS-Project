@@ -3,13 +3,14 @@ package de.symeda.sormas.api.sample;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 
-public class SampleIndexDto extends SampleReferenceDto {
+public class SampleIndexDto extends EntityDto {
 
 	private static final long serialVersionUID = 3830865465145040944L;
 
@@ -207,6 +208,10 @@ public class SampleIndexDto extends SampleReferenceDto {
 	}
 	public void setSpecimenCondition(SpecimenCondition specimenCondition) {
 		this.specimenCondition = specimenCondition;
+	}
+	
+	public SampleReferenceDto toReference() {
+		return new SampleReferenceDto(getUuid());
 	}
 
 }

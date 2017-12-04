@@ -76,8 +76,7 @@ public class DistrictFacadeEjb implements DistrictFacade {
 		if (entity == null) {
 			return null;
 		}
-		DistrictReferenceDto dto = new DistrictReferenceDto();
-		DtoHelper.fillReferenceDto(dto, entity);
+		DistrictReferenceDto dto = new DistrictReferenceDto(entity.getUuid(), entity.toString());
 		return dto;
 	}
 	
@@ -86,7 +85,7 @@ public class DistrictFacadeEjb implements DistrictFacade {
 			return null;
 		}
 		DistrictDto dto = new DistrictDto();
-		DtoHelper.fillReferenceDto(dto, entity);
+		DtoHelper.fillDto(dto, entity);
 		
 		dto.setName(entity.getName());
 		dto.setEpidCode(entity.getEpidCode());

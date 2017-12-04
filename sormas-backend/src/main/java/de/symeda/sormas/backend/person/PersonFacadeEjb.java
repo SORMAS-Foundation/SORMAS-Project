@@ -157,36 +157,12 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 	
 	@Override
-	public PersonReferenceDto savePerson(PersonReferenceDto dto) {
-		Person person = fromDto(dto);
-		personService.ensurePersisted(person);
-		return toReferenceDto(person);
-	}
-	
-	@Override
 	public PersonDto savePerson(PersonDto dto) {
 		Person person = fromDto(dto);
 		personService.ensurePersisted(person);
 		
 		return toDto(person);
 		
-	}
-	
-	public Person fromDto(@NotNull PersonReferenceDto source) {
-		
-		Person target = personService.getByUuid(source.getUuid());
-		if(target==null) {
-			target = personService.createPerson();
-			if (source.getCreationDate() != null) {
-				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
-			}
-		}
-		DtoHelper.validateDto(source, target);
-		
-		target.setUuid(source.getUuid());
-		target.setFirstName(source.getFirstName());
-		target.setLastName(source.getLastName());
-		return target;
 	}
 	
 	public Person fromDto(@NotNull PersonDto source) {
@@ -232,18 +208,16 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 	
 	public static PersonReferenceDto toReferenceDto(Person entity) {
-		PersonReferenceDto dto = new PersonReferenceDto();
-		DtoHelper.fillReferenceDto(dto, entity);
-
-		dto.setFirstName(entity.getFirstName());
-		dto.setLastName(entity.getLastName());
-		
+		if (entity == null) {
+			return null;
+		}
+		PersonReferenceDto dto = new PersonReferenceDto(entity.getUuid(), entity.toString());
 		return dto;
 	}
 	
 	public static PersonIndexDto toIndexDto(Person entity) {
 		PersonIndexDto dto = new PersonIndexDto();
-		DtoHelper.fillReferenceDto(dto, entity);
+		DtoHelper.fillDto(dto, entity);
 
 		dto.setFirstName(entity.getFirstName());
 		dto.setLastName(entity.getLastName());
@@ -271,7 +245,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	
 	public static PersonDto toDto(Person source) {
 		PersonDto target = new PersonDto();
-		DtoHelper.fillReferenceDto(target, source);
+		DtoHelper.fillDto(target, source);
 		
 		target.setFirstName(source.getFirstName());
 		target.setLastName(source.getLastName());

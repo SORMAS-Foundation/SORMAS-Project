@@ -1,6 +1,8 @@
 package de.symeda.sormas.api.region;
 
-public class CommunityDto extends CommunityReferenceDto {
+import de.symeda.sormas.api.EntityDto;
+
+public class CommunityDto extends EntityDto {
 
 	private static final long serialVersionUID = -8833267932522978860L;
 
@@ -21,6 +23,10 @@ public class CommunityDto extends CommunityReferenceDto {
 	}
 	public void setDistrict(DistrictReferenceDto district) {
 		this.district = district;
+	}
+	
+	public CommunityReferenceDto toReference() {
+		return new CommunityReferenceDto(getUuid());
 	}
 	
 	@Override

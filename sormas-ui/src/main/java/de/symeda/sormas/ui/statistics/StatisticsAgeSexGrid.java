@@ -6,7 +6,7 @@ import com.vaadin.ui.Grid;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.caze.StatisticsCase;
+import de.symeda.sormas.api.caze.StatisticsCaseDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -46,9 +46,9 @@ public class StatisticsAgeSexGrid extends Grid {
 		int[] male = new int[4];
 		int[] female = new int[4];
 		int[] unknown = new int[4];
-		for (StatisticsCase statisticsCase : FacadeProvider.getCaseFacade().getCasesForStatistics(regionRef, districtRef, disease, from, to, LoginHelper.getCurrentUserAsReference().getUuid())) {
-			Sex sex = statisticsCase.getSex();
-			Integer age = statisticsCase.getApproximateAge();
+		for (StatisticsCaseDto statisticsCaseDto : FacadeProvider.getCaseFacade().getCasesForStatistics(regionRef, districtRef, disease, from, to, LoginHelper.getCurrentUserAsReference().getUuid())) {
+			Sex sex = statisticsCaseDto.getSex();
+			Integer age = statisticsCaseDto.getApproximateAge();
 			if (sex == null) {
 				if (age == null) {
 					unknown[3]++;

@@ -3,9 +3,7 @@ package de.symeda.sormas.api.contact;
 import java.io.Serializable;
 import java.util.Date;
 
-import de.symeda.sormas.api.person.PersonReferenceDto;
-
-public class MapContact implements Serializable {
+public class MapContactDto implements Serializable {
 
 	private static final long serialVersionUID = -5840120135940125045L;
 	
@@ -18,12 +16,13 @@ public class MapContact implements Serializable {
 	private Date lastVisitDateTime;
 	private Date caseOnsetDate;
 	private Date caseReportDate;
-	private String personUuid;
-	private PersonReferenceDto person;
-	private String casePersonUuid;
-	private PersonReferenceDto casePerson;
+	private String personFirstName;
+	private String personLastName;
+	private String casePersonFirstName;
+	private String casePersonLastName;
 	
-	public MapContact(String uuid, ContactClassification contactClassification, Double reportLat, Double reportLon, Double addressLat, Double addressLon, Date caseOnsetDate, Date caseReportDate, String personUuid, String casePersonUuid) {
+	public MapContactDto(String uuid, ContactClassification contactClassification, Double reportLat, Double reportLon, Double addressLat, Double addressLon, Date caseOnsetDate, Date caseReportDate,
+			String personFirstName, String personLastName, String casePersonFirstName, String casePersonLastName) {
 		this.uuid = uuid;
 		this.contactClassification = contactClassification;
 		this.reportLat = reportLat;
@@ -32,8 +31,10 @@ public class MapContact implements Serializable {
 		this.addressLon = addressLon;
 		this.caseOnsetDate = caseOnsetDate;
 		this.caseReportDate = caseReportDate;
-		this.personUuid = personUuid;
-		this.casePersonUuid = casePersonUuid;
+		this.personFirstName = personFirstName;
+		this.personLastName = personLastName;
+		this.casePersonFirstName = casePersonFirstName;
+		this.casePersonLastName = casePersonLastName;
 	}
 	
 	public String getUuid() {
@@ -104,44 +105,44 @@ public class MapContact implements Serializable {
 		this.caseReportDate = caseReportDate;
 	}
 	
-	public String getPersonUuid() {
-		return personUuid;
+	public String getPersonFirstName() {
+		return personFirstName;
 	}
 
-	public void setPersonUuid(String personUuid) {
-		this.personUuid = personUuid;
+	public void setPersonFirstName(String personFirstName) {
+		this.personFirstName = personFirstName;
 	}
 
-	public PersonReferenceDto getPerson() {
-		return person;
+	public String getPersonLastName() {
+		return personLastName;
 	}
 
-	public void setPerson(PersonReferenceDto person) {
-		this.person = person;
+	public void setPersonLastName(String personLastName) {
+		this.personLastName = personLastName;
 	}
 
-	public String getCasePersonUuid() {
-		return casePersonUuid;
+	public String getCasePersonFirstName() {
+		return casePersonFirstName;
 	}
 
-	public void setCasePersonUuid(String casePersonUuid) {
-		this.casePersonUuid = casePersonUuid;
+	public void setCasePersonFirstName(String casePersonFirstName) {
+		this.casePersonFirstName = casePersonFirstName;
 	}
 
-	public PersonReferenceDto getCasePerson() {
-		return casePerson;
+	public String getCasePersonLastName() {
+		return casePersonLastName;
 	}
 
-	public void setCasePerson(PersonReferenceDto casePerson) {
-		this.casePerson = casePerson;
+	public void setCasePersonLastName(String casePersonLastName) {
+		this.casePersonLastName = casePersonLastName;
 	}
 
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append(person.getFirstName()).append(" ").append(person.getLastName().toUpperCase());
+		builder.append(personFirstName).append(" ").append(personLastName.toUpperCase());
 		builder.append(" to case ");
-		builder.append(casePerson.getFirstName()).append(" ").append(casePerson.getLastName().toUpperCase());
+		builder.append(casePersonFirstName).append(" ").append(casePersonLastName.toUpperCase());
 		return builder.toString();
 	}
 

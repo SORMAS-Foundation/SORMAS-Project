@@ -25,10 +25,10 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.caze.DashboardCase;
+import de.symeda.sormas.api.caze.DashboardCaseDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
-import de.symeda.sormas.api.caze.MapCase;
-import de.symeda.sormas.api.caze.StatisticsCase;
+import de.symeda.sormas.api.caze.MapCaseDto;
+import de.symeda.sormas.api.caze.StatisticsCaseDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
@@ -228,7 +228,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 	
 	@Override
-	public List<DashboardCase> getNewCasesForDashboard(DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid) {
+	public List<DashboardCaseDto> getNewCasesForDashboard(DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid) {
 		District district = districtService.getByReferenceDto(districtRef);
 		User user = userService.getByUuid(userUuid);
 		
@@ -236,7 +236,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 	
 	@Override
-	public List<MapCase> getCasesForMap(DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid) {
+	public List<MapCaseDto> getCasesForMap(DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid) {
 		District district = districtService.getByReferenceDto(districtRef);
 		User user = userService.getByUuid(userUuid);
 		
@@ -244,7 +244,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 	
 	@Override
-	public List<StatisticsCase> getCasesForStatistics(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid) {
+	public List<StatisticsCaseDto> getCasesForStatistics(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid) {
 		Region region = regionService.getByReferenceDto(regionRef);
 		District district = districtService.getByReferenceDto(districtRef);
 		User user = userService.getByUuid(userUuid);
@@ -447,8 +447,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (entity == null) {
 			return null;
 		}
-		CaseReferenceDto dto = new CaseReferenceDto();
-		DtoHelper.fillReferenceDto(dto, entity);
+		CaseReferenceDto dto = new CaseReferenceDto(entity.getUuid(), entity.toString());
 		return dto;
 	}
 
@@ -457,7 +456,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			return null;
 		}
 		CaseDataDto target = new CaseDataDto();
-		DtoHelper.fillReferenceDto(target, source);
+		DtoHelper.fillDto(target, source);
 
 		target.setDisease(source.getDisease());
 		target.setDiseaseDetails(source.getDiseaseDetails());

@@ -6,7 +6,7 @@ import java.util.Date;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.person.PresentCondition;
 
-public class DashboardCase implements Serializable {
+public class DashboardCaseDto implements Serializable {
 
 	private static final long serialVersionUID = -5705128377788207648L;
 
@@ -19,7 +19,7 @@ public class DashboardCase implements Serializable {
 	private InvestigationStatus investigationStatus;
 	private PresentCondition casePersonCondition;
 	
-	public DashboardCase(Date reportDate, Date onsetDate, CaseClassification caseClassification, Disease disease, InvestigationStatus investigationStatus, PresentCondition casePersonCondition) {
+	public DashboardCaseDto(Date reportDate, Date onsetDate, CaseClassification caseClassification, Disease disease, InvestigationStatus investigationStatus, PresentCondition casePersonCondition) {
 		this.reportDate = reportDate;
 		this.onsetDate = onsetDate;
 		this.caseClassification = caseClassification;

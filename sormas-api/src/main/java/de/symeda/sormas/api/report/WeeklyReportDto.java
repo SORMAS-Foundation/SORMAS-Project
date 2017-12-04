@@ -2,10 +2,11 @@ package de.symeda.sormas.api.report;
 
 import java.util.Date;
 
+import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 
-public class WeeklyReportDto extends WeeklyReportReferenceDto {
+public class WeeklyReportDto extends EntityDto {
 
 	private static final long serialVersionUID = -2884998571593631851L;
 
@@ -65,6 +66,10 @@ public class WeeklyReportDto extends WeeklyReportReferenceDto {
 	}
 	public void setEpiWeek(Integer epiWeek) {
 		this.epiWeek = epiWeek;
+	}
+	
+	public WeeklyReportReferenceDto toReference() {
+		return new WeeklyReportReferenceDto(getUuid());
 	}
 	
 }

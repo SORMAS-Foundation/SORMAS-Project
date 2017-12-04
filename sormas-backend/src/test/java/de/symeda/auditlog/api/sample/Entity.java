@@ -2,7 +2,7 @@ package de.symeda.auditlog.api.sample;
 
 import de.symeda.auditlog.api.Audited;
 import de.symeda.auditlog.api.AuditedIgnore;
-import de.symeda.auditlog.api.HasUuid;
+import de.symeda.sormas.api.HasUuid;
 
 @Audited
 public class Entity implements HasUuid {

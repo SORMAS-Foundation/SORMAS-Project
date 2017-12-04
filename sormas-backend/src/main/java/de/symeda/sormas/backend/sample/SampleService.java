@@ -18,7 +18,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.sample.DashboardSample;
+import de.symeda.sormas.api.sample.DashboardSampleDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
@@ -70,9 +70,9 @@ public class SampleService extends AbstractAdoService<Sample> {
 		}
 	}
 	
-	public List<DashboardSample> getNewSamplesForDashboard(District district, Disease disease, Date from, Date to, User user) {
+	public List<DashboardSampleDto> getNewSamplesForDashboard(District district, Disease disease, Date from, Date to, User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<DashboardSample> cq = cb.createQuery(DashboardSample.class);
+		CriteriaQuery<DashboardSampleDto> cq = cb.createQuery(DashboardSampleDto.class);
 		Root<Sample> sample = cq.from(getElementClass());
 		Join<Sample, Case> caze = sample.join(Sample.ASSOCIATED_CASE, JoinType.LEFT);
 		
@@ -102,7 +102,7 @@ public class SampleService extends AbstractAdoService<Sample> {
 			}
 		}
 		
-		List<DashboardSample> result;
+		List<DashboardSampleDto> result;
 		if (filter != null) {
 			cq.where(filter);
 			cq.multiselect(

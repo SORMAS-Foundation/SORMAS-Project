@@ -1,8 +1,9 @@
 package de.symeda.sormas.api.event;
 
+import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.person.PersonDto;
 
-public class EventParticipantDto extends EventParticipantReferenceDto {
+public class EventParticipantDto extends EntityDto {
 
 	private static final long serialVersionUID = -8725734604520880084L;
 
@@ -38,6 +39,10 @@ public class EventParticipantDto extends EventParticipantReferenceDto {
 	
 	public void setInvolvementDescription(String involvementDescription) {
 		this.involvementDescription = involvementDescription;
+	}
+	
+	public EventParticipantReferenceDto toReference() {
+		return new EventParticipantReferenceDto(getUuid());
 	}
 
 }

@@ -114,7 +114,7 @@ public class CaseEditDataForm extends FormTab {
         });
 
         if (binding.caseDataPregnant.getVisibility() == View.GONE && binding.caseDataMeaslesVaccination.getVisibility() == View.GONE &&
-                binding.caseDataYellowFeverVaccination.getVisibility() == View.GONE && binding.caseDataSmallpoxVaccinationScar.getVisibility() == View.GONE) {
+                binding.caseDataYellowFeverVaccination.getVisibility() == View.GONE && binding.caseDataSmallpoxVaccinationReceived.getVisibility() == View.GONE) {
             binding.caseMedicalInformationHeadline.setVisibility(View.GONE);
         }
 

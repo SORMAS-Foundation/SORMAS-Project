@@ -32,6 +32,7 @@ public class VisitController {
 
 	public void editVisit(VisitReferenceDto visitRef, Consumer<VisitReferenceDto> doneConsumer) {
     	VisitDto dto = FacadeProvider.getVisitFacade().getVisitByUuid(visitRef.getUuid());
+    	VisitReferenceDto referenceDto = dto.toReference();
     	VisitEditForm editForm = new VisitEditForm(dto.getDisease(), null);
         editForm.setValue(dto);
         final CommitDiscardWrapperComponent<VisitEditForm> editView = new CommitDiscardWrapperComponent<VisitEditForm>(editForm, editForm.getFieldGroup());
@@ -49,7 +50,7 @@ public class VisitController {
         			VisitDto dto = editForm.getValue();
         			dto = FacadeProvider.getVisitFacade().saveVisit(dto);
         			if (doneConsumer != null) {
-        				doneConsumer.accept(dto);
+        				doneConsumer.accept(referenceDto);
         			}
         		}
         	}
@@ -59,10 +60,10 @@ public class VisitController {
 			editView.addDeleteListener(new DeleteListener() {
 				@Override
 				public void onDelete() {
-					FacadeProvider.getVisitFacade().deleteVisit(dto, LoginHelper.getCurrentUserAsReference().getUuid());
+					FacadeProvider.getVisitFacade().deleteVisit(referenceDto, LoginHelper.getCurrentUserAsReference().getUuid());
 					UI.getCurrent().removeWindow(window);
         			if (doneConsumer != null) {
-        				doneConsumer.accept(dto);
+        				doneConsumer.accept(referenceDto);
         			}
 				}
 			}, I18nProperties.getFieldCaption("Visit"));
@@ -82,7 +83,7 @@ public class VisitController {
         			VisitDto dto = createForm.getValue();
         			dto = FacadeProvider.getVisitFacade().saveVisit(dto);
         			if (doneConsumer != null) {
-        				doneConsumer.accept(dto);
+        				doneConsumer.accept(dto.toReference());
         			}
         		}
         	}

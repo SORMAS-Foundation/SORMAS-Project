@@ -68,8 +68,7 @@ public class RegionFacadeEjb implements RegionFacade {
 		if (entity == null) {
 			return null;
 		}
-		RegionReferenceDto dto = new RegionReferenceDto();
-		DtoHelper.fillReferenceDto(dto, entity);
+		RegionReferenceDto dto = new RegionReferenceDto(entity.getUuid(), entity.toString());
 		return dto;
 	}
 	
@@ -78,7 +77,7 @@ public class RegionFacadeEjb implements RegionFacade {
 			return null;
 		}
 		RegionDto dto = new RegionDto();
-		DtoHelper.fillReferenceDto(dto, entity);
+		DtoHelper.fillDto(dto, entity);
 		
 		dto.setName(entity.getName());
 		dto.setEpidCode(entity.getEpidCode());

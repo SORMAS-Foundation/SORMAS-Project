@@ -149,7 +149,7 @@ public class UserFacadeEjb implements UserFacade {
 	
 	public static UserDto toDto(User entity) {
 		UserDto dto = new UserDto();
-		DtoHelper.fillReferenceDto(dto, entity);
+		DtoHelper.fillDto(dto, entity);
 		
 		dto.setActive(entity.isAktiv());
 		dto.setUserName(entity.getUserName());
@@ -174,8 +174,7 @@ public class UserFacadeEjb implements UserFacade {
 		if (entity == null) {
 			return null;
 		}
-		UserReferenceDto dto = new UserReferenceDto();
-		DtoHelper.fillReferenceDto(dto, entity);
+		UserReferenceDto dto = new UserReferenceDto(entity.getUuid(), entity.toString());
 		return dto;
 	}	
 	

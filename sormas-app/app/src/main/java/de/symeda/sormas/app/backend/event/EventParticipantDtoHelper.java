@@ -83,8 +83,7 @@ public class EventParticipantDtoHelper extends AdoDtoHelper<EventParticipant, Ev
         if (ado == null) {
             return null;
         }
-        EventParticipantReferenceDto dto = new EventParticipantReferenceDto();
-        fillReferenceDto(dto, ado);
+        EventParticipantReferenceDto dto = new EventParticipantReferenceDto(ado.getUuid());
 
         return dto;
     }

@@ -7,7 +7,7 @@ import java.lang.reflect.Method;
 
 import org.junit.Test;
 
-import de.symeda.sormas.api.DataTransferObject;
+import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.symptoms.Symptoms;
@@ -15,7 +15,7 @@ import de.symeda.sormas.backend.symptoms.Symptoms;
 public class DtoAdoCodeGenerator {
 
 	Class<? extends AbstractDomainObject> ado = Symptoms.class;
-	Class<? extends DataTransferObject> dto = SymptomsDto.class;
+	Class<? extends EntityDto> dto = SymptomsDto.class;
 
 	@Test
 	public void generateCopyJava() throws IntrospectionException {
@@ -29,9 +29,9 @@ public class DtoAdoCodeGenerator {
 			}
 			
 			String propertyName = property.getName();
-			if (DataTransferObject.UUID.equals(propertyName)
-					|| DataTransferObject.CHANGE_DATE.equals(propertyName)
-					|| DataTransferObject.CREATION_DATE.equals(propertyName)) {
+			if (EntityDto.UUID.equals(propertyName)
+					|| EntityDto.CHANGE_DATE.equals(propertyName)
+					|| EntityDto.CREATION_DATE.equals(propertyName)) {
 				continue;
 			}
 			
@@ -81,9 +81,9 @@ public class DtoAdoCodeGenerator {
 		for (PropertyDescriptor property : Introspector.getBeanInfo(dto).getPropertyDescriptors()){
 			String propertyName = property.getName();
 			
-			if (DataTransferObject.UUID.equals(propertyName)
-					|| DataTransferObject.CHANGE_DATE.equals(propertyName)
-					|| DataTransferObject.CREATION_DATE.equals(propertyName)
+			if (EntityDto.UUID.equals(propertyName)
+					|| EntityDto.CHANGE_DATE.equals(propertyName)
+					|| EntityDto.CREATION_DATE.equals(propertyName)
 					|| "class".equals(propertyName)) {
 				continue;
 			}

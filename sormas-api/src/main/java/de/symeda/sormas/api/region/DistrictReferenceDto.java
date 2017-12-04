@@ -4,6 +4,19 @@ import de.symeda.sormas.api.ReferenceDto;
 
 public class DistrictReferenceDto extends ReferenceDto {
 
-	private static final long serialVersionUID = 7148178605023705226L;
+	private static final long serialVersionUID = 8990957700033431836L;
+
+	public DistrictReferenceDto() {
+		
+	}
+	
+	public DistrictReferenceDto(String uuid) {
+		setUuid(uuid);
+	}
+	
+	public DistrictReferenceDto(String uuid, String caption) {
+		setUuid(uuid);
+		setCaption(caption);
+	}
 	
 }

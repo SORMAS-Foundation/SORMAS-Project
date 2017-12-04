@@ -41,10 +41,10 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
-import de.symeda.sormas.api.caze.MapCase;
+import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.contact.ContactClassification;
-import de.symeda.sormas.api.contact.MapContact;
-import de.symeda.sormas.api.event.DashboardEvent;
+import de.symeda.sormas.api.contact.MapContactDto;
+import de.symeda.sormas.api.event.DashboardEventDto;
 import de.symeda.sormas.api.event.EventType;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
@@ -86,16 +86,16 @@ public class MapComponent extends VerticalLayout {
 	private boolean showRegions;
 
 	// Entities
-	private final HashMap<FacilityReferenceDto, List<MapCase>> casesByFacility = new HashMap<>();
-	private List<MapCase> mapCases = new ArrayList<>();
-	private List<MapCase> mapAndFacilityCases = new ArrayList<>();
-	private List<MapContact> mapContacts = new ArrayList<>();
+	private final HashMap<FacilityReferenceDto, List<MapCaseDto>> casesByFacility = new HashMap<>();
+	private List<MapCaseDto> mapCaseDtos = new ArrayList<>();
+	private List<MapCaseDto> mapAndFacilityCases = new ArrayList<>();
+	private List<MapContactDto> mapContactDtos = new ArrayList<>();
 
 	// Markers
 	private final HashMap<GoogleMapMarker, FacilityDto> markerCaseFacilities = new HashMap<GoogleMapMarker, FacilityDto>();
-	private final HashMap<GoogleMapMarker, MapCase> markerCases = new HashMap<GoogleMapMarker, MapCase>();
-	private final HashMap<GoogleMapMarker, MapContact> markerContacts = new HashMap<GoogleMapMarker, MapContact>();
-	private final HashMap<GoogleMapMarker, DashboardEvent> markerEvents = new HashMap<GoogleMapMarker, DashboardEvent>();
+	private final HashMap<GoogleMapMarker, MapCaseDto> markerCases = new HashMap<GoogleMapMarker, MapCaseDto>();
+	private final HashMap<GoogleMapMarker, MapContactDto> markerContacts = new HashMap<GoogleMapMarker, MapContactDto>();
+	private final HashMap<GoogleMapMarker, DashboardEventDto> markerEvents = new HashMap<GoogleMapMarker, DashboardEventDto>();
 	private final HashMap<RegionReferenceDto, GoogleMapPolygon[]> regionPolygonsMap = new HashMap<RegionReferenceDto, GoogleMapPolygon[]>();
 	private final HashMap<DistrictReferenceDto, GoogleMapPolygon[]> districtPolygonsMap = new HashMap<DistrictReferenceDto, GoogleMapPolygon[]>();
 
@@ -149,9 +149,9 @@ public class MapComponent extends VerticalLayout {
 			@Override
 			public void markerClicked(GoogleMapMarker clickedMarker) {
 				FacilityDto facility = markerCaseFacilities.get(clickedMarker);
-				MapCase caze = markerCases.get(clickedMarker);
-				MapContact contact = markerContacts.get(clickedMarker);
-				DashboardEvent event = markerEvents.get(clickedMarker);
+				MapCaseDto caze = markerCases.get(clickedMarker);
+				MapContactDto contact = markerContacts.get(clickedMarker);
+				DashboardEventDto event = markerEvents.get(clickedMarker);
 
 				if (facility != null) {
 					VerticalLayout layout = new VerticalLayout();
@@ -160,7 +160,7 @@ public class MapComponent extends VerticalLayout {
 					caseGrid.setHeightMode(HeightMode.ROW);
 					layout.addComponent(caseGrid);
 					layout.setMargin(true);
-					window.setCaption("Cases in " + markerCaseFacilities.get(clickedMarker).getCaption());
+					window.setCaption("Cases in " + markerCaseFacilities.get(clickedMarker).toString());
 				} else if (caze != null) {
 					ControllerProvider.getCaseController().navigateToData(caze.getUuid());
 				} else if (contact != null) {
@@ -208,8 +208,8 @@ public class MapComponent extends VerticalLayout {
 	public List<CaseDataDto> getCasesForFacility(FacilityDto facility) {
 		List<CaseDataDto> casesForFacility = new ArrayList<>();
 		CaseFacade caseFacade = FacadeProvider.getCaseFacade();
-		for (MapCase mapCase : casesByFacility.get(facility)) {
-			casesForFacility.add(caseFacade.getCaseDataByUuid(mapCase.getUuid()));
+		for (MapCaseDto mapCaseDto : casesByFacility.get(facility)) {
+			casesForFacility.add(caseFacade.getCaseDataByUuid(mapCaseDto.getUuid()));
 		}
 		return casesForFacility;
 	}
@@ -218,7 +218,7 @@ public class MapComponent extends VerticalLayout {
 		List<CaseDataDto> casesWithoutGPSTag = new ArrayList<>();
 
 		CaseFacade caseFacade = FacadeProvider.getCaseFacade();
-		for (MapCase caze : mapCases) {
+		for (MapCaseDto caze : mapCaseDtos) {
 			if (caze.getReportLat() == null || caze.getReportLon() == null) {
 				casesWithoutGPSTag.add(caseFacade.getCaseDataByUuid(caze.getUuid()));
 			}
@@ -257,7 +257,7 @@ public class MapComponent extends VerticalLayout {
 	}
 
 	private boolean hasCasesWithoutGPSTag() {
-		for (MapCase caze : mapCases) {
+		for (MapCaseDto caze : mapCaseDtos) {
 			if (caze.getReportLat() == null || caze.getReportLon() == null) {
 				return true;
 			}
@@ -750,8 +750,9 @@ public class MapComponent extends VerticalLayout {
 		for (Entry<DistrictDto,Long> districtCaseCount : caseCountPerDistrict.entrySet()) {
 
 			DistrictDto district = districtCaseCount.getKey();
+			DistrictReferenceDto districtRef = district.toReference();
 			long caseCount = districtCaseCount.getValue();
-			GeoLatLon[][] districtShape = FacadeProvider.getGeoShapeProvider().getDistrictShape(district);
+			GeoLatLon[][] districtShape = FacadeProvider.getGeoShapeProvider().getDistrictShape(districtRef);
 			if (districtShape == null) {
 				continue;
 			}
@@ -809,7 +810,7 @@ public class MapComponent extends VerticalLayout {
 				districtPolygons[part] = polygon;
 				map.addPolygonOverlay(polygon);
 			}
-			districtPolygonsMap.put(district, districtPolygons);
+			districtPolygonsMap.put(districtRef, districtPolygons);
 		}
 	}
 
@@ -824,11 +825,11 @@ public class MapComponent extends VerticalLayout {
 		markerCaseFacilities.clear();
 		markerCases.clear();
 		casesByFacility.clear();
-		mapCases.clear();
+		mapCaseDtos.clear();
 		mapAndFacilityCases.clear();
 	}
 
-	private void showCaseMarkers(List<MapCase> cases) {
+	private void showCaseMarkers(List<MapCaseDto> cases) {
 
 		clearCaseMarkers();
 
@@ -848,7 +849,7 @@ public class MapComponent extends VerticalLayout {
 			// on the number of cases
 			int numberOfCases = casesByFacility.get(facility).size();
 			Set<CaseClassification> classificationSet = new HashSet<>();
-			for (MapCase caze : casesByFacility.get(facility)) {
+			for (MapCaseDto caze : casesByFacility.get(facility)) {
 				classificationSet.add(caze.getCaseClassification());
 			}
 
@@ -881,7 +882,7 @@ public class MapComponent extends VerticalLayout {
 			map.addMarker(marker);
 		}
 
-		for (MapCase caze : mapCases) {
+		for (MapCaseDto caze : mapCaseDtos) {
 			if (caze.getAddressLat() == null || caze.getAddressLon() == null) {
 				if (caze.getReportLat() == null || caze.getReportLon() == null) {
 					continue;
@@ -912,23 +913,23 @@ public class MapComponent extends VerticalLayout {
 		}
 	}
 
-	private void fillCaseLists(List<MapCase> cases) {
-		for (MapCase caze : cases) {
+	private void fillCaseLists(List<MapCaseDto> cases) {
+		for (MapCaseDto caze : cases) {
 			CaseClassification classification = caze.getCaseClassification();
 			if (classification == null || classification == CaseClassification.NO_CASE)
 				continue;
 
 			if (mapCaseDisplayMode == MapCaseDisplayMode.CASES) {
-				mapCases.add(caze);
+				mapCaseDtos.add(caze);
 			} else {
 				if (caze.getHealthFacilityUuid().equals(FacilityDto.NONE_FACILITY_UUID) ||
 						caze.getHealthFacilityUuid().equals(FacilityDto.OTHER_FACILITY_UUID)) {
-					mapCases.add(caze);
+					mapCaseDtos.add(caze);
 				} else {
 					FacilityReferenceDto facility = new FacilityReferenceDto();
 					facility.setUuid(caze.getHealthFacilityUuid());
 					if (casesByFacility.get(facility) == null) {
-						casesByFacility.put(facility, new ArrayList<MapCase>());
+						casesByFacility.put(facility, new ArrayList<MapCaseDto>());
 					}
 					casesByFacility.get(facility).add(caze);
 				}
@@ -943,14 +944,14 @@ public class MapComponent extends VerticalLayout {
 		}
 
 		markerContacts.clear();
-		mapContacts.clear();
+		mapContactDtos.clear();
 	}
 
-	private void showContactMarkers(List<MapContact> contacts) {
+	private void showContactMarkers(List<MapContactDto> contacts) {
 
 		clearContactMarkers();
 
-		for (MapContact contact : contacts) {
+		for (MapContactDto contact : contacts) {
 
 			// Don't show a marker for contacts that don't have geo coordinates
 			if (contact.getAddressLat() == null || contact.getAddressLon() == null) {
@@ -1004,11 +1005,11 @@ public class MapComponent extends VerticalLayout {
 		markerEvents.clear();
 	}
 
-	private void showEventMarkers(List<DashboardEvent> events) {
+	private void showEventMarkers(List<DashboardEventDto> events) {
 
 		clearEventMarkers();
 
-		for (DashboardEvent event : events) {
+		for (DashboardEventDto event : events) {
 			MapIcon icon;
 			if (event.getEventType() == EventType.OUTBREAK) {
 				icon = MapIcon.OUTBREAK;

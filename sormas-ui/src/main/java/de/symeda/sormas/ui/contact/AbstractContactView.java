@@ -26,7 +26,7 @@ public abstract class AbstractContactView extends AbstractSubNavigationView {
 	public void refreshMenu(SubNavigationMenu menu, Label infoLabel, Label infoLabelSub, String params) {
 		
 		ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(params);
-		contactRef = contact;		
+		contactRef = contact.toReference();	
 		
 		menu.removeAllViews();
 		menu.addView(ContactsView.VIEW_NAME, "Contacts list");

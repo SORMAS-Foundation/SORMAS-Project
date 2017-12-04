@@ -18,9 +18,9 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.caze.DashboardCase;
-import de.symeda.sormas.api.caze.MapCase;
-import de.symeda.sormas.api.caze.StatisticsCase;
+import de.symeda.sormas.api.caze.DashboardCaseDto;
+import de.symeda.sormas.api.caze.MapCaseDto;
+import de.symeda.sormas.api.caze.StatisticsCaseDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -132,9 +132,9 @@ public class CaseService extends AbstractAdoService<Case> {
 		return resultList;
 	}	
 
-	public List<DashboardCase> getNewCasesForDashboard(District district, Disease disease, Date from, Date to, User user) {
+	public List<DashboardCaseDto> getNewCasesForDashboard(District district, Disease disease, Date from, Date to, User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<DashboardCase> cq = cb.createQuery(DashboardCase.class);
+		CriteriaQuery<DashboardCaseDto> cq = cb.createQuery(DashboardCaseDto.class);
 		Root<Case> caze = cq.from(getElementClass());
 		Join<Case, Symptoms> symptoms = caze.join(Case.SYMPTOMS, JoinType.LEFT);
 		Join<Case, Person> person = caze.join(Case.PERSON, JoinType.LEFT);
@@ -173,7 +173,7 @@ public class CaseService extends AbstractAdoService<Case> {
 			}
 		}
 
-		List<DashboardCase> result;
+		List<DashboardCaseDto> result;
 		if (filter != null) {
 			cq.where(filter);
 			cq.multiselect(
@@ -193,9 +193,9 @@ public class CaseService extends AbstractAdoService<Case> {
 		return result;
 	}
 
-	public List<MapCase> getCasesForMap(District district, Disease disease, Date from, Date to, User user) {
+	public List<MapCaseDto> getCasesForMap(District district, Disease disease, Date from, Date to, User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<MapCase> cq = cb.createQuery(MapCase.class);
+		CriteriaQuery<MapCaseDto> cq = cb.createQuery(MapCaseDto.class);
 		Root<Case> caze = cq.from(getElementClass());
 		Join<Case, Symptoms> symptoms = caze.join(Case.SYMPTOMS, JoinType.LEFT);
 		Join<Case, Facility> facility = caze.join(Case.HEALTH_FACILITY, JoinType.LEFT);
@@ -237,7 +237,7 @@ public class CaseService extends AbstractAdoService<Case> {
 			}
 		}
 
-		List<MapCase> result;
+		List<MapCaseDto> result;
 		if (filter != null) {
 			cq.where(filter);
 			cq.multiselect(
@@ -254,8 +254,8 @@ public class CaseService extends AbstractAdoService<Case> {
 					);
 
 			result = em.createQuery(cq).getResultList();
-			for (MapCase mapCase : result) {
-				mapCase.setPerson(personFacade.getReferenceByUuid(mapCase.getPersonUuid()));
+			for (MapCaseDto mapCaseDto : result) {
+				mapCaseDto.setPerson(personFacade.getReferenceByUuid(mapCaseDto.getPersonUuid()));
 			}
 		} else {
 			result = Collections.emptyList();
@@ -264,9 +264,9 @@ public class CaseService extends AbstractAdoService<Case> {
 		return result;
 	}
 	
-	public List<StatisticsCase> getCasesForStatistics(Region region, District district, Disease disease, Date from, Date to, User user) {
+	public List<StatisticsCaseDto> getCasesForStatistics(Region region, District district, Disease disease, Date from, Date to, User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<StatisticsCase> cq = cb.createQuery(StatisticsCase.class);
+		CriteriaQuery<StatisticsCaseDto> cq = cb.createQuery(StatisticsCaseDto.class);
 		Root<Case> caze = cq.from(getElementClass());
 		Join<Case, Symptoms> symptoms = caze.join(Case.SYMPTOMS, JoinType.LEFT);
 		Join<Case, Person> person = caze.join(Case.PERSON, JoinType.LEFT);	
@@ -315,7 +315,7 @@ public class CaseService extends AbstractAdoService<Case> {
 			}
 		}
 
-		List<StatisticsCase> result;
+		List<StatisticsCaseDto> result;
 		if (filter != null) {
 			cq.where(filter);
 			cq.multiselect(
