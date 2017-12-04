@@ -61,7 +61,7 @@ public class CommunityFacadeEjb implements CommunityFacade {
 	
 	@Override
 	public CommunityReferenceDto getCommunityReferenceByUuid(String uuid) {
-		return toReferenceDto(service.getByUuid(uuid));
+		return toReferenceDto(communityService.getByUuid(uuid));
 	}
 	
 	public static CommunityReferenceDto toReferenceDto(Community entity) {
