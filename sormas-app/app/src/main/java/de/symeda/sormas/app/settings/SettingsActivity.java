@@ -117,7 +117,7 @@ public class SettingsActivity extends AbstractEditTabActivity {
                             new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    processLogout();
+                                    dialog.dismiss();
                                 }
                             }
                     );
@@ -125,7 +125,7 @@ public class SettingsActivity extends AbstractEditTabActivity {
                             new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss();
+                                    processLogout();
                                 }
                             }
                     );

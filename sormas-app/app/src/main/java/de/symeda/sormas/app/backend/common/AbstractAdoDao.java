@@ -483,34 +483,36 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
         ADO snapshot = querySnapshotByUuid(source.getUuid());
         String sourceEntityString = source.toString();
 
-        if (current == null) {
+        try {
 
-            // use the source as new entity
-            current = source;
+            if (current == null) {
 
-            if (snapshot != null) {
-                // no existing entity but a snapshot -> the entity was deleted
-                if (!source.getChangeDate().equals(snapshot.getChangeDate())) {
-                    // source does not match snapshot -> there are changed fields that we need to keep
-                    // we have a conflict
-                    Log.i(source.getClass().getSimpleName(), "Recreating deleted entity, because it was modified: " + source.getUuid());
-                    DatabaseHelper.getSyncLogDao().createWithParentStack(source.toString(), "Recreated because it was modified by someone else.");
-                    // recreate the entity and set it to modified, because the list was changed before
-                    current.setModified(true);
-                } else {
-                    // the entity was delete and the server didn't send changes -> keep the deletion
-                    return null;
+                // create a new entity
+                current = getAdoClass().newInstance();
+                current.setUuid(source.getUuid());
+                current.setCreationDate(source.getCreationDate());
+
+                if (snapshot != null) {
+                    // no existing entity but a snapshot -> the entity was deleted
+                    if (!source.getChangeDate().equals(snapshot.getChangeDate())) {
+                        // source does not match snapshot -> there are changed fields that we need to keep
+                        // we have a conflict
+                        Log.i(source.getClass().getSimpleName(), "Recreating deleted entity, because it was modified: " + source.getUuid());
+                        DatabaseHelper.getSyncLogDao().createWithParentStack(source.toString(), "Recreated because it was modified by someone else.");
+                        // recreate the entity and set it to modified, because the list was changed before
+                        current.setModified(true);
+                    } else {
+                        // the entity was delete and the server didn't send changes -> keep the deletion
+                        return null;
+                    }
                 }
             }
-        }
 
-        // use change date from server
-        current.setChangeDate(source.getChangeDate());
-        if (snapshot != null) {
-            snapshot.setChangeDate(source.getChangeDate());
-        }
-
-        try {
+            // use change date from server
+            current.setChangeDate(source.getChangeDate());
+            if (snapshot != null) {
+                snapshot.setChangeDate(source.getChangeDate());
+            }
 
             // ignore parent property
             EmbeddedAdo annotation = source.getClass().getAnnotation(EmbeddedAdo.class);
@@ -643,6 +645,8 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
             throw new RuntimeException(e);
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
+        } catch (InstantiationException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -695,7 +699,13 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 
                     // set and save
                     parentSetter.invoke(resultElement, parent);
-                    DatabaseHelper.getAdoDao(resultElement.getClass()).updateWithCast(resultElement);
+                    AbstractAdoDao<? extends AbstractDomainObject> dao = DatabaseHelper.getAdoDao(resultElement.getClass());
+                    dao.updateWithCast(resultElement);
+
+                    // If the parent is modified we need to make sure this collection element is modified as well
+                    if (parent.isModified() && !resultElement.isModified()) {
+                        dao.saveAndSnapshotWithCast(resultElement);
+                    }
                 }
             }
         } catch (NoSuchMethodException e) {

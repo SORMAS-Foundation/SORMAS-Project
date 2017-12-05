@@ -19,7 +19,7 @@ public class DistrictDao extends AbstractAdoDao<District> {
 
     @Override
     protected Class<District> getAdoClass() {
-        throw new UnsupportedOperationException();
+        return District.class;
     }
 
     @Override
