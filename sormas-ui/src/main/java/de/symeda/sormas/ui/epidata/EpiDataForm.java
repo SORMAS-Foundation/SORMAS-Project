@@ -192,7 +192,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 	
 	private void updateBurialsHint(OptionGroup burialAttendedField, EpiDataBurialsField burialsField) {
 		YesNoUnknown value = (YesNoUnknown) burialAttendedField.getValue();
-		if (value == YesNoUnknown.YES && (burialsField == null || burialsField.getValue().size() == 0)) {
+		if (value == YesNoUnknown.YES && (burialsField == null || burialsField.getValue() == null || burialsField.getValue().size() == 0)) {
 			burialAttendedField.setComponentError(new UserError("Please add an entry to the list below if there is any data available to you."));
 		} else {
 			burialAttendedField.setComponentError(null);
@@ -201,7 +201,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 	
 	private void updateGatheringsHint(OptionGroup gatheringAttendedField, EpiDataGatheringsField gatheringsField) {
 		YesNoUnknown value = (YesNoUnknown) gatheringAttendedField.getValue();
-		if (value == YesNoUnknown.YES && (gatheringsField == null || gatheringsField.getValue().size() == 0)) {
+		if (value == YesNoUnknown.YES && (gatheringsField == null || gatheringsField.getValue() == null || gatheringsField.getValue().size() == 0)) {
 			gatheringAttendedField.setComponentError(new UserError("Please add an entry to the list below if there is any data available to you."));
 		} else {
 			gatheringAttendedField.setComponentError(null);
@@ -210,7 +210,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 	
 	private void updateTravelsHint(OptionGroup traveledField, EpiDataTravelsField travelsField) {
 		YesNoUnknown value = (YesNoUnknown) traveledField.getValue();
-		if (value == YesNoUnknown.YES && (travelsField == null || travelsField.getValue().size() == 0)) {
+		if (value == YesNoUnknown.YES && (travelsField == null || travelsField.getValue() == null || travelsField.getValue().size() == 0)) {
 			traveledField.setComponentError(new UserError("Please add an entry to the list below if there is any data available to you."));
 		} else {
 			traveledField.setComponentError(null);

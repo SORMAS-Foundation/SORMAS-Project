@@ -20,6 +20,7 @@ import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.Window.CloseListener;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.Vaccination;
@@ -27,7 +28,10 @@ import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases.DiseasesConfiguration;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -106,7 +110,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		TextField healthFacilityDetails = addField(CaseDataDto.HEALTH_FACILITY_DETAILS, TextField.class);
 
 		addField(CaseDataDto.REGION, ComboBox.class);
-		addField(CaseDataDto.DISTRICT, ComboBox.class);
+		ComboBox district = addField(CaseDataDto.DISTRICT, ComboBox.class);
 		addField(CaseDataDto.COMMUNITY, ComboBox.class);
 		ComboBox facility = addField(CaseDataDto.HEALTH_FACILITY, ComboBox.class);
 
@@ -178,6 +182,13 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 		addValueChangeListener(e -> {
 			diseaseField.addValueChangeListener(new DiseaseChangeListener(diseaseField, getValue().getDisease()));
+		});
+		
+		district.addValueChangeListener(e -> {
+			DistrictReferenceDto districtDto = (DistrictReferenceDto) e.getProperty().getValue();
+			List<UserReferenceDto> assignableSurveillanceOfficers = FacadeProvider.getUserFacade().getAssignableUsersByDistrict(districtDto, false, UserRole.SURVEILLANCE_OFFICER);
+			surveillanceOfficerField.removeAllItems();
+			surveillanceOfficerField.addItems(assignableSurveillanceOfficers);
 		});
 
 		facility.addValueChangeListener(e -> {
