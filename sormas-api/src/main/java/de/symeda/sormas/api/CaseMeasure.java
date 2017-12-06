@@ -1,8 +1,6 @@
-package de.symeda.sormas.ui.dashboard;
+package de.symeda.sormas.api;
 
-import de.symeda.sormas.api.I18nProperties;
-
-public enum RegionMapVisualization {
+public enum CaseMeasure {
 
 	CASE_COUNT,
 	CASE_INCIDENCE

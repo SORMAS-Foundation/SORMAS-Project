@@ -1,5 +1,7 @@
 package de.symeda.sormas.backend.caze;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -20,6 +22,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
@@ -44,6 +47,7 @@ import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
@@ -658,7 +662,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 	
 	@Override
-	public Map<DistrictDto, Long> getCaseCountPerDistrict(Date fromDate, Date toDate, Disease disease) {
+	public List<Pair<DistrictDto, BigDecimal>> getCaseMeasurePerDistrict(Date fromDate, Date toDate, Disease disease, CaseMeasure caseMeasure) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<Case> from = cq.from(Case.class);
@@ -696,11 +700,31 @@ public class CaseFacadeEjb implements CaseFacade {
 		
 		cq.groupBy(from.get(Case.DISTRICT));
 		cq.multiselect(from.get(Case.DISTRICT), cb.count(from));
+		if (caseMeasure == CaseMeasure.CASE_COUNT) {
+			cq.orderBy(cb.asc(cb.count(from)));
+		}
 		List<Object[]> results = em.createQuery(cq).getResultList();
-		
-		Map<DistrictDto, Long> resultMap = results.stream().collect(
-				Collectors.toMap(e -> DistrictFacadeEjb.toDto((District)e[0]), e -> (Long)e[1]));
-		return resultMap;
+
+		if (caseMeasure == CaseMeasure.CASE_COUNT) {
+			List<Pair<DistrictDto, BigDecimal>> resultList = results.stream()
+					.map(e -> new Pair<DistrictDto, BigDecimal>(DistrictFacadeEjb.toDto((District)e[0]), new BigDecimal((Long)e[1])))
+					.collect(Collectors.toList());
+			return resultList;
+		} else {
+			List<Pair<DistrictDto, BigDecimal>> resultList = results.stream()
+					.map(e -> new Pair<DistrictDto, BigDecimal>(DistrictFacadeEjb.toDto((District)e[0]), 
+							new BigDecimal((Long)e[1])
+								.divide(new BigDecimal(((District)e[0]).getPopulation())
+								.divide(new BigDecimal(DistrictDto.CASE_MEASURE_DIVISOR), 1, RoundingMode.HALF_UP), 1, RoundingMode.HALF_UP)))
+					.sorted(new Comparator<Pair<DistrictDto, BigDecimal>>() {
+						@Override
+						public int compare(Pair<DistrictDto, BigDecimal> o1, Pair<DistrictDto, BigDecimal> o2) {
+							return o1.getElement1().compareTo(o2.getElement1());
+						}
+					})
+					.collect(Collectors.toList());
+			return resultList;
+		}
 	}
 	
 	@LocalBean

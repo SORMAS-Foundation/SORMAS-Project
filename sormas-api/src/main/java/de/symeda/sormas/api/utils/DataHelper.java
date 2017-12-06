@@ -4,6 +4,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.nio.ByteBuffer;
 import java.util.Date;
 
@@ -86,8 +89,10 @@ public final class DataHelper {
 		return uuid.substring(0, 6).toUpperCase();
 	}
 
-	public static class Pair<K, V> {
+	public static class Pair<K, V> implements Serializable {
 
+		private static final long serialVersionUID = 7135988167451005820L;
+		
 		private final K element0;
 		private final V element1;
 
@@ -127,6 +132,10 @@ public final class DataHelper {
 
 	public static String getEpidNumberRegexp() {
 		return "\\w{3}-\\w{3}-\\w{3}-\\d{2}-[A-Za-z0-9]+";
+	}
+	
+	public static BigDecimal getTruncatedBigDecimal(BigDecimal number) {
+		return number.remainder(BigDecimal.ONE).compareTo(BigDecimal.ZERO) == 0 ? number.setScale(0,  RoundingMode.HALF_UP) : number;
 	}
 
 }
