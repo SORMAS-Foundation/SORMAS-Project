@@ -3,6 +3,8 @@ package de.symeda.sormas.ui.contact;
 import org.joda.time.LocalDate;
 
 import com.vaadin.data.Validator;
+import com.vaadin.data.fieldgroup.FieldGroup.CommitEvent;
+import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
 import com.vaadin.data.validator.DateRangeValidator;
 import com.vaadin.shared.ui.datefield.Resolution;
 import com.vaadin.ui.ComboBox;
@@ -37,6 +39,8 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 					LayoutUtil.fluidRowLocs(ContactDto.DESCRIPTION),
 					LayoutUtil.fluidRowLocs(ContactDto.CONTACT_OFFICER, "")
 					);
+	private TextField firstNameField;
+	private TextField lastNameField;
 
     public ContactCreateForm() {
         super(ContactDto.class, ContactDto.I18N_PREFIX);
@@ -47,8 +51,8 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
     @Override
 	protected void addFields() {
 
-    	addCustomField(FIRST_NAME, String.class, TextField.class);
-    	addCustomField(LAST_NAME, String.class, TextField.class);
+    	firstNameField = addCustomField(FIRST_NAME, String.class, TextField.class);
+    	lastNameField = addCustomField(LAST_NAME, String.class, TextField.class);
     	
     	addField(ContactDto.CAZE, ComboBox.class)
     		.addItems(FacadeProvider.getCaseFacade().getSelectableCases(LoginHelper.getCurrentUserAsReference()));
@@ -75,6 +79,19 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
     	    	contactOfficerField.addItems(FacadeProvider.getUserFacade().getAssignableUsersByDistrict(caseDto.getDistrict(), false, UserRole.CONTACT_OFFICER));
         	}
     	});
+    }
+    
+    @Override
+    public void preCommit(CommitEvent commitEvent) throws CommitException {
+    	super.preCommit(commitEvent);
+    	
+    	// TODO replace with general logic that validates custom field pre commit
+    	if (firstNameField != null) {
+    		firstNameField.validate();
+    	}
+    	if (lastNameField != null) {
+    		lastNameField.validate();
+    	}
     }
     
     protected void updateLastContactDateValidator() {

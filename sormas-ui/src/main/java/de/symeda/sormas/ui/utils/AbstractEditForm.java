@@ -8,7 +8,9 @@ import com.vaadin.data.Validator;
 import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.data.fieldgroup.DefaultFieldGroupFieldFactory;
+import com.vaadin.data.fieldgroup.FieldGroup.CommitEvent;
 import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
+import com.vaadin.data.fieldgroup.FieldGroup.CommitHandler;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.converter.Converter.ConversionException;
 import com.vaadin.shared.ui.combobox.FilteringMode;
@@ -38,7 +40,7 @@ import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.login.LoginHelper;
 
 @SuppressWarnings("serial")
-public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomField<DTO> {// implements DtoEditForm<DTO> {
+public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomField<DTO> implements CommitHandler {// implements DtoEditForm<DTO> {
 
 	private final BeanFieldGroup<DTO> fieldGroup;
 	
@@ -66,6 +68,8 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 				}
 			}
 		};
+		
+		fieldGroup.addCommitHandler(this);
 		
 		fieldGroup.setFieldFactory(new DefaultFieldGroupFieldFactory() {
 			@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -206,11 +210,17 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 	}
 	
 	@Override
-	public void commit() throws SourceException, InvalidValueException {
-		
+	public void preCommit(CommitEvent commitEvent) throws CommitException {
 		if (!LoginHelper.hasUserRight(UserRight.EDIT)) {
 			throw new UnsupportedOperationException("User with role 'National Observer' is not allowed to edit data");
 		}
+	}
+	
+	/**
+	 * Attention: This method is not called when used with CommitDiscardWrapperComponent (uses FieldGroup instead)
+	 */
+	@Override
+	public void commit() throws SourceException, InvalidValueException {
 		
 		try {
 			getFieldGroup().commit();
@@ -224,6 +234,11 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 			}
 		}
 		super.commit();
+	}
+	
+	@Override
+	public void postCommit(CommitEvent commitEvent) throws CommitException {
+		
 	}
 	
 	@Override
