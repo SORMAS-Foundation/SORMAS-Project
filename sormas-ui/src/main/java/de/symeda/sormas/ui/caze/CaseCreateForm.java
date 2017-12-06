@@ -39,11 +39,14 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
     public CaseCreateForm() {
         super(CaseDataDto.class, CaseDataDto.I18N_PREFIX);
 
-        setWidth(540, Unit.PIXELS);
+        setWidth(540, Unit.PIXELS);		
+        
+        hideValidationUntilNextCommit();
     }
 
     @Override
 	protected void addFields() {
+    	
     	addField(CaseDataDto.DISEASE, ComboBox.class);
     	addField(CaseDataDto.DISEASE_DETAILS, TextField.class);
     	addField(CaseDataDto.PLAGUE_TYPE, ComboBox.class);

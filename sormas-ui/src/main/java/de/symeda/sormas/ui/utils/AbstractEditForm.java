@@ -45,8 +45,10 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 	private final BeanFieldGroup<DTO> fieldGroup;
 	
 	private final String propertyI18nPrefix;
-
+	
 	private Class<DTO> type;
+
+	private boolean hideValidationUntilNextCommit = false;
 	
 	protected AbstractEditForm(Class<DTO> type, String propertyI18nPrefix) {
 	
@@ -59,7 +61,7 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 			protected void configureField(Field<?> field) {
 				field.setBuffered(isBuffered());
 
-				field.setEnabled(isEnabled());
+				field.setEnabled(isEnabled());				
 
 				if (field.getPropertyDataSource().isReadOnly()) {
 					field.setReadOnly(true);
@@ -214,10 +216,21 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 		if (!LoginHelper.hasUserRight(UserRight.EDIT)) {
 			throw new UnsupportedOperationException("User with role 'National Observer' is not allowed to edit data");
 		}
+		
+		if (hideValidationUntilNextCommit) {
+			hideValidationUntilNextCommit = false;
+			for (Field<?> field : getFieldGroup().getFields()) {
+				if (field instanceof AbstractField) {
+					AbstractField<?> abstractField = (AbstractField<?>)field;
+					abstractField.setValidationVisible(true);
+				}
+			}
+		}
 	}
 	
 	/**
-	 * Attention: This method is not called when used with CommitDiscardWrapperComponent (uses FieldGroup instead)
+	 * Attention (!!!!)
+	 * This method is not called when used with CommitDiscardWrapperComponent (uses FieldGroup instead)
 	 */
 	@Override
 	public void commit() throws SourceException, InvalidValueException {
@@ -280,12 +293,23 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 	
 	@SuppressWarnings("rawtypes")
 	protected <T extends Field> T formatField(T field, String propertyId) {
-		field.setCaption(I18nProperties.getPrefixFieldCaption(getPropertyI18nPrefix(), propertyId, field.getCaption()));
+		
+		String caption = I18nProperties.getPrefixFieldCaption(getPropertyI18nPrefix(), propertyId, field.getCaption());
+		field.setCaption(caption);
+
 		if (field instanceof AbstractField) {
 			AbstractField abstractField = (AbstractField)field;
 			abstractField.setDescription(I18nProperties.getPrefixFieldDescription(
 					getPropertyI18nPrefix(), propertyId, abstractField.getDescription()));
+			
+			if (hideValidationUntilNextCommit) {
+				abstractField.setValidationVisible(false);
+			}
 		}
+		
+		String validationError = I18nProperties.getPrefixValidationError(getPropertyI18nPrefix(), propertyId);
+		field.setRequiredError(String.format(validationError, caption));
+
 		field.setWidth(100, Unit.PERCENTAGE);
 		return field;
 	}
@@ -346,5 +370,19 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 
 	protected String getPropertyI18nPrefix() {
 		return propertyI18nPrefix;
+	}
+
+	public void hideValidationUntilNextCommit() {
+		
+		this.hideValidationUntilNextCommit  = true;
+		
+		for (Field<?> field : getFieldGroup().getFields()) {
+			if (field instanceof AbstractField) {
+				AbstractField<?> abstractField = (AbstractField<?>)field;
+				abstractField.setValidationVisible(false);
+			}
+		}
+		
+		// TODO go through custom fields as well
 	}
 }

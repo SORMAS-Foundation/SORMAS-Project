@@ -46,6 +46,8 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
         super(ContactDto.class, ContactDto.I18N_PREFIX);
 
 		setWidth(540, Unit.PIXELS);
+		
+		hideValidationUntilNextCommit();
     }
     
     @Override

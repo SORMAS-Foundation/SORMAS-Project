@@ -37,8 +37,11 @@ public class SormasUI extends UI {
 
     @Override
     protected void init(VaadinRequest vaadinRequest) {
-        Responsive.makeResponsive(this);
+		
+    	setErrorHandler(SormasErrorHandler.get());
         setLocale(vaadinRequest.getLocale());
+
+		Responsive.makeResponsive(this);
         
         VaadinSession.getCurrent().setConverterFactory(new SormasDefaultConverterFactory());
         
